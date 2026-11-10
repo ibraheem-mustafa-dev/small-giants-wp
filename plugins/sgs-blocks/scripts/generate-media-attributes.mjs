@@ -58,15 +58,18 @@ const toUrl = ( ...seg ) =>
 		.split( String.fromCharCode( 92 ) )
 		.join( '/' );
 
-const { MEDIA_ATTR_TYPES, MEDIA_BASES, MEDIA_TIERED_BASES, MEDIA_TIERS, mediaAttrType, mediaStoredAttrName } = await import(
+const { MEDIA_ATTR_TYPES, MEDIA_BASES, MEDIA_TIERED_BASES, mediaAttrName } = await import(
 	toUrl( 'src', 'components', 'MediaElementControls.js' )
 );
 
 // The atom registry is imported, never re-declared: the atom -> bases map is
 // what drives selective injection on BOTH sides, and two copies of it would be
 // two chances to disagree about which attributes a surface receives.
-const { MEDIA_ATOMS, basesForAtoms, atomsForElement } = await import(
-	toUrl( 'src', 'components', 'media', 'atoms', 'registry.js' )
+const { MEDIA_ATOMS } = await import( toUrl( 'src', 'components', 'media', 'atoms', 'registry.js' ) );
+
+// An adopted slot reads Spec 49 §8's rows, not the legacy bases above.
+const { adoptedAtomsForElement, adoptedSettingsForAtoms } = await import(
+	toUrl( 'src', 'components', 'media', 'emit', 'adopted-settings.js' )
 );
 
 function phpValue( value ) {
@@ -158,22 +161,9 @@ const BLOCKS_DIR = path.join( PLUGIN_DIR, 'src', 'blocks' );
 const OVERRIDES_FILE = path.join( HERE, 'attr-classification-overrides.json' );
 
 const ENV = {
-	attrType: mediaAttrType,
-	storedName: mediaStoredAttrName,
-	basesForAtoms,
-	atomsForElement,
-	tiered: MEDIA_TIERED_BASES,
-	tiers: MEDIA_TIERS,
+	attrName: mediaAttrName,
+	adoptedSettings: ( element ) => adoptedSettingsForAtoms( adoptedAtomsForElement( element ) ),
 };
-
-// base -> the registry's C1 entry, so the override entries come from the same
-// table the editor and the emitters read.
-const SETTING_BY_BASE = {};
-Object.values( MEDIA_ATOMS ).forEach( ( atom ) =>
-	atom.settings.forEach( ( setting ) => {
-		SETTING_BY_BASE[ setting.base ] = setting;
-	} )
-);
 
 const argBlock = process.argv.includes( '--block' )
 	? process.argv[ process.argv.indexOf( '--block' ) + 1 ]
@@ -202,13 +192,7 @@ function planBlock( text, handWritten ) {
 			skipped.push( `${ block.name } ${ a.name }` );
 			continue;
 		}
-		const companion =
-			a.base === 'ImageAlt'
-				? ENV.storedName( block.name, a.prefix, 'ImageUrl' + a.tier )
-				: '';
-		entries.push(
-			overrideEntry( block.name, a, SETTING_BY_BASE[ a.base ], companion, MEDIA_TIERED_BASES.includes( a.base ) )
-		);
+		entries.push( overrideEntry( block.name, a, a.setting, '', a.setting.responsive ) );
 	}
 	return { next, entries, skipped };
 }
@@ -302,9 +286,8 @@ function selfTest() {
 	ck( `every base has a declared type (missing: ${ missing.join( ', ' ) || 'none' })`, ! missing.length );
 
 	// WRITE PATH AND DRIFT CHECK, on a fixture: a copy of sgs/decorative-image's block.json whose
-	// entry declares `kinds` (the adoption marker). Its expected attributes come from the
-	// registered set the registration filter produced for that block (WordPress, local-indus),
-	// not from this generator.
+	// entry declares `kinds` (the adoption marker). Its expected attributes are Spec 49 §8's names
+	// for the atoms the entry declares, written out by hand in the fixture, not by this generator.
 	const fixDir = path.join( PLUGIN_DIR, 'tests', 'fixtures', 'media' );
 	const readFix = ( f ) => fs.readFileSync( path.join( fixDir, f ), 'utf8' );
 	const fixText = readFix( 'adopted-block.json' );
@@ -320,7 +303,7 @@ function selfTest() {
 	};
 	const writtenMap = Object.fromEntries( written.map( ( [ n, d ] ) => [ n, stripMark( d ) ] ) );
 	ck(
-		`adopted fixture: writes exactly the ${ Object.keys( expectedAttrs ).length } registered media attributes (names, types, defaults)`,
+		`adopted fixture: writes exactly the ${ Object.keys( expectedAttrs ).length } Spec 49 §8 media attributes (names and types)`,
 		JSON.stringify( Object.keys( writtenMap ).sort() ) === JSON.stringify( Object.keys( expectedAttrs ).sort() ) &&
 			Object.keys( expectedAttrs ).every( ( n ) => JSON.stringify( writtenMap[ n ] ) === JSON.stringify( expectedAttrs[ n ] ) )
 	);
@@ -338,7 +321,7 @@ function selfTest() {
 		'adopted fixture: a second run changes nothing',
 		planBlock( done.next, new Set() ).next === done.next && applyOverrideEntries( overridden, done.entries ) === overridden
 	);
-	const tampered = done.next.replace( /("objectFit": \{"type":)"string"/, '$1"integer"' );
+	const tampered = done.next.replace( /("fit": \{"type":)"object"/, '$1"integer"' );
 	ck(
 		'drift check: an edited generated attribute differs from what a run writes',
 		tampered !== done.next && planBlock( tampered, new Set() ).next !== tampered

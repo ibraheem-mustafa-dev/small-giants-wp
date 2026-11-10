@@ -1,26 +1,11 @@
 {
-	"attachment": {
-		"type": "string"
+	"fit": {
+		"type": "object"
 	},
-	"objectFit": {
-		"type": "string"
+	"focal": {
+		"type": "object"
 	},
-	"objectFitMobile": {
-		"type": "string"
-	},
-	"objectFitTablet": {
-		"type": "string"
-	},
-	"objectPosition": {
-		"type": "string"
-	},
-	"objectPositionMobile": {
-		"type": "string"
-	},
-	"objectPositionTablet": {
-		"type": "string"
-	},
-	"overlayBlendMode": {
+	"overlayBlend": {
 		"type": "string"
 	},
 	"overlayColour": {
@@ -36,21 +21,15 @@
 		"type": "string"
 	},
 	"overlayOpacity": {
-		"type": "number"
+		"type": "object"
 	},
-	"overlayOpacityMobile": {
-		"type": "number"
-	},
-	"overlayOpacityTablet": {
-		"type": "number"
-	},
-	"position": {
-		"type": "string"
+	"pinned": {
+		"type": "boolean"
 	},
 	"repeat": {
-		"type": "string"
+		"type": "object"
 	},
-	"size": {
-		"type": "string"
+	"tileSize": {
+		"type": "object"
 	}
 }

@@ -6,11 +6,11 @@
  * files, calls these, and either writes the results or (with `--check`)
  * compares them with what is on disk.
  *
- * Only entries that declare `kinds` are written. The attribute set is exactly what `includes/media-element-attrs-register.php`
- * adds at registration: for each `supports.sgs.mediaElements` entry, the union
- * of the named atoms' bases (all atoms when `atoms` is omitted), each base and
- * its Tablet and Mobile siblings where the base is tiered, skipping any name the
- * block already declares itself or an earlier entry already produced.
+ * Only entries that declare `kinds` are written (Spec 49 §8.3), and they are written in §8's names: for each such
+ * `supports.sgs.mediaElements` entry, one attribute per adopted setting of the atoms it names (all adopted atoms when
+ * `atoms` is omitted), named `{prefix}{Base}`. A responsive setting is one `object` attribute holding the
+ * `{desktop,tablet,mobile}` value, never Tablet and Mobile siblings. Any name the block already declares itself, or an
+ * earlier entry already produced, is skipped.
  *
  * Generated attributes carry `"_generated": "media-atoms"`, sit on one line
  * each at the end of `attributes`, and are rewritten from scratch on every run,
@@ -51,7 +51,9 @@ export function findBlockJsons( dir ) {
  * The attributes a block's `mediaElements` declaration generates.
  *
  * @param {Object}   block     Parsed block.json.
- * @param {Object}   env       { attrType, storedName, basesForAtoms, atomsForElement, tiered, tiers }.
+ * @param {Object}   env       { attrName, adoptedSettings }: the §8 name of a prefix and base, and the adopted settings
+ *                             of an entry.
+
  * @param {string[]} ownNames  Attribute names the block declares itself.
  * @return {Array<{name:string, def:Object, base:string, tier:string, prefix:string}>} In injection order.
  */
@@ -71,37 +73,20 @@ export function generatedAttributes( block, env, ownNames ) {
 	const out = [];
 	for ( const element of elements ) {
 		const prefix = element?.prefix ? String( element.prefix ) : '';
-		const bases = env.basesForAtoms( env.atomsForElement( element ) );
-		for ( const base of bases ) {
-			for ( const tier of [ '', ...env.tiers ] ) {
-				if ( tier && ! env.tiered.includes( base ) ) {
-					continue;
-				}
-				const name = env.storedName( block.name, prefix, base + tier );
-				if ( own.has( name ) || seen.has( name ) ) {
-					continue;
-				}
-				const type = env.attrType( base, tier );
-				// A block that stores a base as a tier object has no use for scalar
-				// Tablet and Mobile siblings; the registration filter still adds them
-				// until it is removed, so the registered set is unchanged.
-				const baseName = env.storedName( block.name, prefix, base );
-				if (
-					tier &&
-					type !== 'object' &&
-					block.attributes?.[ baseName ]?.type === 'object' &&
-					! block.attributes[ baseName ]._generated
-				) {
-					continue;
-				}
-				seen.add( name );
-				const def = { type };
-				if ( tier && Array.isArray( type ) ) {
-					def.default = null;
-				}
-				def._generated = GENERATED_MARK;
-				out.push( { name, def, base, tier, prefix } );
+		for ( const setting of env.adoptedSettings( element ) ) {
+			const name = env.attrName( prefix, setting.base );
+			if ( own.has( name ) || seen.has( name ) ) {
+				continue;
 			}
+			seen.add( name );
+			out.push( {
+				name,
+				def: { type: setting.responsive ? 'object' : setting.type, _generated: GENERATED_MARK },
+				base: setting.base,
+				tier: '',
+				prefix,
+				setting,
+			} );
 		}
 	}
 	return out;
@@ -208,15 +193,15 @@ function spaced( value ) {
  *
  * @param {string} slug  Block slug.
  * @param {Object} attr  One generatedAttributes() item.
- * @param {Object} setting The registry's C1 entry for the attribute's base.
+ * @param {Object} setting The adopted C1 entry for the attribute's base.
  * @param {string} companion Stored name of the Url attribute for an Alt, else ''.
- * @param {boolean} tiered Whether the base carries Tablet and Mobile siblings.
+ * @param {boolean} tiered Whether the attribute holds the responsive object.
  * @return {Object} { slug, attr, fields, _reason }.
  */
 export function overrideEntry( slug, attr, setting, companion, tiered ) {
 	const fields = { role: setting.role };
 	if ( tiered ) {
-		fields.tier_shape = 'flat_sibling';
+		fields.tier_shape = 'tier_object';
 	}
 	if ( companion ) {
 		fields.alt_companion_attr = companion;

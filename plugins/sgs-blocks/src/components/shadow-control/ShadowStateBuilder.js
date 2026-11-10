@@ -34,8 +34,9 @@ const DEFAULT_PREFS = { look: 'soft', intensity: 0.5, colour: 'site' };
  * @param {boolean}  [props.isHover]      This is the Hover state.
  * @param {string}   [props.baseValue]    Normal shape (hover states).
  * @param {string}   [props.baseColour]   Normal colour (hover states).
+ * @param {string[]} [props.hide]         Inputs to remove: `spread`, `inset`, `raw` (the Raw CSS tab).
  */
-export default function ShadowStateBuilder( { value, colour, onApply, presets, resolveHex, siteColor, canEditShape = true, isHover = false, baseValue, baseColour } ) {
+export default function ShadowStateBuilder( { value, colour, onApply, presets, resolveHex, siteColor, canEditShape = true, isHover = false, baseValue, baseColour, hide = [] } ) {
 	const parsed = useMemo( () => parseStored( value, colour ), [ value, colour ] );
 	const rec = useMemo( () => ( 'layers' === parsed.kind ? recognise( parsed.layers ) : null ), [ parsed ] );
 	const [ prefs, setPrefs ] = useState( () => ( rec && rec.n > 0 ? { look: rec.look, intensity: rec.intensity, colour: rec.colour } : DEFAULT_PREFS ) );
@@ -140,7 +141,7 @@ export default function ShadowStateBuilder( { value, colour, onApply, presets, r
 					{ name: 'simple', title: __( 'Simple', 'sgs-blocks' ) },
 					{ name: 'layers', title: __( 'Layers', 'sgs-blocks' ) },
 					{ name: 'raw', title: __( 'Raw CSS', 'sgs-blocks' ) },
-				] }
+				].filter( ( tab ) => ! hide.includes( tab.name ) ) }
 			>
 				{ ( tab ) => {
 					if ( 'simple' === tab.name ) {
@@ -172,7 +173,7 @@ export default function ShadowStateBuilder( { value, colour, onApply, presets, r
 					}
 					const layers = 'layers' === parsed.kind ? parsed.layers : [];
 					return 'layers' === tab.name ? (
-						<LayersTab layers={ layers } commit={ commitLayers } resolveHex={ resolveHex } />
+						<LayersTab layers={ layers } commit={ commitLayers } resolveHex={ resolveHex } hide={ hide } />
 					) : (
 						<RawTab layers={ layers } commit={ commitLayers } />
 					);

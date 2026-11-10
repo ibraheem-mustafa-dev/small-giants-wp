@@ -16,8 +16,9 @@ const PX = [ { value: 'px', label: 'px' } ];
  * @param {Object}   props
  * @param {Object}   props.layer    Model layer.
  * @param {Function} props.onChange Receives a patch of layer fields.
+ * @param {string[]} [props.hide]   `spread` and `inset` remove those inputs.
  */
-export default function LayerEditor( { layer, onChange } ) {
+export default function LayerEditor( { layer, onChange, hide = [] } ) {
 	if ( layer.raw ) {
 		return (
 			<div className="sgs-shadow-control__layer-fields">
@@ -51,15 +52,17 @@ export default function LayerEditor( { layer, onChange } ) {
 			</div>
 			<div className="sgs-shadow-control__pair">
 				{ length( 'blur', __( 'Blur', 'sgs-blocks' ), 0 ) }
-				{ length( 'spread', __( 'Spread', 'sgs-blocks' ), -200 ) }
+				{ ! hide.includes( 'spread' ) && length( 'spread', __( 'Spread', 'sgs-blocks' ), -200 ) }
 			</div>
 			<ColourOpacity colour={ layer.colour } alpha={ layer.alpha } onChange={ onChange } />
-			<ToggleControl
-				label={ __( 'Inner shadow', 'sgs-blocks' ) }
-				checked={ layer.inset }
-				onChange={ ( v ) => onChange( { inset: v } ) }
-				__nextHasNoMarginBottom
-			/>
+			{ ! hide.includes( 'inset' ) && (
+				<ToggleControl
+					label={ __( 'Inner shadow', 'sgs-blocks' ) }
+					checked={ layer.inset }
+					onChange={ ( v ) => onChange( { inset: v } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
 		</div>
 	);
 }

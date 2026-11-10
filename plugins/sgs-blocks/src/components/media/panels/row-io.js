@@ -8,11 +8,32 @@
  *
  * @package SGS\Blocks
  */
-import { MEDIA_ATTR_TYPES, MEDIA_TIERED_BASES, mediaStoredAttrName } from '../../MediaElementControls.js';
-import { COMPOSITES } from './panel-model.js';
+import { MEDIA_ATTR_TYPES, MEDIA_TIERED_BASES, mediaAttrName, mediaStoredAttrName } from '../../MediaElementControls.js';
+import { ADOPTED_SETTINGS } from '../emit/adopted-settings.js';
+import { ADOPTED_COMPOSITES, COMPOSITES } from './panel-model.js';
 import { DEVICES, clearPatch, isSet, ownAt, readAt, tierPatch } from './disclosure-context.js';
 
 const DEVICE_NAMES = { desktop: 'Desktop', tablet: 'Tablet', mobile: 'Mobile' };
+
+const ADOPTED_RESPONSIVE = new Set(
+	Object.values( ADOPTED_SETTINGS )
+		.flat()
+		.filter( ( s ) => s.responsive )
+		.map( ( s ) => s.base )
+);
+
+/**
+ * How one base is stored. An adopted base keeps its §8 name and, when responsive, one `{desktop,tablet,mobile}` object;
+ * a legacy base follows what it stores today.
+ *
+ * @param {string}  base    Base name.
+ * @param {boolean} adopted Adopted slot.
+ * @return {{responsive: boolean, mode: string}} Storage facts.
+ */
+const storage = ( base, adopted ) =>
+	adopted
+		? { responsive: ADOPTED_RESPONSIVE.has( base ), mode: 'object' }
+		: { responsive: MEDIA_TIERED_BASES.includes( base ), mode: modeFor( base ) };
 
 /** @param {string} base Base name. @return {string} 'object' or 'flat'. */
 const modeFor = ( base ) =>
@@ -29,9 +50,9 @@ const modeFor = ( base ) =>
  */
 export function rowIO( row, attrs, setAttributes, device, prefix, blockSlug ) {
 	const base = row.setting.base;
-	const key = mediaStoredAttrName( blockSlug, prefix, base );
-	const responsive = MEDIA_TIERED_BASES.includes( base );
-	const mode = modeFor( base );
+	const adopted = !! row.setting.adopted;
+	const key = adopted ? mediaAttrName( prefix, base ) : mediaStoredAttrName( blockSlug, prefix, base );
+	const { responsive, mode } = storage( base, adopted );
 
 	let inheritedFrom = '';
 	if ( responsive && 'desktop' !== device && ! isSet( ownAt( attrs, key, device ) ) ) {
@@ -91,10 +112,13 @@ export function resetPatch( rows, attrs, device, prefix, blockSlug ) {
 	const patch = {};
 	const devices = 'desktop' === device ? DEVICES : [ device ];
 	rows.forEach( ( row ) => {
-		[ row.setting.base, ...( COMPOSITES[ row.setting.base ] || [] ) ].forEach( ( base ) => {
-			const key = mediaStoredAttrName( blockSlug, prefix, base );
-			if ( MEDIA_TIERED_BASES.includes( base ) ) {
-				Object.assign( patch, clearPatch( attrs, key, devices, modeFor( base ) ) );
+		const adopted = !! row.setting.adopted;
+		const members = ( adopted ? ADOPTED_COMPOSITES : COMPOSITES )[ row.setting.base ] || [];
+		[ row.setting.base, ...members ].forEach( ( base ) => {
+			const key = adopted ? mediaAttrName( prefix, base ) : mediaStoredAttrName( blockSlug, prefix, base );
+			const { responsive, mode } = storage( base, adopted );
+			if ( responsive ) {
+				Object.assign( patch, clearPatch( attrs, key, devices, mode ) );
 			} else if ( 'desktop' === device ) {
 				patch[ key ] = undefined;
 			}

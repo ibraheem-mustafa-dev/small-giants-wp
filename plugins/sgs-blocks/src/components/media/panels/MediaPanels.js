@@ -16,6 +16,7 @@ import { useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { moreVertical } from '@wordpress/icons';
 
+import { SizingSummary } from '../SizingFields.js';
 import PanelRow from './PanelRow.js';
 import { createContext } from './disclosure-context.js';
 import { buildPanelModel } from './panel-model.js';
@@ -61,7 +62,7 @@ export default function MediaPanels( {
 } ) {
 	const activeDevice = useActiveDevice();
 	const device = deviceOverride || activeDevice;
-	const opts = { blockSlug, kinds, context, parallax };
+	const opts = { blockSlug, kinds, context, parallax, adopted: true };
 	const kind = createContext( attributes, device, prefix, opts ).kind;
 	const model = buildPanelModel( {
 		atomIds,
@@ -70,7 +71,9 @@ export default function MediaPanels( {
 		prefix,
 		opts,
 		extraPanelIds: Object.keys( panelContent ),
+		adopted: true,
 	} );
+	const slot = { prefix, kinds, context };
 
 	const resetLabel =
 		'desktop' === device
@@ -88,6 +91,9 @@ export default function MediaPanels( {
 					initialOpen={ panel.open }
 					className={ `sgs-media-panel sgs-media-panel--${ panel.id }` }
 				>
+					{ 'size-and-crop' === panel.id && 'background' !== context && (
+						<SizingSummary attributes={ attributes } setAttributes={ setAttributes } prefix={ prefix } />
+					) }
 					{ rows.length > 0 && (
 						<div className="sgs-media-panel__menu">
 							<DropdownMenu
@@ -120,6 +126,7 @@ export default function MediaPanels( {
 							blockSlug={ blockSlug }
 							device={ device }
 							kind={ kind }
+							slot={ slot }
 						/>
 					) ) }
 					{ panelContent[ panel.id ] || null }

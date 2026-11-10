@@ -135,6 +135,7 @@ const warnMissing = ( what ) => () => {
  * @param {Object}   [props.attrNames]            Map from `shadowAttrKeys()`.
  * @param {string}   [props.liftPrefix]           Attribute prefix for the lift switch ('' = the block root; see ShadowLiftControls).
  * @param {boolean}  [props.hoverOnly]            Show only the hover shadow builder, for a block with no resting shadow attributes.
+ * @param {string[]} [props.hide]                 Inputs to remove: `spread`, `inset`, `raw` (the Raw CSS tab). Empty by default.
  */
 export default function ShadowControl( {
 	label,
@@ -151,6 +152,7 @@ export default function ShadowControl( {
 	attrNames,
 	liftPrefix = '',
 	hoverOnly = false,
+	hide = [],
 } ) {
 	// Explicit props win over the map, and a pair is written in ONE call only when the map
 	// (not the caller) supplies both halves.
@@ -213,7 +215,7 @@ export default function ShadowControl( {
 		literal: preset.shadow,
 		preview: presetPreviewCss( preset.shadow, resolveHex( 'site' ) ),
 	} ) );
-	const shared = { presets, resolveHex, siteColor: resolveHex( 'site' ) };
+	const shared = { presets, resolveHex, siteColor: resolveHex( 'site' ), hide };
 
 	// The lift-on-hover value for THIS instance's resting shape (design H5's "the Hover tab
 	// says what it lifts to"), computed only once the theme's hover map (`custom.shadowHover`)

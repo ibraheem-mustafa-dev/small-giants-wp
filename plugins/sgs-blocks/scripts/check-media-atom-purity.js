@@ -391,6 +391,77 @@ function phpBoxAtomParityProblems() {
 	return [];
 }
 
+const PAINT_NODES = [ 'layout', 'surface', 'media', 'mask', 'overlay' ];
+
+/**
+ * The paint nodes each Spec 49 atom (`sizing`, `shape`, `filter`, `layout`) declares with `paints`, parsed out of
+ * registry.js the way `atomAttachments()` reads `attachesTo`. A legacy atom says `attachesTo` (the element or the box
+ * the marker CSS keys on); a new atom prints real properties on named C3 nodes and says `paints`.
+ *
+ * @return {{ids: string[], paints: Object}} Every atom id, and atom id -> its paint nodes.
+ */
+function atomPaintDeclarations() {
+	const file = path.join( ATOM_DIR, 'registry.js' );
+	if ( ! fs.existsSync( file ) ) {
+		return { ids: [], paints: {} };
+	}
+	const ids = [];
+	const paints = {};
+	let current = null;
+	fs.readFileSync( file, 'utf8' )
+		.split( String.fromCharCode( 10 ) )
+		.forEach( ( line ) => {
+			const id = line.match( /^		id: '([a-z-]+)',/ );
+			if ( id ) {
+				current = id[ 1 ];
+				ids.push( current );
+				return;
+			}
+			const p = line.match( /^		paints: \[([^\]]*)\],/ );
+			if ( p && current ) {
+				paints[ current ] = [ ...p[ 1 ].matchAll( /'([a-z]+)'/g ) ].map( ( x ) => x[ 1 ] );
+			}
+		} );
+	return { ids, paints };
+}
+
+/**
+ * Every atom names where it prints: `attachesTo` (box or element) or `paints` (C3 nodes), never both, never neither.
+ * A `paints` atom may name only the C3 nodes, and is never in the PHP `$box_atoms` list, which is for `attachesTo: 'box'`
+ * atoms only.
+ *
+ * @return {string[]} Problems found.
+ */
+function paintDeclarationProblems() {
+	const { ids, paints } = atomPaintDeclarations();
+	const attach = atomAttachments();
+	if ( ! ids.length ) {
+		return [ 'registry.js declares no atoms' ];
+	}
+	const out = [];
+	ids.forEach( ( id ) => {
+		const hasAttach = id in attach;
+		const hasPaints = id in paints;
+		if ( hasAttach === hasPaints ) {
+			out.push( `registry.js atom "${ id }" must declare exactly one of attachesTo or paints.` );
+		}
+		( paints[ id ] || [] ).forEach( ( node ) => {
+			if ( ! PAINT_NODES.includes( node ) ) {
+				out.push( `registry.js atom "${ id }" paints unknown node "${ node }" (${ PAINT_NODES.join( ', ' ) }).` );
+			}
+		} );
+	} );
+	const file = path.join( PLUGIN, 'includes', 'class-sgs-media-element.php' );
+	if ( fs.existsSync( file ) ) {
+		const m = fs.readFileSync( file, 'utf8' ).match( /\$box_atoms\s*=\s*array\(([^)]*)\)/ );
+		const box = m ? [ ...m[ 1 ].matchAll( /'([a-z-]+)'/g ) ].map( ( x ) => x[ 1 ] ) : [];
+		box.filter( ( id ) => id in paints ).forEach( ( id ) =>
+			out.push( `class-sgs-media-element.php $box_atoms names "${ id }", which declares paints.` )
+		);
+	}
+	return out;
+}
+
 /**
  * Every atom PHP twin must actually be REQUIRED, not merely present on disk.
  *
@@ -457,6 +528,7 @@ function run() {
 	const fallbackProblems = stylesheetFallbackProblems()
 		.concat( partialMarkerProblems() )
 		.concat( phpBoxAtomParityProblems() )
+		.concat( paintDeclarationProblems() )
 		.concat( atomTwinLoadProblems() );
 	fallbackProblems.forEach( ( p ) => process.stderr.write( `  ⛔ ${ p }
 ` ) );
@@ -639,6 +711,12 @@ function selfTest() {
 	ck(
 		'the PHP $box_atoms list matches registry.js attachesTo',
 		phpBoxAtomParityProblems().length === 0
+	);
+
+	ck(
+		'every atom declares attachesTo or paints, and the four Spec 49 atoms declare paints',
+		paintDeclarationProblems().length === 0 &&
+			[ 'sizing', 'shape', 'filter', 'layout' ].every( ( id ) => id in atomPaintDeclarations().paints )
 	);
 
 	// Guards the two-marker DOM contract. This single assertion covers BOTH

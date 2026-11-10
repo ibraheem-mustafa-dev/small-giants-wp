@@ -26,62 +26,31 @@ import SgsBoxControl from '../../SgsBoxControl.js';
 import SgsLengthControl from '../../SgsLengthControl.js';
 import ShadowControl from '../../ShadowControl.js';
 import { LINK_SOURCES_ALL } from '../../../shared/link-source-options.js';
-import { mediaStoredAttrName } from '../../MediaElementControls.js';
-import { isSet } from './disclosure-context.js';
+import { mediaAttrName, mediaStoredAttrName } from '../../MediaElementControls.js';
+import FitField from '../FitField.js';
+import FocalField from '../FocalField.js';
+import MediaSlotField from '../MediaSlotField.js';
+import ShapeField from '../ShapeField.js';
+import { AspectRatioField, HeightField, LimitsGroup, WidthField } from '../SizingFields.js';
+import {
+	AlignmentField,
+	ColourTreatmentField,
+	OrderField,
+	PlaybackField,
+	RadiusField,
+	ShadowField,
+	SurfaceColourField,
+} from './adopted-fields.js';
+import { REASONS, isSet } from './disclosure-context.js';
+import { translateReason } from './reasons.js';
+import { SELECT_OPTIONS } from './select-options.js';
 
 const labelOf = ( row ) => row.setting.control.label;
-const reasonOf = ( row ) => ( 'disabled' === row.state.state ? row.state.hiddenReason || undefined : undefined );
+const reasonOf = ( row ) => ( 'disabled' === row.state.state ? translateReason( row.state.hiddenReason ) || undefined : undefined );
+/** A row's stored attribute name: an adopted row keeps its §8 name, an older one what its block stores. */
+const attrKey = ( row, prefix, blockSlug, base ) =>
+	row.setting.adopted ? mediaAttrName( prefix, base ) : mediaStoredAttrName( blockSlug, prefix, base );
 const isOff = ( row ) => 'disabled' === row.state.state;
-
-/** @param {Array<[string,string]>} pairs `[ value, label ]` pairs. @return {Array} Options. */
-const options = ( pairs ) => pairs.map( ( [ value, label ] ) => ( { value, label } ) );
-
-const SELECT_OPTIONS = {
-	SvgAnimation: options( [
-		[ 'none', __( 'None', 'sgs-blocks' ) ],
-		[ 'pulse', __( 'Pulse', 'sgs-blocks' ) ],
-		[ 'float', __( 'Float', 'sgs-blocks' ) ],
-		[ 'wave', __( 'Wave', 'sgs-blocks' ) ],
-	] ),
-	SvgAnimationSpeed: options( [
-		[ 'slow', __( 'Slow', 'sgs-blocks' ) ],
-		[ 'medium', __( 'Medium', 'sgs-blocks' ) ],
-		[ 'fast', __( 'Fast', 'sgs-blocks' ) ],
-	] ),
-	SvgPosition: options( [
-		[ 'background', __( 'Behind content', 'sgs-blocks' ) ],
-		[ 'foreground', __( 'In front of content', 'sgs-blocks' ) ],
-	] ),
-	Repeat: options( [
-		[ 'no-repeat', __( "Don't repeat", 'sgs-blocks' ) ],
-		[ 'repeat', __( 'Repeat both ways', 'sgs-blocks' ) ],
-		[ 'repeat-x', __( 'Repeat across', 'sgs-blocks' ) ],
-		[ 'repeat-y', __( 'Repeat down', 'sgs-blocks' ) ],
-	] ),
-	BorderStyle: options( [
-		[ 'solid', __( 'Solid', 'sgs-blocks' ) ],
-		[ 'dashed', __( 'Dashed', 'sgs-blocks' ) ],
-		[ 'dotted', __( 'Dotted', 'sgs-blocks' ) ],
-	] ),
-	OverlayBlendMode: options( [
-		[ 'normal', __( 'Normal', 'sgs-blocks' ) ],
-		[ 'multiply', __( 'Multiply (darker)', 'sgs-blocks' ) ],
-		[ 'screen', __( 'Screen (lighter)', 'sgs-blocks' ) ],
-		[ 'overlay', __( 'Overlay', 'sgs-blocks' ) ],
-		[ 'darken', __( 'Darken', 'sgs-blocks' ) ],
-		[ 'lighten', __( 'Lighten', 'sgs-blocks' ) ],
-		[ 'color-dodge', __( 'Colour dodge', 'sgs-blocks' ) ],
-		[ 'color-burn', __( 'Colour burn', 'sgs-blocks' ) ],
-		[ 'soft-light', __( 'Soft light', 'sgs-blocks' ) ],
-		[ 'hard-light', __( 'Hard light', 'sgs-blocks' ) ],
-		[ 'difference', __( 'Difference', 'sgs-blocks' ) ],
-		[ 'exclusion', __( 'Exclusion', 'sgs-blocks' ) ],
-	] ),
-	CaptionTag: options( [
-		[ 'figcaption', __( 'Figure caption', 'sgs-blocks' ) ],
-		[ 'div', __( 'Div', 'sgs-blocks' ) ],
-	] ),
-};
 
 const CORNER_SIDES = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
 const CORNER_LABELS = {
@@ -219,12 +188,17 @@ function Corners( { row, io } ) {
 
 /** The colour leader of a pair or trio: a flat colour, its gradient and, for the overlay, hover forms. */
 function Colour( { row, attributes, setAttributes, prefix, blockSlug } ) {
-	const key = ( base ) => mediaStoredAttrName( blockSlug, prefix, base );
+	const key = ( base ) => attrKey( row, prefix, blockSlug, base );
 	const isOverlay = 'OverlayColour' === row.setting.base;
 	const forms = isOverlay
 		? [
 				[ 'rest', __( 'Normal', 'sgs-blocks' ), 'OverlayColour', 'OverlayGradient' ],
 				[ 'hover', __( 'Hover', 'sgs-blocks' ), 'OverlayColourHover', 'OverlayGradientHover' ],
+		  ]
+		: row.setting.adopted
+		? [
+				[ 'rest', __( 'Normal', 'sgs-blocks' ), 'BorderColour', null ],
+				[ 'hover', __( 'Hover', 'sgs-blocks' ), 'BorderColourHover', null ],
 		  ]
 		: [ [ 'rest', __( 'Normal', 'sgs-blocks' ), 'BorderColour', 'BorderColourGradient' ] ];
 
@@ -236,7 +210,7 @@ function Colour( { row, attributes, setAttributes, prefix, blockSlug } ) {
 				( [ k, v ] ) => ( k === colourKey || k === key( 'OverlayGradient' ) ) && v
 			);
 			if ( first ) {
-				patch[ key( 'OverlayOpacity' ) ] = 40;
+				patch[ key( 'OverlayOpacity' ) ] = row.setting.adopted ? { desktop: 40 } : 40;
 			}
 		}
 		setAttributes( patch );
@@ -250,8 +224,12 @@ function Colour( { row, attributes, setAttributes, prefix, blockSlug } ) {
 				label,
 				value: attributes[ key( colour ) ],
 				onChange: ( v ) => write( { [ key( colour ) ]: v ?? '' } ),
-				gradientValue: attributes[ key( gradient ) ],
-				onGradientChange: ( v ) => write( { [ key( gradient ) ]: v ?? '' } ),
+				...( gradient
+					? {
+							gradientValue: attributes[ key( gradient ) ],
+							onGradientChange: ( v ) => write( { [ key( gradient ) ]: v ?? '' } ),
+					  }
+					: {} ),
 				linked: true,
 			} ) ) }
 		/>
@@ -259,7 +237,7 @@ function Colour( { row, attributes, setAttributes, prefix, blockSlug } ) {
 }
 
 function Shadow( { row, attributes, setAttributes, prefix, blockSlug } ) {
-	const key = ( base ) => mediaStoredAttrName( blockSlug, prefix, base );
+	const key = ( base ) => attrKey( row, prefix, blockSlug, base );
 	return (
 		<ShadowControl
 			label={ labelOf( row ) }
@@ -277,7 +255,7 @@ function Shadow( { row, attributes, setAttributes, prefix, blockSlug } ) {
 }
 
 function Link( { row, attributes, setAttributes, prefix, blockSlug } ) {
-	const key = ( base ) => mediaStoredAttrName( blockSlug, prefix, base );
+	const key = ( base ) => attrKey( row, prefix, blockSlug, base );
 	const k = {
 		url: key( 'LinkUrl' ),
 		newTab: key( 'LinkOpensNewTab' ),
@@ -319,6 +297,37 @@ function Link( { row, attributes, setAttributes, prefix, blockSlug } ) {
 	);
 }
 
+/** Fit, or the one hint line in its place while the box does not crop. */
+function Fit( props ) {
+	if ( isOff( props.row ) ) {
+		return <p className="sgs-media-panel__hint">{ reasonOf( props.row ) }</p>;
+	}
+	return <FitField { ...props } />;
+}
+
+/** Focal; Fit prints the shared "give it a shape" hint, so Focal prints only its own reason. */
+function Focal( props ) {
+	if ( isOff( props.row ) ) {
+		return props.row.state.hiddenReason === REASONS.noCrop ? null : <p className="sgs-media-panel__hint">{ reasonOf( props.row ) }</p>;
+	}
+	return <FocalField { ...props } />;
+}
+
+/** The older four-corner box, or the adopted slider with a link and a Round preset. */
+const CornersOrRadius = ( props ) => ( props.row.setting.adopted ? <RadiusField { ...props } /> : <Corners { ...props } /> );
+
+/** Components that print their own device note: `PanelRow` adds none under them. */
+export const OWN_NOTE = [
+	'MediaSlotField',
+	'FitField',
+	'FocalField',
+	'ShapeField',
+	'RatioField',
+	'WidthField',
+	'HeightField',
+	'LimitsGroup',
+];
+
 /** `control.component` name to field. */
 export const COMPONENT_MAP = {
 	ToggleControl: Toggle,
@@ -328,8 +337,22 @@ export const COMPONENT_MAP = {
 	AltField: Alt,
 	LengthField: Length,
 	SidesField: Sides,
-	CornersField: Corners,
+	CornersField: CornersOrRadius,
 	ColourField: Colour,
 	ShadowControl: Shadow,
 	LinkField: Link,
+	MediaSlotField,
+	FitField: Fit,
+	FocalField: Focal,
+	ShapeField,
+	RatioField: AspectRatioField,
+	WidthField,
+	HeightField,
+	LimitsGroup,
+	ShadowField,
+	SurfaceColourField,
+	PlaybackField,
+	ColourTreatmentField,
+	AlignmentField,
+	NumberControl: OrderField,
 };

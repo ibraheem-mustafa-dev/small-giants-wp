@@ -9,6 +9,7 @@
 
 const SIZES = 'size-and-crop';
 const BORDER = 'border-and-shape';
+const LAYOUT = 'position-in-layout';
 
 /**
  * One C1 entry.
@@ -46,12 +47,12 @@ function entry( base, type, tiered, emitter, property, paintNode, component, lab
 
 export const SIZING_SETTINGS = [
 	entry( 'Ratio', 'string', true, 'sizing', 'aspect-ratio', 'surface', 'RatioField', 'Aspect ratio', SIZES, 1 ),
-	entry( 'Width', 'string', true, 'sizing', 'width', 'layout', 'LengthField', 'Width', SIZES, 2 ),
-	entry( 'Height', 'string', true, 'sizing', 'height', 'surface', 'LengthField', 'Height', SIZES, 3 ),
-	entry( 'MinWidth', 'string', true, 'sizing', 'min-width', 'layout', 'LengthField', 'Smallest width', SIZES, 4 ),
-	entry( 'MaxWidth', 'string', true, 'sizing', 'max-width', 'layout', 'LengthField', 'Largest width', SIZES, 5 ),
-	entry( 'MinHeight', 'string', true, 'sizing', 'min-height', 'surface', 'LengthField', 'Smallest height', SIZES, 6 ),
-	entry( 'MaxHeight', 'string', true, 'sizing', 'max-height', 'surface', 'LengthField', 'Largest height', SIZES, 7 ),
+	entry( 'Width', 'string', true, 'sizing', 'width', 'layout', 'WidthField', 'Width', SIZES, 2 ),
+	entry( 'Height', 'string', true, 'sizing', 'height', 'surface', 'HeightField', 'Height', SIZES, 3 ),
+	entry( 'MinWidth', 'string', true, 'sizing', 'min-width', 'layout', 'LimitsGroup', 'Smallest width', SIZES, 4 ),
+	entry( 'MaxWidth', 'string', true, 'sizing', 'max-width', 'layout', 'LimitsGroup', 'Largest width', SIZES, 5 ),
+	entry( 'MinHeight', 'string', true, 'sizing', 'min-height', 'surface', 'LimitsGroup', 'Smallest height', SIZES, 6 ),
+	entry( 'MaxHeight', 'string', true, 'sizing', 'max-height', 'surface', 'LimitsGroup', 'Largest height', SIZES, 7 ),
 ];
 
 export const SHAPE_SETTINGS = [
@@ -63,11 +64,11 @@ export const SHAPE_SETTINGS = [
 ];
 
 export const FILTER_SETTINGS = [
-	entry( 'Colour', 'string', true, 'filter', 'filter', 'media', 'ColourTreatmentField', 'Colour', 'overlay-and-filters', 1 ),
-	entry( 'Greyscale', 'number', false, 'filter', 'filter', 'media', 'RangeControl', 'Black and white strength', 'overlay-and-filters', 2 ),
+	entry( 'Colour', 'string', true, 'filter', 'filter', 'media', 'ColourTreatmentField', 'Colour', 'overlay-and-filters', 6 ),
+	entry( 'Greyscale', 'number', false, 'filter', 'filter', 'media', 'RangeControl', 'Black and white strength', 'overlay-and-filters', 7 ),
 ];
 
 export const LAYOUT_SETTINGS = [
-	entry( 'Alignment', 'string', true, 'plain', 'margin-inline-start', 'layout', 'AlignmentField', 'Alignment', SIZES, 8 ),
-	entry( 'Order', 'number', true, 'plain', 'order', 'layout', 'NumberControl', 'Order', SIZES, 9 ),
+	entry( 'Alignment', 'string', true, 'plain', 'margin-inline-start', 'layout', 'AlignmentField', 'Alignment', LAYOUT, 1 ),
+	entry( 'Order', 'number', true, 'plain', 'order', 'layout', 'NumberControl', 'Order', LAYOUT, 2 ),
 ];

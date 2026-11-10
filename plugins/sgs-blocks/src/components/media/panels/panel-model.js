@@ -27,6 +27,12 @@ import { disclosure as shadowDisclosure } from '../atoms/shadow.js';
 import { disclosure as mediaPaddingDisclosure } from '../atoms/media-padding.js';
 import { disclosure as captionDisclosure } from '../atoms/caption.js';
 import { disclosure as linkDisclosure } from '../atoms/link.js';
+import { disclosure as sizingDisclosure } from '../atoms/sizing.js';
+import { disclosure as shapeDisclosure } from '../atoms/shape.js';
+import { disclosure as filterDisclosure } from '../atoms/filter.js';
+import { disclosure as layoutDisclosure } from '../atoms/layout.js';
+import { ADOPTED_SETTINGS, adoptedAtomsForElement } from '../emit/adopted-settings.js';
+import { adoptedDisclosure } from './adopted-disclosure.js';
 
 /** Atom id to its disclosure function. */
 export const ATOM_DISCLOSURE = {
@@ -45,6 +51,10 @@ export const ATOM_DISCLOSURE = {
 	'media-padding': mediaPaddingDisclosure,
 	caption: captionDisclosure,
 	link: linkDisclosure,
+	sizing: sizingDisclosure,
+	shape: shapeDisclosure,
+	filter: filterDisclosure,
+	layout: layoutDisclosure,
 };
 
 /**
@@ -87,6 +97,15 @@ export const COMPOSITES = {
 	LinkUrl: [ 'LinkOpensNewTab', 'LinkRel', 'LinkUrlSource' ],
 };
 
+/** The adopted path's composites: the same leaders, with the §8 members. A border colour carries its hover form. */
+export const ADOPTED_COMPOSITES = {
+	...COMPOSITES,
+	BorderColour: [ 'BorderColourHover' ],
+};
+
+/** Components that edit a whole slot or group: one render per panel, however many rows name them. */
+export const ONCE_PER_PANEL = [ 'MediaSlotField', 'LimitsGroup' ];
+
 const PANEL_INDEX = Object.fromEntries( PANELS.map( ( p, i ) => [ p.id, i ] ) );
 
 /**
@@ -98,17 +117,21 @@ const PANEL_INDEX = Object.fromEntries( PANELS.map( ( p, i ) => [ p.id, i ] ) );
  * @param {string}   args.device    'desktop' | 'tablet' | 'mobile'.
  * @param {string}   [args.prefix]  Surface prefix.
  * @param {Object}   [args.opts]    `{ blockSlug, kinds, context, parallax }`.
+ * @param {boolean}  [args.adopted] Build from the §8 rows of an adopted slot (`kinds` declared).
  * @param {string[]} [args.extraPanelIds] Panels the caller fills itself
  *                                  (typography, hover, effects...).
  * @return {Array<{panel:Object,rows:Array,extra:boolean}>} Panels with at
  *         least one row or caller content, in display order.
  */
-export function buildPanelModel( { atomIds, attrs, device, prefix = '', opts = {}, extraPanelIds = [] } ) {
+export function buildPanelModel( { atomIds, attrs, device, prefix = '', opts = {}, extraPanelIds = [], adopted = false } ) {
 	const rows = [];
-	atomIds.forEach( ( id, atomIndex ) => {
-		const atom = MEDIA_ATOMS[ id ];
-		const disclose = ATOM_DISCLOSURE[ id ];
-		if ( ! atom || ! disclose || false === atom.clientEditable ) {
+	const ids = adopted && atomIds.length ? adoptedAtomsForElement( { atoms: atomIds } ) : atomIds;
+	ids.forEach( ( id, atomIndex ) => {
+		const atom = adopted ? { settings: ADOPTED_SETTINGS[ id ] } : MEDIA_ATOMS[ id ];
+		const disclose = adopted
+			? ( ...args ) => adoptedDisclosure( id, ...args )
+			: ATOM_DISCLOSURE[ id ];
+		if ( ! atom || ! atom.settings || ! disclose || false === atom.clientEditable ) {
 			return;
 		}
 		const states = disclose( attrs, device, prefix, opts );
@@ -126,7 +149,7 @@ export function buildPanelModel( { atomIds, attrs, device, prefix = '', opts = {
 
 	const present = new Set( rows.map( ( r ) => r.setting.base ) );
 	const absorbed = new Set();
-	Object.entries( COMPOSITES ).forEach( ( [ leader, members ] ) => {
+	Object.entries( adopted ? ADOPTED_COMPOSITES : COMPOSITES ).forEach( ( [ leader, members ] ) => {
 		if ( present.has( leader ) ) {
 			members.forEach( ( m ) => absorbed.add( m ) );
 		}
@@ -136,19 +159,38 @@ export function buildPanelModel( { atomIds, attrs, device, prefix = '', opts = {
 	const byOrder = ( a, b ) =>
 		a.setting.control.order - b.setting.control.order || a.atomIndex - b.atomIndex;
 
+	// A whole-slot or group field renders once, at its first row.
+	const once = ( list ) => {
+		if ( ! adopted ) {
+			return list;
+		}
+		const seen = new Set();
+		return list.filter( ( r ) => {
+			const name = r.setting.control.component;
+			if ( ! ONCE_PER_PANEL.includes( name ) ) {
+				return true;
+			}
+			if ( seen.has( name ) ) {
+				return false;
+			}
+			seen.add( name );
+			return true;
+		} );
+	};
+
 	if ( opts && 'background' === opts.context ) {
 		const sorted = [ ...kept ].sort(
 			( a, b ) =>
 				( PANEL_INDEX[ a.panelId ] ?? 99 ) - ( PANEL_INDEX[ b.panelId ] ?? 99 ) || byOrder( a, b )
 		);
 		return sorted.length
-			? [ { panel: BACKGROUND_PANEL, rows: sorted, extra: extraPanelIds.includes( 'background' ) } ]
+			? [ { panel: BACKGROUND_PANEL, rows: once( sorted ), extra: extraPanelIds.includes( 'background' ) } ]
 			: [];
 	}
 
 	return PANELS.map( ( panel ) => ( {
 		panel,
-		rows: kept.filter( ( r ) => r.panelId === panel.id ).sort( byOrder ),
+		rows: once( kept.filter( ( r ) => r.panelId === panel.id ).sort( byOrder ) ),
 		extra: extraPanelIds.includes( panel.id ),
 	} ) ).filter( ( p ) => p.rows.length || p.extra );
 }
@@ -161,10 +203,10 @@ export function buildPanelModel( { atomIds, attrs, device, prefix = '', opts = {
  * @param {Object}   map     Component name to component.
  * @return {string[]} Sorted unmapped names.
  */
-export function unmappedComponents( atomIds, map ) {
+export function unmappedComponents( atomIds, map, adopted = false ) {
 	const names = new Set();
-	atomIds.forEach( ( id ) => {
-		( MEDIA_ATOMS[ id ]?.settings || [] ).forEach( ( s ) => {
+	( adopted ? adoptedAtomsForElement( { atoms: atomIds } ) : atomIds ).forEach( ( id ) => {
+		( ( adopted ? ADOPTED_SETTINGS[ id ] : MEDIA_ATOMS[ id ]?.settings ) || [] ).forEach( ( s ) => {
 			if ( s.control && ! map[ s.control.component ] ) {
 				names.add( s.control.component );
 			}

@@ -19,8 +19,9 @@ import LayerEditor from './LayerEditor';
  * @param {Object[]} props.layers     Model layers.
  * @param {Function} props.commit     Receives the next layers array (one write).
  * @param {Function} props.resolveHex Colour token resolver for the row dot.
+ * @param {string[]} [props.hide]     Inputs to remove (`spread`, `inset`).
  */
-export default function LayersTab( { layers, commit, resolveHex } ) {
+export default function LayersTab( { layers, commit, resolveHex, hide = [] } ) {
 	const [ open, setOpen ] = useState( null );
 	const rows = useRef( {} );
 	const addButton = useRef( null );
@@ -139,7 +140,7 @@ export default function LayersTab( { layers, commit, resolveHex } ) {
 										isDestructive
 									/>
 								</div>
-								{ expanded && <LayerEditor layer={ layer } onChange={ ( fields ) => patch( index, fields ) } /> }
+								{ expanded && <LayerEditor layer={ layer } hide={ hide } onChange={ ( fields ) => patch( index, fields ) } /> }
 							</li>
 						);
 					} ) }

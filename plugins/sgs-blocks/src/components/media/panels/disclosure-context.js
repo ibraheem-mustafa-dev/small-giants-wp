@@ -15,9 +15,7 @@
  *
  * @package SGS\Blocks
  */
-import { __ } from '@wordpress/i18n';
-
-import { MEDIA_BASES, mediaStoredAttrName } from '../../MediaElementControls.js';
+import { MEDIA_BASES, mediaAttrName, mediaStoredAttrName } from '../../MediaElementControls.js';
 
 export const DEVICES = [ 'desktop', 'tablet', 'mobile' ];
 
@@ -25,6 +23,25 @@ const CASCADE = {
 	desktop: [ 'desktop' ],
 	tablet: [ 'tablet', 'desktop' ],
 	mobile: [ 'mobile', 'tablet', 'desktop' ],
+};
+
+/**
+ * A legacy base's §8 name. The atoms' rules are written against today's bases; on the adopted path a rule reads its
+ * base through this table, so one rule serves both vocabularies. A legacy base with no entry keeps its name.
+ */
+export const ADOPTED_ALIAS = {
+	AspectRatio: 'Ratio',
+	ObjectFit: 'Fit',
+	Size: 'Fit',
+	ObjectPosition: 'Focal',
+	Position: 'Focal',
+	ImageDecorative: 'Decorative',
+	ImageAlt: 'Alt',
+	VideoAlt: 'Alt',
+	OverlayBlendMode: 'OverlayBlend',
+	Attachment: 'Pinned',
+	BorderRadius: 'Radius',
+	SvgPosition: 'SvgLayer',
 };
 
 const EMBED_SOURCES = /^(youtube|vimeo|embed|oembed)$/i;
@@ -37,28 +54,20 @@ export const shown = () => ( { state: 'shown', hiddenReason: null } );
 export const disabled = ( hiddenReason ) => ( { state: 'disabled', hiddenReason } );
 export const omitted = ( hiddenReason = null ) => ( { state: 'omitted', hiddenReason } );
 
-/** What a disabled control tells the person, shared by the atoms' rules. */
+/**
+ * What a disabled control tells the person, shared by the atoms' rules. Plain English here so the atoms load in plain
+ * Node; `reasons.js` translates each line when the editor draws it.
+ */
 export const REASONS = {
-	noCrop: __(
-		'To choose which part of the photo shows, first give it a shape: pick an Aspect ratio or a Height.',
-		'sgs-blocks'
-	),
-	focalFill: __( 'A stretched photo has no part to choose.', 'sgs-blocks' ),
-	autoplayLock: __(
+	noCrop: 'To choose which part of the photo shows, first give it a shape: pick an Aspect ratio or a Height.',
+	focalFill: 'A stretched photo has no part to choose.',
+	autoplayLock:
 		'Locked on while Autoplay is on: a browser refuses to autoplay an unmuted video, and iOS needs "plays inline" or the video takes over the screen.',
-		'sgs-blocks'
-	),
-	overlayPaint: __(
-		'Overlay strength and blend only apply once an overlay colour or gradient is set.',
-		'sgs-blocks'
-	),
-	svgSpeed: __( 'Animation speed only applies once an animation is chosen.', 'sgs-blocks' ),
-	corners: __( 'Corners are not used while a shape is chosen.', 'sgs-blocks' ),
-	borders: __(
-		'Borders are not available on this shape. Choose Circle, Ellipse or Pill to keep a border.',
-		'sgs-blocks'
-	),
-	shadowFollowsShape: __( 'Shadows follow the shape', 'sgs-blocks' ),
+	overlayPaint: 'Overlay strength and blend only apply once an overlay colour or gradient is set.',
+	svgSpeed: 'Animation speed only applies once an animation is chosen.',
+	corners: 'Corners are not used while a shape is chosen.',
+	borders: 'Borders are not available on this shape. Choose Circle, Ellipse or Pill to keep a border.',
+	shadowFollowsShape: 'Shadows follow the shape',
 };
 
 /**
@@ -217,9 +226,13 @@ export function keysFor( key, device = 'all' ) {
  * @param {string[]} kinds The slot's allowed kinds.
  * @return {string} Kind.
  */
-function resolveKind( get, kinds ) {
+function resolveKind( get, kinds, adopted = false ) {
 	if ( 1 === kinds.length ) {
 		return kinds[ 0 ];
+	}
+	if ( adopted ) {
+		const source = get( 'Source' );
+		return source && 'object' === typeof source && source.kind ? source.kind : kinds[ 0 ] || 'image';
 	}
 	const type = get( 'MediaType' );
 	const base = [ 'image', 'video', 'svg', 'lottie', 'embed' ].includes( type ) ? type : 'image';
@@ -240,10 +253,11 @@ function resolveKind( get, kinds ) {
  * @return {Object} Context.
  */
 export function createContext( attrs, device, prefix = '', opts = {} ) {
-	const { blockSlug = '', kinds = [], context = 'element', parallax = false } = opts || {};
+	const { blockSlug = '', kinds = [], context = 'element', parallax = false, adopted = false } = opts || {};
 	const a = attrs || {};
 	const dev = DEVICES.includes( device ) ? device : 'desktop';
-	const get = ( base ) => readAt( a, mediaStoredAttrName( blockSlug, prefix, base ), dev );
+	const keyOf = ( base ) => ( adopted ? mediaAttrName( prefix, base ) : mediaStoredAttrName( blockSlug, prefix, base ) );
+	const get = ( base ) => readAt( a, keyOf( adopted ? ADOPTED_ALIAS[ base ] || base : base ), dev );
 
 	const shapeRaw = get( 'Shape' );
 	const shapeSlug = String(
@@ -264,7 +278,7 @@ export function createContext( attrs, device, prefix = '', opts = {} ) {
 		background,
 		parallax: !! parallax,
 		kinds,
-		kind: resolveKind( get, kinds ),
+		kind: resolveKind( get, kinds, adopted ),
 		get,
 		has: ( base ) => isSet( get( base ) ),
 		shapeSlug,
@@ -274,7 +288,7 @@ export function createContext( attrs, device, prefix = '', opts = {} ) {
 		heightMatchesSpace: 'fill' === height,
 		boxCrops: background || ! NOT_A_BOX.includes( ratio ) || ! NOT_A_BOX.includes( height ),
 		hasBorderWidth: ( () => {
-			const raw = readAt( a, mediaStoredAttrName( blockSlug, prefix, 'BorderWidth' ), dev );
+			const raw = readAt( a, keyOf( 'BorderWidth' ), dev );
 			if ( raw && 'object' === typeof raw ) {
 				return Object.values( raw ).some( ( v ) => parseFloat( v ) > 0 );
 			}
