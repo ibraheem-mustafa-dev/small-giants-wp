@@ -1,40 +1,523 @@
 {
-	"_doc": "Spec 49 C0 fixture for §7.2 sizing (PS-2, PS-7, AC-3). Each case gives the settings at one device, the per-instance declarations the sizing atom's PHP and JS twins must print (PS-7 compares them as parsed declarations per property and device), and the box the browser draws in a 600px parent for a 1600x900 file unless the case names another file. 'root' is the `.{uid}` selector (the media element without a helper; the helper when printed); 'media' is `.{uid} .sgs-media-el`. Base rules in media-base.css are not per-instance and are listed once under 'base'. 'source' says where the expected box comes from: 'measured' (S-css-sizing.md and Q1-sizing-browsers.md, Chrome, Firefox and WebKit) or 'to-prove' (PS-2 decides; correct the case if it fails).",
-	"context": { "parentWidth": 600, "file": { "width": 1600, "height": 900 } },
+	"_doc": "Spec 49 C0 fixture for §7.2 sizing (PS-2, PS-7, AC-3). Each case gives the settings at one device, the per-instance declarations the sizing atom's PHP and JS twins must print (PS-7 compares them as parsed declarations per property and device), and the box the browser draws in a 600px parent for a 1600x900 file unless the case names another file. 'root' is the `.{uid}` selector, used when the layout box and the surface are one element; a case with a wrapper gives 'layout' and 'surface' separately (the media element without a helper; the helper when printed); 'media' is `.{uid} .sgs-media-el`. Base rules in media-base.css are not per-instance and are listed once under 'base'. 'source' says where the expected box comes from: 'measured' (S-css-sizing.md and Q1-sizing-browsers.md, Chrome, Firefox and WebKit) or 'to-prove' (PS-2 decides; correct the case if it fails).",
+	"context": {
+		"parentWidth": 600,
+		"file": {
+			"width": 1600,
+			"height": 900
+		}
+	},
 	"base": {
-		"media": { "height": "auto", "max-width": "100%", "min-width": "0", "box-sizing": "border-box" },
-		"helperMedia": { "display": "block", "width": "100%", "height": "100%", "min-width": "0" }
+		"media": {
+			"height": "auto",
+			"max-width": "100%",
+			"min-width": "0",
+			"box-sizing": "border-box"
+		},
+		"helperMedia": {
+			"display": "block",
+			"width": "100%",
+			"height": "100%",
+			"min-width": "0"
+		}
 	},
 	"rules": [
 		"Each set setting prints its own property.",
 		"Default width per device from resolved values: nothing sizing-related set prints no width; Ratio and Height both set prints width:auto; anything else prints width:100%; a Width the user sets always wins.",
 		"A helper printed with a Height, Width auto and no Ratio also prints the file's own ratio as aspect-ratio on the helper, per device.",
-		"auto, natural or none at a narrower device cancels an inherited value by printing that keyword."
+		"auto, natural or none at a narrower device cancels an inherited value by printing that keyword.",
+		"A helper printed when nothing sizing-related resolves at a device also prints width:fit-content (PS-2).",
+		"Cancel keywords: auto (Height, Width), natural (Ratio, printed aspect-ratio:auto), none (Max width and Max height print none; Min width and Min height print 0)."
 	],
 	"cases": [
-		{ "id": "nothing", "settings": {}, "helper": false, "declarations": { "root": {} }, "box": [ 600, 337.5 ], "source": "measured" },
-		{ "id": "nothing-small-file", "file": { "width": 300, "height": 169 }, "settings": {}, "helper": false, "declarations": { "root": {} }, "box": [ 300, 169 ], "source": "measured" },
-		{ "id": "ratio-only", "settings": { "Ratio": "1 / 1" }, "helper": false, "declarations": { "root": { "aspect-ratio": "1 / 1", "width": "100%" } }, "box": [ 600, 600 ], "source": "measured" },
-		{ "id": "height-only", "settings": { "Height": "300px" }, "helper": false, "declarations": { "root": { "height": "300px", "width": "100%" } }, "box": [ 600, 300 ], "source": "measured" },
-		{ "id": "height-keep-shape", "settings": { "Height": "300px", "Width": "auto" }, "helper": false, "declarations": { "root": { "height": "300px", "width": "auto" } }, "box": [ 533.33, 300 ], "source": "measured" },
-		{ "id": "ratio-height", "settings": { "Ratio": "1 / 1", "Height": "300px" }, "helper": false, "declarations": { "root": { "aspect-ratio": "1 / 1", "height": "300px", "width": "auto" } }, "box": [ 300, 300 ], "source": "measured" },
-		{ "id": "ratio-height-taller-than-space", "settings": { "Ratio": "1 / 1", "Height": "800px" }, "helper": false, "declarations": { "root": { "aspect-ratio": "1 / 1", "height": "800px", "width": "auto" } }, "box": [ 600, 800 ], "source": "measured" },
-		{ "id": "ratio-width", "settings": { "Ratio": "1 / 1", "Width": "200px" }, "helper": false, "declarations": { "root": { "aspect-ratio": "1 / 1", "width": "200px" } }, "box": [ 200, 200 ], "source": "measured" },
-		{ "id": "ratio-width-height", "settings": { "Ratio": "1 / 1", "Width": "200px", "Height": "100px" }, "helper": false, "declarations": { "root": { "aspect-ratio": "1 / 1", "width": "200px", "height": "100px" } }, "box": [ 200, 100 ], "source": "measured", "note": "Ratio is kept and its field says it is not in use." },
-		{ "id": "ratio-max-height", "settings": { "Ratio": "16 / 9", "MaxHeight": "300px" }, "helper": false, "declarations": { "root": { "aspect-ratio": "16 / 9", "width": "100%", "max-height": "300px" } }, "box": [ 600, 300 ], "source": "measured" },
-		{ "id": "ratio-min-height", "settings": { "Ratio": "16 / 9", "MinHeight": "500px" }, "helper": false, "declarations": { "root": { "aspect-ratio": "16 / 9", "width": "100%", "min-height": "500px" } }, "box": [ 600, 500 ], "source": "measured" },
-		{ "id": "ratio-height-max-width", "settings": { "Ratio": "1 / 1", "Height": "300px", "MaxWidth": "200px" }, "helper": false, "declarations": { "root": { "aspect-ratio": "1 / 1", "height": "300px", "width": "auto", "max-width": "200px" } }, "box": [ 200, 300 ], "source": "measured" },
-		{ "id": "ratio-width-max-height", "settings": { "Ratio": "1 / 1", "Width": "400px", "MaxHeight": "250px" }, "helper": false, "declarations": { "root": { "aspect-ratio": "1 / 1", "width": "400px", "max-height": "250px" } }, "box": [ 400, 250 ], "source": "measured" },
-		{ "id": "ratio-width-min-height", "settings": { "Ratio": "2 / 1", "Width": "400px", "MinHeight": "300px" }, "helper": false, "declarations": { "root": { "aspect-ratio": "2 / 1", "width": "400px", "min-height": "300px" } }, "box": [ 400, 300 ], "source": "measured" },
-		{ "id": "ratio-min-width", "settings": { "Ratio": "1 / 1", "MinWidth": "800px" }, "helper": false, "declarations": { "root": { "aspect-ratio": "1 / 1", "width": "100%", "min-width": "800px" } }, "box": [ 800, 800 ], "source": "measured" },
-
-		{ "id": "helper-ratio-height", "settings": { "Ratio": "1 / 1", "Height": "300px", "OverlayColour": "#000" }, "helper": true, "declarations": { "root": { "aspect-ratio": "1 / 1", "height": "300px", "width": "auto" } }, "box": [ 300, 300 ], "source": "measured", "note": "Q1 claim 1: holds through figure, a, picture and the helper." },
-		{ "id": "helper-height-keep-shape", "settings": { "Height": "300px", "Width": "auto", "OverlayColour": "#000" }, "helper": true, "declarations": { "root": { "height": "300px", "width": "auto", "aspect-ratio": "1600 / 900" } }, "box": [ 533.33, 300 ], "source": "measured", "note": "The helper's file-ratio rule (Q1 claim 3)." },
-		{ "id": "helper-height-only", "settings": { "Height": "300px", "OverlayColour": "#000" }, "helper": true, "declarations": { "root": { "height": "300px", "width": "100%" } }, "box": [ 600, 300 ], "source": "to-prove", "note": "Full width and cropped, as without a helper. No file ratio: Width is not auto." },
-		{ "id": "helper-nothing-small-file", "file": { "width": 300, "height": 169 }, "settings": { "OverlayColour": "#000" }, "helper": true, "declarations": { "root": {} }, "box": [ 300, 169 ], "source": "to-prove", "note": "Open in C0: a block-level helper fills its parent, so a small file would stretch to 600. PS-2 must find the rule that keeps the file's own size (for example width:fit-content with max-width:100% on the helper only when nothing sizing-related is set) and prove it in all three browsers; Q1 claim 4 shows fit-content on a figure collapsing in WebKit, so test the helper alone." }
+		{
+			"id": "nothing",
+			"settings": {},
+			"helper": false,
+			"declarations": {
+				"root": {}
+			},
+			"box": [
+				600,
+				337.5
+			],
+			"source": "measured"
+		},
+		{
+			"id": "nothing-small-file",
+			"file": {
+				"width": 300,
+				"height": 169
+			},
+			"settings": {},
+			"helper": false,
+			"declarations": {
+				"root": {}
+			},
+			"box": [
+				300,
+				169
+			],
+			"source": "measured"
+		},
+		{
+			"id": "ratio-only",
+			"settings": {
+				"Ratio": "1 / 1"
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"aspect-ratio": "1 / 1",
+					"width": "100%"
+				}
+			},
+			"box": [
+				600,
+				600
+			],
+			"source": "measured"
+		},
+		{
+			"id": "height-only",
+			"settings": {
+				"Height": "300px"
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"height": "300px",
+					"width": "100%"
+				}
+			},
+			"box": [
+				600,
+				300
+			],
+			"source": "measured"
+		},
+		{
+			"id": "height-keep-shape",
+			"settings": {
+				"Height": "300px",
+				"Width": "auto"
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"height": "300px",
+					"width": "auto"
+				}
+			},
+			"box": [
+				533.33,
+				300
+			],
+			"source": "measured"
+		},
+		{
+			"id": "ratio-height",
+			"settings": {
+				"Ratio": "1 / 1",
+				"Height": "300px"
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"aspect-ratio": "1 / 1",
+					"height": "300px",
+					"width": "auto"
+				}
+			},
+			"box": [
+				300,
+				300
+			],
+			"source": "measured"
+		},
+		{
+			"id": "ratio-height-taller-than-space",
+			"settings": {
+				"Ratio": "1 / 1",
+				"Height": "800px"
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"aspect-ratio": "1 / 1",
+					"height": "800px",
+					"width": "auto"
+				}
+			},
+			"box": [
+				600,
+				800
+			],
+			"source": "measured"
+		},
+		{
+			"id": "ratio-width",
+			"settings": {
+				"Ratio": "1 / 1",
+				"Width": "200px"
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"aspect-ratio": "1 / 1",
+					"width": "200px"
+				}
+			},
+			"box": [
+				200,
+				200
+			],
+			"source": "measured"
+		},
+		{
+			"id": "ratio-width-height",
+			"settings": {
+				"Ratio": "1 / 1",
+				"Width": "200px",
+				"Height": "100px"
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"aspect-ratio": "1 / 1",
+					"width": "200px",
+					"height": "100px"
+				}
+			},
+			"box": [
+				200,
+				100
+			],
+			"source": "measured",
+			"note": "Ratio is kept and its field says it is not in use."
+		},
+		{
+			"id": "ratio-max-height",
+			"settings": {
+				"Ratio": "16 / 9",
+				"MaxHeight": "300px"
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"aspect-ratio": "16 / 9",
+					"width": "100%",
+					"max-height": "300px"
+				}
+			},
+			"box": [
+				600,
+				300
+			],
+			"source": "measured"
+		},
+		{
+			"id": "ratio-min-height",
+			"settings": {
+				"Ratio": "16 / 9",
+				"MinHeight": "500px"
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"aspect-ratio": "16 / 9",
+					"width": "100%",
+					"min-height": "500px"
+				}
+			},
+			"box": [
+				600,
+				500
+			],
+			"source": "measured"
+		},
+		{
+			"id": "ratio-height-max-width",
+			"settings": {
+				"Ratio": "1 / 1",
+				"Height": "300px",
+				"MaxWidth": "200px"
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"aspect-ratio": "1 / 1",
+					"height": "300px",
+					"width": "auto",
+					"max-width": "200px"
+				}
+			},
+			"box": [
+				200,
+				300
+			],
+			"source": "measured"
+		},
+		{
+			"id": "ratio-width-max-height",
+			"settings": {
+				"Ratio": "1 / 1",
+				"Width": "400px",
+				"MaxHeight": "250px"
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"aspect-ratio": "1 / 1",
+					"width": "400px",
+					"max-height": "250px"
+				}
+			},
+			"box": [
+				400,
+				250
+			],
+			"source": "measured"
+		},
+		{
+			"id": "ratio-width-min-height",
+			"settings": {
+				"Ratio": "2 / 1",
+				"Width": "400px",
+				"MinHeight": "300px"
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"aspect-ratio": "2 / 1",
+					"width": "400px",
+					"min-height": "300px"
+				}
+			},
+			"box": [
+				400,
+				300
+			],
+			"source": "measured"
+		},
+		{
+			"id": "ratio-min-width",
+			"settings": {
+				"Ratio": "1 / 1",
+				"MinWidth": "800px"
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"aspect-ratio": "1 / 1",
+					"width": "100%",
+					"min-width": "800px"
+				}
+			},
+			"box": [
+				800,
+				800
+			],
+			"source": "measured"
+		},
+		{
+			"id": "helper-ratio-height",
+			"settings": {
+				"Ratio": "1 / 1",
+				"Height": "300px",
+				"OverlayColour": "#000"
+			},
+			"helper": true,
+			"declarations": {
+				"root": {
+					"aspect-ratio": "1 / 1",
+					"height": "300px",
+					"width": "auto"
+				}
+			},
+			"box": [
+				300,
+				300
+			],
+			"source": "measured",
+			"note": "Q1 claim 1: holds through figure, a, picture and the helper."
+		},
+		{
+			"id": "helper-height-keep-shape",
+			"settings": {
+				"Height": "300px",
+				"Width": "auto",
+				"OverlayColour": "#000"
+			},
+			"helper": true,
+			"declarations": {
+				"root": {
+					"height": "300px",
+					"width": "auto",
+					"aspect-ratio": "1600 / 900"
+				}
+			},
+			"box": [
+				533.33,
+				300
+			],
+			"source": "measured",
+			"note": "The helper's file-ratio rule (Q1 claim 3)."
+		},
+		{
+			"id": "helper-height-only",
+			"settings": {
+				"Height": "300px",
+				"OverlayColour": "#000"
+			},
+			"helper": true,
+			"declarations": {
+				"root": {
+					"height": "300px",
+					"width": "100%"
+				}
+			},
+			"box": [
+				600,
+				300
+			],
+			"source": "measured",
+			"note": "Full width and cropped, as without a helper. No file ratio: Width is not auto."
+		},
+		{
+			"id": "helper-nothing-small-file",
+			"file": {
+				"width": 300,
+				"height": 169
+			},
+			"settings": {
+				"OverlayColour": "#000"
+			},
+			"helper": true,
+			"declarations": {
+				"root": {
+					"width": "fit-content"
+				}
+			},
+			"box": [
+				300,
+				169
+			],
+			"source": "measured",
+			"note": "PS-2: width:fit-content on the helper, 108 of 108 browser cells, including a captioned figure in WebKit."
+		},
+		{
+			"id": "helper-nothing-large-file",
+			"settings": {
+				"OverlayColour": "#000"
+			},
+			"helper": true,
+			"declarations": {
+				"root": {
+					"width": "fit-content"
+				}
+			},
+			"box": [
+				600,
+				337.5
+			],
+			"source": "measured"
+		},
+		{
+			"id": "figure-width-and-height",
+			"settings": {
+				"Width": "320px",
+				"Height": "300px",
+				"OverlayColour": "#000"
+			},
+			"helper": true,
+			"wrapper": "figure",
+			"declarations": {
+				"layout": {
+					"width": "320px"
+				},
+				"surface": {
+					"height": "300px"
+				}
+			},
+			"box": [
+				320,
+				300
+			],
+			"source": "to-prove",
+			"note": "With a figure the layout box and the surface are different elements, so Width and Height land on different selectors (PS-7). WP-2b proves it."
+		}
 	],
 	"responsive": [
-		{ "id": "ratio-desktop-height-mobile", "settings": { "Ratio": { "desktop": "16 / 9" }, "Height": { "mobile": "300px" } }, "helper": false, "declarations": { "root": { "desktop": { "aspect-ratio": "16 / 9", "width": "100%" }, "mobile": { "height": "300px", "width": "auto" } } }, "box": { "desktop": [ 600, 337.5 ], "mobile": [ 533.33, 300 ] }, "source": "to-prove", "note": "Mobile resolves Ratio 16:9 inherited plus Height 300, so its default width becomes auto." },
-		{ "id": "height-cancelled-on-mobile", "settings": { "Height": { "desktop": "400px", "mobile": "auto" } }, "helper": false, "declarations": { "root": { "desktop": { "height": "400px", "width": "100%" }, "mobile": { "height": "auto", "width": "auto" } } }, "box": { "desktop": [ 600, 400 ], "mobile": [ 600, 337.5 ] }, "source": "to-prove", "note": "auto cancels the inherited Height; nothing sizing-related is left, so width returns to auto." }
+		{
+			"id": "ratio-desktop-height-mobile",
+			"settings": {
+				"Ratio": {
+					"desktop": "16 / 9"
+				},
+				"Height": {
+					"mobile": "300px"
+				}
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"desktop": {
+						"aspect-ratio": "16 / 9",
+						"width": "100%"
+					},
+					"mobile": {
+						"height": "300px",
+						"width": "auto"
+					}
+				}
+			},
+			"box": {
+				"desktop": [
+					600,
+					337.5
+				],
+				"mobile": [
+					533.33,
+					300
+				]
+			},
+			"source": "measured",
+			"note": "Mobile resolves Ratio 16:9 inherited plus Height 300, so its default width becomes auto."
+		},
+		{
+			"id": "height-cancelled-on-mobile",
+			"settings": {
+				"Height": {
+					"desktop": "400px",
+					"mobile": "auto"
+				}
+			},
+			"helper": false,
+			"declarations": {
+				"root": {
+					"desktop": {
+						"height": "400px",
+						"width": "100%"
+					},
+					"mobile": {
+						"height": "auto",
+						"width": "auto"
+					}
+				}
+			},
+			"box": {
+				"desktop": [
+					600,
+					400
+				],
+				"mobile": [
+					600,
+					337.5
+				]
+			},
+			"source": "measured",
+			"note": "auto cancels the inherited Height; nothing sizing-related is left, so width returns to auto."
+		}
 	]
 }
