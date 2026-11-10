@@ -95,7 +95,7 @@
 		},
 		{
 			"path": "plugins/sgs-blocks/includes/woocommerce/stripe-appearance.php",
-			"contains": "$rules['.Input:focus']",
+			"contains": ".Input:focus",
 			"category": "not-css",
 			"reason": "A rule of Stripe's Appearance API object, handed to Stripe's Elements through wc_stripe_params; Stripe paints it inside its own iframe, which focus.css cannot reach, so it paints nothing on the page. It draws the site's focus ring colour as an inset line, the same look as the inset variant on SGS inputs."
 		}
