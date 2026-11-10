@@ -576,6 +576,12 @@ function enqueue_styles(): void {
 			array( 'sgs-core-blocks-critical' ),
 			asset_version( 'assets/css/woocommerce.css', $theme_version )
 		);
+		wp_enqueue_style(
+			'sgs-woocommerce-notices',
+			get_theme_file_uri( 'assets/css/woocommerce-notices.css' ),
+			array( 'sgs-woocommerce' ),
+			asset_version( 'assets/css/woocommerce-notices.css', $theme_version )
+		);
 	}
 
 	// Shop archive filter drawer — mobile off-canvas, focus-trap, a11y (FR-30-3, Spec 27 Part 3).

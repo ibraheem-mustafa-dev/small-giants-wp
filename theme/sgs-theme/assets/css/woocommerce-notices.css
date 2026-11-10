@@ -1,0 +1,102 @@
+/* WooCommerce notices take the look of sgs/notice-banner: the same colour tokens per variant, the same radius, spacing and 4px accent edge. */
+
+.wc-block-components-notice-banner,
+.woocommerce-info,
+.woocommerce-message,
+.woocommerce-error {
+	--_notice-bg: var(--wp--preset--color--info-light, #EBF5FF);
+	--_notice-border: var(--wp--preset--color--info, #3B82F6);
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--20, 0.5rem);
+	margin-block: 0 var(--wp--preset--spacing--30, 1rem);
+	padding: var(--wp--preset--spacing--20, 0.5rem) var(--wp--preset--spacing--30, 1rem);
+	border: 0;
+	border-left: 4px solid var(--_notice-border);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	background-color: var(--_notice-bg);
+	color: var(--wp--preset--color--text, #1a1a1a);
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	line-height: 1.5;
+	list-style: none;
+}
+
+.wc-block-components-notice-banner.is-success,
+.woocommerce-message {
+	--_notice-bg: var(--wp--preset--color--success-light, #ECFDF5);
+	--_notice-border: var(--wp--preset--color--success, #2E7D4F);
+}
+
+.wc-block-components-notice-banner.is-warning {
+	--_notice-bg: var(--wp--preset--color--accent-light, #FEE8D4);
+	--_notice-border: var(--wp--preset--color--accent-text, #92400E);
+}
+
+.wc-block-components-notice-banner.is-error,
+.woocommerce-error {
+	--_notice-bg: var(--wp--preset--color--error-light, #FEF2F2);
+	--_notice-border: var(--wp--preset--color--error, #DC2626);
+}
+
+.wc-block-components-notice-banner > svg {
+	align-self: flex-start;
+	margin-top: 2px;
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	background: none;
+	border-radius: 0;
+	fill: var(--_notice-border);
+	color: var(--_notice-border);
+}
+
+.wc-block-components-notice-banner.is-warning > svg {
+	fill: var(--_notice-border);
+}
+
+.wc-block-components-notice-banner .wc-block-components-notice-banner__content {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: row-reverse;
+	justify-content: space-between;
+	align-items: center;
+	gap: var(--wp--preset--spacing--20, 0.5rem) var(--wp--preset--spacing--30, 1rem);
+	padding: 0;
+}
+
+.wc-block-components-notice-banner .wc-block-components-notice-banner__content .button,
+.woocommerce-info .button,
+.woocommerce-message .button,
+.woocommerce-error .button {
+	float: none;
+	flex-shrink: 0;
+	margin: 0;
+}
+
+.wc-block-components-notice-banner.is-error ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+/* On a narrow screen the action link sits on its own line under the text, never wrapping around it. */
+@media (max-width: 767px) {
+	.wc-block-components-notice-banner .wc-block-components-notice-banner__content {
+		flex-direction: column-reverse;
+		align-items: flex-start;
+	}
+
+	.woocommerce-info,
+	.woocommerce-message,
+	.woocommerce-error {
+		display: block;
+	}
+
+	.woocommerce-info .button,
+	.woocommerce-message .button {
+		display: block;
+		margin-top: var(--wp--preset--spacing--20, 0.5rem);
+		width: fit-content;
+	}
+}
