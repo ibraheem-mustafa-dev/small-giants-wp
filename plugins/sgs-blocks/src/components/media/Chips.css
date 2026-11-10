@@ -35,7 +35,7 @@
 }
 
 .sgs-chips__chip:focus-visible {
-	outline: 2px solid #3858e9;
+	outline: 2px solid var(--wp-admin-theme-color, #3858e9);
 	outline-offset: 2px;
 }
 

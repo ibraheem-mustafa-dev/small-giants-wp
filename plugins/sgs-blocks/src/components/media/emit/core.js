@@ -8,15 +8,15 @@
  * @package SGS\Blocks
  */
 
-import { SGS_BREAKPOINTS } from '../../../utils/breakpoints.js';
+import { MEDIA_MOBILE, MEDIA_TABLET } from '../../../utils/breakpoints.js';
 import { resolveTier } from '../../../utils/responsive.js';
 
 /** The devices, widest first. */
 export const DEVICES = [ 'desktop', 'tablet', 'mobile' ];
 
 const DEVICE_MEDIA = {
-	tablet: `@media(max-width:${ SGS_BREAKPOINTS.TABLET_MAX }px)`,
-	mobile: `@media(max-width:${ SGS_BREAKPOINTS.MOBILE_MAX }px)`,
+	tablet: MEDIA_TABLET,
+	mobile: MEDIA_MOBILE,
 };
 
 /**

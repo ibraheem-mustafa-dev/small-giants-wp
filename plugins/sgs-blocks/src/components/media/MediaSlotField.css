@@ -47,7 +47,7 @@
 
 .sgs-media-slot__button:focus-visible,
 .sgs-media-length__keyword:focus-visible {
-	outline: 2px solid #3858e9;
+	outline: 2px solid var(--wp-admin-theme-color, #3858e9);
 	outline-offset: 2px;
 }
 
@@ -112,6 +112,6 @@
 }
 
 .sgs-media-limits summary:focus-visible {
-	outline: 2px solid #3858e9;
+	outline: 2px solid var(--wp-admin-theme-color, #3858e9);
 	outline-offset: 2px;
 }

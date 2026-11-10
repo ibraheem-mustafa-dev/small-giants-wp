@@ -6,6 +6,31 @@
 	},
 	"entries": [
 		{
+			"path": "plugins/sgs-blocks/src/components/media/Chips.css",
+			"selector": ".sgs-chips__chip:focus-visible",
+			"reason": "Block-editor inspector chrome (Spec 49 §9.2 Chips: the ratio, fit and shape radio grids in a panel), painted in the WP admin colour; focus.css loads only in the canvas."
+		},
+		{
+			"path": "plugins/sgs-blocks/src/components/media/FocalField.css",
+			"selector": ".sgs-focal-field__area:focus-visible",
+			"reason": "Block-editor inspector chrome (Spec 49 §9.2 FocalField: the focal picker's drag area in a panel), painted in the WP admin colour; focus.css loads only in the canvas."
+		},
+		{
+			"path": "plugins/sgs-blocks/src/components/media/FocalField.css",
+			"selector": ".sgs-focal-field__pick:focus-visible",
+			"reason": "Block-editor inspector chrome (Spec 49 §9.2 FocalField: the quick-pick buttons in a panel), painted in the WP admin colour; focus.css loads only in the canvas."
+		},
+		{
+			"path": "plugins/sgs-blocks/src/components/media/MediaSlotField.css",
+			"selector": ".sgs-media-slot__button:focus-visible, .sgs-media-length__keyword:focus-visible",
+			"reason": "Block-editor inspector chrome (Spec 49 §9.2 MediaSlotField and sizing fields: the media buttons and length keyword buttons in a panel), painted in the WP admin colour; focus.css loads only in the canvas."
+		},
+		{
+			"path": "plugins/sgs-blocks/src/components/media/MediaSlotField.css",
+			"selector": ".sgs-media-limits summary:focus-visible",
+			"reason": "Block-editor inspector chrome (Spec 49 §9.2 Smallest and largest size disclosure in a panel), painted in the WP admin colour; focus.css loads only in the canvas."
+		},
+		{
 			"path": "plugins/sgs-blocks/src/components/SgsFreeTextField.css",
 			"selector": ".sgs-free-text-field__input:focus",
 			"reason": "Block-editor inspector chrome (the rich free-text input is a contenteditable beside core's text controls), painted in the WP admin colour; the front-end focus system never loads into the inspector."
