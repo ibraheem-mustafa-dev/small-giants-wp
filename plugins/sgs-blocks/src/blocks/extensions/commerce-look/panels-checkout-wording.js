@@ -14,6 +14,7 @@ const WORDING = [
 	// translators: %s stands for the site title WooCommerce inserts.
 	[ 'createAccountLabel', __( 'Create-account checkbox (WooCommerce: Create an account with %s)', 'sgs-blocks' ), 'Create an account with %s' ],
 	[ 'expressDivider', __( 'Express checkout divider (WooCommerce: Or continue below)', 'sgs-blocks' ), 'Or continue below' ],
+	[ 'summaryTitle', __( 'Order summary heading (WooCommerce: Order summary)', 'sgs-blocks' ), 'Order summary' ],
 ];
 
 /**

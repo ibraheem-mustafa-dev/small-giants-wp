@@ -17,6 +17,9 @@ const SUMMARY = `
 	<div class="wc-block-components-order-summary-item"><a class="wc-block-components-product-name" href="https://example.test/p/frame/">Frame</a></div>
 	<div class="wc-block-components-order-summary-item"><a class="wc-block-components-product-name" href="https://example.test/p/other/">Other</a></div>
 </div>
+<div class="wp-block-woocommerce-checkout-order-summary-block checkout-order-summary-block-fill-wrapper">
+	<div class="wc-block-components-checkout-step__heading"><h2 class="wc-block-components-title wc-block-components-checkout-step__title">Your bag</h2></div>
+</div>
 </div>`;
 
 function run( config ) {
@@ -40,13 +43,17 @@ function run( config ) {
 }
 
 describe( 'checkout summary extras', () => {
-	test( 'adds the Edit link after the summary heading, once', () => {
+	test( 'puts the Edit link inside the summary heading bar, once, on both the wide and the stacked summary', () => {
 		run( { editLabel: 'Edit', editUrl: 'https://example.test/bag/', brand: false } );
 		const links = document.querySelectorAll( '.sgs-checkout-summary-edit' );
-		expect( links ).toHaveLength( 1 );
+		expect( links ).toHaveLength( 2 );
 		expect( links[ 0 ].getAttribute( 'href' ) ).toBe( 'https://example.test/bag/' );
 		expect( links[ 0 ].textContent ).toBe( 'Edit' );
-		expect( links[ 0 ].previousElementSibling.className ).toBe( 'wc-block-components-checkout-order-summary__title' );
+		expect( links[ 0 ].parentElement.className ).toBe( 'wc-block-components-checkout-order-summary__title' );
+		expect( links[ 1 ].parentElement.className ).toBe( 'wc-block-components-checkout-step__heading' );
+		// eslint-disable-next-line no-new-func
+		new Function( SCRIPT )();
+		expect( document.querySelectorAll( '.sgs-checkout-summary-edit' ) ).toHaveLength( 2 );
 		expect( document.querySelector( '.sgs-checkout-item-brand' ) ).toBeNull();
 	} );
 
@@ -178,7 +185,7 @@ describe( 'checkout summary extras: observing', () => {
 
 	test( 'a burst of mutations runs one pass per animation frame', () => {
 		load( SUMMARY, { editLabel: 'Edit', editUrl: '/bag/', brand: false } );
-		document.querySelector( '.sgs-checkout-summary-edit' ).remove();
+		document.querySelectorAll( '.sgs-checkout-summary-edit' ).forEach( ( link ) => link.remove() );
 		const watcher = observed.find( ( o ) => o.target );
 		watcher.cb( [] );
 		watcher.cb( [] );

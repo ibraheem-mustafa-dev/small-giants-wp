@@ -1,5 +1,5 @@
 /**
- * Checkout order summary extras: an Edit link beside the summary heading and the product's brand under each line's
+ * Checkout order summary extras: an Edit link in the summary heading bar and the product's brand under each line's
  * name. WooCommerce draws the summary in React, so the page runs this once, with the block's settings, and it
  * (re)applies both whenever the summary redraws. The brand comes from the Store API cart line's `extensions.sgs.brand`.
  *
@@ -10,7 +10,11 @@
 ( function ( config, root ) {
 	var WRAPPER = '.wp-block-woocommerce-checkout';
 	var LOGIN = '.wc-block-checkout__login-prompt';
-	var TITLE = '.wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title';
+	// The heading bar: the wide summary's title row, and the stacked summary's heading wrapper.
+	var TITLES = [
+		'.wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title',
+		'.checkout-order-summary-block-fill-wrapper .wc-block-components-checkout-step__heading',
+	];
 	var ITEM = '.wc-block-components-order-summary-item';
 	var NAME = '.wc-block-components-product-name';
 
@@ -44,14 +48,16 @@
 			return;
 		}
 		if ( config.editLabel && config.editUrl ) {
-			var title = doc.querySelector( TITLE );
-			if ( title && ! doc.querySelector( '.sgs-checkout-summary-edit' ) ) {
-				var a = doc.createElement( 'a' );
-				a.className = 'sgs-checkout-summary-edit';
-				a.setAttribute( 'href', config.editUrl );
-				a.textContent = config.editLabel;
-				title.insertAdjacentElement( 'afterend', a );
-			}
+			TITLES.forEach( function ( selector ) {
+				var title = doc.querySelector( selector );
+				if ( title && ! title.querySelector( '.sgs-checkout-summary-edit' ) ) {
+					var a = doc.createElement( 'a' );
+					a.className = 'sgs-checkout-summary-edit';
+					a.setAttribute( 'href', config.editUrl );
+					a.textContent = config.editLabel;
+					title.appendChild( a );
+				}
+			} );
 		}
 		if ( config.loginPrefix ) {
 			var prompt = doc.querySelector( LOGIN );

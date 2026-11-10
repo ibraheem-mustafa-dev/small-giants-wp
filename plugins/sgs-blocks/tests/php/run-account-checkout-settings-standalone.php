@@ -131,6 +131,11 @@ if ( function_exists( 'SGS\Blocks\sgs_checkout_strings_inject' ) ) {
 	$out   = SGS\Blocks\sgs_checkout_strings_inject( '<div>checkout</div>', $block );
 	ok( '<div>checkout</div>' === $out && 1 === count( $GLOBALS['inline'] ) && 'wp-i18n' === $GLOBALS['inline'][0][0], 'before wp-i18n prints, the filter script is appended to that handle' );
 	$js = $GLOBALS['inline'][0][1] ?? '';
+	$sum_block = array( 'blockName' => 'woocommerce/checkout', 'attrs' => array( 'sgsCheckoutStrings' => array( 'summaryTitle' => 'Your bag' ) ) );
+	$GLOBALS['inline'] = array();
+	SGS\Blocks\sgs_checkout_strings_inject( '<div>checkout</div>', $sum_block );
+	ok( false !== strpos( (string) ( $GLOBALS['inline'][0][1] ?? '' ), '"Order summary":"Your bag"' ), 'summaryTitle rewrites the Order summary heading' );
+	$GLOBALS['inline'] = array( array( 'wp-i18n', $js ) );
 	ok( false !== strpos( $js, 'i18n.gettext_woocommerce' ) && false !== strpos( $js, '"Log in":"Sign in"' ) && false !== strpos( $js, '"Or continue below":"or pay by card"' ) && false === strpos( $js, 'bogus' ), 'the script filters the woocommerce domain with the supported keys only' );
 	$GLOBALS['i18n_done'] = true;
 	$GLOBALS['inline']    = array();

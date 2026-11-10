@@ -27,6 +27,7 @@ function sgs_checkout_strings_supported(): array {
 		'loginLink'          => 'Log in',
 		'createAccountLabel' => 'Create an account with %s',
 		'expressDivider'     => 'Or continue below',
+		'summaryTitle'      => 'Order summary',
 	);
 }
 

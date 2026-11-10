@@ -85,6 +85,22 @@ textarea,
 	--sgs-focus-halo: inset 0 0 0 calc(var(--sgs-focus-width) * 2 * var(--sgs-focus-keep, 1)) var(--sgs-focus-hairline);
 }
 
+/* Choice controls (checkboxes and radios) take the same inset ring as text inputs, and take it on a click as well as on a
+   keyboard focus: a browser does not match :focus-visible for a pointer press on them, so without the :focus arm below the
+   plugin's own :focus outline would show instead, a dark ring outside the control. A selectable card whose input is
+   stretched over it (an input with position absolute, inset 0, no border) therefore rings the whole card inside its border. */
+input[type="checkbox"],
+input[type="radio"] {
+	--sgs-focus-offset: calc(var(--sgs-focus-width) * -1);
+	--sgs-focus-halo: inset 0 0 0 calc(var(--sgs-focus-width) * 2 * var(--sgs-focus-keep, 1)) var(--sgs-focus-hairline);
+}
+input[type="checkbox"]:focus:not(:focus-visible, #wpadminbar *),
+input[type="radio"]:focus:not(:focus-visible, #wpadminbar *) {
+	outline: var(--sgs-focus-width) var(--wp--custom--focus--style, solid) var(--sgs-focus-ring);
+	outline-offset: var(--sgs-focus-offset);
+	box-shadow: var(--sgs-focus-halo), var(--sgs-focus-under, 0 0 #0000);
+}
+
 /* 2. The indicator: one declaration set, six arms (element, adjacent proxy, scoped proxy, card proxy, card overlay, editor preview).
    A card whose stretched link (`.sgs-focus-source`, with a `::after` overlay covering the card) holds focus rings the
    whole card, because the overlay is a pseudo-element and an outline on the link would wrap only its own text box.
