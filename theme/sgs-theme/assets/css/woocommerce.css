@@ -3482,3 +3482,14 @@ body.sgs-shop-active-bar .sgs-shop-filters .wp-block-woocommerce-product-filter-
 .sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading.sgs-filter-segmented + .wp-block-woocommerce-product-filter-attribute .wc-block-product-filter-chips__count {
 	display: none;
 }
+
+/* While payment methods are still arriving, the status line replaces WooCommerce's "no payment methods" notice. */
+.sgs-payment-loading .wc-block-checkout__no-payment-methods-notice {
+	display: none;
+}
+
+.sgs-payment-loading__status {
+	margin: 0 0 var(--wp--preset--spacing--20, 12px);
+	font-size: var(--wp--preset--font-size--regular);
+	color: var(--wp--preset--color--text-muted);
+}
