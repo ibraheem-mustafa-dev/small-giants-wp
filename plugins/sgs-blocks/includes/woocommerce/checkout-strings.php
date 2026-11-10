@@ -27,7 +27,10 @@ function sgs_checkout_strings_supported(): array {
 		'loginLink'          => 'Log in',
 		'createAccountLabel' => 'Create an account with %s',
 		'expressDivider'     => 'Or continue below',
-		'summaryTitle'      => 'Order summary',
+		'summaryTitle'       => 'Order summary',
+		'emailLabel'         => 'Email address',
+		'cityLabel'          => 'City',
+		'newPasswordLabel'   => 'Create a password',
 	);
 }
 

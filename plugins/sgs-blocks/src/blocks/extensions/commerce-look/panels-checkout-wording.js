@@ -15,6 +15,9 @@ const WORDING = [
 	[ 'createAccountLabel', __( 'Create-account checkbox (WooCommerce: Create an account with %s)', 'sgs-blocks' ), 'Create an account with %s' ],
 	[ 'expressDivider', __( 'Express checkout divider (WooCommerce: Or continue below)', 'sgs-blocks' ), 'Or continue below' ],
 	[ 'summaryTitle', __( 'Order summary heading (WooCommerce: Order summary)', 'sgs-blocks' ), 'Order summary' ],
+	[ 'emailLabel', __( 'Email field label (WooCommerce: Email address)', 'sgs-blocks' ), 'Email address' ],
+	[ 'cityLabel', __( 'City field label (WooCommerce: City)', 'sgs-blocks' ), 'City' ],
+	[ 'newPasswordLabel', __( 'Account password field label (WooCommerce: Create a password)', 'sgs-blocks' ), 'Create a password' ],
 ];
 
 /**
