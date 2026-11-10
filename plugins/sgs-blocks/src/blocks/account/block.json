@@ -170,12 +170,14 @@
 					"label": "Headings",
 					"order": 4,
 					"clusters": [
-						"text"
+						"text",
+						"layout"
 					],
 					"prefix": "heading",
 					"attrMap": {
 						"css:color": "headingColour",
-						"css:color-gradient": "headingColourGradient"
+						"css:color-gradient": "headingColourGradient",
+						"css:margin-bottom": "headingMarginBottom"
 					}
 				},
 				"cardBox": {
