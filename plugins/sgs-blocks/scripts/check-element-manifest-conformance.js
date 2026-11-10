@@ -77,6 +77,7 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const os = require( 'os' );
+const { frameworkDbPath } = require( './lib/framework-db' );
 const { execFileSync } = require( 'child_process' );
 
 const ROOT = path.join( __dirname, '..' );
@@ -121,7 +122,7 @@ const GENERATE_ROLE_MAP_SCRIPT = path.join( __dirname, 'generate-attr-role-map.p
 // FALLBACK_DB_PATH from (that script is the single source of truth for this
 // list; duplicated here only because this file can't `require` a .py module).
 const SGS_FRAMEWORK_DB_CANDIDATES = [
-	path.join( os.homedir(), '.claude', 'skills', 'sgs-wp-engine', 'sgs-framework.db' ),
+	frameworkDbPath(),
 	path.join( __dirname, 'data', 'sgs-framework.db' ),
 ];
 

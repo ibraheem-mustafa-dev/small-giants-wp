@@ -95,7 +95,10 @@ except Exception:
 HERE = Path(__file__).resolve().parent
 PLUGIN = HERE.parent
 REPO = PLUGIN.parent.parent
-SKILLS_HOME = Path.home() / ".claude" / "skills"
+sys.path.insert(0, str(PLUGIN / "scripts" / "lib"))
+from framework_db import skills_root  # noqa: E402
+
+SKILLS_HOME = skills_root()
 
 CANDIDATE_DIRS = [PLUGIN / "scripts", REPO / "scripts", REPO / "tools"]
 RUNNABLE = {".py", ".mjs", ".cjs", ".js", ".sh", ".php"}

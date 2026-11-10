@@ -31,16 +31,15 @@ BLOCKS_DIR = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
 INCLUDES_DIR = REPO_ROOT / "plugins" / "sgs-blocks" / "includes"
 # $SGS_FRAMEWORK_DB points every read and write at another copy of the DB
 # (sgs-update-v2.py --db exports it for proof runs on a scratch copy).
-DB_PATH = Path(
-    os.environ.get("SGS_FRAMEWORK_DB")
-    or Path(os.path.expanduser("~")) / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
-)
 
 # Sibling modules (helper_maps, php_include_graph, ...) live next to this script.
 if str(Path(__file__).resolve().parent) not in sys.path:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
 from block_source_files import edit_source, render_source  # noqa: E402
+from framework_db import framework_db_path  # noqa: E402
+
+DB_PATH = framework_db_path()
 import state_vocabulary  # noqa: E402
 
 # ── Shared render files (2026-09-10, colour-resolution root-cause report) ──────

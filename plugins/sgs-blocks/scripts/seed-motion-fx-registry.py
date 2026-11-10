@@ -68,7 +68,9 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 
 # Canonical SGS DB (~/.claude/skills/sgs-wp-engine, same derivation as seed-composition-roles.py). $SGS_FRAMEWORK_DB points a run at a copy.
-DB_PATH = Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
+DB_PATH = framework_db_path()
 sys.path.insert(0, str(Path(__file__).resolve().parent / "dbschema"))
 from motion_registry_columns import EMPTY_OWNED, EMPTY_PANELS, effect_columns  # noqa: E402
 

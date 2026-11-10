@@ -41,6 +41,8 @@ import re
 import sqlite3
 import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -80,14 +82,7 @@ ITEM_PARTS = {
 
 
 def db_path() -> Path:
-    env = os.environ.get("SGS_FRAMEWORK_DB")
-    if env:
-        return Path(env)
-    for root in (".claude",):
-        candidate = Path.home() / root / "skills" / "sgs-wp-engine" / "sgs-framework.db"
-        if candidate.exists():
-            return candidate
-    return Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+    return framework_db_path()
 
 
 def corpus() -> list[str]:

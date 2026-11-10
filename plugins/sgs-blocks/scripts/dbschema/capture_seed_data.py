@@ -42,6 +42,8 @@ import sqlite3
 import sys
 import tempfile
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 DATA = HERE.parent / "data"
@@ -49,7 +51,7 @@ DATA = HERE.parent / "data"
 DEFAULT_DB = Path(
     os.environ.get(
         "SGS_FRAMEWORK_DB",
-        str(Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"),
+        str(framework_db_path()),
     )
 )
 

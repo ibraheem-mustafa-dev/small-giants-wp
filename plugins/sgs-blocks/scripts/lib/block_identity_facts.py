@@ -56,8 +56,9 @@ sys.path.insert(0, str(HERE))
 import identity_scan as S  # noqa: E402
 from identity_editor import StyleIndex, icon_pickers  # noqa: E402
 from identity_markup import MARKUP, DbInputs, Extractor, Paths, load_db_inputs  # noqa: E402
+from framework_db import framework_db_path  # noqa: E402
 
-DEFAULT_DB = Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
+DEFAULT_DB = framework_db_path()
 FACTS = ("renders-tag", "renders-role", "renders-aria", "open-state", "self-moving", "platform", "context", "accepts-kind")
 OPEN_STATES = ("exactly-one", "none-or-one", "any", "none")
 MOVES = ("timer", "controls", "scroll", "none")

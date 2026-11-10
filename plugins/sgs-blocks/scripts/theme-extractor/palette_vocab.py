@@ -12,6 +12,9 @@ import re
 import sqlite3
 from functools import lru_cache
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
 
 # --------------------------------------------------------------------------- brand colours
 
@@ -44,7 +47,7 @@ def brand_words() -> frozenset:
         names.update(str(n).lower() for n in own if len(str(n)) >= 3)
         names.update(w for w in re.split(r"[^a-z0-9]+", str(b.get("label", "")).lower()) if len(w) >= 3)
         names.update(str(n).lower() for n in b.get("aliases", []))
-    db = Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
+    db = framework_db_path()
     if db.is_file():
         conn = sqlite3.connect(f"file:{db.as_posix()}?mode=ro", uri=True)
         try:

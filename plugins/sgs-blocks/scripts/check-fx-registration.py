@@ -121,6 +121,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fx_registration_core import (  # noqa: E402,F401
     Tree, VacuousParse, _block_after, _floor, _strip_js_comments, _strip_php_comments,
 )
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -294,8 +296,7 @@ def known_effects(tree: Tree) -> set[str]:
             "effect list to compare stylesheets against."
         ) from exc
     _floor(effects, 10, schema_path, "the `x-sgs-effects` keys")
-    db = Path(os.environ.get("SGS_FRAMEWORK_DB")
-              or Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
+    db = framework_db_path()
     if db.is_file():
         try:
             conn = sqlite3.connect(f"file:{db.as_posix()}?mode=ro", uri=True)

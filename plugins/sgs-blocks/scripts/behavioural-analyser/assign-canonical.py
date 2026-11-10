@@ -48,14 +48,10 @@ from typing import Optional
 # ---------------------------------------------------------------------------
 
 # DB lives outside the repo (in the sgs-wp-engine skill folder). Resolve via
-# the user's home so this works on any machine. Override with $SGS_FRAMEWORK_DB.
-import os
-DB_PATH = Path(
-    os.environ.get(
-        "SGS_FRAMEWORK_DB",
-        str(Path.home() / ".claude/skills/sgs-wp-engine/sgs-framework.db"),
-    )
-)
+# lib/framework_db.py ($SGS_FRAMEWORK_DB overrides it).
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
+DB_PATH = framework_db_path()
 # fingerprints.json selector overrides RETIRED 2026-07-03 (P-FINGERPRINT-MIGRATION) —
 # folded into sgs-update-v2.py ATTR_CLASSIFICATION_OVERRIDES. FINGERPRINTS_PATH +
 # load_fingerprint_overrides removed with the load.

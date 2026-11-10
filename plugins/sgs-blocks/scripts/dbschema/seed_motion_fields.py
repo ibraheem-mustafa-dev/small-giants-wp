@@ -29,6 +29,8 @@ import os
 import sqlite3
 import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
 
 _SCRIPTS_DIR = Path(__file__).resolve().parents[1]
 _PLUGIN_DIR = _SCRIPTS_DIR.parent
@@ -44,7 +46,7 @@ FIELD_COLUMNS = (
 
 
 def default_db_path() -> Path:
-    return Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
+    return framework_db_path()
 
 
 def load_schema(path: Path | None = None) -> dict:

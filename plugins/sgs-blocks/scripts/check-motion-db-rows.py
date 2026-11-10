@@ -37,6 +37,8 @@ SCRIPTS = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPTS))
 sys.path.insert(0, str(SCRIPTS / "dbschema"))
 import motion_gate_allowlist as allowlist  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
 
 REPO = SCRIPTS.parents[2]
 PLUGIN = REPO / "plugins" / "sgs-blocks"
@@ -48,7 +50,7 @@ SINGLE_TIER = "all"
 
 
 def default_db() -> Path:
-    return Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
+    return framework_db_path()
 
 
 def expected_fields(schema: dict) -> dict[str, bool]:

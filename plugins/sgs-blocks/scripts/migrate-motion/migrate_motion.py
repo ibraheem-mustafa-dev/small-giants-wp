@@ -52,6 +52,8 @@ if sys.stdout.encoding is None or sys.stdout.encoding.lower() != 'utf-8':
 HERE = os.path.dirname(os.path.abspath(__file__))
 PLUGIN = os.path.dirname(os.path.dirname(HERE))
 REPO = os.path.dirname(os.path.dirname(PLUGIN))
+sys.path.insert(0, os.path.join(PLUGIN, 'scripts', 'lib'))
+from framework_db import framework_db_path  # noqa: E402
 MAPPERS_DIR = os.path.join(PLUGIN, 'includes', 'motion', 'migrate', 'mappers')
 MAPPER_PREFIX = 'class-sgs-motion-map-'
 
@@ -146,7 +148,7 @@ BLOCK_RE = re.compile(r'<!--\s+wp:([a-z][a-z0-9_-]*(?:/[a-z][a-z0-9_-]*)?)\s*(\{
 def load_db_attrs():
     """Every attribute name in the framework DB (read-only), or None when the DB cannot be opened."""
     import sqlite3
-    db = os.environ.get('SGS_FRAMEWORK_DB') or os.path.expanduser('~/.claude/skills/sgs-wp-engine/sgs-framework.db')
+    db = str(framework_db_path())
     try:
         con = sqlite3.connect('file:%s?mode=ro' % db.replace('\\', '/'), uri=True)
         try:

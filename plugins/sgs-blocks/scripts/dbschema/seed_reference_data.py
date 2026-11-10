@@ -43,6 +43,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import tree_guard  # noqa: E402
 from motion_presets_seed import MotionPresetError, seed_motion_presets  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
 
 _SCRIPTS_DIR = Path(__file__).resolve().parents[1]
 _DATA_DIR = _SCRIPTS_DIR / "data"
@@ -102,7 +104,7 @@ def default_db_path() -> Path:
     override = os.environ.get("SGS_FRAMEWORK_DB")
     if override:
         return Path(override)
-    return Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+    return framework_db_path()
 
 
 def _warn(message: str) -> None:
@@ -503,7 +505,7 @@ def main(argv: list[str] | None = None) -> int:
         Path(__file__).resolve().parent,
         allow_stale=args.allow_stale_tree,
         target_db=args.db or default_db_path(),
-        shared_dbs=(Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db",),
+        shared_dbs=(framework_db_path(),),
         label="seed_reference_data.py",
     )
     try:

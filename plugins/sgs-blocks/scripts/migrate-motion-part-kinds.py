@@ -45,7 +45,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PLUGIN = os.path.dirname(HERE)
 BLOCKS_DIR = os.path.join(PLUGIN, 'src', 'blocks')
 INCLUDES_DIR = os.path.join(PLUGIN, 'includes')
-DB_PATH = os.environ.get('SGS_FRAMEWORK_DB') or os.path.join(os.path.expanduser('~'), '.claude', 'skills', 'sgs-wp-engine', 'sgs-framework.db')
+sys.path.insert(0, os.path.join(HERE, 'lib'))
+from framework_db import framework_db_path  # noqa: E402
+DB_PATH = str(framework_db_path())
 
 ALL_KINDS = ('surface', 'svg', 'text')
 ENFORCED = ALL_KINDS              # every kind has a reader; --fix writes and --check gates all of them

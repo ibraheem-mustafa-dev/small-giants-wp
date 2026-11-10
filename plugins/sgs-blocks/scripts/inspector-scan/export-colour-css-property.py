@@ -21,9 +21,8 @@ import os
 import sqlite3
 import sys
 from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
-from framework_db import framework_db_path  # noqa: E402  ($SGS_FRAMEWORK_DB, else ~/.claude, then ~/.agents)
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402  ($SGS_FRAMEWORK_DB, else the shared database)
 
 DB_CANDIDATES = [
     framework_db_path(),

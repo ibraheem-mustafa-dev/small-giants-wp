@@ -22,13 +22,15 @@ import os
 import sqlite3
 import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
 
 sys.stdout.reconfigure(encoding="utf-8")
 
 SCRIPTS_DIR = Path(__file__).resolve().parent
 SOURCE_FILE = SCRIPTS_DIR / "data" / "motion-presets.json"
 OUTPUT_FILE = SCRIPTS_DIR.parent / "src" / "components" / "motion" / "generated-motion-presets.json"
-DB_PATH = Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
+DB_PATH = framework_db_path()
 KEYS = ("slug", "panel", "effect", "family", "kind", "intensity", "label", "values", "devices", "trigger", "target")
 
 

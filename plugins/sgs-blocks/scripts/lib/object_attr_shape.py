@@ -78,6 +78,7 @@ import re
 import sqlite3
 import sys
 from pathlib import Path
+from framework_db import framework_db_path  # noqa: E402
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -100,7 +101,7 @@ def _framework_db_path() -> Path:
     override = os.environ.get("SGS_FRAMEWORK_DB")
     if override:
         return Path(override)
-    return Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+    return framework_db_path()
 
 
 @functools.lru_cache(maxsize=None)

@@ -43,6 +43,8 @@ import importlib
 import importlib.util
 import types
 import sys as _sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
 
 _PKG_DIR = Path(__file__).resolve().parents[1]  # scripts/db-consistency/
 _SCRIPTS_DIR = _PKG_DIR.parent                  # scripts/
@@ -93,7 +95,7 @@ from db_consistency.check_variant_reseed import recompute_discriminators  # noqa
 # Live DB fixture
 # ---------------------------------------------------------------------------
 
-_DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+_DB_PATH = framework_db_path()
 _DB_AVAILABLE = _DB_PATH.exists()
 _skip_no_db = pytest.mark.skipif(not _DB_AVAILABLE, reason="sgs-framework.db not found")
 

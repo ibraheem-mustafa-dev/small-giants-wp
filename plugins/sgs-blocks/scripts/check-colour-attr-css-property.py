@@ -63,12 +63,14 @@ import pathlib
 import sqlite3
 import subprocess
 import sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SURVEY_SCRIPT = ROOT / "colour-codemod" / "survey.js"
 GRADIENT_KEYS = ROOT / "data" / "gradient-paint-keys.json"
 MDN_PROPERTIES = ROOT.parent / "node_modules" / "mdn-data" / "css" / "properties.json"
-DEFAULT_DB = pathlib.Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+DEFAULT_DB = framework_db_path()
 REFUSED_VERDICT = "REFUSED:no-css_property"
 
 

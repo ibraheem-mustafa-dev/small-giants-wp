@@ -50,6 +50,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+# A migration fixture asks lib/framework_db.py for the database, under the sandbox's fake home.
+RESOLVE_DB = (
+    "import sys\nsys.path.insert(0, " + repr(str(HERE.parent / "lib")) + ")\n"
+    "from framework_db import framework_db_path\ndb = framework_db_path()\n"
+)
 SCRIPTS = HERE.parent
 MIGRATIONS_DIR = SCRIPTS / "migrations"
 MANIFEST = HERE / "migration-manifest.json"
@@ -339,8 +344,8 @@ def _self_test() -> int:
     good = mdir / "2026-01-01-good.py"
     good.write_text(
         "import sqlite3, pathlib\n"
-        "import os\ndb = os.environ.get('SGS_FRAMEWORK_DB') or str(pathlib.Path.home()/'.claude'/'skills'/'sgs-wp-engine'/'sgs-framework.db')\n"
-        "c = sqlite3.connect(str(db))\n"
+        + RESOLVE_DB
+        + "c = sqlite3.connect(str(db))\n"
         "c.execute('CREATE TABLE IF NOT EXISTS canary(x INTEGER)')\n"
         "c.execute('INSERT INTO canary VALUES (1)')\n"
         "c.commit(); c.close()\n",
@@ -356,8 +361,8 @@ def _self_test() -> int:
     never = mdir / "2026-01-03-never-runs.py"
     never.write_text(
         "import sqlite3, pathlib\n"
-        "import os\ndb = os.environ.get('SGS_FRAMEWORK_DB') or str(pathlib.Path.home()/'.claude'/'skills'/'sgs-wp-engine'/'sgs-framework.db')\n"
-        "c = sqlite3.connect(str(db))\n"
+        + RESOLVE_DB
+        + "c = sqlite3.connect(str(db))\n"
         "c.execute('CREATE TABLE IF NOT EXISTS should_not_exist(x INTEGER)')\n"
         "c.commit(); c.close()\n",
         encoding="utf-8",

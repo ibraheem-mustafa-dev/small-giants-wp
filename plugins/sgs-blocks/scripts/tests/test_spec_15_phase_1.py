@@ -67,12 +67,14 @@ _assign_spec.loader.exec_module(assign_canonical_mod)  # type: ignore[union-attr
 
 from match import snap_color, snap_spacing  # noqa: E402  (added to sys.path above)
 from inheritance import inherits_global_default, _inherits_from_dict  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 
-_DB_SOURCE = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+_DB_SOURCE = framework_db_path()
 _THEME_JSON_PATH = _REPO_ROOT / "theme" / "sgs-theme" / "theme.json"
 _BLOCKS_DIR = _REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
 

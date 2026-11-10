@@ -281,7 +281,7 @@ def generate(db_path, output_path):
         out.append("# SGS Blocks Reference")
         out.append("")
         out.append("> **AUTO-GENERATED.** Do not edit by hand. This file is regenerated from")
-        out.append("> `~/.claude/skills/sgs-wp-engine/sgs-framework.db` by")
+        out.append("> the SGS framework database (`sgs-framework.db`) by")
         out.append("> `plugins/sgs-blocks/scripts/generate-block-reference.py`.")
         out.append("> Refresh: `python plugins/sgs-blocks/scripts/generate-block-reference.py`.")
         out.append("")

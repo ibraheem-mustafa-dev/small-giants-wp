@@ -36,6 +36,8 @@ SCRIPTS = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPTS))
 import motion_control_sets as rules  # noqa: E402
 import motion_gate_allowlist as allowlist  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
 
 REPO = SCRIPTS.parents[2]
 SCHEMA = REPO / "plugins" / "sgs-blocks" / "schemas" / "motion.schema.json"
@@ -51,7 +53,7 @@ def read_json(path: Path) -> dict:
 
 
 def default_db() -> Path:
-    return Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
+    return framework_db_path()
 
 
 def load_db(db: Path) -> tuple[list[str], list[dict]]:
