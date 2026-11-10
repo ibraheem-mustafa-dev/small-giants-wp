@@ -85,7 +85,22 @@ BOX_PROP = re.compile(r"(^|,)\s*(min-)?(width|height|inline-size|block-size)\b")
 PICTURE_PROP = re.compile(r"^\s*(background-size|object-fit|object-position)\s*$")
 
 
-def load_sized_blocks(db_path: Path = DB) -> dict[str, list[str]]:
+def generated_media_sizes(blocks_dir: Path = BLOCKS) -> set[tuple[str, str]]:
+    """(block name, attr) of every `Size` setting the media generator wrote into a block.json.
+
+    That is a media atom's `Size` base, which paints `background-size`, never a tap target's box.
+    The generator leaves css_property to the seeder, so the framework DB may hold no property for it.
+    """
+    out: set[tuple[str, str]] = set()
+    for f in blocks_dir.glob("*/block.json"):
+        attrs = json.loads(f.read_text(encoding="utf-8")).get("attributes") or {}
+        for name, d in attrs.items():
+            if isinstance(d, dict) and d.get("_generated") == "media-atoms" and name.endswith("Size"):
+                out.add((f.parent.name, name))
+    return out
+
+
+def load_sized_blocks(db_path: Path = DB, blocks_dir: Path = BLOCKS) -> dict[str, list[str]]:
     """block name (no namespace) -> its box-size settings, from the framework DB (read-only)."""
     conn = sqlite3.connect(f"file:{db_path.as_posix()}?mode=ro", uri=True)
     try:
@@ -95,8 +110,9 @@ def load_sized_blocks(db_path: Path = DB) -> dict[str, list[str]]:
     finally:
         conn.close()
     out: dict[str, list[str]] = {}
+    media_sizes = generated_media_sizes(blocks_dir)
     for slug, attr, prop in rows:
-        if NOT_BOX.search(attr) or PICTURE_PROP.match(prop):
+        if NOT_BOX.search(attr) or PICTURE_PROP.match(prop) or (slug.split("/")[-1], attr) in media_sizes:
             continue
         if re.search(r"(Size|Height|Width)$", attr) or BOX_PROP.search(prop):
             out.setdefault(slug.split("/")[-1], []).append(attr)
@@ -368,10 +384,19 @@ def cmd_self_test() -> int:
         )
         conn.commit()
         conn.close()
-        loaded = load_sized_blocks(db)
-    ok = "pic" not in loaded and loaded.get("box") == ["iconSize"]
+        (Path(tmp) / "gen").mkdir()
+        (Path(tmp) / "gen" / "block.json").write_text(
+            json.dumps({"attributes": {"sgsSize": {"type": "string", "_generated": "media-atoms"}}}), encoding="utf-8"
+        )
+        loaded = load_sized_blocks(db, Path(tmp))
+        conn = sqlite3.connect(db)
+        conn.execute("INSERT INTO block_attributes VALUES ('sgs/gen', 'sgsSize', NULL, 'sgs')")
+        conn.commit()
+        conn.close()
+        loaded_gen = load_sized_blocks(db, Path(tmp))
+    ok = "pic" not in loaded and loaded.get("box") == ["iconSize"] and "gen" not in loaded_gen
     failed += 0 if ok else 1
-    print(f"{'ok  ' if ok else 'FAIL'} media Size base (background-size) is not a box-size setting: {loaded}")
+    print(f"{'ok  ' if ok else 'FAIL'} media Size base (background-size, or generated with no property) is not a box-size setting: {loaded_gen}")
     # The live register must name only blocks that exist, and give every entry a reason.
     data = json.loads(REGISTER.read_text(encoding="utf-8"))
     for e in data["house"]:
