@@ -5,6 +5,11 @@
  * re-run source selection by itself, so this module reloads the selection, pauses a video no longer shown and plays
  * the one shown (when it autoplays and the visitor has not asked for reduced motion).
  *
+ * The shown video's `poster` is the file its cover `<img>` already loaded for the device (`currentSrc`), so Chrome
+ * paints the cover under the video's controls instead of an opaque panel, with no extra download. The renderer prints
+ * no `poster` attribute, which would download on every device. The stack is marked `data-sgs-poster` once it is set;
+ * the stylesheet lifts the cover above the video only while the mark is absent.
+ *
  * Built as a standalone script module (`build/shared/media/device-video.js`); the renderer enqueues it only on
  * pages that print a video slot.
  */
@@ -33,6 +38,50 @@ function currentSource( video ) {
 }
 
 /**
+ * Point the shown video's poster at its stack's cover file and mark the stack.
+ *
+ * @param {HTMLVideoElement} video The video.
+ */
+function applyPoster( video ) {
+	const stack = video.closest( '.sgs-media-stack' );
+	const cover = stack && stack.querySelector( 'img.sgs-media-cover' );
+	if ( ! stack || ! cover ) {
+		return;
+	}
+	const src = cover.currentSrc || '';
+	if ( ! src || src.startsWith( 'data:' ) ) {
+		video.removeAttribute( 'poster' );
+		stack.removeAttribute( 'data-sgs-poster' );
+		return;
+	}
+	if ( video.getAttribute( 'poster' ) !== src ) {
+		video.setAttribute( 'poster', src );
+	}
+	stack.setAttribute( 'data-sgs-poster', '' );
+}
+
+/**
+ * Set a video's poster once its cover has loaded.
+ *
+ * @param {HTMLVideoElement} video The video.
+ */
+function syncPoster( video ) {
+	const cover = video
+		.closest( '.sgs-media-stack' )
+		?.querySelector( 'img.sgs-media-cover' );
+	if ( ! cover || ! isShown( video ) ) {
+		return;
+	}
+	if ( cover.complete ) {
+		applyPoster( video );
+	} else {
+		cover.addEventListener( 'load', () => applyPoster( video ), {
+			once: true,
+		} );
+	}
+}
+
+/**
  * Re-run source selection for one video and settle its playback.
  *
  * @param {HTMLVideoElement} video The video.
@@ -45,6 +94,7 @@ export function settleVideo( video ) {
 		( s ) => ! s.media || window.matchMedia( s.media ).matches
 	);
 
+	syncPoster( video );
 	if ( ! isShown( video ) || ! matches ) {
 		if ( wasPlaying ) {
 			video.pause();
@@ -77,6 +127,17 @@ export function initDeviceVideo() {
 	if ( ! videos.length ) {
 		return;
 	}
+	videos.forEach( ( video ) => {
+		video
+			.closest( '.sgs-media-stack' )
+			?.querySelector( 'img.sgs-media-cover' )
+			?.addEventListener( 'load', () => {
+				if ( isShown( video ) ) {
+					applyPoster( video );
+				}
+			} );
+		syncPoster( video );
+	} );
 	const queries = [ QUERY_MOBILE, QUERY_TABLET ];
 	const onChange = () => videos.forEach( settleVideo );
 	queries.forEach( ( q ) =>

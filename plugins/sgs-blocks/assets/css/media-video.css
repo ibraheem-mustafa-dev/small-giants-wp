@@ -1,6 +1,10 @@
 /*
  * Spec 49 media renderer: a video and its cover image (§7.1). The cover is a picture under the video, so it shows
  * before play, without script and under reduced motion; the video paints nothing until it has a frame.
+ *
+ * Chrome paints an opaque panel for `<video controls>` that has no frame. Once the view module has copied the
+ * cover's file onto the video as its poster (it marks the stack `data-sgs-poster`), the video shows that poster
+ * under its own controls and the cover steps back beneath it. Until then the cover sits above the video.
  */
 
 .sgs-media-stack {
@@ -15,16 +19,16 @@
 	grid-area: 1 / 1;
 	width: 100%;
 	min-width: 0;
+	height: 100%;
 }
 
-.sgs-media-stack > .sgs-media-video {
-	height: 100%;
-	object-fit: inherit;
-	object-position: inherit;
+/* The slot's emitted Fit and Focal (`.{uid} .sgs-media-el`) win over this zero-specificity base. */
+:where(.sgs-media-stack > .sgs-media-video, .sgs-media-stack .sgs-media-cover) {
+	object-fit: cover;
 }
 
-.sgs-media-stack > .sgs-media-picture > .sgs-media-cover {
-	height: 100%;
-	object-fit: inherit;
-	object-position: inherit;
+.sgs-media-stack:not([data-sgs-poster]) .sgs-media-cover {
+	position: relative;
+	z-index: 1;
+	pointer-events: none;
 }
