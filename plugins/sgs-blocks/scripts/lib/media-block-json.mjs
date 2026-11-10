@@ -10,7 +10,8 @@
  * `supports.sgs.mediaElements` entry, one attribute per adopted setting of the atoms it names (all adopted atoms when
  * `atoms` is omitted), named `{prefix}{Base}`. A responsive setting is one `object` attribute holding the
  * `{desktop,tablet,mobile}` value, never Tablet and Mobile siblings. Any name the block already declares itself (its type must match the setting's), or an
- * earlier entry already produced, is skipped.
+ * earlier entry already produced, is skipped; every such name is reported in one run (a type mismatch throws naming all
+ * of them, a same-type one is listed in `report.kept`).
  *
  * Generated attributes carry `"_generated": "media-atoms"`, sit on one line
  * each at the end of `attributes`, and are rewritten from scratch on every run,
@@ -55,10 +56,11 @@ export function findBlockJsons( dir ) {
  *                             of an entry.
 
  * @param {Object}   ownDefs   The attributes the block declares itself, name to definition. A name the generator would
- *                             also write must carry the same type, or this throws naming the attribute.
+ *                             also write must carry the same type, or this throws naming every such attribute.
+ * @param {{kept: string[]}} [report] Receives `block attribute` for each own attribute kept because its type matches.
  * @return {Array<{name:string, def:Object, base:string, tier:string, prefix:string}>} In injection order.
  */
-export function generatedAttributes( block, env, ownDefs ) {
+export function generatedAttributes( block, env, ownDefs, report ) {
 	// Only an entry that declares `kinds` has adopted the new slot declaration
 	// (Spec 49 §8.3); an entry without it keeps its attributes from the
 	// registration filter.
@@ -72,6 +74,7 @@ export function generatedAttributes( block, env, ownDefs ) {
 	const own = ownDefs || {};
 	const seen = new Set();
 	const out = [];
+	const clashes = [];
 	for ( const element of elements ) {
 		const prefix = element?.prefix ? String( element.prefix ) : '';
 		for ( const setting of env.adoptedSettings( element ) ) {
@@ -84,9 +87,11 @@ export function generatedAttributes( block, env, ownDefs ) {
 				const declaredType = own[ name ]?.type;
 				const types = Array.isArray( declaredType ) ? declaredType : [ declaredType ];
 				if ( ! types.includes( wanted ) ) {
-					throw new Error(
-						`${ block?.name }: attribute "${ name }" is declared as ${ JSON.stringify( declaredType ) } but the media atom setting needs "${ wanted }"; fix the block.json declaration or the atom setting`
+					clashes.push(
+						`${ block?.name }: attribute "${ name }" is declared as ${ JSON.stringify( declaredType ) } but the media atom setting needs "${ wanted }"`
 					);
+				} else if ( report ) {
+					report.kept.push( `${ block?.name } ${ name }` );
 				}
 				continue;
 			}
@@ -100,6 +105,9 @@ export function generatedAttributes( block, env, ownDefs ) {
 				setting,
 			} );
 		}
+	}
+	if ( clashes.length ) {
+		throw new Error( `${ clashes.join( '; ' ) }; fix the block.json declaration or the atom setting` );
 	}
 	return out;
 }

@@ -162,11 +162,20 @@ const OVERRIDES_FILE = path.join( HERE, 'attr-classification-overrides.json' );
 
 const ENV = {
 	attrName: mediaAttrName,
-	adoptedSettings: ( element ) => adoptedSettingsForAtoms( adoptedAtomsForElement( element ) ),
+	adoptedSettings: ( element ) => adoptedSettingsForAtoms( adoptedAtomsForElement( element ), element ),
 };
 
-const argBlock = process.argv.includes( '--block' )
-	? process.argv[ process.argv.indexOf( '--block' ) + 1 ]
+const KNOWN_FLAGS = [ '--block', '--check', '--self-test' ];
+const blockFlagAt = process.argv.indexOf( '--block' );
+const unknownArgs = process.argv.slice( 2 ).filter( ( arg, i ) => ! KNOWN_FLAGS.includes( arg ) && process.argv[ i + 1 ] !== '--block' );
+if ( unknownArgs.length || ( blockFlagAt !== -1 && ! process.argv[ blockFlagAt + 1 ] ) ) {
+	process.stderr.write( `[generate-media-attributes] unknown argument(s): ${ unknownArgs.join( ' ' ) || '--block needs a slug' }. Flags: ${ KNOWN_FLAGS.join( ', ' ) }
+` );
+	process.exit( 2 );
+}
+// A block is named by its short slug (`gallery`) or its full name (`sgs/gallery`); both mean the same block.
+const argBlock = blockFlagAt !== -1
+	? ( process.argv[ blockFlagAt + 1 ].includes( '/' ) ? process.argv[ blockFlagAt + 1 ] : `sgs/${ process.argv[ blockFlagAt + 1 ] }` )
 	: null;
 const rel = ( f ) => path.relative( PLUGIN_DIR, f ).split( path.sep ).join( '/' );
 
@@ -175,14 +184,15 @@ const rel = ( f ) => path.relative( PLUGIN_DIR, f ).split( path.sep ).join( '/' 
  *
  * @param {string}      text        Current block.json source.
  * @param {Set<string>} handWritten `slug|attr` keys that already have a hand-written override entry.
- * @return {{next: string, entries: Object[], skipped: string[]}} New source, entries, and keys left to a hand-written entry.
+ * @return {{next: string, entries: Object[], skipped: string[], kept: string[]}} New source, entries, keys left to a hand-written entry, and own attributes kept for a matching type.
  */
 function planBlock( text, handWritten ) {
 	const block = JSON.parse( text );
 	const own = Object.fromEntries(
 		Object.entries( block.attributes || {} ).filter( ( [ , def ] ) => def?._generated !== 'media-atoms' )
 	);
-	const attrs = generatedAttributes( block, ENV, own );
+	const report = { kept: [] };
+	const attrs = generatedAttributes( block, ENV, own, report );
 	const next = applyGeneratedAttributes( text, attrs );
 	JSON.parse( next ); // refuse to hand back a file that no longer parses
 	const entries = [];
@@ -194,13 +204,13 @@ function planBlock( text, handWritten ) {
 		}
 		entries.push( overrideEntry( block.name, a, a.setting, '', a.setting.responsive ) );
 	}
-	return { next, entries, skipped };
+	return { next, entries, skipped, kept: report.kept };
 }
 
 /**
  * What a run would write, without writing it.
  *
- * @return {{files: Map<string,string>, entries: Object[], skipped: string[], overridesText: string}} New block.json texts (changed ones only), override entries, override keys left to a hand-written entry, and the current override file.
+ * @return {{files: Map<string,string>, entries: Object[], skipped: string[], kept: string[], overridesText: string}} New block.json texts (changed ones only), override entries, override keys left to a hand-written entry, own attributes kept for a matching type, and the current override file.
  */
 function plan() {
 	const overridesText = fs.readFileSync( OVERRIDES_FILE, 'utf8' );
@@ -208,10 +218,11 @@ function plan() {
 	const files = new Map();
 	const entries = [];
 	const skipped = [];
+	const kept = [];
 	for ( const file of findBlockJsons( BLOCKS_DIR ) ) {
 		const text = fs.readFileSync( file, 'utf8' );
 		const name = JSON.parse( text ).name;
-		if ( argBlock && name !== argBlock && name !== `sgs/${ argBlock }` ) {
+		if ( argBlock && name !== argBlock ) {
 			continue;
 		}
 		const done = planBlock( text, handWritten );
@@ -220,8 +231,9 @@ function plan() {
 		}
 		entries.push( ...done.entries );
 		skipped.push( ...done.skipped );
+		kept.push( ...done.kept );
 	}
-	return { files, entries, skipped, overridesText };
+	return { files, entries, skipped, kept, overridesText };
 }
 
 function selfTest() {
@@ -340,6 +352,41 @@ function selfTest() {
 	const agree = JSON.parse( fixText );
 	agree.attributes.overlayOpacity = { type: 'object' };
 	ck( 'type clash: an own `overlayOpacity` of type object is kept without error', ( () => { try { return ! generatedAttributes( agree, ENV, agree.attributes ).some( ( a ) => 'overlayOpacity' === a.name ); } catch ( e ) { return false; } } )() );
+	// Slot context and kinds: only the rows a slot's context and kinds allow are written (Spec 49 §9.3, Appendix C).
+	const withEntry = ( entry ) => {
+		const b = JSON.parse( fixText );
+		b.supports.sgs.mediaElements = [ entry ];
+		return Object.entries( JSON.parse( planBlock( JSON.stringify( b, null, '	' ), new Set() ).next ).attributes )
+			.filter( ( [ , def ] ) => def._generated === 'media-atoms' )
+			.map( ( [ n ] ) => n );
+	};
+	const bg = withEntry( { prefix: 'background', context: 'background', kinds: [ 'image' ] } );
+	ck( `background image slot writes the 16 background rows, none of caption, link, shape, border, shadow, padding or sizing (got ${ bg.length })`,
+		bg.length === 16 && ! bg.some( ( n ) => /Caption|Link|Shape|Radius|Border|BoxShadow|Padding|Alignment|Order|Width|Height|Ratio|Greyscale|Svg|Playback/.test( n ) ) );
+	const imageOnly = withEntry( { prefix: 'item', context: 'item', kinds: [ 'image' ] } );
+	ck( 'image-only slot writes no Playback, Captions or SVG row', ! imageOnly.some( ( n ) => /Playback|Captions|Svg/.test( n ) ) && imageOnly.length > 30 );
+	const svgOnly = withEntry( { prefix: 'logo', context: 'element', kinds: [ 'svg' ] } );
+	ck( 'svg slot writes the four SVG rows and no Playback or Link', svgOnly.filter( ( n ) => /Svg/.test( n ) ).length === 4 && ! svgOnly.some( ( n ) => /Playback|Link/.test( n ) ) );
+
+	// A short and a full block slug name the same block: the override entries do not double on a second run.
+	const twice = applyOverrideEntries( applyOverrideEntries( fixOver, done.entries, done.entries[ 0 ].slug ), done.entries, done.entries[ 0 ].slug );
+	ck( 'override entries are replaced, not doubled, by a second run for the same block', JSON.parse( twice ).entries.length === 1 + done.entries.length );
+
+	// Every clash is reported in one run.
+	const twoClash = JSON.parse( fixText );
+	twoClash.attributes.overlayOpacity = { type: 'number' };
+	twoClash.attributes.fit = { type: 'string' };
+	let twoMessage = '';
+	try {
+		generatedAttributes( twoClash, ENV, twoClash.attributes );
+	} catch ( e ) {
+		twoMessage = e.message;
+	}
+	ck( 'two type clashes are both reported in one run', twoMessage.includes( '"overlayOpacity"' ) && twoMessage.includes( '"fit"' ) );
+	const sameType = { kept: [] };
+	generatedAttributes( agree, ENV, agree.attributes, sameType );
+	ck( 'a same-type own attribute is listed as kept', sameType.kept.some( ( k ) => k.endsWith( 'overlayOpacity' ) ) );
+
 	const unadopted = fixText.replace( '"kinds": [ "image" ], ', '' );
 	const none = planBlock( unadopted, new Set() );
 	ck(
@@ -403,11 +450,17 @@ if ( process.argv.includes( '--check' ) ) {
 if ( ! argBlock ) {
 	fs.writeFileSync( OUT_FILE, out, 'utf8' );
 }
-const { files, entries, skipped, overridesText } = plan();
+const { files, entries, skipped, kept, overridesText } = plan();
 files.forEach( ( text, file ) => fs.writeFileSync( file, text, 'utf8' ) );
 const nextOverrides = applyOverrideEntries( overridesText, entries, argBlock );
 if ( nextOverrides !== overridesText ) {
 	fs.writeFileSync( OVERRIDES_FILE, nextOverrides, 'utf8' );
+}
+if ( kept.length ) {
+	process.stdout.write(
+		`[generate-media-attributes] ${ kept.length } attribute(s) the block already declares with the same type are kept as the block's own (compare their default and enum by hand): ${ kept.join( ', ' ) }
+`
+	);
 }
 if ( skipped.length ) {
 	process.stdout.write(
