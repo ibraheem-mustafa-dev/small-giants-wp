@@ -190,7 +190,6 @@ def migrate_source(slot: Slot) -> None:
                  "VideoCaptionsLabel", "VideoCaptionsSrcLang"):
         if not slot.stays(base):
             slot.retire(base, "converted", target)
-    slot.retire("VideoAlt", "converted", slot.target("Alt"))
     slot._has_video = has_video  # noqa: SLF001 (read by migrate_playback)
 
 
@@ -220,11 +219,23 @@ def _captions(slot: Slot, tier: str):
 
 def migrate_alt(slot: Slot) -> None:
     ctx = slot.ctx
+    has_video = getattr(slot, "_has_video", False)
     alt = slot.get("ImageAlt")
-    if not _set(alt):
+    if not _set(alt) and has_video:
         alt = slot.get("VideoAlt")
     if isinstance(alt, str) and alt:
         ctx.put(slot.target("Alt"), alt)
+    source = ctx.get(slot.target("Source")) if isinstance(ctx.get(slot.target("Source")), dict) else {}
+    for tier in ("Tablet", "Mobile"):
+        name = slot.present("ImageAlt", tier)
+        value = ctx.get(name) if name else None
+        device = TIER_DEVICE[tier]
+        if isinstance(value, str) and value and value != alt and (source.get(device) or {}).get("alt") != value:
+            ctx.drop(name, "deleted", "", f"dropped value {value!r}: the {device} has no file of its own, so its alt text has no Source to sit in")
+    for name in slot.old_names("VideoAlt"):
+        value = ctx.get(name) if ctx.has(name) else None
+        if isinstance(value, str) and value and value != alt:
+            ctx.drop(name, "deleted", "", f"dropped value {value!r}: the slot's media is not a video, so a video alt has nowhere to go")
     slot.retire("ImageAlt", "converted", slot.target("Alt"), "a per-device alt that differs moved into that device's Source")
     slot.retire("VideoAlt", "converted", slot.target("Alt"))
     decorative = slot.get("ImageDecorative")

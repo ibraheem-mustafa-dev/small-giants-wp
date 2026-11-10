@@ -201,6 +201,8 @@ def migrate_extras(ctx: T.Ctx) -> None:
             _plain_shape(ctx, old, target, value)
         elif family == "radius":
             _plain_radius(ctx, old, target, value)
+        elif family == "opacity":
+            _plain_opacity(ctx, old, target, value)
         elif family == "alt":
             if isinstance(value, bool) or isinstance(value, str):
                 _move(ctx, old, target, value)
@@ -245,6 +247,22 @@ def _plain_sizing(ctx: T.Ctx, old: str, target: str, value: Any) -> None:
         ctx.put(target, out)
     if target != old or not out:
         ctx.drop(old, "converted", target)
+
+
+def _plain_opacity(ctx: T.Ctx, old: str, target: str, value: Any) -> None:
+    """Photo opacity as a per-device 0 to 100 number (§8 Opacity); the block's old scale comes from `OPACITY_SCALE`."""
+    scale = M.OPACITY_SCALE.get(ctx.block, 100)
+    out = {}
+    for device, raw in V.device_values(value).items():
+        number = V.to_number(raw)
+        if number is not None:
+            out[device] = round(number * scale)
+    if not out and value not in (None, "", {}):
+        ctx.keep(old, "refused", "opacity is not a number or device object")
+        return
+    if out and any(v != 100 for v in out.values()):
+        ctx.put(target, out)
+    ctx.drop(old, "converted", target, "" if out and any(v != 100 for v in out.values()) else "100 is the default")
 
 
 def _plain_radius(ctx: T.Ctx, old: str, target: str, value: Any) -> None:
@@ -441,7 +459,17 @@ def migrate_unlisted(ctx: T.Ctx) -> None:
         for name in list(ctx.attrs):
             rest = name[len(prefix):]
             if name.startswith(prefix) and rest[:1].isupper() and name not in known and name not in ctx.written:
-                ctx.keep(name, "refused", "no mapping row for this attribute under the slot prefix")
+                ctx.keep(name, "refused", "unmapped legacy attribute: no mapping row for this attribute under the slot prefix")
+
+
+UNMAPPED_NOTE = "unmapped legacy attribute: no mapping row and not in STAYS"
+
+
+def migrate_unmapped(ctx: T.Ctx) -> None:
+    """A saved media-looking attribute with neither a row nor a STAYS entry is reported, never left silently."""
+    reported = {e[1] for e in ctx.events}
+    for name in M.unmapped_attributes(ctx.block, [n for n in ctx.attrs if n not in ctx.written and n not in reported]):
+        ctx.keep(name, "refused", UNMAPPED_NOTE)
 
 
 # ---------------------------------------------------------------- entry point
@@ -457,6 +485,7 @@ def migrate(name: str, attrs: dict):
     apply_pins(ctx)
     migrate_report_always(ctx)
     migrate_unlisted(ctx)
+    migrate_unmapped(ctx)
     return ctx.attrs, ctx.events
 
 

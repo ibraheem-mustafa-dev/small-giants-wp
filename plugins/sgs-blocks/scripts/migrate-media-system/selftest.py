@@ -3,9 +3,12 @@ controls (byte-identical afterwards, or refused with the old attribute kept), ne
 idempotence (fix twice equals fix once), and consistency of the mapping with the code and the framework database."""
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sys
+import tempfile
+from pathlib import Path
 
 import blocks as B
 import markup
@@ -96,8 +99,21 @@ case("decorative-image: legacy files, tiers and the old default decorative=true 
      {"imageId": 8, "imageUrl": U, "imageUrlTablet": "http://x/t.jpg", "hideOnTablet": True},
      {"layerSource": {"desktop": {"kind": "image", "id": 8, "url": U}, "tablet": {"kind": "image", "url": "http://x/t.jpg"}},
       "sgsHideOnTablet": True, "layerDecorative": True})
-case("decorative-image: its own width, height and border are not slot attributes", "sgs/decorative-image",
-     {"width": {"desktop": "200px"}, "height": {"desktop": "80px"}, "borderWidth": {"desktop": "2px"}, "opacity": 80}, None)
+case("decorative-image: width, height, border and a 0 to 100 opacity map to the layer's attributes", "sgs/decorative-image",
+     {"width": {"desktop": "200px"}, "height": {"desktop": "80px"}, "borderWidth": {"desktop": "2px"}, "opacity": 60},
+     {"layerWidth": {"desktop": "200px"}, "layerHeight": {"desktop": "80px"}, "layerBorderWidth": {"desktop": "2px"}, "layerOpacity": {"desktop": 60}})
+case("decorative-image: the default opacity 100 writes nothing", "sgs/decorative-image", {"opacity": 100}, {})
+case("decorative-image: position and rotation stay", "sgs/decorative-image",
+     {"positionX": {"desktop": 20}, "rotation": {"desktop": 5}, "zIndex": 3}, None)
+case("media: a tablet alt with no tablet file is reported as dropped", "sgs/media",
+     {"imageUrl": U, "imageAlt": "A", "imageAltTablet": "B"}, {"source": {"desktop": {"kind": "image", "url": U}}, "alt": "A"})
+case("media: a video alt on an image is reported as dropped", "sgs/media",
+     {"imageUrl": U, "imageAlt": "A", "videoAlt": "V"}, {"source": {"desktop": {"kind": "image", "url": U}}, "alt": "A"})
+case("media: a video alt on a video becomes the alt", "sgs/media",
+     {"mediaType": "video", "videoUrl": U, "videoAlt": "V", "videoAutoplay": True, "videoMuted": True, "videoLoop": False, "videoControls": True,
+      "videoPlaysInline": True, "videoLazyLoad": True},
+     {"source": {"desktop": {"kind": "video", "url": U}}, "alt": "V",
+      "playback": {"autoplay": True, "muted": True, "inline": True, "loop": False, "controls": True, "lazy": True}})
 case("team-member: photo object and the old default shape circle pinned", "sgs/team-member",
      {"photo": {"id": 2, "url": U}},
      {"photoSource": {"desktop": {"kind": "image", "id": 2, "url": U}}, "photoShape": {"desktop": {"shape": "circle"}}, "photoRatio": {"desktop": "1 / 1"}})
@@ -242,6 +258,70 @@ def run_consistency(failures: list[str]) -> int:
     return checks
 
 
+def run_frozen(failures: list[str]) -> int:
+    """The frozen facts stand alone, every legacy attribute is classified, and dropped or unmapped values are reported."""
+    checks = 0
+    gone = Path(tempfile.gettempdir()) / "migrate-media-system-absent"
+    saved = (M.GENERATED_PHP, M.BLOCKS_DIR)
+    before_rows, before_out = json.dumps(M.rows(), sort_keys=True), B.migrate("sgs/hero", {"splitMediaImageUrl": U, "splitMediaObjectFit": "contain"})
+    M.GENERATED_PHP, M.BLOCKS_DIR = gone / "generated.php", gone / "blocks"
+    M.live_generated_maps.cache_clear()
+    M.live_declared_slots.cache_clear()
+    try:
+        checks += 1
+        if json.dumps(M.rows(), sort_keys=True) != before_rows or B.migrate("sgs/hero", {"splitMediaImageUrl": U, "splitMediaObjectFit": "contain"}) != before_out:
+            _fail("frozen: independence", "rows or a migration changed with the PHP mirror and block.json files absent", failures)
+    finally:
+        M.GENERATED_PHP, M.BLOCKS_DIR = saved
+        M.live_generated_maps.cache_clear()
+        M.live_declared_slots.cache_clear()
+    live = M.live_declared_slots
+    M.live_declared_slots = lambda: {"sgs/media": [{"prefix": "", "atoms": None, "kinds": ["image"]}]}
+    digest = hashlib.sha256(M.FROZEN.read_bytes()).hexdigest()
+    try:
+        checks += 1
+        try:
+            M.regenerate()
+            _fail("frozen: regenerate", "regenerate ran although a block declares `kinds`", failures)
+        except SystemExit:
+            pass
+        checks += 1
+        if hashlib.sha256(M.FROZEN.read_bytes()).hexdigest() != digest:
+            _fail("frozen: regenerate", "the refused regenerate still changed the frozen file", failures)
+    finally:
+        M.live_declared_slots = live
+    for block in sorted(set(M.declared_slots()) | set(M.FULLY_CLASSIFIED)):
+        checks += 1
+        gaps = M.unmapped_attributes(block, M.block_attribute_names(block))
+        if gaps:
+            _fail("legacy coverage", f"{block}: {', '.join(gaps)} have neither a mapping row nor a STAYS entry", failures)
+    for key in M.STAYS_WHY:
+        checks += 1
+        if key[1] not in M.STAYS.get(key[0], ()) or not M.STAYS_WHY[key].strip():
+            _fail("legacy coverage", f"{key} STAYS entry has no reason", failures)
+    for block, names in M.STAYS.items():
+        for name in names:
+            checks += 1
+            if (block, name) not in M.STAYS_WHY:
+                _fail("legacy coverage", f"{block}.{name} is in STAYS without a reason", failures)
+    for label, block, attrs, status, text in (
+        ("unmapped event", "sgs/trust-bar", {"badgeImageZzz": "x"}, "refused", "unmapped legacy attribute"),
+        ("dropped tablet alt", "sgs/media", {"imageUrl": U, "imageAlt": "A", "imageAltTablet": "B"}, "deleted", "dropped value 'B'"),
+        ("dropped video alt", "sgs/media", {"imageUrl": U, "videoAlt": "V"}, "deleted", "dropped value 'V'"),
+        ("report: brand logo box", "sgs/product-card", {"brandLogoHeight": {"desktop": "20px"}}, "reported", "WP-9"),
+    ):
+        checks += 1
+        _, events = B.migrate(block, attrs)
+        if not any(e[0] == status and text in e[3] for e in events):
+            _fail(f"event: {label}", f"no {status} event containing {text!r}: {events}", failures)
+    checks += 1
+    new, _ = B.migrate("sgs/decorative-image", {"opacity": 60})
+    media, _ = B.migrate("sgs/media", {"imageUrl": U, "opacity": 0.6})
+    if new.get("layerOpacity") != {"desktop": 60} or media.get("opacity") != {"desktop": 60}:
+        _fail("opacity scale", f"decorative-image 60 and media 0.6 must both be 60: {new} {media}", failures)
+    return checks
+
+
 # Old attributes saved in content but declared nowhere (stale partners); mapped explicitly so they are deleted, not ignored.
 LEGACY_UNDECLARED = {
     ("sgs/hero", "splitMediaWidthUnit"), ("sgs/hero", "splitMediaHeightUnit"), ("sgs/hero", "splitMediaMaxWidthUnit"),
@@ -253,8 +333,11 @@ def run(break_mapping: bool = False) -> int:
     if break_mapping:
         M.NEW_PREFIX[("sgs/hero", "splitMedia")] = "splitMedium"
         M.BASE_FAMILY["ObjectFit"] = ("fit", "Fitt")
+        M.frozen()["rows"] = [r for r in M.rows() if not (r["block"] == "sgs/decorative-image" and r["old"] == "opacity")]
+        M.rows.cache_clear()
+        M.STAYS["sgs/post-grid"] = ()
     failures: list[str] = []
-    total = run_cases(failures) + run_carriers(failures) + run_consistency(failures)
+    total = run_cases(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures)
     for line in failures:
         print(line)
     print(f"migrate-media-system self-test: {total - len(failures)} of {total} checks passed"
