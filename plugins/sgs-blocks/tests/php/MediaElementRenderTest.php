@@ -250,6 +250,9 @@ class MediaElementRenderTest extends TestCase {
 	}
 
 	public function test_inline_svg_ids_are_prefixed_per_sibling(): void {
+		if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
+			$this->markTestSkipped( 'SVG slots need WP_HTML_Tag_Processor; run-media-sizes-filter-standalone.php covers them on a real WordPress.' );
+		}
 		$svg = '<svg viewBox="0 0 10 10"><defs><linearGradient id="g"/></defs><circle fill="url(#g)" r="5"/></svg>';
 		$out = SGS_Media_Element::render(
 			array(

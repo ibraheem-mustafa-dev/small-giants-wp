@@ -27,69 +27,109 @@ if ( ! function_exists( 'sgs_tier_media_svg_html' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_media_svg_prefix_ids' ) ) {
+if ( ! function_exists( 'sgs_media_svg_prefix_reference' ) ) {
 	/**
-	 * Prefix every element id in SVG markup, and every reference to it, so two inline SVG siblings never share an id.
+	 * One attribute value with every reference to a listed id re-pointed at its prefixed id.
 	 *
-	 * @param string $svg    Sanitised SVG markup.
-	 * @param string $prefix Prefix to put before each id.
-	 * @return string Markup with prefixed ids and references.
+	 * @param string   $value  Attribute value ( text, not markup ).
+	 * @param string[] $ids    Ids defined in the SVG.
+	 * @param string   $prefix Prefix.
+	 * @return string
 	 */
-	function sgs_media_svg_prefix_ids( string $svg, string $prefix ): string {
-		if ( '' === $prefix || ! preg_match_all( '/\sid=(["\'])([^"\']+)\1/', $svg, $found ) ) {
-			return $svg;
-		}
-		$ids = array_unique( $found[2] );
-		// Longest first, so one id that starts another is not clipped.
-		usort(
-			$ids,
-			static function ( string $a, string $b ): int {
-				return strlen( $b ) <=> strlen( $a );
-			}
+	function sgs_media_svg_prefix_reference( string $value, array $ids, string $prefix ): string {
+		return (string) preg_replace_callback(
+			'/url\(\s*(["\x27]?)#([^"\x27)\s]+)\1\s*\)/',
+			static function ( array $m ) use ( $ids, $prefix ): string {
+				return in_array( $m[2], $ids, true ) ? 'url(' . $m[1] . '#' . $prefix . $m[2] . $m[1] . ')' : $m[0];
+			},
+			$value
 		);
-		foreach ( $ids as $id ) {
-			$quoted = preg_quote( $id, '/' );
-			$svg    = preg_replace( '/(\sid=["\'])' . $quoted . '(["\'])/', '${1}' . $prefix . $id . '${2}', $svg );
-			$svg    = preg_replace( '/url\(\s*(["\']?)#' . $quoted . '\1\s*\)/', 'url(${1}#' . $prefix . $id . '${1})', $svg );
-			$svg    = preg_replace( '/((?:xlink:)?href=["\'])#' . $quoted . '(["\'])/', '${1}#' . $prefix . $id . '${2}', $svg );
-			$svg    = preg_replace( '/(aria-labelledby=["\'])' . $quoted . '(["\'])/', '${1}' . $prefix . $id . '${2}', $svg );
-		}
-		return $svg;
 	}
 }
 
 if ( ! function_exists( 'sgs_media_svg_element' ) ) {
 	/**
-	 * An inline SVG slot sibling: sanitised, ids prefixed, root given its classes and accessible name.
+	 * An inline SVG slot sibling: ids prefixed, root given its classes and accessible name, then sanitised.
+	 *
+	 * Every edit is made with `WP_HTML_Tag_Processor`, which escapes each value it sets, and `wp_kses` with the SVG
+	 * allow-list runs last on the final markup, so nothing edited here can reach the page unsanitised.
 	 *
 	 * @param string $markup     Raw SVG markup.
 	 * @param string $classes    Classes for the root element.
 	 * @param string $id_prefix  Prefix for element ids.
-	 * @param string $label      Accessible name; empty with `$decorative` false prints no name.
+	 * @param string $label      Accessible name; ignored when `$decorative`.
 	 * @param bool   $decorative True to hide the SVG from assistive technology.
 	 * @param string $fit        `cover`, `contain` or '' for the viewBox default.
 	 * @return string The `<svg>` markup, or '' when nothing survives sanitising.
 	 */
 	function sgs_media_svg_element( string $markup, string $classes, string $id_prefix, string $label, bool $decorative, string $fit ): string {
-		$svg = trim( wp_kses( $markup, sgs_svg_kses_allowed_tags() ) );
-		if ( '' === $svg || ! preg_match( '/^<svg\b[^>]*>/i', $svg, $root ) ) {
+		$markup = trim( $markup );
+		if ( '' === $markup || ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
 			return '';
 		}
-		$svg      = sgs_media_svg_prefix_ids( $svg, $id_prefix );
-		$tag      = $root[0];
-		$new      = preg_replace( '/\s(?:role|aria-label|aria-hidden)=(["\']).*?\1/i', '', $tag );
-		$existing = '';
-		if ( preg_match( '/\sclass=(["\'])(.*?)\1/i', $new, $c ) ) {
-			$existing = $c[2] . ' ';
-			$new      = preg_replace( '/\sclass=(["\']).*?\1/i', '', $new );
+		$ids  = array();
+		$scan = new WP_HTML_Tag_Processor( $markup );
+		while ( $scan->next_tag() ) {
+			$id = $scan->get_attribute( 'id' );
+			if ( is_string( $id ) && '' !== $id ) {
+				$ids[] = $id;
+			}
 		}
-		$par = '';
-		if ( 'cover' === $fit || 'contain' === $fit ) {
-			$new = preg_replace( '/\spreserveAspectRatio=(["\']).*?\1/i', '', $new );
-			$par = ' preserveAspectRatio="' . ( 'cover' === $fit ? 'xMidYMid slice' : 'xMidYMid meet' ) . '"';
+		$refs  = array( 'fill', 'stroke', 'clip-path', 'mask', 'filter', 'style', 'marker-start', 'marker-mid', 'marker-end' );
+		$tags  = new WP_HTML_Tag_Processor( $markup );
+		$first = true;
+		while ( $tags->next_tag() ) {
+			if ( '' !== $id_prefix && $ids ) {
+				$id = $tags->get_attribute( 'id' );
+				if ( is_string( $id ) && in_array( $id, $ids, true ) ) {
+					$tags->set_attribute( 'id', $id_prefix . $id );
+				}
+				foreach ( array( 'href', 'xlink:href' ) as $name ) {
+					$href = $tags->get_attribute( $name );
+					if ( is_string( $href ) && 0 === strpos( $href, '#' ) && in_array( substr( $href, 1 ), $ids, true ) ) {
+						$tags->set_attribute( $name, '#' . $id_prefix . substr( $href, 1 ) );
+					}
+				}
+				$labelled = $tags->get_attribute( 'aria-labelledby' );
+				if ( is_string( $labelled ) && '' !== $labelled ) {
+					$parts = array_map(
+						static fn( string $p ): string => in_array( $p, $ids, true ) ? $id_prefix . $p : $p,
+						preg_split( '/\s+/', trim( $labelled ) )
+					);
+					$tags->set_attribute( 'aria-labelledby', implode( ' ', $parts ) );
+				}
+				foreach ( $refs as $name ) {
+					$value = $tags->get_attribute( $name );
+					if ( is_string( $value ) && false !== strpos( $value, 'url(' ) ) {
+						$tags->set_attribute( $name, sgs_media_svg_prefix_reference( $value, $ids, $id_prefix ) );
+					}
+				}
+			}
+			if ( $first ) {
+				$first = false;
+				if ( 'SVG' !== $tags->get_tag() ) {
+					return '';
+				}
+				foreach ( array( 'role', 'aria-label', 'aria-hidden' ) as $name ) {
+					$tags->remove_attribute( $name );
+				}
+				foreach ( preg_split( '/\s+/', trim( $classes ) ) as $class ) {
+					if ( '' !== $class ) {
+						$tags->add_class( $class );
+					}
+				}
+				if ( 'cover' === $fit || 'contain' === $fit ) {
+					$tags->set_attribute( 'preserveAspectRatio', 'cover' === $fit ? 'xMidYMid slice' : 'xMidYMid meet' );
+				}
+				if ( $decorative || '' === $label ) {
+					$tags->set_attribute( 'aria-hidden', 'true' );
+				} else {
+					$tags->set_attribute( 'role', 'img' );
+					$tags->set_attribute( 'aria-label', $label );
+				}
+			}
 		}
-		$name = $decorative || '' === $label ? ' aria-hidden="true"' : ' role="img" aria-label="' . esc_attr( $label ) . '"';
-		$new  = preg_replace( '/^<svg\b/i', '<svg class="' . esc_attr( $existing . $classes ) . '"' . $name . $par, $new, 1 );
-		return $new . substr( $svg, strlen( $tag ) );
+		$svg = trim( wp_kses( $tags->get_updated_html(), sgs_svg_kses_allowed_tags() ) );
+		return 1 === preg_match( '/^<svg[\s>\/]/i', $svg ) ? $svg : '';
 	}
 }

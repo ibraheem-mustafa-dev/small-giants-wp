@@ -79,6 +79,33 @@ foreach ( array( 'px' => '320px', 'vw' => '50vw', 'none' => '' ) as $sgs_label =
 	$sgs_check( false !== strpos( $sgs_after, 'loading="lazy"' ), "[$sgs_label] loading kept" );
 }
 
+
+// Inline SVG: ids are prefixed per sibling and hostile values never become attributes.
+$sgs_svg_slot = array(
+	'prefix' => '',
+	'kinds'  => array( 'svg' ),
+);
+$sgs_hostile  = '<svg viewBox="0 0 10 10" aria-label=\'x" onload="alert(1)\' onclick="bad()"><defs><linearGradient id=\'g" onload="alert(2)\'/><linearGradient id="g2"/></defs><circle fill="url(#g2)" r="5" onmouseover="alert(3)"/><script>alert(4)</script></svg>';
+$sgs_svg_out  = SGS_Media_Element::render(
+	$sgs_svg_slot,
+	array(
+		'source' => array( 'desktop' => array( 'kind' => 'svg', 'markup' => $sgs_hostile ) ),
+		'alt'    => 'x" onload="alert(5)',
+	),
+	array( 'uid' => 'svg-check' )
+);
+$sgs_h = $sgs_svg_out['html'];
+$sgs_check( '' !== $sgs_h, 'hostile svg still prints' );
+$sgs_events = 0;
+$sgs_walk   = new WP_HTML_Tag_Processor( $sgs_h );
+while ( $sgs_walk->next_tag() ) {
+	$sgs_events += count( (array) $sgs_walk->get_attribute_names_with_prefix( 'on' ) );
+}
+$sgs_check( 0 === $sgs_events, 'no event attribute survives (hostile text stays inert inside escaped values): ' . $sgs_h );
+$sgs_check( false === stripos( $sgs_h, '<script' ), 'no script element survives' );
+$sgs_check( false !== strpos( $sgs_h, 'id="svg-check-s1-g2"' ) && false !== strpos( $sgs_h, 'url(#svg-check-s1-g2)' ), 'ids and url() references are prefixed together' );
+$sgs_check( false !== strpos( $sgs_h, 'role="img"' ) && 1 === substr_count( $sgs_h, 'aria-label=' ), 'one accessible name, from Alt' );
+
 if ( $sgs_fail > 0 ) {
 	WP_CLI::error( $sgs_fail . ' check(s) failed.' );
 }
