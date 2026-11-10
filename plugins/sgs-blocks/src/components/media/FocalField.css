@@ -1,0 +1,100 @@
+/* FocalField: the resolved picture with a draggable point (Spec 49 §9.2). */
+.sgs-focal-field__help,
+.sgs-focal-field__state,
+.sgs-focal-field__note {
+	margin: 4px 0;
+	font-size: 12px;
+	color: #50575e;
+}
+
+.sgs-focal-field__area {
+	position: relative;
+	min-height: 120px;
+	overflow: hidden;
+	border: 1px solid #949494;
+	border-radius: 4px;
+	background: #f0f0f0;
+	cursor: crosshair;
+	touch-action: none;
+}
+
+.sgs-focal-field__area:focus-visible {
+	outline: 2px solid #3858e9;
+	outline-offset: 2px;
+}
+
+.sgs-focal-field__picture {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-height: 240px;
+	object-fit: contain;
+	pointer-events: none;
+}
+
+.sgs-focal-field__empty {
+	display: block;
+	padding: 24px 8px;
+	text-align: center;
+	font-size: 12px;
+}
+
+.sgs-focal-field__point {
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	margin: -10px 0 0 -10px;
+	border: 2px solid #fff;
+	border-radius: 50%;
+	background: rgba(56, 88, 233, 0.6);
+	box-shadow: 0 0 0 1px #1e1e1e;
+	pointer-events: none;
+}
+
+.sgs-focal-field__inputs {
+	display: flex;
+	gap: 12px;
+	margin-top: 8px;
+}
+
+.sgs-focal-field__inputs input {
+	width: 64px;
+	min-height: 44px;
+}
+
+.sgs-focal-field__picks {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 8px;
+}
+
+.sgs-focal-field__pick {
+	min-width: 44px;
+	min-height: 44px;
+	padding: 4px 10px;
+	border: 1px solid #949494;
+	border-radius: 4px;
+	background: #f0f0f0;
+	cursor: pointer;
+}
+
+.sgs-focal-field__pick:hover {
+	background: #fff;
+	border-color: #3858e9;
+}
+
+.sgs-focal-field__pick:focus-visible {
+	outline: 2px solid #3858e9;
+	outline-offset: 2px;
+}
+
+.sgs-focal-field__live {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+}

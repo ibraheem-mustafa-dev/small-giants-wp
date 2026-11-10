@@ -3,7 +3,7 @@
  * switcher) and adapts `ResponsiveOverride`'s `{ desktop, tablet, mobile }` model to the motion storage: the Desktop
  * value lives in the layer's `values`, the Tablet and Mobile overrides in `devices.tablet` and `devices.mobile`.
  * Setting Mobile writes only `devices.mobile`; Reset clears that one override (and an emptied `tablet` or `mobile`
- * object is removed). A blank tier shows "Inherited from Tablet" (or Desktop). The wrapped atom is a render prop and
+ * object is removed). A blank tier shows "Mobile: using Tablet" (or Desktop, or default). The wrapped atom is a render prop and
  * every value is checked against the field type before it is written.
  *
  * Writes always spread the existing objects, so the other tiers and the other fields are never lost.

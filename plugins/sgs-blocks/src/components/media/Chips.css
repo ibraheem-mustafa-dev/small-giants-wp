@@ -1,0 +1,67 @@
+/* Chips: the shared radiogroup grid for ratio, fit and mask choices (Spec 49 §9.2). */
+.sgs-chips {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+	gap: 8px;
+}
+
+.sgs-chips[data-columns="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.sgs-chips[data-columns="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.sgs-chips[data-columns="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.sgs-chips__chip {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 6px 4px;
+	border: 1px solid #949494;
+	border-radius: 4px;
+	background: #f0f0f0;
+	color: #1e1e1e;
+	font-size: 12px;
+	line-height: 1.2;
+	text-align: center;
+	cursor: pointer;
+}
+
+.sgs-chips__chip:hover:not(:disabled) {
+	background: #fff;
+	border-color: #3858e9;
+}
+
+.sgs-chips__chip:focus-visible {
+	outline: 2px solid #3858e9;
+	outline-offset: 2px;
+}
+
+.sgs-chips__chip.is-selected {
+	border: 2px solid #1e1e1e;
+	background: #fff;
+	font-weight: 600;
+}
+
+.sgs-chips__chip:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.sgs-chips__icon {
+	display: inline-flex;
+}
+
+.sgs-chips__caption {
+	font-size: 11px;
+	color: #50575e;
+}
+
+.sgs-chips__tick {
+	position: absolute;
+	top: 2px;
+	right: 4px;
+	font-size: 11px;
+}

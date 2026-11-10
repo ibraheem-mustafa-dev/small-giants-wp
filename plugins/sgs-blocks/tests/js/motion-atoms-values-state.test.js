@@ -103,7 +103,7 @@ describe( 'the per-device atom', () => {
 		const values = { opacity: 1, duration: 300 };
 		const devices = { tablet: { opacity: 0.8, translateX: 4 } };
 		act( () => root.render( h( PerDeviceAtom, props( values, devices, ( w ) => writes.push( w ) ) ) ) );
-		expect( container.textContent ).toContain( 'Inherited from Tablet' );
+		expect( container.textContent ).toContain( 'Mobile: using Tablet' );
 		setText( field( 'input', 'Opacity value' ), '0.4' );
 		expect( writes ).toEqual( [
 			{ values: { opacity: 1, duration: 300 }, devices: { tablet: { opacity: 0.8, translateX: 4 }, mobile: { opacity: 0.4 } } },
@@ -116,8 +116,8 @@ describe( 'the per-device atom', () => {
 		global.__motionDevice = 'Mobile';
 		const writes = [];
 		act( () => root.render( h( PerDeviceAtom, props( { opacity: 1 }, { mobile: { opacity: 0.4 } }, ( w ) => writes.push( w ) ) ) ) );
-		expect( container.textContent ).not.toContain( 'Inherited from' );
-		click( [ ...container.querySelectorAll( 'button' ) ].find( ( b ) => b.textContent === 'Reset to inherited' ) );
+		expect( container.textContent ).not.toContain( 'Mobile: using' );
+		click( [ ...container.querySelectorAll( 'button' ) ].find( ( b ) => b.textContent === 'Reset to Desktop' ) );
 		expect( writes ).toEqual( [ { values: { opacity: 1 }, devices: {} } ] );
 	} );
 

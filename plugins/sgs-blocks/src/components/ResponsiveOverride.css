@@ -1,0 +1,58 @@
+/* ResponsiveOverride display (Spec 49 §9.2). */
+.sgs-responsive-override__header {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.sgs-responsive-override__dots {
+	display: inline-flex;
+	gap: 6px;
+}
+
+/* A dot is a shape as well as a colour: tablet a rotated square, mobile a circle. */
+.sgs-responsive-override__dot {
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	background: #3858e9;
+	box-shadow: 0 0 0 1px #fff, 0 0 0 2px #3858e9;
+}
+
+.sgs-responsive-override__dot--tablet {
+	transform: rotate(45deg);
+}
+
+.sgs-responsive-override__dot--mobile {
+	border-radius: 50%;
+}
+
+.sgs-responsive-override__field.is-inherited {
+	opacity: 0.6;
+}
+
+.sgs-responsive-override__inherited {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin-top: 4px;
+}
+
+.sgs-responsive-override__inherited-icon {
+	display: inline-flex;
+}
+
+.sgs-responsive-override__inherited-text,
+.sgs-responsive-override__global-note {
+	margin: 0;
+	font-size: 11px;
+}
+
+.sgs-responsive-override__global-note {
+	margin-top: 4px;
+}
+
+.sgs-responsive-override__reset.components-button {
+	min-height: 44px;
+	margin-top: 2px;
+}

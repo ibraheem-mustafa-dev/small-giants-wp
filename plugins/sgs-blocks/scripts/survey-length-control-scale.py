@@ -106,6 +106,7 @@ GENERIC_FILES = {
     'blocks/icon/icon-size-control.js': ('font-size', 'the glyph-size wrapper for sgs/icon and sgs/social-icons'),
     'components/SgsGapControl.js': ('spacing', 'the row and column gap pair: its parts are gaps, always the spacing scale'),
     'components/MediaSizingPanel.js': ('spacing', 'media height and inset boxes'),
+    'components/media/SizingFields.js': ('spacing', "the Spec 49 media sizing fields: width, height and the four limits are box lengths for any slot"),
     'components/media/controls/MediaBoxShapeControls.js': ('spacing', "the box-shape atom's width, height, max width and max height: box lengths for its callers (sgs/hero, sgs/media)"),
     'components/motion/DistanceAtom.js': ('spacing', 'motion distance length'),
     'components/media/panels/component-map.js': ('spacing', 'media panel length fields (Width, Height, limits): box lengths, presets off'),

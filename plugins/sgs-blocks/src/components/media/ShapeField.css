@@ -1,0 +1,36 @@
+/* ShapeField: each chip draws the client's own photo in its shape (Spec 49 §9.2). */
+.sgs-shape-tile {
+	display: block;
+	width: 40px;
+	height: 40px;
+	background-color: #c3c4c7;
+	background-image: var(--sgs-shape-photo, none);
+	background-position: center;
+	background-size: cover;
+	border-radius: var(--sgs-shape-radius, 0);
+}
+
+.sgs-shape-tile.is-mask {
+	-webkit-mask-image: var(--sgs-shape-mask);
+	mask-image: var(--sgs-shape-mask);
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+	border-radius: 0;
+}
+
+.sgs-shape-keep {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 44px;
+	margin-top: 8px;
+}
+
+.sgs-shape-note {
+	margin-top: 8px;
+	font-size: 12px;
+}
