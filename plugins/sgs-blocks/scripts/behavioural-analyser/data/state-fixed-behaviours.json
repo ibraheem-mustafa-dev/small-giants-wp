@@ -884,7 +884,7 @@
   {
    "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
    "selector": ".sgs-choice-flow--layout-showcase .is-updated:is(.sgs-choice-flow__summary-total-value, .sgs-choice-flow__summary-summary-total-value)",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+   "reason": "the pop of the summary total when its value changes (summary.js adds is-updated): a fixed scale-and-fade keyframe whose only variable is its duration, which the summary-total and summary-pane-total motion parts set through the motion panel (--sgs-me-dur), falling back to the site medium duration"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
@@ -1173,7 +1173,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ":where(.sgs-form-field__file-label:hover)",
+   "selector": ":where(.sgs-form-field__file-zone:not(.sgs-form-field__file-zone--native):hover .sgs-form-field__file-label)",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
