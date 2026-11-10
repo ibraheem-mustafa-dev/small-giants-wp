@@ -21,7 +21,7 @@
 import {
 	MEDIA_ATTR_TYPES,
 	MEDIA_TIERED_BASES,
-} from '../../MediaElementControls.js';
+} from '../MediaElementControls.js';
 
 /**
  * Per-base facts, as `[ cssProperty, paintNode, emitter, role, component, label, panel, cssState ]`.
