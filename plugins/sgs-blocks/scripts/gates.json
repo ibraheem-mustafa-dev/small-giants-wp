@@ -2240,5 +2240,14 @@
     "added_commit": null,
     "budget_ms": 2600,
     "order": 254
+  },
+  {
+    "id": "migrate-media-system",
+    "cmd": "python scripts/migrate-media-system/cli.py check --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 6000,
+    "order": 255
   }
 ]

@@ -182,6 +182,7 @@
     "selftest:colour-attr-css-property": "python scripts/check-colour-attr-css-property.py --self-test",
     "check:render-tier-object-spacing": "python scripts/check-render-tier-object-spacing.py --check",
     "check:box-alignment": "python scripts/migrate-box-alignment.py --check",
+    "check:media-system-migration": "python scripts/migrate-media-system/cli.py check --self-test",
     "selftest:render-tier-object-spacing": "python scripts/check-render-tier-object-spacing.py --self-test"
   },
   "devDependencies": {
