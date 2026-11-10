@@ -239,6 +239,48 @@ final class MotionStartFloorTest extends TestCase {
 		$this->assertSame( array( '0.01', '0.01', '0' ), $this->render_template_children(), 'a second call does not re-arm' );
 	}
 
+	/**
+	 * The real shop shape: header part, then a lone `main` whose second child holds a product collection > product
+	 * template > product cards. WooCommerce's product template fires `render_block` for a synthetic `core/null` block
+	 * once per product, with no `render_block_data` before it, so each product pops a frame that was never its own.
+	 */
+	public function test_happy_the_cards_of_a_product_collection_in_section_two_start_at_one_percent_whatever_the_template_pops(): void {
+		$section = array( 'blockName' => 'sgs/container', 'attrs' => array(), 'innerBlocks' => array() );
+		$main    = array( 'blockName' => 'sgs/container', 'attrs' => array( 'tagName' => 'main' ), 'innerBlocks' => array( $section, $section ) );
+		$part    = array( 'blockName' => 'core/template-part', 'attrs' => array(), 'innerBlocks' => array() );
+		$GLOBALS['sgs_test_top_blocks']          = array( $part, $main, $part );
+		$GLOBALS['_wp_current_template_content'] = '<!-- wp:sgs/container {"tagName":"main"} -->';
+		$GLOBALS['sgs_test_in_loop']             = false;
+		Sgs_Motion_Renderer::arm_from_template( '/theme/index.php' );
+
+		$open = static function ( string $name, ?object $parent, array $attrs = array() ): array {
+			$block = array( 'blockName' => $name, 'attrs' => $attrs );
+			Sgs_Motion_Renderer::open_frame( $block, $block, $parent );
+			return $block;
+		};
+		$obj  = static fn ( string $name ): object => (object) array( 'name' => $name );
+		$wrap = $open( 'sgs/container', null, array( 'tagName' => 'main' ) );
+		$one  = $open( 'sgs/container', $obj( 'sgs/container' ) );
+		Sgs_Motion_Renderer::close_frame( '', $one );
+		$two        = $open( 'sgs/container', $obj( 'sgs/container' ) );
+		$collection = $open( 'woocommerce/product-collection', $obj( 'sgs/container' ) );
+		$template   = $open( 'woocommerce/product-template', $obj( 'woocommerce/product-collection' ) );
+		$starts     = array();
+		for ( $i = 0; $i < 6; $i++ ) {
+			$GLOBALS['sgs_collected_css'] = array();
+			$card = array( 'blockName' => 'sgs/hero', 'attrs' => array( 'sgsMotion' => self::entrance( array( 'opacity' => 0 ) ) ) );
+			$out  = sgs_test_render_motion_block( $card, '<div class="wp-block-sgs-hero"><p>Card</p></div>', $obj( 'woocommerce/product-template' ) );
+			$starts[] = preg_match( '/--sgs-me-from-op:([0-9.]+);/', $this->css(), $m ) ? $m[1] : null;
+			// WooCommerce's stray close for the product it just rendered.
+			Sgs_Motion_Renderer::close_frame( '', array( 'blockName' => 'core/null', 'attrs' => array() ) );
+		}
+		Sgs_Motion_Renderer::close_frame( '', $template );
+		Sgs_Motion_Renderer::close_frame( '', $collection );
+		Sgs_Motion_Renderer::close_frame( '', $two );
+		Sgs_Motion_Renderer::close_frame( '', $wrap );
+		$this->assertSame( array_fill( 0, 6, '0.01' ), $starts, 'every card of the section-two grid is above the fold' );
+	}
+
 	public function test_fail_a_post_with_no_parseable_blocks_marks_nothing_above_the_fold(): void {
 		$GLOBALS['sgs_test_top_blocks'] = array();
 		$GLOBALS['sgs_test_in_loop']    = true;

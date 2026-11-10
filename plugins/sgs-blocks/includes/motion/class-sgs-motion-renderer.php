@@ -550,15 +550,22 @@ final class Sgs_Motion_Renderer {
 	}
 
 	/**
-	 * Close the frame after the block rendered (render_block, last).
+	 * Close the frame after the block rendered (render_block, last). `render_block` also fires for blocks that never
+	 * went through `render_block_data` (a pre-rendered template part, WooCommerce's product template announcing a
+	 * synthetic `core/null` block once per product), so only a block that matches the top frame's own block closes it;
+	 * any other would pop a frame that is not its own and strip the enclosing blocks of their fold mark.
 	 *
 	 * @param mixed $block_content Rendered HTML.
 	 * @param mixed $block         Parsed block.
 	 * @return mixed
 	 */
 	public static function close_frame( $block_content, $block ) {
-		unset( $block );
-		$closed = array_pop( self::$stack );
+		$name = is_array( $block ) ? (string) ( $block['blockName'] ?? '' ) : '';
+		$last = array() === self::$stack ? null : self::$stack[ count( self::$stack ) - 1 ];
+		if ( null === $last || $last['name'] !== $name ) {
+			return $block_content;
+		}
+		array_pop( self::$stack );
 		$top                               = array() === self::$stack ? null : self::$stack[ count( self::$stack ) - 1 ];
 		$GLOBALS['sgs_hover_group_active'] = null !== $top && ! empty( $top['group'] );
 		return $block_content;
