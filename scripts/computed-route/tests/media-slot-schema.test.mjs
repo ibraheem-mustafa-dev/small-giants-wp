@@ -21,7 +21,7 @@ const attr = ( base ) => schema.$defs[ base ];
 
 const GOOD = {
 	source: { desktop: { kind: 'image', id: 12, url: 'https://x.test/a.jpg', width: 800, height: 600, mime: 'image/jpeg' }, mobile: { kind: 'video', url: 'https://x.test/a.mp4', poster: { url: 'https://x.test/p.jpg', width: 400, height: 300 } } },
-	alt: 'A cake', decorative: false, fit: { desktop: 'cover', mobile: 'contain' }, focal: { desktop: { x: 20, y: 80 } },
+	alt: 'A cake', decorative: false, fit: { desktop: 'cover', mobile: 'contain' }, focal: { desktop: { x: 0.2, y: 0.8 } },
 	height: { desktop: 'fill' }, ratio: { tablet: '16 / 9' }, shape: { desktop: { shape: 'circle', proportions: 'keep' } },
 	radius: { desktop: { topLeft: '12px' } }, borderWidth: { top: 1, right: 1, bottom: 1, left: 1 }, playback: { autoplay: true, muted: true, start: 3 },
 };
@@ -43,7 +43,7 @@ test( 'MUST FAIL: the schema refuses unknown keys, wrong types, off-enum and out
 	assert.equal( bad( { source: { mobile: { kind: 'image', wide: 1 } } } ), false, 'unknown key inside a tier' );
 	assert.equal( bad( { source: { phone: { kind: 'image' } } } ), false, 'unknown tier' );
 	assert.equal( bad( { source: { desktop: { width: '800' } } } ), false, 'wrong type' );
-	assert.equal( bad( { focal: { desktop: { x: 120, y: 0 } } } ), false, 'out of range' );
+	assert.equal( bad( { focal: { desktop: { x: 1.2, y: 0 } } } ), false, 'out of range' );
 	assert.equal( bad( { fit: 'cover' } ), false, 'a responsive setting must be a tier object' );
 	assert.equal( bad( { borderWidth: { top: 99 } } ), false, 'border width above 40' );
 } );
@@ -61,7 +61,7 @@ test( 'MUST FAIL: objectProblems names unknown, wrong-typed, off-enum and wrongl
 	assert.match( p( { tv: {} }, 'Source' ), /unknown key "mediaX\.tv"/ );
 	assert.match( p( { desktop: { width: '800' } }, 'Source' ), /"mediaX\.desktop\.width" must be integer/ );
 	assert.match( p( { desktop: { poster: 'p.jpg' } }, 'Source' ), /"mediaX\.desktop\.poster" must be object/ );
-	assert.match( p( { desktop: { x: 101, y: 0 } }, 'Focal' ), /at most 100/ );
+	assert.match( p( { desktop: { x: 1.01, y: 0 } }, 'Focal' ), /at most 1/ );
 	assert.match( p( { desktop: { shape: 'circle', proportions: 'wide' } }, 'Shape' ), /must be one of \["stretch","keep"\]/ );
 	assert.match( p( { desktop: 5 }, 'Height' ), /must be string/ );
 	assert.match( p( { autoplay: 'yes' }, 'Playback' ), /must be boolean/ );
