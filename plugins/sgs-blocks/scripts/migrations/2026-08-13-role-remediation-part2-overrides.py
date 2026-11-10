@@ -23,7 +23,7 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-DB = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 OVERRIDES_PATH = Path(__file__).resolve().parents[1] / "attr-classification-overrides.json"
 
 # (block_slug, attr_name, role, css_property_or_None)

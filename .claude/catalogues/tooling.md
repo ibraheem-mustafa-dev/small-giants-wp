@@ -1747,7 +1747,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `lib/e14-markup-splice.js` | script-call | E14 markup splice (triage section 7, gap 13). |
 | `lib/e14-unknown-tag.js` | script-call | E14: a bare tag in a declaring selector (`.x figcaption`) against an element whose tag name the markup builds at run time (`<%1$s class="x__cap">`). |
 | `lib/emit_shape.py` | manifest+script-call | emit_shape -- how does a block carry one content attribute? ⚠ **header disputes this — it IS wired** |
-| `lib/framework-db.js` | script-call | $SGS_FRAMEWORK_DB names a database copy; without it the first non-empty shared database under ~/.claude/skills/sgs-wp-engine/ (then ~/.agents/...) is… |
+| `lib/framework-db.js` | script-call | $SGS_FRAMEWORK_DB names a database copy; without it the first non-empty shared database under ~/.claude/skills/sgs-wp-engine/ is used. A script a… |
 | `lib/framework_db.py` | script-call+test-import | the one answer to "which framework database does this process use?". |
 | `lib/identity_editor.py` | script-call | identity_editor -- the editor-side and stylesheet reads behind two `block_identity_facts` facts. |
 | `lib/identity_facts_selftest.py` | script-call | identity_facts_selftest -- planted fixtures for `block_identity_facts.py --self-test`. |

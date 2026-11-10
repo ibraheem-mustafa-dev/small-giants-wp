@@ -40,7 +40,7 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-DB = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 
 def main() -> int:

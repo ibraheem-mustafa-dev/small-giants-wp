@@ -24,7 +24,7 @@ Land sgs-blocks plugin and / or sgs-theme code on the target site with zero depl
 ## Mandatory References
 
 Before invoking this skill, load:
-1. `~/.agents/skills/shared-references/communication-standards.md` — plain English rules
+1. `~/.claude/skills/shared-references/communication-standards.md` — plain English rules
 2. `references/` (this skill) — per-target deploy variants
 
 ## Arguments

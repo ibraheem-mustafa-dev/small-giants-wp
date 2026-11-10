@@ -36,7 +36,7 @@ from pathlib import Path
 SRC_DIR = os.path.join(os.path.dirname(__file__), '..', 'src', 'blocks')
 
 # 2026-08-02: this was a hardcoded absolute literal —
-#   DB_PATH = r'C:\Users\Bean\.agents\skills\sgs-wp-engine\sgs-framework.db'
+#   DB_PATH = r'C:\Users\Bean\.claude\skills\sgs-wp-engine\sgs-framework.db'
 # Two defects in one line. It breaks on any other machine (CLAUDE.md: "No
 # hard-coded environment paths"), and — the reason it was caught — a literal
 # drive path is IMMUNE to HOME redirection, so running this script inside the

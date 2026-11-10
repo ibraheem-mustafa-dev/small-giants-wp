@@ -2,7 +2,7 @@
 
 Stage 3: Sync sgs-framework.db `blocks` into the uimax DB
 `component_libraries` table at
-`~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db`. The DB is the
+`~/.claude/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db`. The DB is the
 canonical source of truth (richer schema, Rosetta Stone `equivalent_implementations`
 payload). After the DB write, this script triggers
 `update-db.py regenerate-csvs` which writes EVERY DB table back to its CSV
@@ -28,7 +28,7 @@ if they are missing (schema migration -- safe to run multiple times).
 Note (Step 6b 2026-05-14): the sgs-framework.db `animations` table was
 retired (0 rows; dropped). When the table is absent, Stage 4 short-circuits
 and returns `{"status": "retired"}`. The richer `uimax.animations` table
-(63 rows in `~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db`) is
+(63 rows in `~/.claude/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db`) is
 the live store for scraped animations and is unaffected.
 
 Called by `/sgs-update` after Stages 1 and 2.
@@ -60,10 +60,10 @@ sys.stdout.reconfigure(encoding="utf-8")
 # Resolve fixed paths.
 SGS_DB = framework_db_path()
 UIMAX_DB = Path(
-    os.path.expanduser("~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db")
+    os.path.expanduser("~/.claude/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db")
 )
 UPDATE_DB_SCRIPT = Path(
-    os.path.expanduser("~/.agents/skills/ui-ux-pro-max/scripts/update-db.py")
+    os.path.expanduser("~/.claude/skills/ui-ux-pro-max/scripts/update-db.py")
 )
 
 # Make uimax_write.py importable.

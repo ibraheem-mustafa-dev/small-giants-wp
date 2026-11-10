@@ -61,14 +61,14 @@ const path = require("node:path");
 const SCRIPTS_DIR = __dirname;
 const PLUGIN_ROOT = path.resolve(SCRIPTS_DIR, "..");
 
-// Same path the python generators use (Path.home() / ".agents" / "skills"
+// Same path the python generators use (Path.home() / ".claude" / "skills"
 // / "sgs-wp-engine" / "sgs-framework.db") — kept in sync manually since this is
 // a Node wrapper around Python scripts with no shared config file. If a
 // generator's DB_PATH ever changes, update this constant too. $SGS_FRAMEWORK_DB
 // points the whole chain (the child processes inherit it) at a copy.
 const DB_PATH =
 	process.env.SGS_FRAMEWORK_DB ||
-	path.join(os.homedir(), ".agents", "skills", "sgs-wp-engine", "sgs-framework.db");
+	path.join(os.homedir(), ".claude", "skills", "sgs-wp-engine", "sgs-framework.db");
 
 function log(msg) {
 	process.stdout.write(`[run-motion-fx-generators] ${msg}\n`);

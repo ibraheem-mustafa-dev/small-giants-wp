@@ -31,11 +31,11 @@ JS_STRIP = re.compile(r"""("(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'|`(?:\\.|[^`\\
 
 
 def framework_db_path() -> Path:
-    """$SGS_FRAMEWORK_DB when set, else the first non-empty shared database (~/.claude, then ~/.agents)."""
+    """$SGS_FRAMEWORK_DB when set, else the shared database under ~/.claude when it is non-empty."""
     override = os.environ.get(ENV)
     if override:
         return Path(override)
-    for root in (".claude", ".agents"):
+    for root in (".claude",):
         candidate = Path.home() / root / _SKILL_DB
         if candidate.is_file() and candidate.stat().st_size > 0:
             return candidate

@@ -32,7 +32,7 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
                               (c) ATTR-LEVEL: block exists but attr_name removed from block.json
                                   (ghost rows Stage 1 never removes — always deleted regardless
                                   of prune_mode; block_attributes has no is_stale column)
-                              Operates on both .agents + .claude DBs.
+                              Operates on the one shared DB.
  10. container_roster_report — run sync-container-wrapping-blocks.py (report-only;
                                NO --apply). Prints the container-bearing roster, KINDs and
                                the roster validation result.
@@ -56,7 +56,7 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
                               Stage 11 (it reads generated-fx-qualifying-blocks.json) and
                               before Stage 13, so a full run exports it.
  13. export_db_to_csv       — export every live table to CSV in
-                              ~/.agents/skills/sgs-wp-engine/db\\ data/ (the space is
+                              ~/.claude/skills/sgs-wp-engine/db\\ data/ (the space is
                               literal). Idempotent + deterministic. Removes CSVs for
                               retired tables. Reports tables exported, row counts, added/removed.
 
@@ -119,7 +119,7 @@ from object_attr_shape import (  # noqa: E402
 # Constants
 # ---------------------------------------------------------------------------
 
-SGS_DB = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 # REPO_ROOT — resolve relative to this script: plugins/sgs-blocks/scripts/sgs-update-v2.py
 # Walk up: scripts/ → sgs-blocks/ → plugins/ → repo root
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -1019,7 +1019,7 @@ def _self_test_is_responsive() -> int:
 
 # ---------------------------------------------------------------------------
 # Stage 1 — SGS codebase scan
-# PORTED FROM: ~/.agents/skills/sgs-wp-engine/scripts/update-db.py
+# PORTED FROM: ~/.claude/skills/sgs-wp-engine/scripts/update-db.py
 #              (check_blocks + full-population logic via the former populate-db.py)
 # Key difference: uses INSERT OR IGNORE for new rows + UPDATE for drifted rows.
 # Second run produces zero new rows AND updates any row whose block.json changed.
@@ -3629,7 +3629,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
 
     (There is no has_inner_blocks column; it is derived on demand.)
 
-    PORTED FROM: ~/.agents/skills/sgs-wp-engine/scripts/update-db.py + the former populate-db.py
+    PORTED FROM: ~/.claude/skills/sgs-wp-engine/scripts/update-db.py + the former populate-db.py
     """
     blocks_dir = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
     if not blocks_dir.exists():
@@ -5802,7 +5802,7 @@ def stage_6_spec_doc_regen(dry_run: bool = False) -> dict:
 # ---------------------------------------------------------------------------
 
 def stage_7_uimax_mirror(dry_run: bool = False) -> dict:
-    """Mirror sgs-blocks → ~/.agents/skills/ui-ux-pro-max/data/component-libraries.csv.
+    """Mirror sgs-blocks → ~/.claude/skills/ui-ux-pro-max/data/component-libraries.csv.
 
     PORTED FROM: plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py
     Delegates to existing script via subprocess — avoids reimporting uimax_write.py
@@ -6014,15 +6014,15 @@ def stage_8_drift_gate(
 # default behaviour is to mark them `is_stale = 1` rather than delete.  The
 # operator can pass `--prune-mode aggressive` to DELETE those rows instead.
 #
-# Operates on BOTH DBs (.agents + .claude) to keep them in sync.
+# Operates on the shared DB; a second, distinct file under ~/.claude is pruned too if one ever exists.
 # ---------------------------------------------------------------------------
 
-# Second DB path (.claude) — the .agents DB is the canonical primary and is
-# opened by `open_db()` / the `conn` argument.  Stage 9 also writes to this
-# secondary path so both stores stay in sync.
+# The .claude DB path. It names the shared DB itself (opened by `open_db()` / the
+# `conn` argument), so _open_claude_db() returns None; Stage 10 prunes it separately
+# only if it is ever a distinct physical file.
 _CLAUDE_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 # The shared framework DB's own path. SGS_DB is reassigned to a private copy by --db.
-_SHARED_SGS_DB = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+_SHARED_SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 # Prune mode constants
 # 'aggressive'   — DELETE stale support rows (default; source of truth is block.json).
@@ -6034,7 +6034,7 @@ _PRUNE_MODE_MARK_STALE   = "conservative"  # legacy alias
 
 
 def _open_claude_db() -> sqlite3.Connection | None:
-    """Open the .claude DB if it exists and is a distinct file from .agents; return None otherwise.
+    """Open the .claude DB if it exists and is a distinct file from the primary; return None otherwise.
 
     The two DB paths are typically hard-linked to the same inode on this machine.
     When they share an inode, opening both connections concurrently would create
@@ -6090,7 +6090,7 @@ def _prune_orphans_on_conn(
     Parameters
     ----------
     conn          : open DB connection to operate on
-    db_label      : short label for log output ('.agents' or '.claude')
+    db_label      : short label for log output ('shared' or '.claude')
     live_slugs    : set of block slugs currently in src/blocks/*/block.json
     live_supports : mapping slug -> frozenset of support_names from block.json
     live_attrs    : mapping slug -> frozenset of attr_names from block.json
@@ -6363,12 +6363,12 @@ def stage_9_prune_orphans(
 
     Parameters
     ----------
-    conn       : primary DB connection (.agents)
+    conn       : primary DB connection (shared)
     dry_run    : if True, count affected rows without writing any changes
     prune_mode : 'aggressive' (default) — DELETE stale supports + retired blocks.
                  'conservative'         — set is_stale=1 instead.
 
-    Both DBs (.agents + .claude) are processed.  Counts from each are reported
+    The primary DB and any distinct .claude DB are processed.  Counts from each are reported
     separately, then aggregated in the returned dict.  Result key ``orphan_blocks_deleted``
     always present (0 when nothing was deleted).
     """
@@ -6416,9 +6416,9 @@ def stage_9_prune_orphans(
         + (" [DRY-RUN]" if dry_run else "")
     )
 
-    # --- Primary DB (.agents) ---
+    # --- Primary DB (shared) ---
     agents_counts = _prune_orphans_on_conn(
-        conn, ".agents", frozen_slugs, live_supports, live_attrs, prune_mode, dry_run
+        conn, "shared", frozen_slugs, live_supports, live_attrs, prune_mode, dry_run
     )
 
     # --- Secondary DB (.claude) — only when it is a distinct physical file ---
@@ -6432,7 +6432,7 @@ def stage_9_prune_orphans(
     elif not same_inode:
         print("  [.claude] skipped — DB not found.")
 
-    # Aggregate totals (when same inode, .agents counts cover both paths)
+    # Aggregate totals (when same inode, the primary counts cover both paths)
     total_orphan_supports = (
         agents_counts.get("orphan_block_supports_deleted", 0)
         + claude_counts.get("orphan_block_supports_deleted", 0)
@@ -7371,7 +7371,7 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
 def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) -> dict:
     """Export every live table in the framework DB to CSV, one file per table.
 
-    The CSV folder at `~/.agents/skills/sgs-wp-engine/db data/` (note the space)
+    The CSV folder at `~/.claude/skills/sgs-wp-engine/db data/` (note the space)
     holds flat copies of all DB tables. This stage regenerates them automatically
     as the final `/sgs-update` step, ensuring they stay current. A run on a database
     copy (`--db`, $SGS_FRAMEWORK_DB) writes `<copy name> db data/` beside the copy
@@ -7385,7 +7385,7 @@ def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
     """
     import csv
 
-    CSV_FOLDER = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "db data"
+    CSV_FOLDER = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "db data"
     if os.environ.get("SGS_FRAMEWORK_DB"):
         copy = framework_db_path()
         CSV_FOLDER = copy.with_name(f"{copy.stem} db data")

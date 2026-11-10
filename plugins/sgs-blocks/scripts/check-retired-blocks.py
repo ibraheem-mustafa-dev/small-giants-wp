@@ -75,7 +75,7 @@ def db_path() -> Path:
     env = os.environ.get("SGS_FRAMEWORK_DB")
     if env:
         return Path(env)
-    for root in (".claude", ".agents"):
+    for root in (".claude",):
         candidate = Path.home() / root / "skills" / "sgs-wp-engine" / "sgs-framework.db"
         if candidate.exists():
             return candidate

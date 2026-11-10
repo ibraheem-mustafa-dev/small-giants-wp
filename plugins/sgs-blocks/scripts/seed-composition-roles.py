@@ -52,7 +52,7 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-# Canonical SGS DB (hard-linked between ~/.agents and ~/.claude — same physical file).
+# Canonical SGS DB (~/.claude/skills/sgs-wp-engine).
 DB_PATH = framework_db_path()
 
 CORRECTIONS: dict[str, str] = {

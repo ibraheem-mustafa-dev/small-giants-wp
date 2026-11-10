@@ -7,8 +7,8 @@ Nothing in this repo can be pointed at a different database:
 
   * 27 of the migrations in ``scripts/migrations/`` hardcode
     ``Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"``.
-  * ``sgs-update-v2.py:74`` hardcodes the same file under ``.agents`` instead
-    of ``.claude``.
+  * older scripts hardcoded the same file under ``.agents``, where the skills
+    lived until 2026-11-10.
   * Measured 2026-08-02: exactly two migrations use ``argparse`` and BOTH expose
     only ``--dry-run``. **No migration accepts a ``--db`` argument.** (An earlier
     plan claimed two did; that was false. There is no per-file special case to
@@ -21,10 +21,8 @@ THE MECHANISM
 -------------
 Redirect ``HOME`` for a subprocess so ``Path.home()`` resolves inside a temp
 directory. Both spellings of the path (``.claude`` and ``.agents``) are created
-there and pointed at ONE file -- on the real machine those two paths are a
-single hardlinked inode, and if the sandbox let them drift apart the migrations
-would write one file while the seeder wrote another, making every downstream
-comparison meaningless.
+there and pointed at ONE file, so a stray script still using the old ``.agents``
+spelling is sandboxed too instead of writing a second, divergent database.
 
 THE GUARD
 ---------
@@ -194,7 +192,7 @@ def sandbox(seed_from: Path | str | None = None, keep: bool = False):
     views: list[Path] = []
     try:
         # The skill folder exists once (under the last spelling) and every other spelling is a directory
-        # link to it, as on the real machine (~/.claude/skills/sgs-wp-engine links to ~/.agents/...). The
+        # link to it, so code using either spelling lands on one database. The
         # database runs in WAL mode and SQLite keeps its -wal and -shm files beside the path it was opened
         # through, so two file-level views of one database (a hardlink or a copy) give each spelling its own
         # WAL and corrupt it ("database disk image is malformed"); a directory link shares them.

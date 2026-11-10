@@ -44,7 +44,7 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 
 # $SGS_FRAMEWORK_DB points a run at a copy of the framework DB.
-DB_PATH = Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
+DB_PATH = Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
 OUTPUT_FILE = Path(__file__).resolve().parent.parent / "includes" / "generated-fx-effects.php"
 # Editor-side mirror of the per-effect facts the inspector needs (D416).
 JSON_OUTPUT_FILE = (

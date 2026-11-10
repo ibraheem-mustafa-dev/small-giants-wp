@@ -48,7 +48,7 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 
 # $SGS_FRAMEWORK_DB points a run at a copy of the framework DB.
-DB_PATH = Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
+DB_PATH = Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 BLOCKS_DIR = PLUGIN_ROOT / "src" / "blocks"
 JSON_OUTPUT = BLOCKS_DIR / "extensions" / "generated-fx-qualifying-blocks.json"

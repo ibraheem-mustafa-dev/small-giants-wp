@@ -50,11 +50,11 @@ QUERY = (
 
 
 def db_path() -> Path:
-    """The framework DB: SGS_FRAMEWORK_DB, else the skill's copy under ~/.claude, else under ~/.agents."""
+    """The framework DB: SGS_FRAMEWORK_DB, else the skill's copy under ~/.claude."""
     env = os.environ.get("SGS_FRAMEWORK_DB")
     if env:
         return Path(env)
-    for root in (".claude", ".agents"):
+    for root in (".claude",):
         candidate = Path.home() / root / "skills" / "sgs-wp-engine" / "sgs-framework.db"
         if candidate.exists():
             return candidate

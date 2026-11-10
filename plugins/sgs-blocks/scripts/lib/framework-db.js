@@ -3,7 +3,7 @@
  * framework-db.js: the one answer to "which framework database does this process use?" (twin of framework_db.py).
  *
  * $SGS_FRAMEWORK_DB names a database copy; without it the first non-empty shared database under
- * ~/.claude/skills/sgs-wp-engine/ (then ~/.agents/...) is used. A script a reseed runs asks this module instead of
+ * ~/.claude/skills/sgs-wp-engine/ is used. A script a reseed runs asks this module instead of
  * building the path itself; check-framework-db-resolver.py fails one that builds it by hand.
  */
 const fs = require( 'fs' );
@@ -16,7 +16,7 @@ function frameworkDbPath() {
 	if ( process.env.SGS_FRAMEWORK_DB ) {
 		return process.env.SGS_FRAMEWORK_DB;
 	}
-	for ( const root of [ '.claude', '.agents' ] ) {
+	for ( const root of [ '.claude' ] ) {
 		const candidate = path.join( os.homedir(), root, ...SKILL_DB );
 		try {
 			if ( fs.statSync( candidate ).size > 0 ) {
