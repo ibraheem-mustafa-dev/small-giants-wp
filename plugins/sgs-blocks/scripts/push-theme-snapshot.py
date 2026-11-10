@@ -263,8 +263,19 @@ def roster_guard(snapshot: dict) -> list[str]:
     return missing
 
 
-def load_local_snapshot(client: str) -> dict:
-    path = repo_root() / "sites" / client / "theme-snapshot.json"
+def local_snapshot_path(client: str, target_domain: str) -> Path:
+    """The snapshot this site ships: the target's own "snapshot" in deploy_common.TARGETS when the domain is a known
+    target of this client (the file build-deploy.py ships), else the client's sites/<client>/theme-snapshot.json."""
+    import deploy_common  # noqa: PLC0415 - stdlib-only module; imported here so --help needs nothing extra
+
+    for target in deploy_common.TARGETS.values():
+        if target.get("host") == target_domain and target.get("client") == client:
+            return repo_root() / deploy_common.target_snapshot_rel(target)
+    return repo_root() / "sites" / client / "theme-snapshot.json"
+
+
+def load_local_snapshot(client: str, target_domain: str) -> dict:
+    path = local_snapshot_path(client, target_domain)
     if not path.is_file():
         sys.exit(f"[push-theme-snapshot] local snapshot not found: {path}")
     with path.open("r", encoding="utf-8") as fh:
@@ -1122,7 +1133,7 @@ def main() -> int:
     if args.rollback:
         return do_rollback(args)
 
-    local = load_local_snapshot(args.client)
+    local = load_local_snapshot(args.client, args.target_domain)
     missing_slugs = roster_guard(local)
     if missing_slugs:
         print(f"[push-theme-snapshot] REFUSED: sites/{args.client}/theme-snapshot.json lacks framework "
