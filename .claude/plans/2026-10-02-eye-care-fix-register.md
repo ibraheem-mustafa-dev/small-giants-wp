@@ -712,7 +712,7 @@ The comparison tool missed several things you found. Each gap becomes a check, w
 
 ## Round 13 (Bean's list of 2026-11-09; live 2026-11-10)
 
-Causes proven before each fix (evidence under `E:/sgs-tmp/ec-check/`), built test-first in ten jobs, integrated once, reseeded once and deployed to eye-care-test, then checked live in real Chrome beside the draft at 375, 768 and 1440 in five passes. Posts were backed up first to `sites/eye-care-ward-end/build/backups/2026-11-09-r13/` (local only). Framework commits `92866dfb7`, `e816a9dfe`, `6c7c64f95`, `64272973b`, `b71e20add`, `e74a4aef8`, `77c8ce234`, `a5192d52b`, `c5c346dda`, `e783fee50` and the fixes after them, up to main `24cef6f96`; the generated-file chores are the "chore(db)" commits.
+Causes proven before each fix (evidence under `E:/sgs-tmp/ec-check/`), built test-first in ten jobs, integrated once, reseeded once and deployed to eye-care-test, then checked live in real Chrome beside the draft at 375, 768 and 1440 in five passes. Posts were backed up first to `sites/eye-care-ward-end/build/backups/2026-11-09-r13/` (local only). Framework commits `92866dfb7`, `e816a9dfe`, `6c7c64f95`, `64272973b`, `b71e20add`, `e74a4aef8`, `77c8ce234`, `a5192d52b`, `c5c346dda`, `e783fee50` and the fixes after them, up to main `f9b2e70fa` (the fold rule's last fixes `bfc0b5851` and `f9b2e70fa`, the checkout line-item fix `5ddbaf93e` and the modal-from-drawer focus fix `fad5a5097` included); the generated-file chores are the "chore(db)" commits.
 
 | Surface or item | Fix | Layer |
 |---|---|---|
@@ -722,7 +722,7 @@ Causes proven before each fix (evidence under `E:/sgs-tmp/ec-check/`), built tes
 | Contact upload box | Hover keys on the zone, not the label the file input covers | framework |
 | Contact "sent" message | A motion part, so the form's motion panel gives it the draft's 300ms fade | framework + setting |
 | Handoff folders (Eye Care, Indus, Mama's) | `--focus-color`, `--focus-width` and `--focus-offset` in `tokens/spacing.css`; a missing token is a warning | framework (Spec 48A FR-48A-15) |
-| Header reload | No content jump on reload or back: a pre-paint head script takes scroll restoration, pre-shrinks the row and restores the saved position once the page is tall enough | framework (Spec 36, 37) |
+| Header reload | Chrome's native scroll restore plus pre-paint shrunk header classes (a hand-rolled restore measured worse); live offset Home 0px at all widths, Shop 26px at 1440 and 0 at 768/375, Product 0/4/18px at 1440/768/375, from 20 to 46px before | framework (Spec 36, 37) |
 | Above the fold, whole site | No entrance starts fully invisible: 1% fades, 99% clip reveals, tiny non-zero scale; one pure definition, the first two content sections; the shop's second card no longer shows before its siblings; template pages (shop, archives, product) are armed from their template | framework (Spec 38A §9, FR-38A-18) |
 | Editor | The editor measures the real first screen when a page is saved and stores the section count (`_sgs_fold_sections`); the canvas applies the same start floor | framework (Spec 38A §9) |
 | Anchor jumps | A jump into an animated section lands under the header (the entrance is finished first, then the browser scrolls) | framework (Spec 38A FR-38A-19) |
