@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # Page weight back under budget (CSS < 100 KB, JS < 50 KB transferred)
 
 Plan date 2026-11-03. Found by the Eye Care stream (fix register R3-23) while proving the shop Load more mode. Budget: project `CLAUDE.md` Non-negotiables, "< 100 KB CSS and < 50 KB JS per page", measured as transferred (compressed) bytes (`plugins/sgs-blocks/includes/configurator-asset-optimiser.php` says "gzipped, as the browser receives it").
@@ -12,6 +16,24 @@ Plan date 2026-11-03. Found by the Eye Care stream (fix register R3-23) while pr
 | canary home | 80.3 KB | 194.2 KB |
 
 Every page is over on both. No gate measures either budget (the only budget gate is `check-motion-bundle-budget.py`).
+
+## Re-measured 2026-11-10: still over, and slow to paint on phones
+
+Same method, one run per page at 1440 px: eye-care-test /shop/ 196.7 KB JS / 207.1 KB CSS; product page at least 145.9 KB JS / 243.1 KB CSS; /about/ 82.4 KB JS / 188.3 KB CSS; home 101.7 KB JS / 215.0 KB CSS; canary home 92.8 KB JS / 194.4 KB CSS. Nothing since 2026-11-03 has reduced them.
+
+Google PageSpeed Insights (Lighthouse, run via the API with `GOOGLE_API_KEY_MAIN`; no field data yet, the test sites have no traffic):
+
+| Page | Mobile score | Mobile LCP | Desktop score | Desktop TBT |
+|---|---|---|---|---|
+| eye-care-test home | 72 | 6.6 s | 89 | 170 ms |
+| eye-care-test /shop/ | 85 | 3.5 s | 63 | 1,200 ms |
+| eye-care-test product page | 77 | 3.5 s | 86 | 260 ms |
+| eye-care-test /about/ | 97 | 1.8 s | 99 | 10 ms |
+| canary home | 86 | 4.1 s | 93 | 10 ms |
+
+CLS is under 0.1 everywhere; accessibility 92 to 98, best practices 100, SEO 92 to 100. The two problems are slow Largest Contentful Paint on phones (the hero media) and the shop's JavaScript blocking the main thread on desktop (cause 2 below). /about/ shows the framework can score 97 to 99.
+
+**Split with Spec 49.** Hero and media loading (lead-image preload per device, modern image formats, media CSS only on pages with media) belongs to Spec 49, the media system rebuild; its session was sent these findings on 2026-11-10. This plan owns the non-media causes below. Done when both budgets hold and mobile LCP is under 2.5 s on the five pages above, measured the same two ways.
 
 ## Causes, ranked by transferred saving
 
