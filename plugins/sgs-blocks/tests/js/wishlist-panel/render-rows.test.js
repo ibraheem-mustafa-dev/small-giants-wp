@@ -100,3 +100,37 @@ describe( 'escapeHtml', () => {
 		);
 	} );
 } );
+
+describe( 'wishlistRowHtml: the cards layout', () => {
+	const product = {
+		...baseProduct,
+		name: 'Oversized Cat-Eye',
+		has_options: true,
+		brands: [ { name: 'Gucci' } ],
+		images: [ { src: 'https://example.test/full.jpg', thumbnail: 'https://example.test/thumb.jpg' } ],
+		prices: { price: '28900', regular_price: '34000', currency_minor_unit: 2, currency_symbol: '£', currency_prefix: '£', currency_suffix: '', currency_decimal_separator: '.', currency_thousand_separator: ',' },
+	};
+
+	it( 'draws a frame card: large photo, brand, heart that removes, name, price and struck regular price', () => {
+		const html = wishlistRowHtml( product, { layout: 'cards', showPrice: true, showStock: false } );
+		expect( html ).toContain( 'sgs-wishlist-panel__card' );
+		expect( html ).toContain( 'https://example.test/full.jpg' );
+		expect( html ).toContain( 'sgs-wishlist-panel__card-brand">Gucci' );
+		expect( html ).toMatch( /<button[^>]*class="sgs-wishlist-panel__remove sgs-wishlist-panel__card-heart"[^>]*data-product-id="42"/ );
+		expect( html ).toContain( 'sgs-wishlist-panel__row-name' );
+		expect( html ).toContain( 'sgs-wishlist-panel__card-rrp' );
+	} );
+
+	it( 'has no basket or options button, sort, date or drop lines', () => {
+		const html = wishlistRowHtml( product, { layout: 'cards', showPrice: true, showStock: true, showDateSaved: true, showPriceDrop: true } );
+		expect( html ).not.toContain( 'choose-options' );
+		expect( html ).not.toContain( 'move-to-basket' );
+		expect( html ).not.toContain( 'row-date' );
+	} );
+
+	it( 'leaves the other layouts as they were', () => {
+		const html = wishlistRowHtml( product, { layout: 'grid', showPrice: true, showStock: false } );
+		expect( html ).not.toContain( 'sgs-wishlist-panel__card' );
+		expect( html ).toContain( 'sgs-wishlist-panel__choose-options' );
+	} );
+} );

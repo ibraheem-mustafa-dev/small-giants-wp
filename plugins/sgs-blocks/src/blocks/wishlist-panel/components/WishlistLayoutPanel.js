@@ -52,6 +52,10 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 						label: __( 'Strip (scrolling row)', 'sgs-blocks' ),
 						value: 'strip',
 					},
+					{
+						label: __( 'Cards (photo, brand, heart, price)', 'sgs-blocks' ),
+						value: 'cards',
+					},
 				] }
 				onChange={ ( value ) => setAttributes( { layout: value } ) }
 			/>

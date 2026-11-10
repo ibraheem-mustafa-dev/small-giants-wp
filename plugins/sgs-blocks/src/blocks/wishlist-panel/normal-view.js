@@ -117,6 +117,7 @@ export async function renderNormalView( elements, labels, ids, announce ) {
 					showDateSaved: ! isStrip && labels.showDateSaved,
 					showPriceDrop: ! isStrip && labels.showPriceDrop,
 					shared: false,
+					layout: labels.layout,
 					labels,
 					savedPrice: savedPrices[ Number( product.id ) ],
 				} )

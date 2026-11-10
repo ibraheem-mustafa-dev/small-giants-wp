@@ -4,7 +4,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
 import { fillRow, textRow } from '../../components';
-import { TextField, TierBox, Toggle, TYPE_TARGET } from './extraControls';
+import { Choice, TextField, TierBox, Toggle, TYPE_TARGET } from './extraControls';
 
 // [ row key, label, background attribute, text attribute ]
 const STATUSES = [
@@ -53,6 +53,15 @@ export default function OrdersPanel( { attributes, setAttributes } ) {
 						help={ __( 'Empty = the shop page.', 'sgs-blocks' ) }
 					/>
 					<TierBox { ...p } name="ordersEmptyPadding" label={ __( 'Card padding', 'sgs-blocks' ) } />
+					<Choice
+						{ ...p }
+						name="wishlistLayout"
+						label={ __( 'Saved items layout', 'sgs-blocks' ) }
+						options={ [
+							{ label: __( 'Wishlist panel default', 'sgs-blocks' ), value: '' },
+							{ label: __( 'Frame cards', 'sgs-blocks' ), value: 'cards' },
+						] }
+					/>
 					<TextField
 						{ ...p }
 						name="wishlistEmptyHeading"

@@ -2732,6 +2732,14 @@
 				"type": "string",
 				"role": "content"
 			},
+			"wishlistLayout": {
+				"type": "string",
+				"enum": [
+					"",
+					"cards"
+				],
+				"description": "How the Saved items tab draws the list: empty = the wishlist panel's own layout, cards = a three-column grid of frame cards (two on a phone) with a heart that removes."
+			},
 			"wishlistEmptyHeading": {
 				"type": "string",
 				"role": "content",

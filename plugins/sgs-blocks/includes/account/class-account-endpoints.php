@@ -229,6 +229,25 @@ final class Account_Endpoints {
 		}
 		$attrs            = self::resolve_wishlist_panel_attrs();
 		$attrs['heading'] = '';
+		if ( is_array( self::$active ) && 'cards' === ( self::$active['wishlistLayout'] ?? '' ) ) {
+			// Frame cards: a photo grid with a heart on each, no sort, dates, drop lines or stock lines.
+			$attrs = array_merge(
+				$attrs,
+				array(
+					'layout'        => 'cards',
+					'columns'       => array(
+						'desktop' => 3,
+						'tablet'  => 3,
+						'mobile'  => 2,
+					),
+					'showSort'      => false,
+					'showDateSaved' => false,
+					'showPriceDrop' => false,
+					'showStock'     => false,
+					'showCount'     => false,
+				)
+			);
+		}
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() output is already escaped by the block's own render.php.
 		echo \render_block(
 			array(

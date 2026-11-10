@@ -27,7 +27,7 @@ import AuthoredText from '../../components/AuthoredText';
 export default function Edit( { attributes, setAttributes } ) {
 	const { heading, layout, maxItems, viewAllLabel, viewAllUrl, showCount, moveLabel, removeLabel, rowActionsFlexWrap } =
 		attributes;
-	const previewLayout = [ 'grid', 'list', 'strip' ].includes( layout ) ? layout : 'grid';
+	const previewLayout = [ 'grid', 'list', 'strip', 'cards' ].includes( layout ) ? layout : 'grid';
 	const sampleCount = 6;
 	const cap = Number( maxItems ) > 0 ? Math.min( Number( maxItems ), sampleCount ) : sampleCount;
 	const showViewAll = Number( maxItems ) > 0 && Number( maxItems ) < sampleCount;

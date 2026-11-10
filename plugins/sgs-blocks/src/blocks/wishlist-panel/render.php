@@ -15,7 +15,7 @@
  * `view.js`) — resolved by `render-labels.php` into one data-* attribute map
  * on the root element. URLs (Saved items page, sign-in, shop) are resolved
  * by `render-urls.php`; the new elements' colours by `render-colours.php`.
- * `layout` (grid/list/strip) becomes a root modifier class; the client reads
+ * `layout` (grid/list/strip/cards) becomes a root modifier class; the client reads
  * it (`view.js`) to pick its row/bar templates.
  *
  * NO-INLINE (Spec 32): zero inline style property declarations; colours/
@@ -55,7 +55,7 @@ $show_price_drop  = ! empty( $attributes['showPriceDrop'] );
 $show_guest_promo = ! empty( $attributes['showGuestPrompt'] );
 
 $layout_raw = (string) ( $attributes['layout'] ?? 'grid' );
-$layout     = in_array( $layout_raw, array( 'grid', 'list', 'strip' ), true ) ? $layout_raw : 'grid';
+$layout     = in_array( $layout_raw, array( 'grid', 'list', 'strip', 'cards' ), true ) ? $layout_raw : 'grid';
 $max_items  = max( 0, absint( $attributes['maxItems'] ?? 0 ) );
 
 $shop_url        = sgs_wishlist_panel_shop_url();

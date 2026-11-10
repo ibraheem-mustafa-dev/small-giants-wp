@@ -29,7 +29,7 @@ if ( ! function_exists( 'absint' ) ) { function absint( $n ) { return abs( (int)
 if ( ! function_exists( 'add_filter' ) ) { function add_filter() {} }
 if ( ! function_exists( 'add_action' ) ) { function add_action() {} }
 if ( ! function_exists( 'remove_filter' ) ) { function remove_filter() {} }
-function render_block( array $b ): string { return '<!--' . $b['blockName'] . ' ' . ( $b['attrs']['label'] ?? '' ) . '-->'; }
+function render_block( array $b ): string { return '<!--' . $b['blockName'] . ' ' . ( $b['attrs']['label'] ?? '' ) . ' ' . json_encode( $b['attrs'] ) . '-->'; }
 
 foreach ( array( 'account/helpers-account-look-css.php', 'account/helpers-account-header.php', 'account/helpers-account-edit-account.php', 'account/helpers-account-signed-out.php', 'account/class-account-strings.php', 'account/class-account-endpoints.php', 'account/class-account-extras.php', 'wishlist/class-wishlist-store.php' ) as $f ) {
 	require_once $base . '/includes/' . $f;
@@ -125,6 +125,17 @@ SGS\Blocks\Account_Extras::end_menu_buffer();
 $counted = ob_get_clean();
 ok( false !== strpos( $counted, 'Wishlist<span class="sgs-account__menu-count">2</span>' ), 'the Wishlist link carries its saved count' );
 ok( false === strpos( $counted, 'Orders<span' ), 'an Orders link with no orders carries no count' );
+
+// 4b) Frame cards layout for the Saved items tab.
+Account_Endpoints::$active = array( 'wishlistLayout' => 'cards' );
+ob_start();
+Account_Endpoints::render_saved_items_endpoint( '' );
+$cards_page = ob_get_clean();
+ok( false !== strpos( $cards_page, '"layout":"cards"' ) && false !== strpos( $cards_page, '"showSort":false' ) && false !== strpos( $cards_page, '"mobile":2' ), 'wishlistLayout cards draws the panel as frame cards without sort or dates' );
+Account_Endpoints::$active = array();
+ob_start();
+Account_Endpoints::render_saved_items_endpoint( '' );
+ok( false === strpos( ob_get_clean(), '"layout":"cards"' ), 'without the setting the panel keeps its own layout' );
 
 echo $failures ? "\n$failures FAILED\n" : "\nALL PASSED\n";
 exit( $failures ? 1 : 0 );

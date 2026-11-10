@@ -235,7 +235,7 @@
 		},
 		"layout": {
 			"type": "string",
-			"enum": [ "grid", "list", "strip" ],
+			"enum": [ "grid", "list", "strip", "cards" ],
 			"default": "grid"
 		},
 		"maxItems": {
