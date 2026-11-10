@@ -57,7 +57,7 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
                               Stage 11 (it reads generated-fx-qualifying-blocks.json) and
                               before Stage 13, so a full run exports it.
  13. export_db_to_csv       — export every live table to CSV in
-                              ~/.claude/skills/sgs-wp-engine/db\\ data/ (the space is
+                              the skill's `db data` folder, shared_csv_dir() (the space is
                               literal). Idempotent + deterministic. Removes CSVs for
                               retired tables. Reports tables exported, row counts, added/removed.
 
@@ -101,7 +101,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from block_source_files import edit_source  # noqa: E402
-from framework_db import builds_default_db_by_hand, code_of, framework_db_path  # noqa: E402
+from framework_db import builds_default_db_by_hand, code_of, framework_db_path, shared_csv_dir, shared_framework_db_path  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "dbschema"))
 from block_source import BlockSource, is_tier_object  # noqa: E402
@@ -120,7 +120,7 @@ from object_attr_shape import (  # noqa: E402
 # Constants
 # ---------------------------------------------------------------------------
 
-SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+SGS_DB = shared_framework_db_path()
 # REPO_ROOT — resolve relative to this script: plugins/sgs-blocks/scripts/sgs-update-v2.py
 # Walk up: scripts/ → sgs-blocks/ → plugins/ → repo root
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -1968,8 +1968,8 @@ def _run_inspector_control_type_seed(conn: sqlite3.Connection) -> None:
     writers — a crude edit.js parser in dbschema/enrich-db.py (fill-NULL-only,
     produced 93 wrong values) and this classifier's Task B (a better parser, but
     policy was report-only, so the stale values from the other writer persisted
-    forever). enrich-db.py's writer is now REMOVED (see that file); this is the
-    SOLE remaining writer, and its policy now overwrites on disagreement (see
+    forever). This is the
+    SOLE writer, and its policy now overwrites on disagreement (see
     extract_inspector_control_types's own docstring — audit-justified: 88/93
     DERIVED_CORRECT, 0 STORED_CORRECT). Wiring it here makes the corrected values
     durable across every reseed, mirroring `_run_canonical_assignment` /
@@ -3727,7 +3727,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         _timed(timings, "composition-role seed", _run_composition_role_seed, conn)
 
         # --- Stage 1 tail: regenerate inspector_control_type from edit.js (2026-07-21)
-        #     — the SOLE writer now (enrich-db.py's stale writer removed); overwrite-
+        #     — the SOLE writer; overwrite-
         #     on-disagreement policy, so this must run every reseed to stay durable. ---
         _timed(timings, "inspector-control-type seed", _run_inspector_control_type_seed, conn)
         _timed(timings, "unlisted choice gaps", _record_unlisted_choice_gaps, conn)
@@ -5942,15 +5942,7 @@ def stage_8_drift_gate(
 # default behaviour is to mark them `is_stale = 1` rather than delete.  The
 # operator can pass `--prune-mode aggressive` to DELETE those rows instead.
 #
-# Operates on the shared DB; a second, distinct file under ~/.claude is pruned too if one ever exists.
 # ---------------------------------------------------------------------------
-
-# The .claude DB path. It names the shared DB itself (opened by `open_db()` / the
-# `conn` argument), so _open_claude_db() returns None; Stage 10 prunes it separately
-# only if it is ever a distinct physical file.
-_CLAUDE_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
-# The shared framework DB's own path. SGS_DB is reassigned to a private copy by --db.
-_SHARED_SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 # Prune mode constants
 # 'aggressive'   — DELETE stale support rows (default; source of truth is block.json).
@@ -5959,41 +5951,6 @@ _SHARED_SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-fra
 _PRUNE_MODE_AGGRESSIVE   = "aggressive"
 _PRUNE_MODE_CONSERVATIVE = "conservative"
 _PRUNE_MODE_MARK_STALE   = "conservative"  # legacy alias
-
-
-def _open_claude_db() -> sqlite3.Connection | None:
-    """Open the .claude DB if it exists and is a distinct file from the primary; return None otherwise.
-
-    The two DB paths are typically hard-linked to the same inode on this machine.
-    When they share an inode, opening both connections concurrently would create
-    a second write-lock on the same file, which is unnecessary and risks busy
-    errors.  In that case we return None (the primary conn already covers both paths).
-    """
-    # A run redirected to another database (--db, or $SGS_FRAMEWORK_DB through the resolver) must never write the
-    # shared files: the .claude path is a second name for the shared DB, so pruning it from a private reseed deleted
-    # every attribute the running tree does not declare from the shared DB (the 2026-11-04 13:00 and 2026-11-05 00:29
-    # attribute losses) and switched it to WAL mode, which publish-framework-db.py refuses.
-    try:
-        if SGS_DB.resolve() != _SHARED_SGS_DB.resolve():
-            return None
-    except OSError:
-        return None
-    if not _CLAUDE_DB.exists():
-        print(f"  WARNING: .claude DB not found at {_CLAUDE_DB} — skipping secondary DB writes.")
-        return None
-    # Check whether the two paths point to the same physical file (hard link)
-    try:
-        agents_inode = SGS_DB.stat().st_ino
-        claude_inode = _CLAUDE_DB.stat().st_ino
-        if agents_inode == claude_inode:
-            # Same inode — primary conn already covers .claude; no second connection needed
-            return None
-    except OSError:
-        pass
-    conn = sqlite3.connect(str(_CLAUDE_DB))
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL")
-    return conn
 
 
 def _ensure_blocks_is_stale_column(conn: sqlite3.Connection) -> None:
@@ -6018,7 +5975,7 @@ def _prune_orphans_on_conn(
     Parameters
     ----------
     conn          : open DB connection to operate on
-    db_label      : short label for log output ('shared' or '.claude')
+    db_label      : short label for log output
     live_slugs    : set of block slugs currently in src/blocks/*/block.json
     live_supports : mapping slug -> frozenset of support_names from block.json
     live_attrs    : mapping slug -> frozenset of attr_names from block.json
@@ -6296,9 +6253,7 @@ def stage_9_prune_orphans(
     prune_mode : 'aggressive' (default) — DELETE stale supports + retired blocks.
                  'conservative'         — set is_stale=1 instead.
 
-    The primary DB and any distinct .claude DB are processed.  Counts from each are reported
-    separately, then aggregated in the returned dict.  Result key ``orphan_blocks_deleted``
-    always present (0 when nothing was deleted).
+    Result key ``orphan_blocks_deleted`` always present (0 when nothing was deleted).
     """
     blocks_dir = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
     if not blocks_dir.exists():
@@ -6329,66 +6284,22 @@ def stage_9_prune_orphans(
 
     frozen_slugs = frozenset(live_slugs)
 
-    # Detect whether the two DB paths share the same inode (hard-linked)
-    same_inode = False
-    try:
-        same_inode = SGS_DB.stat().st_ino == _CLAUDE_DB.stat().st_ino
-    except OSError:
-        pass
-
-    db_scope_note = "(single hard-linked DB)" if same_inode else "(both DBs)"
-
     print(
         f"\nStage 10 [prune-orphans]: {len(frozen_slugs)} live block slugs found. "
-        f"prune_mode={prune_mode} {db_scope_note}"
+        f"prune_mode={prune_mode}"
         + (" [DRY-RUN]" if dry_run else "")
     )
 
-    # --- Primary DB (shared) ---
-    agents_counts = _prune_orphans_on_conn(
-        conn, "shared", frozen_slugs, live_supports, live_attrs, prune_mode, dry_run
+    counts = _prune_orphans_on_conn(
+        conn, "framework", frozen_slugs, live_supports, live_attrs, prune_mode, dry_run
     )
-
-    # --- Secondary DB (.claude) — only when it is a distinct physical file ---
-    claude_conn = _open_claude_db()
-    claude_counts: dict = {}
-    if claude_conn is not None:
-        claude_counts = _prune_orphans_on_conn(
-            claude_conn, ".claude", frozen_slugs, live_supports, live_attrs, prune_mode, dry_run
-        )
-        claude_conn.close()
-    elif not same_inode:
-        print("  [.claude] skipped — DB not found.")
-
-    # Aggregate totals (when same inode, the primary counts cover both paths)
-    total_orphan_supports = (
-        agents_counts.get("orphan_block_supports_deleted", 0)
-        + claude_counts.get("orphan_block_supports_deleted", 0)
-    )
-    total_orphan_caps = (
-        agents_counts.get("orphan_capabilities_deleted", 0)
-        + claude_counts.get("orphan_capabilities_deleted", 0)
-    )
-    total_orphan_attrs = (
-        agents_counts.get("orphan_attributes_deleted", 0)
-        + claude_counts.get("orphan_attributes_deleted", 0)
-    )
-    total_stale_supports = (
-        agents_counts.get("stale_supports_actioned", 0)
-        + claude_counts.get("stale_supports_actioned", 0)
-    )
-    total_ghost_attrs = (
-        agents_counts.get("orphan_attributes_deleted_attr_level", 0)
-        + claude_counts.get("orphan_attributes_deleted_attr_level", 0)
-    )
-    total_orphan_blocks = (
-        agents_counts.get("orphan_blocks_actioned", 0)
-        + claude_counts.get("orphan_blocks_actioned", 0)
-    )
-    total_orphan_child_rows = (
-        agents_counts.get("orphan_block_child_rows_deleted", 0)
-        + claude_counts.get("orphan_block_child_rows_deleted", 0)
-    )
+    total_orphan_supports = counts.get("orphan_block_supports_deleted", 0)
+    total_orphan_caps = counts.get("orphan_capabilities_deleted", 0)
+    total_orphan_attrs = counts.get("orphan_attributes_deleted", 0)
+    total_stale_supports = counts.get("stale_supports_actioned", 0)
+    total_ghost_attrs = counts.get("orphan_attributes_deleted_attr_level", 0)
+    total_orphan_blocks = counts.get("orphan_blocks_actioned", 0)
+    total_orphan_child_rows = counts.get("orphan_block_child_rows_deleted", 0)
 
     stale_verb = "deleted" if prune_mode == _PRUNE_MODE_AGGRESSIVE else "marked_stale"
     summary = (
@@ -6398,7 +6309,7 @@ def stage_9_prune_orphans(
         f"stale_supports_{stale_verb}={total_stale_supports}, "
         f"orphan_attributes_deleted_attr_level={total_ghost_attrs}, "
         f"orphan_block_child_rows_deleted={total_orphan_child_rows}, "
-        f"orphan_blocks_{stale_verb}={total_orphan_blocks} {db_scope_note}."
+        f"orphan_blocks_{stale_verb}={total_orphan_blocks}."
     )
     print(summary)
 
@@ -6412,8 +6323,7 @@ def stage_9_prune_orphans(
         f"orphan_blocks_{stale_verb}": total_orphan_blocks,
         "orphan_blocks_deleted": total_orphan_blocks,
         "prune_mode": prune_mode,
-        "agents": agents_counts,
-        "claude": claude_counts,
+        "counts": counts,
         "dry_run": dry_run,
     }
 
@@ -7298,7 +7208,7 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
 def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) -> dict:
     """Export every live table in the framework DB to CSV, one file per table.
 
-    The CSV folder at `~/.claude/skills/sgs-wp-engine/db data/` (note the space)
+    The CSV folder `shared_csv_dir()` (`db data`, note the space)
     holds flat copies of all DB tables. This stage regenerates them automatically
     as the final `/sgs-update` step, ensuring they stay current. A run on a database
     copy (`--db`, $SGS_FRAMEWORK_DB) writes `<copy name> db data/` beside the copy
@@ -7312,7 +7222,7 @@ def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
     """
     import csv
 
-    CSV_FOLDER = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "db data"
+    CSV_FOLDER = shared_csv_dir()
     if os.environ.get("SGS_FRAMEWORK_DB"):
         copy = framework_db_path()
         CSV_FOLDER = copy.with_name(f"{copy.stem} db data")
@@ -7609,7 +7519,7 @@ def _enforce_tree_guard(args: argparse.Namespace, shared_dbs: tuple[Path, ...] =
 
 def main() -> None:
     global SGS_DB, _CSS_PROPERTY_CLASSIFICATIONS_JSON_PATH
-    shared_dbs = (SGS_DB, _CLAUDE_DB)
+    shared_dbs = (SGS_DB,)
     parser = argparse.ArgumentParser(
         description="SGS framework knowledge base — 14-stage holistic refresh",
         formatter_class=argparse.RawDescriptionHelpFormatter,
