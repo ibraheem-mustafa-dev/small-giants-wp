@@ -142,7 +142,7 @@ Parked (Bean, 2026-09-27). lamalama's "GET IN TOUCH" card is an accepted differe
 1. Read the design report §3, §8, §9; `.claude/specs/18-SGS-FLOATING-UI.md`; `plugins/sgs-blocks/includes/class-sgs-floating-ui-renderer.php` (`Sgs_Floating_UI_Renderer::register()` / `::render()`: back-to-top and reading progress).
 2. Research first with `/research-check`.
 3. Design from the floating UI renderer, which already prints floating UI at `wp_footer`: content authored for the floating layer, not an in-page `sgs/container` lifted out of the tree. It must answer U-14's cautions (the renderer's container is `aria-hidden`, so a card with a real link cannot sit inside it as is; FR-36-8's priority-plus-More text contradicts reusing it unchanged) and the report's §9: (a) every `<style>` tag reaches the CSS collector; (b) the editor shows the card without covering the canvas; (c) behaviour inside `sgs/nav-drawer` and `sgs/modal`; (d) its own z-index token, clear of `sgs/whatsapp-cta` (200) and `sgs/notice-banner` (1000); (e) a portal-conformance detector across the six `wp_footer` adopters.
-4. Exit-cell table, two-model `/qc-council`, Bean's go, then build with `/sgs-wp-engine`, one Sonnet implementer per disjoint file set.
+4. Exit-cell table, `/second-opinion`, Bean's go, then build with `/sgs-wp-engine`, one Sonnet implementer per disjoint file set.
 
 **Exit.** lamalama's card is 160x326 at top 16 / right 16 at 1440 and absent at 375 and 768, measured by `plugins/sgs-blocks/scripts/nav-qa/u18-copy-probe.mjs` (its `card` cell) and the walker; then DEC-18 closes as built and M-08's note says so.
 

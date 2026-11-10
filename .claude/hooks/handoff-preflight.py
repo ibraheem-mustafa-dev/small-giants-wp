@@ -206,9 +206,9 @@ def _plan_refs(text: str) -> set[str]:
 PLAN_STATUSES = ("active", "parked", "done")
 STALE_DAYS = 14
 # A body "Status:" line that says the work shipped, with no qualifier keeping it open.
-BODY_STATUS_RE = re.compile(r"^\**Status[^:\n]*:\**\s*(.*)$", re.IGNORECASE | re.MULTILINE)
+BODY_STATUS_RE = re.compile(r"^\**Status[^:\n]*:\**[ \t]*(.*)$", re.IGNORECASE | re.MULTILINE)
 BODY_FINISHED_RE = re.compile(r"\b(?:built|shipped|live)\b", re.IGNORECASE)
-BODY_OPEN_RE = re.compile(r"\b(?:open|remaining|remain|except|left|todo|not yet|partly|waiting)\b", re.IGNORECASE)
+BODY_OPEN_RE = re.compile(r"\b(?:open|remaining|remain|except|left|todo|not yet|partly|waiting|pending)\b", re.IGNORECASE)
 _SPEC_REF_RE = re.compile(r"(?<![\w./-])(?:\.claude/)?(specs/[^\s`()\[\]<>*\"'#]+\.md)")
 
 
@@ -393,7 +393,7 @@ def main() -> int:
             out = subprocess.run(["git", "-C", str(_REPO), "show", "--name-status", "--format=", c],
                                  capture_output=True, text=True).stdout
             added += [Path(line.split("\t")[-1]).name for line in out.splitlines()
-                      if line[:1] == "A" and "/plans/" in line and "/archive/" not in line]
+                      if line[:1] in "AR" and "/plans/" in line.split("\t")[-1] and "/archive/" not in line.split("\t")[-1]]
     results = [check_plans_folder(added=added) if c is check_plans_folder else c() for c in CHECKS]
     failed = [r for r in results if not r.ok]
     for r in results:
