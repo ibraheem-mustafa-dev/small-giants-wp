@@ -265,3 +265,79 @@ test( 'without IntersectionObserver the class is never added', () => {
 	run();
 	expect( document.documentElement.classList.contains( READY ) ).toBe( false );
 } );
+
+describe( 'a jump to a fragment settles the entrances on its path first', () => {
+	const section = ( html = '<p id="goal">x</p>' ) => {
+		document.body.insertAdjacentHTML( 'beforeend', `<div data-sgs-me="scroll translate opacity" id="sec">${ html }</div><div id="plain">y</div>` );
+		return document.getElementById( 'sec' );
+	};
+	let log;
+	beforeEach( () => {
+		log = [];
+		window.location.hash = '';
+		Element.prototype.scrollIntoView = function () {
+			log.push( 'scroll:' + ( document.getElementById( 'sec' ).hasAttribute( 'data-sgs-in' ) ? 'revealed' : 'hidden' ) );
+		};
+		const spy = Element.prototype.setAttribute;
+		Element.prototype.setAttribute = function ( name, value ) {
+			'data-sgs-in' === name && log.push( 'reveal:' + this.id );
+			return spy.call( this, name, value );
+		};
+		Element.prototype.getAnimations = function () {
+			return [ { finish: () => log.push( 'finish:' + this.id ) } ];
+		};
+	} );
+	afterEach( () => {
+		delete Element.prototype.getAnimations;
+		delete Element.prototype.scrollIntoView;
+	} );
+
+	test( 'on load with a hash the ancestor entrance is revealed and finished, then scrolled to once', () => {
+		const sec = section();
+		window.location.hash = '#goal';
+		run();
+		expect( sec.hasAttribute( 'data-sgs-in' ) ).toBe( true );
+		expect( log.slice( 0, 2 ) ).toEqual( [ 'reveal:sec', 'finish:sec' ] );
+		expect( log.filter( ( l ) => l.startsWith( 'scroll' ) ) ).toEqual( [ 'scroll:revealed' ] );
+	} );
+
+	test( 'a hashchange reveals the path before scrolling', () => {
+		const sec = section();
+		run();
+		window.location.hash = '#goal';
+		window.dispatchEvent( new window.HashChangeEvent( 'hashchange' ) );
+		expect( sec.hasAttribute( 'data-sgs-in' ) ).toBe( true );
+		expect( log.indexOf( 'finish:sec' ) ).toBeLessThan( log.indexOf( 'scroll:revealed' ) );
+	} );
+
+	test( 'a click on a same-page # link reveals in the capture phase, before a bubble handler such as the drawer close', () => {
+		const sec = section( '<p id="goal">x</p>' );
+		document.body.insertAdjacentHTML( 'beforeend', '<dialog id="drawer" open><a id="lnk" href="#goal">go</a></dialog>' );
+		let seenByDrawer;
+		document.getElementById( 'drawer' ).addEventListener( 'click', () => {
+			seenByDrawer = sec.hasAttribute( 'data-sgs-in' );
+		} );
+		run();
+		expect( sec.hasAttribute( 'data-sgs-in' ) ).toBe( false );
+		document.getElementById( 'lnk' ).dispatchEvent( new window.MouseEvent( 'click', { bubbles: true, cancelable: true, button: 0 } ) );
+		expect( seenByDrawer ).toBe( true );
+		expect( log ).toContain( 'finish:sec' );
+	} );
+
+	test( 'a hash to an element outside any entrance reveals nothing and does not scroll', () => {
+		const sec = section();
+		window.location.hash = '#plain';
+		run();
+		window.dispatchEvent( new window.HashChangeEvent( 'hashchange' ) );
+		expect( sec.hasAttribute( 'data-sgs-in' ) ).toBe( false );
+		expect( log ).toEqual( [] );
+	} );
+
+	test( 'reduced motion leaves everything alone', () => {
+		reduced = true;
+		const sec = section();
+		window.location.hash = '#goal';
+		run();
+		expect( sec.hasAttribute( 'data-sgs-in' ) ).toBe( false );
+	} );
+} );
