@@ -75,13 +75,19 @@
 }
 
 /* Motion only when the store has confirmed the visitor has not asked for
-   reduced motion (state.isAnimated adds this class). The toast rises 16px
-   into place while fading in over the first 12% of its life, holds, then
-   fades out over the last 15% while drifting half its own width to the
+   reduced motion (state.isAnimated adds this class). A success toast rises
+   16px into place while fading in over the first 12% of its life, holds,
+   then fades out over the last 15% while drifting half its own width to the
    right. Hovering or focusing the toast holds the motion, as the store's
-   auto-close timer is held. */
-.sgs-toast--animated.sgs-toast--visible {
+   auto-close timer is held. An error toast has no auto-close, so it plays
+   only the rise and fade in (the same 12% of the life) and stays. */
+.sgs-toast--success.sgs-toast--animated.sgs-toast--visible {
 	animation-name: sgs-toast-life;
+}
+
+.sgs-toast--error.sgs-toast--animated.sgs-toast--visible {
+	animation-name: sgs-toast-in;
+	animation-duration: calc(var(--wp--custom--toast--duration, 5s) * 0.12);
 }
 
 .sgs-toast--animated.sgs-toast--visible:hover,
@@ -104,6 +110,17 @@
 	100% {
 		opacity: 0;
 		transform: translate(50%, 0);
+	}
+}
+
+@keyframes sgs-toast-in {
+	0% {
+		opacity: 0;
+		transform: translate(0, 16px);
+	}
+	100% {
+		opacity: 1;
+		transform: translate(0, 0);
 	}
 }
 

@@ -400,6 +400,23 @@ const { state, actions } = store( 'sgs/toast', {
 		 * @param {MouseEvent} event The click on the "View bag" link.
 		 */
 		viewBag( event ) {
+			// A modified or non-primary click keeps the link (a new tab or
+			// window of the cart page); so does a toast hosted inside an open
+			// pop-up, where the page's bag button sits inert behind it.
+			if (
+				event.defaultPrevented ||
+				( event.button !== undefined && event.button !== 0 ) ||
+				event.ctrlKey ||
+				event.metaKey ||
+				event.shiftKey ||
+				event.altKey
+			) {
+				return;
+			}
+			const toast = document.querySelector( '.sgs-toast' );
+			if ( toast && toast.closest( 'dialog[open]' ) ) {
+				return;
+			}
 			const trigger = pageBagTrigger();
 			if ( ! trigger ) {
 				return;

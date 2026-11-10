@@ -54,6 +54,39 @@ describe( 'toast View bag', () => {
 		expect( event.defaultPrevented ).toBe( false );
 	} );
 
+	test.each( [
+		[ 'ctrl', { ctrlKey: true } ],
+		[ 'cmd', { metaKey: true } ],
+		[ 'shift', { shiftKey: true } ],
+		[ 'alt', { altKey: true } ],
+		[ 'middle button', { button: 1 } ],
+	] )( 'a %s click keeps the link, so it can open the cart page in a new tab', ( name, init ) => {
+		document.body.innerHTML = drawerTrigger();
+		const clicked = jest.fn();
+		document.querySelector( '.sgs-cart__trigger' ).addEventListener( 'click', clicked );
+
+		const event = new MouseEvent( 'click', { bubbles: true, cancelable: true, ...init } );
+		toastActions.viewBag( event );
+
+		expect( clicked ).not.toHaveBeenCalled();
+		expect( event.defaultPrevented ).toBe( false );
+	} );
+
+	test( 'inside an open pop-up the link navigates instead of opening a drawer behind the pop-up', () => {
+		document.body.innerHTML =
+			drawerTrigger() +
+			'<dialog open><div class="sgs-toast"><a class="sgs-toast__action" href="/cart/">View bag</a></div></dialog>';
+		const clicked = jest.fn();
+		document.querySelector( '.sgs-cart__trigger' ).addEventListener( 'click', clicked );
+
+		const event = new MouseEvent( 'click', { bubbles: true, cancelable: true } );
+		Object.defineProperty( event, 'currentTarget', { value: document.querySelector( '.sgs-toast__action' ) } );
+		toastActions.viewBag( event );
+
+		expect( clicked ).not.toHaveBeenCalled();
+		expect( event.defaultPrevented ).toBe( false );
+	} );
+
 	test( 'leaves the link alone when there is no bag block at all', () => {
 		document.body.innerHTML = '';
 		const event = clickEvent();
