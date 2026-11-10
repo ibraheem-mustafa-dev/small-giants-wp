@@ -2204,5 +2204,23 @@
     "added_commit": null,
     "budget_ms": 1000,
     "order": 251
+  },
+  {
+    "id": "check-gate-disposition",
+    "cmd": "python scripts/check-gate-disposition.py --self-test && python scripts/check-gate-disposition.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 5000,
+    "order": 252
+  },
+  {
+    "id": "check-media-contract",
+    "cmd": "python scripts/check-media-contract.py --self-test && python scripts/check-media-contract.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 500,
+    "order": 253
   }
 ]

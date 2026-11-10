@@ -1,0 +1,1197 @@
+{
+ "_about": "Spec 49 8.2/6.2: every gate, lint, test and fixture that names a removed or reworked symbol, classified reused, changed or deleted. Checked by scripts/check-gate-disposition.py. Package = the 14.4 package that acts on it; lands = A (on main now) or B (cutover).",
+ "symbols": [
+  {
+   "id": "sgs_render_media",
+   "pattern": "\\bsgs_render_media\\b",
+   "symbol": "includes/helpers-media.php::sgs_render_media"
+  },
+  {
+   "id": "sgs_responsive_image",
+   "pattern": "\\bsgs_responsive_image\\b",
+   "symbol": "includes/helpers-media.php::sgs_responsive_image"
+  },
+  {
+   "id": "sgs_image_loading_attrs",
+   "pattern": "\\bsgs_image_loading_attrs\\b",
+   "symbol": "includes/helpers-media.php::sgs_image_loading_attrs"
+  },
+  {
+   "id": "sgs_next_background_image_index",
+   "pattern": "\\bsgs_next_background_image_index\\b",
+   "symbol": "includes/helpers-media.php::sgs_next_background_image_index"
+  },
+  {
+   "id": "sgs_content_image_claims_priority",
+   "pattern": "\\bsgs_content_image_claims_priority\\b",
+   "symbol": "includes/helpers-media.php::sgs_content_image_claims_priority"
+  },
+  {
+   "id": "preload_hero_image",
+   "pattern": "\\bpreload_hero_image\\b",
+   "symbol": "theme/sgs-theme/functions.php::preload_hero_image"
+  },
+  {
+   "id": "media-element-attrs-register",
+   "pattern": "media-element-attrs-register|media-element-attributes\\.generated",
+   "symbol": "includes/media-element-attrs-register.php"
+  },
+  {
+   "id": "media-element.css",
+   "pattern": "media-element\\.css",
+   "symbol": "assets/css/media-element.css"
+  },
+  {
+   "id": "media-atoms-css",
+   "pattern": "assets/css/media-atoms|media-atoms/\\*\\.css",
+   "symbol": "assets/css/media-atoms/*.css"
+  },
+  {
+   "id": "generate-media-stylesheet",
+   "pattern": "generate-media-stylesheet",
+   "symbol": "scripts/generate-media-stylesheet.mjs"
+  },
+  {
+   "id": "helpers-media-position",
+   "pattern": "helpers-media-position|sgs_media_position_css",
+   "symbol": "includes/helpers-media-position.php"
+  },
+  {
+   "id": "image-controls.php",
+   "pattern": "includes/image-controls\\.php|image-controls\\.php",
+   "symbol": "includes/image-controls.php"
+  },
+  {
+   "id": "imageControls",
+   "pattern": "\\bimageControls\\b",
+   "symbol": "block.json::supports.sgs.imageControls"
+  },
+  {
+   "id": "canvasStyle",
+   "pattern": "\\bcanvasStyle\\b",
+   "symbol": "src/components/media/canvasStyle.js"
+  },
+  {
+   "id": "PanelLayout",
+   "pattern": "\\b(DecorativeImage|HeroSplitMedia|Media|ProductCardImage)PanelLayout\\b",
+   "symbol": "src/components/media/MediaPanelLayout.js"
+  },
+  {
+   "id": "MediaStylingPanel",
+   "pattern": "\\bMediaStylingPanel\\b",
+   "symbol": "src/blocks/media/components/MediaStylingPanel.js"
+  },
+  {
+   "id": "MediaSizingPanel",
+   "pattern": "\\bMediaSizingPanel\\b",
+   "symbol": "src/components/MediaSizingPanel.js"
+  },
+  {
+   "id": "FocalPositionField",
+   "pattern": "\\bFocalPositionField\\b",
+   "symbol": "src/components/FocalPositionField.js"
+  },
+  {
+   "id": "MediaPicker",
+   "pattern": "\\bMediaPicker\\b",
+   "symbol": "src/components/MediaPicker.js"
+  },
+  {
+   "id": "extensions/image-controls.js",
+   "pattern": "extensions/image-controls|image-controls\\.js",
+   "symbol": "src/blocks/extensions/image-controls.js"
+  },
+  {
+   "id": "MediaBoxShapeControls",
+   "pattern": "\\bMediaBoxShapeControls\\b",
+   "symbol": "src/components/media/controls/MediaBoxShapeControls.js"
+  },
+  {
+   "id": "ObjectFitField",
+   "pattern": "\\bObjectFitField\\b",
+   "symbol": "src/components/media/controls/ObjectFitField.js"
+  },
+  {
+   "id": "objectPosition.js",
+   "pattern": "utils/objectPosition|objectPosition\\.js",
+   "symbol": "src/utils/objectPosition.js"
+  },
+  {
+   "id": "swapVideoSrc",
+   "pattern": "\\bswapVideoSrc\\b",
+   "symbol": "src/blocks/hero/view.js::swapVideoSrc (and src/blocks/container/view.js::swapVideoSrc)"
+  },
+  {
+   "id": "check-image-controls-support",
+   "pattern": "check-image-controls-support|surveys-check-image-controls-support",
+   "symbol": "scripts/surveys/check-image-controls-support.py"
+  },
+  {
+   "id": "sgs_render_lottie",
+   "pattern": "\\bsgs_render_lottie\\b",
+   "symbol": "includes/lottie-render.php::sgs_render_lottie"
+  },
+  {
+   "id": "LottieControls",
+   "pattern": "\\bLottieControls\\b",
+   "symbol": "src/components/media/controls/LottieControls.js"
+  },
+  {
+   "id": "media-type-atom",
+   "pattern": "atoms/media-type|sgs_media_atom_media_type|atoms?/intrinsic|sgs_media_atom_intrinsic",
+   "symbol": "includes/media/atoms/media-type.php::sgs_media_atom_media_type_css"
+  },
+  {
+   "id": "box-shape-clip-paths",
+   "pattern": "sgs_media_atom_box_shape_clip_paths|box-shape\\.js::validateShape",
+   "symbol": "includes/media/atoms/box-shape.php::sgs_media_atom_box_shape_clip_paths"
+  },
+  {
+   "id": "sgs_media_element_stored_attr",
+   "pattern": "\\bsgs_media_element_stored_attr\\b",
+   "symbol": "includes/helpers-media-element.php::sgs_media_element_stored_attr"
+  },
+  {
+   "id": "sgs_media_element_style",
+   "pattern": "\\bsgs_media_element_style\\b",
+   "symbol": "includes/helpers-media-element.php::sgs_media_element_style"
+  },
+  {
+   "id": "sgs_tier_media_render",
+   "pattern": "\\bsgs_tier_media_render\\b|helpers-tier-media",
+   "symbol": "includes/helpers-tier-media.php::sgs_tier_media_render"
+  },
+  {
+   "id": "sgsColourTreatment",
+   "pattern": "\\bsgsColourTreatment\\b",
+   "symbol": "includes/image-controls.php::sgsColourTreatment"
+  },
+  {
+   "id": "bg-position-overscan",
+   "pattern": "data-sgs-mc~=\"background-position\"",
+   "symbol": "assets/css/motion.css::img[data-sgs-mc~=\"background-position\"]"
+  }
+ ],
+ "entries": [
+  {
+   "path": "package.json",
+   "kind": "roster",
+   "disposition": "changed",
+   "names": [
+    "scripts/generate-media-stylesheet.mjs",
+    "scripts/surveys/check-image-controls-support.py"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Remove prebuild/prestart and check:media-* entries naming the deleted stylesheet generator and the imageControls survey (App. B)"
+  },
+  {
+   "path": "scripts/audit-block-file-consistency.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media-element.php::sgs_media_element_stored_attr"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names a removed symbol; add the renderer and generated table as readers (App. B, T3 2.5)"
+  },
+  {
+   "path": "scripts/audit-feature-parity.py",
+   "kind": "gate",
+   "disposition": "reused",
+   "names": [
+    "block.json::supports.sgs.imageControls"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names the imageControls flag or a removed function in a comment or a heuristic that keeps working once the flag is gone"
+  },
+  {
+   "path": "scripts/audit-post-content-blocks.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media-element.php::sgs_media_element_stored_attr",
+    "includes/media-element-attrs-register.php"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names a removed symbol; add the renderer and generated table as readers (App. B, T3 2.5)"
+  },
+  {
+   "path": "scripts/behavioural-analyser/extract-signatures.py",
+   "kind": "gate",
+   "disposition": "reused",
+   "names": [
+    "src/components/MediaPicker.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names a removed symbol in a comment or a name list; logic unaffected"
+  },
+  {
+   "path": "scripts/check-dead-controls.js",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media-element.php::sgs_media_element_stored_attr"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names a removed symbol; add the renderer and generated table as readers (App. B, T3 2.5)"
+  },
+  {
+   "path": "scripts/check-enum-control-shape.py",
+   "kind": "gate",
+   "disposition": "reused",
+   "names": [
+    "src/components/media/MediaPanelLayout.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names a removed symbol in a comment or a name list; logic unaffected"
+  },
+  {
+   "path": "scripts/check-length-unit-partners.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media-element.php::sgs_media_element_stored_attr"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names a removed symbol; add the renderer and generated table as readers (App. B, T3 2.5)"
+  },
+  {
+   "path": "scripts/check-media-atom-purity.js",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "assets/css/media-atoms/*.css",
+    "assets/css/media-element.css",
+    "includes/helpers-media-element.php::sgs_media_element_style"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Keep and extend; reads media-element.css and sgs_media_element_style, re-point at media-base.css and the new twins (6.1)"
+  },
+  {
+   "path": "scripts/check-media-breakpoints.js",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "assets/css/media-element.css"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Re-point at media-base.css or drop with a reason (App. B)"
+  },
+  {
+   "path": "scripts/check-motion-literals.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "assets/css/media-atoms/*.css"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Self-test builds a media-atoms partial path; re-point at media-base.css (T3 2.5)"
+  },
+  {
+   "path": "scripts/check-universal-fit.js",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "block.json::supports.sgs.imageControls",
+    "src/blocks/extensions/image-controls.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names the imageControls flag and extensions/image-controls.js (App. B)"
+  },
+  {
+   "path": "scripts/consistency/attr-role-map.json",
+   "kind": "data",
+   "disposition": "changed",
+   "names": [
+    "includes/image-controls.php::sgsColourTreatment"
+   ],
+   "package": "WP-1",
+   "lands": "B",
+   "reason": "Derived from block.json and the seeder; regenerated by the Integrator at cutover (App. B)"
+  },
+  {
+   "path": "scripts/consistency/build-roster.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "block.json::supports.sgs.imageControls"
+   ],
+   "package": "WP-1",
+   "lands": "B",
+   "reason": "Derived from block.json and the seeder; regenerated by the Integrator at cutover (App. B)"
+  },
+  {
+   "path": "scripts/consistency/golden-controls.json",
+   "kind": "data",
+   "disposition": "changed",
+   "names": [
+    "block.json::supports.sgs.imageControls",
+    "src/blocks/extensions/image-controls.js",
+    "src/components/MediaPicker.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Golden picker becomes MediaSlotField and golden focal FocalField; otherwise the scan reads them as hand-rolls (App. B)"
+  },
+  {
+   "path": "scripts/consistency/goldens/behaviour.json",
+   "kind": "data",
+   "disposition": "changed",
+   "names": [
+    "block.json::supports.sgs.imageControls",
+    "src/blocks/extensions/image-controls.js",
+    "src/components/FocalPositionField.js",
+    "src/components/MediaPicker.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Golden picker becomes MediaSlotField and golden focal FocalField; otherwise the scan reads them as hand-rolls (App. B)"
+  },
+  {
+   "path": "scripts/consistency/setting-registry-css.json",
+   "kind": "data",
+   "disposition": "changed",
+   "names": [
+    "block.json::supports.sgs.imageControls"
+   ],
+   "package": "WP-1",
+   "lands": "B",
+   "reason": "Derived from block.json and the seeder; regenerated by the Integrator at cutover (App. B)"
+  },
+  {
+   "path": "scripts/consistency/setting-registry-inputs.json",
+   "kind": "data",
+   "disposition": "changed",
+   "names": [
+    "block.json::supports.sgs.imageControls",
+    "src/components/MediaPicker.js"
+   ],
+   "package": "WP-1",
+   "lands": "B",
+   "reason": "Derived from block.json and the seeder; regenerated by the Integrator at cutover (App. B)"
+  },
+  {
+   "path": "scripts/consistency/setting-registry.json",
+   "kind": "data",
+   "disposition": "changed",
+   "names": [
+    "block.json::supports.sgs.imageControls",
+    "src/components/MediaPicker.js"
+   ],
+   "package": "WP-1",
+   "lands": "B",
+   "reason": "Derived from block.json and the seeder; regenerated by the Integrator at cutover (App. B)"
+  },
+  {
+   "path": "scripts/content-role-detect/detector5_image_alt_companion.py",
+   "kind": "gate",
+   "disposition": "reused",
+   "names": [
+    "includes/helpers-media.php::sgs_responsive_image"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names a removed symbol in a comment or a name list; logic unaffected"
+  },
+  {
+   "path": "scripts/deploy_cache.py",
+   "kind": "roster",
+   "disposition": "changed",
+   "names": [
+    "assets/css/media-element.css"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Replace media-element.css with media-base.css in the cache list (App. B)"
+  },
+  {
+   "path": "scripts/gates.json",
+   "kind": "roster",
+   "disposition": "changed",
+   "names": [
+    "scripts/generate-media-stylesheet.mjs",
+    "scripts/surveys/check-image-controls-support.py"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Remove ids surveys-check-image-controls-support, generate-media-stylesheet, check-media-stylesheet; re-point the other media ids (App. B)"
+  },
+  {
+   "path": "scripts/generate-fx-qualifying-blocks.py",
+   "kind": "gate",
+   "disposition": "reused",
+   "names": [
+    "block.json::supports.sgs.imageControls"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names the imageControls flag or a removed function in a comment or a heuristic that keeps working once the flag is gone"
+  },
+  {
+   "path": "scripts/generate-media-attributes.mjs",
+   "kind": "gate",
+   "disposition": "reused",
+   "names": [
+    "includes/media-element-attrs-register.php"
+   ],
+   "package": "WP-15b",
+   "lands": "B",
+   "reason": "Names the deleted injector in comments only; the generator is the replacement (WP-1)"
+  },
+  {
+   "path": "scripts/generate-media-stylesheet.mjs",
+   "kind": "gate",
+   "disposition": "deleted",
+   "names": [
+    "assets/css/media-atoms/*.css",
+    "assets/css/media-element.css",
+    "scripts/generate-media-stylesheet.mjs"
+   ],
+   "package": "WP-15b",
+   "lands": "B",
+   "reason": "Generator of the deleted media-element.css and media-atoms partials (8.2)"
+  },
+  {
+   "path": "scripts/inspector-scan/core/components.js",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "src/components/MediaPicker.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Golden picker becomes MediaSlotField and golden focal FocalField; otherwise the scan reads them as hand-rolls (App. B)"
+  },
+  {
+   "path": "scripts/inspector-scan/core/extensions.js",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "src/blocks/extensions/image-controls.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Golden picker becomes MediaSlotField and golden focal FocalField; otherwise the scan reads them as hand-rolls (App. B)"
+  },
+  {
+   "path": "scripts/inspector-scan/core/golden.js",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "src/components/MediaPicker.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Golden picker becomes MediaSlotField and golden focal FocalField; otherwise the scan reads them as hand-rolls (App. B)"
+  },
+  {
+   "path": "scripts/inspector-scan/fixtures/18-decorative-image-aria/image-via-shared-component/block.json",
+   "kind": "fixture",
+   "disposition": "changed",
+   "names": [
+    "src/components/MediaPicker.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Golden picker becomes MediaSlotField and golden focal FocalField; otherwise the scan reads them as hand-rolls (App. B)"
+  },
+  {
+   "path": "scripts/inspector-scan/fixtures/18-decorative-image-aria/image-via-shared-component/edit.js",
+   "kind": "fixture",
+   "disposition": "changed",
+   "names": [
+    "src/components/MediaPicker.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Golden picker becomes MediaSlotField and golden focal FocalField; otherwise the scan reads them as hand-rolls (App. B)"
+  },
+  {
+   "path": "scripts/inspector-scan/fixtures/26-responsive-duplicate/_extensions/sibling-triple-all-suffixed.js",
+   "kind": "fixture",
+   "disposition": "changed",
+   "names": [
+    "src/blocks/extensions/image-controls.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Golden picker becomes MediaSlotField and golden focal FocalField; otherwise the scan reads them as hand-rolls (App. B)"
+  },
+  {
+   "path": "scripts/inspector-scan/fixtures/37-media-no-handroll/direct-write-in-render/render.php",
+   "kind": "fixture",
+   "disposition": "deleted",
+   "names": [
+    "includes/helpers-media-element.php::sgs_media_element_style"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Fixture of a deleted inspector rule"
+  },
+  {
+   "path": "scripts/inspector-scan/fixtures/37-media-no-handroll/render-calls-shared-helper-silent/block.json",
+   "kind": "fixture",
+   "disposition": "deleted",
+   "names": [
+    "includes/helpers-media-element.php::sgs_media_element_style"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Fixture of a deleted inspector rule"
+  },
+  {
+   "path": "scripts/inspector-scan/fixtures/37-media-no-handroll/render-calls-shared-helper-silent/render.php",
+   "kind": "fixture",
+   "disposition": "deleted",
+   "names": [
+    "includes/helpers-media-element.php::sgs_media_element_style"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Fixture of a deleted inspector rule"
+  },
+  {
+   "path": "scripts/inspector-scan/fixtures/39-media-control-coverage/sgs-media-silent/edit.js",
+   "kind": "fixture",
+   "disposition": "deleted",
+   "names": [
+    "src/components/media/MediaPanelLayout.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Fixture of a deleted inspector rule"
+  },
+  {
+   "path": "scripts/inspector-scan/placement-rule-surfaces.json",
+   "kind": "data",
+   "disposition": "changed",
+   "names": [
+    "src/blocks/extensions/image-controls.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Golden picker becomes MediaSlotField and golden focal FocalField; otherwise the scan reads them as hand-rolls (App. B)"
+  },
+  {
+   "path": "scripts/inspector-scan/rules.json",
+   "kind": "roster",
+   "disposition": "changed",
+   "names": [
+    "assets/css/media-element.css",
+    "includes/helpers-media-element.php::sgs_media_element_stored_attr",
+    "includes/helpers-media-element.php::sgs_media_element_style",
+    "includes/helpers-tier-media.php::sgs_tier_media_render",
+    "src/components/MediaPicker.js",
+    "src/components/media/MediaPanelLayout.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Drops rules 37 to 39 and re-points 40, 18, 21 and 26 at the new subjects"
+  },
+  {
+   "path": "scripts/inspector-scan/rules/04-colour-alpha.js",
+   "kind": "gate",
+   "disposition": "reused",
+   "names": [
+    "src/components/MediaPicker.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names the deleted picker in a comment only; logic unaffected"
+  },
+  {
+   "path": "scripts/inspector-scan/rules/14-media-upload-check.js",
+   "kind": "gate",
+   "disposition": "reused",
+   "names": [
+    "src/components/MediaPicker.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names the deleted picker in a comment only; logic unaffected"
+  },
+  {
+   "path": "scripts/inspector-scan/rules/18-decorative-image-aria.js",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "src/components/MediaPicker.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Golden picker becomes MediaSlotField and golden focal FocalField; otherwise the scan reads them as hand-rolls (App. B)"
+  },
+  {
+   "path": "scripts/inspector-scan/rules/21-render-without-control.js",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "src/components/MediaPicker.js",
+    "src/components/media/MediaPanelLayout.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Golden picker becomes MediaSlotField and golden focal FocalField; otherwise the scan reads them as hand-rolls (App. B)"
+  },
+  {
+   "path": "scripts/inspector-scan/rules/26-responsive-duplicate.js",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "src/blocks/extensions/image-controls.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Golden picker becomes MediaSlotField and golden focal FocalField; otherwise the scan reads them as hand-rolls (App. B)"
+  },
+  {
+   "path": "scripts/inspector-scan/rules/37-media-no-handroll.js",
+   "kind": "gate",
+   "disposition": "deleted",
+   "names": [
+    "assets/css/media-atoms/*.css",
+    "assets/css/media-element.css",
+    "includes/helpers-media-element.php::sgs_media_element_style",
+    "includes/media-element-attrs-register.php",
+    "scripts/generate-media-stylesheet.mjs"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Replaced by a no-hand-rolled-media-emit rule, the generator --check and AC-12/13 (spec 8.2, App. B)"
+  },
+  {
+   "path": "scripts/inspector-scan/rules/38-media-attr-parity.js",
+   "kind": "gate",
+   "disposition": "deleted",
+   "names": [
+    "includes/helpers-media-element.php::sgs_media_element_stored_attr",
+    "includes/media-element-attrs-register.php"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Replaced by a no-hand-rolled-media-emit rule, the generator --check and AC-12/13 (spec 8.2, App. B)"
+  },
+  {
+   "path": "scripts/inspector-scan/rules/39-media-control-coverage.js",
+   "kind": "gate",
+   "disposition": "deleted",
+   "names": [
+    "includes/helpers-media-element.php::sgs_media_element_stored_attr",
+    "includes/media-element-attrs-register.php",
+    "src/components/media/MediaPanelLayout.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Replaced by a no-hand-rolled-media-emit rule, the generator --check and AC-12/13 (spec 8.2, App. B)"
+  },
+  {
+   "path": "scripts/inspector-scan/rules/40-media-svg-sanitised.js",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-tier-media.php::sgs_tier_media_render"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Keep the SVG sanitise rule, re-point at the renderer; backs AC-8"
+  },
+  {
+   "path": "scripts/lib/media-block-json.mjs",
+   "kind": "gate",
+   "disposition": "reused",
+   "names": [
+    "includes/media-element-attrs-register.php"
+   ],
+   "package": "WP-15b",
+   "lands": "B",
+   "reason": "Names the deleted injector in comments only; the generator is the replacement (WP-1)"
+  },
+  {
+   "path": "scripts/lints/lint-spec-drift.py",
+   "kind": "lint",
+   "disposition": "reused",
+   "names": [
+    "block.json::supports.sgs.imageControls"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names the imageControls flag or a removed function in a comment or a heuristic that keeps working once the flag is gone"
+  },
+  {
+   "path": "scripts/migrate-motion-part-kinds.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media.php::sgs_render_media",
+    "includes/helpers-tier-media.php::sgs_tier_media_render"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Matches sgs_tier_media_render calls and media-atoms paths; update to the split tier files and renderer"
+  },
+  {
+   "path": "scripts/migrate-motion/consumer-groups.json",
+   "kind": "data",
+   "disposition": "changed",
+   "names": [
+    "assets/css/media-atoms/*.css",
+    "src/components/media/MediaPanelLayout.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Matches sgs_tier_media_render calls and media-atoms paths; update to the split tier files and renderer"
+  },
+  {
+   "path": "scripts/qa/lib/first-section-stub.php",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media.php::sgs_content_image_claims_priority"
+   ],
+   "package": "WP-3",
+   "lands": "A",
+   "reason": "Stubs sgs_render_media and sgs_content_image_claims_priority; re-point at the renderer and SGS_Media_Priority (T3 2.5)"
+  },
+  {
+   "path": "scripts/qa/lib/wp-stubs.php",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media.php::sgs_render_media"
+   ],
+   "package": "WP-3",
+   "lands": "A",
+   "reason": "Stubs sgs_render_media and sgs_content_image_claims_priority; re-point at the renderer and SGS_Media_Priority (T3 2.5)"
+  },
+  {
+   "path": "scripts/seed_motion_fx_data.py",
+   "kind": "gate",
+   "disposition": "reused",
+   "names": [
+    "block.json::supports.sgs.imageControls",
+    "includes/lottie-render.php::sgs_render_lottie"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names the imageControls flag or a removed function in a comment or a heuristic that keeps working once the flag is gone"
+  },
+  {
+   "path": "scripts/survey-border-control-migration.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "src/components/media/MediaPanelLayout.js",
+    "src/components/media/controls/MediaBoxShapeControls.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Survey names a removed component or flag; rework or delete (T3 2.5)"
+  },
+  {
+   "path": "scripts/survey-length-control-scale.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "src/components/MediaSizingPanel.js",
+    "src/components/media/controls/MediaBoxShapeControls.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Survey names a removed component or flag; rework or delete (T3 2.5)"
+  },
+  {
+   "path": "scripts/surveys/census-media-presentation.py",
+   "kind": "gate",
+   "disposition": "deleted",
+   "names": [
+    "block.json::supports.sgs.imageControls",
+    "includes/helpers-media-position.php",
+    "includes/helpers-media.php::sgs_responsive_image",
+    "src/blocks/extensions/image-controls.js",
+    "src/components/FocalPositionField.js",
+    "src/components/MediaSizingPanel.js",
+    "src/utils/objectPosition.js"
+   ],
+   "package": "WP-15b",
+   "lands": "B",
+   "reason": "One-off census (App. B)"
+  },
+  {
+   "path": "scripts/surveys/check-image-controls-support.py",
+   "kind": "gate",
+   "disposition": "deleted",
+   "names": [
+    "block.json::supports.sgs.imageControls",
+    "includes/helpers-media-position.php",
+    "includes/helpers-media.php::sgs_render_media",
+    "includes/helpers-media.php::sgs_responsive_image",
+    "includes/image-controls.php",
+    "scripts/surveys/check-image-controls-support.py"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Flag supports.sgs.imageControls is removed (App. B)"
+  },
+  {
+   "path": "scripts/surveys/compare-reach-depth.py",
+   "kind": "gate",
+   "disposition": "reused",
+   "names": [
+    "src/components/MediaPicker.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Names a removed symbol in a comment or a name list; logic unaffected"
+  },
+  {
+   "path": "scripts/surveys/survey-background-colour-support.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "block.json::supports.sgs.imageControls"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Survey names a removed component or flag; rework or delete (T3 2.5)"
+  },
+  {
+   "path": "scripts/surveys/survey-control-mounts.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "block.json::supports.sgs.imageControls",
+    "src/components/MediaPicker.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Survey names a removed component or flag; rework or delete (T3 2.5)"
+  },
+  {
+   "path": "scripts/surveys/survey-dead-css.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/image-controls.php"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Survey names includes/image-controls.php; rework or delete (T3 2.5)"
+  },
+  {
+   "path": "scripts/surveys/survey-inspector-surface.js",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "block.json::supports.sgs.imageControls",
+    "src/blocks/extensions/image-controls.js"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Survey names a removed component or flag; rework or delete (T3 2.5)"
+  },
+  {
+   "path": "scripts/tests/test-media-atom-parity.mjs",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "assets/css/media-element.css",
+    "includes/helpers-media-element.php::sgs_media_element_style"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Keep and extend; reads media-element.css and sgs_media_element_style (6.1)"
+  },
+  {
+   "path": "scripts/tests/test-media-attr-parity.mjs",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media-element.php::sgs_media_element_stored_attr"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Keep and extend; stored-attr helper moves to the renderer (6.1)"
+  },
+  {
+   "path": "scripts/tests/test-media-injection-parity.mjs",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "includes/media-element-attrs-register.php"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Keep and re-point at generated block.json attributes (6.1)"
+  },
+  {
+   "path": "scripts/wiring-fingerprint/wf_media.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media-element.php::sgs_media_element_stored_attr",
+    "includes/helpers-media-element.php::sgs_media_element_style"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Read sites become SGS_Media_Element::render and the generated table, else every media attribute reads as unread (App. B)"
+  },
+  {
+   "path": "scripts/wiring-fingerprint/wf_resolve.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media-element.php::sgs_media_element_style"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Read sites become SGS_Media_Element::render and the generated table, else every media attribute reads as unread (App. B)"
+  },
+  {
+   "path": "scripts/wiring-fingerprint/wf_tokens.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media-element.php::sgs_media_element_style"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Read sites become SGS_Media_Element::render and the generated table, else every media attribute reads as unread (App. B)"
+  },
+  {
+   "path": "tests/fixtures/motion/render-paths.json",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media.php::sgs_render_media"
+   ],
+   "package": "WP-10a",
+   "lands": "B",
+   "reason": "A why-text names sgs_render_media(); render-paths.json is rewritten by WP-10a"
+  },
+  {
+   "path": "tests/js/canvas-tier-preview.test.js",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "includes/image-controls.php",
+    "src/blocks/extensions/image-controls.js"
+   ],
+   "package": "WP-15b",
+   "lands": "B",
+   "reason": "Imports imageControlsCanvasVars from the deleted extensions/image-controls.js; drop that describe block"
+  },
+  {
+   "path": "tests/js/decorative-image-box-panels.test.js",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "src/components/media/controls/MediaBoxShapeControls.js"
+   ],
+   "package": "WP-5",
+   "lands": "B",
+   "reason": "Mocks the deleted MediaBoxShapeControls; re-point at the new Size and Shape fields"
+  },
+  {
+   "path": "tests/js/fx-lottie-params.test.js",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "includes/lottie-render.php::sgs_render_lottie"
+   ],
+   "package": "WP-15b",
+   "lands": "B",
+   "reason": "One test covers the legacy sgs_render_lottie span; delete that case, keep the Lottie effect cases"
+  },
+  {
+   "path": "tests/js/hero-split-media-shadow.test.js",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "src/components/media/canvasStyle.js"
+   ],
+   "package": "WP-4",
+   "lands": "B",
+   "reason": "Imports the deleted canvasStyle.js; re-point at mediaPreview.js"
+  },
+  {
+   "path": "tests/js/image-sequence-aspect-enum.test.js",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "src/components/MediaSizingPanel.js"
+   ],
+   "package": "WP-4",
+   "lands": "B",
+   "reason": "Reads the deleted MediaSizingPanel.js RATIO_OPTIONS; re-point at the sizing field"
+  },
+  {
+   "path": "tests/js/motion-parallax-background-image.test.js",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "assets/css/motion.css::img[data-sgs-mc~=\"background-position\"]"
+   ],
+   "package": "WP-10b",
+   "lands": "B",
+   "reason": "Asserts the img[data-sgs-mc~=\"background-position\"] overscan rule, removed in 8.2; re-point at the new overscan"
+  },
+  {
+   "path": "tests/php/BuyboxImagePriorityTest.php",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media.php::sgs_content_image_claims_priority"
+   ],
+   "package": "WP-3",
+   "lands": "B",
+   "reason": "Asserts sgs_content_image_claims_priority; port to SGS_Media_Priority::resolve"
+  },
+  {
+   "path": "tests/php/ImageIntrinsicSizeTest.php",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media.php::sgs_render_media"
+   ],
+   "package": "WP-2a",
+   "lands": "B",
+   "reason": "Covers sgs_render_media(); port cases to the new renderer"
+  },
+  {
+   "path": "tests/php/LengthStringSettingsTest.php",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "block.json::supports.sgs.imageControls",
+    "includes/image-controls.php"
+   ],
+   "package": "WP-15b",
+   "lands": "B",
+   "reason": "Asserts or exercises supports.sgs.imageControls / image-controls.php; re-point at the sizing atom or delete the case"
+  },
+  {
+   "path": "tests/php/PostGridImagePriorityTest.php",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media.php::sgs_content_image_claims_priority"
+   ],
+   "package": "WP-3",
+   "lands": "B",
+   "reason": "Asserts sgs_content_image_claims_priority; port to SGS_Media_Priority::resolve"
+  },
+  {
+   "path": "tests/php/ProductCardImagePriorityTest.php",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media.php::sgs_content_image_claims_priority",
+    "includes/helpers-media.php::sgs_next_background_image_index"
+   ],
+   "package": "WP-3",
+   "lands": "A",
+   "reason": "Two tests encode the pre-round-12 first-section rule; update to 7.7 (14.4 WP-3)"
+  },
+  {
+   "path": "tests/php/ResponsiveLogoTest.php",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "block.json::supports.sgs.imageControls"
+   ],
+   "package": "WP-15b",
+   "lands": "B",
+   "reason": "Asserts or exercises supports.sgs.imageControls / image-controls.php; re-point at the sizing atom or delete the case"
+  },
+  {
+   "path": "tests/php/TimelineTest.php",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "block.json::supports.sgs.imageControls"
+   ],
+   "package": "WP-15b",
+   "lands": "B",
+   "reason": "Asserts or exercises supports.sgs.imageControls / image-controls.php; re-point at the sizing atom or delete the case"
+  },
+  {
+   "path": "tests/php/run-container-wrapper-standalone.php",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media.php::sgs_responsive_image"
+   ],
+   "package": "WP-2a",
+   "lands": "B",
+   "reason": "Stubs sgs_responsive_image(); re-point at the renderer"
+  },
+  {
+   "path": "tests/php/run-image-loading-attrs-standalone.php",
+   "kind": "test",
+   "disposition": "deleted",
+   "names": [
+    "includes/helpers-media.php::sgs_image_loading_attrs",
+    "includes/helpers-media.php::sgs_next_background_image_index"
+   ],
+   "package": "WP-3",
+   "lands": "B",
+   "reason": "Tests sgs_image_loading_attrs and sgs_next_background_image_index, both deleted; cases move to the SGS_Media_Priority tests"
+  },
+  {
+   "path": "tests/php/run-lottie-standalone.php",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "includes/lottie-render.php::sgs_render_lottie"
+   ],
+   "package": "WP-15b",
+   "lands": "B",
+   "reason": "Section C tests sgs_render_lottie, deleted; the layer-filter sections stay"
+  },
+  {
+   "path": "tests/php/run-media-atom-shadow-hover-standalone.php",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "assets/css/media-atoms/*.css"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Reads the media-atoms stylesheet; port to the shadow twin and media-base.css"
+  },
+  {
+   "path": "tests/php/run-media-hover-zoom-clip-standalone.php",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "includes/helpers-media-element.php::sgs_media_element_style"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Calls sgs_media_element_style; port to SGS_Media_Element::render"
+  },
+  {
+   "path": "tests/playwright/motion-entrance-cascade.check.mjs",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "assets/css/media-element.css"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Reads media-element.css; re-point at media-base.css"
+  }
+ ]
+}
