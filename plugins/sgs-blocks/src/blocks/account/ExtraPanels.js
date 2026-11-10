@@ -28,6 +28,7 @@ const WORDING = [
 	[ 'addresses', __( 'Addresses (menu)', 'sgs-blocks' ), 'Addresses' ],
 	[ 'accountDetails', __( 'Account details (menu)', 'sgs-blocks' ), 'Account details' ],
 	[ 'savedItems', __( 'Saved items (menu)', 'sgs-blocks' ), 'Saved items' ],
+	[ 'passwordMismatch', __( 'Reset form: passwords do not match line', 'sgs-blocks' ), 'Passwords do not match.' ],
 	[ 'billingAddress', __( 'Billing address title', 'sgs-blocks' ), 'Billing address' ],
 	[ 'shippingAddress', __( 'Shipping address title', 'sgs-blocks' ), 'Shipping address' ],
 	[ 'addAddressLink', __( 'Add address link (whole text; %s is the address title)', 'sgs-blocks' ), 'Add %s' ],
@@ -110,6 +111,7 @@ export function HeaderPanel( { attributes, setAttributes } ) {
 					{ '' !== intro && <TextField { ...p } name={ intro } label={ __( 'Intro line', 'sgs-blocks' ) } /> }
 					{ 'headerLost' === prefix && (
 						<TextField { ...p } name="headerLostBackLabel" label={ __( 'Back to sign in link', 'sgs-blocks' ) } />
+						<Toggle { ...p } name="resetErrorsInline" label={ __( 'Reset form errors under the fields', 'sgs-blocks' ) } help={ __( 'The choose-a-new-password form shows its errors as text under the fields, not a boxed notice above. Off = WooCommerce’s own form.', 'sgs-blocks' ) } />
 					) }
 					{ 'headerAccount' === prefix && (
 						<>

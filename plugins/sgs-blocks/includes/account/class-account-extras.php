@@ -23,6 +23,7 @@ final class Account_Extras {
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_orders_template' ), 10, 5 );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_lost_confirmation_template' ), 10, 5 );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_view_order_template' ), 10, 5 );
+		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_reset_password_template' ), 10, 5 );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_address_template' ), 10, 5 );
 		\add_filter( 'woocommerce_billing_fields', array( __CLASS__, 'add_address_2' ), 20 );
 		\add_filter( 'woocommerce_shipping_fields', array( __CLASS__, 'add_address_2' ), 20 );
@@ -128,6 +129,21 @@ final class Account_Extras {
 			return $template;
 		}
 		return __DIR__ . '/templates/order-detail.php';
+	}
+
+	/**
+	 * Swap `myaccount/form-reset-password.php` for the block's own while `resetErrorsInline` is on: its validation
+	 * errors print as red text under the fields instead of a boxed notice above the form.
+	 *
+	 * @param mixed $template      Located template path.
+	 * @param mixed $template_name Template name.
+	 * @return mixed
+	 */
+	public static function maybe_swap_reset_password_template( $template, $template_name = '' ) {
+		if ( 'myaccount/form-reset-password.php' !== $template_name || ! is_array( Account_Endpoints::$active ) || empty( Account_Endpoints::$active['resetErrorsInline'] ) ) {
+			return $template;
+		}
+		return __DIR__ . '/templates/form-reset-password.php';
 	}
 
 	/**

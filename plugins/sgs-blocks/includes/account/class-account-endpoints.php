@@ -76,15 +76,40 @@ final class Account_Endpoints {
 	}
 
 	/**
-	 * Print the H2 when the active block has `tabHeadings` on.
+	 * Print the H2 when the active block has `tabHeadings` on; a non-empty `$aside` (the Wishlist tab's count) shares a
+	 * row with it.
 	 *
 	 * @param string $label Menu label of the endpoint.
+	 * @param string $aside Plain text printed beside the heading, '' for none.
 	 */
-	private static function print_tab_heading( string $label ): void {
+	public static function print_tab_heading( string $label, string $aside = '' ): void {
 		if ( ! is_array( self::$active ) || empty( self::$active['tabHeadings'] ) ) {
 			return;
 		}
-		echo '<h2 class="sgs-account__heading sgs-account__tab-heading">' . \esc_html( $label ) . '</h2>';
+		$heading = '<h2 class="sgs-account__heading sgs-account__tab-heading">' . \esc_html( $label ) . '</h2>';
+		if ( '' === $aside ) {
+			echo $heading; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above.
+			return;
+		}
+		echo '<div class="sgs-account__tab-head">' . $heading . '<span class="sgs-account__tab-count">' . \esc_html( $aside ) . '</span></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above.
+	}
+
+	/**
+	 * The count beside a tab heading from the block's wording: `{count}` is replaced; the singular wording is used for
+	 * one when set. '' while no wording is set.
+	 *
+	 * @param int   $count Number of items.
+	 * @param array $attrs Block attributes.
+	 * @return string
+	 */
+	public static function count_text( int $count, array $attrs ): string {
+		$many = trim( (string) ( $attrs['wishlistCountText'] ?? '' ) );
+		if ( '' === $many ) {
+			return '';
+		}
+		$one      = trim( (string) ( $attrs['wishlistCountOneText'] ?? '' ) );
+		$template = 1 === $count && '' !== $one ? $one : $many;
+		return str_replace( '{count}', (string) $count, $template );
 	}
 
 	/**
@@ -221,7 +246,8 @@ final class Account_Endpoints {
 	public static function render_saved_items_endpoint( $value ) {
 		// The tab heading (when the block prints one) names the tab, so the panel
 		// drops its own heading here.
-		self::print_tab_heading( Account_Strings::text( 'savedItems', __( 'Saved items', 'sgs-blocks' ) ) );
+		$saved = class_exists( Wishlist_Store::class ) ? count( Wishlist_Store::read_list( \get_current_user_id() ) ) : 0;
+		self::print_tab_heading( Account_Strings::text( 'savedItems', __( 'Saved items', 'sgs-blocks' ) ), self::count_text( $saved, is_array( self::$active ) ? self::$active : array() ) );
 		$empty = self::saved_items_empty_card();
 		if ( '' !== $empty ) {
 			echo $empty; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in sgs_account_empty_card_html().

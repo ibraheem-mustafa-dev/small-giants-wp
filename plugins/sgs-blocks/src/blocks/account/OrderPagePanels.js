@@ -73,6 +73,8 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 					{ label: __( 'Frame cards', 'sgs-blocks' ), value: 'cards' },
 				] }
 			/>
+			<TextField { ...p } name="wishlistCountText" label={ __( 'Count beside the heading', 'sgs-blocks' ) } help={ __( '{count} becomes the number of saved items, for example “{count} frames”. Empty = no count.', 'sgs-blocks' ) } />
+			<TextField { ...p } name="wishlistCountOneText" label={ __( 'Count for one item', 'sgs-blocks' ) } help={ __( 'For example “{count} frame”. Empty = the wording above.', 'sgs-blocks' ) } />
 			<TextField { ...p } name="wishlistEmptyHeading" label={ __( 'Empty card: heading', 'sgs-blocks' ) } help={ __( 'Shown while the list is empty, in the orders empty card look (Orders list panel). Leave heading, text and button empty for the wishlist panel’s own message.', 'sgs-blocks' ) } />
 			<TextField { ...p } name="wishlistEmptyText" label={ __( 'Empty card: text', 'sgs-blocks' ) } />
 			<TextField { ...p } name="wishlistEmptyButtonLabel" label={ __( 'Empty card: button label', 'sgs-blocks' ) } />

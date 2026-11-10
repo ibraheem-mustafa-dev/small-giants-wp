@@ -357,6 +357,7 @@
     "wc_shipping_enabled",
     "wc_string_to_bool",
     "wc_tax_enabled",
+    "wc_wp_theme_get_element_class_name",
     "woocommerce_register_additional_checkout_field",
     "woocommerce_store_api_register_endpoint_data",
     "woocommerce_wp_checkbox",

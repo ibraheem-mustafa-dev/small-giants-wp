@@ -777,6 +777,26 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	flex-wrap: wrap;
 }
 
+.sgs-account .sgs-account__tab-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+}
+
+.sgs-account .sgs-account__tab-head .sgs-account__tab-heading {
+	margin: 0;
+}
+
+:where(.sgs-account .sgs-account__tab-head) {
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 20px;
+}
+
+:where(.sgs-account__tab-count) {
+	font-size: 13.5px;
+}
+
 :where(.sgs-account__addr .woocommerce-Address-title) {
 	min-height: 24px;
 	align-items: center;

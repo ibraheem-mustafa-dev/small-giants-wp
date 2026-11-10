@@ -2740,6 +2740,16 @@
 				],
 				"description": "How the Saved items tab draws the list: empty = the wishlist panel's own layout, cards = a three-column grid of frame cards (two on a phone) with a heart that removes."
 			},
+			"wishlistCountText": {
+				"type": "string",
+				"role": "content",
+				"description": "Count beside the Saved items heading; {count} becomes the number of saved items, for example {count} frames. Empty = no count."
+			},
+			"wishlistCountOneText": {
+				"type": "string",
+				"role": "content",
+				"description": "The count wording for exactly one saved item, for example {count} frame. Empty = the plural wording."
+			},
 			"wishlistEmptyHeading": {
 				"type": "string",
 				"role": "content",
@@ -2921,6 +2931,10 @@
 				"type": "string",
 				"role": "content",
 				"description": "The line in an empty billing card while a delivery address is saved. Empty = the empty-card line."
+			},
+			"resetErrorsInline": {
+				"type": "boolean",
+				"description": "Replaces WooCommerce's choose-a-new-password form so its validation errors print as text under the fields instead of a boxed notice above. Off = WooCommerce's own form."
 			},
 			"addressEditor": {
 				"type": "boolean",
