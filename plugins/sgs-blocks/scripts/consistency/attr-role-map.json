@@ -6892,7 +6892,7 @@
     "sgs/modal::modalRef": "technical",
     "sgs/modal::openDuration": "motion",
     "sgs/modal::openEasing": "motion",
-    "sgs/modal::openEasingCustom": null,
+    "sgs/modal::openEasingCustom": "styling",
     "sgs/modal::openOnHashLoad": "boolean-visibility",
     "sgs/modal::openStartScale": "select-from-enum",
     "sgs/modal::scrimBlur": "number-css-px",
