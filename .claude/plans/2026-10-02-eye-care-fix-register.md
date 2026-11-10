@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # Eye Care: fix register
 
 **Written for:** Bean. Every fix the Eye Care test site still needs to match its draft, one line each, merged with your review of the first version.

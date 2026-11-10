@@ -2,7 +2,8 @@
 title: "Eye Care: the functionality and feature backlog pulled out of the fix register"
 project: small-giants-wp
 created: 2026-10-05
-status: Tier 1 built; Tier 2 partly built (open rows below); Tiers 3-4 open except 73
+status: parked
+progress: Tier 1 built; Tier 2 partly built (open rows below); Tiers 3-4 open except 73
 governs: what to build next, after the register-proven repairs track closed
 references:
   - .claude/plans/2026-10-02-eye-care-fix-register.md
