@@ -1242,7 +1242,6 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	background: var(--wp--preset--color--surface, #fff);
 	color: inherit;
 	line-height: normal;
-	text-align: left;
 	text-decoration: none;
 	transition: background var(--wp--custom--duration--fast, 250ms);
 }
@@ -1255,6 +1254,14 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 
 .sgs-account__order-summary {
 	min-width: 0;
+}
+
+/* Zero-specificity defaults for the order row: a site rule overrides them. */
+:where(.sgs-account__order) {
+	text-align: left;
+}
+
+:where(.sgs-account__order-summary) {
 	text-wrap: pretty;
 }
 

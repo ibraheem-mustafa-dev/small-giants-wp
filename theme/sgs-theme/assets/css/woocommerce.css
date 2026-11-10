@@ -3526,9 +3526,10 @@ body.sgs-shop-active-bar .sgs-shop-filters .wp-block-woocommerce-product-filter-
 	border-color: var(--wp--preset--color--text);
 }
 
-.wc-block-checkout__shipping-method-option:focus-visible {
-	outline: 2px solid var(--wp--preset--color--text);
-	outline-offset: -2px;
+/* The delivery cards take the focus system's inset line (focus.css draws it), like inputs and choice controls. */
+.wc-block-checkout__shipping-method-option {
+	--sgs-focus-offset: calc(var(--sgs-focus-width) * -1);
+	--sgs-focus-halo: inset 0 0 0 calc(var(--sgs-focus-width) * 2 * var(--sgs-focus-keep, 1)) var(--sgs-focus-hairline);
 }
 
 .wc-block-checkout__shipping-method-option .wc-block-checkout__shipping-method-option-icon {
