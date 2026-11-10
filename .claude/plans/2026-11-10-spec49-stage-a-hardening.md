@@ -1,5 +1,5 @@
 ---
-status: active
+status: done
 governs: .claude/specs/49-SGS-MEDIA-SYSTEM.md (Front P)
 ---
 
@@ -71,4 +71,4 @@ Paths are under `plugins/sgs-blocks/` unless stated. Each group is one fix agent
 
 ## Progress
 
-- Groups G, M, R, E: dispatched 2026-11-10.
+- All four groups fixed and merged 2026-11-10, each row's failing baseline and passing check recorded in `E:/sgs-tmp/media-qc/stageA/Fix-fxg/`, `Fix-fxm/`, `Fix-fxr/`, `Fix-fxe/`. Notes for Stage B: G4's background slot writes 16 rows (§9.3's list), not Appendix A's "about 14"; G7's guard lifts when any file under `includes/media/` names `sgs-bg-media`, so WP-8 replaces it with a declared background capability; M1's frozen rows must never be regenerated after a block declares `kinds` (`rows --regenerate` refuses); R12 needs items rendered in order, or `item_set.block_rules` on exactly one item.
