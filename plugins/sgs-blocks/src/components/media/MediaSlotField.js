@@ -13,6 +13,7 @@
 import { __ } from '@wordpress/i18n';
 import { useEffect, useRef, useState } from '@wordpress/element';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
+import { asTierObject } from '../../utils/responsive.js';
 import ResponsiveOverride from '../ResponsiveOverride.js';
 import Chips from './Chips.js';
 import MediaSlotPreview from './MediaSlotPreview.js';
@@ -40,6 +41,20 @@ export function LibraryButton( { types, label, onSelect, value } ) {
 	);
 }
 
+/**
+ * The kind a device shows: its own stored entry's kind first, then the inherited file's, then any inherited kind.
+ *
+ * @param {*}      stored   The stored Source.
+ * @param {string} device   Active device.
+ * @param {Object} resolved The file the device resolves to (own or inherited).
+ * @param {string} fallback The slot's first kind.
+ * @return {string} The kind.
+ */
+export function deviceKind( stored, device, resolved, fallback ) {
+	const own = asTierObject( stored )[ device ];
+	return own?.kind || resolved?.kind || resolveTierSource( stored, device, ( s ) => !! s?.kind ).value?.kind || fallback;
+}
+
 export default function MediaSlotField( { attributes, setAttributes, prefix, slot, label } ) {
 	const access = slotAccess( attributes, setAttributes, prefix );
 	const device = useActiveDevice();
@@ -56,7 +71,7 @@ export default function MediaSlotField( { attributes, setAttributes, prefix, slo
 
 	const stored = access.read( 'Source' );
 	const media = resolveTierSource( stored, device, hasFile );
-	const kind = media.value?.kind || resolveTierSource( stored, device, ( s ) => !! s?.kind ).value?.kind || kinds[ 0 ];
+	const kind = deviceKind( stored, device, media.value, kinds[ 0 ] );
 
 	const pick = ( attachment, pickedKind ) => {
 		const { patch, staleAlt: stale } = pickPatch( { read: access.read, device, media: attachment, kind: pickedKind, keepFocal } );
