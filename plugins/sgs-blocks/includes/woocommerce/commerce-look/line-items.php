@@ -155,5 +155,12 @@ function sgs_commerce_look_summary_extras_inject( $block_content, $block ) {
 		return $block_content;
 	}
 	$json = wp_json_encode( $config, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE );
-	return $block_content . '<script>window.sgsCheckoutSummaryExtrasConfig=' . $json . ';' . $script . '</script>';
+	// A footer handle of its own: script text placed in block content is run through `wptexturize`, which encodes
+	// `&&` and quotes and breaks the script.
+	if ( ! wp_script_is( 'sgs-checkout-summary-extras', 'registered' ) ) {
+		wp_register_script( 'sgs-checkout-summary-extras', false, array( 'wp-data' ), false, true );
+	}
+	wp_enqueue_script( 'sgs-checkout-summary-extras' );
+	wp_add_inline_script( 'sgs-checkout-summary-extras', 'window.sgsCheckoutSummaryExtrasConfig=' . $json . ';' . $script );
+	return $block_content;
 }

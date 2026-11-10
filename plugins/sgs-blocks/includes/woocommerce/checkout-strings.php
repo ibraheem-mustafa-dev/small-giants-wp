@@ -78,7 +78,7 @@ function sgs_checkout_strings_script( array $map ): string {
  * Render-block filter: hand the script to the page for the Checkout block.
  *
  * Before `wp-i18n` prints, the script is appended to that handle so it runs ahead of the block's bundle; once it has
- * printed, the script follows the block's own markup.
+ * printed, it goes through a footer handle of its own.
  *
  * @param mixed $block_content Rendered block HTML.
  * @param mixed $block         Parsed block.
@@ -97,5 +97,12 @@ function sgs_checkout_strings_inject( $block_content, $block ) {
 		wp_add_inline_script( 'wp-i18n', $script, 'after' );
 		return $block_content;
 	}
-	return $block_content . '<script>' . $script . '</script>';
+	// Printed through a footer handle of its own: script text placed in post or block content is run through
+	// `wptexturize`, which encodes `&&` and quotes and breaks the script.
+	if ( ! wp_script_is( 'sgs-checkout-strings', 'registered' ) ) {
+		wp_register_script( 'sgs-checkout-strings', false, array( 'wp-hooks' ), false, true );
+	}
+	wp_enqueue_script( 'sgs-checkout-strings' );
+	wp_add_inline_script( 'sgs-checkout-strings', $script );
+	return $block_content;
 }
