@@ -1465,12 +1465,21 @@
     "order": 156
   },
   {
-    "id": "diagram-geometry-twin",
-    "cmd": "node --no-warnings tests/js/diagram-geometry.check.js && php tests/php/diagram-geometry.php",
+    "id": "diagram-geometry-twin-self-test",
+    "cmd": "node --no-warnings tests/js/diagram-geometry.check.js",
     "tier": "fast",
     "added_D": null,
     "added_commit": null,
-    "budget_ms": 46,
+    "budget_ms": 23,
+    "order": 157
+  },
+  {
+    "id": "diagram-geometry-twin",
+    "cmd": "php tests/php/diagram-geometry.php",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 23,
     "order": 157
   },
   {
@@ -2215,21 +2224,39 @@
     "order": 251
   },
   {
-    "id": "check-gate-disposition",
-    "cmd": "python scripts/check-gate-disposition.py --self-test && python scripts/check-gate-disposition.py --check",
+    "id": "check-gate-disposition-self-test",
+    "cmd": "python scripts/check-gate-disposition.py --self-test",
     "tier": "fast",
     "added_D": null,
     "added_commit": null,
-    "budget_ms": 5000,
+    "budget_ms": 2500,
     "order": 252
   },
   {
-    "id": "check-media-contract",
-    "cmd": "python scripts/check-media-contract.py --self-test && python scripts/check-media-contract.py --check",
+    "id": "check-gate-disposition",
+    "cmd": "python scripts/check-gate-disposition.py --check",
     "tier": "fast",
     "added_D": null,
     "added_commit": null,
-    "budget_ms": 500,
+    "budget_ms": 2500,
+    "order": 252
+  },
+  {
+    "id": "check-media-contract-self-test",
+    "cmd": "python scripts/check-media-contract.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 250,
+    "order": 253
+  },
+  {
+    "id": "check-media-contract",
+    "cmd": "python scripts/check-media-contract.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 250,
     "order": 253
   },
   {

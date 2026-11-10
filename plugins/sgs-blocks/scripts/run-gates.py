@@ -82,7 +82,9 @@ _THIN = "-" * 78
 # Only interpreters we are prepared to launch. `npm` is deliberately absent:
 # it is a shell shim on Windows and every command it would have run is a
 # generator that stays in `prebuild`.
-_ALLOWED_EXE = {"python", "node"}
+_ALLOWED_EXE = {"python", "node", "php"}
+# Shell control tokens: the runner uses no shell, so these would reach the first command as plain arguments.
+_CHAIN_TOKENS = {"&&", "||", ";"}
 
 # Every command in the chain carries one of these. `generator` records a
 # command that RUNS IN `prebuild`, not here — it is in the roster so the whole
@@ -147,6 +149,9 @@ def select(gates: list[dict], tier: str, only: list[str] | None) -> list[dict]:
 def run_one(gate: dict) -> tuple[int, str, float]:
     """Run one gate from the PLUGIN dir. Returns (exit_code, output, seconds)."""
     argv = shlex.split(gate["cmd"], posix=True)
+    chained = [t for t in argv if t in _CHAIN_TOKENS]
+    if chained:
+        return 2, f"[run-gates] refusing a chained command ({chained[0]}): only the first command would run; split it into separate gate records: {gate['cmd']}", 0.0
     if not argv or argv[0] not in _ALLOWED_EXE:
         return 2, f"[run-gates] refusing to run unrecognised command: {gate['cmd']}", 0.0
 
@@ -410,6 +415,14 @@ def do_self_test() -> int:
     # 2. POSITIVE CONTROL — a passing command is reported as passing.
     code, _, _ = run_one({"id": "_st_pass", "cmd": f'python -c "{_SELF_TEST_PASS}"'})
     check("positive control: exit 0 is seen as pass", code == 0, f"got exit {code}")
+
+    # 2b. A chained command is refused, not half-run.
+    code, out, _ = run_one({"id": "_st_chain", "cmd": f'python -c "{_SELF_TEST_PASS}" && python -c "{_SELF_TEST_FAIL}"'})
+    check("a command chained with && is refused", code == 2 and "refusing a chained command" in out, f"got exit {code}")
+    for token in ("||", ";"):
+        code, _, _ = run_one({"id": "_st_chain", "cmd": f'python -c "{_SELF_TEST_PASS}" {token} python -c "{_SELF_TEST_PASS}"'})
+        check(f"a command chained with {token} is refused", code == 2, f"got exit {code}")
+    check("no roster gate is chained", not [g["id"] for g in gates if any(t in _CHAIN_TOKENS for t in shlex.split(g["cmd"], posix=True))])
 
     # 3. NEGATIVE CONTROL — a failing command is reported as failing, and its
     #    output is captured. Without this, a runner that stopped running
