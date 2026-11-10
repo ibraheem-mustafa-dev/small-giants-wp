@@ -46,10 +46,14 @@
 import { getBlockType } from '@wordpress/blocks';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
+import { Suspense, lazy } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 import { MEDIA_ATOMS, atomsForElement } from './media/atoms/registry.js';
-import MediaPanels from './media/panels/MediaPanels.js';
+
+// The adopted panels load on first use as one shared chunk, so the 30-odd block bundles that import this
+// component do not each carry a copy (about 80 KB apiece).
+const MediaPanels = lazy( () => import( /* webpackChunkName: "media-panels" */ './media/panels/MediaPanels.js' ) );
 
 import { control as sourceControl } from './media/atoms/source.control.js';
 import { control as mediaTypeControl } from './media/atoms/media-type.control.js';
@@ -155,17 +159,19 @@ export default function MediaElementPanel( {
 	const slotKinds = Array.isArray( kinds ) && kinds.length ? kinds : declaredKinds( blockName, prefix );
 	if ( slotKinds.length ) {
 		return (
-			<MediaPanels
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-				prefix={ prefix }
-				blockSlug={ blockSlug }
-				atomIds={ ids }
-				kinds={ slotKinds }
-				context={ context }
-				parallax={ parallax }
-				panelContent={ panelContent }
-			/>
+			<Suspense fallback={ null }>
+				<MediaPanels
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix={ prefix }
+					blockSlug={ blockSlug }
+					atomIds={ ids }
+					kinds={ slotKinds }
+					context={ context }
+					parallax={ parallax }
+					panelContent={ panelContent }
+				/>
+			</Suspense>
 		);
 	}
 	const rows = [];
