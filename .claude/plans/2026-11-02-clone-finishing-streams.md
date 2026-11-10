@@ -60,6 +60,12 @@ Rules:
 
 ## Eye Care (now)
 
+- **Live:** eye-care-test, edited directly, on main `24cef6f96` (round 13's framework commits are in it). Rounds 1 to 13 are live: round 13 is Bean's list of 2026-11-09 (input focus, buttons, above-the-fold entrances, pop-up and lens motion, checkout, account and thank-you settings, reload and anchor jumps), checked live in real Chrome beside the draft in five passes. The fix register (`plans/2026-10-02-eye-care-fix-register.md`, "Round 13") lists every fix, the frameworks built and the known limits; the decided differences, including Bean's round 13 rulings, are in `decided.md`.
+- **Next:** Bean's sign-off beside the draft at 375, 768 and 1440. Still unchecked: Stripe and the wallet buttons end to end, and a tap-through of the header, shop cards, bag and size guide at 375 for the touch-hover change.
+- **Waiting on Spec 49:** Mama's media work (images, backgrounds, effects on them) waits for the media system's cutover (`specs/49-SGS-MEDIA-SYSTEM.md`; plan register `plans/2026-11-09-media-controls-redesign.md`), so it is built once on the new controls.
+
+## Eye Care (now)
+
 - **Live:** eye-care-test, edited directly, framework through `24095ea4f` (marker, 2026-11-09). Rounds 1 to 12 and the clean first paint are live: round 11 is Bean's 15-item list of 2026-11-08 and round 12 his second list of 2026-11-09, both in the fix register (`plans/2026-10-02-eye-care-fix-register.md`, "Round 11" and "Round 12"), verified live in real Chrome. The decided differences, including Bean's round 12 rulings, are in `decided.md`.
 - **Next, in order:**
   1. Run `/qc-council` on round 12's framework code (`f791e433b` to `24095ea4f`, Spec 02 FR-2-20, Spec 38A FR-38A-43 and FR-38A-44, Spec 43 FR-43-24a, Spec 32): it has not been run.

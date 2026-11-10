@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 2
-spec_version: "1.13"
+spec_version: "1.14"
 project: small-giants-wp
 title: SGS Blocks — Custom Gutenberg Block Library
 status: active
@@ -442,6 +442,8 @@ Variant background, border and colour are overridable via `:where()` (E9). `icon
 **Inner blocks:** Yes. Modal content accepts any blocks (used when no `modalRef` is set).
 
 **Render:** Dynamic `render.php` + `viewScriptModule` for open/close logic via the Interactivity API. Uses the `<dialog>` element for native accessibility; focus trap and Escape handling are built in. The `<dialog>` outer shell is rendered block-private (not through `SGS_Container_Wrapper`).
+
+**Open state and focus.** The dialog publishes `open` on every open and clears it on close (`modal-motion-state.js`, Spec 38A FR-38A-51). `openDuration`, `openEasing`, `openStartScale` and `scrimFadeDuration` set the open animation and the backdrop fade; unset keeps the stylesheet values. On open the modal saves the page's real scroll position (`modal-core.js::pageScrollY`, which reads past a nav drawer's body scroll lock) and restores it on close; `modal-core.js::restoreModalFocus` returns focus to the control that opened it, and treats focus still on the dialog's own control as stranded, so a modal opened from a closing nav drawer returns focus to the burger.
 
 ---
 
@@ -921,7 +923,7 @@ Content that moves on its own for more than five seconds beside other content (a
 
 All blocks can be conditionally shown or hidden per device tier through three independent booleans: `sgsHideOnMobile`, `sgsHideOnTablet`, `sgsHideOnDesktop` (`plugins/sgs-blocks/src/blocks/extensions/responsive-visibility.js`; the device-visibility CSS is `plugins/sgs-blocks/includes/device-visibility.php`).
 
-**Not built:** role-based, login-state and schedule-based visibility conditions (a server-side `render_block` filter, zero frontend cost).
+**Conditions:** a server-side `render_block` filter (`plugins/sgs-blocks/includes/conditional-visibility.php`, zero frontend cost) hides a block unless every active condition passes: `sgsConditionLoggedIn` (`none`, `logged-in`, `logged-out`, or `order-owner`, which shows the block only when the signed-in viewer owns the order on the order-confirmation page; a guest order, another customer's order and a page with no order stay hidden), user role, date range, weekdays, URL parameter, referrer, product reviews and collection results.
 
 ---
 

@@ -710,6 +710,40 @@ The comparison tool missed several things you found. Each gap becomes a check, w
 - **Also built 2026-10-05:** pages are read once their animations finish (no row read mid-entrance), the draft's declared widths are read (Contact's 168px address), transition and animation timings are compared, and a list's spacing between its lines (Contact's hours).
 - **Shopping flows as scripted end-to-end tests**, not comparisons: two products in the bag, a second pair, choosing then clearing a filter (N11, N25).
 
+## Round 13 (Bean's list of 2026-11-09; live 2026-11-10)
+
+Causes proven before each fix (evidence under `E:/sgs-tmp/ec-check/`), built test-first in ten jobs, integrated once, reseeded once and deployed to eye-care-test, then checked live in real Chrome beside the draft at 375, 768 and 1440 in five passes. Posts were backed up first to `sites/eye-care-ward-end/build/backups/2026-11-09-r13/` (local only). Framework commits `92866dfb7`, `e816a9dfe`, `6c7c64f95`, `64272973b`, `b71e20add`, `e74a4aef8`, `77c8ce234`, `a5192d52b`, `c5c346dda`, `e783fee50` and the fixes after them, up to main `24cef6f96`; the generated-file chores are the "chore(db)" commits.
+
+| Surface or item | Fix | Layer |
+|---|---|---|
+| Every input, select and textarea (contact, account, checkout) | One inset 2px focus outline inside the border; the border no longer recolours on focus (WooCommerce's own block rule included); checkboxes and radios keep the normal offset | framework (Spec 32 §14.5) |
+| Account, cart and checkout buttons | The full button preset: colours, a 3px lift over 0.25s, the preset's timing; Sign in primary and Create account secondary through `registerButtonPreset`; reduced motion removes the lift; the Create-account lines leave post 9's Custom CSS | framework (Spec 27) + settings |
+| Account links | A block's link decoration setting switches the global hover underline sweep off, so "Forgotten your password?" and the privacy link draw one line | framework |
+| Contact upload box | Hover keys on the zone, not the label the file input covers | framework |
+| Contact "sent" message | A motion part, so the form's motion panel gives it the draft's 300ms fade | framework + setting |
+| Handoff folders (Eye Care, Indus, Mama's) | `--focus-color`, `--focus-width` and `--focus-offset` in `tokens/spacing.css`; a missing token is a warning | framework (Spec 48A FR-48A-15) |
+| Header reload | No content jump on reload or back: a pre-paint head script takes scroll restoration, pre-shrinks the row and restores the saved position once the page is tall enough | framework (Spec 36, 37) |
+| Above the fold, whole site | No entrance starts fully invisible: 1% fades, 99% clip reveals, tiny non-zero scale; one pure definition, the first two content sections; the shop's second card no longer shows before its siblings; template pages (shop, archives, product) are armed from their template | framework (Spec 38A §9, FR-38A-18) |
+| Editor | The editor measures the real first screen when a page is saved and stores the section count (`_sgs_fold_sections`); the canvas applies the same start floor | framework (Spec 38A §9) |
+| Anchor jumps | A jump into an animated section lands under the header (the entrance is finished first, then the browser scrolls) | framework (Spec 38A FR-38A-19) |
+| Pop-up (`sgs/modal`) | Announces `open` like the nav drawer; open duration, easing, start scale and backdrop fade are settings; opened from a closing nav drawer it saves the page's real scroll position and returns focus to the burger | framework (Spec 02, Spec 38A FR-38A-51) + settings |
+| Size pop-up, post 461 | Zoom .985 to 1, 270ms fade, 250ms backdrop, as the draft | settings |
+| Lens flow, post 463 | Question 1 and Back rise on open and on Back; the fit guard switches Fit to screen off when padding or gaps are eaten; the summary photo and total are motion parts and the progress fill, photo and total read the panel's speed (500, 600 and 350ms); the tag sits 14px from the card's top left | framework (Spec 43 FR-43-24a) + settings + Custom CSS |
+| Filter drawer (shop) | Keeps its slide-up sheet and adds the draft's 250ms group fades, replayed on every open | framework + setting |
+| Account, post 9 | Menu order as the draft, tab headings, the draft's password and email labels, password pair side by side, `headingMarginBottom` | framework (Spec 27) + settings |
+| Checkout, template part 1609 | Delivery before address; one step number; "Free" not "FREE"; Express Checkout heading hidden; Pay now above the summary at 768 and 375; country hidden; "+ Add flat" removed; 72px thumbnails; terms 12.5px; "Already have an account? Sign in" beside the Contact heading; optional mobile field; summary Edit link and brand; wording through the i18n filter | framework + settings + options + Custom CSS |
+| Thank-you, part 1611 | Signed-in note and "View my orders" button shown only to the order's owner; the tick peaks at 1.15 over 600ms | framework + settings |
+| Lens total pop | A timing-only entrance prints its custom properties with no marker, so the lens total's pop keeps its own animation | framework |
+
+Frameworks built in this round: the inset input focus; the button preset helper (`includes/helpers-button-preset.php::sgs_button_preset_css`); the modal open state; the fold rule (`Sgs_Motion_Fold::is_above_fold`) with the editor fold scan (`Sgs_Fold_Scan`) and the template arming (`Sgs_Motion_Renderer::arm_from_template`); the anchor reveal (`assets/js/motion-reveal.js::settle`); the choice-flow fit guard; the choice-flow speed parts; the account and checkout settings (`menuOrder`, `tabHeadings`, `registerButtonPreset`, `sgsCheckoutStrings`, `sgs_checkout_mobile_field`, order summary extras); and the `order-owner` Show-to condition (`includes/conditional-visibility.php`).
+
+Moved elsewhere: lazy loading by the fold (the image loader calls `Sgs_Motion_Fold::is_above_fold`) and the two `ProductCardImagePriorityTest` tests that still encode the pre-round-12 first-section rule go to Spec 49 WP-3; hero parallax lag goes to Spec 49.
+
+Known limits:
+- A modal rendered after `wp_head` has no import map, so it cannot play an open entrance and logs a console warning.
+- The `helpers-media.php::sgs_hidden_render_depth` and `Sgs_Motion_Loop_Delays::$template_depth` counters can drift if a block is rendered directly through `WP_Block::render()`, which fires neither hook.
+- The checkout login prefix's -24px offset is measured on WooCommerce 11.2.1.
+
 ## Round 11 (Bean's 15-item list, 2026-11-08; live 2026-11-09)
 
 Causes proven on the live page or in code, proposed to Bean and council-checked before anything was applied. Framework `db037c7aa`, `50b8302d1`, `b22ba90a7`, `1f4575bd1`; shared DB `b4f6f742821a`. Each item was checked on eye-care-test at the widths named.

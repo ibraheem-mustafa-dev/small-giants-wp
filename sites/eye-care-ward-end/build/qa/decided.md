@@ -137,7 +137,7 @@ How fixes are judged (Bean, 2026-11-03, replaces the note above): this site's ow
 
 Decided or accepted in rounds 7 to 9 (2026-11-04 to 06). Do not report:
 - Hover rule S1 restated (R7): a white button lifts only, a black one lifts with a lighter ground, the green WhatsApp lifts only; nothing darkens (N36C). The draft's WhatsApp card tint and the outline "as they are" fill were dropped.
-- The lens summary greys pass contrast (6.2:1; draft 3.3:1). The colour-dot focus ring is dark so it shows on gold and tan dots. Contact fields turn tan on focus. (R7, live is better)
+- The lens summary greys pass contrast (6.2:1; draft 3.3:1). The colour-dot focus ring is dark so it shows on gold and tan dots. Every input, select and textarea takes one inset 2px focus outline with no border change (Bean, round 13).
 - The lens summary "Tinted to match" label at 375 (a draft glitch that wraps and clips).
 - Shop brand filter rows and search box 44px; the bag Remove's 24px row; the lens skip row 44px; the Gender buttons' focus ring inset. (R8, live is better)
 - Sign-in and checkout: the show-password eye and the checkout floating labels stay; the account's Subscriptions, Downloads and Payment methods tabs are hidden; Stripe runs in test mode with Apple Pay, Google Pay, Card and Klarna (Amazon Pay and Link off). (R9, Bean)
@@ -161,9 +161,22 @@ Decided in round 11 (Bean, 2026-11-09). Do not report:
 
 Decided in round 12 (Bean, 2026-11-09). Do not report:
 - The header's side gutters do not change when it turns sticky (reverses the draft).
-- The drawer call button's hover border is taupe: measured as the `accent` taupe. Bean reported black; ask whether he still sees black before changing it.
+- The drawer call button's hover border is taupe, the `accent` taupe (closed, Bean, round 13).
 - The white line under Four reasons on the home page was a page-load artefact, not a bug.
 - A draft's font sizes are copied verbatim, including `vw` clamps (Specs 01, 32, 35A and 48 say so); the hero h1 uses the `hero` size, clamp(42px, 4.4vw, 72px).
 - The trust bar is a still row when its badges fit and a ticker only when they do not (`belowBreakpoint: overflow`); it stays still at 1440 and 1920.
 - The hero parallax moves the Background part's real image (speed ratio 0.18, page basis); the lens flow fits the screen and shows four columns only from a 2200px container.
 - The hero focal points (post 208) and the lens tag and outline (post 463) stay in Custom CSS until Spec 49.
+
+Decided in round 13 (Bean, 2026-11-09 and 2026-11-10). Do not report:
+- Input focus is one inset 2px outline drawn inside the border, with no border colour change, on every text input, select and textarea (contact, account, checkout); buttons and links keep the gap. This replaces "Contact fields turn tan on focus" (R7).
+- The drawer call button's hover border is taupe.
+- Field labels stay 13px.
+- Above the fold, no entrance starts fully invisible: fades start at 1%, clip reveals at 99% and scale-from-zero at a tiny scale. "Above the fold" is the first two content sections, or the count the editor measured when the page was saved.
+- The filter drawer keeps its slide-up sheet and adds the draft's group fades (250ms).
+- The size pop-up matches the draft: a zoom from .985 to 1 with a 270ms fade and a 250ms backdrop.
+- The "Confirm your email" notice is kept.
+- The Express Checkout heading is hidden; the wallet buttons and their divider stay.
+- The thank-you note ("View my orders") shows only to the signed-in owner of the order.
+- Prices hide ".00" everywhere except at checkout, where pennies show.
+- "Already have an account? Sign in" sits beside the Contact heading on one line, not below the fields.
