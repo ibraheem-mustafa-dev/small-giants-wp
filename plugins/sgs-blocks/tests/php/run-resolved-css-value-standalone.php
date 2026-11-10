@@ -57,6 +57,8 @@ $resolved = array(
 	'clamp(1rem, 2vw + 0.5rem, 3rem)',
 	'CLAMP(1rem, 2vw, 3rem)',
 	'clamp(1rem, calc(2vw + 1px), min(3rem, 9vw))',
+	"var(--a, 'x')",
+	'var(--a, "x")',
 );
 $hostile  = array(
 	'var(--x);}body{color:red}',
@@ -68,6 +70,9 @@ $hostile  = array(
 	'var(--x) var(--y)',
 	'calc(}body{color:red)',
 	'var(--x)/* c */',
+	"var(--a, ')",
+	'var(--a, ")',
+	"var(--a, 'x\")",
 	'min(url(x), 1px)',
 	'calc(1px)' . chr( 92 ),
 );

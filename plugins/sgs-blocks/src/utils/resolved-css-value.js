@@ -4,7 +4,7 @@
  * custom property. PHP twin: `sgs_resolved_css_value()` (includes/helpers-css-safety.php).
  *
  * A value carrying `;`, `{`, `}`, `<`, `>`, `=`, a backslash, a comment opener, `url(`, `expression(` or `@import`,
- * unbalanced parentheses, or text outside the single call, is refused.
+ * unbalanced parentheses or quotes, or text outside the single call, is refused.
  *
  * @package
  */
@@ -25,6 +25,18 @@ export function resolvedCssValue( value ) {
 		return '';
 	}
 	if ( /[\\{}<>;=]/.test( text ) || text.includes( '/*' ) || /url\s*\(|expression\s*\(|@import/i.test( text ) ) {
+		return '';
+	}
+	// An open quote would swallow the rest of the declaration, so single and double quotes must pair up.
+	let quote = '';
+	for ( const ch of text ) {
+		if ( '' === quote && ( '"' === ch || "'" === ch ) ) {
+			quote = ch;
+		} else if ( '' !== quote && ch === quote ) {
+			quote = '';
+		}
+	}
+	if ( '' !== quote ) {
 		return '';
 	}
 	// The first call must close at the very last character, with balanced parentheses throughout.

@@ -232,8 +232,8 @@ if ( ! function_exists( 'sgs_resolved_css_value' ) ) {
 	 *
 	 * The value is validated by sgs_css_length_value(), which refuses `;`, `{`, `}`,
 	 * `<`, `>`, `=`, a backslash, a comment opener, `url(`, `expression(`, `@import`
-	 * and unbalanced parentheses; this function also refuses text before or after the
-	 * single call.
+	 * and unbalanced parentheses; this function also refuses unbalanced quotes and text
+	 * before or after the single call.
 	 *
 	 * @param mixed $value Stored value.
 	 * @return string The trimmed, safe value; '' when the value is not a single safe CSS function call.
@@ -244,6 +244,18 @@ if ( ! function_exists( 'sgs_resolved_css_value' ) ) {
 		}
 		$value = trim( $value );
 		if ( 1 !== preg_match( '/^(?:var|calc|min|max|clamp)(\((?:[^()]|(?1))*\))$/i', $value ) ) {
+			return '';
+		}
+		// An open quote would swallow the rest of the declaration, so single and double quotes must pair up.
+		$quote = '';
+		foreach ( str_split( $value ) as $char ) {
+			if ( '' === $quote && ( '"' === $char || "'" === $char ) ) {
+				$quote = $char;
+			} elseif ( '' !== $quote && $char === $quote ) {
+				$quote = '';
+			}
+		}
+		if ( '' !== $quote ) {
 			return '';
 		}
 		return sgs_css_length_value( $value );
