@@ -110,8 +110,10 @@ export function HeaderPanel( { attributes, setAttributes } ) {
 					/>
 					{ '' !== intro && <TextField { ...p } name={ intro } label={ __( 'Intro line', 'sgs-blocks' ) } /> }
 					{ 'headerLost' === prefix && (
-						<TextField { ...p } name="headerLostBackLabel" label={ __( 'Back to sign in link', 'sgs-blocks' ) } />
-						<Toggle { ...p } name="resetErrorsInline" label={ __( 'Reset form errors under the fields', 'sgs-blocks' ) } help={ __( 'The choose-a-new-password form shows its errors as text under the fields, not a boxed notice above. Off = WooCommerce’s own form.', 'sgs-blocks' ) } />
+						<>
+							<TextField { ...p } name="headerLostBackLabel" label={ __( 'Back to sign in link', 'sgs-blocks' ) } />
+							<Toggle { ...p } name="resetErrorsInline" label={ __( 'Reset form errors under the fields', 'sgs-blocks' ) } help={ __( 'The choose-a-new-password form shows its errors as text under the fields, not a boxed notice above. Off = WooCommerce’s own form.', 'sgs-blocks' ) } />
+						</>
 					) }
 					{ 'headerAccount' === prefix && (
 						<>
