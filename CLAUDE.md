@@ -2,11 +2,11 @@
 
 SGS is a standalone WordPress block framework and AI website-builder: theme + blocks plugin (with forms) + booking, client-notes, accessibility and configurator plugins. It competes with Kadence / Spectra / GenerateBlocks and delivers client builds with Bean as QC only. Everything must work for ANY client ("a restaurant, a wedding planner AND a law firm"): client colours, copy, imagery and structure live in `sites/<client>/` only, never in the theme or plugins.
 
-**Where things live:** see `.claude/CLAUDE.md` (status in `LEDGER.md`, specs roster in `specs/README.md`, plans, dev-setup, architecture). Client design context → `sites/<client>/CLAUDE.md`; each plugin and the theme has its own CLAUDE.md. Path-scoped rules in `.claude/rules/` load automatically when you touch their paths; `framework-principles.md` (the `FP-<n>` rules) always loads.
+**Where things live:** see `.claude/CLAUDE.md` (status in `LEDGER.md`, specs roster in `specs/README.md`, plans, dev-setup). Client design context → `sites/<client>/CLAUDE.md`; each plugin and the theme has its own CLAUDE.md. Path-scoped rules in `.claude/rules/` load automatically when you touch their paths; `framework-principles.md` (the `FP-<n>` rules) always loads.
 
 ## How to work here
 
-- **Plan mode is the default** (`.claude/settings.json`). Read the governing spec that `LEDGER.md` names before touching its surface.
+- **Read the governing spec that `LEDGER.md` names** before touching its surface.
 - **Find the cause in the artefacts** (code, DB, logs, live DOM), and classify the layer: an implementation bug, or a gap in the spec or plan. Fix the right layer.
 - **A control that "doesn't work" already works somewhere: find it and diff.** `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT block_slug, attr_name, css_property, css_element FROM block_attributes WHERE css_property='<prop>'"`, then compare that block's `render.php`/`style.css` with yours.
 - **Verify the rendered page at 375/768/1440** (Playwright or Chrome: DOM and computed styles). A green gate or build proves only what it asserts.
@@ -61,6 +61,6 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --targe
 | Lay out a page, header, footer, drawer or modal on a live site | `scripts/wp-build-page.js` from a JSON block tree in `sites/<client>/build/` (it refuses unknown or wrongly typed settings) |
 | Block, theme and client-site work | `/sgs-wp-engine` (+ `/wp-block-development` for core block-API questions) |
 | Deploy ceremony | `/wp-sgs-deploy` |
-| Cloning pipeline | `/sgs-clone`, then `/sgs-update` |
+| Cloning (Spec 48) | the computed route in `scripts/computed-route` (LEDGER Front H); `/sgs-update` after framework changes |
 | DB and schema questions | `/sgs-db`, `python ~/.claude/hooks/wp-blocks.py dump` |
 | Pages built with banned core blocks | `plugins/sgs-blocks/scripts/migrate-core-blocks/` (see its README) |

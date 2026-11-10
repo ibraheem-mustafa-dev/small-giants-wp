@@ -1037,7 +1037,7 @@ Paths checked with `ls` in `E:/sgs-tmp/wt-media` (HEAD `e8f3c9be3`); "New" means
 | `.claude/specs/02-SGS-BLOCKS.md`, `35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md`, `35-BLOCK-INSPECTOR-UX-STANDARD.md`, `32-COMPONENT-STYLING-TOKEN-CONTRACT.md`, `36-SGS-NAVIGATION-SYSTEM.md`, `48-CLONING-SYSTEM.md` | Edit | Current-truth text: atoms and slots, rules 37 to 39 and golden picker, `imageControls` routing, Spec 32 amendment, nav-drawer media copy, Fill's image part | WP-15b |
 | `.claude/specs/38-SGS-MOTION-SYSTEM.md`, `38A-SGS-MOTION-MODEL.md` | Edit | Media part names; not named in WP-15b today | WP-15b |
 | `.claude/rules/block-editor-controls.md`, `block-authoring.md`, `colour-emission.md`, `cloning-pipeline.md` | Edit | "Shared atom" row; media colour exemption wording; cloning-pipeline gets the §11 rules and "never write Fit or Focal when the box does not crop" | WP-15b |
-| `.claude/dev-setup.md`, `.claude/architecture.md`, `CLAUDE.md`, `scripts/computed-route/README.md` | Edit | Old media names; Fill image row | WP-15b |
+| `.claude/dev-setup.md`, `CLAUDE.md`, `scripts/computed-route/README.md` | Edit | Old media names; Fill image row | WP-15b |
 | `.claude/LEDGER.md` | Replace | Replaced at handoff, not hand-edited | WP-15b |
 | `.claude/catalogues/helpers.md`, `catalogues/tooling.md` | Regenerate | Generated; regeneration command not verified | WP-15b |
 

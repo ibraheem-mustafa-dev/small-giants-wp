@@ -2,7 +2,7 @@
 sgs-update-v2.py — 14-stage holistic refresh of the SGS framework knowledge base.
 
 Phase 4 of the architecture programme. Co-exists with the legacy 3-script setup
-(update-db.py + generate-block-reference.py + sgs-update-uimax-sync.py) until
+(update-db.py + generate-block-reference.py) until
 all 13 stages pass the Phase 4 gate, at which point the slash command entrypoint
 swaps to this script.
 
@@ -22,7 +22,8 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
   4. slot_synonym_auto_seed — heuristic slot → block mapping
   5. block_replacement_mapping — verify blocks.replaces validity
   6. spec_doc_regen         — regenerate .claude/specs/02-SGS-BLOCKS-REFERENCE.md
-  7. uimax_mirror           — mirror sgs-blocks → uimax CSV
+  7. (retired 2026-11-10)  — the uimax mirror; the uimax DB no longer exists.
+                              The slot stays empty so stages 8-14 keep their numbers.
   8. drift_gate             — warn on MAJOR.MINOR WP version mismatch
   9. prune_orphans          — delete orphan rows across three categories:
                               (a) BLOCK-LEVEL: block_slug absent from `blocks` table
@@ -64,7 +65,7 @@ Usage:
     python sgs-update-v2.py [--stage N] [--dry-run] [--wp-version X.Y] [--prune-mode MODE] [--self-test]
                             [--allow-stale-tree]
 
-    --stage N               Run only stage N (1-14). Omit to run all (order 1-12, 14, 13).
+    --stage N               Run only stage N (1-14, except retired 7). Omit to run all (order 1-6, 8-12, 14, 13).
     --db PATH               Seed this framework DB instead of the shared one (a copy for a proof run).
     --dry-run               Compute row counts without writing to DB or files
     --wp-version X.Y        WP version tag for Stage 2 (default: 7.0)
@@ -325,7 +326,7 @@ def restore_wp_reference_archive(db_path: Path = None) -> None:
     for hooks, and `slug` for docs) has nothing to collide with. No
     SGS-authored (`source='sgs'`) row can exist yet at this point in
     `--rebuild`'s sequence: of the three writers of `hooks`, only
-    `uimax-tools/enrich-db.py`'s `target_29_hooks` (a repo PHP scan) ever
+    `dbschema/enrich-db.py`'s `target_29_hooks` (a repo PHP scan) ever
     writes `source='sgs'` rows, and that script is a standalone manual tool
     `--rebuild` never invokes (see the "NOT wired" note above
     `_REBUILD_SEEDERS`). The other two writers — this file's own
@@ -436,7 +437,7 @@ _REBUILD_SEEDERS: tuple[tuple[str, str, str], ...] = (
 )
 
 # NOT wired, with reasons (do not 'helpfully' add these without fixing them first):
-#  * uimax-tools/enrich-db.py  -> style_variations + pattern_coverage.
+#  * dbschema/enrich-db.py  -> style_variations + pattern_coverage.
 #    Both TARGETS are idempotent, but the SCRIPT is all-or-nothing: run_all()
 #    fires all 10 targets with only --repo/--dry-run to control it, and target 2.1
 #    writes `slot_synonyms` — a table RETIRED in favour of `slots`. It also loops
@@ -1964,7 +1965,7 @@ def _run_inspector_control_type_seed(conn: sqlite3.Connection) -> None:
 
     Bean's instruction: "wire the inspector controls seeder into sgs-update and
     remove whatever is setting the current data." `inspector_control_type` had TWO
-    writers — a crude edit.js parser in uimax-tools/enrich-db.py (fill-NULL-only,
+    writers — a crude edit.js parser in dbschema/enrich-db.py (fill-NULL-only,
     produced 93 wrong values) and this classifier's Task B (a better parser, but
     policy was report-only, so the stale values from the other writer persisted
     forever). enrich-db.py's writer is now REMOVED (see that file); this is the
@@ -5794,79 +5795,6 @@ def stage_6_spec_doc_regen(dry_run: bool = False) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Stage 7 — uimax mirror
-# PORTED FROM: plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py
-# Strategy: delegates to existing script via subprocess.run() — the script
-# imports uimax_write.py (a sibling module) and has complex validation logic.
-# Stage 7: delegates to existing sgs-update-uimax-sync.py until full port.
-# ---------------------------------------------------------------------------
-
-def stage_7_uimax_mirror(dry_run: bool = False) -> dict:
-    """Mirror sgs-blocks → ~/.claude/skills/ui-ux-pro-max/data/component-libraries.csv.
-
-    PORTED FROM: plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py
-    Delegates to existing script via subprocess — avoids reimporting uimax_write.py
-    (a sibling module with its own validation chokepoint). Only Stage 3 of that
-    script (the DB→CSV sync) is invoked; Stage 4 (animation gap scan) is retired
-    (sgs-framework.db animations table dropped at Step 6b 2026-05-14).
-    Stage 7: delegates to existing sgs-update-uimax-sync.py until full port.
-    """
-    script = (
-        REPO_ROOT
-        / "plugins"
-        / "sgs-blocks"
-        / "scripts"
-        / "uimax-tools"
-        / "sgs-update-uimax-sync.py"
-    )
-    if not script.exists():
-        return {"error": f"sgs-update-uimax-sync.py not found at {script}"}
-
-    cmd = [sys.executable, str(script), "--repo", str(REPO_ROOT), "--stage", "3"]
-    if dry_run:
-        cmd.append("--dry-run")
-
-    result = subprocess.run(
-        cmd,
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-        cwd=str(REPO_ROOT),
-    )
-
-    output = (result.stdout or "").strip()
-    if result.returncode != 0:
-        error_msg = (result.stderr or output or "").strip()[:400]
-        print(f"Stage 7 ERROR: sgs-update-uimax-sync.py failed — {error_msg}")
-        return {"error": error_msg, "exit_code": result.returncode}
-
-    # Print the subprocess output so it appears in the parent's stream
-    if output:
-        for line in output.splitlines():
-            print(f"  {line}")
-
-    # Parse key metric from output: "Newly inserted to uimax DB: N"
-    newly_inserted = None
-    skipped = None
-    import re
-    m_new = re.search(r"Newly inserted to uimax DB:\s*(\d+)", output)
-    m_skip = re.search(r"Skipped \(preserved\):\s*(\d+)", output)
-    if m_new:
-        newly_inserted = int(m_new.group(1))
-    if m_skip:
-        skipped = int(m_skip.group(1))
-
-    status = "dry-run" if dry_run else "synced"
-    return {
-        "status": status,
-        "newly_inserted": newly_inserted,
-        "skipped_existing": skipped,
-        "exit_code": result.returncode,
-    }
-
-
-# ---------------------------------------------------------------------------
 # Stage 8 — Drift gate (STUB — Step 4.6)
 # ---------------------------------------------------------------------------
 
@@ -6497,7 +6425,7 @@ def stage_9_prune_orphans(
 # neither the DB nor any block.json file). The roster, KINDs and validation
 # result flow through to the terminal.
 #
-# The script is invoked as a subprocess (same pattern as Stage 6 / Stage 7) so
+# The script is invoked as a subprocess (same pattern as Stage 6) so
 # it runs in its own Python process and cannot import-side-effect this module.
 
 
@@ -6554,8 +6482,7 @@ def stage_10_container_roster_report(dry_run: bool = False) -> dict:
 # PORTED FROM: plugins/sgs-blocks/scripts/generate-fx-effects-php.py +
 #              plugins/sgs-blocks/scripts/generate-fx-qualifying-blocks.py
 # Strategy: delegates to both existing scripts via subprocess.run() — same
-# "delegate rather than duplicate" shape as Stage 6 (generate-block-reference.py)
-# and Stage 7 (sgs-update-uimax-sync.py). Both generators already own their own
+# "delegate rather than duplicate" shape as Stage 6 (generate-block-reference.py). Both generators already own their own
 # DB-path resolution, a pure render function, and a --check diff mode; importing
 # their logic here would duplicate it for zero benefit.
 # ---------------------------------------------------------------------------
@@ -7615,7 +7542,6 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
         4: lambda: stage_4_slot_synonym_auto_seed(conn, dry_run=args.dry_run),
         5: lambda: stage_5_block_replacement_mapping(conn, dry_run=args.dry_run),
         6: lambda: stage_6_spec_doc_regen(dry_run=args.dry_run),
-        7: lambda: stage_7_uimax_mirror(dry_run=args.dry_run),
         8: lambda: stage_8_drift_gate(conn, dry_run=args.dry_run),
         9: lambda: stage_9_prune_orphans(conn, dry_run=args.dry_run, prune_mode=prune_mode),
         10: lambda: stage_10_container_roster_report(dry_run=args.dry_run),
@@ -7628,7 +7554,7 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
 
 # A full run's order: the identification facts (14) read Stage 11's qualifying-blocks file and Stage 1's roles, and the
 # CSV export (13) stays last so it carries every table.
-FULL_RUN_ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 13]
+FULL_RUN_ORDER = [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 14, 13]  # 7 retired 2026-11-10 (uimax mirror)
 
 
 def _guard_children_for_db_override() -> None:
@@ -7691,9 +7617,9 @@ def main() -> None:
     parser.add_argument(
         "--stage",
         type=int,
-        choices=range(1, 15),
+        choices=[n for n in range(1, 15) if n != 7],  # 7 retired 2026-11-10 (uimax mirror)
         metavar="N",
-        help="Run a single stage only (1-14). Omit to run all stages (in FULL_RUN_ORDER: 14 before 13).",
+        help="Run a single stage only (1-14; 7 is retired). Omit to run all stages (in FULL_RUN_ORDER: 14 before 13).",
     )
     parser.add_argument(
         "--self-test",

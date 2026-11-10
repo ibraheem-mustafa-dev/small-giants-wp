@@ -20,7 +20,7 @@ Dual-DB: always writes to both
 Idempotent: INSERT OR IGNORE / UPSERT throughout.
 
 Usage:
-    python plugins/sgs-blocks/scripts/uimax-tools/enrich-db.py [--repo PATH] [--dry-run]
+    python plugins/sgs-blocks/scripts/dbschema/enrich-db.py [--repo PATH] [--dry-run]
 """
 from __future__ import annotations
 
