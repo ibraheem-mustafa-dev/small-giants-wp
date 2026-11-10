@@ -1,0 +1,157 @@
+{
+ "chrome": {
+  "load@1440": {
+   "fetched": [
+    "/Q-desktop-video.mp4",
+    "/S-iframe-lazy.html",
+    "/T-desktop.gif",
+    "/favicon.ico"
+   ],
+   "lcp": [],
+   "videoSrc": "/Q-desktop-video.mp4"
+  },
+  "resize-from-1440": {
+   "fetched": [
+    "/P-mobile-photo.gif",
+    "/R-mobile-video.mp4",
+    "/T-mobile.gif"
+   ],
+   "videoSrc": "/R-mobile-video.mp4",
+   "pImgCurrent": "http://127.0.0.1:63434/P-mobile-photo.gi"
+  },
+  "iframe-scroll-after-resize-from-1440": {
+   "iframeFetched": false,
+   "viewport": 375
+  },
+  "load@375": {
+   "fetched": [
+    "/P-mobile-photo.gif",
+    "/R-mobile-video.mp4",
+    "/T-mobile.gif",
+    "/favicon.ico"
+   ],
+   "lcp": [
+    {
+     "url": "http://127.0.0.1:63434/P-mobile-photo.gif",
+     "el": "p-img",
+     "size": 1,
+     "t": 52
+    }
+   ],
+   "videoSrc": "/R-mobile-video.mp4"
+  },
+  "resize-from-375": {
+   "fetched": [
+    "/Q-desktop-video.mp4",
+    "/S-iframe-lazy.html",
+    "/T-desktop.gif"
+   ],
+   "videoSrc": "/Q-desktop-video.mp4",
+   "pImgCurrent": "data:image/gif;base64,R0lGODlhAQABAIAAAA"
+  },
+  "iframe-scroll-after-resize-from-375": {
+   "iframeFetched": false,
+   "viewport": 1440
+  },
+  "iframe-hidden-scrolled-to-bottom@375": false
+ },
+ "firefox": {
+  "load@1440": {
+   "fetched": [
+    "/Q-desktop-video.mp4",
+    "/T-desktop.gif",
+    "/favicon.ico"
+   ],
+   "lcp": [],
+   "videoSrc": "/Q-desktop-video.mp4"
+  },
+  "resize-from-1440": {
+   "fetched": [
+    "/P-mobile-photo.gif",
+    "/R-mobile-video.mp4",
+    "/T-mobile.gif"
+   ],
+   "videoSrc": "/R-mobile-video.mp4",
+   "pImgCurrent": "http://127.0.0.1:63434/P-mobile-photo.gi"
+  },
+  "iframe-scroll-after-resize-from-1440": {
+   "iframeFetched": false,
+   "viewport": 375
+  },
+  "load@375": {
+   "fetched": [
+    "/P-mobile-photo.gif",
+    "/R-mobile-video.mp4",
+    "/T-mobile.gif",
+    "/favicon.ico"
+   ],
+   "lcp": [],
+   "videoSrc": "/R-mobile-video.mp4"
+  },
+  "resize-from-375": {
+   "fetched": [
+    "/Q-desktop-video.mp4",
+    "/T-desktop.gif"
+   ],
+   "videoSrc": "/Q-desktop-video.mp4",
+   "pImgCurrent": "data:image/gif;base64,R0lGODlhAQABAIAAAA"
+  },
+  "iframe-scroll-after-resize-from-375": {
+   "iframeFetched": true,
+   "viewport": 1440
+  },
+  "iframe-hidden-scrolled-to-bottom@375": false
+ },
+ "webkit": {
+  "load@1440": {
+   "fetched": [
+    "/Q-desktop-video.mp4",
+    "/T-desktop.gif"
+   ],
+   "lcp": [],
+   "videoSrc": "/Q-desktop-video.mp4"
+  },
+  "resize-from-1440": {
+   "fetched": [
+    "/P-mobile-photo.gif",
+    "/R-mobile-video.mp4",
+    "/T-mobile.gif"
+   ],
+   "videoSrc": "/R-mobile-video.mp4",
+   "pImgCurrent": "http://127.0.0.1:63434/P-mobile-photo.gi"
+  },
+  "iframe-scroll-after-resize-from-1440": {
+   "iframeFetched": false,
+   "viewport": 375
+  },
+  "load@375": {
+   "fetched": [
+    "/P-mobile-photo.gif",
+    "/R-mobile-video.mp4",
+    "/T-mobile.gif"
+   ],
+   "lcp": [
+    {
+     "url": "http://127.0.0.1:63434/P-mobile-photo.gif",
+     "el": "p-img",
+     "size": 1,
+     "t": 28
+    }
+   ],
+   "videoSrc": "/R-mobile-video.mp4"
+  },
+  "resize-from-375": {
+   "fetched": [
+    "/Q-desktop-video.mp4",
+    "/T-desktop.gif"
+   ],
+   "videoSrc": "/Q-desktop-video.mp4",
+   "pImgCurrent": "data:image/gif;base64,R0lGODlhAQABAIAAAA"
+  },
+  "iframe-scroll-after-resize-from-375": {
+   "iframeFetched": true,
+   "viewport": 1440
+  },
+  "iframe-hidden-scrolled-to-bottom@375": false
+ }
+}
