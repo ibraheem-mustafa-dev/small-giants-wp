@@ -1,0 +1,15 @@
+/* A wrapped row: the field prints its own visible label, so the override's header keeps its label for screen readers and shows the dots. */
+.sgs-media-panel__row--responsive .sgs-responsive-override__label {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+}
+
+.sgs-media-panel__title .sgs-responsive-override__dots {
+	margin-inline-start: 8px;
+	vertical-align: middle;
+}

@@ -25,11 +25,20 @@
 
 .sgs-focal-field__picture {
 	display: block;
-	width: 100%;
+	width: auto;
+	max-width: 100%;
 	height: auto;
 	max-height: 240px;
-	object-fit: contain;
 	pointer-events: none;
+}
+
+/* The drawn picture's own box: the point and the pointer maths use it, so a portrait photo is not letterboxed inside it. */
+.sgs-focal-field__frame {
+	position: relative;
+	display: block;
+	width: fit-content;
+	max-width: 100%;
+	margin: 0 auto;
 }
 
 .sgs-focal-field__empty {

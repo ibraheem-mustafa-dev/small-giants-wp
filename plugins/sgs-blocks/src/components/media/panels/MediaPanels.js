@@ -22,7 +22,8 @@ import MotionLine from './MotionLine.js';
 import PanelRow from './PanelRow.js';
 import { createContext } from './disclosure-context.js';
 import { buildPanelModel } from './panel-model.js';
-import { resetPatch } from './row-io.js';
+import PanelTitle from './PanelTitle.js';
+import { panelOwnDevices, resetPatch } from './row-io.js';
 
 const DEVICE_TO_KEY = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
 const DEVICE_NAMES = { desktop: 'Desktop', tablet: 'Tablet', mobile: 'Mobile' };
@@ -95,7 +96,7 @@ export default function MediaPanels( {
 			.map( ( { panel, rows } ) => (
 				<PanelBody
 					key={ panel.id }
-					title={ panel.title() }
+					title={ <PanelTitle title={ panel.title() } devices={ panelOwnDevices( rows, attributes, prefix, blockSlug ) } /> }
 					initialOpen={ panel.open }
 					className={ `sgs-media-panel sgs-media-panel--${ panel.id }` }
 				>

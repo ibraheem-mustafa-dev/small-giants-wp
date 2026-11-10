@@ -32,6 +32,11 @@ export default function MediaSlotAlt( { access, device, kind, ownSource, staleAl
 	// A link on a Decorative image is refused (§7.1): the box keeps its alt, and a stored pair is flagged.
 	const linked = '' !== String( access.read( 'LinkUrl' ) || '' ).trim();
 
+	// A photo or an embed that is drawn but has no description or title at this device (§9.5, §9.3).
+	const drawn = hasFile( resolveTierSource( access.read( 'Source' ), device, hasFile ).value );
+	const effectiveAlt = ( perDevice ? ownSource.alt : '' ) || access.read( 'Alt' ) || '';
+	const missingAlt = drawn && ! decorative && ! effectiveAlt && ( 'image' === kind || 'embed' === kind );
+
 	const onChange = ( event ) => {
 		onAltEdited();
 		if ( perDevice ) {
@@ -64,6 +69,13 @@ export default function MediaSlotAlt( { access, device, kind, ownSource, staleAl
 			{ perDevice && ! decorative && ! value && (
 				<p className="sgs-media-slot__note" role="status">
 					{ sprintf( /* translators: %s: the wider device. */ __( "This file differs from %s's. Describe it.", 'sgs-blocks' ), deviceName( widerFrom ) ) }
+				</p>
+			) }
+			{ missingAlt && (
+				<p className="sgs-media-slot__warning sgs-media-slot__missing-alt" role="status">
+					{ 'embed' === kind
+						? __( 'This embed has no title. Add one so screen readers can name it.', 'sgs-blocks' )
+						: __( 'This photo has no description. Add alt text or tick Decorative.', 'sgs-blocks' ) }
 				</p>
 			) }
 			{ staleAlt && (

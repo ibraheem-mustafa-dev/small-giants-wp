@@ -15,8 +15,8 @@ import { DEVICES, clearPatch, isSet, ownAt, readAt, tierPatch } from './disclosu
 
 const DEVICE_NAMES = { desktop: 'Desktop', tablet: 'Tablet', mobile: 'Mobile' };
 
-/** Bases stored inside `Source` (per device), so a panel reset clears them with it and they own no attribute. */
-const STORED_IN_SOURCE = new Set( [ 'Captions' ] );
+/** The slot's content (the file, its description and its captions): Reset clears a panel's settings and leaves these, Remove clears the file. */
+const CONTENT_BASES = new Set( [ 'Source', 'Alt', 'VideoAlt', 'Decorative', 'Captions', 'Caption' ] );
 
 const ADOPTED_RESPONSIVE = new Set(
 	Object.values( ADOPTED_SETTINGS )
@@ -100,7 +100,7 @@ export function deviceNote( io, device ) {
 }
 
 /**
- * One `setAttributes` patch that clears every row of a panel: all devices on
+ * One `setAttributes` patch that clears every settings row of a panel (never the file, its alt or its captions): all devices on
  * Desktop, only the active device elsewhere (a setting that is the same on
  * every device is left alone off Desktop). One call is one undo step.
  *
@@ -116,7 +116,7 @@ export function resetPatch( rows, attrs, device, prefix, blockSlug ) {
 	const devices = 'desktop' === device ? DEVICES : [ device ];
 	rows.forEach( ( row ) => {
 		const adopted = !! row.setting.adopted;
-		if ( adopted && STORED_IN_SOURCE.has( row.setting.base ) ) {
+		if ( CONTENT_BASES.has( row.setting.base ) ) {
 			return;
 		}
 		const members = ( adopted ? ADOPTED_COMPOSITES : COMPOSITES )[ row.setting.base ] || [];
@@ -131,4 +131,26 @@ export function resetPatch( rows, attrs, device, prefix, blockSlug ) {
 		} );
 	} );
 	return patch;
+}
+
+/**
+ * Which of Tablet and Mobile hold their own value for a row inside a panel (the closed-panel dot, Spec 49 §9.2).
+ *
+ * @param {Object[]} rows      The panel's rows.
+ * @param {Object}   attrs     Block attributes.
+ * @param {string}   prefix    Surface prefix.
+ * @param {string}   blockSlug Block slug.
+ * @return {string[]} 'tablet' and / or 'mobile', in that order.
+ */
+export function panelOwnDevices( rows, attrs, prefix, blockSlug ) {
+	const found = new Set();
+	rows.forEach( ( row ) => {
+		[ 'tablet', 'mobile' ].forEach( ( device ) => {
+			const io = rowIO( row, attrs, () => {}, device, prefix, blockSlug );
+			if ( io.responsive && isSet( io.own ) ) {
+				found.add( device );
+			}
+		} );
+	} );
+	return [ 'tablet', 'mobile' ].filter( ( device ) => found.has( device ) );
 }

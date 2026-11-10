@@ -29,7 +29,7 @@ describe( 'FocalField', () => {
 	it( 'a click on the picture writes {x,y} in 0 to 1', () => {
 		const { container, setAttributes, unmount } = render( FocalField, { source: { desktop: PHOTO } } );
 		const area = container.querySelector( '.sgs-focal-field__area' );
-		area.getBoundingClientRect = () => ( { left: 0, top: 0, width: 200, height: 100 } );
+		container.querySelector( '.sgs-focal-field__frame' ).getBoundingClientRect = () => ( { left: 0, top: 0, width: 200, height: 100 } );
 		act( () => {
 			area.dispatchEvent( new MouseEvent( 'pointerdown', { bubbles: true, clientX: 50, clientY: 25 } ) );
 		} );
@@ -68,7 +68,7 @@ describe( 'FocalField', () => {
 
 	it( 'Reset clears this device only', () => {
 		const { container, setAttributes, unmount } = render( FocalField, { source: { desktop: PHOTO }, focal: { desktop: { x: 0.1, y: 0.1 }, tablet: { x: 0.9, y: 0.9 } } }, {}, 'Tablet' );
-		click( button( container, 'Reset' ) );
+		click( [ ...container.querySelectorAll( 'button' ) ].find( ( b ) => b.textContent.trim().startsWith( 'Reset to' ) ) );
 		expect( setAttributes ).toHaveBeenCalledWith( { focal: { desktop: { x: 0.1, y: 0.1 } } } );
 		unmount();
 	} );
@@ -205,5 +205,43 @@ describe( 'MediaSlotField', () => {
 		click( button( container, 'Remove' ) );
 		expect( setAttributes ).toHaveBeenCalledWith( { source: { desktop: PHOTO } } );
 		unmount();
+	} );
+} );
+
+describe( 'Stage A hardening E5 and E6', () => {
+	it( 'E5: clicks map to the drawn picture, so a portrait photo letterboxed in the area is not skewed', () => {
+		const { container, setAttributes, unmount } = render( FocalField, { source: { desktop: PHOTO } } );
+		const area = container.querySelector( '.sgs-focal-field__area' );
+		area.getBoundingClientRect = () => ( { left: 0, top: 0, width: 300, height: 100 } );
+		container.querySelector( '.sgs-focal-field__frame' ).getBoundingClientRect = () => ( { left: 100, top: 0, width: 100, height: 100 } );
+		act( () => {
+			area.dispatchEvent( new MouseEvent( 'pointerdown', { bubbles: true, clientX: 125, clientY: 50 } ) );
+		} );
+		expect( setAttributes ).toHaveBeenCalledWith( { focal: { desktop: { x: 0.25, y: 0.5 } } } );
+		unmount();
+	} );
+
+	it( 'E5: the picker announces its value on focus, has one Reset and lets a box stay empty', () => {
+		const { container, setAttributes, unmount } = render( FocalField, { source: { desktop: PHOTO }, focal: { desktop: { x: 0.2, y: 0.8 } } } );
+		expect( container.querySelector( '.sgs-focal-field__area' ).getAttribute( 'aria-label' ) ).toContain( '20% across and 80% down' );
+		expect( [ ...container.querySelectorAll( 'button' ) ].filter( ( b ) => /^Reset/.test( b.textContent.trim() ) ) ).toHaveLength( 1 );
+		const [ x ] = [ ...container.querySelectorAll( '.sgs-focal-field__inputs input' ) ];
+		setValue( x, '' );
+		expect( x.value ).toBe( '' );
+		expect( setAttributes ).not.toHaveBeenCalled();
+		unmount();
+	} );
+
+	it( 'E6: a photo with no alt shows the inline warning; Decorative or an alt removes it', () => {
+		const warn = 'This photo has no description. Add alt text or tick Decorative.';
+		const bare = render( MediaSlotField, { source: { desktop: PHOTO } } );
+		expect( bare.container.textContent ).toContain( warn );
+		bare.unmount();
+		const described = render( MediaSlotField, { source: { desktop: PHOTO }, alt: 'A loaf' } );
+		expect( described.container.textContent ).not.toContain( warn );
+		described.unmount();
+		const decorative = render( MediaSlotField, { source: { desktop: PHOTO }, decorative: true } );
+		expect( decorative.container.textContent ).not.toContain( warn );
+		decorative.unmount();
 	} );
 } );

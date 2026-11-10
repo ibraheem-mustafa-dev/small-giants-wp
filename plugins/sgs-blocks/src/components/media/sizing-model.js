@@ -25,7 +25,11 @@ export const FILL = 'fill';
 export function normaliseRatio( ratio ) {
 	const text = String( ratio ?? '' ).trim();
 	const match = text.match( /^(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)$/ );
-	return match ? `${ match[ 1 ] } / ${ match[ 2 ] }` : text;
+	if ( match ) {
+		return `${ match[ 1 ] } / ${ match[ 2 ] }`;
+	}
+	// Core writes a square as the bare number "1": the same ratio as "1 / 1".
+	return /^\d+(?:\.\d+)?$/.test( text ) && Number( text ) > 0 ? `${ text } / 1` : text;
 }
 
 /**
@@ -70,11 +74,20 @@ export function isLength( value ) {
  *
  * @param {Function} read   Maps a base name (`Ratio`, `Width`...) to the stored attribute.
  * @param {string}   device The device.
- * @return {Object} `{ ratio, width, height, fit }`, each a string or ''.
+ * @return {Object} `{ ratio, width, height, fit, minWidth, maxWidth, minHeight, maxHeight }`, each a string or ''.
  */
 export function resolveSizing( read, device ) {
 	const pick = ( base ) => resolveTierSource( read( base ), device ).value || '';
-	return { ratio: pick( 'Ratio' ), width: pick( 'Width' ), height: pick( 'Height' ), fit: pick( 'Fit' ) };
+	return {
+		ratio: pick( 'Ratio' ),
+		width: pick( 'Width' ),
+		height: pick( 'Height' ),
+		fit: pick( 'Fit' ),
+		minWidth: pick( 'MinWidth' ),
+		maxWidth: pick( 'MaxWidth' ),
+		minHeight: pick( 'MinHeight' ),
+		maxHeight: pick( 'MaxHeight' ),
+	};
 }
 
 /**
@@ -86,11 +99,14 @@ export function resolveSizing( read, device ) {
  */
 export function describeSizing( device, sized ) {
 	const { ratio, width, height, fit } = sized;
-	const hasRatio = !! ratio && NATURAL !== ratio && FILL !== height;
+	const widthSet = isLength( width );
+	const heightSet = isLength( height );
+	// Ratio is not used while Width and Height are both set, nor while Height is Fill (§7.2).
+	const hasRatio = !! ratio && NATURAL !== ratio && FILL !== height && ! ( widthSet && heightSet );
 	const hasHeight = !! height && 'auto' !== height;
 	const parts = [];
 
-	if ( isLength( width ) ) {
+	if ( widthSet ) {
 		parts.push( sprintf( /* translators: %s: a CSS length. */ __( '%s wide', 'sgs-blocks' ), width ) );
 	} else if ( 'auto' === width || ( hasRatio && hasHeight ) ) {
 		parts.push( __( 'width follows the height', 'sgs-blocks' ) );
@@ -102,7 +118,7 @@ export function describeSizing( device, sized ) {
 
 	if ( FILL === height ) {
 		parts.push( __( 'as tall as its space', 'sgs-blocks' ) );
-	} else if ( isLength( height ) ) {
+	} else if ( heightSet ) {
 		parts.push( sprintf( /* translators: %s: a CSS length. */ __( '%s tall', 'sgs-blocks' ), height ) );
 	}
 	if ( hasRatio ) {
@@ -112,7 +128,9 @@ export function describeSizing( device, sized ) {
 				: sprintf( /* translators: %s: a ratio such as 16:9. */ __( 'ratio %s', 'sgs-blocks' ), ratio.replace( / /g, '' ).replace( '/', ':' ) )
 		);
 	}
-	if ( hasRatio || isLength( height ) || FILL === height ) {
+	// Width auto with a Height and no Ratio keeps the file's proportions, so nothing is cropped (§7.2).
+	const keepsProportions = 'auto' === width && ! hasRatio && heightSet;
+	if ( ! keepsProportions && ( hasRatio || heightSet || FILL === height ) ) {
 		if ( 'contain' === fit ) {
 			parts.push( __( 'showing all of the photo', 'sgs-blocks' ) );
 		} else if ( 'fill' === fit ) {
@@ -122,6 +140,17 @@ export function describeSizing( device, sized ) {
 		} else {
 			parts.push( __( 'cropped to fill', 'sgs-blocks' ) );
 		}
+	}
+	const limits = [
+		[ sized.minWidth, __( 'min width %s', 'sgs-blocks' ) ],
+		[ sized.maxWidth, __( 'max width %s', 'sgs-blocks' ) ],
+		[ sized.minHeight, __( 'min height %s', 'sgs-blocks' ) ],
+		[ sized.maxHeight, __( 'max height %s', 'sgs-blocks' ) ],
+	]
+		.filter( ( [ value ] ) => isLength( value ) )
+		.map( ( [ value, template ] ) => sprintf( template, value ) );
+	if ( limits.length ) {
+		parts.push( sprintf( /* translators: %s: a list such as "max height 300px". */ __( 'limited to %s', 'sgs-blocks' ), limits.join( ', ' ) ) );
 	}
 	return sprintf( /* translators: 1: device name, 2: the result. */ __( '%1$s: %2$s', 'sgs-blocks' ), deviceName( device ), parts.join( ', ' ) );
 }
