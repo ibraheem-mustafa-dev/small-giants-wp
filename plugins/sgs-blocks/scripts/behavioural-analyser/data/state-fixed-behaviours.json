@@ -2654,12 +2654,12 @@
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": ".wc-block-checkout__shipping-method-option:hover",
-   "reason": "fixed paint, no setting: the delivery card's edge takes the text colour on hover, as the shipping option cards do (Eye Care round 14)"
+   "reason": "fixed paint, no setting: the delivery card's edge takes the text colour on hover, as the shipping option cards do"
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": ".wc-block-checkout__shipping-method-option:focus-visible",
-   "reason": "fixed paint, no setting: inset keyboard focus line on the delivery card (Eye Care round 14)"
+   "reason": "fixed paint, no setting: inset keyboard focus line on the delivery card"
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
