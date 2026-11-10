@@ -46,6 +46,7 @@ if ( ! function_exists( 'sgs_button_preset_css' ) ) {
 			. 'border-color:var(' . $v . 'hover-border,var(' . $v . 'border,transparent));'
 			. 'transform:var(' . $v . 'hover-lift,translateY(-3px));'
 			. 'scale:var(' . $v . 'hover-scale,none);rotate:var(' . $v . 'hover-rotate,none);}';
+		$css .= '@media (prefers-reduced-motion: reduce){' . $selector . '{transition:none;}' . $hover . '{transform:none;scale:none;rotate:none;}}';
 		return $css;
 	}
 }

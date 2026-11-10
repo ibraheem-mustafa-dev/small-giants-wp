@@ -308,6 +308,16 @@ html {
 	box-shadow: var(--wp--preset--shadow--soft);
 }
 
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-button__link {
+		transition: none;
+	}
+
+	.wp-block-button__link:hover {
+		transform: none;
+	}
+}
+
 .wp-block-button__link:active {
 	transform: translateY(0) scale(0.97);
 }

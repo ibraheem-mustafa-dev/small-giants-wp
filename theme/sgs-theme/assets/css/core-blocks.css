@@ -756,6 +756,16 @@ footer .is-style-no-bullets a {
 	box-shadow: var(--wp--preset--shadow--glow);
 }
 
+@media (prefers-reduced-motion: reduce) {
+	.sgs-header-cta .wp-block-button__link {
+		transition: none;
+	}
+
+	.sgs-header-cta .wp-block-button__link:hover {
+		transform: none;
+	}
+}
+
 /* Hide header CTA on mobile and tablet — hamburger menu is sufficient */
 @media (max-width: 1023px) {
 	.sgs-header-cta {

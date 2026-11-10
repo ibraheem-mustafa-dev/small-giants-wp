@@ -97,4 +97,17 @@ final class ButtonPresetCssTest extends TestCase {
 		$css = $this->account( array( 'loginLinkColour' => 'text' ) );
 		$this->assertStringNotContainsString( '::after', $css );
 	}
+
+	public function test_reduced_motion_removes_the_transition_and_the_hover_movement(): void {
+		$css = $this->account( array( 'loginButtonPreset' => 'primary' ) );
+		$this->assertStringContainsString( '@media (prefers-reduced-motion: reduce){' . self::LOGIN . '{transition:none;}' . self::LOGIN . ':hover{transform:none;scale:none;rotate:none;}}', $css );
+	}
+
+	public function test_the_theme_hover_rules_have_a_reduced_motion_guard(): void {
+		$dir = dirname( __DIR__, 4 ) . '/theme/sgs-theme/assets/css/';
+		foreach ( array( 'core-blocks-critical.css', 'core-blocks.css' ) as $file ) {
+			$css = (string) file_get_contents( $dir . $file );
+			$this->assertMatchesRegularExpression( '/@media \(prefers-reduced-motion: reduce\)\s*\{[^@]*\.(wp-block-button__link|sgs-header-cta \.wp-block-button__link):hover\s*\{[^}]*transform:\s*none/s', $css, $file );
+		}
+	}
 }
