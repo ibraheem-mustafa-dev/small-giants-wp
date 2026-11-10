@@ -41,8 +41,7 @@
  *
  * ⚠ PER-CLIENT: these numbers are the FRAMEWORK default. A client whose scale differs
  * gets their own values from the Spec 48 §11 extractor — that emit is not built yet, so a
- * client with a materially different ladder currently inherits this curve. Named as
- * remaining work in D1007, not silently assumed away.
+ * client with a materially different ladder currently inherits this curve.
  *
  * ⛔ Do not add `clamp()` here or reintroduce `fluid` in theme.json. The framework ladder
  * steps down per tier instead (D1007: GOV.UK never adopted fluid type, and Designsystemet

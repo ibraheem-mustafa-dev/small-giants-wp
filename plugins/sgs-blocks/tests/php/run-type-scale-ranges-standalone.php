@@ -53,6 +53,26 @@ namespace {
 	$GLOBALS['sgs_test_sizes'] = array( 'custom' => array( array( 'slug' => 'hero', 'size' => 'clamp(1px,2vw,3px);}</style><script>' ) ) );
 	$check( 'a value that could break out of the rule is ignored', '' === \SGS\Theme\type_scale_ranges_css() );
 
+	$fluid = static function ( string $size ): string {
+		$GLOBALS['sgs_test_sizes'] = array( 'custom' => array( array( 'slug' => 'hero', 'size' => $size ) ) );
+		return \SGS\Theme\type_scale_ranges_css();
+	};
+	$check( 'a comment opener inside a clamp() is refused', '' === $fluid( 'clamp(1px,/*,2px)' ) );
+	$check( 'a comment closer is refused', '' === $fluid( 'clamp(1px,*/,2vw)' ) );
+	$check( 'a bare viewport length is kept', '' !== $fluid( '5vw' ) );
+	$check( 'a min() with a viewport unit is kept', '' !== $fluid( 'min(5vw, 3rem)' ) );
+	$check( 'a calc() with a viewport unit is kept', '' !== $fluid( 'calc(1rem + 2vw)' ) );
+	$check( 'a max() with a container unit is kept', '' !== $fluid( 'max(2rem, 4cqi)' ) );
+	$check( 'a clamp() with a viewport unit is kept', '' !== $fluid( 'clamp(2rem, 4vw, 3rem)' ) );
+	$check( 'a plain rem size is stepped down', '' === $fluid( '2rem' ) );
+	$check( 'a plain px size is stepped down', '' === $fluid( '32px' ) );
+	$check( 'a clamp() with no viewport unit is stepped down', '' === $fluid( 'clamp(1rem, 2rem, 3rem)' ) );
+	$check( 'unbalanced parentheses are refused', '' === $fluid( 'clamp(1rem, 4vw, 3rem' ) );
+
+	$functions = (string) file_get_contents( __DIR__ . '/../../../../theme/sgs-theme/functions.php' );
+	$check( 'NEGATIVE CONTROL: the theme prints the ranges after the type scale stylesheet', 1 === preg_match( "/wp_add_inline_style\(\s*'sgs-type-scale',\s*type_scale_ranges_css\(\)\s*\)/", $functions ) );
+	$check( 'the check fails once the call is deleted', 0 === preg_match( "/wp_add_inline_style\(\s*'sgs-type-scale',\s*type_scale_ranges_css\(\)\s*\)/", str_replace( "wp_add_inline_style( 'sgs-type-scale', type_scale_ranges_css() );", '', $functions ) ) );
+
 	echo $failed ? "FAILED {$failed}\n" : "All passed\n";
 	exit( $failed ? 1 : 0 );
 }
