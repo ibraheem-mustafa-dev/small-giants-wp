@@ -117,6 +117,12 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|---|
 | `sgs_button_note_html` | `function sgs_button_note_html( array $attributes ): string` | The note's markup. | tags span |
 
+#### `includes/helpers-button-preset.php` — 1 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_button_preset_css` | `function sgs_button_preset_css( string $selector, string $preset, bool $resting = true, bool $colours = true…` | The CSS for one preset on one selector. | no markup |
+
 #### `includes/helpers-button-press.php` — 4 function(s)
 
 | Function | Signature | Purpose | Prints |
@@ -230,11 +236,14 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_container_tier_min_column_width` | `function sgs_container_tier_min_column_width( array $attributes, string $tier ): ?string` | Resolve the effective intrinsic-columns BASIS (minimum column width) for one device tier, from `sgs/container`'s client-configurable… | no markup |
 | `sgs_block_wants_intrinsic_columns` | `function sgs_block_wants_intrinsic_columns( $block ): bool` | Does this block type opt in to content-aware column collapse? | no markup |
 
-#### `includes/helpers-css-safety.php` — 7 function(s)
+#### `includes/helpers-css-safety.php` — 10 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_css_length_value_preset_slugs` | `function sgs_css_length_value_preset_slugs(): array` | Return the currently-registered WP spacing-preset slugs (e.g. ['10','20', '30','40','50','60']), read live from theme.json via… | no markup |
+| `sgs_css_quotes_balanced` | `function sgs_css_quotes_balanced( string $value ): bool` | Whether every single or double quote in a value is closed by the same quote. JS twin: `src/utils/css-length.js::cssQuotesBalanced`. | no markup |
+| `sgs_css_balanced_end` | `function sgs_css_balanced_end( string $value, int $open ): int` | The index of the parenthesis that closes the one at `$open`, or -1. | no markup |
+| `sgs_css_math_has_adjacent_terms` | `function sgs_css_math_has_adjacent_terms( string $value ): bool` | Whether any min(), max() or clamp() call holds two terms with only whitespace between them (`min(10px 20px)`). Quoted text and var() calls… | no markup |
 | `sgs_css_length_value` | `function sgs_css_length_value( $value )` | Validate and normalise a CSS length-shaped value for safe inline emission. | no markup |
 | `sgs_resolved_css_value` | `function sgs_resolved_css_value( $value ): string` | The one predicate for "this stored value is already a resolved CSS value". | no markup |
 | `sgs_font_weight_value` | `function sgs_font_weight_value( $value ): string` | A font weight, safe to print after `font-weight:`. | no markup |
@@ -1012,7 +1021,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). | calls wc_price |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). | tags li, span, ul; aria aria-current, aria-label |
 
-**101 files, 492 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**102 files, 496 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -1044,7 +1053,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `LinkUnderlineControl.js` | `LinkUnderlineControl (default)` | LinkUnderlineControl — how the links inside a block's text are underlined. |
 | `LogicalAlignControl.js` | `LogicalAlignControl (default)`, `LogicalAlignToolbar` | LogicalAlignControl — the one inspector control for a box's horizontal alignment, stored as the logical values `start \| center… |
 | `MediaElementControls.js` | `mediaAttrName`, `mediaAttrType`, `mediaAttrKeys`, `mediaStoredAttrName`, `MEDIA_BASES`… | L1 — media attribute NAMING. The contract every later wave inherits. |
-| `MediaElementPanel.js` | `MediaElementPanel (default)` | L3 — the media element's DISPATCH layer. |
+| `MediaElementPanel.js` | `MediaElementPanel (default)`, `declaredKinds` | L3 — the media element's DISPATCH layer. |
 | `MediaGalleryPicker.js` | `MediaGalleryPicker (default)` | MediaGalleryPicker — shared bulk multi-select media component for SGS blocks. |
 | `MediaPicker.js` | `MediaPicker (default)` | MediaPicker — shared media-slot component for SGS blocks. |
 | `MediaSizingPanel.js` | `MediaSizingPanel (default)`, `RATIO_OPTIONS` | MediaSizingPanel — the shared "media size & crop" panel (C19, 2026-08-27). |
@@ -1053,7 +1062,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `ResponsiveBoxControls.js` | `ResponsiveBoxControls (default)` | ResponsiveBoxControls — Spec 37 FR-37-16 per-device spacing + width panel. |
 | `ResponsiveControl.js` | `ResponsiveControl (default)` | Responsive breakpoint switcher for block sidebar controls. |
 | `ResponsiveLengthControl.js` | `ResponsiveLengthControl (default)` | ResponsiveLengthControl — one per-device CSS length under the global device toggle. |
-| `ResponsiveOverride.js` | `ResponsiveOverride (default)` | ResponsiveOverride — SGS-owned per-device override control (Spec 37 FR-37-16). |
+| `ResponsiveOverride.js` | `ResponsiveOverride (default)` | ResponsiveOverride: SGS-owned per-device override control (Spec 37 FR-37-16; display per Spec 49 §9.2). |
 | `ResponsiveTriStateControl.js` | `ResponsiveTriStateControl (default)` | ResponsiveTriStateControl — the DP1 tri-state on/off control (Spec 35 T1.2). |
 | `RowQuickInsertAppender.js` | `RowQuickInsertAppender (default)` | Promoted quick-insert appender for a freeform row block (site-header-row / site-footer-row). Steering, not gating: the row still… |
 | `RowScrollBehaviourControls.js` | `RowScrollBehaviourControls (default)` | RowScrollBehaviourControls — per-row transparent / hide-on-scroll toggles |
@@ -1097,35 +1106,39 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `box-shape.control.js` | `control` | `box-shape` atom — CONTROL half (JSX). |
 | `box-shape.js` | `normaliseRatio`, `resolveSizingMode`, `validateShape`, `resolveHeight`, `resolveWidth`… | `box-shape` atom — L2b control + disclosure + validator + value-setter. |
 | `caption.control.js` | `control` | `caption` atom — CONTROL half (JSX). |
-| `caption.js` | `attrKeys`, `validateTag`, `disclosure`, `validate`, `css` | `caption` atom — L2b control + disclosure + validator + value-setter. |
+| `caption.js` | `attrKeys`, `validateTag`, `disclosure`, `validate`, `css`, `emit` | `caption` atom — L2b control + disclosure + validator + value-setter. |
+| `filter.js` | `emit`, `css`, `validate`, `disclosure` | `filter` atom: the colour treatment (Natural, Black and white with a strength, White), logic half. PHP twin… |
 | `focal-point.control.js` | `control` | `focal-point` atom — CONTROL half (JSX). |
-| `focal-point.js` | `resolvePosition`, `validate`, `disclosure`, `css` | `focal-point` atom — LOGIC half (L2b value-setter + validator + disclosure). |
+| `focal-point.js` | `resolvePosition`, `validate`, `disclosure`, `css`, `emit` | `focal-point` atom — LOGIC half (L2b value-setter + validator + disclosure). |
 | `intrinsic.control.js` | `control` | Atom: INTRINSIC (control half). |
-| `intrinsic.js` | `disclosure`, `validate`, `css` | Atom: INTRINSIC (logic half) — the chosen media's own pixel dimensions. |
+| `intrinsic.js` | `disclosure`, `validate`, `css`, `emit` | Atom: INTRINSIC (logic half) — the chosen media's own pixel dimensions. |
+| `layout.js` | `emit`, `css`, `validate`, `disclosure` | `layout` atom: Alignment and Order on the layout box, logic half. PHP twin: `includes/media/atoms/layout.php`. |
 | `link.control.js` | `control` | `link` atom — CONTROL half (JSX). |
-| `link.js` | `attrKeys`, `disclosure`, `validate`, `css` | `link` atom — L2b control + disclosure + validator + value-setter. |
+| `link.js` | `attrKeys`, `disclosure`, `validate`, `css`, `emit` | `link` atom — L2b control + disclosure + validator + value-setter. |
 | `meaning.control.js` | `control` | Atom: MEANING (control half) — the editor UI. |
-| `meaning.js` | `altBaseFor`, `resolveMediaType`, `disclosure`, `validate`, `css`, `TYPE_VOCABULARY` | Atom: MEANING (logic half) — accessibility text for the media. |
+| `meaning.js` | `altBaseFor`, `resolveMediaType`, `disclosure`, `validate`, `css`, `emit`… | Atom: MEANING (logic half) — accessibility text for the media. |
 | `media-padding.control.js` | `control` | `media-padding` atom — CONTROL half (JSX). |
-| `media-padding.js` | `attrKey`, `sidesToShorthand`, `sideDecls`, `disclosure`, `validate`, `css` | `media-padding` atom — L2b control + disclosure + validator + value-setter. |
+| `media-padding.js` | `attrKey`, `sidesToShorthand`, `sideDecls`, `disclosure`, `validate`, `css`, `emit` | `media-padding` atom — L2b control + disclosure + validator + value-setter. |
 | `media-type.control.js` | `control` | `media-type` atom — CONTROL half (JSX-equivalent `control()`, via `createElement()`). |
-| `media-type.js` | `validate`, `disclosure`, `css`, `CANONICAL_ENUM`, `TIER_ENUM` | `media-type` atom — LOGIC half (pure: css/validate/disclosure). |
+| `media-type.js` | `validate`, `disclosure`, `css`, `emit`, `CANONICAL_ENUM`, `TIER_ENUM` | `media-type` atom — LOGIC half (pure: css/validate/disclosure). |
 | `object-fit.control.js` | `control` | `object-fit` atom — CONTROL half (JSX). |
-| `object-fit.js` | `validate`, `disclosure`, `css` | `object-fit` atom — LOGIC half (L2b value-setter + validator + disclosure). |
+| `object-fit.js` | `validate`, `disclosure`, `css`, `emit` | `object-fit` atom — LOGIC half (L2b value-setter + validator + disclosure). |
 | `opacity.control.js` | `control` | `opacity` atom — CONTROL half (JSX). |
-| `opacity.js` | `attrKeys`, `disclosure`, `validate`, `css` | `opacity` atom — L2b control + disclosure + validator + value-setter. |
+| `opacity.js` | `attrKeys`, `disclosure`, `validate`, `css`, `emit` | `opacity` atom — L2b control + disclosure + validator + value-setter. |
 | `overlay.control.js` | `control` | `overlay` atom — CONTROL half (JSX). |
 | `overlay.js` | `validateGradient`, `resolveColour`, `resolvePaint`, `attrKeys`, `disclosure`… | `overlay` atom — L2b control + disclosure + validator + value-setter. |
-| `registry.js` | `basesForAtoms`, `atomsForElement`, `MEDIA_ATOMS`, `MEDIA_ATOM_IDS` | L2b — the ATOM registry. The middle level between names and panels. |
+| `registry.js` | `basesForAtoms`, `atomsForElement`, `MEDIA_ATOMS`, `MEDIA_KINDS_ATOMS`, `KINDS_ATOM_IDS`… | L2b — the ATOM registry. The middle level between names and panels. |
 | `shadow.control.js` | `control` | `shadow` atom — CONTROL half (JSX). |
-| `shadow.js` | `attrKeys`, `resolveShadow`, `disclosure`, `validate`, `liftAttrName`, `liftOn`, `css` | `shadow` atom: L2b control + disclosure + validator + value-setter. |
+| `shadow.js` | `attrKeys`, `resolveShadow`, `disclosure`, `validate`, `liftAttrName`, `liftOn`, `css`… | `shadow` atom: L2b control + disclosure + validator + value-setter. |
+| `shape.js` | `emit`, `css`, `validate`, `disclosure`, `shapeAt`, `shapeHasMask` | `shape` atom: Shape, Corners and Border (Spec 49 §7.5), logic half. PHP twin: `includes/media/atoms/shape.php`. |
+| `sizing.js` | `emit`, `css`, `validate`, `disclosure` | `sizing` atom: Ratio, Width, Height and the four limits (Spec 49 §7.2), logic half. PHP twin: `includes/media/atoms/sizing.php`. |
 | `source.control.js` | `pairPickerRow`, `control` | Atom: SOURCE (control half) — the editor UI. |
-| `source.js` | `resolveMediaType`, `disclosure`, `validate`, `css`, `TYPE_VOCABULARY` | Atom: SOURCE (logic half) — which media is showing. |
+| `source.js` | `resolveMediaType`, `disclosure`, `validate`, `css`, `emit`, `TYPE_VOCABULARY` | Atom: SOURCE (logic half) — which media is showing. |
 | `svg-presentation.control.js` | `control` | `svg-presentation` atom — CONTROL half (JSX). |
 | `svg-presentation.js` | `validatePosition`, `validateAnimation`, `validateSpeed`, `attrKeys`, `disclosure`… | `svg-presentation` atom — L2b control + disclosure + validator + value-setter. |
 | `video-behaviour.control.js` | `control` | `video-behaviour` atom — CONTROL half (JSX-equivalent `control()`, via `createElement()`). |
-| `video-behaviour.js` | `validate`, `disclosure`, `css` | `video-behaviour` atom — LOGIC half (pure: css/validate/disclosure). |
+| `video-behaviour.js` | `validate`, `disclosure`, `css`, `emit` | `video-behaviour` atom — LOGIC half (pure: css/validate/disclosure). |
 
-**31 files.**
+**35 files.**
 
 <!-- HELPER-CATALOGUE:END -->

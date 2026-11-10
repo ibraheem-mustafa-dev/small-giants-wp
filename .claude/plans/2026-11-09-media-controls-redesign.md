@@ -6,7 +6,7 @@ archive-after: the Eye Care sign-off (an Eye Care doc links here; it moves to pl
 
 # Media controls redesign: Bean's issue register
 
-Status: superseded by the ground-up design in `.claude/specs/49-SGS-MEDIA-SYSTEM.md` (v0.7, approved by Bean 2026-11-10; evidence in `.claude/reports/2026-11-09-media-controls/`; Bean 2026-11-09: design from the ground up, media-first, one shared cutover). The register below stays the list of what Bean raised; the Design and Sequence sections are replaced by the spec. The build follows the spec's §14 (Stage A under way). Raised by Bean on 2026-11-09 after checking the editor.
+Status: superseded by the ground-up design in `.claude/specs/49-SGS-MEDIA-SYSTEM.md` (v0.7, approved by Bean 2026-11-10; evidence in `.claude/reports/2026-11-09-media-controls/`; Bean 2026-11-09: design from the ground up, media-first, one shared cutover). The register below stays the list of what Bean raised; the Design and Sequence sections are replaced by the spec. The build follows the spec's §14 (Stage A done on 2026-11-10; Stage B next). Raised by Bean on 2026-11-09 after checking the editor.
 
 ## Order of work (Bean)
 
