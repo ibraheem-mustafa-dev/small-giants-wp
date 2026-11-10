@@ -40,6 +40,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-signed-o
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-look-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-header.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-edit-account.php';
+require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-order-detail.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-register.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-strings.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-extras.php';

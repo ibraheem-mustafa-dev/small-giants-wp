@@ -2642,6 +2642,96 @@
 				"type": "string",
 				"role": "content"
 			},
+			"orderDetailLook": {
+				"type": "boolean"
+			},
+			"orderDetailProgress": {
+				"type": "boolean"
+			},
+			"orderDetailItems": {
+				"type": "boolean"
+			},
+			"orderDetailBoxes": {
+				"type": "boolean"
+			},
+			"orderDetailWhatsApp": {
+				"type": "boolean"
+			},
+			"ordersSummary": {
+				"type": "boolean"
+			},
+			"orderDetailBackLabel": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderDetailTitle": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderDetailPlacedText": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderDetailProgressLabel": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderStepPlaced": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderStepProcessing": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderStepDispatched": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderStepDelivered": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderStepReady": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderStepCollected": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderDetailAddressTitle": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderDetailPaymentTitle": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderDetailTotalTitle": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderDetailSubtotalLabel": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderDetailTotalLabel": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderDetailWhatsAppNumber": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderDetailWhatsAppTitle": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderDetailWhatsAppText": {
+				"type": "string",
+				"role": "content"
+			},
 			"wishlistEmptyHeading": {
 				"type": "string",
 				"role": "content",

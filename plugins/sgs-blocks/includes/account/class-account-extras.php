@@ -22,6 +22,9 @@ final class Account_Extras {
 		\add_action( 'woocommerce_after_account_navigation', array( __CLASS__, 'end_menu_buffer' ), 99 );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_orders_template' ), 10, 5 );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_lost_confirmation_template' ), 10, 5 );
+		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_view_order_template' ), 10, 5 );
+		\add_filter( 'woocommerce_account_orders_columns', array( __CLASS__, 'add_summary_column' ) );
+		\add_action( 'woocommerce_my_account_my_orders_column_order-summary', array( __CLASS__, 'summary_cell' ) );
 		\add_action( 'woocommerce_account_edit-address_endpoint', array( __CLASS__, 'address_helper_line' ), 20 );
 		\add_action( 'wp_loaded', array( __CLASS__, 'fill_display_name' ), 10 );
 		\add_action( 'woocommerce_save_account_details_errors', array( __CLASS__, 'validate_mobile' ), 10, 1 );
@@ -108,6 +111,51 @@ final class Account_Extras {
 			return $template;
 		}
 		return __DIR__ . '/templates/orders-empty.php';
+	}
+
+	/**
+	 * Swap `myaccount/view-order.php` for the block's own order detail while `orderDetailLook` is on.
+	 *
+	 * @param mixed $template      Located template path.
+	 * @param mixed $template_name Template name.
+	 * @return mixed
+	 */
+	public static function maybe_swap_view_order_template( $template, $template_name = '' ) {
+		if ( 'myaccount/view-order.php' !== $template_name || ! is_array( Account_Endpoints::$active ) || empty( Account_Endpoints::$active['orderDetailLook'] ) ) {
+			return $template;
+		}
+		return __DIR__ . '/templates/order-detail.php';
+	}
+
+	/**
+	 * Add the items summary column to the orders table while `ordersSummary` is on.
+	 *
+	 * @param mixed $columns Column key => label.
+	 * @return mixed
+	 */
+	public static function add_summary_column( $columns ) {
+		if ( ! is_array( $columns ) || ! is_array( Account_Endpoints::$active ) || empty( Account_Endpoints::$active['ordersSummary'] ) ) {
+			return $columns;
+		}
+		$out = array();
+		foreach ( $columns as $key => $label ) {
+			$out[ $key ] = $label;
+			if ( 'order-date' === $key ) {
+				$out['order-summary'] = __( 'Items', 'sgs-blocks' );
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * The summary cell: the order's product names on one line.
+	 *
+	 * @param mixed $order The order.
+	 */
+	public static function summary_cell( $order ) {
+		if ( is_object( $order ) && method_exists( $order, 'get_items' ) && function_exists( 'sgs_account_order_item_names' ) ) {
+			echo esc_html( sgs_account_order_item_names( $order ) );
+		}
 	}
 
 	/**
