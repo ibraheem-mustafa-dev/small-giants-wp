@@ -487,6 +487,7 @@
     "extract_from_markers",
     "insert_with_markers",
     "user_can",
-    "woocommerce_register_additional_checkout_field"
+    "woocommerce_register_additional_checkout_field",
+    "wc_get_endpoint_url"
   ]
 }
