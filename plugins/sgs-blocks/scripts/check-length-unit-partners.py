@@ -122,6 +122,13 @@ ALLOW = {
     ('plugins/sgs-blocks/scripts/survey-length-control-scale.py', 'maxWidthUnit'):
         ("a synthetic sgs/x self-test source: the survey reads the setting out of a wrapped value expression",
          ('composeUnit( attributes.maxWidth, attributes.maxWidthUnit )',)),
+    **{
+        (path, unit): ("Spec 49's migration tool names the retired hero split-media unit partners only to delete them "
+                       "from saved content (its mapping rows and their self-test fixtures); it reads no setting", None)
+        for path in ('plugins/sgs-blocks/scripts/migrate-media-system/mapping.py',
+                     'plugins/sgs-blocks/scripts/migrate-media-system/selftest.py')
+        for unit in ('splitMediaWidthUnit', 'splitMediaHeightUnit', 'splitMediaMaxWidthUnit', 'splitMediaMaxHeightUnit')
+    },
 }
 
 
