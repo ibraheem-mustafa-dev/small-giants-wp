@@ -3,10 +3,13 @@
  * name. WooCommerce draws the summary in React, so the page runs this once, with the block's settings, and it
  * (re)applies both whenever the summary redraws. The brand comes from the Store API cart line's `extensions.sgs.brand`.
  *
- * `config`: { editLabel: string, editUrl: string, brand: boolean }.
+ * It also puts `loginPrefix` as a text node before the Log in link, so only the link is clickable.
+ *
+ * `config`: { editLabel: string, editUrl: string, brand: boolean, loginPrefix: string }.
  */
 ( function ( config, root ) {
-	var WRAPPER = '.wp-block-woocommerce-checkout-order-summary-block';
+	var WRAPPER = '.wp-block-woocommerce-checkout';
+	var LOGIN = '.wc-block-checkout__login-prompt';
 	var TITLE = '.wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title';
 	var ITEM = '.wc-block-components-order-summary-item';
 	var NAME = '.wc-block-components-product-name';
@@ -48,6 +51,13 @@
 				a.setAttribute( 'href', config.editUrl );
 				a.textContent = config.editLabel;
 				title.insertAdjacentElement( 'afterend', a );
+			}
+		}
+		if ( config.loginPrefix ) {
+			var prompt = doc.querySelector( LOGIN );
+			var before = prompt ? prompt.previousSibling : null;
+			if ( prompt && prompt.parentNode && ! ( before && 3 === before.nodeType && before.nodeValue === config.loginPrefix ) ) {
+				prompt.parentNode.insertBefore( doc.createTextNode( config.loginPrefix ), prompt );
 			}
 		}
 		if ( config.brand ) {

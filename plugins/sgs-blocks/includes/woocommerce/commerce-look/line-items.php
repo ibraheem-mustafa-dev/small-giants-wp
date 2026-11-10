@@ -113,23 +113,27 @@ function sgs_commerce_look_item_card_layout_css( array $attrs, string $block, st
 add_filter( 'render_block', __NAMESPACE__ . '\sgs_commerce_look_summary_extras_inject', 13, 2 );
 
 /**
- * The checkout order summary extras that are set: an Edit link (label and the bag's address) and the brand under
- * each line's name. Both are Checkout-only; Cart has its own summary.
+ * The checkout extras that are set: an Edit link (label and the bag's address) and the brand under each line's name in
+ * the order summary, and the text before the Log in link (`sgsCheckoutStrings.loginPrefix`, kept with its trailing
+ * space). All are Checkout-only; Cart has its own summary.
  *
  * @param array<string, mixed> $attrs Stored block attributes.
  * @param string               $bag   Address of the bag page.
- * @return array{editLabel:string,editUrl:string,brand:bool}|array{} Empty when neither is set.
+ * @return array{editLabel:string,editUrl:string,brand:bool,loginPrefix:string}|array{} Empty when none is set.
  */
 function sgs_commerce_look_summary_extras( array $attrs, string $bag ): array {
-	$label = trim( sanitize_text_field( (string) ( $attrs['sgsSummaryEditLinkLabel'] ?? '' ) ) );
-	$brand = true === ( $attrs['sgsItemShowBrand'] ?? false );
-	if ( '' === $label && ! $brand ) {
+	$label  = trim( sanitize_text_field( (string) ( $attrs['sgsSummaryEditLinkLabel'] ?? '' ) ) );
+	$brand  = true === ( $attrs['sgsItemShowBrand'] ?? false );
+	$raw    = is_array( $attrs['sgsCheckoutStrings'] ?? null ) ? (string) ( $attrs['sgsCheckoutStrings']['loginPrefix'] ?? '' ) : '';
+	$prefix = '' === trim( $raw ) ? '' : substr( str_replace( array( "\r", "\n", "\t" ), ' ', wp_kses( $raw, array() ) ), 0, 120 );
+	if ( '' === $label && ! $brand && '' === $prefix ) {
 		return array();
 	}
 	return array(
-		'editLabel' => '' !== $bag ? $label : '',
-		'editUrl'   => esc_url_raw( $bag ),
-		'brand'     => $brand,
+		'editLabel'   => '' !== $bag ? $label : '',
+		'editUrl'     => esc_url_raw( $bag ),
+		'brand'       => $brand,
+		'loginPrefix' => $prefix,
 	);
 }
 

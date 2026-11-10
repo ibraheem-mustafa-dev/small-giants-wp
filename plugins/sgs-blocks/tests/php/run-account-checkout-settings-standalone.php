@@ -23,6 +23,7 @@ function __( $t, $d = null ) { return $t; }
 function esc_html( $t ) { return htmlspecialchars( (string) $t, ENT_QUOTES ); }
 function esc_url_raw( $t ) { return (string) $t; }
 function sanitize_key( $k ) { return preg_replace( '/[^a-z0-9_\-]/', '', strtolower( (string) $k ) ); }
+function wp_kses( $t, $a ) { return strip_tags( (string) $t ); }
 function sanitize_text_field( $t ) { return trim( strip_tags( (string) $t ) ); }
 function wp_json_encode( $v, $f = 0 ) { return json_encode( $v, $f ); }
 function get_option( $k, $d = false ) { return $GLOBALS['options'][ $k ] ?? $d; }
@@ -175,6 +176,10 @@ if ( function_exists( 'SGS\Blocks\sgs_commerce_look_summary_extras' ) ) {
 	$js                  = $GLOBALS['inline'][0][1] ?? '';
 	ok( '<div>checkout</div>' === $out && false !== strpos( $js, 'sgsCheckoutSummaryExtrasConfig={"editLabel":"Edit"' ) && false !== strpos( $js, 'sgs-checkout-item-brand' ) && in_array( $GLOBALS['inline'][0][0] ?? '', $GLOBALS['enqueued'], true ), 'the checkout block gets the config and the script through an enqueued handle, its content untouched' );
 	ok( false !== strpos( $js, '&&' ) && false === strpos( $js, '&#038;' ), 'the summary extras script is printed with its && intact' );
+	$c = SGS\Blocks\sgs_commerce_look_summary_extras( array( 'sgsCheckoutStrings' => array( 'loginPrefix' => 'Already have an account? ' ) ), 'https://example.test/bag/' );
+	ok( 'Already have an account? ' === ( $c['loginPrefix'] ?? null ) && '' === $c['editLabel'] && false === $c['brand'], 'loginPrefix alone configures the prefix and keeps its trailing space' );
+	ok( '' === ( SGS\Blocks\sgs_commerce_look_summary_extras( array( 'sgsItemShowBrand' => true ), 'https://example.test/bag/' )['loginPrefix'] ?? 'x' ), 'no loginPrefix when it is not set' );
+	ok( array() === SGS\Blocks\sgs_checkout_strings_map( array( 'loginPrefix' => 'Already have an account? ' ) ), 'loginPrefix is not a gettext key, so the translation filter never carries it' );
 	$out = SGS\Blocks\sgs_commerce_look_summary_extras_inject( '<div>checkout</div>', array( 'blockName' => 'woocommerce/checkout', 'attrs' => array() ) );
 	ok( '<div>checkout</div>' === $out, 'an unset checkout block is unchanged' );
 	$out = SGS\Blocks\sgs_commerce_look_summary_extras_inject( '<div>cart</div>', array( 'blockName' => 'woocommerce/cart', 'attrs' => array( 'sgsItemShowBrand' => true ) ) );

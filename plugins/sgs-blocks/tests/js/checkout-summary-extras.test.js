@@ -10,10 +10,13 @@ const SCRIPT = fs.readFileSync(
 );
 
 const SUMMARY = `
+<div class="wp-block-woocommerce-checkout">
+<div class="wc-block-checkout__login-wrap"><a class="wc-block-checkout__login-prompt" href="/my-account/">Sign in</a></div>
 <div class="wp-block-woocommerce-checkout-order-summary-block">
 	<div class="wc-block-components-checkout-order-summary__title"><p class="wc-block-components-checkout-order-summary__title-text">Your bag</p></div>
 	<div class="wc-block-components-order-summary-item"><a class="wc-block-components-product-name" href="https://example.test/p/frame/">Frame</a></div>
 	<div class="wc-block-components-order-summary-item"><a class="wc-block-components-product-name" href="https://example.test/p/other/">Other</a></div>
+</div>
 </div>`;
 
 function run( config ) {
@@ -57,6 +60,24 @@ describe( 'checkout summary extras', () => {
 	} );
 } );
 
+describe( 'checkout login prefix', () => {
+	test( 'puts the text before the Log in link as a text node, outside the link', () => {
+		run( { editLabel: '', editUrl: '', brand: false, loginPrefix: 'Already have an account? ' } );
+		const link = document.querySelector( '.wc-block-checkout__login-prompt' );
+		expect( link.previousSibling.nodeType ).toBe( 3 );
+		expect( link.previousSibling.nodeValue ).toBe( 'Already have an account? ' );
+		expect( link.textContent ).toBe( 'Sign in' );
+	} );
+
+	test( 'a second render adds the text once', () => {
+		run( { editLabel: '', editUrl: '', brand: false, loginPrefix: 'Already have an account? ' } );
+		// eslint-disable-next-line no-new-func
+		new Function( SCRIPT )();
+		const parent = document.querySelector( '.wc-block-checkout__login-wrap' );
+		expect( parent.textContent ).toBe( 'Already have an account? Sign in' );
+	} );
+} );
+
 describe( 'checkout summary extras: observing', () => {
 	const originalObserver = window.MutationObserver;
 	let observed;
@@ -96,11 +117,11 @@ describe( 'checkout summary extras: observing', () => {
 		window.MutationObserver = originalObserver;
 	} );
 
-	test( 'watches the order summary wrapper, never the whole body, once it exists', () => {
+	test( 'watches the Checkout block, never the whole body, once it exists', () => {
 		load( SUMMARY, { editLabel: 'Edit', editUrl: '/bag/', brand: true } );
 		const targets = observed.map( ( o ) => o.target ).filter( Boolean );
 		expect( targets ).toHaveLength( 1 );
-		expect( targets[ 0 ].className ).toBe( 'wp-block-woocommerce-checkout-order-summary-block' );
+		expect( targets[ 0 ].className ).toBe( 'wp-block-woocommerce-checkout' );
 	} );
 
 	test( 'before the wrapper exists it watches the body, then hands over to the wrapper and disconnects the body watch', () => {
@@ -109,7 +130,7 @@ describe( 'checkout summary extras: observing', () => {
 		document.body.innerHTML = SUMMARY;
 		observed[ 0 ].cb( [] );
 		expect( observed[ 0 ].target ).toBeNull();
-		expect( observed.some( ( o ) => o.target && o.target.className === 'wp-block-woocommerce-checkout-order-summary-block' ) ).toBe( true );
+		expect( observed.some( ( o ) => o.target && o.target.className === 'wp-block-woocommerce-checkout' ) ).toBe( true );
 	} );
 
 	test( 'a burst of mutations runs one pass per animation frame', () => {

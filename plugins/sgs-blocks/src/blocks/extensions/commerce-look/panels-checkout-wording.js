@@ -48,6 +48,14 @@ export function CheckoutWordingPanel( { attributes, setAttributes } ) {
 				/>
 			) ) }
 			<TextControl
+				label={ __( 'Text before the Log in link (for example: Already have an account? )', 'sgs-blocks' ) }
+				help={ __( 'Plain text placed in front of the link; only the link stays clickable. Keep a trailing space.', 'sgs-blocks' ) }
+				value={ strings.loginPrefix || '' }
+				onChange={ ( value ) => setString( 'loginPrefix', value ) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
+			<TextControl
 				label={ __( 'Edit link beside the summary heading (link text)', 'sgs-blocks' ) }
 				help={ __( 'Links to the bag page. Empty shows no link.', 'sgs-blocks' ) }
 				value={ attributes.sgsSummaryEditLinkLabel || '' }
