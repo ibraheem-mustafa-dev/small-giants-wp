@@ -2276,5 +2276,32 @@
     "added_commit": null,
     "budget_ms": 6000,
     "order": 256
+  },
+  {
+    "id": "stage-b-freeze-selftest",
+    "cmd": "python ../../scripts/check-stage-b-freeze.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 3000,
+    "order": 257
+  },
+  {
+    "id": "check-media-adoption",
+    "cmd": "node scripts/adopt-media-blocks.mjs --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 5000,
+    "order": 258
+  },
+  {
+    "id": "test-media-adoption-selftest",
+    "cmd": "node scripts/adopt-media-blocks.mjs --self-test",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 90000,
+    "order": 259
   }
 ]

@@ -17,21 +17,8 @@ from deploy_common import err, log, ssh_base_cmd
 
 DETECTOR_DIR = Path(__file__).resolve().parent / "migrate-media-system"
 FIRST_LINES = 6
-# `check` also scans the repo's own files unless --target names kinds; a kind that matches nothing limits it to the exported content.
-NO_REPO_KIND = "saved-content-only"
-
 _MARKER = "import sys; sys.path.insert(0, sys.argv[1]); import mapping; print(int(bool(mapping.any_block_adopted())))"
-# Prefers corpus.export_command; until it exists the same read-only command is built from corpus.POST_TYPES.
-_EXPORT = (
-    "import sys; sys.path.insert(0, sys.argv[1]); import corpus\n"
-    "wp = sys.argv[2]\n"
-    "if hasattr(corpus, 'export_command'):\n"
-    "    print(corpus.export_command(wp))\n"
-    "else:\n"
-    "    import shlex\n"
-    "    print(f'wp --path={shlex.quote(wp)} post list --post_type={corpus.POST_TYPES} --post_status={corpus.POST_STATUSES} "
-    "--fields=ID,post_type,post_name,post_status,post_content --format=json')\n"
-)
+_EXPORT = "import sys; sys.path.insert(0, sys.argv[1]); import corpus; print(corpus.export_command(sys.argv[2]))"
 
 
 def build_is_post_cutover() -> bool:
@@ -49,8 +36,7 @@ def export_command_for(wp_root: str) -> str:
 
 
 def run_detector(content_file: Path) -> subprocess.CompletedProcess:
-    return subprocess.run([sys.executable, str(DETECTOR_DIR / "cli.py"), "check", "--content", str(content_file), "--active", "on",
-                           "--target", NO_REPO_KIND],
+    return subprocess.run([sys.executable, str(DETECTOR_DIR / "cli.py"), "check", "--content", str(content_file), "--active", "on"],
                           capture_output=True, text=True, encoding="utf-8")
 
 
