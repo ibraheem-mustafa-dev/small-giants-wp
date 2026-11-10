@@ -221,7 +221,7 @@ function uploadUniform( gl, location, value ) {
  * Never throws. Returns `null` on any failure — see README "initSurface
  * returns null, never throws" for why that is the whole fallback mechanism.
  *
- * @param {HTMLElement}      el                 Element the canvas is appended to.
+ * @param {HTMLElement}      el                 Element the canvas is appended to (or, for an <img>, placed after).
  * @param {Object}            opts               Options.
  * @param {HTMLImageElement} opts.image         Already-decoded source image.
  * @param {string}            opts.fragment      GLSL ES 3.00 fragment shader source.
@@ -567,7 +567,18 @@ export function createRenderer( el, opts ) {
 		return null;
 	}
 
-	el.appendChild( canvas );
+	// An <img> host cannot hold children, so its canvas goes in as the image's next sibling.
+	if ( 'IMG' === el.tagName ) {
+		if ( ! el.parentNode ) {
+			removeCanvas();
+			return null;
+		}
+		// The canvas takes the image's classes so the image's own placement rules (position, inset, size) cover it exactly.
+		canvas.className = CANVAS_CLASS + ' ' + el.className;
+		el.parentNode.insertBefore( canvas, el.nextSibling );
+	} else {
+		el.appendChild( canvas );
+	}
 	sizeCanvas();
 	paint();
 

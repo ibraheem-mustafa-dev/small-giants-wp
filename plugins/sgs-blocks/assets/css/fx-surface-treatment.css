@@ -15,6 +15,11 @@
 	position: relative;
 }
 
+/* An <img> host holds its canvas as the next sibling, with the image's classes copied onto it so an image placed by its own class rules is covered exactly; an unplaced image falls back to the parent as the positioning context. */
+:has( > img[data-sgs-fx~="surface-treatment"] + .sgs-webgl-surface ) {
+	position: relative;
+}
+
 /*
  * A BARE CLASS RULE, and that is now the correct shape — this is the NEGATIVE
  * CONTROL for the 2026-08-25 child-lift de-specification.

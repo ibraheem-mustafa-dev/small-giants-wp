@@ -351,7 +351,8 @@ function driveScrollResolve( el, handle ) {
 function initTreatment( el ) {
 	const state = { cancelled: false, handle: null, stopDriver: null };
 
-	const img = el.querySelector( 'img' );
+	// The host is the <img> itself (sgs/decorative-image) or a wrapper that contains it (sgs/team-member).
+	const img = 'IMG' === el.tagName ? el : el.querySelector( 'img' );
 	if ( ! img ) {
 		return () => {
 			state.cancelled = true;
