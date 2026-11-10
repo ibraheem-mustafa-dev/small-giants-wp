@@ -22,7 +22,7 @@
  */
 
 import { MEDIA_BASES } from '../../MediaElementControls.js';
-import { settingsForBases } from './atom-settings.js';
+import { settingsForBases } from '../atom-settings.js';
 
 /**
  * Every atom, with the base set it owns.
