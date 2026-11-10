@@ -15,6 +15,9 @@ import { DEVICES, clearPatch, isSet, ownAt, readAt, tierPatch } from './disclosu
 
 const DEVICE_NAMES = { desktop: 'Desktop', tablet: 'Tablet', mobile: 'Mobile' };
 
+/** Bases stored inside `Source` (per device), so a panel reset clears them with it and they own no attribute. */
+const STORED_IN_SOURCE = new Set( [ 'Captions' ] );
+
 const ADOPTED_RESPONSIVE = new Set(
 	Object.values( ADOPTED_SETTINGS )
 		.flat()
@@ -113,6 +116,9 @@ export function resetPatch( rows, attrs, device, prefix, blockSlug ) {
 	const devices = 'desktop' === device ? DEVICES : [ device ];
 	rows.forEach( ( row ) => {
 		const adopted = !! row.setting.adopted;
+		if ( adopted && STORED_IN_SOURCE.has( row.setting.base ) ) {
+			return;
+		}
 		const members = ( adopted ? ADOPTED_COMPOSITES : COMPOSITES )[ row.setting.base ] || [];
 		[ row.setting.base, ...members ].forEach( ( base ) => {
 			const key = adopted ? mediaAttrName( prefix, base ) : mediaStoredAttrName( blockSlug, prefix, base );

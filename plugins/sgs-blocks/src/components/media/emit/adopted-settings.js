@@ -95,10 +95,13 @@ const SHADOW_SETTINGS = [
 const SVG_SETTINGS = [
 	row( { base: 'SvgLayer', type: 'string', role: 'layout', component: 'SelectControl', label: 'Layer order', panel: 'svg', order: 1 } ),
 	row( { base: 'SvgTextShadow', type: 'boolean', role: 'behaviour', component: 'ToggleControl', label: 'Text shadow', panel: 'svg', order: 2 } ),
+	row( { base: 'SvgParts', type: 'array', role: 'behaviour', component: 'SvgPartsField', label: 'Background SVG parts', panel: 'svg', order: 3 } ),
+	row( { base: 'SvgPartsTrigger', type: 'string', role: 'behaviour', component: 'SvgPartsField', label: 'Background SVG animation trigger', panel: 'svg', order: 4 } ),
 ];
 
 const PLAYBACK_SETTINGS = [
 	row( { base: 'Playback', type: 'object', role: 'behaviour', component: 'PlaybackField', label: 'Playback', panel: 'video', order: 1 } ),
+	row( { base: 'Captions', type: 'object', role: 'content', component: 'CaptionsField', label: 'Captions', panel: 'video', order: 2 } ),
 ];
 
 const CAPTION_SETTINGS = [

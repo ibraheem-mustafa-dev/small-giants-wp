@@ -29,6 +29,7 @@ import { LINK_SOURCES_ALL } from '../../../shared/link-source-options.js';
 import { mediaAttrName, mediaStoredAttrName } from '../../MediaElementControls.js';
 import FitField from '../FitField.js';
 import FocalField from '../FocalField.js';
+import MediaSlotCaptions from '../MediaSlotCaptions.js';
 import MediaSlotField from '../MediaSlotField.js';
 import ShapeField from '../ShapeField.js';
 import { AspectRatioField, HeightField, LimitsGroup, WidthField } from '../SizingFields.js';
@@ -41,6 +42,7 @@ import {
 	ShadowField,
 	SurfaceColourField,
 } from './adopted-fields.js';
+import SvgPartsField from './SvgPartsField.js';
 import { REASONS, isSet } from './disclosure-context.js';
 import { translateReason } from './reasons.js';
 import { SELECT_OPTIONS } from './select-options.js';
@@ -319,6 +321,7 @@ const CornersOrRadius = ( props ) => ( props.row.setting.adopted ? <RadiusField 
 /** Components that print their own device note: `PanelRow` adds none under them. */
 export const OWN_NOTE = [
 	'MediaSlotField',
+	'CaptionsField',
 	'FitField',
 	'FocalField',
 	'ShapeField',
@@ -352,6 +355,8 @@ export const COMPONENT_MAP = {
 	ShadowField,
 	SurfaceColourField,
 	PlaybackField,
+	CaptionsField: MediaSlotCaptions,
+	SvgPartsField,
 	ColourTreatmentField,
 	AlignmentField,
 	NumberControl: OrderField,

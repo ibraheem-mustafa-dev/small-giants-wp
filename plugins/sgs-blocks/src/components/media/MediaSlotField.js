@@ -23,7 +23,7 @@ import { LIBRARY_TYPES, embedSrc, hasFile, kindNoun, kindOptions, pickPatch, pos
 import './MediaSlotField.css';
 
 /** A Media Library button that hands the chosen attachment to `onSelect`. */
-function LibraryButton( { types, label, onSelect, value } ) {
+export function LibraryButton( { types, label, onSelect, value } ) {
 	return (
 		<MediaUploadCheck>
 			<MediaUpload

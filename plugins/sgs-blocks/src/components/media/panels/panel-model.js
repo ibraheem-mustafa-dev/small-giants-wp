@@ -104,7 +104,7 @@ export const ADOPTED_COMPOSITES = {
 };
 
 /** Components that edit a whole slot or group: one render per panel, however many rows name them. */
-export const ONCE_PER_PANEL = [ 'MediaSlotField', 'LimitsGroup' ];
+export const ONCE_PER_PANEL = [ 'MediaSlotField', 'LimitsGroup', 'SvgPartsField' ];
 
 const PANEL_INDEX = Object.fromEntries( PANELS.map( ( p, i ) => [ p.id, i ] ) );
 

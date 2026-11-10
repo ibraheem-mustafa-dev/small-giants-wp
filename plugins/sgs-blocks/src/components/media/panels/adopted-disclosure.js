@@ -79,10 +79,11 @@ export function adoptedDisclosure( id, attrs, device, prefix = '', opts = {} ) {
 			return run( shadowDisclosure );
 		case 'svg-presentation': {
 			const m = run( svgDisclosure );
-			return { SvgLayer: m.SvgPosition, SvgTextShadow: m.SvgTextShadow };
+			const parts = c.background && kindIn( c, 'svg' ) ? shown() : omitted();
+			return { SvgLayer: m.SvgPosition, SvgTextShadow: m.SvgTextShadow, SvgParts: parts, SvgPartsTrigger: parts };
 		}
 		case 'video-behaviour':
-			return { Playback: kindIn( c, 'video', 'embed' ) ? shown() : omitted() };
+			return { Playback: kindIn( c, 'video', 'embed' ) ? shown() : omitted(), Captions: kindIn( c, 'video' ) ? shown() : omitted() };
 		case 'caption':
 			return run( captionDisclosure );
 		case 'link':
