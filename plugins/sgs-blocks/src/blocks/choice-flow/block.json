@@ -111,6 +111,7 @@
 					}
 				},
 				"summary-photo": {
+					"surface": true,
 					"selector": ".sgs-choice-flow__summary-image",
 					"label": "Summary photo",
 					"layer": "CONTENT",
