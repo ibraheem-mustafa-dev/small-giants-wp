@@ -274,7 +274,11 @@ CLAMP_DEFAULTS = {("sgs/trust-bar", "badgeImageSize"): 60}
 
 # Blocks whose old Shape string drew only the values listed (the new Shape each becomes); any other value painted nothing.
 # option-picker's colour dot has a 3px stylesheet radius, so "square" (radius 0) is an explicit none, never a deleted default.
-OLD_SHAPE_DRAWN = {"sgs/option-picker": {"round": "circle", "square": "none"}}
+OLD_SHAPE_DRAWN = {
+    "sgs/option-picker": {"round": "circle", "square": "none"},
+    # brand-strip's tile: "none" is the no-card tile; "square" is the old default (the tile the stylesheet already draws)
+    "sgs/brand-strip": {"circle": "circle", "none": "none"},
+}
 
 # Old attributes outside the prefix grammar: (block, old name) -> (family, full new attribute name or note).
 EXTRA = {
@@ -373,6 +377,7 @@ EXTRA = {
     ("sgs/responsive-logo", "logoUrlMobile"): ("source", "logoSource"),
     ("sgs/responsive-logo", "darkLogoId"): ("source", "logoDarkSource"),
     ("sgs/responsive-logo", "logoDecorative"): ("alt", "logoDecorative"),
+    ("sgs/responsive-logo", "alt"): ("alt", "logoAlt"),
     ("sgs/responsive-logo", "inlineSvg"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
     ("sgs/nav-drawer", "chromeLogoId"): ("source", "chromeLogoSource"),
     ("sgs/nav-drawer", "chromeLogoUrl"): ("source", "chromeLogoSource"),

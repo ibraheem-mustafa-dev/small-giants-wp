@@ -123,6 +123,19 @@ case("before-after: autoplay with no video side is inert and deleted, an image s
 case("before-after: a video side with no saved autoplay (the old default false) gets no Playback", "sgs/before-after",
      {"beforeMediaType": "video", "beforeVideoUrl": VIDEO},
      {"beforeSource": {"desktop": {"kind": "video", "url": VIDEO}}})
+case("responsive-logo: alt becomes logoAlt (the Indus header and footer keep their alt)", "sgs/responsive-logo", {"alt": "Indus Foods Ltd"},
+     {"logoAlt": "Indus Foods Ltd"})
+case("responsive-logo: an empty alt is the default and is deleted", "sgs/responsive-logo", {"alt": ""}, {})
+case("negative: responsive-logo already holding logoAlt", "sgs/responsive-logo", {"logoAlt": "Indus Foods Ltd"}, None)
+case("responsive-logo: colourTreatment stays", "sgs/responsive-logo", {"colourTreatment": "white"}, None)
+case("brand-strip tile: none (no card) becomes the none Shape", "sgs/brand-strip", {"tileShape": "none"}, {"logoShape": {"desktop": {"shape": "none"}}})
+case("brand-strip tile: circle becomes the circle Shape", "sgs/brand-strip", {"tileShape": "circle"}, {"logoShape": {"desktop": {"shape": "circle"}}})
+case("brand-strip tile: square is the old default and writes nothing", "sgs/brand-strip", {"tileShape": "square"}, {})
+case("negative: brand-strip logoShape already an object", "sgs/brand-strip", {"logoShape": {"desktop": {"shape": "none"}}}, None)
+case("choice-flow: the header logo object's alt is carried to headerLogoAlt", "sgs/choice-flow",
+     {"headerLogo": {"id": 5, "url": U, "alt": "Brand"}}, {"headerLogoSource": {"desktop": {"kind": "image", "id": 5, "url": U}}, "headerLogoAlt": "Brand"})
+case("choice-flow: a header logo with no alt gets no headerLogoAlt", "sgs/choice-flow", {"headerLogo": {"id": 5, "url": U}},
+     {"headerLogoSource": {"desktop": {"kind": "image", "id": 5, "url": U}}})
 case("size: a per-device image gets its own size", "sgs/media", {"imageUrl": U, "imageUrlMobile": "http://x/m.jpg"},
      {"source": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}, "mobile": {"kind": "image", "url": "http://x/m.jpg", "width": 160, "height": 120}}, "width": {"desktop": "100%"}})
 case("size: a hero split image gets its size", "sgs/hero", {"splitMediaImageUrl": "http://x/m.svg"},

@@ -45,10 +45,21 @@ def object_entry(value: Any):
     return entry, value.get("alt") if isinstance(value.get("alt"), str) else "", extra
 
 
+def _carry_object_alt(ctx: T.Ctx, target: str, alt: str) -> None:
+    """The old media object's `alt` is the slot's Alt (`headerLogoSource` -> `headerLogoAlt`), when the block declares that attribute
+    and nothing is stored there; a Source entry holds only a per-device alt that differs."""
+    name = target[: -len("Source")] + "Alt" if target.endswith("Source") else ""
+    declared = M.live_declared_attributes().get(ctx.block, set())
+    if alt and name in declared and not ctx.has(name):
+        ctx.put(name, alt)
+        ctx.events.append(("converted", target, name, "the old media object's alt"))
+
+
 def _source_from_objects(ctx: T.Ctx, names: dict, target: str, id_name: str | None = None, flat_id: str | None = None) -> bool:
     """names: {device: attribute holding an object or URL}. Writes the R Source; returns whether it was written."""
     source: dict = {}
     consumed = []
+    desktop_alt = ""
     for device in DEVICES:
         name = names.get(device)
         if not name or not ctx.has(name):
@@ -58,6 +69,10 @@ def _source_from_objects(ctx: T.Ctx, names: dict, target: str, id_name: str | No
             consumed.append(name)
             continue
         entry, alt, extra = got
+        if alt and device == "desktop":
+            desktop_alt = alt
+        elif alt:
+            entry["alt"] = alt
         if extra:
             ctx.keep(name, "refused", f"unexpected keys {extra} in a media object")
             return False
@@ -70,6 +85,7 @@ def _source_from_objects(ctx: T.Ctx, names: dict, target: str, id_name: str | No
     if source:
         existing = ctx.get(target) if isinstance(ctx.get(target), dict) else {}
         ctx.put(target, {**existing, **source})
+        _carry_object_alt(ctx, target, desktop_alt)
     for name in consumed + ([flat_id] if flat_id and ctx.has(flat_id) else []):
         ctx.drop(name, "converted", target)
     return bool(source)
@@ -274,7 +290,9 @@ def migrate_extras(ctx: T.Ctx) -> None:
         elif family == "opacity":
             _plain_opacity(ctx, old, target, value)
         elif family == "alt":
-            if isinstance(value, bool) or isinstance(value, str):
+            if value == "" and target != old:
+                ctx.drop(old, "deleted", "", "an empty alt is the default")
+            elif isinstance(value, bool) or isinstance(value, str):
                 _move(ctx, old, target, value)
         elif family == "source":
             pass  # handled by migrate_object_sources
