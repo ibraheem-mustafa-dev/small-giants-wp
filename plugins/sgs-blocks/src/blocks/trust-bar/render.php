@@ -90,14 +90,9 @@ $icon_circle_shadow_colour             = isset( $attributes['iconCircleShadowCol
 $icon_circle_shadow_colour_hover       = isset( $attributes['iconCircleShadowColourHover'] ) ? (string) $attributes['iconCircleShadowColourHover'] : '';
 
 // --- image-badge attributes (mirrors icon-circle's own control set) -----------
-$badge_image_border_radius       = isset( $attributes['badgeImageBorderRadius'] ) ? (string) $attributes['badgeImageBorderRadius'] : '';
-$badge_image_size                = isset( $attributes['badgeImageSize'] ) ? absint( $attributes['badgeImageSize'] ) : 60;
 $badge_image_shadow              = isset( $attributes['badgeImageShadow'] ) ? (string) $attributes['badgeImageShadow'] : '';
 $badge_image_shadow_colour       = isset( $attributes['badgeImageShadowColour'] ) ? (string) $attributes['badgeImageShadowColour'] : '';
 $badge_image_shadow_colour_hover = isset( $attributes['badgeImageShadowColourHover'] ) ? (string) $attributes['badgeImageShadowColourHover'] : '';
-// badgeImageObjectFit is read directly by SGS_Media_Element::style() (the
-// shared object-fit atom, rule 37-media-no-handroll) further down — no local
-// sanitised copy needed here.
 // Grid columns are driven by the gridTemplateColumns attr via the shared wrapper helper.
 // Gap is consumed by the shared wrapper helper directly from $attributes['gap'].
 
@@ -131,9 +126,6 @@ $tb_overflow_drop     = ( 'drop' === $tb_overflow_mode && ! $tb_marquee_always )
 
 // Clamp circle size.
 $icon_circle_size = max( 36, min( 64, $icon_circle_size ) );
-
-// Clamp image-badge size.
-$badge_image_size = max( 24, min( 160, $badge_image_size ) );
 
 // --- Resolve colour values ----------------------------------------------------
 $circle_bg_value          = sgs_colour_value( $icon_circle_bg );
@@ -465,44 +457,54 @@ $tb_extra_scoped_css .= sgs_text_states_css(
 );
 
 // --- image-badge appearance (no-inline contract: scoped rule, not inline style=) -----
-// Mirrors icon-circle's own control set (size/shadow/border-radius) plus an
-// image-specific object-fit control. Only emitted when the variant is active.
-// Media-element atom layer (rule 37-media-no-handroll) — badgeImageObjectFit
-// already matches mediaAttrName('badgeImage','ObjectFit'), so it is wired
-// directly onto the shared object-fit atom rather than a hand-rolled
-// `object-fit:` declaration. Computed once (not per item, below) because the
-// scope class/CSS are the same for every badge image in this block instance;
-// only fires when the image-badge branch actually renders an <img>.
-$tb_badge_img_marker_class_attr = '';
-if ( 'image-badge' === $badge_style && class_exists( 'SGS_Media_Element' ) ) {
-	$tb_badge_img_scope_class       = SGS_Media_Element::scope_class( $uid, 'badgeImage' );
-	$tb_badge_img_marker_class_attr = ' ' . implode( ' ', SGS_Media_Element::element_classes( $tb_badge_img_scope_class ) );
-
-	$tb_badge_img_atom_css = SGS_Media_Element::style( $attributes, 'badgeImage', 'sgs/trust-bar', $uid, array( 'object-fit' ) );
-	if ( '' !== $tb_badge_img_atom_css ) {
-		$tb_extra_scoped_css .= $tb_badge_img_atom_css;
+// The badge pictures are the `badge` slot (Spec 49 §8.3): the shared media renderer prints each as a group that IS the
+// badge's picture box (`.sgs-trust-bar__badge-img`). The block's Width (60px when unset), Fit (contain when unset:
+// logos and certification marks are never cropped), Radius, Shape and Colour belong to the slot; the shadow stays the
+// block's own and follows the picture's corners. Only emitted when the variant is active.
+$tb_media_css    = '';
+$tb_render_badge = static function ( array $item, int $index ): string {
+	unset( $item, $index );
+	return '';
+};
+if ( 'image-badge' === $badge_style ) {
+	require_once dirname( __DIR__, 3 ) . '/includes/media/render-item-slot.php';
+	$tb_media_attrs = $attributes;
+	if ( array() === sgs_media_item_device_tiers( $tb_media_attrs['badgeFit'] ?? null ) ) {
+		$tb_media_attrs['badgeFit'] = array( 'desktop' => 'contain' );
 	}
+	$tb_render_badge = sgs_media_item_renderer(
+		sgs_media_item_slot_for( $block, 'badge' ),
+		$tb_media_attrs,
+		'sgs/trust-bar',
+		$uid . '-media',
+		array(
+			'desktop' => 0,
+			'tablet'  => 0,
+			'mobile'  => 0,
+		),
+		$tb_media_css,
+		'sgs-trust-bar__badge-img'
+	);
 }
 
 if ( 'image-badge' === $badge_style ) {
-	$img_sel   = $uid_scope . ' .sgs-trust-bar__badge-img';
-	$img_decls = array();
+	$img_sel = $uid_scope . ' .sgs-trust-bar__badge-img';
 
-	$img_decls[] = 'width:' . $badge_image_size . 'px';
-	$img_decls[] = 'height:' . $badge_image_size . 'px';
-
-	if ( '' !== $badge_image_border_radius ) {
-		$safe_img_radius = preg_replace( '/[^A-Za-z0-9\s%().,\-]/', '', $badge_image_border_radius );
-		$img_decls[]     = 'border-radius:' . esc_attr( trim( $safe_img_radius ) );
+	// The box is 60px wide unless the client sets a Width (the atom's rule then sizes it).
+	if ( array() === array_filter( sgs_media_device_values( $attributes['badgeWidth'] ?? null ), static fn( $v ): bool => null !== $v ) ) {
+		$tb_extra_scoped_css .= $img_sel . '{width:60px}';
 	}
 
+	// The shadow sits on the picture itself, so it follows the Radius and Shape the slot gives it.
 	// sgs_shadow_value_composed() composes the SHAPE-only attr (D621/D622
 	// colour-panel split) with the separate colour attr; an empty/invalid
 	// stored shape resolves to '' so no declaration is emitted.
 	// The resting declaration carries the forced-colours outline fallback.
-	$img_decls = array_merge( $img_decls, sgs_shadow_box_decls( $badge_image_shadow, $badge_image_shadow_colour ) );
-
-	$tb_extra_scoped_css .= $img_sel . '{' . implode( ';', $img_decls ) . '}';
+	$img_shadow_sel = $img_sel . ' .sgs-media-el';
+	$img_decls      = sgs_shadow_box_decls( $badge_image_shadow, $badge_image_shadow_colour );
+	if ( array() !== $img_decls ) {
+		$tb_extra_scoped_css .= $img_shadow_sel . '{' . implode( ';', $img_decls ) . '}';
+	}
 
 	// HOVER-state shadow colour (Rule 31, 2026-08-22) — same shape as the
 	// icon-circle hover rule above.
@@ -510,12 +512,12 @@ if ( 'image-badge' === $badge_style ) {
 		$safe_badge_image_shadow_hover = sgs_shadow_value_composed( $badge_image_shadow, $badge_image_shadow_colour_hover );
 		if ( '' !== $safe_badge_image_shadow_hover ) {
 			// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback
-			$tb_extra_scoped_css .= sgs_hover_state_rules( $img_sel, 'box-shadow:' . $safe_badge_image_shadow_hover, ':focus-within' );
+			$tb_extra_scoped_css .= sgs_hover_state_rules( $img_shadow_sel, 'box-shadow:' . $safe_badge_image_shadow_hover, ':focus-within' );
 		}
 	} elseif ( '' !== $badge_image_shadow ) {
 		// AUTOMATIC LIFT (design H4) — only when this instance has NO explicit hover colour.
 		$tb_extra_scoped_css .= sgs_shadow_hover_rules(
-			$img_sel,
+			$img_shadow_sel,
 			$badge_image_shadow,
 			$badge_image_shadow_colour,
 			$attributes,
@@ -526,20 +528,6 @@ if ( 'image-badge' === $badge_style ) {
 
 // --- Build badge items HTML ---------------------------------------------------
 $items_html = '';
-
-// Spec 35 Part 4 — per-item object-fit override, image-badge variant only.
-// Keyed by the item's OWN stable `_key` (src/utils/generateItemKey.js), never
-// by array index/`:nth-child` (both break the moment an operator reorders/
-// adds/removes a badge). `sgs_media_position_css()` already accepts an
-// arbitrary attributes array + prefix; passed a per-item shim here rather
-// than the block's own $attributes, with focalPoint always null (badges are
-// logos/certification marks, not photographs — no crop control by design,
-// mirroring sgs/testimonial's orgLogo + sgs/brand-strip's logoFit). A
-// pre-existing item authored before this field existed has no `_key` yet
-// (client-side backfill lands on next editor save), so the index fallback
-// below is never load-bearing in practice — it only prevents an empty
-// selector.
-$tb_per_item_css = '';
 
 // Sibling offset for the per-badge `:nth-child(N)` scoped rules below.
 //
@@ -681,50 +669,16 @@ foreach ( $items as $tb_item_index => $item ) {
 			$items_html .= sprintf( '<div class="sgs-trust-bar__badge"%s>%s</div>', $item_attrs, $inner_html );
 		}
 	} elseif ( 'image-badge' === $badge_style ) {
-		$media_url = isset( $item['media']['url'] ) ? (string) $item['media']['url'] : '';
-		if ( empty( $media_url ) && isset( $item['image']['url'] ) ) {
-			$media_url = (string) $item['image']['url'];
-		}
-		$media_alt = isset( $item['media']['alt'] ) ? (string) $item['media']['alt'] : '';
-		if ( empty( $media_alt ) ) {
-			$media_alt = isset( $item['label'] ) ? (string) $item['label'] : '';
-		}
-
-		// Per-item object-fit override (Spec 35 Part 4) — see the
-		// $tb_per_item_css declaration above the loop for the full rationale.
+		// The badge's picture: the item's own `source`, `alt`, `decorative` and `fit`, printed by the shared media
+		// renderer (Spec 49 §8.3). An item with no alt of its own is named by its label.
 		$tb_item_key      = ! empty( $item['_key'] ) ? (string) $item['_key'] : 'idx-' . absint( $tb_item_index );
 		$tb_item_key_attr = ' data-badge-key="' . esc_attr( $tb_item_key ) . '"';
-		$tb_per_item_css .= sgs_media_position_css(
-			array(
-				'objectPosition' => null,
-				'objectFit'      => $item['objectFit'] ?? '',
-			),
-			'',
-			$uid_scope . ' [data-badge-key="' . esc_attr( $tb_item_key ) . '"] img'
-		);
-
-		// Decorative badge image (WCAG 2.1 AA 1.1.1) — an explicit per-badge
-		// editorial choice that this image carries no information (e.g. a
-		// repeating brand-mark pattern where the names already appear as
-		// text elsewhere). Blank the alt AND add aria-hidden so assistive
-		// tech skips it entirely rather than announcing an empty image.
-		$item_decorative = ! empty( $item['decorative'] );
-		if ( $item_decorative ) {
-			$media_alt = '';
+		$media_item       = $item;
+		if ( '' === trim( (string) ( $item['alt'] ?? '' ) ) ) {
+			$media_item['alt'] = $item_label;
 		}
-
 		$item_attrs   .= $tb_item_key_attr;
-		$badge_content = '';
-		if ( $media_url ) {
-			$badge_content .= sprintf(
-				'<img src="%s" alt="%s"%s%s class="sgs-trust-bar__badge-img%s" loading="lazy" />',
-				esc_url( $media_url ),
-				esc_attr( $media_alt ),
-				sgs_image_size_attrs( (string) $media_url ),
-				$item_decorative ? ' aria-hidden="true"' : '',
-				esc_attr( $tb_badge_img_marker_class_attr )
-			);
-		}
+		$badge_content = $tb_render_badge( $media_item, (int) $tb_item_index );
 		if ( $item_label ) {
 			$badge_content .= sprintf(
 				'<span class="sgs-trust-bar__badge-label">%s</span>',
@@ -768,8 +722,8 @@ $typo_css  = sgs_typography_css_rule( $attributes, 'label', $label_sel, '', fals
 $typo_css .= sgs_typography_css_rule( $attributes, 'title', $title_sel, '', false, false, sgs_object_attr_keys( $block ) );
 // No-inline contract: combine the color/border scoped rules ($tb_extra_scoped_css,
 // built above — includes title/label colour), typography, and the per-item
-// image-badge object-fit overrides ($tb_per_item_css) into ONE <style> tag.
-$all_scoped_css = $tb_extra_scoped_css . $typo_css . $tb_per_item_css;
+// image-badge picture rules ($tb_media_css) into ONE <style> tag.
+$all_scoped_css = $tb_extra_scoped_css . $typo_css . $tb_media_css;
 $style_block    = $all_scoped_css ? '<style>' . wp_strip_all_tags( $all_scoped_css ) . '</style>' : '';
 
 // Overflow mode 'drop' needs the badges to actually wrap onto further rows in
