@@ -418,3 +418,30 @@ function sgs_configurator_optimise_assets(): void {
 }
 
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\\sgs_configurator_optimise_assets', 99 );
+
+/**
+ * Drop `wp-polyfill` as a dependency of front-end scripts.
+ *
+ * `wp-polyfill` is a core-js bundle that fills in language features for browsers older
+ * than any WordPress supports; every current browser has them natively. On the front end
+ * it arrives only as a declared dependency (on a WooCommerce shop page through
+ * `wc-settings` and `wc-types`, about 10.5 KB transferred, measured 2026-11-11), so
+ * removing the dependency removes the file while every script that listed it still loads.
+ * A script that enqueues `wp-polyfill` directly keeps it. The block editor and wp-admin
+ * are untouched.
+ *
+ * @return void
+ */
+function sgs_drop_polyfill_dependency(): void {
+	if ( is_admin() || ! apply_filters( 'sgs_drop_polyfill_dependency', true ) ) {
+		return;
+	}
+
+	foreach ( wp_scripts()->registered as $script ) {
+		if ( in_array( 'wp-polyfill', $script->deps, true ) ) {
+			$script->deps = array_values( array_diff( $script->deps, array( 'wp-polyfill' ) ) );
+		}
+	}
+}
+
+add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\\sgs_drop_polyfill_dependency', 100 );
