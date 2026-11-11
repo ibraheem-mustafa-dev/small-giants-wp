@@ -252,13 +252,42 @@ if ( ! function_exists( 'sgs_media_atom_shape_border' ) ) {
 		$style   = sgs_media_scalar( $attrs, $slot, 'BorderStyle' );
 		$allowed = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 		sgs_media_add( $rules, $selector, 'desktop', 'border-style', in_array( $style, $allowed, true ) ? $style : 'solid' );
-		$colour = sgs_media_colour( sgs_media_scalar( $attrs, $slot, 'BorderColour' ) );
-		if ( '' !== $colour ) {
+		$background    = sgs_media_colour( sgs_media_scalar( $attrs, $slot, 'Background' ) );
+		$gradient      = sgs_media_gradient( sgs_media_scalar( $attrs, $slot, 'BorderColourGradient' ) );
+		$gradient_over = sgs_media_gradient( sgs_media_scalar( $attrs, $slot, 'BorderColourHoverGradient' ) );
+		$colour        = sgs_media_colour( sgs_media_scalar( $attrs, $slot, 'BorderColour' ) );
+		$colour_hover  = sgs_media_colour( sgs_media_scalar( $attrs, $slot, 'BorderColourHover' ) );
+		// A gradient cannot be a border colour: it paints as the surface's background across the border box, the
+		// Background colour (if any) painted over it in the padding box, so corners and a circle or pill follow
+		// `border-radius`. The border itself is transparent.
+		$layers = static function ( string $paint ) use ( $background ): string {
+			return '' !== $background ? 'linear-gradient(' . $background . ',' . $background . '),' . $paint : $paint;
+		};
+		if ( '' !== $gradient || '' !== $gradient_over ) {
+			sgs_media_add( $rules, $selector, 'desktop', 'background-origin', 'border-box' );
+			sgs_media_add( $rules, $selector, 'desktop', 'background-clip', '' !== $background ? 'padding-box,border-box' : 'border-box' );
+		}
+		if ( '' !== $gradient ) {
+			sgs_media_add( $rules, $selector, 'desktop', 'border-color', 'transparent' );
+			sgs_media_add( $rules, $selector, 'desktop', 'background-image', $layers( $gradient ) );
+		} elseif ( '' !== $colour ) {
 			sgs_media_add( $rules, $selector, 'desktop', 'border-color', $colour );
 		}
-		$colour_hover = sgs_media_colour( sgs_media_scalar( $attrs, $slot, 'BorderColourHover' ) );
-		if ( '' !== $colour_hover ) {
-			$hover[] = array( $selector . ':hover', $selector, array( 'border-color' => $colour_hover ) );
+		$decls = array();
+		if ( '' !== $gradient_over ) {
+			$decls = array(
+				'background-image' => $layers( $gradient_over ),
+				'border-color'     => 'transparent',
+			);
+		} elseif ( '' !== $colour_hover ) {
+			$decls = array( 'border-color' => $colour_hover );
+			if ( '' !== $gradient ) {
+				$decls['background-image'] = '' !== $background ? $layers( 'linear-gradient(transparent,transparent)' ) : 'none';
+			}
+		}
+		if ( array() !== $decls ) {
+			ksort( $decls );
+			$hover[] = array( $selector . ':hover', $selector, $decls );
 		}
 	}
 }

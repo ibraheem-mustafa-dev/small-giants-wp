@@ -94,8 +94,10 @@ export function adoptedDisclosure( id, attrs, device, prefix = '', opts = {} ) {
 		case 'filter': {
 			const fn = { sizing: sizingDisclosure, shape: shapeDisclosure, layout: layoutDisclosure, filter: filterDisclosure }[ id ];
 			const map = fn( attrs, device, prefix );
-			// A base with no rule of its own (the hover border colour) follows its resting form.
+			// A base with no rule of its own (the hover and gradient border colours) follows its resting form.
 			map.BorderColourHover = map.BorderColourHover || map.BorderColour;
+			map.BorderColourGradient = map.BorderColourGradient || map.BorderColour;
+			map.BorderColourHoverGradient = map.BorderColourHoverGradient || map.BorderColour;
 			const out = {};
 			Object.keys( map ).forEach( ( base ) => {
 				out[ base ] = c.background || ( 'filter' === id && ! kindIn( c, 'image', 'video', 'svg' ) ) ? omitted( NOT_ON_BACKGROUNDS ) : map[ base ];

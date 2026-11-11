@@ -89,6 +89,10 @@ const extras = {
 	'shape-radius': { Shape: T( { shape: 'circle' }, 'pill', 'none' ), Radius: { desktop: { topLeft: 8, bottomRight: '1rem' } } },
 	'shape-mask': { Shape: T( { shape: 'hexagon' }, { shape: 'star', proportions: 'keep' }, 'none' ), BoxShadow: '0 4px 12px', BoxShadowColour: 'rgba(0,0,0,.3)' },
 	'shape-border': { BorderWidth: { top: 2, right: 2, bottom: 2, left: 2 }, BorderStyle: 'dashed', BorderColour: '#ff0000', BorderColourHover: 'secondary', Radius: { desktop: { topLeft: 4 } } },
+	'shape-border-gradient': { BorderWidth: { top: 3, right: 3, bottom: 3, left: 3 }, BorderColour: '#ff0000', BorderColourGradient: 'linear-gradient(90deg, #f00, #00f)', BorderColourHoverGradient: 'linear-gradient(0deg, #0f0, #00f)', Shape: { shape: 'circle' } },
+	'shape-border-gradient-padded': { BorderWidth: { top: 2 }, BorderColourGradient: 'linear-gradient(90deg, #f00, #00f)', BorderColourHover: 'secondary', Background: '#fff', Radius: { desktop: { topLeft: 8 } } },
+	'shape-border-hover-gradient-only': { BorderWidth: { top: 2 }, BorderColour: 'primary', BorderColourHoverGradient: 'linear-gradient(90deg, #f00, #00f)', Background: 'primary' },
+	'shape-border-gradient-mask': { BorderWidth: { top: 2 }, BorderColourGradient: 'linear-gradient(90deg, #f00, #00f)', Shape: { shape: 'hexagon' } },
 	shadow: { BoxShadow: '0 8px 24px', BoxShadowColour: '#00000040', BoxShadowColourHover: 'primary' },
 	'shadow-none': { BoxShadow: 'none' },
 	overlay: { OverlayColour: 'primary', OverlayOpacity: T( 40, 20, 0 ), OverlayBlend: 'multiply', OverlayColourHover: '#000' },
@@ -121,7 +125,7 @@ const BREAKOUT_BASES = {
 	any: [ 'Height', 'Width', 'MaxWidth', 'MinHeight', 'Ratio', 'OverlayColour', 'OverlayGradient', 'OverlayColourHover', 'Background', 'BorderColour', 'BoxShadow', 'BoxShadowColour', 'OverlayBlend', 'Blend', 'Alignment', 'Padding' ],
 	length: [ 'Height', 'Width', 'MaxWidth', 'MinHeight', 'Padding' ],
 	colour: [ 'OverlayColour', 'Background', 'BorderColour', 'BoxShadowColour' ],
-	gradient: [ 'OverlayGradient', 'OverlayColour' ],
+	gradient: [ 'OverlayGradient', 'OverlayColour', 'BorderColourGradient', 'BorderColourHoverGradient' ],
 	url: [],
 };
 const refused = [ ...breakouts.refuse.any, ...breakouts.refuse.length, ...breakouts.refuse.colour, ...breakouts.refuse.gradient, ...breakouts.refuse.url ];
@@ -130,7 +134,7 @@ for ( const [ group, bases ] of Object.entries( BREAKOUT_BASES ) ) {
 		for ( const base of bases ) {
 			const attrs = toAttrs( {}, FILE );
 			attrs[ PREFIX + base ] = 'Padding' === base ? { top: bad } : bad;
-			if ( 'BorderColour' === base ) {
+			if ( base.startsWith( 'BorderColour' ) ) {
 				attrs[ PREFIX + 'BorderWidth' ] = { top: 2 };
 			}
 			attrSets.push( { label: `breakout:${ group }${ i }:${ base }`, attrs, helper: true, bad } );

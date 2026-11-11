@@ -150,6 +150,12 @@ const BORDER_HOVER = row( {
 	slots: OFF_BACKGROUND,
 } );
 
+/** The border's gradient forms (§8: "BorderColour, gradient forms"): panel companions of Border colour, painted by the shape emitter. */
+const BORDER_GRADIENTS = [
+	row( { base: 'BorderColourGradient', type: 'string', emitter: 'colour-states', property: 'background-image', paintNode: 'surface', role: 'colour-gradient', component: 'ColourField', label: 'Border gradient', panel: BORDER, order: 5.2, slots: OFF_BACKGROUND } ),
+	row( { base: 'BorderColourHoverGradient', type: 'string', emitter: 'colour-states', property: 'background-image', paintNode: 'surface', role: 'colour-gradient', component: 'ColourField', label: 'Border gradient on hover', panel: BORDER, order: 5.3, state: 'hover', slots: OFF_BACKGROUND } ),
+];
+
 /** A new atom's rows from `kinds-settings.js`, marked as adopted. */
 const adopt = ( list ) => list.map( ( setting ) => ( { ...setting, adopted: true } ) );
 
@@ -168,7 +174,7 @@ export const ADOPTED_SETTINGS = {
 	caption: CAPTION_SETTINGS,
 	link: LINK_SETTINGS,
 	sizing: adopt( SIZING_SETTINGS ),
-	shape: [ ...adopt( SHAPE_SETTINGS ), BORDER_HOVER ],
+	shape: [ ...adopt( SHAPE_SETTINGS ), BORDER_HOVER, ...BORDER_GRADIENTS ],
 	filter: adopt( FILTER_SETTINGS ),
 	layout: adopt( LAYOUT_SETTINGS ),
 };

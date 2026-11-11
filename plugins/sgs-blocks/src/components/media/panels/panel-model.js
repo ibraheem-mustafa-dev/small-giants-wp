@@ -97,10 +97,10 @@ export const COMPOSITES = {
 	LinkUrl: [ 'LinkOpensNewTab', 'LinkRel', 'LinkUrlSource' ],
 };
 
-/** The adopted path's composites: the same leaders, with the §8 members. A border colour carries its hover form. */
+/** The adopted path's composites: the same leaders, with the §8 members. A border colour carries its gradient and hover forms. */
 export const ADOPTED_COMPOSITES = {
 	...COMPOSITES,
-	BorderColour: [ 'BorderColourHover' ],
+	BorderColour: [ 'BorderColourGradient', 'BorderColourHover', 'BorderColourHoverGradient' ],
 };
 
 /** Components that edit a whole slot or group: one render per panel, however many rows name them. */

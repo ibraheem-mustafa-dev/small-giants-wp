@@ -199,8 +199,8 @@ function Colour( { row, attributes, setAttributes, prefix, blockSlug } ) {
 		  ]
 		: row.setting.adopted
 		? [
-				[ 'rest', __( 'Normal', 'sgs-blocks' ), 'BorderColour', null ],
-				[ 'hover', __( 'Hover', 'sgs-blocks' ), 'BorderColourHover', null ],
+				[ 'rest', __( 'Normal', 'sgs-blocks' ), 'BorderColour', 'BorderColourGradient' ],
+				[ 'hover', __( 'Hover', 'sgs-blocks' ), 'BorderColourHover', 'BorderColourHoverGradient' ],
 		  ]
 		: [ [ 'rest', __( 'Normal', 'sgs-blocks' ), 'BorderColour', 'BorderColourGradient' ] ];
 
