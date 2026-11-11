@@ -231,43 +231,6 @@ function problemsFor( name, raw ) {
 }
 
 /**
- * A shared CSS fallback must not silently override a surface's own default.
- *
- * The atom rules sit at (0,1,0) on `.sgs-media-el` and fire UNCONDITIONALLY,
- * so a `var( --x, initial )` fallback beats a block's own `:where()` default at
- * (0,0,0). `sgs/media` defaults object-fit to `cover` that way; an `initial`
- * fallback in the shared layer would have flipped every existing block from
- * cover to fill, with no attribute changed and nothing to grep for.
- *
- * ⛔ `initial` / `unset` / `revert` are therefore BANNED as fallbacks here. The
- * fallback must be the value the surfaces actually default to — measured from
- * the census, not chosen. A rule that loses is indistinguishable from one that
- * is absent; a rule that silently wins is worse.
- */
-function stylesheetFallbackProblems() {
-	const dir = path.join( PLUGIN, 'assets', 'css', 'media-atoms' );
-	if ( ! fs.existsSync( dir ) ) {
-		return [ 'assets/css/media-atoms/ is missing' ];
-	}
-	const out = [];
-	fs.readdirSync( dir )
-		.filter( ( f ) => f.endsWith( '.css' ) )
-		.forEach( ( f ) => {
-			const body = withoutComments(
-				fs.readFileSync( path.join( dir, f ), 'utf8' )
-			);
-			[ ...body.matchAll( /var\(\s*--sgs-media-[a-z0-9-]+\s*,\s*(initial|unset|revert)\s*\)/g ) ].forEach(
-				( m ) =>
-					out.push(
-						`${ f }: var() fallback '${ m[ 1 ] }' silently overrides a ` +
-							`surface's own default - use the value the census measured`
-					)
-			);
-		} );
-	return out;
-}
-
-/**
  * Every atom's declared `attachesTo`, parsed out of registry.js.
  *
  * Read textually rather than imported: this gate is plain CommonJS and
@@ -296,99 +259,6 @@ function atomAttachments() {
 		}
 	} );
 	return out;
-}
-
-/**
- * A partial must key on the marker its atom DECLARES, and only that one.
- *
- * The two markers exist because `overlay` paints via `::after` and a replaced
- * element generates no pseudo-element, while `object-fit` is a replaced-element
- * property that does nothing on a container. Both failures are silent: the rule
- * is present, the cascade resolves, and nothing paints. Only this gate and a
- * pixel sample can tell.
- *
- * @return {string[]} Problems found.
- */
-function partialMarkerProblems() {
-	const EL = '.sgs-media-el';
-	const BOX = '.sgs-media-box';
-	const dir = path.join( PLUGIN, 'assets', 'css', 'media-atoms' );
-	const attach = atomAttachments();
-	const out = [];
-
-	if ( ! Object.keys( attach ).length ) {
-		out.push(
-			'registry.js declares no attachesTo values — every atom must name ' +
-				"'element' or 'box', or this check silently verifies nothing."
-		);
-		return out;
-	}
-
-	Object.keys( attach ).forEach( ( id ) => {
-		const file = path.join( dir, id + '.css' );
-		if ( ! fs.existsSync( file ) ) {
-			return;
-		}
-		const body = fs.readFileSync( file, 'utf8' );
-		const wanted = 'box' === attach[ id ] ? BOX : EL;
-		const forbidden = 'box' === attach[ id ] ? EL : BOX;
-		if ( body.includes( forbidden ) ) {
-			out.push(
-				id + '.css keys on ' + forbidden + " but the atom declares attachesTo: '" +
-					attach[ id ] + "', so it must key on " + wanted + '. A rule on the ' +
-					'wrong node resolves fine and paints nothing.'
-			);
-		}
-	} );
-
-	return out;
-}
-
-/**
- * The PHP dispatch class holds its OWN list of which atoms key on the box
- * marker. Two copies of one fact drift; this is the gate that stops them.
- *
- * Named rather than derived because PHP cannot import an ES module, and the
- * alternative — generating the PHP from registry.js — would add a build step
- * for a two-entry list. A gate is cheaper than a generator here, but only if it
- * exists: `STORED_AS` is duplicated the same way and has no gate, which is
- * recorded as debt rather than repeated.
- *
- * @return {string[]} Problems found.
- */
-function phpBoxAtomParityProblems() {
-	const file = path.join( PLUGIN, 'includes', 'class-sgs-media-element.php' );
-	if ( ! fs.existsSync( file ) ) {
-		return [];
-	}
-	const attach = atomAttachments();
-	const fromRegistry = Object.keys( attach )
-		.filter( ( id ) => 'box' === attach[ id ] )
-		.sort();
-
-	const raw = fs.readFileSync( file, 'utf8' );
-	const m = raw.match( /\$box_atoms\s*=\s*array\(([^)]*)\)/ );
-	if ( ! m ) {
-		return [
-			'class-sgs-media-element.php declares no $box_atoms array — the PHP ' +
-				'half cannot know which atoms need the box marker.',
-		];
-	}
-	const fromPhp = [ ...m[ 1 ].matchAll( /'([a-z-]+)'/g ) ]
-		.map( ( x ) => x[ 1 ] )
-		.sort();
-
-	if ( fromRegistry.join( ',' ) !== fromPhp.join( ',' ) ) {
-		return [
-			'box-atom drift: registry.js attachesTo says [' +
-				fromRegistry.join( ', ' ) +
-				'] but class-sgs-media-element.php $box_atoms says [' +
-				fromPhp.join( ', ' ) +
-				']. The renderer would omit or add a marker the stylesheet ' +
-				'disagrees with, and nothing would paint.',
-		];
-	}
-	return [];
 }
 
 const PAINT_NODES = [ 'layout', 'surface', 'media', 'mask', 'overlay' ];
@@ -427,8 +297,7 @@ function atomPaintDeclarations() {
 
 /**
  * Every atom names where it prints: `attachesTo` (box or element) or `paints` (C3 nodes), never both, never neither.
- * A `paints` atom may name only the C3 nodes, and is never in the PHP `$box_atoms` list, which is for `attachesTo: 'box'`
- * atoms only.
+ * A `paints` atom may name only the C3 nodes.
  *
  * @return {string[]} Problems found.
  */
@@ -451,23 +320,14 @@ function paintDeclarationProblems() {
 			}
 		} );
 	} );
-	const file = path.join( PLUGIN, 'includes', 'class-sgs-media-element.php' );
-	if ( fs.existsSync( file ) ) {
-		const m = fs.readFileSync( file, 'utf8' ).match( /\$box_atoms\s*=\s*array\(([^)]*)\)/ );
-		const box = m ? [ ...m[ 1 ].matchAll( /'([a-z-]+)'/g ) ].map( ( x ) => x[ 1 ] ) : [];
-		box.filter( ( id ) => id in paints ).forEach( ( id ) =>
-			out.push( `class-sgs-media-element.php $box_atoms names "${ id }", which declares paints.` )
-		);
-	}
 	return out;
 }
 
 /**
  * Every atom PHP twin must actually be REQUIRED, not merely present on disk.
  *
- * `sgs_media_element_style()` dispatches by naming convention and skips a
- * missing function silently — deliberately, so a half-built atom cannot fatal a
- * page. The cost of that kindness is that an UNLOADED twin is indistinguishable
+ * The renderer calls a twin by naming convention and skips a missing function silently — deliberately, so a half-built
+ * atom cannot fatal a page. The cost of that kindness is that an UNLOADED twin is indistinguishable
  * from an atom with nothing to say: the control stores the right value, the
  * gate is green, and the page paints the default.
  *
@@ -525,10 +385,7 @@ function run() {
 		return 1;
 	}
 
-	const fallbackProblems = stylesheetFallbackProblems()
-		.concat( partialMarkerProblems() )
-		.concat( phpBoxAtomParityProblems() )
-		.concat( paintDeclarationProblems() )
+	const fallbackProblems = paintDeclarationProblems()
 		.concat( atomTwinLoadProblems() );
 	fallbackProblems.forEach( ( p ) => process.stderr.write( `  ⛔ ${ p }
 ` ) );
@@ -704,42 +561,9 @@ function selfTest() {
 		atomTwinLoadProblems().length === 0
 	);
 	ck(
-		'the PHP $box_atoms list matches registry.js attachesTo',
-		phpBoxAtomParityProblems().length === 0
-	);
-
-	ck(
 		'every atom declares attachesTo or paints, and the four Spec 49 atoms declare paints',
 		paintDeclarationProblems().length === 0 &&
 			[ 'sizing', 'shape', 'filter', 'layout' ].every( ( id ) => id in atomPaintDeclarations().paints )
-	);
-
-	// Guards the two-marker DOM contract. This single assertion covers BOTH
-	// failure modes: a partial keying on the wrong marker, and the parse itself
-	// silently returning nothing (an empty attachesTo map is reported as a
-	// problem rather than as a clean pass, so an inert check cannot read green).
-	ck(
-		'every atom CSS partial keys on the marker its attachesTo declares',
-		partialMarkerProblems().length === 0
-	);
-
-	// The stylesheet fallback rule needs both controls: it must reject a silent
-	// override AND accept a real measured default, or a rule that flagged
-	// everything would look identical here.
-	const fallbackNow = stylesheetFallbackProblems();
-	ck(
-		'the REAL atom stylesheets carry no initial/unset/revert fallback',
-		fallbackNow.length === 0,
-		fallbackNow.join( '; ' )
-	);
-	ck(
-		'a measured default IS present in the generated stylesheet',
-		fs
-			.readFileSync(
-				path.join( PLUGIN, 'assets', 'css', 'media-element.css' ),
-				'utf8'
-			)
-			.includes( '--sgs-media-object-fit, cover' )
 	);
 
 	// A generic-looking `<` that is not JSX must not trip it.

@@ -30,18 +30,3 @@ if ( ! function_exists( 'sgs_media_atom_intrinsic_requires' ) ) {
 		);
 	}
 }
-
-if ( ! function_exists( 'sgs_media_atom_intrinsic_css' ) ) {
-	/**
-	 * No CSS. Intrinsic width/height are HTML attributes, not stylesheet
-	 * values.
-	 *
-	 * @param array  $attributes Block attributes.
-	 * @param string $prefix     Surface prefix.
-	 * @param string $block_slug Block slug.
-	 * @return array Always empty.
-	 */
-	function sgs_media_atom_intrinsic_css( array $attributes, $prefix, $block_slug ) {
-		return array();
-	}
-}

@@ -2,8 +2,8 @@
 
 The media atoms (`includes/media/atoms/*.php`) never name an attribute: they ask
 `sgs_media_element_stored_attr( $block_slug, $prefix, 'Base' )` for the key and
-read `$attributes[ $key ]`. A block opts in with
-`SGS_Media_Element::style( $attributes, '<prefix>', '<block>', … )`. So the read
+read `$attributes[ $key ]`. A block's slots print through
+`SGS_Media_Element::render( $slot, $attrs, $context )`. So the read
 site of a media attribute is the key-builder call whose base, joined to one of
 the block's literal prefixes (or renamed by the resolver's own `$stored_as`
 table), gives the attribute's name.
@@ -27,8 +27,8 @@ class MediaKeys:
         if entry:
             for m in re.finditer(r"""['"](sgs/[a-z0-9-]+)['"]\s*=>\s*array\s*\((.*?)\)""", entry[2].src, re.S):
                 self.overrides[m.group(1)] = dict(re.findall(r"""['"](\w+)['"]\s*=>\s*['"](\w+)['"]""", m.group(2)))
-        # The atoms run through `sgs_media_element_style()`'s dynamic `$fn = 'sgs_media_atom_…_css'`
-        # dispatch, which no call graph follows: every atom function is a candidate read site.
+        # The renderer calls each atom's `sgs_media_atom_<id>_emit` by name, which no call graph follows: every atom
+        # function is a candidate read site.
         self.atom_texts = [body for name, (_f, _p, body) in sorted(index.funcs.items()) if name.startswith(ATOM_PREFIX)]
 
     @staticmethod

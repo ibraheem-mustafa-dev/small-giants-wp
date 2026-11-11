@@ -5,7 +5,7 @@
 // wave-gradient drift) keeps running underneath it and after it.
 //
 // jsdom has no cascade and no Web Animations, so this drives real Chromium against static pages that load the real
-// stylesheets (assets/css/motion.css, motion-triggers.css, media-element.css, fx-wave-gradient.css and the container
+// stylesheets (assets/css/motion.css, motion-triggers.css, fx-wave-gradient.css and the container
 // and nav-drawer-menu block styles). It runs every case with the stylesheets in both orders, so a result never depends
 // on which file the page happens to print last. No WordPress site, no credentials.
 //
@@ -26,7 +26,7 @@ const { chromium } = require('playwright');
 const MUTATIONS = {
 	'entrance-iteration': { file: 'assets/css/motion.css', needle: 'animation-iteration-count: var(--sgs-me-a-list-iteration-count)' },
 	'entrance-duration': { file: 'assets/css/motion.css', needle: 'animation-duration: var(--sgs-me-a-list-duration)' },
-	'base-name': { file: 'assets/css/media-element.css', needle: '--sgs-base-animation-name:' },
+	'base-name': { file: 'assets/css/fx-wave-gradient.css', needle: '--sgs-base-animation-name:' },
 	'open-longhands': { file: 'assets/css/motion-triggers.css', needle: 'animation-direction: var(--sgs-me-a-list-direction)' },
 };
 const MUTATE = process.env.SGS_ENTRANCE_CASCADE_MUTATE || '';
@@ -48,7 +48,7 @@ function css(rel) {
 }
 
 const MOTION = ['assets/css/motion.css', 'assets/css/motion-triggers.css'];
-const OTHERS = ['assets/css/media-element.css', 'assets/css/fx-wave-gradient.css', 'src/blocks/container/style.css', 'src/blocks/nav-drawer-menu/style.css'];
+const OTHERS = ['assets/css/fx-wave-gradient.css', 'src/blocks/container/style.css', 'src/blocks/nav-drawer-menu/style.css'];
 const ORDERS = { 'motion first': [...MOTION, ...OTHERS], 'motion last': [...OTHERS, ...MOTION] };
 const PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
 const KB = '--sgs-media-svg-animation-name:sgs-media-svg-float;--sgs-media-svg-animation-duration:12s';

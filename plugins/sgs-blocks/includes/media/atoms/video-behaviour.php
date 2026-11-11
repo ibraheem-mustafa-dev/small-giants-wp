@@ -105,21 +105,3 @@ if ( ! function_exists( 'sgs_media_atom_video_behaviour_requires' ) ) {
 		);
 	}
 }
-
-if ( ! function_exists( 'sgs_media_atom_video_behaviour_css' ) ) {
-	/**
-	 * Playback behaviour is HTML element state (attributes/properties on
-	 * `<video>`, or an iframe embed's query-string params), never a
-	 * paintable CSS property. This atom emits no custom-property
-	 * declarations — see the JS twin's `css()` and
-	 * `assets/css/media-atoms/video-behaviour.css`.
-	 *
-	 * @param array  $attributes Block attributes (unused).
-	 * @param string $prefix     Surface prefix (unused).
-	 * @param string $block_slug Block slug (unused).
-	 * @return array Always empty.
-	 */
-	function sgs_media_atom_video_behaviour_css( array $attributes, $prefix, $block_slug ) {
-		return array();
-	}
-}

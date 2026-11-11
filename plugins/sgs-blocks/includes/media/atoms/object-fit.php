@@ -16,10 +16,6 @@
  * `ObjectFitTablet`/`ObjectFitMobile` declarations alongside the base, for
  * the ELEMENT scope only. The BACKDROP scope's `Size` base stays untiered.
  *
- * `sgs_media_atom_object_fit_css()` must emit BYTE-IDENTICAL declarations to
- * the JS twin's `css()` for the same attribute set — enforced by
- * `scripts/tests/test-media-atom-parity.mjs`.
- *
  * @package SGS\Blocks
  */
 
@@ -63,47 +59,6 @@ if ( ! function_exists( 'sgs_media_atom_object_fit_requires' ) ) {
 			'state'        => 'shown',
 			'hiddenReason' => null,
 		);
-	}
-}
-
-if ( ! function_exists( 'sgs_media_atom_object_fit_css' ) ) {
-	/**
-	 * Custom-property declarations for this atom. Mirrors the JS twin's
-	 * `css()` exactly.
-	 *
-	 * @param array  $attributes Block attributes.
-	 * @param string $prefix     Surface prefix ('' | 'sgs' | 'split' | …).
-	 * @param string $block_slug Block slug, for `STORED_AS` resolution.
-	 * @return string[] `--custom-property:value;` declarations, never bare rules.
-	 */
-	function sgs_media_atom_object_fit_css( array $attributes, $prefix, $block_slug ) {
-		$decls = array();
-
-		// Element scope, tiered (MEDIA_TIERED_BASES carries `ObjectFit`).
-		$fit_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectFit' );
-		$fit     = sgs_media_atom_object_fit_validate( $attributes[ $fit_key ] ?? null, 'element' );
-		if ( '' !== $fit ) {
-			$decls[] = '--sgs-media-object-fit:' . $fit;
-		}
-		$fit_tablet_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectFitTablet' );
-		$fit_tablet     = sgs_media_atom_object_fit_validate( $attributes[ $fit_tablet_key ] ?? null, 'element' );
-		if ( '' !== $fit_tablet ) {
-			$decls[] = '--sgs-media-object-fit-tablet:' . $fit_tablet;
-		}
-		$fit_mobile_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectFitMobile' );
-		$fit_mobile     = sgs_media_atom_object_fit_validate( $attributes[ $fit_mobile_key ] ?? null, 'element' );
-		if ( '' !== $fit_mobile ) {
-			$decls[] = '--sgs-media-object-fit-mobile:' . $fit_mobile;
-		}
-
-		// Backdrop scope. `Size` is NOT in MEDIA_TIERED_BASES — not tiered.
-		$size_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Size' );
-		$size     = sgs_media_atom_object_fit_validate( $attributes[ $size_key ] ?? null, 'backdrop' );
-		if ( '' !== $size ) {
-			$decls[] = '--sgs-media-background-size:' . $size;
-		}
-
-		return $decls;
 	}
 }
 

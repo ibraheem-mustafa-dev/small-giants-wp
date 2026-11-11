@@ -29,20 +29,3 @@ if ( ! function_exists( 'sgs_media_atom_media_type_requires' ) ) {
 		return array();
 	}
 }
-
-if ( ! function_exists( 'sgs_media_atom_media_type_css' ) ) {
-	/**
-	 * Media-type is a MARKUP discriminator (which of `<img>` / `<video>` /
-	 * inline `<svg>` renders), never a paintable CSS property. It emits no
-	 * custom-property declarations — see the JS twin's `css()` for the same
-	 * note, and `assets/css/media-atoms/media-type.css`.
-	 *
-	 * @param array  $attributes Block attributes (unused).
-	 * @param string $prefix     Surface prefix (unused).
-	 * @param string $block_slug Block slug (unused).
-	 * @return array Always empty.
-	 */
-	function sgs_media_atom_media_type_css( array $attributes, $prefix, $block_slug ) {
-		return array();
-	}
-}

@@ -19,10 +19,6 @@
  * every current adopter; only this atom's own emitter was not reading them.
  * Colour/gradient/blend-mode stay untiered.
  *
- * `sgs_media_atom_overlay_css()` must emit BYTE-IDENTICAL declarations to
- * the JS twin's `css()` for the same attribute set — enforced by
- * `scripts/tests/test-media-atom-parity.mjs`.
- *
  * @package SGS\Blocks
  */
 
@@ -101,75 +97,6 @@ if ( ! function_exists( 'sgs_media_atom_overlay_format_opacity_fraction' ) ) {
 			return null;
 		}
 		return rtrim( rtrim( number_format( $pct / 100, 4, '.', '' ), '0' ), '.' );
-	}
-}
-
-if ( ! function_exists( 'sgs_media_atom_overlay_css' ) ) {
-	/**
-	 * Custom-property declarations for this atom. Mirrors the JS twin's
-	 * `css()` exactly.
-	 *
-	 * @param array  $attributes Block attributes.
-	 * @param string $prefix     Surface prefix.
-	 * @param string $block_slug Block slug, for STORED_AS resolution.
-	 * @return string[] `--custom-property:value;` declarations, never bare rules.
-	 */
-	function sgs_media_atom_overlay_css( array $attributes, $prefix, $block_slug ) {
-		$decls = array();
-		$keys  = sgs_media_atom_overlay_attr_keys( $prefix, $block_slug );
-
-		$paint = sgs_background_paint_value( $attributes[ $keys['colour'] ] ?? null, $attributes[ $keys['gradient'] ] ?? null );
-		if ( '' === $paint['property'] ) {
-			return $decls;
-		}
-
-		if ( 'background-image' === $paint['property'] ) {
-			$decls[] = '--sgs-media-overlay-gradient:' . $paint['value'];
-		} else {
-			$decls[] = '--sgs-media-overlay-colour:' . $paint['value'];
-		}
-
-		$hover_paint = sgs_background_paint_value( $attributes[ $keys['colourHover'] ] ?? null, $attributes[ $keys['gradientHover'] ] ?? null );
-		if ( 'background-image' === $hover_paint['property'] ) {
-			$decls[] = '--sgs-media-overlay-gradient-hover:' . $hover_paint['value'];
-		} elseif ( 'background-color' === $hover_paint['property'] ) {
-			$decls[] = '--sgs-media-overlay-colour-hover:' . $hover_paint['value'];
-		}
-
-		$opacity = sgs_media_atom_overlay_format_opacity_fraction( $attributes[ $keys['opacity'] ] ?? null );
-		if ( null !== $opacity ) {
-			$decls[] = '--sgs-media-overlay-opacity:' . $opacity;
-		}
-
-		$opacity_tablet = sgs_media_atom_overlay_format_opacity_fraction( $attributes[ $keys['opacityTablet'] ] ?? null );
-		if ( null !== $opacity_tablet ) {
-			$decls[] = '--sgs-media-overlay-opacity-tablet:' . $opacity_tablet;
-		}
-
-		$opacity_mobile = sgs_media_atom_overlay_format_opacity_fraction( $attributes[ $keys['opacityMobile'] ] ?? null );
-		if ( null !== $opacity_mobile ) {
-			$decls[] = '--sgs-media-overlay-opacity-mobile:' . $opacity_mobile;
-		}
-
-		$blend_mode           = $attributes[ $keys['blendMode'] ] ?? null;
-		$allowed_blend_modes  = array(
-			'multiply',
-			'screen',
-			'overlay',
-			'darken',
-			'lighten',
-			'color-dodge',
-			'color-burn',
-			'soft-light',
-			'hard-light',
-			'difference',
-			'exclusion',
-		);
-		if ( $blend_mode && 'normal' !== $blend_mode && in_array( $blend_mode, $allowed_blend_modes, true ) ) {
-			$decls[] = '--sgs-media-overlay-blend:' . $blend_mode;
-		}
-
-		return $decls;
 	}
 }
 

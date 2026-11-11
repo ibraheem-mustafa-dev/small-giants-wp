@@ -105,7 +105,6 @@ class Resolver:
         if d.get("renderVia") == "media-element-atom" and not ch.kinds():
             ch.read = True
             ch.decl = True
-            ch.helpers.add("sgs_media_element_style")
             where = where or "media-atom"
         for fb, fa in sorted(ch.forwards):
             if (fb, fa) in stack or (fb, fa) == key or fb not in self.passed or fa not in self.passed[fb].channels:

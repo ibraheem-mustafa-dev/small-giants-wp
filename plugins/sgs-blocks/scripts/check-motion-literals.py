@@ -266,7 +266,7 @@ def self_test() -> int:
         php.write_bytes(php.read_bytes())
         code = check(tmp, quiet=True)
         report("temp tree: --check passes once literals are tokens", code == 0, f"exit {code}")
-        partial = tmp / "plugins/sgs-blocks/assets/css/media-atoms/overlay.css"
+        partial = tmp / "plugins/sgs-blocks/assets/css/nested/overlay.css"
         partial.parent.mkdir(parents=True)
         partial.write_bytes(b".o{transition: opacity 0.3s ease;}\n")
         code = check(tmp, quiet=True)

@@ -1,8 +1,7 @@
 <?php
 /**
  * Standalone tests: sgs/media clips its frame when its image part has a hover scale above 1
- * (includes/helpers-media-element.php::sgs_media_hover_zoom_clips, ::sgs_media_element_style and
- * includes/class-sgs-media-element.php::requires_box).
+ * (includes/helpers-media-element.php::sgs_media_hover_zoom_clips).
  *
  * Run: php plugins/sgs-blocks/tests/php/run-media-hover-zoom-clip-standalone.php
  *

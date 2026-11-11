@@ -51,7 +51,7 @@ DATA_RE = re.compile(r"""(data-[a-z0-9-]+)|wp_interactivity_data_wp_context|wp_i
 FWD_RE = re.compile(r"""render_block\s*\(|new\s+\\?WP_Block\s*\(|['"]blockName['"]\s*=>""")
 EMITTER_NAME_RE = re.compile(
     r"\b(wp_style_engine_get_styles|sgs_\w*(?:_css|_css_rule|_decls?|_rules?|_paint_decl|_state_css|_style)|sgs_emit_\w+|sgs_hover_state_rules|sgs_tier_\w+|"
-    r"sgs_typography_css_rule|sgs_serialise_\w+|sgs_border_radius_tiers|sgs_box_\w+|sgs_shadow_\w+|sgs_slider_nav_classes|sgs_media_element_style)\s*\("
+    r"sgs_typography_css_rule|sgs_serialise_\w+|sgs_border_radius_tiers|sgs_box_\w+|sgs_shadow_\w+|sgs_slider_nav_classes)\s*\("
 )
 # Raw stylesheet text: a `<style>` element, or an append onto a CSS buffer (`$css .= $custom`).
 RAW_STYLE_RE = re.compile(r"<style\b[^>]*>(.*?)(?:</style|$)", re.I | re.S)
