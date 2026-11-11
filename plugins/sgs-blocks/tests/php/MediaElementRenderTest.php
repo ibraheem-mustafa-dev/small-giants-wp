@@ -405,6 +405,24 @@ class MediaElementRenderTest extends TestCase {
 		$this->assertSame( '', $out['css'] );
 	}
 
+	public function test_a_plain_root_carries_the_block_class_and_the_anchor(): void {
+		$slot  = array( 'prefix' => '', 'kinds' => array( 'image', 'embed' ) );
+		$attrs = array(
+			'source' => array( 'desktop' => array( 'kind' => 'image', 'url' => '/u/a.jpg', 'width' => 600, 'height' => 400 ) ),
+			'alt'    => 'Photo',
+		);
+		$out   = SGS_Media_Element::render( $slot, $attrs, array( 'uid' => 'u1', 'extra_class' => 'wp-block-sgs-media is-style-x', 'anchor' => 'my-photo' ) );
+		$this->assertMatchesRegularExpression( '#^<img id="my-photo" [^>]*class="sgs-media-el sgs-media sgs-media--renderer u1 wp-block-sgs-media is-style-x"#', $out['html'], 'the bare img is the block root' );
+		$embed = SGS_Media_Element::render(
+			$slot,
+			array( 'source' => array( 'desktop' => array( 'kind' => 'embed', 'url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' ) ) ),
+			array( 'uid' => 'u2', 'extra_class' => 'wp-block-sgs-media', 'anchor' => 'my-video' )
+		);
+		$this->assertMatchesRegularExpression( '#^<iframe id="my-video" [^>]*wp-block-sgs-media#', $embed['html'], 'a bare embed is the block root' );
+		$none = SGS_Media_Element::render( $slot, $attrs, array( 'uid' => 'u3' ) );
+		$this->assertStringNotContainsString( ' id=', $none['html'], 'no anchor, no id' );
+	}
+
 	public function test_sizes_follow_section_7_6(): void {
 		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/media/render-sources.php';
 		$this->assertSame( '(max-width: 320px) 100vw, 320px', sgs_media_sizes_for_width( '320px', false ) );

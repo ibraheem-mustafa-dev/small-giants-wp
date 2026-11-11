@@ -193,7 +193,7 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 
 	// The media elements: one sibling per kind, per distinct embed and per distinct SVG.
 	$scope    = $uid . ( $uid !== $block_uid ? ' ' . $block_uid : '' );
-	$direct   = 'sgs-media-el' . ( $plain ? ' sgs-media sgs-media--renderer ' . $scope : '' );
+	$direct   = 'sgs-media-el' . ( $plain ? ' sgs-media sgs-media--renderer ' . trim( $scope . ' ' . (string) ( $context['extra_class'] ?? '' ) ) : '' );
 	$siblings = array();
 	$html     = '';
 	if ( $image_files ) {
@@ -267,6 +267,15 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	}
 	if ( '' === $html ) {
 		return $result;
+	}
+	// A bare media element is the block's root, so it carries the anchor too (unless it already holds an id of its own).
+	if ( $plain && '' !== trim( (string) ( $context['anchor'] ?? '' ) ) ) {
+		$html = (string) preg_replace_callback(
+			'/^<([a-z]+)\b([^>]*)>/i',
+			static fn( array $m ): string => false === stripos( $m[2], ' id="' ) ? '<' . $m[1] . ' id="' . esc_attr( trim( (string) $context['anchor'] ) ) . '"' . $m[2] . '>' : $m[0],
+			$html,
+			1
+		);
 	}
 
 	// Nesting, innermost first. The outermost printed element carries the uid, the block classes and the anchor.
