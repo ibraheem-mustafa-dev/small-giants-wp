@@ -13,7 +13,9 @@
  *      used by `sgs/nav-bar-menu` + `sgs/nav-drawer` — FP-9, no
  *      second open/close/focus utility).
  *   4. Either way, opening the panel triggers `panel-render.js` to fetch +
- *      render the live item list/qty/remove/subtotal — never a redirect.
+ *      render the live item list/qty/remove/subtotal, never a redirect. That
+ *      code loads on the first pointer, key or focus on the widget
+ *      (`lazyPanel()`), not at page load.
  *   5. On every `wc-blocks_added_to_cart` / `added_to_cart` /
  *      `wc-blocks_removed_from_cart` document event (fired elsewhere on the
  *      page, e.g. by `sgs/product-card`'s Store API add-to-cart), the cart
@@ -44,11 +46,34 @@
  */
 
 import { pillTriggerLabel } from './trigger-label.js';
-import '../../shared/nav-interactivity/store';
+// eslint-disable-next-line import/no-unresolved -- a webpack external: the script module `@sgs/nav-store` (one copy per page).
+import '@sgs/nav-store';
 import { onCartChange } from '../../shared/cart-live';
-import { initPanel } from './panel-render';
 import { initFlyout } from './flyout';
 import { maybeAnimateCountPop } from './count-pop';
+
+/**
+ * The panel renderer (`panel-render.js`, with its item rows, free-delivery bar and extras), loaded the first time a
+ * panel is about to be needed rather than at page load: the badge needs only the cart reader, and the panel is hidden
+ * until opened. Loading starts on the first pointer or key press on the trigger, so it is usually ready before the
+ * click that opens the panel lands; `refresh()` waits for it either way.
+ *
+ * @param {HTMLElement} panelRoot The `[data-sgs-cart-panel]` element.
+ * @param {Object}      options   `initPanel` options.
+ * @return {{ refresh: Function, warm: Function }} `refresh` renders the live cart once loaded; `warm` starts loading.
+ */
+function lazyPanel( panelRoot, options ) {
+	let ready = null;
+	const warm = () => {
+		if ( ! ready ) {
+			ready = import( /* webpackChunkName: "cart-panel" */ './panel-render' ).then( ( module ) =>
+				module.initPanel( panelRoot, options )
+			);
+		}
+		return ready;
+	};
+	return { refresh: () => warm().then( ( panel ) => panel.refresh() ), warm };
+}
 
 /**
  * Update every sgs/cart widget on the page with the given cart's live count.
@@ -104,6 +129,19 @@ function updateCartWidgets( cart ) {
 }
 
 /**
+ * Start loading a widget's panel code on the first sign the visitor is heading for its trigger (pointer over or down,
+ * a key press or focus inside the widget), so the first open seldom waits.
+ *
+ * @param {HTMLElement} widget The `.wp-block-sgs-cart` root.
+ * @param {Function}    warm   Starts the load; safe to call more than once.
+ */
+function warmOnIntent( widget, warm ) {
+	[ 'pointerenter', 'pointerdown', 'focusin', 'keydown' ].forEach( ( type ) =>
+		widget.addEventListener( type, warm, { once: true, passive: true } )
+	);
+}
+
+/**
  * Wire one `.sgs-cart` widget's panel (flyout or drawer) if it has one.
  *
  * @param {HTMLElement} widget The `.wp-block-sgs-cart` root.
@@ -144,9 +182,8 @@ function initWidgetPanel( widget ) {
 		if ( ! flyout ) {
 			return null;
 		}
-		const panel = initPanel( panelRoot, {
-				freeDelivery,
-		} );
+		const panel = lazyPanel( panelRoot, { freeDelivery } );
+		warmOnIntent( widget, panel.warm );
 		flyout.setOnOpen( panel.refresh );
 		return {
 			mode,
@@ -156,9 +193,8 @@ function initWidgetPanel( widget ) {
 		};
 	}
 
-	const panel = initPanel( panelRoot, {
-		freeDelivery,
-	} );
+	const panel = lazyPanel( panelRoot, { freeDelivery } );
+	warmOnIntent( widget, panel.warm );
 
 	// drawer — the shared store owns open/close (imported above for its side
 	// effect). Refresh the panel content on every trigger click; a fresh
