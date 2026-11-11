@@ -576,6 +576,54 @@ LEGACY_UNDECLARED = {
 }
 
 
+def run_http_retry(failures: list[str]) -> int:
+    """A dropped connection is retried, so one pass reads the size; a 404 is not retried. Negative control: a reader
+    that always drops returns None after every attempt."""
+    import io
+    import urllib.error
+    import urllib.request
+    png = bytes.fromhex("89504e470d0a1a0a0000000d49484452") + (640).to_bytes(4, "big") + (480).to_bytes(4, "big") + bytes.fromhex("0802000000")
+    calls = {"n": 0}
+
+    class Resp(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def flaky(request, timeout=0):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise ConnectionResetError("dropped")
+        return Resp(png)
+
+    def gone(request, timeout=0):
+        calls["n"] += 1
+        raise urllib.error.HTTPError(request.full_url, 404, "Not Found", {}, None)
+
+    def always_drop(request, timeout=0):
+        calls["n"] += 1
+        raise ConnectionResetError("dropped")
+
+    real_open, real_sleep = urllib.request.urlopen, S.time.sleep
+    S.time.sleep = lambda _s: None
+    checks = 0
+    try:
+        for opener, want, want_calls, label in ((flaky, (640, 480), 2, "a dropped first read is retried"),
+                                                 (gone, None, 1, "a 404 is not retried"),
+                                                 (always_drop, None, S.HTTP_ATTEMPTS, "negative: always dropped gives up")):
+            calls["n"] = 0
+            urllib.request.urlopen = opener
+            got = S._http("http://remote.test/x.png")
+            checks += 1
+            if got != want or calls["n"] != want_calls:
+                failures.append(f"FAIL http retry: {label}: got {got} after {calls['n']} call(s), want {want} after {want_calls}")
+    finally:
+        urllib.request.urlopen, S.time.sleep = real_open, real_sleep
+    return checks
+
+
 def run_sizes(failures: list[str]) -> int:
     """FR-49-16 against a registered attachment map: an own upload (a sized copy too) gets its attachment id, another file
     its read size, and the same URL on another site resolves on that site's map. Negative control: a site without the
@@ -652,7 +700,7 @@ def _run(break_mapping: bool = False) -> int:
         M.rows.cache_clear()
         M.STAYS["sgs/post-grid"] = ()
     failures: list[str] = []
-    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures) + run_sizes(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
+    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures) + run_sizes(failures) + run_http_retry(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
     for line in failures:
         print(line)
     print(f"migrate-media-system self-test: {total - len(failures)} of {total} checks passed"

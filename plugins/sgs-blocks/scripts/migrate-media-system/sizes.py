@@ -16,6 +16,8 @@ from __future__ import annotations
 import base64
 import re
 import struct
+import time
+import urllib.error
 import urllib.request
 from typing import Callable
 
@@ -148,24 +150,37 @@ def dimensions(data: bytes) -> Size | None:
     return None
 
 
+HTTP_ATTEMPTS = 3
+
+
 def _http(url: str) -> Size | None:
+    """The file's size from its first bytes over HTTP. A network failure (a dropped or slow connection) is retried
+    up to HTTP_ATTEMPTS times with a short pause, so one pass reads what a second pass would; bytes that arrive but
+    hold no readable size are not retried."""
     if not url.startswith(("http://", "https://")):
         return None
     request = urllib.request.Request(url, headers={"User-Agent": "sgs-media-migrate/1", "Range": f"bytes=0-{HEAD_LIMIT - 1}"})
-    try:
-        with urllib.request.urlopen(request, timeout=12) as response:
-            data = b""
-            while len(data) < HEAD_LIMIT:
-                chunk = response.read(65536)
-                if not chunk:
-                    break
-                data += chunk
-                found = dimensions(data)
-                if found:
-                    return found
-            return dimensions(data)
-    except Exception:  # noqa: BLE001 (any network failure means "could not be read"; the caller refuses with a note)
-        return None
+    for attempt in range(HTTP_ATTEMPTS):
+        try:
+            with urllib.request.urlopen(request, timeout=12) as response:
+                data = b""
+                while len(data) < HEAD_LIMIT:
+                    chunk = response.read(65536)
+                    if not chunk:
+                        break
+                    data += chunk
+                    found = dimensions(data)
+                    if found:
+                        return found
+                return dimensions(data)
+        except urllib.error.HTTPError as exc:
+            if exc.code < 500:
+                return None  # 4xx: the file is not there; a retry cannot help
+        except Exception:  # noqa: BLE001 (any other network failure is retried, then means "could not be read")
+            pass
+        if attempt + 1 < HTTP_ATTEMPTS:
+            time.sleep(1 + attempt)
+    return None
 
 
 def _local(mirror: str, rel: str) -> Size | None:
