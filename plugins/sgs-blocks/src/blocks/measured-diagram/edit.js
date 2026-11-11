@@ -17,6 +17,7 @@ import {
 	InnerBlocks,
 } from '@wordpress/block-editor';
 import { PanelBody, RangeControl } from '@wordpress/components';
+import { useEffect, useRef } from '@wordpress/element';
 import {
 	SgsColourPanel,
 	fillRow,
@@ -27,11 +28,14 @@ import {
 	SgsLengthControl,
 	MediaElementPanel,
 } from '../../components';
-import MediaPicker from '../../components/MediaPicker';
+import SlotPicture from '../../components/media/SlotPicture';
+import metadata from './block.json';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { usePreviewTier } from '../../utils';
-import { drawingBox } from './drawing-box';
+import { drawingBox, sourceSize } from './drawing-box';
 import { diagramPreviewCss, gradientId, userSpaceGradient, UserSpaceGradientDef } from './editor-preview';
+
+const DRAWING_ENTRY = metadata.supports.sgs.mediaElements.find( ( e ) => 'drawing' === e.prefix );
 
 const ALLOWED_BLOCKS = [ 'sgs/diagram-dimension' ];
 const TEMPLATE = [ [ 'sgs/diagram-dimension', {} ] ];
@@ -58,12 +62,7 @@ function measureImage( url, onResult ) {
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
-		drawingImageUrl,
-		drawingImageId,
-		drawingImageAlt,
-		drawingImageDecorative,
-		drawingImageWidth,
-		drawingImageHeight,
+		drawingSource,
 		maxWidth,
 		labelMode,
 		lineWidth,
@@ -76,7 +75,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} = attributes;
 
 	const previewTier = usePreviewTier();
-	const [ boxW, boxH ] = drawingBox( drawingImageWidth, drawingImageHeight );
+	const [ boxW, boxH ] = drawingBox( ...sourceSize( drawingSource ) );
 	// Every attribute the canvas mirror paints is named here, at the call site.
 	const previewCss = diagramPreviewCss( {
 		attributes: { ...attributes, maxWidth, labelMode, lineWidth, extensionWidth, extensionStyle, labelGap },
@@ -100,34 +99,41 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		}
 	);
 
-	const onSelectDrawing = ( media ) => {
-		if ( ! media ) {
+	// A file the media library reports no size for (an SVG upload usually has none) gets its natural size read once, so
+	// the frame's ratio and the lines' viewBox match the drawing: the size is measurement data stored on the source.
+	const latestSource = useRef( drawingSource );
+	latestSource.current = drawingSource;
+	const pendingFile = [ 'desktop', 'tablet', 'mobile' ]
+		.map( ( key ) => [ key, drawingSource?.[ key ] ] )
+		.find( ( [ , entry ] ) => entry?.url && ! ( Number( entry.width ) > 0 && Number( entry.height ) > 0 ) );
+	const pendingKey = pendingFile ? `${ pendingFile[ 0 ] }:${ pendingFile[ 1 ].url }` : '';
+	useEffect( () => {
+		if ( ! pendingFile ) {
 			return;
 		}
-		setAttributes( {
-			drawingImageUrl: media.url,
-			drawingImageId: media.id || 0,
-			drawingImageAlt: drawingImageAlt || media.alt || '',
-			drawingImageWidth: media.width || undefined,
-			drawingImageHeight: media.height || undefined,
+		const [ key, entry ] = pendingFile;
+		measureImage( entry.url, ( size ) => {
+			const current = latestSource.current?.[ key ];
+			if ( current?.url === entry.url ) {
+				setAttributes( { drawingSource: { ...latestSource.current, [ key ]: { ...current, ...size } } } );
+			}
 		} );
-		if ( ! media.width || ! media.height ) {
-			measureImage( media.url, ( size ) =>
-				setAttributes( { drawingImageWidth: size.width, drawingImageHeight: size.height } )
-			);
-		}
-	};
-
-	const onRemoveDrawing = () =>
-		setAttributes( {
-			drawingImageUrl: '',
-			drawingImageId: 0,
-			drawingImageWidth: undefined,
-			drawingImageHeight: undefined,
-		} );
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [ pendingKey ] );
+	const uid = 'sgs-md-' + clientId.slice( 0, 8 );
 
 	return (
 		<>
+			<MediaElementPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/measured-diagram"
+				blockSlug="sgs/measured-diagram"
+				prefix="drawing"
+				atoms={ DRAWING_ENTRY.atoms }
+				kinds={ DRAWING_ENTRY.kinds }
+				context={ DRAWING_ENTRY.context }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Settings', 'sgs-blocks' ) }>
 					<ResponsiveOverride
@@ -156,23 +162,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 				<PanelBody title={ __( 'Drawing', 'sgs-blocks' ) }>
-					<MediaPicker
-						value={ drawingImageUrl ? { url: drawingImageUrl, id: drawingImageId, type: 'image' } : null }
-						onChange={ onSelectDrawing }
-						onRemove={ onRemoveDrawing }
-						allowedTypes={ [ 'image' ] }
-						label={ __( 'Choose drawing', 'sgs-blocks' ) }
-						instructionsImage={ __( 'An SVG or image of the item, with no labels of its own.', 'sgs-blocks' ) }
-					/>
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="drawing"
-						blockSlug="sgs/measured-diagram"
-						insertion="element"
-						atoms={ [ 'intrinsic', 'meaning' ] }
-						mediaType="image"
-					/>
 					<ResponsiveLengthControl
 						label={ __( 'Maximum width', 'sgs-blocks' ) }
 						value={ maxWidth }
@@ -307,25 +296,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<figure { ...blockProps }>
 				{ previewCss && <style>{ previewCss }</style> }
 				<div className="sgs-measured-diagram__frame">
-					{ drawingImageUrl ? (
-						<img
-							className="sgs-measured-diagram__drawing"
-							src={ drawingImageUrl }
-							alt={ drawingImageDecorative ? '' : drawingImageAlt || '' }
-							width={ drawingImageWidth || undefined }
-							height={ drawingImageHeight || undefined }
+					<div className={ `sgs-measured-diagram__drawing ${ uid }` }>
+						<SlotPicture
+							{ ...{ attributes, setAttributes } }
+							prefix="drawing"
+							kinds={ DRAWING_ENTRY.kinds }
+							context={ DRAWING_ENTRY.context }
+							uid={ uid }
+							title={ __( 'Drawing', 'sgs-blocks' ) }
+							instructions={ __( 'An SVG or image of the item, with no labels of its own.', 'sgs-blocks' ) }
 						/>
-					) : (
-						<div className="sgs-measured-diagram__empty">
-							<MediaPicker
-								value={ null }
-								onChange={ onSelectDrawing }
-								allowedTypes={ [ 'image' ] }
-								label={ __( 'Choose drawing', 'sgs-blocks' ) }
-								instructionsImage={ __( 'Choose the drawing to measure.', 'sgs-blocks' ) }
-							/>
-						</div>
-					) }
+					</div>
 					{ ( lineGradient || extensionGradient ) && (
 						<svg className="sgs-measured-diagram__defs" aria-hidden="true" focusable="false">
 							<defs>

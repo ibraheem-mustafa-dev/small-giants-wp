@@ -110,7 +110,6 @@ final class Sgs_Block_Bindings_Support {
 		'sgs/heading'           => array( 'content' ),
 		'sgs/button'            => array( 'url', 'label', 'linkTarget', 'rel' ),
 		'sgs/media'             => array( 'caption' ),
-		'sgs/measured-diagram'  => array( 'drawingImageUrl', 'drawingImageId', 'drawingImageAlt' ),
 		'sgs/diagram-dimension' => array( 'value', 'caption' ),
 		'sgs/team-member'       => array( 'name', 'bio' ),
 		'sgs/testimonial'       => array( 'quote', 'reviewerName', 'reviewerRole', 'orgName', 'summaryPhrase' ),

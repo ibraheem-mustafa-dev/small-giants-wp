@@ -21,8 +21,7 @@
 		"sgs/diagram-dimension"
 	],
 	"providesContext": {
-		"sgs/measuredDiagramWidth": "drawingImageWidth",
-		"sgs/measuredDiagramHeight": "drawingImageHeight",
+		"sgs/measuredDiagramSource": "drawingSource",
 		"sgs/measuredDiagramTickLength": "tickLength"
 	},
 	"supports": {
@@ -31,8 +30,6 @@
 		"align": false,
 		"sgs": {
 			"motion": true,
-			"imageControls": false,
-			"_comment_imageControls": "The drawing is a measured technical drawing with labels placed at fixed % positions over it. Cropping, object-position, zoom or a forced aspect ratio would move the drawing under those labels, so the frame always shows the whole drawing at its own aspect ratio (from the intrinsic atom) and no image-treatment controls are offered.",
 			"mediaElements": [
 				{
 					"prefix": "drawing",
@@ -43,7 +40,7 @@
 					]
 				}
 			],
-			"_comment_mediaElements": "Prefix `drawing`, two atoms: `intrinsic` writes drawingImageWidth/drawingImageHeight from the chosen file (they become the frame's aspect ratio and the line SVGs' viewBox, passed to the children through providesContext); `meaning` gives drawingImageAlt and the drawingImageDecorative toggle. The picked file itself is drawingImageId/drawingImageUrl, declared here with the source atom's own types (integer/string) because the source atom would also inject video, SVG and Lottie slots a drawing never uses.",
+			"_comment_mediaElements": "Prefix `drawing`, Source and Alt only: a crop, focal point or forced ratio would move the drawing under the labels placed over it at fixed percentages. The renderer prints the whole drawing at its own aspect ratio, which it reads from the source's width and height.",
 			"colourExemptions": {
 				"line": {
 					"rule": "states",
@@ -201,31 +198,6 @@
 		"root": ".sgs-measured-diagram"
 	},
 	"attributes": {
-		"drawingImageId": {
-			"type": "integer",
-			"default": 0,
-			"role": "content"
-		},
-		"drawingImageUrl": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"drawingImageAlt": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"drawingImageDecorative": {
-			"type": "boolean",
-			"default": false
-		},
-		"drawingImageWidth": {
-			"type": "number"
-		},
-		"drawingImageHeight": {
-			"type": "number"
-		},
 		"maxWidth": {
 			"type": "object",
 			"default": {}
