@@ -92,6 +92,8 @@ case("hero split width: a video is not pinned", "sgs/hero", {"splitMediaType": "
 case("hero overlay: the gradient and its hover take the overlay family's names, the old strength 30 is pinned", "sgs/hero",
      {"overlayGradient": G1, "overlayGradientHover": G2},
      {"backgroundOverlayGradient": G1, "backgroundOverlayGradientHover": G2, "backgroundOverlayOpacity": {"desktop": 30}})
+case("trust-bar: the badge shadow (a STAYS entry under the unlisted badgeImage prefix) is kept, not refused", "sgs/trust-bar",
+     {"badgeStyle": "image-badge", "badgeImageShadow": "soft", "badgeImageShadowColour": "#000"}, None)
 case("trust-bar badge size: the number becomes Width in px (the old render drew it square)", "sgs/trust-bar", {"badgeImageSize": 96},
      {"badgeWidth": {"desktop": "96px"}})
 case("trust-bar badge size: clamped to the 24 to 160 range the old render drew", "sgs/trust-bar", {"badgeImageSize": 200},

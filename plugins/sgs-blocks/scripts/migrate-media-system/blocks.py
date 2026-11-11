@@ -619,7 +619,7 @@ UNLISTED_PREFIXES = ("splitMedia", "badgeImage")
 def migrate_unlisted(ctx: T.Ctx) -> None:
     """A saved attribute under a long, media-only slot prefix that no row maps is refused, never ignored."""
     rows = [r for r in M.rows() if r["block"] in (ctx.block, "*")]
-    known = {r["old"] for r in rows} | {r["target"] for r in rows}
+    known = {r["old"] for r in rows} | {r["target"] for r in rows} | set(M.STAYS.get(ctx.block, ()))
     for prefix in UNLISTED_PREFIXES:
         if prefix not in {o for s in M.merged_slots(ctx.block) for o in s["olds"]}:
             continue
