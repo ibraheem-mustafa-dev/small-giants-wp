@@ -37,11 +37,23 @@
 	max-width: 100%;
 }
 
-:where(.sgs-media-box, .sgs-media-box__mask) :where(.sgs-media-el) {
+:where(.sgs-media-box, .sgs-media-box__mask) .sgs-media-el {
 	display: block;
 	width: 100%;
 	height: 100%;
 	min-width: 0;
+	min-height: 0;
+}
+
+/* Fit defaults to cover (§8). Where the box matches the file's shape cover changes nothing; where a Ratio, Height or Width crops, it crops instead of stretching. An emitted Fit wins. */
+:where(.sgs-media--renderer.sgs-media-el, .sgs-media--renderer .sgs-media-el) {
+	object-fit: cover;
+}
+
+/* A helper with a Ratio has a height only through that ratio, which a percentage height cannot read; a one-row grid whose row may shrink to zero gives the media that height, and a helper with no Ratio still takes the file's height from its content. */
+:where(.sgs-media-box, .sgs-media-box__mask) {
+	display: grid;
+	grid-template-rows: minmax(0, 1fr);
 }
 
 /* An embed with nothing set is full width at 16:9; the player scales itself. */
@@ -54,6 +66,7 @@
 
 /* Fill ("Match its space"): the height the surrounding layout gives, 12rem when nothing supplies one. */
 .sgs-media-box--fill {
+	display: block;
 	height: auto;
 	min-height: 100%;
 	flex: 1 1 auto;
