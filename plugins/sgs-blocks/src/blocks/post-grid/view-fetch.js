@@ -128,7 +128,8 @@ export async function fetchPosts( queryData, page, filterCategory ) {
 		excludePost:           queryData.excludePost || 0,
 		layout:                queryData.layout,
 		cardStyle:             queryData.cardStyle,
-		imageSize:             queryData.imageSize,
+		// Spec 49: the image slot's settings, so a card paged in prints the same picture markup as the first page.
+		imageMedia:            queryData.imageMedia ? JSON.stringify( queryData.imageMedia ) : undefined,
 		showImage:             queryData.showImage,
 		showTitle:             queryData.showTitle,
 		showExcerpt:           queryData.showExcerpt,
@@ -142,7 +143,6 @@ export async function fetchPosts( queryData, page, filterCategory ) {
 		readMoreText:          queryData.readMoreText,
 		readMoreIcon:          queryData.readMoreIcon,
 		cardLink:              queryData.cardLink,
-		aspectRatio:           queryData.aspectRatio,
 		titleColour:           queryData.titleColour,
 		excerptColour:         queryData.excerptColour,
 		metaColour:            queryData.metaColour,
@@ -152,9 +152,8 @@ export async function fetchPosts( queryData, page, filterCategory ) {
 		categoryBadgeBgColourHover:         queryData.categoryBadgeBgColourHover,
 		categoryBadgeBgColourHoverGradient: queryData.categoryBadgeBgColourHoverGradient,
 		readMoreColour:        queryData.readMoreColour,
-		// 37-media-no-handroll: round-tripped so AJAX-paginated cards' featured
-		// images carry the same media-atom marker class as the initial
-		// render's — see the $sgs_pg_uid comment in class-post-grid-rest.php.
+		// Round-tripped so AJAX-paginated cards' featured images carry the grid's media scope class — see the
+		// $sgs_pg_uid comment in class-post-grid-rest.php.
 		uid:                   queryData.uid,
 		// Spec 38A §8: the entrance the first page's cards inherit, stamped by the route on the fetched cards.
 		itemMotion:            queryData.itemMotion ? JSON.stringify( queryData.itemMotion ) : undefined,

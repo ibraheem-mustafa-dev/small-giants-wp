@@ -14,6 +14,8 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/class-post-grid-media.php';
+
 /**
  * Handles the sgs-blocks/v1/posts REST route.
  *
@@ -123,10 +125,17 @@ class Post_Grid_REST {
 				'enum'              => [ 'card', 'flat', 'overlay', 'minimal' ],
 				'sanitize_callback' => 'sanitize_key',
 			],
-			'imageSize'            => [
+			// Spec 49: the grid's image-slot settings (every `image*` attribute but the Source and Alt) as one JSON
+			// object, which Post_Grid_Media::decode_settings() reduces to its own names.
+			'imageMedia'           => [
 				'type'              => 'string',
-				'default'           => 'medium_large',
-				'sanitize_callback' => 'sanitize_key',
+				'default'           => '',
+				'validate_callback' => static function ( $value ) {
+					return is_string( $value ) && strlen( $value ) <= Post_Grid_Media::MAX_JSON;
+				},
+				'sanitize_callback' => static function ( $value ) {
+					return (string) $value;
+				},
 			],
 			'showImage'            => [
 				'type'    => 'boolean',
@@ -185,11 +194,6 @@ class Post_Grid_REST {
 			'cardLink'             => [
 				'type'    => 'boolean',
 				'default' => false,
-			],
-			'aspectRatio'          => [
-				'type'              => 'string',
-				'default'           => '16/10',
-				'sanitize_callback' => 'sanitize_text_field',
 			],
 			'titleColour'          => [
 				'type'              => 'string',
@@ -281,6 +285,8 @@ class Post_Grid_REST {
 	 */
 	public static function get_posts( \WP_REST_Request $request ): \WP_REST_Response {
 		$params = $request->get_params();
+		// The image slot's settings as the renderer reads them (`image*` names only).
+		$params['imageMedia'] = Post_Grid_Media::decode_settings( $params['imageMedia'] ?? '' );
 
 		// Build WP_Query args — only published posts.
 		$query_args = [
@@ -317,8 +323,6 @@ class Post_Grid_REST {
 			$index = 0;
 			while ( $query->have_posts() ) {
 				$query->the_post();
-				// Pass card index so render_card can set fetchpriority on first image.
-				$params['_card_index'] = $index;
 				// Each fetched page restarts at index 0 (Spec 38A FR-38A-26), so the card picks up the grid's own
 				// per-index stagger rule already on the page; without a stagger the attribute matches no rule.
 				// The first page's inherited entrance (Spec 38A §8), when the grid applies its entrance to its cards.
@@ -387,9 +391,6 @@ class Post_Grid_REST {
 		);
 		$card_vars = array_merge( $card_vars, $badge_bg_decls );
 
-		$aspect_ratio = isset( $params['aspectRatio'] ) ? sanitize_text_field( $params['aspectRatio'] ) : '16/10';
-		$card_vars[]  = '--sgs-pg-aspect:' . $aspect_ratio;
-
 		return implode( ';', $card_vars ) . ';';
 	}
 
@@ -420,22 +421,14 @@ class Post_Grid_REST {
 		$readmore_icon = isset( $params['readMoreIcon'] ) ? sanitize_key( (string) $params['readMoreIcon'] ) : '';
 		$card_link     = ! empty( $params['cardLink'] );
 		$excerpt_len   = isset( $params['excerptLength'] ) ? absint( $params['excerptLength'] ) : 20;
-		$image_size    = isset( $params['imageSize'] ) ? sanitize_key( $params['imageSize'] ) : 'medium_large';
-		$aspect_ratio  = isset( $params['aspectRatio'] ) ? sanitize_text_field( $params['aspectRatio'] ) : '16/10';
-		$card_index    = isset( $params['_card_index'] ) ? absint( $params['_card_index'] ) : 1;
 
-		// 37-media-no-handroll: the block's own uid, threaded through so the
-		// featured-image <img> can carry the shared media-atom marker class
-		// (SGS_Media_Element::scope_class()). render.php passes it via
-		// $card_params for the initial render; view.js's AJAX pagination
-		// round-trips it back as a REST param (see render.php's
-		// $sgs_query_data 'uid' key) so cards injected later match the SAME
-		// `.{uid}{--sgs-media-object-fit:…}` rule already printed in the
-		// page's <head> on first load — that rule is a bare class selector,
-		// so it matches DOM added after the stylesheet was parsed.
+		// The block's own uid, threaded through so the featured image carries the grid's media scope class
+		// (Post_Grid_Media::scope()). render.php passes it via $card_params for the initial render; view.js's AJAX
+		// pagination round-trips it back as a REST param (see render.php's $sgs_query_data 'uid' key), so cards
+		// injected later match the class rules already printed with the grid.
 		$sgs_pg_uid = isset( $params['uid'] ) && is_string( $params['uid'] ) ? sanitize_html_class( $params['uid'] ) : '';
 
-		// FR-32-4 as amended (D345): the per-instance colour + aspect custom
+		// FR-32-4 as amended (D345): the per-instance colour custom
 		// property VALUES are NO LONGER emitted inline on the card root. They are
 		// emitted once, by render.php, as a scoped
 		// `.{uid}.wp-block-sgs-post-grid .sgs-post-grid__card{…}` rule — see
@@ -466,31 +459,15 @@ class Post_Grid_REST {
 
 		// --- Image section -----------------------------------------------
 		if ( $show_image ) {
-			// Performance: only the page's likely LCP image (the first card of a grid in the first section, and only
-			// when no earlier image took the page's slot) loads eagerly at high priority; every other card, and every
-			// page this endpoint fetches later, loads lazily (helpers-media.php::sgs_content_image_claims_priority).
-			$img_claims = 0 === $card_index && has_post_thumbnail( $post_id ) && \sgs_content_image_claims_priority();
-			$img_attrs  = [
-				'class'         => 'sgs-post-grid__img',
-				'loading'       => $img_claims ? 'eager' : 'lazy',
-				'fetchpriority' => $img_claims ? 'high' : 'auto',
-			];
+			// The featured image goes through the shared media renderer: loading and priority come from the resolver
+			// (§7.7: the page's lead image loads eagerly, a REST render is lazy and never high).
+			$image_html = Post_Grid_Media::card_image( $post_id, $sgs_pg_uid, is_array( $params['imageMedia'] ?? null ) ? $params['imageMedia'] : array() );
 
-			// 37-media-no-handroll: media-atom marker classes (see the $sgs_pg_uid
-			// comment above). Appended to the same `class` attr `get_the_post_
-			// thumbnail()` already receives — one <img>, one class string.
-			if ( '' !== $sgs_pg_uid && class_exists( 'SGS_Media_Element' ) ) {
-				$img_attrs['class'] .= ' ' . implode(
-					' ',
-					\SGS_Media_Element::element_classes( \SGS_Media_Element::scope_class( $sgs_pg_uid, '' ) )
-				);
-			}
-
-			if ( has_post_thumbnail( $post_id ) ) {
+			if ( '' !== $image_html ) {
 				$card .= sprintf(
 					'<a href="%s" class="sgs-post-grid__image-link" tabindex="-1" aria-hidden="true"><div class="sgs-post-grid__image">%s</div></a>',
 					$permalink,
-					get_the_post_thumbnail( $post_id, $image_size, $img_attrs )
+					$image_html
 				);
 			} elseif ( 'minimal' !== $card_style ) {
 				// Placeholder shown for card/flat/overlay when no featured image is set.

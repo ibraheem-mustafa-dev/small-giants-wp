@@ -3,7 +3,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { resolveColourToken } from '../../../components';
-import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, isCssGradient, tierBoxLonghands } from '../../../utils';
+import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, isCssGradient, tierBoxLonghands, focalPointToObjectPosition } from '../../../utils';
 import { tierValueOf } from '../../../utils/responsive';
 import { IconPreview } from '../../../components/IconPicker';
 import { cardGradientPreview } from '../preview-style';
@@ -70,8 +70,10 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		readMoreText,
 		readMoreIcon,
 		readMorePin,
-		aspectRatio,
+		imageRatio,
 		imageHeight,
+		imageFit,
+		imageFocal,
 		titleColour,
 		titleColourGradient,
 		excerptColour,
@@ -89,13 +91,12 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		readMoreColourGradient,
 		cardBgColour,
 		imageDecorative,
-		imageSize,
 		excerptLength,
 	} = attributes;
 
 	const featuredImage = post?._embedded?.[ 'wp:featuredmedia' ]?.[ 0 ];
-	// The size render.php asks for, falling back to the original file as it does.
-	const imageUrl      = featuredImage?.media_details?.sizes?.[ imageSize || 'medium_large' ]?.source_url || featuredImage?.source_url;
+	// The preview shows a medium-large file; the page prints the renderer's own srcset.
+	const imageUrl      = featuredImage?.media_details?.sizes?.medium_large?.source_url || featuredImage?.source_url;
 	// wp_trim_words(): the first N words, with an ellipsis only when words were cut.
 	const excerptWords  = ( post?.excerpt?.rendered || '' ).replace( /(<([^>]+)>)/gi, '' ).trim().split( /\s+/ ).filter( Boolean );
 	const excerptMax    = excerptLength || 20;
@@ -157,6 +158,15 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		</span>
 	);
 
+	// The frame's ratio at the previewed device (16 / 9 when the grid sets none), and the picture's fit and focal point.
+	const ratioValue = String( tierValueOf( imageRatio, tier ) || '16 / 9' );
+	const frameRatio = 'natural' === ratioValue ? 'auto' : ratioValue;
+	const fitValue   = tierValueOf( imageFit, tier ) || 'cover';
+	const focalValue = tierValueOf( imageFocal, tier );
+	const imageStyle = {
+		objectFit: fitValue,
+		objectPosition: 'cover' === fitValue ? focalPointToObjectPosition( focalValue || { x: 0.5, y: 0.5 } ) : undefined,
+	};
 	const imageHeightPx = ( 'mobile' === tier ? imageHeight?.mobile || imageHeight?.tablet || imageHeight?.desktop : 'tablet' === tier ? imageHeight?.tablet || imageHeight?.desktop : imageHeight?.desktop ) || '';
 
 	return (
@@ -168,12 +178,13 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 				<div className="sgs-post-grid__image-link">
 					<div
 						className="sgs-post-grid__image"
-						style={ imageHeightPx ? { height: imageHeightPx, aspectRatio: 'auto' } : ( aspectRatio ? { aspectRatio } : {} ) }
+						style={ imageHeightPx ? { height: imageHeightPx, aspectRatio: 'auto' } : { aspectRatio: frameRatio } }
 					>
 						<img
 							src={ imageUrl }
 							alt={ imageDecorative ? '' : ( featuredImage.alt_text || '' ) }
 							className="sgs-post-grid__img"
+							style={ imageStyle }
 							aria-hidden={ imageDecorative || undefined }
 						/>
 					</div>

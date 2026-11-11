@@ -5,8 +5,8 @@
  * Partial of render.php, included with a plain require so it shares render.php's
  * local scope (required once per block instance).
  *
- * Reads: $attributes, $uid, $layout, $query, $show_filters, $filter_taxonomy, $card_params, $image_decorative, $carousel_show_arrows, $carousel_show_dots, $carousel_autoplay, $pagination, $total_pages, $current_page.
- * Writes: output only (echoed into the open output buffer); sets $card_params['_card_index'] and its own loop locals.
+ * Reads: $attributes, $uid, $layout, $query, $show_filters, $filter_taxonomy, $card_params, $carousel_show_arrows, $carousel_show_dots, $carousel_autoplay, $pagination, $total_pages, $current_page.
+ * Writes: output only (echoed into the open output buffer); its own loop locals only.
  *
  * @package SGS\Blocks
  */
@@ -107,15 +107,11 @@ if ( $query->have_posts() ) {
 	$card_index = 0;
 	while ( $query->have_posts() ) {
 		$query->the_post();
-		$card_params['_card_index'] = $card_index;
 		$card_html                  = \SGS\Blocks\Post_Grid_REST::render_card( get_the_ID(), $card_params );
 		if ( null !== $sgs_pg_loop_style ) {
 			$card_html = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_item( $card_html, $card_index );
 		}
-		if ( $image_decorative ) {
-			$card_html = sgs_post_grid_make_card_image_decorative( $card_html );
-		}
-		echo $card_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — render_card() escapes all output internally; sgs_post_grid_make_card_image_decorative() only rewrites an already-escaped alt attribute to an empty string and adds a literal aria-hidden attribute.
+		echo $card_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — render_card() escapes all output internally.
 		++$card_index;
 	}
 	wp_reset_postdata();

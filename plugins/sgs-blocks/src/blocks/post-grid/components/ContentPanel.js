@@ -4,20 +4,21 @@
 
 import { __ } from '@wordpress/i18n';
 import { SelectControl, RangeControl, ToggleControl } from '@wordpress/components';
-import MediaElementPanel from '../../../components/MediaElementPanel';
 import SgsBooleanField from '../../../components/SgsBooleanField';
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
-import ResponsiveLengthControl from '../../../components/ResponsiveLengthControl';
 import ResponsiveOverride from '../../../components/ResponsiveOverride';
 import { IconPicker } from '../../../components/IconPicker';
-import { ASPECT_RATIO_OPTIONS, IMAGE_SIZE_OPTIONS } from './constants';
 
 import SgsFreeTextField from '../../../components/SgsFreeTextField';
+const LOADING_OPTIONS = [
+	{ label: __( 'Automatic', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Load first', 'sgs-blocks' ), value: 'first' },
+	{ label: __( 'Load later', 'sgs-blocks' ), value: 'later' },
+];
+
 export default function ContentPanel( { attributes, setAttributes, set } ) {
 	const {
-		aspectRatio,
-		imageHeight,
-		imageSize,
+		imageLoading,
 		showImage,
 		imageDecorative,
 		showTitle,
@@ -41,10 +42,8 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 					resetAll={ () =>
 						setAttributes( {
 							showImage: true,
-							imageSize: 'medium_large',
+							imageLoading: '',
 							imageDecorative: false,
-							aspectRatio: '16 / 9',
-							imageHeight: {},
 							showTitle: true,
 							showExcerpt: true,
 							excerptLength: 20,
@@ -74,44 +73,15 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 						>
 							{ showImage && (
 								<>
-									{ /* Consolidated in from the "Layout" panel — CO-2 /
-									     THE PLACEMENT RULE TIER 1 names "Post image" a
-									     declared element; aspect ratio is image-owned. */ }
+									{ /* The ratio, height, fit, focal point, radius and shape are the adopted media panels (edit.js). */ }
 									<SelectControl
-										label={ __( 'Image aspect ratio', 'sgs-blocks' ) }
-										value={ aspectRatio }
-										options={ ASPECT_RATIO_OPTIONS }
-										onChange={ set( 'aspectRatio' ) }
+										label={ __( 'Load priority', 'sgs-blocks' ) }
+										help={ __( 'Automatic loads the pictures above the fold first and the rest as they scroll into view.', 'sgs-blocks' ) }
+										value={ imageLoading || '' }
+										options={ LOADING_OPTIONS }
+										onChange={ set( 'imageLoading' ) }
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
-									/>
-									<ResponsiveLengthControl
-										label={ __( 'Image height', 'sgs-blocks' ) }
-										help={ __( 'A fixed image frame per device. When set it replaces the aspect ratio and the image covers the frame.', 'sgs-blocks' ) }
-										value={ imageHeight }
-										onChange={ set( 'imageHeight' ) }
-									/>
-									<SelectControl
-										label={ __( 'Image size', 'sgs-blocks' ) }
-										value={ imageSize }
-										options={ IMAGE_SIZE_OPTIONS }
-										onChange={ set( 'imageSize' ) }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
-									{ /* 37-media-no-handroll: object-fit for the featured-image <img>
-									     (sgs-post-grid__img), one media-atom control covering both the
-									     grid-mode and list-mode selectors in style.css — same element,
-									     rendered once per card by Post_Grid_REST::render_card(). */ }
-									<MediaElementPanel
-										attributes={ attributes }
-										setAttributes={ setAttributes }
-										prefix=""
-										blockSlug="sgs/post-grid"
-										insertion="element"
-										atoms={ [ 'object-fit' ] }
-										mediaType="image"
-										scope="element"
 									/>
 									<ToggleControl
 										label={ __( 'Featured images are decorative', 'sgs-blocks' ) }
