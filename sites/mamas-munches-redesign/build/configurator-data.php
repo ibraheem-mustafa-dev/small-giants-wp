@@ -29,6 +29,7 @@ foreach ( $flavours as $name => $hex ) {
 	$tid = (int) ( is_array( $t ) ? $t['term_id'] : $t );
 	update_term_meta( $tid, '_sgs_swatch_color', $hex );
 	$ids[] = $tid;
+	update_term_meta( $tid, 'order_pa_flavour', count( $ids ) - 1 ); // the attribute's own order: the draft's, Vanilla first.
 }
 
 $product = wc_get_product( $pid );
