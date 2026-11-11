@@ -18,7 +18,7 @@ reordered. The roster now lives in `scripts/gates.json`, one record per gate:
 
 TIERS
 -----
-    fast    every cheap gate; runs on every build via `prebuild`
+    fast    every cheap gate; runs on every build, beside webpack (scripts/build-with-gates.mjs)
     full    the heavyweights; runs pre-deploy via `npm run gate:full`, which
             `build-deploy.py` invokes as `step_gate_full()`
 
