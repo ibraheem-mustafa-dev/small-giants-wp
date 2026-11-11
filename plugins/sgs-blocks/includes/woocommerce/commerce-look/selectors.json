@@ -406,8 +406,8 @@
 			}
 		},
 		"coupon_apply": {
-			"cart": ".wp-block-woocommerce-cart-order-summary-coupon-form-block .wc-block-components-totals-coupon__button",
-			"checkout": ".wp-block-woocommerce-checkout-order-summary-coupon-form-block .wc-block-components-totals-coupon__button",
+			"cart": ".wp-block-woocommerce-cart-order-summary-coupon-form-block .wc-block-components-totals-coupon__button.wc-block-components-button",
+			"checkout": ".wp-block-woocommerce-checkout-order-summary-coupon-form-block .wc-block-components-totals-coupon__button.wc-block-components-button",
 			"wc_version": "11.2.1",
 			"state": "basket filled; any user; any width; the coupon Apply button (the coupon panel open)",
 			"needs": {

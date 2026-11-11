@@ -61,15 +61,24 @@ final class CommerceLookCheckoutPartsTest extends TestCase {
 		$this->assertStringContainsString( '.sgs-x .wp-block-woocommerce-checkout-order-summary-coupon-form-block .wc-block-components-totals-coupon{padding-top:14px;padding-bottom:14px;}', $css, 'coupon padding is printed on the inner coupon section' );
 		$this->assertStringContainsString( '.sgs-x .wp-block-woocommerce-checkout-order-summary-coupon-form-block{padding:0;}', $css, 'the wrapper drops its own padding when the setting is set' );
 		$this->assertStringContainsString( 'totals-coupon__input.wc-block-components-text-input input[type],.sgs-x .wp-block-woocommerce-checkout-order-summary-coupon-form-block .wc-block-components-totals-coupon__input.wc-block-components-text-input{min-height:40px;height:40px;}', $css, 'coupon input and its wrapper share the height' );
-		$this->assertStringContainsString( 'totals-coupon__button{min-height:40px;height:40px;}', $css, 'coupon apply height' );
+		$this->assertStringContainsString( 'totals-coupon__button.wc-block-components-button{min-height:40px;height:40px;}', $css, 'coupon apply height' );
 		$this->assertMatchesRegularExpression( '/@media\(max-width:\d+px\)\{[^{]*totals-coupon__button\{min-height:44px;height:44px;\}/', $css, 'coupon apply height on mobile' );
 		$this->assertStringContainsString( '.wc-block-components-totals-coupon .wc-block-components-panel__button{font-size:14px;}', $css, 'coupon label size' );
 		$this->assertStringContainsString( '.wc-block-components-totals-coupon .wc-block-components-panel__button{color:#5E584F;}', $css, 'coupon label colour' );
 		$cart = $this->css( self::ATTRS, 'cart' );
 		$this->assertStringContainsString( '.sgs-x .wp-block-woocommerce-cart-order-summary-coupon-form-block .wc-block-components-totals-coupon{padding-top:14px;padding-bottom:14px;}', $cart, 'cart coupon padding' );
 		$this->assertStringContainsString( '.sgs-x .wp-block-woocommerce-cart-order-summary-coupon-form-block{padding:0;}', $cart, 'cart wrapper padding' );
-		$this->assertStringContainsString( 'totals-coupon__button{min-height:40px;height:40px;}', $cart, 'cart coupon apply height' );
+		$this->assertStringContainsString( 'totals-coupon__button.wc-block-components-button{min-height:40px;height:40px;}', $cart, 'cart coupon apply height' );
 		$this->assertStringNotContainsString( 'radio-control-accordion-option', $cart, 'the cart has no payment options' );
+	}
+
+	public function test_the_apply_button_row_outranks_the_checkout_actions_button_rule(): void {
+		// On phones the order summary sits inside the actions block, whose own `.wp-element-button` min-height rule has three
+		// classes under the scope; the Apply row must carry a fourth so the coupon height wins whatever the order.
+		$rows = json_decode( (string) file_get_contents( $this->root() . 'includes/woocommerce/commerce-look/selectors.json' ), true )['rows'];
+		foreach ( array( 'cart', 'checkout' ) as $block ) {
+			$this->assertStringContainsString( '.wc-block-components-totals-coupon__button.wc-block-components-button', $rows['coupon_apply'][ $block ], $block );
+		}
 	}
 
 	public function test_a_block_with_none_of_them_prints_none_of_it(): void {
