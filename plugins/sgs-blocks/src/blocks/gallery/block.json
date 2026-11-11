@@ -209,7 +209,7 @@
 							}
 						}
 					},
-					"_note_tile": "Logo-tile styling (fill, border, radius, height, padding) is block-wide on the same figure and paints through render-tile.php::sgs_gallery_tile_css. tileFitContain is a boolean on the image inside the tile and is not a CSS property of the figure, so it stays unmapped. Per-item links (mediaItems[].linkUrl) turn the figure's button into an <a> and are item data, not element styling.",
+					"_note_tile": "Logo-tile styling (fill, border, radius, height, padding) is block-wide on the same figure and paints through render-tile.php::sgs_gallery_tile_css. Per-item links (mediaItems[].linkUrl) turn the figure's button into an <a> and are item data, not element styling.",
 					"_note": "The per-image grid cell (.sgs-gallery__item, render.php ~line 455/506) - distinct from the image element (the <img> itself) and img-wrap below. aspectRatio is claimed via explicit attrMap rather than declaring 'layout' in clusters: a first draft used clusters:[\"layout\"], which reached the SAME bare (no-prefix) cluster members as the 'grid' element (also bare-prefix) and produced a CONTESTED finding on aspectRatio itself, plus risked colliding on other bare layout members this block happens to declare. clusters:[] + explicit attrMap avoids the collision entirely while still claiming aspectRatio cleanly (placement-reach's attrMap/member-owner path is independent of the clusters list). shadowHover is a HOVER-ONLY box-shadow with no resting-state twin (no base 'shadow' attribute exists on this block) - deliberately left unclustered rather than declared as a states.hover entry, which would create a NEW state-without-base finding (the framework's baseline currently accepts exactly one such case, sgs/post-grid, and gates against any rise). prefix:\"\" additionally opts this element out of orphan-candidate scanning so shadowHover is reported honestly as an accepted gap. Found live 2026-08-15: DB tagged 2 attrs css_element='item', undeclared until now."
 				},
 				"img-wrap": {
@@ -671,11 +671,6 @@
 			"type": "object",
 			"default": {},
 			"description": "Space between a tile's edge and its image, per device tier, each tier a {top,right,bottom,left} box."
-		},
-		"tileFitContain": {
-			"type": "boolean",
-			"default": false,
-			"description": "Fits every image inside its tile without cropping, centred (object-fit contain), whatever each item's own fit says."
 		},
 		"itemSource": {"type":"object","_generated":"media-atoms"},
 		"itemLoading": {"type":"string","_generated":"media-atoms"},

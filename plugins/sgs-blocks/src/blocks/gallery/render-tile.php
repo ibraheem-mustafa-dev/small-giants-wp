@@ -146,10 +146,6 @@ if ( ! function_exists( 'sgs_gallery_tile_css' ) ) {
 			$css .= $item . '{box-sizing:border-box;}' . $box_css;
 		}
 
-		if ( ! empty( $attributes['tileFitContain'] ) ) {
-			$css .= $item . ' .sgs-gallery__img-wrap img,' . $item . ' .sgs-gallery__img-wrap video{object-fit:contain;object-position:center;}';
-		}
-
 		return $css;
 	}
 }

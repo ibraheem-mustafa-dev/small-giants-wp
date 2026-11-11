@@ -77,7 +77,6 @@ final class GalleryLinkedTileTest extends TestCase {
 					'tileBorderRadius'         => array(),
 					'tileMinHeight'            => array(),
 					'tilePadding'              => array(),
-					'tileFitContain'           => false,
 				)
 			)
 		);
@@ -193,7 +192,6 @@ final class GalleryLinkedTileTest extends TestCase {
 							'left'   => '12px',
 						),
 					),
-					'tileFitContain'   => true,
 				)
 			)
 		);
@@ -205,8 +203,6 @@ final class GalleryLinkedTileTest extends TestCase {
 		$this->assertStringContainsString( $item . '{min-height:64px;--sgs-gallery-tap-min:0px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px;}', $css );
 		$this->assertStringContainsString( '@media(max-width:767px){', $css );
 		$this->assertStringContainsString( 'min-height:56px;', $css );
-		$this->assertStringContainsString( '.sgs-gallery__img-wrap img,', $css );
-		$this->assertStringContainsString( 'object-fit:contain;object-position:center;', $css );
 		$this->assertStringContainsString( 'sgs-gallery--tile', $out['html'] );
 		$this->assertStringNotContainsString( ' style="', $out['html'] );
 	}

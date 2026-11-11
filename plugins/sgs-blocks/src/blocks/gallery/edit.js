@@ -509,7 +509,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				) }
 				captionStyle={ captionStyle }
 				tileStyle={ tileStyle }
-				tileFitContain={ attributes.tileFitContain }
 				gridStyle={ gridStyle }
 				separatorsCanvas={ separatorsCanvas }
 				onSelectImages={ onAddImages }

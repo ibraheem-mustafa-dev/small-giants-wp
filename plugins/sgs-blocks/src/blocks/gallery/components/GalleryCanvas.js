@@ -15,7 +15,6 @@ export default function GalleryCanvas( {
 	items,
 	captionStyle,
 	tileStyle,
-	tileFitContain,
 	gridStyle,
 	separatorsCanvas,
 	onSelectImages,
@@ -126,7 +125,6 @@ export default function GalleryCanvas( {
 										attributes={ attributes }
 										captionStyle={ captionStyle }
 										tileStyle={ tileStyle }
-								tileFitContain={ tileFitContain }
 								device={ device }
 									/>
 								) ) }
@@ -171,7 +169,6 @@ export default function GalleryCanvas( {
 								attributes={ attributes }
 								captionStyle={ captionStyle }
 								tileStyle={ tileStyle }
-								tileFitContain={ tileFitContain }
 								device={ device }
 								hiddenOnDevice={
 									hiddenFrom > 0 && index >= hiddenFrom

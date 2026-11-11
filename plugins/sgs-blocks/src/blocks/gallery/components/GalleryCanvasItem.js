@@ -11,7 +11,6 @@ export default function GalleryCanvasItem( {
 	attributes,
 	captionStyle,
 	tileStyle,
-	tileFitContain,
 	device = 'desktop',
 	hiddenOnDevice = false,
 } ) {
@@ -20,9 +19,7 @@ export default function GalleryCanvasItem( {
 	const file = itemFile( item, device );
 	const isVideo = 'video' === file.kind;
 	const ratio = String( resolveResponsiveTier( attributes.itemRatio || {}, device )?.value || '' ).replace( /\s+/g, '' );
-	const fit = tileFitContain
-		? 'contain'
-		: tierValueOf( item.fit, device ) || tierValueOf( attributes.itemFit, device ) || 'cover';
+	const fit = tierValueOf( item.fit, device ) || tierValueOf( attributes.itemFit, device ) || 'cover';
 	const focal = tierValueOf( item.focal, device );
 	const mediaStyle = {
 		// Tile mode sizes the tile itself (tileStyle.minHeight); the image then fills it.
