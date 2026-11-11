@@ -82,6 +82,22 @@ def live_declared_slots() -> dict:
     return out
 
 
+EXTENSION_PHP = PLUGIN / "includes" / "extension-attributes.generated.php"
+
+
+@lru_cache(maxsize=1)
+def live_declared_attributes() -> dict:
+    """{block name: attribute names it takes}: its block.json on disk plus the universal `sgs*` extension attributes the plugin
+    injects into every block (sgsHideOnTablet and the rest). Read once per run (guard against writing a name the block dropped)."""
+    extensions = set(re.findall(r"^\s*'(sgs[A-Za-z0-9]+)'\s*=>", EXTENSION_PHP.read_text(encoding="utf-8"), re.M)) if EXTENSION_PHP.is_file() else set()
+    out: dict[str, set[str]] = {}
+    for path in sorted(BLOCKS_DIR.glob("*/block.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if data.get("name"):
+            out[data["name"]] = set(data.get("attributes") or {}) | extensions
+    return out
+
+
 def any_block_adopted() -> bool:
     """True once any block declares `kinds` on a media slot: the cutover marker (§8.3)."""
     return any(e["kinds"] for entries in live_declared_slots().values() for e in entries)
@@ -284,10 +300,10 @@ EXTRA = {
     ("sgs/timeline", "milestoneMediaWidth"): ("sizing", "entryWidth"),
     ("sgs/trust-bar", "badgeImageSize"): ("sizing", "badgeWidth"),
     ("sgs/trust-bar", "badgeImageBorderRadius"): ("radius", "badgeRadius"),
-    ("sgs/product-card", "brandLogoHeight"): ("report", "brand logo box: the `logo` slot is named by WP-9"),
-    ("sgs/product-card", "brandLogoWidth"): ("report", "brand logo box: the `logo` slot is named by WP-9"),
-    ("sgs/product-card", "brandLogoMaxHeight"): ("report", "brand logo box: the `logo` slot is named by WP-9"),
-    ("sgs/product-card", "brandLogoMaxWidth"): ("report", "brand logo box: the `logo` slot is named by WP-9"),
+    ("sgs/product-card", "brandLogoHeight"): ("sizing", "logoHeight"),
+    ("sgs/product-card", "brandLogoWidth"): ("sizing", "logoWidth"),
+    ("sgs/product-card", "brandLogoMaxHeight"): ("sizing", "logoMaxHeight"),
+    ("sgs/product-card", "brandLogoMaxWidth"): ("sizing", "logoMaxWidth"),
     ("sgs/hero", "splitMediaBorderColourHover"): ("report", "Hover effect on the media part (WP-10a)"),
     ("sgs/hero", "splitMediaBorderColourHoverGradient"): ("report", "Hover effect on the media part (WP-10a)"),
     ("sgs/brand-strip", "tileShape"): ("shape", "logoShape"),
@@ -314,7 +330,6 @@ EXTRA = {
     ("sgs/image-sequence", "thumbnailDecorative"): ("alt", "thumbnailDecorative"),
     ("sgs/image-sequence", "aspectRatio"): ("sizing", "thumbnailRatio"),
     ("sgs/option-picker", "swatchShape"): ("shape", "swatchShape"),
-    ("sgs/buybox", "galleryStickerShape"): ("shape", "galleryStickerShape"),
     ("sgs/measured-diagram", "drawingImageId"): ("source", "drawingSource"),
     ("sgs/measured-diagram", "drawingImageUrl"): ("source", "drawingSource"),
     ("sgs/measured-diagram", "drawingImageAlt"): ("alt", "drawingAlt"),
@@ -372,6 +387,10 @@ EXTRA = {
     ("sgs/buybox", "galleryThumbBorderColour"): ("rename", "thumbBorderColour"),
     ("sgs/buybox", "galleryThumbBorderWidth"): ("rename", "thumbBorderWidth"),
     ("sgs/buybox", "previewImageId"): ("report", "preview image Source: slot named by WP-9"),
+    ("sgs/buybox", "previewBorderWidth"): ("sides", "previewBorderWidth"),
+    ("sgs/buybox", "previewRadius"): ("radius", "previewRadius"),
+    ("sgs/buybox", "galleryThumbBorderColourHover"): ("rename", "thumbBorderColourHover"),
+    ("sgs/product-card", "imageHeight"): ("sizing", "imageHeight"),
     ("sgs/responsive-logo", "svgParts"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
     ("sgs/responsive-logo", "svgPartsTrigger"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
     ("sgs/nav-drawer", "chromeLogoSvgParts"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
@@ -424,6 +443,7 @@ _STAYS_GROUPS = (
     ("sgs/before-after", "slider caption text, not media", ("beforeLabel", "afterLabel")),
     ("sgs/gallery", "the items array is rewritten by the items migration, not by a row", ("mediaItems",)),
     ("sgs/cart", "small fixed thumbnail on an exempt block (Appendix A)", ("itemThumbBg", "itemThumbSize", "itemThumbRadius", "iconSvg")),
+    ("sgs/buybox", "the sticker's own enum (rounded, pill, tag) draws a badge, not a media Shape or Corners (W3b)", ("galleryStickerShape",)),
     ("sgs/media", "player readout typography (§13: videoTime typography stays)", ("videoTimeTextColumns",)),
     ("sgs/google-reviews", "remote avatar and card logo on an exempt block (Appendix A)",
      ("logoPosition", "avatarSize", "avatarBorderRadius", "showCardLogo", "cardLogoSize", "avatarTextAlign", "avatarTextColour")),
@@ -555,8 +575,22 @@ def new_target(family: str, target: str, new_prefix: str) -> str:
 
 @lru_cache(maxsize=1)
 def rows() -> list[dict]:
-    """Every mapping row {block, old, family, target, new_prefix, base, tier}, read from the frozen file."""
-    return frozen()["rows"]
+    """Every mapping row {block, old, family, target, new_prefix, base, tier}: the frozen file's, with the rows of `EXTRA` (the
+    attributes outside the prefix grammar, which Stage B packages amend after the freeze) taking precedence over the frozen
+    copy of the same (block, old), and any `EXTRA` entry the frozen file lacks added."""
+    out = []
+    seen = set()
+    for row in frozen()["rows"]:
+        key = (row["block"], row["old"])
+        if row.get("base") is None and row.get("new_prefix") is None and key in EXTRA:
+            family, target = EXTRA[key]
+            row = {**row, "family": family, "target": target}
+            seen.add(key)
+        out.append(row)
+    for (block, old), (family, target) in sorted(EXTRA.items()):
+        if (block, old) not in seen and not any(r["block"] == block and r["old"] == old for r in out):
+            out.append({"block": block, "old": old, "family": family, "target": target, "new_prefix": None, "base": None, "tier": ""})
+    return out
 
 
 def build_rows(declared: dict, maps: dict) -> list[dict]:

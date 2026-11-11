@@ -259,6 +259,8 @@ def migrate_extras(ctx: T.Ctx) -> None:
             _plain_shape(ctx, old, target, value)
         elif family == "radius":
             _plain_radius(ctx, old, target, value)
+        elif family == "sides":
+            _plain_sides(ctx, old, target, value)
         elif family == "opacity":
             _plain_opacity(ctx, old, target, value)
         elif family == "alt":
@@ -335,6 +337,18 @@ def _plain_radius(ctx: T.Ctx, old: str, target: str, value: Any) -> None:
             ctx.keep(old, "refused", "radius is not a length, corner object or device object")
         return
     _move(ctx, old, target, new)
+
+
+def _plain_sides(ctx: T.Ctx, old: str, target: str, value: Any) -> None:
+    """A border width stored as one length string becomes the Sides object (top, right, bottom, left; not per device)."""
+    if isinstance(value, str) and value.strip():
+        _move(ctx, old, target, {side: value.strip() for side in V.SIDES})
+    elif isinstance(value, str):
+        ctx.drop(old, "deleted", "", "empty string is the default")
+    elif isinstance(value, dict) and any(k in value for k in V.SIDES):
+        return
+    elif value not in (None, {}):
+        ctx.keep(old, "refused", "border width is not a length or a sides object")
 
 
 def _plain_shape(ctx: T.Ctx, old: str, target: str, value: Any) -> None:
@@ -544,9 +558,36 @@ def migrate(name: str, attrs: dict):
     """(new attributes, events). Saved content repeats the same attribute set across revisions, so results are kept per input."""
     key = (name, S.active(), json.dumps(attrs, sort_keys=True, ensure_ascii=True))
     if key not in _MEMO:
-        _MEMO[key] = _migrate(name, attrs)
+        _MEMO[key] = guard_declared(name, attrs, *_migrate(name, attrs))
     new, events = _MEMO[key]
     return copy.deepcopy(new), list(events)
+
+
+CORE_ATTRIBUTES = frozenset({"className", "anchor", "lock", "metadata", "style", "align", "fontSize", "fontFamily",
+                             "backgroundColor", "textColor", "gradient", "layout"})
+
+
+def guard_declared(name: str, original: dict, new: dict, events: list):
+    """WordPress silently drops an attribute the block's block.json does not declare, so a value the migration writes under such a
+    name would be lost with no event. Such a block is refused whole: nothing is written, and the event names the attribute and
+    the old one it came from. Applies to the blocks `fix` rewrites (`mapping.migration_scope`); an unadopted block's targets are
+    declared by the package that adopts it."""
+    if any(e[0] == "refused" for e in events):
+        return new, events
+    scope = M.migration_scope()
+    declared = M.live_declared_attributes().get(name)
+    if declared is None or (scope is not None and name not in scope):
+        return new, events
+    bad = sorted(k for k, v in new.items() if k not in declared and k not in CORE_ATTRIBUTES and (k not in original or original[k] != v))
+    if not bad:
+        return new, events
+    refusals = []
+    for attr in bad:
+        old = sorted({e[1] for e in events if len(e) > 2 and e[2] == attr and e[1] != attr})
+        origin = f"from {', '.join(old)}" if old else "written by the migration"
+        refusals.append(("refused", old[0] if old else attr, attr, f"{name} no longer declares {attr} ({origin}): "
+                         "WordPress would drop the value; resolve by hand or map the attribute"))
+    return copy.deepcopy(original), refusals
 
 
 def migrate_gallery_tile_fit(ctx: T.Ctx) -> None:
@@ -565,8 +606,31 @@ def migrate_gallery_tile_fit(ctx: T.Ctx) -> None:
     ctx.drop("tileFitContain", "converted", "itemFit", "contain on every tile image")
 
 
+BACKGROUND_ONLY_NOTE = ("the old front end gave a background-repeat / background-attachment custom property to the <img> or video, "
+                        "which has no background image, so the value painted nothing; the new block declares no such setting")
+OVERLAY_PAINTERS = ("overlayColour", "overlayColourHover", "overlayGradient", "overlayGradientHover")
+OVERLAY_SETTINGS = (*OVERLAY_PAINTERS, "overlayBlendMode", "overlayOpacity", "overlayOpacityTablet", "overlayOpacityMobile")
+OVERLAY_NOTE = ("sgs/decorative-image's layer has no Overlay (§10.4); none of the colour, gradient or hover colour or gradient was set, "
+                "so the overlay painted nothing")
+
+
+def migrate_inert_settings(ctx: T.Ctx) -> None:
+    """Old values that painted nothing on the old front end are deleted: Repeat and Attachment on an <img> or video (sgs/media,
+    sgs/decorative-image), and a decorative-image overlay with no colour or gradient. A decorative-image overlay that did paint
+    is left to `guard_declared`, which refuses the block so a person decides."""
+    if ctx.block in ("sgs/media", "sgs/decorative-image"):
+        for old in ("attachment", "repeat"):
+            ctx.drop(old, "deleted", "", BACKGROUND_ONLY_NOTE)
+    if ctx.block == "sgs/decorative-image":
+        painted = any(isinstance(ctx.get(n), str) and ctx.get(n).strip() for n in OVERLAY_PAINTERS)
+        if not painted:
+            for old in OVERLAY_SETTINGS:
+                ctx.drop(old, "deleted", "", OVERLAY_NOTE)
+
+
 def _migrate(name: str, attrs: dict):
     ctx = T.Ctx(name, attrs)
+    migrate_inert_settings(ctx)
     for slot in M.merged_slots(name):
         T.migrate_slot(ctx, slot["olds"], slot["new"], slot["bases"])
     if name in M.BACKGROUND_BLOCKS:

@@ -11,6 +11,7 @@ PCT = re.compile(r"^-?\d+(?:\.\d+)?%$")
 RATIO = re.compile(r"^\d+(?:\.\d+)?\s*/\s*\d+(?:\.\d+)?$")
 PX = re.compile(r"^(\d+(?:\.\d+)?)px$")
 CORNERS = ("topLeft", "topRight", "bottomRight", "bottomLeft")
+SIDES = ("top", "right", "bottom", "left")
 
 
 def is_device_object(value: Any) -> bool:

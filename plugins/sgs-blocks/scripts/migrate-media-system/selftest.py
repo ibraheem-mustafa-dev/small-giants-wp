@@ -209,6 +209,23 @@ case("gallery: tileFitContain false is the default and is dropped, itemFit untou
 case("negative: a gallery without tileFitContain is untouched", "sgs/gallery", {"itemFit": {"desktop": "cover"}, "mediaItems": [{"fit": {"desktop": "contain"}, "_key": "k"}]}, None)
 case("negative: an already migrated overlay gradient is untouched", "sgs/container",
      {"backgroundOverlayGradient": G1, "backgroundOverlayOpacity": {"desktop": 50}}, None)
+# ---- W3b: product-card logo and image height, buybox preview, thumb hover colour, sticker shape
+case("product-card: the brand logo box becomes the logo slot's sizing", "sgs/product-card",
+     {"brandLogoHeight": {"desktop": "24px", "mobile": "16px"}, "brandLogoWidth": {"desktop": "auto"}, "brandLogoMaxHeight": {"desktop": 32}, "brandLogoMaxWidth": {"tablet": "80%"}},
+     {"logoHeight": {"desktop": "24px", "mobile": "16px"}, "logoWidth": {"desktop": "auto"}, "logoMaxHeight": {"desktop": "32px"}, "logoMaxWidth": {"tablet": "80%"}})
+case("product-card: an old string imageHeight becomes the image slot's Height", "sgs/product-card",
+     {"imageHeight": "180px"}, {"imageHeight": {"desktop": "180px"}})
+case("negative: a product-card imageHeight already per device is untouched", "sgs/product-card", {"imageHeight": {"desktop": "180px"}}, None)
+case("buybox: preview border width and radius strings become Sides and Corners", "sgs/buybox",
+     {"previewBorderWidth": "2px", "previewRadius": "6px"},
+     {"previewBorderWidth": {"top": "2px", "right": "2px", "bottom": "2px", "left": "2px"},
+      "previewRadius": {"desktop": {"topLeft": "6px", "topRight": "6px", "bottomRight": "6px", "bottomLeft": "6px"}}})
+case("negative: buybox preview border width and radius already reshaped are untouched", "sgs/buybox",
+     {"previewBorderWidth": {"top": "2px", "right": "2px", "bottom": "2px", "left": "2px"}, "previewRadius": {"desktop": {"topLeft": "6px", "topRight": "6px", "bottomRight": "6px", "bottomLeft": "6px"}}}, None)
+case("buybox: the thumb hover border colour takes the slot's name", "sgs/buybox",
+     {"galleryThumbBorderColourHover": "primary"}, {"thumbBorderColourHover": "primary"})
+case("negative: buybox galleryStickerShape stays its own enum and writes no Corners", "sgs/buybox",
+     {"galleryStickerShape": "rounded", "galleryStickerRadius": "4px"}, None)
 # ---- other blocks
 case("decorative-image: legacy files, tiers and the old default decorative=true pinned", "sgs/decorative-image",
      {"imageId": 8, "imageUrl": U, "imageUrlTablet": "http://x/t.jpg", "hideOnTablet": True},
@@ -483,10 +500,59 @@ def run_consistency(failures: list[str]) -> int:
 HERO_PROBE = {"splitMediaImageUrl": U, "splitMediaObjectFit": "contain"}
 
 
+def run_declared_guard(failures: list[str]) -> int:
+    """A target the block's block.json does not declare refuses the block whole (negative control); a declared one passes; the
+    known narrowed slots delete what painted nothing and refuse a decorative-image overlay that did paint."""
+    checks = 0
+    svg = {"layerSource": {"desktop": {"kind": "svg", "markup": "<svg/>"}}}
+    original = {"imageUrl": U}
+    declared = B.guard_declared("sgs/media", original, {"alt": "A"}, [("converted", "imageAlt", "alt", "")])
+    undeclared = B.guard_declared("sgs/media", original, {"noSuchTarget": 1}, [("converted", "imageUrl", "noSuchTarget", "")])
+    checks += 1
+    if declared != ({"alt": "A"}, [("converted", "imageAlt", "alt", "")]):
+        _fail("guard: declared target", f"a declared target was changed: {declared}", failures)
+    checks += 1
+    refused = [e for e in undeclared[1] if e[0] == "refused"]
+    if undeclared[0] != original or len(refused) != 1 or "noSuchTarget" not in refused[0][3] or refused[0][1] != "imageUrl":
+        _fail("guard: undeclared target (negative control)", f"expected a refusal naming noSuchTarget and imageUrl, got {undeclared}", failures)
+    checks += 1
+    unscoped = B.guard_declared("sgs/hero", original, {"noSuchTarget": 1}, [])
+    if M.migration_scope() is not None and unscoped[0] != {"noSuchTarget": 1}:
+        _fail("guard: unadopted block", "a block outside the migration scope was refused", failures)
+    for label, block, attrs, want_events, want_refused, want_keep in (
+        ("repeat and attachment on an image delete", "sgs/media", {"attachment": "fixed", "repeat": "repeat"}, {"deleted"}, False, None),
+        ("repeat and attachment on a decorative image delete", "sgs/decorative-image", {**svg, "attachment": "fixed", "repeat": "repeat"}, {"deleted"}, False, None),
+        ("an overlay that painted nothing deletes", "sgs/decorative-image", {**svg, "overlayOpacity": 40, "overlayBlendMode": "multiply"}, {"deleted"}, False, None),
+        ("an overlay colour refuses the block", "sgs/decorative-image", {**svg, "overlayColour": "#f00"}, {"refused"}, True, "overlayColour"),
+    ):
+        checks += 1
+        new, events = B.migrate(block, attrs)
+        kinds = {e[0] for e in events} - {"pinned"}
+        problems = []
+        if want_events != kinds:
+            problems.append(f"events {sorted(kinds)}, expected {sorted(want_events)}")
+        if want_refused != (new == attrs):
+            problems.append("the block was " + ("not refused whole" if want_refused else "left unchanged"))
+        if not want_refused and any(k in new for k in ("attachment", "repeat", *B.OVERLAY_SETTINGS)):
+            problems.append(f"a deleted attribute is still saved: {new}")
+        if want_keep and not any(e[1] == want_keep and "layerOverlayColour" in e[3] for e in events):
+            problems.append(f"the refusal does not name {want_keep} and its target: {events}")
+        if problems:
+            _fail(f"guard: {label}", "; ".join(problems), failures)
+    checks += 1
+    before = M.live_declared_attributes.cache_info().misses
+    B.guard_declared("sgs/media", original, {"alt": "A"}, [])
+    B.guard_declared("sgs/gallery", original, {"alt": "A"}, [])
+    if M.live_declared_attributes.cache_info().misses != before:
+        _fail("guard: declarations cached", "the live block.json files were read again within a run", failures)
+    return checks
+
+
 def reset_caches() -> None:
     """The one place the mapping's kept facts and the kept migration results are cleared."""
     M.live_generated_maps.cache_clear()
     M.live_declared_slots.cache_clear()
+    M.live_declared_attributes.cache_clear()
     B.clear_memo()
 
 
@@ -556,7 +622,7 @@ def run_frozen(failures: list[str]) -> int:
         ("unmapped event", "sgs/trust-bar", {"badgeImageZzz": "x"}, "refused", "unmapped legacy attribute"),
         ("dropped tablet alt", "sgs/media", {"imageUrl": U, "imageAlt": "A", "imageAltTablet": "B"}, "deleted", "dropped value 'B'"),
         ("dropped video alt", "sgs/media", {"imageUrl": U, "videoAlt": "V"}, "deleted", "dropped value 'V'"),
-        ("report: brand logo box", "sgs/product-card", {"brandLogoHeight": {"desktop": "20px"}}, "reported", "WP-9"),
+        ("report: preview image id", "sgs/buybox", {"previewImageId": 5}, "reported", "WP-9"),
     ):
         checks += 1
         _, events = B.migrate(block, attrs)
@@ -726,7 +792,7 @@ def _run(break_mapping: bool = False) -> int:
         M.rows.cache_clear()
         M.STAYS["sgs/post-grid"] = ()
     failures: list[str] = []
-    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures) + run_sizes(failures) + run_http_retry(failures) + run_inplace_json(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
+    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_declared_guard(failures) + run_scope(failures) + run_sizes(failures) + run_http_retry(failures) + run_inplace_json(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
     for line in failures:
         print(line)
     print(f"migrate-media-system self-test: {total - len(failures)} of {total} checks passed"
