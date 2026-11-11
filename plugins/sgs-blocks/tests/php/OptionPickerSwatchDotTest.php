@@ -1,6 +1,6 @@
 <?php
 /**
- * sgs/option-picker colour dot (shape, size, ring, tick inside) and the per-item caption line.
+ * sgs/option-picker colour dot (shape from the swatch slot's Shape, size, ring, tick inside) and the per-item caption line.
  *
  * Run with: vendor/bin/phpunit --filter OptionPickerSwatchDotTest
  *
@@ -31,20 +31,20 @@ final class OptionPickerSwatchDotTest extends TestCase {
 		$this->assertStringNotContainsString( '--sgs-op-swatch-tick', $out['css'] );
 		$this->assertStringNotContainsString( 'sgs-option-picker--swatch-tick', $out['html'] );
 		$this->assertStringContainsString( 'sgs-option-picker--no-tick', $out['html'] );
-		$explicit = $this->render_block( 'sgs/option-picker', array( 'optionItems' => self::ITEMS, 'swatchShape' => '', 'swatchTickInside' => false ) );
+		$explicit = $this->render_block( 'sgs/option-picker', array( 'optionItems' => self::ITEMS, 'swatchTickInside' => false ) );
 		$this->assertSame( $out['html'], $explicit['html'] );
 	}
 
 	public function test_shape_size_and_ring_print_one_scoped_rule(): void {
 		$out = $this->render_block(
 			'sgs/option-picker',
-			array( 'optionItems' => self::ITEMS, 'pillStyle' => 'outlined', 'swatchShape' => 'round', 'swatchSize' => '20px', 'swatchRingWidth' => '2px', 'swatchRingColour' => '#3a2a22' )
+			array( 'optionItems' => self::ITEMS, 'pillStyle' => 'outlined', 'swatchShape' => array( 'desktop' => array( 'shape' => 'circle' ) ), 'swatchSize' => '20px', 'swatchRingWidth' => '2px', 'swatchRingColour' => '#3a2a22' )
 		);
 		$this->assertStringContainsString( '.wp-block-sgs-option-picker .sgs-option-picker__swatch--colour{border-radius:50%;width:20px;height:20px;border-width:2px;border-color:#3a2a22;}', $out['css'] );
 	}
 
 	public function test_a_tile_keeps_its_full_width_colour_block(): void {
-		$out = $this->render_block( 'sgs/option-picker', array( 'optionItems' => self::ITEMS, 'pillStyle' => 'tile', 'swatchShape' => 'round', 'swatchSize' => '20px' ) );
+		$out = $this->render_block( 'sgs/option-picker', array( 'optionItems' => self::ITEMS, 'pillStyle' => 'tile', 'swatchShape' => array( 'desktop' => array( 'shape' => 'circle' ) ), 'swatchSize' => '20px' ) );
 		$this->assertStringNotContainsString( 'sgs-option-picker__swatch--colour{', $out['css'] );
 	}
 

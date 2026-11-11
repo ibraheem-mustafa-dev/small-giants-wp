@@ -84,6 +84,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once __DIR__ . '/sub-label-support.php';
+require_once dirname( __DIR__, 3 ) . '/includes/media/render-item-slot.php';
 
 // ---------------------------------------------------------------------------
 // 1. Box-object interface contract §1 + security §D sanitisers.
@@ -193,11 +194,14 @@ foreach ( $option_items as $item ) {
 		'key'   => $key,
 		'label' => '' !== $label_text ? $label_text : $key,
 	);
-	// A caller's per-item image (sgs/buybox pickerVariationSwatch) survives validation; the pill
-	// loop below reads it ahead of the term-meta swatch.
-	$item_image = isset( $item['image'] ) ? esc_url_raw( trim( (string) $item['image'] ) ) : '';
-	if ( '' !== $item_image ) {
-		$valid_item['image'] = $item_image;
+	// A caller's per-item picture (sgs/buybox pickerVariationSwatch) survives validation, as the media item it is
+	// (`source`, `alt`, `decorative`, `fit`, `focal`); the pill loop below reads it ahead of the term-meta swatch.
+	if ( sgs_media_item_has_source( (array) $item ) ) {
+		foreach ( array( 'source', 'alt', 'decorative', 'fit', 'focal' ) as $media_key ) {
+			if ( isset( $item[ $media_key ] ) ) {
+				$valid_item[ $media_key ] = $item[ $media_key ];
+			}
+		}
 	}
 	// A caller's per-item second line (the buybox pack tile's variation price) wins over the term-meta sub-label.
 	$item_sub_label_text = isset( $item['subLabel'] ) ? sanitize_text_field( trim( (string) $item['subLabel'] ) ) : '';
@@ -243,20 +247,23 @@ $radio_name = $uid . '-choice';
 $legend_id  = $uid . '-legend';
 $root_sel   = '.' . $uid . '.wp-block-sgs-option-picker';
 
-// Media-element atom layer (rule 37-media-no-handroll) — the image-swatch
-// marker classes, computed once (every swatch <img> in this instance shares
-// the same 'swatch' scope, since there is one client-facing fit control per
-// picker instance, not per option). `.sgs-media-el` is the shared marker
-// assets/css/media-atoms/object-fit.css's rule targets; `$sgs_op_swatch_scope`
-// is the per-instance scope the atom's custom-property VALUE (§7 below) is
-// set on. Mirrors sgs/gallery's identical pattern.
-$sgs_op_swatch_scope   = '';
-$sgs_op_swatch_classes = array();
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$sgs_op_swatch_scope   = SGS_Media_Element::scope_class( $uid, 'swatch' );
-	$sgs_op_swatch_classes = SGS_Media_Element::element_classes( $sgs_op_swatch_scope );
-}
-$sgs_op_swatch_img_class = implode( ' ', array_filter( array_merge( array( 'sgs-option-picker__swatch', 'sgs-option-picker__swatch--image' ), $sgs_op_swatch_classes ) ) );
+// The image swatches: one item of the `swatch` slot each (Spec 49 §8.3). The renderer's group span IS the swatch box
+// (`sgs-option-picker__swatch--image`), so the block's Width and Shape size and clip it; the block-level rules print
+// once, each pill's own source, alt and fit under its own scope class.
+$sgs_op_swatch_css    = '';
+$sgs_op_render_swatch = sgs_media_item_renderer(
+	sgs_media_item_slot_for( $block, 'swatch' ),
+	$attributes,
+	'sgs/option-picker',
+	$uid . '-media',
+	array(
+		'desktop' => 0,
+		'tablet'  => 0,
+		'mobile'  => 0,
+	),
+	$sgs_op_swatch_css,
+	'sgs-option-picker__swatch sgs-option-picker__swatch--image'
+);
 
 // ---------------------------------------------------------------------------
 // 5. WP-native style.* (skip-serialised → emitted scoped, never inline).
@@ -386,17 +393,6 @@ if ( '' !== $tile_gap_raw ) {
 
 $scoped_css = array();
 
-// --- Swatch image object-fit (media-element atom layer, rule
-// 37-media-no-handroll) — no `swatchObjectFit` value set -> style() returns
-// '' -> nothing appended -> the shared stylesheet's own `.sgs-media-el`
-// `cover` fallback governs. ---
-if ( '' !== $sgs_op_swatch_scope && class_exists( 'SGS_Media_Element' ) ) {
-	$sgs_op_swatch_css = SGS_Media_Element::style( $attributes, 'swatch', 'sgs/option-picker', $uid, array( 'object-fit' ) );
-	if ( '' !== $sgs_op_swatch_css ) {
-		$scoped_css[] = $sgs_op_swatch_css;
-	}
-}
-
 // --- Root custom-property VALUES (§6) — the ONLY per-instance override
 // channel (Spec 32 FR-32-4), scoped here rather than emitted inline. ---
 $swatch_tick_inside = ! empty( $attributes['swatchTickInside'] );
@@ -411,10 +407,12 @@ if ( $var_decls ) {
 // --- Colour dot shape, size and ring (a tile keeps its full-width colour block). Unset prints nothing. ---
 if ( 'tile' !== $pill_style_safe ) {
 	$swatch_decls = array();
-	$swatch_shape = (string) ( $attributes['swatchShape'] ?? '' );
-	if ( 'round' === $swatch_shape ) {
+	// The dot's shape is the swatch slot's Shape: circle rounds it, none squares it, anything else keeps the stylesheet's.
+	$swatch_shape = is_array( $attributes['swatchShape'] ?? null ) ? sgs_media_item_device_tiers( $attributes['swatchShape'] ) : array();
+	$swatch_kind  = is_array( $swatch_shape['desktop'] ?? null ) ? (string) ( $swatch_shape['desktop']['shape'] ?? '' ) : '';
+	if ( 'circle' === $swatch_kind ) {
 		$swatch_decls[] = 'border-radius:50%';
-	} elseif ( 'square' === $swatch_shape ) {
+	} elseif ( 'none' === $swatch_kind ) {
 		$swatch_decls[] = 'border-radius:0';
 	}
 	$swatch_size = sgs_css_length_value( (string) ( $attributes['swatchSize'] ?? '' ) );
@@ -832,7 +830,7 @@ if ( ! empty( $content_impact ) && is_array( $content_impact ) ) {
 
 $pills_html = '';
 
-foreach ( $valid_items as $item ) {
+foreach ( $valid_items as $item_index => $item ) {
 	$is_checked  = $item['key'] === $resolved_default;
 	$input_id    = $uid . '-' . $item['key'];
 	$checked_str = $is_checked ? ' checked' : '';
@@ -842,43 +840,32 @@ foreach ( $valid_items as $item ) {
 	$swatch_chip_html  = '';
 	$pill_extra_class  = '';
 
-	// (sgs/buybox pickerVariationSwatch): a caller-supplied
-	// per-item image URL wins over the term-meta swatch lookup below — see
-	// block.json's optionItems.items.image docblock for why a raw URL is
-	// needed here (term meta is shared by every product using that term, so
-	// it cannot carry a per-PRODUCT variation photo). Every other caller
-	// leaves 'image' unset, so this branch is dormant everywhere else.
-	$item_image_url = (string) ( $item['image'] ?? '' );
-	if ( '' !== $item_image_url ) {
-		$swatch_image_html = sprintf(
-			'<img src="%s" alt=""%s class="%s" loading="lazy" decoding="async" aria-hidden="true" />',
-			esc_url( $item_image_url ),
-			sgs_image_size_attrs( $item_image_url ),
-			esc_attr( $sgs_op_swatch_img_class )
+	// (sgs/buybox pickerVariationSwatch): a caller-supplied per-item picture wins over the term-meta swatch lookup
+	// below — a per-PRODUCT variation photo, which the term's shared meta cannot carry. Every other caller leaves
+	// the item's `source` unset, so this branch is dormant everywhere else.
+	$swatch_item = null;
+	if ( sgs_media_item_has_source( $item ) ) {
+		$swatch_item = $item;
+	} elseif ( null !== $swatch && $swatch['image_id'] > 0 ) {
+		// The term's own swatch image: decorative, the label beside it names the option.
+		$swatch_item = array(
+			'source'     => array(
+				'desktop' => array(
+					'kind' => 'image',
+					'id'   => $swatch['image_id'],
+				),
+			),
+			'decorative' => true,
 		);
-		$pill_extra_class  = ' sgs-option-picker__pill--has-image';
+	}
+	$swatch_image_html = null !== $swatch_item ? $sgs_op_render_swatch( $swatch_item, $item_index ) : '';
+	if ( '' !== $swatch_image_html ) {
+		$pill_extra_class = ' sgs-option-picker__pill--has-image';
 	} elseif ( null !== $swatch ) {
-		$image_id = $swatch['image_id'];
-		$color    = $swatch['color'];
+		$color = $swatch['color'];
 
-		if ( $image_id > 0 ) {
-			$src_data = wp_get_attachment_image_src( $image_id, sgs_option_picker_tile_image_size( $pill_style_safe ) );
-			if ( $src_data ) {
-				$img_url           = $src_data[0];
-				$img_w             = absint( $src_data[1] );
-				$img_h             = absint( $src_data[2] );
-				// Marker classes computed once above ($sgs_op_swatch_img_class) —
-				// media-element atom layer, object-fit only (rule
-				// 37-media-no-handroll; see block.json's `_comment_mediaElements`).
-				$swatch_image_html = sprintf(
-					'<img src="%s" alt="" class="%s" width="%d" height="%d" loading="lazy" decoding="async" aria-hidden="true" />',
-					esc_url( $img_url ),
-					esc_attr( $sgs_op_swatch_img_class ),
-					$img_w,
-					$img_h
-				);
-				$pill_extra_class  = ' sgs-option-picker__pill--has-image';
-			}
+		if ( $swatch['image_id'] > 0 ) {
+			// The term's image no longer resolves to a file: no swatch.
 		} elseif ( '' !== $color ) {
 			// Colour chip — the swatch background is a decorative DATA VALUE (the
 			// colour term's own swatch, not a styling property of the block),
@@ -1001,6 +988,11 @@ $root_attr_args = array(
 // scoped `<style>` channel, which is unfiltered but kept consistent).
 if ( $anchor ) {
 	$root_attr_args['id'] = esc_attr( $anchor );
+}
+
+// The swatch slot's rules (Width, Shape, Fit, Ratio) join the block's scoped rules.
+if ( '' !== $sgs_op_swatch_css ) {
+	$scoped_css[] = $sgs_op_swatch_css;
 }
 
 $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );

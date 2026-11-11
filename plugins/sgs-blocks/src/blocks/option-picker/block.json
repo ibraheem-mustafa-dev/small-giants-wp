@@ -35,7 +35,7 @@
 			"scalarStylingLift": true,
 			"arrayContentLift": true,
 			"scalarContentLift": true,
-			"_comment_mediaElements": "The image-swatch <img> (style.css .sgs-option-picker__swatch--image) is a fixed 2rem square crop of a WooCommerce attribute term's `_sgs_swatch_image_id` image — no per-instance media picker, but the crop MODE (cover|contain) is a legitimate client choice (e.g. a white-background product photo may want 'contain'). Wired via the shared object-fit atom, prefix 'swatch'.",
+			"_comment_mediaElements": "The `swatch` slot: each option's own picture (`optionItems[].source`, drawn ahead of the term-meta swatch image by the shared media renderer) and the term's own swatch image share the block-level Fit, Width and Shape. The Shape also rounds the colour dot.",
 			"mediaElements": [
 				{
 					"prefix": "swatch",
@@ -177,7 +177,6 @@
 						"layout"
 					],
 					"attrMap": {
-						"css:border-radius": "swatchShape",
 						"css:width": "swatchSize",
 						"css:border-width": "swatchRingWidth",
 						"css:border-color": "swatchRingColour"
@@ -302,15 +301,36 @@
 						"type": "string",
 						"role": "text-content"
 					},
-					"image": {
-						"type": "string",
-						"description": "Optional per-item image URL, forwarded by a caller that resolves its own image per option (e.g. sgs/buybox's pickerVariationSwatch — a per-PRODUCT variation photo, which this block's own _sgs_swatch_image_id term meta cannot carry since term meta is shared by every product using that term). Wins over the term-meta swatch lookup for that item when set; empty (default, every existing caller) leaves the term-meta path unchanged.",
-						"role": "image-object"
-					},
 					"subLabel": {
 						"type": "string",
 						"description": "Optional per-item second caption line, forwarded by a caller that resolves its own text per option (for example sgs/buybox's pack-tile price line, taken from the variation price). Shown in place of the term-meta sub-label for that item; empty (every existing caller) leaves the term-meta path unchanged.",
 						"role": "text-content"
+					},
+					"source": {
+						"type": "object",
+						"description": "The item's picture per device, the media Source shape: {desktop:{kind,id,url,width,height,mime}, tablet, mobile}. A device with no entry shows the wider device's file.",
+						"role": "image-object"
+					},
+					"alt": {
+						"type": "string",
+						"default": "",
+						"description": "The picture's description for screen readers. Blank when the picture is decorative.",
+						"role": "image-alt"
+					},
+					"decorative": {
+						"type": "boolean",
+						"default": false,
+						"role": "boolean-visibility"
+					},
+					"fit": {
+						"type": "object",
+						"description": "How this item's picture fills its box per device. Empty uses the block's own fit.",
+						"role": "visual"
+					},
+					"focal": {
+						"type": "object",
+						"description": "The part of this item's picture kept in view when it is cropped, per device: {desktop:{x,y}} with x and y from 0 to 1.",
+						"role": "visual"
 					}
 				}
 			}
