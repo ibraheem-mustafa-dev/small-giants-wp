@@ -865,7 +865,7 @@ C0 ships these signatures as documentation, plus the shared fixtures in `plugins
 | Wave 4 | Team member, testimonial, before-after, timeline, choice-flow options, form tiles, option picker, image sequence, measured diagram, trust-bar badge; style-call replacement in the small fixed thumbnails; `sgs/business-info` map width and height to CSS (FR-49-17) | Wave 1 | B |
 | WP-15b Docs, removal | Specs 02, 35A, 36, 48, rules, CLAUDE files; §8.2 | all | B |
 
-Parallel after WP-1: WP-0b, 2a, 2b, 3, 4, 5. Parallel after the Slice gate: WP-6, 10a, 13, 14. Stage A closed on 2026-11-10 (main `7aa0a65d3`): every Stage A package, the Slice gate, a full second opinion (five reviewers, every finding fact-checked) and its 32-row hardening wave, recorded with what Stage B packages own in `.claude/plans/archive/2026-11-10-spec49-stage-a-hardening.md`. Waves within Stage B after their needs. Generated files and baselines change only through the Integrator.
+Parallel after WP-1: WP-0b, 2a, 2b, 3, 4, 5. Parallel after the Slice gate: WP-6, 10a, 13, 14. Stage A closed on 2026-11-10 (main `7aa0a65d3`): every Stage A package, the Slice gate, a full second opinion (five reviewers, every finding fact-checked) and its 32-row hardening wave, recorded with what Stage B packages own in `.claude/plans/archive/2026-11-10-spec49-stage-a-hardening.md`. Stage B's §14.1 setup package (adoption script, folder freeze, deploy refusal, saved-content survey, fix, check and restore) is done on `main` (`9fe19a727` to `e16da1326`); no block is adopted yet. Waves within Stage B after their needs. Generated files and baselines change only through the Integrator.
 
 ## 15. Non-functional
 
