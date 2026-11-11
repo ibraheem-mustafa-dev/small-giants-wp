@@ -366,6 +366,15 @@
 				"action": "none"
 			}
 		},
+		"payment_option_chosen": {
+			"checkout": ".wc-block-checkout__payment-method .wc-block-components-radio-control-accordion-option--checked-option-highlighted",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width; a payment method chosen (the highlighted option box)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
 		"coupon_panel": {
 			"cart": ".wp-block-woocommerce-cart-order-summary-coupon-form-block",
 			"checkout": ".wp-block-woocommerce-checkout-order-summary-coupon-form-block",

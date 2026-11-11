@@ -86,4 +86,27 @@ final class CommerceLookCheckoutPartsTest extends TestCase {
 		$this->assertArrayHasKey( 'cart', $rows['coupon_panel'] );
 		$this->assertArrayNotHasKey( 'cart', $rows['payment_option'] );
 	}
+
+	public function test_the_option_card_settings_also_paint_the_payment_option_boxes(): void {
+		$attrs = array(
+			'sgsOptionBackground'         => 'white',
+			'sgsOptionBorderWidth'        => array( 'top' => '1px', 'right' => '1px', 'bottom' => '1px', 'left' => '1px' ),
+			'sgsOptionBorderStyle'        => 'solid',
+			'sgsOptionBorderColour'       => 'border',
+			'sgsOptionBorderRadius'       => array( 'desktop' => array( 'topLeft' => '0px', 'topRight' => '0px', 'bottomRight' => '0px', 'bottomLeft' => '0px' ) ),
+			'sgsOptionPadding'            => array( 'desktop' => array( 'top' => '18px', 'right' => '20px', 'bottom' => '18px', 'left' => '20px' ) ),
+			'sgsOptionChosenBackground'   => 'surface-stage',
+			'sgsOptionChosenBorderColour' => 'text',
+		);
+		$css    = $this->css( $attrs, 'checkout' );
+		$box    = '.sgs-x .wc-block-checkout__payment-method .wc-block-components-radio-control-accordion-option';
+		$rules  = array_filter( array_map( 'trim', explode( '}', $css ) ) );
+		$on_box = array_values( array_filter( $rules, static fn( string $r ): bool => 0 === strpos( $r, $box . '{' ) ) );
+		$text   = implode( '', $on_box );
+		$this->assertStringContainsString( 'background-color:white', $text, 'the option fill reaches the payment option box' );
+		$this->assertStringContainsString( 'border-top-left-radius:0px', $text, 'the option corners reach the payment option box (WooCommerce rounds the chosen one to 4px)' );
+		$this->assertStringContainsString( 'border-width:1px 1px 1px 1px', $text, 'the option border reaches the payment option box' );
+		$this->assertStringNotContainsString( 'padding', $text, 'the box holds an inner label that already carries the option padding' );
+		$this->assertStringContainsString( $box . '--checked-option-highlighted{background-color:var(--wp--preset--color--surface-stage', $css, 'the chosen fill reaches the chosen payment option box' );
+	}
 }

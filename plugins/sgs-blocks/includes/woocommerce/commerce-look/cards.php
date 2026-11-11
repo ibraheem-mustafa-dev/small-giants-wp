@@ -62,13 +62,20 @@ function sgs_commerce_look_cards_css( array $attrs, string $block, string $root 
 	$css .= sgs_commerce_look_card_css( $attrs, 'sgsStep', $step, $b_step ) . sgs_commerce_look_border_tiers( $step, $b_step );
 	$b_option = sgs_border_element_decls( $attrs, 'sgsOption', $option, array( 'colour' => array( 'base' => 'sgsOptionBorderColour' ) ) );
 	$css .= sgs_commerce_look_card_css( $attrs, 'sgsOption', $option, $b_option ) . sgs_commerce_look_border_tiers( $option, $b_option );
+	// The payment option boxes (WooCommerce draws each method as one accordion box around its inner label) take the same
+	// card look. The inner label already carries the option padding, so the box takes none.
+	$payment = sgs_commerce_look_selector( 'payment_option', $block, $root );
+	if ( '' !== $payment ) {
+		$b_payment = sgs_border_element_decls( $attrs, 'sgsOption', $payment, array( 'colour' => array( 'base' => 'sgsOptionBorderColour' ) ) );
+		$css      .= sgs_commerce_look_card_css( array_diff_key( $attrs, array( 'sgsOptionPadding' => true ) ), 'sgsOption', $payment, $b_payment ) . sgs_commerce_look_border_tiers( $payment, $b_payment );
+	}
 	$b_notice = sgs_border_element_decls( $attrs, 'sgsNotice', $notice, array( 'colour' => array( 'base' => 'sgsNoticeBorderColour' ) ) );
 	$css .= sgs_commerce_look_card_css( $attrs, 'sgsNotice', $notice, $b_notice ) . sgs_commerce_look_border_tiers( $notice, $b_notice );
 	$b_bar = sgs_border_element_decls( $attrs, 'sgsBar', $bar, array( 'colour' => array( 'base' => 'sgsBarBorderColour' ) ) );
 	$css .= sgs_commerce_look_card_css( $attrs, 'sgsBar', $bar, $b_bar ) . sgs_commerce_look_border_tiers( $bar, $b_bar );
 
 	// The chosen option card: its own fill, edge and shadow.
-	$chosen = sgs_commerce_look_selector( 'option_chosen', $block, $root );
+	$chosen = implode( ',', array_filter( array( sgs_commerce_look_selector( 'option_chosen', $block, $root ), sgs_commerce_look_selector( 'payment_option_chosen', $block, $root ) ) ) );
 	if ( '' !== $chosen ) {
 		$decls  = sgs_fill_decls( $attrs, array( 'base' => 'sgsOptionChosenBackground' ) )['normal'];
 		$edge   = sgs_colour_value( (string) ( $attrs['sgsOptionChosenBorderColour'] ?? '' ) );
