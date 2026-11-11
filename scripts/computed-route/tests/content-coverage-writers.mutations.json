@@ -163,9 +163,9 @@
 	},
 	{
 		"file": "lib/skeleton-write-content.mjs",
-		"find": "Object.assign( out.attrs, { logoId: hit.id } )",
+		"find": "Object.assign( out.attrs, { [ logoAttr ]: itemSource( hit ) } )",
 		"replace": "Object.assign( out.attrs, {} )",
-		"why": "logoId is never written"
+		"why": "the logo's Source is never written"
 	},
 	{
 		"file": "lib/skeleton-write-content.mjs",
