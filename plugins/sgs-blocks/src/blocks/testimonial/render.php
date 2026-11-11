@@ -12,10 +12,6 @@
  * rating-led, review-card, avatar-spotlight, corporate-logo, case-study-media, minimal-quote.
  * The wrapper carries `sgs-testimonial--{variant}`; per-variant layout is CSS-only.
  *
- * FP-14: NO server-side legacy fallback hack. The ONE legacy read below
- * (avatar.url → avatarMedia) is synthesise-on-read for un-migrated posts only —
- * it is NOT an `if ( empty( $content ) )` scalar-render branch.
- *
  * Schema.org Review JSON-LD is emitted (gated by schemaEnabled) reading the
  * typed scalar attrs.
  *
@@ -101,21 +97,12 @@ $reviewer_name  = trim( (string) ( $attributes['reviewerName'] ?? '' ) );
 $reviewer_role  = trim( (string) ( $attributes['reviewerRole'] ?? '' ) );
 $org_name       = trim( (string) ( $attributes['orgName'] ?? '' ) );
 
-$avatar_media = $attributes['avatarMedia'] ?? null;
-$org_logo     = $attributes['orgLogo'] ?? null;
-$work_media   = $attributes['workMedia'] ?? null;
-
-// ── Decorative-image toggles (item 18, WCAG 1.1.1) ──────────────────────────
-// The media library already stores the real alt text on each attachment
-// (sgs_render_media() reads it from $attrs['alt']) — so this is not a second
-// alt field, it is the operator saying "ignore that, this picture carries no
-// information for THIS instance". When on: the media is rendered with an
-// empty alt (via a cloned attrs array, never mutating the stored attachment
-// data) AND the wrapping element carries aria-hidden="true", so a screen
-// reader skips the whole node instead of announcing a filename or nothing.
+// ── Media slots (Spec 49 §7): `avatar` (the reviewer's photo), `logo` (the organisation's) and `work` (the case-study
+// picture). Each prints through `SGS_Media_Element::render()` under its own scope class; the responsive source object
+// carries the tablet and mobile files. The decorative flags hide a slot's wrapper from assistive technology too.
 $avatar_decorative     = ! empty( $attributes['avatarDecorative'] );
-$org_logo_decorative   = ! empty( $attributes['orgLogoDecorative'] );
-$work_media_decorative = ! empty( $attributes['workMediaDecorative'] );
+$org_logo_decorative   = ! empty( $attributes['logoDecorative'] );
+$work_media_decorative = ! empty( $attributes['workDecorative'] );
 
 // ── Rating fields (fully optional — gated by showRating) ────────────────────
 $show_rating = ! empty( $attributes['showRating'] );
@@ -769,141 +756,46 @@ if ( ! empty( $meta_parts ) ) {
 }
 
 // ── Media nodes (gated) ─────────────────────────────────────────────────────
-// ART-DIRECTION TIERS (2026-08-07). sgs_render_media() takes no class argument,
-// so each tier gets its OWN `.sgs-testimonial__avatar--{tier}` wrapper rather
-// than a modifier on the <img> — same visible result, and the toggle lands on an
-// element this block already owns.
-//
-// 37-media-no-handroll remediation (2026-09-03) — sgs_render_media() also has
-// no way to add the mediaElements marker classes (`sgs-media-el` + the
-// per-instance scope class) to the tag it returns, so this small local closure
-// injects them into the ALREADY-BUILT html string. A top-level `function` here
-// would fatal on a second block instance on the same page
-// (feedback_no_top_level_function_in_per_render_php.md), so this stays a
-// closure assigned to a local var, matching the `$sgs_avatar_tier_sel` pattern
-// below. Every avatar art-direction tier (desktop/tablet/mobile) shares ONE
-// scope class — they are mutually-exclusive-by-viewport `display:none`
-// swaps of the SAME conceptual media element, not independent slots, so one
-// `avatarObjectFit`/`avatarObjectFitTablet`/`avatarObjectFitMobile` triad
-// correctly governs whichever tier is visible at a given width.
-$sgs_media_el_classes = static function ( $html, $prefix ) use ( $uid ) {
-	if ( '' === $html || ! class_exists( 'SGS_Media_Element' ) ) {
-		return $html;
+// One renderer call per slot. `$sgs_slot_html` returns the slot's markup and queues its scoped rules.
+$sgs_slot_html = static function ( string $prefix ) use ( $attributes, $uid, &$scoped_css ): string {
+	if ( ! class_exists( 'SGS_Media_Element' ) || array() === array_filter( (array) ( $attributes[ $prefix . 'Source' ] ?? array() ) ) ) {
+		return '';
 	}
-	$sgs_scope_class = SGS_Media_Element::scope_class( $uid, $prefix );
-	$sgs_marker_cls  = implode( ' ', SGS_Media_Element::element_classes( $sgs_scope_class ) );
-	return preg_replace( '/class="sgs-media /', 'class="' . $sgs_marker_cls . ' sgs-media ', $html, 1 );
+	$out = SGS_Media_Element::render(
+		array(
+			'prefix'  => $prefix,
+			'kinds'   => array( 'image' ),
+			'context' => 'content',
+		),
+		$attributes,
+		array(
+			'uid'       => $uid . '-' . $prefix,
+			'block'     => 'sgs/testimonial',
+			'in_editor' => defined( 'REST_REQUEST' ) && REST_REQUEST,
+		)
+	);
+	if ( '' !== $out['css'] ) {
+		$scoped_css[] = $out['css'];
+	}
+	return (string) $out['html'];
 };
 
 $avatar_html  = '';
-$avatar_tiers = array();
-foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
-	$sgs_tier_media = $attributes[ 'avatarMedia' . $sgs_tier ] ?? null;
-	if ( empty( $sgs_tier_media['url'] ) ) {
-		continue;
-	}
-	// Decorative applies block-wide to every avatar tier — a client uses the
-	// author photo either as content or as decoration, not differently per
-	// device width.
-	if ( $avatar_decorative ) {
-		$sgs_tier_media = array_merge( $sgs_tier_media, array( 'alt' => '' ) );
-	}
-	$sgs_tier_inner = sgs_render_media( $sgs_tier_media, 'sgs/testimonial' );
-	if ( '' === $sgs_tier_inner ) {
-		continue;
-	}
-	$sgs_tier_inner                          = $sgs_media_el_classes( $sgs_tier_inner, 'avatar' );
-	$avatar_tiers[ strtolower( $sgs_tier ) ] = $sgs_tier_inner;
+$avatar_inner = $sgs_slot_html( 'avatar' );
+if ( '' !== $avatar_inner ) {
+	$avatar_html = '<div class="sgs-testimonial__avatar"' . ( $avatar_decorative ? ' aria-hidden="true"' : '' ) . '>' . $avatar_inner . '</div>';
 }
 
-if ( ! empty( $avatar_media['url'] ) ) {
-	$avatar_media_render = $avatar_decorative ? array_merge( $avatar_media, array( 'alt' => '' ) ) : $avatar_media;
-	$avatar_inner        = sgs_render_media( $avatar_media_render, 'sgs/testimonial' );
-	$avatar_inner        = $sgs_media_el_classes( $avatar_inner, 'avatar' );
-	if ( '' !== $avatar_inner ) {
-		$avatar_base_cls = 'sgs-testimonial__avatar';
-		if ( ! empty( $avatar_tiers ) ) {
-			$avatar_base_cls .= ' sgs-testimonial__avatar--desktop';
-		}
-		$avatar_aria = $avatar_decorative ? ' aria-hidden="true"' : '';
-		$avatar_html = '<div class="' . esc_attr( $avatar_base_cls ) . '"' . $avatar_aria . '>' . $avatar_inner . '</div>';
-		foreach ( $avatar_tiers as $sgs_tier_key => $sgs_tier_inner ) {
-			$avatar_html .= '<div class="sgs-testimonial__avatar sgs-testimonial__avatar--'
-				. esc_attr( $sgs_tier_key ) . '"' . $avatar_aria . '>' . $sgs_tier_inner . '</div>';
-		}
-	}
+$logo_html  = '';
+$logo_inner = $sgs_slot_html( 'logo' );
+if ( '' !== $logo_inner ) {
+	$logo_html = '<div class="sgs-testimonial__logo"' . ( $org_logo_decorative ? ' aria-hidden="true"' : '' ) . '>' . $logo_inner . '</div>';
 }
 
-// ⛔ Tier selectors descend from $root_sel — a single compound token
-// (`.{uid}.wp-block-sgs-testimonial`), never a multi-member selector LIST: a
-// descendant appended to a list binds to its last member only, which on
-// sgs/media hid every image at every width before it was caught live.
-if ( '' !== $avatar_html && ! empty( $avatar_tiers ) ) {
-	$sgs_avatar_tier_sel = static function ( $tier ) use ( $root_sel ) {
-		return $root_sel . ' .sgs-testimonial__avatar--' . $tier;
-	};
-	if ( isset( $avatar_tiers['mobile'] ) ) {
-		$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . $sgs_avatar_tier_sel( 'desktop' ) . '{display:none}}';
-		$scoped_css[] = SGS_Breakpoints::media( 'tablet-up' ) . '{' . $sgs_avatar_tier_sel( 'mobile' ) . '{display:none}}';
-	}
-	if ( isset( $avatar_tiers['tablet'] ) ) {
-		$scoped_css[] = SGS_Breakpoints::media( 'tablet-only' ) . '{' . $sgs_avatar_tier_sel( 'desktop' ) . '{display:none}}';
-		$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . $sgs_avatar_tier_sel( 'tablet' ) . '{display:none}}';
-		$scoped_css[] = SGS_Breakpoints::media( 'desktop' ) . '{' . $sgs_avatar_tier_sel( 'tablet' ) . '{display:none}}';
-	}
-}
-
-$logo_html = '';
-if ( ! empty( $org_logo['url'] ) ) {
-	$org_logo_render = $org_logo_decorative ? array_merge( $org_logo, array( 'alt' => '' ) ) : $org_logo;
-	$logo_inner      = sgs_render_media( $org_logo_render, 'sgs/testimonial' );
-	if ( '' !== $logo_inner ) {
-		$logo_aria = $org_logo_decorative ? ' aria-hidden="true"' : '';
-		$logo_html = '<div class="sgs-testimonial__logo"' . $logo_aria . '>' . $logo_inner . '</div>';
-	}
-}
-
-$work_html = '';
-if ( ! empty( $work_media['url'] ) ) {
-	$work_media_render = $work_media_decorative ? array_merge( $work_media, array( 'alt' => '' ) ) : $work_media;
-	$work_inner        = sgs_render_media( $work_media_render, 'sgs/testimonial' );
-	$work_inner        = $sgs_media_el_classes( $work_inner, 'work' );
-	if ( '' !== $work_inner ) {
-		$work_aria = $work_media_decorative ? ' aria-hidden="true"' : '';
-		$work_html = '<figure class="sgs-testimonial__work"' . $work_aria . '>' . $work_inner . '</figure>';
-	}
-}
-
-// --- Image controls (37-media-no-handroll remediation, 2026-09-03) ---
-// This block has THREE image slots (avatar / org logo / work media).
-// Design decision (verified against style.css before writing, not guessed):
-// - avatar (.sgs-testimonial__avatar img) — style.css no longer hardcodes
-// object-fit; the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,
-// cover)}` atom stylesheet paints the SAME default circular cover-crop, but a
-// client can now override the crop MODE per instance via `avatarObjectFit`
-// (border-radius:50% stays a genuine fixed constant — a non-circular avatar is
-// not a supported shape here).
-// - org logo (.sgs-testimonial__logo img) — style.css:101-107 fixes
-// object-fit:contain. A logo must NEVER be cropped (cropping a client's
-// own brand mark is a defect, not a style choice), so this stays a
-// component-owned constant, not a client control.
-// - work media (.sgs-testimonial__work img/video) — case-study photos vary
-// wildly in composition/aspect ratio, so this is the one slot with a
-// genuine per-instance crop need. Both avatar and work are now wired via the
-// independently-scoped `mediaElements` atoms (block.json supports.sgs),
-// replacing the old block-level imageControls/imageControlsExplicit +
-// sgs_media_position_css() pair this comment used to describe — that shared
-// mechanism set ONE crop for the whole block; these are genuinely
-// per-slot, matching sgs/before-after's Wave 5b precedent.
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$sgs_avatar_fit_css = SGS_Media_Element::style( $attributes, 'avatar', 'sgs/testimonial', $uid, array( 'object-fit' ) );
-	if ( '' !== $sgs_avatar_fit_css ) {
-		$scoped_css[] = $sgs_avatar_fit_css;
-	}
-	$sgs_work_fit_css = SGS_Media_Element::style( $attributes, 'work', 'sgs/testimonial', $uid, array( 'object-fit', 'focal-point' ) );
-	if ( '' !== $sgs_work_fit_css ) {
-		$scoped_css[] = $sgs_work_fit_css;
-	}
+$work_html  = '';
+$work_inner = $sgs_slot_html( 'work' );
+if ( '' !== $work_inner ) {
+	$work_html = '<figure class="sgs-testimonial__work"' . ( $work_media_decorative ? ' aria-hidden="true"' : '' ) . '>' . $work_inner . '</figure>';
 }
 
 // ── Text nodes (gated) — NO inline style="" any more; every declaration is
