@@ -763,25 +763,21 @@ def pin_naked_ratio_width(ctx: T.Ctx) -> None:
 
 
 def pin_hero_split_width(ctx: T.Ctx) -> None:
-    """The old hero drew its split image at the file's own width (the image forced that width onto the grid column); the new
-    default, no Width, fills the grid cell. A hero whose old split image is migrated here and has no Width of its own gets
-    `splitWidth` as each device's own file width in px, so the page does not change. A hero already in the new shape (no old
-    split name converted) is never pinned."""
+    """The old hero printed its split image with the width of WordPress's `large` size (an upload) or the file's own width, and that
+    intrinsic width stretched the grid column; the new default, no Width, fills the grid cell. A hero whose old split image is
+    migrated here and has no Width of its own gets `splitWidth` in px at that printed width, so the page does not change. Only the
+    desktop file is pinned (the old render read the attachment size for the desktop tier only). A hero already in the new shape
+    (no old split name converted) is never pinned."""
     if ctx.block != "sgs/hero" or ctx.has("splitWidth") or not isinstance(ctx.get("splitSource"), dict):
         return
     if not any(e[0] == "converted" and e[2] == "splitSource" for e in ctx.events):
         return
-    pinned: dict = {}
-    for device in DEVICES:
-        entry = ctx.get("splitSource").get(device)
-        if isinstance(entry, dict) and entry.get("kind") == "image":
-            width = S.intrinsic_width(entry)
-            if width:
-                pinned[device] = f"{width}px"
-    if "desktop" not in pinned:
+    entry = ctx.get("splitSource").get("desktop")
+    width = S.printed_width(entry) if isinstance(entry, dict) and entry.get("kind") == "image" else None
+    if not width:
         return
-    ctx.put("splitWidth", pinned)
-    ctx.events.append(("pinned", "splitMediaWidth", "splitWidth", f"old split image was drawn at its file's own width: {pinned} written explicitly"))
+    ctx.put("splitWidth", {"desktop": f"{width}px"})
+    ctx.events.append(("pinned", "splitMediaWidth", "splitWidth", f"old split image was printed {width}px wide: written explicitly"))
 
 
 def needs_migration(name: str, attrs: dict):

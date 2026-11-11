@@ -273,3 +273,17 @@ def intrinsic_width(entry: dict) -> int | None:
         return int(entry["width"])
     got = resolve(entry["url"]) if isinstance(entry.get("url"), str) and entry["url"] else None
     return got[2][0] if got and got[2][0] else None
+
+
+LARGE_BOUND = 1024
+
+
+def printed_width(entry: dict) -> int | None:
+    """The width the old front end printed on an image: an upload printed WordPress's `large` size (WordPress's default 1024 by 1024
+    bound, kept within the file's own ratio, never above the file), any other image printed at the file's own width."""
+    got = resolve(entry["url"]) if isinstance(entry.get("url"), str) and entry["url"] else None
+    if got and got[0] == "id" and got[2][0] and got[2][1]:
+        width, height = got[2]
+        scale = min(1.0, LARGE_BOUND / width, LARGE_BOUND / height)
+        return max(1, round(width * scale))
+    return intrinsic_width(entry)

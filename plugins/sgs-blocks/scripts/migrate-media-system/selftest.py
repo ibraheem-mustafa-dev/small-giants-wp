@@ -176,7 +176,7 @@ case("hero split: per-tier type, files, alt and a zero id", "sgs/hero",
      {"splitMediaType": "image", "splitMediaImageUrl": U, "splitMediaImageIdMobile": 0, "splitMediaImageUrlMobile": "http://x/m.jpg",
       "splitMediaImageAlt": "A", "splitMediaImageAltMobile": "M"},
      {"splitSource": {"desktop": {"kind": "image", "url": U}, "mobile": {"kind": "image", "url": "http://x/m.jpg", "alt": "M"}}, "splitAlt": "A",
-      "splitWidth": {"desktop": "640px", "mobile": "160px"}})
+      "splitWidth": {"desktop": "640px"}})
 # ---- shape, radius, opacity, overlay
 case("media: rounded becomes Corners 12px", "sgs/media", {"shape": "rounded"}, {"radius": {"desktop": {"topLeft": "12px", "topRight": "12px", "bottomRight": "12px", "bottomLeft": "12px"}}})
 case("media: circle becomes Shape circle", "sgs/media", {"shape": "circle"}, {"shape": {"desktop": {"shape": "circle"}}})
@@ -816,6 +816,19 @@ def run_sizes(failures: list[str]) -> int:
             S._SITES.pop(key, None)
         S.activate("repo")
         B.clear_memo()
+    original = S.resolve
+    try:
+        for label, got, expected in (("a 2200 by 1467 upload prints the 1024 large size", ("id", 5, (2200, 1467)), 1024),
+                                     ("an upload under the bound prints its own width", ("id", 6, (800, 600)), 800),
+                                     ("a tall upload is bounded by its height", ("id", 7, (1000, 2000)), 512),
+                                     ("a file that is no upload prints its own width", ("size", None, (2200, 1467)), 2200)):
+            checks += 1
+            S.resolve = lambda url, got=got: got
+            width = S.printed_width({"kind": "image", "url": "http://x/big.jpg"})
+            if width != expected:
+                _fail(f"printed width: {label}", f"expected {expected}, got {width}", failures)
+    finally:
+        S.resolve = original
     return checks
 
 
