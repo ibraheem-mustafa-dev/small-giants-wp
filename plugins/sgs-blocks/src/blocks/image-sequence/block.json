@@ -164,9 +164,7 @@
 		},
 		"thumbnailSource": {"type":"object","_generated":"media-atoms"},
 		"thumbnailLoading": {"type":"string","_generated":"media-atoms"},
-		"thumbnailFit": {"type":"object","_generated":"media-atoms"},
-		"thumbnailRepeat": {"type":"object","_generated":"media-atoms"},
-		"thumbnailTileSize": {"type":"object","_generated":"media-atoms"}
+		"thumbnailFit": {"type":"object","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
