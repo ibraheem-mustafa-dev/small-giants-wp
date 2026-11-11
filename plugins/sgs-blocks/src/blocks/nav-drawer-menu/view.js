@@ -57,35 +57,37 @@ function markCurrentPage( root ) {
 	const current = normalisePath( window.location.pathname );
 	root.querySelectorAll(
 		'.sgs-nav-drawer-menu__link[data-sgs-nav-path], .sgs-nav-drawer-menu__sublink[data-sgs-nav-path]'
-	).forEach(
-		( link ) => {
-			const path = normalisePath( link.dataset.sgsNavPath || '' );
-			if ( path !== '' && path === current ) {
-				link.setAttribute( 'aria-current', 'page' );
-			} else {
-				link.removeAttribute( 'aria-current' );
-			}
+	).forEach( ( link ) => {
+		const path = normalisePath( link.dataset.sgsNavPath || '' );
+		if ( path !== '' && path === current ) {
+			link.setAttribute( 'aria-current', 'page' );
+		} else {
+			link.removeAttribute( 'aria-current' );
 		}
-	);
+	} );
 
 	// A mega item's panel links are container-block links without a
 	// `data-sgs-nav-path`. When one of them points at the current page, the
 	// item's accordion row takes `data-sgs-nav-has-current`, which the
 	// ancestor-current rule in includes/nav-menu-css.php reads.
-	root.querySelectorAll( '.sgs-nav-drawer-menu__mega-body' ).forEach( ( body ) => {
-		const row = body.closest( '.sgs-nav-drawer-menu__accordion-row' );
-		if ( ! row ) {
-			return;
-		}
-		const hasCurrent = Array.from( body.querySelectorAll( 'a[href]' ) ).some( ( anchor ) => {
-			if ( anchor.origin !== window.location.origin ) {
-				return false;
+	root.querySelectorAll( '.sgs-nav-drawer-menu__mega-body' ).forEach(
+		( body ) => {
+			const row = body.closest( '.sgs-nav-drawer-menu__accordion-row' );
+			if ( ! row ) {
+				return;
 			}
-			const path = normalisePath( anchor.pathname );
-			return path !== '' && path === current;
-		} );
-		row.toggleAttribute( 'data-sgs-nav-has-current', hasCurrent );
-	} );
+			const hasCurrent = Array.from(
+				body.querySelectorAll( 'a[href]' )
+			).some( ( anchor ) => {
+				if ( anchor.origin !== window.location.origin ) {
+					return false;
+				}
+				const path = normalisePath( anchor.pathname );
+				return path !== '' && path === current;
+			} );
+			row.toggleAttribute( 'data-sgs-nav-has-current', hasCurrent );
+		}
+	);
 }
 
 // Cleanup functions for every currently-active opt-in effect instance
@@ -102,14 +104,18 @@ let effects = null;
  * @return {Promise<void>} Resolves once the effects are running.
  */
 function startEffects() {
-	return import( /* webpackChunkName: "drawer-menu-effects" */ './bar-effects' ).then( ( module ) => {
+	return import(
+		/* webpackChunkName: "drawer-menu-effects" */ './bar-effects'
+	).then( ( module ) => {
 		if ( effects ) {
 			return;
 		}
 		effects = module;
-		document.querySelectorAll( '.wp-block-sgs-nav-drawer-menu' ).forEach( ( root ) => {
-			activeCleanups.push( ...effects.initBarEffects( root ) );
-		} );
+		document
+			.querySelectorAll( '.wp-block-sgs-nav-drawer-menu' )
+			.forEach( ( root ) => {
+				activeCleanups.push( ...effects.initBarEffects( root ) );
+			} );
 	} );
 }
 
@@ -123,11 +129,18 @@ function startEffects() {
 function whenFirstNeeded( start ) {
 	const types = [ 'pointerdown', 'touchstart', 'keydown' ];
 	const fire = () => {
-		types.forEach( ( type ) => document.removeEventListener( type, fire, true ) );
+		types.forEach( ( type ) =>
+			document.removeEventListener( type, fire, true )
+		);
 		document.removeEventListener( DRAWER_PHASE_EVENT, fire, true );
 		start();
 	};
-	types.forEach( ( type ) => document.addEventListener( type, fire, { capture: true, passive: true } ) );
+	types.forEach( ( type ) =>
+		document.addEventListener( type, fire, {
+			capture: true,
+			passive: true,
+		} )
+	);
 	// The phase event fires on the drawer itself and does not bubble; a capturing listener on the document still sees it.
 	document.addEventListener( DRAWER_PHASE_EVENT, fire, true );
 }
@@ -136,9 +149,11 @@ function whenFirstNeeded( start ) {
  * Initialise every sgs/nav-drawer-menu instance on the page.
  */
 function init() {
-	document.querySelectorAll( '.wp-block-sgs-nav-drawer-menu' ).forEach( ( root ) => {
-		markCurrentPage( root );
-	} );
+	document
+		.querySelectorAll( '.wp-block-sgs-nav-drawer-menu' )
+		.forEach( ( root ) => {
+			markCurrentPage( root );
+		} );
 	whenFirstNeeded( startEffects );
 	// A multi-column list with lines between its rows: the fallback overlay for
 	// browsers without CSS gap decorations (a no-op elsewhere).
@@ -165,11 +180,13 @@ if ( document.readyState === 'loading' ) {
 window.addEventListener( 'pageshow', ( event ) => {
 	if ( event.persisted ) {
 		teardownEffects();
-		document.querySelectorAll( '.wp-block-sgs-nav-drawer-menu' ).forEach( ( root ) => {
-			markCurrentPage( root );
-			if ( effects ) {
-				activeCleanups.push( ...effects.initBarEffects( root ) );
-			}
-		} );
+		document
+			.querySelectorAll( '.wp-block-sgs-nav-drawer-menu' )
+			.forEach( ( root ) => {
+				markCurrentPage( root );
+				if ( effects ) {
+					activeCleanups.push( ...effects.initBarEffects( root ) );
+				}
+			} );
 	}
 } );

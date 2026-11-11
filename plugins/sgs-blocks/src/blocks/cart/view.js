@@ -66,9 +66,9 @@ function lazyPanel( panelRoot, options ) {
 	let ready = null;
 	const warm = () => {
 		if ( ! ready ) {
-			ready = import( /* webpackChunkName: "cart-panel" */ './panel-render' ).then( ( module ) =>
-				module.initPanel( panelRoot, options )
-			);
+			ready = import(
+				/* webpackChunkName: "cart-panel" */ './panel-render'
+			).then( ( module ) => module.initPanel( panelRoot, options ) );
 		}
 		return ready;
 	};
