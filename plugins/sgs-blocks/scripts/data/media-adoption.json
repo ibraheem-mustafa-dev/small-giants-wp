@@ -495,7 +495,15 @@
 								"image"
 							],
 							"context": "item",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"sizing",
+								"shape"
+							]
 						}
 					},
 					"replace": []
@@ -507,7 +515,14 @@
 								"image"
 							],
 							"context": "item",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"sizing",
+								"shape"
+							]
 						}
 					},
 					"replace": []
@@ -519,7 +534,14 @@
 								"image"
 							],
 							"context": "item",
-							"from": "swatch"
+							"from": "swatch",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"sizing",
+								"shape"
+							]
 						}
 					},
 					"replace": [
@@ -562,10 +584,22 @@
 								"image"
 							],
 							"context": "item",
-							"from": "badgeImage"
+							"from": "badgeImage",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"sizing",
+								"shape",
+								"filter"
+							]
 						}
 					},
-					"replace": []
+					"replace": [
+						"badgeImageBorderRadius",
+						"badgeImageSize",
+						"badgeImageObjectFit"
+					]
 				}
 			}
 		}
