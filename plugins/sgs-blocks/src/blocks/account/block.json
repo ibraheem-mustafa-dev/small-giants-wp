@@ -527,6 +527,16 @@
 							"css:color": "ordersDateColour"
 						}
 					},
+					"ordersSummaryText": {
+						"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row .woocommerce-orders-table__cell-order-summary",
+						"motion": false,
+						"label": "Order items summary",
+						"order": 49,
+						"clusters": [
+							"text"
+						],
+						"prefix": "ordersSummary"
+					},
 					"ordersTotal": {
 						"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row .woocommerce-orders-table__cell-order-total",
 						"motion": false,
@@ -2479,6 +2489,57 @@
 				]
 			},
 			"ordersDateTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"ordersSummaryFontSize": {
+				"type": "object"
+			},
+			"ordersSummaryFontSizeUnit": {
+				"type": "string"
+			},
+			"ordersSummaryFontFamily": {
+				"type": "string"
+			},
+			"ordersSummaryFontWeight": {
+				"type": "string"
+			},
+			"ordersSummaryFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"ordersSummaryLineHeight": {
+				"type": "object"
+			},
+			"ordersSummaryLineHeightUnit": {
+				"type": "string"
+			},
+			"ordersSummaryLetterSpacing": {
+				"type": "object"
+			},
+			"ordersSummaryLetterSpacingUnit": {
+				"type": "string"
+			},
+			"ordersSummaryTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"ordersSummaryTextDecoration": {
 				"type": "string",
 				"enum": [
 					"",

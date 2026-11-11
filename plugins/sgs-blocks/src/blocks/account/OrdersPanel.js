@@ -120,6 +120,7 @@ export const EXTRA_TYPE_TARGETS = [
 	target( 'menuCount', __( 'Menu Orders count', 'sgs-blocks' ) ),
 	target( 'ordersNumber', __( 'Order number', 'sgs-blocks' ) ),
 	target( 'ordersDate', __( 'Order date', 'sgs-blocks' ) ),
+	target( 'ordersSummary', __( 'Order items summary', 'sgs-blocks' ) ),
 	target( 'ordersTotal', __( 'Order total', 'sgs-blocks' ) ),
 	target( 'ordersPill', __( 'Order status pill', 'sgs-blocks' ) ),
 	target( 'ordersEmptyTitle', __( 'Orders empty card heading', 'sgs-blocks' ) ),

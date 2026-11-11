@@ -104,6 +104,10 @@ $same = sgs_account_edit_account_markup( $cards, array( 'addressEmptyText' => 'N
 ok( false !== strpos( $same, '<address>Same as delivery address</address>' ) && false !== strpos( $same, '<address>No delivery address saved yet.</address>' ), 'an empty billing card says same as delivery while a delivery address is saved' );
 ok( $cards === sgs_account_edit_account_markup( $cards, array() ), 'without the setting WooCommerce\'s line stays' );
 
+// 3b2) The row list's items summary takes type settings (size and unit shown here).
+$rowcss = sgs_account_orders_look_css( array( 'ordersRowList' => true, 'ordersSummaryFontSize' => array( 'desktop' => 14 ), 'ordersSummaryFontSizeUnit' => 'px' ), '.x' );
+ok( false !== strpos( $rowcss, '.x .sgs-account__orders-list .sgs-account__order .sgs-account__order-summary{font-size:14px' ), 'the order row summary takes its font size setting' );
+
 // 3c) Motion parts carry the block's own classes.
 $marked = sgs_account_edit_account_markup( '<div class="woocommerce-MyAccount-content"></div><div class="u-columns col2-set" id="customer_login"></div>', array() );
 ok( false !== strpos( $marked, 'woocommerce-MyAccount-content sgs-account__tab-content"' ) && false !== strpos( $marked, 'u-columns col2-set sgs-account__auth-grid" id="customer_login"' ), 'the tab content and the sign-in pair carry classes of the block' );

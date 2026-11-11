@@ -144,6 +144,7 @@ if ( ! function_exists( 'sgs_account_orders_look_css' ) ) {
 				$css[] = sgs_typography_css_rule( $attributes, $prefix, $row . ' ' . $cell[0], '', false, false, $tiered );
 				$css[] = sgs_text_states_css( $row . ' ' . $cell[0], $attributes, array( 'base' => $cell[1] ) );
 			}
+			$css[] = sgs_typography_css_rule( $attributes, 'ordersSummary', $row . ' ' . ( $row_list ? '.sgs-account__order-summary' : '.woocommerce-orders-table__cell-order-summary' ), '', false, false, $tiered );
 			$pill  = $row . ( $row_list ? ' .sgs-account__order-status' : ' .woocommerce-orders-table__cell-order-status' );
 			$css[] = sgs_typography_css_rule( $attributes, 'ordersPill', $pill, '', false, false, $tiered );
 			$css[] = sgs_fill_states_css( $pill, $attributes, array( 'base' => 'ordersPillBackground' ) );
