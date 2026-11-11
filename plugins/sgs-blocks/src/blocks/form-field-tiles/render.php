@@ -435,6 +435,22 @@ if ( ! empty( $attributes['label'] ?? '' ) ) {
 }
 
 // ── Build per-tile labels HTML ────────────────────────────────────────────────
+// The tiles' pictures: block-level rules (Fit, Width, Shape) print once; each tile's own source, alt and fit under its
+// own scope class. Both go into the field's scoped <style> below.
+require_once dirname( __DIR__, 3 ) . '/includes/media/render-item-slot.php';
+$sgs_ft_media_css    = '';
+$sgs_ft_render_image = sgs_media_item_renderer(
+	sgs_media_item_slot_for( $block, 'tile' ),
+	$attributes,
+	'sgs/form-field-tiles',
+	$sgs_ft_uid . '-media',
+	array(
+		'desktop' => 0,
+		'tablet'  => 0,
+		'mobile'  => 0,
+	),
+	$sgs_ft_media_css
+);
 ob_start();
 foreach ( $tiles as $i => $tile ) {
 	$tile_id = $fid . '-tile-' . $i;
@@ -487,9 +503,8 @@ foreach ( $tiles as $i => $tile ) {
 		}
 	}
 
-	if ( ! empty( $tile['image'] ) ) {
-		echo '<img class="sgs-form-tile__image" src="' . esc_url( $tile['image'] ) . '" alt="" aria-hidden="true" loading="lazy" />';
-	}
+	// The tile's picture: the shared media renderer prints it (Spec 49 §8.3), one item of the block's `tile` slot.
+	echo $sgs_ft_render_image( (array) $tile, (int) $i ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by SGS_Media_Element::render() with per-attribute escaping.
 
 	echo '<span class="sgs-form-tile__label">' . esc_html( $tile['label'] ?? '' ) . '</span>';
 	// The description sits inside the label (part of the tile's accessible name, WCAG 2.5.3), cut to 140 characters.
@@ -501,6 +516,9 @@ foreach ( $tiles as $i => $tile ) {
 	echo '</label>';
 }
 $tiles_inner_html = ob_get_clean();
+if ( '' !== $sgs_ft_media_css ) {
+	echo '<style>' . wp_strip_all_tags( $sgs_ft_media_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the media atoms' own scoped rules; tags stripped.
+}
 
 // Tile stagger (Spec 38A FR-38A-26): the tiles are array data, so the field's stored `sgsMotion.stagger` becomes one
 // scoped delay rule per tile, found by its `data-sgs-loop-i` index. Null (no stagger) leaves the tiles untagged; the

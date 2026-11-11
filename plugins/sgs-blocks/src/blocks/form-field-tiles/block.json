@@ -23,7 +23,6 @@
 			"motionItems": "tile",
 			"motion": true,
 			"iconPicker": true,
-			"imageControls": false,
 			"elements": {
 				"tile": {
 					"label": "Each tile",
@@ -300,14 +299,31 @@
 						"type": "string",
 						"role": "enum-mode"
 					},
-					"image": {
-						"type": "string",
-						"role": "image-object"
-					},
 					"description": {
 						"type": "string",
 						"default": "",
 						"role": "text-content"
+					},
+					"source": {
+						"type": "object",
+						"description": "The item's picture per device, the media Source shape: {desktop:{kind,id,url,width,height,mime}, tablet, mobile}. A device with no entry shows the wider device's file.",
+						"role": "image-object"
+					},
+					"alt": {
+						"type": "string",
+						"default": "",
+						"description": "The picture's description for screen readers. Blank when the picture is decorative.",
+						"role": "image-alt"
+					},
+					"decorative": {
+						"type": "boolean",
+						"default": false,
+						"role": "boolean-visibility"
+					},
+					"fit": {
+						"type": "object",
+						"description": "How this item's picture fills its box per device. Empty uses the block's own fit.",
+						"role": "visual"
 					}
 				}
 			}
