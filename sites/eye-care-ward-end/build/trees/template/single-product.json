@@ -154,8 +154,6 @@
           "layout": "grid",
           "variant": "split",
           "className": "cr-ref-product-5",
-          "splitMediaImageUrl": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/whatsapp-white.svg",
-          "splitMediaImageId": 71,
           "backgroundColourGradient": "none",
           "gridTemplateColumns": {
             "tablet": "repeat(1, minmax(0, 1fr))",
@@ -172,7 +170,14 @@
           },
           "flexDirection": "row",
           "textColourHover": "primary",
-          "justifyContent": "flex-start"
+          "justifyContent": "flex-start",
+          "splitSource": {
+            "desktop": {
+              "kind": "image",
+              "id": 71,
+              "url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/whatsapp-white.svg"
+            }
+          }
         },
         "innerBlocks": [
           {

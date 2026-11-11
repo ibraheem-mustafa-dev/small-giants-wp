@@ -4,12 +4,6 @@
     "attributes": {
       "align": "full",
       "backgroundColour": "primary",
-      "backgroundImage": {
-        "id": 174,
-        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/hero.jpg",
-        "alt": "Designer sunglasses resting on a rail above the sea"
-      },
-      "overlayGradient": "linear-gradient(100deg,rgba(18,18,18,.86) 0%,rgba(18,18,18,.74) 30%,rgba(18,18,18,.4) 58%,rgba(18,18,18,.04) 82%,rgba(18,18,18,0) 100%)",
       "minHeight": {
         "desktop": "min(84vh, 820px)",
         "mobile": "82vh"
@@ -69,7 +63,17 @@
             ]
           }
         }
-      }
+      },
+      "backgroundSource": {
+        "desktop": {
+          "kind": "image",
+          "id": 174,
+          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/hero.jpg"
+        }
+      },
+      "backgroundAlt": "Designer sunglasses resting on a rail above the sea",
+      "backgroundDecorative": false,
+      "backgroundOverlayGradient": "linear-gradient(100deg,rgba(18,18,18,.86) 0%,rgba(18,18,18,.74) 30%,rgba(18,18,18,.4) 58%,rgba(18,18,18,.04) 82%,rgba(18,18,18,0) 100%)"
     },
     "innerBlocks": [
       {

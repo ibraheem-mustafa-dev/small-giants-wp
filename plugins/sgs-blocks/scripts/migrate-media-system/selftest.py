@@ -526,9 +526,12 @@ def run_declared_guard(failures: list[str]) -> int:
     if undeclared[0] != original or len(refused) != 1 or "noSuchTarget" not in refused[0][3] or refused[0][1] != "imageUrl":
         _fail("guard: undeclared target (negative control)", f"expected a refusal naming noSuchTarget and imageUrl, got {undeclared}", failures)
     checks += 1
-    unscoped = B.guard_declared("sgs/hero", original, {"noSuchTarget": 1}, [])
-    if M.migration_scope() is not None and unscoped[0] != {"noSuchTarget": 1}:
-        _fail("guard: unadopted block", "a block outside the migration scope was refused", failures)
+    scope = M.migration_scope()
+    outside = sorted(set(M.live_declared_attributes()) - set(scope)) if scope is not None else []
+    if outside:
+        unscoped = B.guard_declared(outside[0], original, {"noSuchTarget": 1}, [])
+        if unscoped[0] != {"noSuchTarget": 1}:
+            _fail("guard: unadopted block", f"{outside[0]}, outside the migration scope, was refused", failures)
     for label, block, attrs, want_events, want_refused, want_keep in (
         ("repeat and attachment on an image delete", "sgs/media", {"attachment": "fixed", "repeat": "repeat"}, {"deleted"}, False, None),
         ("repeat and attachment on a decorative image delete", "sgs/decorative-image", {**svg, "attachment": "fixed", "repeat": "repeat"}, {"deleted"}, False, None),
