@@ -155,7 +155,8 @@
 						"desktop": {
 							"kind": "image",
 							"url": "https://picsum.photos/id/1015/1200/800.jpg",
-							"height": 280
+							"height": 800,
+							"width": 1200
 						}
 					},
 					"alt": "A river valley seen from above"

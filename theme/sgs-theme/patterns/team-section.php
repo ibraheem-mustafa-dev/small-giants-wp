@@ -19,7 +19,7 @@
 
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface-alt","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"flexWrap":"wrap","borderRadius":{"desktop":"12px"}} -->
-				<!-- wp:sgs/media {"alignment":{"desktop":"center"},"maxWidth":{"desktop":"120px"},"height":{"desktop":"120px"},"source":{"desktop":{"kind":"image","url":"https://placehold.co/120x120/0F7E80/FFFFFF?text=AJ"}},"alt":"Alex Johnson","width":{"desktop":"auto"},"radius":{"desktop":{"topLeft":"100%","topRight":"100%","bottomRight":"100%","bottomLeft":"100%"}}} /-->
+				<!-- wp:sgs/media {"alignment":{"desktop":"center"},"maxWidth":{"desktop":"120px"},"height":{"desktop":"120px"},"source":{"desktop":{"kind":"image","url":"https://placehold.co/120x120/0F7E80/FFFFFF?text=AJ","width":120,"height":120}},"alt":"Alex Johnson","width":{"desktop":"auto"},"radius":{"desktop":{"topLeft":"100%","topRight":"100%","bottomRight":"100%","bottomLeft":"100%"}}} /-->
 				<!-- wp:sgs/heading {"content":"Alex Johnson","textAlign":{"desktop":"center"},"level":"h3","fontSize":{"desktop":"large"},"margin":{"top":"var:preset|spacing|20"}} /-->
 				<!-- wp:sgs/text {"text":"Creative Director","textAlign":{"desktop":"center"},"textColour":"primary","fontSize":{"desktop":"small"},"textTransform":"uppercase","letterSpacing":{"desktop":0.05},"letterSpacingUnit":"em","fontWeight":"600","margin":{"top":"0"}} /-->
 				<!-- wp:sgs/text {"text":"Over 15 years of experience crafting digital experiences for leading brands.","textAlign":{"desktop":"center"},"textColour":"text-muted","fontSize":{"desktop":"small"}} /-->
@@ -28,7 +28,7 @@
 
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface-alt","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"flexWrap":"wrap","borderRadius":{"desktop":"12px"}} -->
-				<!-- wp:sgs/media {"alignment":{"desktop":"center"},"maxWidth":{"desktop":"120px"},"height":{"desktop":"120px"},"source":{"desktop":{"kind":"image","url":"https://placehold.co/120x120/F87A1F/FFFFFF?text=SP"}},"alt":"Sarah Patel","width":{"desktop":"auto"},"radius":{"desktop":{"topLeft":"100%","topRight":"100%","bottomRight":"100%","bottomLeft":"100%"}}} /-->
+				<!-- wp:sgs/media {"alignment":{"desktop":"center"},"maxWidth":{"desktop":"120px"},"height":{"desktop":"120px"},"source":{"desktop":{"kind":"image","url":"https://placehold.co/120x120/F87A1F/FFFFFF?text=SP","width":120,"height":120}},"alt":"Sarah Patel","width":{"desktop":"auto"},"radius":{"desktop":{"topLeft":"100%","topRight":"100%","bottomRight":"100%","bottomLeft":"100%"}}} /-->
 				<!-- wp:sgs/heading {"content":"Sarah Patel","textAlign":{"desktop":"center"},"level":"h3","fontSize":{"desktop":"large"},"margin":{"top":"var:preset|spacing|20"}} /-->
 				<!-- wp:sgs/text {"text":"Lead Developer","textAlign":{"desktop":"center"},"textColour":"primary","fontSize":{"desktop":"small"},"textTransform":"uppercase","letterSpacing":{"desktop":0.05},"letterSpacingUnit":"em","fontWeight":"600","margin":{"top":"0"}} /-->
 				<!-- wp:sgs/text {"text":"Full-stack developer passionate about performance and accessibility.","textAlign":{"desktop":"center"},"textColour":"text-muted","fontSize":{"desktop":"small"}} /-->
@@ -37,7 +37,7 @@
 
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface-alt","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"flexWrap":"wrap","borderRadius":{"desktop":"12px"}} -->
-				<!-- wp:sgs/media {"alignment":{"desktop":"center"},"maxWidth":{"desktop":"120px"},"height":{"desktop":"120px"},"source":{"desktop":{"kind":"image","url":"https://placehold.co/120x120/2E7D4F/FFFFFF?text=ML"}},"alt":"Marcus Lee","width":{"desktop":"auto"},"radius":{"desktop":{"topLeft":"100%","topRight":"100%","bottomRight":"100%","bottomLeft":"100%"}}} /-->
+				<!-- wp:sgs/media {"alignment":{"desktop":"center"},"maxWidth":{"desktop":"120px"},"height":{"desktop":"120px"},"source":{"desktop":{"kind":"image","url":"https://placehold.co/120x120/2E7D4F/FFFFFF?text=ML","width":120,"height":120}},"alt":"Marcus Lee","width":{"desktop":"auto"},"radius":{"desktop":{"topLeft":"100%","topRight":"100%","bottomRight":"100%","bottomLeft":"100%"}}} /-->
 				<!-- wp:sgs/heading {"content":"Marcus Lee","textAlign":{"desktop":"center"},"level":"h3","fontSize":{"desktop":"large"},"margin":{"top":"var:preset|spacing|20"}} /-->
 				<!-- wp:sgs/text {"text":"Strategy Lead","textAlign":{"desktop":"center"},"textColour":"primary","fontSize":{"desktop":"small"},"textTransform":"uppercase","letterSpacing":{"desktop":0.05},"letterSpacingUnit":"em","fontWeight":"600","margin":{"top":"0"}} /-->
 				<!-- wp:sgs/text {"text":"Turning business goals into actionable digital strategies since 2012.","textAlign":{"desktop":"center"},"textColour":"text-muted","fontSize":{"desktop":"small"}} /-->
