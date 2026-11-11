@@ -12,7 +12,8 @@ import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { contentCoverage, reportLines, NO_ELEMENT_SHAPES, contentRows } from '../lib/content-coverage.mjs';
 import { coverageProblems, contentSettingId, parseContentSettingId, contentSettingProblems } from '../lib/clone-coverage.mjs';
 import { textDecisions, linkDecisions, presenceDecisions, textSettings, linkSettings, presenceSettings } from '../lib/fill-presence.mjs';
-import { mediaDecisions, mediaSettings } from '../lib/fill-media.mjs';
+import { mediaDecisions } from '../lib/fill-media.mjs';
+import { blockMediaSlots, mediaSettings } from '../lib/media/slots.mjs';
 import { iconDecisions, iconSettings, ICON_SETTINGS } from '../lib/fill-icon.mjs';
 import { formFieldWrites, formSettings, FORM_FIELD_SETTINGS } from '../lib/fill-form.mjs';
 import { listClaims } from '../lib/fill-list-content.mjs';
@@ -29,9 +30,9 @@ const roles = [
 	{ role_name: 'typography', classification: 'styling-behaviour' },
 ];
 const attr = ( block_slug, attr_name, role, attr_type = 'string', more = {} ) => ( { block_slug, attr_name, attr_type, role, ...more } );
-const blocks = [ 'sgs/measured', 'sgs/listy', 'sgs/skel', 'sgs/pic', 'sgs/ico', 'sgs/form-field-text', 'sgs/wish', 'sgs/orphan', 'sgs/hosty', 'sgs/hosty-item' ].map( ( slug ) => ( { slug, title: slug, category: 'sgs', type: 'dynamic' } ) );
+const blocks = [ 'sgs/measured', 'sgs/listy', 'sgs/skel', 'sgs/media', 'sgs/ico', 'sgs/form-field-text', 'sgs/wish', 'sgs/orphan', 'sgs/hosty', 'sgs/hosty-item' ].map( ( slug ) => ( { slug, title: slug, category: 'sgs', type: 'dynamic' } ) );
 const SCHEMAS = {
-	'sgs/pic': { imageUrl: { type: 'string' }, imageId: { type: 'integer' }, imageAlt: { type: 'string' } },
+	'sgs/media': { source: { type: 'object' }, alt: { type: 'string' }, decorative: { type: 'boolean' }, caption: { type: 'string' } },
 	'sgs/ico': { iconSvg: { type: 'string' }, iconSource: { type: 'string' }, iconName: { type: 'string' } },
 	'sgs/listy': { entries: { type: 'array', items: { properties: { title: { type: 'string' } } } } },
 };
@@ -45,9 +46,9 @@ const ROUTED = [
 	attr( 'sgs/listy', 'entries', 'content', 'array' ),
 	attr( 'sgs/skel', 'heading', 'text-content' ),
 	attr( 'sgs/skel', 'url', 'link-href' ),
-	attr( 'sgs/pic', 'imageUrl', 'image-object' ),
-	attr( 'sgs/pic', 'imageAlt', 'image-alt', 'string', { alt_companion_attr: 'imageUrl' } ),
-	attr( 'sgs/pic', 'imageId', 'image-object', 'integer' ),
+	attr( 'sgs/media', 'source', 'image-object', 'object' ),
+	attr( 'sgs/media', 'alt', 'image-alt', 'string' ),
+	attr( 'sgs/media', 'decorative', 'image-object', 'boolean' ),
 	attr( 'sgs/ico', 'iconSvg', 'svg' ),
 	attr( 'sgs/form-field-text', 'placeholder', 'content' ),
 	attr( 'sgs/orphan', 'lead', 'text-content' ),
@@ -88,9 +89,9 @@ test( 'each route claims its own setting: measured, list, role-writer (skeleton,
 	assert.deepEqual( at( 'sgs/hosty-item', 'caption' ), [ 'list', 'list' ], 'the single child block of a host takes the items' );
 	assert.deepEqual( at( 'sgs/skel', 'heading' ), [ 'role-writer', 'skeleton' ] );
 	assert.deepEqual( at( 'sgs/skel', 'url' ), [ 'role-writer', 'skeleton' ] );
-	assert.deepEqual( at( 'sgs/pic', 'imageUrl' ), [ 'role-writer', 'media' ] );
-	assert.deepEqual( at( 'sgs/pic', 'imageId' ), [ 'role-writer', 'media' ] );
-	assert.deepEqual( at( 'sgs/pic', 'imageAlt' ), [ 'role-writer', 'media' ] );
+	assert.deepEqual( at( 'sgs/media', 'source' ), [ 'role-writer', 'media' ] );
+	assert.deepEqual( at( 'sgs/media', 'decorative' ), [ 'role-writer', 'media' ] );
+	assert.deepEqual( at( 'sgs/media', 'alt' ), [ 'role-writer', 'media' ] );
 	assert.deepEqual( at( 'sgs/ico', 'iconSvg' ), [ 'role-writer', 'icon' ] );
 	assert.deepEqual( at( 'sgs/form-field-text', 'placeholder' ), [ 'role-writer', 'form' ] );
 	assert.deepEqual( at( 'sgs/wish', 'errorText' ), [ 'no-element', 'script-rendered' ] );
@@ -235,15 +236,16 @@ test( 'the measured claims equal what textDecisions, linkDecisions and presenceD
 	assert.deepEqual( written.sort(), [ 'd', 'e' ] );
 } );
 
-test( 'the media claims hold everything mediaDecisions writes, and nothing for a block with several image slots', () => {
-	const slots = [ { alt: 'imageAlt', url: 'imageUrl' } ];
-	const schema = { imageUrl: { type: 'string' }, imageId: { type: 'integer' }, imageAlt: { type: 'string' }, caption: { type: 'string' } };
+test( 'the media claims hold everything mediaDecisions writes, and nothing for an item slot', () => {
+	const slots = blockMediaSlots( 'sgs/media' );
 	const map = { sites: { s: { files: [ { asset: 'a.png', url: 'https://x/a.png', id: 7 } ] } } };
-	const out = mediaDecisions( { slots, schema, img: { tag: 'img', src: 'a.png', alt: 'An A', caption: 'Cap' }, media: { map, site: 's', origin: '' } } );
-	assert.deepEqual( out.writes.map( ( w ) => w.attr ).sort(), [ ...mediaSettings( slots, schema ) ].sort() );
-	assert.deepEqual( out.writes.map( ( w ) => w.attr ).sort(), [ 'caption', 'imageAlt', 'imageId', 'imageUrl' ] );
-	assert.deepEqual( mediaSettings( [ ...slots, { alt: 'bAlt', url: 'bUrl' } ], schema ), [] );
+	const m = { tag: 'img', src: 'a.png', alt: 'An A', natural: { w: 10, h: 10 }, poster: null, markup: null, own: true, element: { computed: { position: 'static' } } };
+	const out = mediaDecisions( { slots, reads: { 1440: [ m ], 768: [ m ], 375: [ m ] }, caption: 'Cap', media: { map, site: 's', origin: '' } } );
+	assert.deepEqual( out.writes.map( ( w ) => w.attr ).sort(), [ 'alt', 'caption', 'source' ] );
+	assert.deepEqual( [ ...mediaSettings( 'sgs/media' ) ].sort(), [ 'alt', 'caption', 'decorative', 'source' ] );
+	assert.deepEqual( mediaSettings( 'sgs/card-grid' ), [] );
 } );
+
 
 test( 'the icon claims hold everything iconDecisions writes, and nothing for a block with no iconSvg', () => {
 	const schema = { iconSvg: { type: 'string' }, iconSource: { type: 'string' }, iconName: { type: 'string' }, iconBogus: { type: 'string' } };

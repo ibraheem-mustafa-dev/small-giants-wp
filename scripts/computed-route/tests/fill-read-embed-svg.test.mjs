@@ -10,7 +10,7 @@ import { readDraft } from '../lib/fill-read.mjs';
 import { skeletonNodes } from '../lib/fill-skeleton.mjs';
 import { mapDecisions } from '../lib/fill-map.mjs';
 import { iconDecisions } from '../lib/fill-icon.mjs';
-import { nestedImage } from '../lib/fill-media.mjs';
+import { mediaAt } from '../lib/fill-media.mjs';
 
 const SVG = 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 120 40%27%3E%3Crect width=%27120%27 height=%2740%27 fill=%27red%27/%3E%3C/svg%3E';
 const HTML = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
@@ -64,10 +64,11 @@ test( 'MUST FAIL: the page read carries the map iframe\'s address, filter and he
 	assert.equal( r.writes.find( ( w ) => 'mapZoom' === w.attr ).value, 14 );
 } );
 
-test( 'MUST FAIL: a nested image (inside wrapper elements) is read and found by nestedImage', () => {
+test( 'MUST FAIL: a nested image (inside wrapper elements) is read, and mediaAt lists the visible media', () => {
 	const img = at( 1440, '3:' ).img;
 	assert.equal( img.alt, 'A loaf' );
-	assert.equal( nestedImage( { '': at( 1440, '3:' ) } ).alt, 'A loaf' );
+	const listed = mediaAt( { '': at( 1440, '3:' ) } );
+	assert.deepEqual( [ listed.length, listed[ 0 ].tag, listed[ 0 ].alt ], [ 1, 'img', 'A loaf' ] );
 } );
 
 test( 'MUST FAIL: the page read carries the scroller\'s scrollbar colours, width and the ground it sits on (a descendant scroller is found)', () => {

@@ -119,6 +119,47 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		const imgs = el.matches( 'img' ) ? [ el ] : [ ...el.querySelectorAll( 'img' ), ...drawn.filter( ( i, n ) => drawn.findIndex( ( j ) => imgSrc( j ) === imgSrc( i ) ) === n ) ];
 		const cap = el.matches( 'figure' ) ? el.querySelector( 'figcaption' ) : null;
 		snap.img = 1 === imgs.length ? { tag: el.localName, src: imgSrc( imgs[ 0 ] ), alt: imgs[ 0 ].getAttribute( 'alt' ), caption: cap ? ( cap.textContent || '' ).replace( /\s+/g, ' ' ).trim() : null } : null;
+		// The media this element is or holds that shows at this width, in document order (Spec 49 section 11: the kind per
+		// width is read from the visible element): { tag, src, poster, alt, natural, markup, own, element } each, where `element`
+		// is what lib/media/absorb.mjs::placement reads. A hidden sibling (display:none) is not drawn, so it is not listed. An
+		// inline svg counts only when it is this element or the only media it holds (an icon beside a photo is no media here).
+		{
+			const shown = ( n ) => {
+				const r = n.getBoundingClientRect();
+				const c = getComputedStyle( n );
+				return r.width > 0 && r.height > 0 && 'none' !== c.display && 'hidden' !== c.visibility && ! n.closest( '[hidden]' );
+			};
+			const rasters = ( el.matches( 'img, video, iframe' ) ? [ el ] : [ ...el.querySelectorAll( 'img, video, iframe' ) ] ).filter( shown );
+			const vectors = ( el.matches( 'svg' ) ? [ el ] : [ ...el.querySelectorAll( 'svg' ) ] ).filter( ( n ) => ! n.parentElement?.closest( 'svg' ) && shown( n ) );
+			const nodes = rasters.length ? rasters : ( 1 === vectors.length ? vectors : [] );
+			const read = ( n ) => {
+				const c = getComputedStyle( n );
+				const par = n.parentElement;
+				const box = n.getBoundingClientRect();
+				const pr = par ? par.getBoundingClientRect() : box;
+				const sibs = par ? [ ...par.children ].filter( ( x ) => x !== n && ! x.matches( 'source, track, figcaption' ) && 'none' !== getComputedStyle( x ).display ) : [];
+				const later = sibs.some( ( x ) => 4 & n.compareDocumentPosition( x ) );
+				const tag = n.localName;
+				const attr = ( k ) => n.getAttribute( k );
+				const src = 'img' === tag ? ( n.closest( 'picture' ) && n.currentSrc ? n.currentSrc : null ) ?? attr( 'src' ) ?? attr( 'data-src' ) ?? '' : 'video' === tag ? ( attr( 'src' ) ?? n.querySelector( 'source' )?.getAttribute( 'src' ) ?? '' ) : 'iframe' === tag ? attr( 'src' ) ?? '' : '';
+								const ni = 'img' === tag ? { w: n.naturalWidth, h: n.naturalHeight } : 'video' === tag ? { w: n.videoWidth, h: n.videoHeight } : null;
+				return {
+					tag, src, poster: 'video' === tag ? attr( 'poster' ) : null, alt: 'img' === tag ? attr( 'alt' ) : null,
+					natural: ni && ni.w > 0 && ni.h > 0 ? ni : null, markup: 'svg' === tag ? new XMLSerializer().serializeToString( n ) : null, own: n === el,
+					element: {
+						computed: { position: c.position, inset: [ c.top, c.right, c.bottom, c.left ].every( ( v ) => '0px' === v ) },
+						fullBox: Math.abs( box.width - pr.width ) <= 1 && Math.abs( box.height - pr.height ) <= 1,
+						behindSiblings: later || Number( c.zIndex ) < 0, hasSiblingContent: sibs.length > 0,
+						hasText: '' !== ( n.textContent || '' ).trim(), offsets: [ c.top, c.right, c.bottom, c.left ].some( ( v ) => 'auto' !== v ),
+					},
+				};
+			};
+			const light = nodes.map( read );
+			// A custom element draws its picture in its open shadow root: those images, one per address, when no light-DOM media shows.
+			const seen = new Set();
+			const shadow = light.length ? [] : drawn.filter( ( i ) => shown( i ) && ! seen.has( imgSrc( i ) ) && seen.add( imgSrc( i ) ) ).map( read );
+			snap.media = [ ...light, ...shadow ];
+		}
 		// Every picture the element draws when it draws two or more, in document order (one image placeholder's copies of one
 		// address count once), so a list block can give each of its items the picture the draft draws in that item.
 		const pictures = [];
