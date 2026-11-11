@@ -37,10 +37,14 @@
 	"sgs/before-after": [
 		"ambient-float",
 		"carousel-loop",
+		"cursor-field",
 		"curtain",
 		"draggable",
 		"follow-pointer",
+		"generative-background",
 		"glare",
+		"grid-dots",
+		"ken-burns",
 		"lottie",
 		"magnet",
 		"morph",
@@ -51,13 +55,18 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment"
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/brand-strip": [
 		"ambient-float",
+		"cursor-field",
 		"curtain",
 		"follow-pointer",
+		"generative-background",
 		"glare",
+		"grid-dots",
+		"ken-burns",
 		"lottie",
 		"magnet",
 		"marquee",
@@ -69,7 +78,8 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment"
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/button": [
 		"ambient-float",
@@ -92,9 +102,13 @@
 	"sgs/buybox": [
 		"ambient-float",
 		"carousel-loop",
+		"cursor-field",
 		"curtain",
 		"follow-pointer",
+		"generative-background",
 		"glare",
+		"grid-dots",
+		"ken-burns",
 		"lottie",
 		"magnet",
 		"morph",
@@ -105,7 +119,8 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment"
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/choice-flow-result": [
 		"ambient-float",
@@ -350,10 +365,14 @@
 	],
 	"sgs/image-sequence": [
 		"ambient-float",
+		"cursor-field",
 		"curtain",
 		"follow-pointer",
+		"generative-background",
 		"glare",
+		"grid-dots",
 		"image-sequence",
+		"ken-burns",
 		"lottie",
 		"magnet",
 		"morph",
@@ -364,7 +383,8 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment"
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/info-box": [
 		"ambient-float",
@@ -528,9 +548,13 @@
 	"sgs/post-grid": [
 		"ambient-float",
 		"carousel-loop",
+		"cursor-field",
 		"curtain",
 		"follow-pointer",
+		"generative-background",
 		"glare",
+		"grid-dots",
+		"ken-burns",
 		"lottie",
 		"magnet",
 		"morph",
@@ -541,7 +565,8 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment"
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/pricing-table": [
 		"ambient-float",
@@ -563,9 +588,13 @@
 	],
 	"sgs/product-card": [
 		"ambient-float",
+		"cursor-field",
 		"curtain",
 		"follow-pointer",
+		"generative-background",
 		"glare",
+		"grid-dots",
+		"ken-burns",
 		"lottie",
 		"magnet",
 		"morph",
@@ -578,7 +607,8 @@
 		"scrub",
 		"sheen",
 		"split-reveal",
-		"surface-treatment"
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/product-faq": [
 		"ambient-float",
@@ -641,10 +671,14 @@
 	],
 	"sgs/responsive-logo": [
 		"ambient-float",
+		"cursor-field",
 		"curtain",
 		"draw",
 		"follow-pointer",
+		"generative-background",
 		"glare",
+		"grid-dots",
+		"ken-burns",
 		"lottie",
 		"magnet",
 		"morph",
@@ -656,7 +690,8 @@
 		"scrub",
 		"sheen",
 		"surface-treatment",
-		"svg-loop"
+		"svg-loop",
+		"wave-gradient"
 	],
 	"sgs/separator": [
 		"ambient-float",
@@ -730,9 +765,13 @@
 	],
 	"sgs/team-member": [
 		"ambient-float",
+		"cursor-field",
 		"curtain",
 		"follow-pointer",
+		"generative-background",
 		"glare",
+		"grid-dots",
+		"ken-burns",
 		"lottie",
 		"magnet",
 		"morph",
@@ -745,7 +784,8 @@
 		"scrub",
 		"sheen",
 		"split-reveal",
-		"surface-treatment"
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/testimonial": [
 		"ambient-float",
@@ -792,9 +832,13 @@
 	"sgs/timeline": [
 		"ambient-float",
 		"carousel-loop",
+		"cursor-field",
 		"curtain",
 		"follow-pointer",
+		"generative-background",
 		"glare",
+		"grid-dots",
+		"ken-burns",
 		"lottie",
 		"magnet",
 		"morph",
@@ -806,7 +850,8 @@
 		"scroll-progress",
 		"sheen",
 		"split-reveal",
-		"surface-treatment"
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/trust-bar": [
 		"ambient-float",

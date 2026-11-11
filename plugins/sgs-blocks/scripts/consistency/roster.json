@@ -111,7 +111,7 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": true,
+        "link": false,
         "media": true,
         "animation": false
       },
@@ -787,7 +787,7 @@
         "styling": true,
         "colour": true,
         "link": false,
-        "media": true,
+        "media": false,
         "animation": false
       },
       "qualifies": {
@@ -1142,7 +1142,7 @@
       "surfaces": {
         "styling": false,
         "colour": true,
-        "link": true,
+        "link": false,
         "media": true,
         "animation": false
       },
@@ -1513,7 +1513,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 51,
+        "paintDeclarations": 52,
         "replacedCoreSupports": []
       }
     },

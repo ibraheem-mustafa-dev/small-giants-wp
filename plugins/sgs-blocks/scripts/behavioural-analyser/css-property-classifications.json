@@ -4435,16 +4435,6 @@
     },
     {
       "slug": "sgs/buybox",
-      "attr": "galleryThumbBorderColourHover",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "gallery-thumb",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
       "attr": "guidedGroupTitleFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -4687,38 +4677,6 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "guidedMeter"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "mainPhotoBorderStyle",
-      "fields": {
-        "css_property": "border-style",
-        "css_element": "main-photo-frame"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "mainPhotoBorderWidth",
-      "fields": {
-        "css_property": "border-width",
-        "css_element": "main-photo-frame"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "mainPhotoRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_element": "main-photo-frame"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "mainPhotoShadow",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_element": "main-photo-frame"
       }
     },
     {
@@ -5548,6 +5506,14 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerBoxBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "picker-box"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerDotRingThickness",
       "fields": {
         "css_property": "border-width",
@@ -5801,6 +5767,15 @@
       "fields": {
         "css_property": "text-transform",
         "css_element": "rrpChip"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPillBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "rrp-pill"
       }
     },
     {
@@ -6174,6 +6149,14 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "thumbBorderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "thumbsPerRow",
       "fields": {
         "css_property": "grid-template-columns",
@@ -6440,14 +6423,6 @@
         "css_property": "align-items",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
-      "attr": "aspectRatio",
-      "fields": {
-        "css_property": "aspect-ratio",
-        "css_element": "image-wrap"
       }
     },
     {
@@ -6885,14 +6860,6 @@
         "css_property": "grid-template-rows",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
-      "attr": "imageHeight",
-      "fields": {
-        "css_property": "height",
-        "css_element": "image-wrap"
       }
     },
     {
@@ -8761,33 +8728,20 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "backgroundOverlayColourHover",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "overlay",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "backgroundOverlayOpacity",
-      "fields": {
-        "css_property": "opacity"
       }
     },
     {
@@ -8982,15 +8936,6 @@
         "css_property": "overflow",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "overlayGradientHover",
-      "fields": {
-        "css_property": "background-image",
-        "css_element": "overlay",
-        "css_state": "hover"
       }
     },
     {
@@ -9837,15 +9782,6 @@
     },
     {
       "slug": "sgs/decorative-image",
-      "attr": "backgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/decorative-image",
       "attr": "backgroundColourGradient",
       "fields": {
         "css_property": "background-image",
@@ -9854,19 +9790,8 @@
     },
     {
       "slug": "sgs/decorative-image",
-      "attr": "borderStyle",
-      "fields": {
-        "css_property": "border-style",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/decorative-image",
-      "attr": "borderWidth",
-      "fields": {
-        "css_property": "border-width",
-        "css_element": "wrapper"
-      }
+      "attr": "fadeOnScroll",
+      "fields": {}
     },
     {
       "slug": "sgs/decorative-image",
@@ -9875,7 +9800,32 @@
     },
     {
       "slug": "sgs/decorative-image",
-      "attr": "height",
+      "attr": "layerBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "layerBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "layerBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "layerHeight",
       "fields": {
         "css_property": "height",
         "css_element": "wrapper"
@@ -9883,7 +9833,7 @@
     },
     {
       "slug": "sgs/decorative-image",
-      "attr": "maxWidth",
+      "attr": "layerMaxWidth",
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER",
@@ -9892,7 +9842,7 @@
     },
     {
       "slug": "sgs/decorative-image",
-      "attr": "opacity",
+      "attr": "layerOpacity",
       "fields": {
         "css_property": "opacity",
         "css_element": "wrapper"
@@ -9900,9 +9850,24 @@
     },
     {
       "slug": "sgs/decorative-image",
+      "attr": "layerShape",
+      "fields": {
+        "css_property": "border-radius"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "layerWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
       "attr": "overflow",
       "fields": {
-        "css_property": "overflow",
+        "css_property": "overflow,z-index",
         "css_element": "wrapper"
       }
     },
@@ -9925,22 +9890,6 @@
       "attr": "rotation",
       "fields": {
         "css_property": "transform",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/decorative-image",
-      "attr": "shape",
-      "fields": {
-        "css_property": "clip-path",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/decorative-image",
-      "attr": "width",
-      "fields": {
-        "css_property": "width",
         "css_element": "wrapper"
       }
     },
@@ -13876,15 +13825,6 @@
     },
     {
       "slug": "sgs/gallery",
-      "attr": "aspectRatio",
-      "fields": {
-        "css_property": "aspect-ratio",
-        "css_layer": "GRID_AREA",
-        "css_element": "item"
-      }
-    },
-    {
-      "slug": "sgs/gallery",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -17174,6 +17114,23 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-image"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
@@ -17189,58 +17146,6 @@
       "fields": {
         "css_property": "background-image",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "backgroundOverlayColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "overlay"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "backgroundOverlayColourHover",
-      "fields": {
-        "css_property": "background-color",
-        "css_layer": "OUTER",
-        "css_element": "overlay",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "backgroundOverlayOpacity",
-      "fields": {
-        "css_property": "opacity",
-        "css_layer": "OUTER",
-        "css_element": "overlay"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "backgroundPosition",
-      "fields": {
-        "css_property": "object-position",
-        "css_element": "video-bg"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "backgroundSize",
-      "fields": {
-        "css_property": "object-fit",
-        "css_element": "video-bg"
       }
     },
     {
@@ -17434,7 +17339,9 @@
       "slug": "sgs/hero",
       "attr": "margin",
       "fields": {
-        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
+        "css_property": "margin-bottom,margin-left,margin-right,margin-top",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
       }
     },
     {
@@ -17448,58 +17355,11 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "mediaBackground",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "GRID_AREA",
-        "css_element": "media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "mediaBackgroundGradient",
-      "fields": {
-        "css_property": "background-image",
-        "css_layer": "GRID_AREA",
-        "css_element": "media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "mediaPadding",
-      "fields": {
-        "css_property": "padding",
-        "css_layer": "GRID_AREA",
-        "css_element": "media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "minHeight",
       "fields": {
         "css_property": "min-height",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "overlayGradient",
-      "fields": {
-        "css_property": "background-image",
-        "css_layer": "OUTER",
-        "css_element": "overlay"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "overlayGradientHover",
-      "fields": {
-        "css_property": "background-image",
-        "css_layer": "OUTER",
-        "css_element": "overlay",
-        "css_state": "hover"
       }
     },
     {
@@ -17518,86 +17378,6 @@
         "css_property": "box-shadow",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaAspectRatio",
-      "fields": {
-        "css_property": "aspect-ratio",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaBackground",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaBorderStyle",
-      "fields": {
-        "css_property": "border-style",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaBorderWidth",
-      "fields": {
-        "css_property": "border-width",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaMaxHeight",
-      "fields": {
-        "css_property": "max-height"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaMinHeight",
-      "fields": {
-        "css_property": "min-height",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaPadding",
-      "fields": {
-        "css_property": "padding",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaShape",
-      "fields": {
-        "css_property": "clip-path",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaWidth",
-      "fields": {
-        "css_property": "width",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
       }
     },
     {
@@ -18735,14 +18515,6 @@
       }
     },
     {
-      "slug": "sgs/image-sequence",
-      "attr": "aspectRatio",
-      "fields": {
-        "css_property": "aspect-ratio",
-        "css_element": "wrapper"
-      }
-    },
-    {
       "slug": "sgs/info-box",
       "attr": "backgroundColour",
       "fields": {
@@ -19798,25 +19570,6 @@
     },
     {
       "slug": "sgs/media",
-      "attr": "captionColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "caption"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "captionColourHover",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "caption",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/media",
       "attr": "captionFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -19934,23 +19687,7 @@
       "slug": "sgs/media",
       "attr": "captionWritingMode",
       "fields": {
-        "css_property": "writing-mode",
-        "css_element": "caption"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "imageBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode",
-        "css_element": "img"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "order",
-      "fields": {
-        "css_property": "order"
+        "css_property": "writing-mode"
       }
     },
     {
@@ -20730,29 +20467,6 @@
     },
     {
       "slug": "sgs/multi-button",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "backgroundOverlayColourHover",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "overlay",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "backgroundOverlayOpacity",
-      "fields": {
-        "css_property": "opacity"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -20866,15 +20580,6 @@
         "css_property": "max-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "overlayGradientHover",
-      "fields": {
-        "css_property": "background-image",
-        "css_element": "overlay",
-        "css_state": "hover"
       }
     },
     {
@@ -21183,36 +20888,16 @@
     },
     {
       "slug": "sgs/nav-drawer",
-      "attr": "backgroundImage",
+      "attr": "backgroundOverlayBlend",
       "fields": {
-        "css_property": "background-image",
-        "css_layer": "OUTER",
-        "css_element": "decorative"
+        "css_property": "mix-blend-mode"
       }
     },
     {
       "slug": "sgs/nav-drawer",
-      "attr": "backgroundPosition",
+      "attr": "backgroundOverlayOpacity",
       "fields": {
-        "css_property": "background-position",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "backgroundRepeat",
-      "fields": {
-        "css_property": "background-repeat",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "backgroundSize",
-      "fields": {
-        "css_property": "background-size",
+        "css_property": "opacity",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -22771,29 +22456,6 @@
     },
     {
       "slug": "sgs/physics-canvas",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
-      "attr": "backgroundOverlayColourHover",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "overlay",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
-      "attr": "backgroundOverlayOpacity",
-      "fields": {
-        "css_property": "opacity"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -22844,15 +22506,6 @@
         "css_property": "min-height",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
-      "attr": "overlayGradientHover",
-      "fields": {
-        "css_property": "background-image",
-        "css_element": "overlay",
-        "css_state": "hover"
       }
     },
     {
@@ -23419,14 +23072,6 @@
         "css_property": "grid-template-rows",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/post-grid",
-      "attr": "imageHeight",
-      "fields": {
-        "css_property": "height",
-        "css_element": "image"
       }
     },
     {
@@ -26272,18 +25917,10 @@
     },
     {
       "slug": "sgs/product-card",
-      "attr": "imageAspectRatio",
+      "attr": "imageBackground",
       "fields": {
-        "css_property": "aspect-ratio",
-        "css_element": "image"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "imageHeight",
-      "fields": {
-        "css_property": "height",
-        "css_element": "image"
+        "css_property": "background-color",
+        "css_element": "media-wrap"
       }
     },
     {
@@ -26292,15 +25929,6 @@
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "mediaBackgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "image"
       }
     },
     {
@@ -28395,13 +28023,6 @@
     },
     {
       "slug": "sgs/responsive-logo",
-      "attr": "alt",
-      "fields": {
-        "css_element": "image"
-      }
-    },
-    {
-      "slug": "sgs/responsive-logo",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -28414,38 +28035,6 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/responsive-logo",
-      "attr": "logoDecorative",
-      "fields": {
-        "css_element": "image"
-      }
-    },
-    {
-      "slug": "sgs/responsive-logo",
-      "attr": "logoId",
-      "fields": {
-        "css_property": "max-width",
-        "css_tier": "desktop",
-        "css_element": "image"
-      }
-    },
-    {
-      "slug": "sgs/responsive-logo",
-      "attr": "logoIdMobile",
-      "fields": {
-        "css_property": "max-width",
-        "css_tier": "mobile",
-        "css_element": "image"
-      }
-    },
-    {
-      "slug": "sgs/responsive-logo",
-      "attr": "logoSwitchCustomPx",
-      "fields": {
-        "css_element": "image"
       }
     },
     {
@@ -28477,15 +28066,6 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/responsive-logo",
-      "attr": "width",
-      "fields": {
-        "css_property": "width",
-        "css_layer": "OUTER",
         "css_element": "wrapper"
       }
     },
@@ -28715,6 +28295,16 @@
     },
     {
       "slug": "sgs/site-footer",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
@@ -28722,29 +28312,6 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundOverlayColourHover",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "overlay",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundOverlayOpacity",
-      "fields": {
-        "css_property": "opacity"
       }
     },
     {
@@ -28835,15 +28402,6 @@
         "css_property": "min-height",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "overlayGradientHover",
-      "fields": {
-        "css_property": "background-image",
-        "css_element": "overlay",
-        "css_state": "hover"
       }
     },
     {
@@ -29119,29 +28677,6 @@
     },
     {
       "slug": "sgs/site-header",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "backgroundOverlayColourHover",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "overlay",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "backgroundOverlayOpacity",
-      "fields": {
-        "css_property": "opacity"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -29192,15 +28727,6 @@
         "css_property": "min-height",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "overlayGradientHover",
-      "fields": {
-        "css_property": "background-image",
-        "css_element": "overlay",
-        "css_state": "hover"
       }
     },
     {
@@ -32612,6 +32138,31 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "entryHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "entryRatio",
+      "fields": {
+        "css_property": "aspect-ratio",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "entryWidth",
+      "fields": {
+        "css_property": "grid-template-columns,left,max-width,rule",
+        "css_layer": "GRID",
+        "css_element": "entry"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "hintFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -32672,30 +32223,6 @@
       "fields": {
         "css_property": "margin",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
-      "attr": "mediaAspectRatio",
-      "fields": {
-        "css_property": "aspect-ratio",
-        "css_element": "image"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
-      "attr": "mediaHeight",
-      "fields": {
-        "css_property": "height",
-        "css_element": "image"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
-      "attr": "milestoneMediaWidth",
-      "fields": {
-        "css_property": "grid-template-columns,left,max-width,rule",
-        "css_layer": "GRID"
       }
     },
     {
@@ -33017,48 +32544,9 @@
     },
     {
       "slug": "sgs/trust-bar",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "backgroundOverlayColourHover",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "overlay",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "backgroundOverlayOpacity",
-      "fields": {
-        "css_property": "opacity"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "badgeImageBorderRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_element": "badge-img"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
       "attr": "badgeImageShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "badge-img"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "badgeImageSize",
-      "fields": {
-        "css_property": "height,width",
         "css_element": "badge-img"
       }
     },
@@ -33438,15 +32926,6 @@
         "css_property": "min-height",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "overlayGradientHover",
-      "fields": {
-        "css_property": "background-image",
-        "css_element": "overlay",
-        "css_state": "hover"
       }
     },
     {
@@ -36786,71 +36265,12 @@
     },
     {
       "slug": "sgs/buybox",
-      "attr": "galleryThumbBorderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "gallery-thumb"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
       "attr": "galleryThumbBorderColourCurrent",
       "fields": {
         "css_property": "border-color",
         "role": "color",
         "css_element": "gallery-thumb",
         "css_state": "current"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "galleryThumbBorderRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_element": "gallery-thumb"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "galleryThumbBorderStyle",
-      "fields": {
-        "css_property": "border-style",
-        "css_element": "gallery-thumb"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "galleryThumbBorderWidth",
-      "fields": {
-        "css_property": "border-width",
-        "css_element": "gallery-thumb"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "mainPhotoBackgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "main-photo-frame"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "mainPhotoBorderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "main-photo-frame"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "mainPhotoShadowColour",
-      "fields": {
-        "css_property": "box-shadow-color",
-        "css_element": "main-photo-frame"
       }
     },
     {
@@ -36977,14 +36397,6 @@
       "fields": {
         "css_property": "font-size",
         "css_element": "pick-tile-price"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "pickerBoxBorderWidth",
-      "fields": {
-        "css_property": "border-width",
-        "css_element": "picker-box"
       }
     },
     {
@@ -37183,15 +36595,6 @@
         "css_property": "flex-wrap",
         "css_layer": "OUTER",
         "css_element": "price-row"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "rrpPillBackgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "rrp-pill"
       }
     },
     {
@@ -37438,6 +36841,14 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_element": "image-wrap"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "imageHeight",
+      "fields": {
+        "css_property": "height",
         "css_element": "image-wrap"
       }
     },
@@ -37961,16 +37372,6 @@
     },
     {
       "slug": "sgs/container",
-      "attr": "backgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/container",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -38379,7 +37780,7 @@
     },
     {
       "slug": "sgs/decorative-image",
-      "attr": "borderColour",
+      "attr": "layerBorderColour",
       "fields": {
         "css_property": "border-color",
         "role": "color",
@@ -38388,7 +37789,7 @@
     },
     {
       "slug": "sgs/decorative-image",
-      "attr": "borderColourGradient",
+      "attr": "layerBorderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
         "css_element": "wrapper"
@@ -38396,46 +37797,46 @@
     },
     {
       "slug": "sgs/decorative-image",
-      "attr": "borderRadius",
+      "attr": "layerBorderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "layerBoxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "layerBoxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "layerBoxShadowColourHover",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "layerRadius",
       "fields": {
         "css_property": "border-radius",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/decorative-image",
-      "attr": "boxShadow",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/decorative-image",
-      "attr": "boxShadowColour",
-      "fields": {
-        "css_property": "box-shadow-color",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/decorative-image",
-      "attr": "boxShadowColourHover",
-      "fields": {
-        "css_property": "box-shadow-color",
-        "css_element": "wrapper",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/decorative-image",
-      "attr": "boxShadowHover",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "hover"
       }
     },
     {
@@ -40376,6 +39777,15 @@
     },
     {
       "slug": "sgs/gallery",
+      "attr": "itemRatio",
+      "fields": {
+        "css_property": "aspect-ratio",
+        "css_layer": "GRID_AREA",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
       "attr": "overlayColourHover",
       "fields": {
         "css_property": "background-color",
@@ -41362,16 +40772,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "backgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -41439,16 +40839,17 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaAlign",
+      "attr": "splitBackground",
       "fields": {
-        "css_property": "justify-content",
+        "css_property": "background-color",
+        "role": "color",
         "css_layer": "GRID_AREA",
-        "css_element": "media"
+        "css_element": "split-media"
       }
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaBorderColour",
+      "attr": "splitBorderColour",
       "fields": {
         "css_property": "border-color",
         "role": "color",
@@ -41458,7 +40859,7 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaBorderColourGradient",
+      "attr": "splitBorderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
         "css_layer": "GRID_AREA",
@@ -41467,7 +40868,7 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaBorderColourHover",
+      "attr": "splitBorderColourHover",
       "fields": {
         "css_property": "border-color",
         "role": "color",
@@ -41478,26 +40879,25 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaBorderColourHoverGradient",
+      "attr": "splitBorderStyle",
       "fields": {
-        "css_property": "border-color-gradient",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaBorderRadius",
-      "fields": {
-        "css_property": "border-radius",
+        "css_property": "border-style",
         "css_layer": "GRID_AREA",
         "css_element": "split-media"
       }
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaBoxShadow",
+      "attr": "splitBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitBoxShadow",
       "fields": {
         "css_property": "box-shadow",
         "css_layer": "GRID_AREA",
@@ -41506,7 +40906,7 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaBoxShadowColour",
+      "attr": "splitBoxShadowColour",
       "fields": {
         "css_property": "box-shadow-color",
         "css_layer": "GRID_AREA",
@@ -41515,7 +40915,7 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaBoxShadowColourHover",
+      "attr": "splitBoxShadowColourHover",
       "fields": {
         "css_property": "box-shadow-color",
         "css_layer": "GRID_AREA",
@@ -41525,25 +40925,7 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaHeight",
-      "fields": {
-        "css_property": "height",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaMaxWidth",
-      "fields": {
-        "css_property": "max-width",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaObjectFit",
+      "attr": "splitFit",
       "fields": {
         "css_property": "object-fit",
         "css_layer": "GRID_AREA",
@@ -41552,7 +40934,7 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaObjectPosition",
+      "attr": "splitFocal",
       "fields": {
         "css_property": "object-position",
         "css_layer": "GRID_AREA",
@@ -41561,21 +40943,65 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaOverlayColour",
+      "attr": "splitHeight",
       "fields": {
-        "css_property": "background-color",
-        "role": "color",
+        "css_property": "height",
         "css_layer": "GRID_AREA",
-        "css_element": "media-overlay"
+        "css_element": "split-media"
       }
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaOverlayGradient",
+      "attr": "splitMaxHeight",
       "fields": {
-        "css_property": "background-image",
+        "css_property": "max-height",
         "css_layer": "GRID_AREA",
-        "css_element": "media-overlay"
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMaxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitRatio",
+      "fields": {
+        "css_property": "aspect-ratio",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
       }
     },
     {
@@ -41836,6 +41262,14 @@
         "css_property": "color-gradient",
         "css_element": "item-text",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "aspectRatio",
+      "fields": {
+        "css_property": "aspect-ratio",
+        "css_element": "wrapper"
       }
     },
     {
@@ -42132,19 +41566,11 @@
     },
     {
       "slug": "sgs/media",
-      "attr": "aspectRatio",
-      "fields": {
-        "css_property": "aspect-ratio",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/media",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
         "role": "color",
-        "css_element": "wrapper"
+        "css_element": "media"
       }
     },
     {
@@ -42152,7 +41578,7 @@
       "attr": "borderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
-        "css_element": "wrapper"
+        "css_element": "media"
       }
     },
     {
@@ -42161,7 +41587,7 @@
       "fields": {
         "css_property": "border-color",
         "role": "color",
-        "css_element": "wrapper",
+        "css_element": "media",
         "css_state": "hover"
       }
     },
@@ -42170,16 +41596,8 @@
       "attr": "borderColourHoverGradient",
       "fields": {
         "css_property": "border-color-gradient",
-        "css_element": "wrapper",
+        "css_element": "media",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "borderRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_element": "wrapper"
       }
     },
     {
@@ -42187,7 +41605,7 @@
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
-        "css_element": "wrapper"
+        "css_element": "media"
       }
     },
     {
@@ -42195,7 +41613,7 @@
       "attr": "borderWidth",
       "fields": {
         "css_property": "border-width",
-        "css_element": "wrapper"
+        "css_element": "media"
       }
     },
     {
@@ -42203,8 +41621,16 @@
       "attr": "boxShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "captionColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "caption"
       }
     },
     {
@@ -42213,6 +41639,16 @@
       "fields": {
         "css_property": "background-image",
         "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "captionColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "caption",
+        "css_state": "hover"
       }
     },
     {
@@ -42226,10 +41662,26 @@
     },
     {
       "slug": "sgs/media",
+      "attr": "fit",
+      "fields": {
+        "css_property": "object-fit",
+        "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "focal",
+      "fields": {
+        "css_property": "object-position",
+        "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/media",
       "attr": "height",
       "fields": {
         "css_property": "height",
-        "css_element": "wrapper"
+        "css_element": "media"
       }
     },
     {
@@ -42237,7 +41689,7 @@
       "attr": "maxHeight",
       "fields": {
         "css_property": "max-height",
-        "css_element": "wrapper"
+        "css_element": "media"
       }
     },
     {
@@ -42245,24 +41697,7 @@
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "objectFit",
-      "fields": {
-        "css_property": "object-fit",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "objectPosition",
-      "fields": {
-        "css_property": "object-position",
-        "css_element": "wrapper"
+        "css_element": "media"
       }
     },
     {
@@ -42270,7 +41705,23 @@
       "attr": "opacity",
       "fields": {
         "css_property": "opacity",
-        "css_element": "wrapper"
+        "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "radius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "ratio",
+      "fields": {
+        "css_property": "aspect-ratio",
+        "css_element": "media"
       }
     },
     {
@@ -43004,15 +42455,6 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "backgroundImage",
-      "fields": {
-        "css_property": "background-image",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -45830,14 +45272,6 @@
       }
     },
     {
-      "slug": "sgs/option-picker",
-      "attr": "swatchShape",
-      "fields": {
-        "css_property": "border-radius",
-        "css_element": "swatch-dot"
-      }
-    },
-    {
       "slug": "sgs/physics-canvas",
       "attr": "borderColour",
       "fields": {
@@ -45863,14 +45297,6 @@
         "css_property": "border-radius",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/post-grid",
-      "attr": "aspectRatio",
-      "fields": {
-        "css_property": "aspect-ratio",
-        "css_element": "image"
       }
     },
     {
@@ -46082,6 +45508,22 @@
         "css_property": "grid-template-columns",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "imageHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "imageRatio",
+      "fields": {
+        "css_property": "aspect-ratio",
+        "css_element": "image"
       }
     },
     {
@@ -46504,38 +45946,6 @@
     },
     {
       "slug": "sgs/product-card",
-      "attr": "brandLogoHeight",
-      "fields": {
-        "css_property": "height",
-        "css_element": "brandLogo"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "brandLogoMaxHeight",
-      "fields": {
-        "css_property": "max-height",
-        "css_element": "brandLogo"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "brandLogoMaxWidth",
-      "fields": {
-        "css_property": "max-width",
-        "css_element": "brandLogo"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "brandLogoWidth",
-      "fields": {
-        "css_property": "width",
-        "css_element": "brandLogo"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
       "attr": "cardShadowHover",
       "fields": {
         "css_property": "box-shadow",
@@ -46626,6 +46036,14 @@
       "fields": {
         "css_property": "tag",
         "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "imageHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "image"
       }
     },
     {
@@ -47294,6 +46712,14 @@
       }
     },
     {
+      "slug": "sgs/responsive-logo",
+      "attr": "width",
+      "fields": {
+        "css_property": "width",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/separator",
       "attr": "contentColourGradient",
       "fields": {
@@ -47308,25 +46734,6 @@
         "css_property": "background-image",
         "css_element": "content",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundAttachment",
-      "fields": {
-        "css_property": "background-attachment",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
@@ -47346,33 +46753,6 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundPosition",
-      "fields": {
-        "css_property": "background-position",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundRepeat",
-      "fields": {
-        "css_property": "background-repeat",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundSize",
-      "fields": {
-        "css_property": "background-size",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
@@ -47461,15 +46841,6 @@
     },
     {
       "slug": "sgs/site-header",
-      "attr": "backgroundAttachment",
-      "fields": {
-        "css_property": "background-attachment",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
       "attr": "backgroundColourGradient",
       "fields": {
         "css_property": "background-color-gradient",
@@ -47496,33 +46867,6 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "scrolled"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "backgroundPosition",
-      "fields": {
-        "css_property": "background-position",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "backgroundRepeat",
-      "fields": {
-        "css_property": "background-repeat",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "backgroundSize",
-      "fields": {
-        "css_property": "background-size",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
@@ -49255,6 +48599,14 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "entryRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "headingLevel",
       "fields": {
         "css_property": "tag",
@@ -49268,14 +48620,6 @@
         "css_property": "color",
         "role": "color",
         "css_element": "hint"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
-      "attr": "mediaBorderRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_element": "image"
       }
     },
     {
@@ -49358,55 +48702,11 @@
     },
     {
       "slug": "sgs/trust-bar",
-      "attr": "backgroundAttachment",
-      "fields": {
-        "css_property": "background-attachment",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-image",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "backgroundPosition",
-      "fields": {
-        "css_property": "background-position",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "backgroundRepeat",
-      "fields": {
-        "css_property": "background-repeat",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "backgroundSize",
-      "fields": {
-        "css_property": "background-size",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "badgeImageObjectFit",
-      "fields": {
-        "css_property": "object-fit",
-        "css_element": "badge-img"
       }
     },
     {
@@ -49733,73 +49033,6 @@
       }
     },
     {
-      "slug": "sgs/hero",
-      "attr": "splitMediaBorderRadiusMobile",
-      "fields": {
-        "css_property": "border-radius",
-        "css_tier": "mobile",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaBorderRadiusTablet",
-      "fields": {
-        "css_property": "border-radius",
-        "css_tier": "tablet",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "borderRadiusMobile",
-      "fields": {
-        "css_property": "border-radius",
-        "css_tier": "mobile",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "borderRadiusTablet",
-      "fields": {
-        "css_property": "border-radius",
-        "css_tier": "tablet",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "backgroundImageMobile",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "mobile",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "backgroundImageTablet",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "tablet",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/responsive-logo",
-      "attr": "logoIdTablet",
-      "fields": {
-        "css_property": "max-width",
-        "css_tier": "tablet",
-        "css_element": "image"
-      }
-    },
-    {
       "slug": "sgs/text",
       "attr": "firstLetterFontSizeUnit",
       "fields": {}
@@ -49836,6 +49069,22 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "separator"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "previewBorderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "pick-preview"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "thumbBorderColourHoverGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_state": "hover"
       }
     },
     {
@@ -49882,6 +49131,15 @@
       }
     },
     {
+      "slug": "sgs/decorative-image",
+      "attr": "layerBorderColourHoverGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
       "slug": "sgs/form",
       "attr": "submitColourGradient",
       "fields": {
@@ -49896,6 +49154,15 @@
         "css_property": "background-color-gradient",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileBorderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "CONTENT",
+        "css_element": "tile"
       }
     },
     {
@@ -49934,11 +49201,12 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "backgroundColourGradient",
+      "attr": "splitBorderColourHoverGradient",
       "fields": {
-        "css_property": "background-color-gradient",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_property": "border-color-gradient",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media",
+        "css_state": "hover"
       }
     },
     {
