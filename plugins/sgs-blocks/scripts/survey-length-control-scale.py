@@ -111,6 +111,7 @@ GENERIC_FILES = {
     'components/media/controls/MediaBoxShapeControls.js': ('spacing', "the box-shape atom's width, height, max width and max height: box lengths for its callers (sgs/hero, sgs/media)"),
     'components/motion/DistanceAtom.js': ('spacing', 'motion distance length'),
     'components/media/panels/component-map.js': ('spacing', 'media panel length fields (Width, Height, limits): box lengths, presets off'),
+    'blocks/extensions/commerce-look/table-panels.js': ('spacing', "the commerce-look table's length column (margins, gaps, widths and heights of WooCommerce parts): box lengths for every row"),
     'blocks/timeline/card-device-controls.js': ('spacing', "the timeline's per-device card gap and image height (TierLengthItem): box lengths"),
     'blocks/account/CellPanels.js': ('spacing', "the account block's gap, margin, padding-side, width, min-height, radius and rule-width rows: box lengths, each row named in the file's row tables"),
 }
