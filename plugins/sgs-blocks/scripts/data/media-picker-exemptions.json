@@ -1,7 +1,6 @@
 {
  "_about": "Spec 49 FR-49-26 / AC-18: files allowed a raw <MediaUpload> because the file is not media this system prints. Read by scripts/check-media-contract.py once a block declares kinds.",
  "exempt": [
-  { "path": "src/blocks/audio/edit.js", "reason": "Audio files are not a media kind the system prints (FR-49-26)" },
-  { "path": "src/blocks/media/components/VideoPanel.js", "reason": "Holds the captions .vtt picker, which is not media this system prints (FR-49-26); Wave 1 moves the video and poster pickers to MediaSlotField and may then narrow this entry" }
+  { "path": "src/blocks/audio/edit.js", "reason": "Audio files are not a media kind the system prints (FR-49-26)" }
  ]
 }

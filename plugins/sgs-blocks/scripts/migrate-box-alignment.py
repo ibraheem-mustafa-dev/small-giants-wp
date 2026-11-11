@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""migrate-box-alignment.py - physical `left|right` to logical `start|end` for five settings.
+"""migrate-box-alignment.py - physical `left|right` to logical `start|end` for four settings.
 
     sgs/icon       iconAlign      left|center|right          -> start|center|end
-    sgs/media      alignment      left|center|right          -> start|center|end
     sgs/separator  alignment      left|center|right          -> start|center|end
     sgs/nav-drawer drawerAlign    left|center|right|stretch  -> start|center|end|stretch
     sgs/tabs       tabAlignment   left|center|right|stretch  -> start|center|end|stretch
@@ -18,7 +17,7 @@ THREE CORPORA
   source  edit.js / render.php / style.css markers of the old shape (SOURCE_MARKERS). Checked.
 
 Both sgs/hero.alignment and every other block's `alignment` are untouched: a value is only
-read when its owning block name is one of the five.
+read when its owning block name is one of the four.
 
 Edits are textual (the value token only), so indentation and key order are byte-identical.
 Occurrences are paired with the parse by document order and the pairing is asserted, so a
@@ -51,7 +50,6 @@ BLOCKS = ROOT / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 # block name -> (attribute, allowed new values, default new value)
 SPEC = {
     'sgs/icon': ('iconAlign', ('start', 'center', 'end'), 'start'),
-    'sgs/media': ('alignment', ('start', 'center', 'end'), 'start'),
     'sgs/separator': ('alignment', ('start', 'center', 'end'), 'center'),
     'sgs/nav-drawer': ('drawerAlign', ('start', 'center', 'end', 'stretch'), 'start'),
     'sgs/tabs': ('tabAlignment', ('start', 'center', 'end', 'stretch'), 'start'),
@@ -68,7 +66,7 @@ DATA_SUFFIX_TEXT = ('.php', '.html', '.htm')
 PRUNE = {'.git', 'node_modules', 'vendor', 'build', '.claude', 'pipeline-state', 'worktrees',
          '.phpunit.cache', 'dist', 'fixtures', 'cache'}
 
-# Wide-enumeration exceptions: a file that holds a five-block value and is deliberately not migrated.
+# Wide-enumeration exceptions: a file that holds a four-block value and is deliberately not migrated.
 WIDTH_OK = {}
 
 # Old-shape markers in block source, each with the reason it is the old shape. `--check` needs 0 hits.
@@ -319,7 +317,7 @@ def crosscheck(narrow):
             continue
         _, sites, _ = transform(text, path)
         if any(s['verdict'] != 'ignore' for s in sites):
-            out.append(f'{rel(path)}: holds a watched five-block value but is not a migration target (add it or WIDTH_OK)')
+            out.append(f'{rel(path)}: holds a watched four-block value but is not a migration target (add it or WIDTH_OK)')
     for path in broad_targets():
         if rel(path) in WIDTH_OK:
             continue
@@ -344,7 +342,7 @@ SELF_TEST_COMMENT_WANT = (
     '<!-- wp:sgs/tabs {"tabAlignment":"start"} /-->\n'
 )
 SELF_TEST_TREE = (
-    '[\n  {\n    "name": "sgs/media",\n    "attributes": {\n      "alignment": "right",\n'
+    '[\n  {\n    "name": "sgs/separator",\n    "attributes": {\n      "alignment": "right",\n'
     '      "other": {"alignment": "left"}\n    },\n    "innerBlocks": [\n'
     '      {"name": "sgs/hero", "attributes": {"alignment": "left"}}\n    ]\n  }\n]\n'
 )
@@ -374,7 +372,7 @@ def self_test():
     expect('off-enum value is unrecognised', [s['verdict'] for s in sites], ['unrecognised'])
     _, _, problems = transform('<!-- wp:sgs/icon {"iconAlign":"left" <?php x ?>} /-->', 'x.php')
     expect('unparseable comment is reported', len(problems), 1)
-    _, sites, _ = transform('<!-- wp:sgs/media {"alignment":"start"} /-->', 'x.php')
+    _, sites, _ = transform('<!-- wp:sgs/separator {"alignment":"start"} /-->', 'x.php')
     expect('already migrated is ok', [s['verdict'] for s in sites], ['ok'])
     _, sites, _ = transform('<!-- wp:sgs/separator {"alignment":"stretch"} /-->', 'x.php')
     expect('stretch is not allowed on separator', [s['verdict'] for s in sites], ['unrecognised'])

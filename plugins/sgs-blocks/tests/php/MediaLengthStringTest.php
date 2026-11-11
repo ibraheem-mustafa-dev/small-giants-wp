@@ -74,47 +74,39 @@ final class MediaLengthStringTest extends TestCase {
 		$this->assertStringContainsString( 'max-width:none;', $css, 'keyword prints as itself' );
 	}
 
-	public function test_media_atom_sizes_print_per_device_as_custom_properties(): void {
+	public function test_media_sizes_print_per_device_as_scoped_rules(): void {
 		$css = $this->normalised(
 			$this->render_block(
 				'sgs/media',
 				array(
-					'mediaType'   => 'image',
-					'imageUrl'    => 'https://example.test/a.jpg',
-					'mediaSizing' => 'height',
-					'height'      => array(
+					'source'    => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/a.jpg', 'width' => 800, 'height' => 600 ) ),
+					'height'    => array(
 						'desktop' => '320px',
 						'mobile'  => '50vh',
 					),
-					'width'       => array( 'desktop' => '100%' ),
-					'maxWidth'    => array(
+					'width'     => array( 'desktop' => '100%' ),
+					'maxWidth'  => array(
 						'desktop' => '640px',
 						'mobile'  => 'none',
 					),
-					'maxHeight'   => array( 'tablet' => 'calc(100% - 2rem)' ),
+					'maxHeight' => array( 'tablet' => 'calc(100% - 2rem)' ),
 				)
 			)['css']
 		);
-		$this->assertStringContainsString( '--sgs-media-height:320px', $css );
-		$this->assertStringContainsString( '--sgs-media-height-mobile:50vh', $css );
-		$this->assertStringContainsString( '--sgs-media-width:100%', $css );
-		$this->assertStringContainsString( '--sgs-media-width-mobile:auto', $css, 'a tier with a height and no width keeps the ratio width' );
-		$this->assertStringNotContainsString( '--sgs-media-width:auto', $css, 'the desktop tier has a width, so it is not auto' );
-		$this->assertStringContainsString( '--sgs-media-max-width:640px', $css );
-		$this->assertStringContainsString( '--sgs-media-max-width-mobile:none', $css );
-		$this->assertStringContainsString( '--sgs-media-max-height-tablet:calc(100%-2rem)', $css );
+		$this->assertMatchesRegularExpression( '/\.sgs-media-[a-z0-9]+\{height:320px;max-width:640px;width:100%;\}/', $css, 'the desktop values print in the base rule' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-media-[a-z0-9]+\{height:50vh;max-width:none;\}\}/', $css, 'the phone values print in the phone query, a keyword as itself' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:1023px\)\{\.sgs-media-[a-z0-9]+\{max-height:calc\(100%-2rem\);\}\}/', $css, 'the tablet value prints in the tablet query' );
 	}
 
-	public function test_media_atom_ignores_the_old_number_shape(): void {
+	public function test_media_ignores_the_old_number_shape(): void {
 		$css = $this->render_block(
 			'sgs/media',
 			array(
-				'mediaType' => 'image',
-				'imageUrl'  => 'https://example.test/a.jpg',
-				'maxWidth'  => array( 'desktop' => 640 ),
+				'source'   => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/a.jpg', 'width' => 800, 'height' => 600 ) ),
+				'maxWidth' => array( 'desktop' => 640 ),
 			)
 		)['css'];
-		$this->assertStringNotContainsString( '--sgs-media-max-width:640', $css );
+		$this->assertStringNotContainsString( 'max-width:640', $css );
 	}
 
 	public function test_before_after_stage_height_and_max_width_print_per_device(): void {

@@ -1,13 +1,17 @@
 /**
- * Media block inspector: the Typography panel (caption and video time read-out).
+ * Media block inspector: the Typography fields (caption and video time read-out), mounted into the media panels'
+ * Typography panel as caller content. The caption target shows when a caption exists and the video-time target when
+ * the player shows (Spec 49 §9.3).
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody } from '@wordpress/components';
 import { TypographyControls } from '../../../components';
 
-export default function TypographyPanel( { attributes, setAttributes } ) {
+export default function TypographyPanel( { attributes, setAttributes, showCaption = true, showVideoTime = true } ) {
+	if ( ! showCaption && ! showVideoTime ) {
+		return null;
+	}
 	return (
-		<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+		<>
 			{ /* One switcher: the caption and the video player's time read-out.
 			     The read-out is built by view.js; the canvas shows a static sample. */ }
 			<TypographyControls
@@ -53,8 +57,8 @@ export default function TypographyPanel( { attributes, setAttributes } ) {
 						showTextColumns: true,
 						showWritingMode: true,
 					},
-				] }
+				].filter( ( target ) => ( 'caption' === target.key ? showCaption : showVideoTime ) ) }
 			/>
-		</PanelBody>
+		</>
 	);
 }
