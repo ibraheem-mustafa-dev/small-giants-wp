@@ -20,6 +20,15 @@ final class MediaLengthStringTest extends TestCase {
 
 	use BlockHarnessRenderTrait;
 
+	private const HERO_SOURCE = array(
+		'desktop' => array(
+			'kind'   => 'image',
+			'url'    => 'https://example.test/a.jpg',
+			'width'  => 800,
+			'height' => 600,
+		),
+	);
+
 	/**
 	 * Hero split image: attribute, CSS property.
 	 *
@@ -27,10 +36,10 @@ final class MediaLengthStringTest extends TestCase {
 	 */
 	public static function hero_sizes(): array {
 		return array(
-			'width'      => array( 'splitMediaWidth', 'width' ),
-			'height'     => array( 'splitMediaHeight', 'height' ),
-			'max width'  => array( 'splitMediaMaxWidth', 'max-width' ),
-			'max height' => array( 'splitMediaMaxHeight', 'max-height' ),
+			'width'      => array( 'splitWidth', 'width' ),
+			'height'     => array( 'splitHeight', 'height' ),
+			'max width'  => array( 'splitMaxWidth', 'max-width' ),
+			'max height' => array( 'splitMaxHeight', 'max-height' ),
 		);
 	}
 
@@ -46,32 +55,41 @@ final class MediaLengthStringTest extends TestCase {
 			$this->render_block(
 				'sgs/hero',
 				array(
-					'variant'            => 'split',
-					'splitMediaObjectFit' => 'custom',
-					$attr                => array(
+					'variant'     => 'split',
+					'splitSource' => self::HERO_SOURCE,
+					$attr         => array(
 						'desktop' => '240px',
 						'mobile'  => '80%',
 					),
-				)
+				),
+				array(),
+				array(),
+				'',
+				true
 			)['css']
 		);
-		$this->assertMatchesRegularExpression( '/(?<!\}\})\.sgs-hero__split-media\{(?:[a-z-]+:[^;}]+;)*' . preg_quote( $prop, '/' ) . ':240px;?\}/', $css, 'desktop base rule' );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^@]*\.sgs-hero__split-media\{' . preg_quote( $prop, '/' ) . ':80%;?\}/', $css, 'mobile rule' );
+		$this->assertMatchesRegularExpression( '/(?<!\}\})\.sgs-hero-[0-9a-f]+-split\{(?:[a-z-]+:[^;}]+;)*' . preg_quote( $prop, '/' ) . ':240px;(?:[a-z-]+:[^;}]+;)*\}/', $css, 'desktop base rule' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^@]*\.sgs-hero-[0-9a-f]+-split\{' . preg_quote( $prop, '/' ) . ':80%;?\}/', $css, 'mobile rule' );
 	}
 
-	public function test_hero_split_image_keyword_and_old_number_shape(): void {
+	public function test_hero_split_image_max_height_prints_and_no_limit_keyword_prints_nothing(): void {
 		$css = $this->normalised(
 			$this->render_block(
 				'sgs/hero',
 				array(
-					'variant'             => 'split',
-					'splitMediaObjectFit' => 'custom',
-					'splitMediaMaxWidth'  => array( 'desktop' => 'none' ),
-					'splitMediaMaxHeight' => array( 'desktop' => '50vh' ),
-				)
+					'variant'        => 'split',
+					'splitSource'    => self::HERO_SOURCE,
+					'splitMaxWidth'  => array( 'desktop' => 'none' ),
+					'splitMaxHeight' => array( 'desktop' => '50vh' ),
+				),
+				array(),
+				array(),
+				'',
+				true
 			)['css']
 		);
-		$this->assertStringContainsString( 'max-width:none;', $css, 'keyword prints as itself' );
+		$this->assertStringContainsString( 'max-height:50vh;', $css, 'the value prints in the base rule' );
+		$this->assertStringNotContainsString( 'max-width:none', $css, 'a keyword that means no limit prints nothing on the slot' );
 	}
 
 	public function test_media_sizes_print_per_device_as_scoped_rules(): void {

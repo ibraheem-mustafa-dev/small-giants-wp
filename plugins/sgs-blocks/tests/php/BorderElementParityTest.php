@@ -105,7 +105,6 @@ final class BorderElementParityTest extends TestCase {
 		array( 'theme-toggle', '' ),
 		array( 'mega-aside', 'aside' ),
 		array( 'filter-search', 'input' ),
-		array( 'hero', 'splitMedia' ),
 		array( 'cart', 'pill' ),
 		array( 'product-card', 'attributeTag' ),
 		array( 'google-reviews', 'card' ),
@@ -128,7 +127,7 @@ final class BorderElementParityTest extends TestCase {
 	 * attributes). Case => list of target names.
 	 */
 	private const TARGET_CASES = array(
-		'k2_radius_siblings'     => array( 'hero[splitMedia]' ),
+		'k2_radius_siblings'     => array(),
 		'm_colour_gradient_only' => array( 'tabs[panel]' ),
 	);
 
@@ -137,13 +136,6 @@ final class BorderElementParityTest extends TestCase {
 	 * Keyed by target name, falling back to the block folder name.
 	 */
 	private const BASES = array(
-		'hero[splitMedia]'          => array(
-			'attrs' => array(
-				'variant'            => 'split',
-				'splitMediaType'     => 'image',
-				'splitMediaImageUrl' => 'https://example.test/parity.jpg',
-			),
-		),
 		'cart[pill]'                => array(
 			'attrs'   => array(
 				'triggerStyle' => 'pill',

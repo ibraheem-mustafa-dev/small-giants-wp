@@ -11,32 +11,24 @@ import {
 	RangeControl,
 	Button,
 	TextControl,
-	ToggleControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, GradientOverlayControl, gradientOverlayAttrKeys, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl, SgsLengthControl, AlignItemsTierControl, SvgPartsControls } from '../../components';
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, GradientOverlayControl, gradientOverlayAttrKeys, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl, SgsLengthControl } from '../../components';
 
 const CONTENT_GAP_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
 	{ value: 'rem', label: 'rem', default: 0 },
 	{ value: 'em', label: 'em', default: 0 },
 ];
-import {
-	HeroSplitMediaSourceSection,
-	HeroSplitMediaStylingSection,
-} from '../../components/media/HeroSplitMediaPanelLayout.js';
 import MediaElementPanel from '../../components/MediaElementPanel.js';
-import {
-	elementScopeClass,
-	elementCustomProperties,
-} from '../../components/media/canvasStyle.js';
+import BackgroundLayers from '../../components/media/BackgroundLayers';
+import mediaPreview from '../../components/media/mediaPreview.js';
+import { resolveTierSource, useActiveDevice } from '../../components/media/deviceValues.js';
+import { hasFile } from '../../components/media/mediaSlotWrites.js';
 import {
 	resolveShadowPreviewComposed,
-	colourVar,
 	resolveBackgroundPaintPreviewStyle,
 	textPaintPreview,
-	backgroundPaintPreview,
 	resolveResponsiveTier,
-	patchTier,
 	flattenPresetSetting,
 	usePreviewTier,
 	textIndentPreviewCss,
@@ -45,7 +37,7 @@ import {
 // No-inline migration: hero no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
 // per-grid-area panels write to LEGACY FLAT attrs, which would become dead
-// controls once contentPadding / mediaPadding become box
+// controls once contentPadding becomes a box
 // objects. Import the individual panels still needed instead (mirrors
 // sgs/container's own edit.js, which took the same approach); hero rolls its
 // own "Content band" / "Content area" / "Media area" panels below using
@@ -54,21 +46,13 @@ import {
 	WidthPanel,
 	ShapeDividersPanel,
 } from '../container/components/ContainerWrapperControls';
-import { HeroBackgroundPanel } from './components/HeroBackgroundPanel';
+import { BackgroundPanel } from '../container/components/BackgroundPanel';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { tierValueOf, sanitiseSvg, svgBackgroundPreview, backgroundPreview, wrapperToneClass, surfaceBackdropPreview, OVERLAY_BLEND_MODES } from '../../utils';
-import { heroCanvasPreview, splitMediaAtTier } from './canvas-preview';
+import { sanitiseSvg, svgBackgroundPreview, backgroundMediaPreview, wrapperToneClass, surfaceBackdropPreview } from '../../utils';
+import { heroCanvasPreview } from './canvas-preview';
+import metadata from './block.json';
 import { motionNamesBand } from '../extensions/motion/canvas/resolve-target';
 import { getBlockType } from '@wordpress/blocks';
-
-// ── Phase 1 constant options ─────────────────────────────────────────────────
-// BORDER_STYLE_OPTIONS (the local 4-option none/solid/dashed/dotted list) was removed
-// 2026-08-30 -- its only consumer, the bespoke splitMedia <SelectControl>, was replaced
-// by a consolidated <SgsBorderControl> mount (which owns its own style options via
-// GradientCapableColourControl's BorderStyleControl); see migrate-colour-picker-to-panel.py.
-
-// The split media's object-fit select is the shared object-fit atom's own
-// ObjectFitField (HeroSplitMediaStylingSection).
 
 const UNIT_PX_PCT = [
 	{ label: 'px', value: 'px' },
@@ -165,6 +149,9 @@ const ALIGN_CONTENT_OPTIONS = [
  * Produces: eyebrow label → headline (h1) → sub-headline paragraph → CTA buttons.
  * Converter supplies sgs/label + sgs/heading + sgs/text + sgs/multi-button.
  */
+const SPLIT_ENTRY = metadata.supports.sgs.mediaElements.find( ( e ) => 'split' === e.prefix );
+const SPLIT_SLOT = { prefix: 'split', kinds: SPLIT_ENTRY.kinds, context: SPLIT_ENTRY.context };
+
 const HERO_CONTENT_TEMPLATE = [
 	[ 'sgs/label', { className: 'sgs-hero__label', text: __( 'Eyebrow label', 'sgs-blocks' ) } ],
 	[ 'sgs/heading', { level: 'h1', className: 'sgs-hero__headline', content: __( 'Your hero headline', 'sgs-blocks' ) } ],
@@ -200,70 +187,44 @@ const CTA_STYLE_OPTIONS = [
 	{ label: __( 'Outline', 'sgs-blocks' ), value: 'outline' },
 ];
 
+/**
+ * The media element one device shows in the split column (the editor's twin of the renderer's picture, video and SVG).
+ *
+ * @param {Object} props
+ * @param {Object} props.shown The source at the previewed device.
+ * @param {string} props.alt   Its alt text.
+ * @return {JSX.Element|null} The element.
+ */
+function SplitMediaElement( { shown, alt } ) {
+	if ( 'video' === shown.kind ) {
+		return (
+			<span className="sgs-media-stack">
+				{ shown.poster?.url && <img className="sgs-media-el sgs-media-cover" src={ shown.poster.url } alt="" /> }
+				{ shown.url && <video className="sgs-media-el sgs-media-video" src={ shown.url } poster={ shown.poster?.url || undefined } muted loop autoPlay playsInline /> }
+			</span>
+		);
+	}
+	if ( 'svg' === shown.kind && shown.markup ) {
+		// Editor preview of the operator's own markup, through the same allowlist the server uses.
+		return <span className="sgs-media-el sgs-media-svg" aria-hidden="true" dangerouslySetInnerHTML={ { __html: sanitiseSvg( shown.markup ) } } />; // eslint-disable-line react/no-danger
+	}
+	if ( shown.url ) {
+		return <img className="sgs-media-el" src={ shown.url } width={ shown.width || undefined } height={ shown.height || undefined } alt={ alt } />;
+	}
+	return null;
+}
+
 export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const previewTier = usePreviewTier();
 	const indentPreviewCss = textIndentPreviewCss( attributes, '', `#block-${ clientId }`, previewTier );
 	const {
 		variant,
 		alignment,
-		backgroundImage,
 		backgroundOverlayColour,
-		overlayGradient,
-		// splitImage/splitVideo/splitSvg (legacy shapes) and their Tablet/
-		// Mobile siblings, plus the hand-rolled "Split image" picker + media-
-		// type SelectControl that used to read them, were removed 2026-09-01
-		// (HeroSplitMediaSourceSection now owns that UI). No legacy fallback
-		// is read here — Bean-locked (2026-09-02), see the resolution
-		// comment below for the full reasoning.
-		//
-		// Wave 6 (2026-09-01) — the `source` atom's own canonical shape
-		// (prefix 'splitMedia'), written by the new picker in
-		// HeroSplitMediaSourceSection. Desktop tier only here, matching every
-		// other canvas-preview resolution in this file; render.php resolves
-		// all three tiers.
-		splitMediaImageId,
-		splitMediaImageUrl,
-		splitMediaImageAlt,
-		// Decorative-image toggle (finding 18, 2026-09-02) — when true, render.php
-		// blanks the alt text and sets aria-hidden on the split-media wrapper
-		// regardless of media type (image/video/svg), so a screen reader skips it.
-		splitMediaDecorative,
-		splitMediaVideoId,
-		splitMediaVideoUrl,
-		splitMediaSvgContent,
-		splitMediaType,
-		// minHeight is a TIER OBJECT {desktop,tablet,mobile} as of Spec 35 pass 3b
-		// (2026-08-11) — the minHeightTablet/minHeightMobile siblings no longer exist.
+		backgroundOverlayGradient,
+		// minHeight is a TIER OBJECT {desktop,tablet,mobile}: the minHeightTablet/minHeightMobile siblings no longer exist.
 		minHeight,
 		shadow,
-		// Phase 1 — image display.
-		splitMediaObjectFit,
-		// splitMediaObjectPosition is a TIER OBJECT {desktop,tablet,mobile} as of
-		// Priority 4 (2026-09-07, migrate-tier-object.py --fix) — the
-		// splitMediaObjectPositionTablet/Mobile siblings no longer exist.
-		splitMediaObjectPosition,
-		// splitMediaWidth is a TIER OBJECT {desktop,tablet,mobile} as of
-		// Priority 4 (2026-09-07, migrate-tier-object.py --fix) — the
-		// splitMediaWidthTablet/Mobile siblings no longer exist.
-		splitMediaWidth,
-		splitMediaAlign,
-		// splitMediaHeight is a TIER OBJECT {desktop,tablet,mobile} as of 2026-08-10 —
-		// the splitMediaHeightTablet/splitMediaHeightMobile siblings no longer exist.
-		splitMediaHeight,
-		// Box-object families (contract §B, 2026-07-09).
-		splitMediaBorderRadius,
-		splitMediaBorderRadiusTablet,
-		splitMediaBorderRadiusMobile,
-		splitMediaBorderStyle,
-		splitMediaBorderWidth,
-		splitMediaBorderColour,
-		splitMediaBorderColourGradient,
-		// D701 — resting (non-hover) border-colour gradient. Sibling to the
-		// WP-native __experimentalBorder.color support (attributes.style.border.color),
-		// wins over it at render time when set. `borderColourHover`/
-		// `borderColourHoverGradient` gained their own "Hover" tab in the same
-		// SgsBorderControl popover on 2026-09-02 (gap 2 fix) — see this file's
-		// destructure block below for those two attrs.
 		borderColourGradient,
 		borderColour,
 		borderWidth,
@@ -280,25 +241,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		textColourGradient,
 		textColourHover,
 		textColourHoverGradient,
-		splitMediaPadding,
-		// C19 item 3 (2026-09-04) — box-shape atom's remaining bases, only used
-		// for this ToolsPanelItem's hasValue()/onDeselect() below; the control
-		// UI itself reads/writes via MediaElementPanel's own atom composition.
-		splitMediaMediaSizing,
-		splitMediaShape,
-		splitMediaAspectRatio,
-		splitMediaMinHeight,
-		splitMediaMaxWidth,
-		splitMediaMaxHeight,
 		contentBackground,
 		contentBackgroundGradient,
 		// contentPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} —
 		// ONE attr; each tier is a {top,right,bottom,left} box.
 		contentPadding,
-		mediaBackground,
-		mediaBackgroundGradient,
-		splitMediaBackground,
-		mediaPadding,
 		// Phase 1 — layout grid. splitColumnRatio* retired (Step 6, 2026-06-11);
 		// render.php now reads gridTemplateColumns* for the split variant.
 		gridTemplateColumns,
@@ -340,7 +287,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const isSplit = variant === 'split';
 
 	// CHECK A (2026-09-05) — colour palette for textColour/textColourGradient
-	// and mediaBackground/mediaBackgroundGradient canvas previews below, same
+	// canvas previews below, same
 	// hook sgs/container's edit.js uses for the identical purpose.
 	const [ colourPalette ] = useSettings( 'color.palette' );
 	// The theme's gradient presets, normalised by flattenPresetSetting() —
@@ -352,10 +299,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 	// The canvas styles and the split column's media at the previewed device tier.
 	const heroPreview = heroCanvasPreview( attributes, { tier: previewTier, palette: colourPalette, isSplit } );
-	const splitMediaAtPreview = splitMediaAtTier( attributes, previewTier );
-	const resolvedSplitImage = splitMediaAtPreview.image;
-	const resolvedSplitVideo = splitMediaAtPreview.video;
-	const resolvedSplitSvg = splitMediaAtPreview.svg;
 
 	// Root background paint (backgroundColour / backgroundColourGradient).
 	// Spread FIRST so the background-image branch below still wins when a media
@@ -388,49 +331,15 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		bgSvgTextShadow: attributes.bgSvgTextShadow,
 	} );
 
-	// Background media (backgroundRepeat/backgroundAttachment) — editor mirror,
-	// CHECK A findings 2026-09-05. Narrower than container's own backgroundPreview()
-	// call on purpose: hero already renders its OWN hand-built overlay <span>
-	// further down (mirrors render.php's overlay markup exactly). Passing
-	// backgroundOverlayColour/overlayGradient into backgroundPreview() here would
-	// mount a SECOND, overlapping preview mechanism (its own `::after` overlay
-	// layer) for an effect this file already previews by hand — two overlapping
-	// previews for one setting is unfalsifiable (prove-the-
-	// cause-before-fix), so only the fields hero previews NOWHERE else
-	// (backgroundImage/backgroundSize/backgroundPosition/backgroundRepeat/
-	// backgroundAttachment/bgVideo) are passed. `[]` stands in for the colour
-	// palette — none of those fields resolve a colour token, so a real palette
-	// is not needed here (verified: resolveColourToken() short-circuits on an
-	// empty/undefined value before ever touching the palette argument).
-	//
-	// ⚠ Gated to the SPLIT variant only, deliberately — a verified frontend fact,
-	// not a style choice. render.php NULLS `backgroundImage` before it ever
-	// reaches SGS_Container_Wrapper for the STANDARD variant (render.php
-	// ~:1549-1562: standard paints its own private LCP <img> instead), so
-	// backgroundRepeat/backgroundAttachment have ZERO effect on a standard hero
-	// — an <img> has no tiling or fixed-attachment concept. Only the split
-	// variant hands backgroundImage through to the wrapper's CSS `::before`
-	// layer (class-sgs-container-wrapper.php ~:1232/:1240), which is the ONLY
-	// place these two properties actually paint. Applying this preview
-	// unconditionally would make the canvas show a repeating/fixed background
-	// on a standard hero that the frontend never renders — the exact class of
-	// mismatch CHECK A exists to close, just inverted.
-	const bgMediaPreview = backgroundPreview( {
-		backgroundImage: attributes.backgroundImage,
-		bgVideo: attributes.bgVideo,
-		backgroundSize: attributes.backgroundSize,
-		backgroundPosition: attributes.backgroundPosition,
-		backgroundRepeat: attributes.backgroundRepeat,
-		backgroundAttachment: attributes.backgroundAttachment,
-		backgroundImageTablet: attributes.backgroundImageTablet,
-		backgroundImageMobile: attributes.backgroundImageMobile,
-	}, [], [], previewTier );
+	// The background's canvas layers and the tier-aware paint around them, as the shared Background panel and the
+	// container preview them (`backgroundMediaPreview`, `BackgroundLayers`: the same two nodes the page prints).
+	const bgPreview = backgroundMediaPreview( attributes, colourPalette, gradientPresets, previewTier );
 
 	const wrapperStyle = {
 		...heroPreview.root,
 		...svgPreview.style,
 		...surfaceBackdropPreview( { surfaceBlur: attributes.surfaceBlur, surfaceSaturate: attributes.surfaceSaturate } ),
-		...( isSplit ? bgMediaPreview.style : {} ),
+		...bgPreview.style,
 		...resolveBackgroundPaintPreviewStyle(
 			backgroundColour,
 			backgroundColourGradient
@@ -473,11 +382,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			wrapperStyle.flexWrap = flexWrap;
 		}
 	}
-	if ( ! isSplit && backgroundImage?.url ) {
-		wrapperStyle.backgroundImage = `url(${ backgroundImage.url })`;
-		wrapperStyle.backgroundSize = 'cover';
-		wrapperStyle.backgroundPosition = 'center';
-	}
 	if ( shadow ) {
 		wrapperStyle.boxShadow = resolveShadowPreviewComposed( shadow, attributes.shadowColour );
 	}
@@ -497,91 +401,14 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// `Sgs_Motion_Targets::names_band()` does on the page; split passes wrap_inner=false there too.
 	const showContentBand = bandFromProps || ( ! isSplit && motionNamesBand( attributes, 'sgs/hero', getBlockType( 'sgs/hero' )?.supports?.sgs?.elements || {} ) );
 
-	// Split-image preview style — mirrors render.php's scoped `.sgs-hero__split-image`
-	// CSS builder (render.php:576-626, 561-573) for the Phase-1 image-display
-	// attributes so the editor canvas stops silently disagreeing with the
-	// frontend. Desktop tier only, matching every other preview builder in
-	// this file.
-	const imagePreviewStyle = {
-		// Wave 6 — object-fit + focal-point (+ tablet/mobile) now come from
-		// the shared atom's own custom-property VALUES (prefix 'splitMedia'),
-		// consumed by the shared `.sgs-media-el` stylesheet via the
-		// `sgs-media-el` marker class applied below — the same mechanism
-		// `sgs/media`'s own edit.js canvas uses. This REPLACES the old direct
-		// `imagePreviewStyle.objectFit = splitMediaObjectFit || 'cover'`
-		// assignment; the atom's own CSS (`object-fit.css`) falls
-		// back to 'cover' via `var(--sgs-media-object-fit, cover)`, so an
-		// unset value renders identically.
-		// The `shadow` atom's resting/hover custom properties ride the same marker
-		// (`assets/css/media-atoms/shadow.css` paints `.sgs-media-el`), matching
-		// render.php's `SGS_Media_Element::style()` atom list.
-		...elementCustomProperties( {
-			attributes,
-			prefix: 'splitMedia',
-			blockSlug: 'sgs/hero',
-			atoms: [ 'object-fit', 'focal-point', 'shadow' ],
-		} ),
-		...heroPreview.image,
-	};
-	// border style/width/colour — render.php:561-573 (box-object family,
-	// base only, no tiers). Entry condition matches render.php exactly:
-	// emit when style isn't 'none' OR a width is set.
-	// Background behind the image itself (splitMediaBackground), as render.php paints it on the split-media element.
-	Object.assign( imagePreviewStyle, backgroundPaintPreview( splitMediaBackground, '', colourPalette ) );
-	Object.assign( imagePreviewStyle, sgsBorderPreview( { widthValues: splitMediaBorderWidth, styleValue: splitMediaBorderStyle, colourValue: splitMediaBorderColour, colourGradientValue: attributes.splitMediaBorderColourGradient }, previewTier, colourPalette ) );
-
-	// Media-wrapper (`.sgs-hero__media`) class + style preview.
-	// Wave 6 — the overlay atom (prefix 'media', attachesTo: 'box') paints via
-	// `.sgs-media-box::after`, so `.sgs-hero__media` (the wrapper this atom's
-	// "box" IS) carries the universal `sgs-media-box` marker + this element's
-	// own scope class. This is what lets the SAME shared `overlay.css` the
-	// other adopting blocks use paint here too — no hero-specific overlay CSS.
-	const mediaBoxScopeClass = elementScopeClass( clientId, 'splitMedia' );
-	const mediaWrapperClassName = [
-		'sgs-hero__media',
-		'sgs-media-box',
-		mediaBoxScopeClass,
-	]
-		.filter( Boolean )
-		.join( ' ' );
-	const mediaWrapperStyle = {
-		// Wave 6 — overlay colour/gradient/opacity/blend-mode + hover pair,
-		// consumed by the shared `.sgs-media-box::after` rule via the marker
-		// class above. Replaces the old hand-rolled `$media_overlay_html`
-		// span's frontend-only preview gap — the canvas previously showed NO
-		// overlay preview at all; it now matches the frontend exactly.
-		...elementCustomProperties( {
-			attributes,
-			prefix: 'splitMedia',
-			blockSlug: 'sgs/hero',
-			atoms: [ 'overlay' ],
-		} ),
-		// CHECK A (2026-09-05) — mediaBackground/mediaBackgroundGradient paint
-		// `.sgs-hero__media` (render.php:819-826), and this style object is
-		// ONLY ever applied to the JSX node rendered when isSplit (the media
-		// wrapper markup itself is entirely inside render.php's `if ($is_split)`
-		// branch — the wrapper does not exist for the standard variant), so no
-		// extra isSplit gate is needed here.
-		...backgroundPaintPreview( mediaBackground, mediaBackgroundGradient, colourPalette ),
-	};
-	Object.assign( mediaWrapperStyle, heroPreview.media );
-	// Where a narrower image sits in its column (render.php prints display:flex once any device is set).
-	if ( splitMediaAlign && Object.keys( splitMediaAlign ).length > 0 ) {
-		const splitAlignValue = tierValueOf( splitMediaAlign, previewTier );
-		mediaWrapperStyle.display = 'flex';
-		mediaWrapperStyle.justifyContent = { start: 'flex-start', center: 'center', end: 'flex-end' }[ splitAlignValue ];
-	}
-	// Wave 6 — object-fit + focal-point (prefix 'splitMedia', attachesTo:
-	// 'element') target `.sgs-media-el` directly, so this element carries the
-	// universal marker + its own scope class.
-	const splitMediaScopeClass = elementScopeClass( clientId, 'splitMedia' );
-	const splitImageClassName = [
-		'sgs-hero__split-image',
-		'sgs-media-el',
-		splitMediaScopeClass,
-	]
-		.filter( Boolean )
-		.join( ' ' );
+	// The split media: the shared slot preview (the editor's twin of `SGS_Media_Element::render()`), the media element of
+	// the device being edited, inside the hero's own grid cell (`.sgs-hero__media`, where column order applies).
+	const activeDevice = useActiveDevice();
+	const splitUid = 'sgs-hero-' + clientId.slice( 0, 8 );
+	const splitPreview = mediaPreview( SPLIT_SLOT, attributes, splitUid );
+	const splitShown = resolveTierSource( attributes.splitSource, activeDevice, hasFile ).value;
+	const splitAlt = attributes.splitDecorative ? '' : splitShown?.alt || attributes.splitAlt || '';
+	const mediaWrapperStyle = heroPreview.media;
 
 	// `has-background` suppression flag — mirrors render.php:934-938.
 	//
@@ -604,7 +431,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		!! backgroundColour ||
 		!! backgroundColourGradient ||
 		!! backgroundOverlayColour ||
-		!! overlayGradient;
+		!! backgroundOverlayGradient;
 
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
 	// against the hero's own background. When the background is a gradient,
@@ -618,24 +445,19 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// passing it unspread to .join(' ') stringifies it with COMMAS, silently
 	// killing all four SVG classes. Same trap fixed on container 2026-09-05.
 	//
-	// bgMediaPreview.className is the OPPOSITE shape — backgroundPreview()
-	// returns className as a single STRING (e.g. "sgs-ed-has-bg-media"), not an
-	// array, so it is wrapped in `[ ... ]` (one element) rather than spread with
-	// `...` — spreading a string here would explode it into one array entry per
-	// CHARACTER. Only merged when `isSplit`, matching the same gate the style
-	// spread above uses (see bgMediaPreview's own comment for why).
 	const className = [
 		'sgs-hero',
 		`sgs-hero--${ variant }`,
 		`sgs-hero--align-${ alignment }`,
 		hasBackgroundPaint ? 'has-background' : null,
 		...svgPreview.className,
-		...( isSplit ? [ bgMediaPreview.className ] : [] ),
+		bgPreview.className,
 		wrapperToneClass( {
 			backgroundOverlayColour: attributes.backgroundOverlayColour,
-			overlayGradient: attributes.overlayGradient,
+			overlayGradient: attributes.backgroundOverlayGradient,
 			backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
-			backgroundImage: attributes.backgroundImage,
+			// The tone judge only asks whether a photo is there (it never samples one).
+			backgroundImage: bgPreview.media ? { url: bgPreview.media.url || 'photo' } : null,
 			backgroundColourGradient,
 			backgroundColour,
 			surfaceTone: attributes.surfaceTone,
@@ -764,57 +586,19 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					/>
 				</PanelBody>
 
-				{/* ── Split image (SPLIT VARIANT ONLY — its own media source, not covered by
-				   the shared Background panel on the Styles tab). Unified 2026-08-11: the
-				   standard-variant background image and the background-video picker that
-				   used to live here were REMOVED — they duplicated the Styles tab's
-				   Background panel (Image/Video tabs), which is a strict superset (it also
-				   handles tablet/mobile art-direction). One media-selection UI per
-				   attribute, not two.
-				   Title renamed from "Image" to "Split image" (media-panel consolidation
-				   task) so it reads honestly as split-only — the standard variant's
-				   background media, overlay colour/gradient, and Parallax/Ken Burns effects
-				   all live in the shared "Background" panel on the Styles tab, which is
-				   reachable for BOTH variants (see that panel for why). ── */}
+				{ /* The split media (SPLIT VARIANT ONLY): the shared media panels for the `split` slot, which own its source per
+				     device, alt and decorative, fit and focal point, size and crop, padding, background, border and shape,
+				     shadow and overlay. Column order and the content column's own settings stay in the hero's panels below. */ }
 				{ isSplit && (
-					<PanelBody title={ __( 'Split image', 'sgs-blocks' ) } initialOpen={ false }>
-						{ /* Wave 6 (2026-09-01) — media-type + source + overlay + motion now
-						     route through the shared media-atom system, all on ONE uniform
-						     prefix 'splitMedia' (2026-09-07 rename) except the media-type
-						     atom itself, which stays prefix 'split' — see
-						     HeroSplitMediaPanelLayout.js for why. This REPLACES the
-						     hand-rolled "Split image" MediaPicker, the splitImage?.url-gated
-						     media-type SelectControl (closing that gating bug — the type tabs
-						     are now always reachable), the per-type video/SVG MediaUpload/
-						     TextareaControl combo, the hand-rolled GradientOverlayControl
-						     media-overlay span, and the hand-rolled Ken-burns/parallax
-						     ToggleControl pair + RangeControl. */ }
-						<HeroSplitMediaSourceSection
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-						/>
-						{ /* Decorative-image toggle (finding 18, 2026-09-02, WCAG 2.1 AA 1.1.1).
-						     Only the split-media element gets this — it is the only real
-						     <img>/<video>/svg the block renders; backgroundImage paints via CSS
-						     background-image and is never exposed to assistive tech, so it needs
-						     no toggle. The alt-text field itself lives inside
-						     HeroSplitMediaSourceSection (HeroSplitMediaPanelLayout.js), a shared
-						     component this task does not touch — render.php is the single source
-						     of truth and blanks alt / sets aria-hidden whenever this is on,
-						     regardless of what the alt field still shows in the editor. */ }
-						<ToggleControl
-							label={ __( 'Split image is decorative', 'sgs-blocks' ) }
-							checked={ !! splitMediaDecorative }
-							onChange={ ( val ) =>
-								setAttributes( { splitMediaDecorative: val } )
-							}
-							help={ __(
-								'Turn on when this image/video is decoration rather than information — screen readers will skip it instead of reading the alt text.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
-					</PanelBody>
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="split"
+						blockSlug={ name }
+						blockName={ name }
+						context={ SPLIT_ENTRY.context }
+						kinds={ SPLIT_ENTRY.kinds }
+					/>
 				) }
 			</InspectorControls>
 
@@ -1084,12 +868,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								) }
 							</ResponsiveOverride>
 						</ToolsPanelItem>
-
-						{ /* Media background/padding controls live in the "Image" panel's
-						     "Outer padding" section below (mediaBackground/mediaPadding*
-						     box-object attrs) — the legacy mediaBackgroundColour control
-						     was removed (one control per setting); the former deprecated.js v7
-						     migrates the legacy value. */ }
 
 						<ToolsPanelItem
 							label={ __( 'Content stack gap', 'sgs-blocks' ) }
@@ -1516,266 +1294,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					</ToolsPanel>
 				</PanelBody>
 
-				{/* ── 4. Split image styling (SPLIT VARIANT ONLY — appearance for the split
-				   media column; media SELECTION for this image lives in the "Split image"
-				   panel on the Settings tab). The overlay colour and gradient live in the
-				   shared <BackgroundPanel> below, which is ungated and so reachable on
-				   both variants. This panel is entirely split-specific. */ }
-				{ isSplit && (
-					<PanelBody title={ __( 'Split image styling', 'sgs-blocks' ) } initialOpen={ false }>
-					{ /* The ToolsPanel `label` deliberately does NOT repeat the PanelBody
-					   title above it — a ToolsPanel names the CLUSTER it resets, not its
-					   parent (same convention as the "Container / Entire Block" and
-					   "Alignment & grid" panels elsewhere on this file). Wrapped in
-					   PanelBody 2026-09-07: a bare ToolsPanel has no collapse mechanism at
-					   all, which is why this panel would not collapse. */ }
-					<ToolsPanel
-						label={ __( 'Split media', 'sgs-blocks' ) }
-						resetAll={ () =>
-							setAttributes( {
-								splitMediaObjectFit: 'cover',
-								// TIER OBJECT (Priority 4, 2026-09-07) — mirrors block.json's
-								// own default shape exactly (tablet omitted -> inherits).
-								splitMediaObjectPosition: { desktop: 'center center', mobile: 'center 20%' },
-								// TIER OBJECT (Priority 4, 2026-09-07) — mirrors block.json's default ({}).
-								splitMediaWidth: {},
-								splitMediaHeight: {},
-								splitMediaMediaSizing: undefined,
-								splitMediaShape: 'none',
-								splitMediaAspectRatio: '',
-								splitMediaMinHeight: {},
-								splitMediaMaxWidth: {},
-								splitMediaMaxHeight: {},
-								splitMediaBorderRadius: {},
-								splitMediaBorderRadiusTablet: {},
-								splitMediaBorderRadiusMobile: {},
-								splitMediaBorderStyle: '',
-								splitMediaBorderWidth: {},
-								splitMediaBorderColour: '',
-								splitMediaBorderColourGradient: '',
-								splitMediaPadding: { desktop: {} },
-								splitMediaBackground: '',
-								mediaBackground: '',
-								mediaBackgroundGradient: '',
-								mediaPadding: { desktop: {} },
-							} )
-						}
-					>
-						{ /* The "Split image height" control was REMOVED 2026-08-10. It wrote
-							     the splitImageHeight/…Tablet/splitImageMobileHeight trio, which set
-							     `height` on `.sgs-hero__split-image` — the SAME property on the SAME
-							     element as the "Height" control further down this panel. Two controls
-							     for one setting is the duplicate-control class this framework bans, and
-							     at equal CSS specificity the later-emitted rule won, so this one was
-							     already the loser whenever both were set. The surviving control is the
-							     Height control below, which carries a unit picker instead of hardcoding
-							     px. Its render is now UNGATED so it keeps this control's reach. */ }
-							{ /* Wave 6 (2026-09-01) — object-fit + focal-point now route
-							     through the shared media-atom system (prefix 'splitMedia',
-							     reproducing splitMediaObjectFit/splitMediaObjectPosition*
-							     exactly — see HeroSplitMediaPanelLayout.js). This REPLACES the
-							     hand-rolled "Object fit" SelectControl and the
-							     ResponsiveControl+FocalPositionField "Object position" combo.
-							     The "Custom sizing" toggle inside the new section is a
-							     hero-specific bridge into the `custom` sizing-mode sentinel
-							     (object-fit's own vocabulary never includes it) — see that
-							     component's own docblock. */ }
-						<ToolsPanelItem
-							label={ __( 'Split media styling', 'sgs-blocks' ) }
-							hasValue={ () =>
-								splitMediaObjectFit !== 'cover' ||
-								( splitMediaObjectPosition?.desktop ?? 'center center' ) !== 'center center' ||
-								( splitMediaObjectPosition?.tablet ?? '' ) !== '' ||
-								( splitMediaObjectPosition?.mobile ?? 'center 20%' ) !== 'center 20%' ||
-								Object.keys( splitMediaWidth ?? {} ).length > 0 ||
-								Object.keys( splitMediaHeight ?? {} ).length > 0
-							}
-							onDeselect={ () =>
-								setAttributes( {
-									splitMediaObjectFit: 'cover',
-									splitMediaObjectPosition: { desktop: 'center center', mobile: 'center 20%' },
-									splitMediaWidth: {},
-									splitMediaHeight: {},
-								} )
-							}
-							isShownByDefault
-						>
-							<HeroSplitMediaStylingSection
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-							/>
-						</ToolsPanelItem>
-
-						{ /* C19 item 3 (2026-09-04) — replaces the old bespoke "Custom
-						     dimensions" width/height sub-section above plus the separate
-						     "Border" and "Inner padding" ToolsPanelItems below with ONE
-						     mount of the shared box-shape + media-padding atoms, giving
-						     hero the same shape -> fit -> position chain as sgs/media
-						     (MediaBoxShapeControls: sizing mode / named shape / height /
-						     ratio / min-height / width / max-width / max-height /
-						     border, plus a padding row). Prefix
-						     'splitMedia' resolves to hero's EXISTING splitMediaWidth/
-						     Height/BorderRadius/BorderWidth/BorderStyle/BorderColour/
-						     Padding attrs (mediaStoredAttrName has no STORED_AS entry for
-						     sgs/hero, so the canonical splitMedia+Base naming already
-						     matches — zero renames) plus the NEW splitMediaMediaSizing/
-						     Shape/AspectRatio/MinHeight/MaxWidth/MaxHeight
-						     attrs hand-declared in block.json. Width and height apply
-						     under every object-fit. */ }
-						<ToolsPanelItem
-							label={ __( 'Split media box, border & shadow', 'sgs-blocks' ) }
-							hasValue={ () =>
-								!! splitMediaMediaSizing ||
-								splitMediaShape !== 'none' ||
-								!! splitMediaAspectRatio ||
-								Object.keys( splitMediaWidth ?? {} ).length > 0 ||
-								Object.keys( splitMediaHeight ?? {} ).length > 0 ||
-								Object.keys( splitMediaMinHeight ?? {} ).length > 0 ||
-								Object.keys( splitMediaMaxWidth ?? {} ).length > 0 ||
-								Object.keys( splitMediaMaxHeight ?? {} ).length > 0 ||
-								Object.keys( splitMediaBorderWidth ?? {} ).length > 0 ||
-								splitMediaBorderStyle !== '' ||
-								splitMediaBorderColour !== '' ||
-								splitMediaBorderColourGradient !== '' ||
-								Object.keys( splitMediaBorderRadius ?? {} ).length > 0 ||
-								Object.keys( splitMediaBorderRadiusTablet ?? {} ).length > 0 ||
-								Object.keys( splitMediaBorderRadiusMobile ?? {} ).length > 0 ||
-								!! attributes.splitMediaBoxShadow ||
-								!! attributes.splitMediaBoxShadowColour ||
-								!! attributes.splitMediaBoxShadowColourHover ||
-								Object.values( splitMediaPadding ?? {} ).some(
-									( tierBox ) => tierBox && Object.keys( tierBox ).length > 0
-								)
-							}
-							onDeselect={ () =>
-								setAttributes( {
-									splitMediaMediaSizing: undefined,
-									splitMediaShape: 'none',
-									splitMediaAspectRatio: '',
-									splitMediaWidth: {},
-									splitMediaHeight: {},
-									splitMediaMinHeight: {},
-									splitMediaMaxWidth: {},
-									splitMediaMaxHeight: {},
-									splitMediaBorderRadius: {},
-									splitMediaBorderRadiusTablet: {},
-									splitMediaBorderRadiusMobile: {},
-									splitMediaBorderStyle: '',
-									splitMediaBorderWidth: {},
-									splitMediaBorderColour: '',
-									splitMediaBorderColourGradient: '',
-									splitMediaBoxShadow: '',
-									splitMediaBoxShadowColour: '',
-									splitMediaBoxShadowColourHover: '',
-									splitMediaPadding: { desktop: {} },
-								} )
-							}
-							isShownByDefault
-						>
-							<MediaElementPanel
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-								prefix="splitMedia"
-								blockSlug="sgs/hero"
-								insertion="element"
-								atoms={ [ 'box-shape', 'media-padding', 'shadow' ] }
-							/>
-						</ToolsPanelItem>
-
-						<ToolsPanelItem
-							label={ __( 'Image position in column', 'sgs-blocks' ) }
-							hasValue={ () => Object.keys( splitMediaAlign ?? {} ).length > 0 }
-							onDeselect={ () => setAttributes( { splitMediaAlign: {} } ) }
-						>
-							<AlignItemsTierControl
-								label={ __( 'Image position in column', 'sgs-blocks' ) }
-								help={ __( 'Where an image narrower than its column sits. Set Centre on mobile to centre it on phones.', 'sgs-blocks' ) }
-								value={ splitMediaAlign }
-								onChange={ ( obj ) => setAttributes( { splitMediaAlign: obj } ) }
-								options={ [
-									{ label: __( 'Left', 'sgs-blocks' ), value: 'start' },
-									{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-									{ label: __( 'Right', 'sgs-blocks' ), value: 'end' },
-								] }
-							/>
-						</ToolsPanelItem>
-
-						<ToolsPanelItem
-							label={ __( 'Background', 'sgs-blocks' ) }
-							hasValue={ () => !! mediaBackground || !! mediaBackgroundGradient }
-							onDeselect={ () =>
-								setAttributes( {
-									mediaBackground: '',
-									mediaBackgroundGradient: '',
-								} )
-							}
-						>
-							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Background', 'sgs-blocks' ) }</p>
-							<GradientOverlayControl
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-								attrNames={ gradientOverlayAttrKeys( 'mediaBackground', { solid: 'mediaBackground' } ) }
-								solidLabel={ __( 'Media background colour', 'sgs-blocks' ) }
-							/>
-						</ToolsPanelItem>
-
-						<ToolsPanelItem
-							label={ __( 'Image background colour', 'sgs-blocks' ) }
-							hasValue={ () => !! splitMediaBackground }
-							onDeselect={ () => setAttributes( { splitMediaBackground: '' } ) }
-						>
-							<DesignTokenPicker
-								label={ __( 'Image background colour', 'sgs-blocks' ) }
-								value={ splitMediaBackground }
-								onChange={ ( val ) => setAttributes( { splitMediaBackground: val ?? '' } ) }
-							/>
-							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Paints behind the image itself, so a contained logo or transparent image sits on this colour.', 'sgs-blocks' ) }</p>
-						</ToolsPanelItem>
-
-						<ToolsPanelItem
-							label={ __( 'Outer padding', 'sgs-blocks' ) }
-							hasValue={ () =>
-								Object.values( mediaPadding ?? {} ).some(
-									( tierBox ) => tierBox && Object.keys( tierBox ).length > 0
-								)
-							}
-							onDeselect={ () =>
-								setAttributes( {
-									mediaPadding: { desktop: {} },
-								} )
-							}
-						>
-							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Outer padding (around the whole media wrapper)', 'sgs-blocks' ) }</p>
-							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the space between the wrapper and the surrounding section.', 'sgs-blocks' ) }</p>
-							<ResponsiveBoxControl
-								label={ __( 'Media padding', 'sgs-blocks' ) }
-								presets
-								values={ {
-									base: mediaPadding?.desktop ?? {},
-									tablet: mediaPadding?.tablet ?? {},
-									mobile: mediaPadding?.mobile ?? {},
-								} }
-								onChange={ ( tier, next ) => {
-									const tierMap = {
-										base: 'desktop',
-										tablet: 'tablet',
-										mobile: 'mobile',
-									};
-									patchTier( attributes, setAttributes, 'mediaPadding', tierMap[ tier ], next );
-								} }
-							/>
-						</ToolsPanelItem>
-					</ToolsPanel>
-					</PanelBody>
-				) }
-
 				{ /* WS-4: mirrored sgs/container wrapper controls (section KIND).
-				   Overlay colour/gradient + Parallax/Ken Burns for BOTH variants now live
+				   Background media, overlay and Parallax/Ken Burns for BOTH variants live
 				   solely in the shared "Background" panel (<BackgroundPanel>, mounted
-				   further down this Styles tab) — see the "Split image styling" panel's
-				   comment above for why the old local duplicates were removed rather than
-				   repointed. This "Section (outer)" panel only ever wrote width/max-width,
-				   unrelated to overlay.
+				   further down this Styles tab). This "Section (outer)" panel only ever
+				   wrote width/max-width, unrelated to overlay.
 				   No-inline migration (2026-07-09): the default <ContainerWrapperControls>
 				   aggregator is no longer used (see the import comment above) — its
 				   "Content band" + per-grid-area panels wrote to legacy FLAT attrs
@@ -1824,23 +1347,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				<HeroBackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
-
-				{ !! attributes.bgSvgContent && (
-					<PanelBody title={ __( 'Background SVG animation', 'sgs-blocks' ) } initialOpen={ false }>
-						<SvgPartsControls
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							names={ {
-								parts: 'bgSvgParts',
-								trigger: 'bgSvgPartsTrigger',
-							} }
-							label={ __( 'Background SVG parts', 'sgs-blocks' ) }
-							defaultTrigger="load"
-							hover={ false }
-						/>
-					</PanelBody>
-				) }
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 
 				{ /* Shadow — legacy string token attr (sm/md/lg/glow OR a raw box-shadow
 					CSS string built by ShadowControl), resolved by sgs_shadow_value()
@@ -1863,44 +1370,8 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 			<div { ...blockProps }>
 				{ indentPreviewCss && <style>{ indentPreviewCss }</style> }
+				<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
 				{ svgLayer }
-				{ /* Mirrors hero/render.php's overlay gate + gradient/solid branch
-				   (D5 + the 2026-08-11 gradient-render bug fix) — a colour or
-				   gradient with no background media now renders too, and the
-				   editor preview must agree with the frontend. */ }
-				{ ( () => {
-					// Raw (undefaulted) — decides WHETHER an overlay was explicitly
-					// set. 'text' below is a PAINT default only, applied once the
-					// span already exists for another reason (media present); it
-					// must never itself trigger the span.
-					const resolvedColourRaw = backgroundOverlayColour || '';
-					// `overlayGradient` IS the complete CSS gradient string since the
-					// D636 storage collapse (837f7c97) — no angle/from/to scalars to
-					// rebuild from.
-					const hasOverlayColour = !! resolvedColourRaw || !! overlayGradient;
-					const showsOverlay =
-						( ! isSplit && !! backgroundImage?.url ) ||
-						hasOverlayColour;
-					if ( ! showsOverlay ) {
-						return null;
-					}
-					return (
-						<span
-							className="sgs-hero__overlay"
-							style={
-								{
-									...( overlayGradient
-										? { backgroundImage: overlayGradient }
-										: { backgroundColor: resolvedColourRaw || colourVar( 'text' ) } ),
-									...( OVERLAY_BLEND_MODES.includes( attributes.backgroundOverlayBlendMode )
-										? { mixBlendMode: attributes.backgroundOverlayBlendMode }
-										: {} ),
-								}
-							}
-							aria-hidden="true"
-						/>
-					);
-				} )() }
 
 				{ /* FR-22-6: content column is the InnerBlocks slot (label + heading + text + buttons).
 				   Standard variant only: wrapped in the content-band preview (mirrors the
@@ -1914,62 +1385,15 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					<div { ...innerBlocksProps } />
 				) }
 
-				{ /* Canvas preview of the split column. Reads the TYPED families, the
-				     same ones render.php resolves, so the editor and the front end
-				     cannot disagree about what this slot holds. Desktop tier only —
-				     the per-tier preview is what WP's own device switcher provides.
-				     The old `splitMedia?.type === 'video'` branch was removed with
-				     that attribute (2026-08-13). */ }
-				{ isSplit &&
-					( resolvedSplitImage?.url ||
-						resolvedSplitVideo?.url ||
-						resolvedSplitSvg ) && (
-						<div
-							className={ mediaWrapperClassName }
-							style={
-								Object.keys( mediaWrapperStyle ).length
-									? mediaWrapperStyle
-									: undefined
-							}
-						>
-							{ 'video' === splitMediaAtPreview.type && (
-								<video
-									src={ resolvedSplitVideo.url }
-									className={ splitImageClassName }
-									style={ imagePreviewStyle }
-									autoPlay
-									muted
-									loop
-									playsInline
-								/>
-							) }
-							{ 'svg' === splitMediaAtPreview.type && (
-								/* Editor-only preview of the operator's own pasted markup,
-								   identical in mechanism and purpose to media/edit.js:1538.
-								   The SERVER is the security boundary: render.php passes every
-								   SVG tier through wp_kses( ..., sgs_allowed_svg_tags() ), so
-								   nothing unsanitised reaches a visitor. aria-hidden matches
-								   media's treatment — the preview is decorative. */
-								/* eslint-disable-next-line react/no-danger */
-								<div
-									className={ splitImageClassName }
-									style={ imagePreviewStyle }
-									aria-hidden="true"
-									dangerouslySetInnerHTML={ {
-										__html: sanitiseSvg( resolvedSplitSvg ),
-									} }
-								/>
-							) }
-							{ 'image' === splitMediaAtPreview.type && (
-									<img
-										src={ resolvedSplitImage.url }
-										alt={ resolvedSplitImage.alt || '' }
-										className={ splitImageClassName }
-										style={ imagePreviewStyle }
-									/>
-								) }
-						</div>
-					) }
+				{ /* The split media: the shared slot preview inside the hero's grid cell, as render.php prints it. */ }
+				{ isSplit && splitShown && ( hasFile( splitShown ) || splitShown.markup ) && (
+					<div className="sgs-hero__media" style={ Object.keys( mediaWrapperStyle ).length ? mediaWrapperStyle : undefined }>
+						{ splitPreview.css && <style>{ splitPreview.css }</style> }
+						<span className={ [ 'sgs-media', 'sgs-media--renderer', 'sgs-hero__split-media', splitPreview.className ].join( ' ' ) }>
+							<SplitMediaElement shown={ splitShown } alt={ splitAlt } />
+						</span>
+					</div>
+				) }
 			</div>
 		</>
 	);
