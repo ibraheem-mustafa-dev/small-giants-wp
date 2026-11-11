@@ -531,11 +531,21 @@
 						"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row .woocommerce-orders-table__cell-order-summary",
 						"motion": false,
 						"label": "Order items summary",
-						"order": 49,
+						"order": 79,
 						"clusters": [
 							"text"
 						],
 						"prefix": "ordersSummary"
+					},
+					"orderDetailText": {
+						"selector": ".sgs-account__od-text",
+						"motion": false,
+						"label": "Order page address and payment text",
+						"order": 78,
+						"clusters": [
+							"text"
+						],
+						"prefix": "orderDetailText"
 					},
 					"ordersTotal": {
 						"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row .woocommerce-orders-table__cell-order-total",
@@ -2540,6 +2550,57 @@
 				]
 			},
 			"ordersSummaryTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"orderDetailTextFontSize": {
+				"type": "object"
+			},
+			"orderDetailTextFontSizeUnit": {
+				"type": "string"
+			},
+			"orderDetailTextFontFamily": {
+				"type": "string"
+			},
+			"orderDetailTextFontWeight": {
+				"type": "string"
+			},
+			"orderDetailTextFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"orderDetailTextLineHeight": {
+				"type": "object"
+			},
+			"orderDetailTextLineHeightUnit": {
+				"type": "string"
+			},
+			"orderDetailTextLetterSpacing": {
+				"type": "object"
+			},
+			"orderDetailTextLetterSpacingUnit": {
+				"type": "string"
+			},
+			"orderDetailTextTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"orderDetailTextTextDecoration": {
 				"type": "string",
 				"enum": [
 					"",

@@ -454,6 +454,19 @@ if ( ! function_exists( 'sgs_account_login_look_css' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_account_order_detail_look_css' ) ) {
+	/**
+	 * Order page: the type of the address and payment text.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $root_sel   Scoped root selector.
+	 * @return string CSS text (may be '').
+	 */
+	function sgs_account_order_detail_look_css( array $attributes, string $root_sel ): string {
+		return sgs_typography_css_rule( $attributes, 'orderDetailText', $root_sel . ' .sgs-account__od-text', '', false, false, sgs_object_attr_keys( 'sgs/account' ) );
+	}
+}
+
 if ( ! function_exists( 'sgs_account_look_css' ) ) {
 	/**
 	 * All Round 9 look rules for one sgs/account instance.
@@ -465,6 +478,7 @@ if ( ! function_exists( 'sgs_account_look_css' ) ) {
 	function sgs_account_look_css( array $attributes, string $root_sel ): string {
 		return sgs_account_menu_look_css( $attributes, $root_sel )
 			. sgs_account_orders_look_css( $attributes, $root_sel )
+			. sgs_account_order_detail_look_css( $attributes, $root_sel )
 			. sgs_account_address_look_css( $attributes, $root_sel )
 			. sgs_account_details_look_css( $attributes, $root_sel )
 			. sgs_account_login_look_css( $attributes, $root_sel )

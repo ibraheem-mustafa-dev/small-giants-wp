@@ -103,10 +103,11 @@ if ( ! function_exists( 'sgs_account_order_box' ) ) {
 	 *
 	 * @param string $title Box title.
 	 * @param string $inner Escaped inner HTML.
+	 * @param bool   $text  True for a box of plain text (address, payment): block flow, no row layout.
 	 * @return string Escaped HTML.
 	 */
-	function sgs_account_order_box( string $title, string $inner ): string {
-		return '<div class="sgs-account__od-box"><div class="sgs-account__od-box-title">' . esc_html( $title ) . '</div>' . $inner . '</div>';
+	function sgs_account_order_box( string $title, string $inner, bool $text = false ): string {
+		return '<div class="sgs-account__od-box' . ( $text ? ' sgs-account__od-box--text' : '' ) . '"><div class="sgs-account__od-box-title">' . esc_html( $title ) . '</div>' . $inner . '</div>';
 	}
 }
 
@@ -212,8 +213,8 @@ if ( ! function_exists( 'sgs_account_order_detail_html' ) ) {
 			$ship_row  = '<div class="sgs-account__od-row"><span>' . esc_html( $text( 'orderDetailShippingLabel', (string) $order->get_shipping_method() ) ) . '</span><span>'
 				. ( $ship_cost <= 0 && '' !== $ship_free ? esc_html( $ship_free ) : sgs_account_money( $ship_cost, $attributes ) ) . '</span></div>';
 			$html    .= '<div class="sgs-account__od-boxes">'
-				. sgs_account_order_box( $text( 'orderDetailAddressTitle', 'Delivery address' ), '<p class="sgs-account__od-text">' . nl2br( esc_html( wp_strip_all_tags( str_replace( '<br/>', "\n", $address ) ) ) ) . '</p>' )
-				. sgs_account_order_box( $text( 'orderDetailPaymentTitle', 'Payment' ), '<p class="sgs-account__od-text">' . esc_html( (string) $order->get_payment_method_title() ) . '</p>' )
+				. sgs_account_order_box( $text( 'orderDetailAddressTitle', 'Delivery address' ), '<p class="sgs-account__od-text">' . nl2br( esc_html( wp_strip_all_tags( str_replace( '<br/>', "\n", $address ) ) ) ) . '</p>', true )
+				. sgs_account_order_box( $text( 'orderDetailPaymentTitle', 'Payment' ), '<p class="sgs-account__od-text">' . esc_html( (string) $order->get_payment_method_title() ) . '</p>', true )
 				. sgs_account_order_box(
 					$text( 'orderDetailTotalTitle', 'Total' ),
 					'<div class="sgs-account__od-row"><span>' . esc_html( $text( 'orderDetailSubtotalLabel', 'Subtotal' ) ) . '</span><span>' . sgs_account_money( (float) $order->get_subtotal(), $attributes ) . '</span></div>'

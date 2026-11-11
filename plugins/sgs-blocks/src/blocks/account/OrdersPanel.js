@@ -122,6 +122,7 @@ export const EXTRA_TYPE_TARGETS = [
 	target( 'ordersDate', __( 'Order date', 'sgs-blocks' ) ),
 	target( 'ordersSummary', __( 'Order items summary', 'sgs-blocks' ) ),
 	target( 'ordersTotal', __( 'Order total', 'sgs-blocks' ) ),
+	target( 'orderDetailText', __( 'Order page address and payment text', 'sgs-blocks' ) ),
 	target( 'ordersPill', __( 'Order status pill', 'sgs-blocks' ) ),
 	target( 'ordersEmptyTitle', __( 'Orders empty card heading', 'sgs-blocks' ) ),
 	target( 'ordersEmptyTextType', __( 'Orders empty card text', 'sgs-blocks' ) ),

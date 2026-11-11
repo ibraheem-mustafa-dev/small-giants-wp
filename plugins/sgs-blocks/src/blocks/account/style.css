@@ -1119,6 +1119,11 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	background: var(--wp--preset--color--surface, #fff);
 }
 
+/* A box of plain text (address, payment) flows as a block: its lines sit under the title with no flex gap. */
+.sgs-account__od-box--text {
+	display: block;
+}
+
 .sgs-account__od-box-title {
 	margin-block-end: 4px;
 	color: var(--wp--preset--color--text-muted, currentColor);
