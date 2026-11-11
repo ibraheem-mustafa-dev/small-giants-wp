@@ -620,11 +620,15 @@
       "pricePanelTitle": "",
       "stickyFooter": true,
       "showHeader": true,
-      "headerLogo": {
-        "id": 486,
-        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png",
-        "alt": ""
+      "headerLogoSource": {
+        "desktop": {
+          "kind": "image",
+          "id": 486,
+          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png",
+          "mime": "image/png"
+        }
       },
+      "headerLogoDecorative": true,
       "stepCountLabel": "Question",
       "summaryBaseLabel": "Frame",
       "summaryPendingLabel": "Lenses",
@@ -1476,9 +1480,12 @@
   },
   "sgs/hero": {
     "attributes": {
-      "bgVideo": {
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/calibration-loop.mp4",
-        "type": "video"
+      "backgroundSource": {
+        "desktop": {
+          "kind": "video",
+          "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/calibration-loop.mp4",
+          "mime": "video/mp4"
+        }
       }
     },
     "inner": [
@@ -1573,10 +1580,10 @@
   },
   "sgs/media": {
     "attributes": {
-      "mediaType": "image",
-      "imageId": "{{image}}",
-      "imageUrl": "{{image.url}}",
-      "imageAlt": "Person wearing sunglasses outdoors",
+      "source": {
+        "desktop": { "kind": "image", "id": "{{image}}", "url": "{{image.url}}" }
+      },
+      "alt": "Person wearing sunglasses outdoors",
       "caption": "A short caption under the image."
     },
     "preconditions": {
@@ -2162,8 +2169,14 @@
       "submenuModel": "accordion",
       "chromeSlotText": "MENU",
       "chromeSlotPlacement": "after-logo",
-      "chromeLogoUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png",
-      "chromeLogoId": 4080,
+      "chromeLogoSource": {
+        "desktop": {
+          "kind": "image",
+          "id": 4080,
+          "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png",
+          "mime": "image/png"
+        }
+      },
       "chromeSlotType": "label"
     },
     "inner": [
@@ -2410,7 +2423,9 @@
   "sgs/responsive-logo": {
     "attributes": {
       "linkToHome": true,
-      "logoId": "{{logo}}"
+      "logoSource": {
+        "desktop": { "kind": "image", "id": "{{image}}", "url": "{{image.url}}" }
+      }
     }
   },
   "sgs/site-header": {
@@ -2638,12 +2653,14 @@
   },
   "sgs/before-after": {
     "attributes": {
-      "beforeImageId": 3459,
-      "beforeImageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-      "beforeImageAlt": "Before",
-      "afterImageId": 4080,
-      "afterImageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png",
-      "afterImageAlt": "After"
+      "beforeSource": {
+        "desktop": { "kind": "image", "id": 3459, "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg", "mime": "image/jpeg" }
+      },
+      "beforeAlt": "Before",
+      "afterSource": {
+        "desktop": { "kind": "image", "id": 4080, "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png", "mime": "image/png" }
+      },
+      "afterAlt": "After"
     }
   },
   "sgs/collapsible-text": {
@@ -2667,18 +2684,15 @@
   },
   "sgs/decorative-image": {
     "attributes": {
-      "decorMedia": {
-        "id": 3459,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-        "alt": "Sample image",
-        "type": "image",
-        "mime": "image/jpeg"
-      }
+      "layerSource": {
+        "desktop": { "kind": "image", "id": 3459, "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg", "mime": "image/jpeg" }
+      },
+      "layerAlt": "Sample image"
     },
     "variants": [
       {},
       {
-        "decorMedia": null
+        "layerSource": null
       }
     ],
     "inner": [
@@ -2695,12 +2709,11 @@
         "when": {
           "inner": false,
           "lacks": [
-            "decorMedia",
-            "imageUrl"
+            "layerSource"
           ]
         },
         "attributes": {
-          "decorMedia": null,
+          "layerSource": null,
           "width": {
             "desktop": "120px"
           },
@@ -2727,8 +2740,7 @@
         "when": {
           "inner": false,
           "has": [
-            "decorMedia",
-            "imageUrl"
+            "layerSource"
           ]
         },
         "attributes": {},
@@ -2955,12 +2967,8 @@
   },
   "sgs/image-sequence": {
     "attributes": {
-      "thumbnail": {
-        "id": 3459,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-        "alt": "Sample image",
-        "type": "image",
-        "mime": "image/jpeg"
+      "thumbnailSource": {
+        "desktop": { "kind": "image", "id": 3459, "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg", "mime": "image/jpeg" }
       },
       "thumbnailAlt": "Sample image"
     }
@@ -3320,13 +3328,10 @@
       "name": "Sample Person",
       "role": "Sample role",
       "bio": "A short supporting statement.",
-      "photo": {
-        "id": 3459,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-        "alt": "Sample image",
-        "type": "image",
-        "mime": "image/jpeg"
-      }
+      "photoSource": {
+        "desktop": { "kind": "image", "id": 3459, "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg", "mime": "image/jpeg" }
+      },
+      "photoAlt": "Sample image"
     }
   },
   "sgs/testimonial": {
@@ -3425,11 +3430,10 @@
   },
   "sgs/measured-diagram": {
     "attributes": {
-      "drawingImageId": 4969,
-      "drawingImageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/10/sgs-sample-diagram.svg",
-      "drawingImageAlt": "Sample drawing",
-      "drawingImageWidth": 680,
-      "drawingImageHeight": 300
+      "drawingSource": {
+        "desktop": { "kind": "image", "id": 4969, "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/10/sgs-sample-diagram.svg", "mime": "image/svg+xml", "width": 680, "height": 300 }
+      },
+      "drawingAlt": "Sample drawing"
     },
     "inner": [
       {
@@ -3478,8 +3482,6 @@
       {
         "name": "sgs/measured-diagram",
         "attributes": {
-          "drawingImageWidth": 680,
-          "drawingImageHeight": 300,
           "drawingSource": {
             "desktop": {
               "kind": "image",

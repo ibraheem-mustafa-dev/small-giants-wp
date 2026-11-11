@@ -92,11 +92,11 @@ test( 'Eye Care\'s refs resolve every fixture to the literal ids it carried befo
 	assert.deepEqual( [ nav.ref, nav.splitAfterItemId, nav.disabledItemIds, nav.drawerRef ], [ 96, 'id:195', [ 'id:195' ], 203 ] );
 	assert.deepEqual( r( 'sgs/nav-drawer-menu' ).fixture.variants[ 1 ].itemTrailingIcons, { 'id:195': { source: 'lucide', name: 'arrow-right' } } );
 	const media = r( 'sgs/media' ).fixture.attributes;
-	assert.deepEqual( [ media.imageId, media.imageUrl ], [ 202, 'https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg' ] );
+	assert.deepEqual( [ media.source.desktop.id, media.source.desktop.url ], [ 202, 'https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg' ] );
 	assert.deepEqual( r( 'sgs/buybox' ).fixture.parents[ 0 ].attributes.query.woocommerceHandPickedProducts, [ '71' ] );
 	assert.equal( r( 'sgs/buybox' ).fixture.parents[ 0 ].attributes.queryId, 91, 'a query loop\'s own number is not a reference' );
 	assert.equal( r( 'sgs/product-card' ).fixture.attributes.productId, 71 );
-	assert.equal( r( 'sgs/responsive-logo' ).fixture.attributes.logoId, 198 );
+	assert.equal( r( 'sgs/responsive-logo' ).fixture.attributes.logoSource.desktop.id, 202 );
 } );
 
 test( 'the fixtures carry no bare reference, and the detector\'s own cases pass', () => {
