@@ -72,11 +72,11 @@ case("media: intrinsic size folded into Source", "sgs/media", {"imageUrl": U, "i
 case("svg animation: wave fast becomes an svg-loop layer", "sgs/media",
      {"mediaType": "svg", "svgContent": "<svg/>", "svgAnimation": "wave", "svgAnimationSpeed": "fast"},
      {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "width": {"desktop": "100%"},
-      "sgsMotion": {"v": 1, "elements": {"svg": {"effects": [{"id": "svg-loop", "effect": "svg-loop", "values": {"motion": "wave", "duration": 3000, "amplitude": 1}}]}}}})
+      "sgsMotion": {"v": 1, "elements": {"media": {"effects": [{"id": "svg-loop", "effect": "svg-loop", "values": {"motion": "wave", "duration": 3000, "amplitude": 1}}]}}}})
 case("svg animation: float becomes an ambient-float layer, speed defaulting to medium", "sgs/media",
      {"mediaType": "svg", "svgContent": "<svg/>", "svgAnimation": "float"},
      {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "width": {"desktop": "100%"},
-      "sgsMotion": {"v": 1, "elements": {"svg": {"effects": [{"id": "ambient-float", "effect": "ambient-float", "values": {"travel": -10, "axis": "y", "period": 2000, "easing": "ease-in-out", "direction": "alternate"}}]}}}})
+      "sgsMotion": {"v": 1, "elements": {"media": {"effects": [{"id": "ambient-float", "effect": "ambient-float", "values": {"travel": -10, "axis": "y", "period": 2000, "easing": "ease-in-out", "direction": "alternate"}}]}}}})
 case("svg animation: none is deleted with no layer", "sgs/media",
      {"mediaType": "svg", "svgContent": "<svg/>", "svgAnimation": "none", "svgAnimationSpeed": "slow"},
      {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "width": {"desktop": "100%"}})

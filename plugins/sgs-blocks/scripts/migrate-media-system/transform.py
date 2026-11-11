@@ -647,7 +647,7 @@ def migrate_renames(slot: Slot) -> None:
 # old stylesheets drew (the Spec 38A migration mapper `Sgs_Motion_Map_Looping_Media` holds the same table).
 SVG_LOOP_MS = {"pulse": {"slow": 5000, "medium": 3000, "fast": 1500}, "wave": {"slow": 8000, "medium": 5000, "fast": 3000}}
 FLOAT_PERIOD_MS = {"slow": 3000, "medium": 2000, "fast": 1000}
-SVG_PARTS = {"": "svg", "background": "svg-bg"}
+SVG_PARTS = {"": "media", "background": "svg-bg"}
 
 
 def migrate_svg_animation(slot: Slot) -> None:
