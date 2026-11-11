@@ -4,7 +4,10 @@
 From the moment the integration branch `feature/media-stage-b` exists (a local branch or `origin/feature/media-stage-b`),
 every block folder that `plugins/sgs-blocks/scripts/data/media-adoption.json` names (`waves[].blocks` keys, matched to
 `src/blocks/**/block.json` by `name`) is frozen: a commit that stages a file under one is refused, unless it is made on
-that branch or on a detached HEAD that descends from the branch's tip (agents commit in detached worktrees on top of it).
+that branch or on any HEAD, named or detached, that has the branch's tip among its ancestors (agents commit in detached worktrees on
+top of it; once the branch is merged, `main` contains the tip and the freeze no longer applies to it, even if a stale
+`origin/` ref remains). The frozen folders come from HEAD's tree as well as the working tree, so staging the deletion of a
+frozen folder or a change of a block's `name` does not escape.
 When neither ref exists, or the adoption file is missing, or nothing staged is under `src/blocks/`, it exits 0 in silence.
 It reads local and remote-tracking refs only; it never touches the network.
 
@@ -40,10 +43,7 @@ def branch_tips(root):
 
 
 def commit_allowed(root, tips):
-    """On the integration branch, or detached with a branch tip among HEAD's ancestors."""
-    code, current = git(root, "symbolic-ref", "-q", "--short", "HEAD")
-    if code == 0:
-        return current == BRANCH
+    """True when a branch tip is among HEAD's ancestors (HEAD itself counts): the branch, a detached HEAD above it, or a merge of it."""
     return any(git(root, "merge-base", "--is-ancestor", tip, "HEAD")[0] == 0 for tip in tips)
 
 
@@ -58,18 +58,28 @@ def adopted_block_names(root):
     return {name for wave in data.get("waves", []) for name in wave.get("blocks", {})}
 
 
-def frozen_folders(root, names):
-    """{folder prefix ending in '/': block name} for every block.json whose `name` is in names."""
-    out = {}
-    base = Path(root) / BLOCKS
-    for bj in sorted(base.rglob("block.json")):
+def block_json_names(root):
+    """[(block.json path relative to root, name)] from the working tree and from HEAD's tree (a path may appear in both)."""
+    found = []
+    for bj in sorted((Path(root) / BLOCKS).rglob("block.json")):
         try:
-            name = json.loads(bj.read_text(encoding="utf-8")).get("name")
+            found.append((bj.relative_to(root).as_posix(), json.loads(bj.read_text(encoding="utf-8")).get("name")))
         except ValueError:
             continue
-        if name in names:
-            out[bj.parent.relative_to(root).as_posix() + "/"] = name
-    return out
+    code, listing = git(root, "ls-tree", "-r", "--name-only", "HEAD", "--", BLOCKS)
+    for path in listing.splitlines() if code == 0 else []:
+        if path.endswith("/block.json"):
+            code, text = git(root, "show", f"HEAD:{path}")
+            try:
+                found.append((path, json.loads(text).get("name")))
+            except ValueError:
+                continue
+    return found
+
+
+def frozen_folders(root, names):
+    """{folder prefix ending in '/': block name} for every block.json (working tree or HEAD) whose `name` is in names."""
+    return {path.rsplit("/", 1)[0] + "/": name for path, name in block_json_names(root) if name in names}
 
 
 def violations(root):
@@ -94,7 +104,7 @@ def check(root):
     print(f"stage-b freeze BLOCKED: `{BRANCH}` exists, and these staged files are in block folders Stage B edits (Spec 49 section 14.1):", file=sys.stderr)
     for f, name in bad:
         print(f"  {f}  ({name})", file=sys.stderr)
-    print(f"Rule: a frozen block folder changes only on `{BRANCH}` (or a detached HEAD on top of its tip). "
+    print(f"Rule: a frozen block folder changes only on `{BRANCH}` (or any HEAD that has its tip as an ancestor). "
           f"Make the change there, or unstage these files.", file=sys.stderr)
     return 1
 
@@ -131,6 +141,7 @@ def self_test():
             {"id": "wave-1", "blocks": {"sgs/media": {"slots": {}}}}]}))
         g("add", "-A")
         g("commit", "-q", "-m", "base")
+        base = g("rev-parse", "HEAD").stdout.strip()
 
         frozen, free = BLOCKS + "media/render.php", BLOCKS + "other/render.php"
         for f in (frozen, free):
@@ -143,6 +154,13 @@ def self_test():
         expect("no branch: staged frozen file passes silently", root, 0, True)
 
         g("branch", BRANCH)
+        g("checkout", "-q", BRANCH)
+        (root / "tip.txt").write_text("tip\n")
+        g("add", "--", "tip.txt")
+        g("commit", "-q", "-m", "branch tip", "--", "tip.txt")
+        g("checkout", "-q", "main")
+        g("reset", "-q")
+        g("add", "--", frozen)
         r = expect("NEGATIVE CONTROL branch exists, frozen file on main is refused", root, 1)
         ok = frozen in r.stderr and "sgs/media" in r.stderr and "Rule:" in r.stderr
         print(("ok   " if ok else "FAIL ") + "refusal names the file, the block and the rule")
@@ -185,6 +203,38 @@ def self_test():
         (root / frozen).write_text("<?php // edit 5\n")
         g("add", "--", frozen)
         expect("only the origin/ ref exists: refused on main", root, 1)
+
+        g("reset", "-q", "--hard")
+        g("checkout", "-q", "-b", "side", base)
+        (root / frozen).write_text("<?php // edit 6\n")
+        g("add", "--", frozen)
+        expect("a named branch that lacks the tip: refused", root, 1)
+        g("reset", "-q", "--hard")
+        g("checkout", "-q", "main")
+        g("merge", "-q", "-s", "ours", "--no-edit", "elsewhere")
+        (root / frozen).write_text("<?php // edit 7\n")
+        g("add", "--", frozen)
+        expect("merged: main contains the tip, a stale origin/ ref no longer freezes it", root, 0)
+        g("reset", "-q")
+        g("branch", BRANCH, "elsewhere")
+        g("add", "--", frozen)
+        expect("merged: main contains the tip of the local branch too", root, 0)
+        g("reset", "-q", "--hard")
+        g("checkout", "-q", "side")
+        g("merge", "-q", "--no-edit", "main")
+        (root / frozen).write_text("<?php // edit 8\n")
+        g("add", "--", frozen)
+        expect("a named branch that has merged the tip: allowed", root, 0)
+        g("reset", "-q", "--hard")
+        g("checkout", "-q", "-b", "gone", base)
+        g("rm", "-q", "-r", "--", BLOCKS + "media")
+        expect("a staged deletion of a frozen folder is refused (names come from HEAD's tree)", root, 1)
+        g("reset", "-q", "--hard")
+        (root / BLOCKS / "media" / "block.json").write_text(json.dumps({"name": "sgs/renamed"}))
+        g("add", "--", BLOCKS + "media/block.json")
+        expect("a staged `name` change of a frozen block is refused", root, 1)
+        g("reset", "-q", "--hard")
+        g("checkout", "-q", "main")
 
         (root / ADOPTION).unlink()
         expect("adoption file missing: nothing frozen, silent", root, 0, True)
