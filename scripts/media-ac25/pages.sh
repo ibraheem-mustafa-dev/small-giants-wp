@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Lists every published front-end URL path of a local mirror, one per line (read only).
-# Usage: bash scripts/media-ac25/pages.sh local-mediatest-eye-care > urls.txt   (counts go to stderr)
+# Usage: bash scripts/media-ac25/pages.sh local-mediatest-<site> > urls.txt   (counts go to stderr)
 # Covers: home, posts page, shop page, one blog category, one product category, and every published
 # post of every public post type (pages, posts, products, custom types) except attachments.
 set -euo pipefail

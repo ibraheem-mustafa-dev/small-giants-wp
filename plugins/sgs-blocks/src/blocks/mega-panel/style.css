@@ -434,7 +434,7 @@
 	   scoped `<style>` is ever absent from the page. */
 	object-fit: var( --sgs-media-object-fit, cover );
 	width: 100%;
-	border-radius: 12px;
+	border-radius: var( --sgs-mega-aside-img-radius, 12px );
 }
 .wp-block-sgs-mega-panel:not( .sgs-mega-panel--aside-sep-none ) .sgs-mega-aside {
 	/* Width falls back to 0: the divider's width is the asideSeparator control's
