@@ -22,7 +22,7 @@ import deploy_verify
 
 from deploy_common import DEPLOY_ROOTS, FRAMEWORK_THEME_JSON_REL, REPO_ROOT, SNAPSHOT_REL, TARBALL_NAME, TARGETS, THEME_JSON_PAYLOAD_NAME
 from deploy_guards import deploy_roots_for_scope, deployed_dirty_files, resolve_theme_json_payload, split_dirty_by_payload, theme_json_guard_decision, uncommitted_snapshot_md5
-from deploy_ship import build_remote_extract_cmd, build_tar_cmd
+from deploy_ship import build_remote_extract_cmd, build_tar_cmd, upload_resumable
 from deploy_verify import theme_json_verify_result
 
 
@@ -378,6 +378,112 @@ def self_test_motion_qa_args() -> list[str]:
     return failures
 
 
+def self_test_upload_resume() -> list[str]:
+    """Self-test case 21: the tarball upload resumes after a dropped connection (no network).
+
+    A fake server tracks how many bytes of the upload it holds. Each check runs against the real `upload_resumable`
+    and against a planted faulty one (must find something).
+    """
+    failures: list[str] = []
+    total = 1000
+
+    def attempt(impl, script, sizes=None, attempts=4, dry_run=False):
+        """Run `impl` against a scripted server. `script` is one (exit code, bytes held after) per transfer;
+        `sizes` is what the remote reports before each retry (default: the bytes held after the last transfer)."""
+        with tempfile.TemporaryDirectory(prefix="sgs-upload-selftest-") as td:
+            local = Path(td) / "pack.tar"
+            local.write_bytes(b"x" * total)
+            state = {"held": None, "verbs": [], "sleeps": 0, "size_calls": 0}
+            steps = list(script)
+
+            def runner(cmd, *, dry_run, cwd=None):
+                batch = Path(cmd[cmd.index("-b") + 1])
+                state["verbs"].append(batch.read_text(encoding="utf-8").split()[0])
+                if dry_run or not steps:
+                    return 0
+                rc, held = steps.pop(0)
+                state["held"] = held
+                return rc
+
+            def remote_size(use_alias, remote):
+                state["size_calls"] += 1
+                return state["held"]
+
+            def sleep(_seconds):
+                state["sleeps"] += 1
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                rc = impl(True, str(local), "pack.tar", dry_run, runner=runner, remote_size=remote_size,
+                          attempts=attempts, pause=0, sleep=sleep)
+            state["rc"] = rc
+            return state
+
+    def faulty_always_put(use_alias, local, remote, dry_run, *, runner, remote_size, attempts, pause, sleep):
+        """Restarts from byte zero on every retry."""
+        rc = 1
+        for _ in range(attempts):
+            batch = Path(tempfile.mkdtemp(prefix="sgs-upload-fault-")) / "b"
+            batch.write_text(f'put "{local}" "{remote}"\n', encoding="utf-8")
+            rc = runner(["sftp", "-b", str(batch), "hd"], dry_run=dry_run)
+            if rc == 0:
+                return 0
+        return rc
+
+    def faulty_trust_exit_code(use_alias, local, remote, dry_run, *, runner, remote_size, attempts, pause, sleep):
+        """Believes a zero exit code without checking the remote size."""
+        batch = Path(tempfile.mkdtemp(prefix="sgs-upload-fault-")) / "b"
+        batch.write_text(f'put "{local}" "{remote}"\n', encoding="utf-8")
+        return runner(["sftp", "-b", str(batch), "hd"], dry_run=dry_run)
+
+    def faulty_no_limit(use_alias, local, remote, dry_run, *, runner, remote_size, attempts, pause, sleep):
+        """Reports success after the attempts run out."""
+        upload_resumable(use_alias, local, remote, dry_run, runner=runner, remote_size=remote_size,
+                         attempts=attempts, pause=pause, sleep=sleep)
+        return 0
+
+    def check_first_try(impl) -> list[str]:
+        got = attempt(impl, [(0, total)])
+        return [] if got["rc"] == 0 and got["verbs"] == ["put"] else [f"first try gave rc={got['rc']} verbs={got['verbs']}"]
+
+    def check_resume(impl) -> list[str]:
+        got = attempt(impl, [(1, 300), (0, total)])
+        return [] if got["rc"] == 0 and got["verbs"] == ["put", "reput"] else [f"a drop with 300 bytes held gave rc={got['rc']} verbs={got['verbs']}, not put then reput"]
+
+    def check_drop_before_file(impl) -> list[str]:
+        got = attempt(impl, [(1, None), (0, total)])
+        return [] if got["rc"] == 0 and got["verbs"] == ["put", "put"] else [f"a drop before any file existed gave verbs={got['verbs']}, not put then put"]
+
+    def check_short_file(impl) -> list[str]:
+        got = attempt(impl, [(0, 400), (0, total)])
+        return [] if got["rc"] == 0 and len(got["verbs"]) == 2 else [f"a zero exit with 400 of {total} bytes held was accepted (verbs={got['verbs']})"]
+
+    def check_gives_up(impl) -> list[str]:
+        got = attempt(impl, [(1, 100)] * 3, attempts=3)
+        return [] if got["rc"] != 0 and len(got["verbs"]) == 3 else [f"three failed attempts gave rc={got['rc']} after {len(got['verbs'])} transfers"]
+
+    def check_dry(impl) -> list[str]:
+        got = attempt(impl, [], dry_run=True)
+        return [] if got["rc"] == 0 and got["verbs"] == ["put"] and got["size_calls"] == 0 else [f"dry run gave rc={got['rc']} verbs={got['verbs']} size_calls={got['size_calls']}"]
+
+    real = upload_resumable
+    cases = [
+        ("a clean upload is one put", check_first_try(real), check_first_try(lambda *a, **k: 0)),
+        ("a drop with a partial file resumes with reput", check_resume(real), check_resume(faulty_always_put)),
+        ("a drop before any file exists starts again with put", check_drop_before_file(real), check_drop_before_file(lambda *a, **k: 1)),
+        ("a zero exit with a short remote file is not accepted", check_short_file(real), check_short_file(faulty_trust_exit_code)),
+        ("the attempts run out with a failing exit code", check_gives_up(real), check_gives_up(faulty_no_limit)),
+        ("a dry run makes one call and no remote check", check_dry(real), check_dry(lambda *a, **k: 1)),
+    ]
+    for label, real_problems, planted_problems in cases:
+        print(f"  [upload resume case] {label}: real={'GREEN' if not real_problems else 'RED'}; "
+              f"planted fault={'RED' if planted_problems else 'GREEN (check is vacuous)'}"
+              + (f" ({planted_problems[0]})" if planted_problems else ""))
+        failures.extend(f"upload resume: {label}: {p}" for p in real_problems)
+        if not planted_problems:
+            failures.append(f"upload resume NEGATIVE CONTROL: {label}: the planted fault was not detected, so the check cannot fail")
+    return failures
+
+
 def self_test() -> int:
     """Prove the payload-scoped dirty gate REJECTS the unsafe case, not just the happy path.
 
@@ -517,6 +623,7 @@ def self_test() -> int:
     failures.extend(self_test_timing())
     failures.extend(self_test_motion_qa_args())
     failures.extend(self_test_litespeed_probe())
+    failures.extend(self_test_upload_resume())
     failures.extend(deploy_qa_tier.self_test())
     failures.extend(deploy_media_guard.self_test())
 

@@ -14,7 +14,7 @@ import time
 from pathlib import Path
 import deploy_cache
 
-from deploy_common import BUILD_DIR, ISOLATION_WORKTREE_PREFIX, PLUGIN_DIR, REMOTE_STAGING_DIR, REPO_ROOT, TARBALL_MAX_MB, TARBALL_NAME, TAR_EXCLUDES, THEME_JSON_PAYLOAD_NAME, composer_dump_autoload, err, fmt_cmd, log, resolve_exe, run, scp_base_cmd, ssh_base_cmd
+from deploy_common import BUILD_DIR, ISOLATION_WORKTREE_PREFIX, PLUGIN_DIR, REMOTE_STAGING_DIR, REPO_ROOT, SSH_ALIAS, SSH_USER_HOST, TARBALL_MAX_MB, TARBALL_NAME, TAR_EXCLUDES, THEME_JSON_PAYLOAD_NAME, composer_dump_autoload, err, fmt_cmd, log, resolve_exe, run, ssh_base_cmd
 
 
 def build_tar_cmd(theme: bool, blocks: bool, theme_json_payload: bool) -> list[str]:
@@ -223,14 +223,86 @@ def step_tar(dry_run: bool, theme: bool, blocks: bool,
                 )
 
 
+UPLOAD_ATTEMPTS = 8
+UPLOAD_PAUSE_SECONDS = 5
+
+
+def sftp_batch_cmd(use_alias: bool, batch_path: str) -> list[str]:
+    """The sftp command that runs one batch file against the deploy host."""
+    if use_alias:
+        return ["sftp", "-q", "-b", batch_path, SSH_ALIAS]
+    return ["sftp", "-q", "-i", str(Path.home() / ".ssh" / "id_ed25519"), "-P", "65002", "-b", batch_path, SSH_USER_HOST]
+
+
+def remote_file_size(use_alias: bool, remote: str) -> int | None:
+    """Bytes the host holds for `remote` (relative to the login folder), None when the file does not exist.
+
+    Raises OSError when the host cannot be asked, so the caller retries and never treats an unreachable host as an empty one.
+    """
+    result = subprocess.run(
+        ssh_base_cmd(use_alias) + [f"stat -c %s {shlex.quote(remote)} 2>/dev/null; echo rc=$?"],
+        capture_output=True, text=True, check=False,
+    )
+    if result.returncode != 0:
+        raise OSError(f"ssh exit {result.returncode}")
+    lines = result.stdout.split()
+    if lines and lines[-1] == "rc=0" and len(lines) >= 2 and lines[-2].isdigit():
+        return int(lines[-2])
+    return None
+
+
+def upload_resumable(use_alias: bool, local: str, remote: str, dry_run: bool, *, runner=run, remote_size=remote_file_size,
+                     attempts: int = UPLOAD_ATTEMPTS, pause: float = UPLOAD_PAUSE_SECONDS, sleep=time.sleep) -> int:
+    """Upload `local` to `remote` over sftp, resuming after a dropped connection; returns 0 only when the host holds every byte.
+
+    The first attempt is `put`. After a failure the host's file size decides the next one: no file means `put` again,
+    a partial file means `reput` (sftp appends from the bytes already held), a complete file means done. A zero exit
+    code counts only when the host reports the full size.
+    """
+    local_path = REPO_ROOT / local
+    expected = 0 if dry_run else local_path.stat().st_size
+    rc = 1
+    for attempt in range(1, attempts + 1):
+        verb = "put"
+        if attempt > 1:
+            try:
+                held = remote_size(use_alias, remote)
+            except OSError as exc:
+                log(f"  [upload] attempt {attempt}: cannot reach the host ({exc}); waiting {pause}s")
+                sleep(pause)
+                continue
+            if held == expected:
+                return 0
+            verb = "reput" if held else "put"
+        with tempfile.TemporaryDirectory(prefix="sgs-upload-") as td:
+            batch = Path(td) / "upload.batch"
+            batch.write_text(f'{verb} "{local}" "{remote}"\n', encoding="utf-8")
+            rc = runner(sftp_batch_cmd(use_alias, str(batch)), dry_run=dry_run, cwd=REPO_ROOT)
+        if dry_run:
+            return rc
+        if rc == 0:
+            try:
+                held = remote_size(use_alias, remote)
+            except OSError:
+                held = None
+            if held == expected:
+                return 0
+            log(f"  [upload] attempt {attempt}: exit 0 but the host holds {held} of {expected} bytes")
+            rc = rc or 1
+        else:
+            log(f"  [upload] attempt {attempt} dropped (exit {rc}); resuming")
+        if attempt < attempts:
+            sleep(pause)
+    return rc
+
+
 def step_scp(dry_run: bool, use_alias: bool, host_label: str) -> int:
-    log(f"[3/5] SCP to {host_label}")
-    cmd = scp_base_cmd(use_alias, TARBALL_NAME, TARBALL_NAME)
-    rc = run(cmd, dry_run=dry_run, cwd=REPO_ROOT)
+    log(f"[3/5] Upload to {host_label} (sftp, resumes after a dropped connection)")
+    rc = upload_resumable(use_alias, TARBALL_NAME, TARBALL_NAME, dry_run)
     if rc != 0:
-        err(f"scp failed (exit {rc})")
+        err(f"upload failed after {UPLOAD_ATTEMPTS} attempts (exit {rc})")
         return rc
-    log("[3/5] SCP: OK")
+    log("[3/5] Upload: OK")
     return 0
 
 
