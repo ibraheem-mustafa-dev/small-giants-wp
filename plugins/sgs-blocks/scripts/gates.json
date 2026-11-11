@@ -2303,5 +2303,32 @@
     "added_commit": null,
     "budget_ms": 90000,
     "order": 259
+  },
+  {
+    "id": "assert-gate-wiring",
+    "cmd": "python scripts/run-gates.py --assert-wired",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 260
+  },
+  {
+    "id": "build-with-gates-selftest",
+    "cmd": "node scripts/build-with-gates.mjs --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 4000,
+    "order": 261
+  },
+  {
+    "id": "run-motion-gates-selftest",
+    "cmd": "python scripts/run-motion-gates.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 262
   }
 ]

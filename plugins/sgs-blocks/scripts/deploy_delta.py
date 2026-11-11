@@ -118,16 +118,25 @@ def excluded(rel: str, rx: re.Pattern[str]) -> bool:
 OUTSIDE_LINKS_ALLOWED = ("plugins/sgs-blocks/vendor",)
 
 
-def allowed_outside(repo_root: Path) -> list[str]:
-    """Real paths a payload link may resolve into outside the checkout: vendor/ and each linked folder inside it."""
+def allowed_outside(repo_root: Path, shared_root: str | None = None) -> list[str]:
+    """Real paths a payload link may resolve into outside the checkout: vendor/ and each linked folder inside it.
+
+    When the isolated deploy names the shared checkout (SGS_DEPLOY_SHARED_ROOT), a linked folder counts only if it
+    resolves inside that checkout's own vendor/, so a stray link in vendor/ to anywhere else is refused, not shipped."""
+    shared_root = os.environ.get("SGS_DEPLOY_SHARED_ROOT") if shared_root is None else shared_root
     out: list[str] = []
     for rel in OUTSIDE_LINKS_ALLOWED:
         path = repo_root / rel
         if not path.exists():
             continue
         out.append(os.path.realpath(path))
+        source = os.path.realpath(Path(shared_root) / rel) if shared_root else None
         if path.is_dir():
-            out += [os.path.realpath(child) for child in path.iterdir() if child.is_symlink()]
+            for child in path.iterdir():
+                if child.is_symlink():
+                    real = os.path.realpath(child)
+                    if source is None or _within(real, source):
+                        out.append(real)
     return out
 
 
@@ -285,8 +294,9 @@ def fetch_live_listing(use_alias: bool, wp_content: str, roots: list[tuple[str, 
                        timeout: int = LISTING_TIMEOUT_S, attempts: int = LISTING_ATTEMPTS,
                        runner=subprocess.run) -> tuple[Live | None, str]:
     """The live listing, asked up to `attempts` times. The host's link stalls at random: a listing that normally takes
-    about a second hung for 180s on 2026-11-11 and made a good deploy read as stale. A listing that arrives but
-    cannot be parsed is not retried (it would read the same)."""
+    about a second hung for 180s on 2026-11-11 and made a good deploy read as stale, and a stall can as easily cut the
+    gzip stream short. Every failure is asked again, an unparseable listing included; the listing is read-only, so a
+    repeat costs only time."""
     why = "not asked"
     for _ in range(max(1, attempts)):
         try:
@@ -298,7 +308,9 @@ def fetch_live_listing(use_alias: bool, wp_content: str, roots: list[tuple[str, 
         if done.returncode != 0:
             why = f"ssh exit {done.returncode}"
             continue
-        return parse_live_listing(done.stdout, roots)
+        live, why = parse_live_listing(done.stdout, roots)
+        if live is not None:
+            return live, why
     return None, f"{why}, {max(1, attempts)} attempt(s)"
 
 
@@ -586,6 +598,29 @@ def self_test() -> list[str]:
             except PayloadError:
                 pass
             os.remove(blocks_dir / "linked-out") if (blocks_dir / "linked-out").is_symlink() else os.rmdir(blocks_dir / "linked-out")
+            # vendor/ as the worktree builds it (a real folder, packages linked): links into the shared checkout's
+            # vendor/ ship, a link elsewhere is refused once the deploy names the shared checkout.
+            shell_repo = base / "shell-repo"
+            (shell_repo / "plugins" / "sgs-blocks" / "vendor").mkdir(parents=True)
+            (shell_repo / "plugins" / "sgs-blocks" / "sgs-blocks.php").write_bytes(b"<?php\n")
+            shared = base / "shared-checkout"
+            (shared / "plugins" / "sgs-blocks" / "vendor" / "spatie").mkdir(parents=True)
+            (shared / "plugins" / "sgs-blocks" / "vendor" / "spatie" / "Hex.php").write_bytes(b"<?php // Hex\n")
+            os.symlink(shared / "plugins" / "sgs-blocks" / "vendor" / "spatie",
+                       shell_repo / "plugins" / "sgs-blocks" / "vendor" / "spatie", target_is_directory=True)
+            os.environ["SGS_DEPLOY_SHARED_ROOT"] = str(shared)
+            try:
+                got = collect_payload(shell_repo, theme=False, blocks=True)
+                if "plugins/sgs-blocks/vendor/spatie/Hex.php" not in got:
+                    failures.append("collect: a vendor/ package linked from the shared checkout did not ship")
+                os.symlink(outside, shell_repo / "plugins" / "sgs-blocks" / "vendor" / "stray", target_is_directory=True)
+                try:
+                    collect_payload(shell_repo, theme=False, blocks=True)
+                    failures.append("collect: a vendor/ link outside the shared checkout's vendor/ was shipped")
+                except PayloadError:
+                    pass
+            finally:
+                os.environ.pop("SGS_DEPLOY_SHARED_ROOT", None)
         except OSError as exc:
             failures.append(f"collect: could not build the link cases ({exc})")
         # The dev autoload detector: a shipped autoload file naming a dev-only package is found (planted), a clean one
@@ -829,22 +864,28 @@ def self_test() -> list[str]:
             return plan_delta(pl, lv, w, rts)
 
         def stall_case(attempts: int) -> list[str]:
-            # The first ssh call stalls (a timeout), the second answers: the listing must still arrive.
+            # The first ssh call stalls (a timeout) or arrives cut short; the second answers: the listing must arrive.
             good = sh(live_listing_cmd(WPC, roots), srv).stdout
-            calls = {"n": 0}
+            problems = []
+            for first in ("timeout", "cut off"):
+                calls = {"n": 0}
 
-            def runner(cmd, **kw):
-                calls["n"] += 1
-                if calls["n"] == 1:
-                    raise subprocess.TimeoutExpired(cmd, kw.get("timeout", 0))
-                return subprocess.CompletedProcess(cmd, 0, good, b"")
+                def runner(cmd, **kw):
+                    calls["n"] += 1
+                    if calls["n"] == 1 and first == "timeout":
+                        raise subprocess.TimeoutExpired(cmd, kw.get("timeout", 0))
+                    if calls["n"] == 1:
+                        return subprocess.CompletedProcess(cmd, 0, good[: len(good) // 2], b"")
+                    return subprocess.CompletedProcess(cmd, 0, good, b"")
 
-            live_, why_ = fetch_live_listing(True, WPC, roots, ["ssh"], attempts=attempts, runner=runner)
-            return [] if live_ is not None else [f"one stalled ssh call lost the listing ({why_})"]
+                live_, why_ = fetch_live_listing(True, WPC, roots, ["ssh"], attempts=attempts, runner=runner)
+                if live_ is None:
+                    problems.append(f"one {first} ssh answer lost the listing ({why_})")
+            return problems
 
         cases = [
             ("an unchanged payload uploads nothing", nothing_case(plan_delta), nothing_case(always_all)),
-            ("one stalled ssh call does not lose the live listing", stall_case(LISTING_ATTEMPTS), stall_case(1)),
+            ("one stalled or cut-off ssh answer does not lose the live listing", stall_case(LISTING_ATTEMPTS), stall_case(1)),
             ("one changed file of the same size sends only that file", one_file_case(plan_delta), one_file_case(size_only)),
             ("a deleted file is deleted on the server", delete_case(build_remote_apply_cmd), delete_case(no_delete_list)),
             ("a missing, garbled, cut-off or symlink-holding listing gives a full upload",

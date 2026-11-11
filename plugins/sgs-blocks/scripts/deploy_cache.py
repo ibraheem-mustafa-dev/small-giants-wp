@@ -164,7 +164,6 @@ def carry_pass(from_key: str | None, to_key: str | None) -> bool:
             # Another session carried or recorded the same entry meanwhile (see record_pass): it stands.
             if not gate_pass(to_key):
                 raise
-            return False
     finally:
         shutil.rmtree(work, ignore_errors=True)
     return True

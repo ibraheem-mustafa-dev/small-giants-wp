@@ -105,7 +105,13 @@ def self_test() -> int:
 def main() -> int:
     if "--self-test" in sys.argv:
         return self_test()
-    jobs = int(sys.argv[sys.argv.index("--jobs") + 1]) if "--jobs" in sys.argv else DEFAULT_JOBS
+    jobs = DEFAULT_JOBS
+    if "--jobs" in sys.argv:
+        at = sys.argv.index("--jobs") + 1
+        if at >= len(sys.argv) or not sys.argv[at].isdigit():
+            print("run-motion-gates: --jobs needs a whole number, e.g. --jobs 4", file=sys.stderr)
+            return 2
+        jobs = int(sys.argv[at])
     rows = execute(discover(), jobs)
     if not rows:
         print("run-motion-gates: no motion gate scripts found")
