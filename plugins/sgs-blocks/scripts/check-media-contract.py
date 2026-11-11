@@ -11,7 +11,9 @@ the adoption marker (Spec 49 section 8.3). Once one does, it enforces:
          background layer (`sgs-bg-media`, WP-8).
   AC-18  Raw `<MediaUpload` appears only in `MediaSlotField.js` and the files in
          `scripts/data/media-picker-exemptions.json`; the core focal picker and the old
-         focal field appear nowhere but `FocalField.js` (FR-49-26).
+         focal field appear nowhere but `FocalField.js` (FR-49-26). While Stage B adopts wave
+         by wave (some block `media-adoption.json` lists has not adopted), it reads only the
+         adopted blocks' folders; once every listed block has adopted, all of `src/`.
 
     python scripts/check-media-contract.py --check
     python scripts/check-media-contract.py --self-test
@@ -30,6 +32,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PLUGIN = os.path.dirname(HERE)
 FIXTURE = os.path.join(PLUGIN, 'tests', 'fixtures', 'media', 'adopted-block.json')
 EXEMPTIONS = os.path.join(HERE, 'data', 'media-picker-exemptions.json')
+ADOPTION_MAP = os.path.join(HERE, 'data', 'media-adoption.json')
 
 EMIT_DIR = os.path.join(PLUGIN, 'src', 'components', 'media', 'emit')
 LEGACY_REGISTRY = os.path.join(PLUGIN, 'src', 'components', 'MediaElementControls.js')
@@ -160,6 +163,22 @@ def load_sources() -> dict[str, str]:
     return files
 
 
+def listed_blocks() -> set[str]:
+    """Every block name `media-adoption.json` lists in any wave (empty when the file is missing)."""
+    if not os.path.exists(ADOPTION_MAP):
+        return set()
+    with open(ADOPTION_MAP, encoding='utf-8') as fh:
+        return {name for wave in json.load(fh).get('waves', []) for name in wave.get('blocks', {})}
+
+
+def picker_scope(adopters: list[tuple[str, dict]], listed: set[str]) -> list[str] | None:
+    """Folder prefixes AC-18 reads while adoption is partial; None (all of `src/`) once every listed block adopted."""
+    adopted = {b.get('name') for _, b in adopters}
+    if listed and not listed <= adopted:
+        return sorted(os.path.dirname(p) + '/' for p, _ in adopters)
+    return None
+
+
 def load_exemptions() -> set[str]:
     if not os.path.exists(EXEMPTIONS):
         return set()
@@ -176,7 +195,11 @@ def check() -> int:
     for p, b in adopters:
         problems += contract_problems(b, p)
         problems += background_problems(b, p)
-    problems += picker_problems(load_sources(), load_exemptions())
+    sources = load_sources()
+    scope = picker_scope(adopters, listed_blocks())
+    if scope is not None:
+        sources = {p: t for p, t in sources.items() if p.startswith(tuple(scope))}
+    problems += picker_problems(sources, load_exemptions())
     if problems:
         print(f'media-contract: FAIL ({len(problems)})')
         for m in problems:
@@ -236,6 +259,11 @@ def self_test() -> int:
     if len(pickers) != 2 or not any('x/edit.js' in m and 'MediaUpload' in m for m in pickers) \
             or not any('y/edit.js' in m and 'focal' in m for m in pickers):
         print(f'self-test FAIL: picker gate gave {pickers}'); ok = False
+    partial = [('src/blocks/media/block.json', {'name': 'sgs/media'})]
+    if picker_scope(partial, {'sgs/media', 'sgs/hero'}) != ['src/blocks/media/']:
+        print('self-test FAIL: partial adoption must read only the adopted block folders'); ok = False
+    if picker_scope(partial, {'sgs/media'}) is not None or picker_scope(partial, set()) is not None:
+        print('self-test FAIL: full adoption (or no adoption map) must read all of src/'); ok = False
     print('media-contract self-test: ' + ('OK' if ok else 'FAIL'))
     return 0 if ok else 1
 

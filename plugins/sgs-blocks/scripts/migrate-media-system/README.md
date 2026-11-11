@@ -29,6 +29,8 @@ cli.py self-test --mirror [--keep]                  the proof on a scratch mirro
 
 With `--mirror` or `--content`, `check` and `fix` read only those targets; add `--target KIND` to include repo files as well.
 
+While Stage B adopts wave by wave (some block that `scripts/data/media-adoption.json` lists has not declared `kinds`), `fix` and `check --active auto` rewrite and enforce only the adopted blocks (`mapping.migration_scope`), so a wave's migration never hands an unadopted block attributes its `render.php` cannot read; `--all-blocks` lifts the limit. Once every listed block has adopted, the scope is every block. `check --active on` (the deploy guard's form) is never scoped. A JSON file with a rewritten block keeps the indent of its first indented line; a file with no rewritten block is left byte for byte.
+
 `corpus.export_command(wp_path)` returns one read-only shell command (the PHP travels inside it, base64) that prints the export JSON on a WordPress host over SSH or in WSL. Package C's deploy step calls it.
 
 ## Self-test

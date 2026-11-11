@@ -43,7 +43,10 @@ sync_site() {
   # carries that snapshot's paint key (mirror_theme_json.py).
   local tj
   tj="$(mktemp)"
-  python3 "$REPO/scripts/local-wp/mirror_theme_json.py" "$site" "$tj"
+  # A scratch copy (scratch-mirror.sh) runs the theme.json of the mirror it was copied from.
+  local tj_site="$site"
+  [ -f "$dir/.scratch-source" ] && tj_site="$(cat "$dir/.scratch-source")"
+  python3 "$REPO/scripts/local-wp/mirror_theme_json.py" "$tj_site" "$tj"
   install -m 644 "$tj" "$dir/wp-content/themes/sgs-theme/theme.json"
   rm -f "$tj"
 
@@ -57,11 +60,12 @@ sync_site() {
 }
 
 case "$TARGET" in
-  local-eye-care|local-sandybrown|local-indus|local-mamas|all) check_build ;;
+  local-eye-care|local-sandybrown|local-indus|local-mamas|local-mediatest*|all) check_build ;;
 esac
 
 case "$TARGET" in
   local-eye-care|local-sandybrown|local-indus|local-mamas) sync_site "$TARGET" ;;
+  local-mediatest*) [ -f "/var/www/$TARGET/.scratch-source" ] || { echo "$TARGET is not a scratch copy (scratch-mirror.sh)" >&2; exit 1; }; sync_site "$TARGET" ;;
   all) sync_site local-eye-care; sync_site local-sandybrown; sync_site local-indus; sync_site local-mamas ;;
-  *) echo "Usage: $0 <local-eye-care|local-sandybrown|local-indus|local-mamas|all>" >&2; exit 2 ;;
+  *) echo "Usage: $0 <local-eye-care|local-sandybrown|local-indus|local-mamas|all|local-mediatest-*>" >&2; exit 2 ;;
 esac

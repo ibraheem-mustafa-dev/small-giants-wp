@@ -38,6 +38,10 @@ wsl -d Ubuntu -u root -- bash /mnt/c/Users/Bean/Projects/small-giants-wp/scripts
 
 Use `local-eye-care`, `local-sandybrown`, `local-indus` or `local-mamas` instead of `all` for one site. It runs `rsync --delete` on `plugins/sgs-blocks/` (excluding `node_modules` and, at the plugin root only, `src`, `tests`, `.phpunit.cache`; `vendor/*/src` is copied), any other `plugins/sgs-*` folder already present on the site, and `theme/sgs-theme/`, replaces the theme's `theme.json` with the one a deploy ships to the test site the mirror copies (`mirror_theme_json.py`: the client snapshot named by that target's `client` in `deploy_common.py`, so default paint measured on the mirror carries that snapshot's paint key), then runs `wp cache flush`. From Git Bash, prefix the `wsl` command with `MSYS_NO_PATHCONV=1` or the `/mnt/c/...` path is rewritten. Build first (`npm run build` in `plugins/sgs-blocks`).
 
+## Scratch copies of a mirror
+
+`scripts/local-wp/scratch-mirror.sh create <mirror> local-mediatest-<name> <port>` copies a mirror's database (as `wp_mediatest_<name>`), files and uploads to `/var/www/local-mediatest-<name>`, rewrites its URLs to `http://localhost:<port>` (8090 to 8199) and serves it from its own Apache site; `drop local-mediatest-<name>` removes the site, database, files and backups; `list` shows each copy, its port and source. A copy records its source in `.scratch-source`, and `sync-build.sh local-mediatest-<name>` syncs a build to it with the source mirror's `theme.json`. Logins are the source mirror's. Use a copy for work the four mirrors must not see (they serve other sessions on `main`'s code), such as migrating saved content for a branch build. Run it from PowerShell, or from Git Bash with `MSYS_NO_PATHCONV=1`.
+
 ## Refresh the database and uploads from the test site
 
 The database is not kept in step with the test sites by itself. Before measuring on a mirror, refresh it (from Git Bash, which holds the SSH key):

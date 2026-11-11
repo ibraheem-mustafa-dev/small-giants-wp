@@ -18,7 +18,9 @@ content of a local mirror (`mirror.py`): database backup first, direct `$wpdb` w
 command; `restore` returns a mirror to a backup. Saved content means every store holding block markup: all post types and
 statuses, post meta and options (`export-content.php`). `check` exits 1 while
 any old attribute remains on a target (with `--mirror` or `--content` it reads only those, unless `--target` is named); it stays silent (exit 0) until a block declares `kinds` on a media slot
-(`--active auto`), the cutover marker of Spec 49 §8.3. `self-test` runs the fixtures, negative controls and the
+(`--active auto`), the cutover marker of Spec 49 §8.3. While some blocks `media-adoption.json` lists have not adopted,
+`fix` and `check --active auto` touch only the adopted blocks (`mapping.migration_scope`; `--all-blocks` lifts it), so a
+wave's migration never hands an unadopted block attributes its render.php cannot read. `self-test` runs the fixtures, negative controls and the
 idempotence proof.
 """
 from __future__ import annotations
@@ -151,7 +153,26 @@ def cmd_survey(args) -> int:
     return 0
 
 
+SCOPE: frozenset[str] | None = None
+
+
+def set_scope(args) -> None:
+    """Limit fix and check to the adopted blocks while adoption is partial (`mapping.migration_scope`);
+    `--all-blocks` lifts the limit."""
+    global SCOPE
+    SCOPE = None if getattr(args, "all_blocks", False) else M.migration_scope()
+    if SCOPE is not None:
+        print(f"migrate-media-system: adoption is partial; scope is the {len(SCOPE)} adopted block(s): "
+              + ", ".join(sorted(SCOPE)) + " (--all-blocks for every block)", file=sys.stderr)
+
+
+def in_scope(name: str) -> bool:
+    return SCOPE is None or name in SCOPE
+
+
 def fn_for(_name: str, _attrs: dict):
+    if not in_scope(_name):
+        return _attrs
     new, _ = B.migrate(_name, _attrs)
     return new
 
@@ -181,6 +202,7 @@ def cmd_fix(args) -> int:
     if args.mirror and len(args.mirror) > 1 and args.apply:
         raise SystemExit("--apply writes one mirror at a time")
     refuse_unsupported_saved(args)
+    set_scope(args)
     changed = 0
     files: list[Path] = [Path(f) for f in args.file or []]
     saved_only = saved_only_scope(args)
@@ -236,10 +258,12 @@ def cmd_check(args) -> int:
     args.repo = not saved_only
     args.target = args.target or ([] if saved_only else list(CHECK_KINDS))
     refuse_unsupported_saved(args)
+    if args.active == "auto":
+        set_scope(args)
     found: collections.Counter = collections.Counter()
     where: dict = {}
     for label, name, attrs in records(args):
-        if "__unparseable__" in attrs:
+        if "__unparseable__" in attrs or not in_scope(name):
             continue
         for attr, status in B.old_attributes(name, attrs):
             found[(name, attr, status)] += 1
@@ -284,6 +308,8 @@ def main(argv=None) -> int:
             p.add_argument("--mirror", action="append", help="read-only wp-cli export of a local mirror: " + "a folder name under /var/www/local-")
         if name != "survey":
             p.add_argument("--repo", action="store_true", help="include the repo targets (default when no --content or --mirror is named)")
+            p.add_argument("--all-blocks", action="store_true",
+                           help="every block, even while adoption is partial (default: only the adopted blocks until all have adopted)")
         if name == "fix":
             p.add_argument("--apply", action="store_true")
             p.add_argument("--dry-run", action="store_true")

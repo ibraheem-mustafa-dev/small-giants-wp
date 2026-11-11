@@ -87,6 +87,31 @@ def any_block_adopted() -> bool:
     return any(e["kinds"] for entries in live_declared_slots().values() for e in entries)
 
 
+ADOPTION_MAP = PLUGIN / "scripts" / "data" / "media-adoption.json"
+
+
+def adopted_blocks() -> set[str]:
+    """Blocks whose block.json declares `kinds` on at least one media slot."""
+    return {b for b, entries in live_declared_slots().items() if any(e["kinds"] for e in entries)}
+
+
+@lru_cache(maxsize=1)
+def migration_scope() -> frozenset[str] | None:
+    """The blocks `fix` rewrites and `check` enforces under `--active auto`.
+
+    While Stage B adopts wave by wave, only the adopted blocks: rewriting a block that has not adopted would hand its
+    render.php attributes it cannot read. Once every block `media-adoption.json` lists has adopted, None (every block).
+    """
+    listed: set[str] = set()
+    if ADOPTION_MAP.is_file():
+        for wave in json.loads(ADOPTION_MAP.read_text(encoding="utf-8")).get("waves", []):
+            listed |= set(wave.get("blocks", {}))
+    adopted = adopted_blocks()
+    if listed and not listed <= adopted:
+        return frozenset(adopted)
+    return None
+
+
 def live_db_attributes() -> dict:
     """{block: {attr: [type, default_json]}} for source='sgs' attributes of the framework database (regeneration only)."""
     path = framework_db_path()

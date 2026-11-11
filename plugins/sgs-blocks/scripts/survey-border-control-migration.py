@@ -156,6 +156,13 @@ def _delegated_atom_mounts_sgs_border_control(bj):
                     return True
     return False
 
+def _adopted_media_slot_owns_border(bj):
+    """A media slot that declares `kinds` (Spec 49 §8.3, adopted) gets its border from the media system's
+    adopted Border and shape panel (`src/components/media/panels/component-map.js`), which is that slot's
+    sanctioned border control in place of a hand-mounted <SgsBorderControl>."""
+    entries = (((bj or {}).get('supports') or {}).get('sgs') or {}).get('mediaElements') or []
+    return any(isinstance(e, dict) and e.get('kinds') for e in entries)
+
 # The ratcheted ceiling: current known-open population for each open category, so a
 # regression (a new NATIVE_FULL block appearing, or an existing PRIVATE block losing
 # its SgsBorderControl mount) fails --check even though this migration cannot finish
@@ -293,6 +300,7 @@ def classify_block(block_dir):
         'SgsBorderControl' in edit_js
         or 'SgsBorderControl' in own_editor_js
         or _delegated_atom_mounts_sgs_border_control(bj)
+        or _adopted_media_slot_owns_border(bj)
         or _delegated_shared_file_mounts_sgs_border_control(edit_js)
     )
 

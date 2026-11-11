@@ -71,7 +71,8 @@ def file_blocks(path: Path) -> list[tuple[str, dict]]:
 
 
 def rewrite_file_text(path: Path, fn) -> tuple[str, int, bool]:
-    """(new text, changed block count, reformatted). A JSON file is re-serialised with its detected indent."""
+    """(new text, changed block count, reformatted). A JSON file with a changed block is re-serialised with the indent
+    of its first indented line; a file with no changed block comes back byte for byte."""
     text = read_text(path)
     if path.suffix.lower() != ".json":
         new, count = markup.rewrite_markup(text, fn)
@@ -81,9 +82,12 @@ def rewrite_file_text(path: Path, fn) -> tuple[str, int, bool]:
     except ValueError:
         new, count = markup.rewrite_markup(text, fn)
         return new, count, False
-    indent = 2 if '\n  "' in text or '\n  {' in text or '\n  [' in text else (4 if '\n    "' in text else None)
+    first = re.search(r'\n([ \t]+)\S', text)
+    indent: str | None = first.group(1) if first else None
     unchanged = json.dumps(data, indent=indent, ensure_ascii=False)
     data, count = markup.rewrite_json(data, fn)
+    if not count:
+        return text, 0, False
     new = json.dumps(data, indent=indent, ensure_ascii=False)
     if text.endswith("\n"):
         new += "\n"
