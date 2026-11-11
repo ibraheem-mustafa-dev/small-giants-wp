@@ -180,14 +180,16 @@ def dev_vendor_namespaces(excludes: list[str] | None = None) -> list[str]:
 
 
 def dev_autoload_leaks(payload: dict[str, Entry], namespaces: list[str] | None = None) -> list[str]:
-    """Shipped Composer autoload files that still name a dev-only package.
+    """Shipped Composer autoload files (vendor/composer/autoload_*.php) that still name a dev-only package.
 
     Those packages are excluded, so a dev-included autoload_files.php that requires them fatals every page (D849).
-    The no-dev regeneration in deploy_ship.step_collect exists to prevent it; this proves it happened."""
+    The no-dev regeneration in deploy_ship.step_collect exists to prevent it; this proves it happened. Only the
+    autoload_*.php files count: installed.php lists every installed package, dev ones included, whatever the mode,
+    and is read only by Composer's InstalledVersions class, never required on a request."""
     names = dev_vendor_namespaces() if namespaces is None else namespaces
     needles = [f"/{ns}/".encode() for ns in names]
     return sorted(p for p, e in payload.items()
-                  if p.startswith("plugins/sgs-blocks/vendor/composer/") and p.endswith(".php")
+                  if p.startswith("plugins/sgs-blocks/vendor/composer/autoload_") and p.endswith(".php")
                   and any(n in e.data for n in needles))
 
 
@@ -565,8 +567,11 @@ def self_test() -> list[str]:
                  Entry(b"<?php return [ $vendorDir . '/phpstan/phpstan/bootstrap.php' ];", "", 0)}
         clean = {"plugins/sgs-blocks/vendor/composer/autoload_files.php":
                  Entry(b"<?php return [ $vendorDir . '/symfony/polyfill-mbstring/bootstrap.php' ];", "", 0)}
+        clean["plugins/sgs-blocks/vendor/composer/installed.php"] = Entry(
+            b"<?php return ['phpstan/phpstan' => ['install_path' => __DIR__ . '/../phpstan/phpstan', 'dev_requirement' => true]];", "", 0)
         if dev_autoload_leaks(leaky) != ["plugins/sgs-blocks/vendor/composer/autoload_files.php"] or dev_autoload_leaks(clean):
-            failures.append("dev_autoload_leaks: a dev-included autoloader was not found, or a clean one was flagged")
+            failures.append("dev_autoload_leaks: a dev-included autoloader was not found, or a clean one (with installed.php "
+                            "listing dev packages, as Composer always writes it) was flagged")
         if "phpstan" not in dev_vendor_namespaces():
             failures.append("dev_vendor_namespaces: phpstan is not among the excluded dev namespaces")
         # Planted fault: tar's anchored-prefix rule read as "any component named src".
