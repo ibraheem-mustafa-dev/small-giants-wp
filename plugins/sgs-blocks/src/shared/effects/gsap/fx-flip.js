@@ -118,6 +118,17 @@ const DEBOUNCE_MS = 180;
 const ARM_MS = 2000;
 
 /**
+ * Flip state options: `simple` skips the rotation, scale and skew matrix maths.
+ *
+ * Product cards are never rotated or skewed, and without it each `getState()` walks every card's ancestors building a
+ * transform matrix, forcing a layout at each step: 7 cards on the canary shop took about 1,500 ms at 4x CPU against 1 ms
+ * with `simple` (measured 2026-11-11). That ran at boot and on every frame of the armed window after any click.
+ *
+ * @type {{simple: boolean}}
+ */
+const FLIP_STATE = { simple: true };
+
+/**
  * The product LIST inside one Product Collection root, resolved once.
  *
  * Cached per root on first access via a WeakMap so repeated calls don't
@@ -254,14 +265,14 @@ export function initFlip( el ) {
 		// every frame ONLY while armed AND no re-filter is currently captured
 		// or animating, so it's always the geometry from immediately before
 		// whatever mutation is about to be observed.
-		let lastFrameState = Flip.getState( productNodes( el ) );
+		let lastFrameState = Flip.getState( productNodes( el ), FLIP_STATE );
 
 		const tick = () => {
 			if ( performance.now() >= armUntil || capturedState || flipTween ) {
 				rafId = null;
 				return;
 			}
-			lastFrameState = Flip.getState( productNodes( el ) );
+			lastFrameState = Flip.getState( productNodes( el ), FLIP_STATE );
 			rafId = requestAnimationFrame( tick );
 		};
 
@@ -276,7 +287,10 @@ export function initFlip( el ) {
 		const arm = () => {
 			armUntil = performance.now() + ARM_MS;
 			if ( rafId === null ) {
-				lastFrameState = Flip.getState( productNodes( el ) );
+				lastFrameState = Flip.getState(
+					productNodes( el ),
+					FLIP_STATE
+				);
 				rafId = requestAnimationFrame( tick );
 			}
 		};
@@ -318,6 +332,7 @@ export function initFlip( el ) {
 				// duration so those overlaps don't fight the grid's own layout.
 				absolute: true,
 				nested: true,
+				...FLIP_STATE,
 				onComplete: () => {
 					flipTween = null;
 				},
