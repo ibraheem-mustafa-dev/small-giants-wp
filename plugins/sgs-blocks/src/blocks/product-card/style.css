@@ -93,8 +93,8 @@
 }
 
 /* When the image fails to load, show a neutral surface placeholder. */
-.product-card .product-card-img[src=""],
-.product-card .product-card-img:not([src]) {
+.product-card img.product-card-img[src=""],
+.product-card img.product-card-img:not([src]) {
 	display: none;
 }
 
@@ -826,7 +826,7 @@
  * aspect-ratio inline style drives the box; the fixed 220px from .product-card-img
  * is overridden when the media box is present. overflow:hidden clips any rounding.
  */
-.product-card--live:not(.product-card--image-sized) .product-card__media {
+.product-card--live:not(.product-card--image-sized, .product-card--image-ratio) .product-card__media {
 	position: relative;
 	/* Fixed-height media box (matches the mockup draft): the image scales to
 	   fill the full width + a fixed height, cropping/​centred via object-fit
@@ -1800,6 +1800,12 @@
  */
 .product-card.product-card--flat {
 	--sgs-product-card-shadow: none;
+}
+
+/* A Ratio beside Height Fill: the box carries the Ratio (the scoped rule sets aspect-ratio), the filling picture follows it. */
+.product-card--image-ratio .product-card__media,
+.product-card--image-ratio .sgs-product-card__media-wrap {
+	overflow: hidden;
 }
 
 /*

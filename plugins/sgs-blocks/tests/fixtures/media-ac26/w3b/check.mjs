@@ -38,7 +38,7 @@ const CASES = [
 	[ 'default card photo box', '.ac26-default .product-card-img', 'height', px( '220px' ) ],
 	[ 'buybox photo frame corners', '.ac26-buybox .product-card__media', 'border-top-left-radius', px( '20px' ) ],
 	[ 'buybox photo frame border', '.ac26-buybox .product-card__media', 'border-top-width', px( '3px' ) ],
-	[ 'buybox photo frame shadow', '.ac26-buybox .product-card__media', 'box-shadow', px( 'rgba(0, 0, 0, 0.5) 0px 4px 12px 0px' ) ],
+	[ 'buybox photo frame shadow', '.ac26-buybox .product-card__media', 'box-shadow', px( 'rgb(0, 0, 0) 0px 4px 12px 0px' ) ],
 	[ 'buybox photo fit', '.ac26-buybox .sgs-buybox__main-photo', 'object-fit', px( 'contain' ) ],
 	[ 'buybox thumbnail corners', '.ac26-buybox .product-card__thumb', 'border-top-left-radius', px( '10px' ) ],
 	[ 'buybox thumbnail fit', '.ac26-buybox .product-card__thumb img', 'object-fit', px( 'contain' ) ],

@@ -1361,8 +1361,11 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 							'key'   => $t['slug'],
 							'label' => $buybox_axis_band_labels[ $t['slug'] ] ?? $t['label'],
 						);
-						if ( ! empty( $buybox_axis_variation_images[ $t['slug'] ] ) ) {
-							$item['image'] = $buybox_axis_variation_images[ $t['slug'] ];
+						// An option's photo is a per-item Source (sgs/option-picker items take source, alt, fit and focal); a file whose
+						// size cannot be read prints no photo (FR-49-16), so the option keeps its colour or label.
+						$buybox_option_source = ! empty( $buybox_axis_variation_images[ $t['slug'] ] ) ? sgs_pcm_source( (string) $buybox_axis_variation_images[ $t['slug'] ] ) : null;
+						if ( null !== $buybox_option_source ) {
+							$item['source'] = $buybox_option_source;
 						}
 						return $item;
 					},

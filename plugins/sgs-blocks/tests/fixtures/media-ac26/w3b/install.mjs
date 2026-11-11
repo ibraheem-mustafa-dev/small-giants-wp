@@ -34,16 +34,21 @@ if ( ! site || ! /^local-mediatest[a-z0-9-]*$|^local-[a-z0-9-]+$/.test( site ) )
 const SLUG = 'ac26-w3b';
 const docroot = `/var/www/${ site }`;
 
-const wp = ( ...wpArgs ) =>
+const wslWp = ( wpArgs, input ) =>
 	execFileSync( 'wsl', [ '-d', 'Ubuntu', '-u', 'root', '--', 'wp', `--path=${ docroot }`, '--allow-root', ...wpArgs ], {
 		encoding: 'utf8',
+		input,
 		env: { ...process.env, MSYS_NO_PATHCONV: '1' },
 	} ).trim();
+const wp = ( ...wpArgs ) => wslWp( wpArgs );
+/** Run a PHP snippet in WordPress (written to a file in WSL first, so `$` and quotes reach PHP untouched). */
+const wpPhp = ( code ) => {
+	execFileSync( 'wsl', [ '-d', 'Ubuntu', '-u', 'root', '--', 'tee', '/tmp/sgs-ac26-snippet.php' ], { input: `<?php ${ code }`, stdio: [ 'pipe', 'ignore', 'inherit' ] } );
+	return wslWp( [ 'eval-file', '/tmp/sgs-ac26-snippet.php' ] );
+};
 
 const productOf = ( type ) =>
-	wp(
-		'eval',
-		`$p = wc_get_products( array( 'type' => '${ type }', 'status' => 'publish', 'limit' => 1, 'return' => 'ids' ) ); echo $p ? $p[0] : 0;`
+	wpPhp(`$p = wc_get_products( array( 'type' => '${ type }', 'status' => 'publish', 'limit' => 1, 'return' => 'ids' ) ); echo $p ? $p[0] : 0;`
 	);
 const variable = option( 'variable' ) || productOf( 'variable' );
 const simple = option( 'simple' ) || productOf( 'simple' );
@@ -53,13 +58,13 @@ if ( ! Number( variable ) || ! Number( simple ) ) {
 }
 const pickset = Number(
 	option( 'pickset' ) ||
-		wp( 'eval', `$p = get_page_by_path( 'zookies', OBJECT, 'product' ); echo $p ? $p->ID : 0;` ) ||
+		wpPhp(`$p = get_page_by_path( 'zookies', OBJECT, 'product' ); echo $p ? $p->ID : 0;` ) ||
 		0
 ) || Number( variable );
 const imageId = Number( wp( 'post', 'list', '--post_type=attachment', '--post_mime_type=image', '--posts_per_page=1', '--orderby=ID', '--order=ASC', '--field=ID' ).split( /\s+/ )[ 0 ] );
 const imageUrl = wp( 'post', 'get', String( imageId ), '--field=guid' );
 const imageMeta = JSON.parse(
-	wp( 'eval', `echo wp_json_encode( wp_get_attachment_metadata( ${ imageId } ) ?: array() );` ) || '{}'
+	wpPhp(`echo wp_json_encode( wp_get_attachment_metadata( ${ imageId } ) ?: array() );` ) || '{}'
 );
 if ( ! imageId || ! imageUrl ) {
 	console.error( 'The mirror has no image in its media library.' );
@@ -121,9 +126,9 @@ const content = [
 
 const existing = wp( 'post', 'list', '--post_type=page', `--name=${ SLUG }`, '--post_status=any', '--field=ID' ).split( /\s+/ )[ 0 ];
 if ( existing ) {
-	execFileSync( 'wsl', [ '-d', 'Ubuntu', '-u', 'root', '--', 'wp', `--path=${ docroot }`, '--allow-root', 'post', 'update', existing, '-', '--post_status=publish' ], { input: content, encoding: 'utf8', env: { ...process.env, MSYS_NO_PATHCONV: '1' } } );
+	wslWp( [ 'post', 'update', existing, '-', '--post_status=publish' ], content );
 	console.log( `updated page ${ existing } (/${ SLUG }/)` );
 } else {
-	const id = execFileSync( 'wsl', [ '-d', 'Ubuntu', '-u', 'root', '--', 'wp', `--path=${ docroot }`, '--allow-root', 'post', 'create', '-', '--post_type=page', '--post_status=publish', `--post_name=${ SLUG }`, '--post_title=AC-26 product card and buybox', '--porcelain' ], { input: content, encoding: 'utf8', env: { ...process.env, MSYS_NO_PATHCONV: '1' } } ).trim();
+	const id = wslWp( [ 'post', 'create', '-', '--post_type=page', '--post_status=publish', `--post_name=${ SLUG }`, '--post_title=AC-26 product card and buybox', '--porcelain' ], content );
 	console.log( `created page ${ id } (/${ SLUG }/)` );
 }

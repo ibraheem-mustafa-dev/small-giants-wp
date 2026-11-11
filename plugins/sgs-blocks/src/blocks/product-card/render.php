@@ -568,6 +568,12 @@ if ( is_array( $attributes['cardPaddingTier'] ?? null ) && array() !== $attribut
 // one set of controls governs the card whichever path renders (FP-9). The `sgs-product-card__image` part class sits on
 // each main picture so a motion layer on the `image` part reaches it on every path (Spec 38A section 6.2).
 $sgs_pc_main_class = 'product-card-img sgs-product-card__image';
+// A photo set to Fill ignores its own Ratio, so the photo box carries the Ratio and the filling picture follows it.
+$sgs_pc_box_ratio_css = sgs_pcm_fill_ratio_css( $attributes, 'image', '.' . $sgs_card_uid . ' .product-card__media,.' . $sgs_card_uid . ' .sgs-product-card__media-wrap' );
+if ( '' !== $sgs_pc_box_ratio_css ) {
+	$sgs_card_typo_css .= $sgs_pc_box_ratio_css;
+	$classes[]          = 'product-card--image-ratio';
+}
 
 // ── Block-private colour/border (R2c, B-3/B-8) → scoped, NOT inline ──────
 // block.json's native color/border supports are now radius-only + gradients

@@ -389,3 +389,55 @@ if ( ! function_exists( 'sgs_pcm_chrome_css' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_pcm_fill_ratio' ) ) {
+	/**
+	 * The photo box's Ratio per device where the slot's Height is Fill.
+	 *
+	 * A photo set to Fill takes the height its box gives and ignores its own Ratio (the sizing rules), so the card's photo
+	 * box carries the Ratio instead and the filling picture follows it. A device whose Height is not Fill is absent.
+	 *
+	 * @param array  $attrs  Block attributes.
+	 * @param string $prefix Slot prefix.
+	 * @return array<string,string> Device => ratio such as `1 / 1`.
+	 */
+	function sgs_pcm_fill_ratio( array $attrs, string $prefix ): array {
+		$heights = sgs_media_device_values( $attrs[ sgs_media_element_attr( $prefix, 'Height' ) ] ?? null );
+		$ratios  = sgs_media_device_values( $attrs[ sgs_media_element_attr( $prefix, 'Ratio' ) ] ?? null );
+		$out     = array();
+		foreach ( sgs_media_devices() as $device ) {
+			$ratio = is_string( $ratios[ $device ] ) ? sgs_media_ratio( $ratios[ $device ] ) : '';
+			if ( 'fill' === $heights[ $device ] && '' !== $ratio ) {
+				$out[ $device ] = $ratio;
+			}
+		}
+		return $out;
+	}
+}
+
+if ( ! function_exists( 'sgs_pcm_fill_ratio_css' ) ) {
+	/**
+	 * The photo box's Ratio as rules on `$selector`, per device (see `sgs_pcm_fill_ratio()`); '' when none.
+	 *
+	 * @param array  $attrs    Block attributes.
+	 * @param string $prefix   Slot prefix.
+	 * @param string $selector The photo box selector.
+	 * @return string
+	 */
+	function sgs_pcm_fill_ratio_css( array $attrs, string $prefix, string $selector ): string {
+		$ratios = sgs_pcm_fill_ratio( $attrs, $prefix );
+		$css    = '';
+		$prev   = '';
+		foreach ( sgs_media_devices() as $device ) {
+			$now = $ratios[ $device ] ?? '';
+			if ( $now === $prev ) {
+				continue;
+			}
+			$body = '' !== $now ? 'aspect-ratio:' . $now . ';height:auto;' : 'aspect-ratio:auto;height:var(--sgs-product-card-image-height,220px);';
+			$rule = $selector . '{' . $body . '}';
+			$css .= 'desktop' === $device ? $rule : '@media ' . sgs_media_device_query( $device ) . '{' . $rule . '}';
+			$prev = $now;
+		}
+		return $css;
+	}
+}
+
