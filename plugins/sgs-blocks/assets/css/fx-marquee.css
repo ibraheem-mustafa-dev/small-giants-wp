@@ -154,3 +154,15 @@
 		mask-image: none;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-desktop~="marquee"][data-sgs-marquee="on"] [data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-desktop~="marquee"][data-sgs-marquee="on"][data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]) {
+		translate: none;
+	}
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-desktop~="marquee"] [data-sgs-marquee-clone] {
+		display: none;
+	}
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-desktop~="marquee"][data-sgs-marquee="on"][data-sgs-fx-marquee-edge-fade="true"] [data-sgs-marquee-lane="on"] {
+		mask-image: none;
+	}
+}

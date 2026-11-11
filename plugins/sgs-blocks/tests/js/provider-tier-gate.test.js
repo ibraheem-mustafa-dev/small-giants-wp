@@ -174,6 +174,18 @@ describe( 'bootEffect per-effect tier gate', () => {
 		] );
 	} );
 
+	test( 'the desktop list switches one effect off on desktop only', () => {
+		const el = element( {
+			'data-sgs-fx': 'scrub split-reveal',
+			'data-sgs-fx-off-desktop': 'scrub',
+		} );
+		setWidth( 1440 );
+		expect( isDisabledAtThisTier( el, 'scrub' ) ).toBe( true );
+		expect( isDisabledAtThisTier( el, 'split-reveal' ) ).toBe( false );
+		setWidth( 800 );
+		expect( isDisabledAtThisTier( el, 'scrub' ) ).toBe( false );
+	} );
+
 	test( 'the tablet list is read on tablet only', () => {
 		const el = element( {
 			'data-sgs-fx': 'scrub split-reveal',

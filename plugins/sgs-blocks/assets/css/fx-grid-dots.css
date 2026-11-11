@@ -148,3 +148,8 @@
 		display: none;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="grid-dots"][data-sgs-fx-off-desktop~="grid-dots"] .sgs-grid-dots__canvas {
+		display: none;
+	}
+}

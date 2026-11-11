@@ -180,7 +180,7 @@ def _render(rows: list[tuple], levels: dict[str, list[str]]) -> tuple[str, str]:
         " *",
         " * Uses a static variable so the array is only built once per request.",
         " *",
-        " * @return array<string,array{plugin_set:string[],owns_scroll_transform:bool}>",
+        " * @return array<string,array{plugin_set:string[],owns_scroll_transform:bool,media_kinds:string[]}>",
         " */",
         "function sgs_get_motion_fx_effects() {",
         "\tstatic $effects = null;",
@@ -199,6 +199,10 @@ def _render(rows: list[tuple], levels: dict[str, list[str]]) -> tuple[str, str]:
         lines.append(
             f"\t\t\t\t'triggers'              => "
             f"{_php_array_of_strings([t for t in str(triggers).split(',') if t])},"
+        )
+        lines.append(
+            f"\t\t\t\t'media_kinds'           => "
+            f"{_php_array_of_strings([k for k in str(_kinds).split(',') if k])},"
         )
         lines.append("\t\t\t),")
 

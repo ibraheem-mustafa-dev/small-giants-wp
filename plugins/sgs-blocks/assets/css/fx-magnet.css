@@ -75,6 +75,12 @@
 		--sgs-mag-y: 0px !important;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="magnet"][data-sgs-fx-off-desktop~="magnet"] {
+		--sgs-mag-x: 0px !important;
+		--sgs-mag-y: 0px !important;
+	}
+}
 
 /*
  * A declared moving part (`data-sgs-fx-magnet-moving-part`) is marked `data-sgs-mag-part` by the driver and carries the

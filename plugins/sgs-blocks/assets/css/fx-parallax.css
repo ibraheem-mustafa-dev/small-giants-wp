@@ -79,6 +79,11 @@
 		--sgs-fx-plx-offset: 0px;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="parallax"][data-sgs-fx-off-desktop~="parallax"] {
+		--sgs-fx-plx-offset: 0px;
+	}
+}
 
 /* Overscan on the background part (Spec 49 10.2). The moving `.sgs-bg-media` is taller than its section by the most the
    offset can reach, so no gap shows at the section's top or bottom. Per side, with H the section's height (the `100%` of

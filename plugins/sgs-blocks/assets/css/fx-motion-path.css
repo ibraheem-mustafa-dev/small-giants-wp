@@ -254,10 +254,10 @@
 /*
  * Per-device off switch (Spec 38A FR-38A-23). The parked state is the effect's own result, and the authored
  * `position` it replaces cannot be recovered by an override, so the rule is not applied at a tier where the effect is
- * off (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off). Desktop is never off.
+ * off (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off). Desktop is off only when the server names the effect in data-sgs-fx-off-desktop (the kind the slot shows there does not fit it).
  */
 @media ( min-width: 1024px ) {
-	[data-sgs-fx~="motion-path"].sgs-fx-motion-path--resting {
+	[data-sgs-fx~="motion-path"].sgs-fx-motion-path--resting:not( [data-sgs-fx-off-desktop~="motion-path"] ) {
 		position: sticky;
 		top: var( --sgs-fx-motion-path-rest-y );
 	}
@@ -287,7 +287,7 @@
  * could fall out of sync with this one.
  */
 @media ( prefers-reduced-motion: reduce ) and ( min-width: 1024px ) {
-	[data-sgs-fx~="motion-path"] {
+	[data-sgs-fx~="motion-path"]:not( [data-sgs-fx-off-desktop~="motion-path"] ) {
 		position: sticky;
 		top: var( --sgs-fx-motion-path-rest-y );
 	}

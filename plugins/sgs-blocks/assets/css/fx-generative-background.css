@@ -206,3 +206,14 @@
 		background-color: transparent;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-desktop~="generative-background"] .sgs-generative-background__canvas,
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-desktop~="generative-background"] .sgs-generative-background__webgl-canvas,
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-desktop~="generative-background"] .sgs-generative-background__toggle {
+		display: none;
+	}
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-desktop~="generative-background"] {
+		background-image: none;
+		background-color: transparent;
+	}
+}

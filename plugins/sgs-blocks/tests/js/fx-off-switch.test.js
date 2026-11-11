@@ -150,7 +150,7 @@ describe( 'isEffectOffAtThisTier', () => {
 		expect( isEffectOffAtThisTier( el, 'ripple' ) ).toBe( false );
 	} );
 
-	test( 'desktop is never off, whatever the element carries', () => {
+	test( 'desktop ignores the tablet and mobile switches', () => {
 		const el = element( {
 			'data-sgs-fx': 'ripple',
 			'data-sgs-fx-off-mobile': 'ripple',
@@ -160,6 +160,18 @@ describe( 'isEffectOffAtThisTier', () => {
 		} );
 		expect( currentTier() ).toBe( 'desktop' );
 		expect( isEffectOffAtThisTier( el, 'ripple' ) ).toBe( false );
+	} );
+
+	test( 'desktop is off only for an effect the server names in data-sgs-fx-off-desktop', () => {
+		const el = element( {
+			'data-sgs-fx': 'ken-burns ripple',
+			'data-sgs-fx-off-desktop': 'ken-burns',
+		} );
+		expect( currentTier() ).toBe( 'desktop' );
+		expect( isEffectOffAtThisTier( el, 'ken-burns' ) ).toBe( true );
+		expect( isEffectOffAtThisTier( el, 'ripple' ) ).toBe( false );
+		resize( 800 );
+		expect( isEffectOffAtThisTier( el, 'ken-burns' ) ).toBe( false );
 	} );
 
 	test( 'no matchMedia means no tier and nothing off (fail-open)', () => {

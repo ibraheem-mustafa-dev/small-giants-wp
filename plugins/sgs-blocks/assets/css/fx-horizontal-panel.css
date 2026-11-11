@@ -251,3 +251,16 @@
 		opacity: 1;
 	}
 }
+@media (min-width: 1024px) {
+	.sgs-js [data-sgs-fx~="horizontal-panel"][data-sgs-fx-off-desktop~="horizontal-panel"] {
+		overflow-x: auto;
+		overflow-y: hidden;
+		scroll-snap-type: x mandatory;
+	}
+	[data-sgs-fx~="horizontal-panel"][data-sgs-fx-off-desktop~="horizontal-panel"] [data-sgs-fx-panel]:not([data-sgs-mc~="scale"]) {
+		scale: none;
+	}
+	[data-sgs-fx~="horizontal-panel"][data-sgs-fx-off-desktop~="horizontal-panel"] [data-sgs-fx-panel]:not([data-sgs-mc~="opacity"]) {
+		opacity: 1;
+	}
+}

@@ -695,3 +695,16 @@
 		display: none;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-off-desktop~="cursor-field"][data-sgs-cursor-field] {
+		--sgs-cursor-field-layer: none;
+		--sgs-cursor-field-participant-layer: none;
+		--sgs-cursor-field-mask: none;
+	}
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-off-desktop~="cursor-field"][data-sgs-cursor-field]::before {
+		display: none;
+	}
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-off-desktop~="cursor-field"] > .sgs-motion-layer[data-sgs-layer="cursor-field-ring"] {
+		display: none;
+	}
+}

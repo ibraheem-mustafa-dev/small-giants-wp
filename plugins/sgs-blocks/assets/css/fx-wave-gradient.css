@@ -603,3 +603,21 @@
 		--sgs-base-animation-name: none;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-desktop~="wave-gradient"] .sgs-wave-gradient__canvas,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-desktop~="wave-gradient"] .sgs-wave-gradient__toggle {
+		display: none;
+	}
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-desktop~="wave-gradient"]:is(.sgs-wave-gradient--pastel, .sgs-wave-gradient--horizon, .sgs-wave-gradient--ribbon, .sgs-wave-gradient--veil)::before,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-desktop~="wave-gradient"]:is(.sgs-wave-gradient--pastel, .sgs-wave-gradient--horizon, .sgs-wave-gradient--ribbon, .sgs-wave-gradient--veil)::after {
+		display: none;
+	}
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-desktop~="wave-gradient"] {
+		background-image: none;
+		background-color: transparent;
+	}
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-desktop~="wave-gradient"].sgs-wave-gradient--pastel {
+		animation-name: none;
+		--sgs-base-animation-name: none;
+	}
+}

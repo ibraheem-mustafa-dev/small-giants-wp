@@ -79,3 +79,8 @@
 		display: none;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="surface-treatment"][data-sgs-fx-off-desktop~="surface-treatment"] .sgs-webgl-surface {
+		display: none;
+	}
+}

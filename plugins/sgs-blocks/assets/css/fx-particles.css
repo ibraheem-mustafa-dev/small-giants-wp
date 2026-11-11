@@ -84,3 +84,8 @@
 		display: none;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="particles"][data-sgs-fx-off-desktop~="particles"] .sgs-particles__canvas {
+		display: none;
+	}
+}

@@ -154,3 +154,16 @@
 		display: none;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-desktop~="lottie"].sgs-lottie > svg,
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-desktop~="lottie"].sgs-lottie-layer > svg {
+		display: none;
+	}
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-desktop~="lottie"].sgs-lottie:has(> svg) > :is(img, picture),
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-desktop~="lottie"].sgs-lottie-layer:has(> svg) :is(img, picture) {
+		visibility: visible;
+	}
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-desktop~="lottie"].sgs-lottie + .sgs-lottie__pause {
+		display: none;
+	}
+}
