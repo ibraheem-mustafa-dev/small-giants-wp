@@ -5,7 +5,7 @@
 	"version": "0.2.0",
 	"title": "SGS Image Gallery",
 	"category": "sgs-content",
-	"description": "Image gallery with grid, masonry, and carousel layouts plus lightbox viewing. supports.filter.duotone (T3.5, D402 ADOPT) targets each .sgs-gallery__img via the selectors.filter.duotone map — WP core renders duotone as a generated class + <style> tag, not an inline style attribute, so no render.php changes are needed.",
+	"description": "Image gallery with grid, masonry, and carousel layouts plus lightbox viewing. supports.filter.duotone (T3.5, D402 ADOPT) targets each gallery picture via the selectors.filter.duotone map — WP core renders duotone as a generated class + <style> tag, not an inline style attribute, so no render.php changes are needed.",
 	"keywords": [
 		"gallery",
 		"images",
@@ -63,9 +63,6 @@
 				}
 			},
 			"collection": true,
-			"imageControls": true,
-			"imageControlsExplicit": true,
-			"_comment_mediaElements": "Rule 37-media-no-handroll fix (D-pending). Grid-thumbnail object-fit now routes through the shared media-element atom layer instead of a style.css literal. NOT a new client control: prefix 'sgs' resolves (sgs_media_element_attr) to the SAME 'sgsObjectFit' attribute the legacy universal image-controls extension (imageControls/imageControlsExplicit above) already injects and already exposes an 'Object Fit' dropdown for in the inspector — adding a second ObjectFitField here would give the client two controls for one property. render.php reads that existing value through SGS_Media_Element::style() and marks the grid <img> with the atom's scope class; style.css no longer hardcodes object-fit on .sgs-gallery__img, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default). The lightbox full-view image is deliberately NOT part of this — it keeps its own hardcoded object-fit:contain (style.css), which is not client-controllable.",
 			"mediaElements": [
 				{
 					"prefix": "item",
@@ -73,6 +70,14 @@
 					"kinds": [
 						"image",
 						"video"
+					],
+					"atoms": [
+						"source",
+						"meaning",
+						"object-fit",
+						"focal-point",
+						"sizing",
+						"shape"
 					]
 				}
 			],
@@ -137,7 +142,7 @@
 				},
 				"image": {
 					"surface": true,
-					"selector": ".sgs-gallery__img",
+					"selector": ".sgs-gallery__img-wrap .sgs-media-el",
 					"label": "Image",
 					"order": 2,
 					"clusters": [],
@@ -148,7 +153,7 @@
 							}
 						}
 					},
-					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio, not the Text/Fill/Layout style clusters. `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
+					"_note": "The item picture: printed by the shared media renderer (Spec 49), whose fit, focal point, ratio, radius and shape the Images panel and the block-level item settings write. `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
 				},
 				"caption": {
 					"text": true,
@@ -183,7 +188,7 @@
 					"clusters": [],
 					"prefix": "",
 					"attrMap": {
-						"css:aspect-ratio": "aspectRatio",
+						"css:aspect-ratio": "itemRatio",
 						"css:background-color": "tileColour",
 						"css:background-image": "tileColourGradient",
 						"css:border-width": "tileBorderWidth",
@@ -259,7 +264,7 @@
 	"selectors": {
 		"root": ".wp-block-sgs-gallery",
 		"filter": {
-			"duotone": ".sgs-gallery__img"
+			"duotone": ".sgs-gallery__img-wrap .sgs-media-el"
 		}
 	},
 	"attributes": {
@@ -279,32 +284,37 @@
 			"items": {
 				"type": "object",
 				"properties": {
+					"source": {
+						"type": "object",
+						"description": "The item's picture or video per device, the media Source shape: {desktop:{kind,id,url,width,height,mime,poster}, tablet, mobile}. A device with no entry shows the wider device's file.",
+						"role": "image-object"
+					},
+					"alt": {
+						"type": "string",
+						"default": "",
+						"description": "The picture's description for screen readers. Blank when the item is decorative.",
+						"role": "image-alt"
+					},
 					"decorative": {
 						"type": "boolean",
 						"default": false,
 						"role": "boolean-visibility"
 					},
-					"_key": {
-						"type": "string",
-						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field. Scopes this item's own object-fit/focal-point CSS so a crop value survives reorder/add/remove instead of following array index or the WP attachment id (which collides the moment the same image is used twice). Spec 35 Part 4.",
-						"role": "technical"
-					},
-					"objectFit": {
-						"type": "string",
-						"enum": [
-							"cover",
-							"contain"
-						],
-						"default": "cover",
-						"role": "visual"
-					},
-					"focalPoint": {
+					"fit": {
 						"type": "object",
-						"default": {
-							"x": 0.5,
-							"y": 0.5
-						},
+						"description": "How this item fills its tile per device: cover or contain. Empty uses the gallery's own fit (itemFit).",
 						"role": "visual"
+					},
+					"focal": {
+						"type": "object",
+						"description": "The part of this item's picture kept in view when it is cropped, per device: {desktop:{x,y}} with x and y from 0 to 1.",
+						"role": "visual"
+					},
+					"caption": {
+						"type": "string",
+						"default": "",
+						"description": "Text shown under or over the picture when the gallery shows captions.",
+						"role": "text-content"
 					},
 					"linkUrl": {
 						"type": "string",
@@ -330,29 +340,10 @@
 						"description": "Accessible name of the link (aria-label). Empty falls back to the image's alt text.",
 						"role": "a11y-text"
 					},
-					"id": {
-						"type": "integer",
-						"default": 0,
-						"description": "The item's attachment ID in the Media Library. 0 is no attachment: the item then shows the picture at url, or no picture.",
+					"_key": {
+						"type": "string",
+						"description": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field. It names the item's tile (data-gallery-item-key) so the tile keeps its identity through reorder, add and remove.",
 						"role": "technical"
-					},
-					"url": {
-						"type": "string",
-						"default": "",
-						"description": "The item's picture address. Empty is an item with no picture yet (its link, label and caption still show).",
-						"role": "image-object"
-					},
-					"alt": {
-						"type": "string",
-						"default": "",
-						"description": "The picture's description for screen readers. Blank when the item is decorative.",
-						"role": "image-alt"
-					},
-					"caption": {
-						"type": "string",
-						"default": "",
-						"description": "Text shown under or over the picture when the gallery shows captions.",
-						"role": "text-content"
 					}
 				}
 			}
@@ -392,9 +383,19 @@
 			},
 			"_comment": "Was the bare number \"16\". MEASURED before and after: this default renders 16px either way, so the change is behaviour-preserving — it only makes the value explicit. (An earlier draft of this comment claimed the default had been silently dead because spacing slug 16 does not exist in theme.json. That was WRONG: gallery's own render.php already appended `px` to a bare number before handing it on, so \"16\" always meant 16px here. The live capture showed 16px on both builds and corrected the claim.) Notably this block had already implemented the bare-number-means-px convention locally, which is now the framework-wide rule. Bean-ruled 2026-08-10."
 		},
-		"aspectRatio": {
-			"type": "string",
-			"default": "1 / 1"
+		"itemRatio": {
+			"type": "object",
+			"default": {
+				"desktop": "1 / 1"
+			},
+			"description": "The shape of every item's tile per device, as a ratio such as 1 / 1 or 4 / 3. The item's picture fills it."
+		},
+		"itemFit": {
+			"type": "object",
+			"default": {
+				"desktop": "cover"
+			},
+			"description": "How every picture fills its tile per device: cover crops to fill, contain shows the whole picture. An item's own fit overrides it."
 		},
 		"enableLightbox": {
 			"type": "boolean",
@@ -491,10 +492,6 @@
 		"carouselShowArrows": {
 			"type": "boolean",
 			"default": true
-		},
-		"imageSize": {
-			"type": "string",
-			"default": "large"
 		},
 		"captionReveal": {
 			"type": "boolean",
@@ -684,33 +681,10 @@
 		"itemLoading": {"type":"string","_generated":"media-atoms"},
 		"itemAlt": {"type":"string","_generated":"media-atoms"},
 		"itemDecorative": {"type":"boolean","_generated":"media-atoms"},
-		"itemFit": {"type":"object","_generated":"media-atoms"},
 		"itemRepeat": {"type":"object","_generated":"media-atoms"},
 		"itemTileSize": {"type":"object","_generated":"media-atoms"},
 		"itemFocal": {"type":"object","_generated":"media-atoms"},
 		"itemPinned": {"type":"boolean","_generated":"media-atoms"},
-		"itemPadding": {"type":"object","_generated":"media-atoms"},
-		"itemBackground": {"type":"string","_generated":"media-atoms"},
-		"itemOverlayColour": {"type":"string","_generated":"media-atoms"},
-		"itemOverlayColourHover": {"type":"string","_generated":"media-atoms"},
-		"itemOverlayGradient": {"type":"string","_generated":"media-atoms"},
-		"itemOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
-		"itemOverlayOpacity": {"type":"object","_generated":"media-atoms"},
-		"itemOverlayBlend": {"type":"string","_generated":"media-atoms"},
-		"itemOpacity": {"type":"object","_generated":"media-atoms"},
-		"itemBlend": {"type":"string","_generated":"media-atoms"},
-		"itemBoxShadow": {"type":"string","_generated":"media-atoms"},
-		"itemBoxShadowColour": {"type":"string","_generated":"media-atoms"},
-		"itemBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
-		"itemPlayback": {"type":"object","_generated":"media-atoms"},
-		"itemCaptions": {"type":"object","_generated":"media-atoms"},
-		"itemCaption": {"type":"string","_generated":"media-atoms"},
-		"itemCaptionTag": {"type":"string","_generated":"media-atoms"},
-		"itemLinkUrl": {"type":"string","_generated":"media-atoms"},
-		"itemLinkOpensNewTab": {"type":"boolean","_generated":"media-atoms"},
-		"itemLinkRel": {"type":"string","_generated":"media-atoms"},
-		"itemLinkUrlSource": {"type":"string","_generated":"media-atoms"},
-		"itemRatio": {"type":"object","_generated":"media-atoms"},
 		"itemWidth": {"type":"object","_generated":"media-atoms"},
 		"itemHeight": {"type":"object","_generated":"media-atoms"},
 		"itemMinWidth": {"type":"object","_generated":"media-atoms"},
@@ -722,11 +696,7 @@
 		"itemBorderWidth": {"type":"object","_generated":"media-atoms"},
 		"itemBorderStyle": {"type":"string","_generated":"media-atoms"},
 		"itemBorderColour": {"type":"string","_generated":"media-atoms"},
-		"itemBorderColourHover": {"type":"string","_generated":"media-atoms"},
-		"itemColour": {"type":"object","_generated":"media-atoms"},
-		"itemGreyscale": {"type":"number","_generated":"media-atoms"},
-		"itemAlignment": {"type":"object","_generated":"media-atoms"},
-		"itemOrder": {"type":"object","_generated":"media-atoms"}
+		"itemBorderColourHover": {"type":"string","_generated":"media-atoms"}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",

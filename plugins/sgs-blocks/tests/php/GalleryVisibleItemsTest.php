@@ -25,7 +25,7 @@ final class GalleryVisibleItemsTest extends TestCase {
 	private function attrs( array $extra = array() ): array {
 		$items = array();
 		foreach ( range( 0, 9 ) as $i ) {
-			$items[] = array( 'id' => 0, 'url' => "https://example.com/$i.png", 'alt' => "Image $i", 'type' => 'image', '_key' => "k$i" );
+			$items[] = array( 'source' => array( 'desktop' => array( 'kind' => 'image', 'url' => "https://example.com/$i.png", 'width' => 800, 'height' => 600 ) ), 'alt' => "Image $i", '_key' => "k$i" );
 		}
 		return array_merge( array( 'mediaItems' => $items, 'layout' => array(), 'columns' => array( 'desktop' => 5, 'tablet' => 3, 'mobile' => 2 ) ), $extra );
 	}

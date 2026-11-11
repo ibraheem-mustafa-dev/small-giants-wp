@@ -21,17 +21,12 @@ require_once dirname( __FILE__, 4 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __FILE__, 4 ) . '/includes/class-sgs-container-wrapper.php';
 require_once __DIR__ . '/render-tile.php';
+require_once __DIR__ . '/render-item.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-gallery-grid-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-pause.php';
 
-// CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
-// declarations inside this block's scoped <style> tag. Strips everything
-// except letters, digits, dot, and % so a value can never break out of the
-// declaration into a new CSS rule. Mirrors sgs/hero's proven sanitiser.
-// CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
-// declarations (border-style) — letters + hyphen only.
-// CSS aspect-ratio sanitiser — the aspectRatio attr stores values like
-// "1/1", "4/3", "16/9". Allows digits, dot, and "/" only.
+// CSS aspect-ratio sanitiser — `itemRatio` stores values like "1 / 1", "4 / 3", "16 / 9".
+// Allows digits, dot, and "/" only (a space is dropped, which the aspect-ratio grammar accepts).
 $sgs_css_ratio = static function ( $value ) {
 	return preg_replace( '/[^0-9.\/]/', '', (string) $value );
 };
@@ -74,11 +69,17 @@ $gap = sgs_container_gap_value( $gap_raw );
 if ( '' === $gap ) {
 	$gap = '16px';
 }
-$aspect_ratio    = sanitize_text_field( $attributes['aspectRatio'] ?? '1/1' );
+// `itemRatio` is a per-device object; a tier is a real ratio when it holds a digit (not empty or auto).
+$sgs_gal_ratio_tiers = array();
+foreach ( sgs_gallery_device_tiers( $attributes['itemRatio'] ?? null ) as $sgs_gal_ratio_device => $sgs_gal_ratio_raw ) {
+	$sgs_gal_ratio_clean = is_scalar( $sgs_gal_ratio_raw ) ? $sgs_css_ratio( $sgs_gal_ratio_raw ) : '';
+	if ( preg_match( '/\d/', $sgs_gal_ratio_clean ) ) {
+		$sgs_gal_ratio_tiers[ $sgs_gal_ratio_device ] = $sgs_gal_ratio_clean;
+	}
+}
 $enable_lightbox = (bool) ( $attributes['enableLightbox'] ?? true );
 $show_captions   = (bool) ( $attributes['showCaptions'] ?? false );
 $caption_reveal  = (bool) ( $attributes['captionReveal'] ?? false );
-$image_size      = sanitize_key( $attributes['imageSize'] ?? 'large' );
 
 $hover_scale     = sanitize_text_field( $attributes['scaleHover'] ?? '' );
 $hover_grayscale = (bool) ( $attributes['grayscaleHover'] ?? false );
@@ -185,23 +186,20 @@ foreach ( $images as $context_index => $img ) {
 		continue;
 	}
 	$sgs_gallery_lightbox_pos[ $context_index ] = count( $context_images );
-	$img_id   = absint( $img['id'] ?? 0 );
-	$img_type = isset( $img['type'] ) ? sanitize_key( $img['type'] ) : 'image';
+	$img_file = sgs_gallery_item_file( (array) $img );
+	$img_type = 'video' === $img_file['kind'] ? 'video' : 'image';
 	$full_url = '';
 
-	if ( $img_id && 'image' === $img_type ) {
+	if ( $img_file['id'] && 'image' === $img_type ) {
 		// Prefer the attachment's full-size URL from WordPress metadata.
-		$full_src = wp_get_attachment_image_src( $img_id, 'full' );
+		$full_src = wp_get_attachment_image_src( $img_file['id'], 'full' );
 		$full_url = $full_src ? esc_url( $full_src[0] ) : '';
 	}
 
-	// Fall back to the stored fullUrl / url if the attachment no longer exists,
-	// or if this item is a video (always use the direct file URL).
-	if ( ! $full_url && ! empty( $img['fullUrl'] ) ) {
-		$full_url = esc_url( $img['fullUrl'] );
-	}
-	if ( ! $full_url && ! empty( $img['url'] ) ) {
-		$full_url = esc_url( $img['url'] );
+	// Fall back to the file's own address if the attachment no longer exists, or if this item is a video
+	// (always use the direct file URL).
+	if ( ! $full_url && '' !== $img_file['url'] ) {
+		$full_url = esc_url( $img_file['url'] );
 	}
 
 	// Decorative items get an empty alt here too — otherwise the lightbox's
@@ -269,25 +267,6 @@ if ( '' !== $sgs_gallery_caption_hover_effective ) {
 	}
 	$gallery_responsive_css .= sgs_text_colour_gradient_fallback_rule( $sgs_gallery_caption_sel . ':hover', $sgs_gallery_caption_hover_effective );
 }
-
-// -------------------------------------------------------------------------
-// Media-element atom layer (rule 37-media-no-handroll fix) — grid-thumbnail
-// object-fit only. `class_exists()` guards a class the plugin loader always
-// registers; kept for the same "never fatal if load order changes" reason
-// `sgs/before-after` and `sgs/hero` guard it. Classes are added to the SAME
-// <img> already carrying `sgs-gallery__img` (built via wp_get_attachment_image()
-// below) — `.sgs-media-el` is the shared marker the generated
-// assets/css/media-atoms/object-fit.css rule targets, `$sgs_gallery_media_scope`
-// is the per-instance scope the atom's custom-property value below is set on.
-// The `.sgs-gallery__lightbox-img` (style.css, `object-fit:contain`) does NOT
-// get these classes — that element is deliberately excluded, see style.css.
-$sgs_gallery_media_scope   = '';
-$sgs_gallery_media_classes = array();
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$sgs_gallery_media_scope   = SGS_Media_Element::scope_class( $uid, 'sgs' );
-	$sgs_gallery_media_classes = SGS_Media_Element::element_classes( $sgs_gallery_media_scope );
-}
-$sgs_gallery_img_class = implode( ' ', array_filter( array_merge( array( 'sgs-gallery__img' ), $sgs_gallery_media_classes ) ) );
 
 // -------------------------------------------------------------------------
 // Responsive gap tiers (gapTablet / gapMobile).
@@ -358,45 +337,18 @@ foreach ( array(
 	}
 }
 
-// -------------------------------------------------------------------------
-// Explicit image-controls crop (Spec 35 capability-routing doctrine, Part 9,
-// mechanism (c)). block.json declares `imageControlsExplicit:true` so the
-// universal render_block guessing-filter (includes/image-controls.php) bails
-// out for this block. Block-wide only (one crop setting for every grid
-// item — per-item cropping is an explicit non-goal, the array `mediaItems`
-// attribute has no per-item position/fit fields). Selector targets every
-// grid-item `<img>` uniformly via `.sgs-gallery__img`. Deliberately excludes
-// `.sgs-gallery__lightbox-img` (style.css, `object-fit:contain`) — a
-// separate, natural-size element per the block census, never scoped by this
-// selector.
-//
-// object-fit split out (rule 37-media-no-handroll fix): `sgsObjectFit` is now
-// read by the media-element atom below, not here — pass a copy with it
-// cleared so this call only ever emits `object-position` (its `sgsObjectFit`
-// half would otherwise duplicate the atom's `var(--sgs-media-object-fit)`
-// declaration on the SAME element with higher specificity, silently making
-// the atom's value dead the moment an operator set one). Object-position has
-// no atom coverage yet (`focal-point`, not in scope for this fix) and stays
-// on this explicit mechanism unchanged.
-$gallery_responsive_css .= sgs_media_position_css(
-	array_merge( $attributes, array( 'sgsObjectFit' => '' ) ),
-	'sgs',
-	$root_sel . ' .sgs-gallery__img'
-);
-
-// Media-element atom layer — object-fit only (rule 37-media-no-handroll fix).
-// Reads the SAME `sgsObjectFit` attribute the block already stores (see the
-// block.json `_comment_mediaElements`); emits `.{scope}{--sgs-media-object-fit:…}`
-// which assets/css/media-atoms/object-fit.css's `.sgs-media-el` rule consumes.
-// No value set -> no declaration -> that stylesheet's own `cover` fallback
-// applies, matching the removed style.css default exactly (style.css).
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$gallery_responsive_css .= SGS_Media_Element::style(
-		$attributes,
-		'sgs',
-		'sgs/gallery',
-		$uid,
-		array( 'object-fit' )
+// The item picture's size, crop, focal point, radius and shape come from the shared media renderer, item by item
+// (sgs_gallery_render_item_media()); the tile's own ratio is this block-wide custom property per device.
+if ( array() !== $sgs_gal_ratio_tiers ) {
+	$gallery_responsive_css .= sgs_emit_responsive_css(
+		$root_sel . ' .sgs-gallery__item',
+		array(
+			array(
+				'value'     => $sgs_gal_ratio_tiers,
+				'css'       => '--sgs-item-aspect',
+				'transform' => static fn( $raw ): string => (string) $raw,
+			),
+		)
 	);
 }
 
@@ -438,7 +390,7 @@ $wrapper_classes = implode( ' ', array_filter( [
 	$enable_lightbox ? 'sgs-gallery--lightbox-enabled' : '',
 	sgs_gallery_tile_mode( $attributes ) ? 'sgs-gallery--tile' : '',
 	// A real aspect ratio (not empty or auto): style.css fills each tile with its picture.
-	'' !== $sgs_css_ratio( $aspect_ratio ) ? 'sgs-gallery--fixed-aspect' : '',
+	array() !== $sgs_gal_ratio_tiers ? 'sgs-gallery--fixed-aspect' : '',
 	$hover_shadow   ? 'sgs-has-hover'                 : '',
 	$hover_grayscale ? 'sgs-has-grayscale'             : '',
 	( $show_captions && $caption_reveal ) ? 'sgs-gallery--caption-reveal' : '',
@@ -486,88 +438,31 @@ ob_start();
 				<?php
 			endif;
 		else :
+			$sgs_gal_media_slot  = sgs_gallery_media_slot( $block );
+			$sgs_gal_media_scope = $uid . '-media';
+			$sgs_gal_media_cols  = array(
+				'desktop' => $columns,
+				'tablet'  => $columns_tablet,
+				'mobile'  => $columns_mobile,
+			);
+			// The block-level media rules print once, with the first item that has a picture.
+			$sgs_gal_block_rules = true;
 			foreach ( $images as $index => $img ) :
-				$img_id         = absint( $img['id'] ?? 0 );
-				$img_type       = isset( $img['type'] ) ? sanitize_key( $img['type'] ) : 'image';
-				// Item 18 (2026-09-02, decorative-image-aria) — per-item field on the
-				// mediaItems repeater (Spec 00 field-level naming). When set, the image
-				// is purely decorative: alt is blanked and aria-hidden="true" is added
-				// so assistive tech skips it entirely (WCAG 2.1 AA 1.1.1), instead of a
-				// client either writing meaningless alt text or leaving it blank and
-				// hoping.
+				$img            = (array) $img;
+				// Per-item decorative flag (WCAG 2.1 AA 1.1.1): alt is blanked and the renderer prints an empty alt.
 				$img_decorative = ! empty( $img['decorative'] );
 				$img_alt        = $img_decorative ? '' : esc_attr( wp_strip_all_tags( $img['alt'] ?? '' ) );
 				$img_caption    = $show_captions ? esc_html( wp_strip_all_tags( $img['caption'] ?? '' ) ) : '';
 
-				// Build the unified media-slot shape for sgs_render_media().
-				$item_media = array(
-					'url'  => $img['url'] ?? '',
-					'type' => $img_type,
-					'id'   => $img_id,
-					'alt'  => $img_decorative ? '' : ( $img['alt'] ?? '' ),
-					'mime' => $img['mime'] ?? '',
-				);
-				$item_html = sgs_render_media( $item_media, 'sgs/gallery' );
-				// A video item, or an image with no attachment ID, prints this markup in place of the attachment <img>;
-				// its media carries the same gallery image classes (the `image` motion part class `sgs-gallery__img` and
-				// the media-element marker), so motion, zoom and object-fit reach every item. sgs_render_media() prints
-				// one class attribute on its opening tag.
-				$item_html = (string) preg_replace( '/^(<(?:img|video)\b[^>]*?\sclass=")/', '$1' . esc_attr( $sgs_gallery_img_class ) . ' ', $item_html, 1 );
-				if ( $img_decorative ) {
-					// sgs_render_media() has no aria-hidden param (shared helper — out of
-					// scope to change here). Its output always opens with a literal
-					// `<img ` or `<video ` tag (helpers-media.php), so a single anchored
-					// replacement on the OPENING tag only is safe.
-					$item_html = preg_replace( '/^<(img|video)\s/', '<$1 aria-hidden="true" ', $item_html, 1 );
+				$item_media = sgs_gallery_render_item_media( $img, (int) $index, $attributes, $sgs_gal_media_slot, $sgs_gal_media_scope, $sgs_gal_media_cols, $sgs_gal_block_rules );
+				if ( '' !== $item_media['html'] ) {
+					$sgs_gal_block_rules     = false;
+					$gallery_responsive_css .= $item_media['css'];
 				}
+				$item_html = $item_media['html'];
 
-				// Determine the aspect-ratio for this item. It is a
-				// CSS custom-PROPERTY VALUE (never a raw property
-				// declaration) — style.css reads --sgs-item-aspect via a scoped
-				// `aspect-ratio: var(...)` rule. VARIES per item (FR-32-4, D345),
-				// so it cannot be a single scoped rule on the block root; emitted
-				// into a `:nth-child(N)` scoped rule instead (same mechanism as
-				// sgs/card-grid's per-item values) — every
-				// image renders `.sgs-gallery__item` unconditionally, so position
-				// is stable. $sgs_css_ratio allows digits, dot, and the "/" the
-				// aspect-ratio grammar needs (e.g. "16/9"). No `style` attribute
-				// is ever written on the item (FR-32-1 forbids a bare `style=""`).
-				$item_style_decls = array();
-				if ( $aspect_ratio ) {
-					$item_style_decls[] = '--sgs-item-aspect:' . $sgs_css_ratio( $aspect_ratio );
-				}
-				if ( ! empty( $item_style_decls ) ) {
-					$gallery_responsive_css .= $root_sel . ' .sgs-gallery__item:nth-child(' . ( absint( $index ) + 1 ) . '){' . implode( ';', $item_style_decls ) . ';}';
-				}
-
-				// Spec 35 Part 4 — per-item crop, keyed by the item's OWN
-				// stable `_key`, never `:nth-child`/array index (unlike the
-				// aspect-ratio rule just above, which is genuinely
-				// POSITION-bound and safe with nth-child — crop is IDENTITY-
-				// bound: reordering must keep each photo's own crop, not the
-				// crop that happened to sit at that grid position). Additive
-				// override of the block-wide sgs_media_position_css() call
-				// below; only emits when this item sets a non-default value.
-				$gallery_item_key        = ! empty( $img['_key'] ) ? (string) $img['_key'] : 'idx-' . absint( $index );
-				$gallery_responsive_css .= sgs_media_position_css(
-					array(
-						'objectPosition' => $img['focalPoint'] ?? null,
-						'objectFit'      => $img['objectFit'] ?? '',
-					),
-					'',
-					$root_sel . ' [data-gallery-item-key="' . esc_attr( $gallery_item_key ) . '"] img, '
-						. $root_sel . ' [data-gallery-item-key="' . esc_attr( $gallery_item_key ) . '"] video'
-				);
-
-				// Determine full-size URL for lightbox data attribute.
-				$full_url = '';
-				if ( $img_id ) {
-					$full_src = wp_get_attachment_image_src( $img_id, 'full' );
-					$full_url = $full_src ? esc_url( $full_src[0] ) : '';
-				}
-				if ( ! $full_url && ! empty( $img['fullUrl'] ) ) {
-					$full_url = esc_url( $img['fullUrl'] );
-				}
+				// The tile's stable key names it in the markup (data-gallery-item-key); reorder keeps each item's identity.
+				$gallery_item_key = ! empty( $img['_key'] ) ? (string) $img['_key'] : 'idx-' . absint( $index );
 
 				$sgs_gallery_link = sgs_gallery_item_link( $img );
 
@@ -576,7 +471,7 @@ ob_start();
 					echo sgs_gallery_linked_item_html( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every part is escaped inside or before the call.
 						$sgs_gallery_link,
 						$gallery_item_key,
-						sgs_gallery_media_html( $img, (int) $index, $image_size, $sgs_gallery_img_class, $img_decorative, (string) $item_html ),
+						$item_html,
 						$img_alt,
 						( $show_captions && $img_caption ) ? $img_caption : ''
 					);
@@ -599,33 +494,7 @@ ob_start();
 							data-wp-context="<?php echo esc_attr( wp_json_encode( array( 'currentIndex' => $sgs_gallery_lightbox_pos[ $index ] ?? $index ) ) ); ?>"
 						>
 							<div class="sgs-gallery__img-wrap">
-								<?php
-								if ( 'image' === $img_type && $img_id ) {
-									// Prefer wp_get_attachment_image() for images with attachment IDs —
-									// it emits srcset, the requested size, and lazy-loading natively.
-									echo wp_get_attachment_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wp_get_attachment_image() is safe.
-										$img_id,
-										$image_size,
-										false,
-										array_merge(
-											array(
-												'class'   => $sgs_gallery_img_class,
-												'loading' => $index < 4 ? 'eager' : 'lazy',
-											),
-											// Item 18 (decorative-image-aria): overriding 'alt' here beats
-											// wp_get_attachment_image()'s own default (the attachment's
-											// stored _wp_attachment_image_alt meta), and 'aria-hidden'
-											// passes straight through as an extra attribute.
-											$img_decorative ? array( 'alt' => '', 'aria-hidden' => 'true' ) : array()
-										)
-									);
-								} else {
-									// Video items, or images without an attachment ID, render via the
-									// shared media-slot helper — emits <img> or <video> as needed, with the
-									// gallery image classes added where $item_html is built.
-									echo $item_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — sgs_render_media() escapes internally.
-								}
-								?>
+								<?php echo $item_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by SGS_Media_Element::render() with per-attribute escaping. ?>
 							</div>
 						</button>
 						<?php if ( $show_captions && $img_caption ) : ?>
@@ -637,35 +506,14 @@ ob_start();
 					<?php
 
 				else :
-					// No lightbox — plain figure with a link to the full image.
+					// No lightbox — plain figure.
 					?>
 					<figure
 						class="sgs-gallery__item"
 						data-gallery-item-key="<?php echo esc_attr( $gallery_item_key ); ?>"
 					>
 						<div class="sgs-gallery__img-wrap">
-							<?php
-							if ( 'image' === $img_type && $img_id ) {
-								echo wp_get_attachment_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wp_get_attachment_image() is safe.
-									$img_id,
-									$image_size,
-									false,
-									array_merge(
-										array(
-											'class'   => $sgs_gallery_img_class,
-											'loading' => $index < 4 ? 'eager' : 'lazy',
-										),
-										// Item 18 (decorative-image-aria) — see the lightbox branch above
-										// for the rationale (same override, no-lightbox path).
-										$img_decorative ? array( 'alt' => '', 'aria-hidden' => 'true' ) : array()
-									)
-								);
-							} else {
-								// Pre-existing gap, unchanged by this fix — see the lightbox branch
-								// above.
-								echo $item_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — sgs_render_media() escapes internally.
-							}
-							?>
+							<?php echo $item_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by SGS_Media_Element::render() with per-attribute escaping. ?>
 						</div>
 						<?php if ( $show_captions && $img_caption ) : ?>
 							<figcaption class="sgs-gallery__caption">

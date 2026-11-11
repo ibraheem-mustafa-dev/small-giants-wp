@@ -37,11 +37,9 @@ final class GalleryLinkedTileTest extends TestCase {
 		foreach ( array( 'a', 'b', 'c', 'd' ) as $i => $key ) {
 			$items[] = array_merge(
 				array(
-					'id'   => 0,
-					'url'  => "https://example.com/{$key}.png",
-					'alt'  => 'Image ' . strtoupper( $key ),
-					'type' => 'image',
-					'_key' => "k{$i}",
+					'source' => array( 'desktop' => array( 'kind' => 'image', 'url' => "https://example.com/{$key}.png", 'width' => 800, 'height' => 600 ) ),
+					'alt'    => 'Image ' . strtoupper( $key ),
+					'_key'   => "k{$i}",
 				),
 				$links[ $i ] ?? array()
 			);
