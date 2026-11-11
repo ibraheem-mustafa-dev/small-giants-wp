@@ -789,7 +789,7 @@
 
 // Card width and the two-column card (768px up). `cardWidth` prints `--sgs-timeline-card-width-vw`; unset keeps 220px.
 // contentLayout 'same-side' makes each entry a card with the text (date and content) on one side and the image on the
-// other, the media column as wide as `milestoneMediaWidth` and the gap between the columns `cardColumnGap`: contentSide 'start' puts the text first, 'end' puts the image first. An entry with no image is one column.
+// other, the media column as wide as `entryWidth` and the gap between the columns `cardColumnGap`: contentSide 'start' puts the text first, 'end' puts the image first. An entry with no image is one column.
 @media (min-width: 768px) {
 	.sgs-timeline--horizontal .sgs-timeline__entry {
 		flex-basis: var(--sgs-timeline-card-width-vw, min(220px, 80vw));
@@ -1278,10 +1278,9 @@
 
 // ── The media element itself ──────────────────────────────────────────────────
 //
-// `sgs_tier_media_render()` emits `.sgs-timeline__media` plus a type modifier
-// (`--image` / `--video` / `--svg`). Size and radius target the TYPE-AGNOSTIC
-// base so a video or an SVG milestone is sized identically to an image — scoping
-// them to the `--image` class is the exact bug sgs/hero shipped and had to fix.
+// The shared media renderer prints each entry's picture or video (`entry-media.php`), and its outermost element
+// carries `.sgs-timeline__media`. Size and radius target that one class so a video milestone is sized identically to
+// an image. Fit and Focal come from the renderer's own rules.
 .sgs-timeline__media-slot {
 	display: block;
 	width: 100%;
@@ -1296,17 +1295,26 @@
 	border-radius: var(--wp--custom--border-radius--small, 4px);
 }
 
-// object-fit only means anything on a replaced element, so it is scoped to the
-// two types that HAVE intrinsic dimensions. An inline SVG is not replaced.
-.sgs-timeline__media--image,
-.sgs-timeline__media--video {
-	object-fit: cover;
-}
-
-.sgs-timeline__media--svg svg {
+// A video entry prints a cover picture and the player in one stack: both take the entry's box.
+.sgs-timeline__media-slot :is(.sgs-media-group, .sgs-media-stack, .sgs-media-link) {
 	display: block;
 	width: 100%;
-	height: auto;
+}
+
+.sgs-timeline__media-slot .sgs-media-stack {
+	position: relative;
+	aspect-ratio: 16 / 9;
+}
+
+.sgs-timeline__media-slot .sgs-media-stack :is(img, video) {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.sgs-timeline__media-slot .sgs-media-stack > video {
+	position: absolute;
+	inset: 0;
 }
 
 // ── Milestone media placement: media UNDER the date ───────────────────────────
@@ -1458,7 +1466,7 @@
 
 	.sgs-timeline--milestone-full-height .sgs-timeline__media-slot {
 		align-self: stretch;
-		// milestoneMediaWidth is ignored here — the media fills its column
+		// entryWidth is ignored here — the media fills its column
 		// rather than sitting at a fixed thumbnail width (design doc §3.4).
 		max-width: none;
 
@@ -1466,11 +1474,9 @@
 			height: 100%;
 		}
 
-		.sgs-timeline__media--image,
-		.sgs-timeline__media--video {
+		:is(.sgs-media-group, .sgs-media-stack, .sgs-media-link, img, video) {
 			width: 100%;
 			height: 100%;
-			object-fit: cover;
 		}
 	}
 

@@ -58,6 +58,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-connector-line.php';
+require_once __DIR__ . '/entry-media.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // ---------------------------------------------------------------------------
@@ -146,8 +147,10 @@ if ( 'pinned-horizontal' === $scroll_effect && 'horizontal' !== $orientation ) {
 	$scroll_effect = 'basic';
 }
 
-// Milestone media width (block-wide, not per entry).
-$media_width = sgs_css_length_value( $attributes['milestoneMediaWidth'] ?? '180px' );
+// Milestone media width (the Width setting of the entry media, block-wide, not per entry): the desktop width sets the
+// media column's size; a narrower device's own width follows below. An unset width is the 180px thumbnail.
+$media_width_tiers = sgs_timeline_device_tiers( $attributes['entryWidth'] ?? null );
+$media_width       = sgs_css_length_value( is_string( $media_width_tiers['desktop'] ?? null ) ? $media_width_tiers['desktop'] : '180px' );
 
 // Task 3 (2026-08-30) — milestoneSize. Sanitised against the declared enum,
 // same idiom as $content_layout above: an out-of-enum stored value is
@@ -162,17 +165,6 @@ $milestone_size = in_array( $milestone_size, array( 'compact', 'full-height' ), 
 // VALUES only (no property declaration), matching $media_width above.
 $milestone_min_height = sgs_css_length_value( $attributes['milestoneMinHeight'] ?? '80vh' );
 $entry_gap            = sgs_css_length_value( $attributes['entryGap'] ?? '' );
-
-// Decorative milestone media. WordPress already stores the real alt text on the
-// ATTACHMENT, which is where it belongs and which this block reads — so this is
-// not a second alt field, it is the operator saying "ignore that, this picture
-// carries no information". It then renders with an empty alt AND aria-hidden, so
-// a screen reader skips it entirely instead of announcing a filename.
-//
-// Block-level rather than per entry, for the same reason placement is: a client
-// uses milestone pictures either as content or as decoration, consistently down
-// one timeline, and three toggles per milestone is not a client-facing control.
-$media_decorative = ! empty( $attributes['milestoneMediaDecorative'] );
 
 // Alternating A/B row bands.
 $row_stripes = ! empty( $attributes['rowStripes'] );
@@ -844,16 +836,16 @@ if ( 'horizontal' === $orientation ) {
 	}
 }
 
-// Entry image slot: a per-device aspect ratio (the picture fills and crops to it) and corner radius.
+// Entry image slot: a per-device aspect ratio (the picture fills and crops to it). Its corner radius, border and mask
+// belong to the media itself, which the shared renderer prints.
 $media_sel   = $root_sel . ' .sgs-timeline__media-slot';
-$media_clip  = false;
-$media_ratio = ! empty( $attributes['mediaAspectRatio'] ) && is_array( $attributes['mediaAspectRatio'] );
+$media_ratio = ! empty( $attributes['entryRatio'] ) && is_array( $attributes['entryRatio'] );
 if ( $media_ratio ) {
 	$scoped_css[] = sgs_emit_responsive_css(
 		$media_sel,
 		array(
 			array(
-				'value'     => $attributes['mediaAspectRatio'],
+				'value'     => $attributes['entryRatio'],
 				'css'       => 'aspect-ratio',
 				'transform' => static function ( $raw ) {
 					return preg_match( '/^\s*(\d+(?:\.\d+)?)\s*(?:\/\s*(\d+(?:\.\d+)?)\s*)?$/', (string) $raw, $ratio_parts ) && (float) $ratio_parts[1] > 0 && (float) ( $ratio_parts[2] ?? 1 ) > 0
@@ -863,24 +855,29 @@ if ( $media_ratio ) {
 			),
 		)
 	);
-	$scoped_css[] = $media_sel . ' .sgs-timeline__media{height:100%;}';
-	$media_clip   = true;
-}
-$media_radius = sgs_border_element_decls( $attributes, 'media', $media_sel, array( 'radius' => 'mediaBorderRadius' ) );
-if ( $media_radius['base'] || $media_radius['tablet'] || $media_radius['mobile'] ) {
-	$media_clip = true;
-}
-if ( $media_radius['base'] ) {
-	$scoped_css[] = "{$media_sel}{" . implode( ';', $media_radius['base'] ) . ';}';
-}
-if ( $media_radius['tablet'] ) {
-	$scoped_css[] = sgs_emit_tier_decls( $media_sel, array( 'tablet' => $media_radius['tablet'] ) );
-}
-if ( $media_radius['mobile'] ) {
-	$scoped_css[] = sgs_emit_tier_decls( $media_sel, array( 'mobile' => $media_radius['mobile'] ) );
-}
-if ( $media_clip ) {
+	$scoped_css[] = $media_sel . ' :is(.sgs-timeline__media,.sgs-media-group,.sgs-media-stack,img,video){height:100%;}';
 	$scoped_css[] = $media_sel . '{overflow:hidden;}';
+}
+// A narrower device's own media width moves the media column on that device.
+foreach ( array( 'tablet', 'mobile' ) as $sgs_tl_device ) {
+	if ( is_string( $media_width_tiers[ $sgs_tl_device ] ?? null ) && '' !== sgs_css_length_value( $media_width_tiers[ $sgs_tl_device ] ) ) {
+		$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( $sgs_tl_device => array( '--sgs-timeline-media-width:' . sgs_css_length_value( $media_width_tiers[ $sgs_tl_device ] ) ) ) );
+	}
+}
+
+// Each entry's media prints through the shared renderer before the stylesheet is printed, so the renderer's rules reach it.
+$sgs_tl_media_slot  = sgs_timeline_media_slot( $block ?? null );
+$sgs_tl_block_rules = true;
+$sgs_tl_entry_media = array();
+foreach ( $entries as $sgs_tl_index => $sgs_tl_entry ) {
+	$sgs_tl_one = sgs_timeline_render_entry_media( is_array( $sgs_tl_entry ) ? $sgs_tl_entry : array(), (int) $sgs_tl_index, $attributes, $sgs_tl_media_slot, $uid . '-media', $sgs_tl_block_rules );
+	if ( '' !== $sgs_tl_one['html'] ) {
+		$sgs_tl_block_rules = false;
+		if ( '' !== $sgs_tl_one['css'] ) {
+			$scoped_css[] = $sgs_tl_one['css'];
+		}
+	}
+	$sgs_tl_entry_media[ $sgs_tl_index ] = $sgs_tl_one;
 }
 
 require __DIR__ . '/card-device.php';
@@ -936,7 +933,6 @@ $sgs_tl_loop_i     = 0;
 				$description = isset( $entry['description'] ) ? (string) $entry['description'] : '';
 				// The entry icon is a Lucide slug (role icon-slug); an unknown slug draws no icon element.
 				$icon_svg    = isset( $entry['icon'] ) ? sgs_get_lucide_icon( preg_replace( '/[^a-z0-9-]/', '', strtolower( (string) $entry['icon'] ) ) ) : '';
-				$image_id    = isset( $entry['image'] ) ? absint( $entry['image'] ) : 0;
 
 				// Build a safe ISO 8601 datetime attribute from the raw date string.
 				// Accept both full dates (YYYY-MM-DD) and year-only values.
@@ -960,83 +956,16 @@ $sgs_tl_loop_i     = 0;
 				$entry_classes    = array( 'sgs-timeline__entry' );
 				$entry_class_attr = implode( ' ', $entry_classes );
 
-				$image_alt = ( $image_id > 0 ) ? (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) : '';
-
 				// ── Milestone media ────────────────────────────────────────────────
 				//
-				// An entry with `image` set and no `mediaType` resolves to 'image'.
-				// block.json's `entries` item schema types every key this loop reads
-				// (WordPress validates the whole array against it on render, so a
-				// wrongly typed key would blank every entry).
-				//
-				// ONE tier, not three. sgs/hero declares 32 attributes for split media
-				// because it art-directs PER DEVICE; replicating that per milestone would
-				// give a client three pickers times N milestones, which is unusable. A
-				// single 'desktop' tier still buys the whole image/video/SVG switch and
-				// the SVG allowlist, and emits no toggle CSS.
-				$entry_media_type = isset( $entry['mediaType'] ) ? (string) $entry['mediaType'] : 'image';
-				$entry_media_type = in_array( $entry_media_type, array( 'image', 'video', 'svg' ), true )
-					? $entry_media_type
-					: 'image';
-				$entry_video      = isset( $entry['video'] ) && is_array( $entry['video'] ) ? $entry['video'] : array();
-				$entry_svg        = isset( $entry['svg'] ) ? (string) $entry['svg'] : '';
-
-				$entry_media_spec = array();
-				if ( 'svg' === $entry_media_type && '' !== trim( $entry_svg ) ) {
-					$entry_media_spec = array(
-						'type' => 'svg',
-						'svg'  => $entry_svg,
-					);
-				} elseif ( 'video' === $entry_media_type && ! empty( $entry_video['url'] ) ) {
-					$entry_media_spec = array(
-						'type'  => 'video',
-						'media' => array(
-							'id'  => isset( $entry_video['id'] ) ? absint( $entry_video['id'] ) : 0,
-							'url' => (string) $entry_video['url'],
-						),
-					);
-				} elseif ( 'image' === $entry_media_type && $image_id > 0 ) {
-					// Resolve dimensions server-side from the attachment ID so the image
-					// reserves its space and does not shift the layout as it loads. Same
-					// backfill sgs/hero does; the ID is stored rather than a URL so it
-					// survives a media re-upload.
-					$src              = wp_get_attachment_image_src( $image_id, 'large' );
-					$entry_media_spec = array(
-						'type'  => 'image',
-						'media' => array(
-							'id'     => $image_id,
-							'url'    => is_array( $src ) ? (string) $src[0] : (string) wp_get_attachment_image_url( $image_id, 'large' ),
-							'width'  => is_array( $src ) ? absint( $src[1] ) : 0,
-							'height' => is_array( $src ) ? absint( $src[2] ) : 0,
-						),
-					);
-				}
-
-				$entry_media_html = '';
-				if ( $entry_media_spec ) {
-					$entry_media_result = sgs_tier_media_render(
-						array( 'desktop' => $entry_media_spec ),
-						'sgs-timeline__media',
-						$uid,
-						$media_decorative ? '' : $image_alt,
-						array(),
-						// N milestones down a page, not one hero above the fold.
-						array(
-							'img_loading'       => 'lazy',
-							'img_fetchpriority' => 'auto',
-							'video_autoplay'    => false,
-						)
-					);
-					$entry_media_html = $entry_media_result['html'];
-					// The helper's CSS must reach $scoped_css BEFORE it is printed above
-					// the <ol>. A single-tier call returns '' here, but appending
-					// unconditionally keeps the caller contract honest if a tier is ever
-					// added — sgs/image-sequence shipped broken by appending it after the
-					// <style> had already been emitted.
-					if ( '' !== $entry_media_result['css'] ) {
-						$scoped_css[] = $entry_media_result['css'];
-					}
-				}
+				// The entry's `source` (an image or a video per device) prints through the shared media renderer
+				// (entry-media.php). The entry's date, title, description and icon are the rest of the item.
+				$entry_media      = $sgs_tl_entry_media[ $index ] ?? array(
+					'html'       => '',
+					'css'        => '',
+					'decorative' => false,
+				);
+				$entry_media_html = $entry_media['html'];
 				if ( '' !== $entry_media_html ) {
 					$entry_classes[]  = 'sgs-timeline__entry--has-media';
 					$entry_class_attr = implode( ' ', $entry_classes );
@@ -1059,7 +988,7 @@ $sgs_tl_loop_i     = 0;
 					// sgs_responsive_image(), SVG through wp_kses( …, sgs_allowed_svg_tags() ).
 					if ( '' !== $entry_media_html ) :
 						?>
-						<div class="sgs-timeline__media-slot"<?php echo $media_decorative ? ' aria-hidden="true"' : ''; ?>>
+						<div class="sgs-timeline__media-slot"<?php echo $entry_media['decorative'] ? ' aria-hidden="true"' : ''; ?>>
 							<?php echo $entry_media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						</div>
 						<?php

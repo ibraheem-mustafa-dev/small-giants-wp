@@ -32,6 +32,24 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"mediaElements": [
+				{
+					"prefix": "entry",
+					"context": "content",
+					"kinds": [
+						"image",
+						"video"
+					],
+					"atoms": [
+						"source",
+						"meaning",
+						"object-fit",
+						"focal-point",
+						"sizing",
+						"shape"
+					]
+				}
+			],
 			"motionItems": "entry",
 			"motion": true,
 			"iconPicker": true,
@@ -57,7 +75,7 @@
 				"borderRadius": [
 					"borderRadius",
 					"cardBorderRadius",
-					"mediaBorderRadius"
+					"entryRadius"
 				],
 				"borderWidth": [
 					"borderWidth",
@@ -353,11 +371,11 @@
 						"layout"
 					],
 					"attrMap": {
-						"css:aspect-ratio": "mediaAspectRatio",
-						"css:border-radius": "mediaBorderRadius",
-						"css:height": "mediaHeight"
+						"css:aspect-ratio": "entryRatio",
+						"css:border-radius": "entryRadius",
+						"css:height": "entryHeight"
 					},
-					"_note": "The picture (or video or SVG) each entry prints opposite its text. The entry image takes entrance and hover from the Motion panel; mediaAspectRatio crops the slot to a ratio per device and mediaBorderRadius rounds it.",
+					"_note": "The picture (or video or SVG) each entry prints opposite its text. The entry image takes entrance and hover from the Motion panel; entryRatio crops the slot to a ratio per device and entryRadius rounds it.",
 					"absentIn": [ "progress", "plain" ],
 					"absentWhy": "The entry image renders only for an entry that has an image; these paths render entries without one."
 				},
@@ -660,24 +678,31 @@
 						"type": "string",
 						"role": "icon-slug"
 					},
-					"image": {
-						"type": [
-							"number",
-							"string"
-						],
-						"role": "image-object"
-					},
-					"mediaType": {
-						"type": "string",
-						"role": "enum-mode"
-					},
-					"video": {
+					"source": {
 						"type": "object",
+						"description": "The entry's picture or video per device, the media Source shape: {desktop:{kind,id,url,width,height,mime,poster}, tablet, mobile}. A device with no entry shows the wider device's file.",
 						"role": "image-object"
 					},
-					"svg": {
+					"alt": {
 						"type": "string",
-						"role": "svg"
+						"default": "",
+						"description": "The picture's description for screen readers. Blank when the entry's media is decorative.",
+						"role": "image-alt"
+					},
+					"decorative": {
+						"type": "boolean",
+						"default": false,
+						"role": "boolean-visibility"
+					},
+					"fit": {
+						"type": "object",
+						"description": "How this entry's picture fills its box per device. Empty uses the timeline's own fit (entryFit).",
+						"role": "visual"
+					},
+					"focal": {
+						"type": "object",
+						"description": "The part of this entry's picture kept in view when it is cropped, per device: {desktop:{x,y}} with x and y from 0 to 1.",
+						"role": "visual"
 					}
 				}
 			},
@@ -686,22 +711,19 @@
 					"date": "2020-01-01",
 					"title": "First Milestone",
 					"description": "<p>Description of this milestone.</p>",
-					"icon": "",
-					"image": 0
+					"icon": ""
 				},
 				{
 					"date": "2022-06-15",
 					"title": "Second Milestone",
 					"description": "<p>Description of this milestone.</p>",
-					"icon": "",
-					"image": 0
+					"icon": ""
 				},
 				{
 					"date": "2024-12-01",
 					"title": "Third Milestone",
 					"description": "<p>Description of this milestone.</p>",
-					"icon": "",
-					"image": 0
+					"icon": ""
 				}
 			]
 		},
@@ -882,10 +904,6 @@
 				}
 			}
 		},
-		"milestoneMediaWidth": {
-			"type": "string",
-			"default": "180px"
-		},
 		"milestoneSize": {
 			"type": "string",
 			"enum": [
@@ -913,10 +931,6 @@
 			],
 			"default": "inline",
 			"description": "Replaces the old `showDateColumn` boolean (Task 3a). 'own-column' only takes effect when contentLayout is 'single-column' — on phones the date always sits above the title, so there's room for it."
-		},
-		"milestoneMediaDecorative": {
-			"type": "boolean",
-			"default": false
 		},
 		"rowStripes": {
 			"type": "boolean",
@@ -1463,7 +1477,7 @@
 		"cardColumnGap": {
 			"type": "object",
 			"default": {},
-			"description": "Horizontal timeline, text-beside-image cards: the gap between the text column and the image column, per device ({desktop,tablet,mobile} tier object of CSS lengths). Empty keeps the theme spacing. The image column is as wide as milestoneMediaWidth."
+			"description": "Horizontal timeline, text-beside-image cards: the gap between the text column and the image column, per device ({desktop,tablet,mobile} tier object of CSS lengths). Empty keeps the theme spacing. The image column is as wide as entryWidth."
 		},
 		"cardLayout": {
 			"type": "object",
@@ -1495,25 +1509,10 @@
 			"default": "",
 			"description": "Colour of the mobile card shadow."
 		},
-		"mediaHeight": {
-			"type": "object",
-			"default": {},
-			"description": "Entry image slot height per device ({desktop,tablet,mobile} tier object of CSS lengths; a bare number is pixels). The picture fills and crops to this height and the aspect ratio is ignored where a height is set. Empty keeps the aspect ratio or the picture's natural shape."
-		},
 		"cardMaxWidth": {
 			"type": "object",
 			"default": {},
 			"description": "Horizontal timeline: the widest an entry card may grow, per device ({desktop,tablet,mobile} tier object of CSS lengths such as 900px). Empty means no cap."
-		},
-		"mediaAspectRatio": {
-			"type": "object",
-			"default": {},
-			"description": "Entry image slot aspect ratio per device ({desktop,tablet,mobile} tier object of ratios such as \"4 / 5\"). Empty keeps the image at its natural shape."
-		},
-		"mediaBorderRadius": {
-			"type": "object",
-			"default": {},
-			"description": "Entry image slot corner radius per device ({desktop,tablet,mobile} tier object of corner boxes)."
 		},
 		"dateFontSize": {
 			"type": "object",
@@ -1764,7 +1763,26 @@
 				"capitalize"
 			],
 			"default": ""
-		}
+		},
+		"entrySource": {"type":"object","_generated":"media-atoms"},
+		"entryLoading": {"type":"string","_generated":"media-atoms"},
+		"entryAlt": {"type":"string","_generated":"media-atoms"},
+		"entryDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"entryFit": {"type":"object","_generated":"media-atoms"},
+		"entryFocal": {"type":"object","_generated":"media-atoms"},
+		"entryRatio": {"type":"object","_generated":"media-atoms"},
+		"entryWidth": {"type":"object","_generated":"media-atoms"},
+		"entryHeight": {"type":"object","_generated":"media-atoms"},
+		"entryMinWidth": {"type":"object","_generated":"media-atoms"},
+		"entryMaxWidth": {"type":"object","_generated":"media-atoms"},
+		"entryMinHeight": {"type":"object","_generated":"media-atoms"},
+		"entryMaxHeight": {"type":"object","_generated":"media-atoms"},
+		"entryShape": {"type":"object","_generated":"media-atoms"},
+		"entryRadius": {"type":"object","_generated":"media-atoms"},
+		"entryBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"entryBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"entryBorderColour": {"type":"string","_generated":"media-atoms"},
+		"entryBorderColourHover": {"type":"string","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"viewScriptModule": "file:./view.js",
@@ -1779,22 +1797,19 @@
 					"date": "2018-01-01",
 					"title": "Company Founded",
 					"description": "<p>Our story began with a vision and a handshake.</p>",
-					"icon": "building",
-					"image": 0
+					"icon": "building"
 				},
 				{
 					"date": "2020-06-01",
 					"title": "First Milestone",
 					"description": "<p>Reached an important milestone in our growth.</p>",
-					"icon": "flag",
-					"image": 0
+					"icon": "flag"
 				},
 				{
 					"date": "2023-03-15",
 					"title": "National Expansion",
 					"description": "<p>Grew our reach across the UK.</p>",
-					"icon": "map",
-					"image": 0
+					"icon": "map"
 				}
 			]
 		}

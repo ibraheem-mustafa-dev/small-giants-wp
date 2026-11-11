@@ -1,10 +1,8 @@
 import { __ } from '@wordpress/i18n';
-import { SelectControl } from '@wordpress/components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	BOX_UNITS,
 	normaliseResponsiveBox,
-	ResponsiveBorderRadiusControl,
 	ResponsiveOverride,
 	SgsBorderControl,
 	SgsBoxControl,
@@ -12,19 +10,7 @@ import {
 	ShadowControl,
 	TypographyControls,
 } from '../../components';
-import { CARD_DEVICE_ATTRS, CardDeviceShadowItems, CardLayoutItems, TierLengthItem } from './card-device-controls';
-
-/** The image-slot ratios offered per device; empty keeps the picture at its natural shape. */
-const MEDIA_RATIO_OPTIONS = [
-	{ value: '', label: __( 'Natural shape', 'sgs-blocks' ) },
-	{ value: '1 / 1', label: __( 'Square (1:1)', 'sgs-blocks' ) },
-	{ value: '4 / 3', label: __( 'Landscape (4:3)', 'sgs-blocks' ) },
-	{ value: '3 / 2', label: __( 'Landscape (3:2)', 'sgs-blocks' ) },
-	{ value: '16 / 9', label: __( 'Wide (16:9)', 'sgs-blocks' ) },
-	{ value: '4 / 5', label: __( 'Portrait (4:5)', 'sgs-blocks' ) },
-	{ value: '3 / 4', label: __( 'Portrait (3:4)', 'sgs-blocks' ) },
-	{ value: '2 / 3', label: __( 'Portrait (2:3)', 'sgs-blocks' ) },
-];
+import { CARD_DEVICE_ATTRS, CardDeviceShadowItems, CardLayoutItems } from './card-device-controls';
 
 const CARD_ATTRS = {
 	cardBackgroundColour: '',
@@ -234,74 +220,6 @@ export function EntryCardControls( { attributes, setAttributes } ) {
 						/>
 					) }
 				</ResponsiveOverride>
-			</ToolsPanelItem>
-		</ToolsPanel>
-	);
-}
-
-/**
- * The shape of the entry image slot: a per-device aspect ratio and corner radius.
- *
- * @param {Object}   props               Props.
- * @param {Object}   props.attributes    Block attributes.
- * @param {Function} props.setAttributes Attribute writer.
- * @return {JSX.Element} The panel.
- */
-export function EntryImageShapeControls( { attributes, setAttributes } ) {
-	const radius = attributes.mediaBorderRadius || {};
-	return (
-		<ToolsPanel
-			label={ __( 'Entry image shape', 'sgs-blocks' ) }
-			resetAll={ () => setAttributes( { mediaAspectRatio: {}, mediaHeight: {}, mediaBorderRadius: {} } ) }
-		>
-			<ToolsPanelItem
-				label={ __( 'Image aspect ratio', 'sgs-blocks' ) }
-				hasValue={ () => hasKeys( attributes.mediaAspectRatio ) }
-				onDeselect={ () => setAttributes( { mediaAspectRatio: {} } ) }
-				isShownByDefault
-			>
-				<ResponsiveOverride
-					label={ __( 'Image aspect ratio', 'sgs-blocks' ) }
-					value={ attributes.mediaAspectRatio }
-					onChange={ ( obj ) => setAttributes( { mediaAspectRatio: obj } ) }
-				>
-					{ ( { ownValue, setOwnValue } ) => (
-						<SelectControl
-							label={ __( 'Image aspect ratio', 'sgs-blocks' ) }
-							hideLabelFromVision
-							value={ 'string' === typeof ownValue ? ownValue : '' }
-							options={ MEDIA_RATIO_OPTIONS }
-							onChange={ ( val ) => setOwnValue( val ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
-				</ResponsiveOverride>
-			</ToolsPanelItem>
-			<TierLengthItem
-				name="mediaHeight"
-				label={ __( 'Image height', 'sgs-blocks' ) }
-				help={ __( 'A fixed height for the picture band, for example 190px; the picture fills and crops to it and the aspect ratio is ignored where a height is set. Empty keeps the aspect ratio.', 'sgs-blocks' ) }
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-			/>
-			<ToolsPanelItem
-				label={ __( 'Image corner radius', 'sgs-blocks' ) }
-				hasValue={ () => hasKeys( radius ) }
-				onDeselect={ () => setAttributes( { mediaBorderRadius: {} } ) }
-				isShownByDefault
-			>
-				<ResponsiveBorderRadiusControl
-					label={ __( 'Image corner radius', 'sgs-blocks' ) }
-					values={ {
-						base: radius.desktop ?? {},
-						tablet: radius.tablet ?? {},
-						mobile: radius.mobile ?? {},
-					} }
-					onChange={ ( tier, next ) =>
-						setAttributes( { mediaBorderRadius: { ...radius, [ 'base' === tier ? 'desktop' : tier ]: next } } )
-					}
-				/>
 			</ToolsPanelItem>
 		</ToolsPanel>
 	);

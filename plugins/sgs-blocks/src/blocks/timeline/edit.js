@@ -2,15 +2,12 @@ import { __, sprintf } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
-	MediaUpload,
-	MediaUploadCheck,
 	RichText,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
 	TextControl,
-	TextareaControl,
 	Button,
 	ToggleControl,
 	RadioControl,
@@ -28,7 +25,14 @@ import {
 	SgsLengthControl,
 	ShadowLiftControls,
 	LinkUnderlineControl,
+	MediaElementPanel,
 } from '../../components';
+import MediaSlotField from '../../components/media/MediaSlotField.js';
+import FitField from '../../components/media/FitField.js';
+import FocalField from '../../components/media/FocalField.js';
+import { resolveTierSource } from '../../components/media/deviceValues.js';
+import { hasFile } from '../../components/media/mediaSlotWrites.js';
+import { ENTRY_SLOT, entryToSlotAttrs, applySlotPatch } from './entry-model.js';
 import {
 	colourVar,
 	linkColourPreviewCss,
@@ -38,14 +42,13 @@ import {
 	usePreviewTier,
 	typographyPreviewStyle,
 	sgsBorderPreview,
-	sanitiseSvg,
 	gapVar,
 } from '../../utils';
 import { connectorLineCss, connectorLineStyleOf } from '../../utils/connector-line';
-import { timelineCardPreviewStyle, timelineMediaPreviewStyle, timelineStripPreviewStyle } from './card-preview';
+import { timelineCardPreviewStyle, timelineMediaPreviewStyle, timelineMediaWidth, timelineStripPreviewStyle } from './card-preview';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 import HorizontalPanelControls, { CardWidthControl, pinnedColourRows } from './horizontal-panel-controls';
-import { cardColourRows, EntryCardControls, EntryImageShapeControls, EntryDateTypography, EntryDescriptionTypography } from './card-panel-controls';
+import { cardColourRows, EntryCardControls, EntryDateTypography, EntryDescriptionTypography } from './card-panel-controls';
 
 // Per-device spacing boxes of the entry parts: [ attribute, label ].
 const ENTRY_PART_BOXES = [
@@ -87,80 +90,60 @@ const ORIENTATION_OPTIONS = [
 ];
 
 /**
- * Does this entry carry renderable media? Mirrors render.php's own test so the
- * canvas and the page agree on which entries get the media grid rows.
+ * The file an entry shows at a device: its kind and address, empty when the entry has none.
  *
- * @param {Object} entry One item from the `entries` array.
- * @return {boolean} True when a source exists for the selected type.
+ * @param {Object} entry  One item from the `entries` array.
+ * @param {string} device 'desktop' | 'tablet' | 'mobile'.
+ * @return {{kind: string, url: string, poster: string}} The file.
  */
-function entryHasMedia( entry ) {
-	const type = entry.mediaType || 'image';
-	if ( 'svg' === type ) {
-		return !! ( entry.svg && entry.svg.trim() );
+function entryFile( entry, device = 'desktop' ) {
+	const found = resolveTierSource( entry?.source, device, hasFile ).value;
+	if ( ! found ) {
+		return { kind: 'image', url: '', poster: '' };
 	}
-	if ( 'video' === type ) {
-		return !! entry.video?.url;
-	}
-	return !! entry.image;
+	return {
+		kind: found.kind || ( /\.(mp4|webm|mov|ogv|m4v)(\?|#|$)/i.test( found.url || '' ) ? 'video' : 'image' ),
+		url: found.url || '',
+		poster: found.poster?.url || '',
+	};
 }
 
 /**
- * Canvas preview for an image or video milestone.
+ * Does this entry carry renderable media? Mirrors the renderer's own test so the canvas and the page agree on which
+ * entries get the media grid rows.
  *
- * ⛔ Reads `entry.imageUrl`, a companion to the stored attachment `image` ID —
- * the SAME id+url pair `sgs/media` and `sgs/responsive-logo` use, where the ID
- * is authoritative and the URL exists so the EDITOR can paint without a REST
- * round-trip. render.php ignores the URL entirely and resolves from the ID, so a
- * re-uploaded attachment still renders correctly on the page.
+ * @param {Object} entry  One item from the `entries` array.
+ * @param {string} device The previewed device.
+ * @return {boolean} True when the entry has a file at that device.
+ */
+function entryHasMedia( entry, device = 'desktop' ) {
+	return '' !== entryFile( entry, device ).url;
+}
+
+/**
+ * Canvas preview for an image or video milestone, from the entry's stored Source (its url is stored beside the
+ * attachment id, so the editor paints without a REST round-trip).
  *
- * ⚠ The reason this is safe here and was a data-loss bug on sgs/responsive-logo
- * (D496): that block read an UNDECLARED `_desktopLogoUrl`, which WP silently
- * discarded on save, so every preview went `undefined` on reload. `entries`'
- * item schema declares no `additionalProperties`, so nothing strips a companion
- * key from an entry.
- *
- * @param {Object} props       Component props.
- * @param {Object} props.entry The entry to preview.
+ * @param {Object} props        Component props.
+ * @param {Object} props.entry  The entry to preview.
+ * @param {string} props.device The previewed device.
  * @return {JSX.Element|null} The preview element.
  */
-function MediaPreview( { entry } ) {
-	const type = entry.mediaType || 'image';
-	if ( 'video' === type ) {
+function MediaPreview( { entry, device } ) {
+	const file = entryFile( entry, device );
+	if ( 'video' === file.kind ) {
 		return (
 			<video
 				className="sgs-timeline__media sgs-timeline__media--video"
-				src={ entry.video?.url }
+				src={ file.url }
+				poster={ file.poster || undefined }
 				muted
 				playsInline
 			/>
 		);
 	}
-	if ( ! entry.imageUrl ) {
-		// The ID is stored but no companion URL is — an entry authored before
-		// this feature existed. Say so rather than rendering a broken image.
-		return (
-			<span className="sgs-timeline__media sgs-timeline__media--placeholder">
-				{ __(
-					'Image set — re-select it to preview here',
-					'sgs-blocks'
-				) }
-			</span>
-		);
-	}
-	return (
-		<img
-			className="sgs-timeline__media sgs-timeline__media--image"
-			src={ entry.imageUrl }
-			alt=""
-		/>
-	);
+	return <img className="sgs-timeline__media sgs-timeline__media--image" src={ file.url } alt="" />;
 }
-
-const MEDIA_TYPE_OPTIONS = [
-	{ label: __( 'Image', 'sgs-blocks' ), value: 'image' },
-	{ label: __( 'Video', 'sgs-blocks' ), value: 'video' },
-	{ label: __( 'SVG / Animation', 'sgs-blocks' ), value: 'svg' },
-];
 
 // Step 4b — curated scroll-effect picker, reusing the SAME GSAP fx slugs the
 // generic "Scroll & effects" extension would offer (scrub / pin-scrub /
@@ -334,6 +317,8 @@ function stripeColourVar( slug ) {
 
 function EntryEditor( { entry, onChange, onRemove } ) {
 	const update = ( key, value ) => onChange( { ...entry, [ key ]: value } );
+	const slotAttrs = entryToSlotAttrs( entry );
+	const setSlot = ( patch ) => onChange( applySlotPatch( entry, patch ) );
 
 	return (
 		<div
@@ -395,124 +380,11 @@ function EntryEditor( { entry, onChange, onRemove } ) {
 				onChange={ ( { name } ) => update( 'icon', name ) }
 				sources={ [ 'lucide' ] }
 			/>
-			{ /* ── Milestone media ──────────────────────────────────────────
-			     Type picker follows sgs/hero's SelectControl shape rather than
-			     sgs/media's ButtonGroup, so the two blocks that switch media
-			     type read the same way. Hero labels the third option "SVG"
-			     while sgs/media and sgs/info-box label it "SVG / Animation" —
-			     the fuller label is used here because it tells a non-technical
-			     client what the option is FOR. */ }
-			<SelectControl
-				label={ __( 'Media type', 'sgs-blocks' ) }
-				value={ entry.mediaType || 'image' }
-				options={ MEDIA_TYPE_OPTIONS }
-				onChange={ ( value ) => update( 'mediaType', value ) }
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
-			/>
-			{ 'image' === ( entry.mediaType || 'image' ) && (
-				<>
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ ( media ) =>
-								// Both keys in ONE change: `update` replaces a
-								// single key, so two calls would make the second
-								// overwrite the first's entry object.
-								onChange( {
-									...entry,
-									image: media.id,
-									imageUrl: media.url,
-								} )
-							}
-							allowedTypes={ [ 'image' ] }
-							value={ entry.image || 0 }
-							render={ ( { open } ) => (
-								<Button
-									variant="secondary"
-									onClick={ open }
-									style={ {
-										marginTop: '8px',
-										marginBottom: '8px',
-									} }
-								>
-									{ entry.image
-										? __( 'Change image', 'sgs-blocks' )
-										: __(
-												'Add image (optional)',
-												'sgs-blocks'
-										  ) }
-								</Button>
-							) }
-						/>
-					</MediaUploadCheck>
-					{ entry.image > 0 && (
-						<Button
-							variant="tertiary"
-							isDestructive
-							onClick={ () =>
-								onChange( { ...entry, image: 0, imageUrl: '' } )
-							}
-							size="small"
-							style={ { display: 'block', marginBottom: '8px' } }
-						>
-							{ __( 'Remove image', 'sgs-blocks' ) }
-						</Button>
-					) }
-				</>
-			) }
-			{ 'video' === entry.mediaType && (
-				<>
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ ( media ) =>
-								update( 'video', {
-									id: media.id,
-									url: media.url,
-								} )
-							}
-							allowedTypes={ [ 'video' ] }
-							value={ entry.video?.id || 0 }
-							render={ ( { open } ) => (
-								<Button
-									variant="secondary"
-									onClick={ open }
-									style={ {
-										marginTop: '8px',
-										marginBottom: '8px',
-									} }
-								>
-									{ entry.video?.url
-										? __( 'Change video', 'sgs-blocks' )
-										: __( 'Select video', 'sgs-blocks' ) }
-								</Button>
-							) }
-						/>
-					</MediaUploadCheck>
-					{ entry.video?.url && (
-						<Button
-							variant="tertiary"
-							isDestructive
-							onClick={ () => update( 'video', {} ) }
-							size="small"
-							style={ { display: 'block', marginBottom: '8px' } }
-						>
-							{ __( 'Remove video', 'sgs-blocks' ) }
-						</Button>
-					) }
-				</>
-			) }
-			{ 'svg' === entry.mediaType && (
-				<TextareaControl
-					label={ __( 'SVG code', 'sgs-blocks' ) }
-					help={ __(
-						'Paste the SVG markup. Scripts, event handlers and unsafe elements are removed automatically, in the editor as well as on the published page.',
-						'sgs-blocks'
-					) }
-					value={ entry.svg || '' }
-					onChange={ ( value ) => update( 'svg', value ) }
-					__nextHasNoMarginBottom
-				/>
-			) }
+			{ /* The entry's picture or video: the shared media field with its Alt text and Decorative switch, then this
+			     entry's own Fit and Focal point (an empty Fit takes the timeline's). */ }
+			<MediaSlotField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ ENTRY_SLOT.prefix } slot={ ENTRY_SLOT } label={ __( 'Media', 'sgs-blocks' ) } />
+			<FitField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ ENTRY_SLOT.prefix } slot={ ENTRY_SLOT } />
+			<FocalField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ ENTRY_SLOT.prefix } />
 			<Button
 				variant="secondary"
 				isDestructive
@@ -579,8 +451,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		descriptionLinkUnderlineColourHover,
 		descriptionLinkUnderlineOffset,
 		scrollEffect,
-		milestoneMediaWidth,
-		milestoneMediaDecorative,
 		milestoneSize,
 		milestoneMinHeight,
 		entryGap,
@@ -751,7 +621,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				: undefined,
 			'--sgs-connector-colour-hover-gradient':
 				connectorColourHoverGradient || undefined,
-			'--sgs-timeline-media-width': milestoneMediaWidth || undefined,
+			'--sgs-timeline-media-width': timelineMediaWidth( attributes.entryWidth, previewTier ) || undefined,
 			// Mirrors render.php: an EMPTY stripe A resolves to `transparent`,
 			// so odd rows keep the page/section background and only even rows
 			// band. Emitted only when the feature is on, so a timeline without
@@ -825,14 +695,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title: '',
 					description: '',
 					icon: '',
-					image: 0,
-					// Every key here is declared in block.json's `entries`
-					// item schema. Seeded explicitly: an entry whose mediaType is
-					// absent falls back to 'image', but a seeded default is what
-					// the next reader sees when they open the stored content.
-					mediaType: 'image',
-					video: {},
-					svg: '',
 				},
 			],
 		} );
@@ -848,6 +710,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
+			{ /* The settings every entry shares (Spec 49 §10.4): Fit, Width, Height, Ratio, Radius and the border and shape.
+			   The adopted panels on the entry slot, without the Source rows, which each entry's own card holds. */ }
+			<MediaElementPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				prefix="entry"
+				blockSlug="sgs/timeline"
+				blockName="sgs/timeline"
+				atoms={ [ 'object-fit', 'sizing', 'shape' ] }
+				kinds={ ENTRY_SLOT.kinds }
+				context={ ENTRY_SLOT.context }
+			/>
 			{ linkPreviewCss && <style>{ linkPreviewCss }</style> }
 			{ railPreviewCss && <style>{ railPreviewCss }</style> }
 			<SgsColourPanel
@@ -1597,34 +1471,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { entryGap: val } )
 						}
 					/>
-					<TextControl
-						label={ __( 'Milestone media width', 'sgs-blocks' ) }
-						value={ milestoneMediaWidth }
-						onChange={ ( val ) =>
-							setAttributes( { milestoneMediaWidth: val } )
-						}
-						help={ __(
-							'Any CSS width, e.g. 180px or 14rem. On phones the media goes full width regardless. Ignored in full-height mode — the media fills its column instead.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<ToggleControl
-						label={ __(
-							'Milestone media is decorative',
-							'sgs-blocks'
-						) }
-						checked={ milestoneMediaDecorative }
-						onChange={ ( val ) =>
-							setAttributes( { milestoneMediaDecorative: val } )
-						}
-						help={ __(
-							'Turn on when the pictures are decoration rather than information — screen readers will skip them instead of reading the image description.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-					/>
 				</PanelBody>
 			</InspectorControls>
 
@@ -1691,7 +1537,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<EntryDescriptionTypography attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
 				<EntryCardControls attributes={ attributes } setAttributes={ setAttributes } />
-				<EntryImageShapeControls attributes={ attributes } setAttributes={ setAttributes } />
 				<PanelBody
 					title={ __( 'Padding, margin & border', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -1892,7 +1737,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						     until they previewed the page. Rendered here so the
 						     editor matches the page, which is the whole point of
 						     the block editor for a non-technical client. */ }
-						{ entryHasMedia( entry ) && (
+						{ entryHasMedia( entry, previewTier ) && (
 							<div
 								className="sgs-timeline__media-slot"
 								style={ timelineMediaPreviewStyle( attributes, previewTier ) }
@@ -1903,25 +1748,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								   page — an inspector control the preview
 								   ignores is exactly the desync CHECK A exists
 								   to catch, and it caught this one. */
-								aria-hidden={
-									milestoneMediaDecorative || undefined
-								}
+								aria-hidden={ entry.decorative || undefined }
 							>
-								{ 'svg' === entry.mediaType ? (
-									<div
-										className="sgs-timeline__media sgs-timeline__media--svg"
-										/* Editor-only preview of operator-pasted
-										   markup. The FRONTEND path is the one that
-										   matters for safety and it runs the same
-										   wp_kses() allowlist as every other SGS
-										   SVG surface (helpers-tier-media.php). */
-										dangerouslySetInnerHTML={ {
-											__html: sanitiseSvg( entry.svg ),
-										} }
-									/>
-								) : (
-									<MediaPreview entry={ entry } />
-								) }
+								<MediaPreview entry={ entry } device={ previewTier } />
 							</div>
 						) }
 						<div
