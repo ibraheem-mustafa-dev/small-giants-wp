@@ -1,8 +1,10 @@
 /**
  * One item of the gallery's live preview canvas: the figure, its image or video, and its caption.
  */
-import { focalPointToObjectPosition } from '../../../utils';
+import { focalPointToObjectPosition, resolveResponsiveTier } from '../../../utils';
+import { tierValueOf } from '../../../utils/responsive.js';
 import { isTileMode } from '../tile-preview';
+import { itemFile } from '../item-model';
 
 export default function GalleryCanvasItem( {
 	item,
@@ -10,53 +12,40 @@ export default function GalleryCanvasItem( {
 	captionStyle,
 	tileStyle,
 	tileFitContain,
+	device = 'desktop',
 	hiddenOnDevice = false,
 } ) {
-	const { aspectRatio, showCaptions } = attributes;
+	const { showCaptions } = attributes;
 	const tile = isTileMode( attributes );
-	const isVideo =
-		item.type === 'video' ||
-		( item.mime && item.mime.startsWith( 'video/' ) );
-	const itemFit = tileFitContain ? 'contain' : item.objectFit || 'cover';
+	const file = itemFile( item, device );
+	const isVideo = 'video' === file.kind;
+	const ratio = String( resolveResponsiveTier( attributes.itemRatio || {}, device )?.value || '' ).replace( /\s+/g, '' );
+	const fit = tileFitContain
+		? 'contain'
+		: tierValueOf( item.fit, device ) || tierValueOf( attributes.itemFit, device ) || 'cover';
+	const focal = tierValueOf( item.focal, device );
 	const mediaStyle = {
 		// Tile mode sizes the tile itself (tileStyle.minHeight); the image then fills it.
-		...( aspectRatio && ! tile ? { aspectRatio } : {} ),
-		objectFit: itemFit,
-		objectPosition:
-			'cover' === itemFit
-				? focalPointToObjectPosition( item.focalPoint || { x: 0.5, y: 0.5 } )
-				: undefined,
+		...( /\d/.test( ratio ) && ! tile ? { aspectRatio: ratio } : {} ),
+		objectFit: fit,
+		objectPosition: 'cover' === fit ? focalPointToObjectPosition( focal || { x: 0.5, y: 0.5 } ) : undefined,
 		width: '100%',
 		...( tile ? { height: '100%' } : {} ),
 		display: 'block',
 	};
 	return (
 		<figure
-			className={
-				hiddenOnDevice
-					? 'sgs-gallery__item sgs-gallery__item--hidden-on-device'
-					: 'sgs-gallery__item'
-			}
-			style={ {
-				...( aspectRatio ? { '--sgs-aspect-ratio': aspectRatio } : {} ),
-				...tileStyle,
-			} }
+			className={ hiddenOnDevice ? 'sgs-gallery__item sgs-gallery__item--hidden-on-device' : 'sgs-gallery__item' }
+			style={ { ...tileStyle } }
 		>
 			<div className="sgs-gallery__img-wrap">
-				{ isVideo ? (
-					<video
-						src={ item.url }
-						className="sgs-gallery__img"
-						muted
-						loop
-						playsInline
-						style={ mediaStyle }
-					/>
+				{ isVideo && ! file.poster ? (
+					<video src={ file.url } className="sgs-media-el" muted loop playsInline style={ mediaStyle } />
 				) : (
 					<img
-						src={ item.url }
+						src={ isVideo ? file.poster : file.url }
 						alt={ item.alt || '' }
-						className="sgs-gallery__img"
+						className="sgs-media-el"
 						loading="lazy"
 						style={ mediaStyle }
 					/>

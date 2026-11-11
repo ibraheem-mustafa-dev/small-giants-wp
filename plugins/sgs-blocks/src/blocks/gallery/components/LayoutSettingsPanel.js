@@ -1,15 +1,15 @@
 /**
- * Gallery settings-tab Layout panel: layout mode, per-device columns and image aspect ratio.
+ * Gallery settings-tab Layout panel: layout mode, per-device columns and items shown.
  */
 import { __ } from '@wordpress/i18n';
 import { Notice, PanelBody, RangeControl, SelectControl } from '@wordpress/components';
 import ResponsiveOverride from '../../../components/ResponsiveOverride';
 import ResponsiveLengthControl from '../../../components/ResponsiveLengthControl';
 import { galleryLayoutTiers } from '../layout-tiers';
-import { LAYOUT_OPTIONS, ASPECT_RATIO_OPTIONS } from './gallery-options';
+import { LAYOUT_OPTIONS } from './gallery-options';
 
 export default function LayoutSettingsPanel( { attributes, setAttributes, set } ) {
-	const { layout, columns, visibleItems, aspectRatio, scrollItemWidth, scrollInset } = attributes;
+	const { layout, columns, visibleItems, scrollItemWidth, scrollInset } = attributes;
 	const layoutTiers = galleryLayoutTiers( layout );
 
 	return (
@@ -134,14 +134,6 @@ export default function LayoutSettingsPanel( { attributes, setAttributes, set } 
 							/>
 						) }
 					</ResponsiveOverride>
-					<SelectControl
-						label={ __( 'Image aspect ratio', 'sgs-blocks' ) }
-						value={ aspectRatio }
-						options={ ASPECT_RATIO_OPTIONS }
-						onChange={ set( 'aspectRatio' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 				</PanelBody>
 		</>
 	);

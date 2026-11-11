@@ -1,123 +1,90 @@
 /**
- * Gallery item handlers: drag-to-reorder, remove, decorative toggle, crop patch and media selection.
+ * Gallery item handlers: drag-to-reorder, move, remove, patch and media selection.
  */
 import { useRef } from '@wordpress/element';
+import { applySlotPatch } from './item-model';
 
 export default function useGalleryItems( { items, setAttributes } ) {
 	// Drag-to-reorder state.
 	const dragSourceIndex = useRef( null );
 
+	const write = ( next ) => setAttributes( { mediaItems: next } );
+
 	/**
-	 * Handle drag-start — record which index is being moved.
+	 * Move one item to a new position.
 	 *
-	 * @param {number} index Source index.
+	 * @param {number} from Source index.
+	 * @param {number} to   Target index.
 	 */
+	const moveItem = ( from, to ) => {
+		if ( from === to || from < 0 || to < 0 || from >= items.length || to >= items.length ) {
+			return;
+		}
+		const next = [ ...items ];
+		const [ moved ] = next.splice( from, 1 );
+		next.splice( to, 0, moved );
+		write( next );
+	};
+
 	const handleDragStart = ( index ) => {
 		dragSourceIndex.current = index;
 	};
 
-	/**
-	 * Handle drop — swap the dragged image with the target position.
-	 *
-	 * @param {number} targetIndex Drop target index.
-	 */
 	const handleDrop = ( targetIndex ) => {
 		const sourceIndex = dragSourceIndex.current;
-		if ( sourceIndex === null || sourceIndex === targetIndex ) {
-			return;
-		}
-		const next = [ ...items ];
-		const [ moved ] = next.splice( sourceIndex, 1 );
-		next.splice( targetIndex, 0, moved );
-		setAttributes( { mediaItems: next } );
 		dragSourceIndex.current = null;
+		if ( null !== sourceIndex ) {
+			moveItem( sourceIndex, targetIndex );
+		}
 	};
 
-	/**
-	 * Remove a single item from the gallery.
-	 *
-	 * @param {number} index Index to remove.
-	 */
-	const removeImage = ( index ) => {
-		const next = items.filter( ( _, i ) => i !== index );
-		setAttributes( { mediaItems: next } );
-	};
+	const removeImage = ( index ) => write( items.filter( ( _, i ) => i !== index ) );
 
 	/**
-	 * Toggle the per-item decorative flag (item 18, decorative-image-aria).
-	 * Patches only the targeted item in the mediaItems repeater — the flag is
-	 * a per-item field, not a top-level block attribute.
+	 * Patch one item's own fields (caption, link and the like).
 	 *
-	 * @param {number}  index      Index of the item to update.
-	 * @param {boolean} decorative New decorative value.
+	 * @param {number} index Item index.
+	 * @param {Object} patch Fields to set; an empty value removes the field.
 	 */
-	const toggleItemDecorative = ( index, decorative ) => {
-		const next = items.map( ( item, i ) =>
-			i === index ? { ...item, decorative } : item
+	const updateItem = ( index, patch ) =>
+		write(
+			items.map( ( item, i ) => {
+				if ( i !== index ) {
+					return item;
+				}
+				const next = { ...item, ...patch };
+				Object.keys( patch ).forEach( ( key ) => {
+					if ( '' === patch[ key ] || undefined === patch[ key ] ) {
+						delete next[ key ];
+					}
+				} );
+				return next;
+			} )
 		);
-		setAttributes( { mediaItems: next } );
-	};
 
 	/**
-	 * Patch a single item's crop fields (Spec 35 Part 4).
+	 * Apply a media field's `setAttributes` patch to one item.
 	 *
-	 * @param {number} index Index of the item to update.
-	 * @param {Object} patch Partial item patch — { objectFit } and/or { focalPoint }.
+	 * @param {number} index Item index.
+	 * @param {Object} patch `{ itemSource: ..., itemFocal: ... }`.
 	 */
-	const updateItemCrop = ( index, patch ) => {
-		const next = items.map( ( item, i ) =>
-			i === index ? { ...item, ...patch } : item
-		);
-		setAttributes( { mediaItems: next } );
-	};
+	const updateItemSlot = ( index, patch ) =>
+		write( items.map( ( item, i ) => ( i === index ? applySlotPatch( item, patch ) : item ) ) );
 
 	/**
-	 * Patch a single item's picture words (alt and/or caption).
+	 * Add the media picked in the library after the items already in the gallery.
 	 *
-	 * @param {number} index Index of the item to update.
-	 * @param {Object} patch Partial item patch.
+	 * @param {Object[]} picked New items from `resolveGalleryMedia`.
 	 */
-	const updateItemText = ( index, patch ) => {
-		const next = items.map( ( item, i ) =>
-			i === index ? { ...item, ...patch } : item
-		);
-		setAttributes( { mediaItems: next } );
-	};
-
-	/**
-	 * Patch a single item's link fields (linkUrl, linkTarget and/or linkLabel).
-	 *
-	 * @param {number} index Index of the item to update.
-	 * @param {Object} patch Partial item patch.
-	 */
-	const updateItemLink = ( index, patch ) => {
-		const next = items.map( ( item, i ) =>
-			i === index ? { ...item, ...patch } : item
-		);
-		setAttributes( { mediaItems: next } );
-	};
-
-	/**
-	 * Handle a selection from MediaGalleryPicker.
-	 * MediaGalleryPicker already maps each raw WP media object to the
-	 * unified SGS media-slot shape (via the resolveItem prop, bound below
-	 * to resolveGalleryMedia) so sgs_render_media() can render either an
-	 * <img> or <video> per item — this just persists the mapped array.
-	 *
-	 * @param {Object[]} mappedItems Array already resolved to the SGS media-slot shape.
-	 */
-	const onSelectImages = ( mappedItems ) => {
-		setAttributes( { mediaItems: mappedItems } );
-	};
+	const onAddImages = ( picked ) => write( [ ...items, ...picked ] );
 
 	return {
 		handleDragStart,
 		handleDrop,
+		moveItem,
 		removeImage,
-		toggleItemDecorative,
-		updateItemCrop,
-		updateItemLink,
-		updateItemText,
-		onSelectImages,
+		updateItem,
+		updateItemSlot,
+		onAddImages,
 	};
 }

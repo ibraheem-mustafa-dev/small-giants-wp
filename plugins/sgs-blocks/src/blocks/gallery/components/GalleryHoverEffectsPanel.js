@@ -1,5 +1,5 @@
 /**
- * Gallery settings-tab Hover Effects panel: image size, scale, transition, grayscale and shadow.
+ * Gallery settings-tab Hover Effects panel: scale, transition, grayscale and shadow.
  */
 import { __ } from '@wordpress/i18n';
 import { RangeControl, SelectControl, ToggleControl } from '@wordpress/components';
@@ -7,11 +7,10 @@ import { RangeControl, SelectControl, ToggleControl } from '@wordpress/component
 // React error #130 on selecting the block): they must come from the primitives boundary.
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
 import { ShadowControl } from '../../../components';
-import { IMAGE_SIZE_OPTIONS, EASING_OPTIONS } from './gallery-options';
+import { EASING_OPTIONS } from './gallery-options';
 
 export default function GalleryHoverEffectsPanel( { attributes, setAttributes, set } ) {
 	const {
-		imageSize,
 		scaleHover,
 		transitionDuration,
 		transitionEasing,
@@ -22,7 +21,7 @@ export default function GalleryHoverEffectsPanel( { attributes, setAttributes, s
 		<>
 				{ /* Panel 3: Hover Effects — moved ahead of Content 2026-09-08
 				     (rule 41 dom-order-vs-declared-order finding). This panel
-				     holds Image's owned attrs (imageSize/
+				     holds Image's owned attrs (
 				     grayscaleHover; block.json supports.sgs.elements.image,
 				     order 2) alongside the block-wide hover-effect controls
 				     (scaleHover/transitionDuration/Easing/
@@ -46,26 +45,6 @@ export default function GalleryHoverEffectsPanel( { attributes, setAttributes, s
 						} )
 					}
 				>
-					{ /* Moved in from the "Content" panel (D622 — an
-					     element-scoped control belongs in its own element's
-					     TIER 1 panel; "image" is a declared element whose
-					     attrMap claims imageSize alongside
-					     grayscaleHover below). */ }
-					<ToolsPanelItem
-						label={ __( 'Image size', 'sgs-blocks' ) }
-						hasValue={ () => !! imageSize && imageSize !== 'large' }
-						onDeselect={ () => setAttributes( { imageSize: 'large' } ) }
-						isShownByDefault
-					>
-						<SelectControl
-							label={ __( 'Image size', 'sgs-blocks' ) }
-							value={ imageSize }
-							options={ IMAGE_SIZE_OPTIONS }
-							onChange={ set( 'imageSize' ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Hover shadow', 'sgs-blocks' ) }
 						hasValue={ () => ( attributes.shadowHover ?? '' ) !== '' }

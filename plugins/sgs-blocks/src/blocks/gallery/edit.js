@@ -53,6 +53,7 @@ import {
 import { captionPreviewStyle } from './preview-style';
 import { isTileMode, tilePreviewStyle, tileColourRow } from './tile-preview';
 import useGalleryItems from './use-gallery-items';
+import { itemFile } from './item-model';
 import ImagesPanel from './components/ImagesPanel';
 import LayoutSettingsPanel from './components/LayoutSettingsPanel';
 import { galleryLayoutTiers } from './layout-tiers';
@@ -63,6 +64,7 @@ import GalleryCarouselPanel from './components/GalleryCarouselPanel';
 import GalleryCanvas from './components/GalleryCanvas';
 import GalleryBorderControl from './components/GalleryBorderControl';
 import GalleryTilePanel from './components/GalleryTilePanel';
+import MediaElementPanel from '../../components/MediaElementPanel';
 
 // -------------------------------------------------------------------------
 // Main edit component
@@ -104,12 +106,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		handleDragStart,
 		handleDrop,
+		moveItem,
 		removeImage,
-		toggleItemDecorative,
-		updateItemCrop,
-		updateItemLink,
-		updateItemText,
-		onSelectImages,
+		updateItem,
+		updateItemSlot,
+		onAddImages,
 	} = useGalleryItems( { items, setAttributes } );
 
 	// Active device tier for the padding/margin/maxWidth/contentWidth/grid-layout
@@ -252,6 +253,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		// render.php hands the wrapper no `layout`: the outer element is never a grid.
 		layout: '',
 	} );
+
+	// The shared item settings show for the kind of media the items hold; the block itself holds no file, so the
+	// panels are told the kind (a gallery with a video item as well as photos offers both kinds' settings).
+	const blockLevelAttributes = {
+		...attributes,
+		itemSource: { desktop: { kind: items.some( ( item ) => 'video' === itemFile( item ).kind ) ? 'video' : 'image' } },
+	};
 
 	const blockProps = useBlockProps( {
 		className: `sgs-gallery sgs-gallery--${ layoutTiers.desktop }${
@@ -439,14 +447,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					items={ items }
-					onSelectImages={ onSelectImages }
+					onAddImages={ onAddImages }
 					removeImage={ removeImage }
+					moveItem={ moveItem }
 					handleDragStart={ handleDragStart }
 					handleDrop={ handleDrop }
-					toggleItemDecorative={ toggleItemDecorative }
-					updateItemCrop={ updateItemCrop }
-					updateItemLink={ updateItemLink }
-					updateItemText={ updateItemText }
+					updateItem={ updateItem }
+					updateItemSlot={ updateItemSlot }
 				/>
 
 				<LayoutSettingsPanel
@@ -478,6 +485,18 @@ export default function Edit( { attributes, setAttributes } ) {
 				   max-width/gap rather than left as its own ungrouped panel). */ }
 			</InspectorControls>
 
+			{ /* The settings every item shares (Spec 49 §10.4: Fit, Ratio, Radius, Shape): the adopted panels on the
+			   item slot, without the Source rows, which each item's own card holds. */ }
+			<MediaElementPanel
+				attributes={ blockLevelAttributes }
+				setAttributes={ setAttributes }
+				prefix="item"
+				blockSlug="sgs/gallery"
+				blockName="sgs/gallery"
+				atoms={ [ 'object-fit', 'sizing', 'shape' ] }
+				context="item"
+			/>
+
 			<GalleryCanvas
 				attributes={ { ...attributes, layout: canvasLayout } }
 				blockProps={ blockProps }
@@ -493,7 +512,8 @@ export default function Edit( { attributes, setAttributes } ) {
 				tileFitContain={ attributes.tileFitContain }
 				gridStyle={ gridStyle }
 				separatorsCanvas={ separatorsCanvas }
-				onSelectImages={ onSelectImages }
+				onSelectImages={ onAddImages }
+				device={ previewTier }
 			/>
 		</>
 	);

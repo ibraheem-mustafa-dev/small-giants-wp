@@ -4,7 +4,7 @@
 import { __ } from '@wordpress/i18n';
 import MediaGalleryPicker from '../../../components/MediaGalleryPicker';
 import GalleryCanvasItem from './GalleryCanvasItem';
-import { resolveGalleryMedia } from '../resolve-gallery-media';
+import { resolveGalleryMedia } from '../item-model';
 
 export default function GalleryCanvas( {
 	attributes,
@@ -19,9 +19,9 @@ export default function GalleryCanvas( {
 	gridStyle,
 	separatorsCanvas,
 	onSelectImages,
+	device = 'desktop',
 } ) {
 	const {
-		imageSize,
 		layout,
 		carouselShowArrows,
 		carouselShowDots,
@@ -103,9 +103,8 @@ export default function GalleryCanvas( {
 								<MediaGalleryPicker
 									value={ [] }
 									onChange={ onSelectImages }
-									resolveItem={ ( media ) =>
-										resolveGalleryMedia( media, imageSize )
-									}
+									multiple="add"
+									resolveItem={ resolveGalleryMedia }
 									allowedTypes={ [ 'image', 'video' ] }
 									addLabel={ __( 'Add media', 'sgs-blocks' ) }
 									buttonVariant="primary"
@@ -122,12 +121,13 @@ export default function GalleryCanvas( {
 							>
 								{ items.map( ( item, index ) => (
 									<GalleryCanvasItem
-										key={ item._key || item.id || index }
+										key={ item._key || index }
 										item={ item }
 										attributes={ attributes }
 										captionStyle={ captionStyle }
 										tileStyle={ tileStyle }
 								tileFitContain={ tileFitContain }
+								device={ device }
 									/>
 								) ) }
 							</div>
@@ -148,9 +148,8 @@ export default function GalleryCanvas( {
 						<MediaGalleryPicker
 							value={ [] }
 							onChange={ onSelectImages }
-							resolveItem={ ( media ) =>
-								resolveGalleryMedia( media, imageSize )
-							}
+									multiple="add"
+							resolveItem={ resolveGalleryMedia }
 							allowedTypes={ [ 'image', 'video' ] }
 							addLabel={ __( 'Add media', 'sgs-blocks' ) }
 							buttonVariant="primary"
@@ -167,12 +166,13 @@ export default function GalleryCanvas( {
 					>
 						{ items.map( ( item, index ) => (
 							<GalleryCanvasItem
-								key={ item._key || item.id || index }
+								key={ item._key || index }
 								item={ item }
 								attributes={ attributes }
 								captionStyle={ captionStyle }
 								tileStyle={ tileStyle }
 								tileFitContain={ tileFitContain }
+								device={ device }
 								hiddenOnDevice={
 									hiddenFrom > 0 && index >= hiddenFrom
 								}
