@@ -125,6 +125,10 @@ require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-loop-delays.ph
 require_once $sgs_blocks_dir . '/includes/motion/field-types/class-sgs-motion-document.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-loop-inherit.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-delegate.php';
+// A block that prints media through SGS_Media_Element::render() reaches the load-priority resolver, which asks the motion
+// renderer whether the page is armed (an unarmed page prints lazy images).
+require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-fold.php';
+require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-renderer.php';
 
 // Real SGS code: sgs/product-card's bound paths call sgs_product_card_has_real_image() (the no-photo box), which the
 // plugin bootstrap loads from this file (sgs-blocks.php), not the render.php itself.
