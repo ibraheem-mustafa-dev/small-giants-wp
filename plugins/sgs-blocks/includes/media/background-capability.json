@@ -1,0 +1,11 @@
+{
+	"_doc": "What the renderer prints for a slot whose context is `background` (Spec 49 §7.8). The renderer reads the class names and kinds from here; check-media-contract.py (G7) refuses a `kinds` entry on a background slot unless this file declares the renderer function, the element and overlay classes, the stylesheet that styles them and every kind the entry names.",
+	"background": {
+		"renderer": "sgs_media_render_background",
+		"renderer_file": "includes/media/render-background.php",
+		"element_class": "sgs-bg-media",
+		"overlay_class": "sgs-bg-overlay",
+		"stylesheet": "assets/css/media-bg.css",
+		"kinds": ["image", "video", "svg"]
+	}
+}

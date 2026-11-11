@@ -264,6 +264,11 @@ if ( ! class_exists( 'SGS_Media_Element' ) ) {
 		 * @return array{html:string,css:string,needs_helper:bool,lead_candidate:bool}
 		 */
 		public static function render( array $slot, array $attrs, array $context = array() ): array {
+			if ( 'background' === ( $slot['context'] ?? '' ) ) {
+				// A background prints one `.sgs-bg-media` element, not the content slot's nesting (§7.8).
+				require_once __DIR__ . '/media/render-background.php';
+				return sgs_media_render_background( $slot, $attrs, $context );
+			}
 			return sgs_media_render_slot( $slot, $attrs, $context );
 		}
 
