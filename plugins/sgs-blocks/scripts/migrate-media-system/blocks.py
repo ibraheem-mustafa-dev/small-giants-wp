@@ -437,6 +437,7 @@ ITEM_SETS = (
     ("sgs/card-grid", "items", "card"),
     ("sgs/form-field-tiles", "tiles", "tile"),
     ("sgs/option-picker", "optionItems", "option"),
+    ("sgs/timeline", "entries", "timeline"),
 )
 
 
@@ -448,9 +449,44 @@ def migrate_items(ctx: T.Ctx) -> None:
         out = []
         for item in items:
             out.append(_item(ctx, attr, item, shape))
+        if shape == "timeline":
+            out = _timeline_decorative(ctx, out)
         if out != items:
             ctx.put(attr, out)
             ctx.events.append(("converted", attr, attr, f"{len(items)} items"))
+
+
+def _timeline_entry(new: dict):
+    """A timeline entry's old `image` id (with its `imageUrl` companion), `video` object or `svg` as a Source entry.
+
+    The old keys are removed whether or not the entry had media (an `image` of 0 is no media). An SVG entry has no
+    Source kind on this slot (§10.4: image and video), so it is returned as None and the entry keeps its old keys.
+    """
+    kind = new.get("mediaType") or "image"
+    if kind == "svg" and isinstance(new.get("svg"), str) and new["svg"].strip():
+        return None
+    entry = None
+    if kind == "video":
+        got = object_entry(new.get("video"))
+        entry = got[0] if got else None
+    else:
+        ident = V.to_number(new.get("image"))
+        if ident:
+            entry = {"kind": "image", "id": int(ident)}
+            if isinstance(new.get("imageUrl"), str) and new["imageUrl"]:
+                entry["url"] = new["imageUrl"]
+    for key in ("image", "imageUrl", "mediaType", "video", "svg"):
+        new.pop(key, None)
+    return entry or {}
+
+
+def _timeline_decorative(ctx: T.Ctx, entries: list):
+    """`milestoneMediaDecorative` (one switch for every picture) becomes each entry's own `decorative`."""
+    if ctx.get("milestoneMediaDecorative") is True:
+        entries = [dict(e, decorative=True) if isinstance(e, dict) and "source" in e else e for e in entries]
+    if ctx.has("milestoneMediaDecorative"):
+        ctx.drop("milestoneMediaDecorative", "converted", "entries[].decorative", "folded into each entry")
+    return entries
 
 
 def _item(ctx: T.Ctx, attr: str, item: Any, shape: str):
@@ -470,6 +506,12 @@ def _item(ctx: T.Ctx, attr: str, item: Any, shape: str):
             entry = got[0] if got else None
             for key in ("id", "url", "mime", "width", "height"):
                 new.pop(key, None)
+    elif shape == "timeline":
+        entry = _timeline_entry(new)
+        if entry is None:
+            return item
+        if not entry:
+            return new
     else:
         key = {"card": "media", "tile": "image", "option": "image"}[shape]
         got = object_entry(new.pop(key, None))

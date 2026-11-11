@@ -281,6 +281,16 @@ case("hero: mediaPadding and background move to the split surface", "sgs/hero",
 case("timeline: media height, ratio, radius and width", "sgs/timeline",
      {"mediaHeight": {"tablet": 190}, "mediaAspectRatio": {"desktop": "4/5"}, "mediaBorderRadius": {"desktop": "4px"}, "milestoneMediaWidth": "180px"},
      {"entryHeight": {"tablet": "190px"}, "entryRatio": {"desktop": "4 / 5"}, "entryRadius": {"desktop": "4px"}, "entryWidth": {"desktop": "180px"}})
+case("timeline: entry image id, video and empty entries fold into source; the decorative switch moves onto each entry", "sgs/timeline",
+     {"entries": [{"date": "2019", "image": 7, "imageUrl": U, "mediaType": "image", "video": [], "svg": ""},
+                  {"date": "2020", "image": 0, "mediaType": "image", "video": [], "svg": ""},
+                  {"date": "2021", "image": 0, "mediaType": "video", "video": {"id": 9, "url": "http://x/v.mp4"}, "svg": ""}],
+      "milestoneMediaDecorative": True},
+     {"entries": [{"date": "2019", "source": {"desktop": {"kind": "image", "id": 7, "url": U}}, "decorative": True},
+                  {"date": "2020"},
+                  {"date": "2021", "source": {"desktop": {"kind": "video", "id": 9, "url": "http://x/v.mp4"}}, "decorative": True}]})
+case("timeline: an SVG entry keeps its old keys (the slot takes images and video)", "sgs/timeline",
+     {"entries": [{"date": "2019", "mediaType": "svg", "svg": "<svg/>"}]}, None)
 # ---- negative controls: refusals keep the old attribute; unrelated and new-shape attributes stay byte-identical
 case("negative: an unreadable focal position is refused and stays", "sgs/media", {"objectPosition": "calc(1px + 2px) 5px"}, None)
 case("negative: Lottie is reported and stays", "sgs/media", {"mediaType": "lottie", "imageUrl": U}, None)
