@@ -1,7 +1,7 @@
 <?php
 /**
  * Cart and Checkout look: the payment option group (the outline WooCommerce draws round a whole group of options, and
- * the gap between option cards) and the coupon panel (its padding and its label text).
+ * the gap between option cards) and the coupon section (its padding, the height of its code box and Apply button, and its label text).
  *
  * @package SGS\Blocks
  */
@@ -32,9 +32,26 @@ function sgs_commerce_look_payment_coupon_css( array $attrs, string $block, stri
 	if ( '' !== $option ) {
 		$css .= sgs_emit_responsive_css( $option, array( array( 'value' => $attrs['sgsOptionGap'] ?? null, 'css' => 'margin-bottom', 'unit_default' => 'px' ) ) );
 	}
-	$panel = sgs_commerce_look_selector( 'coupon_panel', $block, $root );
-	if ( '' !== $panel ) {
-		$css .= sgs_emit_responsive_css( $panel, array( array( 'value' => $attrs['sgsCouponPadding'] ?? null, 'css' => 'padding', 'box' => true, 'unit_default' => 'px' ) ) );
+	$panel   = sgs_commerce_look_selector( 'coupon_panel', $block, $root );
+	$section = sgs_commerce_look_selector( 'coupon_section', $block, $root );
+	if ( '' !== $panel && '' !== $section && ! empty( $attrs['sgsCouponPadding'] ) ) {
+		// The box is the padding of the whole coupon section: it prints on the inner section, and the wrapper gives up
+		// its own padding so the two never add up.
+		$css .= $panel . '{padding:0;}';
+		$css .= sgs_emit_responsive_css( $section, array( array( 'value' => $attrs['sgsCouponPadding'], 'css' => 'padding', 'box' => true, 'unit_default' => 'px' ) ) );
+	}
+	$height = $attrs['sgsCouponControlHeight'] ?? null;
+	foreach ( array( 'coupon_input', 'coupon_apply' ) as $row ) {
+		$selector = sgs_commerce_look_selector( $row, $block, $root );
+		if ( '' !== $selector ) {
+			$css .= sgs_emit_responsive_css(
+				$selector,
+				array(
+					array( 'value' => $height, 'css' => 'min-height', 'unit_default' => 'px' ),
+					array( 'value' => $height, 'css' => 'height', 'unit_default' => 'px' ),
+				)
+			);
+		}
 	}
 	return $css . sgs_commerce_look_text_css( $attrs, 'sgsCouponLabel', sgs_commerce_look_selector( 'coupon_label', $block, $root ) );
 }

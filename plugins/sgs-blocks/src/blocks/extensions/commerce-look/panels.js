@@ -328,7 +328,7 @@ export function ButtonPanel( { attributes, setAttributes } ) {
 }
 
 /**
- * The collapsed coupon panel in the order summary: its padding and its label text.
+ * The collapsed coupon panel in the order summary: its padding, the height of its code box and Apply button, and its label text.
  *
  * @param {Object} props Block attributes and setter.
  * @return {JSX.Element} The panel.
@@ -341,6 +341,13 @@ export function CouponPanel( { attributes, setAttributes } ) {
 				label={ __( 'Padding', 'sgs-blocks' ) }
 				values={ boxTiers( attributes.sgsCouponPadding ) }
 				onChange={ ( tier, next ) => setAttributes( { sgsCouponPadding: writeTier( attributes.sgsCouponPadding, tier, next ) } ) }
+			/>
+			<ResponsiveLengthControl
+				scale="spacing"
+				label={ __( 'Code box and Apply button height', 'sgs-blocks' ) }
+				value={ attributes.sgsCouponControlHeight }
+				units={ LENGTH_UNITS }
+				onChange={ ( next ) => setAttributes( { sgsCouponControlHeight: next } ) }
 			/>
 			<TextControls attributes={ attributes } setAttributes={ setAttributes } prefix="sgsCouponLabel" />
 		</PanelBody>

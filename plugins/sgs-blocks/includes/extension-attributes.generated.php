@@ -76,6 +76,7 @@ return array(
 	'sgsConditionReferrer' => array( 'type' => 'string' ),
 	'sgsConditionUrlParam' => array( 'type' => 'string' ),
 	'sgsConditionUserRole' => array( 'type' => 'array' ),
+	'sgsCouponControlHeight' => array( 'type' => 'object' ),
 	'sgsCouponLabelColour' => array( 'type' => 'string' ),
 	'sgsCouponLabelFontFamily' => array( 'type' => 'string' ),
 	'sgsCouponLabelFontSize' => array( 'type' => 'number' ),
