@@ -135,10 +135,10 @@ case("before-after: autoplay with no video side is inert and deleted, an image s
 case("before-after: a video side with no saved autoplay (the old default false) gets no Playback", "sgs/before-after",
      {"beforeMediaType": "video", "beforeVideoUrl": VIDEO},
      {"beforeSource": {"desktop": {"kind": "video", "url": VIDEO}}})
-case("responsive-logo: alt becomes logoAlt (the Indus header and footer keep their alt)", "sgs/responsive-logo", {"alt": "Indus Foods Ltd"},
-     {"logoAlt": "Indus Foods Ltd"})
+case("responsive-logo: alt becomes logoAlt (a header and footer keep their alt)", "sgs/responsive-logo", {"alt": "Example Foods Ltd"},
+     {"logoAlt": "Example Foods Ltd"})
 case("responsive-logo: an empty alt is the default and is deleted", "sgs/responsive-logo", {"alt": ""}, {})
-case("negative: responsive-logo already holding logoAlt", "sgs/responsive-logo", {"logoAlt": "Indus Foods Ltd"}, None)
+case("negative: responsive-logo already holding logoAlt", "sgs/responsive-logo", {"logoAlt": "Example Foods Ltd"}, None)
 case("responsive-logo: colourTreatment stays", "sgs/responsive-logo", {"colourTreatment": "white"}, None)
 case("brand-strip tile: none (no card) becomes the none Shape", "sgs/brand-strip", {"tileShape": "none"}, {"logoShape": {"desktop": {"shape": "none"}}})
 case("brand-strip tile: circle becomes the circle Shape", "sgs/brand-strip", {"tileShape": "circle"}, {"logoShape": {"desktop": {"shape": "circle"}}})
