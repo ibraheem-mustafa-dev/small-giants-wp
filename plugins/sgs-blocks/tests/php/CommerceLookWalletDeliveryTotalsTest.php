@@ -30,6 +30,7 @@ final class CommerceLookWalletDeliveryTotalsTest extends TestCase {
 		'sgsItemBrandLineHeight'               => 16.5,
 		'sgsItemBrandLineHeightUnit'           => 'px',
 		'sgsItemTextTop'                       => array( 'desktop' => '0px', 'mobile' => '2px' ),
+		'sgsItemTextGap'                       => array( 'desktop' => '0px', 'mobile' => '2px' ),
 		'sgsSummaryRowsPadding'                => array( 'desktop' => array( 'top' => '14px', 'bottom' => '4px' ) ),
 		'sgsTotalPadding'                      => array( 'desktop' => array( 'top' => '8px' ) ),
 		'sgsFieldPadding'                      => array(
@@ -114,6 +115,7 @@ final class CommerceLookWalletDeliveryTotalsTest extends TestCase {
 		$this->assertStringContainsString( 'line-height:16.5px', $this->bodies( $css, '.sgs-x .sgs-checkout-item-brand' ) );
 		$this->assertStringContainsString( 'padding-top:0px', $this->bodies( $css, '.sgs-x .wc-block-components-order-summary-item__description,.sgs-x .wc-block-components-order-summary-item__total-price' ), 'the space above the text and price columns' );
 		$this->assertMatchesRegularExpression( '/@media\(max-width:\d+px\)\{[^{]*__total-price\{padding-top:2px;\}/', $css, 'the space above the columns has a phone value' );
+		$this->assertStringContainsString( 'gap:0px', $this->bodies( $css, '.sgs-x .wc-block-components-order-summary-item__description' ), 'the gap between the brand, name and variant lines' );
 		$rows = $this->bodies( $css, '.sgs-x .wp-block-woocommerce-checkout-order-summary-totals-block' );
 		$this->assertStringContainsString( 'padding-top:14px', $rows, 'the totals block padding above the first row' );
 		$this->assertStringContainsString( 'padding-bottom:4px', $rows );
@@ -145,11 +147,11 @@ final class CommerceLookWalletDeliveryTotalsTest extends TestCase {
 
 	public function test_the_settings_are_declared_and_their_rows_exist(): void {
 		$js = (string) file_get_contents( $this->root() . 'src/blocks/extensions/commerce-look/attributes.js' );
-		foreach ( array( 'sgsExpressRuleLine', 'sgsExpressRuleGap', 'sgsDeliveryTitleLineHeight', 'sgsDeliveryDescriptionLineHeight', 'sgsDeliveryGap', 'sgsItemBrandLineHeight', 'sgsItemTextTop', 'sgsSummaryRowsPadding', 'sgsTotalPadding' ) as $name ) {
+		foreach ( array( 'sgsExpressRuleLine', 'sgsExpressRuleGap', 'sgsDeliveryTitleLineHeight', 'sgsDeliveryDescriptionLineHeight', 'sgsDeliveryGap', 'sgsItemBrandLineHeight', 'sgsItemTextTop', 'sgsItemTextGap', 'sgsSummaryRowsPadding', 'sgsTotalPadding' ) as $name ) {
 			$this->assertMatchesRegularExpression( '/^\s*' . $name . ':/m', $js, "{$name} must be declared or WordPress drops it on save" );
 		}
 		$rows = json_decode( (string) file_get_contents( $this->root() . 'includes/woocommerce/commerce-look/selectors.json' ), true )['rows'];
-		foreach ( array( 'express_rule', 'express_rule_line', 'delivery_title', 'delivery_description', 'delivery_step', 'item_brand', 'item_text', 'summary_rows', 'field_text_active' ) as $id ) {
+		foreach ( array( 'express_rule', 'express_rule_line', 'delivery_title', 'delivery_description', 'delivery_step', 'item_brand', 'item_text', 'item_description', 'summary_rows', 'field_text_active' ) as $id ) {
 			$this->assertArrayHasKey( 'checkout', $rows[ $id ], $id );
 			$this->assertArrayNotHasKey( 'cart', $rows[ $id ], $id );
 		}

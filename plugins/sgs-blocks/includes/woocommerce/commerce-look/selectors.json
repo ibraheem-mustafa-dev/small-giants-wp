@@ -502,6 +502,14 @@
 				"basket": "filled",
 				"action": "none"
 			}
+		},
+		"item_description": {
+			"checkout": ".wc-block-components-order-summary-item__description",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
 		}
 	}
 }

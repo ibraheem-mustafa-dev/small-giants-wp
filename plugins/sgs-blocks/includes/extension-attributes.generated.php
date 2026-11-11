@@ -245,6 +245,7 @@ return array(
 	'sgsItemStepperBorderWidth' => array( 'type' => 'object' ),
 	'sgsItemStepperRadius' => array( 'type' => 'string' ),
 	'sgsItemStepperWidth' => array( 'type' => 'object' ),
+	'sgsItemTextGap' => array( 'type' => 'object' ),
 	'sgsItemTextTop' => array( 'type' => 'object' ),
 	'sgsItemThumbSize' => array( 'type' => array( 'string', 'object' ) ),
 	'sgsItemVariantColour' => array( 'type' => 'string' ),

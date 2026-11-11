@@ -536,6 +536,7 @@
 				"sgsExpressRuleGap": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "gap", "css_element": "express-divider" },
 				"sgsDeliveryGap": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "margin-bottom", "css_element": "delivery-step" },
 				"sgsItemTextTop": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "padding-top", "css_element": "line-item-text" },
+				"sgsItemTextGap": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "gap", "css_element": "line-item-description" },
 				"sgsSummaryRowsPadding": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "padding", "css_element": "summary-rows" },
 				"sgsTotalPadding": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "padding", "css_element": "total-row" },
 

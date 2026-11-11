@@ -68,6 +68,12 @@ function sgs_commerce_look_line_items_css( array $attrs, string $block, string $
 		$css .= sgs_emit_responsive_css( $text, array( array( 'value' => $attrs['sgsItemTextTop'] ?? null, 'css' => 'padding-top', 'unit_default' => 'px' ) ) );
 	}
 
+	// Gap between the brand, name and variant lines of a checkout summary line (WooCommerce stacks them 4px apart).
+	$description = sgs_commerce_look_selector( 'item_description', $block, $root );
+	if ( '' !== $description ) {
+		$css .= sgs_emit_responsive_css( $description, array( array( 'value' => $attrs['sgsItemTextGap'] ?? null, 'css' => 'gap', 'unit_default' => 'px' ) ) );
+	}
+
 	// Quantity stepper: corners (the buttons inherit the radius, so the stepper clips them) and width; its fill and edge print with the cards (cards.php).
 	$stepper = sgs_commerce_look_selector( 'item_stepper', $block, $root );
 	$radius  = sgs_css_single_length_value( (string) ( $attrs['sgsItemStepperRadius'] ?? '' ) );

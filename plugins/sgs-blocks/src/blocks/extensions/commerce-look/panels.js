@@ -148,6 +148,13 @@ export function LineItemsPanel( { attributes, setAttributes, isCart } ) {
 						units={ LENGTH_UNITS }
 						onChange={ ( next ) => setAttributes( { sgsItemTextTop: next } ) }
 					/>
+					<ResponsiveLengthControl
+						scale="spacing"
+						label={ __( 'Gap between the brand, name and variant lines', 'sgs-blocks' ) }
+						value={ attributes.sgsItemTextGap }
+						units={ LENGTH_UNITS }
+						onChange={ ( next ) => setAttributes( { sgsItemTextGap: next } ) }
+					/>
 					<PanelBody title={ __( 'Brand line', 'sgs-blocks' ) } initialOpen={ false }>
 						<TextControls { ...shared } prefix="sgsItemBrand" />
 					</PanelBody>

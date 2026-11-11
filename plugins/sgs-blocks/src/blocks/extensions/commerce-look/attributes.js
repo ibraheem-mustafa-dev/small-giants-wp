@@ -339,6 +339,7 @@ export const COMMERCE_LOOK_ATTRIBUTES = {
 	sgsExpressRuleGap: { type: 'object' },
 	sgsDeliveryGap: { type: 'object' },
 	sgsItemTextTop: { type: 'object' },
+	sgsItemTextGap: { type: 'object' },
 	sgsSummaryRowsPadding: { type: 'object' },
 	sgsTotalPadding: { type: 'object' },
 };
