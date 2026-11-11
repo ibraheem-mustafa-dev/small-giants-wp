@@ -14,6 +14,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { COMMERCE_LOOK_ATTRIBUTES } from './attributes';
 import { CANVAS_SCOPE, setLookAttributes, useCommerceLookCss } from './canvas-css';
 import { CheckoutWordingPanel } from './panels-checkout-wording';
+import { TablePanel } from './table-panels';
 import { ButtonPanel, CheckoutPanels, ColumnsPanel, CouponPanel, FieldsPanel, LineItemsPanel, NoticePanel, SummaryPanel } from './panels';
 
 const CART_BLOCK = 'woocommerce/cart';
@@ -49,6 +50,7 @@ if ( ! window.__sgsCommerceLookRegistered ) {
 					<ColumnsPanel { ...shared } />
 					<CouponPanel { ...shared } />
 					<ButtonPanel { ...shared } />
+					<TablePanel { ...shared } isCart={ isCart } />
 					{ ! isCart && <CheckoutPanels { ...shared } /> }
 					{ ! isCart && <CheckoutWordingPanel { ...shared } /> }
 				</InspectorControls>

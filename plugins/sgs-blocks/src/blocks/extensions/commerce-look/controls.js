@@ -8,6 +8,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { DesignTokenPicker, ResponsiveBoxControl, ShadowControl, SgsBorderControl, TypographyControls } from '../../../components';
+import { COMMERCE_LOOK_TABLE_ATTRIBUTES } from './attributes-table.generated';
 
 const TIERS = [ 'desktop', 'tablet', 'mobile' ];
 
@@ -124,15 +125,18 @@ export function CardControls( { attributes, setAttributes, prefix, noPadding = f
  * @param {Function} props.setAttributes Block setAttributes.
  * @param {string}   props.prefix        Attribute prefix (`sgsStepTitle`, ...).
  * @param {boolean}  [props.noColour]    Omit the colour row (the button's colours come from the preset).
+ * @param {boolean}  [props.showTextAlign] Offer a text alignment row (the row declares `{prefix}TextAlign`).
  * @return {JSX.Element} The rows.
  */
-export function TextControls( { attributes, setAttributes, prefix, noColour = false } ) {
+export function TextControls( { attributes, setAttributes, prefix, noColour = false, showTextAlign = false } ) {
 	return (
 		<>
 			<TypographyControls
 				showFontFamily
 				showTransform
 				showLetterSpacing
+				showDecoration={ ( prefix + 'TextDecoration' ) in COMMERCE_LOOK_TABLE_ATTRIBUTES }
+				showTextAlign={ showTextAlign }
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 				prefix={ prefix }
