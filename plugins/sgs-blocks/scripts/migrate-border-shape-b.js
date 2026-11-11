@@ -2596,7 +2596,12 @@ function check() {
 			// `includes/media/atoms/box-shape.php` — a genuinely different,
 			// equally-real consumption path the literal regex below cannot
 			// see, not a half-migrated block.
-			const viaMediaAtom = /SGS_Media_Element::style\(/.test( php ) && /'box-shape'/.test( php );
+			// An ADOPTED media slot (a `kinds` entry in `supports.sgs.mediaElements`) renders through
+			// `SGS_Media_Element::render()`, whose shape atom prints the border, radius and shadow rules.
+			const adoptedSlot = ( ( bj.supports || {} ).sgs || {} ).mediaElements;
+			const viaAdoptedSlot = /SGS_Media_Element::render\(/.test( php )
+				&& Array.isArray( adoptedSlot ) && adoptedSlot.some( ( e ) => e && Array.isArray( e.kinds ) && e.kinds.length > 0 );
+			const viaMediaAtom = viaAdoptedSlot || ( /SGS_Media_Element::style\(/.test( php ) && /'box-shape'/.test( php ) );
 			// A `wrapper`-prefixed private border (2026-09-06, sgs/social-icons) —
 			// needed because this block ALSO has a per-item `iconBorderColour`
 			// family, so the wrapper-level control needed a distinct name to avoid

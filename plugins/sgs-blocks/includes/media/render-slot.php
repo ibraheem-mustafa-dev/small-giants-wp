@@ -295,7 +295,7 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	}
 	if ( $has_figure ) {
 		$out = '<figure' . ( $grouped ? ( $fill ? ' class="sgs-fill-wrap"' : '' ) : $outer( $fill ? 'sgs-fill-wrap' : '' ) ) . '>' . $out
-			. '<' . $caption_tag . ' class="sgs-media-caption">' . wp_kses_post( $caption ) . '</' . $caption_tag . '></figure>';
+			. '<' . $caption_tag . ' class="sgs-media-caption">' . ( function_exists( 'sgs_rich_text_kses' ) ? sgs_rich_text_kses( $caption ) : wp_kses_post( $caption ) ) . '</' . $caption_tag . '></figure>';
 	}
 
 	if ( $grouped ) {

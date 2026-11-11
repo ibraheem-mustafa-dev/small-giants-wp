@@ -40,6 +40,9 @@
     ],
     "sgs/nav-bar-menu:triggerOpenLabel": [
       "includes/nav-menu-markup.php"
+    ],
+    "sgs/media:caption": [
+      "includes/media/render-slot.php"
     ]
   },
   "controlFiles": {
