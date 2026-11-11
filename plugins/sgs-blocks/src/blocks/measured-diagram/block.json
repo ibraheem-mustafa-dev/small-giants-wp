@@ -33,9 +33,13 @@
 			"mediaElements": [
 				{
 					"prefix": "drawing",
-					"context": "element",
+					"context": "content",
+					"kinds": [
+						"image",
+						"svg"
+					],
 					"atoms": [
-						"intrinsic",
+						"source",
 						"meaning"
 					]
 				}
@@ -459,7 +463,11 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"drawingSource": {"type":"object","_generated":"media-atoms"},
+		"drawingLoading": {"type":"string","_generated":"media-atoms"},
+		"drawingAlt": {"type":"string","_generated":"media-atoms"},
+		"drawingDecorative": {"type":"boolean","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

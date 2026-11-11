@@ -11,11 +11,6 @@
       "showHeader": true,
       "closeStyle": "text",
       "headerLogoHeight": 16,
-      "headerLogo": {
-        "id": 486,
-        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png",
-        "alt": ""
-      },
       "progressColour": "accent",
       "progressCounts": "current",
       "stepCountLabel": "Question",
@@ -57,7 +52,14 @@
       },
       "className": "cr-ref-lens-0",
       "advanceMode": "pick",
-      "skipAddsToBag": true
+      "skipAddsToBag": true,
+      "headerLogoSource": {
+        "desktop": {
+          "kind": "image",
+          "id": 486,
+          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png"
+        }
+      }
     },
     "innerBlocks": [
       {

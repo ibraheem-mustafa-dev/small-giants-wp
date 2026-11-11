@@ -2374,9 +2374,11 @@
   },
   "responsive-logo": {
    "base": {
-    "logoUrl": "https://example.test/logo.png",
-    "logoUrlTablet": "https://example.test/logo-t.png",
-    "logoUrlMobile": "https://example.test/logo-m.png"
+    "logoSource": {
+     "desktop": { "kind": "image", "url": "https://example.test/logo.png", "width": 200, "height": 60 },
+     "tablet": { "kind": "image", "url": "https://example.test/logo-t.png", "width": 160, "height": 48 },
+     "mobile": { "kind": "image", "url": "https://example.test/logo-m.png", "width": 120, "height": 36 }
+    }
    },
    "paths": {
     "static": {

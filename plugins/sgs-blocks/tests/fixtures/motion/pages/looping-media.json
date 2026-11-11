@@ -166,8 +166,6 @@
 				"name": "sgs/responsive-logo",
 				"attributes": {
 					"className": "m513-logo",
-					"logoId": 2072,
-					"logoUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/sgs-motion-canary/sgs-canary-logo.svg",
 					"width": 240,
 					"sgsMotion": {
 						"v": 1,
@@ -189,6 +187,13 @@
 									]
 								}
 							}
+						}
+					},
+					"logoSource": {
+						"desktop": {
+							"kind": "image",
+							"id": 2072,
+							"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/sgs-motion-canary/sgs-canary-logo.svg"
 						}
 					}
 				}

@@ -37,7 +37,12 @@
 					{
 						"name": "sgs/responsive-logo",
 						"attributes": {
-							"logoId": 91
+							"logoSource": {
+								"desktop": {
+									"kind": "image",
+									"id": 91
+								}
+							}
 						},
 						"draftRef": {
 							"tpl": "Root>SiteHeader@7#0/58#0"

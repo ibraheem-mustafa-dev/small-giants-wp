@@ -733,14 +733,11 @@
                                     {
                                         "name": "sgs/responsive-logo",
                                         "attributes": {
-                                            "logoId": 92,
-                                            "logoUrl": "http://localhost:8084/wp-content/uploads/2026/10/logo-round.png",
                                             "maxWidth": {
                                                 "desktop": "190px",
                                                 "tablet": "150px",
                                                 "mobile": "140px"
                                             },
-                                            "alt": "Mama's Munches",
                                             "sgsMotion": {
                                                 "v": 1,
                                                 "elements": {
@@ -767,6 +764,14 @@
                                                 "mobile": {
                                                     "left": "auto",
                                                     "right": "auto"
+                                                }
+                                            },
+                                            "logoAlt": "Mama's Munches",
+                                            "logoSource": {
+                                                "desktop": {
+                                                    "kind": "image",
+                                                    "id": 92,
+                                                    "url": "http://localhost:8084/wp-content/uploads/2026/10/logo-round.png"
                                                 }
                                             }
                                         }

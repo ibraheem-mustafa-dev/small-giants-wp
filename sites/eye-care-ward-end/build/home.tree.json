@@ -393,7 +393,7 @@
           "maxHeight": 22,
           "logoMaxWidth": 120,
           "logoOpacity": 75,
-          "logoFit": "contain",
+          "logoFit": {"desktop": "contain"},
           "className": "cr-ref-home-8",
           "sgsMotion": {
             "v": 1,

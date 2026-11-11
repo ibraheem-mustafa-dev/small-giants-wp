@@ -3,7 +3,7 @@
 # Usage (inside WSL): install.sh <wp-path> [content-file]   e.g. install.sh /var/www/local-mediatest-pkg-gr
 set -euo pipefail
 WP_PATH="${1:?wp path}"
-CONTENT="${2:-$(dirname "$0")/page-content.html}"
+CONTENT="${2:-$(dirname "$0")/page-content.legacy.tpl}"
 cd "$WP_PATH"
 IMG="$(wp --allow-root option get siteurl)/wp-content/uploads/2026/05/cookies-stacked.jpeg"
 BODY="$(sed "s#__IMG__#${IMG}#g" "$CONTENT")"

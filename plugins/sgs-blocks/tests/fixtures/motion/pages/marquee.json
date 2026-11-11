@@ -40,94 +40,114 @@
      "className": "m515-speed",
      "logos": [
       {
-       "media": {
-        "id": 3455,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 1",
-       "name": "Brand 1"
+       "name": "Brand 1",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3455,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3457,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 2",
-       "name": "Brand 2"
+       "name": "Brand 2",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3457,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3458,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 3",
-       "name": "Brand 3"
+       "name": "Brand 3",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3458,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3459,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 4",
-       "name": "Brand 4"
+       "name": "Brand 4",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3459,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3455,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 5",
-       "name": "Brand 5"
+       "name": "Brand 5",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3455,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3457,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 6",
-       "name": "Brand 6"
+       "name": "Brand 6",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3457,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3458,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 7",
-       "name": "Brand 7"
+       "name": "Brand 7",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3458,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3459,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 8",
-       "name": "Brand 8"
+       "name": "Brand 8",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3459,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3455,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 9",
-       "name": "Brand 9"
+       "name": "Brand 9",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3455,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3457,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 10",
-       "name": "Brand 10"
+       "name": "Brand 10",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3457,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg"
+        }
+       }
       }
      ],
      "logoGap": "14px",
@@ -276,76 +296,92 @@
      "className": "m515-brands",
      "logos": [
       {
-       "media": {
-        "id": 3455,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 1",
-       "name": "Brand 1"
+       "name": "Brand 1",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3455,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3457,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 2",
-       "name": "Brand 2"
+       "name": "Brand 2",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3457,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3458,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 3",
-       "name": "Brand 3"
+       "name": "Brand 3",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3458,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3459,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 4",
-       "name": "Brand 4"
+       "name": "Brand 4",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3459,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3455,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 5",
-       "name": "Brand 5"
+       "name": "Brand 5",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3455,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3457,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 6",
-       "name": "Brand 6"
+       "name": "Brand 6",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3457,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3458,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 7",
-       "name": "Brand 7"
+       "name": "Brand 7",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3458,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3459,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 8",
-       "name": "Brand 8"
+       "name": "Brand 8",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3459,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+        }
+       }
       }
      ],
      "sgsMotion": {
@@ -692,76 +728,92 @@
      "className": "m515-pause-brands",
      "logos": [
       {
-       "media": {
-        "id": 3455,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 1",
-       "name": "Brand 1"
+       "name": "Brand 1",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3455,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3457,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 2",
-       "name": "Brand 2"
+       "name": "Brand 2",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3457,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3458,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 3",
-       "name": "Brand 3"
+       "name": "Brand 3",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3458,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3459,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 4",
-       "name": "Brand 4"
+       "name": "Brand 4",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3459,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3455,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 5",
-       "name": "Brand 5"
+       "name": "Brand 5",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3455,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3457,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 6",
-       "name": "Brand 6"
+       "name": "Brand 6",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3457,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3458,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 7",
-       "name": "Brand 7"
+       "name": "Brand 7",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3458,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg"
+        }
+       }
       },
       {
-       "media": {
-        "id": 3459,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-        "type": "image"
-       },
        "alt": "Brand 8",
-       "name": "Brand 8"
+       "name": "Brand 8",
+       "source": {
+        "desktop": {
+         "kind": "image",
+         "id": 3459,
+         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+        }
+       }
       }
      ],
      "sgsMotion": {

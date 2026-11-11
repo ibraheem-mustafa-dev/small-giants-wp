@@ -873,11 +873,6 @@
           "stickyFooter": true,
           "showHeader": true,
           "closeStyle": "text",
-          "headerLogo": {
-            "id": 486,
-            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png",
-            "alt": ""
-          },
           "progressCounts": "current",
           "stepCountLabel": "Question",
           "summaryBaseLabel": "Frame",
@@ -890,7 +885,14 @@
           },
           "stageNoteIcon": "whatsapp",
           "skipPrompt": "Frame only?",
-          "skipLabel": "Skip the lenses"
+          "skipLabel": "Skip the lenses",
+          "headerLogoSource": {
+            "desktop": {
+              "kind": "image",
+              "id": 486,
+              "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png"
+            }
+          }
         }
       },
       {
@@ -921,11 +923,6 @@
           "stickyFooter": true,
           "showHeader": true,
           "closeStyle": "text",
-          "headerLogo": {
-            "id": 486,
-            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png",
-            "alt": ""
-          },
           "progressCounts": "current",
           "stepCountLabel": "Question",
           "summaryBaseLabel": "Frame",
@@ -938,7 +935,14 @@
           },
           "stageNoteIcon": "whatsapp",
           "skipPrompt": "Frame only?",
-          "skipLabel": "Skip the lenses"
+          "skipLabel": "Skip the lenses",
+          "headerLogoSource": {
+            "desktop": {
+              "kind": "image",
+              "id": 486,
+              "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png"
+            }
+          }
         }
       },
       {
@@ -1379,11 +1383,6 @@
           "stickyFooter": true,
           "showHeader": true,
           "closeStyle": "text",
-          "headerLogo": {
-            "id": 486,
-            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png",
-            "alt": ""
-          },
           "progressCounts": "current",
           "stepCountLabel": "Question",
           "summaryBaseLabel": "Frame",
@@ -1396,7 +1395,14 @@
           },
           "stageNoteIcon": "whatsapp",
           "skipPrompt": "Frame only?",
-          "skipLabel": "Skip the lenses"
+          "skipLabel": "Skip the lenses",
+          "headerLogoSource": {
+            "desktop": {
+              "kind": "image",
+              "id": 486,
+              "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png"
+            }
+          }
         }
       }
     ]
@@ -3472,11 +3478,16 @@
       {
         "name": "sgs/measured-diagram",
         "attributes": {
-          "drawingImageId": 4969,
-          "drawingImageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/10/sgs-sample-diagram.svg",
-          "drawingImageAlt": "Sample drawing",
           "drawingImageWidth": 680,
-          "drawingImageHeight": 300
+          "drawingImageHeight": 300,
+          "drawingSource": {
+            "desktop": {
+              "kind": "image",
+              "id": 4969,
+              "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/10/sgs-sample-diagram.svg"
+            }
+          },
+          "drawingAlt": "Sample drawing"
         }
       }
     ]

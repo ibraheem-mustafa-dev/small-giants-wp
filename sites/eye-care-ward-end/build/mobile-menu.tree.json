@@ -42,7 +42,6 @@
 			"chromeRating": true,
 			"chromeRatingPlacement": "end",
 			"chromeRatingShowCount": false,
-			"chromeLogoId": 1467,
 			"chromeLogoWidth": {
 				"desktop": "97px"
 			},
@@ -79,6 +78,12 @@
 					"order": "row-first",
 					"perRow": false,
 					"closeOrder": "together"
+				}
+			},
+			"chromeLogoSource": {
+				"desktop": {
+					"kind": "image",
+					"id": 1467
 				}
 			}
 		},

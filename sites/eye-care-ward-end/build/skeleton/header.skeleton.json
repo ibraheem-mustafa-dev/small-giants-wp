@@ -292,7 +292,12 @@
 							{
 								"name": "sgs/responsive-logo",
 								"attributes": {
-									"logoId": 65
+									"logoSource": {
+										"desktop": {
+											"kind": "image",
+											"id": 65
+										}
+									}
 								},
 								"draftRef": {
 									"tpl": "Root/29#0"

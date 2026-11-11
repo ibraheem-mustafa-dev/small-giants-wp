@@ -1701,13 +1701,18 @@
                                   },
                                   "captionLetterSpacingUnit": "em",
                                   "captionTextTransform": "uppercase",
-                                  "drawingImageId": 1293,
-                                  "drawingImageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/eye-care-sizing-frame-front.svg",
                                   "drawingImageWidth": 680,
                                   "drawingImageHeight": 300,
-                                  "drawingImageAlt": "Front view of the frame",
                                   "tickLength": 1.765,
-                                  "className": "cr-ref-product-121"
+                                  "className": "cr-ref-product-121",
+                                  "drawingSource": {
+                                    "desktop": {
+                                      "kind": "image",
+                                      "id": 1293,
+                                      "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/eye-care-sizing-frame-front.svg"
+                                    }
+                                  },
+                                  "drawingAlt": "Front view of the frame"
                                 },
                                 "innerBlocks": [
                                   {
@@ -1892,13 +1897,18 @@
                                   },
                                   "captionLetterSpacingUnit": "em",
                                   "captionTextTransform": "uppercase",
-                                  "drawingImageId": 1294,
-                                  "drawingImageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/eye-care-sizing-frame-side.svg",
                                   "drawingImageWidth": 680,
                                   "drawingImageHeight": 230,
-                                  "drawingImageAlt": "Side view of the frame",
                                   "tickLength": 1.765,
-                                  "className": "cr-ref-product-127"
+                                  "className": "cr-ref-product-127",
+                                  "drawingSource": {
+                                    "desktop": {
+                                      "kind": "image",
+                                      "id": 1294,
+                                      "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/eye-care-sizing-frame-side.svg"
+                                    }
+                                  },
+                                  "drawingAlt": "Side view of the frame"
                                 },
                                 "innerBlocks": [
                                   {

@@ -247,11 +247,6 @@
 				"attributes": {
 					"name": "Part target",
 					"role": "Only the photo moves",
-					"photo": {
-						"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/indus-diamond.png",
-						"id": 4602,
-						"alt": ""
-					},
 					"shadowLiftOnHover": false,
 					"className": "m39-media",
 					"sgsMotion": {
@@ -271,6 +266,21 @@
 								}
 							}
 						}
+					},
+					"photoSource": {
+						"desktop": {
+							"kind": "image",
+							"id": 4602,
+							"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/indus-diamond.png"
+						}
+					},
+					"photoShape": {
+						"desktop": {
+							"shape": "circle"
+						}
+					},
+					"photoRatio": {
+						"desktop": "1 / 1"
 					}
 				}
 			}
