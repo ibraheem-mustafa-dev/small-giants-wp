@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""deploy_ship.py - build-deploy.py's build and shipping steps: npm build, packaging, upload, the
-remote extract with its .bak rotation, local cleanup and the isolated-worktree run.
+"""deploy_ship.py - build-deploy.py's build and shipping steps: npm build, collecting the payload, sending only what
+the site lacks (deploy_delta.py) through the resumable upload, the checked remote apply with its .bak rotation, local
+cleanup and the isolated-worktree run.
 """
 from __future__ import annotations
 
@@ -14,75 +15,10 @@ import time
 from pathlib import Path
 import deploy_cache
 
-from deploy_common import BUILD_DIR, ISOLATION_WORKTREE_PREFIX, PLUGIN_DIR, REMOTE_STAGING_DIR, REPO_ROOT, SSH_ALIAS, SSH_USER_HOST, TARBALL_MAX_MB, TARBALL_NAME, TAR_EXCLUDES, THEME_JSON_PAYLOAD_NAME, composer_dump_autoload, err, fmt_cmd, log, resolve_exe, run, ssh_base_cmd
+import deploy_delta
+import deploy_timing
 
-
-def build_tar_cmd(theme: bool, blocks: bool, theme_json_payload: bool) -> list[str]:
-    """The tar command step_tar runs. Pure, so the self-test packages with the real command."""
-    cmd: list[str] = ["tar", "-cf", TARBALL_NAME]
-    for ex in TAR_EXCLUDES:
-        cmd.append(f"--exclude={ex}")
-    if theme:
-        cmd.append("theme/sgs-theme")
-    if blocks:
-        cmd.append("plugins/sgs-blocks")
-    if theme and theme_json_payload:
-        cmd.append(THEME_JSON_PAYLOAD_NAME)
-    return cmd
-
-
-def build_remote_extract_cmd(wp_content: str, theme: bool, blocks: bool,
-                             theme_json_payload: bool) -> str:
-    """The remote shell command step_remote_extract runs. Pure, so the self-test runs it verbatim.
-
-    With ``theme_json_payload`` the staged theme.json replaces the framework one INSIDE THE
-    STAGING COPY, straight after extraction and before any live directory is moved. The chain is
-    `&&`-joined: if the payload is missing or empty the command stops there, the live theme is
-    never swapped, and the deploy aborts with the client's current theme.json still in place.
-    """
-    # $WP is absolute before the cd below: the targets' wp_content is relative to the SSH home.
-    wp = shlex.quote(wp_content) if wp_content.startswith("/") else f'"$PWD"/{shlex.quote(wp_content)}'
-    parts: list[str] = [f"WP={wp}"]
-    parts.append(f"rm -rf {REMOTE_STAGING_DIR}")
-    parts.append(f"mkdir {REMOTE_STAGING_DIR}")
-    parts.append(f"cd {REMOTE_STAGING_DIR}")
-    parts.append(f"tar -xf ../{TARBALL_NAME}")
-    if theme and theme_json_payload:
-        parts.append(f"test -s {THEME_JSON_PAYLOAD_NAME}")
-        parts.append(f"mv -f {THEME_JSON_PAYLOAD_NAME} theme/sgs-theme/theme.json")
-    if blocks:
-        # Rotate: drop the older backup, move the live copy aside, install new.
-        parts.append("rm -rf $WP/plugins/sgs-blocks.bak")
-        parts.append("if [ -d $WP/plugins/sgs-blocks ]; then "
-                     "mv $WP/plugins/sgs-blocks $WP/plugins/sgs-blocks.bak; fi")
-        parts.append("mkdir -p $WP/plugins")
-        parts.append("mv plugins/sgs-blocks $WP/plugins/")
-        # Bust the CSS-lift cache. `tar` PRESERVES mtimes on extraction, so
-        # sgs-blocks.php keeps its ORIGINAL (pre-deploy) mtime after the move
-        # above — sgs_css_check_deploy() (class-sgs-css-registry.php) keys its
-        # epoch-bump signature on SGS_BLOCKS_VERSION + that file's mtime, so a
-        # CSS-only change (no version bump) would silently never trip it and
-        # every block's lifted <style> + ?ver= would keep serving the OLD CSS
-        # after a deploy that "succeeded". touch forces the signature to
-        # change on every deploy; the rm clears the stale lifted files so
-        # they regenerate fresh on next render rather than serving until GC.
-        parts.append("touch $WP/plugins/sgs-blocks/sgs-blocks.php")
-        parts.append("rm -f $WP/uploads/sgs-css/sgs-*.css")
-    if theme:
-        # Dot-prefixed so WordPress's theme scanner (search_theme_directories())
-        # skips it — WP excludes any directory starting with "." from the theme
-        # listing, so the backup does not show up as a second "SGS Theme" on
-        # the Themes admin page. Same rotation logic as sgs-blocks.bak above,
-        # just a hidden folder name instead of a visible one.
-        parts.append("rm -rf $WP/themes/.sgs-theme.bak")
-        parts.append("if [ -d $WP/themes/sgs-theme ]; then "
-                     "mv $WP/themes/sgs-theme $WP/themes/.sgs-theme.bak; fi")
-        parts.append("mkdir -p $WP/themes")
-        parts.append("mv theme/sgs-theme $WP/themes/")
-    # Cleanup this run's staging folder and tarball only
-    parts.append("cd ..")
-    parts.append(f"rm -rf {REMOTE_STAGING_DIR} {TARBALL_NAME}")
-    return " && ".join(parts)
+from deploy_common import BUILD_DIR, FULL_PACKAGE_NAME, ISOLATION_WORKTREE_PREFIX, PLUGIN_DIR, REMOTE_STAGING_DIR, REPO_ROOT, SSH_ALIAS, SSH_USER_HOST, TARBALL_MAX_MB, TARBALL_NAME, composer_dump_autoload, err, fmt_cmd, log, resolve_exe, run, ssh_base_cmd
 
 
 # ---------------------------------------------------------------------------
@@ -101,126 +37,60 @@ def step_build(dry_run: bool) -> int:
     return 0
 
 
-def step_tar(dry_run: bool, theme: bool, blocks: bool,
-             theme_json_payload: bytes | None = None) -> int:
-    log("[2/5] Packaging tarball")
+def step_collect(dry_run: bool, theme: bool, blocks: bool,
+                 theme_json_payload: bytes | None = None) -> tuple[int, dict[str, deploy_delta.Entry] | None]:
+    """Read every file this deploy ships into memory with its sha256 (deploy_delta.collect_payload).
 
-    # PRE-TAR: regenerate a dev-free autoloader before packaging, and ALWAYS
-    # restore the dev-included one afterwards — even if packaging fails
-    # partway. Only relevant for a blocks deploy (vendor/ lives inside
-    # plugins/sgs-blocks); a --theme-only deploy never touches vendor/ at
-    # all, and dry-run never writes to disk in the first place.
-    #
-    # Why this exists: the deployed tarball must ship an autoloader with zero
-    # references to PHPStan/PHPUnit/etc (see TAR_EXCLUDES's `vendor/` block, and
-    # composer_dump_autoload()'s docstring for the two-consumer split). A
-    # dev-included autoloader in the tarball fatals the live site, and a local
-    # gate that regenerates the working tree's autoloader dev-included would
-    # silently undo the deploy-safe one. See:
-    # `python plugins/sgs-blocks/scripts/check-render-undefined-vars.py --check`
-    regen_composer = blocks and not dry_run
+    A blocks deploy regenerates a dev-free Composer autoloader first and ALWAYS restores the dev-included one
+    afterwards, even on failure. The payload must carry an autoloader with zero references to PHPStan/PHPUnit (their
+    folders are excluded, and a dev-included vendor/composer/autoload_files.php requiring them fatal'd the live site,
+    D849), while the working tree needs the dev-included one for check-render-undefined-vars.py and PHPStan. The bytes
+    are read inside that window and held in memory, so a fallback full upload later ships exactly the same files.
+    The target's client theme.json is placed in the payload here (the PROVEN CAUSE note in deploy_common.py).
+    """
+    log("[2/5] Collecting the payload")
+    if dry_run:
+        log("  (dry run) would regenerate the no-dev autoloader, read and hash every shipped file, restore the autoloader")
+        return 0, {}
+    regen_composer = blocks
     if regen_composer:
-        rc = composer_dump_autoload(dry_run, no_dev=True)
+        rc = composer_dump_autoload(False, no_dev=True)
         if rc != 0:
-            err(
-                f"composer dump-autoload --no-dev failed (exit {rc}) — refusing to "
-                "package a tarball with a dev-included autoloader (that is the exact "
-                "bug that fatal'd the live site, D849). Nothing was packaged."
-            )
-            return rc
-
-    stage = REPO_ROOT / THEME_JSON_PAYLOAD_NAME
+            err(f"composer dump-autoload --no-dev failed (exit {rc}): refusing to ship a dev-included autoloader "
+                "(the bug that fatal'd the live site, D849). Nothing was collected.")
+            return rc, None
     try:
-        # The target's theme.json travels as its own member and replaces the framework copy
-        # inside the remote staging dir (build_remote_extract_cmd), never after the swap.
-        ship_payload = theme and theme_json_payload is not None
-        if ship_payload and not dry_run:
-            stage.write_bytes(theme_json_payload)
-        cmd = build_tar_cmd(theme, blocks, ship_payload)
-        rc = run(cmd, dry_run=dry_run, cwd=REPO_ROOT)
-        if rc != 0:
-            err(f"tar failed (exit {rc})")
-            return rc
-        if not dry_run and not (REPO_ROOT / TARBALL_NAME).exists():
-            err(f"tarball not produced: {REPO_ROOT / TARBALL_NAME}")
-            return 2
-
-        # STRUCTURAL SIZE GUARD. The named excludes cover the known strays;
-        # this catches the NEXT one. Any untracked tree dropped inside
-        # plugins/sgs-blocks or theme/sgs-theme is invisible to the dirty gate and ships
-        # silently -- the only symptom is a suddenly huge tarball, and "the deploy is a
-        # bit slow" is exactly how that goes unnoticed. Fail closed and NAME the biggest
-        # members, so the next person is not left guessing what got in.
-        if not dry_run:
-            size_mb = (REPO_ROOT / TARBALL_NAME).stat().st_size / (1024 * 1024)
-            if size_mb > TARBALL_MAX_MB:
-                err(
-                    f"tarball is {size_mb:.0f}MB, over the {TARBALL_MAX_MB}MB ceiling. "
-                    "Something that is not part of the plugin/theme is being packaged."
-                )
-                try:
-                    import subprocess as _sp
-                    out = _sp.run(
-                        ["tar", "-tvf", TARBALL_NAME],
-                        cwd=str(REPO_ROOT), capture_output=True, text=True, timeout=180,
-                    ).stdout.splitlines()
-                    tops: dict[str, int] = {}
-                    # `tar -tvf` prints: perms owner group SIZE date time path.
-                    # Do NOT index a fixed column: the first two cuts of this guard did
-                    # (parts[2], then "first digit in parts[1:5]") and both silently read
-                    # the OWNER id 0, accumulating zeros and printing an alphabetical list
-                    # of 0.0MB rows that named nothing. Anchor on the DATE instead and take
-                    # the integer immediately before it. Verified against the real 113MB
-                    # tarball: totals 108.6MB and names scripts/vendor/build, matching an
-                    # independent awk pass. A diagnostic that fails quietly is worse than
-                    # no diagnostic, because it reads as an answer.
-                    import re as _re
-                    _MONTH = _re.compile(r"^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$")
-                    _DATE = _re.compile(r"^\d{4}-\d{2}-\d{2}$")
-                    for line in out:
-                        parts = line.split()
-                        if not parts:
-                            continue
-                        nbytes = None
-                        for idx, tok in enumerate(parts):
-                            if _MONTH.match(tok) or _DATE.match(tok):
-                                for j in range(idx - 1, -1, -1):
-                                    if parts[j].isdigit():
-                                        nbytes = int(parts[j])
-                                        break
-                                break
-                        if nbytes is None:
-                            continue
-                        key = "/".join(parts[-1].rstrip("/").split("/")[:3])
-                        tops[key] = tops.get(key, 0) + nbytes
-                    for path, nbytes in sorted(tops.items(), key=lambda kv: -kv[1])[:8]:
-                        err(f"    {nbytes / (1024 * 1024):8.1f}MB  {path}")
-                except Exception as exc:  # noqa: BLE001 - diagnostics only
-                    err(f"    (could not enumerate tar members: {exc})")
-                err(
-                    "Fix: add it to TAR_EXCLUDES + .gitignore, or move it out of the "
-                    "plugin/theme directory. Do NOT raise the ceiling to get past this."
-                )
-                return 2
-        log(f"[2/5] Packaging tarball: OK ({TARBALL_NAME})")
-        return 0
+        try:
+            payload = deploy_delta.collect_payload(REPO_ROOT, theme, blocks, theme_json_payload if theme else None)
+        except (deploy_delta.PayloadError, OSError) as exc:
+            err(f"payload: {exc}")
+            return 2, None
+        leaks = deploy_delta.dev_autoload_leaks(payload)
+        if leaks:
+            err("the payload's Composer autoloader still names dev-only packages (PHPStan/PHPUnit), which are not "
+                f"shipped, so every page would fatal (D849): {', '.join(leaks)}. The --no-dev regeneration did not take.")
+            return 2, None
+        # SIZE GUARD. Any untracked tree dropped inside the plugin or theme folder ships silently; the only symptom
+        # is a suddenly large payload, so fail closed and name the biggest folders.
+        size_mb = deploy_delta.payload_bytes(payload) / (1024 * 1024)
+        if size_mb > TARBALL_MAX_MB:
+            err(f"the payload is {size_mb:.1f}MB, over the {TARBALL_MAX_MB}MB ceiling. Something that is not part of "
+                "the plugin/theme is being shipped:")
+            for path, nbytes in deploy_delta.largest_folders(payload):
+                err(f"    {nbytes / (1024 * 1024):8.1f}MB  {path}")
+            err("Fix: add it to TAR_EXCLUDES + .gitignore, or move it out of the plugin/theme folder. Do NOT raise "
+                "the ceiling to get past this.")
+            return 2, None
+        log(f"[2/5] Payload: {len(payload)} files, {size_mb:.1f}MB")
+        return 0, payload
     finally:
-        stage.unlink(missing_ok=True)
-        # POST-TAR restore — runs on every exit path (success, tar failure, size
-        # guard). NEVER leave the working tree in the --no-dev state: the next
-        # developer's `npm run build` needs PHPStan's classmap present for
-        # check-render-undefined-vars.py to run at all.
         if regen_composer:
-            restore_rc = composer_dump_autoload(dry_run, no_dev=False)
+            restore_rc = composer_dump_autoload(False, no_dev=False)
             if restore_rc != 0:
-                err(
-                    f"composer dump-autoload --optimize (dev-included) restore FAILED "
-                    f"(exit {restore_rc}) — the working tree's vendor/composer/"
-                    "autoload_*.php are left in the --no-dev state. Local PHPStan gates "
-                    "will fail until this is re-run by hand: "
-                    "php composer.phar dump-autoload --optimize (from plugins/sgs-blocks/, "
-                    "composer.phar is at the repo root)."
-                )
+                err(f"composer dump-autoload --optimize (dev-included) restore FAILED (exit {restore_rc}): the working "
+                    "tree's vendor/composer/autoload_*.php are left in the --no-dev state and local PHPStan gates will "
+                    "fail until this is re-run by hand: php composer.phar dump-autoload --optimize (from "
+                    "plugins/sgs-blocks/, composer.phar is at the repo root).")
 
 
 UPLOAD_ATTEMPTS = 8
@@ -296,61 +166,122 @@ def upload_resumable(use_alias: bool, local: str, remote: str, dry_run: bool, *,
     return rc
 
 
-def step_scp(dry_run: bool, use_alias: bool, host_label: str) -> int:
-    log(f"[3/5] Upload to {host_label} (sftp, resumes after a dropped connection)")
-    rc = upload_resumable(use_alias, TARBALL_NAME, TARBALL_NAME, dry_run)
+SHIP_UPLOAD_FAILED = 3
+SHIP_APPLY_FAILED = 4      # the swap failed and was undone, the connection dropped, or the apply timed out
+SHIP_TREE_DIFFERS = 5
+SHIP_STAGE_FAILED = 6      # the staged tree failed its check; nothing was swapped
+APPLY_TIMEOUT_S = 900
+
+
+def run_remote(cmd: list[str], *, dry_run: bool, cwd=None) -> int:
+    """run() with a timeout: a half-open connection must not hang the deploy. The remote command ignores hangups, so
+    stopping the local ssh cannot interrupt a swap."""
+    log(f"  $ {fmt_cmd(cmd)}")
+    try:
+        return subprocess.run(cmd, cwd=cwd, check=False, timeout=APPLY_TIMEOUT_S).returncode
+    except subprocess.TimeoutExpired:
+        err(f"the remote apply did not answer within {APPLY_TIMEOUT_S}s")
+        return 124
+
+
+def _send(plan: deploy_delta.Plan, payload: dict[str, deploy_delta.Entry], roots: list[tuple[str, str]],
+          use_alias: bool, wp_content: str, package: str, *, uploader=None, runner=None) -> int:
+    """Write the package for `plan`, upload it (resumable) and apply it remotely. 0, or a SHIP_* code."""
+    uploader = uploader or upload_resumable
+    runner = runner or run_remote
+    deploy_timing.note("upload_mode", plan.mode)
+    if plan.mode == "nothing":
+        deploy_timing.note("upload_bytes", 0)
+        log(f"[upload] mode=nothing ({plan.reason}): no upload, no swap")
+        return 0
+    size = deploy_timing.timed("package-write", deploy_delta.write_package, REPO_ROOT / package, payload, plan, roots)
+    deploy_timing.note("upload_bytes", size)
+    log(f"[upload] mode={plan.mode} files={len(plan.send)} deleted={len(plan.delete)} bytes={size} "
+        f"(payload {plan.payload_bytes} bytes; {plan.reason})")
+    rc = deploy_timing.timed("scp", uploader, use_alias, package, package, False)
     if rc != 0:
         err(f"upload failed after {UPLOAD_ATTEMPTS} attempts (exit {rc})")
-        return rc
-    log("[3/5] Upload: OK")
-    return 0
+        return SHIP_UPLOAD_FAILED
+    remote = deploy_delta.build_remote_apply_cmd(wp_content, roots, plan.mode, package, REMOTE_STAGING_DIR)
+    rc = deploy_timing.timed("remote-apply", runner, ssh_base_cmd(use_alias) + [remote], dry_run=False)
+    if rc == 0:
+        return 0
+    if rc == deploy_delta.APPLY_STAGE_FAILED:
+        err("the staged tree failed its check; nothing was swapped")
+        return SHIP_STAGE_FAILED
+    if rc == deploy_delta.APPLY_SWAP_FAILED:
+        err("a folder swap failed; every swapped folder was put back, so the site runs the previous files")
+    elif rc == deploy_delta.APPLY_AFTER_SWAP_FAILED:
+        err("the new files are live, but touching sgs-blocks.php or clearing uploads/sgs-css failed")
+    else:
+        err(f"the remote apply ended with exit {rc} (a dropped connection or a timeout); the host ignores hangups, so "
+            "it may have finished. Re-run the deploy: its listing shows what the site now holds.")
+    return SHIP_APPLY_FAILED
 
 
-def step_remote_extract(dry_run: bool, use_alias: bool, wp_content: str,
-                        theme: bool, blocks: bool, theme_json_payload: bool = False) -> int:
-    """Extract + install, rotating the previous copy aside instead of deleting it.
+def step_ship(dry_run: bool, use_alias: bool, wp_content: str, theme: bool, blocks: bool,
+              payload: dict[str, deploy_delta.Entry] | None, force_full: bool = False, *,
+              lister=None, uploader=None, runner=None) -> int:
+    """[3/5]+[4/5] Send only what the site lacks, apply it in a checked staging copy, then confirm the live tree.
 
-    Deleting the live directory before extracting would leave nothing to roll
-    back to after a bad deploy, so the outgoing copy is renamed to
-    ``<dir>.bak`` (previous .bak dropped first, so exactly one generation is
-    kept and disk use stays bounded). Recovery is then a single `mv` back —
-    see ROLLBACK_HINT, which step_verify prints on failure.
-
-    The theme's backup is named ``.sgs-theme.bak`` (dot-prefixed) rather than
-    ``sgs-theme.bak`` — WordPress's theme directory scanner
-    (``search_theme_directories()``) skips any directory starting with ``.``,
-    so the backup does not show up as a second "SGS Theme" entry on the
-    Themes admin page while still living in the same rollback location. The
-    plugins backup keeps its visible name; WordPress's plugin scanner doesn't
-    surface it the same way in normal use.
+    The live listing decides nothing / delta / full (deploy_delta.plan_delta). A delta whose staged tree fails its
+    check swaps nothing, and the full package is sent once instead. Any other apply failure stops: a second apply
+    would replace the .bak, the only rollback copy. After the swap the live tree is listed again
+    and must equal the payload file for file; a difference returns SHIP_TREE_DIFFERS (the files are live).
     """
-    log("[4/5] Remote extract + install")
-    remote_cmd = build_remote_extract_cmd(wp_content, theme, blocks, theme_json_payload)
-    cmd = ssh_base_cmd(use_alias) + [remote_cmd]
-    rc = run(cmd, dry_run=dry_run)
+    roots = deploy_delta.roots_for(theme, blocks)
+    lister = lister or (lambda: deploy_delta.fetch_live_listing(use_alias, wp_content, roots, ssh_base_cmd(use_alias)))
+    if dry_run:
+        log("[3/5] (dry run) would list the live tree, upload only the difference and apply it in a checked copy:")
+        log(f"  $ {fmt_cmd(ssh_base_cmd(use_alias) + [deploy_delta.live_listing_cmd(wp_content, roots)])}")
+        log(f"  $ {fmt_cmd(ssh_base_cmd(use_alias) + [deploy_delta.build_remote_apply_cmd(wp_content, roots, 'delta', TARBALL_NAME, REMOTE_STAGING_DIR)])}")
+        return 0
+    assert payload is not None
+    live, why = deploy_timing.timed("live-listing", lister)
+    plan = deploy_delta.plan_delta(payload, live, why, roots, force_full=force_full)
+    rc = _send(plan, payload, roots, use_alias, wp_content, TARBALL_NAME, uploader=uploader, runner=runner)
+    if rc == SHIP_STAGE_FAILED and plan.mode == "delta":
+        log("[delta] the staged tree failed its check and nothing was swapped; sending the full package once")
+        deploy_timing.note("upload_fallback", True)
+        total = deploy_delta.payload_bytes(payload)
+        plan = deploy_delta.Plan("full", list(payload), [], "the delta failed its check", total, total)
+        rc = _send(plan, payload, roots, use_alias, wp_content, FULL_PACKAGE_NAME, uploader=uploader, runner=runner)
     if rc != 0:
-        err(f"remote extract failed (exit {rc})")
         return rc
-    log("[4/5] Remote extract: OK")
+    if plan.mode == "nothing":
+        return 0
+    after, why = deploy_timing.timed("verify-tree", lister)
+    want = {p: e.sha256 for p, e in payload.items()}
+    if after is None or after.other or after.files != want:
+        if after is None:
+            err(f"[verify-tree] could not list the live tree after the swap: {why}")
+        else:
+            differ = sorted(p for p in set(want) | set(after.files) if want.get(p) != after.files.get(p))
+            err(f"[verify-tree] the live tree is not the payload ({len(differ)} path(s) differ, "
+                f"{len(after.other)} symlink(s) or special file(s)):")
+            for p in (differ + after.other)[:12]:
+                err(f"    {p}")
+        return SHIP_TREE_DIFFERS
+    log(f"[verify-tree] PASS: the live tree holds exactly the {len(want)} payload files")
     return 0
 
 
 def step_local_cleanup(dry_run: bool) -> int:
     log("[5/5] Local cleanup")
-    tarball = REPO_ROOT / TARBALL_NAME
+    packages = [REPO_ROOT / TARBALL_NAME, REPO_ROOT / FULL_PACKAGE_NAME]
     if dry_run:
-        log(f"  $ rm {tarball}")
+        log(f"  $ rm -f {' '.join(str(p) for p in packages)}")
         log("[5/5] Local cleanup: OK")
         return 0
-    if tarball.exists():
+    for package in packages:
         try:
-            tarball.unlink()
+            package.unlink(missing_ok=True)
         except OSError as e:
-            err(f"failed to remove {tarball}: {e}")
+            err(f"failed to remove {package}: {e}")
             return 1
-    if tarball.exists():
-        err(f"tarball still present after cleanup: {tarball}")
-        return 1
+        if package.exists():
+            err(f"package still present after cleanup: {package}")
+            return 1
     log("[5/5] Local cleanup: OK")
     return 0
 
