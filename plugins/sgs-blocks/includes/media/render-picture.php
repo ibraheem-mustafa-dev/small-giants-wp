@@ -105,7 +105,8 @@ if ( ! function_exists( 'sgs_media_picture' ) ) {
 	 * @param array<string,array|null> $files   Device => file ( `id`, `url`, `width`, `height` ), null where the device
 	 *                                          shows another kind or nothing.
 	 * @param array                    $options `classes` (img), `picture_classes`, `alt`, `loading`, `fetchpriority`,
-	 *                                          `sizes` (device => string), `force_picture`.
+	 *                                          `sizes` (device => string), `queries` (device => media condition),
+	 *                                          `force_picture`.
 	 * @return string The markup, or '' when no device shows an image.
 	 */
 	function sgs_media_picture( array $files, array $options ): string {
@@ -133,13 +134,15 @@ if ( ! function_exists( 'sgs_media_picture' ) ) {
 		if ( 1 === count( array_unique( $keys ) ) && empty( $options['force_picture'] ) ) {
 			return $img;
 		}
+		// A block that places a device's file at its own width passes that condition in `queries`.
+		$queries = (array) ( $options['queries'] ?? array() );
 		$sources = '';
 		if ( $keys['mobile'] === $keys['tablet'] && $keys['tablet'] !== $keys['desktop'] ) {
-			$sources .= sgs_media_source_tag( $files['tablet'] ?? null, SGS_Breakpoints::query_fractional( 'tablet' ), (string) ( $sizes['tablet'] ?? '' ) );
+			$sources .= sgs_media_source_tag( $files['tablet'] ?? null, (string) ( $queries['tablet'] ?? SGS_Breakpoints::query_fractional( 'tablet' ) ), (string) ( $sizes['tablet'] ?? '' ) );
 		} else {
 			foreach ( array( 'tablet', 'mobile' ) as $device ) {
 				if ( $keys[ $device ] !== $keys['desktop'] ) {
-					$sources .= sgs_media_source_tag( $files[ $device ] ?? null, sgs_media_device_query( $device ), (string) ( $sizes[ $device ] ?? '' ) );
+					$sources .= sgs_media_source_tag( $files[ $device ] ?? null, (string) ( $queries[ $device ] ?? sgs_media_device_query( $device ) ), (string) ( $sizes[ $device ] ?? '' ) );
 				}
 			}
 		}

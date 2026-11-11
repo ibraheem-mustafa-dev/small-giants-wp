@@ -57,8 +57,9 @@ function sgs_media_item_atom_ids(): array {
  *
  * @param array $slot    `{prefix, kinds, context}`.
  * @param array $attrs   Block attributes.
- * @param array $context `{uid, block, area, section_index, item_set:{index,columns,block_rules}, in_editor, extra_class, anchor}`
- *                       plus `effects`, `entrance` and `hover` for §7.3.
+ * @param array $context `{uid, block, area, section_index, item_set:{index,columns,block_rules}, in_editor, extra_class, anchor,
+ *                       device_queries}` (device_queries: device => the media condition that shows that device's image, for a
+ *                       block with its own switch width) plus `effects`, `entrance` and `hover` for §7.3.
  * @return array{html:string,css:string,needs_helper:bool,lead_candidate:bool}
  */
 function sgs_media_render_slot( array $slot, array $attrs, array $context = array() ): array {
@@ -210,6 +211,7 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 				'loading'         => $loading,
 				'fetchpriority'   => $fetch,
 				'sizes'           => $sizes,
+				'queries'         => (array) ( $context['device_queries'] ?? array() ),
 			)
 		);
 		$siblings['sgs-media-sib--image'] = array_keys( $image_files );
