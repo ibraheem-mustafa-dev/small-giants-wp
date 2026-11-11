@@ -132,7 +132,14 @@ def record_pass(key: str | None, repo: Path, build_dir: Path, seconds: float) ->
             "files": files,
         }
         (work / "gate-pass.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
-        os.replace(work, final)
+        try:
+            os.replace(work, final)
+        except OSError:
+            # Another deploy of the same tree and DB recorded this pass while this one copied its build (two
+            # sessions deploying one commit; seen 2026-11-11, when the second rename failed with "Access is denied"
+            # and crashed a deploy whose gates had passed). That entry is the same pass, so it stands.
+            if not gate_pass(key):
+                raise
     finally:
         shutil.rmtree(work, ignore_errors=True)
     prune(root)
@@ -151,7 +158,13 @@ def carry_pass(from_key: str | None, to_key: str | None) -> bool:
     shutil.rmtree(work, ignore_errors=True)
     try:
         shutil.copytree(root / from_key, work)
-        os.replace(work, final)
+        try:
+            os.replace(work, final)
+        except OSError:
+            # Another session carried or recorded the same entry meanwhile (see record_pass): it stands.
+            if not gate_pass(to_key):
+                raise
+            return False
     finally:
         shutil.rmtree(work, ignore_errors=True)
     return True
@@ -286,6 +299,25 @@ def self_test() -> list[str]:
             failures.append("restore_build did not restore build/ and the build's generated file")
         if restore_build(k1, repo, build):
             failures.append("restore_build restored for a key that never passed")
+        # Two deploys of one tree record the same pass at once: the second must not crash (its rename onto the first's
+        # entry fails on Windows) and the pass must read back.
+        db.write_bytes(b"db-race")
+        k_race = run_key(repo, isolated=True, no_cache=False, db=db)
+        real_leftovers = build_leftovers
+
+        def other_deploy_records_first(repo_):
+            shutil.copytree(cache_root() / k2, cache_root() / k_race)
+            return real_leftovers(repo_)
+
+        globals()["build_leftovers"] = other_deploy_records_first
+        try:
+            record_pass(k_race, repo, build, 12.0)
+            if not gate_pass(k_race):
+                failures.append("after a concurrent record of the same pass, the pass does not read back")
+        except OSError as exc:
+            failures.append(f"a concurrent record of the same pass crashed the deploy ({exc})")
+        finally:
+            globals()["build_leftovers"] = real_leftovers
         db.write_bytes(b"db-v3")
         k3 = run_key(repo, isolated=True, no_cache=False, db=db)
         if carry_pass(k1, k3):
