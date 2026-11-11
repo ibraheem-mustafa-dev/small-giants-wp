@@ -191,6 +191,7 @@
     "is_single",
     "is_singular",
     "is_ssl",
+    "is_store_notice_showing",
     "is_tag",
     "is_tax",
     "is_user_logged_in",
