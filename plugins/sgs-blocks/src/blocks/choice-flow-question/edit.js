@@ -11,7 +11,8 @@ import {
 	Button,
 } from '@wordpress/components';
 import { VStack } from '../../components/primitives';
-import MediaPicker from '../../components/MediaPicker';
+import MediaElementPanel from '../../components/MediaElementPanel';
+import ItemSlotFields from '../../components/media/ItemSlotFields.js';
 import AddonPricingPanel from './AddonPricingPanel';
 import AnswersPanel from './AnswersPanel';
 import OptionCardsPanel from '../choice-flow/OptionCardsPanel';
@@ -26,6 +27,9 @@ import { SgsColourPanel } from '../../components';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Reserved sentinel (FR-43-2 / spec brief) — "jump straight to whichever
 // result step is reachable" rather than a specific sibling sgs/form-step.
+/** The block's one media slot: each option's picture (Spec 49 §10.4: Source, Fit, Focal point, Width, Shape). */
+const OPTION_SLOT = { prefix: 'option', kinds: [ 'image' ], context: 'item' };
+
 const TERMINAL_SENTINEL = '__terminal__';
 
 /**
@@ -145,36 +149,12 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					value: `option-${ newIndex }`,
 					nextStepId: '',
 					tags: [],
-					image: null,
 					helpText: '',
 					addToBagNow: false,
 				},
 			],
 		} );
 	};
-
-	/**
-	 * Adapt an option's stored `image` shape ({id, url, alt} — FR-43-15,
-	 * matching sgs/media's own imageId/imageUrl/imageAlt attribute trio) to
-	 * the richer `SGSMedia` shape `MediaPicker` expects ({url, type, id, alt,
-	 * mime}), and back again on change/remove. `type`/`mime` are never
-	 * persisted here — this option's `image` attribute is image-only
-	 * (`allowedTypes={ [ 'image' ] }` below), so they would be redundant on
-	 * every stored row.
-	 *
-	 * @param {{id?: number, url?: string, alt?: string}|null|undefined} image
-	 * @return {import('../../components/MediaPicker').SGSMedia|null}
-	 */
-	const toMediaPickerValue = ( image ) =>
-		image && image.url
-			? {
-					url: image.url,
-					type: 'image',
-					id: image.id || 0,
-					alt: image.alt || '',
-					mime: 'image/jpeg',
-			  }
-			: null;
 
 	return (
 		<>
@@ -281,33 +261,20 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
 								/>
-								{ /* FR-43-15 (v1.3.0): optional per-option image, rendered in
-								     the option card's 16:9 preview zone. Reuses this codebase's
-								     shared MediaPicker (wraps MediaUpload/MediaUploadCheck —
-								     see decorative-image/edit.js for the established pattern)
-								     rather than hand-rolling a bespoke MediaUpload call. */ }
-								<MediaPicker
-									value={ toMediaPickerValue( option.image ) }
-									allowedTypes={ [ 'image' ] }
-									onChange={ ( media ) =>
-										updateOption(
-											index,
-											'image',
-											media
-												? {
-														id: media.id,
-														url: media.url,
-														alt: media.alt,
-												  }
-												: null
-										)
-									}
-									onRemove={ () => updateOption( index, 'image', null ) }
-									label={ __( 'Select image', 'sgs-blocks' ) }
-									instructionsImage={ __(
-										'Optional. Shown in the option card’s preview zone.',
-										'sgs-blocks'
-									) }
+								{ /* FR-43-15: optional per-option picture, printed by the shared media renderer in the option card's
+								     preview zone (Spec 49 §8.3). Fit and Focal point are the option's own; Width and Shape are the
+								     question's (Option pictures panel). */ }
+								<ItemSlotFields
+									item={ option }
+									prefix="option"
+									slot={ OPTION_SLOT }
+									focal
+									label={ __( 'Picture', 'sgs-blocks' ) }
+									onChange={ ( next ) => {
+										const newOptions = [ ...options ];
+										newOptions[ index ] = next;
+										setAttributes( { options: newOptions } );
+									} }
 								/>
 								{ /* FR-43-16 (v1.3.0): optional per-option help text, revealed
 								     by a floating '?' toggle on the option card. */ }
@@ -366,6 +333,16 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					</VStack>
 				</PanelBody>
 			</InspectorControls>
+			{ /* What every option's picture shares (Spec 49 §10.4): Fit, Width and Shape. */ }
+			<MediaElementPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				prefix="option"
+				blockSlug="sgs/choice-flow-question"
+				blockName="sgs/choice-flow-question"
+				atoms={ [ 'object-fit', 'sizing', 'shape' ] }
+				context="item"
+			/>
 			<InspectorControls group="styles">
 				<TitlePanel attributes={ attributes } setAttributes={ setAttributes } />
 				<OptionCardsPanel attributes={ attributes } setAttributes={ setAttributes } title={ __( 'Option pictures', 'sgs-blocks' ) } />

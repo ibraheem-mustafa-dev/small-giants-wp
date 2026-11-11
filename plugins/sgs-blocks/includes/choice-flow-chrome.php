@@ -197,62 +197,55 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_progress_colour_css' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_choice_flow_term_swatch_image' ) ) {
+if ( ! function_exists( 'sgs_choice_flow_term_swatch_item' ) ) {
 	/**
-	 * D5: a product-option step's fallback option image — the term's OWN
-	 * swatch image, same term meta `sgs/option-picker`'s pills read
-	 * (`_sgs_swatch_image_id` — `option-picker/render.php`).
+	 * D5: a product-option step's fallback option picture, as a media item: the term's OWN swatch image, same term
+	 * meta `sgs/option-picker`'s pills read (`_sgs_swatch_image_id` — `option-picker/render.php`).
 	 *
 	 * @param string $taxonomy A `pa_*` attribute taxonomy name.
 	 * @param string $slug     The term's slug.
-	 * @return array{url:string,alt:string} Empty when nothing resolves.
+	 * @return array{source?:array,alt?:string} Empty when nothing resolves.
 	 */
-	function sgs_choice_flow_term_swatch_image( string $taxonomy, string $slug ): array {
-		$empty = array(
-			'url' => '',
-			'alt' => '',
-		);
+	function sgs_choice_flow_term_swatch_item( string $taxonomy, string $slug ): array {
 		if ( '' === $taxonomy || '' === $slug || ! function_exists( 'get_term_by' ) ) {
-			return $empty;
+			return array();
 		}
 		$term = get_term_by( 'slug', $slug, $taxonomy );
 		if ( ! $term instanceof \WP_Term ) {
-			return $empty;
+			return array();
 		}
 		$image_id = absint( get_term_meta( $term->term_id, '_sgs_swatch_image_id', true ) );
-		$url      = $image_id > 0 ? wp_get_attachment_image_url( $image_id, 'medium' ) : false;
-		if ( ! $url ) {
-			return $empty;
+		if ( $image_id <= 0 || ! wp_get_attachment_url( $image_id ) ) {
+			return array();
 		}
 		$alt = trim( (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) );
 		return array(
-			'url' => (string) $url,
-			'alt' => '' !== $alt ? $alt : $term->name,
+			'source' => array(
+				'desktop' => array(
+					'kind' => 'image',
+					'id'   => $image_id,
+				),
+			),
+			'alt'    => '' !== $alt ? $alt : $term->name,
 		);
 	}
 }
 
-if ( ! function_exists( 'sgs_choice_flow_resolve_option_image' ) ) {
+if ( ! function_exists( 'sgs_choice_flow_option_media_item' ) ) {
 	/**
-	 * D5: a product-option step option's image — its own merged `image`
-	 * (from `sgs_choice_flow_merge_option_extras()`) first, else the term's
-	 * swatch image. Optional either way — no image anywhere keeps this
-	 * option a plain text card.
+	 * D5: a product-option step option's picture as a media item — its own merged `source` (from
+	 * `sgs_choice_flow_merge_option_extras()`) first, else the term's swatch image. Optional either way: no picture
+	 * anywhere keeps this option a plain text card.
 	 *
 	 * @param array  $merged_option A row from `sgs_choice_flow_merge_option_extras()`.
 	 * @param string $taxonomy      This step's `pa_*` attribute taxonomy.
-	 * @return array{url:string,alt:string}
+	 * @return array The option's `{source, alt, decorative, fit, focal}`, or the term's `{source, alt}`.
 	 */
-	function sgs_choice_flow_resolve_option_image( array $merged_option, string $taxonomy ): array {
-		$image = isset( $merged_option['image'] ) && is_array( $merged_option['image'] ) ? $merged_option['image'] : array();
-		$url   = isset( $image['url'] ) ? (string) $image['url'] : '';
-		if ( '' !== $url ) {
-			return array(
-				'url' => $url,
-				'alt' => isset( $image['alt'] ) ? (string) $image['alt'] : '',
-			);
+	function sgs_choice_flow_option_media_item( array $merged_option, string $taxonomy ): array {
+		if ( sgs_media_item_has_source( $merged_option ) ) {
+			return $merged_option;
 		}
-		return sgs_choice_flow_term_swatch_image( $taxonomy, (string) ( $merged_option['value'] ?? '' ) );
+		return sgs_choice_flow_term_swatch_item( $taxonomy, (string) ( $merged_option['value'] ?? '' ) );
 	}
 }
 

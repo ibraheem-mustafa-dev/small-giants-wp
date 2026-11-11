@@ -100,14 +100,100 @@
 					"_note": "introWidth: the intro's width in ch as a class (sgs-choice-flow-question__intro--w{n}, includes/choice-flow-showcase.php), never an inline style."
 				},
 				"options": {
-					"label": "Options list",
-					"layer": "CONTENT",
-					"order": 3,
-					"clusters": [
-						"layout"
-					],
-					"_note": "v1: no per-option colour/layout attrs yet — plain list, styled by the block's own stylesheet only."
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"summaryText": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"stageEffect": {
+						"type": "string",
+						"role": "enum-mode"
+					},
+					"label": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"value": {
+						"type": "string",
+						"role": "technical"
+					},
+					"nextStepId": {
+						"type": "string",
+						"description": "Empty string = advance to the next step in flow order (default, FR-43-2). '__terminal__' = jump to the reachable result step. Any other value = the 0-based DOM-order position of a sibling sgs/form-step within the same sgs/choice-flow, resolved at editor-time by the step picker (not a clientId — clientId is editor-only and unresolvable by render.php/the runtime store, see choice-flow-question/edit.js and choice-flow/view.js).",
+						"role": "technical"
+					},
+					"tags": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"default": [],
+						"description": "FR-43-12: tags this option contributes to the path's accumulated tag set when chosen, for matching against a sgs/choice-flow-result's own matchTags. Empty when the flow only ever has one result (the common case).",
+						"role": "technical"
+					},
+					"helpText": {
+						"type": "string",
+						"default": "",
+						"description": "FR-43-16 (v1.3.0): optional per-option explanatory copy, revealed by a floating '?' toggle overlaid on the option card. Empty string = no toggle button renders at all (not a disabled one).",
+						"role": "text-content"
+					},
+					"addToBagNow": {
+						"type": "boolean",
+						"default": false,
+						"description": "FR-43-20 (v1.4.0): choosing this option adds the page's product with NO add-ons and ends the flow (the draft's 'No prescription — keep the lenses they come with'). Clears any add-on answers already accumulated on this path; the operator still routes it to a result step via `nextStepId` (usually the add-to-bag terminal) — this flag only guarantees the add-on list is empty when it gets there.",
+						"role": "boolean-visibility"
+					},
+					"isDefault": {
+						"type": "boolean",
+						"default": false,
+						"description": "Spec 43 Phase 3/4 §1/§5: pre-selects this option on load and records it as the answer, without auto-advancing. Rendering this pre-selection (Wave 2, question view.js) is not built here — only the stored flag.",
+						"role": "state-modifier-boolean"
+					},
+					"badge": {
+						"type": "string",
+						"default": "",
+						"description": "Spec 43 Phase 3/4 §1/§5: short pill label (up to 20 characters) rendered on the option card, e.g. 'Popular'. Empty string = no badge. Printed by render.php.",
+						"role": "text-content"
+					},
+					"description": {
+						"type": "string",
+						"default": "",
+						"description": "Spec 43 Phase 3/4 §1/§5: one line of explanatory copy (up to 140 characters) rendered under the option's label. Empty string = no description line. Printed by render.php.",
+						"role": "text-content"
+					},
+					"source": {
+						"type": "object",
+						"description": "The item's picture per device, the media Source shape: {desktop:{kind,id,url,width,height,mime}, tablet, mobile}. A device with no entry shows the wider device's file.",
+						"role": "image-object"
+					},
+					"alt": {
+						"type": "string",
+						"default": "",
+						"description": "The picture's description for screen readers. Blank when the picture is decorative.",
+						"role": "image-alt"
+					},
+					"decorative": {
+						"type": "boolean",
+						"default": false,
+						"role": "boolean-visibility"
+					},
+					"fit": {
+						"type": "object",
+						"description": "How this item's picture fills its box per device. Empty uses the block's own fit.",
+						"role": "visual"
+					},
+					"focal": {
+						"type": "object",
+						"description": "The part of this item's picture kept in view when it is cropped, per device: {desktop:{x,y}} with x and y from 0 to 1.",
+						"role": "visual"
+					}
 				}
+			}
+		}
 			}
 		}
 	},

@@ -261,7 +261,11 @@ if ( ! function_exists( 'sgs_choice_flow_merge_option_extras' ) ) {
 			array(
 				'nextStepId'  => isset( $match['nextStepId'] ) ? (string) $match['nextStepId'] : '',
 				'tags'        => isset( $match['tags'] ) && is_array( $match['tags'] ) ? array_map( 'strval', $match['tags'] ) : array(),
-				'image'       => isset( $match['image'] ) && is_array( $match['image'] ) ? $match['image'] : array(),
+				'source'      => isset( $match['source'] ) && is_array( $match['source'] ) ? $match['source'] : array(),
+				'alt'         => isset( $match['alt'] ) ? (string) $match['alt'] : '',
+				'decorative'  => ! empty( $match['decorative'] ),
+				'fit'         => isset( $match['fit'] ) && is_array( $match['fit'] ) ? $match['fit'] : array(),
+				'focal'       => isset( $match['focal'] ) && is_array( $match['focal'] ) ? $match['focal'] : array(),
 				'helpText'    => isset( $match['helpText'] ) ? (string) $match['helpText'] : '',
 				'isDefault'   => ! empty( $match['isDefault'] ),
 				'badge'       => isset( $match['badge'] ) && '' !== $match['badge'] ? (string) $match['badge'] : (string) $term['badge'],

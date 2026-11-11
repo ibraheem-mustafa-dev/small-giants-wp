@@ -216,10 +216,25 @@
 	background-color: var( --wp--preset--color--surface-alt, #f1f0ec );
 }
 
+/* The picture is printed by the shared media renderer: an `.sgs-media-group` per option holding the `.sgs-media-el`
+   (Spec 49 §8.3). The group fills the band, so the picture takes the band's size as it did bare; a Width the client
+   sets is the renderer's own rule on the group and, with specificity 0 here, wins. */
+:where( .sgs-choice-flow-question__option-media ) > .sgs-media-group {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	margin-inline: auto;
+}
+
 .sgs-choice-flow-question__option-media img {
 	display: block;
 	width: 100%;
 	height: 100%;
+}
+
+.sgs-choice-flow-question__option-media .sgs-media-el {
 	object-fit: cover;
 }
 
@@ -374,13 +389,13 @@
    picture drawn at a share of the band's width, centred; a smaller one
    shows the band around it, a larger one is cropped by the band. The
    finish cards' frame photo (__option-photo) keeps filling the band. */
-.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media:has( > img ) {
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media:has( img ) {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
-.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media > img:not( .sgs-choice-flow-question__option-photo ) {
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media img:not( .sgs-choice-flow-question__option-photo ) {
 	flex: none;
 	width: var( --sgs-choice-flow-media-size, 100% );
 	max-width: none;
