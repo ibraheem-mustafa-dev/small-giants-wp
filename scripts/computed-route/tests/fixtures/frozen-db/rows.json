@@ -867,7 +867,6 @@
 	],
 	"property_equivalents": [
 		{"draft_property":"align-self","setting_property":"align-items","hop":"parent","condition":"every-child-same","note":"A child's own cross-axis alignment is its parent's Align items when every child of that parent asks the same.","created_at":"2026-10-26 20:04:31"},
-		{"draft_property":"height","setting_property":"max-height","hop":"self","condition":"intrinsic-ratio","note":"A declared height on an image, SVG or logo of intrinsic ratio is its maximum height when the box keeps that ratio at every width: the width follows the height, so a maximum of the rendered height paints the same box, per tier.","created_at":"2026-10-26 20:04:31"},
 		{"draft_property":"height","setting_property":"min-height","hop":"self","condition":"render-matches","note":"A declared height is the block's minimum height when the element renders at that height: its content fits, so the minimum paints the same box.","created_at":"2026-10-26 20:04:31"},
 		{"draft_property":"justify-self","setting_property":"justify-items","hop":"parent","condition":"every-child-same","note":"A grid child's own inline alignment is its parent's Justify items when every child of that parent asks the same.","created_at":"2026-10-26 20:04:31"}
 	]
