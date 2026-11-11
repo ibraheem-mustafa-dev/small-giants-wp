@@ -97,6 +97,9 @@ G1, G2 = "linear-gradient(90deg,#000,#fff)", "linear-gradient(0deg,#111,#222)"
 VIDEO = "http://x/v.mp4"
 case("hero split width: an old image with no width is pinned to its file's own width (the old image forced it on the grid column)", "sgs/hero",
      {"splitMediaImageUrl": U}, {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitWidth": {"desktop": "640px"}})
+case("hero motion: the saved split-image part moves to split-media (the renderer's part name)", "sgs/hero",
+     {"sgsMotion": {"v": 1, "elements": {"split-image": {"hover": {"state": {"values": {"restRotate": -8}}}}}}},
+     {"sgsMotion": {"v": 1, "elements": {"split-media": {"hover": {"state": {"values": {"restRotate": -8}}}}}}})
 case("negative: a hero already in the new shape is not pinned", "sgs/hero",
      {"splitSource": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}}}, None)
 case("hero split width: a video is not pinned", "sgs/hero", {"splitMediaType": "video", "splitMediaVideoUrl": "http://x/v.mp4"},
