@@ -1639,145 +1639,193 @@
                       "title": "",
                       "subtitle": "48 frames",
                       "link": "/shop/?brands=ray-ban",
-                      "media": {
-                        "id": 571,
-                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-ray-ban.jpg",
-                        "alt": "Ray-Ban",
-                        "type": "image"
+                      "source": {
+                        "desktop": {
+                          "kind": "image",
+                          "id": 571,
+                          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-ray-ban.jpg"
+                        }
                       },
-                      "objectFit": "scale-down"
+                      "alt": "Ray-Ban",
+                      "fit": {
+                        "desktop": "scale-down"
+                      }
                     },
                     {
                       "title": "",
                       "subtitle": "44 frames",
                       "link": "/shop/?brands=gucci",
-                      "media": {
-                        "id": 572,
-                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-gucci.jpg",
-                        "alt": "Gucci",
-                        "type": "image"
+                      "source": {
+                        "desktop": {
+                          "kind": "image",
+                          "id": 572,
+                          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-gucci.jpg"
+                        }
                       },
-                      "objectFit": "scale-down"
+                      "alt": "Gucci",
+                      "fit": {
+                        "desktop": "scale-down"
+                      }
                     },
                     {
                       "title": "",
                       "subtitle": "17 frames",
                       "link": "/shop/?brands=oakley",
-                      "media": {
-                        "id": 573,
-                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-oakley.jpg",
-                        "alt": "Oakley",
-                        "type": "image"
+                      "source": {
+                        "desktop": {
+                          "kind": "image",
+                          "id": 573,
+                          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-oakley.jpg"
+                        }
                       },
-                      "objectFit": "scale-down"
+                      "alt": "Oakley",
+                      "fit": {
+                        "desktop": "scale-down"
+                      }
                     },
                     {
                       "title": "",
                       "subtitle": "12 frames",
                       "link": "/shop/?brands=prada",
-                      "media": {
-                        "id": 574,
-                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-prada.jpg",
-                        "alt": "Prada",
-                        "type": "image"
+                      "source": {
+                        "desktop": {
+                          "kind": "image",
+                          "id": 574,
+                          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-prada.jpg"
+                        }
                       },
-                      "objectFit": "scale-down"
+                      "alt": "Prada",
+                      "fit": {
+                        "desktop": "scale-down"
+                      }
                     },
                     {
                       "title": "",
                       "subtitle": "11 frames",
                       "link": "/shop/?brands=versace",
-                      "media": {
-                        "id": 575,
-                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-versace.jpg",
-                        "alt": "Versace",
-                        "type": "image"
+                      "source": {
+                        "desktop": {
+                          "kind": "image",
+                          "id": 575,
+                          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-versace.jpg"
+                        }
                       },
-                      "objectFit": "scale-down"
+                      "alt": "Versace",
+                      "fit": {
+                        "desktop": "scale-down"
+                      }
                     },
                     {
                       "title": "",
                       "subtitle": "9 frames",
                       "link": "/shop/?brands=dolce-gabbana",
-                      "media": {
-                        "id": 576,
-                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-dolce-gabbana.jpg",
-                        "alt": "Dolce & Gabbana",
-                        "type": "image"
+                      "source": {
+                        "desktop": {
+                          "kind": "image",
+                          "id": 576,
+                          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-dolce-gabbana.jpg"
+                        }
                       },
-                      "objectFit": "scale-down"
+                      "alt": "Dolce & Gabbana",
+                      "fit": {
+                        "desktop": "scale-down"
+                      }
                     },
                     {
                       "title": "",
                       "subtitle": "7 frames",
                       "link": "/shop/?brands=balenciaga",
-                      "media": {
-                        "id": 577,
-                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-balenciaga.jpg",
-                        "alt": "Balenciaga",
-                        "type": "image"
+                      "source": {
+                        "desktop": {
+                          "kind": "image",
+                          "id": 577,
+                          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-balenciaga.jpg"
+                        }
                       },
-                      "objectFit": "scale-down"
+                      "alt": "Balenciaga",
+                      "fit": {
+                        "desktop": "scale-down"
+                      }
                     },
                     {
                       "title": "",
                       "subtitle": "18 frames",
                       "link": "/shop/?brands=michael-kors",
-                      "media": {
-                        "id": 578,
-                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-michael-kors.jpg",
-                        "alt": "Michael Kors",
-                        "type": "image"
+                      "source": {
+                        "desktop": {
+                          "kind": "image",
+                          "id": 578,
+                          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-michael-kors.jpg"
+                        }
                       },
-                      "objectFit": "scale-down"
+                      "alt": "Michael Kors",
+                      "fit": {
+                        "desktop": "scale-down"
+                      }
                     },
                     {
                       "title": "",
                       "subtitle": "12 frames",
                       "link": "/shop/?brands=polaroid",
-                      "media": {
-                        "id": 579,
-                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-polaroid.jpg",
-                        "alt": "Polaroid",
-                        "type": "image"
+                      "source": {
+                        "desktop": {
+                          "kind": "image",
+                          "id": 579,
+                          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-polaroid.jpg"
+                        }
                       },
-                      "objectFit": "scale-down"
+                      "alt": "Polaroid",
+                      "fit": {
+                        "desktop": "scale-down"
+                      }
                     },
                     {
                       "title": "",
                       "subtitle": "10 frames",
                       "link": "/shop/?brands=police",
-                      "media": {
-                        "id": 580,
-                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-police.jpg",
-                        "alt": "Police",
-                        "type": "image"
+                      "source": {
+                        "desktop": {
+                          "kind": "image",
+                          "id": 580,
+                          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-police.jpg"
+                        }
                       },
-                      "objectFit": "scale-down"
+                      "alt": "Police",
+                      "fit": {
+                        "desktop": "scale-down"
+                      }
                     },
                     {
                       "title": "",
                       "subtitle": "9 frames",
                       "link": "/shop/?brands=carrera",
-                      "media": {
-                        "id": 581,
-                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-carrera.jpg",
-                        "alt": "Carrera",
-                        "type": "image"
+                      "source": {
+                        "desktop": {
+                          "kind": "image",
+                          "id": 581,
+                          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-carrera.jpg"
+                        }
                       },
-                      "objectFit": "scale-down"
+                      "alt": "Carrera",
+                      "fit": {
+                        "desktop": "scale-down"
+                      }
                     },
                     {
                       "title": "Ferrari Scuderia",
                       "subtitle": "6 frames",
                       "link": "/shop/?brands=ferrari-scuderia",
-                      "media": {
-                        "id": 625,
-                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/brand-logo-ferrari-scuderia.svg",
-                        "alt": "Ferrari Scuderia",
-                        "type": "image"
+                      "source": {
+                        "desktop": {
+                          "kind": "image",
+                          "id": 625,
+                          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/brand-logo-ferrari-scuderia.svg"
+                        }
                       },
-                      "objectFit": "scale-down"
+                      "alt": "Ferrari Scuderia",
+                      "fit": {
+                        "desktop": "scale-down"
+                      }
                     }
                   ]
                 }
