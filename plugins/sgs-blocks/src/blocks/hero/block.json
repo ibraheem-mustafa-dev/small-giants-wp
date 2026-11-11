@@ -44,22 +44,20 @@
 			"mediaElements": [
 				{
 					"prefix": "split",
-					"context": "element",
-					"atoms": [
-						"media-type"
+					"context": "content",
+					"kinds": [
+						"image",
+						"video",
+						"svg"
 					]
 				},
 				{
-					"prefix": "splitMedia",
-					"context": "element",
-					"atoms": [
-						"source",
-						"object-fit",
-						"focal-point",
-						"box-shape",
-						"media-padding",
-						"overlay",
-						"shadow"
+					"prefix": "background",
+					"context": "background",
+					"kinds": [
+						"image",
+						"video",
+						"svg"
 					]
 				}
 			],
@@ -928,16 +926,6 @@
 			"type": "string",
 			"default": "center center"
 		},
-		"backgroundRepeat": {
-			"type": "string",
-			"default": "no-repeat",
-			"enum": [
-				"no-repeat",
-				"repeat",
-				"repeat-x",
-				"repeat-y"
-			]
-		},
 		"backgroundSize": {
 			"type": "string",
 			"default": "cover",
@@ -1400,7 +1388,77 @@
 		"contentGap": {
 			"type": "object",
 			"description": "Space between the stacked items of the content column (eyebrow, heading, text, buttons) per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Unset prints no gap."
-		}
+		},
+		"splitSource": {"type":"object","_generated":"media-atoms"},
+		"splitLoading": {"type":"string","_generated":"media-atoms"},
+		"splitAlt": {"type":"string","_generated":"media-atoms"},
+		"splitDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"splitFit": {"type":"object","_generated":"media-atoms"},
+		"splitRepeat": {"type":"object","_generated":"media-atoms"},
+		"splitTileSize": {"type":"object","_generated":"media-atoms"},
+		"splitFocal": {"type":"object","_generated":"media-atoms"},
+		"splitPinned": {"type":"boolean","_generated":"media-atoms"},
+		"splitPadding": {"type":"object","_generated":"media-atoms"},
+		"splitBackground": {"type":"string","_generated":"media-atoms"},
+		"splitOverlayColour": {"type":"string","_generated":"media-atoms"},
+		"splitOverlayColourHover": {"type":"string","_generated":"media-atoms"},
+		"splitOverlayGradient": {"type":"string","_generated":"media-atoms"},
+		"splitOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
+		"splitOverlayOpacity": {"type":"object","_generated":"media-atoms"},
+		"splitOverlayBlend": {"type":"string","_generated":"media-atoms"},
+		"splitOpacity": {"type":"object","_generated":"media-atoms"},
+		"splitBlend": {"type":"string","_generated":"media-atoms"},
+		"splitBoxShadow": {"type":"string","_generated":"media-atoms"},
+		"splitBoxShadowColour": {"type":"string","_generated":"media-atoms"},
+		"splitBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
+		"splitSvgLayer": {"type":"string","_generated":"media-atoms"},
+		"splitSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
+		"splitSvgParts": {"type":"array","default":[],"_generated":"media-atoms"},
+		"splitSvgPartsTrigger": {"type":"string","_generated":"media-atoms"},
+		"splitPlayback": {"type":"object","_generated":"media-atoms"},
+		"splitCaptions": {"type":"object","_generated":"media-atoms"},
+		"splitCaption": {"type":"string","_generated":"media-atoms"},
+		"splitCaptionTag": {"type":"string","_generated":"media-atoms"},
+		"splitLinkUrl": {"type":"string","_generated":"media-atoms"},
+		"splitLinkOpensNewTab": {"type":"boolean","_generated":"media-atoms"},
+		"splitLinkRel": {"type":"string","_generated":"media-atoms"},
+		"splitLinkUrlSource": {"type":"string","_generated":"media-atoms"},
+		"splitRatio": {"type":"object","_generated":"media-atoms"},
+		"splitWidth": {"type":"object","_generated":"media-atoms"},
+		"splitHeight": {"type":"object","_generated":"media-atoms"},
+		"splitMinWidth": {"type":"object","_generated":"media-atoms"},
+		"splitMaxWidth": {"type":"object","_generated":"media-atoms"},
+		"splitMinHeight": {"type":"object","_generated":"media-atoms"},
+		"splitMaxHeight": {"type":"object","_generated":"media-atoms"},
+		"splitShape": {"type":"object","_generated":"media-atoms"},
+		"splitRadius": {"type":"object","_generated":"media-atoms"},
+		"splitBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"splitBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"splitBorderColour": {"type":"string","_generated":"media-atoms"},
+		"splitBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"splitColour": {"type":"object","_generated":"media-atoms"},
+		"splitGreyscale": {"type":"number","_generated":"media-atoms"},
+		"splitAlignment": {"type":"object","_generated":"media-atoms"},
+		"splitOrder": {"type":"object","_generated":"media-atoms"},
+		"backgroundSource": {"type":"object","_generated":"media-atoms"},
+		"backgroundLoading": {"type":"string","_generated":"media-atoms"},
+		"backgroundAlt": {"type":"string","_generated":"media-atoms"},
+		"backgroundDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundFit": {"type":"object","_generated":"media-atoms"},
+		"backgroundRepeat": {"type":"object","_generated":"media-atoms"},
+		"backgroundTileSize": {"type":"object","_generated":"media-atoms"},
+		"backgroundFocal": {"type":"object","_generated":"media-atoms"},
+		"backgroundPinned": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundOverlayGradient": {"type":"string","_generated":"media-atoms"},
+		"backgroundOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
+		"backgroundOverlayBlend": {"type":"string","_generated":"media-atoms"},
+		"backgroundOpacity": {"type":"object","_generated":"media-atoms"},
+		"backgroundSvgLayer": {"type":"string","_generated":"media-atoms"},
+		"backgroundSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundSvgParts": {"type":"array","default":[],"_generated":"media-atoms"},
+		"backgroundSvgPartsTrigger": {"type":"string","_generated":"media-atoms"},
+		"backgroundPlayback": {"type":"object","_generated":"media-atoms"},
+		"backgroundCaptions": {"type":"object","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
