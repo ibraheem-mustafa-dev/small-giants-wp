@@ -27,15 +27,19 @@
 		},
 		"sgs": {
 			"motion": true,
-			"imageControls": true,
-			"imageControlsExplicit": true,
-			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03, CORRECTED same day via /qc-council). NOT a new client control: prefix 'sgs' resolves (sgs_media_element_attr) to the SAME 'sgsObjectFit' attribute imageControlsExplicit's legacy image-controls extension already injects and already exposes an 'Object fit' dropdown for -- the original unprefixed entry here created a SECOND, dead 'Object fit' dropdown (QC-council finding: two identically-labelled controls in the same inspector) and, worse, left the legacy sgs_media_position_css() call in render.php free to emit a literal object-fit declaration from any PRE-EXISTING sgsObjectFit value on the SAME selector the atom now paints -- a live double-emission risk for any team-member instance saved before this fix, not just a cosmetic duplicate. render.php now clears sgsObjectFit before that call (mirrors sgs/gallery's identical fix) so only object-position emits from the legacy path, and the atom owns object-fit exclusively via this SAME attribute. style.css's hardcoded object-fit:cover was removed; the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` atom stylesheet paints the identical default.",
 			"mediaElements": [
 				{
-					"prefix": "sgs",
-					"context": "element",
+					"prefix": "photo",
+					"context": "content",
+					"kinds": [
+						"image"
+					],
 					"atoms": [
-						"object-fit"
+						"source",
+						"meaning",
+						"object-fit",
+						"focal-point",
+						"shape"
 					]
 				}
 			],
@@ -270,14 +274,15 @@
 				"desktop": {}
 			}
 		},
-		"photo": {
-			"type": "object"
+		"photoShape": {
+			"type": "object",
+			"default": { "desktop": { "shape": "circle" } },
+			"description": "The photo's shape (Spec 49 shape setting). The default is a circle."
 		},
-		"photoTablet": {
-			"type": "object"
-		},
-		"photoMobile": {
-			"type": "object"
+		"photoRatio": {
+			"type": "object",
+			"default": { "desktop": "1 / 1" },
+			"description": "The photo's aspect ratio. The default is square, so a circle stays round."
 		},
 		"photoDecorative": {
 			"type": "boolean",
@@ -394,10 +399,6 @@
 		"displayMode": {
 			"type": "string",
 			"default": "full"
-		},
-		"photoShape": {
-			"type": "string",
-			"default": "circle"
 		},
 		"scaleHover": {
 			"type": "string",
@@ -918,7 +919,20 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"photoSource": {"type":"object","_generated":"media-atoms"},
+		"photoLoading": {"type":"string","_generated":"media-atoms"},
+		"photoAlt": {"type":"string","_generated":"media-atoms"},
+		"photoFit": {"type":"object","_generated":"media-atoms"},
+		"photoRepeat": {"type":"object","_generated":"media-atoms"},
+		"photoTileSize": {"type":"object","_generated":"media-atoms"},
+		"photoFocal": {"type":"object","_generated":"media-atoms"},
+		"photoPinned": {"type":"boolean","_generated":"media-atoms"},
+		"photoRadius": {"type":"object","_generated":"media-atoms"},
+		"photoBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"photoBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"photoBorderColour": {"type":"string","_generated":"media-atoms"},
+		"photoBorderColourHover": {"type":"string","_generated":"media-atoms"}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
@@ -930,7 +944,7 @@
 			"name": "Jordan Taylor",
 			"role": "Team Lead",
 			"bio": "A brief supporting statement that explains your value proposition.",
-			"photoShape": "circle",
+			"photoShape": { "desktop": { "shape": "circle" } },
 			"cardStyle": "elevated"
 		}
 	}

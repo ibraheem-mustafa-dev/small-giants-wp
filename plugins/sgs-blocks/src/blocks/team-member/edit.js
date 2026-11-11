@@ -39,8 +39,12 @@ import {
 	RangeControl,
 	Button,
 } from '@wordpress/components';
-import { FlexWrapControl, ResponsiveBoxControl, ResponsiveControl, ShadowControl, shadowAttrKeys, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import MediaPicker from '../../components/MediaPicker';
+import { FlexWrapControl, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import MediaElementPanel from '../../components/MediaElementPanel';
+import SlotPicture from '../../components/media/SlotPicture';
+import metadata from './block.json';
+
+const PHOTO_ENTRY = metadata.supports.sgs.mediaElements.find( ( e ) => 'photo' === e.prefix );
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { usePreviewTier, typographyPreviewStyle } from '../../utils';
@@ -54,12 +58,6 @@ const CARD_STYLES = [
 	{ label: __( 'Bordered', 'sgs-blocks' ), value: 'bordered' },
 	{ label: __( 'Elevated', 'sgs-blocks' ), value: 'elevated' },
 	{ label: __( 'Filled', 'sgs-blocks' ), value: 'filled' },
-];
-
-const PHOTO_SHAPES = [
-	{ label: __( 'Circle', 'sgs-blocks' ), value: 'circle' },
-	{ label: __( 'Rounded', 'sgs-blocks' ), value: 'rounded' },
-	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
 ];
 
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
@@ -166,15 +164,10 @@ function SocialLinkItemEditor( { item, index, onChange, onRemove } ) {
 	);
 }
 
-export default function Edit( { attributes, setAttributes, name: blockName } ) {
+export default function Edit( { attributes, setAttributes, name: blockName, clientId } ) {
 	const previewTier = usePreviewTier();
 	const [ colourPalette ] = useSettings( 'color.palette' );
 	const {
-		photo,
-		// photoTablet / photoMobile are deliberately NOT destructured — the
-		// responsive family is read through `photoForTier()` off `attributes`
-		// so the tier map stays the single source of truth for which attr
-		// belongs to which device.
 		name,
 		headingLevel,
 		role,
@@ -187,7 +180,6 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 		backgroundColourGradient,
 		cardStyle,
 		photoShape,
-		photoDecorative,
 		overlayHover,
 		cardShadow,
 		cardShadowColour,
@@ -225,28 +217,9 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 	// placement), not a style control; mirrors render.php's own fallback.
 	const HeadingTag = headingLevel || 'h3';
 
-	const activeMedia = photo && photo.url ? photo : null;
-
-	const handleMediaChange = ( media ) => {
-		setAttributes( { photo: media || null } );
-	};
-
-	// Responsive photo family — one attr per device tier. The base (unsuffixed)
-	// attr IS the desktop value, matching the framework convention.
-	const photoTierAttr = {
-		desktop: 'photo',
-		tablet: 'photoTablet',
-		mobile: 'photoMobile',
-	};
-
-	const photoForTier = ( breakpoint ) => {
-		const value = attributes[ photoTierAttr[ breakpoint ] ];
-		return value && value.url ? value : null;
-	};
-
-	const setPhotoForTier = ( breakpoint, media ) => {
-		setAttributes( { [ photoTierAttr[ breakpoint ] ]: media || null } );
-	};
+	const photoUid = 'sgs-team-member-' + clientId.slice( 0, 8 );
+	// The wrapper clips the bio overlay to the photo's outline: a circle is the one shape it follows.
+	const photoOutline = 'circle' === ( ( photoShape || { desktop: { shape: 'circle' } } ).desktop?.shape ?? '' ) ? 'circle' : 'none';
 
 	// Social links repeater helpers — mirror trust-bar pattern.
 	const updateSocialLink = ( index, updated ) => {
@@ -366,6 +339,16 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 					},
 				] }
 			/>
+			<MediaElementPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/team-member"
+				blockSlug="sgs/team-member"
+				prefix="photo"
+				atoms={ PHOTO_ENTRY.atoms }
+				kinds={ PHOTO_ENTRY.kinds }
+				context={ PHOTO_ENTRY.context }
+			/>
 			<InspectorControls>
 				{ /* S7 pilot (2026-09-02, uniformity sweep): converted from a plain
 				   PanelBody to a ToolsPanel — the four SelectControls are core
@@ -382,7 +365,6 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 							headingLevel: 'h3',
 							displayMode: 'full',
 							cardStyle: 'elevated',
-							photoShape: 'circle',
 							overlayHover: false,
 							cardShadow: '',
 							cardShadowColour: null,
@@ -444,21 +426,6 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 							value={ cardStyle }
 							options={ CARD_STYLES }
 							onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Photo shape', 'sgs-blocks' ) }
-						hasValue={ () => photoShape !== 'circle' }
-						onDeselect={ () => setAttributes( { photoShape: 'circle' } ) }
-						isShownByDefault
-					>
-						<SelectControl
-							label={ __( 'Photo shape', 'sgs-blocks' ) }
-							value={ photoShape }
-							options={ PHOTO_SHAPES }
-							onChange={ ( val ) => setAttributes( { photoShape: val } ) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -562,38 +529,6 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
-
-				<PanelBody title={ __( 'Photo', 'sgs-blocks' ) } initialOpen={ false }>
-					<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
-						{ __( 'Optional — set a different photo per device. Leave a tier blank to inherit the one above it.', 'sgs-blocks' ) }
-					</p>
-					<ResponsiveControl label={ __( 'Photo', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
-							<MediaPicker
-								value={ photoForTier( breakpoint ) }
-								onChange={ ( media ) => setPhotoForTier( breakpoint, media ) }
-								onRemove={ () => setPhotoForTier( breakpoint, null ) }
-								allowedTypes={ [ 'image' ] }
-								label={ __( 'Select photo', 'sgs-blocks' ) }
-								instructionsImage={ __( 'Choose a photo for this device size', 'sgs-blocks' ) }
-							/>
-						) }
-					</ResponsiveControl>
-					<ToggleControl
-						label={ __( 'Decorative photo', 'sgs-blocks' ) }
-						help={ __( 'Only use this for a purely decorative graphic, such as a placeholder silhouette before a real photo is uploaded. Most photos identify the person and should keep their alt text.', 'sgs-blocks' ) }
-						checked={ !! photoDecorative }
-						onChange={ ( val ) => setAttributes( { photoDecorative: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					{ /* 37-media-no-handroll remediation (2026-09-03, CORRECTED via
-					     /qc-council same day): NO new control here. The photo's crop
-					     mode is bridged onto the pre-existing 'Object fit' dropdown
-					     the legacy image-controls extension already renders (writes
-					     sgsObjectFit) — mounting a second MediaElementPanel gave the
-					     client two identically-labelled controls. See block.json's
-					     _comment_mediaElements for the full correction. */ }
-				</PanelBody>
 
 				{ ! isCompact && (
 					<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) } initialOpen={ false }>
@@ -791,14 +726,17 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<div className={ `sgs-team-member__photo sgs-team-member__photo--${ photoShape }` }>
-					<MediaPicker
-						value={ activeMedia }
-						onChange={ handleMediaChange }
-						onRemove={ () => setAttributes( { photo: null } ) }
-						allowedTypes={ [ 'image' ] }
-						label={ __( 'Select photo', 'sgs-blocks' ) }
-						instructionsImage={ __( 'Choose a headshot photo for this team member', 'sgs-blocks' ) }
+				<div className={ `sgs-team-member__photo sgs-team-member__photo--${ photoOutline } ${ photoUid }` }>
+					<SlotPicture
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="photo"
+						kinds={ PHOTO_ENTRY.kinds }
+						context={ PHOTO_ENTRY.context }
+						uid={ photoUid }
+						fallbackAlt={ name }
+						title={ __( 'Photo', 'sgs-blocks' ) }
+						instructions={ __( 'Choose a headshot photo for this team member', 'sgs-blocks' ) }
 					/>
 				</div>
 				<RichText

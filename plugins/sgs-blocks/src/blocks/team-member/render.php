@@ -61,27 +61,26 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // ---------------------------------------------------------------------------
-// 1. Media / photo — single `photo` attr plus responsive tiers photoTablet/
-// photoMobile. PHP renders once for every device, so the tablet/mobile
-// overrides are expressed as <picture><source media> alternates below
-// (step 7) — the exact pattern already proven live on sgs/responsive-logo —
-// rather than picked server-side.
+// 1. Photo: one media slot (`photo`, Spec 49 §7). `SGS_Media_Element::render()` prints the picture for every device
+// (the responsive `photoSource` object carries the tablet and mobile files) and the scoped rules for Fit, Focal point,
+// Shape, Radius and Ratio. The wrapper below stays the block's own: it sizes the photo and clips the bio overlay.
 // ---------------------------------------------------------------------------
-$photo        = $attributes['photo'] ?? null;
-$photo_tablet = $attributes['photoTablet'] ?? null;
-$photo_mobile = $attributes['photoMobile'] ?? null;
+$photo_source = is_array( $attributes['photoSource'] ?? null ) ? $attributes['photoSource'] : array();
 
-// Decorative photo (WCAG 2.1 AA 1.1.1) — an explicit editorial "this picture
-// carries no information", for the edge case of a placeholder/silhouette
-// graphic before a real photo is uploaded. A team photo is almost always
-// informative content (it identifies the person), so this defaults false;
-// when true it renders with an empty alt AND aria-hidden on the photo
-// wrapper, so a screen reader skips it entirely. Same shape as
-// sgs/timeline's milestoneMediaDecorative (render.php:152).
+// Decorative photo (WCAG 2.1 AA 1.1.1): an explicit editorial "this picture carries no information", for a placeholder
+// or silhouette graphic before a real photo is uploaded. A team photo normally identifies the person, so this defaults
+// false; when true it renders with an empty alt AND aria-hidden on the photo wrapper.
 $photo_decorative = ! empty( $attributes['photoDecorative'] );
 
-// Schema.org needs a plain image URL (desktop tier only).
-$schema_image_url = ! empty( $photo['url'] ) ? $photo['url'] : '';
+// Schema.org needs a plain image URL: the first device that has one.
+$schema_image_url = '';
+foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_tm_device ) {
+	$sgs_tm_entry = $photo_source[ $sgs_tm_device ] ?? null;
+	if ( is_array( $sgs_tm_entry ) && 'image' === ( $sgs_tm_entry['kind'] ?? 'image' ) && ! empty( $sgs_tm_entry['url'] ) && is_string( $sgs_tm_entry['url'] ) ) {
+		$schema_image_url = $sgs_tm_entry['url'];
+		break;
+	}
+}
 
 // ---------------------------------------------------------------------------
 // 2. Box-object interface contract §1 + security §D sanitisers (copied from
@@ -121,7 +120,9 @@ $name_colour_gradient   = $attributes['nameColourGradient'] ?? '';
 $role_colour            = $attributes['roleColour'] ?? 'text-muted';
 $role_colour_gradient   = $attributes['roleColourGradient'] ?? '';
 $card_style             = $attributes['cardStyle'] ?? 'elevated';
-$photo_shape            = $attributes['photoShape'] ?? 'circle';
+$photo_shape_attr       = is_array( $attributes['photoShape'] ?? null ) ? $attributes['photoShape'] : array( 'desktop' => array( 'shape' => 'circle' ) );
+// The wrapper clips the bio overlay to the photo's outline: a circle is the one shape it can follow.
+$photo_shape            = 'circle' === ( $photo_shape_attr['desktop']['shape'] ?? '' ) ? 'circle' : 'none';
 $hover_scale            = $attributes['scaleHover'] ?? '';
 $hover_shadow           = $attributes['cardShadowHover'] ?? '';
 $hover_shadow_colour    = $attributes['cardShadowColourHover'] ?? '';
@@ -239,70 +240,9 @@ if ( '' !== $card_shadow ) {
 }
 
 // ---------------------------------------------------------------------------
-// 7. Photo HTML.
+// 7. Photo HTML is built at step 12, once the scope class exists.
 // ---------------------------------------------------------------------------
 $photo_html = '';
-$photo_img  = '';
-if ( ! empty( $photo['url'] ) ) {
-	$media_for_render = $photo;
-	if ( $photo_decorative ) {
-		$media_for_render['alt'] = '';
-	} elseif ( empty( $media_for_render['alt'] ) ) {
-		$media_for_render['alt'] = $name;
-	}
-	$photo_base_img = sgs_render_media( $media_for_render, 'sgs/team-member' );
-
-	// Responsive tiers — PHP renders once for every device, so tablet/mobile
-	// overrides are expressed as <picture><source media> alternates (same
-	// pattern as sgs/responsive-logo render.php): the browser picks the first
-	// matching <source>, falling through to the base desktop <img> when no
-	// tier override is set. Order matters — narrowest breakpoint first.
-	$photo_tablet_url = ! empty( $photo_tablet['url'] ) ? $photo_tablet['url'] : '';
-	$photo_mobile_url = ! empty( $photo_mobile['url'] ) ? $photo_mobile['url'] : '';
-
-	if ( '' !== $photo_tablet_url || '' !== $photo_mobile_url ) {
-		$photo_sources = '';
-		if ( '' !== $photo_mobile_url ) {
-			$photo_sources .= sprintf( '<source media="' . SGS_Breakpoints::query( 'mobile' ) . '" srcset="%s">', esc_url( $photo_mobile_url ) );
-		}
-		if ( '' !== $photo_tablet_url ) {
-			$photo_sources .= sprintf( '<source media="' . SGS_Breakpoints::query( 'tablet' ) . '" srcset="%s">', esc_url( $photo_tablet_url ) );
-		}
-		$photo_img = '<picture class="sgs-team-member__photo-picture">' . $photo_sources . $photo_base_img . '</picture>';
-	} else {
-		$photo_img = $photo_base_img;
-	}
-}
-
-if ( '' !== $photo_img ) {
-	if ( $hover_overlay && ! $is_compact ) {
-		if ( $photo_decorative ) {
-			// Decorative + overlay: drop role="img"/aria-label (nothing left to
-			// name) and hide the whole photo wrapper from assistive tech instead.
-			$photo_html = sprintf(
-				'<div class="sgs-team-member__photo sgs-team-member__photo--%s sgs-team-member__photo--has-overlay" aria-hidden="true">%s<div class="sgs-team-member__overlay" aria-hidden="true"><div class="sgs-team-member__overlay-bio">%s</div></div></div>',
-				esc_attr( $photo_shape ),
-				$photo_img,
-				sgs_rich_text_kses( $bio, true, 'body' )
-			);
-		} else {
-			$photo_html = sprintf(
-				'<div class="sgs-team-member__photo sgs-team-member__photo--%s sgs-team-member__photo--has-overlay" tabindex="0" role="img" aria-label="%s">%s<div class="sgs-team-member__overlay" aria-hidden="true"><div class="sgs-team-member__overlay-bio">%s</div></div></div>',
-				esc_attr( $photo_shape ),
-				esc_attr( $name ),
-				$photo_img,
-				sgs_rich_text_kses( $bio, true, 'body' )
-			);
-		}
-	} else {
-		$photo_html = sprintf(
-			'<div class="sgs-team-member__photo sgs-team-member__photo--%s"%s>%s</div>',
-			esc_attr( $photo_shape ),
-			$photo_decorative ? ' aria-hidden="true"' : '',
-			$photo_img
-		);
-	}
-}
 
 // ---------------------------------------------------------------------------
 // 8. Name / role / bio HTML. NO inline style any more (contract §A) — the
@@ -646,51 +586,58 @@ if ( '' !== ( $attributes['roleColourHover'] ?? '' ) ) {
 	$scoped_css[] = sgs_hover_state_rules( "{$role_colour_sel}", "color:" . sgs_colour_value( $attributes['roleColourHover'] ), ':focus-visible' );
 }
 
-// --- Photo object-position (Spec 35 capability-routing doctrine mechanism
-// (c), Part 9) — explicit call to the shared helper with this block's OWN
-// known selector, since supports.sgs.imageControlsExplicit=true opts this
-// block out of the guessing render_block filter (includes/image-controls.php).
-// Returns '' when unset.
-// ⛔ object-fit is CLEARED from this call (37-media-no-handroll fix,
-// CORRECTED 2026-09-03 via /qc-council — mirrors sgs/gallery's identical
-// fix): sgsObjectFit is now owned exclusively by the media-atom layer below,
-// which reads the SAME attribute (bridged via mediaElements prefix "sgs").
-// Without this clear, any team-member instance saved BEFORE this fix with a
-// real sgsObjectFit value would have this call emit a literal
-// `object-fit:<value>;` on the identical selector the atom also paints,
-// silently overriding the atom's CSS-custom-property rule for existing
-// content — a live double-emission bug, not just a duplicate control. ---
-$photo_position_css = sgs_media_position_css(
-	array_merge( $attributes, array( 'sgsObjectFit' => '' ) ),
-	'sgs',
-	$root_sel . ' .sgs-team-member__photo img'
-);
-if ( '' !== $photo_position_css ) {
-	$scoped_css[] = $photo_position_css;
-}
-
-// --- Photo object-fit (37-media-no-handroll remediation, 2026-09-03,
-// CORRECTED same day via /qc-council) — the crop MODE is bridged onto the
-// SAME pre-existing sgsObjectFit attribute the legacy image-controls
-// extension already exposes an 'Object fit' dropdown for (block.json
-// supports.sgs.mediaElements, prefix "sgs") — NOT a new attribute, so no
-// second control was added. style.css no longer hardcodes object-fit:cover;
-// the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}`
-// atom stylesheet paints the identical default. sgs_render_media() (called
-// at step 7 to build $photo_base_img, folded into $photo_html) takes no
-// class argument, so the marker classes (`sgs-media-el` + the per-instance
-// scope class) are injected into the already-built $photo_html string here,
-// once $uid exists — same closure-not-top-level-function shape as
-// sgs/testimonial's $sgs_media_el_classes (render.php, same date;
-// feedback_no_top_level_function_in_per_render_php.md).
-if ( '' !== $photo_html && class_exists( 'SGS_Media_Element' ) ) {
-	$sgs_tm_scope_class = SGS_Media_Element::scope_class( $uid, 'sgs' );
-	$sgs_tm_marker_cls  = implode( ' ', SGS_Media_Element::element_classes( $sgs_tm_scope_class ) );
-	$photo_html         = preg_replace( '/class="sgs-media /', 'class="' . $sgs_tm_marker_cls . ' sgs-media ', $photo_html, 1 );
-
-	$sgs_tm_fit_css = SGS_Media_Element::style( $attributes, 'sgs', 'sgs/team-member', $uid, array( 'object-fit' ) );
-	if ( '' !== $sgs_tm_fit_css ) {
-		$scoped_css[] = $sgs_tm_fit_css;
+// --- Photo: the shared media renderer prints the picture and its scoped rules; the wrapper keeps the block's own
+// size, the circle clip and the bio overlay. ---
+if ( class_exists( 'SGS_Media_Element' ) && array() !== array_filter( $photo_source ) ) {
+	$sgs_tm_slot  = array(
+		'prefix'  => 'photo',
+		'kinds'   => array( 'image' ),
+		'context' => 'content',
+	);
+	$sgs_tm_attrs = $attributes;
+	if ( '' === trim( (string) ( $attributes['photoAlt'] ?? '' ) ) ) {
+		$sgs_tm_attrs['photoAlt'] = (string) $name;
+	}
+	$sgs_tm_out = SGS_Media_Element::render(
+		$sgs_tm_slot,
+		$sgs_tm_attrs,
+		array(
+			'uid'       => $uid,
+			'block'     => 'sgs/team-member',
+			'in_editor' => defined( 'REST_REQUEST' ) && REST_REQUEST,
+		)
+	);
+	if ( '' !== $sgs_tm_out['html'] ) {
+		if ( '' !== $sgs_tm_out['css'] ) {
+			$scoped_css[] = $sgs_tm_out['css'];
+		}
+		$photo_img = $sgs_tm_out['html'];
+		if ( $hover_overlay && ! $is_compact ) {
+			if ( $photo_decorative ) {
+				// Decorative + overlay: nothing left to name, so hide the whole photo wrapper from assistive tech.
+				$photo_html = sprintf(
+					'<div class="sgs-team-member__photo sgs-team-member__photo--%s sgs-team-member__photo--has-overlay" aria-hidden="true">%s<div class="sgs-team-member__overlay" aria-hidden="true"><div class="sgs-team-member__overlay-bio">%s</div></div></div>',
+					esc_attr( $photo_shape ),
+					$photo_img,
+					sgs_rich_text_kses( $bio, true, 'body' )
+				);
+			} else {
+				$photo_html = sprintf(
+					'<div class="sgs-team-member__photo sgs-team-member__photo--%s sgs-team-member__photo--has-overlay" tabindex="0" role="img" aria-label="%s">%s<div class="sgs-team-member__overlay" aria-hidden="true"><div class="sgs-team-member__overlay-bio">%s</div></div></div>',
+					esc_attr( $photo_shape ),
+					esc_attr( $name ),
+					$photo_img,
+					sgs_rich_text_kses( $bio, true, 'body' )
+				);
+			}
+		} else {
+			$photo_html = sprintf(
+				'<div class="sgs-team-member__photo sgs-team-member__photo--%s"%s>%s</div>',
+				esc_attr( $photo_shape ),
+				$photo_decorative ? ' aria-hidden="true"' : '',
+				$photo_img
+			);
+		}
 	}
 }
 
