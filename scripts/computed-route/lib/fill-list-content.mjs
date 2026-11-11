@@ -17,6 +17,7 @@ import { loadAjv, schemaProblems } from './handoff.mjs';
 import { setAttr } from './tree.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { draftPath, mapEntries, stockEntries } from './fill-media.mjs';
+import { itemSource } from './media/write.mjs';
 import { stockKey } from './media-stock.mjs';
 import { normaliseHref } from './fill-presence.mjs';
 import { templateKeyOf, parseTemplateKey } from './fact-key.mjs';
@@ -47,6 +48,8 @@ export const wordsOf = ( name ) => String( name ).split( '.' ).pop().replace( /(
 // Every role a name's words name, in priority order: a field may take each; a key's first is its primary role.
 export const fieldRoles = ( name ) => ITEM_ROLES.filter( ( [ , words ] ) => wordsOf( name ).some( ( w ) => words.has( w ) ) ).map( ( [ r ] ) => r );
 export const keyRole = ( name ) => fieldRoles( name )[ 0 ] ?? null;
+// The roles an item key plays: a key the block declares as a picture (role `image-object`, a slot's `source`) is the image key whatever its name; any other takes the roles its words name.
+export const keyRoles = ( k ) => ( 'image-object' === k.role ? [ 'image' ] : fieldRoles( k.key ) );
 
 // Each draft field's item key: { map: { field: key }, unmatched: [field] }. fields: [{ name, image }]; keys: [{ key }].
 // A field takes the key of its own name first. Otherwise, for each role the field plays in order, it takes an open key whose
@@ -68,8 +71,8 @@ export function matchFields( fields, keys ) {
 	for ( const f of fields.filter( ( x ) => ! ( x.name in map ) ) ) {
 		for ( const role of f.image ? [ 'image' ] : fieldRoles( f.name ) ) {
 			const free = keys.filter( ( k ) => ! used.has( k.key ) );
-			const primary = free.filter( ( k ) => keyRole( k.key ) === role );
-			const open = primary.length ? primary : free.filter( ( k ) => fieldRoles( k.key ).includes( role ) );
+			const primary = free.filter( ( k ) => keyRoles( k )[ 0 ] === role );
+			const open = primary.length ? primary : free.filter( ( k ) => keyRoles( k ).includes( role ) );
 			if ( open.length ) {
 				take( f, pick( f, open ) );
 				break;
@@ -91,7 +94,7 @@ export function listTarget( db, block, schemaOf ) {
 		const def = ( schemaOf( block ) || {} )[ attr ] || {};
 		const props = def.items?.properties;
 		const first = Array.isArray( def.default ) && def.default[ 0 ] && 'object' === typeof def.default[ 0 ] ? def.default[ 0 ] : {};
-		const keys = props ? Object.entries( props ).map( ( [ key, p ] ) => ( { key, type: one( p.type ) } ) ) : Object.entries( first ).map( ( [ key, v ] ) => ( { key, type: typeOf( v ) } ) );
+		const keys = props ? Object.entries( props ).map( ( [ key, p ] ) => ( { key, type: one( p.type ), role: p.role ?? null } ) ) : Object.entries( first ).map( ( [ key, v ] ) => ( { key, type: typeOf( v ) } ) );
 		return { kind: 'attr', attr, keys: keys.map( ( k ) => ( { ...k, html: /^<p>[\s\S]*<\/p>$/.test( String( first[ k.key ] ?? '' ) ) } ) ) };
 	}
 	const row = db.prepare( 'SELECT accepts_allowed_blocks FROM block_composition WHERE block_slug = ?' ).get( block );
@@ -105,8 +108,8 @@ export function listTarget( db, block, schemaOf ) {
 		return null;
 	}
 	const child = allowed[ 0 ];
-	const keys = db.prepare( "SELECT attr_name, attr_type FROM block_attributes WHERE block_slug = ? AND role IN ( 'text-content', 'content', 'image-object' ) AND ( css_property IS NULL OR css_property = '' ) AND attr_type IN ( 'string', 'object', 'number', 'integer' ) ORDER BY rowid" ).all( child )
-		.map( ( r ) => ( { key: r.attr_name, type: r.attr_type, html: false } ) );
+	const keys = db.prepare( "SELECT attr_name, attr_type, role FROM block_attributes WHERE block_slug = ? AND role IN ( 'text-content', 'content', 'image-object' ) AND ( css_property IS NULL OR css_property = '' ) AND attr_type IN ( 'string', 'object', 'number', 'integer' ) ORDER BY rowid" ).all( child )
+		.map( ( r ) => ( { key: r.attr_name, type: r.attr_type, role: r.role, html: false } ) );
 	return keys.length ? { kind: 'children', child, keys } : null;
 }
 
@@ -137,12 +140,12 @@ export function itemAttrs( item, { map, keys, media, pages = null, label } ) {
 	for ( const [ field, key ] of Object.entries( map ) ) {
 		const k = keys.find( ( x ) => x.key === key );
 		const v = item[ field ];
-		if ( 'image' === keyRole( key ) || 'image' === keyRole( field ) ) {
+		if ( 'image' === keyRoles( k )[ 0 ] || 'image' === keyRole( field ) ) {
 			const hit = null === v || undefined === v ? null : itemPicture( v, media );
 			if ( ! hit ) {
 				rows.push( { field, value: v ?? '', reason: `${ label }'s picture (${ field }${ v ? ` "${ v }"` : '' }) is chosen by the draft at run time or is no uploaded file: choose it in the item's ${ key } setting` } );
 			} else {
-				attrs[ key ] = 'object' === k.type ? { id: hit.id, url: hit.url } : 'string' === k.type ? hit.url : hit.id;
+				attrs[ key ] = 'object' === k.type ? itemSource( hit ) : 'string' === k.type ? hit.url : hit.id;
 			}
 			continue;
 		}

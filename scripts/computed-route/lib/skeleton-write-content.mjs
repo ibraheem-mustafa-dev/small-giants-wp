@@ -1,8 +1,10 @@
 // The settings one element's block takes from the draft element (Spec 48 §3.4, split out of
 // lib/skeleton-propose.mjs::proposeSkeleton): `contentAttrs` the content, identity and structure settings (a skeleton holds
 // no style value, R-47-10) with the handover notes for what no setting can hold, and `carriedAttrs` the ids the build holds
-// for the element's block (a logo block's `logoId`, a menu block's `ref`).
+// for the element's block (a logo block's Source, a menu block's `ref`).
 // The factory takes the writer's shared context (`ctx`).
+import { blockMediaSlots } from './media/slots.mjs';
+import { itemSource } from './media/write.mjs';
 import { LOGO_HANDOVER } from './skeleton-write-units.mjs';
 import { elementHandler, handlerOf, linkWrite } from './draft-link.mjs';
 
@@ -27,8 +29,11 @@ export const copyrightPrefixOf = ( text, siteName = null ) => copyrightPrefixPar
 // { text, link, others }. `text` and `link` are the block's first text-content and link-href settings (firstAttrByRole), the
 // ones a draft element's words and address go to; `others` are the identity and structure settings it writes by name: a
 // wrapper shell's tag and layout, a section root's layout, the Site Info display type with its copyright prefix, a link's
-// target, and the ids the build carries (a logo block's `logoId`, any block's menu `ref`). contentAttrs and carriedAttrs
+// target, and the ids the build carries (a logo block's Source, any block's menu `ref`). contentAttrs and carriedAttrs
 // write through this; lib/content-coverage.mjs asks it which settings a re-clone writes.
+// A logo block's Source setting: its one content media slot that takes an image (lib/media/slots.mjs), as a list.
+const logoSource = ( block ) => blockMediaSlots( block ).filter( ( m ) => 'content' === m.context && m.kinds.includes( 'image' ) ).slice( 0, 1 ).map( ( m ) => m.source );
+
 export function skeletonSettings( facts, block ) {
 	const has = ( name ) => !! facts.attr( block, name );
 	const out = { text: null, link: null, others: [] };
@@ -37,7 +42,7 @@ export function skeletonSettings( facts, block ) {
 	} else if ( 'section-root' === facts.composition[ block ]?.composition_role ) {
 		out.others.push( ...( has( 'layout' ) ? [ 'layout' ] : [] ) );
 	} else if ( facts.logoBlocks.includes( block ) ) {
-		out.others.push( ...( has( 'logoId' ) ? [ 'logoId' ] : [] ) );
+		out.others.push( ...logoSource( block ) );
 	} else {
 		out.text = facts.firstAttrByRole( block, 'text-content' );
 		out.link = facts.firstAttrByRole( block, 'link-href' );
@@ -110,17 +115,18 @@ export function makeContent( ctx ) {
 		return { a: { ...a, ...Object.fromEntries( Object.entries( top.attributes || {} ) ) }, handover };
 	}
 
-	// The ids the build holds for this element's block: a logo block's `logoId` (the attachment of the file the element
+	// The ids the build holds for this element's block: a logo block's Source (the attachment of the file the element
 	// draws) and a menu block's `ref` (the menu site-build made for this surface). { attrs, said: { attr: where from } }.
 	function carriedAttrs( block, e ) {
 		const out = { attrs: {}, said: {}, missing: [] };
 		if ( ! carried ) {
 			return out;
 		}
-		if ( facts.logoBlocks.includes( block ) && attrExists( block, 'logoId' ) ) {
+		const [ logoAttr ] = facts.logoBlocks.includes( block ) ? logoSource( block ) : [];
+		if ( logoAttr ) {
 			const hit = carried.logo( e, view );
-			hit?.id && Object.assign( out.attrs, { logoId: hit.id } ) && ( out.said.logoId = `media-map.json: ${ hit.asset }` );
-			hit?.reason && out.missing.push( `${ e.key }: no logoId is carried: ${ hit.reason }` );
+			hit?.id && hit.url && Object.assign( out.attrs, { [ logoAttr ]: itemSource( hit ) } ) && ( out.said[ logoAttr ] = `media-map.json: ${ hit.asset }` );
+			hit?.reason && out.missing.push( `${ e.key }: no ${ logoAttr } is carried: ${ hit.reason }` );
 		}
 		if ( 'nav' === e.tag && attrExists( block, 'ref' ) && surfaceKind ) {
 			const id = carried.menu( surfaceKind );

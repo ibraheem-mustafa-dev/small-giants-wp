@@ -12,8 +12,9 @@ import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { parseLogic } from '../lib/intake-ast.mjs';
 import { listItems, loopItems, currentItems, holeField } from '../lib/fill-list-items.mjs';
-import { listContentWrites, listTarget, matchFields, listDecisions, withPictures, applyChildren, keyRole, loadItemRoles, ITEM_ROLES, ITEM_ROLES_FILE } from '../lib/fill-list-content.mjs';
-import { imageSlots, schemaImageSlots, pictureSettles } from '../lib/fill-media.mjs';
+import { listContentWrites, listTarget, matchFields, listDecisions, withPictures, applyChildren, keyRole, itemAttrs, loadItemRoles, ITEM_ROLES, ITEM_ROLES_FILE } from '../lib/fill-list-content.mjs';
+import { pictureSettles } from '../lib/fill-media.mjs';
+import { blockMediaSlots } from '../lib/media/slots.mjs';
 
 const C = 'Demo';
 const SCHEMAS = {
@@ -147,7 +148,7 @@ test( 'a current-item display reads every item from the draft\'s logic and becom
 	assert.deepEqual( flat[ 0 ].innerBlocks.map( ( c ) => c.name ), [ 'sgs/quote', 'sgs/quote' ] );
 	assert.deepEqual( flat[ 0 ].innerBlocks[ 0 ].attributes, { quote: 'Always on time.', reviewerName: 'Shop owner', orgName: 'Retail customer' } );
 	// The second item's avatar is a draft file the media map holds: its attachment.
-	assert.deepEqual( flat[ 0 ].innerBlocks[ 1 ].attributes.avatarMedia, { id: 501, url: 'https://acme.test/chef.png' } );
+	assert.deepEqual( flat[ 0 ].innerBlocks[ 1 ].attributes.avatarMedia, { desktop: { kind: 'image', id: 501, url: 'https://acme.test/chef.png', mime: 'image/png' } } );
 	// The first item's avatar is a placeholder the draft fills at run time: a named row.
 	assert.equal( r.handover.length, 1 );
 	assert.match( r.handover[ 0 ].reason, /item 1's picture \(avatar "av-1"\)/ );
@@ -198,7 +199,7 @@ test( 'items holding only links are not written; a hash route goes through the p
 	assert.match( bare.r.handover[ 0 ].reason, /carry no words or uploaded picture/ );
 	// With a drawn picture per item the pictures are written, each link as its page's permalink.
 	const drawn = pass( [ [ 'sgs/logos', 'Root/40#0' ] ], { facts, inventory, pages, picturesOf: () => [ 'https://images.unsplash.com/photo-1700000000-abcdef12?w=600', 'assets/chef.png' ] } );
-	assert.deepEqual( drawn.flat[ 0 ].attributes.logos.map( ( l ) => l.media ), [ { id: 502, url: 'https://acme.test/p1.jpg' }, { id: 501, url: 'https://acme.test/chef.png' } ] );
+	assert.deepEqual( drawn.flat[ 0 ].attributes.logos.map( ( l ) => l.media ), [ { desktop: { kind: 'image', id: 502, url: 'https://acme.test/p1.jpg', mime: 'image/jpeg' } }, { desktop: { kind: 'image', id: 501, url: 'https://acme.test/chef.png', mime: 'image/png' } } ] );
 	assert.deepEqual( drawn.flat[ 0 ].attributes.logos.map( ( l ) => l.linkUrl ), [ '/brand-0/', undefined ] );
 	assert.match( drawn.r.handover.find( ( h ) => 'href' === h.evidence.key ).reason, /item 2's link "#\/brand-1" goes to no page/ );
 } );
@@ -279,13 +280,20 @@ test( 'holes: only content holes with a head and a field are item fields', () =>
 	assert.equal( holeField( { where: 'attr:id', path: 't.img' }, 'image-slot' ).image, true );
 } );
 
-test( 'a split image held as content is found from the block.json image trio (MUST FAIL)', () => {
-	const db = makeDb();
-	assert.deepEqual( imageSlots( db, 'sgs/split', SCHEMAS[ 'sgs/split' ] ), [ { alt: 'splitMediaImageAlt', url: 'splitMediaImageUrl' } ] );
-	// A video URL with an id and no alt, or a link URL, is no image trio; DB rows win over the trio.
-	assert.deepEqual( schemaImageSlots( { aUrl: { type: 'string' }, aId: { type: 'string' }, aAlt: { type: 'string' } } ), [] );
-	assert.deepEqual( imageSlots( db, 'sgs/pic', SCHEMAS[ 'sgs/split' ] ), [ { alt: 'imageAlt', url: 'imageUrl' } ] );
-	assert.deepEqual( imageSlots( db, 'sgs/split' ), [] );
+test( 'a split image held as content is found from the media slot declaration of the block (MUST FAIL)', () => {
+	assert.deepEqual( blockMediaSlots( 'sgs/hero' ).filter( ( m ) => 'content' === m.context ).map( ( m ) => [ m.source, m.alt ] ), [ [ 'splitSource', 'splitAlt' ] ] );
+	// An item-context slot (a card grid's pictures) and a block with no slot are none of the media writer's.
+	assert.deepEqual( blockMediaSlots( 'sgs/card-grid' ), [], 'its pictures are item values, written by the list writer' );
+	assert.deepEqual( blockMediaSlots( 'sgs/text' ), [] );
+} );
+
+test( 'the picture of an item is written as a per-device Source on the key the block declares as a picture (MUST FAIL)', () => {
+	const keys = [ { key: 'source', type: 'object', role: 'image-object' }, { key: 'title', type: 'string', role: 'text-content' } ];
+	const { map } = matchFields( [ { name: 'photo', image: true }, { name: 'title', image: false } ], keys );
+	assert.deepEqual( map, { photo: 'source', title: 'title' } );
+	const media = { map: { sites: { s: { files: [ { asset: 'a/p.png', id: 7, url: 'https://x/p.png' } ] } } }, site: 's', origin: '' };
+	const r = itemAttrs( { photo: 'a/p.png', title: 'T' }, { map, keys, media, label: 'item 1' } );
+	assert.deepEqual( r.attrs, { source: { desktop: { kind: 'image', id: 7, url: 'https://x/p.png', mime: 'image/png' } }, title: 'T' } );
 } );
 
 test( 'the page editor\'s picture row on the node is settled once the node holds the draft\'s attachment (MUST FAIL)', () => {
