@@ -733,6 +733,20 @@ $media_html = '';
 if ( $is_split ) {
 	// The slot's own scope class: the hero's `$uid` is the section's, and a rule printed for the media must not reach it.
 	$sgs_hero_split_uid = $uid . '-split';
+	// Grid tracks per device (`gridTemplateColumns` tiers; a device that sets none takes the wider one's, and the mobile
+	// default is one track).
+	$sgs_hero_split_columns = array();
+	$sgs_hero_split_tracks  = 2;
+	foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_hero_split_device ) {
+		$sgs_hero_split_template = trim( (string) ( $split_col_tiers[ $sgs_hero_split_device ] ?? '' ) );
+		if ( '' === $sgs_hero_split_template && 'mobile' === $sgs_hero_split_device ) {
+			$sgs_hero_split_template = '1fr';
+		}
+		if ( '' !== $sgs_hero_split_template ) {
+			$sgs_hero_split_tracks = max( 1, count( preg_split( '/\s+(?![^(]*\))/', $sgs_hero_split_template ) ?: array() ) );
+		}
+		$sgs_hero_split_columns[ $sgs_hero_split_device ] = $sgs_hero_split_tracks;
+	}
 	$sgs_hero_split     = SGS_Media_Element::render(
 		array(
 			'prefix'  => 'split',
@@ -745,6 +759,9 @@ if ( $is_split ) {
 			'block'       => 'sgs/hero',
 			'extra_class' => 'sgs-hero__split-media',
 			'in_editor'   => defined( 'REST_REQUEST' ) && REST_REQUEST,
+			// The media is one grid column wide: its `sizes` divide the viewport by the track count, so the browser
+			// does not fetch a file as wide as the whole viewport.
+			'item_set'    => array( 'columns' => $sgs_hero_split_columns ),
 		)
 	);
 	if ( '' !== $sgs_hero_split['html'] ) {

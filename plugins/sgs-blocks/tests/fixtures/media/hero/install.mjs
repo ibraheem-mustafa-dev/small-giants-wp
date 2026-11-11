@@ -83,6 +83,6 @@ if ( existing ) {
 	wp( 'post', 'update', existing, wslFile );
 	console.log( `updated page ${ existing }` );
 } else {
-	console.log( `created page ${ wp( 'post', 'create', wslFile, '--post_type=page', '--post_status=publish', '--post_title=Hero media fixture', '--post_name=hero-media-fixture', '--porcelain' ) }` );
+	console.log( `created page ${ wp( 'post', 'create', wslFile, '--post_type=page', '--post_status=publish', '--post_title="Hero media fixture"', '--post_name=hero-media-fixture', '--porcelain' ) }` );
 }
 console.log( `${ origin }/hero-media-fixture/` );

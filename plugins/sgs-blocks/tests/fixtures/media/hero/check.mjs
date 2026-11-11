@@ -52,13 +52,15 @@ for ( const width of [ 375, 768, 1440 ] ) {
 			expect( '0.4' === start.overlay, `${ tag } overlay opacity ${ start.overlay }` );
 		}
 		const positions = [];
-		for ( const y of [ 0, 250, 500, 800 ] ) {
+		for ( const y of [ 0, 250, 400, 500, 600, 700, 800 ] ) {
 			await page.evaluate( ( top ) => window.scrollTo( 0, top ), y );
 			await page.waitForTimeout( 500 );
 			const g = await geo();
 			positions.push( g.bg[ 0 ] - g.hero[ 0 ] );
 			// The moving layer must cover the section's own top and bottom edge wherever the section is on screen.
-			expect( g.bg[ 0 ] <= g.hero[ 0 ] + 0.5 && g.bg[ 1 ] >= g.hero[ 1 ] - 0.5, `${ tag } scroll ${ y }: background gap (bg ${ g.bg } hero ${ g.hero })` );
+			// Only while the section is on screen: a gap above a section that has scrolled away is not seen.
+			const onScreen = g.hero[ 1 ] > 0 && g.hero[ 0 ] < 900;
+			expect( ! onScreen || ( g.bg[ 0 ] <= g.hero[ 0 ] + 0.5 && g.bg[ 1 ] >= g.hero[ 1 ] - 0.5 ), `${ tag } scroll ${ y }: background gap (bg ${ g.bg } hero ${ g.hero })` );
 		}
 		if ( reduced ) {
 			expect( positions.every( ( p ) => Math.abs( p - positions[ 0 ] ) < 0.5 ), `${ tag } background moved under reduced motion (${ positions })` );
