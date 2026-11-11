@@ -612,7 +612,7 @@ export default function Edit( {
 			atoms={ MEDIA_SLOTS[ prefix ].atoms }
 			kinds={ MEDIA_SLOTS[ prefix ].kinds }
 			context={ MEDIA_SLOTS[ prefix ].context }
-			slotLabel={ label }
+			label={ label }
 		/>
 	);
 
@@ -2029,13 +2029,13 @@ export default function Edit( {
 			      shows in the editor). ── */ }
 			<div { ...blockProps }>
 				{ showWork && (
-					<figure className={ `sgs-testimonial__work ${ slotUid( 'work' ) }` }>
+					<figure className="sgs-testimonial__work">
 						<SlotPicture { ...slotProps( 'work' ) } title={ __( 'Work image', 'sgs-blocks' ) } instructions={ __( 'Choose the case-study picture', 'sgs-blocks' ) } />
 					</figure>
 				) }
 
 				{ showLogo && (
-					<div className={ `sgs-testimonial__logo ${ slotUid( 'logo' ) }` }>
+					<div className="sgs-testimonial__logo">
 						<SlotPicture { ...slotProps( 'logo' ) } placeholder={ false } />
 					</div>
 				) }
@@ -2116,7 +2116,7 @@ export default function Edit( {
 					style={ 'review-card' === effectiveVariant ? reviewFooterRulePreview( reviewFooterBorder, previewTier ) : undefined }
 				>
 					{ showAvatar && (
-						<div className={ `sgs-testimonial__avatar ${ slotUid( 'avatar' ) }` }>
+						<div className="sgs-testimonial__avatar">
 							<SlotPicture { ...slotProps( 'avatar' ) } title={ __( 'Author photo', 'sgs-blocks' ) } instructions={ __( 'Choose the reviewer photo', 'sgs-blocks' ) } />
 						</div>
 					) }

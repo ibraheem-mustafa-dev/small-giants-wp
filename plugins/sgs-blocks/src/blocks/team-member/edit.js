@@ -219,7 +219,7 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 	// placement), not a style control; mirrors render.php's own fallback.
 	const HeadingTag = headingLevel || 'h3';
 
-	const photoUid = 'sgs-team-member-' + clientId.slice( 0, 8 );
+	const photoUid = 'sgs-team-member-photo-' + clientId.slice( 0, 8 );
 	// The wrapper clips the bio overlay to the photo's outline: a circle is the one shape it follows.
 	const photoAttributes = attributes.photoShape ? attributes : { ...attributes, photoShape: DEFAULT_PHOTO_SHAPE };
 	const photoOutline = 'circle' === ( photoAttributes.photoShape.desktop?.shape ?? '' ) ? 'circle' : 'none';
@@ -729,7 +729,7 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<div className={ `sgs-team-member__photo sgs-team-member__photo--${ photoOutline } ${ photoUid }` }>
+				<div className={ `sgs-team-member__photo sgs-team-member__photo--${ photoOutline }` }>
 					<SlotPicture
 						attributes={ photoAttributes }
 						setAttributes={ setAttributes }

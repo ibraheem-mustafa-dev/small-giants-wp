@@ -430,7 +430,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			<div { ...blockProps }>
 				<div
-					className={ `sgs-image-sequence-editor__preview-wrapper ${ uid }` }
+					className="sgs-image-sequence-editor__preview-wrapper"
 					style={ { aspectRatio: stageAspect } }
 				>
 					<SlotPicture

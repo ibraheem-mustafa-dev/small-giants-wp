@@ -296,7 +296,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<figure { ...blockProps }>
 				{ previewCss && <style>{ previewCss }</style> }
 				<div className="sgs-measured-diagram__frame">
-					<div className={ `sgs-measured-diagram__drawing ${ uid }` }>
+					<div className="sgs-measured-diagram__drawing">
 						<SlotPicture
 							{ ...{ attributes, setAttributes } }
 							prefix="drawing"

@@ -604,7 +604,7 @@ if ( class_exists( 'SGS_Media_Element' ) && array() !== array_filter( $photo_sou
 		$sgs_tm_slot,
 		$sgs_tm_attrs,
 		array(
-			'uid'       => $uid,
+			'uid'       => $uid . '-photo',
 			'block'     => 'sgs/team-member',
 			'in_editor' => defined( 'REST_REQUEST' ) && REST_REQUEST,
 		)
