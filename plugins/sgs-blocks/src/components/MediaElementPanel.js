@@ -155,7 +155,11 @@ export default function MediaElementPanel( {
 	context = 'element',
 	parallax,
 	panelContent,
+<<<<<<< HEAD
 	label = '',
+=======
+	slotLabel,
+>>>>>>> 4756953d8 (feat(media stage b, W4a): shared SlotPicture (the canvas picture for one adopted image slot) and slotLabel on MediaElementPanel (names the slot in each panel title when a block has more than one))
 } ) {
 	const ids = atomsForElement( { atoms } );
 
@@ -173,7 +177,11 @@ export default function MediaElementPanel( {
 					context={ context }
 					parallax={ parallax }
 					panelContent={ panelContent }
+<<<<<<< HEAD
 					label={ label }
+=======
+					slotLabel={ slotLabel }
+>>>>>>> 4756953d8 (feat(media stage b, W4a): shared SlotPicture (the canvas picture for one adopted image slot) and slotLabel on MediaElementPanel (names the slot in each panel title when a block has more than one))
 				/>
 			</Suspense>
 		);
