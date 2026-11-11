@@ -956,7 +956,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 // ---------------------------------------------------------------------------
 // 4. Render.
 // FP-14: no empty($content) branching — all nodes are explicitly gated above.
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- all parts pre-sanitised: text via wp_kses_post()/esc_html(); media via sgs_render_media(); attrs via esc_attr()/sanitize_html_class(); schema via wp_json_encode(); CSS via wp_strip_all_tags() + the sanitisers above.
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- all parts pre-sanitised: text via wp_kses_post()/esc_html(); media via the media renderer; attrs via esc_attr()/sanitize_html_class(); schema via wp_json_encode(); CSS via wp_strip_all_tags() + the sanitisers above.
 // ---------------------------------------------------------------------------
 ?>
 <?php

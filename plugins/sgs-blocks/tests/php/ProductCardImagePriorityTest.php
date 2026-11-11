@@ -124,46 +124,26 @@ final class ProductCardImagePriorityTest extends TestCase {
 		$this->assertSame( 3, substr_count( $src, 'sgs_pcm_main_image(' ), 'the read-only, variable and simple card branches print the photo through the media renderer, which asks SGS_Media_Priority' );
 	}
 
-	public function test_claim_needs_the_first_section_and_takes_the_slot_once(): void {
-		require_once dirname( __DIR__, 2 ) . '/includes/helpers-media.php';
-		$GLOBALS['sgs_test_in_loop'] = true;
-		Sgs_Motion_Renderer::arm_first_section( '<!-- wp:sgs/section /-->' );
-		$claims = array();
-		sgs_test_render_motion_block(
-			array( 'blockName' => 'sgs/card-grid', 'attrs' => array() ),
-			'<div class="wp-block-sgs-card-grid"></div>',
-			null,
-			static function () use ( &$claims ): void {
-				for ( $i = 0; $i < 3; $i++ ) {
-					sgs_test_render_motion_block(
-						array( 'blockName' => 'sgs/product-card', 'attrs' => array() ),
-						'<div class="wp-block-sgs-product-card"></div>',
-						null,
-						static function () use ( &$claims ): void {
-							$claims[] = sgs_content_image_claims_priority();
-						}
-					);
-				}
-			}
-		);
-		$this->assertSame( array( true, false, false ), $claims, 'only the first card of a first-section grid claims the slot' );
+	public function test_only_the_first_image_above_the_fold_takes_the_page_priority_slot(): void {
+		require_once dirname( __DIR__, 2 ) . '/includes/media/class-sgs-media-priority.php';
+		SGS_Media_Priority::reset();
+		$above = array( 'rest' => false, 'armed' => true, 'fold' => true );
+		$first = SGS_Media_Priority::resolve( array( 'role' => 'card' ), $above );
+		$next  = SGS_Media_Priority::resolve( array( 'role' => 'card' ), $above );
+		$this->assertSame( array( 'eager', 'high' ), array( $first['loading'], $first['fetchpriority'] ), 'the first card claims the slot' );
+		$this->assertSame( array( 'eager', 'auto' ), array( $next['loading'], $next['fetchpriority'] ), 'the next card loads eagerly but takes no priority' );
 
-		$later = array();
-		sgs_test_render_motion_block(
-			array( 'blockName' => 'sgs/product-card', 'attrs' => array() ),
-			'<div class="wp-block-sgs-product-card"></div>',
-			null,
-			static function () use ( &$later ): void {
-				$later[] = sgs_content_image_claims_priority();
-			}
-		);
-		$this->assertSame( array( false ), $later, 'a card below the first section claims nothing' );
-	}
+		$below = SGS_Media_Priority::resolve( array( 'role' => 'card' ), array( 'rest' => false, 'armed' => true, 'fold' => false ) );
+		$this->assertSame( array( 'lazy', 'auto' ), array( $below['loading'], $below['fetchpriority'] ), 'a card below the fold claims nothing' );
 
-	public function test_claim_outside_the_first_section_leaves_the_page_slot_untouched(): void {
-		require_once dirname( __DIR__, 2 ) . '/includes/helpers-media.php';
-		$this->assertFalse( sgs_content_image_claims_priority(), 'no first section (the editor block-renderer request)' );
-		$this->assertSame( 1, sgs_next_background_image_index(), 'the refused claim did not consume the page-wide slot' );
+		$editor = SGS_Media_Priority::resolve( array( 'role' => 'card' ), array( 'rest' => true, 'armed' => true, 'fold' => true ) );
+		$this->assertSame( 'lazy', $editor['loading'], 'the editor block-renderer request claims nothing' );
+
+		SGS_Media_Priority::reset();
+		$hidden = SGS_Media_Priority::resolve( array( 'role' => 'card', 'hidden' => true ), $above );
+		$lead   = SGS_Media_Priority::resolve( array( 'role' => 'card' ), $above );
+		$this->assertSame( 'lazy', $hidden['loading'], 'a hidden surface claims nothing' );
+		$this->assertSame( 'high', $lead['fetchpriority'], 'a hidden image left the slot free' );
 	}
 
 	public function test_grid_cards_never_take_the_first_section_slot(): void {

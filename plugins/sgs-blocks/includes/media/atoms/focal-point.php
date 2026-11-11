@@ -7,9 +7,8 @@
  * scope: `background-position` / `background-repeat` / `background-
  * attachment` (the `Position` / `Repeat` / `Attachment` bases).
  *
- * Builds on the SHARED emitter in `helpers-media-position.php`
- * (`sgs_media_position_focal_to_css()`) for the `{x,y}` -> "X% Y%" maths —
- * does not re-derive it — and additionally accepts the already-CSS-string
+ * Converts the `{x,y}` -> "X% Y%" maths itself
+ * (`sgs_media_atom_focal_point_xy_to_css()`) and additionally accepts the already-CSS-string
  * shape `sgs/hero`'s `splitMediaObjectPosition` stores, sanitised with the
  * same charset `hero/render.php`'s own `$sgs_css_object_position` closure
  * uses (`preg_replace('/[^A-Za-z0-9%.\-\s]/', '', ...)`).
@@ -24,7 +23,27 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 2 ) . '/helpers-media-element.php';
-require_once dirname( __DIR__, 2 ) . '/helpers-media-position.php';
+
+if ( ! function_exists( 'sgs_media_atom_focal_point_xy_to_css' ) ) {
+	/**
+	 * A focal point {x,y} (floats 0-1) as a CSS "X% Y%" position. Clamped 0-1, rounded to 2 places. Returns '' when
+	 * unset or at the CSS default (centre), so the element's own default wins.
+	 *
+	 * @param mixed $focal_point Raw attribute value, expected {x,y}.
+	 * @return string "X% Y%" or ''.
+	 */
+	function sgs_media_atom_focal_point_xy_to_css( $focal_point ) {
+		if ( ! is_array( $focal_point ) || ! isset( $focal_point['x'], $focal_point['y'] ) ) {
+			return '';
+		}
+		$x = max( 0.0, min( 1.0, (float) $focal_point['x'] ) );
+		$y = max( 0.0, min( 1.0, (float) $focal_point['y'] ) );
+		if ( 0.5 === $x && 0.5 === $y ) {
+			return '';
+		}
+		return round( $x * 100, 2 ) . '% ' . round( $y * 100, 2 ) . '%';
+	}
+}
 
 if ( ! function_exists( 'sgs_media_atom_focal_point_sanitise_string' ) ) {
 	/**
@@ -46,7 +65,7 @@ if ( ! function_exists( 'sgs_media_atom_focal_point_resolve_position' ) ) {
 	/**
 	 * Resolve a position value in EITHER stored shape to a CSS
 	 * `object-position`/`background-position` string. An `{x,y}` array
-	 * converts via the SHARED emitter (`sgs_media_position_focal_to_css()`);
+	 * converts through `sgs_media_atom_focal_point_xy_to_css()`;
 	 * a string is sanitised and passed through unchanged.
 	 *
 	 * @param mixed $raw Raw attribute value.
@@ -54,7 +73,7 @@ if ( ! function_exists( 'sgs_media_atom_focal_point_resolve_position' ) ) {
 	 */
 	function sgs_media_atom_focal_point_resolve_position( $raw ) {
 		if ( is_array( $raw ) && isset( $raw['x'], $raw['y'] ) ) {
-			return sgs_media_position_focal_to_css( $raw );
+			return sgs_media_atom_focal_point_xy_to_css( $raw );
 		}
 		return sgs_media_atom_focal_point_sanitise_string( $raw );
 	}

@@ -62,9 +62,6 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/class-block-defaults.php';
 		Block_Defaults::register();
 
-		// Image Controls extension — objectPosition / maxWidth / per-breakpoint height.
-		require_once SGS_BLOCKS_PATH . 'includes/image-controls.php';
-
 		// The universal rich-text formats (Spec 02 FR-2-4 highlight, FR-2-5 inline photo). Their stylesheet is
 		// registered once; the page loads it only when a block's markup holds either format (the render_block
 		// filter), and the editor canvas always loads it (enqueue_editor_extension_styles()).
@@ -72,8 +69,11 @@ final class SGS_Blocks {
 		add_action( 'init', array( $this, 'register_inline_formats_style' ) );
 		add_filter( 'render_block', 'sgs_inline_formats_maybe_enqueue', 10, 2 );
 
-		// A cover-cropped image drawn wider than its box drops core's sizes="auto" (helpers-media.php).
-		require_once SGS_BLOCKS_PATH . 'includes/helpers-media.php';
+		// Image Controls extension — objectPosition / maxWidth / per-breakpoint height.
+		require_once SGS_BLOCKS_PATH . 'includes/image-controls.php';
+
+		// A cover-cropped image drawn wider than its box drops core's sizes="auto" (media/cover-crop.php).
+		require_once SGS_BLOCKS_PATH . 'includes/media/cover-crop.php';
 		add_filter( 'wp_content_img_tag', 'sgs_media_drop_auto_sizes', 20 );
 
 		// Tier G motion registry (Spec 38 §4.4) — registers the GSAP

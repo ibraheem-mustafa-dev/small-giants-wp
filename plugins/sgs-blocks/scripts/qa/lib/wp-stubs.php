@@ -282,8 +282,8 @@ if ( ! function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 }
 
-// NOTE: sgs_link_attributes() / sgs_render_media() are real SGS helpers
-// (plugins/sgs-blocks/includes/helpers-link.php, helpers-media.php),
+// NOTE: sgs_link_attributes() is a real SGS helper
+// (plugins/sgs-blocks/includes/helpers-link.php),
 // require_once'd by render.php itself — never stubbed here, or the stub
 // would collide with (or silently mask) the real implementation under test.
 

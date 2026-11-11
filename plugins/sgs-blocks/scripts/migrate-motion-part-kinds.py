@@ -72,7 +72,7 @@ CONFIRMED = {
     'hero:split-image': ((r"'image'\s*=>\s*\$sgs_hero_split_image_class", r"'sgs-hero__split-image'"),
                          'extra class on the <img> tier only (sgs_tier_media_render $extra[image])'),
     'card-grid:image': ((r"preg_replace\(\s*'/\(<\(\?:img\|video\)", r"array\(\s*'sgs-card-grid__media'\s*\)"),
-                        'class added to the first <img>/<video> sgs_render_media returned'),
+                        'class added to the first <img>/<video> the media renderer returned'),
     'gallery:image': ((r"array\(\s*'sgs-gallery__img'\s*\)", r"wp_get_attachment_image\("),
                       'class on the <img> wp_get_attachment_image prints'),
     'hero:background': ((r"'sgs-hero__bg-img sgs-hero__background'", r"'bg_img_class'\s*=>\s*'sgs-hero__background'"),

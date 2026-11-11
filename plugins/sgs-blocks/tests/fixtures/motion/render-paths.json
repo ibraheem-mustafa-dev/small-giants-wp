@@ -1058,7 +1058,7 @@
      }
     },
     "media-slot": {
-     "why": "a video item, or an image with no attachment ID, prints sgs_render_media() markup in place of the attachment <img>",
+     "why": "a video item, or an image with no attachment ID, prints the media renderer's markup in place of the attachment <img>",
      "attrs": {
       "mediaItems": [
        {

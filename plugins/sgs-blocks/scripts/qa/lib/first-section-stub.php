@@ -3,8 +3,7 @@
  * The page's first-section state for the render harness, loaded only by `--first-section`: the block being rendered
  * sits inside the page's first top-level section, above the fold, on a page the motion renderer is armed on. That is
  * what `SGS_Media_Priority::resolve()` (includes/media/class-sgs-media-priority.php) reads from the renderer on a real
- * page (`is_armed()`, `in_above_fold()`), and what the old `sgs_content_image_claims_priority()` read
- * (`in_first_section()`).
+ * page (`is_armed()`, `in_above_fold()`).
  *
  * WHAT IT IS: the real `Sgs_Motion_Renderer`, set into that state through reflection (the harness runs no render_block
  * filters, so it has no frames of its own): armed, with one frame marked first-section and above-the-fold. Where a

@@ -34,8 +34,13 @@
  *                                     (a painted surface's dark/light tone from
  *                                     its top-down layers)
  *
- *   helpers-media.php               — sgs_responsive_image, sgs_render_stars,
- *                                     sgs_render_media
+ *   helpers-media.php               — sgs_responsive_image, sgs_image_loading_attrs
+ *
+ *   media/hidden-render.php         — sgs_in_hidden_render_context
+ *
+ *   media/cover-crop.php            — sgs_media_cover_crop_plan, sgs_media_drop_auto_sizes
+ *
+ *   helpers-stars.php               — sgs_render_stars
  *
  *   helpers-configurator-pricing.php — sgs_configurator_format_minor,
  *                                      sgs_configurator_mode_price,
@@ -107,12 +112,6 @@
  *                                     never inline. sgs_typography_css_rule
  *                                     is implemented on top of it.)
  *
- *   helpers-media-position.php      — sgs_media_position_css,
- *                                     sgs_media_position_focal_to_css (Spec 35
- *                                     capability-routing doctrine, mechanism
- *                                     (c) — explicitly-wired object-fit/
- *                                     object-position, caller owns selector)
- *
  *   helpers-svg-gradient.php        — sgs_svg_stroke_gradient,
  *                                     sgs_svg_inject_defs (D636/D644 icon/SVG
  *                                     gradient mechanism — converts a
@@ -176,7 +175,6 @@ require_once __DIR__ . '/helpers-responsive.php';
 require_once __DIR__ . '/helpers-separators-css.php';
 require_once __DIR__ . '/helpers-container-separators.php';
 require_once __DIR__ . '/helpers-typography.php';
-require_once __DIR__ . '/helpers-media-position.php';
 require_once __DIR__ . '/helpers-colour-wcag.php';
 require_once __DIR__ . '/helpers-surface-tone.php';
 require_once __DIR__ . '/helpers-scrim.php';
@@ -185,6 +183,9 @@ require_once __DIR__ . '/helpers-state-motion-model.php';
 require_once __DIR__ . '/helpers-nav-drawer-motion-model.php';
 require_once __DIR__ . '/helpers-item-effects.php';
 require_once __DIR__ . '/helpers-media.php';
+require_once __DIR__ . '/media/hidden-render.php';
+require_once __DIR__ . '/media/cover-crop.php';
+require_once __DIR__ . '/helpers-stars.php';
 require_once __DIR__ . '/helpers-tier-media.php';
 require_once __DIR__ . '/helpers-media-element.php';
 require_once __DIR__ . '/helpers-configurator-pricing.php';

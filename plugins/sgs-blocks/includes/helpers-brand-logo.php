@@ -27,6 +27,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/media/hidden-render.php';
+require_once __DIR__ . '/media/class-sgs-media-priority.php';
+
 if ( ! function_exists( 'sgs_brand_logo_taxonomy' ) ) {
 	/**
 	 * The brand taxonomy's name, filterable so a site can point every brand
@@ -188,10 +191,15 @@ if ( ! function_exists( 'sgs_brand_logo_img_markup' ) ) {
 			$dimensions = sgs_image_size_attrs( $url );
 		}
 
-		$loading = sgs_image_loading_attrs( false );
+		$loading = SGS_Media_Priority::resolve(
+			array(
+				'role'   => 'logo',
+				'hidden' => sgs_in_hidden_render_context(),
+			)
+		);
 		return '<img class="' . esc_attr( $class_name ) . '" src="' . esc_url( $url ) . '"'
 			. ' alt="' . esc_attr( $name ) . '"' . $dimensions
 			. ' loading="' . esc_attr( $loading['loading'] ) . '" fetchpriority="' . esc_attr( $loading['fetchpriority'] ) . '"'
-			. ' decoding="' . esc_attr( $loading['decoding'] ) . '" />';
+			. ' decoding="async" />';
 	}
 }

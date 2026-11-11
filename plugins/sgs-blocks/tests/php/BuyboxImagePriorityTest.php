@@ -3,7 +3,7 @@
  * Tests: sgs/buybox's main image claims `loading="eager"` and `fetchpriority="high"` only when it is the page's likely
  * LCP image (Spec 38A §9 LCP rule): inside the page's first top-level section, or as its own product page's buybox
  * (single-product.html prints it before the post content, where no first section is armed), and only while the
- * page-wide priority slot is free (`helpers-media.php::sgs_content_image_claims_priority`). A buybox below the first
+ * page-wide priority slot is free (`SGS_Media_Priority::resolve`). A buybox below the first
  * section of another page loads its photo lazily at auto priority, so it takes no priority from the image above it and
  * its entrance is not held at full opacity.
  *

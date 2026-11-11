@@ -746,6 +746,6 @@ endif;
 printf(
 	'<div %1$s>%3$s<div class="sgs-brand-strip__track"><div class="sgs-brand-strip__set" data-sgs-marquee-set>%2$s</div></div></div>',
 	$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	$logos_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from sgs_render_media(), which escapes its own output.
+	$logos_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from the media renderer, which escapes its own output.
 	$bs_title_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_kses_post() on the title text.
 );

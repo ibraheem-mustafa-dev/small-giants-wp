@@ -45,48 +45,6 @@ require_once __DIR__ . '/media/tier-image.php';
 require_once __DIR__ . '/media/tier-video.php';
 require_once __DIR__ . '/media/tier-svg.php';
 
-if ( ! function_exists( 'sgs_allowed_svg_tags' ) ) {
-	/**
-	 * The SGS inline-SVG allow-list for `wp_kses()`.
-	 *
-	 * Security non-negotiable: inline SVG is never echoed raw. This is the single
-	 * definition of what an operator-supplied SVG may contain.
-	 *
-	 * ⭐ UNIFIED 2026-08-30. This is now an ALIAS for
-	 * `sgs_svg_kses_allowed_tags()`. There is ONE list.
-	 *
-	 * Six SVG allowlists existed in SGS code. Two were byte-identical copies of
-	 * this one (media/render.php, class-sgs-container-wrapper.php) and were
-	 * collapsed onto it. This function and `sgs_svg_kses_allowed_tags()` were
-	 * the two REAL lists and they diverged in BOTH directions — 13 tags vs 36,
-	 * with `<style>`/`<animate>` unique to this one.
-	 *
-	 * The merge, and what it changes for this function's callers (hero,
-	 * timeline, sgs/media, every container background):
-	 *
-	 *  GAINED — 25 tags, including linearGradient/radialGradient/stop (a
-	 *    gradient-filled SVG was previously flattened SILENTLY), <title>/<desc>
-	 *    (SVG accessible names were previously stripped, against the WCAG 2.1
-	 *    AA baseline), plus filters, masks, patterns and <use>.
-	 *  KEPT — `<animate>`, carried over so animated SVG still works here.
-	 *  LOST — `<style>`, deliberately. Inline SVG `<style>` in an HTML document
-	 *    is DOCUMENT-scoped, and wp_kses does not sanitise element TEXT
-	 *    content, so arbitrary page-wide CSS survived it. A Contributor could
-	 *    restyle or overlay the page, or `@import` an external sheet from an
-	 *    admin's session. That is the same privilege-escalation family as the
-	 *    editor XSS this work exists to close, so it did not carry over.
-	 *
-	 * Kept as a named alias rather than deleted so the existing call sites keep
-	 * working; collapsing the two names is a later tidy-up, not a behaviour
-	 * change.
-	 *
-	 * @return array<string,array<string,bool>> wp_kses allow-list.
-	 */
-	function sgs_allowed_svg_tags(): array {
-		return sgs_svg_kses_allowed_tags();
-	}
-}
-
 if ( ! function_exists( 'sgs_tier_media_render' ) ) {
 	/**
 	 * Render up to three device tiers of media, each with its own TYPE.

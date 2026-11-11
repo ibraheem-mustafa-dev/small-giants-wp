@@ -87,7 +87,7 @@ foreach ( $items as $index => $item ) :
 		<?php if ( $item_needs_wrap ) : ?>
 		<div class="<?php echo esc_attr( $image_wrap_class ); ?>"<?php echo $item_decorative ? ' aria-hidden="true"' : ''; ?>>
 			<?php if ( '' !== $media_html ) : ?>
-				<?php echo $media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_render_media(). ?>
+				<?php echo $media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside the media renderer. ?>
 			<?php endif; ?>
 			<?php if ( $item_show_overlay ) : ?>
 				<div class="sgs-card-grid__image-overlay" aria-hidden="true"></div>
