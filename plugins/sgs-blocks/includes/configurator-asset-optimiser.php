@@ -116,11 +116,82 @@ function sgs_jquery_still_needed( array $removed ): bool {
  * @return string
  */
 function sgs_note_wc_block_render( $block_content, $block ) {
-	if ( 0 === strpos( (string) ( $block['blockName'] ?? '' ), 'woocommerce/' ) ) {
+	$name = (string) ( $block['blockName'] ?? '' );
+	if ( 0 === strpos( $name, 'woocommerce/' ) ) {
 		sgs_wc_block_rendered( true );
+		if ( sgs_wc_block_needs_classic_scripts( $name, (string) $block_content ) ) {
+			sgs_wc_classic_markup_rendered( true );
+		}
 	}
 
 	return $block_content;
+}
+
+/**
+ * Whether a rendered WooCommerce block relies on WooCommerce's classic jQuery scripts.
+ *
+ * A classic template or shortcode block prints classic markup throughout. Otherwise the
+ * one thing `wc-add-to-cart` drives is a classic Ajax add-to-cart link: WooCommerce binds
+ * `.add_to_cart_button:not(.wc-interactive)`, and its own Interactivity API buttons carry
+ * `wc-interactive`. Scripts that declare jQuery as a dependency (the classic product
+ * gallery, the variations form) keep it through `sgs_jquery_still_needed()` and need no
+ * entry here. The sort dropdown is handled by the catalog-sorting block's own script.
+ *
+ * @param string $name          Block name.
+ * @param string $block_content Rendered HTML.
+ * @return bool
+ */
+function sgs_wc_block_needs_classic_scripts( string $name, string $block_content ): bool {
+	$classic_blocks = apply_filters(
+		'sgs_wc_blocks_needing_classic_scripts',
+		array( 'woocommerce/legacy-template', 'woocommerce/classic-shortcode' )
+	);
+	if ( in_array( $name, $classic_blocks, true ) ) {
+		return true;
+	}
+
+	return (bool) preg_match( '/class="(?![^"]*\bwc-interactive\b)[^"]*\badd_to_cart_button\b/', $block_content );
+}
+
+/**
+ * Whether markup driven by WooCommerce's classic scripts rendered on this request.
+ *
+ * @param bool $mark Pass true to record it.
+ * @return bool
+ */
+function sgs_wc_classic_markup_rendered( bool $mark = false ): bool {
+	static $rendered = false;
+	if ( $mark ) {
+		$rendered = true;
+	}
+
+	return $rendered;
+}
+
+/**
+ * Whether this WooCommerce shop or product page runs without WooCommerce's classic jQuery scripts.
+ *
+ * True on a shop archive, product taxonomy archive or single product built from blocks
+ * (a block theme template) that rendered no classic markup. Cart, checkout and account
+ * pages keep the full stack: their forms use the classic password and field helpers.
+ * Measured 2026-11-11 on the canary at 375 and 1440 px with `jquery`, `jquery-migrate`,
+ * `jquery-blockui`, `woocommerce`, `wc-add-to-cart` and `js-cookie` blocked in the
+ * browser: the shop's sort and filters, a simple product's add to cart, the buybox
+ * choice flow's add to bag, the cart drawer and checkout all still work. That stack is
+ * about 42 KB of transferred JavaScript and most of the shop's main-thread blocking.
+ *
+ * @return bool
+ */
+function sgs_wc_page_runs_without_classic_scripts(): bool {
+	if ( ! function_exists( 'is_woocommerce' ) || ! wp_is_block_theme() ) {
+		return false;
+	}
+	if ( ! is_woocommerce() || is_cart() || is_checkout() || is_account_page() ) {
+		return false;
+	}
+
+	// Nothing rendered from blocks means a classic PHP template printed the page.
+	return sgs_wc_block_rendered() && ! sgs_wc_classic_markup_rendered();
 }
 add_filter( 'render_block', __NAMESPACE__ . '\\sgs_note_wc_block_render', 10, 2 );
 
@@ -271,7 +342,7 @@ function sgs_dequeue_wc_styles_off_wc_pages(): void {
 /**
  * Dequeue the redundant WooCommerce frontend scripts.
  *
- * Fires on two independent paths:
+ * Fires on three independent paths:
  *   1. A page carrying a BOUND configurator — the original D-numbered behaviour. Such a
  *      page IS a WooCommerce surface, so path 2 would never reach it; the configurator
  *      talks to the SGS REST proxy and the Store API by vanilla fetch, so the jQuery
@@ -279,6 +350,8 @@ function sgs_dequeue_wc_styles_off_wc_pages(): void {
  *   2. A page that is not a WooCommerce surface at all (X-2, 2026-08-23) — the 404,
  *      search, blog archive, single post, ordinary pages and the front page. This
  *      path also drops WooCommerce's stylesheets (`sgs_dequeue_wc_styles_off_wc_pages()`).
+ *   3. A shop archive or single product built from blocks with no classic markup
+ *      (`sgs_wc_page_runs_without_classic_scripts()`, 2026-11-11). Its stylesheets stay.
  *
  * Hooked at priority 99 so it runs after WooCommerce (and everything else)
  * has enqueued on `wp_enqueue_scripts`.
@@ -301,7 +374,15 @@ function sgs_configurator_optimise_assets(): void {
 	$strip_off_wc_pages = (bool) apply_filters( 'sgs_optimise_assets_off_wc_pages', true )
 		&& ! sgs_page_needs_wc_frontend();
 
-	if ( ! $has_configurator && ! $strip_off_wc_pages ) {
+	/**
+	 * Filter the block-built shop and product page path independently of the other two.
+	 *
+	 * @param bool $enabled Whether to strip the classic WC scripts from block-built shop and product pages.
+	 */
+	$strip_on_block_shop = (bool) apply_filters( 'sgs_optimise_assets_on_block_shop_pages', true )
+		&& sgs_wc_page_runs_without_classic_scripts();
+
+	if ( ! $has_configurator && ! $strip_off_wc_pages && ! $strip_on_block_shop ) {
 		return;
 	}
 
