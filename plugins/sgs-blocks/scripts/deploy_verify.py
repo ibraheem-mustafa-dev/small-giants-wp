@@ -244,6 +244,30 @@ def step_first_paint(dry_run: bool, target_key: str) -> int:
     return run(cmd, dry_run=False, cwd=REPO_ROOT)
 
 
+def page_weight_wanted(page_weight_flag: bool, motion_qa_tier: str) -> bool:
+    """The live page-weight gate runs when `--page-weight` is passed and on every release run (`--motion-qa-tier full`)."""
+    return bool(page_weight_flag) or motion_qa_tier == "full"
+
+
+def step_page_weight(dry_run: bool, target_key: str) -> int:
+    """Post-deploy LIVE page-weight gate (`scripts/check-page-weight.mjs`): transferred CSS and JS per page against the budget.
+
+    It runs after the upload because a pre-deploy tier would measure the OLD live code. A page over budget fails only above
+    its baseline plus the tolerance (the baseline only ratchets down); a page under budget fails when it goes over. A target
+    with no entry in `scripts/data/page-weight.json` is skipped with a log line; a dry run only prints the command.
+    """
+    import json
+    if target_key not in json.loads((REPO_ROOT / "scripts" / "data" / "page-weight.json").read_text(encoding="utf-8"))["sites"]:
+        log(f"[page-weight] SKIPPED: no entry for {target_key} in scripts/data/page-weight.json")
+        return 0
+    node = "node.exe" if os.name == "nt" else "node"
+    cmd = [node, str(REPO_ROOT / "scripts" / "check-page-weight.mjs"), "--site", target_key, "--check"]
+    if dry_run:
+        log(f"[page-weight] SKIPPED (--dry-run); would run: {' '.join(cmd)}")
+        return 0
+    return run(cmd, dry_run=False, cwd=REPO_ROOT)
+
+
 def step_motion_qa(dry_run: bool, tier: str = "full", parallel: int = 1, uncommitted: list[str] | None = None,
                    skip_verify: bool = False) -> int:
     """Post-deploy LIVE motion regression check.

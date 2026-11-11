@@ -63,5 +63,18 @@ describe( 'woocommerce notices', () => {
 		test.each( [ 'is-info', 'is-success', 'is-warning', 'is-error' ] )( '.%s icon takes no background fill of its own', ( variant ) => {
 			expect( rule( `.wc-block-components-notice-banner.${ variant } > svg` ) ).toContain( 'background: none' );
 		} );
+
+		test( 'the action link takes the text colour against the three-class .wc-forward colour rule in wc-blocks.css', () => {
+			const body = rule( '.wc-block-components-notice-banner > .wc-block-components-notice-banner__content .wc-forward' );
+			expect( body ).toContain( 'color: var(--wp--preset--color--text' );
+			expect( body ).toContain( '!important' ); // wc-blocks.css sets that colour with !important.
+		} );
+
+		test( 'the info icon is painted in the text colour for every variant, never the pale edge colour', () => {
+			const body = rule( '.wc-block-components-notice-banner > svg' );
+			expect( body ).toContain( 'fill: var(--wp--preset--color--text' );
+			expect( body ).toContain( 'color: var(--wp--preset--color--text' );
+			expect( css ).not.toContain( 'fill: var(--_notice-border)' );
+		} );
 	} );
 } );

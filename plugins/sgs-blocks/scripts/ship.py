@@ -8,8 +8,8 @@ Steps, each stopping the run on failure:
      the gate pass is keyed on HEAD's tree, so a rebase after gating would void it).
   2. Reseed only when it is needed (--reseed auto): the shared framework DB lacks an attribute some block.json declares
      (read from the DB itself, because generated files can be committed by a private reseed that was never published),
-     or the composition seeder or the DB seeder changed since the last commit that regenerated the DB's generated files
-     (consistency/attr-role-map.json). The reseed runs on a private copy (publish-framework-db.py begin, sgs-update-v2.py --db, seed_reference_data.py, regenerate) and the
+     or the composition seeder or the DB seeder changed since the last commit that wrote any of the generated files
+     (GENERATED; a change to those files themselves never triggers a reseed). The reseed runs on a private copy (publish-framework-db.py begin, sgs-update-v2.py --db, seed_reference_data.py, regenerate) and the
      regenerated files are committed.
   3. ONE build-deploy.py pass for the target, with SGS_FRAMEWORK_DB pointing at the copy when reseeded: build, both gate
      tiers, the editor check on the target's own mirror (TARGETS["editor_mirror"] in deploy_common.py) and the deploy.
@@ -39,9 +39,10 @@ GENERATED = (
     "plugins/sgs-blocks/scripts/consistency/roster.json",
     "plugins/sgs-blocks/scripts/dbschema/seed-history.json",
 )
-# The generated file every reseed rewrites: its last commit is the last reseed this tree carries.
-RESEED_MARKER = "plugins/sgs-blocks/scripts/consistency/attr-role-map.json"
-# A change to any of these after that commit means the DB no longer describes the blocks.
+# A change to any of these after the last commit of a GENERATED file means the DB no longer describes the blocks.
+# The GENERATED files themselves never count: dbschema/seed-history.json sits under a trigger prefix, and a reseed
+# that leaves attr-role-map.json unchanged commits seed-history.json alone, so counting it made every ship reseed,
+# commit and change the tree, and the gate cache (keyed on the tree) never hit.
 RESEED_TRIGGERS = (
     "plugins/sgs-blocks/src/blocks/",
     "plugins/sgs-blocks/scripts/seed-composition-roles.py",
@@ -55,6 +56,8 @@ def needs_reseed(changed: list[str]) -> list[str]:
     hits = []
     for path in changed:
         p = path.replace("\\", "/")
+        if p in GENERATED:
+            continue
         if p.startswith("plugins/sgs-blocks/src/blocks/"):
             if p.endswith("/block.json"):
                 hits.append(p)
@@ -87,6 +90,11 @@ def missing_from_db(blocks_dir: Path, db: Path) -> list[str]:
             if (slug, attr) not in have:
                 missing.append(f"{slug}::{attr}")
     return missing
+
+
+def last_reseed_commit(git_fn) -> str:
+    """The last commit that wrote any GENERATED file: the last reseed this tree carries."""
+    return git_fn("log", "-1", "--format=%H", "--", *GENERATED)
 
 
 def plan(target: str, reseed: bool, copy: str, takeover: bool, push: bool) -> list[tuple[str, list[str], dict]]:
@@ -150,7 +158,7 @@ def main() -> int:
 
     shared = Path(framework_db_path())
     missing = missing_from_db(REPO_ROOT / "plugins/sgs-blocks/src/blocks", shared) if shared.is_file() else ["(no shared DB found)"]
-    marker = git("log", "-1", "--format=%H", "--", RESEED_MARKER)
+    marker = last_reseed_commit(git)
     changed = git("diff", "--name-only", f"{marker}..HEAD").splitlines() if marker else []
     seeders = [p for p in needs_reseed(changed) if not p.endswith("/block.json")]
     hits = missing + seeders

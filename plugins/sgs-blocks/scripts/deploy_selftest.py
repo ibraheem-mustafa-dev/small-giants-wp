@@ -14,15 +14,16 @@ import subprocess
 import tempfile
 from pathlib import Path
 import deploy_cache
+import deploy_delta
 import deploy_media_guard
 import deploy_multi
 import deploy_qa_tier
 import deploy_timing
 import deploy_verify
 
-from deploy_common import DEPLOY_ROOTS, FRAMEWORK_THEME_JSON_REL, REPO_ROOT, SNAPSHOT_REL, TARBALL_NAME, TARGETS, THEME_JSON_PAYLOAD_NAME
+from deploy_common import DEPLOY_ROOTS, FRAMEWORK_THEME_JSON_REL, FULL_PACKAGE_NAME, REPO_ROOT, SNAPSHOT_REL, TARBALL_NAME, TARGETS
 from deploy_guards import deploy_roots_for_scope, deployed_dirty_files, resolve_theme_json_payload, split_dirty_by_payload, theme_json_guard_decision, uncommitted_snapshot_md5
-from deploy_ship import build_remote_extract_cmd, build_tar_cmd, upload_resumable
+from deploy_ship import SHIP_APPLY_FAILED, SHIP_UPLOAD_FAILED, step_ship, upload_resumable
 from deploy_verify import theme_json_verify_result
 
 
@@ -52,8 +53,13 @@ def self_test_theme_json() -> list[str]:
         (repo / "sites" / "acme").mkdir(parents=True)
         (repo / SNAPSHOT_REL.format(client="acme")).write_bytes(SNAPSHOT)
 
-        def simulate(target: dict, use_payload: bool = True, drop_payload: bool = False) -> tuple[int, bytes | None]:
-            """Package + extract exactly as a real theme deploy does; return (rc, live theme.json)."""
+        roots = deploy_delta.roots_for(theme=True, blocks=False)
+
+        def simulate(target: dict, use_payload: bool = True, ship_framework: bool = False) -> tuple[int, bytes | None]:
+            """Collect, package and apply exactly as a real full theme deploy does; return (rc, live theme.json).
+
+            ship_framework swaps the framework theme.json into the package after it was written, standing in for
+            any way the client's file could fail to reach the staged tree."""
             server = base / f"server-{os.urandom(4).hex()}"
             live = server / "wp-content" / "themes" / "sgs-theme"
             live.mkdir(parents=True)
@@ -61,16 +67,22 @@ def self_test_theme_json() -> list[str]:
             payload, _label = resolve_theme_json_payload(target, root=repo)
             if payload is None:
                 return 99, live.joinpath("theme.json").read_bytes()
-            stage = repo / THEME_JSON_PAYLOAD_NAME
-            if use_payload:
-                stage.write_bytes(payload)
-            tar = subprocess.run(build_tar_cmd(True, False, use_payload and not drop_payload),
-                                 cwd=repo, capture_output=True, text=True)
-            stage.unlink(missing_ok=True)
-            if tar.returncode != 0:
-                return 98, None
-            shutil.move(str(repo / TARBALL_NAME), str(server / TARBALL_NAME))
-            cmd = build_remote_extract_cmd("wp-content", True, False, use_payload)
+            entries = deploy_delta.collect_payload(repo, theme=True, blocks=False,
+                                                   theme_json_payload=payload if use_payload else None)
+            plan = deploy_delta.Plan("full", list(entries), [], "self-test", 0, 0)
+            pkg = server / "pkg.tgz"
+            deploy_delta.write_package(pkg, entries, plan, roots)
+            if ship_framework:
+                import tarfile
+                with tarfile.open(pkg, "r:gz") as t:
+                    members = [(m, t.extractfile(m).read()) for m in t.getmembers()]
+                with tarfile.open(pkg, "w:gz") as t:
+                    for m, data in members:
+                        info = tarfile.TarInfo(m.name)
+                        data = FRAMEWORK if m.name == deploy_delta.THEME_JSON else data
+                        info.size = len(data)
+                        t.addfile(info, io.BytesIO(data))
+            cmd = deploy_delta.build_remote_apply_cmd("wp-content", roots, "full", "pkg.tgz", "stage")
             rc = subprocess.run([bash, "-c", cmd], cwd=server, capture_output=True, text=True).returncode
             f = live.joinpath("theme.json")
             return rc, (f.read_bytes() if f.exists() else None)
@@ -78,12 +90,13 @@ def self_test_theme_json() -> list[str]:
         client_target = {"client": "acme"}
         plain_target = {"client": None}
 
-        # 8. NEGATIVE CONTROL — the pre-fix deploy (no payload) DOES lose the snapshot. Without
-        #    this, case 9 could pass on a simulation that never overwrote anything.
-        rc, live = simulate(client_target, use_payload=False)
-        if rc != 0 or live != FRAMEWORK:
-            failures.append(f"NEGATIVE CONTROL: the pre-fix deploy did not reproduce the loss "
-                            f"(rc={rc}, live={live!r}) - the simulation cannot detect the bug")
+        # 8. The pre-fix deploy (a theme package without the target's theme.json) can no longer be built: the
+        #    collector refuses it. Case 11 is the negative control that the simulation can see a lost snapshot.
+        try:
+            simulate(client_target, use_payload=False)
+            failures.append("a theme package without the target's theme.json was built (the framework one would ship)")
+        except deploy_delta.PayloadError:
+            pass
         # 9. A theme deploy on a target WITH a client ends with the client snapshot live.
         rc, live = simulate(client_target)
         if rc != 0 or live != SNAPSHOT:
@@ -94,13 +107,13 @@ def self_test_theme_json() -> list[str]:
         if rc != 0 or live != FRAMEWORK:
             failures.append(f"no-client target: live theme.json is not the framework default "
                             f"(rc={rc}, live={live!r})")
-        # 11. A payload missing from the tarball FAILS the extract, and the live theme (the
+        # 11. A staged theme.json that is not the client's FAILS the apply's check, and the live theme (the
         #     client's snapshot) is left untouched — never swapped for the default.
-        rc, live = simulate(client_target, drop_payload=True)
+        rc, live = simulate(client_target, ship_framework=True)
         if rc == 0:
-            failures.append("missing payload: the remote extract exited 0 - a failed re-apply passed green")
+            failures.append("framework theme.json staged: the remote apply exited 0 - a lost client theme.json passed green")
         if live != SNAPSHOT:
-            failures.append(f"missing payload: the live theme was swapped anyway (live={live!r})")
+            failures.append(f"framework theme.json staged: the live theme was swapped anyway (live={live!r})")
         # 12. A named client with no snapshot file fails closed (no framework fallback).
         payload, why = resolve_theme_json_payload({"client": "ghost"}, root=repo)
         if payload is not None:
@@ -378,6 +391,60 @@ def self_test_motion_qa_args() -> list[str]:
     return failures
 
 
+def self_test_page_weight() -> list[str]:
+    """Self-test case 24: the live page-weight gate runs when asked or on a release run, builds its command, skips an
+    unknown target and only logs on a dry run (no deploy, no network). Each check is proven red on a planted fault."""
+    failures: list[str] = []
+
+    def captured(step, *args) -> tuple[list[list[str]], str]:
+        seen: list[list[str]] = []
+        original = deploy_verify.run
+        deploy_verify.run = lambda cmd, **kw: seen.append([Path(c).name if i < 2 else c for i, c in enumerate(cmd)]) or 0
+        buf = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(buf):
+                step(*args)
+        finally:
+            deploy_verify.run = original
+        return seen, buf.getvalue()
+
+    node = "node.exe" if os.name == "nt" else "node"
+    want = [[node, "check-page-weight.mjs", "--site", "sandybrown", "--check"]]
+
+    def check_wanted(fn) -> list[str]:
+        got = [fn(False, "none"), fn(True, "none"), fn(False, "full"), fn(False, "smoke")]
+        return [] if got == [False, True, True, False] else [f"wanted() gave {got}, not [False, True, True, False]"]
+
+    def check_cmd(step) -> list[str]:
+        got, _ = captured(step, False, "sandybrown")
+        return [] if got == want else [f"command is {got}, not {want}"]
+
+    def check_unknown(step) -> list[str]:
+        got, text = captured(step, False, "no-such-target")
+        return [] if not got and "SKIPPED" in text else [f"an unknown target ran {got} / logged {text!r}"]
+
+    def check_dry(step) -> list[str]:
+        got, text = captured(step, True, "sandybrown")
+        return [] if not got and "check-page-weight.mjs --site sandybrown --check" in text else [f"dry run ran {got} / logged {text!r}"]
+
+    real_step, real_wanted = deploy_verify.step_page_weight, deploy_verify.page_weight_wanted
+    cases = [
+        ("runs on --page-weight or --motion-qa-tier full only", check_wanted(real_wanted), check_wanted(lambda f, t: bool(f))),
+        ("the command names the target and --check", check_cmd(real_step),
+         check_cmd(lambda d, t: deploy_verify.run(["node", "check-page-weight.mjs", "--site", t], dry_run=False))),
+        ("a target with no data entry is skipped", check_unknown(real_step),
+         check_unknown(lambda d, t: deploy_verify.run(["node", "check-page-weight.mjs", "--site", t, "--check"], dry_run=False))),
+        ("a dry run logs the command and runs nothing", check_dry(real_step), check_dry(lambda d, t: deploy_verify.step_page_weight(False, t))),
+    ]
+    for label, real_problems, planted_problems in cases:
+        print(f"  [page-weight case] {label}: real={'GREEN' if not real_problems else 'RED'}; "
+              f"planted fault={'RED' if planted_problems else 'GREEN (check is vacuous)'}")
+        failures.extend(f"page-weight: {label}: {p}" for p in real_problems)
+        if not planted_problems:
+            failures.append(f"page-weight NEGATIVE CONTROL: {label}: the planted fault was not detected, so the check cannot fail")
+    return failures
+
+
 def self_test_upload_resume() -> list[str]:
     """Self-test case 21: the tarball upload resumes after a dropped connection (no network).
 
@@ -441,6 +508,22 @@ def self_test_upload_resume() -> list[str]:
                          attempts=attempts, pause=pause, sleep=sleep)
         return 0
 
+    def faulty_reput_any(use_alias, local, remote, dry_run, *, runner, remote_size, attempts, pause, sleep):
+        """Resumes with reput whenever the host holds any bytes, even more than the local file has."""
+        rc = 1
+        for n in range(attempts):
+            verb = "put" if n == 0 else ("reput" if remote_size(use_alias, remote) else "put")
+            batch = Path(tempfile.mkdtemp(prefix="sgs-upload-fault-")) / "b"
+            batch.write_text(f'{verb} "{local}" "{remote}"\n', encoding="utf-8")
+            rc = runner(["sftp", "-b", str(batch), "hd"], dry_run=dry_run)
+            if rc == 0:
+                return 0
+        return rc
+
+    def check_stale_larger_file(impl) -> list[str]:
+        got = attempt(impl, [(1, total + 500), (0, total)])
+        return [] if got["rc"] == 0 and got["verbs"] == ["put", "put"] else [f"a remote file larger than the local one gave verbs={got['verbs']}, not put then put (reput would append past the end)"]
+
     def check_first_try(impl) -> list[str]:
         got = attempt(impl, [(0, total)])
         return [] if got["rc"] == 0 and got["verbs"] == ["put"] else [f"first try gave rc={got['rc']} verbs={got['verbs']}"]
@@ -469,7 +552,8 @@ def self_test_upload_resume() -> list[str]:
     cases = [
         ("a clean upload is one put", check_first_try(real), check_first_try(lambda *a, **k: 0)),
         ("a drop with a partial file resumes with reput", check_resume(real), check_resume(faulty_always_put)),
-        ("a drop before any file exists starts again with put", check_drop_before_file(real), check_drop_before_file(lambda *a, **k: 1)),
+        ("a leftover remote file larger than the local one is overwritten with put, never resumed", check_stale_larger_file(real), check_stale_larger_file(faulty_reput_any)),
+        ("a drop before any file exists starts again with put",check_drop_before_file(real), check_drop_before_file(lambda *a, **k: 1)),
         ("a zero exit with a short remote file is not accepted", check_short_file(real), check_short_file(faulty_trust_exit_code)),
         ("the attempts run out with a failing exit code", check_gives_up(real), check_gives_up(faulty_no_limit)),
         ("a dry run makes one call and no remote check", check_dry(real), check_dry(lambda *a, **k: 1)),
@@ -481,6 +565,156 @@ def self_test_upload_resume() -> list[str]:
         failures.extend(f"upload resume: {label}: {p}" for p in real_problems)
         if not planted_problems:
             failures.append(f"upload resume NEGATIVE CONTROL: {label}: the planted fault was not detected, so the check cannot fail")
+    return failures
+
+
+def self_test_ship() -> list[str]:
+    """Self-test case 26: the real step_ship end to end against a temp server (no network).
+
+    The SSH listing and the remote apply run in bash in the temp server folder; the upload goes through the real
+    upload_resumable with a fake sftp that copies the package into that folder. Checks: a dropped connection
+    mid-transfer resumes and the deploy completes (planted fault: a one-shot upload, as scp was); a delta whose staged
+    tree fails its check swaps nothing and the full package then lands (the first apply must really have failed); a
+    changed and a deleted file land in one delta apply.
+    """
+    import tarfile
+    failures: list[str] = []
+    bash = shutil.which("bash")
+    if not bash:
+        return ["ship self-test needs bash on PATH (Git Bash on Windows)"]
+    roots = deploy_delta.roots_for(theme=True, blocks=False)
+    with tempfile.TemporaryDirectory(prefix="sgs-ship-selftest-") as td:
+        base = Path(td)
+        repo = base / "repo"
+        (repo / "theme" / "sgs-theme" / "parts").mkdir(parents=True)
+        for rel, data in {"theme.json": b'{"v":1}\n', "style.css": b"/* SGS */\n", "parts/header.html": b"<h/>\n",
+                          "big.bin": os.urandom(4000)}.items():
+            (repo / "theme" / "sgs-theme" / rel).write_bytes(data)
+        payload = deploy_delta.collect_payload(repo, theme=True, blocks=False, theme_json_payload=b"{\"client\":1}\n")
+
+        def server_with(tree: dict[str, bytes]) -> Path:
+            srv = base / f"srv-{os.urandom(3).hex()}"
+            (srv / "wp-content").mkdir(parents=True)
+            for rel, data in tree.items():
+                f = srv / "wp-content" / rel
+                f.parent.mkdir(parents=True, exist_ok=True)
+                f.write_bytes(data)
+            return srv
+
+        def live_tree(srv: Path) -> dict[str, bytes]:
+            w = srv / "wp-content"
+            # The live folder only: the rotation rightly leaves the previous copy in themes/.sgs-theme.bak.
+            return {q.relative_to(w).as_posix(): q.read_bytes() for q in sorted((w / "themes" / "sgs-theme").rglob("*"))
+                    if q.is_file()} if (w / "themes" / "sgs-theme").is_dir() else {}
+
+        def batch_file(local: str, remote: str) -> str:
+            f = Path(tempfile.mkdtemp(prefix="sgs-ship-batch-")) / "b"
+            f.write_text(f'put "{local}" "{remote}"\n', encoding="utf-8")
+            return str(f)
+
+        def ship(srv: Path, *, drop_first: bool, resumable: bool, tamper_first_apply: bool = False,
+                 first_apply_rc: int | None = None) -> tuple[int, dict]:
+            state: dict = {"uploads": 0, "apply_rcs": []}
+
+            def lister():
+                done = subprocess.run([bash, "-c", deploy_delta.live_listing_cmd("wp-content", roots)], cwd=srv,
+                                      capture_output=True)
+                return deploy_delta.parse_live_listing(done.stdout, roots)
+
+            def fake_sftp(cmd, *, dry_run, cwd=None):
+                words = Path(cmd[cmd.index("-b") + 1]).read_text(encoding="utf-8").split()
+                verb, local, remote = words[0], words[1].strip('"'), words[2].strip('"')
+                data = (REPO_ROOT / local).read_bytes()
+                dest = srv / remote
+                state["uploads"] += 1
+                if drop_first and state["uploads"] == 1:
+                    dest.write_bytes(data[: len(data) // 2])
+                    return 255
+                if verb == "reput" and dest.exists():
+                    dest.write_bytes(dest.read_bytes() + data[dest.stat().st_size:])
+                else:
+                    dest.write_bytes(data)
+                return 0
+
+            def remote_size(use_alias, remote):
+                f = srv / remote
+                return f.stat().st_size if f.exists() else None
+
+            def uploader(use_alias, local, remote, dry_run):
+                if resumable:
+                    return upload_resumable(use_alias, local, remote, dry_run, runner=fake_sftp, remote_size=remote_size,
+                                            attempts=4, pause=0, sleep=lambda _s: None)
+                return fake_sftp(["sftp", "-b", batch_file(local, remote)], dry_run=dry_run)
+
+            def runner(cmd, *, dry_run, cwd=None):
+                if first_apply_rc is not None and not state["apply_rcs"]:
+                    state["apply_rcs"].append(first_apply_rc)
+                    return first_apply_rc
+                if tamper_first_apply and not state["apply_rcs"]:
+                    pkg = srv / TARBALL_NAME
+                    with tarfile.open(pkg, "r:gz") as t:
+                        members = [(m, t.extractfile(m).read()) for m in t.getmembers()]
+                    with tarfile.open(pkg, "w:gz") as t:
+                        for m, data in members:
+                            info = tarfile.TarInfo(m.name)
+                            data = b"/* tampered */\n" if m.name.endswith("style.css") else data
+                            info.size = len(data)
+                            t.addfile(info, io.BytesIO(data))
+                rc = subprocess.run([bash, "-c", cmd[-1]], cwd=srv, capture_output=True).returncode
+                state["apply_rcs"].append(rc)
+                return rc
+
+            try:
+                with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                    rc = step_ship(False, True, "wp-content", True, False, payload, lister=lister, uploader=uploader,
+                                   runner=runner)
+            finally:
+                for name in (TARBALL_NAME, FULL_PACKAGE_NAME):
+                    (REPO_ROOT / name).unlink(missing_ok=True)
+            return rc, state
+
+        want = {p: e.data for p, e in payload.items()}
+        old = dict(want)
+        old["themes/sgs-theme/style.css"] = b"/* old */\n"
+        old["themes/sgs-theme/gone.html"] = b"<old/>\n"
+
+        def drop_case(resumable: bool) -> list[str]:
+            srv = server_with({})
+            rc, st = ship(srv, drop_first=True, resumable=resumable)
+            ok = rc == 0 and live_tree(srv) == want and st["uploads"] >= 2
+            return [] if ok else [f"a drop mid-transfer gave rc={rc} after {st['uploads']} transfer(s)"]
+
+        real, planted = drop_case(True), drop_case(False)
+        print(f"  [ship case] a dropped connection mid-transfer resumes: real={'GREEN' if not real else 'RED'}; "
+              f"planted fault={'RED' if planted else 'GREEN (check is vacuous)'}")
+        failures.extend(f"ship: drop resumes: {p}" for p in real)
+        if not planted:
+            failures.append("ship NEGATIVE CONTROL: a one-shot upload survived a drop, so the check cannot fail")
+
+        srv = server_with(old)
+        rc, st = ship(srv, drop_first=False, resumable=True, tamper_first_apply=True)
+        fb_ok = rc == 0 and live_tree(srv) == want and len(st["apply_rcs"]) == 2 and st["apply_rcs"][0] != 0
+        print(f"  [ship case] a delta failing its check falls back to one full upload: {'GREEN' if fb_ok else 'RED'} "
+              f"(apply exits {st['apply_rcs']})")
+        if not fb_ok:
+            failures.append(f"ship: fallback: rc={rc} applies={st['apply_rcs']} tree_ok={live_tree(srv) == want}")
+
+        # Only a failed staged check may lead to the full upload: after a swap failure (20) or a dropped connection
+        # (255) a second apply would replace the .bak, the only rollback copy.
+        for code in (deploy_delta.APPLY_SWAP_FAILED, 255):
+            srv = server_with(old)
+            rc, st = ship(srv, drop_first=False, resumable=True, first_apply_rc=code)
+            ok = rc == SHIP_APPLY_FAILED and st["apply_rcs"] == [code]
+            print(f"  [ship case] an apply ending {code} stops without a second apply: {'GREEN' if ok else 'RED'}")
+            if not ok:
+                failures.append(f"ship: exit {code}: rc={rc} applies={st['apply_rcs']}")
+
+        srv = server_with(old)
+        rc, st = ship(srv, drop_first=False, resumable=True)
+        d_ok = rc == 0 and live_tree(srv) == want and st["apply_rcs"] == [0]
+        print(f"  [ship case] a changed and a deleted file land in one delta apply: {'GREEN' if d_ok else 'RED'}")
+        if not d_ok:
+            failures.append(f"ship: delta: rc={rc} applies={st['apply_rcs']}")
     return failures
 
 
@@ -622,8 +856,11 @@ def self_test() -> int:
     failures.extend(deploy_multi.self_test())
     failures.extend(self_test_timing())
     failures.extend(self_test_motion_qa_args())
+    failures.extend(self_test_page_weight())
     failures.extend(self_test_litespeed_probe())
     failures.extend(self_test_upload_resume())
+    failures.extend(deploy_delta.self_test())
+    failures.extend(self_test_ship())
     failures.extend(deploy_qa_tier.self_test())
     failures.extend(deploy_media_guard.self_test())
 
@@ -642,10 +879,10 @@ def self_test() -> int:
     print("  5. SCOPE: a dirty THEME file does not block --blocks-only (it cannot ship it)")
     print("  6. SCOPE NEGATIVE CONTROL: an in-scope dirty file STILL blocks --blocks-only")
     print("  7. SCOPE is CONDITIONAL: a full deploy still sees the dirty theme file")
-    print("  8. NEGATIVE CONTROL: the pre-fix theme deploy DOES replace a client snapshot with the default")
+    print("  8. a theme package without the target's theme.json is refused before anything is packaged")
     print("  9. a theme deploy on a target WITH a client ends with the client snapshot live")
     print(" 10. a target with NO client keeps the framework default theme.json")
-    print(" 11. a payload missing from the tarball FAILS the extract and leaves the live theme untouched")
+    print(" 11. a staged theme.json that is not the client's FAILS the apply's check and leaves the live theme untouched")
     print(" 12. a named client with no snapshot fails closed (no framework fallback)")
     print(" 13. an unparseable snapshot fails closed; a target's own snapshot wins over its client's")
     print(" 14. pre-upload guard: aborts only when an UNCOMMITTED pushed snapshot is live")
@@ -669,4 +906,16 @@ def self_test() -> int:
     print(" 22. LiteSpeed probe: a warning for each of media-lazy and img_optm-webp that is on, none when both are off or missing")
     print(" 23. media guard: a pre-cutover build skips, a clean export passes, an export with one old attribute is refused "
           "(negative control), an unreadable export fails closed")
+    print(" 24. page-weight gate: runs on --page-weight or --motion-qa-tier full only, its command names the target and --check, "
+          "a target with no data entry is skipped, a dry run only logs; each check is proven red on a planted fault")
+    print(" 25. partial upload (deploy_delta.py): the collector applies TAR_EXCLUDES as tar does, follows a linked vendor/ "
+          "(a loop or a link out of the checkout is refused), refuses a theme payload without the target's theme.json, and "
+          "finds a dev-included Composer autoloader; an unchanged payload uploads nothing; one changed file of the same size sends "
+          "only that file; a deleted file is deleted on the server; a missing, garbled, cut-off or symlink-holding live "
+          "listing gives a full upload; a tampered delta or a wrong staged theme.json fails before the swap and leaves the "
+          "site untouched; a full upload builds the whole tree; --full-upload forces full; a file-folder type change applies as one "
+          "delta; a failed second swap puts both folders back; sent files carry the deploy time; each check red on a planted fault")
+    print(" 26. step_ship end to end: a dropped connection mid-transfer resumes (red on a one-shot upload), a delta failing "
+          "its check falls back to one full upload, an apply ending in a swap failure or a dropped connection stops with no "
+          "second apply, a changed and a deleted file land in one delta apply")
     return 0

@@ -76,4 +76,57 @@ check("without a reseed the shared DB is used", env == {}, env)
 check("every target names its editor-check mirror", all(t.get("editor_mirror") for t in deploy_common.TARGETS.values()),
       [k for k, t in deploy_common.TARGETS.items() if not t.get("editor_mirror")])
 
+# The reseed loop: a reseed whose commit rewrote only seed-history.json must not trigger the next reseed.
+import subprocess  # noqa: E402
+SEED_HISTORY = "plugins/sgs-blocks/scripts/dbschema/seed-history.json"
+ROLE_MAP = "plugins/sgs-blocks/scripts/consistency/attr-role-map.json"
+SEEDER = "plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py"
+check("a GENERATED file alone never triggers a reseed", ship.needs_reseed([SEED_HISTORY, ROLE_MAP]) == [],
+      ship.needs_reseed([SEED_HISTORY, ROLE_MAP]))
+repo = Path(tempfile.mkdtemp(prefix="ship-reseed-"))
+
+
+def g(*a):
+    return subprocess.run(["git", *a], cwd=repo, capture_output=True, text=True, check=True).stdout.strip()
+
+
+g("init", "-q")
+g("config", "user.email", "t@example.invalid")
+g("config", "user.name", "t")
+
+
+def commit(files, msg):
+    for rel, text in files.items():
+        f = repo / rel
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(text)
+    g("add", "-A")
+    g("commit", "-q", "-m", msg)
+
+
+commit({SEEDER: "v1", ROLE_MAP: "r1", SEED_HISTORY: "h1"}, "a reseed that wrote both generated files")
+commit({SEED_HISTORY: "h2"}, "a reseed that rewrote seed-history.json only")
+
+
+def reasons(marker_fn, trigger_fn):
+    marker = marker_fn(g)
+    return trigger_fn(g("diff", "--name-only", f"{marker}..HEAD").splitlines())
+
+
+def old_marker(git_fn):
+    return git_fn("log", "-1", "--format=%H", "--", ROLE_MAP)
+
+
+def old_needs_reseed(changed):
+    return [p for p in changed if any(p.startswith(t) for t in ship.RESEED_TRIGGERS)]
+
+
+check("after a seed-history-only reseed commit, the next ship does not reseed",
+      reasons(ship.last_reseed_commit, ship.needs_reseed) == [], reasons(ship.last_reseed_commit, ship.needs_reseed))
+check("NEGATIVE CONTROL: the old marker and trigger rule reseed again (the loop this fixes)",
+      reasons(old_marker, old_needs_reseed) == [SEED_HISTORY], reasons(old_marker, old_needs_reseed))
+commit({SEEDER: "v2"}, "a real seeder edit")
+check("a real seeder edit after the last reseed still triggers one",
+      reasons(ship.last_reseed_commit, ship.needs_reseed) == [SEEDER], reasons(ship.last_reseed_commit, ship.needs_reseed))
+
 sys.exit(1 if failures else 0)

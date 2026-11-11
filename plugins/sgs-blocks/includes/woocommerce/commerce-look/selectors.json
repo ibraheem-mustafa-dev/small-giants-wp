@@ -385,6 +385,36 @@
 				"action": "none"
 			}
 		},
+		"coupon_section": {
+			"cart": ".wp-block-woocommerce-cart-order-summary-coupon-form-block .wc-block-components-totals-coupon",
+			"checkout": ".wp-block-woocommerce-checkout-order-summary-coupon-form-block .wc-block-components-totals-coupon",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; the coupon section inside the summary wrapper (WooCommerce puts its own side padding here)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"coupon_input": {
+			"cart": ".wp-block-woocommerce-cart-order-summary-coupon-form-block .wc-block-components-totals-coupon__input.wc-block-components-text-input input[type],.wp-block-woocommerce-cart-order-summary-coupon-form-block .wc-block-components-totals-coupon__input.wc-block-components-text-input",
+			"checkout": ".wp-block-woocommerce-checkout-order-summary-coupon-form-block .wc-block-components-totals-coupon__input.wc-block-components-text-input input[type],.wp-block-woocommerce-checkout-order-summary-coupon-form-block .wc-block-components-totals-coupon__input.wc-block-components-text-input",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; the coupon code text input and its wrapper (the coupon panel open)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"coupon_apply": {
+			"cart": ".wp-block-woocommerce-cart-order-summary-coupon-form-block .wc-block-components-totals-coupon__button.wc-block-components-button",
+			"checkout": ".wp-block-woocommerce-checkout-order-summary-coupon-form-block .wc-block-components-totals-coupon__button.wc-block-components-button",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; the coupon Apply button (the coupon panel open)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
 		"coupon_label": {
 			"cart": ".wc-block-components-totals-coupon .wc-block-components-panel__button",
 			"checkout": ".wc-block-components-totals-coupon .wc-block-components-panel__button",

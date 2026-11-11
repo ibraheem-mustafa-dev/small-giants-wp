@@ -323,14 +323,15 @@ if ( ! function_exists( 'sgs_account_login_look_css' ) ) {
 		// The buttons WooCommerce and the wishlist panel print inside the account content (the saved-items empty
 		// link, Select options, an order's Pay or Cancel, Browse products) are not form buttons, so the theme paints
 		// them in its own button colour; with the all-forms scope they take the same preset, at their natural width.
+		// A block notice's action link (Confirm email, View cart) is a text link in the notice look, so it is left out.
 		$extra = array();
 		if ( 'all-forms' === ( $attributes['loginButtonScope'] ?? '' ) ) {
 			$content = $root_sel . ' .woocommerce-MyAccount-content';
 			$extra   = array(
 				$root_sel . ' .sgs-wishlist-panel__empty-cta',
 				$root_sel . ' .sgs-wishlist-panel__choose-options',
-				$content . ' a.button:not(.view)',
-				$content . ' a.woocommerce-button:not(.view)',
+				$content . ' a.button:not(.view):not(.wc-block-components-notice-banner__content *)',
+				$content . ' a.woocommerce-button:not(.view):not(.wc-block-components-notice-banner__content *)',
 				$content . ' button.button:not([type="submit"])',
 				$content . ' button.woocommerce-button:not([type="submit"])',
 			);

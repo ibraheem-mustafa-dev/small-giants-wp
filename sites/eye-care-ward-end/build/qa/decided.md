@@ -186,3 +186,8 @@ Decided in round 13 (Bean, 2026-11-09 and 2026-11-10). Do not report:
 - The thank-you note ("View my orders") shows only to the signed-in owner of the order.
 - Prices hide ".00" everywhere except at checkout, where pennies show.
 - "Already have an account? Sign in" sits beside the Contact heading on one line, not below the fields.
+
+Decided on 2026-11-11 (Bean). Do not report:
+- Stripe's frame text and labels need not match the draft (Stripe's frame is Stripe's).
+- The "By providing your card information, you allow ... to charge your card for future payments" line is Stripe's standard wording for a saved card and stays; turning Saved cards off is a business decision that is still open.
+- Colour settings are not generalised, and the account post's literal colours stay as they are.

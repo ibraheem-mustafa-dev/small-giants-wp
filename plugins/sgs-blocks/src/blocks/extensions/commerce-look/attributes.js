@@ -281,6 +281,7 @@ export const COMMERCE_LOOK_ATTRIBUTES = {
 	sgsOptionGroupOutline: { type: 'object' },
 	sgsOptionGap: { type: 'object' },
 	sgsCouponPadding: { type: 'object' },
+	sgsCouponControlHeight: { type: 'object' },
 	sgsCouponLabelFontSize: { type: 'number' },
 	sgsCouponLabelFontSizeUnit: { type: 'string' },
 	sgsCouponLabelFontSizeTablet: { type: 'number' },

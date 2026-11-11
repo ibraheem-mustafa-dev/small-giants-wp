@@ -1,0 +1,138 @@
+#!/usr/bin/env node
+/**
+ * build-with-gates.mjs: `npm run build`'s main step. Runs the fast gate tier and webpack at the same time.
+ *
+ * The fast tier (scripts/gates.json, 245 s on 2026-11-11) used to run at the end of `prebuild`, before webpack (159 s)
+ * started. Nothing makes them sequential: `prebuild` deletes build/ first, so no fast gate reads the build. To keep it
+ * that way while webpack runs, webpack writes to a folder in the system temp directory, outside the repository, and
+ * that folder becomes build/ only when both the gates and webpack pass. Outside the repository matters: whole-corpus
+ * gates walk the plugin folder skipping `build` by name, and a sibling build-next/ failed two of them
+ * (migrate-box-longhands, migrate-length-sanitiser) on 2026-11-11. A failure of either leaves no build/, as a failed
+ * fast tier always did, so a deploy still fails closed. Output: the gates' lines as they come, webpack's after it ends.
+ *
+ * Usage (from plugins/sgs-blocks, through `npm run build`): node scripts/build-with-gates.mjs [--serial]
+ *   --serial runs the gates, then webpack, the old order (for comparing).
+ * Self-test: node scripts/build-with-gates.mjs --self-test
+ *
+ * @package SGS\Blocks
+ */
+import { spawn } from 'child_process';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const PLUGIN = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
+const GATES = [ 'python', [ 'scripts/run-gates.py', '--tier', 'fast' ] ];
+const webpackTo = ( dir ) => [ 'npx', [ 'wp-scripts', 'build', '--experimental-modules', '--webpack-copy-php', `--output-path=${ dir }` ] ];
+
+/** Run a command; stream its output when `live`, otherwise collect it. Resolves { code, out }. */
+function run( [ cmd, args ], { cwd, live } ) {
+	return new Promise( ( resolve ) => {
+		// A bare name (npx, python) needs the shell on Windows to find its .cmd shim; its arguments hold no spaces.
+		const viaShell = process.platform === 'win32' && ! path.isAbsolute( cmd );
+		const child = viaShell
+			? spawn( [ cmd, ...args ].join( ' ' ), { cwd, shell: true, stdio: [ 'ignore', 'pipe', 'pipe' ] } )
+			: spawn( cmd, args, { cwd, stdio: [ 'ignore', 'pipe', 'pipe' ] } );
+		let out = '';
+		const take = ( chunk ) => ( live ? process.stdout.write( chunk ) : ( out += chunk ) );
+		child.stdout.on( 'data', take );
+		child.stderr.on( 'data', take );
+		child.on( 'error', ( error ) => resolve( { code: 127, out: `${ out }\n${ error.message }\n` } ) );
+		child.on( 'close', ( code ) => resolve( { code: code ?? 1, out } ) );
+	} );
+}
+
+/** Move `from` to `to`, copying when they sit on different drives. */
+function moveDir( from, to ) {
+	try {
+		fs.renameSync( from, to );
+	} catch ( error ) {
+		if ( error.code !== 'EXDEV' ) throw error;
+		fs.cpSync( from, to, { recursive: true } );
+		fs.rmSync( from, { recursive: true, force: true } );
+	}
+}
+
+/** The build step. `gates` is a command; `webpack` maps the staging folder to a command (the self-test passes fakes). */
+export async function buildWithGates( { cwd = PLUGIN, gates = GATES, webpack = webpackTo, serial = false, log = console.log } = {} ) {
+	const staging = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-build-' ) );
+	const build = path.join( cwd, 'build' );
+	const pack = webpack( staging );
+	const started = Date.now();
+	let gateResult;
+	let packResult;
+	if ( serial ) {
+		gateResult = await run( gates, { cwd, live: true } );
+		packResult = gateResult.code === 0 ? await run( pack, { cwd, live: true } ) : { code: 1, out: 'webpack skipped: the gates failed\n' };
+	} else {
+		[ gateResult, packResult ] = await Promise.all( [ run( gates, { cwd, live: true } ), run( pack, { cwd, live: false } ) ] );
+		process.stdout.write( packResult.out );
+	}
+	const seconds = ( ( Date.now() - started ) / 1000 ).toFixed( 1 );
+	if ( gateResult.code !== 0 || packResult.code !== 0 ) {
+		fs.rmSync( staging, { recursive: true, force: true } );
+		log( `[build] FAILED after ${ seconds }s: fast gates exit ${ gateResult.code }, webpack exit ${ packResult.code }; no build/ written` );
+		return 1;
+	}
+	if ( fs.readdirSync( staging ).length === 0 ) {
+		fs.rmSync( staging, { recursive: true, force: true } );
+		log( '[build] FAILED: webpack exited 0 but wrote nothing' );
+		return 1;
+	}
+	fs.rmSync( build, { recursive: true, force: true } );
+	moveDir( staging, build );
+	log( `[build] fast gates and webpack passed ${ serial ? 'one after the other' : 'side by side' } in ${ seconds }s; webpack's output is now build/` );
+	return 0;
+}
+
+async function selfTest() {
+	const node = process.execPath;
+	const script = ( body ) => [ node, [ '-e', body ] ];
+	const okGates = script( 'process.exit(0)' );
+	const badGates = script( "console.log('gate failed'); process.exit(1)" );
+	const okPack = ( dir ) => script( `require('fs').writeFileSync(${ JSON.stringify( path.join( dir, 'a.js' ) ) },'x')` );
+	const badPack = () => script( 'process.exit(2)' );
+	const emptyPack = () => script( 'process.exit(0)' );
+	// The gates must never see webpack's output while they run: this gate fails if build/ or a build-like folder appears.
+	const seesBuild = script( "setTimeout(()=>process.exit(require('fs').readdirSync('.').some((n)=>/^build/.test(n))?1:0),300)" );
+	// Planted fault: webpack writing inside the plugin folder (the first cut's build-next/) while the gates run.
+	const writesInside = () => script( "require('fs').mkdirSync('build-next',{recursive:true});require('fs').writeFileSync('build-next/a.js','x')" );
+	const quiet = () => {};
+	let failed = 0;
+	const attempt = async ( opts ) => {
+		const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-build-selftest-' ) );
+		const rc = await buildWithGates( { cwd: dir, log: quiet, ...opts } );
+		const hasBuild = fs.existsSync( path.join( dir, 'build', 'a.js' ) );
+		fs.rmSync( dir, { recursive: true, force: true } );
+		return { rc, hasBuild };
+	};
+	const check = async ( label, opts, wantRc, wantBuild, planted ) => {
+		const got = await attempt( opts );
+		const ok = got.rc === wantRc && got.hasBuild === wantBuild;
+		console.log( `${ ok ? 'ok  ' : 'FAIL' } ${ label }${ ok ? '' : `: rc=${ got.rc } build=${ got.hasBuild }` }` );
+		if ( ! ok ) failed++;
+		if ( planted ) {
+			const bad = await attempt( { ...opts, ...planted } );
+			const caught = bad.rc !== wantRc || bad.hasBuild !== wantBuild;
+			console.log( `${ caught ? 'ok  ' : 'FAIL' } NEGATIVE CONTROL for "${ label }": the planted fault is caught` );
+			if ( ! caught ) failed++;
+		}
+	};
+	await check( 'both pass: build/ appears', { gates: okGates, webpack: okPack }, 0, true );
+	await check( 'a failing gate fails the build and leaves no build/', { gates: badGates, webpack: okPack }, 1, false );
+	await check( 'a failing webpack fails the build', { gates: okGates, webpack: badPack }, 1, false );
+	await check( 'a webpack that writes nothing fails the build', { gates: okGates, webpack: emptyPack }, 1, false );
+	await check( 'the gates never see webpack output while they run', { gates: seesBuild, webpack: okPack }, 0, true,
+		{ webpack: writesInside } );
+	await check( 'the serial order still works', { gates: okGates, webpack: okPack, serial: true }, 0, true );
+	console.log( `build-with-gates self-test: ${ failed ? 'FAIL' : 'ok' }` );
+	return failed ? 1 : 0;
+}
+
+if ( process.argv[ 1 ] && fileURLToPath( import.meta.url ) === path.resolve( process.argv[ 1 ] ) ) {
+	if ( process.argv.includes( '--self-test' ) ) {
+		process.exit( await selfTest() );
+	}
+	process.exit( await buildWithGates( { serial: process.argv.includes( '--serial' ) } ) );
+}

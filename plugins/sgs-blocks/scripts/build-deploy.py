@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-build-deploy.py — One-shot SGS build + tar + scp + remote extract + cleanup.
+build-deploy.py — One-shot SGS build, gates, upload of only what the site lacks, checked remote apply, verify.
 
 Usage examples:
     # Default (build + deploy theme & plugin to sandybrown canary)
@@ -57,10 +57,10 @@ from deploy_media_guard import step_media_guard
 from deploy_guards import deploy_roots_for_scope, deployed_dirty_files, resolve_theme_json_payload, should_isolate, split_dirty_by_payload, step_deploy_ownership, step_oldshape_audit, step_theme_json_guard, write_deploy_marker
 from deploy_selftest import self_test
 from deploy_timing import finish as finish_timings, record as record_stage, stage, timed
-from deploy_ship import run_isolated, step_build, step_local_cleanup, step_remote_extract, step_scp, step_tar
+from deploy_ship import SHIP_APPLY_FAILED, SHIP_STAGE_FAILED, SHIP_TREE_DIFFERS, SHIP_UPLOAD_FAILED, run_isolated, step_build, step_collect, step_local_cleanup, step_ship
 from deploy_qa_tier import motion_qa_action, shipped_uncommitted
 from deploy_litespeed_probe import step_litespeed_probe
-from deploy_verify import step_first_paint, step_motion_qa, step_purge_caches, step_scoped_selector_audit, step_verify, step_verify_payload, step_verify_theme_json
+from deploy_verify import page_weight_wanted, step_first_paint, step_motion_qa, step_page_weight, step_purge_caches, step_scoped_selector_audit, step_verify, step_verify_payload, step_verify_theme_json
 
 
 def step_gate_full(dry_run: bool) -> int:
@@ -223,6 +223,14 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--first-paint", action="store_true",
                    help="after the upload, run the live first-paint gate (CLS, late CSS, stylesheet-name stability) against this target; "
                         "the target needs an entry in scripts/data/first-paint.json")
+    p.add_argument("--page-weight", action="store_true",
+                   help="after the upload, run the live page-weight gate (transferred CSS < 100 KB and JS < 50 KB per page, "
+                        "with a baseline that only shrinks) against this target; always on with --motion-qa-tier full. "
+                        "The target needs an entry in scripts/data/page-weight.json")
+    p.add_argument("--full-upload", action="store_true",
+                   help="Send the whole payload instead of only the files the site lacks (deploy_delta.py). The "
+                        "deploy falls back to this by itself when the live tree cannot be listed or a delta fails "
+                        "its staged check, so this is for measuring or when a delta is suspected.")
     p.add_argument("--skip-purge", action="store_true",
                    help="Skip the post-deploy cache purge (OPcache + LiteSpeed). "
                         "NOT recommended: the deploy still lands, but warm caches "
@@ -428,7 +436,7 @@ def main() -> int:
 
     # [2/5] Tar
     # Pre-deploy ownership gate: would this deploy clobber work that is live and
-    # NOT in this checkout? Runs BEFORE tar/scp so an abort costs nothing.
+    # NOT in this checkout? Runs BEFORE the upload so an abort costs nothing.
     rc = timed("deploy-ownership", step_deploy_ownership, use_alias, target_key, args.takeover, args.dry_run)
     if rc != 0:
         print("[ABORTED] reason: deploy-ownership (the live target carries work this "
@@ -444,29 +452,41 @@ def main() -> int:
                   "pushed snapshot, or could not be read). Nothing was uploaded.", flush=True)
             return 1
 
+    payload = None
     try:
         with stage("package"), deploy_cache.package_lock(log):
-            rc = step_tar(args.dry_run, theme=deploy_theme, blocks=deploy_blocks,
-                          theme_json_payload=theme_json_payload)
+            rc, payload = step_collect(args.dry_run, theme=deploy_theme, blocks=deploy_blocks,
+                                       theme_json_payload=theme_json_payload)
     except TimeoutError as exc:
         err(f"[package-lock] {exc}")
         rc = 1
     if rc != 0:
-        print(f"[ABORTED] reason: tar-failed (exit {rc})", flush=True)
+        print(f"[ABORTED] reason: payload-failed (exit {rc})", flush=True)
         return 1
 
-    # [3/5] SCP
-    rc = timed("scp", step_scp, args.dry_run, use_alias, host_label)
-    if rc != 0:
-        print(f"[ABORTED] reason: scp-failed (exit {rc})", flush=True)
+    # [3/5] + [4/5] Send only what the site lacks, apply it in a checked staging copy, swap, confirm the live tree.
+    rc = step_ship(args.dry_run, use_alias, target["wp_content"], deploy_theme, deploy_blocks, payload,
+                   force_full=args.full_upload)
+    if rc == SHIP_UPLOAD_FAILED:
+        print("[ABORTED] reason: upload-failed. Nothing was swapped.", flush=True)
         return 1
-
-    # [4/5] Remote extract
-    rc = timed("remote-extract", step_remote_extract, args.dry_run, use_alias, target["wp_content"],
-               theme=deploy_theme, blocks=deploy_blocks,
-               theme_json_payload=theme_json_payload is not None)
+    if rc == SHIP_STAGE_FAILED:
+        print("[ABORTED] reason: staged-tree-check-failed. Nothing was swapped; read the lines above.", flush=True)
+        return 1
+    if rc == SHIP_APPLY_FAILED:
+        print("[ABORTED] reason: remote-apply-failed. Read the lines above for what is live.", flush=True)
+        return 1
+    if rc == SHIP_TREE_DIFFERS:
+        # The swap ran, so the new code is live: purge the caches before reporting.
+        timed("deploy-marker", write_deploy_marker, use_alias, target_key, args.dry_run)
+        step_local_cleanup(args.dry_run)
+        if not args.skip_purge:
+            timed("purge-caches", step_purge_caches, args.dry_run, use_alias, target["wp_content"], target["host"])
+        print("[DEPLOYED-BUT-STALE] the swap ran but the live tree is not this payload (another deploy at the same "
+              "time, or a file written into the plugin or theme folder). Read the paths above.", flush=True)
+        return 1
     if rc != 0:
-        print(f"[ABORTED] reason: remote-extract-failed (exit {rc})", flush=True)
+        print(f"[ABORTED] reason: ship-failed (exit {rc})", flush=True)
         return 1
 
     # [5/5] Local cleanup
@@ -554,6 +574,14 @@ def main() -> int:
             print("[DEPLOYED-BUT-FIRST-PAINT-FAILED] the deploy completed and the payload matches, but the live first-paint "
                   "gate failed (CLS above its limit, late CSS, or an unstable collected stylesheet name). Read the table above.",
                   flush=True)
+            return 1
+
+    # Post-deploy LIVE page-weight gate: opt-in, and always on for a release run (--motion-qa-tier full).
+    if page_weight_wanted(args.page_weight, args.motion_qa_tier) and deploy_blocks:
+        rc = timed("page-weight", step_page_weight, args.dry_run, target_key)
+        if rc != 0:
+            print("[DEPLOYED-BUT-PAGE-WEIGHT-FAILED] the deploy completed and the payload matches, but a page's transferred CSS "
+                  "or JS rose above its baseline (or above the budget it was under). Read the table above.", flush=True)
             return 1
 
     # Post-deploy structural gate: live scoped-selector match audit.

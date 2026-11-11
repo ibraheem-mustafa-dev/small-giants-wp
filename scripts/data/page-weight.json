@@ -1,0 +1,83 @@
+{
+  "_note": "Data for scripts/check-page-weight.mjs. Budgets are transferred (compressed) bytes per page (project CLAUDE.md Non-negotiables). A page over budget fails above its baseline + toleranceKb; a page under budget fails when it goes over. Baselines are bytes and only ever lowered by --update-baseline. A baseline may be raised only by hand, for a deliberate change, with a 'raised' line giving the reason.",
+  "budgetKb": {
+    "css": 100,
+    "js": 50
+  },
+  "toleranceKb": 3,
+  "width": 1440,
+  "sites": {
+    "sandybrown": {
+      "url": "https://sandybrown-nightingale-600381.hostingersite.com",
+      "pages": [
+        "/",
+        "/blog/",
+        "/shop/",
+        "/product/qa-simple-toast-fixture/",
+        "/product/classic-lactation-cookies/"
+      ]
+    },
+    "eye-care-test": {
+      "url": "https://darkcyan-grouse-898606.hostingersite.com",
+      "pages": [
+        "/",
+        "/shop/",
+        "/product/gucci-oversized-cat-eye/",
+        "/about/"
+      ]
+    }
+  },
+  "baseline": {
+    "sandybrown": {
+      "/": {
+        "css": 133675,
+        "js": 104310,
+        "date": "2026-11-11",
+        "raised": "JS raised on purpose 2026-11-11: order attribution (sourcebuster-js 4.9 KB + wc-order-attribution 1.4 KB) loads on every page again so each order records where the visitor landed (Bean 2026-11-03)."
+      },
+      "/blog/": {
+        "css": 113462,
+        "js": 91784,
+        "date": "2026-11-11",
+        "raised": "JS raised on purpose 2026-11-11: order attribution (sourcebuster-js 4.9 KB + wc-order-attribution 1.4 KB) loads on every page again so each order records where the visitor landed (Bean 2026-11-03)."
+      },
+      "/shop/": {
+        "css": 194724,
+        "js": 195491,
+        "date": "2026-11-11"
+      },
+      "/product/qa-simple-toast-fixture/": {
+        "css": 206385,
+        "js": 186065,
+        "date": "2026-11-11"
+      },
+      "/product/classic-lactation-cookies/": {
+        "css": 217539,
+        "js": 126215,
+        "date": "2026-11-11"
+      }
+    },
+    "eye-care-test": {
+      "/": {
+        "css": 223829,
+        "js": 107179,
+        "date": "2026-11-11"
+      },
+      "/shop/": {
+        "css": 215761,
+        "js": 206917,
+        "date": "2026-11-11"
+      },
+      "/product/gucci-oversized-cat-eye/": {
+        "css": 252040,
+        "js": 392459,
+        "date": "2026-11-11"
+      },
+      "/about/": {
+        "css": 196223,
+        "js": 86647,
+        "date": "2026-11-11"
+      }
+    }
+  }
+}

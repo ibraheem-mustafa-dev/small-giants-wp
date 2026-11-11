@@ -478,6 +478,7 @@
 				"sgsOptionGroupOutline": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "visual", "css_property": "border-top-style", "css_element": "option-group-outline" },
 				"sgsOptionGap": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "margin-bottom", "css_element": "payment-option" },
 				"sgsCouponPadding": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "padding", "css_element": "coupon-panel" },
+				"sgsCouponControlHeight": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "height", "css_element": "coupon-apply" },
 				"sgsCouponLabelFontSize": { "type": "number", "role": "typography", "css_property": "font-size", "css_element": "coupon-label" },
 				"sgsCouponLabelFontSizeUnit": { "type": "string", "role": "typography" },
 				"sgsCouponLabelFontSizeTablet": { "type": "number", "role": "typography", "css_property": "font-size", "css_element": "coupon-label", "css_tier": "tablet" },

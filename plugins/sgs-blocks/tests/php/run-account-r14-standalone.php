@@ -55,6 +55,11 @@ ok( false !== strpos( $css, '.x .sgs-account__wc form .woocommerce-form-login__s
 $none = sgs_account_login_look_css( array( 'loginButtonPreset' => 'primary' ), '.x' );
 ok( false === strpos( $none, 'sgs-wishlist-panel__empty-cta' ), 'without the all-forms scope the extra buttons are left alone' );
 
+// 1b) A block notice's action link inside the account content is a text link (the notice look), never a preset button.
+$content_buttons = preg_match_all( '/a\.(?:woocommerce-)?button:not\(\.view\)(?!:not\(\.wc-block-components-notice-banner__content \*\))[:{,]/', $css );
+ok( 0 === $content_buttons, 'no account content button rule reaches a link inside a block notice (' . $content_buttons . ' unguarded selectors)' );
+ok( false !== strpos( $css, '.x .woocommerce-MyAccount-content a.button:not(.view):not(.wc-block-components-notice-banner__content *)' ), 'other account content buttons (Pay, Cancel, Browse products) still take the preset' );
+
 // 2) The Back to sign in link leaves the header and follows the form.
 $attrs = array( 'headerLostEyebrow' => 'FORGOTTEN', 'headerLostTitle' => 'Reset', 'headerLostIntro' => 'Enter', 'headerLostBackLabel' => 'Back to sign in' );
 ok( false === strpos( sgs_account_header_html( $attrs, 'lost' ), 'header-back' ), 'the lost-password header holds no Back link' );
