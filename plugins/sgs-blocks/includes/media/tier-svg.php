@@ -30,6 +30,34 @@ if ( ! function_exists( 'sgs_tier_media_svg_html' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_svg_parts_attr' ) ) {
+	/**
+	 * Put a slot's named-part animation on its inline SVG: the cleaned parts as `data-sgs-svg-parts` on the `<svg>`,
+	 * which src/shared/svg-parts/svg-parts.js reads. The SVG is returned as it came when there are no parts to animate.
+	 *
+	 * @param string $svg     The `<svg>` markup from `sgs_media_svg_element()`.
+	 * @param mixed  $parts   The slot's stored `SvgParts` list.
+	 * @param string $trigger The slot's `SvgPartsTrigger` ('' for the default, `load`).
+	 * @return string The `<svg>` markup.
+	 */
+	function sgs_media_svg_parts_attr( string $svg, $parts, string $trigger ): string {
+		if ( '' === $svg || empty( $parts ) || ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
+			return $svg;
+		}
+		require_once dirname( __DIR__ ) . '/helpers-svg-parts.php';
+		$json = sgs_svg_parts_data( $parts, '' !== $trigger ? $trigger : 'load' );
+		if ( '' === $json ) {
+			return $svg;
+		}
+		$tags = new WP_HTML_Tag_Processor( $svg );
+		if ( ! $tags->next_tag() || 'SVG' !== $tags->get_tag() ) {
+			return $svg;
+		}
+		$tags->set_attribute( 'data-sgs-svg-parts', $json );
+		return trim( $tags->get_updated_html() );
+	}
+}
+
 if ( ! function_exists( 'sgs_media_svg_element' ) ) {
 	/**
 	 * An inline SVG slot sibling: made safe by the sanitiser every SVG upload goes through, scoped to its own instance

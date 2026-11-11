@@ -450,7 +450,7 @@ if ( ! class_exists( 'SGS_Background_Layer' ) ) {
 		/**
 		 * The inline SVG background layer markup.
 		 *
-		 * @param array<string,mixed> $attributes Block attributes, verbatim (`bgSvgParts`, `bgSvgPartsTrigger`).
+		 * @param array<string,mixed> $attributes Block attributes, verbatim (`backgroundSvgParts`, `backgroundSvgPartsTrigger`).
 		 * @param array<string,mixed> $svg        Result of read_svg().
 		 * @return string
 		 */
@@ -461,12 +461,12 @@ if ( ! class_exists( 'SGS_Background_Layer' ) ) {
 
 				// A motion layer on the `svg-bg` part (the `draw` effect) reaches this element through the
 				// part's own selector, so the div carries no effect attributes of its own.
-				// A block that stores `bgSvgParts` animates named parts of the SVG: the cleaned document rides on the
+				// A block that stores `backgroundSvgParts` animates named parts of the SVG: the cleaned document rides on the
 				// layer as `data-sgs-svg-parts`, read by src/shared/svg-parts/svg-parts.js. Nothing is printed without parts.
 				$svg_parts_attr = '';
-				if ( ! empty( $attributes['bgSvgParts'] ) ) {
+				if ( ! empty( $attributes['backgroundSvgParts'] ) ) {
 					require_once __DIR__ . '/helpers-svg-parts.php';
-					$svg_parts_json = sgs_svg_parts_data( $attributes['bgSvgParts'], (string) ( $attributes['bgSvgPartsTrigger'] ?? 'load' ) );
+					$svg_parts_json = sgs_svg_parts_data( $attributes['backgroundSvgParts'], (string) ( $attributes['backgroundSvgPartsTrigger'] ?? 'load' ) );
 					$svg_parts_attr = '' !== $svg_parts_json ? ' data-sgs-svg-parts="' . esc_attr( $svg_parts_json ) . '"' : '';
 				}
 				$svg_html = sprintf(

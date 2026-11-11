@@ -264,7 +264,7 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 		++$n;
 		$class = $plain ? $direct . ' sgs-media-svg' : 'sgs-media-el sgs-media-svg sgs-media-sib sgs-media-sib--svg-' . $n;
 		$label = $alt_of( $entry['source'] );
-		$html .= sgs_media_svg_element( $entry['source']['markup'], $class, $uid . '-s' . $n . '-', $label, '' === $label, $fit );
+		$html .= sgs_media_svg_parts_attr( sgs_media_svg_element( $entry['source']['markup'], $class, $uid . '-s' . $n . '-', $label, '' === $label, $fit ), $attr( 'SvgParts' ), (string) $attr( 'SvgPartsTrigger' ) );
 		$siblings[ 'sgs-media-sib--svg-' . $n ] = $entry['devices'];
 	}
 	if ( '' === $html ) {

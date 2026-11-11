@@ -356,7 +356,15 @@ if ( ! function_exists( 'sgs_bg_media_html' ) ) {
 			. ( in_array( 'css', $plan['paint'], true ) ? ' ' . $cap['element_class'] . '--painted' : '' );
 		$class .= ! empty( $context['lottie'] ) ? ' sgs-container__lottie-bg' : '';
 		$class .= '' !== trim( (string) ( $context['extra_class'] ?? '' ) ) ? ' ' . trim( (string) $context['extra_class'] ) : '';
-		$result['html'] = '<div class="' . esc_attr( $class ) . '"' . ( $decorative ? ' aria-hidden="true"' : '' ) . '>' . $html . '</div>';
+		// An SVG Source animates named parts of its document: the cleaned parts ride on the element that holds the SVG as
+		// `data-sgs-svg-parts`, read by src/shared/svg-parts/svg-parts.js. Nothing is printed without parts.
+		$parts_attr = '';
+		if ( $svgs && ! empty( $attrs[ $slot['prefix'] . 'SvgParts' ] ) ) {
+			require_once dirname( __DIR__ ) . '/helpers-svg-parts.php';
+			$parts_json = sgs_svg_parts_data( $attrs[ $slot['prefix'] . 'SvgParts' ], (string) ( $attrs[ $slot['prefix'] . 'SvgPartsTrigger' ] ?? 'load' ) );
+			$parts_attr = '' !== $parts_json ? ' data-sgs-svg-parts="' . esc_attr( $parts_json ) . '"' : '';
+		}
+		$result['html'] = '<div class="' . esc_attr( $class ) . '"' . ( $decorative ? ' aria-hidden="true"' : '' ) . $parts_attr . '>' . $html . '</div>';
 		if ( $lead && in_array( 'css', $plan['paint'], true ) ) {
 			$result['preload'] = sgs_bg_media_preload_links( $plan );
 		}
