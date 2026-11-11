@@ -112,6 +112,7 @@
 					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none."
 				},
 				"logo": {
+					"selector": ".sgs-brand-strip__item .sgs-media-el",
 					"label": "Logo image only",
 					"order": 4,
 					"clusters": [

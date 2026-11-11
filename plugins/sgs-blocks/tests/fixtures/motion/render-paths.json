@@ -47,12 +47,24 @@
     "showLabels": true,
     "beforeLabel": "Before",
     "afterLabel": "After",
-    "beforeMediaType": "image",
-    "afterMediaType": "image",
-    "beforeImageUrl": "https://example.test/before.jpg",
-    "beforeImageAlt": "Before view",
-    "afterImageUrl": "https://example.test/after.jpg",
-    "afterImageAlt": "After view"
+    "beforeSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/before.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    },
+    "beforeAlt": "Before view",
+    "afterSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/after.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    },
+    "afterAlt": "After view"
    },
    "paths": {
     "image-labelled": {
@@ -68,27 +80,29 @@
     "logos": [
      {
       "name": "Alpha",
-      "media": {
-       "url": "https://example.test/a.png",
-       "type": "image",
-       "id": 0,
-       "alt": "Alpha",
-       "mime": "image/png",
-       "width": 120,
-       "height": 60
-      }
+      "source": {
+       "desktop": {
+        "kind": "image",
+        "url": "https://example.test/a.png",
+        "mime": "image/png",
+        "width": 120,
+        "height": 60
+       }
+      },
+      "alt": "Alpha"
      },
      {
       "name": "Beta",
-      "media": {
-       "url": "https://example.test/b.png",
-       "type": "image",
-       "id": 0,
-       "alt": "Beta",
-       "mime": "image/png",
-       "width": 120,
-       "height": 60
-      }
+      "source": {
+       "desktop": {
+        "kind": "image",
+        "url": "https://example.test/b.png",
+        "mime": "image/png",
+        "width": 120,
+        "height": 60
+       }
+      },
+      "alt": "Beta"
      }
     ]
    },
@@ -496,10 +510,17 @@
      {
       "title": "Card one",
       "subtitle": "Sub",
-      "media": "https://example.test/c.jpg",
       "glyph": "star",
       "badge": "New",
-      "badgeVariant": "primary"
+      "badgeVariant": "primary",
+      "source": {
+       "desktop": {
+        "kind": "image",
+        "url": "https://example.test/c.jpg",
+        "width": 1200,
+        "height": 800
+       }
+      }
      },
      {
       "title": "Bee",
@@ -637,10 +658,15 @@
         "label": "Large",
         "value": "l",
         "description": "Bigger",
-        "image": {
-         "url": "https://example.test/o.jpg",
-         "alt": "Large"
-        }
+        "source": {
+         "desktop": {
+          "kind": "image",
+          "url": "https://example.test/o.jpg",
+          "width": 1200,
+          "height": 800
+         }
+        },
+        "alt": "Large"
        }
       ]
      }
@@ -661,10 +687,15 @@
         "label": "Large",
         "value": "l",
         "description": "Bigger",
-        "image": {
-         "url": "https://example.test/o.jpg",
-         "alt": "Large"
-        }
+        "source": {
+         "desktop": {
+          "kind": "image",
+          "url": "https://example.test/o.jpg",
+          "width": 1200,
+          "height": 800
+         }
+        },
+        "alt": "Large"
        }
       ]
      }
@@ -695,11 +726,15 @@
   },
   "container": {
    "base": {
-    "backgroundImage": {
-     "url": "https://example.test/bg.jpg",
-     "id": 0
-    },
-    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>"
+    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
+    "backgroundSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/bg.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    }
    },
    "paths": {
     "bg-simple": {
@@ -710,7 +745,12 @@
     "bg-css-layer": {
      "why": "a tiled background image (backgroundRepeat repeat, also any size other than cover/contain, parallax, fixed attachment or a per-device image) is painted on the root's ::before by SGS_Container_Wrapper::render ($sgs_bg_img_is_simple false), not on an element",
      "attrs": {
-      "backgroundRepeat": "repeat"
+      "backgroundRepeat": {
+       "desktop": "repeat"
+      },
+      "backgroundFit": {
+       "desktop": "tile"
+      }
      },
      "content": "<p>Hello</p>"
     }
@@ -913,7 +953,14 @@
      {
       "label": "Option two",
       "value": "two",
-      "image": "https://example.test/t.jpg"
+      "source": {
+       "desktop": {
+        "kind": "image",
+        "url": "https://example.test/t.jpg",
+        "width": 1200,
+        "height": 800
+       }
+      }
      }
     ]
    },
@@ -944,18 +991,28 @@
      "attrs": {
       "mediaItems": [
        {
-        "url": "https://example.test/g1.jpg",
         "type": "image",
-        "id": 11,
         "alt": "One",
-        "caption": "First"
+        "caption": "First",
+        "source": {
+         "desktop": {
+          "kind": "image",
+          "id": 11,
+          "url": "https://example.test/g1.jpg"
+         }
+        }
        },
        {
-        "url": "https://example.test/g2.jpg",
         "type": "image",
-        "id": 12,
         "alt": "Two",
-        "caption": "Second"
+        "caption": "Second",
+        "source": {
+         "desktop": {
+          "kind": "image",
+          "id": 12,
+          "url": "https://example.test/g2.jpg"
+         }
+        }
        }
       ]
      },
@@ -969,18 +1026,28 @@
      "attrs": {
       "mediaItems": [
        {
-        "url": "https://example.test/g1.jpg",
         "type": "image",
-        "id": 11,
         "alt": "One",
-        "caption": "First"
+        "caption": "First",
+        "source": {
+         "desktop": {
+          "kind": "image",
+          "id": 11,
+          "url": "https://example.test/g1.jpg"
+         }
+        }
        },
        {
-        "url": "https://example.test/g2.jpg",
         "type": "image",
-        "id": 12,
         "alt": "Two",
-        "caption": "Second"
+        "caption": "Second",
+        "source": {
+         "desktop": {
+          "kind": "image",
+          "id": 12,
+          "url": "https://example.test/g2.jpg"
+         }
+        }
        }
       ],
       "enableLightbox": true
@@ -995,18 +1062,28 @@
      "attrs": {
       "mediaItems": [
        {
-        "url": "https://example.test/g3.jpg",
         "type": "image",
-        "id": 0,
         "alt": "Three",
-        "caption": "Third"
+        "caption": "Third",
+        "source": {
+         "desktop": {
+          "kind": "image",
+          "url": "https://example.test/g3.jpg",
+          "width": 1200,
+          "height": 800
+         }
+        }
        },
        {
-        "url": "https://example.test/v.mp4",
         "type": "video",
-        "id": 0,
         "alt": "",
-        "caption": "Clip"
+        "caption": "Clip",
+        "source": {
+         "desktop": {
+          "kind": "video",
+          "url": "https://example.test/v.mp4"
+         }
+        }
        }
       ]
      }
@@ -1016,18 +1093,28 @@
      "attrs": {
       "mediaItems": [
        {
-        "url": "https://example.test/g3.jpg",
         "type": "image",
-        "id": 0,
         "alt": "Three",
-        "caption": "Third"
+        "caption": "Third",
+        "source": {
+         "desktop": {
+          "kind": "image",
+          "url": "https://example.test/g3.jpg",
+          "width": 1200,
+          "height": 800
+         }
+        }
        },
        {
-        "url": "https://example.test/v.mp4",
         "type": "video",
-        "id": 0,
         "alt": "",
-        "caption": "Clip"
+        "caption": "Clip",
+        "source": {
+         "desktop": {
+          "kind": "video",
+          "url": "https://example.test/v.mp4"
+         }
+        }
        }
       ],
       "enableLightbox": true
@@ -1130,15 +1217,31 @@
   },
   "hero": {
    "base": {
-    "backgroundImage": {
-     "url": "https://example.test/bg.jpg",
-     "id": 0
-    },
     "backgroundOverlayColour": "#000000",
     "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
-    "splitMediaType": "image",
-    "splitMediaImageUrl": "https://example.test/s.jpg",
-    "splitMediaImageAlt": "A view"
+    "splitSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/s.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    },
+    "splitAlt": "A view",
+    "backgroundSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/bg.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    },
+    "backgroundOverlayOpacity": {
+     "desktop": 30
+    },
+    "splitWidth": {
+     "desktop": "1200px"
+    }
    },
    "paths": {
     "standard": {
@@ -1159,7 +1262,12 @@
      "why": "a tiled background image (backgroundRepeat repeat, also any size other than cover/contain, parallax, fixed attachment or a per-device image) is painted on the root's ::before by SGS_Container_Wrapper::render ($sgs_bg_img_is_simple false), not on an element",
      "attrs": {
       "variant": "split",
-      "backgroundRepeat": "repeat"
+      "backgroundRepeat": {
+       "desktop": "repeat"
+      },
+      "backgroundFit": {
+       "desktop": "tile"
+      }
      },
      "content": "<p>Hello</p>"
     }
@@ -1229,13 +1337,17 @@
   },
   "image-sequence": {
    "base": {
-    "thumbnail": {
-     "url": "https://example.test/thumb.jpg",
-     "id": 0
-    },
     "thumbnailAlt": "A sequence still",
     "desktopFramesUrl": "https://example.test/frames/d-",
-    "desktopFrameCount": 30
+    "desktopFrameCount": 30,
+    "thumbnailSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/thumb.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    }
    },
    "paths": {
     "default": {
@@ -1245,13 +1357,25 @@
     "art-directed": {
      "why": "tablet and mobile thumbnails and frame tiers set: extra thumbnail images print beside the desktop one",
      "attrs": {
-      "thumbnailTablet": {
-       "url": "https://example.test/thumb-t.jpg",
-       "id": 0
-      },
-      "thumbnailMobile": {
-       "url": "https://example.test/thumb-m.jpg",
-       "id": 0
+      "thumbnailSource": {
+       "desktop": {
+        "kind": "image",
+        "url": "https://example.test/thumb.jpg",
+        "width": 1200,
+        "height": 800
+       },
+       "tablet": {
+        "kind": "image",
+        "url": "https://example.test/thumb-t.jpg",
+        "width": 1200,
+        "height": 800
+       },
+       "mobile": {
+        "kind": "image",
+        "url": "https://example.test/thumb-m.jpg",
+        "width": 1200,
+        "height": 800
+       }
       },
       "tabletFramesUrl": "https://example.test/frames/t-",
       "tabletFrameCount": 20,
@@ -1335,26 +1459,60 @@
     "image-figure": {
      "why": "mediaType image with a caption leaves naked mode, so the image prints inside a figure followed by the figcaption",
      "attrs": {
-      "mediaType": "image",
-      "imageUrl": "https://example.test/photo.jpg",
-      "imageAlt": "Sample"
+      "source": {
+       "desktop": {
+        "kind": "image",
+        "url": "https://example.test/photo.jpg",
+        "width": 1200,
+        "height": 800
+       }
+      },
+      "alt": "Sample",
+      "width": {
+       "desktop": "100%"
+      }
      }
     },
     "video-file": {
      "why": "mediaType video with a direct file URL prints a video element inside a figure followed by the caption",
      "attrs": {
-      "mediaType": "video",
-      "videoSource": "external",
-      "videoUrl": "https://example.test/clip.mp4",
-      "videoMimeType": "video/mp4"
+      "source": {
+       "desktop": {
+        "kind": "video",
+        "url": "https://example.test/clip.mp4",
+        "mime": "video/mp4"
+       }
+      },
+      "playback": {
+       "autoplay": false,
+       "muted": true,
+       "inline": true,
+       "loop": false,
+       "controls": true,
+       "lazy": true
+      },
+      "width": {
+       "desktop": "100%"
+      }
      }
     },
     "video-embed": {
      "why": "mediaType video with a YouTube URL prints the embed branch inside the same figure followed by the caption",
      "attrs": {
-      "mediaType": "video",
-      "videoSource": "external",
-      "videoUrl": "https://www.youtube.com/watch?v=abcdefghijk"
+      "source": {
+       "desktop": {
+        "kind": "embed",
+        "url": "https://www.youtube.com/watch?v=abcdefghijk"
+       }
+      },
+      "playback": {
+       "autoplay": false,
+       "muted": true,
+       "inline": true,
+       "loop": false,
+       "controls": true,
+       "lazy": true
+      }
      }
     }
    },
@@ -1393,11 +1551,15 @@
     "contentWidth": {
      "desktop": "640px"
     },
-    "backgroundImage": {
-     "url": "https://example.test/bg.jpg",
-     "id": 0
-    },
-    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>"
+    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
+    "backgroundSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/bg.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    }
    },
    "paths": {
     "bg-simple": {
@@ -1408,7 +1570,12 @@
     "bg-css-layer": {
      "why": "a tiled background image (backgroundRepeat repeat, also any size other than cover/contain, parallax, fixed attachment or a per-device image) is painted on the root's ::before by SGS_Container_Wrapper::render ($sgs_bg_img_is_simple false), not on an element",
      "attrs": {
-      "backgroundRepeat": "repeat"
+      "backgroundRepeat": {
+       "desktop": "repeat"
+      },
+      "backgroundFit": {
+       "desktop": "tile"
+      }
      },
      "content": "<p>Hello</p>"
     }
@@ -1493,10 +1660,25 @@
     "chrome-full": {
      "why": "a chrome logo, a heading slot and the Google rating all configured print the three optional chrome elements beside the close button, with the body, close button and chrome row",
      "attrs": {
-      "chromeLogoUrl": "https://example.test/logo.png",
       "chromeSlotType": "heading",
       "chromeSlotText": "Menu",
-      "chromeRating": true
+      "chromeRating": true,
+      "backgroundSource": {
+       "desktop": {
+        "kind": "image",
+        "url": "https://example.test/nd.jpg",
+        "width": 1200,
+        "height": 800
+       }
+      },
+      "chromeLogoSource": {
+       "desktop": {
+        "kind": "image",
+        "url": "https://example.test/logo.png",
+        "width": 1200,
+        "height": 800
+       }
+      }
      }
     }
    },
@@ -1634,11 +1816,15 @@
   },
   "physics-canvas": {
    "base": {
-    "backgroundImage": {
-     "url": "https://example.test/bg.jpg",
-     "id": 0
-    },
-    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>"
+    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
+    "backgroundSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/bg.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    }
    },
    "paths": {
     "bg-simple": {
@@ -1649,7 +1835,12 @@
     "bg-css-layer": {
      "why": "a tiled background image (backgroundRepeat repeat, also any size other than cover/contain, parallax, fixed attachment or a per-device image) is painted on the root's ::before by SGS_Container_Wrapper::render ($sgs_bg_img_is_simple false), not on an element",
      "attrs": {
-      "backgroundRepeat": "repeat"
+      "backgroundRepeat": {
+       "desktop": "repeat"
+      },
+      "backgroundFit": {
+       "desktop": "tile"
+      }
      },
      "content": "<p>Hello</p>"
     }
@@ -1671,8 +1862,11 @@
    },
    "paths": {
     "filters": {
-    	"why": "showFilters on: the category filter buttons print above the grid", "unrendered": "the filter buttons are the category terms, which the harness cannot supply (no get_terms), so with filters on the block prints nothing here",
-    	"attrs": { "showFilters": true }
+     "why": "showFilters on: the category filter buttons print above the grid",
+     "unrendered": "the filter buttons are the category terms, which the harness cannot supply (no get_terms), so with filters on the block prints nothing here",
+     "attrs": {
+      "showFilters": true
+     }
     },
     "card-badge": {
      "why": "cardStyle card with a featured image and a category: the badge (sgs-post-grid__badge sgs-post-grid__category-badge) prints over the image, before the content wrapper",
@@ -2044,15 +2238,19 @@
       "sourceMode": "typed",
       "productName": "Oak table",
       "description": "Solid oak.",
-      "image": {
-       "url": "https://example.test/a.jpg",
-       "id": 0
-      },
       "imageAlt": "Oak table",
       "priceLarge": "£120",
       "priceNote": "per item",
       "ctaText": "Buy",
-      "ctaUrl": "https://example.test/buy"
+      "ctaUrl": "https://example.test/buy",
+      "imageSource": {
+       "desktop": {
+        "kind": "image",
+        "url": "https://example.test/a.jpg",
+        "width": 1200,
+        "height": 800
+       }
+      }
      }
     },
     "live-wc-simple": {
@@ -2135,7 +2333,11 @@
       "meta": {
        "sgs_price": "120",
        "sgs_price_note": "per item"
-      }
+      },
+      "thumbnail_id": 31
+     },
+     "attachments": {
+      "31": "https://example.test/a.jpg"
      }
     },
     "readonly-variable": {
@@ -2375,9 +2577,24 @@
   "responsive-logo": {
    "base": {
     "logoSource": {
-     "desktop": { "kind": "image", "url": "https://example.test/logo.png", "width": 200, "height": 60 },
-     "tablet": { "kind": "image", "url": "https://example.test/logo-t.png", "width": 160, "height": 48 },
-     "mobile": { "kind": "image", "url": "https://example.test/logo-m.png", "width": 120, "height": 36 }
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/logo.png",
+      "width": 200,
+      "height": 60
+     },
+     "tablet": {
+      "kind": "image",
+      "url": "https://example.test/logo-t.png",
+      "width": 160,
+      "height": 48
+     },
+     "mobile": {
+      "kind": "image",
+      "url": "https://example.test/logo-m.png",
+      "width": 120,
+      "height": 36
+     }
     }
    },
    "paths": {
@@ -2421,11 +2638,15 @@
   },
   "site-footer": {
    "base": {
-    "backgroundImage": {
-     "url": "https://example.test/bg.jpg",
-     "id": 0
-    },
-    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>"
+    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
+    "backgroundSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/bg.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    }
    },
    "paths": {
     "bg-simple": {
@@ -2436,7 +2657,12 @@
     "bg-css-layer": {
      "why": "a tiled background image (backgroundRepeat repeat, also any size other than cover/contain, parallax, fixed attachment or a per-device image) is painted on the root's ::before by SGS_Container_Wrapper::render ($sgs_bg_img_is_simple false), not on an element",
      "attrs": {
-      "backgroundRepeat": "repeat"
+      "backgroundRepeat": {
+       "desktop": "repeat"
+      },
+      "backgroundFit": {
+       "desktop": "tile"
+      }
      },
      "content": "<p>Hello</p>"
     }
@@ -2457,11 +2683,15 @@
   },
   "site-header": {
    "base": {
-    "backgroundImage": {
-     "url": "https://example.test/bg.jpg",
-     "id": 0
-    },
-    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>"
+    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
+    "backgroundSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/bg.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    }
    },
    "paths": {
     "bg-simple": {
@@ -2472,7 +2702,12 @@
     "bg-css-layer": {
      "why": "a tiled background image (backgroundRepeat repeat, also any size other than cover/contain, parallax, fixed attachment or a per-device image) is painted on the root's ::before by SGS_Container_Wrapper::render ($sgs_bg_img_is_simple false), not on an element",
      "attrs": {
-      "backgroundRepeat": "repeat"
+      "backgroundRepeat": {
+       "desktop": "repeat"
+      },
+      "backgroundFit": {
+       "desktop": "tile"
+      }
      },
      "content": "<p>Hello</p>"
     }
@@ -2636,11 +2871,6 @@
     "name": "Alex Example",
     "role": "Head of Sample",
     "bio": "Sample biography text for the team member card.",
-    "photo": {
-     "url": "https://example.test/p.jpg",
-     "alt": "Alex",
-     "id": 0
-    },
     "socialLinks": [
      {
       "platform": "linkedin",
@@ -2650,7 +2880,24 @@
       "platform": "email",
       "url": "alex@example.test"
      }
-    ]
+    ],
+    "photoSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/p.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    },
+    "photoAlt": "Alex",
+    "photoShape": {
+     "desktop": {
+      "shape": "circle"
+     }
+    },
+    "photoRatio": {
+     "desktop": "1 / 1"
+    }
    },
    "paths": {
     "full": {
@@ -2682,27 +2929,39 @@
     "reviewerName": "Sam Sample",
     "reviewerRole": "Director",
     "orgName": "Example Ltd",
-    "avatarMedia": {
-     "url": "https://example.test/a.jpg",
-     "alt": "Sam",
-     "id": 0
-    },
-    "orgLogo": {
-     "url": "https://example.test/l.jpg",
-     "alt": "Example Ltd",
-     "id": 0
-    },
-    "workMedia": {
-     "url": "https://example.test/w.jpg",
-     "alt": "Work",
-     "id": 0
-    },
     "showRating": true,
     "ratingType": "stars",
     "ratingStars": 4.5,
     "reviewDate": "2026-01-01",
     "verified": true,
-    "sourcePlatform": "Google"
+    "sourcePlatform": "Google",
+    "avatarSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/a.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    },
+    "avatarAlt": "Sam",
+    "logoSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/l.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    },
+    "logoAlt": "Example Ltd",
+    "workSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/w.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    },
+    "workAlt": "Work"
    },
    "paths": {
     "classic-card": {
@@ -2878,8 +3137,27 @@
      }
     },
     "media": {
-    	"why": "an entry with media prints the image slot opposite its text: an inline SVG, which needs no attachment",
-    	"attrs": { "connectorProgressFill": true, "entries": [ { "date": "2020", "title": "Founded", "description": "The sample company began.", "mediaType": "svg", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 10 10\"><rect width=\"10\" height=\"10\"/></svg>" } ] }
+     "why": "an entry with an image prints the image slot opposite its text",
+     "attrs": {
+      "entries": [
+       {
+        "date": "2020",
+        "title": "Founded",
+        "description": "The sample company began.",
+        "source": {
+         "desktop": {
+          "kind": "image",
+          "id": 21,
+          "url": "https://example.test/t.jpg"
+         }
+        }
+       }
+      ],
+      "connectorProgressFill": true
+     },
+     "attachments": {
+      "21": "https://example.test/t.jpg"
+     }
     },
     "plain": {
      "why": "connectorProgressFill off: entries only, no progress li",
@@ -2895,32 +3173,44 @@
     "contentWidth": {
      "desktop": "640px"
     },
-    "backgroundImage": {
-     "url": "https://example.test/bg.jpg",
-     "id": 0
-    },
     "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
     "title": "Trusted by",
     "items": [
      {
       "icon": "star",
       "label": "Fast delivery",
-      "media": {
-       "url": "https://example.test/badge.png",
-       "id": 0,
-       "alt": "Badge"
-      }
+      "source": {
+       "desktop": {
+        "kind": "image",
+        "url": "https://example.test/badge.png",
+        "width": 1200,
+        "height": 800
+       }
+      },
+      "alt": "Badge"
      },
      {
       "icon": "heart",
       "label": "Loved",
-      "media": {
-       "url": "https://example.test/badge2.png",
-       "id": 0,
-       "alt": "Badge two"
-      }
+      "source": {
+       "desktop": {
+        "kind": "image",
+        "url": "https://example.test/badge2.png",
+        "width": 1200,
+        "height": 800
+       }
+      },
+      "alt": "Badge two"
      }
-    ]
+    ],
+    "backgroundSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/bg.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    }
    },
    "paths": {
     "icon-circle": {
@@ -2951,7 +3241,12 @@
      "why": "a tiled background image (backgroundRepeat repeat, also any size other than cover/contain, parallax, fixed attachment or a per-device image) is painted on the root's ::before by SGS_Container_Wrapper::render ($sgs_bg_img_is_simple false), not on an element",
      "attrs": {
       "badgeStyle": "icon-circle",
-      "backgroundRepeat": "repeat"
+      "backgroundRepeat": {
+       "desktop": "repeat"
+      },
+      "backgroundFit": {
+       "desktop": "tile"
+      }
      }
     }
    }

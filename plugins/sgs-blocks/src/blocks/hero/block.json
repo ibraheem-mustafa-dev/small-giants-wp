@@ -298,7 +298,7 @@
 						"fill",
 						"layout"
 					],
-					"motionSelector": ".sgs-media-el",
+					"motionSelector": ".sgs-hero__media .sgs-media-el",
 					"prefix": "",
 					"attrMap": {
 						"css:height": "splitHeight",
@@ -344,6 +344,7 @@
 					}
 				},
 				"svg-bg": {
+					"selector": ".sgs-container__svg-bg",
 					"availableWhen": {
 						"slot": "background",
 						"kinds": [

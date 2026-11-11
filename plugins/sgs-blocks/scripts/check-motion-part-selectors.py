@@ -121,7 +121,12 @@ LEGACY_ROOTS = {
     "trust-bar": ("sgs-bg-media", "sgs-container__svg-bg"),
     "physics-canvas": ("sgs-bg-media", "sgs-container__svg-bg"),
     "multi-button": ("sgs-bg-media", "sgs-container__svg-bg"),
-    "hero": ("sgs-container__image-bg", "sgs-container__svg-bg"),
+    "hero": ("sgs-bg-media", "sgs-container__svg-bg"),
+    # The adopted blocks print their pictures through the shared renderer, whose `<img>` is `.sgs-media-el`; the media block's caption is the renderer's `.sgs-media-caption`.
+    "brand-strip": ("sgs-media-el",),
+    "card-grid": ("sgs-media-el",),
+    "gallery": ("sgs-media-el",),
+    "media": ("sgs-media-caption",),
 }
 # Child blocks whose render source prints classes a parent's part names (the parent's rendered HTML contains them).
 CHILD_BLOCKS = {"accordion": ("accordion-item",)}

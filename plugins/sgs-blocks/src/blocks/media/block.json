@@ -107,6 +107,7 @@
 					}
 				},
 				"caption": {
+					"selector": ".sgs-media-caption",
 					"text": true,
 					"label": "Caption",
 					"order": 2,
