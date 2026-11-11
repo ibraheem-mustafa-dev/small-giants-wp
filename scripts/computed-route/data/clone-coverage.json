@@ -1536,7 +1536,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media and logo library IDs (sgs/responsive-logo logoId per device): the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "media and logo library IDs (sgs/responsive-logo logoId per device): Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"block-setting:image-object:object": {
 			"recognise": null,
@@ -1557,7 +1557,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "background images and video: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "background images and video: Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"block-setting:layout:boolean": {
 			"recognise": null,
@@ -10541,70 +10541,70 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio autoplay>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<audio autoplay>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:audio.controls": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio controls>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<audio controls>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:audio.controlslist": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio controlslist>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<audio controlslist>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:audio.crossorigin": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio crossorigin>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<audio crossorigin>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:audio.disableremoteplayback": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio disableremoteplayback>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<audio disableremoteplayback>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:audio.loading": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio loading>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<audio loading>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:audio.loop": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio loop>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<audio loop>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:audio.muted": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio muted>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<audio muted>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:audio.preload": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio preload>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<audio preload>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:audio.src": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio src>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<audio src>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:base.href": {
 			"excluded": {
@@ -11049,14 +11049,14 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<embed src>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<embed src>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:embed.type": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<embed type>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<embed type>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:embed.vspace": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -11664,14 +11664,14 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe allow>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<iframe allow>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:iframe.allowfullscreen": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe allowfullscreen>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<iframe allowfullscreen>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:iframe.allowpaymentrequest": {
 			"excluded": {
@@ -11685,7 +11685,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe allowusermedia>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<iframe allowusermedia>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:iframe.browsingtopics": {
 			"excluded": {
@@ -11699,14 +11699,14 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe credentialless>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<iframe credentialless>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:iframe.csp": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe csp>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<iframe csp>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:iframe.frameborder": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -11754,28 +11754,28 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe name>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<iframe name>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:iframe.privateToken": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe privateToken>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<iframe privateToken>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:iframe.referrerpolicy": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe referrerpolicy>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<iframe referrerpolicy>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:iframe.sandbox": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe sandbox>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<iframe sandbox>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:iframe.scrolling": {
 			"recognise": null,
@@ -11796,7 +11796,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe srcdoc>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<iframe srcdoc>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:iframe.width": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -11836,21 +11836,21 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img crossorigin>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<img crossorigin>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:img.decoding": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img decoding>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<img decoding>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:img.fetchpriority": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img fetchpriority>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<img fetchpriority>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:img.height": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -11870,14 +11870,14 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img ismap>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<img ismap>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:img.loading": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img loading>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<img loading>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:img.longdesc": {
 			"excluded": {
@@ -11898,14 +11898,14 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img referrerpolicy>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<img referrerpolicy>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:img.sizes": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img sizes>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<img sizes>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:img.src": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -11919,14 +11919,14 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img srcset>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<img srcset>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:img.usemap": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img usemap>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<img usemap>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:img.vspace": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -12443,7 +12443,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<map name>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<map name>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:marquee.behavior": {
 			"recognise": "scripts/computed-route/lib/fill-entrance.mjs#sampleMotion",
@@ -12690,7 +12690,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<object data>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<object data>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:object.declare": {
 			"excluded": {
@@ -12704,7 +12704,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<object form>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<object form>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:object.height": {
 			"recognise": null,
@@ -12724,7 +12724,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<object name>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<object name>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:object.standby": {
 			"excluded": {
@@ -12738,14 +12738,14 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<object type>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<object type>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:object.typemustmatch": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<object typemustmatch>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<object typemustmatch>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:object.usemap": {
 			"excluded": {
@@ -13077,49 +13077,49 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<source height>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<source height>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:source.media": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<source media>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<source media>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:source.sizes": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<source sizes>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<source sizes>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:source.src": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<source src>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<source src>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:source.srcset": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<source srcset>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<source srcset>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:source.type": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<source type>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<source type>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:source.width": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<source width>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<source width>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:style.blocking": {
 			"excluded": {
@@ -13765,35 +13765,35 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<track default>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<track default>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:track.kind": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<track kind>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<track kind>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:track.label": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<track label>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<track label>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:track.src": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<track src>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<track src>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:track.srclang": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<track srclang>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<track srclang>: media; the media reader (lib/fill-read-collect.mjs) lists img, video, iframe and svg only, and no SGS media slot takes this element (FR-48-39)"
 		},
 		"html-attr:ul.compact": {
 			"excluded": {
@@ -13814,42 +13814,42 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video autoplay>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<video autoplay>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:video.controls": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video controls>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<video controls>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:video.controlslist": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video controlslist>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<video controlslist>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:video.crossorigin": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video crossorigin>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<video crossorigin>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:video.disablepictureinpicture": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video disablepictureinpicture>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<video disablepictureinpicture>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:video.disableremoteplayback": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video disableremoteplayback>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<video disableremoteplayback>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:video.height": {
 			"recognise": null,
@@ -13863,49 +13863,49 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video loading>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<video loading>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:video.loop": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video loop>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<video loop>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:video.muted": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video muted>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<video muted>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:video.playsinline": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video playsinline>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<video playsinline>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:video.poster": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video poster>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<video poster>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:video.preload": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video preload>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<video preload>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:video.src": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video src>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "<video src>: media; Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html-attr:video.width": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -13950,7 +13950,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "media element: Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html:article": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -13969,7 +13969,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "media element: Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html:b": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -14055,7 +14055,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "media element: Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html:caption": {
 			"recognise": null,
@@ -14205,7 +14205,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "media element: Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html:fieldset": {
 			"recognise": null,
@@ -14434,7 +14434,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "media element: Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html:mark": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -14535,7 +14535,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "media element: Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html:ol": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -14710,7 +14710,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "media element: Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html:spacer": {
 			"excluded": {
@@ -14850,7 +14850,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "media element: Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html:tt": {
 			"recognise": null,
@@ -14882,7 +14882,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"note": "media element: Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"html:wbr": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
