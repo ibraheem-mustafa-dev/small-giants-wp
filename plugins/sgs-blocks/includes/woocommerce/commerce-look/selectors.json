@@ -1573,6 +1573,7 @@
 		},
 		"field_input": {
 			"checkout": ".wc-block-components-text-input input[type]",
+			"element": "field-text-input",
 			"label": "Text field input (padding and height)",
 			"columns": [
 				"padding",

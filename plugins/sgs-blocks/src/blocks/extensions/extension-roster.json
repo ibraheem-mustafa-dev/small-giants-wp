@@ -884,8 +884,8 @@
 				"sgsSummaryItemMetadataMargin": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "margin", "css_element": "summary-item-metadata", "gen": "table" },
 				"sgsTotalsWrapperPadding": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "padding", "css_element": "totals-wrapper", "gen": "table" },
 				"sgsAddressFormColumnGap": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "column-gap", "css_element": "address-form", "gen": "table" },
-				"sgsFieldInputPadding": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "padding", "css_element": "field-input", "gen": "table" },
-				"sgsFieldInputHeight": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "height", "css_element": "field-input", "gen": "table" },
+				"sgsFieldInputPadding": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "padding", "css_element": "field-text-input", "gen": "table" },
+				"sgsFieldInputHeight": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "height", "css_element": "field-text-input", "gen": "table" },
 
 				"sgsCheckoutStrings": { "type": "object", "role": "text-content" }
 			}

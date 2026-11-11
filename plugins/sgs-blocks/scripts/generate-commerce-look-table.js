@@ -12,9 +12,13 @@
  * Both are replaced whole on every run, so a table edit cannot leave a stale line. A table setting whose name
  * repeats an attribute written by hand in attributes.js stops the run.
  *
+ * A row's CSS element name (the roster's css_element) is the row id with dashes, or the row's own `element` when the id
+ * would land on an element a hand-written attribute already owns for the same property.
+ *
  * Usage:
  *   node scripts/generate-commerce-look-table.js           # write both files
  *   node scripts/generate-commerce-look-table.js --check   # exit 1 if either is stale or a name repeats
+ *   node scripts/generate-commerce-look-table.js --names [selectors.json]   # print the setting names as JSON (the wiring-fingerprint gate's reader)
  *   require('./generate-commerce-look-table').tableAttributes() -> [{ name, type, row, column, css, role, element }]
  */
 
@@ -78,7 +82,7 @@ function tableAttributes( table = readTable() ) {
 					column,
 					css: secondary ? '' : 'text' === def.kind ? TEXT_CSS[ suffix ] || def.css : def.css,
 					role: def.role,
-					element: id.replace( /_/g, '-' ),
+					element: row.element || id.replace( /_/g, '-' ),
 				} );
 			}
 		}
@@ -151,6 +155,12 @@ function renderRoster( attrs ) {
 }
 
 function main() {
+	const namesAt = process.argv.indexOf( '--names' );
+	if ( namesAt >= 0 ) {
+		const file = process.argv[ namesAt + 1 ] || TABLE_FILE;
+		process.stdout.write( JSON.stringify( tableAttributes( JSON.parse( fs.readFileSync( file, 'utf8' ) ) ).map( ( a ) => a.name ) ) );
+		return;
+	}
 	const check = process.argv.includes( '--check' );
 	const attrs = tableAttributes();
 	const bad = problems( attrs );
