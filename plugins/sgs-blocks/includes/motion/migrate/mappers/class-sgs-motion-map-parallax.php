@@ -8,7 +8,7 @@
  * - `sgsParallax` (`none` or `element`; `background` was retired in 2026-08 and never ran) with `sgsParallaxStrength`
  *   (0 to 100, default 30), on every block through the extension: a view-basis layer on the root;
  * - `bgParallax` (boolean; `sgs/container`, `sgs/hero`, `sgs/multi-button`, `sgs/physics-canvas`, `sgs/site-footer`,
- *   `sgs/site-header`, `sgs/trust-bar`): a view-basis layer on the root with the background switch on;
+ *   `sgs/site-header`, `sgs/trust-bar`): a view-basis layer on the `background` part (`.sgs-bg-media`);
  * - `splitMediaParallax` (boolean; the media atom on `sgs/hero`): a page-basis layer on the `media` part, the element
  *   the retired `scroll(root)` keyframe moved;
  * - `parallaxStrength` (0 and up; `sgs/decorative-image`): a view-basis layer on the root.
@@ -149,9 +149,6 @@ final class Sgs_Motion_Map_Parallax implements Sgs_Motion_Mapper_Interface {
 				'speedRatio' => $plan['ratio'],
 				'basis'      => $plan['basis'],
 			);
-			if ( true === $plan['background'] ) {
-				$values['background'] = true;
-			}
 			$elements[ $part ]['effects'][] = array(
 				'id'     => self::EFFECT,
 				'effect' => self::EFFECT,
@@ -219,7 +216,6 @@ final class Sgs_Motion_Map_Parallax implements Sgs_Motion_Mapper_Interface {
 		$plans['root'] = array(
 			'ratio'      => self::ratio_for_strength( $clamped ),
 			'basis'      => 'view',
-			'background' => false,
 		);
 	}
 
@@ -236,14 +232,9 @@ final class Sgs_Motion_Map_Parallax implements Sgs_Motion_Mapper_Interface {
 			$consumed[] = 'bgParallax';
 			return;
 		}
-		if ( isset( $plans['root'] ) ) {
-			$reported[] = self::row( 'bgParallax', $value, 'the root already holds the element parallax layer and one element takes one parallax layer; bgParallax stays on the block', false );
-			return;
-		}
-		$plans['root'] = array(
-			'ratio'      => self::BACKGROUND_RATIO,
-			'basis'      => 'view',
-			'background' => true,
+		$plans['background'] = array(
+			'ratio' => self::BACKGROUND_RATIO,
+			'basis' => 'view',
 		);
 		$consumed[]    = 'bgParallax';
 		$reported[]    = self::row( 'bgParallax', $value, 'was a fixed background; now moves the background at ratio ' . self::BACKGROUND_RATIO . ' of the view travel. A cover-sized image has no spare edge, so give the background a larger size or set a clamp', true );
@@ -264,7 +255,6 @@ final class Sgs_Motion_Map_Parallax implements Sgs_Motion_Mapper_Interface {
 		$plans[ self::SPLIT_MEDIA['part'] ] = array(
 			'ratio'      => self::split_media_ratio(),
 			'basis'      => 'page',
-			'background' => false,
 		);
 	}
 
@@ -293,7 +283,6 @@ final class Sgs_Motion_Map_Parallax implements Sgs_Motion_Mapper_Interface {
 		$plans['root'] = array(
 			'ratio'      => self::ratio_for_strength( min( 100, 0 + $value ), 2 ),
 			'basis'      => 'view',
-			'background' => false,
 		);
 	}
 

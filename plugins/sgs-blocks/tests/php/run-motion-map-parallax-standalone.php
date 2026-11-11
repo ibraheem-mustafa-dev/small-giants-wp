@@ -179,13 +179,13 @@ namespace SGS\Blocks\Motion {
 
 	// 2. bgParallax.
 	$r = migrate( 'sgs/container', array( 'bgParallax' => true ) );
-	$l = layer( $r, 'root' );
-	ok( array() === $r['flags'] && true === ( $l['values']['background'] ?? null ) && 0.5 === ( $l['values']['speedRatio'] ?? null ) && 'view' === ( $l['values']['basis'] ?? null ) && array( 'bgParallax' ) === $r['consumed'], 'bgParallax true becomes a background layer at ratio 0.5 on the view basis', js( $r['flags'] ) . js( $r['attrs'] ) );
+	$l = layer( $r, 'background' );
+	ok( array() === $r['flags'] && ! isset( $l['values']['background'] ) && null === layer( $r, 'root' ) && 0.5 === ( $l['values']['speedRatio'] ?? null ) && 'view' === ( $l['values']['basis'] ?? null ) && array( 'bgParallax' ) === $r['consumed'], 'bgParallax true becomes a background layer at ratio 0.5 on the view basis', js( $r['flags'] ) . js( $r['attrs'] ) );
 	ok( 'bgParallax' === ( $r['reported'][0]['attr'] ?? '' ) && true === ( $r['reported'][0]['consumed'] ?? null ), 'bgParallax reports the spare-edge note' );
 	$r = migrate( 'sgs/container', array( 'bgParallax' => false ) );
 	ok( array( 'bgParallax' ) === $r['consumed'] && ! isset( $r['attrs']['sgsMotion'] ), 'bgParallax false is consumed and writes no layer' );
 	$r = migrate( 'sgs/hero', array( 'sgsParallax' => 'element', 'sgsParallaxStrength' => 30, 'bgParallax' => true ) );
-	ok( ! isset( layer( $r, 'root' )['values']['background'] ) && true === ( $r['attrs']['bgParallax'] ?? null ) && 'bgParallax' === ( $r['reported'][0]['attr'] ?? '' ) && false === $r['reported'][0]['consumed'], 'one parallax layer per element: the element parallax wins the root and bgParallax stays, reported', js( $r['reported'] ) );
+	ok( null !== layer( $r, 'root' ) && 0.5 !== ( layer( $r, 'root' )['values']['speedRatio'] ?? null ) && 0.5 === ( layer( $r, 'background' )['values']['speedRatio'] ?? null ) && array() === array_diff( array( 'bgParallax', 'sgsParallax' ), $r['consumed'] ), 'the element parallax stays on the root and bgParallax moves the background part', js( $r['reported'] ) );
 	ok( false === $mapper->handles( 'sgs/text', array( 'bgParallax' => true ) ), 'bgParallax on a block that does not declare it is left alone' );
 
 	// 3. splitMediaParallax.
