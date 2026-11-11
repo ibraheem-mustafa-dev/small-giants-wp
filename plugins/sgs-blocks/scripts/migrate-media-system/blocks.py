@@ -828,7 +828,7 @@ def _migrate(name: str, attrs: dict):
     migrate_items(ctx)
     migrate_gallery_tile_fit(ctx)
     apply_pins(ctx)
-    rename_hero_motion_part(ctx)
+    rename_motion_parts(ctx)
     migrate_report_always(ctx)
     migrate_unlisted(ctx)
     migrate_unmapped(ctx)
@@ -879,22 +879,23 @@ def pin_hero_split_width(ctx: T.Ctx) -> None:
     ctx.events.append(("pinned", "splitMediaWidth", "splitWidth", f"old split image was printed {width}px wide: written explicitly"))
 
 
-def rename_hero_motion_part(ctx: T.Ctx) -> None:
-    """The old hero's split image was the motion part `split-image` (class `sgs-hero__split-image` on the <img>); the renderer prints
-    it as the part `split-media`, so saved motion on `split-image` matches nothing and is lost (a rest rotation, a hover). The saved
-    motion moves to `split-media` when that part holds none of its own (a block that saves both is left as saved)."""
-    if ctx.block != "sgs/hero":
-        return
+def rename_motion_parts(ctx: T.Ctx) -> None:
+    """Saved motion on a part the adopted block no longer declares matches nothing and is lost (a rest rotation, a hover). Each part
+    in `M.MOTION_PART_RENAMES` for the block moves to its new name when the new part holds no motion of its own (a block that
+    saves both is left as saved)."""
+    renames = M.MOTION_PART_RENAMES.get(ctx.block)
     motion = ctx.get("sgsMotion")
     elements = motion.get("elements") if isinstance(motion, dict) else None
-    if not isinstance(elements, dict) or "split-image" not in elements:
+    if not renames or not isinstance(elements, dict):
         return
-    if "split-media" in elements:
+    todo = {old: new for old, new in renames.items() if old in elements and new not in elements}
+    if not todo:
         return
     moved = dict(motion)
-    moved["elements"] = {("split-media" if k == "split-image" else k): v for k, v in elements.items()}
+    moved["elements"] = {todo.get(k, k): v for k, v in elements.items()}
     ctx.put("sgsMotion", moved)
-    ctx.events.append(("converted", "sgsMotion", "sgsMotion.elements.split-media", "the old hero split image is the motion part split-media"))
+    for old, new in todo.items():
+        ctx.events.append(("converted", "sgsMotion", f"sgsMotion.elements.{new}", f"the saved motion part {old} is now {new}"))
 
 
 def needs_migration(name: str, attrs: dict):

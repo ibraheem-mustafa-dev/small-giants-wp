@@ -496,6 +496,13 @@ REPORT_ALWAYS = {
 }
 REPORT_PATTERNS = (re.compile(r"^sgsHoverZoom"),)
 
+# Motion parts an adopted block renamed or replaced: block -> {saved part name: part it is now}. The hero's old split image was the
+# part `split-image`; the renderer prints it as `split-media`. A scan of the saved `sgsMotion.elements` names on the four real
+# mirrors (2026-11-11) found no other part the adopted blocks' block.json no longer declares; add a pair here when one appears.
+MOTION_PART_RENAMES = {
+    "sgs/hero": {"split-image": "split-media"},
+}
+
 # Attributes the report skips: `sgs/button`'s `scaleHover` scales the whole button (the Hover state route does not replace it), and
 # `sgs/brand-strip`'s `imageEffect` keeps its sepia value (its grayscale value moves to the Hover state).
 REPORT_EXEMPT = {("sgs/button", "scaleHover"), ("sgs/brand-strip", "imageEffect")}

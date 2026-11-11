@@ -100,6 +100,10 @@ case("hero split width: an old image with no width is pinned to its file's own w
 case("hero motion: the saved split-image part moves to split-media (the renderer's part name)", "sgs/hero",
      {"sgsMotion": {"v": 1, "elements": {"split-image": {"hover": {"state": {"values": {"restRotate": -8}}}}}}},
      {"sgsMotion": {"v": 1, "elements": {"split-media": {"hover": {"state": {"values": {"restRotate": -8}}}}}}})
+case("negative: a hero that saves both split-image and split-media keeps both as saved", "sgs/hero",
+     {"sgsMotion": {"v": 1, "elements": {"split-image": {"hover": {"state": {"values": {"restRotate": -8}}}}, "split-media": {"hover": {"state": {"values": {"scale": 1.05}}}}}}}, None)
+case("negative: a part no rename names is left as saved", "sgs/hero",
+     {"sgsMotion": {"v": 1, "elements": {"headline": {"hover": {"state": {"values": {"scale": 1.05}}}}}}}, None)
 case("negative: a hero already in the new shape is not pinned", "sgs/hero",
      {"splitSource": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}}}, None)
 case("hero split width: a video is not pinned", "sgs/hero", {"splitMediaType": "video", "splitMediaVideoUrl": "http://x/v.mp4"},
