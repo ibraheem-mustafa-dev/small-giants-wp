@@ -8,7 +8,7 @@ paths:
 
 ## Border controls — `SgsBorderControl` is the one shape
 
-`<SgsBorderControl>` (`src/components/SgsBorderControl.js`) is the one border control every block mounts. Do not cache a mount count (it goes stale): `git grep -l "<SgsBorderControl" -- "src/blocks/*/edit.js"` (a media slot mounts it through the media panels' `src/components/media/controls/MediaBoxShapeControls.js`, so grep on `edit.js` alone under-counts). Unmigrated blocks still declare native `__experimentalBorder`: `git grep -l __experimentalBorder -- "src/blocks/*/block.json"`. Census and ratcheted gate: `scripts/survey-border-control-migration.py`; codemods: `scripts/migrate-border-control.js` (edit.js swap) and `scripts/migrate-border-shape-b.js` (storage).
+`<SgsBorderControl>` (`src/components/SgsBorderControl.js`) is the one border control every block mounts. Do not cache a mount count (it goes stale): `git grep -l "<SgsBorderControl" -- "src/blocks/*/edit.js"` (X, so grep on `edit.js` alone under-counts). Unmigrated blocks still declare native `__experimentalBorder`: `git grep -l __experimentalBorder -- "src/blocks/*/block.json"`. Census and ratcheted gate: `scripts/survey-border-control-migration.py`; codemods: `scripts/migrate-border-control.js` (edit.js swap) and `scripts/migrate-border-shape-b.js` (storage).
 
 The control is a PAIR: border width (box object) + colour, with border STYLE inside the colour popover, plus the SGS-wrapped native radius as a second control when the caller wires `onRadiusChange`.
 
