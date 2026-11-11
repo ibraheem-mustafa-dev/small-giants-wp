@@ -54,8 +54,10 @@
  *   --post-file post.json         the global post get_post() returns (an object: ID, post_type, ...), or a list of
  *                                 them: the posts every WP_Query returns, each the current post while its child renders
  *   --attachments-file a.json     attachment ID => image URL (the harness has no media library)
+ *   --attachment-meta-file m.json attachment ID => {width, height} (the harness has no media library metadata)
  *   --render-children             render_block() renders sgs/* children through their real render.php
  *   --first-section               the block sits in the page's first top-level section (first-section-stub.php)
+ *   --armed                       the page's motion renderer is armed and the block sits below the fold
  *   --queried-file q.json         the request's queried post ({"id": N, "post_type": "..."}): is_singular() and
  *                                 get_queried_object_id() answer as on that post's own page
  *
@@ -133,6 +135,8 @@ require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-renderer.php';
 // Real SGS code: sgs/product-card's bound paths call sgs_product_card_has_real_image() (the no-photo box), which the
 // plugin bootstrap loads from this file (sgs-blocks.php), not the render.php itself.
 require_once $sgs_blocks_dir . '/includes/product-card-no-photo.php';
+// The card's and buybox's pictures go through the shared renderer by way of this file.
+require_once $sgs_blocks_dir . '/includes/product-card-media.php';
 
 // Real SGS code: the configurator paths of sgs/product-card and sgs/buybox call sgs_price_trim_zeros_applies(), which
 // the plugin bootstrap loads from this file (sgs-blocks.php), not the render.php itself.
@@ -437,6 +441,11 @@ if ( isset( $args['queried-file'] ) ) {
 if ( isset( $args['first-section'] ) ) {
 	require_once __DIR__ . '/first-section-stub.php';
 }
+// --armed: the page's motion renderer is armed and the block sits below the fold (first-section-stub.php, fold false).
+if ( isset( $args['armed'] ) && ! isset( $args['first-section'] ) ) {
+	$GLOBALS['sgs_qa_stub_fold'] = false;
+	require_once __DIR__ . '/first-section-stub.php';
+}
 
 // --attachments-file: attachment ID => image URL, what wp_get_attachment_image_url() answers (wp-stubs.php).
 if ( isset( $args['attachments-file'] ) ) {
@@ -448,6 +457,19 @@ if ( isset( $args['attachments-file'] ) ) {
 		harness_fail( 'invalid JSON for attachments-file: ' . json_last_error_msg() );
 	}
 	$GLOBALS['sgs_qa_attachments'] = $attachments_tree;
+}
+
+// --attachment-meta-file: attachment ID => {"width": N, "height": N}, what wp_get_attachment_metadata() answers (wp-stubs.php),
+// so an image with an attachment ID has a size and can be a page's lead image.
+if ( isset( $args['attachment-meta-file'] ) ) {
+	if ( ! is_file( $args['attachment-meta-file'] ) ) {
+		harness_fail( 'attachment-meta-file not found: ' . $args['attachment-meta-file'] );
+	}
+	$attachment_meta = json_decode( (string) file_get_contents( $args['attachment-meta-file'] ), true );
+	if ( ! is_array( $attachment_meta ) ) {
+		harness_fail( 'invalid JSON for attachment-meta-file: ' . json_last_error_msg() );
+	}
+	$GLOBALS['sgs_qa_attachment_meta'] = $attachment_meta;
 }
 
 // --post-file: the global post get_post() returns, as an object (ID, post_type, post_title, ...).

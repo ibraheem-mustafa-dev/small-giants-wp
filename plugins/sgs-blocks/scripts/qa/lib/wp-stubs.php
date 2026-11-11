@@ -1123,7 +1123,8 @@ if ( ! function_exists( 'set_transient' ) ) {
 }
 if ( ! function_exists( 'wp_get_attachment_metadata' ) ) {
 	function wp_get_attachment_metadata( $id ) {
-		return false;
+		// --attachment-meta-file: attachment ID => {width, height}, what the media renderer reads for an image's size.
+		return $GLOBALS['sgs_qa_attachment_meta'][ (string) (int) $id ] ?? false;
 	}
 }
 if ( ! function_exists( 'wp_getimagesize' ) ) {
