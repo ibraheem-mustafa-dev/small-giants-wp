@@ -30,31 +30,34 @@
   "baseline": {
     "sandybrown": {
       "/": {
-        "css": 133675,
-        "js": 104310,
+        "css": 130662,
+        "js": 82432,
         "date": "2026-11-11",
         "raised": "JS raised on purpose 2026-11-11: order attribution (sourcebuster-js 4.9 KB + wc-order-attribution 1.4 KB) loads on every page again so each order records where the visitor landed (Bean 2026-11-03)."
       },
       "/blog/": {
         "css": 113462,
-        "js": 91784,
+        "js": 91750,
         "date": "2026-11-11",
         "raised": "JS raised on purpose 2026-11-11: order attribution (sourcebuster-js 4.9 KB + wc-order-attribution 1.4 KB) loads on every page again so each order records where the visitor landed (Bean 2026-11-03)."
       },
       "/shop/": {
-        "css": 194724,
-        "js": 195491,
-        "date": "2026-11-11"
+        "css": 197939,
+        "js": 195482,
+        "date": "2026-11-11",
+        "raised": "CSS raised on purpose 2026-11-11: the theme notices work (f7bb4fc62, 084c3463f, 18a82b250, 7b16c3135) styles WooCommerce notices from sgs/notice-banner tokens, adding woocommerce-notices.css (1.6 KB) on product pages and 1.1 KB to theme woocommerce.css."
       },
       "/product/qa-simple-toast-fixture/": {
-        "css": 206385,
-        "js": 186065,
-        "date": "2026-11-11"
+        "css": 209510,
+        "js": 186061,
+        "date": "2026-11-11",
+        "raised": "CSS raised on purpose 2026-11-11: the theme notices work (f7bb4fc62, 084c3463f, 18a82b250, 7b16c3135) styles WooCommerce notices from sgs/notice-banner tokens, adding woocommerce-notices.css (1.6 KB) on product pages and 1.1 KB to theme woocommerce.css."
       },
       "/product/classic-lactation-cookies/": {
-        "css": 217539,
+        "css": 221184,
         "js": 126215,
-        "date": "2026-11-11"
+        "date": "2026-11-11",
+        "raised": "CSS raised on purpose 2026-11-11: the theme notices work (f7bb4fc62, 084c3463f, 18a82b250, 7b16c3135) styles WooCommerce notices from sgs/notice-banner tokens, adding woocommerce-notices.css (1.6 KB) on product pages and 1.1 KB to theme woocommerce.css."
       }
     },
     "eye-care-test": {
