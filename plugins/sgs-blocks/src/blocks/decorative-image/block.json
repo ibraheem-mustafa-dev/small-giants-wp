@@ -33,7 +33,14 @@
             "motion": true,
             "_comment_mediaElements": "Adopts object-fit, focal-point and overlay only, unprefixed (one media slot). box-shape is NOT adopted as an atom: its Width, Height and border bases are this block's own width, height and border attributes, so the atom would put --sgs-media-width and a second border on the inner image of every wrapper layer and add second Width, Height and border rows. The layer takes the atom's SHAPE only: the block-private `shape` attribute uses the atom's vocabulary and clip-path map (box-shape.js::validateShape, sgs_media_atom_box_shape_clip_paths) and clips the layer root. The layer paints its own box (border, radius, fill, shadow, height) on its root through the block-private attributes below, built from the shared border, shadow and fill assemblers (sgs_border_element_decls, sgs_shadow_decls, sgs_background_paint_decl), the way sgs/before-after does for its frame.",
             "mediaElements": [
-                { "prefix": "", "context": "element", "atoms": [ "object-fit", "focal-point", "overlay" ] }
+            	{
+            		"prefix": "layer",
+            		"context": "element",
+            		"kinds": [
+            			"image",
+            			"svg"
+            		]
+            	}
             ],
             "boxFamilies": {
                 "borderRadius": [ "borderRadius" ],
@@ -251,7 +258,56 @@
         "hideOnMobile": {
             "type": "boolean",
             "default": false
-        }
+        },
+    	"layerSource": {"type":"object","_generated":"media-atoms"},
+    	"layerLoading": {"type":"string","_generated":"media-atoms"},
+    	"layerAlt": {"type":"string","_generated":"media-atoms"},
+    	"layerDecorative": {"type":"boolean","_generated":"media-atoms"},
+    	"layerFit": {"type":"object","_generated":"media-atoms"},
+    	"layerRepeat": {"type":"object","_generated":"media-atoms"},
+    	"layerTileSize": {"type":"object","_generated":"media-atoms"},
+    	"layerFocal": {"type":"object","_generated":"media-atoms"},
+    	"layerPinned": {"type":"boolean","_generated":"media-atoms"},
+    	"layerPadding": {"type":"object","_generated":"media-atoms"},
+    	"layerBackground": {"type":"string","_generated":"media-atoms"},
+    	"layerOverlayColour": {"type":"string","_generated":"media-atoms"},
+    	"layerOverlayColourHover": {"type":"string","_generated":"media-atoms"},
+    	"layerOverlayGradient": {"type":"string","_generated":"media-atoms"},
+    	"layerOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
+    	"layerOverlayOpacity": {"type":"object","_generated":"media-atoms"},
+    	"layerOverlayBlend": {"type":"string","_generated":"media-atoms"},
+    	"layerOpacity": {"type":"object","_generated":"media-atoms"},
+    	"layerBlend": {"type":"string","_generated":"media-atoms"},
+    	"layerBoxShadow": {"type":"string","_generated":"media-atoms"},
+    	"layerBoxShadowColour": {"type":"string","_generated":"media-atoms"},
+    	"layerBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
+    	"layerSvgLayer": {"type":"string","_generated":"media-atoms"},
+    	"layerSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
+    	"layerSvgParts": {"type":"array","_generated":"media-atoms"},
+    	"layerSvgPartsTrigger": {"type":"string","_generated":"media-atoms"},
+    	"layerCaption": {"type":"string","_generated":"media-atoms"},
+    	"layerCaptionTag": {"type":"string","_generated":"media-atoms"},
+    	"layerLinkUrl": {"type":"string","_generated":"media-atoms"},
+    	"layerLinkOpensNewTab": {"type":"boolean","_generated":"media-atoms"},
+    	"layerLinkRel": {"type":"string","_generated":"media-atoms"},
+    	"layerLinkUrlSource": {"type":"string","_generated":"media-atoms"},
+    	"layerRatio": {"type":"object","_generated":"media-atoms"},
+    	"layerWidth": {"type":"object","_generated":"media-atoms"},
+    	"layerHeight": {"type":"object","_generated":"media-atoms"},
+    	"layerMinWidth": {"type":"object","_generated":"media-atoms"},
+    	"layerMaxWidth": {"type":"object","_generated":"media-atoms"},
+    	"layerMinHeight": {"type":"object","_generated":"media-atoms"},
+    	"layerMaxHeight": {"type":"object","_generated":"media-atoms"},
+    	"layerShape": {"type":"object","_generated":"media-atoms"},
+    	"layerRadius": {"type":"object","_generated":"media-atoms"},
+    	"layerBorderWidth": {"type":"object","_generated":"media-atoms"},
+    	"layerBorderStyle": {"type":"string","_generated":"media-atoms"},
+    	"layerBorderColour": {"type":"string","_generated":"media-atoms"},
+    	"layerBorderColourHover": {"type":"string","_generated":"media-atoms"},
+    	"layerColour": {"type":"object","_generated":"media-atoms"},
+    	"layerGreyscale": {"type":"number","_generated":"media-atoms"},
+    	"layerAlignment": {"type":"object","_generated":"media-atoms"},
+    	"layerOrder": {"type":"object","_generated":"media-atoms"}
     },
     "render": "file:./render.php",
     "editorScript": "file:./index.js",

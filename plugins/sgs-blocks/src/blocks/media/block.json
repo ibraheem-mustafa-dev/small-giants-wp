@@ -26,22 +26,12 @@
 			"mediaElements": [
 				{
 					"prefix": "",
-					"context": "element",
-					"atoms": [
-						"media-type",
-						"source",
-						"meaning",
-						"svg-presentation",
-						"object-fit",
-						"focal-point",
-						"box-shape",
-						"video-behaviour",
-						"overlay",
-						"opacity",
-						"shadow",
-						"media-padding",
-						"caption",
-						"link"
+					"context": "content",
+					"kinds": [
+						"image",
+						"video",
+						"embed",
+						"svg"
 					]
 				}
 			],
@@ -485,9 +475,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"overlayOpacity": {
-			"type": "number"
-		},
 		"overlayBlendMode": {
 			"type": "string",
 			"default": "normal"
@@ -507,19 +494,6 @@
 		"boxShadowColourHover": {
 			"type": "string",
 			"default": ""
-		},
-		"opacity": {
-			"type": "number",
-			"default": 1
-		},
-		"alignment": {
-			"type": "string",
-			"default": "start",
-			"enum": [
-				"start",
-				"center",
-				"end"
-			]
 		},
 		"order": {
 			"type": "object",
@@ -788,7 +762,36 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"source": {"type":"object","_generated":"media-atoms"},
+		"loading": {"type":"string","_generated":"media-atoms"},
+		"alt": {"type":"string","_generated":"media-atoms"},
+		"decorative": {"type":"boolean","_generated":"media-atoms"},
+		"fit": {"type":"object","_generated":"media-atoms"},
+		"repeat": {"type":"object","_generated":"media-atoms"},
+		"tileSize": {"type":"object","_generated":"media-atoms"},
+		"focal": {"type":"object","_generated":"media-atoms"},
+		"pinned": {"type":"boolean","_generated":"media-atoms"},
+		"background": {"type":"string","_generated":"media-atoms"},
+		"overlayOpacity": {"type":"object","_generated":"media-atoms"},
+		"overlayBlend": {"type":"string","_generated":"media-atoms"},
+		"opacity": {"type":"object","_generated":"media-atoms"},
+		"blend": {"type":"string","_generated":"media-atoms"},
+		"svgLayer": {"type":"string","_generated":"media-atoms"},
+		"svgTextShadow": {"type":"boolean","_generated":"media-atoms"},
+		"svgParts": {"type":"array","_generated":"media-atoms"},
+		"svgPartsTrigger": {"type":"string","_generated":"media-atoms"},
+		"playback": {"type":"object","_generated":"media-atoms"},
+		"captions": {"type":"object","_generated":"media-atoms"},
+		"ratio": {"type":"object","_generated":"media-atoms"},
+		"width": {"type":"object","_generated":"media-atoms"},
+		"minWidth": {"type":"object","_generated":"media-atoms"},
+		"minHeight": {"type":"object","_generated":"media-atoms"},
+		"shape": {"type":"object","_generated":"media-atoms"},
+		"radius": {"type":"object","_generated":"media-atoms"},
+		"colour": {"type":"object","_generated":"media-atoms"},
+		"greyscale": {"type":"number","_generated":"media-atoms"},
+		"alignment": {"type":"object","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
