@@ -547,6 +547,146 @@
 						],
 						"prefix": "orderDetailText"
 					},
+					"authHeading": {
+						"selector": "#customer_login h2",
+						"motion": false,
+						"label": "Sign-in and register panel heading",
+						"order": 100,
+						"clusters": [
+							"text"
+						],
+						"prefix": "authHeading"
+					},
+					"loginRememberText": {
+						"selector": ".woocommerce-form-login__rememberme",
+						"motion": false,
+						"label": "Remember me row",
+						"order": 101,
+						"clusters": [
+							"text"
+						],
+						"prefix": "loginRememberText"
+					},
+					"lostPasswordRow": {
+						"selector": ".woocommerce-form-login .lost_password",
+						"motion": false,
+						"label": "Lost password line",
+						"order": 102,
+						"clusters": [
+							"text"
+						],
+						"prefix": "lostPasswordRow"
+					},
+					"privacyText": {
+						"selector": ".woocommerce-privacy-policy-text",
+						"motion": false,
+						"label": "Privacy policy text",
+						"order": 103,
+						"clusters": [
+							"text"
+						],
+						"prefix": "privacyText"
+					},
+					"resetErrorLine": {
+						"selector": ".sgs-account__reset-error",
+						"motion": false,
+						"label": "Reset view error line",
+						"order": 104,
+						"clusters": [
+							"text"
+						],
+						"prefix": "resetErrorLine"
+					},
+					"resetNoticeText": {
+						"selector": ":has(form.lost_reset_password) .woocommerce-error",
+						"motion": false,
+						"label": "Reset view error notice",
+						"order": 105,
+						"clusters": [
+							"text"
+						],
+						"prefix": "resetNoticeText"
+					},
+					"addressSaveButton": {
+						"selector": ".sgs-account__wc form[method=\"post\"] button[name=\"save_address\"]",
+						"motion": false,
+						"label": "Save address button",
+						"order": 106,
+						"clusters": [
+							"text"
+						],
+						"prefix": "addressSaveButton"
+					},
+					"addressEditLink": {
+						"selector": ".woocommerce-Address-title a.edit",
+						"motion": false,
+						"label": "Address Edit link",
+						"order": 107,
+						"clusters": [
+							"text"
+						],
+						"prefix": "addressEditLink"
+					},
+					"addressText": {
+						"selector": ".woocommerce-Address address",
+						"motion": false,
+						"label": "Address card text",
+						"order": 108,
+						"clusters": [
+							"text"
+						],
+						"prefix": "addressText"
+					},
+					"orderDetailBackLink": {
+						"selector": ".sgs-account__od-back",
+						"motion": false,
+						"label": "Order page back link",
+						"order": 109,
+						"clusters": [
+							"text"
+						],
+						"prefix": "orderDetailBackLink"
+					},
+					"orderDetailPlacedLine": {
+						"selector": ".sgs-account__od-placed",
+						"motion": false,
+						"label": "Order page placed line",
+						"order": 110,
+						"clusters": [
+							"text"
+						],
+						"prefix": "orderDetailPlacedLine"
+					},
+					"orderDetailChatText": {
+						"selector": ".sgs-account__od-chat-text",
+						"motion": false,
+						"label": "Order page WhatsApp card text",
+						"order": 111,
+						"clusters": [
+							"text"
+						],
+						"prefix": "orderDetailChatText"
+					},
+					"orderDetailTotalValue": {
+						"selector": ".sgs-account__od-row--total > span:last-child",
+						"motion": false,
+						"label": "Order page total value",
+						"order": 112,
+						"clusters": [
+							"text"
+						],
+						"prefix": "orderDetailTotalValue"
+					},
+					"orderDetailItemBrand": {
+						"selector": ".sgs-account__od-item-brand",
+						"motion": false,
+						"label": "Order page item brand",
+						"order": 113,
+						"clusters": [
+							"text"
+						],
+						"prefix": "orderDetailItemBrand"
+					},
 					"ordersTotal": {
 						"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row .woocommerce-orders-table__cell-order-total",
 						"motion": false,
@@ -2610,6 +2750,1067 @@
 				]
 			},
 			"orderDetailTextTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"menuSidebarBorderWidth": {
+				"type": "object",
+				"description": "Sidebar line width (desktop sidebar) per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"menuTabRowBorderWidth": {
+				"type": "object",
+				"description": "Tab row line width per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"menuTabRowMarginBottom": {
+				"type": "object",
+				"description": "Space under the tab row per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"menuItemMinHeight": {
+				"type": "object",
+				"description": "Menu item minimum height per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"menuItemPadding": {
+				"type": "object",
+				"description": "Menu item padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"menuItemRadius": {
+				"type": "object",
+				"description": "Menu item corner radius per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"menuItemGap": {
+				"type": "object",
+				"description": "Gap between a menu item's icon, text and count per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"menuListGap": {
+				"type": "object",
+				"description": "Gap between menu items per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"menuListPadding": {
+				"type": "object",
+				"description": "Menu list padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"headerEyebrowMarginBottom": {
+				"type": "object",
+				"description": "Space under the eyebrow per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"headerAccountEyebrowMarginBottom": {
+				"type": "object",
+				"description": "Space under the eyebrow (account view) per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"headerSignInMarginBottom": {
+				"type": "object",
+				"description": "Space under the header (sign-in view) per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"headerResetMarginBottom": {
+				"type": "object",
+				"description": "Space under the header (new-password view) per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"headerAccountTitleLineHeight": {
+				"type": "object",
+				"description": "Title line height (account view) per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"headerBackLineMargin": {
+				"type": "object",
+				"description": "Back link line margin per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"headerBackRuleWidth": {
+				"type": "object",
+				"description": "Back link bottom rule width (replaces its underline) per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"registerHintMarginTop": {
+				"type": "object",
+				"description": "Register hint: space above per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"mobileHintMargin": {
+				"type": "object",
+				"description": "Mobile hint margin per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"authPairGap": {
+				"type": "object",
+				"description": "Gap between the sign-in and register panels per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"authPairBorderWidth": {
+				"type": "object",
+				"description": "Frame width around the two panels per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"authPairCellPadding": {
+				"type": "object",
+				"description": "Panel padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"authPairCellBorderWidth": {
+				"type": "object",
+				"description": "Panel border width per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"authPairCellRadius": {
+				"type": "object",
+				"description": "Panel corner radius per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"authPanelHeadingMargin": {
+				"type": "object",
+				"description": "Panel heading margin per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"authFormRowGap": {
+				"type": "object",
+				"description": "Space between rows of the sign-in and register forms per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"loginFormRowGap": {
+				"type": "object",
+				"description": "Space between rows of the sign-in form per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"loginRowMarginBottom": {
+				"type": "object",
+				"description": "Space under each sign-in field, Remember me and Lost password per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"loginLinkPadding": {
+				"type": "object",
+				"description": "Lost password line padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"loginLinkRuleWidth": {
+				"type": "object",
+				"description": "Lost password link bottom rule width (replaces its underline) per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"loginRememberMinHeight": {
+				"type": "object",
+				"description": "Remember me row minimum height per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"loginRememberGap": {
+				"type": "object",
+				"description": "Remember me row gap per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"rememberCheckboxSize": {
+				"type": "object",
+				"description": "Remember me checkbox size per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"privacyLinkTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline"
+				],
+				"description": "Privacy text link underline. Unset keeps the stylesheet."
+			},
+			"resetFormMaxWidth": {
+				"type": "object",
+				"description": "Form maximum width per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"resetFormBorderWidth": {
+				"type": "object",
+				"description": "Form border width per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"resetFormRadius": {
+				"type": "object",
+				"description": "Form corner radius per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"resetFormPadding": {
+				"type": "object",
+				"description": "Form padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"resetFormGap": {
+				"type": "object",
+				"description": "Space between the form rows per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"resetHideIntro": {
+				"type": "boolean",
+				"description": "Hide WooCommerce's intro paragraph. Unset keeps the stylesheet."
+			},
+			"resetRowMargin": {
+				"type": "object",
+				"description": "Form row margin per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"resetRowPadding": {
+				"type": "object",
+				"description": "Form row padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"resetErrorMargin": {
+				"type": "object",
+				"description": "Error line margin per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"resetNoticeBorderWidth": {
+				"type": "object",
+				"description": "Error notice border width per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"resetNoticePadding": {
+				"type": "object",
+				"description": "Error notice padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"resetNoticeMargin": {
+				"type": "object",
+				"description": "Error notice margin per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"resetNoticeItemPadding": {
+				"type": "object",
+				"description": "Error notice item padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"accountFormMaxWidth": {
+				"type": "object",
+				"description": "Form maximum width per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"accountFieldsetBorderWidth": {
+				"type": "object",
+				"description": "Section border width per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"accountFieldsetMargin": {
+				"type": "object",
+				"description": "Section margin per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"accountFieldsetPadding": {
+				"type": "object",
+				"description": "Section padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"accountFieldsetGap": {
+				"type": "object",
+				"description": "Space between section fields per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"accountLegendPadding": {
+				"type": "object",
+				"description": "Section heading padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"accountLegendMargin": {
+				"type": "object",
+				"description": "Section heading margin per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"accountLegendRuleWidth": {
+				"type": "object",
+				"description": "Section heading top rule width per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"accountFormRowMargin": {
+				"type": "object",
+				"description": "Field row margin per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"accountFormRowPadding": {
+				"type": "object",
+				"description": "Field row padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"accountPasswordHelperMargin": {
+				"type": "object",
+				"description": "Password helper margin per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"saveAddressMinHeight": {
+				"type": "object",
+				"description": "Save address button minimum height per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"saveAddressPadding": {
+				"type": "object",
+				"description": "Save address button padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"addressTitleRowGap": {
+				"type": "object",
+				"description": "Title row gap per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"addressTitleRowMarginBottom": {
+				"type": "object",
+				"description": "Space under the title row per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"addressTitleRowPadding": {
+				"type": "object",
+				"description": "Title row padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"addressTitleMargin": {
+				"type": "object",
+				"description": "Title margin per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"addressTitlePadding": {
+				"type": "object",
+				"description": "Title padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"addressEditRuleWidth": {
+				"type": "object",
+				"description": "Edit link bottom rule width (replaces its underline) per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"addressEditMargin": {
+				"type": "object",
+				"description": "Edit link margin per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"addressHelperMarginTop": {
+				"type": "object",
+				"description": "Helper line: space above per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"addressActionsMarginTop": {
+				"type": "object",
+				"description": "Address buttons: space above per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"orderDetailBackMinHeight": {
+				"type": "object",
+				"description": "Back link minimum height per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"orderDetailBackGap": {
+				"type": "object",
+				"description": "Back link arrow gap per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"orderDetailChatUnderline": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline"
+				],
+				"description": "WhatsApp card underline. Unset keeps the stylesheet."
+			},
+			"orderDetailBoxTitleMarginBottom": {
+				"type": "object",
+				"description": "Box title: space under per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"orderDetailLastBoxTitleMarginBottom": {
+				"type": "object",
+				"description": "Last box title: space under per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"orderDetailTotalRowPaddingTop": {
+				"type": "object",
+				"description": "Total row: padding above per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"orderDetailTotalRowMarginTop": {
+				"type": "object",
+				"description": "Total row: space above per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"orderDetailTotalRowRuleWidth": {
+				"type": "object",
+				"description": "Total row top rule width per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"orderDetailTitleMarginBottom": {
+				"type": "object",
+				"description": "Heading: space under per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"orderDetailItemMetaMarginTop": {
+				"type": "object",
+				"description": "Item detail line: space above per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"ordersRowTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline"
+				],
+				"description": "Order row underline. Unset keeps the stylesheet."
+			},
+			"ordersEmptyButtonMinHeight": {
+				"type": "object",
+				"description": "Empty orders button minimum height per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"ordersEmptyButtonPadding": {
+				"type": "object",
+				"description": "Empty orders button padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"tabHeadingMarginBottom": {
+				"type": "object",
+				"description": "Tab heading: space under per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"signedOutMaxWidth": {
+				"type": "object",
+				"description": "Signed-out maximum width per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"authHeadingFontSize": {
+				"type": "object"
+			},
+			"authHeadingFontSizeUnit": {
+				"type": "string"
+			},
+			"authHeadingFontFamily": {
+				"type": "string"
+			},
+			"authHeadingFontWeight": {
+				"type": "string"
+			},
+			"authHeadingFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"authHeadingLineHeight": {
+				"type": "object"
+			},
+			"authHeadingLineHeightUnit": {
+				"type": "string"
+			},
+			"authHeadingLetterSpacing": {
+				"type": "object"
+			},
+			"authHeadingLetterSpacingUnit": {
+				"type": "string"
+			},
+			"authHeadingTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"authHeadingTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"loginRememberTextFontSize": {
+				"type": "object"
+			},
+			"loginRememberTextFontSizeUnit": {
+				"type": "string"
+			},
+			"loginRememberTextFontFamily": {
+				"type": "string"
+			},
+			"loginRememberTextFontWeight": {
+				"type": "string"
+			},
+			"loginRememberTextFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"loginRememberTextLineHeight": {
+				"type": "object"
+			},
+			"loginRememberTextLineHeightUnit": {
+				"type": "string"
+			},
+			"loginRememberTextLetterSpacing": {
+				"type": "object"
+			},
+			"loginRememberTextLetterSpacingUnit": {
+				"type": "string"
+			},
+			"loginRememberTextTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"loginRememberTextTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"lostPasswordRowFontSize": {
+				"type": "object"
+			},
+			"lostPasswordRowFontSizeUnit": {
+				"type": "string"
+			},
+			"lostPasswordRowFontFamily": {
+				"type": "string"
+			},
+			"lostPasswordRowFontWeight": {
+				"type": "string"
+			},
+			"lostPasswordRowFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"lostPasswordRowLineHeight": {
+				"type": "object"
+			},
+			"lostPasswordRowLineHeightUnit": {
+				"type": "string"
+			},
+			"lostPasswordRowLetterSpacing": {
+				"type": "object"
+			},
+			"lostPasswordRowLetterSpacingUnit": {
+				"type": "string"
+			},
+			"lostPasswordRowTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"lostPasswordRowTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"privacyTextFontSize": {
+				"type": "object"
+			},
+			"privacyTextFontSizeUnit": {
+				"type": "string"
+			},
+			"privacyTextFontFamily": {
+				"type": "string"
+			},
+			"privacyTextFontWeight": {
+				"type": "string"
+			},
+			"privacyTextFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"privacyTextLineHeight": {
+				"type": "object"
+			},
+			"privacyTextLineHeightUnit": {
+				"type": "string"
+			},
+			"privacyTextLetterSpacing": {
+				"type": "object"
+			},
+			"privacyTextLetterSpacingUnit": {
+				"type": "string"
+			},
+			"privacyTextTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"privacyTextTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"resetErrorLineFontSize": {
+				"type": "object"
+			},
+			"resetErrorLineFontSizeUnit": {
+				"type": "string"
+			},
+			"resetErrorLineFontFamily": {
+				"type": "string"
+			},
+			"resetErrorLineFontWeight": {
+				"type": "string"
+			},
+			"resetErrorLineFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"resetErrorLineLineHeight": {
+				"type": "object"
+			},
+			"resetErrorLineLineHeightUnit": {
+				"type": "string"
+			},
+			"resetErrorLineLetterSpacing": {
+				"type": "object"
+			},
+			"resetErrorLineLetterSpacingUnit": {
+				"type": "string"
+			},
+			"resetErrorLineTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"resetErrorLineTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"resetNoticeTextFontSize": {
+				"type": "object"
+			},
+			"resetNoticeTextFontSizeUnit": {
+				"type": "string"
+			},
+			"resetNoticeTextFontFamily": {
+				"type": "string"
+			},
+			"resetNoticeTextFontWeight": {
+				"type": "string"
+			},
+			"resetNoticeTextFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"resetNoticeTextLineHeight": {
+				"type": "object"
+			},
+			"resetNoticeTextLineHeightUnit": {
+				"type": "string"
+			},
+			"resetNoticeTextLetterSpacing": {
+				"type": "object"
+			},
+			"resetNoticeTextLetterSpacingUnit": {
+				"type": "string"
+			},
+			"resetNoticeTextTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"resetNoticeTextTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"addressSaveButtonFontSize": {
+				"type": "object"
+			},
+			"addressSaveButtonFontSizeUnit": {
+				"type": "string"
+			},
+			"addressSaveButtonFontFamily": {
+				"type": "string"
+			},
+			"addressSaveButtonFontWeight": {
+				"type": "string"
+			},
+			"addressSaveButtonFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"addressSaveButtonLineHeight": {
+				"type": "object"
+			},
+			"addressSaveButtonLineHeightUnit": {
+				"type": "string"
+			},
+			"addressSaveButtonLetterSpacing": {
+				"type": "object"
+			},
+			"addressSaveButtonLetterSpacingUnit": {
+				"type": "string"
+			},
+			"addressSaveButtonTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"addressSaveButtonTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"addressEditLinkFontSize": {
+				"type": "object"
+			},
+			"addressEditLinkFontSizeUnit": {
+				"type": "string"
+			},
+			"addressEditLinkFontFamily": {
+				"type": "string"
+			},
+			"addressEditLinkFontWeight": {
+				"type": "string"
+			},
+			"addressEditLinkFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"addressEditLinkLineHeight": {
+				"type": "object"
+			},
+			"addressEditLinkLineHeightUnit": {
+				"type": "string"
+			},
+			"addressEditLinkLetterSpacing": {
+				"type": "object"
+			},
+			"addressEditLinkLetterSpacingUnit": {
+				"type": "string"
+			},
+			"addressEditLinkTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"addressEditLinkTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"addressTextFontSize": {
+				"type": "object"
+			},
+			"addressTextFontSizeUnit": {
+				"type": "string"
+			},
+			"addressTextFontFamily": {
+				"type": "string"
+			},
+			"addressTextFontWeight": {
+				"type": "string"
+			},
+			"addressTextFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"addressTextLineHeight": {
+				"type": "object"
+			},
+			"addressTextLineHeightUnit": {
+				"type": "string"
+			},
+			"addressTextLetterSpacing": {
+				"type": "object"
+			},
+			"addressTextLetterSpacingUnit": {
+				"type": "string"
+			},
+			"addressTextTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"addressTextTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"orderDetailBackLinkFontSize": {
+				"type": "object"
+			},
+			"orderDetailBackLinkFontSizeUnit": {
+				"type": "string"
+			},
+			"orderDetailBackLinkFontFamily": {
+				"type": "string"
+			},
+			"orderDetailBackLinkFontWeight": {
+				"type": "string"
+			},
+			"orderDetailBackLinkFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"orderDetailBackLinkLineHeight": {
+				"type": "object"
+			},
+			"orderDetailBackLinkLineHeightUnit": {
+				"type": "string"
+			},
+			"orderDetailBackLinkLetterSpacing": {
+				"type": "object"
+			},
+			"orderDetailBackLinkLetterSpacingUnit": {
+				"type": "string"
+			},
+			"orderDetailBackLinkTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"orderDetailBackLinkTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"orderDetailPlacedLineFontSize": {
+				"type": "object"
+			},
+			"orderDetailPlacedLineFontSizeUnit": {
+				"type": "string"
+			},
+			"orderDetailPlacedLineFontFamily": {
+				"type": "string"
+			},
+			"orderDetailPlacedLineFontWeight": {
+				"type": "string"
+			},
+			"orderDetailPlacedLineFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"orderDetailPlacedLineLineHeight": {
+				"type": "object"
+			},
+			"orderDetailPlacedLineLineHeightUnit": {
+				"type": "string"
+			},
+			"orderDetailPlacedLineLetterSpacing": {
+				"type": "object"
+			},
+			"orderDetailPlacedLineLetterSpacingUnit": {
+				"type": "string"
+			},
+			"orderDetailPlacedLineTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"orderDetailPlacedLineTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"orderDetailChatTextFontSize": {
+				"type": "object"
+			},
+			"orderDetailChatTextFontSizeUnit": {
+				"type": "string"
+			},
+			"orderDetailChatTextFontFamily": {
+				"type": "string"
+			},
+			"orderDetailChatTextFontWeight": {
+				"type": "string"
+			},
+			"orderDetailChatTextFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"orderDetailChatTextLineHeight": {
+				"type": "object"
+			},
+			"orderDetailChatTextLineHeightUnit": {
+				"type": "string"
+			},
+			"orderDetailChatTextLetterSpacing": {
+				"type": "object"
+			},
+			"orderDetailChatTextLetterSpacingUnit": {
+				"type": "string"
+			},
+			"orderDetailChatTextTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"orderDetailChatTextTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"orderDetailTotalValueFontSize": {
+				"type": "object"
+			},
+			"orderDetailTotalValueFontSizeUnit": {
+				"type": "string"
+			},
+			"orderDetailTotalValueFontFamily": {
+				"type": "string"
+			},
+			"orderDetailTotalValueFontWeight": {
+				"type": "string"
+			},
+			"orderDetailTotalValueFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"orderDetailTotalValueLineHeight": {
+				"type": "object"
+			},
+			"orderDetailTotalValueLineHeightUnit": {
+				"type": "string"
+			},
+			"orderDetailTotalValueLetterSpacing": {
+				"type": "object"
+			},
+			"orderDetailTotalValueLetterSpacingUnit": {
+				"type": "string"
+			},
+			"orderDetailTotalValueTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"orderDetailTotalValueTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
+			"orderDetailItemBrandFontSize": {
+				"type": "object"
+			},
+			"orderDetailItemBrandFontSizeUnit": {
+				"type": "string"
+			},
+			"orderDetailItemBrandFontFamily": {
+				"type": "string"
+			},
+			"orderDetailItemBrandFontWeight": {
+				"type": "string"
+			},
+			"orderDetailItemBrandFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"orderDetailItemBrandLineHeight": {
+				"type": "object"
+			},
+			"orderDetailItemBrandLineHeightUnit": {
+				"type": "string"
+			},
+			"orderDetailItemBrandLetterSpacing": {
+				"type": "object"
+			},
+			"orderDetailItemBrandLetterSpacingUnit": {
+				"type": "string"
+			},
+			"orderDetailItemBrandTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"orderDetailItemBrandTextDecoration": {
 				"type": "string",
 				"enum": [
 					"",

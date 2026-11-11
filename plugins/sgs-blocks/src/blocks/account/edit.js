@@ -28,6 +28,7 @@ import DashboardPanel from './DashboardPanel';
 import FieldsPanel, { fieldColourRows } from './FieldsPanel';
 import LoggedOutPanel from './LoggedOutPanel';
 import OrdersPanel, { extraColourRows, EXTRA_TYPE_TARGETS } from './OrdersPanel';
+import CellPanels from './CellPanels';
 import OrderPagePanels from './OrderPagePanels';
 import { WordingPanel, HeaderPanel, AddressesPanel, AccountDetailsPanel, SignInButtonPanel, RegisterFormPanel } from './ExtraPanels';
 import { AuthTabsPanel, SignedOutContentPanel, SignedOutCardPanel } from './SignedOutPanel';
@@ -198,6 +199,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<OrderPagePanels attributes={ attributes } setAttributes={ setAttributes } />
 				<AddressesPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<AccountDetailsPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<CellPanels attributes={ attributes } setAttributes={ setAttributes } />
 				<PanelBody
 					title={ __( 'Card border', 'sgs-blocks' ) }
 					initialOpen={ false }

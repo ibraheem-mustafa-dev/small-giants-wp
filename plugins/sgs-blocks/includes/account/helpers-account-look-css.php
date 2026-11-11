@@ -19,6 +19,7 @@ require_once dirname( __DIR__ ) . '/helpers-border-style.php';
 require_once dirname( __DIR__ ) . '/helpers-colour-variants.php';
 require_once dirname( __DIR__ ) . '/helpers-button-preset.php';
 require_once __DIR__ . '/helpers-account-header.php';
+require_once __DIR__ . '/helpers-account-cells-css.php';
 
 if ( ! function_exists( 'sgs_account_box_shape_css' ) ) {
 	/**
@@ -497,6 +498,7 @@ if ( ! function_exists( 'sgs_account_look_css' ) ) {
 			. sgs_account_address_look_css( $attributes, $root_sel )
 			. sgs_account_details_look_css( $attributes, $root_sel )
 			. sgs_account_login_look_css( $attributes, $root_sel )
-			. sgs_account_header_css( $attributes, $root_sel );
+			. sgs_account_header_css( $attributes, $root_sel )
+			. sgs_account_cells_css( $attributes, $root_sel );
 	}
 }
