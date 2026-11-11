@@ -15,7 +15,7 @@
  * validator).
  *
  * `add_attachment` stores `_sgs_lottie_meta` (w, h, fr, ip, op, duration) so
- * `sgs_render_lottie()` (`includes/lottie-render.php`) never needs to read
+ * the removed Lottie span printer (`includes/lottie-render.php`) never needs to read
  * or echo the file itself — it renders from the stored meta and the
  * attachment URL only.
  *

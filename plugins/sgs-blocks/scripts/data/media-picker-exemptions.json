@@ -1,7 +1,29 @@
 {
  "_about": "Spec 49 FR-49-26 / AC-18: files allowed a raw <MediaUpload> because the file is not media this system prints. Read by scripts/check-media-contract.py once a block declares kinds.",
  "exempt": [
-  { "path": "src/blocks/audio/edit.js", "reason": "Audio files are not a media kind the system prints (FR-49-26)" },
-  { "path": "src/blocks/hero/components/HeroBackgroundPanel.js", "reason": "The hero keeps its own Background panel until WP-9 adopts the hero onto the media background slot; WP-9 deletes this file and the entry" }
+  {
+   "path": "src/blocks/audio/edit.js",
+   "reason": "Audio files are not a media kind the system prints (FR-49-26)"
+  },
+  {
+   "path": "src/blocks/hero/components/HeroBackgroundPanel.js",
+   "reason": "The hero keeps its own Background panel until WP-9 adopts the hero onto the media background slot; WP-9 deletes this file and the entry"
+  },
+  {
+   "path": "src/blocks/extensions/inline-formats/index.js",
+   "reason": "The inline photo format is a rich-text format, not a block slot: it stores one small image in the text run (FR-49-26)"
+  },
+  {
+   "path": "src/blocks/store-selector/edit.js",
+   "reason": "A store's flag is a small fixed thumbnail with its own attributes, not a slot (FR-49-26)"
+  },
+  {
+   "path": "src/components/MediaGalleryPicker.js",
+   "reason": "Bulk add: picks many images at once and writes one item each; per-item settings then live in the item slots (FR-49-26)"
+  },
+  {
+   "path": "src/components/motion/AssetAtom.js",
+   "reason": "Picks motion assets (Lottie JSON, sprite sheets) that are not a media kind the system prints (FR-49-26)"
+  }
  ]
 }

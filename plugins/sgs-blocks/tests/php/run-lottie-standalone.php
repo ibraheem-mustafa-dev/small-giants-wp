@@ -5,7 +5,7 @@
  *
  * Exercises the REAL shipped code — `includes/lottie-upload.php`'s
  * validator (`sgs_lottie_validate_document()` / `sgs_lottie_read_and_validate()`)
- * and `includes/lottie-render.php`'s `sgs_render_lottie()` — against a set of
+ * and `includes/lottie-render.php`'s layer helpers — against a set of
  * WordPress function stubs, so a change to either file is a change to what
  * this test exercises (same technique as
  * `run-media-atom-shadow-hover-standalone.php`).
@@ -298,85 +298,6 @@ unlink( $empty_path );
 function wp_json_encode_stub( array $data ): string {
 	return (string) json_encode( $data ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
 }
-
-// ---------------------------------------------------------------------------
-// C — sgs_render_lottie().
-// ---------------------------------------------------------------------------
-
-$GLOBALS['sgs_test_attachments'][501] = array(
-	'mime' => 'application/json',
-	'url'  => 'https://example.test/wp-content/uploads/2026/09/buck-logo.json',
-	'meta' => array(
-		'_sgs_lottie_meta' => array(
-			'w'        => 400,
-			'h'        => 200,
-			'fr'       => 30,
-			'ip'       => 0,
-			'op'       => 90,
-			'duration' => 3.0,
-		),
-	),
-);
-
-$result = sgs_render_lottie(
-	501,
-	array(
-		'poster_html' => '<img src="poster.jpg" alt="" />',
-		'alt'         => 'buck logo animation',
-		'trigger'     => 'visible',
-		'loop'        => false,
-		'speed'       => 1,
-	)
-);
-
-ok( false !== strpos( $result['wrapper'], 'data-sgs-fx="lottie"' ), 'render: wrapper carries data-sgs-fx="lottie"' );
-ok( false !== strpos( $result['wrapper'], '<img src="poster.jpg" alt="" />' ), 'render: poster markup is present inside the wrapper' );
-ok( false !== strpos( $result['wrapper'], 'aria-label="buck logo animation"' ), 'render: a real alt produces role="img" + aria-label' );
-ok( false === strpos( $result['wrapper'], 'style=' ), 'render: no inline style="…" attribute (Spec 32)' );
-
-$decorative = sgs_render_lottie( 501, array( 'poster_html' => '<img src="p.jpg" alt="" />' ) );
-ok( false !== strpos( $decorative['wrapper'], 'aria-hidden="true"' ), 'render: empty alt renders aria-hidden="true"' );
-ok( false === strpos( $decorative['wrapper'], 'role="img"' ), 'render: decorative instance carries no role="img"' );
-
-// duration 3.0s, loop off -> under the 5s WCAG 2.2.2 threshold -> no pause control.
-ok( '' === $decorative['pause'], 'render: a short, non-looping animation needs no pause control' );
-
-$looping = sgs_render_lottie(
-	501,
-	array(
-		'poster_html' => '<img src="p.jpg" alt="" />',
-		'loop'        => true,
-	)
-);
-ok( '' !== $looping['pause'], 'render: a looping animation carries a separate pause control' );
-ok( false !== strpos( $looping['pause'], '<button' ), 'render: the pause control is a real <button>' );
-ok( false === strpos( $looping['wrapper'], '<button' ), 'render: the pause control is NOT nested inside the wrapper (council fix 4)' );
-ok( false === strpos( $looping['pause'], 'style=' ), 'render: the pause control carries no inline style either' );
-
-// No valid meta -> poster only, fail closed.
-$GLOBALS['sgs_test_attachments'][502] = array(
-	'mime' => 'application/json',
-	'url'  => 'https://example.test/wp-content/uploads/2026/09/no-meta.json',
-	'meta' => array(),
-);
-$no_meta                              = sgs_render_lottie( 502, array( 'poster_html' => '<img src="fallback.jpg" alt="" />' ) );
-ok(
-	'<img src="fallback.jpg" alt="" />' === $no_meta['wrapper'],
-	'render: an attachment with no valid meta renders the poster ONLY (fail closed)'
-);
-ok( '' === $no_meta['pause'], 'render: no-meta attachment carries no pause control' );
-
-// Non-attachment / wrong mime -> poster only.
-$GLOBALS['sgs_test_attachments'][503] = array( 'mime' => 'image/jpeg' );
-$wrong_mime                           = sgs_render_lottie( 503, array( 'poster_html' => '<img src="wrong.jpg" alt="" />' ) );
-ok(
-	'<img src="wrong.jpg" alt="" />' === $wrong_mime['wrapper'],
-	'render: a non-Lottie attachment id renders the poster only'
-);
-
-$aspect_css = sgs_lottie_aspect_ratio_css( 501 );
-ok( in_array( '--sgs-lottie-aspect-ratio:400 / 200', $aspect_css, true ), 'render: aspect-ratio custom property derived from stored w/h' );
-ok( ! preg_grep( '/;\s*$/', $aspect_css ), 'render: css() declarations carry no trailing semicolon' );
 
 // ---------------------------------------------------------------------------
 // F — sgs_media_atom_source_resolve_type() (U-17, design §3.1) now accepts

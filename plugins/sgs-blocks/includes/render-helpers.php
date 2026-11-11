@@ -186,7 +186,6 @@ require_once __DIR__ . '/helpers-media.php';
 require_once __DIR__ . '/media/hidden-render.php';
 require_once __DIR__ . '/media/cover-crop.php';
 require_once __DIR__ . '/helpers-stars.php';
-require_once __DIR__ . '/helpers-tier-media.php';
 require_once __DIR__ . '/helpers-media-element.php';
 require_once __DIR__ . '/helpers-configurator-pricing.php';
 require_once __DIR__ . '/helpers-value-ladder.php';

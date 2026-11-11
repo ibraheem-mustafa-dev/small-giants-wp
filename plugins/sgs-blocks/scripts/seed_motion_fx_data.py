@@ -529,7 +529,7 @@ FX_EFFECTS: list[dict] = [
         # U-17 (`.claude/reports/2026-09-26-u17-lottie-design.md` §3.3, Spec 38
         # §1.2a, D1151). The Lottie player — `lottie-web` 5.13.0 light build,
         # SVG renderer, playing a designer-supplied animation file
-        # (`data-sgs-fx="lottie"`, rendered by `sgs_render_lottie()`).
+        # (`data-sgs-fx="lottie"`, rendered by the removed Lottie span printer).
         "effect": "lottie",
         # in_picker=0: not offered in the generic effects picker — a
         # Lottie instance is chosen via the media-type atom (mediaType:

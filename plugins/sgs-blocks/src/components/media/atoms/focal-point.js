@@ -17,14 +17,11 @@
  * `reads`):
  *   - a CSS string, e.g. "center 20%" (`sgs/hero`'s `splitMediaObjectPosition`,
  *     and the atom's own canonical shape)
- *   - `{x,y}` floats 0-1 — the native `FocalPointPicker` shape, stored
- *     verbatim as `sgsObjectPosition` by the universal `image-controls`
- *     extension
+ *   - `{x,y}` floats 0-1 — the focal point shape the Focal field stores
  * `resolvePosition()` below accepts either, and produces the SAME "X% Y%"
- * string `sgs_media_position_focal_to_css()` (helpers-media-position.php)
- * already produces for the `{x,y}` shape — same clamp, same rounding, same
- * "centre is the default, so emit nothing" rule — so a value set through this
- * atom and one inherited from the universal extension never disagree.
+ * string `sgs_media_atom_focal_point_xy_to_css()` (focal-point.php)
+ * produces for the `{x,y}` shape — same clamp, same rounding, same
+ * "centre is the default, so emit nothing" rule — so the editor and the server never disagree.
  * `resolvePosition()` stays here (not in the control half) because the
  * parity test imports it directly.
  *
@@ -77,7 +74,7 @@ function sanitisePositionString( value ) {
  * Resolve a position value in EITHER stored shape to a CSS `object-position`/
  * `background-position` string. `{x,y}` floats convert with the identical
  * clamp/round/centre-default-is-empty contract as
- * `sgs_media_position_focal_to_css()`; a string is sanitised and passed
+ * `sgs_media_atom_focal_point_xy_to_css()`; a string is sanitised and passed
  * through unchanged.
  *
  * @param {*} raw Raw attribute value.

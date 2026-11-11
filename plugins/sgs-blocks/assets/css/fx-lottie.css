@@ -1,6 +1,6 @@
 /**
  * Lottie media type (Spec 38 §1.2a Tier H, D1151) — shared layout for every
- * surface that renders sgs_render_lottie(): the Media block, the hero split
+ * surface that prints a Lottie span: the Media block, the hero split
  * media, the logo and the wrapper background. Enqueued by the Motion Registry
  * only on pages that carry data-sgs-fx="lottie" (`SGS_Motion_Registry::effect_stylesheet()`).
  *

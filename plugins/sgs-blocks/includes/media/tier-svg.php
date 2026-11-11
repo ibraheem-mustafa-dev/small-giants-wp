@@ -1,7 +1,7 @@
 <?php
 /**
- * Tier media: inline SVG. The tier branch of `sgs_tier_media_render()` and the id-prefixing the media renderer
- * applies to each per-device SVG sibling.
+ * Inline SVG for the media renderer: the id-prefixing it applies to each per-device SVG sibling, and the named-part
+ * animation attribute.
  *
  * @package SGS\Blocks
  */
@@ -10,25 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once dirname( __DIR__ ) . '/helpers-svg-kses.php';
 require_once dirname( __DIR__ ) . '/helpers-svg-document.php';
 require_once dirname( __DIR__ ) . '/helpers-svg-instance-scope.php';
-
-if ( ! function_exists( 'sgs_tier_media_svg_html' ) ) {
-	/**
-	 * One tier's inline SVG, sanitised and wrapped in a decorative span.
-	 *
-	 * @param array  $spec       The tier spec ( `svg`: markup ).
-	 * @param string $class_attr Space-separated classes.
-	 * @return string The wrapped markup.
-	 */
-	function sgs_tier_media_svg_html( array $spec, string $class_attr ): string {
-		return sprintf(
-			'<span class="%s" aria-hidden="true">%s</span>',
-			esc_attr( $class_attr ),
-			wp_kses( (string) ( $spec['svg'] ?? '' ), sgs_allowed_svg_tags() )
-		);
-	}
-}
 
 if ( ! function_exists( 'sgs_media_svg_parts_attr' ) ) {
 	/**

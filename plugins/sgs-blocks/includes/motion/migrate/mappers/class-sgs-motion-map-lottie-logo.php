@@ -73,7 +73,7 @@ final class Sgs_Motion_Map_Lottie_Logo implements Sgs_Motion_Mapper_Interface {
 		'hover-redraw'   => 'hover',
 	);
 
-	/** `sgs_render_lottie()` showed the pause button for a file longer than this many seconds. */
+	/** the removed Lottie span printer showed the pause button for a file longer than this many seconds. */
 	const PAUSE_AFTER_SECONDS = 5.0;
 
 	/**

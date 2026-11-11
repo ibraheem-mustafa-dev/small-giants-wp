@@ -282,12 +282,6 @@ export const MEDIA_ATOMS = {
 			ObjectPosition: [ 'ObjectFit:cover|contain|none|scale-down' ],
 		},
 		reads: {
-			// Two storage shapes, already bridged: `FocalPositionField` takes a
-			// `format` prop ('xy' | 'css-string') and src/utils/objectPosition.js
-			// converts between them.
-			'*': {
-				sgsObjectPosition: '{x,y} floats 0-1 (FocalPointPicker native shape)',
-			},
 			'sgs/hero': {
 				// Priority 4 (2026-09-07, migrate-tier-object.py --fix). Diverges
 				// DELIBERATELY from the atom's base ObjectPosition type (string):
@@ -295,7 +289,7 @@ export const MEDIA_ATOMS = {
 				// {desktop,tablet,mobile} object, matching the pattern already
 				// proven on splitMediaPadding/mediaPadding. focal-point.js's css()/
 				// focal-point.php's sgs_media_atom_focal_point_css() and
-				// focal-point.control.js's control() are all shape-aware: they read
+				// the focal-point atom's disclosure are all shape-aware: they read
 				// the base key first (tier-object, when migrated) and fall back to
 				// the sibling flat ObjectPositionTablet/Mobile keys only when a tier
 				// comes back empty — byte-identical output for every other caller of

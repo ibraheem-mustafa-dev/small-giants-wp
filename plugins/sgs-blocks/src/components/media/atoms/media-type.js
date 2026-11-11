@@ -37,7 +37,7 @@ import { isLegacyCall, rulesFor, kindIn, omitted } from '../panels/disclosure-co
  * The canonical enum (registry `types` field, verbatim). `lottie` (U-17,
  * `.claude/reports/2026-09-26-u17-lottie-design.md` §3.1) is the 4th member,
  * added 2026-09-26 — a Lottie/Bodymovin JSON animation, played by
- * `@sgs/fx-lottie` via `sgs_render_lottie()`, never a plain SVG.
+ * `@sgs/fx-lottie` via the removed Lottie span printer, never a plain SVG.
  */
 export const CANONICAL_ENUM = [ 'image', 'video', 'svg', 'lottie' ];
 
