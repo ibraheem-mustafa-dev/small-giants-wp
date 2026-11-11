@@ -495,6 +495,22 @@ def self_test_upload_resume() -> list[str]:
                          attempts=attempts, pause=pause, sleep=sleep)
         return 0
 
+    def faulty_reput_any(use_alias, local, remote, dry_run, *, runner, remote_size, attempts, pause, sleep):
+        """Resumes with reput whenever the host holds any bytes, even more than the local file has."""
+        rc = 1
+        for n in range(attempts):
+            verb = "put" if n == 0 else ("reput" if remote_size(use_alias, remote) else "put")
+            batch = Path(tempfile.mkdtemp(prefix="sgs-upload-fault-")) / "b"
+            batch.write_text(f'{verb} "{local}" "{remote}"\n', encoding="utf-8")
+            rc = runner(["sftp", "-b", str(batch), "hd"], dry_run=dry_run)
+            if rc == 0:
+                return 0
+        return rc
+
+    def check_stale_larger_file(impl) -> list[str]:
+        got = attempt(impl, [(1, total + 500), (0, total)])
+        return [] if got["rc"] == 0 and got["verbs"] == ["put", "put"] else [f"a remote file larger than the local one gave verbs={got['verbs']}, not put then put (reput would append past the end)"]
+
     def check_first_try(impl) -> list[str]:
         got = attempt(impl, [(0, total)])
         return [] if got["rc"] == 0 and got["verbs"] == ["put"] else [f"first try gave rc={got['rc']} verbs={got['verbs']}"]
@@ -523,7 +539,8 @@ def self_test_upload_resume() -> list[str]:
     cases = [
         ("a clean upload is one put", check_first_try(real), check_first_try(lambda *a, **k: 0)),
         ("a drop with a partial file resumes with reput", check_resume(real), check_resume(faulty_always_put)),
-        ("a drop before any file exists starts again with put", check_drop_before_file(real), check_drop_before_file(lambda *a, **k: 1)),
+        ("a leftover remote file larger than the local one is overwritten with put, never resumed", check_stale_larger_file(real), check_stale_larger_file(faulty_reput_any)),
+        ("a drop before any file exists starts again with put",check_drop_before_file(real), check_drop_before_file(lambda *a, **k: 1)),
         ("a zero exit with a short remote file is not accepted", check_short_file(real), check_short_file(faulty_trust_exit_code)),
         ("the attempts run out with a failing exit code", check_gives_up(real), check_gives_up(faulty_no_limit)),
         ("a dry run makes one call and no remote check", check_dry(real), check_dry(lambda *a, **k: 1)),

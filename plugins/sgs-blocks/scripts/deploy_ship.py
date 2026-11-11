@@ -256,7 +256,7 @@ def upload_resumable(use_alias: bool, local: str, remote: str, dry_run: bool, *,
     """Upload `local` to `remote` over sftp, resuming after a dropped connection; returns 0 only when the host holds every byte.
 
     The first attempt is `put`. After a failure the host's file size decides the next one: no file means `put` again,
-    a partial file means `reput` (sftp appends from the bytes already held), a complete file means done. A zero exit
+    a smaller partial file means `reput` (sftp appends from the bytes already held), a larger leftover means `put` (overwrite), a complete file means done. A zero exit
     code counts only when the host reports the full size.
     """
     local_path = REPO_ROOT / local
@@ -273,7 +273,7 @@ def upload_resumable(use_alias: bool, local: str, remote: str, dry_run: bool, *,
                 continue
             if held == expected:
                 return 0
-            verb = "reput" if held else "put"
+            verb = "reput" if held and held < expected else "put"
         with tempfile.TemporaryDirectory(prefix="sgs-upload-") as td:
             batch = Path(td) / "upload.batch"
             batch.write_text(f'{verb} "{local}" "{remote}"\n', encoding="utf-8")
