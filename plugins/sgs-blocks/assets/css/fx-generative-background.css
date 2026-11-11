@@ -134,7 +134,7 @@
  * descendant selector, so nested structures get one layer, not one each.
  * Enforced by `scripts/check-child-lift.py`.
  */
-:where( [data-sgs-fx~="generative-background"]:not(.sgs-bg-media) ) > * {
+:where( [data-sgs-fx~="generative-background"] ) > * {
 	position: relative;
 	z-index: 2;
 }
