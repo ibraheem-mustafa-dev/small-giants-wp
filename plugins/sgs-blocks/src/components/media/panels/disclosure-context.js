@@ -68,6 +68,8 @@ export const REASONS = {
 	corners: 'Corners are not used while a shape is chosen.',
 	borders: 'Borders are not available on this shape. Choose Circle, Ellipse or Pill to keep a border.',
 	shadowFollowsShape: 'Shadows follow the shape',
+	pinnedParallax: 'Pinned cannot hold while the background has parallax.',
+	pinnedTransform: 'Pinned cannot hold with a moving entrance or hover on this block.',
 };
 
 /**
@@ -253,7 +255,7 @@ function resolveKind( get, kinds, adopted = false ) {
  * @return {Object} Context.
  */
 export function createContext( attrs, device, prefix = '', opts = {} ) {
-	const { blockSlug = '', kinds = [], context = 'element', parallax = false, adopted = false } = opts || {};
+	const { blockSlug = '', kinds = [], context = 'element', parallax = false, transformMotion = false, adopted = false } = opts || {};
 	const a = attrs || {};
 	const dev = DEVICES.includes( device ) ? device : 'desktop';
 	const keyOf = ( base ) => ( adopted ? mediaAttrName( prefix, base ) : mediaStoredAttrName( blockSlug, prefix, base ) );
@@ -277,6 +279,7 @@ export function createContext( attrs, device, prefix = '', opts = {} ) {
 		blockSlug,
 		background,
 		parallax: !! parallax,
+		transformMotion: !! transformMotion,
 		kinds,
 		kind: resolveKind( get, kinds, adopted ),
 		get,

@@ -1,4 +1,5 @@
 import { useState } from '@wordpress/element';
+import BackgroundLayers from '../../components/media/BackgroundLayers';
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
@@ -25,7 +26,7 @@ import {
 	SgsBoxControl,
 } from '../../components';
 import {
-	backgroundPreview,
+	backgroundMediaPreview,
 	spacingPreview,
 	isTierBoxEmpty,
 	svgBackgroundPreview,
@@ -186,30 +187,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 	// The device tier the canvas previews (core/editor's device type).
 	const previewTier = usePreviewTier();
-	const bgPreview = backgroundPreview(
-		{
-			backgroundImage: attributes.backgroundImage,
-			bgVideo: attributes.bgVideo,
-			backgroundSize: attributes.backgroundSize,
-			backgroundPosition: attributes.backgroundPosition,
-			backgroundRepeat: attributes.backgroundRepeat,
-			backgroundAttachment: attributes.backgroundAttachment,
-			backgroundOverlayColour: attributes.backgroundOverlayColour,
-			overlayGradient: attributes.overlayGradient,
-			backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
-			backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
-			backgroundColour: attributes.backgroundColour,
-			backgroundColourGradient: attributes.backgroundColourGradient,
-			surfaceBlur: attributes.surfaceBlur,
-			surfaceSaturate: attributes.surfaceSaturate,
-			surfaceTone: attributes.surfaceTone,
-			backgroundImageTablet: attributes.backgroundImageTablet,
-			backgroundImageMobile: attributes.backgroundImageMobile,
-		},
-		colourPalette,
-		gradientPresets,
-		previewTier
-	);
+	const bgPreview = backgroundMediaPreview( attributes, colourPalette, gradientPresets, previewTier );
 
 	// Lines between the buttons: the block root is the flex list, so the hook's
 	// ref and style land on blockProps.
@@ -1014,6 +992,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			    with it rather than added alongside the spread (which React
 			    would silently discard). */ }
 			<div { ...innerBlocksProps }>
+				<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
 				{ svgLayer }
 				{ innerBlocksProps.children }
 			</div>

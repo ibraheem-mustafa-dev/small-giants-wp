@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import BackgroundLayers from '../../components/media/BackgroundLayers';
 import {
 	useBlockProps,
 	useInnerBlocksProps,
@@ -9,7 +10,7 @@ import { PanelBody, RangeControl, SelectControl, Notice } from '@wordpress/compo
 import { useSelect } from '@wordpress/data';
 import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, fillRow, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
 import {
-	backgroundPreview,
+	backgroundMediaPreview,
 	spacingPreview,
 	svgBackgroundPreview,
 	flattenPresetSetting,
@@ -96,22 +97,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		bgSvgTextShadow: attributes.bgSvgTextShadow,
 	} );
 
-	const bgPreview = backgroundPreview( {
-		backgroundImage: attributes.backgroundImage,
-		bgVideo: attributes.bgVideo,
-		backgroundSize: attributes.backgroundSize,
-		backgroundPosition: attributes.backgroundPosition,
-		backgroundRepeat: attributes.backgroundRepeat,
-		backgroundAttachment: attributes.backgroundAttachment,
-		backgroundOverlayColour: attributes.backgroundOverlayColour,
-		overlayGradient: attributes.overlayGradient,
-		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
-		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
-		backgroundColour: attributes.backgroundColour,
-		backgroundColourGradient: attributes.backgroundColourGradient,
-		surfaceBlur: attributes.surfaceBlur,
-		surfaceSaturate: attributes.surfaceSaturate,
-	}, colourPalette, gradientPresets );
+
 
 	// Active device tier for the padding/margin preview below — this block had
 	// no previewTier mechanism of its own, so this follows sgs/container's
@@ -122,6 +108,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
 		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
 	}, [] );
+
+	const bgPreview = backgroundMediaPreview( attributes, colourPalette, gradientPresets, previewTier );
 
 	// Padding/margin canvas preview. `padding`/`margin` are each ONE
 	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
@@ -416,6 +404,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			</InspectorControls>
 			{ wrapper.hasBandProps ? (
 				<div { ...blockProps }>
+					<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
 					{ svgLayer }
 					<div { ...innerBlocksProps }>
 						{ editorNotice }
@@ -424,6 +413,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				</div>
 			) : (
 				<div { ...innerBlocksProps }>
+					<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
 					{ svgLayer }
 					{ editorNotice }
 					{ innerBlocksProps.children }

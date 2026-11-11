@@ -16,13 +16,16 @@ import { useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { moreVertical } from '@wordpress/icons';
 
+import { getBlockType } from '@wordpress/blocks';
 import { blockHasMotion } from '../../../blocks/extensions/motion/support-cache.js';
 import { SizingSummary } from '../SizingFields.js';
 import MotionLine from './MotionLine.js';
 import PanelRow from './PanelRow.js';
-import { createContext } from './disclosure-context.js';
+import { createContext, REASONS } from './disclosure-context.js';
 import { buildPanelModel } from './panel-model.js';
 import PanelTitle from './PanelTitle.js';
+import { translateReason } from './reasons.js';
+import { pinnedBlockers } from './pinned-blockers.js';
 import { panelOwnDevices, resetPatch } from './row-io.js';
 
 const DEVICE_TO_KEY = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
@@ -59,19 +62,34 @@ export default function MediaPanels( {
 	atomIds,
 	kinds,
 	context = 'element',
-	parallax = false,
+	parallax: parallaxProp,
 	panelContent = {},
 	device: deviceOverride,
 } ) {
 	const activeDevice = useActiveDevice();
 	const device = deviceOverride || activeDevice;
-	const opts = { blockSlug, kinds, context, parallax, adopted: true };
-	const kind = createContext( attributes, device, prefix, opts ).kind;
 	const { clientId, name } = useBlockEditContext();
-	// A background's motion line (§9.6), unless the caller fills the panel; only a block that has the Effects panel.
+	// A background's Pinned setting is refused beside Parallax on the background or a transform entrance or hover on the
+	// block (§10.3). A caller that already knows passes `parallax`; otherwise the block's stored motion says.
+	const blockers = 'background' === context ? pinnedBlockers( attributes?.sgsMotion, getBlockType( name )?.supports?.sgs?.elements ) : {};
+	const parallax = undefined === parallaxProp ? !! blockers.parallax : parallaxProp;
+	const opts = { blockSlug, kinds, context, parallax, transformMotion: !! blockers.transformMotion, adopted: true };
+	const kind = createContext( attributes, device, prefix, opts ).kind;
+	// A background's notes and motion line (§9.6): why Pinned is not offered, then what moves the background. The motion
+	// line shows only on a block that has the Effects panel; a caller's own `panelContent.background` comes first.
+	const pinnedWhy = 'background' === context && 'image' === kind ? ( parallax ? REASONS.pinnedParallax : blockers.transformMotion ? REASONS.pinnedTransform : '' ) : '';
 	const content =
-		'background' === context && ! panelContent.background && blockHasMotion( name )
-			? { ...panelContent, background: <MotionLine clientId={ clientId } attributes={ attributes } kind={ kind } /> }
+		'background' === context
+			? {
+					...panelContent,
+					background: (
+						<>
+							{ panelContent.background || null }
+							{ pinnedWhy && <p className="components-base-control__help sgs-media-panel__note">{ translateReason( pinnedWhy ) }</p> }
+							{ blockHasMotion( name ) && <MotionLine clientId={ clientId } attributes={ attributes } kind={ kind } /> }
+						</>
+					),
+			  }
 			: panelContent;
 	const model = buildPanelModel( {
 		atomIds,

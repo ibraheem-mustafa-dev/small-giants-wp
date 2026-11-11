@@ -189,7 +189,14 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
 		if ( 'Repeat' === base ) {
 			return c.background && kindIn( c, 'image' ) && 'tile' === c.get( 'Size' ) ? shown() : omitted();
 		}
-		return c.background && kindIn( c, 'image' ) && ! c.parallax ? shown() : omitted();
+		if ( ! ( c.background && kindIn( c, 'image' ) ) ) {
+			return omitted();
+		}
+		// Pinned holds only while nothing moves the photo's box (Spec 49 §10.3).
+		if ( c.parallax ) {
+			return omitted( REASONS.pinnedParallax );
+		}
+		return c.transformMotion ? omitted( REASONS.pinnedTransform ) : shown();
 	} );
 }
 

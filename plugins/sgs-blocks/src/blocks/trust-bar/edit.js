@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import BackgroundLayers from '../../components/media/BackgroundLayers';
 import { useBlockProps, InspectorControls, RichText, useSettings } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 import '../../../assets/css/fx-marquee.css';
@@ -22,7 +23,7 @@ import {
 	colourVar,
 	resolveShadowPreviewComposed,
 	resolveResponsiveTier,
-	backgroundPreview,
+	backgroundMediaPreview,
 	backgroundPaintPreview,
 	textPaintPreview,
 	spacingPreview,
@@ -447,22 +448,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		bgSvgTextShadow: attributes.bgSvgTextShadow,
 	} );
 
-	const bgPreview = backgroundPreview( {
-		backgroundImage: attributes.backgroundImage,
-		bgVideo: attributes.bgVideo,
-		backgroundSize: attributes.backgroundSize,
-		backgroundPosition: attributes.backgroundPosition,
-		backgroundRepeat: attributes.backgroundRepeat,
-		backgroundAttachment: attributes.backgroundAttachment,
-		backgroundOverlayColour: attributes.backgroundOverlayColour,
-		overlayGradient: attributes.overlayGradient,
-		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
-		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
-		backgroundColour: attributes.backgroundColour,
-		backgroundColourGradient: attributes.backgroundColourGradient,
-		surfaceBlur: attributes.surfaceBlur,
-		surfaceSaturate: attributes.surfaceSaturate,
-	}, colourPalette, gradientPresets );
+
 
 	// Active device tier for the padding/margin preview below — this block had
 	// no previewTier mechanism of its own, so this follows sgs/container's
@@ -473,6 +459,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
 		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
 	}, [] );
+
+	const bgPreview = backgroundMediaPreview( attributes, colourPalette, gradientPresets, previewTier );
 
 	// Padding/margin canvas preview. `padding`/`margin` are each ONE
 	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
@@ -1399,6 +1387,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			{ /* ── Editor canvas ───────────────────────────────────────────── */ }
 			<div { ...blockProps }>
 				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
+				<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
 				{ svgLayer }
 
 				{ /* Optional title (text-only + image-badge variants) */ }

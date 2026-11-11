@@ -35,6 +35,7 @@ import {
 } from '../../../components';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
 import { LENGTH_UNITS } from './_shared';
+import { BackgroundMediaPanel, hasBackgroundSlot } from './BackgroundMediaPanel';
 
 const BG_POSITION_OPTIONS = [
 	{ label: __( 'Centre centre', 'sgs-blocks' ), value: 'center center' },
@@ -73,7 +74,25 @@ const BG_OVERLAY_BLEND_MODE_OPTIONS = [
 	{ label: __( 'Exclusion', 'sgs-blocks' ), value: 'exclusion' },
 ];
 
-export function BackgroundPanel( { attributes, setAttributes, name } ) {
+/**
+ * The shared Background panel. A block whose registered type declares `backgroundSource` has adopted the media
+ * system's background slot and gets the media panel (`BackgroundMediaPanel.js`); a block that has not (hero, until
+ * WP-9 adopts it and deletes the legacy body below) keeps the panel it always had.
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Block `setAttributes`.
+ * @param {string}   props.name          Block name.
+ * @return {JSX.Element|null} The panel.
+ */
+export function BackgroundPanel( props ) {
+	if ( hasBackgroundSlot( props.name ) ) {
+		return <BackgroundMediaPanel { ...props } />;
+	}
+	return <LegacyBackgroundPanel { ...props } />;
+}
+
+function LegacyBackgroundPanel( { attributes, setAttributes, name } ) {
 	if ( undefined !== name && ! isExtensionEnabled( name, 'background' ) ) {
 		return null;
 	}

@@ -152,7 +152,7 @@ export default function MediaElementPanel( {
 	kinds,
 	blockName = '',
 	context = 'element',
-	parallax = false,
+	parallax,
 	panelContent,
 } ) {
 	const ids = atomsForElement( { atoms } );
