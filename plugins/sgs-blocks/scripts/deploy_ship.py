@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import os
 import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -286,6 +287,27 @@ def step_local_cleanup(dry_run: bool) -> int:
     return 0
 
 
+def vendor_shell(src: Path, dst: Path) -> None:
+    """A real vendor/ for the worktree: its own copy of composer/ and autoload.php (the only files
+    composer_dump_autoload() writes), and a link to each package folder of the shared vendor/.
+
+    Composer computes the autoloader's base path from vendor/'s real location. With vendor/ itself a link, that is
+    the shared checkout, so the base path climbed into this temp worktree, the shared checkout's autoloader was
+    rewritten under every other session, and the shipped autoload_*.php changed on every deploy (a five-file delta
+    for an unchanged payload). With a real vendor/ the base path is dirname($vendorDir) and the shared one is
+    never written.
+    """
+    dst.mkdir()
+    for entry in src.iterdir():
+        if entry.name in ("composer", "autoload.php"):
+            if entry.is_dir():
+                shutil.copytree(entry, dst / entry.name)
+            else:
+                shutil.copy2(entry, dst / entry.name)
+        else:
+            os.symlink(entry, dst / entry.name, target_is_directory=entry.is_dir())
+
+
 def run_isolated(args: "argparse.Namespace") -> int:
     """Create an isolated worktree at HEAD, re-exec this script's WORKTREE COPY
     with the same argv plus --no-isolate, and clean the worktree up after —
@@ -303,14 +325,13 @@ def run_isolated(args: "argparse.Namespace") -> int:
         return 1
 
     try:
-        # node_modules/vendor are both gitignored and were never part of the
-        # worktree checkout — symlink them read-only from the main checkout
-        # rather than reinstalling. Safe to share: neither is written to by a
-        # build (npm run build only writes build/; composer_dump_autoload()
-        # writes vendor/autoload_*.php, which is why it is regenerated INSIDE
-        # the worktree by the normal step_tar() call, same as any other run —
-        # the symlink target is the shared vendor/, so that write lands in the
-        # shared checkout too, exactly as it does for a single-checkout run).
+        # node_modules is gitignored and was never part of the worktree checkout,
+        # so it is linked from the main checkout rather than reinstalled (a build
+        # writes only build/). vendor/ is a real folder instead (vendor_shell()):
+        # composer_dump_autoload() writes vendor/autoload.php and vendor/composer/,
+        # and through a link to the shared vendor/ those writes landed in the
+        # shared checkout with a base path into this temp worktree, which also
+        # shipped (proven 2026-11-11 on sandybrown's autoload_psr4.php).
         # scripts/computed-route/node_modules is linked too: the prebuild's
         # run-motion-fx-generators.js runs validate-motion-presets.mjs, which
         # imports scripts/computed-route/lib/motion-schema.mjs and its ajv 8
@@ -326,7 +347,10 @@ def run_isolated(args: "argparse.Namespace") -> int:
                 continue
             dst.parent.mkdir(parents=True, exist_ok=True)
             try:
-                os.symlink(src, dst, target_is_directory=True)
+                if rel.name == "vendor":
+                    vendor_shell(src, dst)
+                else:
+                    os.symlink(src, dst, target_is_directory=True)
             except OSError as exc:
                 err(f"[isolate] symlink failed for {rel}: {exc} — on Windows this "
                     "needs Developer Mode enabled or an elevated shell for "

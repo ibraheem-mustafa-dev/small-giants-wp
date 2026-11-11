@@ -113,8 +113,22 @@ def excluded(rel: str, rx: re.Pattern[str]) -> bool:
     return False
 
 
-# The one link that may point outside the checkout: the isolated worktree links vendor/ from the shared checkout.
+# The one place a link may point outside the checkout: vendor/, which the isolated worktree builds from the shared
+# checkout (deploy_ship.vendor_shell links each package folder; older worktrees linked vendor/ itself).
 OUTSIDE_LINKS_ALLOWED = ("plugins/sgs-blocks/vendor",)
+
+
+def allowed_outside(repo_root: Path) -> list[str]:
+    """Real paths a payload link may resolve into outside the checkout: vendor/ and each linked folder inside it."""
+    out: list[str] = []
+    for rel in OUTSIDE_LINKS_ALLOWED:
+        path = repo_root / rel
+        if not path.exists():
+            continue
+        out.append(os.path.realpath(path))
+        if path.is_dir():
+            out += [os.path.realpath(child) for child in path.iterdir() if child.is_symlink()]
+    return out
 
 
 def _within(path: str, root: str) -> bool:
@@ -133,7 +147,7 @@ def collect_payload(repo_root: Path, theme: bool, blocks: bool, theme_json_paylo
         raise PayloadError("a theme payload needs the target's theme.json; refusing to ship the framework one")
     rx = compile_excludes(TAR_EXCLUDES if excludes is None else excludes)
     repo_real = os.path.realpath(repo_root)
-    allowed = [os.path.realpath(repo_root / rel) for rel in OUTSIDE_LINKS_ALLOWED if (repo_root / rel).exists()]
+    allowed = allowed_outside(repo_root)
     out: dict[str, Entry] = {}
     for local_rel, server_rel in roots_for(theme, blocks):
         base = repo_root / local_rel

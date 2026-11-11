@@ -23,7 +23,7 @@ import deploy_verify
 
 from deploy_common import DEPLOY_ROOTS, FRAMEWORK_THEME_JSON_REL, FULL_PACKAGE_NAME, REPO_ROOT, SNAPSHOT_REL, TARBALL_NAME, TARGETS
 from deploy_guards import deploy_roots_for_scope, deployed_dirty_files, resolve_theme_json_payload, split_dirty_by_payload, theme_json_guard_decision, uncommitted_snapshot_md5
-from deploy_ship import SHIP_APPLY_FAILED, SHIP_UPLOAD_FAILED, step_ship, upload_resumable
+from deploy_ship import SHIP_APPLY_FAILED, SHIP_UPLOAD_FAILED, step_ship, upload_resumable, vendor_shell
 from deploy_verify import theme_json_verify_result
 
 
@@ -718,6 +718,48 @@ def self_test_ship() -> list[str]:
     return failures
 
 
+def self_test_vendor_shell() -> list[str]:
+    """Self-test case 27: the isolated worktree's vendor/ is a real folder whose composer files are its own, so a
+    composer write there never reaches the shared checkout, while the packages are still read from it.
+    Planted fault: vendor/ linked whole, as before 2026-11-11."""
+    failures: list[str] = []
+
+    def problems_with(build) -> list[str]:
+        found = []
+        with tempfile.TemporaryDirectory(prefix="sgs-vendor-shell-") as td:
+            shared = Path(td) / "shared" / "vendor"
+            (shared / "composer").mkdir(parents=True)
+            (shared / "spatie" / "color").mkdir(parents=True)
+            (shared / "composer" / "autoload_psr4.php").write_text("shared", encoding="utf-8")
+            (shared / "autoload.php").write_text("shared", encoding="utf-8")
+            (shared / "spatie" / "color" / "Hex.php").write_text("<?php // Hex", encoding="utf-8")
+            wt = Path(td) / "wt" / "vendor"
+            wt.parent.mkdir()
+            build(shared, wt)
+            (wt / "composer" / "autoload_psr4.php").write_text("worktree", encoding="utf-8")
+            (wt / "autoload.php").write_text("worktree", encoding="utf-8")
+            if (shared / "composer" / "autoload_psr4.php").read_text(encoding="utf-8") != "shared" or \
+                    (shared / "autoload.php").read_text(encoding="utf-8") != "shared":
+                found.append("a composer write in the worktree changed the shared checkout's vendor/")
+            if not (wt / "spatie" / "color" / "Hex.php").is_file():
+                found.append("the worktree cannot read the shared packages")
+        return found
+
+    def link_whole(src, dst):
+        os.symlink(src, dst, target_is_directory=True)
+
+    try:
+        real, planted = problems_with(vendor_shell), problems_with(link_whole)
+    except OSError as exc:
+        return [f"vendor shell: could not create links here ({exc})"]
+    print(f"  [vendor case] the worktree's composer writes stay in the worktree: real={'GREEN' if not real else 'RED'}; "
+          f"planted fault={'RED' if planted else 'GREEN (check is vacuous)'}")
+    failures.extend(f"vendor shell: {p_}" for p_ in real)
+    if not planted:
+        failures.append("vendor shell NEGATIVE CONTROL: a whole-folder link passed, so the check cannot fail")
+    return failures
+
+
 def self_test() -> int:
     """Prove the payload-scoped dirty gate REJECTS the unsafe case, not just the happy path.
 
@@ -861,6 +903,7 @@ def self_test() -> int:
     failures.extend(self_test_upload_resume())
     failures.extend(deploy_delta.self_test())
     failures.extend(self_test_ship())
+    failures.extend(self_test_vendor_shell())
     failures.extend(deploy_qa_tier.self_test())
     failures.extend(deploy_media_guard.self_test())
 
@@ -918,4 +961,6 @@ def self_test() -> int:
     print(" 26. step_ship end to end: a dropped connection mid-transfer resumes (red on a one-shot upload), a delta failing "
           "its check falls back to one full upload, an apply ending in a swap failure or a dropped connection stops with no "
           "second apply, a changed and a deleted file land in one delta apply")
+    print(" 27. the isolated worktree's vendor/ is a real folder: composer's writes stay in the worktree (no temp-worktree "
+          "base path in the shared or shipped autoloader), packages are read from the shared checkout; red on a whole-folder link")
     return 0
