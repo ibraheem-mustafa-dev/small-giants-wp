@@ -257,7 +257,13 @@ def step_page_weight(dry_run: bool, target_key: str) -> int:
     with no entry in `scripts/data/page-weight.json` is skipped with a log line; a dry run only prints the command.
     """
     import json
-    if target_key not in json.loads((REPO_ROOT / "scripts" / "data" / "page-weight.json").read_text(encoding="utf-8"))["sites"]:
+    data_file = REPO_ROOT / "scripts" / "data" / "page-weight.json"
+    try:
+        sites = json.loads(data_file.read_text(encoding="utf-8"))["sites"]
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        err(f"[page-weight] FAILED: cannot read the site list in {data_file}: {exc}")
+        return 2
+    if target_key not in sites:
         log(f"[page-weight] SKIPPED: no entry for {target_key} in scripts/data/page-weight.json")
         return 0
     node = "node.exe" if os.name == "nt" else "node"

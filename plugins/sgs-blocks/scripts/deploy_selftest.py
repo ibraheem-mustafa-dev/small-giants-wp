@@ -427,6 +427,20 @@ def self_test_page_weight() -> list[str]:
         got, text = captured(step, True, "sandybrown")
         return [] if not got and "check-page-weight.mjs --site sandybrown --check" in text else [f"dry run ran {got} / logged {text!r}"]
 
+    def check_bad_data(step) -> list[str]:
+        data_file = deploy_verify.REPO_ROOT / "scripts" / "data" / "page-weight.json"
+        saved = data_file.read_bytes()
+        try:
+            data_file.write_text("{ not json", encoding="utf-8")
+            try:
+                with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                    rc = step(False, "sandybrown")
+            except Exception as exc:  # noqa: BLE001 - a crash is the failure this case looks for
+                return [f"a malformed data file raised {type(exc).__name__} instead of failing cleanly"]
+        finally:
+            data_file.write_bytes(saved)
+        return [] if rc not in (0, None) else [f"a malformed data file returned {rc}, not a failure"]
+
     real_step, real_wanted = deploy_verify.step_page_weight, deploy_verify.page_weight_wanted
     cases = [
         ("runs on --page-weight or --motion-qa-tier full only", check_wanted(real_wanted), check_wanted(lambda f, t: bool(f))),
@@ -435,6 +449,8 @@ def self_test_page_weight() -> list[str]:
         ("a target with no data entry is skipped", check_unknown(real_step),
          check_unknown(lambda d, t: deploy_verify.run(["node", "check-page-weight.mjs", "--site", t, "--check"], dry_run=False))),
         ("a dry run logs the command and runs nothing", check_dry(real_step), check_dry(lambda d, t: deploy_verify.step_page_weight(False, t))),
+        ("a malformed data file fails cleanly", check_bad_data(real_step),
+         check_bad_data(lambda d, t: __import__("json").loads((deploy_verify.REPO_ROOT / "scripts" / "data" / "page-weight.json").read_text(encoding="utf-8")) and 0)),
     ]
     for label, real_problems, planted_problems in cases:
         print(f"  [page-weight case] {label}: real={'GREEN' if not real_problems else 'RED'}; "
@@ -950,7 +966,7 @@ def self_test() -> int:
     print(" 23. media guard: a pre-cutover build skips, a clean export passes, an export with one old attribute is refused "
           "(negative control), an unreadable export fails closed")
     print(" 24. page-weight gate: runs on --page-weight or --motion-qa-tier full only, its command names the target and --check, "
-          "a target with no data entry is skipped, a dry run only logs; each check is proven red on a planted fault")
+          "a target with no data entry is skipped, a dry run only logs, a malformed data file fails cleanly; each check is proven red on a planted fault")
     print(" 25. partial upload (deploy_delta.py): the collector applies TAR_EXCLUDES as tar does, follows a linked vendor/ "
           "(a loop or a link out of the checkout is refused), refuses a theme payload without the target's theme.json, and "
           "finds a dev-included Composer autoloader; an unchanged payload uploads nothing; one changed file of the same size sends "
