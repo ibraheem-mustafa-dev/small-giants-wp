@@ -259,7 +259,8 @@ if ( ! function_exists( 'sgs_bg_media_html' ) ) {
 		$fetch    = '';
 		$lead     = false;
 		$measured = $result['first_image'] ?? ( $video_files ? reset( $video_files )['poster'] : null );
-		if ( ( $result['first_image'] || $video_files ) && class_exists( 'SGS_Media_Priority' ) ) {
+		// With no motion renderer around the block (a bare render) there is no page to lead: lazy, never high (§7.7 rule 2).
+		if ( ( $result['first_image'] || $video_files ) && class_exists( 'SGS_Media_Priority' ) && class_exists( '\SGS\Blocks\Motion\Sgs_Motion_Renderer' ) ) {
 			$load     = (string) ( $attrs[ sgs_media_key( $slot, 'Loading' ) ] ?? 'auto' );
 			$resolved = SGS_Media_Priority::resolve(
 				array(

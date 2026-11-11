@@ -306,15 +306,25 @@
 					},
 					"_note": "The free slot when chromeSlotType is `button`: a link styled by the shared built-in button emitter, sgs_button_element_style_css() with the `chromeButton` prefix (the sgs/modal and sgs/product-card precedent). Its words and typography are the chromeSlot set."
 				},
-				"decorative": {
-					"motion": false,
-					"label": "Decorative background",
-					"layer": "OUTER",
+				"background": {
+					"surface": true,
+					"prefix": "",
+					"selector": ".sgs-bg-media",
+					"label": "Background",
 					"order": 4,
 					"clusters": [],
-					"attrMap": {
-					},
-					"_note": "The `.{uid}::before` pseudo-element background-media layer. Declared to resolve a routing collision: `backgroundImage` and `drawerBgGradient` would BOTH resolve to css_property=background-image on css_element=wrapper, identical on every routing axis, so db-consistency would report AmbiguousLayerAttrError (cssprop:ambiguous:sgs/nav-drawer:background-image:OUTER:wrapper::) and the clone-time resolver would pick by rowid. They are NOT the same target: render.php states the image paints on `.{uid}::before` and NEVER on the dialog root, precisely because the root already carries drawerBg/drawerBgGradient and a background-image there would overwrite the gradient rather than layer with it. Mirrors sgs/container's media-LAYER pattern. Only backgroundImage is claimed here; the size/position/repeat/attachment companions keep their existing routing."
+					"availableWhen": {"slot": "background", "kinds": ["image"]},
+					"_note": "`.sgs-bg-media`, the first child of the dialog when the drawer has a background (picture, tile layer, video or SVG). A motion target so a Ken Burns layer moves the background alone, never the drawer's content; it declares no style clusters because its look is governed by the Background panel."
+				},
+				"background-video": {
+					"surface": true,
+					"prefix": "",
+					"selector": ".sgs-bg-media",
+					"label": "Background video",
+					"order": 5,
+					"clusters": [],
+					"availableWhen": {"slot": "background", "kinds": ["video"]},
+					"_note": "The same `.sgs-bg-media` element when a device shows a video: an effect that suits video reaches it through this part."
 				}
 			},
 			"spacingDefaults": {

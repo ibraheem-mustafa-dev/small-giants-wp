@@ -113,12 +113,14 @@ LEGACY_ROOTS = {
     # items and its `sgs-form-tiles` layout wrapper: the item parts name those classes.
     "form": ("sgs-form-field",),
     "form-field-tiles": ("sgs-form-tile",),
-    # The six composites that print the container wrapper's background layers as their own `background` / `svg-bg` parts.
-    "site-header": ("sgs-container__image-bg", "sgs-container__svg-bg"),
-    "site-footer": ("sgs-container__image-bg", "sgs-container__svg-bg"),
-    "trust-bar": ("sgs-container__image-bg", "sgs-container__svg-bg"),
-    "physics-canvas": ("sgs-container__image-bg", "sgs-container__svg-bg"),
-    "multi-button": ("sgs-container__image-bg", "sgs-container__svg-bg"),
+    # The composites that print the container wrapper's background layers as their own `background` / `svg-bg` parts: the adopted ones print `.sgs-bg-media`, the hero keeps the legacy `<img>` until WP-9.
+    "container": ("sgs-bg-media",),
+    "nav-drawer": ("sgs-bg-media",),
+    "site-header": ("sgs-bg-media", "sgs-container__svg-bg"),
+    "site-footer": ("sgs-bg-media", "sgs-container__svg-bg"),
+    "trust-bar": ("sgs-bg-media", "sgs-container__svg-bg"),
+    "physics-canvas": ("sgs-bg-media", "sgs-container__svg-bg"),
+    "multi-button": ("sgs-bg-media", "sgs-container__svg-bg"),
     "hero": ("sgs-container__image-bg", "sgs-container__svg-bg"),
 }
 # Child blocks whose render source prints classes a parent's part names (the parent's rendered HTML contains them).

@@ -38,7 +38,7 @@ if ( ! class_exists( 'SGS_Background_Media' ) ) {
 			if ( ! empty( $opts['background_adopted'] ) ) {
 				return true;
 			}
-			return $block instanceof \WP_Block && isset( $block->block_type->attributes['backgroundSource'] );
+			return is_object( $block ) && isset( $block->block_type->attributes['backgroundSource'] );
 		}
 
 		/**
@@ -140,7 +140,7 @@ if ( ! class_exists( 'SGS_Background_Media' ) ) {
 		 */
 		public static function modifier_classes( array $bg, array $svg ): array {
 			$classes = array();
-			if ( $bg['has_image'] && ! $bg['has_video'] ) {
+			if ( $bg['has_image'] ) {
 				$classes[] = 'sgs-container--has-bg-image';
 			}
 			if ( $bg['has_video'] ) {

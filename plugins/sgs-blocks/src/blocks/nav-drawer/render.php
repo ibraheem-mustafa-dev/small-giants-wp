@@ -18,16 +18,16 @@
  * coerces any tag outside its $allowed_tags list (section/div/article/aside/
  * main/nav/header/footer/figure/details/fieldset — 'dialog' is NOT included) to
  * 'section', and the shared file is not modified for one block. A full-screen dialog uses
- * NONE of the wrapper's grid / max-width band / background-image / shape-divider
- * machinery — it needs only background, padding, gap and content-alignment — so
+ * NONE of the wrapper's grid / max-width band / shape-divider
+ * machinery (its background prints through the shared media background renderer) — it needs only background, padding, gap and content-alignment — so
  * the drawer MIRRORS those capabilities block-privately through the SAME shared
  * scoped-CSS helpers (sgs_emit_responsive_css + wp_style_engine_get_styles), with
  * ZERO inline property declarations and no divergence from the wrapper's computed
  * behaviour (the block-private-when-no-grid/section-machinery pattern).
  *
  * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
- * drawerBg + WCAG-computed foreground, drawerAlign, drawerGap, drawerPadding, close-button colour, the background-image media layer
- * (`.{uid}::before`) and the skip-serialised __experimentalBorder support are all emitted into this block's OWN scoped `.{uid}` <style>
+ * drawerBg + WCAG-computed foreground, drawerAlign, drawerGap, drawerPadding, close-button colour, the background element and overlay
+ * (`.sgs-bg-media`, `.sgs-bg-overlay`) and the skip-serialised __experimentalBorder support are all emitted into this block's OWN scoped `.{uid}` <style>
  * at CLASS specificity (never `#uid`).
  *
  * @var array    $attributes Block attributes.
@@ -313,43 +313,15 @@ $sgs_nd_scroll_distance = isset( $attributes['closeOnScrollDistance'] ) && is_nu
 	? max( 0.0, min( 200.0, (float) $attributes['closeOnScrollDistance'] ) )
 	: 0.0;
 
-// ── Background image (backgroundImage + size/position/repeat/attachment).
-// Mirrors sgs/container's own media-LAYER pattern (class-sgs-container-wrapper.php,
-// "Background image — section kind only" block): the image paints on a
-// `.{uid}::before` pseudo-element, never on the dialog root itself, because the
-// root already carries drawerBg/drawerBgGradient (a `background-image` here
-// would simply overwrite the gradient rather than layering with it) and a
-// dedicated layer lets a future opacity/blend control dim the picture without
-// dimming the drawer's editable InnerBlocks content painted above it.
-// `.wp-block-sgs-nav-drawer` uses neither `::before` nor `::after` anywhere in
-// style.css, so the layer is free to claim (confirmed by reading the file).
-$bg_image     = $attributes['backgroundImage'] ?? array();
-$has_bg_image = ! empty( $bg_image['url'] );
-
-// Spec 35 item 18 — see block.json's own comment on backgroundImageDecorative
-// for why this is aria-describedby rather than aria-label: the dialog root's
-// aria-label is already claimed for the drawer's own accessible name.
-$bg_image_decorative = (bool) ( $attributes['backgroundImageDecorative'] ?? true );
-$bg_image_alt        = $has_bg_image ? sanitize_text_field( $bg_image['alt'] ?? '' ) : '';
-$bg_image_needs_note = $has_bg_image && ! $bg_image_decorative && '' !== $bg_image_alt;
-
-$bg_size          = $attributes['backgroundSize'] ?? 'cover';
-$allowed_bg_sizes = array( 'cover', 'contain', 'auto' );
-if ( ! in_array( $bg_size, $allowed_bg_sizes, true ) ) {
-	$bg_size = 'cover';
-}
-$bg_position        = $attributes['backgroundPosition'] ?? 'center center';
-$bg_position        = preg_replace( '/[^A-Za-z0-9\s%]/', '', (string) $bg_position );
-$bg_repeat          = $attributes['backgroundRepeat'] ?? 'no-repeat';
-$allowed_bg_repeats = array( 'no-repeat', 'repeat', 'repeat-x', 'repeat-y' );
-if ( ! in_array( $bg_repeat, $allowed_bg_repeats, true ) ) {
-	$bg_repeat = 'no-repeat';
-}
-$bg_attachment       = $attributes['backgroundAttachment'] ?? 'scroll';
-$allowed_attachments = array( 'scroll', 'fixed' );
-if ( ! in_array( $bg_attachment, $allowed_attachments, true ) ) {
-	$bg_attachment = 'scroll';
-}
+// ── Background (Spec 49 §7.8): the shared media slot. The dialog prints `.sgs-bg-media` (picture, tile layer, video or
+// SVG) and `.sgs-bg-overlay` as its first children, through the same renderer the container uses
+// (includes/media/render-background.php). A drawer is a hidden surface (§7.7 rule 1), so its background loads lazily and
+// claims nothing. The element sits below the drawer's own content by `z-index:-1` (style.css), above the dialog's own
+// background colour or gradient, which is the bottom of the dialog's stacking context.
+require_once dirname( __DIR__, 3 ) . '/includes/media/class-sgs-background-media.php';
+$sgs_nd_bg_slot    = sgs_bg_media_slot();
+$sgs_nd_bg         = sgs_bg_media_html( $sgs_nd_bg_slot, $attributes, array( 'hidden' => true ) );
+[ $sgs_nd_overlay_html, $sgs_nd_overlay_decls ] = SGS_Background_Media::overlay( $attributes, false );
 
 // ────────────────────────────────────────────────────────────────────────────
 // Build the block's OWN scoped CSS (no-inline contract; every value pre-sanitised).
@@ -691,28 +663,11 @@ foreach ( array(
 	$sgs_nd_edge_prev = $sgs_nd_edge;
 }
 
-// ── Background image media layer (`.{uid}::before`). z-index:-1 keeps it below
-// the dialog's own background-colour/gradient paint and below the real
-// `.sgs-nav-drawer__body`/close-button children (both default z-index:auto,
-// which stacks above a negative-z sibling) — the drawer's editable content
-// always stays visible over the picture, mirroring sgs/container's identical
-// media-layer contract (class-sgs-container-wrapper.php).
-if ( $has_bg_image ) {
-	$sgs_nd_media_decls   = array();
-	$sgs_nd_media_decls[] = 'content:""';
-	$sgs_nd_media_decls[] = 'position:absolute';
-	$sgs_nd_media_decls[] = 'inset:0';
-	$sgs_nd_media_decls[] = 'z-index:-1';
-	$sgs_nd_media_decls[] = 'pointer-events:none';
-	$sgs_nd_media_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';
-	$sgs_nd_media_decls[] = 'background-size:' . esc_attr( $bg_size );
-	$sgs_nd_media_decls[] = 'background-position:' . esc_attr( $bg_position );
-	$sgs_nd_media_decls[] = 'background-repeat:' . esc_attr( $bg_repeat );
-	if ( 'fixed' === $bg_attachment ) {
-		$sgs_nd_media_decls[] = 'background-attachment:fixed';
-	}
-	$css .= $root_sel . '::before{' . implode( ';', $sgs_nd_media_decls ) . '}';
+// ── Background element and overlay: their per-instance rules, scoped to the dialog (`.sgs-bg-media`, `.sgs-bg-overlay`).
+if ( '' !== $sgs_nd_bg['html'] ) {
+	$css .= sgs_bg_media_css( $uid . '.wp-block-sgs-nav-drawer', $sgs_nd_bg_slot, $attributes );
 }
+$css .= sgs_bg_overlay_css( $uid . '.wp-block-sgs-nav-drawer', $sgs_nd_overlay_decls, $attributes );
 
 // Border (width, style, colour, gradient ring, radius at three tiers) through
 // the shared assembler. The base rule prints before the tier rules so a tablet
@@ -1117,9 +1072,6 @@ if ( $sgs_nd_any_same_slot ) {
 	// carries an inline `style` while open.
 	$wrapper_args['data-sgs-nav-close-placement'] = 'same-slot';
 }
-if ( $bg_image_needs_note ) {
-	$wrapper_args['aria-describedby'] = $drawer_ref . '-bg-note';
-}
 // The dialog role is explicit and `aria-modal` follows the resolved modality: a non-modal drawer
 // (a `header-box` anchor, or the operator's choice) reports `aria-modal="false"`, and the open drawer still freezes
 // everything except the header region (`store.js::freezeBackground`), so only the header stays reachable behind it.
@@ -1256,18 +1208,6 @@ $close_html = sprintf(
 	$sgs_nd_close_inner // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html() applied above (text paths) or trusted static markup (burger-morph spans / resolver SVG / variant wrapper spans built from the same).
 );
 
-// Spec 35 item 18 — the visually-hidden note the aria-describedby above
-// points at, only emitted when the operator marked the background image
-// non-decorative and supplied alt text (see block.json comment).
-$bg_image_note_html = '';
-if ( $bg_image_needs_note ) {
-	$bg_image_note_html = sprintf(
-		'<span id="%s" class="screen-reader-text">%s</span>',
-		esc_attr( $drawer_ref . '-bg-note' ),
-		esc_html( $bg_image_alt )
-	);
-}
-
 // The chrome row (FR-36-6): the × plus the optional logo and free slot. An
 // `icons` slot lifts the body's leading sgs/social-icons group out of $content.
 $sgs_nd_icons_html = sgs_nav_drawer_chrome_icons_lift( $attributes, $block, $content );
@@ -1290,8 +1230,8 @@ if ( '' !== $css ) {
 printf(
 	'<dialog %1$s>%2$s%3$s<div class="sgs-nav-drawer__body">%4$s</div></dialog>',
 	$wrapper_attributes,
+	$sgs_nd_bg['preload'] . $sgs_nd_bg['html'] . $sgs_nd_overlay_html,
 	$close_html,
-	$bg_image_note_html,
 	$content
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
