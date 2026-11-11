@@ -131,7 +131,13 @@ if ( ! function_exists( 'sgs_account_address_field_html' ) ) {
 		$kind     = (string) ( $field['type'] ?? 'text' );
 		$label    = wp_strip_all_tags( (string) ( $field['label'] ?? '' ) );
 		$required = ! empty( $field['required'] );
-		$hold     = 'address_2' === $suffix ? trim( (string) ( $attributes['addressLine2Label'] ?? '' ) ) : '';
+		// The client's own wording for a field, per field: it is both the hidden label and the placeholder.
+		$wording  = array(
+			'address_1' => 'addressLine1Label',
+			'address_2' => 'addressLine2Label',
+			'city'      => 'addressCityLabel',
+		);
+		$hold     = isset( $wording[ $suffix ] ) ? trim( (string) ( $attributes[ $wording[ $suffix ] ] ?? '' ) ) : '';
 		$hold     = '' !== $hold ? $hold : $label;
 		$id       = esc_attr( $key );
 		$hidden   = '<input type="hidden" name="' . $id . '" id="' . $id . '" value="' . esc_attr( $value ) . '" />';

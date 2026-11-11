@@ -100,7 +100,7 @@ ok( $swap && str_ends_with( (string) Account_Extras::maybe_swap_address_template
 ok( $swap && '/wc/cart.php' === Account_Extras::maybe_swap_address_template( '/wc/cart.php', 'cart/cart.php' ), 'no other template is touched' );
 
 // -- the view ---------------------------------------------------------------
-$attrs = array( 'addressEditor' => true, 'addressLine2Label' => 'Flat / building', 'addressPairs' => 'city,postcode', 'addressEditLabel' => 'Edit', 'addressAddLabel' => 'Add', 'addressSaveLabel' => 'Save address', 'addressCancelLabel' => 'Cancel' );
+$attrs = array( 'addressEditor' => true, 'addressLine1Label' => 'Address', 'addressCityLabel' => 'Town or city', 'addressLine2Label' => 'Flat / building', 'addressPairs' => 'city,postcode', 'addressEditLabel' => 'Edit', 'addressAddLabel' => 'Add', 'addressSaveLabel' => 'Save address', 'addressCancelLabel' => 'Cancel' );
 $GLOBALS['saved'] = array( 'shipping' => '14 Larch Grove<br/>Leeds' );
 $GLOBALS['meta']  = array( 'shipping_address_1' => '14 Larch Grove', 'shipping_first_name' => 'Aisha"><script>x</script>', 'shipping_city' => 'Leeds' );
 $GLOBALS['extra_field'] = true;
@@ -112,6 +112,8 @@ ok( $has && strpos( $html, 'data-sgs-addr="shipping"' ) < strpos( $html, 'data-s
 ok( false !== strpos( $html, 'name="shipping_vat"' ) && false !== strpos( $html, 'name="billing_vat"' ), 'a field another plugin adds through get_address_fields appears on both forms' );
 ok( in_array( 'shipping_', WC()->countries->asked, true ) && in_array( 'billing_', WC()->countries->asked, true ), 'the fields were asked of WooCommerce with each type prefix' );
 ok( false !== strpos( $html, 'placeholder="Flat / building"' ) && false !== strpos( $html, '>Flat / building</label>' ), 'address line 2 takes its wording setting as label and placeholder' );
+ok( false !== strpos( $html, 'placeholder="Address"' ) && false !== strpos( $html, '>Address</label>' ) && false === strpos( $html, 'placeholder="Street address"' ), 'address line 1 takes its wording setting as label and placeholder' );
+ok( false !== strpos( $html, 'placeholder="Town or city"' ) && false !== strpos( $html, '>Town or city</label>' ) && false === strpos( $html, 'placeholder="Town / City"' ), 'the town field takes its wording setting as label and placeholder' );
 ok( false === strpos( $html, '<script>x' ) && false !== strpos( $html, 'Aisha&quot;&gt;&lt;script&gt;' ), 'a saved value is escaped' );
 ok( false !== strpos( $html, 'action="https://example.test/my-account/edit-address/shipping/"' ) && false !== strpos( $html, 'action="https://example.test/my-account/edit-address/billing/"' ), 'each form posts to its type edit-address URL' );
 ok( 2 === substr_count( $html, 'name="action" value="edit_address"' ) && 2 === substr_count( $html, 'name="woocommerce-edit-address-nonce" value="' . wp_create_nonce( 'woocommerce-edit_address' ) . '"' ), 'WooCommerce action field and nonce are on both forms' );

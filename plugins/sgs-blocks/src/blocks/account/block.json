@@ -2982,6 +2982,16 @@
 				"role": "content",
 				"description": "Cancel link of the inline address form."
 			},
+			"addressLine1Label": {
+				"type": "string",
+				"role": "content",
+				"description": "Label and placeholder of the first address line, for example Address. Empty = WooCommerce's own label."
+			},
+			"addressCityLabel": {
+				"type": "string",
+				"role": "content",
+				"description": "Label and placeholder of the town field, for example Town or city. Empty = WooCommerce's own label."
+			},
 			"addressLine2Label": {
 				"type": "string",
 				"role": "content",
