@@ -2,21 +2,18 @@
 /**
  * SGS_Background_Media — the adopted background of the shared container wrapper (Spec 49 §7.8).
  *
- * A block that declares the `backgroundSource` attribute (the media system's background slot) renders its background
- * through this class; a block that does not (the hero, until WP-9 adopts it) keeps `SGS_Background_Layer`. The two
- * share one static interface, so `SGS_Container_Wrapper::render()` picks the class once with `for_block()` and calls
- * the same methods on it.
+ * Every block that runs through the wrapper renders its background through this class. A block that declares no
+ * background attributes gets an empty plan, so it prints no background element.
  *
  * What is printed is `includes/media/render-background.php`'s: one `.sgs-bg-media` element holding the picture, the tile
  * layer, the video or the SVG, then `.sgs-bg-overlay`. The kept SVG layer (`bgSvg*`, an SVG drawn over an image or
- * video) is the block's own, unchanged: it prints through `SGS_Background_Layer`.
+ * video) is the block's own, unchanged: it prints through this class's `svg_html()`.
  *
  * @package SGS\Blocks
  */
 
 defined( 'ABSPATH' ) || exit;
 
-require_once dirname( __DIR__ ) . '/class-sgs-background-layer.php';
 require_once __DIR__ . '/render-background.php';
 
 if ( ! class_exists( 'SGS_Background_Media' ) ) {
@@ -25,33 +22,6 @@ if ( ! class_exists( 'SGS_Background_Media' ) ) {
 	 * Static helper — called from SGS_Container_Wrapper::render().
 	 */
 	final class SGS_Background_Media {
-
-		/**
-		 * Whether a block renders its background through the media system.
-		 *
-		 * @param array<string,mixed> $attributes Block attributes.
-		 * @param mixed               $block      The WP_Block, or null.
-		 * @param array<string,mixed> $opts       The wrapper's options (`background_adopted` forces it).
-		 * @return bool
-		 */
-		public static function handles( array $attributes, $block, array $opts = array() ): bool {
-			if ( ! empty( $opts['background_adopted'] ) ) {
-				return true;
-			}
-			return is_object( $block ) && isset( $block->block_type->attributes['backgroundSource'] );
-		}
-
-		/**
-		 * The class that renders a block's background: this one when it is adopted, else the legacy layer.
-		 *
-		 * @param array<string,mixed> $attributes Block attributes.
-		 * @param mixed               $block      The WP_Block, or null.
-		 * @param array<string,mixed> $opts       The wrapper's options.
-		 * @return class-string
-		 */
-		public static function for_block( array $attributes, $block, array $opts = array() ): string {
-			return self::handles( $attributes, $block, $opts ) ? self::class : SGS_Background_Layer::class;
-		}
 
 		/**
 		 * Read what the wrapper needs to know about the background, without printing anything.
@@ -101,7 +71,24 @@ if ( ! class_exists( 'SGS_Background_Media' ) ) {
 		 * @return array<string,mixed>
 		 */
 		public static function read_svg( array $attributes ): array {
-			return SGS_Background_Layer::read_svg( $attributes );
+			$bg_svg_content        = $attributes['bgSvgContent'] ?? '';
+			$bg_svg_position       = $attributes['bgSvgPosition'] ?? 'background';
+			$allowed_svg_positions = array( 'background', 'foreground' );
+			if ( ! in_array( $bg_svg_position, $allowed_svg_positions, true ) ) {
+				$bg_svg_position = 'background';
+			}
+			$bg_svg_opacity     = isset( $attributes['bgSvgOpacity'] ) ? absint( $attributes['bgSvgOpacity'] ) : 100;
+			$bg_svg_min_height  = is_string( $attributes['bgSvgMinHeight'] ?? null ) ? sgs_css_length_value( $attributes['bgSvgMinHeight'] ) : '';
+			$bg_svg_text_shadow = ! empty( $attributes['bgSvgTextShadow'] );
+
+			return array(
+				'content'     => $bg_svg_content,
+				'position'    => $bg_svg_position,
+				'opacity'     => $bg_svg_opacity,
+				'min_height'  => $bg_svg_min_height,
+				'text_shadow' => $bg_svg_text_shadow,
+				'has_svg'     => ! empty( $bg_svg_content ),
+			);
 		}
 
 		/**
@@ -109,7 +96,7 @@ if ( ! class_exists( 'SGS_Background_Media' ) ) {
 		 *
 		 * @param array<string,mixed> $bg        Result of read().
 		 * @param string              $img_class Unused: the element has one class set.
-		 * @return array<string,mixed> Same keys as the legacy layer: `img_html` carries the whole element, `img_style_decls` is non-empty when per-instance CSS is needed.
+		 * @return array<string,mixed> `img_html` carries the whole element, `img_style_decls` is non-empty when per-instance CSS is needed.
 		 */
 		public static function media( array $bg, string $img_class ): array {
 			unset( $img_class );
@@ -155,7 +142,17 @@ if ( ! class_exists( 'SGS_Background_Media' ) ) {
 					$classes[] = 'sgs-container--svg-text-shadow';
 				}
 			}
-			return array_merge( $classes, SGS_Background_Layer::modifier_classes( array( 'has_image' => false, 'has_video' => false ), $svg ) );
+			if ( $svg['has_svg'] ) {
+				$classes[] = 'sgs-container--has-bg-svg';
+				$classes[] = 'sgs-container--svg-' . esc_attr( $svg['position'] );
+				if ( $svg['text_shadow'] ) {
+					$classes[] = 'sgs-container--svg-text-shadow';
+				}
+				if ( ! empty( $svg['min_height'] ) ) {
+					$classes[] = 'sgs-container--has-svg-min-height';
+				}
+			}
+			return $classes;
 		}
 
 		/**
@@ -245,7 +242,10 @@ if ( ! class_exists( 'SGS_Background_Media' ) ) {
 		 * @return string
 		 */
 		public static function svg_opacity_css( string $uid, array $svg ): string {
-			return SGS_Background_Layer::svg_opacity_css( $uid, $svg );
+			if ( $svg['has_svg'] && $uid ) {
+				return '.' . $uid . ' .sgs-container__svg-bg{--sgs-svg-opacity:' . esc_attr( $svg['opacity'] / 100 ) . ';}';
+			}
+			return '';
 		}
 
 		/**
@@ -256,7 +256,27 @@ if ( ! class_exists( 'SGS_Background_Media' ) ) {
 		 * @return string
 		 */
 		public static function svg_html( array $attributes, array $svg ): string {
-			return SGS_Background_Layer::svg_html( $attributes, $svg );
+			$svg_html = '';
+			if ( $svg['has_svg'] ) {
+				$allowed_svg_tags = sgs_allowed_svg_tags();
+
+				// A motion layer on the `svg-bg` part (the `draw` effect) reaches this element through the
+				// part's own selector, so the div carries no effect attributes of its own.
+				// A block that stores `backgroundSvgParts` animates named parts of the SVG: the cleaned document rides on the
+				// layer as `data-sgs-svg-parts`, read by src/shared/svg-parts/svg-parts.js. Nothing is printed without parts.
+				$svg_parts_attr = '';
+				if ( ! empty( $attributes['backgroundSvgParts'] ) ) {
+					require_once dirname( __DIR__ ) . '/helpers-svg-parts.php';
+					$svg_parts_json = sgs_svg_parts_data( $attributes['backgroundSvgParts'], (string) ( $attributes['backgroundSvgPartsTrigger'] ?? 'load' ) );
+					$svg_parts_attr = '' !== $svg_parts_json ? ' data-sgs-svg-parts="' . esc_attr( $svg_parts_json ) . '"' : '';
+				}
+				$svg_html = sprintf(
+					'<div class="sgs-container__svg-bg"%s aria-hidden="true">%s</div>',
+					$svg_parts_attr,
+					wp_kses( $svg['content'], $allowed_svg_tags )
+				);
+			}
+			return $svg_html;
 		}
 	}
 }

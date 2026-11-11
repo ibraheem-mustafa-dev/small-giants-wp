@@ -51,7 +51,6 @@ require_once __DIR__ . '/helpers-surface-ground.php';
 // sgs_css_length_or_sizing_keyword() — the `$sgs_css_length` closure's sanitiser.
 require_once __DIR__ . '/helpers-css-sizing-keyword.php';
 require_once __DIR__ . '/motion/class-sgs-motion-background-lottie.php';
-require_once __DIR__ . '/class-sgs-background-layer.php';
 require_once __DIR__ . '/media/class-sgs-background-media.php';
 
 if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
@@ -507,8 +506,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// Background and overlay attributes read universally (no kind gate): a block only gets a
 			// working background when its own block.json declares them.
-			// An adopted block (one declaring `backgroundSource`) renders its background through the media system; the hero keeps the legacy layer until WP-9. Both classes share one static interface.
-			$bgc                    = SGS_Background_Media::for_block( $attributes, $block, $opts );
+			// Every block's background renders through the media system's background class.
+			$bgc                    = SGS_Background_Media::class;
 			$bg                     = $bgc::read( $attributes, $opts );
 			$bg_image               = $bg['image'];
 			$bg_image_tablet        = $bg['image_tablet'];

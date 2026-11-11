@@ -1,7 +1,7 @@
 <?php
 /**
  * A cover-cropped image drawn wider than its box keeps the attachment's own sizes hint
- * (includes/helpers-media.php::sgs_media_cover_crop_widens, ::sgs_media_drop_auto_sizes).
+ * (includes/media/cover-crop.php::sgs_media_cover_crop_widens, ::sgs_media_drop_auto_sizes).
  *
  * @package SGS\Blocks\Tests
  */

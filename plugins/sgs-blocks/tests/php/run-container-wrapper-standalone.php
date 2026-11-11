@@ -331,30 +331,12 @@ $no_band_html = SGS_Container_Wrapper::render(
 not_contains( $no_band_html, '<div class="sgs-container__inner"', 'band padding: wrap_inner false renders no band element' );
 contains( $no_band_html, '{padding-right:40px;padding-left:40px;}', 'band padding: wrap_inner false keeps the padding on the outer element' );
 
-// ── Background layers are universal across KINDs (D6, 2026-08-11) ─────────────
-// The background image/video/overlay/svg layers were section-only; D6 made them
-// universal, so a layout or content KIND given the SAME attributes prints the same
-// background <img> and object-fit rule. (A simple no-repeat cover/contain image
-// prints as an <img>, not a CSS background-image.)
+// The background image, video and overlay print through the media system's background class
+// (SGS_Background_Media); its output is covered by the media background tests. A block with no background
+// attributes prints no background element.
 $bg_attrs = array(
-	'maxWidth'        => '1200px',
-	'backgroundImage' => array( 'url' => 'https://example.com/bg.jpg' ),
+	'maxWidth' => '1200px',
 );
-
-$bg_section_html = SGS_Container_Wrapper::render( $bg_attrs, null, '<p>x</p>', 'section' );
-$bg_layout_html  = SGS_Container_Wrapper::render( $bg_attrs, null, '<p>x</p>', 'layout' );
-$bg_content_html = SGS_Container_Wrapper::render( $bg_attrs, null, '<p>x</p>', 'content' );
-
-foreach ( array(
-	'section' => $bg_section_html,
-	'layout'  => $bg_layout_html,
-	'content' => $bg_content_html,
-) as $bg_kind => $bg_kind_html ) {
-	contains( $bg_kind_html, 'sgs-container--has-bg-image', 'bg-universal: ' . $bg_kind . ' kind WITH backgroundImage emits the has-bg-image class' );
-	contains( $bg_kind_html, 'class="sgs-container__image-bg"', 'bg-universal: ' . $bg_kind . ' kind prints the background <img> with the part class' );
-	contains( $bg_kind_html, '> .sgs-container__image-bg{object-fit:cover;object-position:center center}', 'bg-universal: ' . $bg_kind . ' kind emits the scoped object-fit rule' );
-	not_contains( $bg_kind_html, 'background-image:', 'bg-universal: ' . $bg_kind . ' kind paints the image as an <img>, not a CSS background-image' );
-}
 
 // ── (b) UID-STABILITY INVARIANT — highest-value assertion in this file ────────
 // The whole responsive-CSS + scoped-selector mechanism depends on the uid being
@@ -391,38 +373,6 @@ ok( $render_a === $render_b, 'uid-stability: re-rendering the SAME attributes tw
 $render_c = SGS_Container_Wrapper::render( $section_attrs, null, '<p>DIFFERENT inner content</p>', 'section' );
 $uid_c    = extract_uid( $render_c );
 ok( $uid_a === $uid_c, 'uid-stability: uid is independent of $inner_html (only $attributes + anchor feed the md5)' );
-
-// ── Background Lottie layer (Spec 38A FR-38A-52) ──────────────────────────────
-// A `lottie` effect layer on the `background` part plays in a holder <div> the
-// wrapper prints (class sgs-container__image-bg + sgs-container__lottie-bg) with
-// the background image inside as its poster (class sgs-container__lottie-poster).
-// A caller that prints its own holder (sgs/hero) passes `no_background_holder`.
-$lottie_layer_motion = array(
-	'v'        => 1,
-	'elements' => array(
-		'background' => array(
-			'effects' => array(
-				array(
-					'id'      => 'lottie',
-					'effect'  => 'lottie',
-					'trigger' => 'visible',
-					'values'  => array( 'file' => 4079, 'loop' => true ),
-				),
-			),
-		),
-	),
-);
-$lottie_attrs = array_merge( $bg_attrs, array( 'sgsMotion' => $lottie_layer_motion ) );
-
-$lottie_html = SGS_Container_Wrapper::render( $lottie_attrs, null, '<p>x</p>', 'section' );
-contains( $lottie_html, '<div class="sgs-container__image-bg sgs-container__lottie-bg" aria-hidden="true"><img src="https://example.com/bg.jpg"', 'lottie layer: the holder prints with the poster image inside it' );
-contains( $lottie_html, 'class="sgs-container__lottie-poster"', 'lottie layer: the poster carries the poster class' );
-not_contains( $lottie_html, '<img src="https://example.com/bg.jpg" alt="" loading="lazy" decoding="async" class="sgs-container__image-bg"', 'lottie layer: the image does not also carry the part class' );
-not_contains( $lottie_html, 'class="sgs-container__image-bg" ', 'lottie layer: no bare background <img> beside the holder' );
-
-$no_holder_html = SGS_Container_Wrapper::render( $lottie_attrs, null, '<p>x</p>', 'section', array( 'no_background_holder' => true ) );
-not_contains( $no_holder_html, 'sgs-container__lottie-bg', 'no_background_holder: the wrapper prints no holder' );
-contains( $no_holder_html, 'class="sgs-container__image-bg"', 'no_background_holder: the background image keeps the plain part class' );
 
 // No layer: the output is byte-identical to the same block without any motion
 // (the uid hashes the attributes, so it is normalised before comparing).

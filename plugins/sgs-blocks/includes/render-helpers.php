@@ -34,8 +34,6 @@
  *                                     (a painted surface's dark/light tone from
  *                                     its top-down layers)
  *
- *   helpers-media.php               — sgs_responsive_image, sgs_image_loading_attrs
- *
  *   media/hidden-render.php         — sgs_in_hidden_render_context
  *
  *   media/cover-crop.php            — sgs_media_cover_crop_plan, sgs_media_drop_auto_sizes
@@ -182,7 +180,6 @@ require_once __DIR__ . '/helpers-motion-easing.php';
 require_once __DIR__ . '/helpers-state-motion-model.php';
 require_once __DIR__ . '/helpers-nav-drawer-motion-model.php';
 require_once __DIR__ . '/helpers-item-effects.php';
-require_once __DIR__ . '/helpers-media.php';
 require_once __DIR__ . '/media/hidden-render.php';
 require_once __DIR__ . '/media/cover-crop.php';
 require_once __DIR__ . '/helpers-stars.php';
