@@ -3,12 +3,10 @@
  *
  * An effect layer prints `data-sgs-fx-trigger` (absent for the `visible` trigger) and the layer values as
  * `data-sgs-fx-lottie-loop`, `-speed` and `-pause-control`; the server adds `data-src`, the animation file's URL
- * (`sgs_lottie_layer_source_attrs()` in `includes/lottie-render.php`). `sgs_render_lottie()` (the media block and the
- * wrapper background) prints `data-trigger`, `data-loop` and `data-speed` on its own `.sgs-lottie` span instead, so
- * both forms are read until that call is retired.
+ * (`sgs_lottie_layer_source_attrs()` in `includes/lottie-render.php`).
  *
  * Speed: the computed custom property `--sgs-lottie-speed` (the emitter writes the tablet and mobile values there inside
- * its media queries), then `data-sgs-fx-lottie-speed`, then `data-speed`.
+ * its media queries), then `data-sgs-fx-lottie-speed`.
  *
  * @package
  */
@@ -30,14 +28,6 @@ function numberAttr( el, name ) {
 }
 
 /**
- * @param {Element} el
- * @return {boolean} Whether the element is an effect layer rather than a `sgs_render_lottie()` span.
- */
-export function isLayer( el ) {
-	return el.hasAttribute( 'data-sgs-fx-lottie-file' );
-}
-
-/**
  * The playback speed.
  *
  * @param {Element} el
@@ -51,9 +41,6 @@ export function readSpeed( el ) {
 	if ( null === speed ) {
 		speed = numberAttr( el, 'data-sgs-fx-lottie-speed' );
 	}
-	if ( null === speed ) {
-		speed = numberAttr( el, 'data-speed' );
-	}
 	return speed && speed > 0 ? speed : 1;
 }
 
@@ -62,13 +49,8 @@ export function readSpeed( el ) {
  * @return {{src: string, trigger: string, loop: boolean, speed: number, pauseControl: boolean}} Its settings.
  */
 export function readConfig( el ) {
-	const trigger =
-		el.getAttribute( 'data-sgs-fx-trigger' ) ||
-		el.getAttribute( 'data-trigger' ) ||
-		'visible';
-	const loop = el.hasAttribute( 'data-sgs-fx-lottie-loop' )
-		? 'true' === el.getAttribute( 'data-sgs-fx-lottie-loop' )
-		: '1' === el.getAttribute( 'data-loop' );
+	const trigger = el.getAttribute( 'data-sgs-fx-trigger' ) || 'visible';
+	const loop = 'true' === el.getAttribute( 'data-sgs-fx-lottie-loop' );
 	return {
 		src: el.getAttribute( 'data-src' ) || '',
 		trigger: TRIGGERS.includes( trigger ) ? trigger : 'visible',

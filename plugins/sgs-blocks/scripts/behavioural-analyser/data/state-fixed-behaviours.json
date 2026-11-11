@@ -167,11 +167,6 @@
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/assets/css/fx-lottie.css",
-   "selector": ".sgs-lottie__pause[aria-pressed=\"true\"]::before",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
    "file": "plugins/sgs-blocks/assets/css/fx-ripple.css",
    "selector": "[data-sgs-fx~=\"ripple\"][data-sgs-mc~=\"::after\"][data-sgs-ripple=\"play\"]::after",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"

@@ -1,31 +1,12 @@
 /**
- * Lottie media type (Spec 38 §1.2a Tier H, D1151) — shared layout for every
- * surface that prints a Lottie span: the Media block, the hero split
- * media, the logo and the wrapper background. Enqueued by the Motion Registry
+ * Lottie effect layer (Spec 38 §1.2a Tier H) — shared layout for every element
+ * carrying a Lottie layer, and the wrapper background. Enqueued by the Motion Registry
  * only on pages that carry data-sgs-fx="lottie" (`SGS_Motion_Registry::effect_stylesheet()`).
  *
- * The server prints the poster inside .sgs-lottie; the player renders its SVG
+ * The server prints the poster inside the layer; the player renders its SVG
  * into the same box once its trigger fires. Until then (and always under
  * reduced motion, without JS, or in print) the poster is what shows.
  */
-
-.sgs-lottie {
-	position: relative;
-	display: block;
-	line-height: 0;
-}
-
-.sgs-lottie > svg {
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-}
-
-/* Once the animation has drawn, the poster steps back (it keeps its box). */
-.sgs-lottie:has(> svg) > :is(img, picture) {
-	visibility: hidden;
-}
 
 /* A Lottie effect layer on a part: the player's <svg> overlays the part and the poster underneath stays in the layout. */
 .sgs-lottie-layer {
@@ -61,109 +42,42 @@
 	object-position: inherit;
 }
 
-/* The pause control sits beside the animation (never inside a link). */
-:where(*):has(> .sgs-lottie + .sgs-lottie__pause) {
-	position: relative;
-}
-
-.sgs-lottie + .sgs-lottie__pause {
-	position: absolute;
-	inset-block-end: 0.5rem;
-	inset-inline-end: 0.5rem;
-	z-index: 2;
-}
-
-.sgs-lottie__pause {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-width: 44px;
-	min-height: 44px;
-	padding: 0;
-	border: 0;
-	border-radius: 999px;
-	background: var(--wp--preset--color--text, #1a1a1a);
-	color: var(--wp--preset--color--surface, #ffffff);
-	cursor: pointer;
-}
-
-/* Pause bars; a play triangle while paused. */
-.sgs-lottie__pause::before {
-	content: "";
-	display: block;
-	width: 10px;
-	height: 12px;
-	border-inline: 3px solid currentColor;
-}
-
-.sgs-lottie__pause[aria-pressed="true"]::before {
-	width: 0;
-	height: 0;
-	border-inline: 0;
-	border-block: 7px solid transparent;
-	border-inline-start: 11px solid currentColor;
-}
-
 @media print {
-	.sgs-lottie > svg,
-	.sgs-lottie-layer > svg,
-	.sgs-lottie__pause {
+	.sgs-lottie-layer > svg {
 		display: none;
 	}
 
-	.sgs-lottie > :is(img, picture),
 	.sgs-lottie-layer :is(img, picture) {
 		visibility: visible;
 	}
 }
 
-/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the player svg and its pause control are hidden and the poster shows, the same state as without JS. */
+/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the player svg is hidden and the poster shows, the same state as without JS. */
 @media (max-width: 767.98px) {
-	[data-sgs-fx~="lottie"][data-sgs-fx-off-mobile~="lottie"].sgs-lottie > svg,
-	[data-sgs-fx~="lottie"][data-sgs-fx-disable-mobile].sgs-lottie > svg,
 	[data-sgs-fx~="lottie"][data-sgs-fx-off-mobile~="lottie"].sgs-lottie-layer > svg,
 	[data-sgs-fx~="lottie"][data-sgs-fx-disable-mobile].sgs-lottie-layer > svg {
 		display: none;
 	}
-	[data-sgs-fx~="lottie"][data-sgs-fx-off-mobile~="lottie"].sgs-lottie:has(> svg) > :is(img, picture),
-	[data-sgs-fx~="lottie"][data-sgs-fx-disable-mobile].sgs-lottie:has(> svg) > :is(img, picture),
 	[data-sgs-fx~="lottie"][data-sgs-fx-off-mobile~="lottie"].sgs-lottie-layer:has(> svg) :is(img, picture),
 	[data-sgs-fx~="lottie"][data-sgs-fx-disable-mobile].sgs-lottie-layer:has(> svg) :is(img, picture) {
 		visibility: visible;
 	}
-	[data-sgs-fx~="lottie"][data-sgs-fx-off-mobile~="lottie"].sgs-lottie + .sgs-lottie__pause,
-	[data-sgs-fx~="lottie"][data-sgs-fx-disable-mobile].sgs-lottie + .sgs-lottie__pause {
-		display: none;
-	}
 }
 @media (min-width: 768px) and (max-width: 1023.98px) {
-	[data-sgs-fx~="lottie"][data-sgs-fx-off-tablet~="lottie"].sgs-lottie > svg,
-	[data-sgs-fx~="lottie"][data-sgs-fx-disable-tablet].sgs-lottie > svg,
 	[data-sgs-fx~="lottie"][data-sgs-fx-off-tablet~="lottie"].sgs-lottie-layer > svg,
 	[data-sgs-fx~="lottie"][data-sgs-fx-disable-tablet].sgs-lottie-layer > svg {
 		display: none;
 	}
-	[data-sgs-fx~="lottie"][data-sgs-fx-off-tablet~="lottie"].sgs-lottie:has(> svg) > :is(img, picture),
-	[data-sgs-fx~="lottie"][data-sgs-fx-disable-tablet].sgs-lottie:has(> svg) > :is(img, picture),
 	[data-sgs-fx~="lottie"][data-sgs-fx-off-tablet~="lottie"].sgs-lottie-layer:has(> svg) :is(img, picture),
 	[data-sgs-fx~="lottie"][data-sgs-fx-disable-tablet].sgs-lottie-layer:has(> svg) :is(img, picture) {
 		visibility: visible;
 	}
-	[data-sgs-fx~="lottie"][data-sgs-fx-off-tablet~="lottie"].sgs-lottie + .sgs-lottie__pause,
-	[data-sgs-fx~="lottie"][data-sgs-fx-disable-tablet].sgs-lottie + .sgs-lottie__pause {
-		display: none;
-	}
 }
 @media (min-width: 1024px) {
-	[data-sgs-fx~="lottie"][data-sgs-fx-off-desktop~="lottie"].sgs-lottie > svg,
 	[data-sgs-fx~="lottie"][data-sgs-fx-off-desktop~="lottie"].sgs-lottie-layer > svg {
 		display: none;
 	}
-	[data-sgs-fx~="lottie"][data-sgs-fx-off-desktop~="lottie"].sgs-lottie:has(> svg) > :is(img, picture),
 	[data-sgs-fx~="lottie"][data-sgs-fx-off-desktop~="lottie"].sgs-lottie-layer:has(> svg) :is(img, picture) {
 		visibility: visible;
-	}
-	[data-sgs-fx~="lottie"][data-sgs-fx-off-desktop~="lottie"].sgs-lottie + .sgs-lottie__pause {
-		display: none;
 	}
 }

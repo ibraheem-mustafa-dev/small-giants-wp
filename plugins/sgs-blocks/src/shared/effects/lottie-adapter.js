@@ -62,7 +62,7 @@ export async function init( { container, animationData, loop = false, speed = 1 
 	player.setSpeed( clampSpeed( speed ) );
 
 	// The injected <svg> is always decorative — the accessible name (or its
-	// deliberate absence) lives on the wrapper `sgs_render_lottie()` already
+	// deliberate absence) lives on the element the server
 	// rendered, never on the player's own markup.
 	const svg = container.querySelector( 'svg' );
 	if ( svg ) {

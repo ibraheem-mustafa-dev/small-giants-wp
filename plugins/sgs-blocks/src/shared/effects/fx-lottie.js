@@ -2,16 +2,15 @@
  * `@sgs/fx-lottie` — the boot module `SGS_Motion_Registry::enqueue_effect()` enqueues for every page rendering
  * `data-sgs-fx` with the `lottie` token. It finds every such element, reads its settings (`lottie-config.js`: trigger,
  * loop, speed, pause control), wires the trigger and drives the player through `lottie-adapter.js`; this module never
- * touches `lottie-web` directly. An element is either an effect layer on a part (any element carrying the layer's
- * attributes) or a `sgs_render_lottie()` span.
+ * touches `lottie-web` directly. Every element is an effect layer on a part (any element carrying the layer's
+ * attributes).
  *
  * NO GSAP: the scroll trigger is vanilla IntersectionObserver plus a passive, rAF-throttled scroll listener, so a
  * Lottie page never pulls the GSAP graph into `tier_h_lottie`'s 60 KB allowance.
  *
  * Looping and pausing: a looping animation, or one with the pause button switched on, is registered with the shared
  * loop control (`@sgs/loop-control`, `registerLoop`). The control pauses it off screen, while focus is inside its
- * block (always on, WCAG 2.2.2) and from the pause button it creates (or the server-rendered one beside a
- * `sgs_render_lottie()` span); this module pauses and plays the player from `onPausedChange`. A scroll-driven
+ * block (always on, WCAG 2.2.2) and from the pause button it creates; this module pauses and plays the player from `onPausedChange`. A scroll-driven
  * animation is scrubbed by the scrollbar and never loops, so it is not registered.
  *
  * Reduced motion: checked BEFORE the dynamic import, so a `prefers-reduced-motion: reduce` visitor loads no player
@@ -36,7 +35,6 @@ import {
 	readConfig,
 	readSpeed,
 	scrollProgress,
-	isLayer,
 } from './lottie-config.js';
 import { registerWithLoopControl, playIfAllowed } from './lottie-loop.js';
 import { BREAKPOINTS } from '@sgs/loop-control'; // eslint-disable-line import/no-unresolved -- a webpack external (script module `@sgs/loop-control`).
@@ -384,9 +382,7 @@ async function mount( binding ) {
 
 	let player;
 	try {
-		if ( isLayer( el ) ) {
-			el.classList.add( LAYER_CLASS );
-		}
+		el.classList.add( LAYER_CLASS );
 		player = await playerInit( {
 			container: el,
 			animationData,
