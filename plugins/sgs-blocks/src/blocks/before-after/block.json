@@ -24,22 +24,38 @@
 					"reason": "The before/after caption label overlay is aria-hidden with pointer-events:none — no :hover CSS targets it anywhere. Already correctly painted via sgs_block_background_layer_css()/sgs_background_paint_decl() with a real gradient attribute wired. Confirmed 2026-09-06 (colour-conformance FILL audit)."
 				}
 			},
-			"_comment_mediaElements": "Wave 5b. Replaces the old universal imageControls extension's single shared sgsObjectFit/sgsObjectPosition pair (which set BOTH the before and after slots identically) with two independently-scoped media elements, one per slot.",
+			"_comment_mediaElements": "One media slot per side (Spec 49 §10.4): Source, Alt and Decorative, Fit, Focal and Playback each, printed by the shared renderer. The frame's own height, maxWidth and borderRadius are the Height, Width and Radius both sides share.",
 			"mediaElements": [
 				{
 					"prefix": "before",
-					"context": "element",
+					"context": "content",
+					"kinds": [
+						"image",
+						"video",
+						"svg"
+					],
 					"atoms": [
+						"source",
+						"meaning",
 						"object-fit",
-						"focal-point"
+						"focal-point",
+						"video-behaviour"
 					]
 				},
 				{
 					"prefix": "after",
-					"context": "element",
+					"context": "content",
+					"kinds": [
+						"image",
+						"video",
+						"svg"
+					],
 					"atoms": [
+						"source",
+						"meaning",
 						"object-fit",
-						"focal-point"
+						"focal-point",
+						"video-behaviour"
 					]
 				}
 			],
@@ -190,185 +206,6 @@
 			"type": "boolean",
 			"default": true
 		},
-		"_comment_ssr_nullable": "Every numeric attribute below whose default is null is declared as [ <numeric>, \"string\" ] — the house convention (sgs/heading, sgs/text). REASON: this block previews through <ServerSideRender>, which serialises an unset attribute as an EMPTY STRING into the block-renderer REST query. A schema of plain \"integer\"/\"number\" rejects \"\", the REST call returns HTTP 400, and the editor shows 'Preview failed to load' for every instance — while the frontend renders perfectly, so no frontend check can catch it. Found live 2026-07-31 by the Wave C editor probe (D388). render.php already coerces with (int) / a null check, so accepting \"\" changes no rendered output.",
-		"beforeMediaType": {
-			"type": "string",
-			"default": "image",
-			"enum": [
-				"image",
-				"video",
-				"svg"
-			],
-			"_comment": "Mirrors sgs/media's mediaType fork (Spec 38 Step 6), applied per comparison slot rather than block-wide — the before side and after side may each be a different media type (e.g. an SVG diagram compared against a photo)."
-		},
-		"afterMediaType": {
-			"type": "string",
-			"default": "image",
-			"enum": [
-				"image",
-				"video",
-				"svg"
-			]
-		},
-		"beforeImageId": {
-			"type": [
-				"integer",
-				"string"
-			],
-			"default": null
-		},
-		"beforeImageUrl": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"beforeImageAlt": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"beforeImageDecorative": {
-			"type": "boolean",
-			"default": false,
-			"description": "When true, this slot's image renders with an empty alt and aria-hidden so screen readers skip it, per D918/S8 naming convention ({element}Decorative)."
-		},
-		"afterImageId": {
-			"type": [
-				"integer",
-				"string"
-			],
-			"default": null
-		},
-		"afterImageUrl": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"afterImageAlt": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"afterImageDecorative": {
-			"type": "boolean",
-			"default": false,
-			"description": "When true, this slot's image renders with an empty alt and aria-hidden so screen readers skip it, per D918/S8 naming convention ({element}Decorative)."
-		},
-		"_comment_artDirection": "Art-direction tiers (2026-08-07) — the IMAGE pair, completing the half this block was missing: its VIDEO playback tiers landed at d8cdcf8b. Same {base}/{base}Tablet/{base}Mobile shape and ID-wins-URL-falls-back pairing as sgs/media and sgs/hero. Alt text is deliberately NOT tiered — a different crop of the same subject describes the same thing, and a per-device alt would be a second place for the description to drift out of sync. Tier siblings render inside their own comparison slot so the divider still clips them.",
-		"beforeImageIdTablet": {
-			"type": [
-				"integer",
-				"string"
-			],
-			"default": null
-		},
-		"beforeImageUrlTablet": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"beforeImageIdMobile": {
-			"type": [
-				"integer",
-				"string"
-			],
-			"default": null
-		},
-		"beforeImageUrlMobile": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"afterImageIdTablet": {
-			"type": [
-				"integer",
-				"string"
-			],
-			"default": null
-		},
-		"afterImageUrlTablet": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"afterImageIdMobile": {
-			"type": [
-				"integer",
-				"string"
-			],
-			"default": null
-		},
-		"afterImageUrlMobile": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"beforeVideoId": {
-			"type": [
-				"integer",
-				"string"
-			],
-			"default": null
-		},
-		"beforeVideoUrl": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"beforeVideoAlt": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"afterVideoId": {
-			"type": [
-				"integer",
-				"string"
-			],
-			"default": null
-		},
-		"afterVideoUrl": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"afterVideoAlt": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"beforeSvgContent": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"afterSvgContent": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"videoAutoplay": {
-			"type": "boolean",
-			"default": false,
-			"_comment": "Gated behind prefers-reduced-motion at render time in view.js — reduced motion always starts both videos paused regardless of this attribute; the shared play/pause toggle remains available either way (explicit user action, never suppressed)."
-		},
-		"videoAutoplayTablet": {
-			"type": [
-				"boolean",
-				"null",
-				"string"
-			],
-			"default": null,
-			"_comment": "Per-device playback tier (D-pending). null = inherit the tier above (Tablet inherits Desktop, Mobile inherits Tablet) — same convention as sgs/media's videoAutoplayTablet/Mobile and every other *Tablet/*Mobile attr in this framework. Still gated behind prefers-reduced-motion at whichever tier is effective. 'string' is in the type union ONLY because @wordpress/server-side-render's GET transport serialises a null attribute value to an empty string in the REST query string (addQueryArgs cannot represent a real null) — without 'string' here, block-renderer's own schema validation 400s the editor's own live preview on every load (confirmed live 2026-09-01: rest_invalid_param, '[videoAutoplayTablet] is not of type boolean,null.'). render.php treats an empty string identically to null (inherit) — see the raw-value guard below."
-		},
-		"videoAutoplayMobile": {
-			"type": [
-				"boolean",
-				"null",
-				"string"
-			],
-			"default": null
-		},
 		"showLabels": {
 			"type": "boolean",
 			"default": true
@@ -427,6 +264,7 @@
 		"labelLineHeight": {
 			"type": [
 				"number",
+				"null",
 				"string"
 			],
 			"default": null
@@ -659,7 +497,23 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"beforeSource": {"type":"object","_generated":"media-atoms"},
+		"beforeLoading": {"type":"string","_generated":"media-atoms"},
+		"beforeAlt": {"type":"string","_generated":"media-atoms"},
+		"beforeDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"beforeFit": {"type":"object","_generated":"media-atoms"},
+		"beforeFocal": {"type":"object","_generated":"media-atoms"},
+		"beforePlayback": {"type":"object","_generated":"media-atoms"},
+		"beforeCaptions": {"type":"object","_generated":"media-atoms"},
+		"afterSource": {"type":"object","_generated":"media-atoms"},
+		"afterLoading": {"type":"string","_generated":"media-atoms"},
+		"afterAlt": {"type":"string","_generated":"media-atoms"},
+		"afterDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"afterFit": {"type":"object","_generated":"media-atoms"},
+		"afterFocal": {"type":"object","_generated":"media-atoms"},
+		"afterPlayback": {"type":"object","_generated":"media-atoms"},
+		"afterCaptions": {"type":"object","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

@@ -129,7 +129,7 @@ final class Sgs_Block_Bindings_Support {
 		'sgs/form-step'         => array( 'label' ),
 		'sgs/star-rating'       => array( 'label' ),
 		'sgs/audio'             => array( 'title' ),
-		'sgs/before-after'      => array( 'beforeImageAlt', 'beforeImageUrl', 'afterImageAlt', 'afterImageUrl', 'beforeLabel', 'afterLabel' ),
+		'sgs/before-after'      => array( 'beforeLabel', 'afterLabel' ),
 		'sgs/form'              => array( 'successMessage' ),
 		'sgs/form-field-address'  => array( 'label', 'helpText' ),
 		'sgs/form-field-checkbox' => array( 'label', 'helpText' ),

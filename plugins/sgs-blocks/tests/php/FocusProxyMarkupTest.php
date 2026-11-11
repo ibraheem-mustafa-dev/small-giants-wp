@@ -116,8 +116,8 @@ final class FocusProxyMarkupTest extends TestCase {
 		$out = $this->render_block(
 			'sgs/before-after',
 			array(
-				'beforeImageUrl' => 'https://example.test/before.jpg',
-				'afterImageUrl'  => 'https://example.test/after.jpg',
+				'beforeSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/before.jpg', 'width' => 1200, 'height' => 800 ) ),
+				'afterSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/after.jpg', 'width' => 1200, 'height' => 800 ) ),
 				'height'     => array( 'desktop' => '400px' ),
 			)
 		);

@@ -114,8 +114,8 @@ final class MediaLengthStringTest extends TestCase {
 			$this->render_block(
 				'sgs/before-after',
 				array(
-					'beforeImageUrl' => 'https://example.test/before.jpg',
-					'afterImageUrl'  => 'https://example.test/after.jpg',
+					'beforeSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/before.jpg', 'width' => 1200, 'height' => 800 ) ),
+					'afterSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/after.jpg', 'width' => 1200, 'height' => 800 ) ),
 					'height'         => array(
 						'desktop' => '420px',
 						'mobile'  => '60vh',
@@ -134,7 +134,7 @@ final class MediaLengthStringTest extends TestCase {
 	}
 
 	public function test_before_after_defaults_to_a_400px_stage(): void {
-		$css = $this->normalised( $this->render_block( 'sgs/before-after', array( 'beforeImageUrl' => 'https://example.test/b.jpg', 'afterImageUrl' => 'https://example.test/a.jpg' ) )['css'] );
+		$css = $this->normalised( $this->render_block( 'sgs/before-after', array( 'beforeSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/b.jpg', 'width' => 1200, 'height' => 800 ) ), 'afterSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/a.jpg', 'width' => 1200, 'height' => 800 ) ) ) )['css'] );
 		$this->assertMatchesRegularExpression( '/__stage\{height:400px/', $css );
 	}
 }

@@ -44,33 +44,31 @@
 }
 
 /*
- * Universal image-controls extension (supports.sgs.imageControls) — object-
- * fit/position only. This block deliberately does NOT consume
- * `--sgs-max-width`/`--sgs-height-*` from that panel: the frame already has
- * its OWN native width/height mechanism (`maxWidth*` + `height*` attrs,
- * step 3/5 of render.php), and consuming both would create two competing
- * sources of truth for the same box — the exact anti-pattern sgs/media's
- * block.json documents avoiding by opting out of this extension entirely.
- * Object-fit/position have no such duplicate here, so they stay wired.
+ * One comparison side: a layer that fills the stage and holds whatever the shared media renderer printed (a picture,
+ * a video with its cover, or inline SVG). Fit and Focal come from the renderer's own rules under each side's scope
+ * class; this only gives the printed levels the stage's size. The frame owns the block's Height and Width
+ * (`height` and `maxWidth`), so the media takes no size of its own.
  */
-
-.wp-block-sgs-before-after__img {
-	display: block;
+.wp-block-sgs-before-after__side {
 	position: absolute;
 	inset: 0;
-	width: 100%;
-	height: 100%;
-	/* object-fit/object-position are owned by the media-atom layer now
-	   (Wave 5b) — each slot carries its own `.sgs-media-el` marker + scope
-	   class, painted by the shared assets/css/media-atoms/object-fit.css +
-	   focal-point.css (cover/centre fallback lives there, not here). */
+	z-index: 1;
 	-webkit-user-drag: none;
 	user-select: none;
 	pointer-events: none;
 }
 
-.wp-block-sgs-before-after__img--before {
-	z-index: 1;
+.wp-block-sgs-before-after__side :is(.sgs-media-group, .sgs-media-stack, .sgs-media-box, .sgs-media-box__mask, .sgs-media-link) {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.wp-block-sgs-before-after__side :is(img, video, svg, .sgs-media-el) {
+	display: block;
+	width: 100%;
+	height: 100%;
+	max-width: none;
 }
 
 .wp-block-sgs-before-after__after-wrap {
@@ -109,10 +107,6 @@
 /* VERTICAL, reversed: reveal "after" from the BOTTOM edge. */
 .wp-block-sgs-before-after[data-orientation="vertical"][data-reverse="1"] .wp-block-sgs-before-after__after-wrap {
 	clip-path: inset( var( --sgs-before-after-position ) 0 0 0 );
-}
-
-.wp-block-sgs-before-after__after-wrap .wp-block-sgs-before-after__img {
-	position: absolute;
 }
 
 .wp-block-sgs-before-after__labels {
@@ -369,7 +363,7 @@
 .wp-block-sgs-before-after[data-orientation="vertical"] .wp-block-sgs-before-after__range {
 	cursor: ns-resize;
 	writing-mode: vertical-lr;
-	direction: rtl;
+	direction: ltr;
 }
 
 .wp-block-sgs-before-after__range::-webkit-slider-thumb {
@@ -395,38 +389,30 @@
 }
 
 /*
- * Video slot (beforeMediaType/afterMediaType = 'video'). `.__img` already
- * provides position/inset/width/height/object-fit — this only adds what a
- * <video> needs beyond what an <img> gets for free. No native `controls`
- * (render.php never emits that attribute): playback is the shared
- * `.__video-toggle` button below, driven by view.js's sync layer, so both
- * videos in a comparison can never drift into showing different moments.
+ * A side that shows a video: the cover picture and the player share the side's box, and the player carries no native
+ * controls (the shared button below drives both videos).
  */
-.wp-block-sgs-before-after__video {
+.wp-block-sgs-before-after__side video {
 	background-color: #000;
 }
 
-/*
- * SVG slot (beforeMediaType/afterMediaType = 'svg'). The resolver wraps
- * sanitised SVG markup in a <div class="…__img …__svg">; `.__img` handles
- * position/inset/sizing, this makes the inline <svg> itself fill that box —
- * object-fit has no effect on a <div>, so the SVG's own width/height must be
- * set to 100% directly.
- */
-.wp-block-sgs-before-after__svg {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+.wp-block-sgs-before-after__side .sgs-media-stack {
+	position: relative;
+}
+
+.wp-block-sgs-before-after__side .sgs-media-stack :is(img, video) {
+	position: absolute;
+	inset: 0;
+}
+
+/* A side that shows inline SVG: the drawing sits whole in the frame on a plain surface. */
+.wp-block-sgs-before-after__side .sgs-media-svg {
 	background-color: var( --wp--preset--color--surface, #fff );
 }
 
-.wp-block-sgs-before-after__svg svg {
+.wp-block-sgs-before-after__side .sgs-media-svg svg {
 	width: 100%;
 	height: 100%;
-	/* object-fit is not part of the media-atom layer's SVG scope (registry.js
-	   `object-fit.types` is image+video only — inline SVG geometry doesn't
-	   take object-fit) — same fixed default this rule always had. */
-	object-fit: contain;
 }
 
 /*

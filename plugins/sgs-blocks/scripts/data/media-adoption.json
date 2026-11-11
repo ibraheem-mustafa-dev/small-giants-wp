@@ -439,7 +439,14 @@
 								"svg"
 							],
 							"context": "content",
-							"from": "before"
+							"from": "before",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"video-behaviour"
+							]
 						},
 						"after": {
 							"kinds": [
@@ -448,7 +455,14 @@
 								"svg"
 							],
 							"context": "content",
-							"from": "after"
+							"from": "after",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"video-behaviour"
+							]
 						}
 					},
 					"replace": []
@@ -461,7 +475,15 @@
 								"video"
 							],
 							"context": "content",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"sizing",
+								"shape"
+							]
 						}
 					},
 					"replace": []

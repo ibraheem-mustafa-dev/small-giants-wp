@@ -225,8 +225,8 @@ final class BorderElementParityTest extends TestCase {
 		'before-after'              => array(
 			'attrs' => array(
 				'height'     => array( 'desktop' => '400px' ),
-				'beforeImageUrl' => 'https://example.test/before.jpg',
-				'afterImageUrl'  => 'https://example.test/after.jpg',
+				'beforeSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/before.jpg', 'width' => 1200, 'height' => 800 ) ),
+				'afterSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/after.jpg', 'width' => 1200, 'height' => 800 ) ),
 			),
 		),
 		'theme-toggle'              => array(

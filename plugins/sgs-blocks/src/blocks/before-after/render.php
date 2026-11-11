@@ -42,55 +42,24 @@ require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 require_once __DIR__ . '/media-render.php';
 
 // ---------------------------------------------------------------------------
-// 1. Resolve content per slot (image / video / svg — see media-render.php).
-// Soft-fail: nothing to render without content on BOTH slots.
+// 1. Resolve each side through the shared media renderer (media-render.php).
+// Soft-fail: nothing to render without content on BOTH sides.
 // ---------------------------------------------------------------------------
 
-// $uid is computed here (moved ahead of its original §4 location) because
-// the media-slot scope class (Wave 5b, media-atom prefix support) is applied
-// to the <img>/<video> markup INSIDE sgs_before_after_resolve_media() itself.
 $uid = 'sgs-before-after-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 
-$before_media = sgs_before_after_resolve_media( $attributes, 'before', $uid );
-$after_media  = sgs_before_after_resolve_media( $attributes, 'after', $uid );
+$before_media = sgs_before_after_render_side( $attributes, 'before', $uid, sgs_before_after_slot( $block ?? null, 'before' ) );
+$after_media  = sgs_before_after_render_side( $attributes, 'after', $uid, sgs_before_after_slot( $block ?? null, 'after' ) );
 
 if ( ! $before_media['has_content'] || ! $after_media['has_content'] ) {
 	return;
 }
 
-$has_video_slot = 'video' === $before_media['media_type'] || 'video' === $after_media['media_type'];
+$has_video_slot = $before_media['has_video'] || $after_media['has_video'];
 
-// Per-device autoplay tier (D-pending). Desktop stays the real attribute the
-// no-JS/reduced-motion path already relies on; tablet/mobile overrides ride
-// as data-* on the root and are resolved + applied by view.js
-// (bootVideoSyncLayer), reusing the same fallback-upward shape as sgs/media's
-// tiered playback attrs (null = inherit the tier above).
-//
-// An empty string is treated identically to null (inherit) — NOT a stored
-// shape, only a REST-transport artefact. block.json's type union carries
-// 'string' alongside 'boolean'/'null' solely because
-// @wordpress/server-side-render's GET transport serialises an unset (null)
-// attribute to '' in the REST query string (addQueryArgs cannot represent a
-// real null), and the editor's own live preview would otherwise 400 on
-// every load. Real post_content always stores a genuine JSON null for an
-// unset tier, never ''.
-$video_autoplay_tablet_raw = $attributes['videoAutoplayTablet'] ?? null;
-$video_autoplay_mobile_raw = $attributes['videoAutoplayMobile'] ?? null;
-if ( '' === $video_autoplay_tablet_raw ) {
-	$video_autoplay_tablet_raw = null;
-}
-if ( '' === $video_autoplay_mobile_raw ) {
-	$video_autoplay_mobile_raw = null;
-}
-
-$video_autoplay = ! empty( $attributes['videoAutoplay'] );
-
-$video_autoplay_tablet_effective = null !== $video_autoplay_tablet_raw
-	? (bool) $video_autoplay_tablet_raw
-	: $video_autoplay;
-$video_autoplay_mobile_effective = null !== $video_autoplay_mobile_raw
-	? (bool) $video_autoplay_mobile_raw
-	: $video_autoplay_tablet_effective;
+// Autoplay: either side's Playback setting. The shared play and pause button and the drift correction (view.js)
+// then start both videos together.
+$video_autoplay = ! empty( $attributes['beforePlayback']['autoplay'] ) || ! empty( $attributes['afterPlayback']['autoplay'] );
 
 $show_labels  = ! empty( $attributes['showLabels'] ) || ! isset( $attributes['showLabels'] );
 $before_label = isset( $attributes['beforeLabel'] ) ? (string) $attributes['beforeLabel'] : '';
@@ -193,8 +162,7 @@ $preset_bg_slug = isset( $attributes['backgroundColor'] ) ? sanitize_html_class(
 // ---------------------------------------------------------------------------
 
 $anchor = $attributes['anchor'] ?? '';
-// $uid computed earlier, ahead of the resolve_media() calls — see the
-// comment there.
+// $uid is computed in step 1: the sides' scope classes derive from it.
 $root_sel = '.' . $uid . '.wp-block-sgs-before-after';
 
 // ---------------------------------------------------------------------------
@@ -409,63 +377,10 @@ if ( $label_colour ) {
 
 $scoped_css[] = "{$root_sel}{" . implode( ';', $root_var_decls ) . ';}';
 
-// --- Media-element atom layer (Wave 5b) — object-fit + focal-point, ---
-// --- INDEPENDENTLY scoped per slot (before/after), replacing the old ---
-// --- shared supports.sgs.imageControls sgsObjectFit/sgsObjectPosition ---
-// --- pair that set BOTH images identically. Each slot's <img>/<video> ---
-// --- carries its own `sgs_media_element_scope_class( $uid, $prefix )` ---
-// --- class (added in media-render.php) plus the universal `.sgs-media-el` ---
-// --- marker, so the shared `assets/css/media-element.css` stylesheet ---
-// --- (already enqueued globally by the plugin) paints each slot from ---
-// --- its OWN custom-property values — no per-block CSS needed here. ---
-// --- Legacy sgsObjectFit/sgsObjectPosition fallback (fix, 2026-09-01) ---
-// Wave 5b (125e79ad3) removed supports.sgs.imageControls/imageControlsExplicit
-// from block.json in favour of the per-slot mediaElements atoms above, but
-// block.json no longer declares `sgsObjectFit`/`sgsObjectPosition` anywhere.
-// WP drops an attribute a block's schema doesn't declare — but only on the
-// EDITOR/JS surface (see plugins/sgs-blocks/CLAUDE.md); this PHP render
-// still receives whatever value is sitting in the block's saved
-// post_content. Any instance saved BEFORE this migration therefore still
-// carries its old shared crop/position under the legacy keys, while the new
-// beforeObjectFit/afterObjectFit/beforeObjectPosition/afterObjectPosition
-// default empty ('inherit') — so without this fallback the page would
-// silently revert to the browser-default crop the next time it renders.
-// Read-time-only: this does NOT re-declare sgsObjectFit/sgsObjectPosition in
-// block.json (that would resurrect the exact "one shared value for two
-// independent slots" bug 125e79ad3 fixed on purpose) and only fills a slot
-// value when that slot's OWN new attribute is genuinely unset, so a page
-// already migrated to independent per-slot values is never touched.
-$sgs_bap_legacy_fit     = $attributes['sgsObjectFit'] ?? '';
-$sgs_bap_legacy_pos     = $attributes['sgsObjectPosition'] ?? null;
-$sgs_bap_has_legacy_fit = is_string( $sgs_bap_legacy_fit ) && '' !== $sgs_bap_legacy_fit;
-$sgs_bap_has_legacy_pos = is_array( $sgs_bap_legacy_pos ) && isset( $sgs_bap_legacy_pos['x'], $sgs_bap_legacy_pos['y'] );
-
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	foreach ( array( 'before', 'after' ) as $sgs_bap_slot ) {
-		$sgs_bap_attrs = $attributes;
-
-		$sgs_bap_fit_key = $sgs_bap_slot . 'ObjectFit';
-		if ( $sgs_bap_has_legacy_fit && empty( $sgs_bap_attrs[ $sgs_bap_fit_key ] ) ) {
-			$sgs_bap_attrs[ $sgs_bap_fit_key ] = $sgs_bap_legacy_fit;
-		}
-		$sgs_bap_pos_key = $sgs_bap_slot . 'ObjectPosition';
-		if ( $sgs_bap_has_legacy_pos && empty( $sgs_bap_attrs[ $sgs_bap_pos_key ] ) ) {
-			$sgs_bap_attrs[ $sgs_bap_pos_key ] = $sgs_bap_legacy_pos;
-		}
-
-		// $uid here is the RAW block uid, not yet scope-suffixed — `style()`
-		// applies `scope_class( $uid, $prefix )` internally, matching the
-		// SAME class media-render.php puts on the slot's <img>/<video>.
-		$sgs_bap_css = SGS_Media_Element::style(
-			$sgs_bap_attrs,
-			$sgs_bap_slot,
-			'sgs/before-after',
-			$uid,
-			array( 'object-fit', 'focal-point' )
-		);
-		if ( '' !== $sgs_bap_css ) {
-			$scoped_css[] = $sgs_bap_css;
-		}
+// Each side's media rules (Fit, Focal) come from the shared renderer.
+foreach ( array( $before_media, $after_media ) as $sgs_ba_side ) {
+	if ( '' !== $sgs_ba_side['css'] ) {
+		$scoped_css[] = $sgs_ba_side['css'];
 	}
 }
 
@@ -553,54 +468,10 @@ $root_attr_args = array(
 	'data-has-video'      => $has_video_slot ? '1' : '0',
 	'data-video-autoplay' => $video_autoplay ? '1' : '0',
 );
-// Tier overrides — only present when a tier's effective value diverges from
-// the tier above it (view.js resolves + applies these on load and resize;
-// mirrors sgs/media's sgs_media_tier_data_attrs() shape).
-if ( $video_autoplay_tablet_effective !== $video_autoplay ) {
-	$root_attr_args['data-video-autoplay-tablet'] = $video_autoplay_tablet_effective ? '1' : '0';
-}
-if ( $video_autoplay_mobile_effective !== $video_autoplay_tablet_effective ) {
-	$root_attr_args['data-video-autoplay-mobile'] = $video_autoplay_mobile_effective ? '1' : '0';
-}
 if ( $anchor ) {
 	$root_attr_args['id'] = esc_attr( $anchor );
 }
 $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
-
-// ---------------------------------------------------------------------------
-// 6b. ART-DIRECTION TIER TOGGLES (2026-08-07) — the IMAGE pair.
-//
-// The resolver emitted the tier siblings and reported which tiers it actually
-// produced; scoping their breakpoint toggles has to happen HERE because $uid
-// exists only in this file. An unscoped `.wp-block-sgs-before-after__img--…`
-// rule would hide images in every other instance on the page.
-//
-// ⛔ Selectors descend from $root_sel — a single compound token
-// (`.{uid}.wp-block-sgs-before-after`), never a multi-member selector LIST: a
-// descendant appended to a list binds to its last member only, which on
-// sgs/media hid every image at every width before it was caught live.
-// ---------------------------------------------------------------------------
-foreach ( array(
-	'before' => $before_media,
-	'after'  => $after_media,
-) as $sgs_slot => $sgs_slot_media ) {
-	$sgs_slot_tiers = $sgs_slot_media['tiers'] ?? array();
-	if ( empty( $sgs_slot_tiers ) ) {
-		continue;
-	}
-	$sgs_ba_tier_sel = static function ( $tier ) use ( $root_sel, $sgs_slot ) {
-		return $root_sel . ' .wp-block-sgs-before-after__img--' . $sgs_slot . '-' . $tier;
-	};
-	if ( in_array( 'mobile', $sgs_slot_tiers, true ) ) {
-		$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . $sgs_ba_tier_sel( 'desktop' ) . '{display:none}}';
-		$scoped_css[] = SGS_Breakpoints::media( 'tablet-up' ) . '{' . $sgs_ba_tier_sel( 'mobile' ) . '{display:none}}';
-	}
-	if ( in_array( 'tablet', $sgs_slot_tiers, true ) ) {
-		$scoped_css[] = SGS_Breakpoints::media( 'tablet-only' ) . '{' . $sgs_ba_tier_sel( 'desktop' ) . '{display:none}}';
-		$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . $sgs_ba_tier_sel( 'tablet' ) . '{display:none}}';
-		$scoped_css[] = SGS_Breakpoints::media( 'desktop' ) . '{' . $sgs_ba_tier_sel( 'tablet' ) . '{display:none}}';
-	}
-}
 
 // ---------------------------------------------------------------------------
 // 7. Enqueue the Draggable enhancement's script modules — gated on the
@@ -716,9 +587,7 @@ $scoped_css = array_merge( $scoped_css, $border['rules'] );
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<div class="wp-block-sgs-before-after__stage" data-sgs-before-after-stage>
 		<?php
-		// Escaped by the resolver (sgs_before_after_resolve_media() in
-		// media-render.php — every branch either escapes each part itself or
-		// runs the content through wp_kses()/wp_get_attachment_image()).
+		// Built and escaped by the shared media renderer (sgs_before_after_render_side() in media-render.php).
 		echo $before_media['html']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		?>
 		<div class="wp-block-sgs-before-after__after-wrap">
