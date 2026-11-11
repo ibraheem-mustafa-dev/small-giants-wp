@@ -392,11 +392,13 @@
 						"label": "Page header eyebrow",
 						"order": 40,
 						"clusters": [
-							"text"
+							"text",
+							"layout"
 						],
 						"prefix": "headerEyebrow",
 						"attrMap": {
-							"css:color": "headerEyebrowColour"
+							"css:color": "headerEyebrowColour",
+							"css:margin-bottom": "headerEyebrowMarginBottom"
 						}
 					},
 					"headerTitle": {
@@ -444,11 +446,13 @@
 						"label": "Back to sign in link",
 						"order": 44,
 						"clusters": [
-							"text"
+							"text",
+							"layout"
 						],
 						"prefix": "headerBack",
 						"attrMap": {
-							"css:color": "headerBackColour"
+							"css:color": "headerBackColour",
+							"css:border-width": "headerBackRuleWidth"
 						}
 					},
 					"headerRule": {
@@ -573,9 +577,13 @@
 						"label": "Lost password line",
 						"order": 102,
 						"clusters": [
-							"text"
+							"text",
+							"layout"
 						],
-						"prefix": "lostPasswordRow"
+						"prefix": "lostPasswordRow",
+						"attrMap": {
+							"css:padding": "loginLinkPadding"
+						}
 					},
 					"privacyText": {
 						"selector": ".woocommerce-privacy-policy-text",
@@ -883,11 +891,14 @@
 						"label": "Address card titles",
 						"order": 63,
 						"clusters": [
-							"text"
+							"text",
+							"layout"
 						],
 						"prefix": "addressTitle",
 						"attrMap": {
-							"css:color": "addressTitleColour"
+							"css:color": "addressTitleColour",
+							"css:margin": "addressTitleMargin",
+							"css:padding": "addressTitlePadding"
 						}
 					},
 					"addressHelper": {
@@ -896,11 +907,13 @@
 						"label": "Addresses helper line",
 						"order": 64,
 						"clusters": [
-							"text"
+							"text",
+							"layout"
 						],
 						"prefix": "addressHelper",
 						"attrMap": {
-							"css:color": "addressHelperColour"
+							"css:color": "addressHelperColour",
+							"css:margin-top": "addressHelperMarginTop"
 						}
 					},
 					"accountForm": {
@@ -913,7 +926,8 @@
 						],
 						"attrMap": {
 							"css:grid-template-columns": "accountFormColumns",
-							"css:gap": "accountFormGap"
+							"css:gap": "accountFormGap",
+							"css:max-width": "accountFormMaxWidth"
 						},
 						"layer": "OUTER"
 					},
@@ -1007,11 +1021,13 @@
 						"label": "Lost-password link",
 						"order": 71,
 						"clusters": [
-							"text"
+							"text",
+							"layout"
 						],
 						"prefix": "loginLink",
 						"attrMap": {
-							"css:color": "loginLinkColour"
+							"css:color": "loginLinkColour",
+							"css:border-width": "loginLinkRuleWidth"
 						},
 						"states": {
 							"hover": {
@@ -1085,8 +1101,116 @@
 						],
 						"absentWhy": "The tab content prints for a signed-in customer only.",
 						"_note": "The content of the open tab (orders, addresses, wishlist, account details) as one motion part: the target of a tab entrance."
+					},
+					"menuNavSidebar": {
+						"selector": ".sgs-account--desktop-sidebar nav.woocommerce-MyAccount-navigation",
+						"motion": false,
+						"label": "Account menu frame (sidebar)",
+						"order": 114,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:border-width": "menuSidebarBorderWidth"
+						},
+						"_note": "The menu frame beside the content from 1024px: its edge line (includes/account/helpers-account-cells-css.php)."
+					},
+					"menuNav": {
+						"selector": "nav.woocommerce-MyAccount-navigation",
+						"motion": false,
+						"label": "Account menu frame",
+						"order": 115,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:border-width": "menuTabRowBorderWidth",
+							"css:margin-bottom": "menuTabRowMarginBottom"
+						},
+						"_note": "The menu frame: the tab row edge line and the space below it."
+					},
+					"menuList": {
+						"selector": "nav.woocommerce-MyAccount-navigation ul",
+						"motion": false,
+						"label": "Account menu list",
+						"order": 116,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:gap": "menuListGap",
+							"css:padding": "menuListPadding"
+						},
+						"_note": "The menu list: space between items and its own padding."
+					},
+					"menuItem": {
+						"selector": "nav.woocommerce-MyAccount-navigation li.woocommerce-MyAccount-navigation-link > a",
+						"motion": false,
+						"label": "Account menu item box",
+						"order": 117,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:min-height": "menuItemMinHeight",
+							"css:padding": "menuItemPadding",
+							"css:border-radius": "menuItemRadius",
+							"css:gap": "menuItemGap"
+						},
+						"_note": "Every menu item box, current or not: height, padding, corners and the gap between label and count."
+					},
+					"headerBackLine": {
+						"selector": ".sgs-account__header-backline",
+						"motion": false,
+						"label": "Page header back line",
+						"order": 118,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin": "headerBackLineMargin"
+						},
+						"_note": "The line holding the back link above the title."
+					},
+					"ordersEmptyButton": {
+						"selector": ".sgs-account__orders-empty-actions .sgs-button",
+						"motion": false,
+						"label": "Empty orders button",
+						"order": 119,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:min-height": "ordersEmptyButtonMinHeight",
+							"css:padding": "ordersEmptyButtonPadding"
+						},
+						"_note": "The button in the empty orders card."
+					},
+					"addressTitleRow": {
+						"selector": ".woocommerce-Address-title",
+						"motion": false,
+						"label": "Address card title row",
+						"order": 120,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:gap": "addressTitleRowGap",
+							"css:margin-bottom": "addressTitleRowMarginBottom",
+							"css:padding": "addressTitleRowPadding"
+						},
+						"_note": "The row holding an address card title and its Edit link."
+					},
+					"accountFormRow": {
+						"selector": "form.woocommerce-EditAccountForm .form-row",
+						"motion": false,
+						"label": "Account details form row",
+						"order": 121,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin": "accountFormRowMargin",
+							"css:padding": "accountFormRowPadding"
+						},
+						"_note": "Each row of the account details form."
+					},
+					"signInRows": {
+						"selector": "#customer_login form.woocommerce-form-login > p.woocommerce-form-row",
+						"motion": false,
+						"label": "Sign-in form rows",
+						"order": 122,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin-bottom": "loginRowMarginBottom"
+						},
+						"_note": "The sign-in form rows, remember-me line and forgotten-password line: the space below each."
 					}
-			},
+				},
 				"spacingDefaults": {
 					"ordersEmptyPadding": {
 						"top": "var(--wp--preset--spacing--60)",
