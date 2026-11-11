@@ -85,7 +85,6 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
 			SvgContent: [ 'svg' ],
 			Thumbnail: [ 'video' ],
 			ThumbnailId: [ 'video' ],
-			LottieId: [ 'lottie' ],
 		}[ base ];
 		return wanted && ! kindIn( c, ...wanted ) ? omitted() : undefined;
 	} );

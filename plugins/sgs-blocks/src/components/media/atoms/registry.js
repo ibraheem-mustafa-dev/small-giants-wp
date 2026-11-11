@@ -29,7 +29,7 @@ import { FILTER_SETTINGS, LAYOUT_SETTINGS, SHAPE_SETTINGS, SIZING_SETTINGS } fro
  * Every atom, with the base set it owns.
  *
  * `bases` is load-bearing — it drives SELECTIVE INJECTION. A surface declaring
- * `atoms: [ 'source', 'media-type' ]` receives the union of those atoms' bases
+ * `atoms: [ 'source', 'meaning' ]` receives the union of those atoms' bases
  * and nothing else. Without it a single declared prefix injects all 59 bases
  * (109 keys with tiers), which is the dead-control class the framework gates.
  *
@@ -82,10 +82,7 @@ export const MEDIA_ATOMS = {
 		settings: settingsForBases( MEDIA_BASES.source ),
 		effects: [],
 		since: '1.0',
-		// 'lottie' added 2026-09-26 (U-17, design §3.1): a 4th picker slot,
-		// `LottieId` (MEDIA_BASES.source), restricted to `application/json`
-		// in the media library — see source.control.js's lottie branch.
-		types: [ 'image', 'video', 'svg', 'lottie' ],
+		types: [ 'image', 'video', 'svg' ],
 		scope: 'both',
 		attachesTo: 'box',
 		requires: {},
@@ -119,47 +116,13 @@ export const MEDIA_ATOMS = {
 		},
 	},
 
-	'media-type': {
-		id: 'media-type',
-		// Spec 49 §6.2: folded into `Source.kind`, read per device from the chosen file. The legacy bases stay until the cutover.
-		foldedInto: 'source',
-		bases: MEDIA_BASES.type,
-		settings: settingsForBases( MEDIA_BASES.type ),
-		effects: [],
-		since: '1.0',
-		// 'lottie' added 2026-09-26 (U-17, design §3.1) — the 4th media type.
-		types: [ 'image', 'video', 'svg', 'lottie' ],
-		scope: 'both',
-		attachesTo: 'element',
-		requires: {},
-		reads: {
-			// The tier enum carries a 4th member, '', as an inherit sentinel.
-			'sgs/hero': {
-				splitMediaTypeTablet: "'' = inherit from the tier above",
-				splitMediaTypeMobile: "'' = inherit from the tier above",
-			},
-			// ⛔ No attribute at all. The type is inferred at render from which
-			// of backgroundImage / bgVideo / bgSvgContent is non-empty, and
-			// video silently beats image with no editor warning. Adopting this
-			// atom is what gives the client the choice.
-			'sgs/container': {
-				'(none)': 'type inferred from which source attribute is non-empty',
-			},
-		},
-	},
-
 	'video-behaviour': {
 		id: 'video-behaviour',
 		bases: MEDIA_BASES.behaviour,
 		settings: settingsForBases( MEDIA_BASES.behaviour ),
 		effects: [],
 		since: '1.0',
-		// 'lottie' added 2026-09-26 (U-17, design §3.1): this atom already owns
-		// type-conditional playback controls, so `VideoLoop` is reused for a
-		// Lottie instance's loop toggle, and the two new bases `LottieTrigger`/
-		// `LottieSpeed` are shown ONLY for 'lottie' — see video-behaviour.js's
-		// disclosure() and video-behaviour.control.js's per-type branch.
-		types: [ 'video', 'lottie' ],
+		types: [ 'video' ],
 		scope: 'element',
 		attachesTo: 'element',
 		// ⛔ Enforced on BOTH sides, not just the client. A browser refuses to
@@ -186,7 +149,7 @@ export const MEDIA_ATOMS = {
 		settings: settingsForBases( MEDIA_BASES.meaning ),
 		effects: [],
 		since: '1.0',
-		types: [ 'image', 'video', 'svg', 'lottie' ],
+		types: [ 'image', 'video', 'svg' ],
 		scope: 'both',
 		attachesTo: 'element',
 		// Alt text is meaningless once the client marks the media decorative,
@@ -195,25 +158,6 @@ export const MEDIA_ATOMS = {
 			ImageAlt: [ '!ImageDecorative' ],
 		},
 		reads: {},
-	},
-
-	intrinsic: {
-		id: 'intrinsic',
-		// Spec 49 §6.2: folded into `Source.width` and `Source.height`. The legacy bases stay until the cutover.
-		foldedInto: 'source',
-		bases: MEDIA_BASES.intrinsic,
-		settings: settingsForBases( MEDIA_BASES.intrinsic ),
-		effects: [],
-		since: '1.0',
-		types: [ 'image' ],
-		scope: 'element',
-		attachesTo: 'element',
-		requires: {},
-		// ⛔ NO CONTROL. These are written from the chosen media so the renderer
-		// can emit width/height and avoid layout shift. A client never edits
-		// them, and exposing them would invite a value that contradicts the file.
-		reads: {},
-		clientEditable: false,
 	},
 
 	'svg-presentation': {

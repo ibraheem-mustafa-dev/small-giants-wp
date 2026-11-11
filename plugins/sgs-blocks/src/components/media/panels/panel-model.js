@@ -13,10 +13,8 @@ import { __ } from '@wordpress/i18n';
 
 import { MEDIA_ATOMS } from '../atoms/registry.js';
 import { disclosure as sourceDisclosure } from '../atoms/source.js';
-import { disclosure as mediaTypeDisclosure } from '../atoms/media-type.js';
 import { disclosure as videoBehaviourDisclosure } from '../atoms/video-behaviour.js';
 import { disclosure as meaningDisclosure } from '../atoms/meaning.js';
-import { disclosure as intrinsicDisclosure } from '../atoms/intrinsic.js';
 import { disclosure as svgPresentationDisclosure } from '../atoms/svg-presentation.js';
 import { disclosure as objectFitDisclosure } from '../atoms/object-fit.js';
 import { disclosure as focalPointDisclosure } from '../atoms/focal-point.js';
@@ -37,10 +35,8 @@ import { adoptedDisclosure } from './adopted-disclosure.js';
 /** Atom id to its disclosure function. */
 export const ATOM_DISCLOSURE = {
 	source: sourceDisclosure,
-	'media-type': mediaTypeDisclosure,
 	'video-behaviour': videoBehaviourDisclosure,
 	meaning: meaningDisclosure,
-	intrinsic: intrinsicDisclosure,
 	'svg-presentation': svgPresentationDisclosure,
 	'object-fit': objectFitDisclosure,
 	'focal-point': focalPointDisclosure,

@@ -360,7 +360,7 @@ final class MediaAtomEmittersTest extends TestCase {
 
 	public function test_atoms_that_print_no_css_return_an_empty_string(): void {
 		$attrs = self::attrs( array( 'Height' => '300px', 'Alt' => 'x', 'Caption' => 'y' ) ); // phpcs:ignore
-		foreach ( array( 'source', 'meaning', 'caption', 'link', 'video_behaviour', 'media_type', 'intrinsic', 'box_shape' ) as $id ) {
+		foreach ( array( 'source', 'meaning', 'caption', 'link', 'video_behaviour', 'box_shape' ) as $id ) {
 			$this->assertSame( '', ( 'sgs_media_atom_' . $id . '_emit' )( self::SLOT, $attrs, 'u', true ), $id );
 		}
 	}

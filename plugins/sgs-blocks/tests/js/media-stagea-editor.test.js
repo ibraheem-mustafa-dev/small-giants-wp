@@ -62,7 +62,7 @@ const { mediaAttrName } = require( '../../src/components/MediaElementControls' )
 const { describeSizing, normaliseRatio, ratioOptions, resolveSizing } = require( '../../src/components/media/sizing-model' );
 
 const slot = fixture.supports.sgs.mediaElements[ 0 ];
-const ATOMS = [ ...ADOPTED_ATOM_IDS, 'box-shape', 'media-type', 'intrinsic' ];
+const ATOMS = [ ...ADOPTED_ATOM_IDS, 'box-shape' ];
 const key = ( base ) => mediaAttrName( slot.prefix, base );
 const SOURCE = { desktop: { kind: 'image', url: 'https://example.test/a.jpg', alt: 'A bowl', width: 800, height: 600 } };
 

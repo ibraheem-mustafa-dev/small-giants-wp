@@ -237,7 +237,7 @@ function resolveKind( get, kinds, adopted = false ) {
 		return source && 'object' === typeof source && source.kind ? source.kind : kinds[ 0 ] || 'image';
 	}
 	const type = get( 'MediaType' );
-	const base = [ 'image', 'video', 'svg', 'lottie', 'embed' ].includes( type ) ? type : 'image';
+	const base = [ 'image', 'video', 'svg', 'embed' ].includes( type ) ? type : 'image';
 	if ( 'video' === base && EMBED_SOURCES.test( String( get( 'VideoSource' ) || '' ) ) ) {
 		return 'embed';
 	}

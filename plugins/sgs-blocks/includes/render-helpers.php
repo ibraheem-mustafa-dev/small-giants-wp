@@ -217,11 +217,9 @@ require_once __DIR__ . '/helpers-icon-shadow.php';
 require_once __DIR__ . '/helpers-end-shape.php';
 require_once __DIR__ . '/helpers-flex-wrap.php';
 require_once __DIR__ . '/helpers-inline-formats.php';
-require_once __DIR__ . '/media/atoms/media-type.php';
 require_once __DIR__ . '/media/atoms/video-behaviour.php';
 require_once __DIR__ . '/class-sgs-media-element.php';
 require_once __DIR__ . '/media/atoms/source.php';
-require_once __DIR__ . '/media/atoms/intrinsic.php';
 require_once __DIR__ . '/media/atoms/meaning.php';
 // ⛔ EVERY atom twin is required here, not just the ones a block happened to
 // need. `sgs_media_element_style()` dispatches by naming convention and SKIPS a

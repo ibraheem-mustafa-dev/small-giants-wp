@@ -300,21 +300,6 @@ function wp_json_encode_stub( array $data ): string {
 }
 
 // ---------------------------------------------------------------------------
-// F — sgs_media_atom_source_resolve_type() (U-17, design §3.1) now accepts
-// 'lottie' in its vocabulary, and still rejects everything outside the
-// 4-member enum to the 'image' default (negative control: a 5th bogus type).
-// ---------------------------------------------------------------------------
-
-ok(
-	'lottie' === sgs_media_atom_source_resolve_type( array( 'mediaType' => 'lottie' ), '', 'sgs/media' ),
-	'source atom: mediaType "lottie" resolves to "lottie" (not rejected)'
-);
-ok(
-	'image' === sgs_media_atom_source_resolve_type( array( 'mediaType' => 'gif-sprite' ), '', 'sgs/media' ),
-	'source atom: an out-of-vocabulary mediaType still REJECTS to "image" (negative control — the vocab widening did not open the gate)'
-);
-
-// ---------------------------------------------------------------------------
 // D — NEGATIVE CONTROL: the AM LottiePlayer defect, reproduced and shown red.
 // ---------------------------------------------------------------------------
 //

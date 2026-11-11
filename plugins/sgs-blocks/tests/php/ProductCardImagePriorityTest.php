@@ -128,20 +128,20 @@ final class ProductCardImagePriorityTest extends TestCase {
 		require_once dirname( __DIR__, 2 ) . '/includes/media/class-sgs-media-priority.php';
 		SGS_Media_Priority::reset();
 		$above = array( 'rest' => false, 'armed' => true, 'fold' => true );
-		$first = SGS_Media_Priority::resolve( array( 'role' => 'card' ), $above );
-		$next  = SGS_Media_Priority::resolve( array( 'role' => 'card' ), $above );
+		$first = SGS_Media_Priority::resolve( array( 'role' => 'card', 'width' => 800, 'height' => 800 ), $above );
+		$next  = SGS_Media_Priority::resolve( array( 'role' => 'card', 'width' => 800, 'height' => 800 ), $above );
 		$this->assertSame( array( 'eager', 'high' ), array( $first['loading'], $first['fetchpriority'] ), 'the first card claims the slot' );
 		$this->assertSame( array( 'eager', 'auto' ), array( $next['loading'], $next['fetchpriority'] ), 'the next card loads eagerly but takes no priority' );
 
-		$below = SGS_Media_Priority::resolve( array( 'role' => 'card' ), array( 'rest' => false, 'armed' => true, 'fold' => false ) );
+		$below = SGS_Media_Priority::resolve( array( 'role' => 'card', 'width' => 800, 'height' => 800 ), array( 'rest' => false, 'armed' => true, 'fold' => false ) );
 		$this->assertSame( array( 'lazy', 'auto' ), array( $below['loading'], $below['fetchpriority'] ), 'a card below the fold claims nothing' );
 
-		$editor = SGS_Media_Priority::resolve( array( 'role' => 'card' ), array( 'rest' => true, 'armed' => true, 'fold' => true ) );
+		$editor = SGS_Media_Priority::resolve( array( 'role' => 'card', 'width' => 800, 'height' => 800 ), array( 'rest' => true, 'armed' => true, 'fold' => true ) );
 		$this->assertSame( 'lazy', $editor['loading'], 'the editor block-renderer request claims nothing' );
 
 		SGS_Media_Priority::reset();
-		$hidden = SGS_Media_Priority::resolve( array( 'role' => 'card', 'hidden' => true ), $above );
-		$lead   = SGS_Media_Priority::resolve( array( 'role' => 'card' ), $above );
+		$hidden = SGS_Media_Priority::resolve( array( 'role' => 'card', 'hidden' => true, 'width' => 800, 'height' => 800 ), $above );
+		$lead   = SGS_Media_Priority::resolve( array( 'role' => 'card', 'width' => 800, 'height' => 800 ), $above );
 		$this->assertSame( 'lazy', $hidden['loading'], 'a hidden surface claims nothing' );
 		$this->assertSame( 'high', $lead['fetchpriority'], 'a hidden image left the slot free' );
 	}

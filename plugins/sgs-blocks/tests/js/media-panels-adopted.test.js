@@ -65,7 +65,7 @@ const { ADOPTED_ATOM_IDS } = require( '../../src/components/media/emit/adopted-s
 const { mediaAttrName } = require( '../../src/components/MediaElementControls' );
 
 const slot = fixture.supports.sgs.mediaElements[ 0 ];
-const ATOMS = [ ...ADOPTED_ATOM_IDS, 'box-shape', 'media-type', 'intrinsic' ];
+const ATOMS = [ ...ADOPTED_ATOM_IDS, 'box-shape' ];
 const DEVICES = [ 'Desktop', 'Tablet', 'Mobile' ];
 const key = ( base ) => mediaAttrName( slot.prefix, base );
 

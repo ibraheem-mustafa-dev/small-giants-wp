@@ -3,10 +3,8 @@
  * kind and device, with the mask-shape and background omissions.
  */
 import { disclosure as source } from '../../src/components/media/atoms/source.js';
-import { disclosure as mediaType } from '../../src/components/media/atoms/media-type.js';
 import { disclosure as videoBehaviour } from '../../src/components/media/atoms/video-behaviour.js';
 import { disclosure as meaning } from '../../src/components/media/atoms/meaning.js';
-import { disclosure as intrinsic } from '../../src/components/media/atoms/intrinsic.js';
 import { disclosure as svgPresentation } from '../../src/components/media/atoms/svg-presentation.js';
 import { disclosure as objectFit } from '../../src/components/media/atoms/object-fit.js';
 import { disclosure as focalPoint } from '../../src/components/media/atoms/focal-point.js';
@@ -24,7 +22,6 @@ const all = ( map ) => Object.values( map ).map( ( s ) => s.state );
 describe( 'disclosure: earlier object call is unchanged', () => {
 	it( 'still returns the single state for an atom called with an object', () => {
 		expect( objectFit( { attributes: {} } ) ).toEqual( { state: 'shown', hiddenReason: null } );
-		expect( intrinsic().state ).toBe( 'omitted' );
 		expect( overlay( { attributes: {} } ).state ).toBe( 'disabled' );
 		expect( videoBehaviour( { attributes: { videoAutoplay: true } } ).VideoMuted.state ).toBe( 'disabled' );
 	} );
@@ -43,11 +40,6 @@ describe( 'source and media-type, per kind', () => {
 		[ 'svg', 'ImageUrl', 'omitted' ],
 	] )( 'a %s slot: %s is %s', ( kind, base, expected ) => {
 		expect( state( source( {}, 'desktop', '', only( kind ) ), base ) ).toBe( expected );
-	} );
-
-	it( 'hides the kind choice when the slot allows one kind, shows it for two', () => {
-		expect( state( mediaType( {}, 'desktop', '', only( 'image' ) ), 'MediaType' ) ).toBe( 'omitted' );
-		expect( state( mediaType( {}, 'desktop', '', { kinds: [ 'image', 'video' ] } ), 'MediaType' ) ).toBe( 'shown' );
 	} );
 
 	it( 'reads the kind per device: a video on mobile, a photo on desktop', () => {
@@ -84,9 +76,6 @@ describe( 'meaning', () => {
 		const attrs = { linkUrl: 'https://example.test' };
 		expect( state( meaning( attrs, 'desktop', '', { kinds: [ 'image' ] } ), 'ImageDecorative' ) ).toBe( 'omitted' );
 		expect( state( meaning( attrs, 'desktop', '', { kinds: [ 'image' ], context: 'background' } ), 'ImageDecorative' ) ).toBe( 'shown' );
-	} );
-	it( 'never shows the intrinsic pair', () => {
-		expect( all( intrinsic( {}, 'desktop', '', {} ) ) ).toEqual( [ 'omitted', 'omitted' ] );
 	} );
 } );
 
@@ -249,7 +238,7 @@ describe( 'caption and link', () => {
 
 describe( 'closed vocabulary', () => {
 	it( 'every state is shown, disabled or omitted, with a reason whenever disabled', () => {
-		const fns = [ source, mediaType, videoBehaviour, meaning, intrinsic, svgPresentation, objectFit, focalPoint, boxShape, overlay, opacity, shadow, mediaPadding, caption, link ];
+		const fns = [ source, videoBehaviour, meaning, svgPresentation, objectFit, focalPoint, boxShape, overlay, opacity, shadow, mediaPadding, caption, link ];
 		[ 'image', 'video', 'embed', 'svg' ].forEach( ( kind ) => {
 			[ 'desktop', 'tablet', 'mobile' ].forEach( ( device ) => {
 				fns.forEach( ( fn ) => {

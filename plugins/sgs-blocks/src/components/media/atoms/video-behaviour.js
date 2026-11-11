@@ -83,15 +83,6 @@ export function validate( value, base = 'VideoAutoplay' ) {
 	if ( 'VideoCaptionsId' === base ) {
 		return Number.isInteger( value ) && value > 0 ? value : null;
 	}
-	// The two Lottie-only bases.
-	if ( 'LottieTrigger' === base ) {
-		const allowed = [ 'load', 'visible', 'hover', 'scroll' ];
-		return allowed.includes( value ) ? value : 'visible';
-	}
-	if ( 'LottieSpeed' === base ) {
-		const num = Number( value );
-		return Number.isFinite( num ) && num >= 0.25 && num <= 3 ? num : 1;
-	}
 	// VideoCaptionsUrl / VideoCaptionsLabel / VideoCaptionsSrcLang.
 	return 'string' === typeof value ? value : '';
 }
@@ -175,9 +166,6 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
 		}
 		const embedOnly = [ 'VideoAutoplay', 'VideoMuted', 'VideoLoop', 'VideoControls' ];
 		if ( 'embed' === c.kind && ! embedOnly.includes( base ) ) {
-			return omitted();
-		}
-		if ( base.startsWith( 'Lottie' ) ) {
 			return omitted();
 		}
 		if ( [ 'VideoMuted', 'VideoPlaysInline' ].includes( base ) && c.get( 'VideoAutoplay' ) ) {

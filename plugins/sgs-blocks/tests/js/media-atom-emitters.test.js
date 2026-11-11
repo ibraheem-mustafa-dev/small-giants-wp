@@ -262,7 +262,7 @@ describe( 'FR-49-12 value helpers', () => {
 
 describe( 'registry', () => {
 	it( 'keeps the new atoms out of the legacy table, so no existing block gains a control or attribute', () => {
-		expect( MEDIA_ATOM_IDS ).toHaveLength( 15 );
+		expect( MEDIA_ATOM_IDS ).toHaveLength( 13 );
 		KINDS_ATOM_IDS.forEach( ( id ) => {
 			expect( MEDIA_ATOMS[ id ] ).toBeUndefined();
 			expect( ALL_MEDIA_ATOMS[ id ].bases ).toEqual( [] );
@@ -270,9 +270,7 @@ describe( 'registry', () => {
 		expect( KINDS_ATOM_IDS ).toEqual( [ 'sizing', 'shape', 'filter', 'layout' ] );
 	} );
 
-	it( 'folds media-type and intrinsic into source and splits box-shape', () => {
-		expect( MEDIA_ATOMS[ 'media-type' ].foldedInto ).toBe( 'source' );
-		expect( MEDIA_ATOMS.intrinsic.foldedInto ).toBe( 'source' );
+	it( 'splits box-shape', () => {
 		expect( MEDIA_ATOMS[ 'box-shape' ].splitInto ).toEqual( [ 'sizing', 'shape' ] );
 	} );
 

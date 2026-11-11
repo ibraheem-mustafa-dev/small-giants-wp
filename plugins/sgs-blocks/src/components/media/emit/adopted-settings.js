@@ -4,7 +4,7 @@
  * reads; `kinds-settings.js` holds the four new atoms' rows. This file holds the §8 rows of the older atoms as §6.2
  * extends them, and `ADOPTED_SETTINGS` joins all three by atom id.
  *
- * Folded atoms (`media-type`, `intrinsic`) and `box-shape` (split into `sizing` and `shape`) have no adopted row.
+ * `box-shape` (split into `sizing` and `shape`) has no adopted row.
  * Nothing an existing block reads changes: nothing reads these until a slot declares `kinds`.
  *
  * Every entry carries `adopted: true`. A responsive entry is stored as one `{desktop,tablet,mobile}` object under its
@@ -181,8 +181,6 @@ export const ADOPTED_SETTINGS = {
 
 /** Older atoms an adopted slot may name that carry no row of their own, and the atoms each becomes. */
 export const ADOPTED_FOLDED = {
-	'media-type': [],
-	intrinsic: [],
 	'box-shape': [ 'sizing', 'shape' ],
 };
 

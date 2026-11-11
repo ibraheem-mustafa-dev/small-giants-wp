@@ -80,14 +80,7 @@ export const MEDIA_BASES = {
 		'SvgContent',
 		'Thumbnail',
 		'ThumbnailId',
-		// Added 2026-09-26 (U-17, design §3.1) — the Lottie media type's own
-		// slot. Integer attachment ID ONLY, no `LottieUrl` sibling: the URL is
-		// resolved at render from the ID (`wp_get_attachment_url()`), same
-		// pattern `VideoId` uses when `VideoSource` is 'internal'.
-		'LottieId',
 	],
-	// Which of the three types is showing.
-	type: [ 'MediaType', 'VideoSource', 'VideoMimeType' ],
 	// Meaning / accessibility. Per-instance by design: the same logo is
 	// meaningful in a header and decorative in a footer strip.
 	meaning: [ 'ImageAlt', 'VideoAlt', 'ImageDecorative' ],
@@ -105,11 +98,6 @@ export const MEDIA_BASES = {
 		'VideoCaptionsUrl',
 		'VideoCaptionsLabel',
 		'VideoCaptionsSrcLang',
-		// Added 2026-09-26 (U-17, design §3.1) — shown ONLY for the 'lottie'
-		// media type (video-behaviour.control.js's per-type branch).
-		// `VideoLoop` above is REUSED for Lottie's own loop toggle.
-		'LottieTrigger',
-		'LottieSpeed',
 	],
 	// SVG presentation.
 	svg: [
@@ -120,8 +108,6 @@ export const MEDIA_BASES = {
 		'SvgMinHeight',
 		'SvgTextShadow',
 	],
-	// Intrinsic dimensions, written from the chosen media rather than edited.
-	intrinsic: [ 'ImageWidth', 'ImageHeight' ],
 
 	// ── PRESENTATION (atoms 7-10). Added from the census's presentation half.
 	//
@@ -215,7 +201,7 @@ export const MEDIA_BASES = {
  */
 export const MEDIA_TIERED_BASES = [
 	...[ 'ImageId', 'ImageUrl', 'VideoId', 'VideoUrl',
-		'SvgContent', 'Thumbnail', 'ThumbnailId', 'LottieId' ],
+		'SvgContent', 'Thumbnail', 'ThumbnailId' ],
 	...[ 'VideoAutoplay', 'VideoLoop', 'VideoMuted', 'VideoControls',
 		'VideoPlaysInline', 'VideoLazyLoad', 'VideoCaptionsId', 'VideoCaptionsUrl',
 		'VideoCaptionsLabel', 'VideoCaptionsSrcLang' ],
@@ -259,19 +245,12 @@ export const MEDIA_ATTR_TYPES = {
 	VideoId: 'integer',
 	ThumbnailId: 'integer',
 	VideoCaptionsId: 'integer',
-	// Added 2026-09-26 (U-17, design §3.1).
-	LottieId: 'integer',
-	LottieTrigger: 'string',
-	LottieSpeed: 'number',
 	// Strings.
 	ImageUrl: 'string',
 	VideoUrl: 'string',
 	ImageAlt: 'string',
 	VideoAlt: 'string',
 	SvgContent: 'string',
-	MediaType: 'string',
-	VideoSource: 'string',
-	VideoMimeType: 'string',
 	VideoCaptionsUrl: 'string',
 	VideoCaptionsLabel: 'string',
 	VideoCaptionsSrcLang: 'string',
@@ -290,8 +269,6 @@ export const MEDIA_ATTR_TYPES = {
 	VideoLazyLoad: 'boolean',
 	// Numbers.
 	SvgOpacity: 'number',
-	ImageWidth: 'number',
-	ImageHeight: 'number',
 
 	// ── PRESENTATION.
 	//
