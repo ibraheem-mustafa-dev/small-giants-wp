@@ -237,7 +237,7 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 				prefix="preview"
 				blockSlug="sgs/buybox"
 				blockName="sgs/buybox"
-				context="item"
+				context="content"
 				atoms={ PREVIEW_ATOMS }
 			/>
 			<PanelBody title={ __( 'Preview box', 'sgs-blocks' ) } initialOpen={ false }>

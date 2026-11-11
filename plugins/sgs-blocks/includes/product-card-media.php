@@ -20,7 +20,8 @@ require_once __DIR__ . '/media/render-chrome.php';
 
 if ( ! function_exists( 'sgs_pcm_slot' ) ) {
 	/**
-	 * A slot of the product card or buybox: images only, item context.
+	 * A slot of the product card or buybox: images only. `image`, `logo` and `preview` hold one picture per block
+	 * (content context); `main` and `thumb` are item slots whose pictures come from the product.
 	 *
 	 * @param string $prefix Slot prefix (`image`, `thumb`, `logo`, `main`, `preview`).
 	 * @return array{prefix:string,kinds:string[],context:string}
@@ -29,7 +30,7 @@ if ( ! function_exists( 'sgs_pcm_slot' ) ) {
 		return array(
 			'prefix'  => $prefix,
 			'kinds'   => array( 'image' ),
-			'context' => 'item',
+			'context' => in_array( $prefix, array( 'image', 'logo', 'preview' ), true ) ? 'content' : 'item',
 		);
 	}
 }

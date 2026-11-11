@@ -271,7 +271,7 @@
 							"kinds": [
 								"image"
 							],
-							"context": "item",
+							"context": "content",
 							"from": "main",
 							"atoms": [
 								"source",
@@ -299,7 +299,7 @@
 							"kinds": [
 								"image"
 							],
-							"context": "item",
+							"context": "content",
 							"add": true,
 							"atoms": [
 								"source",
@@ -345,7 +345,7 @@
 							"kinds": [
 								"image"
 							],
-							"context": "item",
+							"context": "content",
 							"add": true,
 							"atoms": [
 								"source",

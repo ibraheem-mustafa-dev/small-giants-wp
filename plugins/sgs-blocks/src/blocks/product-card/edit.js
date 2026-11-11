@@ -588,7 +588,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix="image"
-								slot={ { prefix: 'image', kinds: [ 'image' ], context: 'item' } }
+								slot={ { prefix: 'image', kinds: [ 'image' ], context: 'content' } }
 								label={ __( "Choose another image", "sgs-blocks" ) }
 							/>
 						</>
@@ -3280,7 +3280,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						prefix="image"
 						blockSlug="sgs/product-card"
 						blockName="sgs/product-card"
-						context="item"
+						context="content"
 						atoms={ IMAGE_ATOMS }
 					/>
 					<MediaElementPanel
@@ -3299,7 +3299,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							prefix="logo"
 							blockSlug="sgs/product-card"
 							blockName="sgs/product-card"
-							context="item"
+							context="content"
 							atoms={ LOGO_ATOMS }
 						/>
 					) }

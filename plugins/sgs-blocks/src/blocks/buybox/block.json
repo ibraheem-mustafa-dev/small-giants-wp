@@ -76,7 +76,7 @@
 				},
 				{
 					"prefix": "preview",
-					"context": "item",
+					"context": "content",
 					"kinds": [
 						"image"
 					],
@@ -3857,15 +3857,8 @@
 			],
 			"default": ""
 		},
-		"mainSource": {"type":"object","_generated":"media-atoms"},
 		"mainLoading": {"type":"string","_generated":"media-atoms"},
-		"mainAlt": {"type":"string","_generated":"media-atoms"},
-		"mainDecorative": {"type":"boolean","_generated":"media-atoms"},
 		"mainFit": {"type":"object","_generated":"media-atoms"},
-		"mainRepeat": {"type":"object","_generated":"media-atoms"},
-		"mainTileSize": {"type":"object","_generated":"media-atoms"},
-		"mainFocal": {"type":"object","_generated":"media-atoms"},
-		"mainPinned": {"type":"boolean","_generated":"media-atoms"},
 		"mainRatio": {"type":"object","_generated":"media-atoms"},
 		"mainWidth": {"type":"object","_generated":"media-atoms"},
 		"mainHeight": {"type":"object","_generated":"media-atoms"},
@@ -3885,8 +3878,6 @@
 		"mainPadding": {"type":"object","_generated":"media-atoms"},
 		"mainBackground": {"type":"string","_generated":"media-atoms"},
 		"thumbFit": {"type":"object","_generated":"media-atoms"},
-		"thumbRepeat": {"type":"object","_generated":"media-atoms"},
-		"thumbTileSize": {"type":"object","_generated":"media-atoms"},
 		"thumbShape": {"type":"object","_generated":"media-atoms"},
 		"thumbRadius": {"type":"object","_generated":"media-atoms"},
 		"thumbBorderWidth": {"type":"object","_generated":"media-atoms"},
@@ -3896,8 +3887,6 @@
 		"previewSource": {"type":"object","_generated":"media-atoms"},
 		"previewLoading": {"type":"string","_generated":"media-atoms"},
 		"previewFit": {"type":"object","_generated":"media-atoms"},
-		"previewRepeat": {"type":"object","_generated":"media-atoms"},
-		"previewTileSize": {"type":"object","_generated":"media-atoms"},
 		"previewShape": {"type":"object","_generated":"media-atoms"},
 		"previewRadius": {"type":"object","_generated":"media-atoms"},
 		"previewBorderWidth": {"type":"object","_generated":"media-atoms"},
