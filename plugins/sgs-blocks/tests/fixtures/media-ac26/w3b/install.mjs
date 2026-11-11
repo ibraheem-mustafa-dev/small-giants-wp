@@ -6,13 +6,14 @@
  * Idempotent: it creates the page `ac26-w3b` on a local mirror, or rewrites it in place. Run it after the mirror holds
  * the build under test (`scripts/local-wp/sync-build.sh <site>`).
  *
- *   node plugins/sgs-blocks/tests/fixtures/media-ac26/w3b/install.mjs --site local-mediatest-pkg-w3b [--variable ID] [--simple ID]
+ *   node plugins/sgs-blocks/tests/fixtures/media-ac26/w3b/install.mjs --site local-mediatest-pkg-w3b [--variable ID] [--simple ID] [--pickset ID]
  *
  * The page holds, each in its own wrapper class so the check finds it:
  *   ac26-typed    a typed product card: photo with Ratio 4:3 (1:1 on mobile), Fit contain, 12px corners
  *   ac26-simple   a card bound to a simple product with Height 180px
  *   ac26-default  a card bound to a simple product with no photo settings (the 220px box)
  *   ac26-buybox   a buybox on the variable product: main photo corners, border and shadow, thumbnail corners and Fit
+ *   ac26-pick     a Pick a set buybox (the slug `zookies` when the mirror has it, else the variable product): the preview picture's Fit, corners and border
  *
  * Needs WooCommerce and one image in the media library (it uses the first). The mirror is reached through WSL's WP-CLI.
  *
@@ -27,7 +28,7 @@ const option = ( name, fallback = null ) => {
 };
 const site = option( 'site' );
 if ( ! site || ! /^local-mediatest[a-z0-9-]*$|^local-[a-z0-9-]+$/.test( site ) ) {
-	console.error( 'Usage: install.mjs --site local-<name> [--variable ID] [--simple ID]' );
+	console.error( 'Usage: install.mjs --site local-<name> [--variable ID] [--simple ID] [--pickset ID]' );
 	process.exit( 2 );
 }
 const SLUG = 'ac26-w3b';
@@ -50,6 +51,11 @@ if ( ! Number( variable ) || ! Number( simple ) ) {
 	console.error( `The mirror needs a published variable and a published simple product (found variable=${ variable }, simple=${ simple }).` );
 	process.exit( 2 );
 }
+const pickset = Number(
+	option( 'pickset' ) ||
+		wp( 'eval', `$p = get_page_by_path( 'zookies', OBJECT, 'product' ); echo $p ? $p->ID : 0;` ) ||
+		0
+) || Number( variable );
 const imageId = Number( wp( 'post', 'list', '--post_type=attachment', '--post_mime_type=image', '--posts_per_page=1', '--orderby=ID', '--order=ASC', '--field=ID' ).split( /\s+/ )[ 0 ] );
 const imageUrl = wp( 'post', 'get', String( imageId ), '--field=guid' );
 const imageMeta = JSON.parse(
@@ -100,6 +106,16 @@ const content = [
 		thumbFit: { desktop: 'contain' },
 		thumbBorderWidth: sides( '2px' ),
 		thumbBorderColour: '#445566',
+	} ),
+	block( 'buybox', {
+		className: 'ac26-pick',
+		buyboxLayout: 'configurator',
+		buyboxProductId: pickset,
+		previewSource: { desktop: { kind: 'image', id: imageId, url: imageUrl, width: imageMeta.width || 0, height: imageMeta.height || 0 } },
+		previewFit: { desktop: 'contain' },
+		previewRadius: { desktop: corners( '16px' ) },
+		previewBorderWidth: sides( '4px' ),
+		previewBorderColour: '#223344',
 	} ),
 ].join( '\n\n' );
 

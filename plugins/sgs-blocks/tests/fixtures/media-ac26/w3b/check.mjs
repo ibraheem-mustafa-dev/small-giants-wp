@@ -42,6 +42,9 @@ const CASES = [
 	[ 'buybox photo fit', '.ac26-buybox .sgs-buybox__main-photo', 'object-fit', px( 'contain' ) ],
 	[ 'buybox thumbnail corners', '.ac26-buybox .product-card__thumb', 'border-top-left-radius', px( '10px' ) ],
 	[ 'buybox thumbnail fit', '.ac26-buybox .product-card__thumb img', 'object-fit', px( 'contain' ) ],
+	[ 'preview picture fit', '.ac26-pick .sgs-buybox-pick__preview-image', 'object-fit', px( 'contain' ) ],
+	[ 'preview box corners', '.ac26-pick .sgs-buybox__pick-preview', 'border-top-left-radius', px( '16px' ) ],
+	[ 'preview box border', '.ac26-pick .sgs-buybox__pick-preview', 'border-top-width', px( '4px' ) ],
 ];
 
 const failures = [];
@@ -75,7 +78,7 @@ try {
 		if ( /<b>(Notice|Warning|Fatal error|Deprecated)<\/b>:|(Notice|Warning|Fatal error): /.test( html ) ) {
 			failures.push( `${ width }: a PHP notice is printed on the page` );
 		}
-		const inline = await page.evaluate( () => [ ...document.querySelectorAll( '.ac26-typed img, .ac26-simple img, .ac26-default img, .ac26-buybox img' ) ].filter( ( img ) => img.hasAttribute( 'style' ) ).length );
+		const inline = await page.evaluate( () => [ ...document.querySelectorAll( '.ac26-typed img, .ac26-simple img, .ac26-default img, .ac26-buybox img, .ac26-pick img' ) ].filter( ( img ) => img.hasAttribute( 'style' ) ).length );
 		if ( inline ) {
 			failures.push( `${ width }: ${ inline } photo(s) carry an inline style attribute` );
 		}
