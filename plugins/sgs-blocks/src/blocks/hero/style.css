@@ -213,11 +213,16 @@ section.sgs-hero {
 	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
-/* Sub-headline */
-.sgs-hero__subheadline {
+/* Sub-headline: the sgs/text child the content template gives this class. Its type defaults have zero
+   specificity so the child's own typography settings always win; the margin keeps class weight so the
+   layout gap rules do not replace it. */
+:where(.sgs-hero__subheadline) {
 	font-size: clamp(1.125rem, 2.5vw, var(--wp--preset--font-size--large));
 	font-weight: 500;
 	line-height: 1.5;
+}
+
+.sgs-hero__subheadline {
 	margin: 0 0 var(--wp--preset--spacing--40) 0;
 }
 
