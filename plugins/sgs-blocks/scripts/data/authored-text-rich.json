@@ -47,7 +47,7 @@
   },
   "controlFiles": {
     "sgs/media:caption": [
-      "src/components/media/atoms/caption.control.js"
+      "src/components/media/MediaSlotCaptions.js"
     ]
   },
   "unconvertible": {

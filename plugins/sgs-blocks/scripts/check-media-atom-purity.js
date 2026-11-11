@@ -535,24 +535,19 @@ function run() {
 
 	let bad = fallbackProblems.length;
 
-	// The CONSUMER half of the vocabulary — see controlStateProblems().
-	const controls = controlModules();
-	if ( ! controls.length ) {
-		process.stderr.write(
-			'[media-atom-purity] REFUSING to pass: no .control.js modules found. ' +
-				'A gate with nothing to check is not a pass.\n'
-		);
-		return 1;
-	}
-	controls.forEach( ( f ) => {
+	// The CONSUMER half of the vocabulary: any `.control.js` module that appears is checked too. The panels read each
+	// atom's `disclosure()` directly, so none is expected.
+	controlModules().forEach( ( f ) => {
 		const problems = controlStateProblems(
 			f,
 			fs.readFileSync( path.join( ATOM_DIR, f ), 'utf8' )
 		);
 		if ( problems.length ) {
 			bad++;
-			process.stderr.write( `  ⛔ ${ f }\n` );
-			problems.forEach( ( p ) => process.stderr.write( `       ${ p }\n` ) );
+			process.stderr.write( `  ⛔ ${ f }
+` );
+			problems.forEach( ( p ) => process.stderr.write( `       ${ p }
+` ) );
 		}
 	} );
 

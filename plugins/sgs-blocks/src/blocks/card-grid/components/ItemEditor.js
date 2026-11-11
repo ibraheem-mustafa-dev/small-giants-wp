@@ -9,7 +9,7 @@ import {
 } from '@wordpress/components';
 import { LinkPopoverField, IconPicker } from '../../../components';
 import { LINK_SOURCES_ALL } from '../../../shared/link-source-options';
-import MediaPicker from '../../../components/MediaPicker';
+import ItemImageField from '../../../components/media/ItemImageField.js';
 import MediaSlotField from '../../../components/media/MediaSlotField.js';
 import FitField from '../../../components/media/FitField.js';
 import FocalField from '../../../components/media/FocalField.js';
@@ -76,12 +76,10 @@ export default function ItemEditor( { item, index, onChange, onRemove } ) {
 				) }
 			</p>
 			{ /* Uploaded IMAGE glyph (wave B round 2) — an alternative to the
-			   Lucide icon above, in the SAME slot. Reuses the same
-			   MediaPicker component as the card media picker above (never a
-			   second media-picking mechanism), restricted to images since a
-			   glyph is never a video. Wins over the Lucide glyph when set. */ }
+			   Lucide icon above, in the SAME slot. Picked through ItemImageField,
+			   which is restricted to images since a glyph is never a video. Wins over the Lucide glyph when set. */ }
 			<div style={ { marginBottom: '8px' } }>
-				<MediaPicker
+				<ItemImageField
 					value={ item.glyphImage || null }
 					onChange={ ( media ) =>
 						onChange( {
@@ -92,9 +90,8 @@ export default function ItemEditor( { item, index, onChange, onRemove } ) {
 						} )
 					}
 					onRemove={ () => onChange( { ...item, glyphImage: null } ) }
-					allowedTypes={ [ 'image' ] }
 					label={ __( 'Select an image glyph (optional)', 'sgs-blocks' ) }
-					instructionsImage={ __(
+					instructions={ __(
 						'Choose an image (a logo mark, a shape outline, a badge) instead of the Lucide icon above',
 						'sgs-blocks'
 					) }

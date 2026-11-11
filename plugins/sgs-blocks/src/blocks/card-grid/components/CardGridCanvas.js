@@ -8,10 +8,10 @@ import { useSettings } from '@wordpress/block-editor';
 import { IconPreview } from '../../../components';
 import {
 	colourVar,
-	focalPointToObjectPosition,
 	BandWrap,
 	usePreviewTier,
 } from '../../../utils';
+import { focalToObjectPosition } from '../../../components/media/focalPosition.js';
 import { glyphSizePx } from '../../../utils/font-size-preset';
 import { tierValueOf } from '../../../utils/responsive.js';
 import { itemFile } from '../item-model';
@@ -171,7 +171,7 @@ export default function CardGridCanvas( {
 								objectFit: itemFit,
 								objectPosition:
 									'cover' === itemFit
-										? focalPointToObjectPosition( itemFocal || { x: 0.5, y: 0.5 } )
+										? focalToObjectPosition( itemFocal || { x: 0.5, y: 0.5 } )
 										: undefined,
 							};
 							// Glyph + image-fallback tile preview — mirrors render.php's

@@ -1,7 +1,7 @@
 /**
  * One item of the gallery's live preview canvas: the figure, its image or video, and its caption.
  */
-import { focalPointToObjectPosition } from '../../../utils';
+import { focalToObjectPosition } from '../../../components/media/focalPosition.js';
 import { tierValueOf } from '../../../utils/responsive.js';
 import { isTileMode } from '../tile-preview';
 import { itemFile } from '../item-model';
@@ -25,7 +25,7 @@ export default function GalleryCanvasItem( {
 	// the uid each picture carries); a tile fills its own box. Fit and focal stay inline because each item can override them.
 	const mediaStyle = {
 		objectFit: fit,
-		objectPosition: 'cover' === fit ? focalPointToObjectPosition( focal || { x: 0.5, y: 0.5 } ) : undefined,
+		objectPosition: 'cover' === fit ? focalToObjectPosition( focal || { x: 0.5, y: 0.5 } ) : undefined,
 		...( tile ? { height: '100%' } : {} ),
 	};
 	const uid = itemMedia?.uid || '';

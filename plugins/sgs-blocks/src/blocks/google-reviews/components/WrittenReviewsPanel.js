@@ -19,7 +19,7 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../../components';
 import { NumberControl } from '../../../components/primitives';
-import MediaPicker from '../../../components/MediaPicker';
+import ItemImageField from '../../../components/media/ItemImageField.js';
 import { generateItemKey } from '../../../utils';
 
 const RATING_OPTIONS = [
@@ -148,13 +148,12 @@ export default function WrittenReviewsPanel( { attributes, setAttributes } ) {
 							onChange={ ( value ) => update( index, { url: value } ) }
 							__next40pxDefaultSize
 						/>
-						<MediaPicker
+						<ItemImageField
 							value={ review.photo || null }
 							onChange={ ( media ) => update( index, { photo: media } ) }
 							onRemove={ () => update( index, { photo: undefined } ) }
-							allowedTypes={ [ 'image' ] }
 							label={ __( 'Reviewer photo (optional)', 'sgs-blocks' ) }
-							instructionsImage={ __( 'Shown instead of the initial.', 'sgs-blocks' ) }
+							instructions={ __( 'Shown instead of the initial.', 'sgs-blocks' ) }
 						/>
 						<DesignTokenPicker
 							label={ __( 'Initial background colour', 'sgs-blocks' ) }

@@ -151,7 +151,7 @@ export function liftOn( attributes = {}, prefix = '' ) {
  * @param {string} [props.blockSlug]
  * @param {Object<string,string>} [props.hoverMap] `settings.custom.shadowHover` (design H4/H5,
  *   task lift-2) — the AUTOMATIC LIFT this atom draws when no explicit hover colour is set.
- *   Threaded in by the caller (`canvasStyle.js::elementCustomProperties()`) because this
+ *   Threaded in by the caller (the editor preview) because this
  *   module has no WordPress data access of its own (the purity contract,
  *   `scripts/check-media-atom-purity.js`); absent/undefined simply means no lift resolves.
  * @return {string[]} `--custom-property:value;` declarations, never bare rules.

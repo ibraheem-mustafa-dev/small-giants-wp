@@ -20,13 +20,7 @@ export { default as useDrawerPreviewToggle } from './DrawerPreviewToggle';
 export { default as fillRow } from './colour-variants/fillRow';
 export { default as textRow } from './colour-variants/textRow';
 export { default as MediaElementPanel } from './MediaElementPanel';
-export { default as MediaPanelLayout } from './media/MediaPanelLayout';
 export { default as MediaGalleryPicker } from './MediaGalleryPicker';
-export {
-	elementScopeClass as mediaElementScopeClass,
-	elementCustomProperties as mediaElementCustomProperties,
-	requiresBox as mediaElementRequiresBox,
-} from './media/canvasStyle';
 // `parseLinearGradient` / `buildGradientCss` were deleted by 837f7c97 (D636 storage
 // collapse) but stayed listed here, so the barrel advertised two bindings that resolve
 // to `undefined` at runtime — a webpack WARNING, not an error, which is why a green
@@ -49,7 +43,6 @@ export {
 	default as GradientCapableColourControl,
 	isGradientValue,
 } from './GradientCapableColourControl';
-export { default as FocalPositionField } from './FocalPositionField';
 export {
 	default as LinkPopoverField,
 	LinkPopoverContent,
@@ -95,12 +88,6 @@ export { default as SgsGapControl } from './SgsGapControl';
 export { default as SgsLengthControl } from './SgsLengthControl';
 export { default as FlexWrapControl } from './FlexWrapControl';
 export { default as RowWrapPanel } from './RowWrapPanel';
-// Shared media size & crop panel (C19, 2026-08-27) — piloted on sgs/media only.
-// See the component's own docblock for the mode picker + grey-out contract.
-export {
-	default as MediaSizingPanel,
-	RATIO_OPTIONS as MEDIA_SIZING_RATIO_OPTIONS,
-} from './MediaSizingPanel';
 // FR-37-47 (2026-09-17) — starter-look preset control shared by the 3
 // template-locked CPT root blocks (site-header, site-footer, nav-drawer).
 export { default as StarterLookPresetControl } from './StarterLookPresetControl';
