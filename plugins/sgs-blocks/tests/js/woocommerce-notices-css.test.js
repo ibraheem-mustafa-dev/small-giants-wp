@@ -43,4 +43,25 @@ describe( 'woocommerce notices', () => {
 	test( 'is enqueued after woocommerce.css', () => {
 		expect( fn ).toMatch( /'sgs-woocommerce-notices'[\s\S]*?array\( 'sgs-woocommerce' \)/ );
 	} );
+
+	// WooCommerce's wc-blocks.css paints each variant at two classes (`.wc-block-components-notice-banner.is-info`), so a
+	// one-class rule loses to it whatever the order; the theme paints at two classes too, and loads after.
+	describe( 'block notices win against wc-blocks.css by painting at two classes', () => {
+		const rule = ( selector ) =>
+			css
+				.replace( /\/\*[\s\S]*?\*\//g, '' )
+				.split( '}' )
+				.filter( ( block ) => block.includes( '{' ) && block.split( '{' )[ 0 ].split( ',' ).map( ( x ) => x.trim() ).includes( selector ) )
+				.map( ( block ) => block.split( '{' )[ 1 ] )
+				.join( ';' );
+
+		test.each( [ 'is-info', 'is-success', 'is-warning', 'is-error' ] )( '.%s paints its background and edge from the notice tokens', ( variant ) => {
+			const body = rule( `.wc-block-components-notice-banner.${ variant }` );
+			expect( body ).toContain( 'background-color: var(--_notice-bg)' );
+			expect( body ).toContain( 'border-color: var(--_notice-border)' );
+		} );
+		test.each( [ 'is-info', 'is-success', 'is-warning', 'is-error' ] )( '.%s icon takes no background fill of its own', ( variant ) => {
+			expect( rule( `.wc-block-components-notice-banner.${ variant } > svg` ) ).toContain( 'background: none' );
+		} );
+	} );
 } );

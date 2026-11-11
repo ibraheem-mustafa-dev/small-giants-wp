@@ -38,6 +38,22 @@
 	--_notice-border: var(--wp--preset--color--error, #DC2626);
 }
 
+/* wc-blocks.css paints each variant at two classes, so the notice tokens are painted at two classes here too (this file loads after it). */
+.wc-block-components-notice-banner.is-info,
+.wc-block-components-notice-banner.is-success,
+.wc-block-components-notice-banner.is-warning,
+.wc-block-components-notice-banner.is-error {
+	background-color: var(--_notice-bg);
+	border-color: var(--_notice-border);
+}
+
+.wc-block-components-notice-banner.is-info > svg,
+.wc-block-components-notice-banner.is-success > svg,
+.wc-block-components-notice-banner.is-warning > svg,
+.wc-block-components-notice-banner.is-error > svg {
+	background: none;
+}
+
 .wc-block-components-notice-banner > svg {
 	align-self: flex-start;
 	margin-top: 2px;
