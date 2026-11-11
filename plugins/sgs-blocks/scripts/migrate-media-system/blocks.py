@@ -137,6 +137,7 @@ def migrate_background(ctx: T.Ctx) -> None:
         ctx.drop(name, "converted", "backgroundSource")
     # Background fit, focal point, pinned and repeat.
     if any(ctx.has(n) for n in ("backgroundSize", "backgroundRepeat", "backgroundAttachment", "backgroundPosition")):
+        _background_repeat_under_fill(ctx)
         T.migrate_background_fit(ctx)
     # SVG presentation. A kept SVG layer keeps its own settings (names in SVG_LAYER_KEPT); only its parts move.
     if keep_layer:
@@ -184,8 +185,33 @@ def migrate_background(ctx: T.Ctx) -> None:
     _tail_overlay(ctx)
 
 
+def _background_repeat_under_fill(ctx: T.Ctx) -> None:
+    """An old size of cover (the old default when none was saved) or contain stays Fit cover or contain: the old renderer only
+    honoured cover, contain and auto, so a tiled repeat beside cover or contain was never a tile. Only an old size of auto with a
+    repeat becomes Fit tile (T.migrate_background_fit). Contain with a repeat drew copies of the contained image; Fit contain
+    draws one, and the dropped repeat says so."""
+    size = ctx.get("backgroundSize") if isinstance(ctx.get("backgroundSize"), str) else None
+    repeat = ctx.get("backgroundRepeat")
+    if not (isinstance(repeat, str) and repeat in T.REPEATS) or size not in (None, "cover", "contain"):
+        return
+    note = ("repeat is inert under cover" if size in (None, "cover")
+            else "repeat beside contain drew copies of the contained image; Fit contain draws one")
+    ctx.drop("backgroundRepeat", "deleted", "", note)
+
+
+def _overlay_gradient_names(ctx: T.Ctx) -> None:
+    """overlayGradient and overlayGradientHover are the overlay family's gradients under their old names."""
+    for old, new in (("overlayGradient", "backgroundOverlayGradient"), ("overlayGradientHover", "backgroundOverlayGradientHover")):
+        if not ctx.has(old):
+            continue
+        if not ctx.has(new) and isinstance(ctx.get(old), str) and ctx.get(old).strip():
+            ctx.put(new, ctx.get(old))
+        ctx.drop(old, "converted", new)
+
+
 def _tail_overlay(ctx: T.Ctx) -> None:
-    """Overlay blend rename and the pinned overlay-strength default."""
+    """Overlay gradient and blend renames and the pinned overlay-strength default."""
+    _overlay_gradient_names(ctx)
     if ctx.has("backgroundOverlayBlendMode"):
         ctx.put("backgroundOverlayBlend", ctx.get("backgroundOverlayBlendMode"))
         ctx.drop("backgroundOverlayBlendMode", "converted", "backgroundOverlayBlend")
@@ -523,6 +549,22 @@ def migrate(name: str, attrs: dict):
     return copy.deepcopy(new), list(events)
 
 
+def migrate_gallery_tile_fit(ctx: T.Ctx) -> None:
+    """`tileFitContain` made every tile image contain whatever each item said; the gallery's own Fit carries that now: itemFit
+    contain on every device it names (desktop always), and the items' own fits cleared so they cannot override it."""
+    if ctx.block != "sgs/gallery" or not ctx.has("tileFitContain"):
+        return
+    if ctx.get("tileFitContain") is True:
+        existing = ctx.get("itemFit") if isinstance(ctx.get("itemFit"), dict) else {}
+        fit = {device: "contain" for device in existing}
+        fit["desktop"] = "contain"
+        ctx.put("itemFit", fit)
+        items = ctx.get("mediaItems")
+        if isinstance(items, list):
+            ctx.put("mediaItems", [{k: v for k, v in item.items() if k != "fit"} if isinstance(item, dict) else item for item in items])
+    ctx.drop("tileFitContain", "converted", "itemFit", "contain on every tile image")
+
+
 def _migrate(name: str, attrs: dict):
     ctx = T.Ctx(name, attrs)
     for slot in M.merged_slots(name):
@@ -531,6 +573,7 @@ def _migrate(name: str, attrs: dict):
         migrate_background(ctx)
     migrate_extras(ctx)
     migrate_items(ctx)
+    migrate_gallery_tile_fit(ctx)
     apply_pins(ctx)
     migrate_report_always(ctx)
     migrate_unlisted(ctx)

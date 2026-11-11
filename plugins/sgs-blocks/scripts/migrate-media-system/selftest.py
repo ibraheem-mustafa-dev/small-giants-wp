@@ -181,6 +181,33 @@ case("negative: a migrated photo beside a kept svg layer is untouched", "sgs/con
      {"backgroundSource": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}}, **KEPT}, None)
 case("negative: an unreadable photo object beside an svg is refused and both stay", "sgs/container",
      {"backgroundImage": {"url": U, "zzz": 1}, "bgSvgContent": SVG}, None)
+G1, G2 = "linear-gradient(90deg,#000,#fff)", "linear-gradient(0deg,#111,#222)"
+case("container: overlayGradient and its hover take the overlay family's names, the old strength 30 is pinned", "sgs/container",
+     {"overlayGradient": G1, "overlayGradientHover": G2, "backgroundImage": {"url": U}},
+     {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, "backgroundOverlayGradient": G1, "backgroundOverlayGradientHover": G2,
+      "backgroundOverlayOpacity": {"desktop": 30}})
+case("trust-bar: an empty overlayGradient is dropped, not written", "sgs/trust-bar", {"overlayGradient": ""}, {})
+case("container: cover with repeat-x stays Fit cover, the inert repeat is dropped", "sgs/container",
+     {"backgroundImage": {"url": U}, "backgroundSize": "cover", "backgroundRepeat": "repeat-x"},
+     {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, "backgroundFit": {"desktop": "cover"}})
+case("container: contain with repeat stays Fit contain", "sgs/container",
+     {"backgroundImage": {"url": U}, "backgroundSize": "contain", "backgroundRepeat": "repeat"},
+     {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, "backgroundFit": {"desktop": "contain"}})
+case("container: no saved size means the old default cover, so a repeat alone is dropped", "sgs/container",
+     {"backgroundImage": {"url": U}, "backgroundRepeat": "repeat-y"}, {"backgroundSource": {"desktop": {"kind": "image", "url": U}}})
+case("container: size auto with repeat-x is a tile with that repeat", "sgs/container",
+     {"backgroundImage": {"url": U}, "backgroundSize": "auto", "backgroundRepeat": "repeat-x"},
+     {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, "backgroundFit": {"desktop": "tile"}, "backgroundRepeat": {"desktop": "repeat-x"}})
+case("gallery: tileFitContain merges into the saved itemFit and clears each item's own fit", "sgs/gallery",
+     {"tileFitContain": True, "itemFit": {"desktop": "cover", "mobile": "cover"},
+      "mediaItems": [{"source": {"desktop": {"kind": "image", "url": U}}, "fit": {"desktop": "cover"}, "_key": "k"}]},
+     {"itemFit": {"desktop": "contain", "mobile": "contain"}, "mediaItems": [{"source": {"desktop": {"kind": "image", "url": U}}, "_key": "k"}]})
+case("gallery: tileFitContain with no saved itemFit writes desktop contain", "sgs/gallery", {"tileFitContain": True}, {"itemFit": {"desktop": "contain"}})
+case("gallery: tileFitContain false is the default and is dropped, itemFit untouched", "sgs/gallery",
+     {"tileFitContain": False, "itemFit": {"desktop": "cover"}}, {"itemFit": {"desktop": "cover"}})
+case("negative: a gallery without tileFitContain is untouched", "sgs/gallery", {"itemFit": {"desktop": "cover"}, "mediaItems": [{"fit": {"desktop": "contain"}, "_key": "k"}]}, None)
+case("negative: an already migrated overlay gradient is untouched", "sgs/container",
+     {"backgroundOverlayGradient": G1, "backgroundOverlayOpacity": {"desktop": 50}}, None)
 # ---- other blocks
 case("decorative-image: legacy files, tiers and the old default decorative=true pinned", "sgs/decorative-image",
      {"imageId": 8, "imageUrl": U, "imageUrlTablet": "http://x/t.jpg", "hideOnTablet": True},
@@ -312,6 +339,28 @@ def run_svg_keep(failures: list[str]) -> int:
     checks += 1
     if svg_lost({"backgroundImage": {"url": U}, "bgSvgContent": SVG}, {"backgroundSource": lossy["backgroundSource"], "bgSvgContent": SVG}):
         _fail("svg kept: control", "a migration that keeps the SVG was reported as losing it", failures)
+    return checks
+
+
+def run_background_rules(failures: list[str]) -> int:
+    """Negative controls: cover or contain never becomes a tile whatever the repeat; an overlay gradient is never lost."""
+    checks = 0
+    for size in ("cover", "contain", None):
+        for repeat in ("repeat", "repeat-x", "repeat-y"):
+            checks += 1
+            attrs = {"backgroundImage": {"url": U}, **({"backgroundSize": size} if size else {}), "backgroundRepeat": repeat}
+            new, _ = B.migrate("sgs/container", attrs)
+            if new.get("backgroundFit", {}).get("desktop") == "tile" or "backgroundRepeat" in new:
+                _fail(f"tile rule: {size} with {repeat}", f"became a tile or kept a repeat: {new}", failures)
+    for name in ("container", "multi-button", "physics-canvas", "site-header", "site-footer", "trust-bar", "nav-drawer"):
+        checks += 1
+        new, _ = B.migrate(f"sgs/{name}", {"overlayGradient": G1, "overlayGradientHover": G2})
+        if new.get("backgroundOverlayGradient") != G1 or new.get("backgroundOverlayGradientHover") != G2 or "overlayGradient" in new:
+            _fail(f"overlay names: {name}", f"gradient lost or not renamed: {new}", failures)
+    checks += 1
+    unmigrated = {"overlayGradient": G1, "overlayGradientHover": G2}
+    if unmigrated.get("backgroundOverlayGradient") == G1:
+        _fail("overlay names: control", "an unmigrated block was read as carrying the gradient under its new name", failures)
     return checks
 
 
@@ -603,7 +652,7 @@ def _run(break_mapping: bool = False) -> int:
         M.rows.cache_clear()
         M.STAYS["sgs/post-grid"] = ()
     failures: list[str] = []
-    total = run_cases(failures) + run_svg_keep(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures) + run_sizes(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
+    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures) + run_sizes(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
     for line in failures:
         print(line)
     print(f"migrate-media-system self-test: {total - len(failures)} of {total} checks passed"
