@@ -886,14 +886,6 @@
               "justifyContent": "flex-end",
               "boxAspectRatio": "16 / 10",
               "backgroundColour": "surface-stage",
-              "backgroundImage": {
-                "id": 160,
-                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/mega-sun.jpg",
-                "alt": "Prescription sunglasses"
-              },
-              "backgroundSize": "cover",
-              "backgroundPosition": "center 25%",
-              "overlayGradient": "linear-gradient(180deg,rgba(20,20,20,0) 40%,rgba(20,20,20,.8) 100%)",
               "backgroundOverlayOpacity": {
                 "desktop": 100
               },
@@ -916,7 +908,26 @@
               "gap": {
                 "desktop": "0px"
               },
-              "className": "cr-ref-mega-sunglasses-28"
+              "className": "cr-ref-mega-sunglasses-28",
+              "backgroundSource": {
+                "desktop": {
+                  "kind": "image",
+                  "id": 160,
+                  "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/mega-sun.jpg"
+                }
+              },
+              "backgroundAlt": "Prescription sunglasses",
+              "backgroundDecorative": false,
+              "backgroundFit": {
+                "desktop": "cover"
+              },
+              "backgroundFocal": {
+                "desktop": {
+                  "x": 0.5,
+                  "y": 0.25
+                }
+              },
+              "backgroundOverlayGradient": "linear-gradient(180deg,rgba(20,20,20,0) 40%,rgba(20,20,20,.8) 100%)"
             },
             "innerBlocks": [
               {

@@ -118,13 +118,6 @@
 			}
 		},
 		{
-			"slug": "sgs/media",
-			"attr": "mediaType",
-			"fields": {
-				"role": "tag-identity"
-			}
-		},
-		{
 			"slug": "sgs/icon-list",
 			"attr": "headingLevel",
 			"fields": {
@@ -1049,14 +1042,6 @@
 			}
 		},
 		{
-			"slug": "sgs/media",
-			"attr": "displayWidth",
-			"fields": {
-				"role": "behaviour"
-			},
-			"_reason": "2026-11-04: the width the image is drawn at per device, read by sgs_media_cover_crop_plan to print the `sizes` attribute; it paints no CSS, so the name-derived layout role is wrong."
-		},
-		{
 			"slug": "sgs/timeline",
 			"attr": "contentLayout",
 			"fields": {
@@ -1101,22 +1086,6 @@
 			"fields": {
 				"role": "image-alt",
 				"alt_companion_attr": "image"
-			}
-		},
-		{
-			"slug": "sgs/media",
-			"attr": "imageAlt",
-			"fields": {
-				"role": "image-alt",
-				"alt_companion_attr": "imageUrl"
-			}
-		},
-		{
-			"slug": "sgs/decorative-image",
-			"attr": "imageAlt",
-			"fields": {
-				"role": "image-alt",
-				"alt_companion_attr": "imageUrl"
 			}
 		},
 		{
@@ -2280,13 +2249,6 @@
 		},
 		{
 			"slug": "sgs/decorative-image",
-			"attr": "decorMedia",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/decorative-image",
 			"attr": "rotation",
 			"fields": {
 				"role": "styling"
@@ -2723,29 +2685,6 @@
 			"_why": "2026-09-06. See rowStripeColourAGradient's entry (added alongside this one) -- same alternating-row disambiguation, opposite parity."
 		},
 		{
-			"_why": "Check#12 roleguess: svgContent/svgContentMobile/svgContentTablet carry no canonical_slot at all, unlike their imageUrl*/videoUrl* siblings which already correctly mirror each other ('image'/'video'). There is no plain 'svg' row in slots.json (only 'background-svg') -- sgs/media's mediaType enum treats svg as a first-class peer of image/video, so the gap is the missing slot row, not a misclassification. New plain 'svg' slot added to slots.json alongside this fix. canonical_slot_aliases added 2026-09-06 (Check#12 Build 2 widening, same class as imageUrl/videoUrl below): 'background-svg' is the same SVG element under the art-direction background-media naming split (slots.json Task B) and previously fell through to insertion-order guessing among sgs/media's 6-role content-bearing set.",
-			"slug": "sgs/media",
-			"attr": "svgContent",
-			"fields": {
-				"canonical_slot": "svg",
-				"canonical_slot_aliases": "[\"background-svg\"]"
-			}
-		},
-		{
-			"slug": "sgs/media",
-			"attr": "svgContentTablet",
-			"fields": {
-				"canonical_slot": "svg"
-			}
-		},
-		{
-			"slug": "sgs/media",
-			"attr": "svgContentMobile",
-			"fields": {
-				"canonical_slot": "svg"
-			}
-		},
-		{
 			"_why": "Check#12 roleguess: sgs/button.label has no canonical_slot at all, so any of button/button-outline/button-primary/buttonSecondary falls to insertion-order guessing among {iconTitle, label, linkTarget, url}. label is the button's visible text and the only plausible target of the four; url/linkTarget are link-href, iconTitle is icon-only text. canonical_slot='button' covers the base variant slot; canonical_slot_aliases (Check#12 Build 2 multi-value mechanism) additionally names the 3 sibling style-variant slots -- button-outline/button-primary/buttonSecondary -- so all 4 button slots resolve to this same attr via the exact-match/CONFIRMED path rather than any fallback guess. The attr-name fallback (pass 2 in attr_name_for_slot_or_alias) still catches a literal '__label' token regardless.",
 			"slug": "sgs/button",
 			"attr": "label",
@@ -2755,41 +2694,10 @@
 			}
 		},
 		{
-			"_why": "bgVideoMobile/bgVideoTablet are art-direction tier siblings of bgVideo, which already correctly carries canonical_slot='background-video'. The siblings were left unset, so a tier-specific bg-video BEM token on this block falls to guessing instead of matching its own tier.",
-			"slug": "sgs/multi-button",
-			"attr": "bgVideoTablet",
-			"fields": {
-				"canonical_slot": "background-video"
-			}
-		},
-		{
-			"slug": "sgs/multi-button",
-			"attr": "bgVideoMobile",
-			"fields": {
-				"canonical_slot": "background-video"
-			}
-		},
-		{
 			"slug": "sgs/multi-button",
 			"attr": "bgSvgContent",
 			"fields": {
 				"canonical_slot": "background-svg"
-			}
-		},
-		{
-			"_why": "Check#12 Build 2 (canonical_slot multi-value widening, 2026-09-06). sgs/media.imageUrl's canonical_slot='image' already resolves the plain 'image' slot; the 'avatar' and 'background-image' slots are the same physical <img> element under a different draft naming convention and previously fell through to insertion-order guessing among imageUrl/videoUrl/svgContent/thumbnail (role='image-object' vs 'content' vs 'svg'). canonical_slot_aliases names both as extra slots this attr also answers to -- the exact-match/CONFIRMED path in both attr_name_for_slot_or_alias and _slot_extraction_role now resolves them directly rather than guessing.",
-			"slug": "sgs/media",
-			"attr": "imageUrl",
-			"fields": {
-				"canonical_slot_aliases": "[\"avatar\", \"background-image\"]"
-			}
-		},
-		{
-			"_why": "Check#12 Build 2 (canonical_slot multi-value widening, 2026-09-06). Same shape as sgs/media.imageUrl immediately above: videoUrl's canonical_slot='video' already resolves the plain 'video' slot; 'background-video' is the same video element under the art-direction background-media naming split (slots.json Task B) and previously fell through to insertion-order guessing.",
-			"slug": "sgs/media",
-			"attr": "videoUrl",
-			"fields": {
-				"canonical_slot_aliases": "[\"background-video\"]"
 			}
 		},
 		{
@@ -3652,22 +3560,6 @@
 				"role": "typography",
 				"css_property": "letter-spacing",
 				"css_element": "link"
-			}
-		},
-		{
-			"slug": "sgs/container",
-			"attr": "overlayGradient",
-			"fields": {
-				"css_property": "background-image",
-				"css_element": "overlay"
-			}
-		},
-		{
-			"slug": "sgs/container",
-			"attr": "overlayGradientHover",
-			"fields": {
-				"css_property": "background-image",
-				"css_element": "overlay"
 			}
 		},
 		{
@@ -7281,55 +7173,7 @@
 			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
 		},
 		{
-			"slug": "sgs/container",
-			"attr": "backgroundOverlayBlendMode",
-			"fields": {
-				"css_property": "mix-blend-mode"
-			},
-			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
 			"slug": "sgs/hero",
-			"attr": "backgroundOverlayBlendMode",
-			"fields": {
-				"css_property": "mix-blend-mode"
-			},
-			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
-			"slug": "sgs/multi-button",
-			"attr": "backgroundOverlayBlendMode",
-			"fields": {
-				"css_property": "mix-blend-mode"
-			},
-			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
-			"slug": "sgs/physics-canvas",
-			"attr": "backgroundOverlayBlendMode",
-			"fields": {
-				"css_property": "mix-blend-mode"
-			},
-			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
-			"slug": "sgs/site-footer",
-			"attr": "backgroundOverlayBlendMode",
-			"fields": {
-				"css_property": "mix-blend-mode"
-			},
-			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
-			"slug": "sgs/site-header",
-			"attr": "backgroundOverlayBlendMode",
-			"fields": {
-				"css_property": "mix-blend-mode"
-			},
-			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
-			"slug": "sgs/trust-bar",
 			"attr": "backgroundOverlayBlendMode",
 			"fields": {
 				"css_property": "mix-blend-mode"
