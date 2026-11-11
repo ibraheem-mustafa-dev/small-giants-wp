@@ -417,7 +417,13 @@
 	"BorderColour": {
 		"type": "string"
 	},
+	"BorderColourGradient": {
+		"type": "string"
+	},
 	"BorderColourHover": {
+		"type": "string"
+	},
+	"BorderColourHoverGradient": {
 		"type": "string"
 	},
 	"Colour": {
