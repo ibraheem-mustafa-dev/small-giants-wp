@@ -36,6 +36,7 @@ class BlockEditor:
     ssr_credit: set = field(default_factory=set)
     editor_cps: dict = field(default_factory=dict)    # cp -> attrs referenced
     real_prop: set = field(default_factory=set)
+    files: list = field(default_factory=list)         # every editor file the block reaches
 
 
 class EditorModel:
@@ -60,6 +61,7 @@ class EditorModel:
         declared = set((bjson.get("attributes") or {}).keys())
         own_prefix = f"src/blocks/{slug}/"
         files = entry["files"] if entry else []
+        be.files = list(files)
         own = [f for f in files if f.startswith(own_prefix)]
 
         # ---- L2 control

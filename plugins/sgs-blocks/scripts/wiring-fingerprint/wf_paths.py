@@ -26,6 +26,7 @@ DB_PATH = framework_db_path()
 
 BASELINE = SCRIPTS / "wiring-fingerprint-baseline.json"
 COLLECTOR_JS = HERE / "editor_facts.js"
+MEDIA_FACTS_MJS = HERE / "media_system_facts.mjs"
 
 
 @dataclass(frozen=True)

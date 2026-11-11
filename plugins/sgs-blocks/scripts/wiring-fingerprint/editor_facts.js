@@ -298,7 +298,9 @@ function facts( file ) {
 		},
 		VariableDeclarator( p ) {
 			const init = p.node.init;
-			const fromAttrs = init && ( ( init.type === 'Identifier' && ATTR_OBJ_RE.test( init.name ) ) || ( init.type === 'MemberExpression' && init.property.name === 'attributes' ) );
+			// `const { k } = attributes || {}` (a helper that tolerates a missing object) reads the attributes as `= attributes` does.
+			const source = init && init.type === 'LogicalExpression' && ( init.operator === '||' || init.operator === '??' ) ? init.left : init;
+			const fromAttrs = source && ( ( source.type === 'Identifier' && ATTR_OBJ_RE.test( source.name ) ) || ( source.type === 'MemberExpression' && source.property.name === 'attributes' ) );
 			if ( p.node.id.type !== 'ObjectPattern' || ! fromAttrs ) return;
 			for ( const pr of p.node.id.properties ) {
 				if ( pr.type !== 'ObjectProperty' ) continue;

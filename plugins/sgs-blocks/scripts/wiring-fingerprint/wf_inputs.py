@@ -13,7 +13,7 @@ import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from wf_paths import COLLECTOR_JS, Roots
+from wf_paths import COLLECTOR_JS, MEDIA_FACTS_MJS, Roots
 
 ATTR_COLUMNS = (
     "block_slug", "attr_name", "attr_type", "css_property", "css_element", "css_state",
@@ -30,6 +30,9 @@ class Collectors:
         self._dump_p = _spawn(["node", "scripts/check-dead-controls.js", "--dump-json"], roots.plugin) if with_dump else None
         # Which blocks read each context key: the one rule the dead-controls and editor-render-parity gates share.
         self._ctx_p = _spawn(["node", "scripts/lib/context-keys.js", "--json"], roots.plugin)
+        # The media system's wiring facts (media_system_facts.mjs): what the shared panels, renderer and canvas do for an adopted block.
+        self._media_p = _spawn(["node", str(MEDIA_FACTS_MJS), str(roots.plugin)], roots.plugin)
+        self._media: dict | None = None
         self._ctx: dict | None = None
         self._facts: dict | None = None
         self._dump: dict | None = None
@@ -39,6 +42,13 @@ class Collectors:
         if self._facts is None:
             self._facts = json.loads(_collect(self._facts_p, "editor_facts.js"))
         return self._facts
+
+    @property
+    def media_system(self) -> dict:
+        """Per adopted block, per attribute: the shared media system's offer and reads (media_system_facts.mjs)."""
+        if self._media is None:
+            self._media = json.loads(_collect(self._media_p, "media_system_facts.mjs"))
+        return self._media
 
     @property
     def context_reads(self) -> dict[str, dict]:
@@ -70,6 +80,10 @@ class Inputs:
     @property
     def facts(self) -> dict:
         return self.collectors.facts
+
+    @property
+    def media_system(self) -> dict:
+        return self.collectors.media_system
 
     @property
     def context_reads(self) -> dict[str, dict]:
