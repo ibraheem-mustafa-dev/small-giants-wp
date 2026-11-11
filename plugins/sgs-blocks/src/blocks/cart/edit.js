@@ -4,7 +4,6 @@ import { PanelBody, TextControl, Notice, RangeControl } from '@wordpress/compone
 import { useDrawerPreviewToggle, IconPreview, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, SgsColourPanel, ScrimControls, TypographyControls, ResponsiveOverride, SgsLengthControl, RowWrapPanel } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
 import { colourVar, usePreviewTier, tierBoxLonghands, resolveTier } from '../../utils';
-import MediaElementPanel from '../../components/MediaElementPanel';
 import PanelSettingsControls from './PanelSettingsControls';
 import TriggerSettingsControls from './TriggerSettingsControls';
 import PillBorderControl from './PillBorderControl';
@@ -230,15 +229,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					hasPanel={ hasPanel }
 					hasDrawer={ hasDrawer }
 				/>
-				{ hasPanel && (
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						blockSlug="sgs/cart"
-						insertion="root"
-						atoms={ [ 'object-fit' ] }
-						mediaType="image"
-						title={ __( 'Item thumbnail', 'sgs-blocks' ) }
 					/>
 				) }
 

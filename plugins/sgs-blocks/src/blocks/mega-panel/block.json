@@ -33,10 +33,6 @@
 				}
 			},
 			"containerKind": "section",
-			"_comment_mediaElements": "The aside's media is rendered by a CHILD block (sgs/mega-aside, parent-paints-child) — this panel never renders an <img>/<video> of its own, so there is no element to attach the `sgs-media-el` marker class to. The atom's VALUE is instead set as a custom property on the panel's OWN root ($uid, prefix ''), which the aside's img reads via var() since custom properties inherit down the InnerBlocks tree (see render.php's `object-fit` block near the aside-width rule). style.css/render.php do not hardcode object-fit:cover on the aside media.",
-			"mediaElements": [
-				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
-			],
 			"boxFamilies": {
 				"panelPadding": [ "panelPadding" ],
 				"groupPadding": [ "groupPadding" ],

@@ -30,7 +30,6 @@ import { ResponsiveOverride,
 	resolveColourToken,
 	DesignTokenPicker,
 } from '../../components';
-import MediaElementPanel from '../../components/MediaElementPanel';
 import WrittenReviewsPanel from './components/WrittenReviewsPanel';
 import { borderStyleValue } from './components/panel-kit';
 import ColourPanel from './components/ColourPanel';
@@ -426,15 +425,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							onChange={ ( value ) => setAttributes( { showBreakdown: value } ) }
 						/>
 					) }
-
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						blockSlug="sgs/google-reviews"
-						insertion="element"
-						atoms={ [ 'object-fit' ] }
-						mediaType="image"
-					/>
 
 					<ToggleControl
 						label={ __( 'Show dates', 'sgs-blocks' ) }

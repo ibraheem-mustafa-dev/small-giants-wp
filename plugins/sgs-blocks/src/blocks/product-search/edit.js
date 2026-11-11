@@ -10,7 +10,6 @@ import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
 import { ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, ScrimControls, scrimColourRow } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
-import MediaElementPanel from '../../components/MediaElementPanel';
 import {
 	borderPaintPreview,
 	backgroundPaintPreview,
@@ -429,25 +428,6 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				{ /* The result-row product thumbnail's crop mode is a client control
-				   (style.css does not hardcode object-fit; the shared
-				   media-atoms stylesheet paints the default). The thumbnail
-				   only exists in the live results list (view.js), never in this
-				   static editor preview, so this mounts its own panel rather than
-				   nesting inside an existing preview-bound control. */ }
-				<MediaElementPanel
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					prefix=""
-					blockSlug="sgs/product-search"
-					insertion="root"
-					group="styles"
-					atoms={ [ 'object-fit' ] }
-					mediaType="image"
-					scope="element"
-					title={ __( 'Result thumbnail', 'sgs-blocks' ) }
-				/>
-
 				<PanelBody
 					title={ __( 'Spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
