@@ -9,7 +9,7 @@
  *
  * The motion renderer stamps each server thumbnail with its part class (`sgs-buybox__gallery-thumb`), its hover and
  * effect data attributes (`data-sgs-mh`, `data-sgs-mc`, `data-sgs-fx`, …) and any injected paint-layer spans
- * (`span.sgs-motion-layer`). The stamp is read off the first thumbnail before the strip is cleared and remembered per
+ * (`span.sgs-motion-layer`), and the picture's own classes (the thumbnail slot's scope class). The stamp is read off the first thumbnail before the strip is cleared and remembered per
  * strip, so a later rebuild still has it after a variation with no images emptied the strip. Rebuilt thumbnails carry no
  * entrance attributes: the entrance has already played, and a thumbnail stamped with a scroll entrance the reveal module
  * never saw would stay at its hidden start state, so they show their final state instead. A strip the server rendered
@@ -21,7 +21,7 @@
 /** Entrance attributes a rebuilt thumbnail never carries. */
 const ENTRANCE = [ 'data-sgs-me', 'data-sgs-me-keyframes', 'data-sgs-me-kf', 'data-sgs-in' ];
 
-const BARE = { className: 'product-card__thumb', attrs: [], layers: [] };
+const BARE = { className: 'product-card__thumb', imgClass: '', attrs: [], layers: [] };
 
 /** Strip => the stamp last read from it. */
 const stamps = new WeakMap();
@@ -31,7 +31,7 @@ const stamps = new WeakMap();
  * from an earlier read of this strip).
  *
  * @param {Element} strip The `.product-card__thumbs` strip.
- * @return {{className:string,attrs:Array<[string,string]>,layers:Element[]}} The stamp.
+ * @return {{className:string,imgClass:string,attrs:Array<[string,string]>,layers:Element[]}} The stamp.
  */
 export function readThumbStamp( strip ) {
 	const first = strip.querySelector( '.product-card__thumb' );
@@ -40,6 +40,8 @@ export function readThumbStamp( strip ) {
 	}
 	const stamp = {
 		className: first.className || BARE.className,
+		// The media renderer's classes on the picture (its scope class carries the thumb slot's Fit and Radius).
+		imgClass: first.querySelector( 'img' )?.className || '',
 		attrs: [ ...first.attributes ]
 			.filter( ( attr ) => attr.name.startsWith( 'data-sgs-' ) && ! ENTRANCE.includes( attr.name ) )
 			.map( ( attr ) => [ attr.name, attr.value ] ),
@@ -99,6 +101,7 @@ export function renderThumbStrip( card, gallery, selectedIdx ) {
 		if ( item.h ) {
 			img.height = item.h;
 		}
+		img.className = stamp.imgClass;
 		img.loading = 'lazy';
 		img.decoding = 'async';
 		btn.appendChild( img );

@@ -122,10 +122,11 @@ if ( ! function_exists( 'sgs_brand_logo_for_product' ) ) {
 	 * name-only fallback path every caller takes.
 	 *
 	 * @param int $product_id Product post ID.
-	 * @return array{name:string,url:string,width:int,height:int,link:string}
+	 * @return array{id:int,name:string,url:string,width:int,height:int,link:string}
 	 */
 	function sgs_brand_logo_for_product( $product_id ) {
 		$empty = array(
+			'id'     => 0,
 			'name'   => '',
 			'url'    => '',
 			'width'  => 0,
@@ -142,6 +143,7 @@ if ( ! function_exists( 'sgs_brand_logo_for_product' ) ) {
 		$media = sgs_brand_logo_media( $term->term_id );
 
 		return array(
+			'id'     => is_array( $media ) ? absint( $media['id'] ) : 0,
 			'name'   => (string) $term->name,
 			'url'    => is_array( $media ) ? (string) $media['url'] : '',
 			'width'  => is_array( $media ) ? absint( $media['width'] ) : 0,

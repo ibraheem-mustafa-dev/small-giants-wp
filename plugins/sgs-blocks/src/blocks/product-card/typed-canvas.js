@@ -26,7 +26,8 @@ import {
 import { resolveColourToken } from '../../components';
 
 const CSS_LENGTH = /^(?:[\d.]+(?:%|px|em|rem|vw|vh|ch|ex|fr|cm|mm|in|pt|pc)|calc\([\d.\s+\-*/%a-z()]+\))$/i;
-const ASPECTS = [ '16 / 9', '21 / 9', '4 / 3', '1 / 1', '4 / 5', '3 / 4', '9 / 16' ];
+/** A Ratio value the photo slot stores: `width / height`, as the Ratio chips and a custom ratio write it. */
+const RATIO = /^\d+(\.\d+)? \/ \d+(\.\d+)?$/;
 
 // Stacked price group (render.php): the RRP under the price.
 const PRICE_GROUP_PREVIEW = { stacked: { flexDirection: 'column', alignItems: 'flex-start', gap: 0 } };
@@ -54,7 +55,10 @@ function textColour( flat, gradient ) {
  * @return {Object} Style objects and class names per canvas element.
  */
 export function typedCardPreview( attrs, tier ) {
-	const aspectOk = ASPECTS.includes( attrs.imageAspectRatio );
+	// The photo slot's Ratio at this device, e.g. '1 / 1'; empty or 'natural' means the card's fixed-height box.
+	const imageRatio = String( resolveTier( attrs.imageRatio, tier ).value || '' );
+	const aspectOk = RATIO.test( imageRatio );
+	const imageHeight = String( resolveTier( attrs.imageHeight, tier ).value || '' );
 	const maxWidth = resolveTier( attrs.maxWidth, tier ).value;
 	const rowSpace = String( attrs.priceRowSpaceAbove || '' ).trim();
 	const swatchSize = Math.min( 40, Math.abs( parseInt( attrs.swatchSize, 10 ) || 0 ) );
@@ -68,16 +72,17 @@ export function typedCardPreview( attrs, tier ) {
 			aspectOk ? 'product-card--image-ratio' : '',
 		].filter( Boolean ),
 		aspectOk,
+		imageHeight: CSS_LENGTH.test( imageHeight ) ? imageHeight : '',
 		root: {
 			...borderRadiusLonghands( attrs.borderRadius, tier ),
 			...( maxWidth ? { maxWidth } : {} ),
 			'--sgs-product-card-max-width': CSS_LENGTH.test( cardMaxWidth ) ? cardMaxWidth : undefined,
-			'--sgs-product-card-image-aspect': aspectOk ? attrs.imageAspectRatio : undefined,
+			'--sgs-product-card-image-aspect': aspectOk ? imageRatio : undefined,
 			'--sgs-pc-swatch-size': swatchSize > 0 ? `${ swatchSize }px` : undefined,
 			'--sgs-pc-swatch-hover-scale': swatchGrow > 100 ? ( swatchGrow / 100 ).toFixed( 2 ) : undefined,
 		},
 		body: paddingOf( resolveTier( { ...( attrs.cardPaddingTier || {} ), desktop: attrs.cardPadding }, tier ).value ),
-		media: attrs.mediaBackgroundColour ? { background: colour( attrs.mediaBackgroundColour ) } : {},
+		media: attrs.imageBackground ? { background: colour( attrs.imageBackground ) } : {},
 		title: { ...typographyPreviewStyle( attrs, 'title', tier ), ...textColour( attrs.titleColour, attrs.titleColourGradient ) },
 		desc: { ...typographyPreviewStyle( attrs, 'desc', tier ), ...textColour( attrs.descColour, attrs.descColourGradient ) },
 		price: { ...typographyPreviewStyle( attrs, 'price', tier ), ...textColour( attrs.priceColour, attrs.priceColourGradient ) },

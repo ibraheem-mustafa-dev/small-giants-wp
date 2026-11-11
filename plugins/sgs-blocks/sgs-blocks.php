@@ -162,6 +162,7 @@ require_once SGS_BLOCKS_PATH . 'includes/product-choice-flow-link.php';
 // the `sgs_price_trim_zeros` filter; order records keep their pennies.
 require_once SGS_BLOCKS_PATH . 'includes/price-trim-zeros.php';
 require_once SGS_BLOCKS_PATH . 'includes/product-card-no-photo.php';
+require_once SGS_BLOCKS_PATH . 'includes/product-card-media.php';
 
 // Demand Analytics — privacy-safe aggregate counter for unbuyable combos
 // (Spec 27). REST endpoint POST /sgs/v1/demand/attempt +

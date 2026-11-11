@@ -36,11 +36,6 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 		rrpPillRadius,
 		priceRowGap,
 		addToCartPadding,
-		mainPhotoBorderWidth,
-		mainPhotoBorderStyle,
-		mainPhotoBorderColour,
-		mainPhotoRadius,
-		mainPhotoShadow,
 		pickerVariationSwatch,
 		gallerySavingBadge,
 		gallerySavingBadgeFormat,
@@ -191,43 +186,6 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 					values={ addToCartPadding ?? {} }
 					presets
 					onChange={ ( next ) => setAttributes( { addToCartPadding: next } ) }
-				/>
-			</PanelBody>
-
-			<PanelBody
-				title={ __( 'Main photo frame', 'sgs-blocks' ) }
-				initialOpen={ false }
-			>
-				<SgsBorderControl
-					label={ __( 'Photo border width', 'sgs-blocks' ) }
-					widthValues={ mainPhotoBorderWidth ?? {} }
-					onWidthChange={ ( next ) => setAttributes( { mainPhotoBorderWidth: next } ) }
-					styleValue={ mainPhotoBorderStyle }
-					onStyleChange={ ( val ) => setAttributes( { mainPhotoBorderStyle: val } ) }
-					contrastAgainst={ attributes.mainPhotoBackgroundColour && ! attributes.mainPhotoBackgroundColourGradient ? attributes.mainPhotoBackgroundColour : '' }
-					colourLabel={ __( 'Photo border colour', 'sgs-blocks' ) }
-					colourStates={ [
-						{
-							key: 'normal',
-							label: __( 'Normal', 'sgs-blocks' ),
-							value: mainPhotoBorderColour,
-							onChange: ( val ) => setAttributes( { mainPhotoBorderColour: val ?? '' } ),
-							linked: true,
-						},
-					] }
-				/>
-				<SgsLengthControl
-					label={ __( 'Photo corner radius', 'sgs-blocks' ) }
-					value={ mainPhotoRadius || '' }
-					onChange={ ( val ) => setAttributes( { mainPhotoRadius: val ?? '' } ) }
-					help={ __( 'Also sets the thumbnail corners unless they have their own. Empty = the default 8px.', 'sgs-blocks' ) }
-					presets={ false }
-				/>
-				<ShadowControl
-					label={ __( 'Photo shadow', 'sgs-blocks' ) }
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					attrNames={ shadowAttrKeys( 'mainPhotoShadow' ) }
 				/>
 			</PanelBody>
 

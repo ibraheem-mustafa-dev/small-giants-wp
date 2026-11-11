@@ -276,30 +276,37 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 			: '';
 		return resolved && ! /[;{}<>]/.test( resolved ) ? resolved : '';
 	};
+	// A Corners value ({desktop: {topLeft, ...}} or a flat corner object) at this device, as a flat corner object.
+	const cornersAt = ( value ) => {
+		const own = value && ( value[ tier ] || value.desktop || value );
+		return own && typeof own === 'object' ? own : {};
+	};
 	// Main photo frame, price row gap, chip radius and cart padding: the same settings render.php prints.
 	const photoDecls = [];
-	const photoGround = colourOf( attributes.mainPhotoBackgroundColour );
+	const photoGround = colourOf( attributes.mainBackground );
 	if ( photoGround ) {
 		photoDecls.push( `background:${ photoGround }` );
 	}
-	const photoBorderColour = colourOf( attributes.mainPhotoBorderColour );
+	const photoBorderColour = colourOf( attributes.mainBorderColour );
 	if ( photoBorderColour ) {
 		photoDecls.push( `border-color:${ photoBorderColour }` );
 	}
-	const photoWidth = attributes.mainPhotoBorderWidth || {};
+	const photoWidth = attributes.mainBorderWidth || {};
 	const photoBox = photoWidth.desktop || photoWidth;
 	const photoSides = [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => safeLength( photoBox[ side ] ) );
 	if ( photoSides.some( Boolean ) ) {
 		photoDecls.push(
-			`border-style:${ attributes.mainPhotoBorderStyle || 'solid' }`,
+			`border-style:${ attributes.mainBorderStyle || 'solid' }`,
 			`border-width:${ photoSides.map( ( side ) => side || '0' ).join( ' ' ) }`
 		);
 	}
-	if ( safeLength( attributes.mainPhotoRadius ) ) {
-		photoDecls.push( `border-radius:${ safeLength( attributes.mainPhotoRadius ) }` );
+	const photoCorners = cornersAt( attributes.mainRadius );
+	const photoRadii = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ].map( ( corner ) => safeLength( photoCorners[ corner ] ) );
+	if ( photoRadii.some( Boolean ) ) {
+		photoDecls.push( `border-radius:${ photoRadii.map( ( r ) => r || '0' ).join( ' ' ) }` );
 	}
-	const photoShadow = attributes.mainPhotoShadow
-		? composeShadow( attributes.mainPhotoShadow, attributes.mainPhotoShadowColour )
+	const photoShadow = attributes.mainBoxShadow
+		? composeShadow( attributes.mainBoxShadow, attributes.mainBoxShadowColour )
 		: '';
 	if ( photoShadow && ! /[;{}<>]/.test( photoShadow ) ) {
 		photoDecls.push( `box-shadow:${ photoShadow }` );
@@ -388,17 +395,17 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	// and corner radius, with the stylesheet's own 2px transparent border underneath.
 	const thumbBorder = sgsBorderPreview(
 		{
-			widthValues: attributes.galleryThumbBorderWidth,
-			styleValue: attributes.galleryThumbBorderStyle,
-			colourValue: attributes.galleryThumbBorderColour,
-			radiusValues: { base: attributes.galleryThumbBorderRadius },
+			widthValues: attributes.thumbBorderWidth,
+			styleValue: attributes.thumbBorderStyle,
+			colourValue: attributes.thumbBorderColour,
+			radiusValues: { base: cornersAt( attributes.thumbRadius ) },
 		},
 		tier,
 		palette,
 		{ defaultBorder: true }
 	);
-	const thumbColour = colourOf( attributes.galleryThumbBorderColour );
-	const thumbHover = colourOf( attributes.galleryThumbBorderColourHover );
+	const thumbColour = colourOf( attributes.thumbBorderColour );
+	const thumbHover = colourOf( attributes.thumbBorderColourHover );
 	const thumbSelected = colourOf(
 		attributes.galleryThumbBorderColourCurrent
 	);
@@ -454,11 +461,15 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		if ( attributes.previewBorderColour ) {
 			previewDecls.push( `border-color:${ resolve( attributes.previewBorderColour ) }` );
 		}
-		if ( attributes.previewBorderWidth ) {
-			previewDecls.push( `border-width:${ attributes.previewBorderWidth }` );
+		const previewWidth = attributes.previewBorderWidth || {};
+		const previewSides = [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => safeLength( previewWidth[ side ] ) );
+		if ( previewSides.some( Boolean ) ) {
+			previewDecls.push( `border-width:${ previewSides.map( ( side ) => side || '0' ).join( ' ' ) }` );
 		}
-		if ( attributes.previewRadius ) {
-			previewDecls.push( `border-radius:${ attributes.previewRadius }` );
+		const previewCorners = cornersAt( attributes.previewRadius );
+		const previewRadii = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ].map( ( corner ) => safeLength( previewCorners[ corner ] ) );
+		if ( previewRadii.some( Boolean ) ) {
+			previewDecls.push( `border-radius:${ previewRadii.map( ( r ) => r || '0' ).join( ' ' ) }` );
 		}
 		const previewPad = tierBoxLonghands( attributes.previewPadding, tier, 'padding' );
 		Object.entries( previewPad ).forEach( ( [ prop, val ] ) => {

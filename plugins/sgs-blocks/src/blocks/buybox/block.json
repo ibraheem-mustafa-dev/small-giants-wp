@@ -51,6 +51,16 @@
 					"context": "item",
 					"kinds": [
 						"image"
+					],
+					"atoms": [
+						"source",
+						"meaning",
+						"object-fit",
+						"focal-point",
+						"sizing",
+						"shape",
+						"shadow",
+						"media-padding"
 					]
 				},
 				{
@@ -58,6 +68,10 @@
 					"context": "item",
 					"kinds": [
 						"image"
+					],
+					"atoms": [
+						"object-fit",
+						"shape"
 					]
 				},
 				{
@@ -65,6 +79,11 @@
 					"context": "item",
 					"kinds": [
 						"image"
+					],
+					"atoms": [
+						"source",
+						"object-fit",
+						"shape"
 					]
 				}
 			],
@@ -1708,46 +1727,10 @@
 			"default": "",
 			"description": "CSS length of the space between the main product image and the thumbnail strip (e.g. \"2px\"). Empty keeps the stylesheet's 0.75rem."
 		},
-		"galleryThumbBorderWidth": {
-			"type": "object",
-			"default": {},
-			"description": "Border width of every gallery thumbnail, a {top, right, bottom, left} box of CSS lengths (e.g. \"1px\" on each side). Empty keeps the stylesheet's 2px."
-		},
-		"galleryThumbBorderStyle": {
-			"type": "string",
-			"enum": [
-				"none",
-				"solid",
-				"dashed",
-				"dotted",
-				"double",
-				"groove",
-				"ridge",
-				"inset",
-				"outset"
-			],
-			"default": "solid",
-			"description": "Border style of every gallery thumbnail. Read only when a width is set."
-		},
-		"galleryThumbBorderColour": {
-			"type": "string",
-			"default": "",
-			"description": "Resting border colour of the gallery thumbnails (palette slug or colour). Empty keeps the stylesheet's transparent border."
-		},
-		"galleryThumbBorderColourHover": {
-			"type": "string",
-			"default": "",
-			"description": "Border colour of a gallery thumbnail on hover or keyboard focus (palette slug or colour). Empty leaves the border unchanged."
-		},
 		"galleryThumbBorderColourCurrent": {
 			"type": "string",
 			"default": "",
 			"description": "Border colour of the selected gallery thumbnail, the one carrying aria-current=true (palette slug or colour). Empty keeps the primary-token colour."
-		},
-		"galleryThumbBorderRadius": {
-			"type": "object",
-			"default": {},
-			"description": "Corner radius of every gallery thumbnail, a flat {topLeft, topRight, bottomRight, bottomLeft} corner object of CSS lengths (not a tier envelope), read by sgs_corner_object_longhands(). Empty keeps the stylesheet's inheritance of the main image's radius (--sgs-buybox-img-radius, 8px). The selected thumbnail's border follows it, being on the same element."
 		},
 		"thumbSelectedScale": {
 			"type": "number",
@@ -3258,11 +3241,6 @@
 			"default": "Your {pack}: {split}",
 			"description": "Pick a set only: the one-line summary under the preview. Tokens: {pack}, {pack_label}, {variation}, {split}, {picks}, {count}. Unknown tokens are removed."
 		},
-		"previewImageId": {
-			"type": "integer",
-			"default": 0,
-			"description": "Pick a set only: the media-library image the live preview draws on (for example a tray or a vest). 0 = a plain tinted shape."
-		},
 		"previewLayerAxis": {
 			"type": "string",
 			"default": "",
@@ -3662,52 +3640,6 @@
 			"default": "",
 			"description": "Pick a set only: text colour on a selected option in every group, including the pack tile's small lines. Empty picks black or white, whichever reads best on the selected fill (4.5:1) when a selected fill is set."
 		},
-		"mainPhotoBackgroundColour": {
-			"type": "string",
-			"default": "",
-			"description": "Ground colour behind the main product photo (palette slug or colour). Empty keeps the stylesheet's surface colour."
-		},
-		"mainPhotoBorderWidth": {
-			"type": "object",
-			"default": {},
-			"description": "Border width of the main photo box, a {top, right, bottom, left} box of CSS lengths, or per-device {desktop, tablet, mobile} boxes. Empty keeps the stylesheet's 1px."
-		},
-		"mainPhotoBorderStyle": {
-			"type": "string",
-			"enum": [
-				"none",
-				"solid",
-				"dashed",
-				"dotted",
-				"double",
-				"groove",
-				"ridge",
-				"inset",
-				"outset"
-			],
-			"default": "solid",
-			"description": "Border style of the main photo box. Read only when a width is set."
-		},
-		"mainPhotoBorderColour": {
-			"type": "string",
-			"default": "",
-			"description": "Border colour of the main photo box (palette slug or colour). Empty keeps the stylesheet's faint border."
-		},
-		"mainPhotoRadius": {
-			"type": "string",
-			"default": "",
-			"description": "Corner radius of the main photo box as a CSS length. Prints as --sgs-buybox-img-radius, so the gallery thumbnails follow it unless they set their own. Empty keeps 8px."
-		},
-		"mainPhotoShadow": {
-			"type": "string",
-			"default": "",
-			"description": "Box shadow of the main photo box (shadow preset or value)."
-		},
-		"mainPhotoShadowColour": {
-			"type": "string",
-			"default": "",
-			"description": "Colour of the main photo box shadow (palette slug or colour)."
-		},
 		"rrpPillRadius": {
 			"type": "string",
 			"default": "",
@@ -3934,25 +3866,6 @@
 		"mainTileSize": {"type":"object","_generated":"media-atoms"},
 		"mainFocal": {"type":"object","_generated":"media-atoms"},
 		"mainPinned": {"type":"boolean","_generated":"media-atoms"},
-		"mainPadding": {"type":"object","_generated":"media-atoms"},
-		"mainBackground": {"type":"string","_generated":"media-atoms"},
-		"mainOverlayColour": {"type":"string","_generated":"media-atoms"},
-		"mainOverlayColourHover": {"type":"string","_generated":"media-atoms"},
-		"mainOverlayGradient": {"type":"string","_generated":"media-atoms"},
-		"mainOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
-		"mainOverlayOpacity": {"type":"object","_generated":"media-atoms"},
-		"mainOverlayBlend": {"type":"string","_generated":"media-atoms"},
-		"mainOpacity": {"type":"object","_generated":"media-atoms"},
-		"mainBlend": {"type":"string","_generated":"media-atoms"},
-		"mainBoxShadow": {"type":"string","_generated":"media-atoms"},
-		"mainBoxShadowColour": {"type":"string","_generated":"media-atoms"},
-		"mainBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
-		"mainCaption": {"type":"string","_generated":"media-atoms"},
-		"mainCaptionTag": {"type":"string","_generated":"media-atoms"},
-		"mainLinkUrl": {"type":"string","_generated":"media-atoms"},
-		"mainLinkOpensNewTab": {"type":"boolean","_generated":"media-atoms"},
-		"mainLinkRel": {"type":"string","_generated":"media-atoms"},
-		"mainLinkUrlSource": {"type":"string","_generated":"media-atoms"},
 		"mainRatio": {"type":"object","_generated":"media-atoms"},
 		"mainWidth": {"type":"object","_generated":"media-atoms"},
 		"mainHeight": {"type":"object","_generated":"media-atoms"},
@@ -3966,98 +3879,30 @@
 		"mainBorderStyle": {"type":"string","_generated":"media-atoms"},
 		"mainBorderColour": {"type":"string","_generated":"media-atoms"},
 		"mainBorderColourHover": {"type":"string","_generated":"media-atoms"},
-		"mainColour": {"type":"object","_generated":"media-atoms"},
-		"mainGreyscale": {"type":"number","_generated":"media-atoms"},
-		"mainAlignment": {"type":"object","_generated":"media-atoms"},
-		"mainOrder": {"type":"object","_generated":"media-atoms"},
-		"thumbSource": {"type":"object","_generated":"media-atoms"},
-		"thumbLoading": {"type":"string","_generated":"media-atoms"},
-		"thumbAlt": {"type":"string","_generated":"media-atoms"},
-		"thumbDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"mainBoxShadow": {"type":"string","_generated":"media-atoms"},
+		"mainBoxShadowColour": {"type":"string","_generated":"media-atoms"},
+		"mainBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
+		"mainPadding": {"type":"object","_generated":"media-atoms"},
+		"mainBackground": {"type":"string","_generated":"media-atoms"},
 		"thumbFit": {"type":"object","_generated":"media-atoms"},
 		"thumbRepeat": {"type":"object","_generated":"media-atoms"},
 		"thumbTileSize": {"type":"object","_generated":"media-atoms"},
-		"thumbFocal": {"type":"object","_generated":"media-atoms"},
-		"thumbPinned": {"type":"boolean","_generated":"media-atoms"},
-		"thumbPadding": {"type":"object","_generated":"media-atoms"},
-		"thumbBackground": {"type":"string","_generated":"media-atoms"},
-		"thumbOverlayColour": {"type":"string","_generated":"media-atoms"},
-		"thumbOverlayColourHover": {"type":"string","_generated":"media-atoms"},
-		"thumbOverlayGradient": {"type":"string","_generated":"media-atoms"},
-		"thumbOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
-		"thumbOverlayOpacity": {"type":"object","_generated":"media-atoms"},
-		"thumbOverlayBlend": {"type":"string","_generated":"media-atoms"},
-		"thumbOpacity": {"type":"object","_generated":"media-atoms"},
-		"thumbBlend": {"type":"string","_generated":"media-atoms"},
-		"thumbBoxShadow": {"type":"string","_generated":"media-atoms"},
-		"thumbBoxShadowColour": {"type":"string","_generated":"media-atoms"},
-		"thumbBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
-		"thumbCaption": {"type":"string","_generated":"media-atoms"},
-		"thumbCaptionTag": {"type":"string","_generated":"media-atoms"},
-		"thumbLinkUrl": {"type":"string","_generated":"media-atoms"},
-		"thumbLinkOpensNewTab": {"type":"boolean","_generated":"media-atoms"},
-		"thumbLinkRel": {"type":"string","_generated":"media-atoms"},
-		"thumbLinkUrlSource": {"type":"string","_generated":"media-atoms"},
-		"thumbRatio": {"type":"object","_generated":"media-atoms"},
-		"thumbWidth": {"type":"object","_generated":"media-atoms"},
-		"thumbHeight": {"type":"object","_generated":"media-atoms"},
-		"thumbMinWidth": {"type":"object","_generated":"media-atoms"},
-		"thumbMaxWidth": {"type":"object","_generated":"media-atoms"},
-		"thumbMinHeight": {"type":"object","_generated":"media-atoms"},
-		"thumbMaxHeight": {"type":"object","_generated":"media-atoms"},
 		"thumbShape": {"type":"object","_generated":"media-atoms"},
 		"thumbRadius": {"type":"object","_generated":"media-atoms"},
 		"thumbBorderWidth": {"type":"object","_generated":"media-atoms"},
 		"thumbBorderStyle": {"type":"string","_generated":"media-atoms"},
 		"thumbBorderColour": {"type":"string","_generated":"media-atoms"},
 		"thumbBorderColourHover": {"type":"string","_generated":"media-atoms"},
-		"thumbColour": {"type":"object","_generated":"media-atoms"},
-		"thumbGreyscale": {"type":"number","_generated":"media-atoms"},
-		"thumbAlignment": {"type":"object","_generated":"media-atoms"},
-		"thumbOrder": {"type":"object","_generated":"media-atoms"},
 		"previewSource": {"type":"object","_generated":"media-atoms"},
 		"previewLoading": {"type":"string","_generated":"media-atoms"},
-		"previewAlt": {"type":"string","_generated":"media-atoms"},
-		"previewDecorative": {"type":"boolean","_generated":"media-atoms"},
 		"previewFit": {"type":"object","_generated":"media-atoms"},
 		"previewRepeat": {"type":"object","_generated":"media-atoms"},
 		"previewTileSize": {"type":"object","_generated":"media-atoms"},
-		"previewFocal": {"type":"object","_generated":"media-atoms"},
-		"previewPinned": {"type":"boolean","_generated":"media-atoms"},
-		"previewBackground": {"type":"string","_generated":"media-atoms"},
-		"previewOverlayColour": {"type":"string","_generated":"media-atoms"},
-		"previewOverlayColourHover": {"type":"string","_generated":"media-atoms"},
-		"previewOverlayGradient": {"type":"string","_generated":"media-atoms"},
-		"previewOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
-		"previewOverlayOpacity": {"type":"object","_generated":"media-atoms"},
-		"previewOverlayBlend": {"type":"string","_generated":"media-atoms"},
-		"previewOpacity": {"type":"object","_generated":"media-atoms"},
-		"previewBlend": {"type":"string","_generated":"media-atoms"},
-		"previewBoxShadow": {"type":"string","_generated":"media-atoms"},
-		"previewBoxShadowColour": {"type":"string","_generated":"media-atoms"},
-		"previewBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
-		"previewCaption": {"type":"string","_generated":"media-atoms"},
-		"previewCaptionTag": {"type":"string","_generated":"media-atoms"},
-		"previewLinkUrl": {"type":"string","_generated":"media-atoms"},
-		"previewLinkOpensNewTab": {"type":"boolean","_generated":"media-atoms"},
-		"previewLinkRel": {"type":"string","_generated":"media-atoms"},
-		"previewLinkUrlSource": {"type":"string","_generated":"media-atoms"},
-		"previewRatio": {"type":"object","_generated":"media-atoms"},
-		"previewWidth": {"type":"object","_generated":"media-atoms"},
-		"previewHeight": {"type":"object","_generated":"media-atoms"},
-		"previewMinWidth": {"type":"object","_generated":"media-atoms"},
-		"previewMaxWidth": {"type":"object","_generated":"media-atoms"},
-		"previewMinHeight": {"type":"object","_generated":"media-atoms"},
-		"previewMaxHeight": {"type":"object","_generated":"media-atoms"},
 		"previewShape": {"type":"object","_generated":"media-atoms"},
 		"previewRadius": {"type":"object","_generated":"media-atoms"},
 		"previewBorderWidth": {"type":"object","_generated":"media-atoms"},
 		"previewBorderStyle": {"type":"string","_generated":"media-atoms"},
-		"previewBorderColourHover": {"type":"string","_generated":"media-atoms"},
-		"previewColour": {"type":"object","_generated":"media-atoms"},
-		"previewGreyscale": {"type":"number","_generated":"media-atoms"},
-		"previewAlignment": {"type":"object","_generated":"media-atoms"},
-		"previewOrder": {"type":"object","_generated":"media-atoms"}
+		"previewBorderColourHover": {"type":"string","_generated":"media-atoms"}
 	},
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css",

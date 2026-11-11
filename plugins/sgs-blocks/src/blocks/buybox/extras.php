@@ -278,9 +278,10 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 	 * @param string $root_sel   The block's unique root selector (render.php's $root_sel).
 	 * @param array  $rrp        Result of sgs_product_rrp_saving() (includes/product-rrp.php).
 	 * @param array  $sticky     Result of sgs_buybox_sticky_data().
+	 * @param string $uid        The block's scope class, without the dot (the thumbnail buttons carry `{uid}-thumbbtn`).
 	 * @return string[] CSS rule strings to append to render.php's $scoped_css.
 	 */
-	function sgs_buybox_extras_scoped_css( array $attributes, string $root_sel, array $rrp, array $sticky ): array {
+	function sgs_buybox_extras_scoped_css( array $attributes, string $root_sel, array $rrp, array $sticky, string $uid = '' ): array {
 		$css = array();
 
 		// --- Sticky configurator column. Disabled below 768px unconditionally
@@ -389,45 +390,29 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 			}
 		}
 
-		// The thumbnails' border, through the shared helpers. Width (a box) and style
-		// paint only beside a real width (sgs_border_box_decls); the stylesheet already
-		// paints a 2px solid border, so a style the client chose without a width still
-		// applies on its own. The corner radius is a flat corner object. Colour is three
-		// states: Normal, Hover (touch-guarded, with :focus-within for keyboard users)
-		// and Current, the selected thumbnail (aria-current="true"). All empty emits
-		// nothing, so style.css's 2px transparent border, primary-token selected border
-		// and inherited main-image radius paint exactly as before.
-		$thumb_sel        = $root_sel . ' .product-card__thumb';
-		$thumb_style      = sgs_border_style_keyword( $attributes['galleryThumbBorderStyle'] ?? '' );
-		$thumb_width_box  = is_array( $attributes['galleryThumbBorderWidth'] ?? null ) ? $attributes['galleryThumbBorderWidth'] : array();
-		$thumb_decls      = sgs_border_box_decls( $thumb_width_box, $thumb_style );
-		$thumb_corners    = sgs_corner_object_longhands( $attributes['galleryThumbBorderRadius'] ?? null );
-		$has_border_width = null !== sgs_box_object_shorthand( $thumb_width_box );
-		// sgs_border_box_decls() emits nothing for the explicit style `none`, which would
-		// leave the stylesheet's own border showing; the client chose no border.
-		if ( empty( $thumb_decls ) && $has_border_width && 'none' === $thumb_style ) {
-			$thumb_decls[] = 'border-style:none';
-		}
-		if ( null !== $thumb_corners ) {
-			$thumb_decls[] = $thumb_corners;
-		}
-		if ( ! empty( $thumb_decls ) ) {
-			$css[] = $thumb_sel . '{' . implode( ';', $thumb_decls ) . ';}';
+		// The thumbnails' border and corners are the `thumb` slot's settings, printed on the thumbnail button (it carries the
+		// selected state and the clip; the picture inside fills it). Width and style paint only beside a real width, so
+		// style.css's 2px transparent border, primary-token selected border and inherited main-photo radius stand when
+		// nothing is set. Colour is three states: Normal (thumbBorderColour), Hover (thumbBorderColourHover, touch-guarded,
+		// with :focus-within for keyboard users) and Current, the selected thumbnail (galleryThumbBorderColourCurrent).
+		$thumb_sel          = $root_sel . ' .product-card__thumb';
+		$thumb_button_chrome = sgs_pcm_chrome_css( array_diff_key( $attributes, array( 'thumbBorderColour' => 1, 'thumbBorderColourHover' => 1 ) ), 'thumb', $uid . '-thumbbtn' );
+		if ( '' !== $thumb_button_chrome ) {
+			$css[] = $thumb_button_chrome;
 		}
 
-		// A resting colour alone outranks style.css's selected rule (the same specificity,
-		// emitted later), so the selected thumbnail keeps the stylesheet's primary-token
-		// border unless the client chose a Current colour.
+		// A resting colour alone outranks style.css's selected rule (the same specificity, emitted later), so the
+		// selected thumbnail keeps the stylesheet's primary-token border unless the client chose a Current colour.
 		$thumb_colour_attrs = $attributes;
-		if ( '' !== (string) ( $attributes['galleryThumbBorderColour'] ?? '' ) && '' === (string) ( $attributes['galleryThumbBorderColourCurrent'] ?? '' ) ) {
+		if ( '' !== (string) ( $attributes['thumbBorderColour'] ?? '' ) && '' === (string) ( $attributes['galleryThumbBorderColourCurrent'] ?? '' ) ) {
 			$thumb_colour_attrs['galleryThumbBorderColourCurrent'] = 'primary';
 		}
 		$thumb_colour_css = sgs_border_states_css(
 			$thumb_sel,
 			$thumb_colour_attrs,
 			array(
-				'base'         => 'galleryThumbBorderColour',
-				'hover'        => 'galleryThumbBorderColourHover',
+				'base'         => 'thumbBorderColour',
+				'hover'        => 'thumbBorderColourHover',
 				'current'      => 'galleryThumbBorderColourCurrent',
 				'current_aria' => 'true',
 			)

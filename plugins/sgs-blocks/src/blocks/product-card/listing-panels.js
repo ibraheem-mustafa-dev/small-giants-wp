@@ -11,7 +11,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { FlexWrapControl, MEDIA_SIZING_RATIO_OPTIONS, SgsBoxControl, SgsLengthControl } from '../../components';
+import { FlexWrapControl, SgsBoxControl, SgsLengthControl } from '../../components';
 import { SGS_LENGTH_UNITS, sgsNormaliseLength } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
@@ -44,7 +44,6 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
 		showCtaShadow,
 		showSwatches,
 		showDescriptionTier,
-		imageSize,
 	} = attributes;
 	const tierValue = ( tier ) => ( showDescriptionTier && showDescriptionTier[ tier ] ) || '';
 	const setTier = ( tier, v ) => {
@@ -221,22 +220,6 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				) }
-				<SelectControl
-					label={ __( 'Photo size', 'sgs-blocks' ) }
-					help={ __( 'A larger size stops a small thumbnail looking soft on a wide card. Default = the shop\u2019s thumbnail size.', 'sgs-blocks' ) }
-					value={ imageSize || '' }
-					options={ [
-						{ label: __( 'Shop thumbnail (default)', 'sgs-blocks' ), value: '' },
-						{ label: __( 'Thumbnail', 'sgs-blocks' ), value: 'thumbnail' },
-						{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
-						{ label: __( 'Medium large', 'sgs-blocks' ), value: 'medium_large' },
-						{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
-						{ label: __( 'Full size', 'sgs-blocks' ), value: 'full' },
-					] }
-					onChange={ ( v ) => setAttributes( { imageSize: v } ) }
-					__next40pxDefaultSize
-					__nextHasNoMarginBottom
-				/>
 				<ToggleControl
 					label={ __( 'Show colour dots', 'sgs-blocks' ) }
 					checked={ showSwatches !== false }
@@ -262,7 +245,7 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
 }
 
 /**
- * Styles panel: the image box shape and the resting shadow.
+ * Styles panel: the card's padding per device and its resting shadow. The photo's shape, ratio and height are the `image` slot's panels.
  *
  * @param {Object}   props               Component props.
  * @param {Object}   props.attributes    Block attributes.
@@ -270,38 +253,14 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
  * @return {Element} The panel.
  */
 export function ListingShapePanel( { name, attributes, setAttributes } ) {
-	const { imageAspectRatio, showShadow, noImageLabel, priceRowSpaceAbove, imageFill, cardPaddingTier, cardPadding } = attributes;
+	const { showShadow, noImageLabel, priceRowSpaceAbove, cardPaddingTier, cardPadding } = attributes;
 	const setPaddingTier = ( tier, box ) => setAttributes( { cardPaddingTier: { ...( cardPaddingTier || {} ), [ tier ]: box } } );
 
 	return (
 		<PanelBody
-			title={ __( 'Image shape & shadow', 'sgs-blocks' ) }
+			title={ __( 'Card padding & shadow', 'sgs-blocks' ) }
 			initialOpen={ false }
 		>
-			<SelectControl
-				label={ __( 'Image shape', 'sgs-blocks' ) }
-				help={ __(
-					'Fixed height uses the Image height setting; a ratio follows the card’s width.',
-					'sgs-blocks'
-				) }
-				value={ imageAspectRatio || '' }
-				options={ [
-					{ label: __( 'Fixed height', 'sgs-blocks' ), value: '' },
-					...MEDIA_SIZING_RATIO_OPTIONS,
-				] }
-				onChange={ ( v ) => setAttributes( { imageAspectRatio: v } ) }
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
-			/>
-			{ '' !== ( imageAspectRatio || '' ) && (
-				<ToggleControl
-					label={ __( 'Photo fills its box', 'sgs-blocks' ) }
-					help={ __( 'Stretches the photo link to the box\u2019s full height so a short photo fills it.', 'sgs-blocks' ) }
-					checked={ !! imageFill }
-					onChange={ ( v ) => setAttributes( { imageFill: v } ) }
-					__nextHasNoMarginBottom
-				/>
-			) }
 			<SgsBoxControl
 				label={ __( 'Card padding on tablet', 'sgs-blocks' ) }
 				values={ ( cardPaddingTier && cardPaddingTier.tablet ) || cardPadding || {} }

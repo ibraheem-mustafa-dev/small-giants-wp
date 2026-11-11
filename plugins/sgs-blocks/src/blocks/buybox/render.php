@@ -434,6 +434,7 @@ $context = array(
 	'inStock'             => (bool) $def['inStock'],
 	// FR-30-10 Step-10a: real gallery seed (was neutral '' / '' / [] / true before).
 	'imageSrc'            => $buybox_img_src,
+	'imageSrcset'         => '',
 	'imageAlt'            => $buybox_img_alt,
 	'pending'             => false,
 	'restNonce'           => wp_create_nonce( 'wp_rest' ),
@@ -762,46 +763,13 @@ if ( $border['mobile'] ) {
 // FR-Wave-B: sticky column / RRP pill / stock-status scoped CSS (extras.php).
 $scoped_css = array_merge(
 	$scoped_css,
-	sgs_buybox_extras_scoped_css( $attributes, $root_sel, $buybox_rrp, $buybox_sticky )
+	sgs_buybox_extras_scoped_css( $attributes, $root_sel, $buybox_rrp, $buybox_sticky, $uid )
 );
 
-// Main photo frame: the box is .product-card__media (the photo inside it is the
-// .sgs-buybox__main-photo image). Ground, border (width, style, colour; tablet and
-// mobile widths in their own queries), corner radius and shadow print on the box only; the
-// thumbnails keep their own radius setting. All empty prints nothing.
-$sgs_bb_photo_sel    = $root_sel . ' .product-card__media';
-$sgs_bb_photo_border = sgs_border_element_decls(
-	$attributes,
-	'mainPhoto',
-	$sgs_bb_photo_sel,
-	array(
-		'colour' => array( 'base' => 'mainPhotoBorderColour' ),
-		'radius' => false,
-	)
-);
-$sgs_bb_photo_decls  = $sgs_bb_photo_border['base'];
-$sgs_bb_photo_ground = sgs_colour_value( (string) ( $attributes['mainPhotoBackgroundColour'] ?? '' ) );
-if ( '' !== $sgs_bb_photo_ground ) {
-	$sgs_bb_photo_decls[] = 'background:' . $sgs_bb_photo_ground;
-}
-$sgs_bb_photo_decls = array_merge(
-	$sgs_bb_photo_decls,
-	sgs_shadow_box_decls( (string) ( $attributes['mainPhotoShadow'] ?? '' ), (string) ( $attributes['mainPhotoShadowColour'] ?? '' ) )
-);
-if ( ! empty( $sgs_bb_photo_decls ) ) {
-	$scoped_css[] = $sgs_bb_photo_sel . '{' . implode( ';', $sgs_bb_photo_decls ) . ';}';
-}
-$scoped_css[] = implode( '', $sgs_bb_photo_border['rules'] );
-if ( $sgs_bb_photo_border['tablet'] ) {
-	$scoped_css[] = sgs_emit_tier_decls( $sgs_bb_photo_sel, array( 'tablet' => $sgs_bb_photo_border['tablet'] ) );
-}
-if ( $sgs_bb_photo_border['mobile'] ) {
-	$scoped_css[] = sgs_emit_tier_decls( $sgs_bb_photo_sel, array( 'mobile' => $sgs_bb_photo_border['mobile'] ) );
-}
-$sgs_bb_photo_radius = sgs_css_length_value( (string) ( $attributes['mainPhotoRadius'] ?? '' ) );
-if ( '' !== $sgs_bb_photo_radius ) {
-	$scoped_css[] = $sgs_bb_photo_sel . '{border-radius:' . $sgs_bb_photo_radius . ';}';
-}
+// Main photo frame: the box is .product-card__media (the photo inside it is the .sgs-buybox__main-photo image). The
+// `main` slot's border, corners, shadow and ground print on the box, which also carries the sticker; gallery-col.php
+// hands the photo to the renderer without them. All empty prints nothing.
+$scoped_css[] = sgs_pcm_chrome_css( $attributes, 'main', $uid . '-frame' );
 
 // Price row gap, and the saving pill's corner radius.
 $sgs_bb_row_gap = sgs_css_length_value( (string) ( $attributes['priceRowGap'] ?? '' ) );

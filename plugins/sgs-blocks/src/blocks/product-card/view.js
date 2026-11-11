@@ -45,6 +45,7 @@
  *   inStock            {boolean}
  *   stockText          {string}   e.g. "Out of stock" (empty when in stock)
  *   imageSrc           {string}
+ *   imageSrcset        {string}  the printed photo's srcset; emptied once a swap writes a new src
  *   imageAlt           {string}
  *   pending            {boolean}  true while addToCart XHR is in flight
  *
@@ -616,6 +617,8 @@ function applyPillSelection( ctx, detail ) {
 			ctx.imageSrc = combo.imageUrl;
 		}
 		if ( ctx.imageSrc !== previousImage ) {
+			// The printed photo's srcset would outrank the new src; the swap empties it.
+			ctx.imageSrcset = '';
 			replayPhoto( cardRefByCtx.get( ctx ) );
 		}
 
@@ -703,6 +706,9 @@ function selectThumbByIndex( ctx, card, idx ) {
 	}
 	const imageChanged = ctx.imageSrc !== ctx.gallery[ idx ].url;
 	ctx.imageSrc = ctx.gallery[ idx ].url;
+	if ( imageChanged ) {
+		ctx.imageSrcset = '';
+	}
 	ctx.selectedThumb = idx;
 	if ( imageChanged ) {
 		replayPhoto( card );

@@ -1,12 +1,15 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, TextControl, ToggleControl, Button, Notice } from '@wordpress/components';
+import { InspectorControls } from '@wordpress/block-editor';
+import { PanelBody, SelectControl, TextControl, ToggleControl, Notice } from '@wordpress/components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { useSelect } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import ConfiguratorLookPanel from './ConfiguratorLookPanel';
-import { fillRow, textRow, ResponsiveBoxControl, ResponsiveLengthControl, SgsLengthControl } from '../../components';
+import { fillRow, textRow, ResponsiveBoxControl, ResponsiveLengthControl, SgsLengthControl, MediaElementPanel } from '../../components';
+
+/** The preview slot's atoms: Source and Fit for the picture; Shape, Radius and Border for the preview box (render.php prints them there). */
+const PREVIEW_ATOMS = [ 'source', 'object-fit', 'shape' ];
 
 const STYLE_OPTIONS = [
 	{ value: '', label: __( 'Same as the picker style', 'sgs-blocks' ) },
@@ -165,7 +168,7 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 		<InspectorControls>
 			<PanelBody title={ __( 'Pick a set', 'sgs-blocks' ) } initialOpen>
 				<Checklist productId={ productId } list={ state.list } failed={ state.failed } />
-				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { groupStyles: {}, summaryText: 'Your {pack}: {split}', previewImageId: 0, previewLayerAxis: '', pickHideGallery: false, pickHidePreview: false, showPriceRow: true } ) }>
+				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { groupStyles: {}, summaryText: 'Your {pack}: {split}', previewLayerAxis: '', pickHideGallery: false, pickHidePreview: false, showPriceRow: true } ) }>
 				<Item label={ __( 'Option group looks', 'sgs-blocks' ) } name="groupStyles" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
 					{ ( state.list ? state.list.groups : [] ).map( ( group ) => (
 						<SelectControl
@@ -188,27 +191,6 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-				</Item>
-				<Item label={ __( 'Preview image', 'sgs-blocks' ) } name="previewImageId" fallback={ 0 } attributes={ attributes } setAttributes={ setAttributes }>
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ ( media ) => setAttributes( { previewImageId: media && media.id ? media.id : 0 } ) }
-							allowedTypes={ [ 'image' ] }
-							value={ attributes.previewImageId || 0 }
-							render={ ( { open } ) => (
-								<div>
-									<Button variant="secondary" onClick={ open } __next40pxDefaultSize>
-										{ attributes.previewImageId ? __( 'Change the preview image', 'sgs-blocks' ) : __( 'Choose the preview image', 'sgs-blocks' ) }
-									</Button>
-									{ attributes.previewImageId > 0 && (
-										<Button variant="link" isDestructive onClick={ () => setAttributes( { previewImageId: 0 } ) }>
-											{ __( 'Remove', 'sgs-blocks' ) }
-										</Button>
-									) }
-								</div>
-							) }
-						/>
-					</MediaUploadCheck>
 				</Item>
 				<Item label={ __( 'Preview: scatter this attribute’s colour', 'sgs-blocks' ) } name="previewLayerAxis" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
 					<TextControl
@@ -248,24 +230,18 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 				</Item>
 				</ToolsPanel>
 			</PanelBody>
+			{ /* The picture inside the live preview (Spec 49 10.4, the `preview` slot); the preview box's own spacing follows. */ }
+			<MediaElementPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				prefix="preview"
+				blockSlug="sgs/buybox"
+				blockName="sgs/buybox"
+				context="item"
+				atoms={ PREVIEW_ATOMS }
+			/>
 			<PanelBody title={ __( 'Preview box', 'sgs-blocks' ) } initialOpen={ false }>
-				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { previewBorderWidth: '', previewRadius: '', previewPadding: {} } ) }>
-				<Item label={ __( 'Border width', 'sgs-blocks' ) } name="previewBorderWidth" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
-					<SgsLengthControl
-						presets
-						label={ __( 'Border width', 'sgs-blocks' ) }
-						value={ attributes.previewBorderWidth || '' }
-						onChange={ ( val ) => setAttributes( { previewBorderWidth: val ?? '' } ) }
-					/>
-				</Item>
-				<Item label={ __( 'Corner radius', 'sgs-blocks' ) } name="previewRadius" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
-					<SgsLengthControl
-						presets
-						label={ __( 'Corner radius', 'sgs-blocks' ) }
-						value={ attributes.previewRadius || '' }
-						onChange={ ( val ) => setAttributes( { previewRadius: val ?? '' } ) }
-					/>
-				</Item>
+				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { previewPadding: {} } ) }>
 				<Item label={ __( 'Inner spacing', 'sgs-blocks' ) } name="previewPadding" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
 					<TierBox label={ __( 'Inner spacing', 'sgs-blocks' ) } name="previewPadding" attributes={ attributes } setAttributes={ setAttributes } />
 				</Item>

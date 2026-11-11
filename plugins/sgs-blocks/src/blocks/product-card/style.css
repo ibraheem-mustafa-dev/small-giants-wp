@@ -67,14 +67,15 @@
 	--sgs-product-card-bg: transparent;
 }
 
-/* object-fit/object-position now governed by the media-element atom layer
-   (rule 37-media-no-handroll — .sgs-media-el, assets/css/media-element.css),
-   which carries the SAME cover/center-center defaults this rule used to
-   hardcode, so an untouched card renders byte-identical. */
-.product-card .product-card-img {
+/* The photo is the `image` media slot (Spec 49): object-fit, object-position, Ratio, Height and Width come from the
+   renderer's rules for the slot's scope class. A card whose slot sets a Ratio or a Height (.product-card--image-sized)
+   is sized by the photo itself; every other card keeps the fixed-height box (the var is also settable site-wide). */
+.product-card:not(.product-card--image-sized) .product-card-img {
 	width: 100%;
-	/* Var emitted by render.php when the imageHeight attr is set (F3 fix). */
 	height: var( --sgs-product-card-image-height, 220px );
+}
+
+.product-card .product-card-img {
 	display: block;
 }
 
@@ -753,8 +754,8 @@
 	display: block;
 }
 
-/* imageFill: the photo link takes the media box's full height, so a photo shorter than the box fills it. */
-.product-card--image-fill .product-card__img-link {
+/* Height Fill on the photo slot: the link, and the slot's box inside it, take the media box's full height. */
+.product-card__img-link:has( .sgs-media-box--fill ) {
 	height: 100%;
 }
 
@@ -825,7 +826,7 @@
  * aspect-ratio inline style drives the box; the fixed 220px from .product-card-img
  * is overridden when the media box is present. overflow:hidden clips any rounding.
  */
-.product-card--live .product-card__media {
+.product-card--live:not(.product-card--image-sized) .product-card__media {
 	position: relative;
 	/* Fixed-height media box (matches the mockup draft): the image scales to
 	   fill the full width + a fixed height, cropping/​centred via object-fit
@@ -837,13 +838,23 @@
 	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
 }
 
+/* A sized photo (Ratio or Height on the slot) sets the box's height; the box only clips and positions. */
+.product-card--live.product-card--image-sized .product-card__media {
+	position: relative;
+	overflow: hidden;
+	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
+}
+
 /* Main image fills the fixed-height box. object-fit/object-position now
    governed by the media-element atom layer (rule 37-media-no-handroll —
    .sgs-media-el default cover/center-center matches what this rule used to
    hardcode, so an untouched card renders byte-identical). */
-.product-card--live .product-card__media .product-card-img {
+.product-card--live:not(.product-card--image-sized) .product-card__media .product-card-img {
 	width: 100%;
 	height: 100%;
+}
+
+.product-card--live .product-card__media .product-card-img {
 	display: block;
 	margin: 0;
 }
@@ -1093,9 +1104,12 @@
    an untouched card renders byte-identical). The bound <img> carries this class
    too (the motion part class) beside .product-card-img; :where(:not(.product-card-img))
    keeps this rule on the typed image only. */
-.product-card .sgs-product-card__image:where(:not(.product-card-img)) {
+.product-card:not(.product-card--image-sized) .sgs-product-card__image:where(:not(.product-card-img)) {
 	width: 100%;
 	height: var( --sgs-product-card-image-height, 220px );
+}
+
+.product-card .sgs-product-card__image:where(:not(.product-card-img)) {
 	display: block;
 }
 
@@ -1535,14 +1549,17 @@
 
 /* Two classes (0,2,0): WooCommerce's `.woocommerce img { height: auto }`
    (0,1,1) would otherwise beat the single-class rule and show every logo at its
-   file's intrinsic size. The card's instance rule (brandLogoHeight, -Width,
-   -MaxHeight, -MaxWidth) uses the same weight and comes later, so it wins. */
+   file's intrinsic size. */
 .sgs-product-card__brand .sgs-product-card__brand-logo {
 	display: block;
-	width: auto;
-	height: var( --sgs-product-card-brand-logo-height, 18px );
 	max-width: 100%;
 	object-fit: contain;
+}
+
+/* The logo's default size; the `logo` slot's Width and Height (the renderer's rules for its scope class) replace it. */
+:where( .sgs-product-card__brand ) .sgs-product-card__brand-logo {
+	width: auto;
+	height: var( --sgs-product-card-brand-logo-height, 18px );
 }
 
 .sgs-product-card__saving-badge {
@@ -1786,15 +1803,12 @@
 }
 
 /*
- * imageAspectRatio: the image box follows the card's width at the chosen
- * shape instead of the fixed imageHeight. The image and the no-image
- * placeholder fill the box.
+ * A Ratio or a Height on the photo slot: the box follows the photo's own size instead of the fixed height. The
+ * renderer's rules size the photo; the box clips it.
  */
-.product-card--image-ratio .product-card__media,
-.product-card--image-ratio .sgs-product-card__media-wrap {
-	--sgs-product-card-image-height: 100%;
+.product-card--image-sized .product-card__media,
+.product-card--image-sized .sgs-product-card__media-wrap {
 	height: auto;
-	aspect-ratio: var( --sgs-product-card-image-aspect, 1 / 1 );
 	overflow: hidden;
 }
 

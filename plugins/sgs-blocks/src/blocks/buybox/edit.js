@@ -23,6 +23,10 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Curated extras for below the add-to-cart form (any block can still be inserted from the list view).
 const BUYBOX_EXTRAS_ALLOWED_BLOCKS = [ 'sgs/button', 'sgs/whatsapp-cta', 'sgs/icon-list', 'sgs/gift-order' ];
 
+/** The atoms each slot's panels carry (block.json supports.sgs.mediaElements). */
+const MAIN_ATOMS = [ 'source', 'meaning', 'object-fit', 'focal-point', 'sizing', 'shape', 'shadow', 'media-padding' ];
+const THUMB_ATOMS = [ 'object-fit', 'shape' ];
+
 /**
  * Editor view for sgs/buybox: the canvas draws a sample product with the real
  * markup (canvas-mock.js), since the editor has no product context to render.
@@ -362,12 +366,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Gallery images', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					{ /* Two independently-scoped media elements — 'main' is the
-					     large PDP display image, 'thumb' is the thumbnail-rail
-					     image (a distinct role, not the same image rendered
-					     twice). Mirrors sgs/before-after's before/after pattern
-					     so a client can set a different fit for each. Rule
-					     37-media-no-handroll. */ }
+					{ /* The gallery's two media slots (Spec 49 10.4), the adopted panels: 'main' is the large product photo, 'thumb' the
+					     thumbnail strip's pictures (one set of settings for every thumbnail). */ }
 					<p className="sgs-buybox__media-panel-label">
 						{ __( 'Main image', 'sgs-blocks' ) }
 					</p>
@@ -376,10 +376,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						setAttributes={ setAttributes }
 						prefix="main"
 						blockSlug="sgs/buybox"
-						insertion="element"
-						atoms={ [ 'object-fit' ] }
-						mediaType="image"
-						scope="element"
+						blockName="sgs/buybox"
+						context="item"
+						atoms={ MAIN_ATOMS }
 					/>
 					<p className="sgs-buybox__media-panel-label">
 						{ __( 'Thumbnail images', 'sgs-blocks' ) }
@@ -389,10 +388,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						setAttributes={ setAttributes }
 						prefix="thumb"
 						blockSlug="sgs/buybox"
-						insertion="element"
-						atoms={ [ 'object-fit' ] }
-						mediaType="image"
-						scope="element"
+						blockName="sgs/buybox"
+						context="item"
+						atoms={ THUMB_ATOMS }
 					/>
 				</PanelBody>
 				<PanelBody

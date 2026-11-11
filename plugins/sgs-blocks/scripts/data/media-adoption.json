@@ -272,21 +272,39 @@
 								"image"
 							],
 							"context": "item",
-							"from": "main"
+							"from": "main",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"sizing",
+								"shape",
+								"shadow",
+								"media-padding"
+							]
 						},
 						"thumb": {
 							"kinds": [
 								"image"
 							],
 							"context": "item",
-							"from": "thumb"
+							"from": "thumb",
+							"atoms": [
+								"object-fit",
+								"shape"
+							]
 						},
 						"logo": {
 							"kinds": [
 								"image"
 							],
 							"context": "item",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"sizing"
+							]
 						}
 					},
 					"replace": [
@@ -300,21 +318,40 @@
 								"image"
 							],
 							"context": "item",
-							"from": "main"
+							"from": "main",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"sizing",
+								"shape",
+								"shadow",
+								"media-padding"
+							]
 						},
 						"thumb": {
 							"kinds": [
 								"image"
 							],
 							"context": "item",
-							"from": "thumb"
+							"from": "thumb",
+							"atoms": [
+								"object-fit",
+								"shape"
+							]
 						},
 						"preview": {
 							"kinds": [
 								"image"
 							],
 							"context": "item",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"object-fit",
+								"shape"
+							]
 						}
 					},
 					"replace": [

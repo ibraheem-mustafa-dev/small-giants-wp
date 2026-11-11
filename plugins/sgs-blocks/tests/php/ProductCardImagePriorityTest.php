@@ -63,17 +63,22 @@ final class ProductCardImagePriorityTest extends TestCase {
 		$harness = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
 		$attrs_f = tempnam( sys_get_temp_dir(), 'sgsat' );
 		$prod_f  = tempnam( sys_get_temp_dir(), 'sgspr' );
+		$meta_f  = tempnam( sys_get_temp_dir(), 'sgsmt' );
 		file_put_contents( $attrs_f, json_encode( array( 'sourceMode' => 'wc-product', 'productId' => 52 ), JSON_THROW_ON_ERROR ) );
 		file_put_contents( $prod_f, json_encode( $product, JSON_THROW_ON_ERROR ) );
+		// The product photo is attachment 7, 800 x 800: large enough to be the page's lead image.
+		file_put_contents( $meta_f, json_encode( array( '7' => array( 'width' => 800, 'height' => 800 ) ), JSON_THROW_ON_ERROR ) );
 		try {
 			$cmd = escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( $harness )
 				. ' --slug sgs/product-card --attrs-file ' . escapeshellarg( $attrs_f )
 				. ' --product-file ' . escapeshellarg( $prod_f )
+				. ' --attachment-meta-file ' . escapeshellarg( $meta_f )
 				. ( $first_section ? ' --first-section' : '' ) . ' 2>&1';
 			$out = (string) shell_exec( $cmd );
 		} finally {
 			@unlink( $attrs_f );
 			@unlink( $prod_f );
+			@unlink( $meta_f );
 		}
 		$decoded = json_decode( $out, true );
 		$this->assertIsArray( $decoded, 'harness did not return JSON: ' . $out );
@@ -104,7 +109,6 @@ final class ProductCardImagePriorityTest extends TestCase {
 		$img = self::main_img( $this->card_html( self::PRODUCT ) );
 		$this->assertNotSame( '', $img, 'the bound card prints its main image' );
 		$this->assertStringContainsString( 'loading="lazy"', $img );
-		$this->assertStringContainsString( 'fetchpriority="auto"', $img );
 		$this->assertStringNotContainsString( 'fetchpriority="high"', $img );
 	}
 
@@ -117,7 +121,7 @@ final class ProductCardImagePriorityTest extends TestCase {
 	public function test_no_card_branch_hardcodes_a_high_priority_image(): void {
 		$src = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/product-card/render.php' );
 		$this->assertSame( 0, preg_match( '/fetchpriority="high"/', $src ), 'the variable and simple card branches both decide the priority per render' );
-		$this->assertSame( 2, substr_count( $src, 'sgs_content_image_claims_priority()' ), 'both bound branches ask the shared page-wide claim' );
+		$this->assertSame( 3, substr_count( $src, 'sgs_pcm_main_image(' ), 'the read-only, variable and simple card branches print the photo through the media renderer, which asks SGS_Media_Priority' );
 	}
 
 	public function test_claim_needs_the_first_section_and_takes_the_slot_once(): void {

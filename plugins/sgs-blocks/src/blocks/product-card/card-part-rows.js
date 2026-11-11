@@ -14,7 +14,7 @@ import { __ } from '@wordpress/i18n';
  * @return {Object[]} SgsColourPanel rows.
  */
 export function cardPartColourRows( attributes, setAttributes ) {
-	const { borderColourHover, rrpColour, mediaBackgroundColour, noImageLabelColour, swatchBorderColour, swatchMoreBorderColour, wishlistBorderColour } = attributes;
+	const { borderColourHover, rrpColour, noImageLabelColour, swatchBorderColour, swatchMoreBorderColour, wishlistBorderColour } = attributes;
 
 	return [
 		{
@@ -39,19 +39,6 @@ export function cardPartColourRows( attributes, setAttributes ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: rrpColour,
 					onChange: ( val ) => setAttributes( { rrpColour: val ?? '' } ),
-					linked: true,
-				},
-			],
-		},
-		{
-			key: 'mediaBackground',
-			label: __( 'Photo background colour', 'sgs-blocks' ),
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: mediaBackgroundColour,
-					onChange: ( val ) => setAttributes( { mediaBackgroundColour: val ?? '' } ),
 					linked: true,
 				},
 			],
