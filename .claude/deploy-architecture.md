@@ -19,7 +19,7 @@ All files are in `plugins/sgs-blocks/scripts/`. One job per file; the command fi
 | `build-deploy.py` | The command: flags, `main()` (the stage order), `build_and_gate()`, `step_gate_full()`. Keep it a thin sequencer; new logic goes in a module. |
 | `deploy_common.py` | `TARGETS` (every deploy site), paths, run ID, tar and dirty-gate rules, `log()`, `err()`, `run()`, SSH and composer helpers. Scripts that need `TARGETS` or the SSH helpers import this. |
 | `deploy_guards.py` | Checks before anything ships: scoped dirty-file gate, client `theme.json` payload and guard, ownership marker, stored-content (old-shape) audit, the isolation decision. |
-| `deploy_ship.py` | `npm run build`, packaging, upload, remote extract with `.bak` rotation, local cleanup, and `run_isolated()` (the throwaway git worktree at `HEAD`). |
+| `deploy_ship.py` | `npm run build`, packaging, upload (`upload_resumable()`: sftp `put`, then `reput` from the bytes the host holds after a dropped connection, verified by remote size, up to 8 attempts; a larger leftover file is overwritten), remote extract with `.bak` rotation, local cleanup, and `run_isolated()` (the throwaway git worktree at `HEAD`). |
 | `deploy_verify.py` | After the files land: cache purge, `theme.json` and payload checks, the smoke test, the live motion probes (`step_motion_qa`), the scoped-selector audit. |
 | `deploy_cache.py` | Remembers a commit that already built and passed `gate:full`; also the machine-wide packaging lock. |
 | `deploy_multi.py` | `--target a,b` or `all`: one build and gate, then every site at once. |
@@ -39,7 +39,7 @@ All files are in `plugins/sgs-blocks/scripts/`. One job per file; the command fi
 3. `build`: `npm run build`, whose `prebuild` runs the generators then the fast gate tier (so fast-gate time is inside this stage), or a restore from the deploy cache.
 4. `gate-full`: `npm run gate:full` (the full gate tier), skipped and logged as `gate-full (cached)` when this commit and framework DB already passed.
 5. `deploy-ownership`, `theme-json-guard`: refuse to overwrite a newer deploy by another session (`--takeover` overrides) and ship the target client's own `theme.json`.
-6. `package`, `scp`, `remote-extract`, `deploy-marker`, `local-cleanup`.
+6. `package`, `scp` (the stage keeps its name; the transfer is a resumable sftp upload, because the Hostinger link resets connections about every 1 to 2 minutes), `remote-extract`, `deploy-marker`, `local-cleanup`.
 7. `purge-caches`, `verify-theme-json`, `verify`, `verify-payload`: caches purged, then the live site is fetched and the deployed `block.json` files are checksummed against the payload.
 8. `motion-qa`: live probes against the canary, canary target only, and only when asked for (`--motion-qa-tier smoke|full|auto`; the default `none` runs none).
 9. `first-paint`: the live first-paint gate (`scripts/check-first-paint.mjs`), only when asked for (`--first-paint`); it runs for any target with an entry in `scripts/data/first-paint.json`.

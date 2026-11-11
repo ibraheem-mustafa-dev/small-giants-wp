@@ -729,7 +729,20 @@ Bean's eleven points (bag goes to the cart page, toast motion and hover, checkou
 
 **Test order:** #1744 (Stripe test mode, the test customer): processing, thank-you owner note and View my orders, "Processing order" and "New order" emails sent.
 
-**Open (streams plan "Eye Care", steps 1 to 4):** the final walks' rows (`E:/sgs-tmp/ec-check/r14/V5/VERIFY.md` checkout, `V6/VERIFY.md` account), then the Custom CSS on posts 1609 and 9 into settings, then Bean's sign-off.
+**Bean's list of 2026-11-11 and the corner request** (each re-read live on eye-care-test at 1440 and 375 after the deploy of `97028e38e`):
+
+| Point | Cause | Fix | Live reading (1440, 375) |
+|---|---|---|---|
+| Stripe's "charge your card for future payments" line | Stripe's standard wording for a card saved for reuse; the store has Saved cards on (test mode); Stripe renders it | None: decided, stays; turning Saved cards off in WooCommerce admin should remove it (untested; a business decision for Bean or Eye Care) | n/a |
+| No space between the bag items and the separator above the coupon | Post 1609's Custom CSS rule `& .wc-block-components-order-summary-item{padding:0;margin:0}` overrode the `sgsItemPadding` setting | The rule narrowed to `margin:0`; `sgsItemPadding` bottom 18px | 18px, 18px |
+| Coupon section has extra side padding the summary card lacks | `sgsCouponPadding` painted the wrapper and the inner box, doubling it | `sgsCouponPadding` now prints on the inner `.wc-block-components-totals-coupon` (new `coupon_section` row) with `padding:0` on the wrapper (`d742e3554`) | coupon label, box and Apply start at the Subtotal x (893 and 893; 45 and 45) |
+| Coupon code box and Apply too tall; on mobile Apply taller than the box | No height setting; the checkout actions block's `.wp-element-button` min-height outranked Apply on phones | New `sgsCouponControlHeight` (per device, code box and Apply together; `d742e3554`); the Apply row carries `.wc-block-components-button` so its height wins (`400301ceb`); post 1609 desktop 44px | box, wrapper and Apply 44px at both widths |
+| Notice link and text not vertically aligned; link and info icon should be black | Specificity: WooCommerce's wc-blocks.css paints each variant at two classes and the link colour with `!important`; the account all-forms button preset gave links in notices a 52px box | `woocommerce-notices.css` paints at two classes, the link colour takes `!important`, the icon takes the text colour in every variant; the preset skips links inside block notices (`7b16c3135`) | link and icon #141414; link box 21px; link centre 0.5px from text centre (375: link on its own line) |
+| Payment box corners (selected box 4px beside square ones) | WooCommerce's `.wc-block-components-radio-control--highlight-checked ... --checked-option-highlighted` rule in packages-style.css | The Option and Chosen option card settings also paint the payment option boxes (`payment_option_chosen` row; `8a159d98b`, `eff3eee7a`) | 0px on card and Klarna boxes at both widths |
+
+**Decided (Bean, 2026-11-11):** Stripe's frame text and labels need not match the draft; colours are not generalised and the account post's literal colours stay as they are.
+
+**Open (streams plan "Eye Care", steps 1 to 4):** the final walks' remaining rows (`E:/sgs-tmp/ec-check/r14/V5/VERIFY.md` checkout, `V6/VERIFY.md` account), then the Custom CSS on posts 1609 and 9 into settings, then Bean's sign-off.
 
 **Process lessons recorded in auto memory:** a surface is matched from a checklist written from the draft's code, never from a findings list; a one-off look never covers everyday properties; after each deploy every "visible after deploy" line is re-read live; a mirror is checked for which site it copies before an agent writes to it.
 
