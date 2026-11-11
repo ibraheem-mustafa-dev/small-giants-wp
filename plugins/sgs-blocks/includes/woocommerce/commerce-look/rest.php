@@ -1,9 +1,10 @@
 <?php
 /**
- * `GET /sgs/v1/commerce-look/css`: the Cart and Checkout look rules for the editor canvas.
+ * `POST /sgs/v1/commerce-look/css`: the Cart and Checkout look rules for the editor canvas.
  *
  * WooCommerce draws these two blocks in React in the editor, so `render_block` never runs for them there. The canvas
- * asks this route with the block's current attributes and prints the CSS it gets back. The CSS is built by the same
+ * posts the block's current attributes to this route (in the request body, so a long attribute set never meets a URL
+ * length limit) and prints the CSS it gets back. The CSS is built by the same
  * writer the front end uses (sgs_commerce_look_css()); the editor has no second implementation.
  *
  * Security: the REST cookie nonce (`X-WP-Nonce`, checked by core before this callback runs) and the `edit_posts`
@@ -35,7 +36,7 @@ function sgs_commerce_look_register_route(): void {
 		'sgs/v1',
 		'/commerce-look/css',
 		array(
-			'methods'             => \WP_REST_Server::READABLE,
+			'methods'             => \WP_REST_Server::CREATABLE,
 			'callback'            => __NAMESPACE__ . '\sgs_commerce_look_rest_css',
 			'permission_callback' => static fn(): bool => current_user_can( 'edit_posts' ),
 			'args'                => array(

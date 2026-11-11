@@ -161,26 +161,42 @@
 			return true;
 		}
 
-		apply();
-		if ( ! watchSummary() ) {
-			watchBody();
+		/** Apply the extras once, then watch the page and the cart store for redraws. */
+		function connect() {
+			apply();
+			if ( ! watchSummary() ) {
+				watchBody();
+			}
+			if ( config.brand && root.wp && root.wp.data && root.wp.data.subscribe ) {
+				var last = EMPTY;
+				unsubscribe = root.wp.data.subscribe( function () {
+					var items = cartItems( root );
+					if ( items !== last ) {
+						last = items;
+						schedule();
+					}
+				} );
+			}
 		}
-		if ( config.brand && root.wp && root.wp.data && root.wp.data.subscribe ) {
-			var last = EMPTY;
-			unsubscribe = root.wp.data.subscribe( function () {
-				var items = cartItems( root );
-				if ( items !== last ) {
-					last = items;
-					schedule();
-				}
-			} );
-		}
-		root.addEventListener( 'pagehide', function () {
+
+		function disconnect() {
 			if ( observer ) {
 				observer.disconnect();
+				observer = null;
 			}
 			if ( 'function' === typeof unsubscribe ) {
 				unsubscribe();
+			}
+			unsubscribe = null;
+		}
+
+		connect();
+		// A page left through the back-forward cache keeps its DOM and script state, so it stops watching on `pagehide`
+		// and watches again (re-applying the extras React may have redrawn) when `pageshow` says it was restored.
+		root.addEventListener( 'pagehide', disconnect );
+		root.addEventListener( 'pageshow', function ( event ) {
+			if ( event.persisted && ! observer ) {
+				connect();
 			}
 		} );
 	}

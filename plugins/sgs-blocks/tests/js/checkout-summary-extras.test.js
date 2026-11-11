@@ -217,4 +217,32 @@ describe( 'checkout signed-in line', () => {
 		run( { editLabel: 'Edit', editUrl: 'https://example.test/bag/', brand: false, signedInLine: '' } );
 		expect( document.querySelector( '.sgs-checkout-signed-in' ) ).toBeNull();
 	} );
+
+	test( 'a page restored from the back-forward cache gets its extras back and is watched again', () => {
+		run( { editLabel: 'Edit', editUrl: 'https://example.test/bag/', brand: true } );
+		window.dispatchEvent( new Event( 'pagehide' ) );
+		document.querySelectorAll( '.sgs-checkout-summary-edit, .sgs-checkout-item-brand' ).forEach( ( el ) => el.remove() );
+		const restored = new Event( 'pageshow' );
+		restored.persisted = true;
+		window.dispatchEvent( restored );
+		expect( document.querySelectorAll( '.sgs-checkout-summary-edit' ) ).toHaveLength( 2 );
+		expect( document.querySelectorAll( '.sgs-checkout-item-brand' ) ).toHaveLength( 1 );
+	} );
+
+	test( 'a restored page is watched again: a summary that React redraws afterwards still gets the Edit link', async () => {
+		const originalFrame = window.requestAnimationFrame;
+		window.requestAnimationFrame = ( cb ) => {
+			cb();
+			return 1;
+		};
+		run( { editLabel: 'Edit', editUrl: 'https://example.test/bag/', brand: false } );
+		window.dispatchEvent( new Event( 'pagehide' ) );
+		const restored = new Event( 'pageshow' );
+		restored.persisted = true;
+		window.dispatchEvent( restored );
+		document.querySelectorAll( '.sgs-checkout-summary-edit' ).forEach( ( el ) => el.remove() );
+		await new Promise( ( resolve ) => setTimeout( resolve, 80 ) );
+		window.requestAnimationFrame = originalFrame;
+		expect( document.querySelectorAll( '.sgs-checkout-summary-edit' ).length ).toBeGreaterThan( 0 );
+	} );
 } );

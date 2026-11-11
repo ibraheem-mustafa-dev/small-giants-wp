@@ -2,15 +2,16 @@
  * The editor canvas for the Cart and Checkout look: the CSS the server writer returns for the block's settings.
  *
  * WooCommerce draws these blocks in React in the editor, so the front-end `render_block` writer never runs there.
- * The canvas asks `GET /sgs/v1/commerce-look/css` (nonce and `edit_posts` checked by the route) with the block's
- * set attributes, 300 ms after the last change, and prints the answer. The last good CSS stays on screen when a
- * request fails. There is no second implementation of the rules in JavaScript.
+ * The canvas asks `POST /sgs/v1/commerce-look/css` (nonce and `edit_posts` checked by the route) with the block's
+ * set attributes in the request body, 300 ms after the last change, and prints the answer. An answer that arrives
+ * after a newer change, or after every setting was cleared, is dropped. The last good CSS stays on screen when a
+ * request fails, and the failure is written to the editor console. There is no second implementation of the rules in
+ * JavaScript.
  *
  * @package SGS\Blocks
  */
 import { useEffect, useRef, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
-import { addQueryArgs } from '@wordpress/url';
 
 /** Scope class the route's CSS is written against; the canvas wrapper carries it. */
 export const CANVAS_SCOPE = 'sgs-commerce-look-editor';
@@ -47,19 +48,23 @@ export function useCommerceLookCss( blockName, attributes ) {
 	const latest = useRef( 0 );
 
 	useEffect( () => {
+		// Every change takes a new ticket, the clearing change included, so no request already in flight can answer for it.
+		const ticket = ++latest.current;
 		if ( '{}' === key ) {
 			setCss( '' );
 			return undefined;
 		}
-		const ticket = ++latest.current;
 		const timer = setTimeout( () => {
-			apiFetch( { path: addQueryArgs( '/sgs/v1/commerce-look/css', { block: blockName, attributes: key } ) } )
+			apiFetch( { path: '/sgs/v1/commerce-look/css', method: 'POST', data: { block: blockName, attributes: key } } )
 				.then( ( res ) => {
 					if ( ticket === latest.current && res && 'string' === typeof res.css ) {
 						setCss( res.css );
 					}
 				} )
-				.catch( () => {} );
+				.catch( ( error ) => {
+					// eslint-disable-next-line no-console
+					console.warn( 'SGS commerce-look: the editor canvas CSS request failed; the last good CSS stays.', error && ( error.code || error.message ) );
+				} );
 		}, DEBOUNCE_MS );
 		return () => clearTimeout( timer );
 	}, [ blockName, key ] );

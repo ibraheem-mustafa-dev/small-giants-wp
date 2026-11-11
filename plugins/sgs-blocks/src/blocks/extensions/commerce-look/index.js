@@ -4,7 +4,7 @@
  * Adds the settings in attributes.js to `woocommerce/cart` and `woocommerce/checkout` ONLY. No attribute has a
  * default, so an unset block is WooCommerce's and the theme's look, byte for byte. The front end is painted by
  * includes/woocommerce/commerce-look/writer.php; the editor canvas prints the same writer's output, fetched from
- * `GET /sgs/v1/commerce-look/css` (canvas-css.js).
+ * `POST /sgs/v1/commerce-look/css` (canvas-css.js).
  *
  * @package SGS\Blocks
  */
