@@ -59,24 +59,26 @@
     },
     "eye-care-test": {
       "/": {
-        "css": 223829,
-        "js": 107179,
-        "date": "2026-11-11"
+        "css": 154522,
+        "js": 113562,
+        "date": "2026-11-11",
+        "raised": "JS raised on purpose 2026-11-11: order attribution (sourcebuster-js 4.9 KB + wc-order-attribution 1.4 KB) loads on every page again so each order records where the visitor landed (Bean 2026-11-03)."
       },
       "/shop/": {
-        "css": 215761,
-        "js": 206917,
+        "css": 215757,
+        "js": 152781,
         "date": "2026-11-11"
       },
       "/product/gucci-oversized-cat-eye/": {
-        "css": 252040,
-        "js": 392459,
+        "css": 252006,
+        "js": 390758,
         "date": "2026-11-11"
       },
       "/about/": {
-        "css": 196223,
-        "js": 86647,
-        "date": "2026-11-11"
+        "css": 126874,
+        "js": 93082,
+        "date": "2026-11-11",
+        "raised": "JS raised on purpose 2026-11-11: order attribution (sourcebuster-js 4.9 KB + wc-order-attribution 1.4 KB) loads on every page again so each order records where the visitor landed (Bean 2026-11-03)."
       }
     }
   }
