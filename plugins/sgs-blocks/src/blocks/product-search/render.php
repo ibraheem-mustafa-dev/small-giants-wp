@@ -254,19 +254,13 @@ if ( $sgs_ps_fill_decls ) {
 	$sgs_scoped_css[] = '.' . $sgs_style_uid . '{' . implode( ';', $sgs_ps_fill_decls ) . ';}';
 }
 
-// --- Result thumbnail object-fit — the shared media-atom system computes the custom-property
-// VALUE server-side, keyed on $sgs_style_uid (the same no-inline
-// scoped-styling uid class already on the wrapper for every display mode).
-// view.js adds the matching `sgs-media-el` + $sgs_style_uid marker classes
-// to each thumbnail <img> it builds at fetch time (there is no
-// server-rendered <img> here to attach classes to directly — the results
-// list is JS-built from a live REST response). style.css does not
-// hardcode object-fit on the result-row thumbnail. ---
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$sgs_ps_fit_css = SGS_Media_Element::style( $attributes, '', 'sgs/product-search', $sgs_style_uid, array( 'object-fit' ) );
-	if ( '' !== $sgs_ps_fit_css ) {
-		$sgs_scoped_css[] = $sgs_ps_fit_css;
-	}
+// --- Result thumbnail Fit (Spec 49 §10.4: a small fixed thumbnail keeps its own attributes). view.js builds the
+// results list from a live REST response, so there is no server-rendered <img> to class; the rule is scoped to the
+// wrapper's $sgs_style_uid and matches each thumbnail view.js adds. ---
+require_once dirname( __DIR__, 3 ) . '/includes/media/fixed-thumb-fit.php';
+$sgs_ps_fit_css = sgs_fixed_thumb_fit_css( $attributes, 'sgs/product-search', '.' . $sgs_style_uid . ' .sgs-media-el' );
+if ( '' !== $sgs_ps_fit_css ) {
+	$sgs_scoped_css[] = $sgs_ps_fit_css;
 }
 
 // --- Base padding/margin — WP-native style.spacing objects (skip-serialised

@@ -719,16 +719,13 @@ if ( ! $show_headings ) {
 $css .= $aside_sel . '{flex:0 0 ' . ( '' !== $aside_width ? $aside_width : '340px' ) . ';width:' . ( '' !== $aside_width ? $aside_width : '340px' ) . ';}';
 // Cap the aside media so a tall image never dominates the fixed-width aside
 // column — a modest banner, matching the editor cap. max-height/width/
-// border-radius are fixed panel constants; object-fit is a genuine
-// client control via the shared media-atom system. The aside's img is rendered by a CHILD block
-// (sgs/mega-aside, parent-paints-child), so there is no element
-// this panel itself renders to attach the `sgs-media-el` marker class to —
-// instead the atom's VALUE is set as a custom property on this panel's OWN
-// root ($uid, prefix ''), which the aside img reads via var() since custom
-// properties inherit down through the InnerBlocks tree.
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$css .= SGS_Media_Element::style( $attributes, '', 'sgs/mega-panel', $uid, array( 'object-fit' ) );
-}
+// border-radius are fixed panel constants; object-fit is a genuine client control
+// (Spec 49 §10.4: a small fixed thumbnail keeps its own attributes), cover unless the client sets a Fit per device.
+// The aside's img is rendered by a CHILD block (sgs/mega-aside, parent-paints-child), so the rule is scoped to
+// this panel's own root and matches the img inside it.
+require_once dirname( __DIR__, 3 ) . '/includes/media/fixed-thumb-fit.php';
+$css .= $aside_sel . ' img{max-height:170px;object-fit:cover;width:100%;border-radius:12px;}';
+$css .= sgs_fixed_thumb_fit_css( $attributes, 'sgs/mega-panel', $aside_sel . ' img' );
 $css .= $aside_sel . ' img{max-height:170px;object-fit:var(--sgs-media-object-fit,cover);width:100%;border-radius:12px;}';
 
 /*
