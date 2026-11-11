@@ -65,12 +65,17 @@ import GalleryCanvas from './components/GalleryCanvas';
 import GalleryBorderControl from './components/GalleryBorderControl';
 import GalleryTilePanel from './components/GalleryTilePanel';
 import MediaElementPanel from '../../components/MediaElementPanel';
+import mediaPreview from '../../components/media/mediaPreview';
+import metadata from './block.json';
+
+const ITEM_ENTRY = metadata.supports.sgs.mediaElements.find( ( entry ) => 'item' === entry.prefix );
+const ITEM_SLOT = { prefix: 'item', kinds: ITEM_ENTRY.kinds, context: ITEM_ENTRY.context };
 
 // -------------------------------------------------------------------------
 // Main edit component
 // -------------------------------------------------------------------------
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		mediaItems,
 		layout,
@@ -260,6 +265,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		...attributes,
 		itemSource: { desktop: { kind: items.some( ( item ) => 'video' === itemFile( item ).kind ) ? 'video' : 'image' } },
 	};
+
+	// The items' shared size, shape and border as the page prints them: the emitters' own CSS, scoped to a class every
+	// canvas item carries (`sgs_media_render_slot` prints the same rules under the block's scope class).
+	const itemMediaUid = 'sgs-gallery-media-' + clientId.slice( 0, 8 );
+	const itemMedia = mediaPreview( ITEM_SLOT, blockLevelAttributes, itemMediaUid );
 
 	const blockProps = useBlockProps( {
 		className: `sgs-gallery sgs-gallery--${ layoutTiers.desktop }${
@@ -513,6 +523,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				separatorsCanvas={ separatorsCanvas }
 				onSelectImages={ onAddImages }
 				device={ previewTier }
+				itemMedia={ { ...itemMedia, uid: itemMediaUid } }
 			/>
 		</>
 	);

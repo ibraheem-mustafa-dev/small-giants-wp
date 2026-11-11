@@ -19,6 +19,7 @@ export default function GalleryCanvas( {
 	separatorsCanvas,
 	onSelectImages,
 	device = 'desktop',
+	itemMedia = null,
 } ) {
 	const {
 		layout,
@@ -118,6 +119,7 @@ export default function GalleryCanvas( {
 								className="sgs-gallery__grid"
 								style={ gridStyle }
 							>
+								{ itemMedia?.css && <style>{ itemMedia.css }</style> }
 								{ items.map( ( item, index ) => (
 									<GalleryCanvasItem
 										key={ item._key || index }
@@ -125,7 +127,8 @@ export default function GalleryCanvas( {
 										attributes={ attributes }
 										captionStyle={ captionStyle }
 										tileStyle={ tileStyle }
-								device={ device }
+										device={ device }
+										itemMedia={ itemMedia }
 									/>
 								) ) }
 							</div>
@@ -162,6 +165,7 @@ export default function GalleryCanvas( {
 						className="sgs-gallery__grid"
 						style={ gridStyle }
 					>
+						{ itemMedia?.css && <style>{ itemMedia.css }</style> }
 						{ items.map( ( item, index ) => (
 							<GalleryCanvasItem
 								key={ item._key || index }
@@ -170,6 +174,7 @@ export default function GalleryCanvas( {
 								captionStyle={ captionStyle }
 								tileStyle={ tileStyle }
 								device={ device }
+								itemMedia={ itemMedia }
 								hiddenOnDevice={
 									hiddenFrom > 0 && index >= hiddenFrom
 								}

@@ -15,12 +15,18 @@ import { sgsBorderPreview } from '../../utils/border-preview';
 import { backgroundPaintPreview } from '../../utils/background-preview';
 import { composeShadow } from '../../utils/shadow-layers';
 
-const EDGES = {
-	top: 'positionTop',
-	right: 'positionRight',
-	bottom: 'positionBottom',
-	left: 'positionLeft',
-};
+/**
+ * The four edge offsets, each read by its own attribute name.
+ *
+ * @param {Object} attributes Block attributes.
+ * @return {Object} Edge to its per-device value object.
+ */
+const edgeValues = ( attributes ) => ( {
+	top: attributes.positionTop,
+	right: attributes.positionRight,
+	bottom: attributes.positionBottom,
+	left: attributes.positionLeft,
+} );
 const TIERS = [ 'desktop', 'tablet', 'mobile' ];
 const SHAPE_RADIUS = { circle: '50%', ellipse: '50%', pill: '9999px' };
 
@@ -35,8 +41,8 @@ const SHAPE_RADIUS = { circle: '50%', ellipse: '50%', pill: '9999px' };
  */
 export function layerEdges( attributes, tier ) {
 	const out = { x: false, y: false, offsets: {} };
-	for ( const [ property, attr ] of Object.entries( EDGES ) ) {
-		const tiers = attributes[ attr ] || {};
+	for ( const [ property, stored ] of Object.entries( edgeValues( attributes ) ) ) {
+		const tiers = stored || {};
 		if (
 			TIERS.some( ( t ) => '' !== cssLengthValue( tiers[ t ] ?? '' ) )
 		) {

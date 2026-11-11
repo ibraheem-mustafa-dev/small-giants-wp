@@ -1,7 +1,7 @@
 /**
  * One item of the gallery's live preview canvas: the figure, its image or video, and its caption.
  */
-import { focalPointToObjectPosition, resolveResponsiveTier } from '../../../utils';
+import { focalPointToObjectPosition } from '../../../utils';
 import { tierValueOf } from '../../../utils/responsive.js';
 import { isTileMode } from '../tile-preview';
 import { itemFile } from '../item-model';
@@ -13,39 +13,46 @@ export default function GalleryCanvasItem( {
 	tileStyle,
 	device = 'desktop',
 	hiddenOnDevice = false,
+	itemMedia = null,
 } ) {
 	const { showCaptions } = attributes;
 	const tile = isTileMode( attributes );
 	const file = itemFile( item, device );
 	const isVideo = 'video' === file.kind;
-	const ratio = String( resolveResponsiveTier( attributes.itemRatio || {}, device )?.value || '' ).replace( /\s+/g, '' );
 	const fit = tierValueOf( item.fit, device ) || tierValueOf( attributes.itemFit, device ) || 'cover';
 	const focal = tierValueOf( item.focal, device );
+	// Ratio, width, height, limits, corners, border and shape come from the shared emitters' CSS (`itemMedia`, scoped to
+	// the uid each picture carries); a tile fills its own box. Fit and focal stay inline because each item can override them.
 	const mediaStyle = {
-		// Tile mode sizes the tile itself (tileStyle.minHeight); the image then fills it.
-		...( /\d/.test( ratio ) && ! tile ? { aspectRatio: ratio } : {} ),
 		objectFit: fit,
 		objectPosition: 'cover' === fit ? focalPointToObjectPosition( focal || { x: 0.5, y: 0.5 } ) : undefined,
-		width: '100%',
 		...( tile ? { height: '100%' } : {} ),
-		display: 'block',
 	};
+	const uid = itemMedia?.uid || '';
+	const withUid = ( classes ) => [ classes, itemMedia?.needsHelper ? '' : uid ].filter( Boolean ).join( ' ' );
+	const picture = isVideo && ! file.poster ? (
+		<video src={ file.url } className={ withUid( 'sgs-media-el' ) } muted loop playsInline style={ mediaStyle } />
+	) : (
+		<img
+			src={ isVideo ? file.poster : file.url }
+			alt={ item.alt || '' }
+			className={ withUid( 'sgs-media-el' ) }
+			loading="lazy"
+			style={ mediaStyle }
+		/>
+	);
 	return (
 		<figure
 			className={ hiddenOnDevice ? 'sgs-gallery__item sgs-gallery__item--hidden-on-device' : 'sgs-gallery__item' }
 			style={ { ...tileStyle } }
 		>
 			<div className="sgs-gallery__img-wrap">
-				{ isVideo && ! file.poster ? (
-					<video src={ file.url } className="sgs-media-el" muted loop playsInline style={ mediaStyle } />
+				{ itemMedia?.needsHelper ? (
+					<span className={ `sgs-media-box ${ uid }` }>
+						<span className="sgs-media-box__mask">{ picture }</span>
+					</span>
 				) : (
-					<img
-						src={ isVideo ? file.poster : file.url }
-						alt={ item.alt || '' }
-						className="sgs-media-el"
-						loading="lazy"
-						style={ mediaStyle }
-					/>
+					picture
 				) }
 			</div>
 			{ showCaptions && item.caption && (
