@@ -904,6 +904,17 @@
 						"absentWhy": "The sign-in and register forms print for a signed-out visitor only.",
 						"_note": "The two forms (sign in, register) as one motion part: the target of their entrance."
 					},
+					"lostForm": {
+						"selector": ".sgs-account__lost-form",
+						"label": "Forgotten-password and new-password form",
+						"order": 77,
+						"clusters": [],
+						"absentIn": [
+							"logged-in-dashboard"
+						],
+						"absentWhy": "The forgotten-password and new-password forms print for a signed-out visitor only.",
+						"_note": "The form of the forgotten-password and new-password views as one motion part: the target of their entrance (the page header is its own part)."
+					},
 					"tabContent": {
 						"selector": ".sgs-account__tab-content",
 						"label": "Tab content",

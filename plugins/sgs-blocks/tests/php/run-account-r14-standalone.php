@@ -108,6 +108,9 @@ ok( $cards === sgs_account_edit_account_markup( $cards, array() ), 'without the 
 $marked = sgs_account_edit_account_markup( '<div class="woocommerce-MyAccount-content"></div><div class="u-columns col2-set" id="customer_login"></div>', array() );
 ok( false !== strpos( $marked, 'woocommerce-MyAccount-content sgs-account__tab-content"' ) && false !== strpos( $marked, 'u-columns col2-set sgs-account__auth-grid" id="customer_login"' ), 'the tab content and the sign-in pair carry classes of the block' );
 
+$lost = sgs_account_edit_account_markup( '<form method="post" class="woocommerce-ResetPassword lost_reset_password"><input type="password" name="password_1" /></form>', array() );
+ok( false !== strpos( $lost, '<form method="post" class="woocommerce-ResetPassword lost_reset_password sgs-account__lost-form">' ), 'the forgotten-password and new-password form carries a class of the block (a motion part)' );
+
 // 4) Saved items: the empty card while the list is empty, else the panel.
 Account_Endpoints::$active = array( 'tabHeadings' => true, 'wishlistEmptyHeading' => 'Nothing saved yet.', 'wishlistEmptyText' => 'Tap the heart.', 'wishlistEmptyButtonLabel' => 'Shop sunglasses' );
 $GLOBALS['saved'] = array();

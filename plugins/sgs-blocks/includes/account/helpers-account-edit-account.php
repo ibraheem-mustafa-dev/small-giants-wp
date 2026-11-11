@@ -58,6 +58,8 @@ if ( ! function_exists( 'sgs_account_edit_account_markup' ) ) {
 		// WooCommerce class and an id only) so each can be a motion part.
 		$html = str_replace( '<div class="woocommerce-MyAccount-content">', '<div class="woocommerce-MyAccount-content sgs-account__tab-content">', $html );
 		$html = (string) preg_replace( '#(<div class=")([^"]*)("[^>]*\bid="customer_login")#', '$1$2 sgs-account__auth-grid$3', $html, 1 );
+		// The forgotten-password and new-password form is a motion part too.
+		$html = (string) preg_replace( '#(<form\b[^>]*\bclass="[^"]*\blost_reset_password\b[^"]*)(")#', '$1 sgs-account__lost-form$2', $html, 1 );
 		if ( false === strpos( $html, 'woocommerce-EditAccountForm' ) || ! is_user_logged_in() ) {
 			return $html;
 		}
