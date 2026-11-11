@@ -77,4 +77,32 @@ describe( 'woocommerce notices', () => {
 			expect( css ).not.toContain( 'fill: var(--_notice-border)' );
 		} );
 	} );
+	// A classic notice can be a `ul` of `li` errors or hold inline <strong> and <a> in its text, so it is never a flex row:
+	// the errors stack and the inline text flows. Only the block banner (an icon, then its content) lays out as flex.
+	describe( 'a classic notice flows as a block; only the block banner is a flex row', () => {
+		const stripped = css.replace( /\/\*[\s\S]*?\*\//g, '' );
+		const bodies = ( selector ) =>
+			stripped
+				.split( '}' )
+				.filter( ( block ) => block.includes( '{' ) && block.split( '{' )[ 0 ].split( ',' ).map( ( x ) => x.trim() ).includes( selector ) )
+				.map( ( block ) => block.split( '{' )[ 1 ] );
+
+		test.each( [ '.woocommerce-info', '.woocommerce-message', '.woocommerce-error' ] )( '%s is never display:flex', ( selector ) => {
+			for ( const body of bodies( selector ) ) {
+				expect( body ).not.toMatch( /display:\s*flex/ );
+				expect( body ).not.toMatch( /align-items/ );
+			}
+		} );
+
+		test( 'the block banner keeps its flex row with the icon centred', () => {
+			const all = bodies( '.wc-block-components-notice-banner' ).join( ';' );
+			expect( all ).toMatch( /display:\s*flex/ );
+			expect( all ).toMatch( /align-items:\s*center/ );
+		} );
+
+		test( 'a classic notice contains its floated children and keeps the button beside the text', () => {
+			expect( bodies( '.woocommerce-error' ).join( ';' ) ).toMatch( /display:\s*flow-root/ );
+			expect( bodies( '.woocommerce-info .button' ).join( ';' ) ).toMatch( /display:\s*inline-block/ );
+		} );
+	} );
 } );

@@ -6,9 +6,6 @@
 .woocommerce-error {
 	--_notice-bg: var(--wp--preset--color--info-light, #EBF5FF);
 	--_notice-border: var(--wp--preset--color--info, #3B82F6);
-	display: flex;
-	align-items: center;
-	gap: var(--wp--preset--spacing--20, 0.5rem);
 	margin-block: 0 var(--wp--preset--spacing--30, 1rem);
 	padding: var(--wp--preset--spacing--20, 0.5rem) var(--wp--preset--spacing--30, 1rem);
 	border: 0;
@@ -19,6 +16,37 @@
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	line-height: 1.5;
 	list-style: none;
+}
+
+/* The block banner is an icon beside its content, so it is a flex row centred on the icon. A classic notice can be a list of
+   errors or hold inline <strong> and <a> in its text, so it stays a block: the errors stack and the text flows. */
+.wc-block-components-notice-banner {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--20, 0.5rem);
+}
+
+.woocommerce-info,
+.woocommerce-message,
+.woocommerce-error {
+	display: flow-root;
+}
+
+/* woocommerce-layout.css floats the button to the right at three classes (`.woocommerce-page .woocommerce-message .button`); a
+   notice keeps the button beside its text, so the rule names the same selectors and, loading later, wins the tie. */
+.woocommerce-info .button,
+.woocommerce-message .button,
+.woocommerce-error .button,
+.woocommerce .woocommerce-info .button,
+.woocommerce .woocommerce-message .button,
+.woocommerce .woocommerce-error .button,
+.woocommerce-page .woocommerce-info .button,
+.woocommerce-page .woocommerce-message .button,
+.woocommerce-page .woocommerce-error .button {
+	float: none;
+	display: inline-block;
+	vertical-align: middle;
+	margin: 0 var(--wp--preset--spacing--20, 0.5rem) 0 0;
 }
 
 .wc-block-components-notice-banner.is-success,
@@ -83,7 +111,6 @@
 .woocommerce-error .button {
 	float: none;
 	flex-shrink: 0;
-	margin: 0;
 }
 
 /* wc-blocks.css sets the colour of a notice's .wc-forward link with !important, so the text colour needs it here too. */
@@ -128,16 +155,14 @@
 		align-items: flex-start;
 	}
 
-	.woocommerce-info,
-	.woocommerce-message,
-	.woocommerce-error {
-		display: block;
-	}
-
 	.woocommerce-info .button,
-	.woocommerce-message .button {
+	.woocommerce-message .button,
+	.woocommerce .woocommerce-info .button,
+	.woocommerce .woocommerce-message .button,
+	.woocommerce-page .woocommerce-info .button,
+	.woocommerce-page .woocommerce-message .button {
 		display: block;
-		margin-top: var(--wp--preset--spacing--20, 0.5rem);
+		margin: var(--wp--preset--spacing--20, 0.5rem) 0 0;
 		width: fit-content;
 	}
 }
