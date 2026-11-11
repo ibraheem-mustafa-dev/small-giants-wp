@@ -1,9 +1,14 @@
 /**
  * Attribute definitions for the Cart and Checkout look extension (commerce-look). No attribute carries a `default`:
  * absent means WooCommerce's and the theme's own look. Generated list; one line per attribute so
- * scripts/generate-extension-attributes.js and check-extension-roster.js read it.
+ * scripts/generate-extension-attributes.js and check-extension-roster.js read it. The row-by-column settings of
+ * includes/woocommerce/commerce-look/selectors.json are in attributes-table.generated.js
+ * (scripts/generate-commerce-look-table.js), spread in first; a name there never repeats one written here.
  */
+import { COMMERCE_LOOK_TABLE_ATTRIBUTES } from './attributes-table.generated';
+
 export const COMMERCE_LOOK_ATTRIBUTES = {
+	...COMMERCE_LOOK_TABLE_ATTRIBUTES,
 	sgsFieldBackground: { type: 'string' },
 	sgsFieldBorderWidth: { type: 'object' },
 	sgsFieldBorderStyle: { type: 'string' },

@@ -33,7 +33,7 @@ const ACTIONS = {
 export function rowsFor( block, file = SELECTOR_TABLE ) {
 	const rows = JSON.parse( fs.readFileSync( file, 'utf8' ) ).rows || {};
 	return Object.entries( rows )
-		.filter( ( [ , r ] ) => r[ block ] )
+		.filter( ( [ , r ] ) => r[ block ] && false !== r.probe )
 		.map( ( [ id, r ] ) => ( { id, selectors: r[ block ].split( ',' ).map( ( s ) => s.trim() ), wcVersion: r.wc_version, state: r.state, needs: r.needs || {} } ) );
 }
 

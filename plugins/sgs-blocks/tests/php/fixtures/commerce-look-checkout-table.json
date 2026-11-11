@@ -1,0 +1,1396 @@
+{
+ "settings": {
+  "sgsOptionBackground": "white",
+  "sgsOptionBorderWidth": {
+   "top": "1px",
+   "right": "1px",
+   "bottom": "1px",
+   "left": "1px"
+  },
+  "sgsOptionBorderStyle": "solid",
+  "sgsOptionBorderColour": "border",
+  "sgsStepPadding": {
+   "desktop": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "0px",
+    "left": "0px"
+   }
+  },
+  "sgsStepTitleGap": {
+   "desktop": "12px"
+  },
+  "sgsStepTitleLineHeight": 1.5,
+  "sgsStepTitleLineHeightUnit": "unitless",
+  "sgsStepNumberFontFamily": "heading",
+  "sgsStepNumberFontSize": 22,
+  "sgsStepNumberFontSizeUnit": "px",
+  "sgsStepNumberFontWeight": "500",
+  "sgsStepNumberLetterSpacing": 0,
+  "sgsStepNumberLetterSpacingUnit": "em",
+  "sgsStepNumberTextTransform": "none",
+  "sgsStepNumberLineHeight": 1.5,
+  "sgsStepNumberLineHeightUnit": "unitless",
+  "sgsFieldInputPadding": {
+   "desktop": {
+    "top": "18px",
+    "bottom": "6px"
+   }
+  },
+  "sgsFieldInputHeight": {
+   "desktop": "48px"
+  },
+  "sgsItemHideUnitPrice": true,
+  "sgsPlaceOrderTextWidth": {
+   "desktop": "100%"
+  },
+  "sgsPlaceOrderLabelWidth": {
+   "desktop": "100%"
+  },
+  "sgsShippingOptionControlGap": {
+   "desktop": "8px"
+  },
+  "sgsShippingFreeTextTransform": "none",
+  "sgsShippingValueTextTransform": "none",
+  "sgsShippingValueStrongFontWeight": "400",
+  "sgsRadioOptionFlatShadow": "none",
+  "sgsRadioOptionCheckedFlatShadow": "none",
+  "sgsRadioOptionLayoutWidth": {
+   "desktop": "100%"
+  },
+  "sgsRadioLabelGroupGap": {
+   "desktop": "12px"
+  },
+  "sgsShippingLabelFontSize": 16,
+  "sgsShippingLabelFontSizeUnit": "px",
+  "sgsShippingLabelFontWeight": "500",
+  "sgsShippingSecondaryFontSize": 16,
+  "sgsShippingSecondaryFontSizeUnit": "px",
+  "sgsShippingSecondaryFontWeight": "500",
+  "sgsShippingSecondaryTextAlign": "right",
+  "sgsShippingDescriptionFontSize": 13.5,
+  "sgsShippingDescriptionFontSizeUnit": "px",
+  "sgsShippingDescriptionMargin": {
+   "desktop": {
+    "top": "4px"
+   }
+  },
+  "sgsExpressRuleFontSize": 12,
+  "sgsExpressRuleFontSizeUnit": "px",
+  "sgsExpressRuleLetterSpacing": 0.16,
+  "sgsExpressRuleLetterSpacingUnit": "em",
+  "sgsExpressRuleTextTransform": "uppercase",
+  "sgsExpressRuleLineHeight": 18,
+  "sgsExpressRuleLineHeightUnit": "px",
+  "sgsExpressRuleMargin": {
+   "desktop": {
+    "top": "22px",
+    "right": "0px",
+    "bottom": "40px",
+    "left": "0px"
+   }
+  },
+  "sgsLoginPromptFontFamily": "body",
+  "sgsLoginPromptFontSize": 13.5,
+  "sgsLoginPromptFontSizeUnit": "px",
+  "sgsCheckboxLabelFontSize": 15,
+  "sgsCheckboxLabelFontSizeUnit": "px",
+  "sgsCreateAccountLabelFontSize": 15,
+  "sgsCreateAccountLabelFontSizeUnit": "px",
+  "sgsCheckboxWrapLabelFontSize": 15,
+  "sgsCheckboxWrapLabelFontSizeUnit": "px",
+  "sgsCheckboxWrapLabelLineHeight": 1.5,
+  "sgsCheckboxWrapLabelLineHeightUnit": "unitless",
+  "sgsCheckboxWrapLabelPadding": {
+   "desktop": {
+    "top": "2px"
+   }
+  },
+  "sgsExpressContentBorder": {
+   "desktop": {
+    "width": "0px",
+    "style": "none"
+   }
+  },
+  "sgsExpressContentPadding": {
+   "desktop": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "0px",
+    "left": "0px"
+   }
+  },
+  "sgsExpressContentMargin": {
+   "desktop": {
+    "top": "0px"
+   }
+  },
+  "sgsExpressButtonsGap": {
+   "desktop": "8px"
+  },
+  "sgsOptionGap": {
+   "desktop": "8px"
+  },
+  "sgsOptionChosenBackground": "surface-stage",
+  "sgsOptionChosenBorderColour": "text",
+  "sgsPaymentOptionLabelBorder": {
+   "desktop": {
+    "width": "0px",
+    "style": "none"
+   }
+  },
+  "sgsPaymentOptionLabelPadding": {
+   "desktop": {
+    "left": "20px"
+   }
+  },
+  "sgsSummaryTitleFlexMargin": {
+   "desktop": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "16px",
+    "left": "0px"
+   }
+  },
+  "sgsSummaryEditFontFamily": "body",
+  "sgsSummaryEditLineHeight": 19,
+  "sgsSummaryEditLineHeightUnit": "px",
+  "sgsSummaryEditFontSize": 12,
+  "sgsSummaryEditFontSizeUnit": "px",
+  "sgsSummaryEditLetterSpacing": 0,
+  "sgsSummaryEditLetterSpacingUnit": "em",
+  "sgsSummaryEditTextTransform": "none",
+  "sgsSummaryEditFontWeight": "400",
+  "sgsSummaryEditTextDecoration": "none",
+  "sgsSummaryEditBorderBottom": {
+   "desktop": {
+    "width": "1px",
+    "style": "solid",
+    "colour": "border"
+   }
+  },
+  "sgsItemBrandFontSize": 11,
+  "sgsItemBrandFontSizeUnit": "px",
+  "sgsItemBrandLetterSpacing": 0.16,
+  "sgsItemBrandLetterSpacingUnit": "em",
+  "sgsItemBrandTextTransform": "uppercase",
+  "sgsTotalsItemLineHeight": 21,
+  "sgsTotalsItemLineHeightUnit": "px",
+  "sgsTotalsItemPadding": {
+   "desktop": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "0px",
+    "left": "0px"
+   }
+  },
+  "sgsTotalsItemMargin": {
+   "desktop": {
+    "bottom": "8px"
+   }
+  },
+  "sgsCheckoutRootPadding": {
+   "desktop": {
+    "top": "0px"
+   }
+  },
+  "sgsStepSpacedMargin": {
+   "desktop": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "40px",
+    "left": "0px"
+   }
+  },
+  "sgsShippingOptionMargin": {
+   "desktop": {
+    "bottom": "4px"
+   }
+  },
+  "sgsShippingFieldsMargin": {
+   "desktop": {
+    "bottom": "40px"
+   }
+  },
+  "sgsUseBillingMargin": {
+   "desktop": {
+    "top": "12px",
+    "right": "0px",
+    "bottom": "0px",
+    "left": "0px"
+   }
+  },
+  "sgsAddressWrapperMargin": {
+   "desktop": {
+    "bottom": "0px"
+   }
+  },
+  "sgsPaymentMethodMargin": {
+   "desktop": {
+    "bottom": "16px"
+   }
+  },
+  "sgsOrderNotesMargin": {
+   "desktop": {
+    "bottom": "16px"
+   }
+  },
+  "sgsActionsMargin": {
+   "desktop": {
+    "bottom": "0px"
+   }
+  },
+  "sgsTermsBorderTop": {
+   "desktop": {
+    "width": "0px",
+    "style": "none"
+   }
+  },
+  "sgsTermsPadding": {
+   "desktop": {
+    "top": "0px"
+   }
+  },
+  "sgsTermsMargin": {
+   "desktop": {
+    "bottom": "22px"
+   }
+  },
+  "sgsStepHeadingMargin": {
+   "desktop": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "0px",
+    "left": "0px"
+   }
+  },
+  "sgsStepHeadingHeight": {
+   "desktop": "33px"
+  },
+  "sgsStepHeadingMinHeight": {
+   "desktop": "33px"
+  },
+  "sgsStepHeadingContainerMargin": {
+   "desktop": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "16px",
+    "left": "0px"
+   }
+  },
+  "sgsFieldInStepMargin": {
+   "desktop": {
+    "top": "8px"
+   }
+  },
+  "sgsRadioLabelsLineHeight": 20,
+  "sgsRadioLabelsLineHeightUnit": "px",
+  "sgsRadioDescriptionsFontSize": 13.5,
+  "sgsRadioDescriptionsFontSizeUnit": "px",
+  "sgsRadioDescriptionsLineHeight": 18,
+  "sgsRadioDescriptionsLineHeightUnit": "px",
+  "sgsItemMargin": {
+   "desktop": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "0px",
+    "left": "0px"
+   }
+  },
+  "sgsItemImageBoxMargin": {
+   "desktop": {
+    "top": "0px"
+   }
+  },
+  "sgsCheckboxInputWidth": {
+   "desktop": "18px"
+  },
+  "sgsCheckboxInputHeight": {
+   "desktop": "18px"
+  },
+  "sgsCheckboxInputMinWidth": {
+   "desktop": "18px"
+  },
+  "sgsCheckboxInputMinHeight": {
+   "desktop": "18px"
+  },
+  "sgsCheckboxInputRadius": {
+   "desktop": "2px"
+  },
+  "sgsSummaryFillBorder": {
+   "desktop": {
+    "width": "0px",
+    "style": "none"
+   }
+  },
+  "sgsSummaryFillRadius": {
+   "desktop": "0px"
+  },
+  "sgsSummaryInnerPadding": {
+   "desktop": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "0px",
+    "left": "0px"
+   }
+  },
+  "sgsCartItemsWrapPadding": {
+   "desktop": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "16px",
+    "left": "0px"
+   }
+  },
+  "sgsSummaryTitleBoxMargin": {
+   "desktop": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "16px",
+    "left": "0px"
+   }
+  },
+  "sgsSummaryTitleTextMargin": {
+   "desktop": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "0px",
+    "left": "0px"
+   }
+  },
+  "sgsSummaryTitleTextDeepMargin": {
+   "desktop": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "0px",
+    "left": "0px"
+   }
+  },
+  "sgsSummaryTitleTextLineHeight": 19,
+  "sgsSummaryTitleTextLineHeightUnit": "px",
+  "sgsItemDescriptionPadding": {
+   "desktop": {
+    "right": "0px",
+    "left": "0px"
+   }
+  },
+  "sgsItemInnerGap": {
+   "desktop": "14px"
+  },
+  "sgsSummaryItemNameMargin": {
+   "desktop": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "0px",
+    "left": "0px"
+   }
+  },
+  "sgsSummaryItemMetadataMargin": {
+   "desktop": {
+    "top": "2px"
+   }
+  },
+  "sgsTotalsWrapperPadding": {
+   "desktop": {
+    "top": "0px",
+    "bottom": "0px"
+   }
+  },
+  "sgsAddressFormColumnGap": {
+   "desktop": "8px"
+  }
+ },
+ "expect": [
+  {
+   "line": 2,
+   "replaces": ".wc-block-components-checkout-step",
+   "decl": "padding-left:0"
+  },
+  {
+   "line": 3,
+   "replaces": ".wc-block-components-checkout-step__title",
+   "decl": "gap:12px"
+  },
+  {
+   "line": 4,
+   "replaces": ".wc-block-components-checkout-step--with-step-number .wc-block-components-checkout-step__title::before",
+   "decl": "font-family:var(--wp--preset--font-family--heading)"
+  },
+  {
+   "line": 4,
+   "replaces": ".wc-block-components-checkout-step--with-step-number .wc-block-components-checkout-step__title::before",
+   "decl": "font-size:22px"
+  },
+  {
+   "line": 4,
+   "replaces": ".wc-block-components-checkout-step--with-step-number .wc-block-components-checkout-step__title::before",
+   "decl": "font-weight:500"
+  },
+  {
+   "line": 4,
+   "replaces": ".wc-block-components-checkout-step--with-step-number .wc-block-components-checkout-step__title::before",
+   "decl": "letter-spacing:0"
+  },
+  {
+   "line": 4,
+   "replaces": ".wc-block-components-checkout-step--with-step-number .wc-block-components-checkout-step__title::before",
+   "decl": "text-transform:none"
+  },
+  {
+   "line": 5,
+   "replaces": ".wc-block-components-text-input input[type]",
+   "decl": "height:48px"
+  },
+  {
+   "line": 5,
+   "replaces": ".wc-block-components-text-input input[type]",
+   "decl": "padding-top:18px"
+  },
+  {
+   "line": 5,
+   "replaces": ".wc-block-components-text-input input[type]",
+   "decl": "padding-bottom:6px"
+  },
+  {
+   "line": 6,
+   "replaces": ".wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title .wc-block-components-checkout-order-summary__title-text",
+   "decl": "margin-left:0"
+  },
+  {
+   "line": 7,
+   "replaces": ".wc-block-components-order-summary-item__individual-prices",
+   "decl": "display:none"
+  },
+  {
+   "line": 8,
+   "replaces": ".wc-block-components-checkout-place-order-button .wc-block-components-button__text",
+   "decl": "width:100%"
+  },
+  {
+   "line": 9,
+   "replaces": ".wc-block-checkout__shipping-option .wc-block-components-radio-control",
+   "decl": "gap:8px"
+  },
+  {
+   "line": 12,
+   "replaces": ".wc-block-components-checkout-place-order-button__text",
+   "decl": "width:100%"
+  },
+  {
+   "line": 21,
+   "replaces": ".wc-block-checkout__shipping-option .wc-block-checkout__shipping-option--free",
+   "decl": "text-transform:none"
+  },
+  {
+   "line": 25,
+   "replaces": ".wc-block-components-totals-shipping .wc-block-components-totals-item__value",
+   "decl": "text-transform:none"
+  },
+  {
+   "line": 25,
+   "replaces": ".wc-block-components-totals-shipping .wc-block-components-totals-item__value strong",
+   "decl": "text-transform:none"
+  },
+  {
+   "line": 29,
+   "replaces": ".wc-block-components-radio-control__option",
+   "decl": "box-shadow:none"
+  },
+  {
+   "line": 29,
+   "replaces": ".wc-block-components-radio-control__option--checked-option-highlighted",
+   "decl": "box-shadow:none"
+  },
+  {
+   "line": 29,
+   "replaces": ".wc-block-components-radio-control-accordion-option--checked-option-highlighted",
+   "decl": "box-shadow:none"
+  },
+  {
+   "line": 30,
+   "replaces": ".wc-block-components-radio-control__option-layout",
+   "decl": "width:100%"
+  },
+  {
+   "line": 31,
+   "replaces": ".wc-block-components-radio-control__label-group",
+   "decl": "gap:12px"
+  },
+  {
+   "line": 32,
+   "replaces": ".wc-block-checkout__shipping-option .wc-block-components-radio-control__label",
+   "decl": "font-size:16px"
+  },
+  {
+   "line": 32,
+   "replaces": ".wc-block-checkout__shipping-option .wc-block-components-radio-control__label",
+   "decl": "font-weight:500"
+  },
+  {
+   "line": 33,
+   "replaces": ".wc-block-checkout__shipping-option .wc-block-components-radio-control__secondary-label",
+   "decl": "font-size:16px"
+  },
+  {
+   "line": 33,
+   "replaces": ".wc-block-checkout__shipping-option .wc-block-components-radio-control__secondary-label",
+   "decl": "font-weight:500"
+  },
+  {
+   "line": 33,
+   "replaces": ".wc-block-checkout__shipping-option .wc-block-components-radio-control__secondary-label",
+   "decl": "text-align:right"
+  },
+  {
+   "line": 34,
+   "replaces": ".wc-block-checkout__shipping-option .wc-block-components-radio-control__description-group",
+   "decl": "margin-top:4px"
+  },
+  {
+   "line": 34,
+   "replaces": ".wc-block-checkout__shipping-option .wc-block-components-radio-control__description-group",
+   "decl": "font-size:13.5px"
+  },
+  {
+   "line": 36,
+   "replaces": ".wc-block-components-express-payment-continue-rule",
+   "decl": "font-size:12px"
+  },
+  {
+   "line": 36,
+   "replaces": ".wc-block-components-express-payment-continue-rule",
+   "decl": "letter-spacing:.16em"
+  },
+  {
+   "line": 36,
+   "replaces": ".wc-block-components-express-payment-continue-rule",
+   "decl": "text-transform:uppercase"
+  },
+  {
+   "line": 37,
+   "replaces": ".wc-block-checkout__login-prompt",
+   "decl": "font-family:var(--wp--preset--font-family--body)"
+  },
+  {
+   "line": 37,
+   "replaces": ".sgs-checkout-login-prefix",
+   "decl": "font-family:var(--wp--preset--font-family--body)"
+  },
+  {
+   "line": 37,
+   "replaces": ".wc-block-checkout__login-prompt",
+   "decl": "font-size:13.5px"
+  },
+  {
+   "line": 37,
+   "replaces": ".sgs-checkout-login-prefix",
+   "decl": "font-size:13.5px"
+  },
+  {
+   "line": 39,
+   "replaces": ".wc-block-components-checkbox__label",
+   "decl": "font-size:15px"
+  },
+  {
+   "line": 40,
+   "replaces": ".wc-block-components-express-payment__content",
+   "decl": "border-width:0"
+  },
+  {
+   "line": 40,
+   "replaces": ".wc-block-components-express-payment__content",
+   "decl": "border-style:none"
+  },
+  {
+   "line": 40,
+   "replaces": ".wc-block-components-express-payment__content",
+   "decl": "padding-top:0"
+  },
+  {
+   "line": 40,
+   "replaces": ".wc-block-components-express-payment__content",
+   "decl": "padding-right:0"
+  },
+  {
+   "line": 40,
+   "replaces": ".wc-block-components-express-payment__content",
+   "decl": "padding-bottom:0"
+  },
+  {
+   "line": 40,
+   "replaces": ".wc-block-components-express-payment__content",
+   "decl": "padding-left:0"
+  },
+  {
+   "line": 40,
+   "replaces": ".wc-block-components-express-payment__content",
+   "decl": "margin-top:0"
+  },
+  {
+   "line": 42,
+   "replaces": ".wc-block-components-express-payment__event-buttons",
+   "decl": "gap:8px"
+  },
+  {
+   "line": 43,
+   "replaces": ".wc-block-components-radio-control-accordion-option",
+   "decl": "background-color:white",
+   "via": [
+    ".wc-block-checkout__payment-method .wc-block-components-radio-control-accordion-option"
+   ]
+  },
+  {
+   "line": 43,
+   "replaces": ".wc-block-components-radio-control-accordion-option",
+   "decl": "border-width:1px 1px 1px 1px",
+   "via": [
+    ".wc-block-checkout__payment-method .wc-block-components-radio-control-accordion-option"
+   ]
+  },
+  {
+   "line": 43,
+   "replaces": ".wc-block-components-radio-control-accordion-option",
+   "decl": "border-style:solid",
+   "via": [
+    ".wc-block-checkout__payment-method .wc-block-components-radio-control-accordion-option"
+   ]
+  },
+  {
+   "line": 43,
+   "replaces": ".wc-block-components-radio-control-accordion-option",
+   "decl": "border-color:var(--wp--preset--color--border)",
+   "via": [
+    ".wc-block-checkout__payment-method .wc-block-components-radio-control-accordion-option"
+   ]
+  },
+  {
+   "line": 43,
+   "replaces": ".wc-block-components-radio-control-accordion-option",
+   "decl": "margin-bottom:8px",
+   "via": [
+    ".wc-block-checkout__payment-method .wc-block-components-radio-control-accordion-option"
+   ]
+  },
+  {
+   "line": 44,
+   "replaces": ".wc-block-components-radio-control-accordion-option .wc-block-components-radio-control__option",
+   "decl": "border-width:0"
+  },
+  {
+   "line": 44,
+   "replaces": ".wc-block-components-radio-control-accordion-option .wc-block-components-radio-control__option",
+   "decl": "border-style:none"
+  },
+  {
+   "line": 44,
+   "replaces": ".wc-block-components-radio-control-accordion-option .wc-block-components-radio-control__option",
+   "decl": "padding-left:20px"
+  },
+  {
+   "line": 45,
+   "replaces": ".wc-block-components-radio-control-accordion-option--checked-option-highlighted",
+   "decl": "background-color:var(--wp--preset--color--surface-stage)",
+   "via": [
+    ".wc-block-checkout__payment-method .wc-block-components-radio-control-accordion-option--checked-option-highlighted"
+   ]
+  },
+  {
+   "line": 45,
+   "replaces": ".wc-block-components-radio-control-accordion-option--checked-option-highlighted",
+   "decl": "border-color:var(--wp--preset--color--text)",
+   "via": [
+    ".wc-block-checkout__payment-method .wc-block-components-radio-control-accordion-option--checked-option-highlighted"
+   ]
+  },
+  {
+   "line": 46,
+   "replaces": ".wc-block-checkout__create-account .wc-block-components-checkbox__label",
+   "decl": "font-size:15px"
+  },
+  {
+   "line": 48,
+   "replaces": ".wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title",
+   "decl": "margin-top:0"
+  },
+  {
+   "line": 48,
+   "replaces": ".checkout-order-summary-block-fill-wrapper .wc-block-components-checkout-step__heading",
+   "decl": "margin-top:0"
+  },
+  {
+   "line": 48,
+   "replaces": ".wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title",
+   "decl": "margin-right:0"
+  },
+  {
+   "line": 48,
+   "replaces": ".checkout-order-summary-block-fill-wrapper .wc-block-components-checkout-step__heading",
+   "decl": "margin-right:0"
+  },
+  {
+   "line": 48,
+   "replaces": ".wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title",
+   "decl": "margin-bottom:16px"
+  },
+  {
+   "line": 48,
+   "replaces": ".checkout-order-summary-block-fill-wrapper .wc-block-components-checkout-step__heading",
+   "decl": "margin-bottom:16px"
+  },
+  {
+   "line": 48,
+   "replaces": ".wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title",
+   "decl": "margin-left:0"
+  },
+  {
+   "line": 48,
+   "replaces": ".checkout-order-summary-block-fill-wrapper .wc-block-components-checkout-step__heading",
+   "decl": "margin-left:0"
+  },
+  {
+   "line": 49,
+   "replaces": ".sgs-checkout-summary-edit",
+   "decl": "font-family:var(--wp--preset--font-family--body)"
+  },
+  {
+   "line": 49,
+   "replaces": ".sgs-checkout-summary-edit",
+   "decl": "line-height:19px"
+  },
+  {
+   "line": 49,
+   "replaces": ".sgs-checkout-summary-edit",
+   "decl": "font-size:12px"
+  },
+  {
+   "line": 49,
+   "replaces": ".sgs-checkout-summary-edit",
+   "decl": "letter-spacing:0"
+  },
+  {
+   "line": 49,
+   "replaces": ".sgs-checkout-summary-edit",
+   "decl": "text-transform:none"
+  },
+  {
+   "line": 49,
+   "replaces": ".sgs-checkout-summary-edit",
+   "decl": "font-weight:400"
+  },
+  {
+   "line": 49,
+   "replaces": ".sgs-checkout-summary-edit",
+   "decl": "text-decoration:none"
+  },
+  {
+   "line": 49,
+   "replaces": ".sgs-checkout-summary-edit",
+   "decl": "border-bottom-width:1px"
+  },
+  {
+   "line": 49,
+   "replaces": ".sgs-checkout-summary-edit",
+   "decl": "border-bottom-style:solid"
+  },
+  {
+   "line": 49,
+   "replaces": ".sgs-checkout-summary-edit",
+   "decl": "border-bottom-color:var(--wp--preset--color--border)"
+  },
+  {
+   "line": 50,
+   "replaces": ".sgs-checkout-item-brand",
+   "decl": "font-size:11px"
+  },
+  {
+   "line": 50,
+   "replaces": ".sgs-checkout-item-brand",
+   "decl": "letter-spacing:.16em"
+  },
+  {
+   "line": 50,
+   "replaces": ".sgs-checkout-item-brand",
+   "decl": "text-transform:uppercase"
+  },
+  {
+   "line": 51,
+   "replaces": ".wc-block-components-totals-item",
+   "decl": "padding-left:0"
+  },
+  {
+   "line": 51,
+   "replaces": ".wc-block-components-totals-item",
+   "decl": "padding-right:0"
+  },
+  {
+   "line": 52,
+   "replaces": "&",
+   "decl": "padding-top:0"
+  },
+  {
+   "line": 53,
+   "replaces": ".wc-block-components-checkout-step",
+   "decl": "padding-top:0"
+  },
+  {
+   "line": 53,
+   "replaces": ".wc-block-components-checkout-step",
+   "decl": "padding-right:0"
+  },
+  {
+   "line": 53,
+   "replaces": ".wc-block-components-checkout-step",
+   "decl": "padding-bottom:0"
+  },
+  {
+   "line": 53,
+   "replaces": ".wc-block-components-checkout-step",
+   "decl": "padding-left:0"
+  },
+  {
+   "line": 54,
+   "replaces": ".wc-block-components-checkout-step:not(.wc-block-checkout__shipping-method)",
+   "decl": "margin-top:0"
+  },
+  {
+   "line": 54,
+   "replaces": ".wc-block-components-checkout-step:not(.wc-block-checkout__shipping-method)",
+   "decl": "margin-right:0"
+  },
+  {
+   "line": 54,
+   "replaces": ".wc-block-components-checkout-step:not(.wc-block-checkout__shipping-method)",
+   "decl": "margin-bottom:40px"
+  },
+  {
+   "line": 54,
+   "replaces": ".wc-block-components-checkout-step:not(.wc-block-checkout__shipping-method)",
+   "decl": "margin-left:0"
+  },
+  {
+   "line": 55,
+   "replaces": ".wc-block-checkout__shipping-option",
+   "decl": "margin-bottom:4px"
+  },
+  {
+   "line": 56,
+   "replaces": ".wc-block-checkout__shipping-fields",
+   "decl": "margin-bottom:40px"
+  },
+  {
+   "line": 58,
+   "replaces": ".wc-block-checkout__use-address-for-billing",
+   "decl": "margin-top:12px"
+  },
+  {
+   "line": 58,
+   "replaces": ".wc-block-checkout__use-address-for-billing",
+   "decl": "margin-right:0"
+  },
+  {
+   "line": 58,
+   "replaces": ".wc-block-checkout__use-address-for-billing",
+   "decl": "margin-bottom:0"
+  },
+  {
+   "line": 58,
+   "replaces": ".wc-block-checkout__use-address-for-billing",
+   "decl": "margin-left:0"
+  },
+  {
+   "line": 59,
+   "replaces": ".wc-block-components-address-address-wrapper",
+   "decl": "margin-bottom:0"
+  },
+  {
+   "line": 60,
+   "replaces": ".wc-block-checkout__payment-method",
+   "decl": "margin-bottom:16px"
+  },
+  {
+   "line": 61,
+   "replaces": ".wc-block-checkout__order-notes",
+   "decl": "margin-bottom:16px"
+  },
+  {
+   "line": 62,
+   "replaces": ".wc-block-checkout__actions",
+   "decl": "margin-bottom:0"
+  },
+  {
+   "line": 63,
+   "replaces": ".wc-block-checkout__terms",
+   "decl": "border-top-width:0"
+  },
+  {
+   "line": 63,
+   "replaces": ".wc-block-checkout__terms",
+   "decl": "border-top-style:none"
+  },
+  {
+   "line": 63,
+   "replaces": ".wc-block-checkout__terms",
+   "decl": "padding-top:0"
+  },
+  {
+   "line": 63,
+   "replaces": ".wc-block-checkout__terms",
+   "decl": "margin-bottom:22px"
+  },
+  {
+   "line": 64,
+   "replaces": ".wc-block-components-checkout-step__heading",
+   "decl": "min-height:33px"
+  },
+  {
+   "line": 65,
+   "replaces": ".wc-block-components-checkout-step__content .wc-block-components-text-input",
+   "decl": "margin-top:8px"
+  },
+  {
+   "line": 65,
+   "replaces": ".wc-block-components-address-form .wc-block-components-text-input",
+   "decl": "margin-top:8px"
+  },
+  {
+   "line": 68,
+   "replaces": ".wc-block-components-express-payment-continue-rule",
+   "decl": "margin-top:22px"
+  },
+  {
+   "line": 68,
+   "replaces": ".wc-block-components-express-payment-continue-rule",
+   "decl": "margin-right:0"
+  },
+  {
+   "line": 68,
+   "replaces": ".wc-block-components-express-payment-continue-rule",
+   "decl": "margin-bottom:40px"
+  },
+  {
+   "line": 68,
+   "replaces": ".wc-block-components-express-payment-continue-rule",
+   "decl": "margin-left:0"
+  },
+  {
+   "line": 69,
+   "replaces": ".wc-block-components-checkout-step__heading-container",
+   "decl": "margin-top:0"
+  },
+  {
+   "line": 69,
+   "replaces": ".wc-block-components-checkout-step__heading-container",
+   "decl": "margin-right:0"
+  },
+  {
+   "line": 69,
+   "replaces": ".wc-block-components-checkout-step__heading-container",
+   "decl": "margin-bottom:16px"
+  },
+  {
+   "line": 69,
+   "replaces": ".wc-block-components-checkout-step__heading-container",
+   "decl": "margin-left:0"
+  },
+  {
+   "line": 70,
+   "replaces": ".wc-block-components-checkout-step__heading",
+   "decl": "margin-top:0"
+  },
+  {
+   "line": 70,
+   "replaces": ".wc-block-components-checkout-step__heading",
+   "decl": "margin-right:0"
+  },
+  {
+   "line": 70,
+   "replaces": ".wc-block-components-checkout-step__heading",
+   "decl": "margin-bottom:0"
+  },
+  {
+   "line": 70,
+   "replaces": ".wc-block-components-checkout-step__heading",
+   "decl": "margin-left:0"
+  },
+  {
+   "line": 70,
+   "replaces": ".wc-block-components-checkout-step__heading",
+   "decl": "height:33px"
+  },
+  {
+   "line": 71,
+   "replaces": ".wc-block-components-radio-control__label",
+   "decl": "line-height:20px"
+  },
+  {
+   "line": 71,
+   "replaces": ".wc-block-components-radio-control__secondary-label",
+   "decl": "line-height:20px"
+  },
+  {
+   "line": 71,
+   "replaces": ".wc-block-checkout__shipping-option--free",
+   "decl": "line-height:20px"
+  },
+  {
+   "line": 72,
+   "replaces": ".wc-block-components-radio-control__description-group",
+   "decl": "font-size:13.5px"
+  },
+  {
+   "line": 72,
+   "replaces": ".wc-block-components-radio-control__secondary-description",
+   "decl": "font-size:13.5px"
+  },
+  {
+   "line": 72,
+   "replaces": ".wc-block-components-radio-control__secondary-description *",
+   "decl": "font-size:13.5px"
+  },
+  {
+   "line": 72,
+   "replaces": ".wc-block-components-radio-control__description-group",
+   "decl": "line-height:18px"
+  },
+  {
+   "line": 72,
+   "replaces": ".wc-block-components-radio-control__secondary-description",
+   "decl": "line-height:18px"
+  },
+  {
+   "line": 72,
+   "replaces": ".wc-block-components-radio-control__secondary-description *",
+   "decl": "line-height:18px"
+  },
+  {
+   "line": 73,
+   "replaces": ".wc-block-components-express-payment-continue-rule",
+   "decl": "line-height:18px"
+  },
+  {
+   "line": 74,
+   "replaces": ".wc-block-components-radio-control label.wc-block-components-radio-control__option.wc-block-components-radio-control__option-checked",
+   "decl": "box-shadow:none"
+  },
+  {
+   "line": 75,
+   "replaces": ".wc-block-components-order-summary-item",
+   "decl": "margin-top:0"
+  },
+  {
+   "line": 75,
+   "replaces": ".wc-block-components-order-summary-item",
+   "decl": "margin-right:0"
+  },
+  {
+   "line": 75,
+   "replaces": ".wc-block-components-order-summary-item",
+   "decl": "margin-bottom:0"
+  },
+  {
+   "line": 75,
+   "replaces": ".wc-block-components-order-summary-item",
+   "decl": "margin-left:0"
+  },
+  {
+   "line": 76,
+   "replaces": ".wc-block-components-order-summary-item__image",
+   "decl": "margin-top:0"
+  },
+  {
+   "line": 78,
+   "replaces": ".wc-block-components-checkout-step__title",
+   "decl": "line-height:1.5"
+  },
+  {
+   "line": 79,
+   "replaces": ".wc-block-components-checkout-step--with-step-number .wc-block-components-checkout-step__title::before",
+   "decl": "line-height:1.5"
+  },
+  {
+   "line": 80,
+   "replaces": ".wc-block-components-checkbox label",
+   "decl": "font-size:15px"
+  },
+  {
+   "line": 80,
+   "replaces": ".wc-block-components-checkbox label",
+   "decl": "line-height:1.5"
+  },
+  {
+   "line": 80,
+   "replaces": ".wc-block-components-checkbox label",
+   "decl": "padding-top:2px"
+  },
+  {
+   "line": 81,
+   "replaces": ".wc-block-components-checkbox .wc-block-components-checkbox__input[type=checkbox]",
+   "decl": "width:18px"
+  },
+  {
+   "line": 81,
+   "replaces": ".wc-block-components-checkbox .wc-block-components-checkbox__input[type=checkbox]",
+   "decl": "height:18px"
+  },
+  {
+   "line": 81,
+   "replaces": ".wc-block-components-checkbox .wc-block-components-checkbox__input[type=checkbox]",
+   "decl": "border-radius:2px"
+  },
+  {
+   "line": 82,
+   "replaces": ".checkout-order-summary-block-fill",
+   "decl": "border-width:0"
+  },
+  {
+   "line": 82,
+   "replaces": ".checkout-order-summary-block-fill",
+   "decl": "border-style:none"
+  },
+  {
+   "line": 82,
+   "replaces": ".checkout-order-summary-block-fill",
+   "decl": "border-radius:0"
+  },
+  {
+   "line": 83,
+   "replaces": ".wc-block-components-order-summary",
+   "decl": "padding-top:0"
+  },
+  {
+   "line": 83,
+   "replaces": ".wc-block-components-order-summary__content",
+   "decl": "padding-top:0"
+  },
+  {
+   "line": 83,
+   "replaces": ".wc-block-components-order-summary",
+   "decl": "padding-right:0"
+  },
+  {
+   "line": 83,
+   "replaces": ".wc-block-components-order-summary__content",
+   "decl": "padding-right:0"
+  },
+  {
+   "line": 83,
+   "replaces": ".wc-block-components-order-summary",
+   "decl": "padding-bottom:0"
+  },
+  {
+   "line": 83,
+   "replaces": ".wc-block-components-order-summary__content",
+   "decl": "padding-bottom:0"
+  },
+  {
+   "line": 83,
+   "replaces": ".wc-block-components-order-summary",
+   "decl": "padding-left:0"
+  },
+  {
+   "line": 83,
+   "replaces": ".wc-block-components-order-summary__content",
+   "decl": "padding-left:0"
+  },
+  {
+   "line": 84,
+   "replaces": ".wp-block-woocommerce-checkout-order-summary-cart-items-block.wc-block-components-totals-wrapper",
+   "decl": "padding-top:0"
+  },
+  {
+   "line": 84,
+   "replaces": ".wp-block-woocommerce-checkout-order-summary-cart-items-block.wc-block-components-totals-wrapper",
+   "decl": "padding-right:0"
+  },
+  {
+   "line": 84,
+   "replaces": ".wp-block-woocommerce-checkout-order-summary-cart-items-block.wc-block-components-totals-wrapper",
+   "decl": "padding-bottom:16px"
+  },
+  {
+   "line": 84,
+   "replaces": ".wp-block-woocommerce-checkout-order-summary-cart-items-block.wc-block-components-totals-wrapper",
+   "decl": "padding-left:0"
+  },
+  {
+   "line": 85,
+   "replaces": ".wc-block-components-checkout-order-summary__title",
+   "decl": "margin-top:0"
+  },
+  {
+   "line": 85,
+   "replaces": ".checkout-order-summary-block-fill-wrapper .wc-block-components-checkout-step__heading-container",
+   "decl": "margin-top:0"
+  },
+  {
+   "line": 85,
+   "replaces": ".wc-block-components-checkout-order-summary__title",
+   "decl": "margin-right:0"
+  },
+  {
+   "line": 85,
+   "replaces": ".checkout-order-summary-block-fill-wrapper .wc-block-components-checkout-step__heading-container",
+   "decl": "margin-right:0"
+  },
+  {
+   "line": 85,
+   "replaces": ".wc-block-components-checkout-order-summary__title",
+   "decl": "margin-bottom:16px"
+  },
+  {
+   "line": 85,
+   "replaces": ".checkout-order-summary-block-fill-wrapper .wc-block-components-checkout-step__heading-container",
+   "decl": "margin-bottom:16px"
+  },
+  {
+   "line": 85,
+   "replaces": ".wc-block-components-checkout-order-summary__title",
+   "decl": "margin-left:0"
+  },
+  {
+   "line": 85,
+   "replaces": ".checkout-order-summary-block-fill-wrapper .wc-block-components-checkout-step__heading-container",
+   "decl": "margin-left:0"
+  },
+  {
+   "line": 86,
+   "replaces": ".wc-block-components-checkout-order-summary__title-text",
+   "decl": "margin-top:0"
+  },
+  {
+   "line": 86,
+   "replaces": ".checkout-order-summary-block-fill-wrapper .wc-block-components-title",
+   "decl": "margin-top:0"
+  },
+  {
+   "line": 86,
+   "replaces": ".wc-block-components-checkout-order-summary__title-text",
+   "decl": "margin-right:0"
+  },
+  {
+   "line": 86,
+   "replaces": ".checkout-order-summary-block-fill-wrapper .wc-block-components-title",
+   "decl": "margin-right:0"
+  },
+  {
+   "line": 86,
+   "replaces": ".wc-block-components-checkout-order-summary__title-text",
+   "decl": "margin-bottom:0"
+  },
+  {
+   "line": 86,
+   "replaces": ".checkout-order-summary-block-fill-wrapper .wc-block-components-title",
+   "decl": "margin-bottom:0"
+  },
+  {
+   "line": 86,
+   "replaces": ".wc-block-components-checkout-order-summary__title-text",
+   "decl": "margin-left:0"
+  },
+  {
+   "line": 86,
+   "replaces": ".checkout-order-summary-block-fill-wrapper .wc-block-components-title",
+   "decl": "margin-left:0"
+  },
+  {
+   "line": 86,
+   "replaces": ".wc-block-components-checkout-order-summary__title-text",
+   "decl": "line-height:19px"
+  },
+  {
+   "line": 86,
+   "replaces": ".checkout-order-summary-block-fill-wrapper .wc-block-components-title",
+   "decl": "line-height:19px"
+  },
+  {
+   "line": 87,
+   "replaces": ".wc-block-components-order-summary-item__description",
+   "decl": "padding-left:0"
+  },
+  {
+   "line": 87,
+   "replaces": ".wc-block-components-order-summary-item__description",
+   "decl": "padding-right:0"
+  },
+  {
+   "line": 88,
+   "replaces": ".wc-block-components-order-summary-item",
+   "decl": "gap:14px"
+  },
+  {
+   "line": 89,
+   "replaces": ".wc-block-components-order-summary-item .wc-block-components-product-name",
+   "decl": "margin-top:0"
+  },
+  {
+   "line": 89,
+   "replaces": ".wc-block-components-order-summary-item .wc-block-components-product-name",
+   "decl": "margin-right:0"
+  },
+  {
+   "line": 89,
+   "replaces": ".wc-block-components-order-summary-item .wc-block-components-product-name",
+   "decl": "margin-bottom:0"
+  },
+  {
+   "line": 89,
+   "replaces": ".wc-block-components-order-summary-item .wc-block-components-product-name",
+   "decl": "margin-left:0"
+  },
+  {
+   "line": 90,
+   "replaces": ".wc-block-components-order-summary-item .wc-block-components-product-metadata",
+   "decl": "margin-top:2px"
+  },
+  {
+   "line": 91,
+   "replaces": ".wc-block-components-totals-wrapper:not(.wp-block-woocommerce-checkout-order-summary-coupon-form-block):not(:has(.wc-block-components-totals-footer-item))",
+   "decl": "padding-top:0"
+  },
+  {
+   "line": 91,
+   "replaces": ".wc-block-components-totals-wrapper:not(.wp-block-woocommerce-checkout-order-summary-coupon-form-block):not(:has(.wc-block-components-totals-footer-item))",
+   "decl": "padding-bottom:0"
+  },
+  {
+   "line": 92,
+   "replaces": ".wc-block-components-totals-item",
+   "decl": "padding-top:0"
+  },
+  {
+   "line": 92,
+   "replaces": ".wc-block-components-totals-item",
+   "decl": "padding-bottom:0"
+  },
+  {
+   "line": 92,
+   "replaces": ".wc-block-components-totals-item",
+   "decl": "margin-bottom:8px"
+  },
+  {
+   "line": 92,
+   "replaces": ".wc-block-components-totals-item",
+   "decl": "line-height:21px"
+  },
+  {
+   "line": 96,
+   "replaces": ".wc-block-components-address-form",
+   "decl": "column-gap:8px"
+  },
+  {
+   "line": 100,
+   "replaces": ".wc-block-components-checkbox .wc-block-components-checkbox__input[type=checkbox]",
+   "decl": "min-width:18px"
+  },
+  {
+   "line": 100,
+   "replaces": ".wc-block-components-checkbox .wc-block-components-checkbox__input[type=checkbox]",
+   "decl": "min-height:18px"
+  },
+  {
+   "line": 101,
+   "replaces": ".wc-block-components-totals-shipping .wc-block-components-totals-item__value strong",
+   "decl": "font-weight:400"
+  }
+ ]
+}
