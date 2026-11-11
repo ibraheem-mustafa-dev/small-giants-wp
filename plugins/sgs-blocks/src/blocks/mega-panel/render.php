@@ -729,7 +729,7 @@ $css .= $aside_sel . '{flex:0 0 ' . ( '' !== $aside_width ? $aside_width : '340p
 if ( class_exists( 'SGS_Media_Element' ) ) {
 	$css .= SGS_Media_Element::style( $attributes, '', 'sgs/mega-panel', $uid, array( 'object-fit' ) );
 }
-$css .= $aside_sel . ' .sgs-media__img,' . $aside_sel . ' img{max-height:170px;object-fit:var(--sgs-media-object-fit,cover);width:100%;border-radius:12px;}';
+$css .= $aside_sel . ' img{max-height:170px;object-fit:var(--sgs-media-object-fit,cover);width:100%;border-radius:12px;}';
 
 /*
  * Group-heading EYEBROW (columns style: group heading shown as an eyebrow —
