@@ -438,6 +438,8 @@ ITEM_SETS = (
     ("sgs/form-field-tiles", "tiles", "tile"),
     ("sgs/option-picker", "optionItems", "option"),
     ("sgs/timeline", "entries", "timeline"),
+    ("sgs/choice-flow-question", "options", "option"),
+    ("sgs/trust-bar", "items", "card"),
 )
 
 
