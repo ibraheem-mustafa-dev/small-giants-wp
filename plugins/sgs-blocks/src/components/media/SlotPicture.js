@@ -3,7 +3,8 @@
  * CSS `mediaPreview()` builds (the editor's twin of what `SGS_Media_Element::render()` prints), or a media placeholder
  * when the slot has no file.
  *
- * The caller's wrapper carries the class `uid`: the slot's rules are scoped to `.{uid} .sgs-media-el`.
+ * The picture carries the scope class `uid` itself (the slot's layout box is the picture, or the helper around it), so
+ * the caller's own wrapper must not: a class on a wrapper would pick up the slot's width rule.
  *
  * @package
  */
@@ -21,7 +22,7 @@ import mediaPreview from './mediaPreview.js';
  * @param {string}   props.prefix         The slot's prefix.
  * @param {string[]} [props.kinds]        The slot's kinds; default image.
  * @param {string}   [props.context]      The slot's context; default content.
- * @param {string}   props.uid            The scope class the caller's wrapper carries.
+ * @param {string}   props.uid            The scope class the picture carries; unique to this slot.
  * @param {string}   [props.fallbackAlt]  Alt text when the slot has none of its own.
  * @param {string}   [props.title]        Placeholder title.
  * @param {string}   [props.instructions] Placeholder instructions.
@@ -65,26 +66,26 @@ export default function SlotPicture( {
 		);
 	}
 
-	const { css, needsHelper } = mediaPreview( { prefix, kinds, context, wrapper: true }, attributes, uid );
+	const { css, needsHelper } = mediaPreview( { prefix, kinds, context }, attributes, uid );
 	const decorative = !! attributes[ `${ prefix }Decorative` ];
 	const alt = decorative ? '' : shown.alt || attributes[ `${ prefix }Alt` ] || fallbackAlt;
 	const src = shown.url || 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent( shown.markup );
-	let picture = (
+	const image = (
 		<img
-			className={ `sgs-media-el ${ className }`.trim() }
+			className={ `sgs-media-el ${ needsHelper ? '' : uid } ${ className }`.replace( /\s+/g, ' ' ).trim() }
 			src={ src }
 			width={ shown.width || undefined }
 			height={ shown.height || undefined }
 			alt={ alt }
 		/>
 	);
-	if ( needsHelper ) {
-		picture = (
-			<span className="sgs-media-box">
-				<span className="sgs-media-box__mask">{ picture }</span>
-			</span>
-		);
-	}
+	const picture = needsHelper ? (
+		<span className={ `sgs-media-box ${ uid }` }>
+			<span className="sgs-media-box__mask">{ image }</span>
+		</span>
+	) : (
+		image
+	);
 	return (
 		<>
 			{ css && <style>{ css }</style> }
