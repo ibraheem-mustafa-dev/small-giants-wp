@@ -134,6 +134,7 @@ export function declaredKinds( blockName, prefix ) {
  * @param {string}   [props.context]     'element' | 'background' (panel path).
  * @param {boolean}  [props.parallax]    Parallax is on for this background (panel path).
  * @param {Object}   [props.panelContent] Panel id to caller content (panel path).
+ * @param {string}   [props.label]       Names the slot in each panel title when a block mounts more than one (panel path).
  * @return {Array|Object|null} Bare rows, a mounted panel, or null.
  */
 export default function MediaElementPanel( {
@@ -154,6 +155,7 @@ export default function MediaElementPanel( {
 	context = 'element',
 	parallax,
 	panelContent,
+	label = '',
 } ) {
 	const ids = atomsForElement( { atoms } );
 
@@ -171,6 +173,7 @@ export default function MediaElementPanel( {
 					context={ context }
 					parallax={ parallax }
 					panelContent={ panelContent }
+					label={ label }
 				/>
 			</Suspense>
 		);

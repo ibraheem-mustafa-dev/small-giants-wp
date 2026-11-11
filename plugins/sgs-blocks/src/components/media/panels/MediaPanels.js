@@ -52,6 +52,7 @@ function useActiveDevice() {
  * @param {boolean}  [props.parallax]     Parallax is on for this background.
  * @param {Object}   [props.panelContent] Panel id to caller-supplied content.
  * @param {string}   [props.device]       Overrides the editor's active device.
+ * @param {string}   [props.label]        Names the slot in each panel title ("Before: Media") when a block mounts more than one.
  * @return {JSX.Element} The panels.
  */
 export default function MediaPanels( {
@@ -65,6 +66,7 @@ export default function MediaPanels( {
 	parallax: parallaxProp,
 	panelContent = {},
 	device: deviceOverride,
+	label = '',
 } ) {
 	const activeDevice = useActiveDevice();
 	const device = deviceOverride || activeDevice;
@@ -114,7 +116,7 @@ export default function MediaPanels( {
 			.map( ( { panel, rows } ) => (
 				<PanelBody
 					key={ panel.id }
-					title={ <PanelTitle title={ panel.title() } devices={ panelOwnDevices( rows, attributes, prefix, blockSlug ) } /> }
+					title={ <PanelTitle title={ label ? /* translators: 1: the slot's name, 2: the panel title. */ sprintf( __( '%1$s: %2$s', 'sgs-blocks' ), label, panel.title() ) : panel.title() } devices={ panelOwnDevices( rows, attributes, prefix, blockSlug ) } /> }
 					initialOpen={ panel.open }
 					className={ `sgs-media-panel sgs-media-panel--${ panel.id }` }
 				>
