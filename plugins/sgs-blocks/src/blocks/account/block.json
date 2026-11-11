@@ -2306,6 +2306,15 @@
 				"default": {},
 				"description": "Width of the active menu item bar per device. Unset = 3px."
 			},
+			"menuActiveIndicatorStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"bar",
+					"line"
+				],
+				"description": "How the current menu item is marked: a bar inside the item (default), or a line on its edge (left edge in the sidebar, bottom edge in the tab row) that stays when the item has keyboard focus. The line takes the bar's colour and width."
+			},
 			"menuOrdersCount": {
 				"type": "boolean"
 			},

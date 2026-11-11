@@ -91,6 +91,19 @@ if ( ! function_exists( 'sgs_account_menu_look_css' ) ) {
 				)
 			);
 		}
+		if ( 'line' === ( $attributes['menuActiveIndicatorStyle'] ?? '' ) ) {
+			$link   = $root_sel . ' nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a';
+			$colour = sgs_colour_value( (string) ( $attributes['menuActiveIndicatorColour'] ?? '' ) );
+			$colour = '' !== $colour ? $colour : 'currentColor';
+			$width  = is_array( $attributes['menuActiveIndicatorWidth'] ?? null ) ? (string) ( $attributes['menuActiveIndicatorWidth']['desktop'] ?? '' ) : '';
+			$width  = '' !== $width ? sgs_account_length_transform( $width ) : '3px';
+			// The focus ring replaces box-shadow, so the line is also handed to it as --sgs-focus-under.
+			$side   = 'inset ' . $width . ' 0 0 0 ' . $colour;
+			$under  = 'inset 0 -' . $width . ' 0 0 ' . $colour;
+			$css[]  = '@media (min-width:1024px){' . $link . '{box-shadow:' . $side . ';--sgs-focus-under:' . $side . ';}}';
+			$css[]  = '@media (max-width:1023px){' . $link . '{background:transparent;box-shadow:' . $under . ';--sgs-focus-under:' . $under . ';}}';
+			$css[]  = $link . '::after{content:none;}';
+		}
 		$css[] = sgs_typography_css_rule( $attributes, 'menuCount', $root_sel . ' .sgs-account__menu-count', '', false, false, $tiered );
 		$css[] = sgs_text_states_css( $root_sel . ' .sgs-account__menu-count', $attributes, array( 'base' => 'menuCountColour' ) );
 		return implode( '', array_filter( $css ) );
