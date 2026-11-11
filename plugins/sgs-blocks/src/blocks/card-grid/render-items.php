@@ -5,7 +5,7 @@
  * Partial of render.php, included with a plain require so it shares render.php's
  * local scope (required once per block instance).
  *
- * Reads: $items, $card_grid_loop_style, $card_grid_loop_i, $variant, $root_sel, $heading_level, $no_image_label, $image_fallback, $sgs_cg_media_classes, $card_grid_overlay_active and $card_grid_per_item_css.
+ * Reads: $items, $card_grid_loop_style, $card_grid_loop_i, $variant, $heading_level, $no_image_label, $image_fallback, $attributes, $columns, $columns_tablet, $columns_mobile, $sgs_cg_media_slot, $sgs_cg_media_scope, $card_grid_overlay_active and $card_grid_per_item_css.
  * Writes: $card_grid_per_item_css (extended); the echoed card markup goes into the buffer render.php collects as $inner_html.
  *
  * @package SGS\Blocks
@@ -13,17 +13,16 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// The card photos' scope class and columns (for `sizes`), and whether the next card prints the block-level media rules (once).
+$sgs_cg_media_cols = array(
+	'desktop' => $columns,
+	'tablet'  => $columns_tablet,
+	'mobile'  => $columns_mobile,
+);
+$sgs_cg_block_rules = true;
+
 foreach ( $items as $index => $item ) :
-	$card_grid_item_key      = ! empty( $item['_key'] ) ? (string) $item['_key'] : 'idx-' . absint( $index );
-	$card_grid_per_item_css .= sgs_media_position_css(
-		array(
-			'objectPosition' => $item['focalPoint'] ?? null,
-			'objectFit'      => $item['objectFit'] ?? '',
-		),
-		'',
-		$root_sel . ' [data-card-key="' . esc_attr( $card_grid_item_key ) . '"] img, '
-			. $root_sel . ' [data-card-key="' . esc_attr( $card_grid_item_key ) . '"] video'
-	);
+	$card_grid_item_key = ! empty( $item['_key'] ) ? (string) $item['_key'] : 'idx-' . absint( $index );
 	// Task 2.1) resolved via sgs_link_attributes() — link/linkTarget/linkRel
 	// are the existing per-item storage keys, mapped to the shared
 	// SgsLinkControl object shape { url, opensInNewTab, rel } at render time.
@@ -38,55 +37,15 @@ foreach ( $items as $index => $item ) :
 	$has_link  = '' !== $link_attr;
 	$item_tag  = $has_link ? 'a' : 'div';
 
-	// Unified media slot — sgs_render_media() emits the right tag for either
-	// image or video.
-	$item_media = $item['media'] ?? null;
-	// A BARE URL STRING is a first-class accepted shape. block.json declares
-	// `items[].media` as `{"type":"string"}` while edit.js writes the object
-	// form, and `sgs_render_media()` bails on anything that is not an array
-	// (helpers-media.php:168) — so a string URL would render NOTHING, silently,
-	// with an empty `.sgs-card-grid__image-wrap` left behind. Normalising here
-	// fixes every caller at once — patterns, and any clone output
-	// that emits the documented string shape.
-	// `alt` is deliberately '': these cards carry a visible title, so an alt
-	// that repeated it would double-announce to a screen reader.
-	if ( is_string( $item_media ) ) {
-		$item_media = '' !== trim( $item_media )
-			? array(
-				'url'  => trim( $item_media ),
-				'type' => 'image',
-				'alt'  => '',
-			)
-			: null;
-	}
-	// Per-card decorative toggle (item 18 of the detector-findings backlog,
-	// D918/S8 repeater-field naming — the media slot lives inside the `items`
-	// array, so the flag does too). Blanking alt AND aria-hiding the wrapper
-	// mirrors sgs/timeline's block-level `milestoneMediaDecorative` mechanism
-	// so the image (or video) is skipped entirely by assistive tech, per
-	// WCAG 2.1 AA 1.1.1. wc-product/cpt-collection modes never reach this
-	// loop with client-authored media — `$items` there is the live product
-	// query result, not this attribute, so decorative scoping is a no-op for
-	// those modes rather than needing a separate exclusion.
+	// The card's photo goes through the shared media renderer as an item of an item set (fit, focal point, ratio,
+	// radius, shape and loading come from its per-card and block-level rules). A decorative card prints an empty alt.
+	// The aria-hidden wrapper below mirrors sgs/timeline's decorative-media mechanism so assistive technology skips it.
 	$item_decorative = ! empty( $item['decorative'] );
-	if ( $item_decorative && is_array( $item_media ) ) {
-		$item_media['alt'] = '';
-	}
-	$media_html = ! empty( $item_media ) ? sgs_render_media( $item_media, 'sgs/card-grid' ) : '';
-	// Media-element atom layer (rule 37-media-no-handroll fix) — append the
-	// `sgs-card-grid__media` hook (the motion part `image`), `.sgs-media-el` marker + per-instance scope class onto the FIRST
-	// <img>/<video> tag `sgs_render_media()` returned, so this element inherits
-	// the `--sgs-media-object-fit` custom property set on $root_sel above and
-	// picks up assets/css/media-atoms/object-fit.css's rule. `sgs_render_media()`
-	// has no classes parameter (shared helper, out of this fix's scope), so the
-	// class is appended here via a scoped regex rather than editing that helper.
+	$item_media      = sgs_card_grid_render_item_media( (array) $item, (int) $index, $attributes, $sgs_cg_media_slot, $sgs_cg_media_scope, $sgs_cg_media_cols, $sgs_cg_block_rules );
+	$media_html      = $item_media['html'];
 	if ( '' !== $media_html ) {
-		$media_html = preg_replace(
-			'/(<(?:img|video)\b[^>]*\bclass=")/',
-			'$1' . esc_attr( implode( ' ', array_merge( array( 'sgs-card-grid__media' ), $sgs_cg_media_classes ) ) ) . ' ',
-			$media_html,
-			1
-		);
+		$sgs_cg_block_rules      = false;
+		$card_grid_per_item_css .= $item_media['css'];
 	}
 	// Per-item glyph icon ("Shop by shape") — shown OVER the
 	// photo when there is one, or inside the image-fallback tile when

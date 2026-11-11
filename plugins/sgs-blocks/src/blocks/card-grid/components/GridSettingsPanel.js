@@ -1,17 +1,14 @@
 /**
- * Card Grid — Grid Settings panel: variant, aspect ratio, image height, image padding and hover effect.
+ * Card Grid — Grid Settings panel: variant and image padding. The image ratio, height, fit, radius and shape are the adopted media panels (edit.js).
  */
 
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl } from '@wordpress/components';
-import { ResponsiveOverride, SgsBoxControl, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl } from '../../../components';
-import { VARIANT_OPTIONS, ASPECT_RATIO_OPTIONS } from './card-grid-options';
+import { ResponsiveOverride, SgsBoxControl, BOX_UNITS, normaliseResponsiveBox } from '../../../components';
+import { VARIANT_OPTIONS } from './card-grid-options';
 
 export default function GridSettingsPanel( { attributes, setAttributes } ) {
-	const {
-		variant,
-		aspectRatio,
-	} = attributes;
+	const { variant } = attributes;
 
 	return (
 				<PanelBody
@@ -31,33 +28,6 @@ export default function GridSettingsPanel( { attributes, setAttributes } ) {
 					{ /* Responsive columns (desktop/tablet/mobile) are provided by the
 					     ContainerWrapperControls LayoutPanel above when layout=grid.
 					     Duplicate direct controls removed (Rule 3, Step 7b). */ }
-					<SelectControl
-						label={ __( 'Aspect ratio', 'sgs-blocks' ) }
-						value={ aspectRatio }
-						options={ ASPECT_RATIO_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { aspectRatio: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<ResponsiveOverride
-						label={ __( 'Image height', 'sgs-blocks' ) }
-						value={ attributes.imageHeight }
-						onChange={ ( obj ) => setAttributes( { imageHeight: obj } ) }
-					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<SgsLengthControl
-								presets={ false }
-								label={ __( 'Image height', 'sgs-blocks' ) }
-								hideLabelFromVision
-								help={ __( 'A fixed height for every image area, instead of the aspect ratio (e.g. a row of logos). Empty keeps the aspect ratio.', 'sgs-blocks' ) }
-								value={ ownValue || '' }
-								placeholder={ inherited ? effectiveValue : '' }
-								onChange={ ( val ) => setOwnValue( val || '' ) }
-							/>
-						) }
-					</ResponsiveOverride>
 					<ResponsiveOverride
 						value={ attributes.imagePadding }
 						onChange={ ( obj ) => setAttributes( { imagePadding: obj } ) }

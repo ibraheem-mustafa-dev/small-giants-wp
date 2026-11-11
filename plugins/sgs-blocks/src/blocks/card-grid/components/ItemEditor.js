@@ -6,12 +6,14 @@ import {
 	Button,
 	SelectControl,
 	TextControl,
-	ToggleControl,
-	FocalPointPicker,
 } from '@wordpress/components';
 import { LinkPopoverField, IconPicker } from '../../../components';
 import { LINK_SOURCES_ALL } from '../../../shared/link-source-options';
 import MediaPicker from '../../../components/MediaPicker';
+import MediaSlotField from '../../../components/media/MediaSlotField.js';
+import FitField from '../../../components/media/FitField.js';
+import FocalField from '../../../components/media/FocalField.js';
+import { IMAGE_SLOT, applySlotPatch, itemToSlotAttrs } from '../item-model';
 
 const BADGE_VARIANT_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
@@ -24,6 +26,8 @@ export default function ItemEditor( { item, index, onChange, onRemove } ) {
 	const update = ( key, value ) => {
 		onChange( { ...item, [ key ]: value } );
 	};
+	const slotAttrs = itemToSlotAttrs( item );
+	const setSlot = ( patch ) => onChange( applySlotPatch( item, patch ) );
 
 	return (
 		<div
@@ -37,58 +41,11 @@ export default function ItemEditor( { item, index, onChange, onRemove } ) {
 			<p style={ { margin: '0 0 8px', fontWeight: 600 } }>
 				{ __( 'Item', 'sgs-blocks' ) } { index + 1 }
 			</p>
-			<div style={ { marginBottom: '8px' } }>
-				<MediaPicker
-					value={ item.media || null }
-					onChange={ ( media ) => onChange( { ...item, media } ) }
-					onRemove={ () => onChange( { ...item, media: null } ) }
-					label={ __( 'Select card media', 'sgs-blocks' ) }
-					instructionsImage={ __(
-						'Choose an image or video for this card',
-						'sgs-blocks'
-					) }
-				/>
-			</div>
-			{ /* Gated on media existing — an unavailable image shows no crop
-			     control, matching the avatar/work disclosure pattern on
-			     sgs/testimonial. Spec 35 Part 4: per-item, keyed by item._key
-			     in render.php, never by array index. */ }
-			{ !! item.media?.url && (
-				<>
-					<SelectControl
-						label={ __( 'Image fit', 'sgs-blocks' ) }
-						value={ item.objectFit || 'cover' }
-						options={ [
-							{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
-							{ label: __( 'Contain (fit within, no crop)', 'sgs-blocks' ), value: 'contain' },
-							{ label: __( 'Fill (stretch)', 'sgs-blocks' ), value: 'fill' },
-							{ label: __( 'Scale down (never enlarged)', 'sgs-blocks' ), value: 'scale-down' },
-							{ label: __( 'Natural size', 'sgs-blocks' ), value: 'none' },
-						] }
-						onChange={ ( val ) => update( 'objectFit', val ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ 'cover' === ( item.objectFit || 'cover' ) && (
-						<FocalPointPicker
-							label={ __( 'Focal point', 'sgs-blocks' ) }
-							url={ item.media.url }
-							value={ item.focalPoint || { x: 0.5, y: 0.5 } }
-							onChange={ ( val ) => update( 'focalPoint', val ) }
-						/>
-					) }
-				</>
-			) }
-			<ToggleControl
-				label={ __( 'Decorative — hide from screen readers', 'sgs-blocks' ) }
-				checked={ !! item.decorative }
-				onChange={ ( val ) => update( 'decorative', val ) }
-				help={ __(
-					'Turn on for a purely decorative card image with no informational content — screen readers will skip it entirely (WCAG 1.1.1).',
-					'sgs-blocks'
-				) }
-				__nextHasNoMarginBottom
-			/>
+			{ /* The card's photo: the shared media field (picker, Alt text, Decorative), its fit and its focal point, each
+			     written into this card's own `source`, `alt`, `decorative`, `fit` and `focal` (Spec 49 section 8.3). */ }
+			<MediaSlotField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ IMAGE_SLOT.prefix } slot={ IMAGE_SLOT } label={ __( 'Card image', 'sgs-blocks' ) } />
+			<FitField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ IMAGE_SLOT.prefix } slot={ IMAGE_SLOT } />
+			<FocalField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ IMAGE_SLOT.prefix } />
 			{ /* Per-item glyph icon — reuses the
 			   shared framework icon registry (same IconPicker as sgs/icon and
 			   sgs/trust-bar's icon-circle items), never a second icon system.

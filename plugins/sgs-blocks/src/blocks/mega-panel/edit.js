@@ -108,7 +108,7 @@ const MEDIA_CARDS_TEMPLATE = [
 			columns: { desktop: 4, tablet: 2, mobile: 1 },
 			gap: { desktop: '14' },
 			cardRadius: '18px',
-			aspectRatio: '16/10',
+			imageRatio: { desktop: '16 / 10' },
 		},
 	],
 ];
@@ -129,7 +129,7 @@ const BRANDS_TEMPLATE = [
 			columns: { desktop: 4, tablet: 3, mobile: 2 },
 			gap: { desktop: '10' },
 			cardRadius: '12px',
-			aspectRatio: '3/2',
+			imageRatio: { desktop: '3 / 2' },
 		},
 	],
 	[ 'sgs/mega-aside' ],

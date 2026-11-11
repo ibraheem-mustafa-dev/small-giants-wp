@@ -142,51 +142,6 @@ if ( '' !== $card_border_gradient ) {
 	);
 }
 
-// ── Explicit media crop (Spec 35 capability-routing doctrine Part 9,
-// mechanism (c)) — block.json declares BOTH `imageControls: true` (keeps the
-// sgsObjectPosition/sgsObjectFit attrs + the universal editor UI) and
-// `imageControlsExplicit: true` (opts OUT of includes/image-controls.php's
-// guessed-root render_block injector, which can never find this block's real
-// media element — it lives inside `.sgs-card-grid__image-wrap`, several
-// levels under the guessed root, and only in the manual/query render path
-// below). This is the SINGLE block-wide crop setting applied uniformly to
-// EVERY card's media (per-card cropping is an explicit non-goal — items[] is
-// an array, one sgsObjectPosition/sgsObjectFit pair cannot differ per card).
-// Targets both <img> and <video> since the media slot accepts either
-// (sgs_render_media()). Scoped by $root_sel so multiple grids on one page
-// never collide; harmless no-op in the wc-product/cpt-collection branches
-// below, which delegate to sgs/product-card and never render
-// `.sgs-card-grid__image-wrap` at all.
-//
-// object-fit split out (rule 37-media-no-handroll fix): `sgsObjectFit` is now
-// read by the media-element atom below, not here — pass a copy with it
-// cleared so this call only ever emits `object-position` (its `sgsObjectFit`
-// half would otherwise duplicate the atom's `var(--sgs-media-object-fit)`
-// declaration on the SAME element with higher specificity, silently making
-// the atom's value dead the moment an operator set one). Object-position has
-// no atom coverage yet and stays on this explicit mechanism unchanged.
-$card_grid_native_css .= sgs_media_position_css(
-	array_merge( $attributes, array( 'sgsObjectFit' => '' ) ),
-	'sgs',
-	$root_sel . ' .sgs-card-grid__image-wrap img, ' . $root_sel . ' .sgs-card-grid__image-wrap video'
-);
-
-// Media-element atom layer — object-fit only (rule 37-media-no-handroll fix).
-// Reads the SAME `sgsObjectFit` attribute the block already stores (see the
-// block.json `_comment_mediaElements`); emits `.{scope}{--sgs-media-object-fit:…}`
-// which assets/css/media-atoms/object-fit.css's `.sgs-media-el` rule consumes.
-// No value set -> no declaration -> that stylesheet's own `cover` fallback
-// applies, matching the removed style.css default exactly (style.css).
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$card_grid_native_css .= SGS_Media_Element::style(
-		$attributes,
-		'sgs',
-		'sgs/card-grid',
-		$uid,
-		array( 'object-fit' )
-	);
-}
-
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them
 // manually (mirrors sgs/hero / sgs/quote) so preset palette colours still
