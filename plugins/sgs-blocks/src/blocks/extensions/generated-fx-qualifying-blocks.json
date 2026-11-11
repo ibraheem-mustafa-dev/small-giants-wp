@@ -183,6 +183,7 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
+		"surface-treatment",
 		"svg-loop",
 		"wave-gradient"
 	],
@@ -206,9 +207,13 @@
 	],
 	"sgs/decorative-image": [
 		"ambient-float",
+		"cursor-field",
 		"curtain",
 		"follow-pointer",
+		"generative-background",
 		"glare",
+		"grid-dots",
+		"ken-burns",
 		"lottie",
 		"magnet",
 		"morph",
@@ -219,7 +224,8 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment"
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/form-field-consent": [
 		"ambient-float",
@@ -242,9 +248,13 @@
 	"sgs/gallery": [
 		"ambient-float",
 		"carousel-loop",
+		"cursor-field",
 		"curtain",
 		"follow-pointer",
+		"generative-background",
 		"glare",
+		"grid-dots",
+		"ken-burns",
 		"lottie",
 		"magnet",
 		"morph",
@@ -255,7 +265,8 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment"
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/google-reviews": [
 		"ambient-float",
@@ -396,6 +407,28 @@
 		"sheen",
 		"split-reveal"
 	],
+	"sgs/media": [
+		"ambient-float",
+		"cursor-field",
+		"curtain",
+		"follow-pointer",
+		"generative-background",
+		"glare",
+		"grid-dots",
+		"ken-burns",
+		"lottie",
+		"magnet",
+		"morph",
+		"motion-path",
+		"parallax",
+		"particles",
+		"ripple",
+		"scroll-progress",
+		"scrub",
+		"sheen",
+		"surface-treatment",
+		"wave-gradient"
+	],
 	"sgs/mega-panel": [
 		"ambient-float",
 		"cursor-field",
@@ -462,6 +495,7 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
+		"surface-treatment",
 		"svg-loop",
 		"wave-gradient"
 	],
@@ -487,6 +521,7 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
+		"surface-treatment",
 		"svg-loop",
 		"wave-gradient"
 	],
@@ -663,6 +698,7 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
+		"surface-treatment",
 		"svg-loop",
 		"wave-gradient"
 	],
@@ -688,6 +724,7 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
+		"surface-treatment",
 		"svg-loop",
 		"wave-gradient"
 	],
