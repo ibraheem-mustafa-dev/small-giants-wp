@@ -20,6 +20,12 @@
  * Runs at `render_block_woocommerce/product-collection` priority 10 — the
  * same priority the motion layer renderer's neighbours use, and, load-bearingly, BEFORE the registry's p99 sniff.
  *
+ * Only a collection that inherits the page's query (`query.inherit`, the shop and
+ * product-taxonomy archives) can be re-filtered: WooCommerce's product filters act on
+ * the main query. A fixed collection (related products, a hand-picked rail) never
+ * re-filters, so it gets no attribute, and a page with only those loads no GSAP (about
+ * 39 KB of transferred JavaScript on a single product page, measured 2026-11-11).
+ *
  * @package SGS\Blocks
  */
 
@@ -32,8 +38,8 @@ defined( 'ABSPATH' ) || exit;
  * wrapper, when the site-level setting is on.
  *
  * @param string $block_content The rendered block HTML.
- * @param array  $block         Parsed block data (unused — the opt-in is a
- *                               site setting, not a block attribute).
+ * @param array  $block         Parsed block data: only a collection whose
+ *                               `query.inherit` is true can be re-filtered.
  * @return string Block HTML, with the attribute added when eligible.
  */
 function sgs_inject_flip_on_product_collection( string $block_content, array $block ): string {
@@ -51,6 +57,10 @@ function sgs_inject_flip_on_product_collection( string $block_content, array $bl
 	}
 
 	if ( empty( SGS_Motion_Registry::settings()['animate_product_filtering'] ) ) {
+		return $block_content;
+	}
+
+	if ( empty( $block['attrs']['query']['inherit'] ) ) {
 		return $block_content;
 	}
 
