@@ -11,10 +11,13 @@
  *     also vanilla fetch. `wc-cart-fragments` is already dequeued
  *     (see wc-cart-fragments.php).
  *
- * Neither needs `jquery`, `woocommerce.min`, `jquery-blockui`, the legacy
- * `wc-add-to-cart`, or the order-attribution tracking scripts. Removing them
- * is the only way to meet the FR-27-H1 ≤150 KB page-JS budget (the configurator
- * itself is ~20 KB; the overage is WooCommerce-core jQuery).
+ * Neither needs `jquery`, `woocommerce.min`, `jquery-blockui`, or the legacy
+ * `wc-add-to-cart`. Removing them is the only way to meet the FR-27-H1 ≤150 KB
+ * page-JS budget (the configurator itself is ~20 KB; the overage is
+ * WooCommerce-core jQuery). Order attribution is kept everywhere.
+ *
+ * On a page that is not a WooCommerce surface at all, the same function also drops
+ * the WooCommerce stack and stylesheets (see `sgs_page_needs_wc_frontend()`).
  *
  * Safety:
  *   1. Fires ONLY when a bound configurator card is detected in post content
@@ -101,6 +104,42 @@ function sgs_jquery_still_needed( array $removed ): bool {
 }
 
 /**
+ * Record that a `woocommerce/*` block rendered on this request.
+ *
+ * A block theme renders the whole template (header and footer parts included) before
+ * `wp_head`, so by `wp_enqueue_scripts` this flag covers blocks that the post content
+ * check below cannot see, such as a WooCommerce mini cart or account link in a header
+ * part, or a store-notices block in a page template.
+ *
+ * @param string $block_content Rendered block HTML (returned unchanged).
+ * @param array  $block         Parsed block.
+ * @return string
+ */
+function sgs_note_wc_block_render( $block_content, $block ) {
+	if ( 0 === strpos( (string) ( $block['blockName'] ?? '' ), 'woocommerce/' ) ) {
+		sgs_wc_block_rendered( true );
+	}
+
+	return $block_content;
+}
+add_filter( 'render_block', __NAMESPACE__ . '\\sgs_note_wc_block_render', 10, 2 );
+
+/**
+ * Whether a `woocommerce/*` block has rendered on this request.
+ *
+ * @param bool $mark Pass true to record a render.
+ * @return bool
+ */
+function sgs_wc_block_rendered( bool $mark = false ): bool {
+	static $rendered = false;
+	if ( $mark ) {
+		$rendered = true;
+	}
+
+	return $rendered;
+}
+
+/**
  * Whether this request genuinely needs WooCommerce's jQuery frontend stack.
  *
  * Added 2026-08-23 (Phase 3 design benchmark, finding X-2). WooCommerce enqueues
@@ -120,8 +159,9 @@ function sgs_jquery_still_needed( array $removed ): bool {
  * the full stack, so cart, checkout, account and the classic add-to-cart form are
  * untouched. Only pages that are not WooCommerce surfaces at all lose it.
  *
- * Fails SAFE in three places: WooCommerce inactive means there is nothing to strip;
- * a request with no inspectable queried object keeps the scripts; and any
+ * Fails SAFE in four places: WooCommerce inactive means there is nothing to strip;
+ * a `woocommerce/*` block rendered anywhere in the template keeps everything; a
+ * request with no inspectable queried object keeps the scripts; and any
  * `woocommerce/*` block or shop shortcode embedded in the content keeps them too.
  *
  * @return bool True when the WooCommerce frontend stack must stay.
@@ -134,6 +174,11 @@ function sgs_page_needs_wc_frontend(): bool {
 
 	// Any genuine WooCommerce surface keeps the full stack, no questions asked.
 	if ( is_woocommerce() || is_cart() || is_checkout() || is_account_page() ) {
+		return true;
+	}
+
+	// A WooCommerce block rendered somewhere in the template (a header part, a page template).
+	if ( sgs_wc_block_rendered() ) {
 		return true;
 	}
 
@@ -191,6 +236,39 @@ function sgs_page_needs_wc_frontend(): bool {
 }
 
 /**
+ * Dequeue WooCommerce's stylesheets, and the theme's WooCommerce stylesheet, on a page
+ * that is not a WooCommerce surface and rendered no `woocommerce/*` block.
+ *
+ * Measured 2026-11-11 on the canary home and blog and on a client's home and about
+ * pages at 375 and 1440 px: the only rules in these sheets that match anything there
+ * are `:root` custom properties read only by WooCommerce surfaces and
+ * `.screen-reader-text`, and screenshots of each page and of the open `sgs/cart`
+ * drawer are unchanged with all of them disabled. That is about 60 KB of transferred
+ * CSS per page. The theme's sheet also styles the shop archive, product page, cart,
+ * checkout and WooCommerce's own mini cart, all of which keep it.
+ *
+ * @return void
+ */
+function sgs_dequeue_wc_styles_off_wc_pages(): void {
+	$style_handles = apply_filters(
+		'sgs_dequeue_wc_styles_off_wc_pages',
+		array(
+			'woocommerce-general',
+			'woocommerce-layout',
+			'woocommerce-smallscreen',
+			'woocommerce-blocktheme',
+			'wc-blocks-style',
+			'sgs-woocommerce',
+			'sgs-woocommerce-notices',
+		)
+	);
+
+	foreach ( $style_handles as $handle ) {
+		wp_dequeue_style( $handle );
+	}
+}
+
+/**
  * Dequeue the redundant WooCommerce frontend scripts.
  *
  * Fires on two independent paths:
@@ -199,7 +277,8 @@ function sgs_page_needs_wc_frontend(): bool {
  *      talks to the SGS REST proxy and the Store API by vanilla fetch, so the jQuery
  *      stack is redundant there specifically.
  *   2. A page that is not a WooCommerce surface at all (X-2, 2026-08-23) — the 404,
- *      search, blog archive, single post, ordinary pages and the front page.
+ *      search, blog archive, single post, ordinary pages and the front page. This
+ *      path also drops WooCommerce's stylesheets (`sgs_dequeue_wc_styles_off_wc_pages()`).
  *
  * Hooked at priority 99 so it runs after WooCommerce (and everything else)
  * has enqueued on `wp_enqueue_scripts`.
@@ -226,18 +305,23 @@ function sgs_configurator_optimise_assets(): void {
 		return;
 	}
 
-	// WooCommerce frontend scripts the configurator does not use.
+	// WooCommerce frontend scripts the configurator does not use. Order attribution
+	// (`sourcebuster-js`, `wc-order-attribution`) is never in this list: it must run on
+	// the page a visitor lands on to record where they came from, and every order's
+	// "origin" depends on it (Bean, 2026-11-03).
 	$wc_handles = apply_filters(
 		'sgs_configurator_dequeue_wc_handles',
 		array(
 			'woocommerce',
 			'wc-add-to-cart',
 			'jquery-blockui',
-			'sourcebuster-js',
-			'wc-order-attribution',
 			'js-cookie',
 		)
 	);
+
+	if ( $strip_off_wc_pages ) {
+		sgs_dequeue_wc_styles_off_wc_pages();
+	}
 
 	foreach ( $wc_handles as $handle ) {
 		wp_dequeue_script( $handle );
