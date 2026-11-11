@@ -19,31 +19,33 @@ const rec = ( id, tpl, trigger, properties, o = {} ) => ( { id, element: { dc: '
 const svgRec = ( id, part, nearest = '9' ) => ( { id, element: { dc: 'D', template_tpl_id: null, nearest_tpl_id: nearest, selector: `inlined SVG → [id="${ part }"]` }, trigger: { type: 'mount' } } );
 const PARTS = [ { target: 'snow', fromOpacity: 0 }, { target: 'goldpath', copyShapeFrom: 'path5', draw: true } ];
 const FULL_SVG = '<svg><g id="snow"/><path id="path5"/><path id="goldpath"/></svg>';
-const hero = ( o ) => ( { target, block: 'sgs/hero', saved: { bgSvgContent: FULL_SVG }, records: [ svgRec( 'A-24', 'snow' ) ], clientData: { hero: { bgSvgPartsTrigger: 'load', bgSvgParts: PARTS } }, ...o } );
+const svgSource = ( markup ) => ( { desktop: { kind: 'svg', markup } } );
+const imgSource = ( url, extra = {} ) => ( { desktop: { kind: 'image', id: 1, url }, ...extra } );
+const hero = ( o ) => ( { target, block: 'sgs/hero', saved: { backgroundSource: svgSource( FULL_SVG ) }, records: [ svgRec( 'A-24', 'snow' ) ], clientData: { hero: { backgroundSvgPartsTrigger: 'load', backgroundSvgParts: PARTS } }, ...o } );
 
 test( 'hero svg parts: the client data lands on the hero that holds the SVG', () => {
 	const [ item ] = heroSvgParts( hero() );
 	assert.equal( item.status, 'op' );
-	assert.deepEqual( item.writes.map( ( w ) => w.attr ), [ 'bgSvgParts', 'bgSvgPartsTrigger' ] );
+	assert.deepEqual( item.writes.map( ( w ) => w.attr ), [ 'backgroundSvgParts', 'backgroundSvgPartsTrigger' ] );
 	assert.equal( item.record, 'A-24' );
 } );
 
 test( 'hero svg parts: a missing id, a missing file or no SVG is a no-setting row; another block or another hero writes nothing', () => {
-	const lacking = heroSvgParts( hero( { saved: { bgSvgContent: '<svg><g id="snow"/><path id="path5"/></svg>' } } ) )[ 0 ];
+	const lacking = heroSvgParts( hero( { saved: { backgroundSource: svgSource( '<svg><g id="snow"/><path id="path5"/></svg>' ) } } ) )[ 0 ];
 	assert.equal( lacking.status, 'no-setting' );
 	assert.match( lacking.why, /no element with id goldpath/ );
 	assert.equal( heroSvgParts( hero( { clientData: {} } ) )[ 0 ].status, 'no-setting' );
-	assert.match( heroSvgParts( hero( { saved: {} } ) )[ 0 ].why, /no bgSvgContent/ );
+	assert.match( heroSvgParts( hero( { saved: {} } ) )[ 0 ].why, /holds no inline SVG/ );
 	assert.deepEqual( heroSvgParts( hero( { block: 'sgs/container' } ) ), [] );
 	assert.deepEqual( heroSvgParts( hero( { records: [ svgRec( 'A-24', 'snow', '77' ) ] } ) ), [] );
 } );
 
 const animated = ( u ) => ( /\.svg$/.test( u ) ? '<svg><animateTransform attributeName="transform" dur="4s"/></svg>' : null );
 const still = ( u ) => ( /\.svg$/.test( u ) ? '<svg><g id="snow"/></svg>' : null );
-const withBg = ( url, extra = {} ) => ( { saved: { backgroundImage: { id: 1, url }, ...extra } } );
+const withBg = ( url, extra = {} ) => ( { saved: { backgroundSource: imgSource( url, extra ) } } );
 
 test( 'hero svg parts: a hero whose background is an animated SVG file is equal, with the file named', () => {
-	const [ item ] = heroSvgParts( hero( { ...withBg( 'http://x/hero-rays.svg', { backgroundImageMobile: { id: 2, url: 'http://x/hero-rays-m.svg' } } ), readSvg: animated } ) );
+	const [ item ] = heroSvgParts( hero( { ...withBg( 'http://x/hero-rays.svg', { mobile: { kind: 'image', id: 2, url: 'http://x/hero-rays-m.svg' } } ), readSvg: animated } ) );
 	assert.equal( item.status, 'equal' );
 	assert.match( item.why, /animated SVG file hero-rays\.svg/ );
 } );
@@ -53,12 +55,12 @@ test( 'hero svg parts: a still image, a still SVG, an unreadable file or one sti
 	assert.equal( gap( { ...withBg( 'http://x/photo.jpg' ), readSvg: animated } ).status, 'no-setting' );
 	assert.equal( gap( { ...withBg( 'http://x/hero.svg' ), readSvg: still } ).status, 'no-setting' );
 	assert.equal( gap( { ...withBg( 'http://x/hero.svg' ), readSvg: () => null } ).status, 'no-setting' );
-	assert.equal( gap( { ...withBg( 'http://x/hero.svg', { backgroundImageTablet: { id: 3, url: 'http://x/tablet.png' } } ), readSvg: animated } ).status, 'no-setting' );
+	assert.equal( gap( { ...withBg( 'http://x/hero.svg', { tablet: { kind: 'image', id: 3, url: 'http://x/tablet.png' } } ), readSvg: animated } ).status, 'no-setting' );
 	assert.equal( gap( { saved: {}, readSvg: animated } ).status, 'no-setting' );
 } );
 
 test( 'hero svg parts: saved values already equal give equal', () => {
-	assert.equal( heroSvgParts( hero( { saved: { bgSvgContent: FULL_SVG, bgSvgPartsTrigger: 'load', bgSvgParts: PARTS } } ) )[ 0 ].status, 'equal' );
+	assert.equal( heroSvgParts( hero( { saved: { backgroundSource: svgSource( FULL_SVG ), backgroundSvgPartsTrigger: 'load', backgroundSvgParts: PARTS } } ) )[ 0 ].status, 'equal' );
 } );
 
 // ---- hover indent
@@ -151,7 +153,7 @@ test( 'connectorHidden: true at the tiers the draft hides the line at, and only 
 	assert.equal( hiddenOf( sctx( [] ) ), undefined );
 } );
 
-// ---- the motion family hands the hero SVG's calls to bgSvgParts
+// ---- the motion family hands the hero SVG's calls to backgroundSvgParts
 const svgCall = { key: 'cr-ref-x-1', own: false, tpl: '9', frames: [ { translate: '0 140px', opacity: 0 }, { translate: '0 0', opacity: 1 } ], options: { duration: 1100, easing: 'ease', fill: 'both' } };
 const mctx = ( records, o = {} ) => ( {
 	...hero( { records } ), target, draft: at( { box: { y: 0 } } ), live: at( {} ), recordsIndex: recordIndex( [], 'D' ), db, rawSnapshot: null,
@@ -160,7 +162,7 @@ const mctx = ( records, o = {} ) => ( {
 
 test( 'motion family: the SVG parts are no media entrance; without SVG records the same calls are', () => {
 	const withRecords = motion.decide( mctx( [ svgRec( 'A-24', 'snow' ) ] ) );
-	assert.ok( withRecords.some( ( i ) => 'bgSvgParts' === i.prop && 'op' === i.status ) );
+	assert.ok( withRecords.some( ( i ) => 'backgroundSvgParts' === i.prop && 'op' === i.status ) );
 	assert.ok( ! withRecords.some( ( i ) => /media/.test( `${ i.prop } ${ i.why }` ) ), JSON.stringify( withRecords ) );
 	const without = motion.decide( mctx( [] ) );
 	assert.ok( without.some( ( i ) => /media/.test( `${ i.prop } ${ i.why }` ) ), JSON.stringify( without ) );

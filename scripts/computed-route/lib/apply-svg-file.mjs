@@ -1,5 +1,5 @@
 // A hero whose background is an SVG file that animates itself. The draft draws such a background inline and plays its parts from a
-// script (the hero's `bgSvgParts` setting is that script's home); a hero that points its background image at an animated SVG file
+// script (the hero's `backgroundSvgParts` setting is that script's home); a hero that points its background image at an animated SVG file
 // already delivers the same motion, so it needs no inline SVG to animate (lib/apply-motion-rules.mjs::heroSvgParts).
 import { spawnSync } from 'node:child_process';
 
@@ -30,11 +30,14 @@ export function svgFileAnimates( url, read = fetchOnce ) {
 	return 'string' === typeof text && ANIMATED_SVG.test( text );
 }
 
-// The hero's background image URLs, one per device the block stores (desktop, tablet, mobile), those that are set.
-export const backgroundUrls = ( saved ) => [ saved?.backgroundImage, saved?.backgroundImageTablet, saved?.backgroundImageMobile ].map( ( o ) => o?.url ).filter( Boolean );
+// The hero's background file URLs, one per device the Background Source stores (desktop, tablet, mobile), those that are set.
+export const backgroundUrls = ( saved ) => [ 'desktop', 'tablet', 'mobile' ].map( ( t ) => saved?.backgroundSource?.[ t ] ).filter( ( e ) => 'image' === e?.kind ).map( ( e ) => e.url ).filter( Boolean );
 
-// The URLs when every background image the block holds is an animated SVG file, else null.
+// The inline SVG markup the Background Source holds for desktop, else null.
+export const inlineBackground = ( saved ) => ( 'svg' === saved?.backgroundSource?.desktop?.kind && saved.backgroundSource.desktop.markup ) || null;
+
+// The URLs when every background file the block holds is an animated SVG file, else null.
 export function animatedBackground( saved, read = fetchOnce ) {
 	const urls = backgroundUrls( saved );
-	return urls.length && saved?.backgroundImage?.url && urls.every( ( u ) => svgFileAnimates( u, read ) ) ? urls : null;
+	return urls.length && 'image' === saved?.backgroundSource?.desktop?.kind && urls.every( ( u ) => svgFileAnimates( u, read ) ) ? urls : null;
 }
