@@ -37,10 +37,18 @@
 			"_comment_mediaElements": "The `badge` slot: each image badge's own picture (`items[].source`) printed by the shared media renderer, with the block-level Fit (contain when unset), Width (60px when unset), Radius, Shape and Colour. The `background` slot is the bar's own background.",
 			"mediaElements": [
 				{
-					"prefix": "badgeImage",
-					"context": "element",
+					"prefix": "badge",
+					"context": "item",
+					"kinds": [
+						"image"
+					],
 					"atoms": [
-						"object-fit"
+						"source",
+						"meaning",
+						"object-fit",
+						"sizing",
+						"shape",
+						"filter"
 					]
 				},
 				{
@@ -683,14 +691,6 @@
 			"default": "",
 			"description": "Unset (default) falls through to style.css's framework-default fallback (rgba(0,0,0,0.08))."
 		},
-		"badgeImageBorderRadius": {
-			"type": "string",
-			"default": ""
-		},
-		"badgeImageSize": {
-			"type": "number",
-			"default": 60
-		},
 		"badgeImageShadow": {
 			"type": "string",
 			"default": ""
@@ -701,17 +701,6 @@
 		"badgeImageShadowColourHover": {
 			"type": "string",
 			"default": ""
-		},
-		"badgeImageObjectFit": {
-			"type": "string",
-			"default": "contain",
-			"enum": [
-				"cover",
-				"contain",
-				"fill",
-				"none",
-				"scale-down"
-			]
 		},
 		"textColour": {
 			"type": "string",
@@ -1192,6 +1181,23 @@
 			],
 			"default": ""
 		},
+		"badgeLoading": {"type":"string","_generated":"media-atoms"},
+		"badgeFit": {"type":"object","_generated":"media-atoms"},
+		"badgeRatio": {"type":"object","_generated":"media-atoms"},
+		"badgeWidth": {"type":"object","_generated":"media-atoms"},
+		"badgeHeight": {"type":"object","_generated":"media-atoms"},
+		"badgeMinWidth": {"type":"object","_generated":"media-atoms"},
+		"badgeMaxWidth": {"type":"object","_generated":"media-atoms"},
+		"badgeMinHeight": {"type":"object","_generated":"media-atoms"},
+		"badgeMaxHeight": {"type":"object","_generated":"media-atoms"},
+		"badgeShape": {"type":"object","_generated":"media-atoms"},
+		"badgeRadius": {"type":"object","_generated":"media-atoms"},
+		"badgeBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"badgeBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"badgeBorderColour": {"type":"string","_generated":"media-atoms"},
+		"badgeBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"badgeColour": {"type":"object","_generated":"media-atoms"},
+		"badgeGreyscale": {"type":"number","_generated":"media-atoms"},
 		"backgroundSource": {"type":"object","_generated":"media-atoms"},
 		"backgroundLoading": {"type":"string","_generated":"media-atoms"},
 		"backgroundAlt": {"type":"string","_generated":"media-atoms"},

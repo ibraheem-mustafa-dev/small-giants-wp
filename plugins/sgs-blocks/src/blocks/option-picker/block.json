@@ -39,9 +39,16 @@
 			"mediaElements": [
 				{
 					"prefix": "swatch",
-					"context": "element",
+					"context": "item",
+					"kinds": [
+						"image"
+					],
 					"atoms": [
-						"object-fit"
+						"source",
+						"meaning",
+						"object-fit",
+						"sizing",
+						"shape"
 					]
 				}
 			],
@@ -417,16 +424,6 @@
 			"default": false,
 			"description": "Keep an option's fill and text colour unchanged on hover (no brightening); only the hover shift moves it. Off by default."
 		},
-		"swatchShape": {
-			"type": "string",
-			"enum": [
-				"",
-				"round",
-				"square"
-			],
-			"default": "",
-			"description": "Shape of the colour dot in an outlined, filled or ghost option. Empty keeps the stylesheet's own shape."
-		},
 		"swatchSize": {
 			"type": "string",
 			"default": "",
@@ -784,7 +781,22 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"swatchLoading": {"type":"string","_generated":"media-atoms"},
+		"swatchFit": {"type":"object","_generated":"media-atoms"},
+		"swatchRatio": {"type":"object","_generated":"media-atoms"},
+		"swatchWidth": {"type":"object","_generated":"media-atoms"},
+		"swatchHeight": {"type":"object","_generated":"media-atoms"},
+		"swatchMinWidth": {"type":"object","_generated":"media-atoms"},
+		"swatchMaxWidth": {"type":"object","_generated":"media-atoms"},
+		"swatchMinHeight": {"type":"object","_generated":"media-atoms"},
+		"swatchMaxHeight": {"type":"object","_generated":"media-atoms"},
+		"swatchShape": {"type":"object","_generated":"media-atoms"},
+		"swatchRadius": {"type":"object","_generated":"media-atoms"},
+		"swatchBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"swatchBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"swatchBorderColour": {"type":"string","_generated":"media-atoms"},
+		"swatchBorderColourHover": {"type":"string","_generated":"media-atoms"}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
