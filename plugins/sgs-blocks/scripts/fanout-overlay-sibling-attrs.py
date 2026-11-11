@@ -175,7 +175,19 @@ def declared_keys(path: Path) -> set:
     return {k for k in ALL_NEW_KEYS if k in attrs}
 
 
+def adopted_background(path: Path) -> bool:
+    """A block that declares `backgroundSource` has adopted the media system's background slot (Spec 49): the
+    attribute generator writes its overlay family (`backgroundOverlayGradient`, `...GradientHover`, `...Blend`), so the
+    hand-fanned names this script owns no longer apply to it."""
+    try:
+        return 'backgroundSource' in (json.loads(_read(path)).get('attributes') or {})
+    except (json.JSONDecodeError, OSError):
+        return False
+
+
 def missing_keys(path: Path) -> list:
+    if adopted_background(path):
+        return []
     have = declared_keys(path)
     return [k for k in ALL_NEW_KEYS if k not in have]
 

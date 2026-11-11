@@ -207,6 +207,18 @@ final class ContainerBackgroundMediaTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/> \.sgs-bg-media\{opacity:0\.6;?\}/', $out['css'] );
 	}
 
+	public function test_a_gradient_overlay_and_a_source_with_no_size_print(): void {
+		$out = $this->render(
+			array(
+				'backgroundSource'          => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/wp-content/uploads/bare.jpg' ) ),
+				'backgroundOverlayGradient' => 'linear-gradient(135deg,#ff0000 0%,#0000ff 100%)',
+			)
+		);
+
+		$this->assertStringContainsString( 'bare.jpg', $out['html'] );
+		$this->assertStringContainsString( 'background-image:linear-gradient(135deg', $out['css'] );
+	}
+
 	public function test_an_empty_source_prints_nothing_and_no_element(): void {
 		$out = $this->render( array( 'backgroundSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => '' ) ) ) );
 

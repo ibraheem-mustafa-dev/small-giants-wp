@@ -2018,7 +2018,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/site-header/style.css",
-   "selector": "header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown] > .sgs-container__overlay",
+   "selector": "header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown] > .sgs-bg-overlay",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {

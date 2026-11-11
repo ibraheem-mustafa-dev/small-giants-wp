@@ -52,9 +52,9 @@ import {
 // ResponsiveBoxControl bound to the new object attrs.
 import {
 	WidthPanel,
-	BackgroundPanel,
 	ShapeDividersPanel,
 } from '../container/components/ContainerWrapperControls';
+import { HeroBackgroundPanel } from './components/HeroBackgroundPanel';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { tierValueOf, sanitiseSvg, svgBackgroundPreview, backgroundPreview, wrapperToneClass, surfaceBackdropPreview, OVERLAY_BLEND_MODES } from '../../utils';
 import { heroCanvasPreview, splitMediaAtTier } from './canvas-preview';
@@ -1824,7 +1824,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
+				<HeroBackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 
 				{ !! attributes.bgSvgContent && (
 					<PanelBody title={ __( 'Background SVG animation', 'sgs-blocks' ) } initialOpen={ false }>

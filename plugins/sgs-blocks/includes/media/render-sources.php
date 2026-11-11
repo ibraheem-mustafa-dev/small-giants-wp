@@ -87,9 +87,10 @@ if ( ! function_exists( 'sgs_media_normalise_source' ) ) {
 	 *
 	 * @param mixed    $raw   The device's Source object.
 	 * @param string[] $kinds The slot's allowed kinds; empty allows all.
+	 * @param bool     $unsized True for a background: an image with no attachment id may carry no width and height, because a background is a positioned layer that shifts nothing.
 	 * @return array|null `{kind,id,url,width,height,mime,alt,poster,captions,markup}`.
 	 */
-	function sgs_media_normalise_source( $raw, array $kinds ): ?array {
+	function sgs_media_normalise_source( $raw, array $kinds, bool $unsized = false ): ?array {
 		if ( ! is_array( $raw ) ) {
 			return null;
 		}
@@ -144,7 +145,7 @@ if ( ! function_exists( 'sgs_media_normalise_source' ) ) {
 			return null;
 		}
 		// FR-49-16: a file with no attachment id carries its own width and height, or nothing prints.
-		if ( 'image' === $kind && 0 === $id && ( $source['width'] <= 0 || $source['height'] <= 0 ) ) {
+		if ( ! $unsized && 'image' === $kind && 0 === $id && ( $source['width'] <= 0 || $source['height'] <= 0 ) ) {
 			return null;
 		}
 		return $source;
@@ -165,7 +166,7 @@ if ( ! function_exists( 'sgs_media_resolve_sources' ) ) {
 		$raw    = $attrs[ sgs_media_element_attr( $prefix, 'Source' ) ] ?? null;
 		$out    = array();
 		foreach ( sgs_media_device_values( $raw ) as $device => $source ) {
-			$out[ $device ] = sgs_media_normalise_source( $source, $kinds );
+			$out[ $device ] = sgs_media_normalise_source( $source, $kinds, 'background' === ( $slot['context'] ?? '' ) );
 		}
 		return $out;
 	}
