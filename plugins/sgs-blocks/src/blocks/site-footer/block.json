@@ -84,10 +84,6 @@
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
 						"css:box-shadow": "shadow",
-						"css:background-attachment": "backgroundAttachment",
-						"css:background-position": "backgroundPosition",
-						"css:background-repeat": "backgroundRepeat",
-						"css:background-size": "backgroundSize",
 						"css:border-color-gradient": "borderColourGradient"
 					},
 					"states": {
@@ -140,17 +136,37 @@
 					"_note": "Background image/video (backgroundImage*/bgVideo*), background SVG (bgSvg*), overlay gradient (overlayGradient*/backgroundOverlay*), Ken Burns, and shape dividers (shapeDivider*) are governed by dedicated controls outside the Text/Fill/Layout style clusters, so this element declares none. Mirrors sgs/container's `decorative` element."
 				},
 				"background": {
-					"absentIn": ["bg-css-layer"],
-					"absentWhy": "A tiled, sized, parallax, fixed or per-device background image paints on the root's ::before layer (SGS_Container_Wrapper::render, $sgs_bg_img_is_simple false), so no element carries the image; a layer on the root reaches the section.",
 					"surface": true,
 					"prefix": "",
-					"selector": ".sgs-container__image-bg",
-					"label": "Background image",
+					"selector": ".sgs-bg-media",
+					"label": "Background",
 					"order": 5,
 					"clusters": [],
-					"_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
+					"_note": "`.sgs-bg-media`, the element SGS_Container_Wrapper prints for every background (picture, tile layer, video or SVG). A motion target so a Ken Burns or parallax layer moves the background alone, never the block's content; it declares no style clusters because its look is governed by the Background panel.",
+					"availableWhen": {
+						"slot": "background",
+						"kinds": [
+							"image"
+						]
+					}
+				},
+				"background-video": {
+					"surface": true,
+					"prefix": "",
+					"selector": ".sgs-bg-media",
+					"label": "Background video",
+					"order": 5,
+					"clusters": [],
+					"availableWhen": {
+						"slot": "background",
+						"kinds": [
+							"video"
+						]
+					},
+					"_note": "The same `.sgs-bg-media` element when a device shows a video: an effect that suits video (not Ken Burns) reaches it through this part."
 				},
 				"svg-bg": {
+					"availableWhen": {"slot": "background", "kinds": ["svg"]},
 					"svg": true,
 					"surface": true,
 					"prefix": "",
@@ -230,23 +246,6 @@
 				"desktop": "full"
 			}
 		},
-		"backgroundAttachment": {
-			"type": "string",
-			"default": "scroll",
-			"enum": [
-				"scroll",
-				"fixed"
-			]
-		},
-		"backgroundImage": {
-			"type": "object"
-		},
-		"backgroundImageMobile": {
-			"type": "object"
-		},
-		"backgroundImageTablet": {
-			"type": "object"
-		},
 		"surfaceTone": {
 			"type": "string",
 			"enum": [ "auto", "light", "dark" ],
@@ -260,19 +259,6 @@
 			"default": {
 				"desktop": 30
 			}
-		},
-		"backgroundPosition": {
-			"type": "string",
-			"default": "center center"
-		},
-		"backgroundSize": {
-			"type": "string",
-			"default": "cover",
-			"enum": [
-				"cover",
-				"contain",
-				"auto"
-			]
 		},
 		"bgSvgContent": {
 			"type": "string",
@@ -297,15 +283,6 @@
 		"bgSvgTextShadow": {
 			"type": "boolean",
 			"default": false
-		},
-		"bgVideo": {
-			"type": "object"
-		},
-		"bgVideoTablet": {
-			"type": "object"
-		},
-		"bgVideoMobile": {
-			"type": "object"
 		},
 		"columns": {
 			"type": "object",
@@ -353,10 +330,6 @@
 			"type": "object",
 			"default": {}
 		},
-		"overlayGradient": {
-			"type": "string",
-			"default": ""
-		},
 		"surfaceBlur": {
 			"type": "string",
 			"default": "",
@@ -369,28 +342,6 @@
 		"backgroundOverlayColourHover": {
 			"type": "string",
 			"default": ""
-		},
-		"overlayGradientHover": {
-			"type": "string",
-			"default": ""
-		},
-		"backgroundOverlayBlendMode": {
-			"type": "string",
-			"default": "normal",
-			"enum": [
-				"normal",
-				"multiply",
-				"screen",
-				"overlay",
-				"darken",
-				"lighten",
-				"color-dodge",
-				"color-burn",
-				"soft-light",
-				"hard-light",
-				"difference",
-				"exclusion"
-			]
 		},
 		"shadow": {
 			"type": "string"

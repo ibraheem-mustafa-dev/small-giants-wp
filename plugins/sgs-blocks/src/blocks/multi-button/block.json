@@ -99,7 +99,6 @@
             "css:border-style": "borderStyle",
             "css:border-color": "borderColour",
             "css:border-radius": "borderRadius",
-            "css:background-image": "backgroundImage",
             "css:max-width": "maxWidth",
             "css:gap": "gap",
             "css:flex-direction": "flexDirection",
@@ -124,17 +123,37 @@
           "_note": "Buttons are native InnerBlocks children (`sgs/button`, the only entry in allowedBlocks), each with its own full text/fill/layout controls. The group sets their default border through the childBtn* attributes, which render.php prints as --sgs-mb-btn-* custom properties that button/style.css reads; a button's own border attributes override them."
         },
         "background": {
-          "absentIn": ["bg-css-layer"],
-          "absentWhy": "A tiled, sized, parallax, fixed or per-device background image paints on the root's ::before layer (SGS_Container_Wrapper::render, $sgs_bg_img_is_simple false), so no element carries the image; a layer on the root reaches the section.",
           "surface": true,
           "prefix": "",
-          "selector": ".sgs-container__image-bg",
-          "label": "Background image",
+          "selector": ".sgs-bg-media",
+          "label": "Background",
           "order": 3,
           "clusters": [],
-          "_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
+          "_note": "`.sgs-bg-media`, the element SGS_Container_Wrapper prints for every background (picture, tile layer, video or SVG). A motion target so a Ken Burns or parallax layer moves the background alone, never the block's content; it declares no style clusters because its look is governed by the Background panel.",
+          "availableWhen": {
+            "slot": "background",
+            "kinds": [
+              "image"
+            ]
+          }
+        },
+        "background-video": {
+          "surface": true,
+          "prefix": "",
+          "selector": ".sgs-bg-media",
+          "label": "Background video",
+          "order": 3,
+          "clusters": [],
+          "availableWhen": {
+            "slot": "background",
+            "kinds": [
+              "video"
+            ]
+          },
+          "_note": "The same `.sgs-bg-media` element when a device shows a video: an effect that suits video (not Ken Burns) reaches it through this part."
         },
         "svg-bg": {
+          "availableWhen": {"slot": "background", "kinds": ["svg"]},
           "svg": true,
           "surface": true,
           "prefix": "",
@@ -216,41 +235,10 @@
       "default": "",
       "description": "Hover-state sibling of textColourGradient. Non-empty wins over textColourHover on :hover/:focus-visible."
     },
-    "backgroundImage": {
-      "type": "object",
-      "default": null
-    },
-    "backgroundImageTablet": {
-      "type": "object"
-    },
-    "backgroundImageMobile": {
-      "type": "object"
-    },
     "surfaceTone": {
       "type": "string",
       "enum": [ "auto", "light", "dark" ],
       "default": "auto"
-    },
-    "backgroundSize": {
-      "type": "string",
-      "default": "cover",
-      "enum": [
-        "cover",
-        "contain",
-        "auto"
-      ]
-    },
-    "backgroundPosition": {
-      "type": "string",
-      "default": "center center"
-    },
-    "backgroundAttachment": {
-      "type": "string",
-      "default": "scroll",
-      "enum": [
-        "scroll",
-        "fixed"
-      ]
     },
     "backgroundOverlayColour": {
       "type": "string"
@@ -260,10 +248,6 @@
       "default": {
         "desktop": 30
       }
-    },
-    "overlayGradient": {
-      "type": "string",
-      "default": ""
     },
     "surfaceBlur": {
       "type": "string",
@@ -277,37 +261,6 @@
     "backgroundOverlayColourHover": {
       "type": "string",
       "default": ""
-    },
-    "overlayGradientHover": {
-      "type": "string",
-      "default": ""
-    },
-    "backgroundOverlayBlendMode": {
-      "type": "string",
-      "default": "normal",
-      "enum": [
-        "normal",
-        "multiply",
-        "screen",
-        "overlay",
-        "darken",
-        "lighten",
-        "color-dodge",
-        "color-burn",
-        "soft-light",
-        "hard-light",
-        "difference",
-        "exclusion"
-      ]
-    },
-    "bgVideo": {
-      "type": "object"
-    },
-    "bgVideoTablet": {
-      "type": "object"
-    },
-    "bgVideoMobile": {
-      "type": "object"
     },
     "bgSvgContent": {
       "type": "string",

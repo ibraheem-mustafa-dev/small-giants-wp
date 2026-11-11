@@ -110,10 +110,6 @@
 					"attrMap": {
 						"css:background-color": "backgroundColour",
 						"css:color": "textColour",
-						"css:background-attachment": "backgroundAttachment",
-						"css:background-position": "backgroundPosition",
-						"css:background-repeat": "backgroundRepeat",
-						"css:background-size": "backgroundSize",
 						"css:background-image": "backgroundOverlayColour",
 						"css:margin": "margin",
 						"css:max-width": "maxWidth",
@@ -307,17 +303,37 @@
 					"_note": "The <img> in the image-badge variant (render.php:281-297, .sgs-trust-bar__badge-img). Mirrors icon-badge size/border-radius/box-shadow plus an image-specific object-fit; badgeImageSize maps css:width AND css:height (a single square dimension, render.php:284-285). Emitted only when badgeStyle=image-badge."
 				},
 				"background": {
-					"absentIn": ["bg-css-layer"],
-					"absentWhy": "A tiled, sized, parallax, fixed or per-device background image paints on the root's ::before layer (SGS_Container_Wrapper::render, $sgs_bg_img_is_simple false), so no element carries the image; a layer on the root reaches the section.",
 					"surface": true,
 					"prefix": "",
-					"selector": ".sgs-container__image-bg",
-					"label": "Background image",
+					"selector": ".sgs-bg-media",
+					"label": "Background",
 					"order": 8,
 					"clusters": [],
-					"_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
+					"_note": "`.sgs-bg-media`, the element SGS_Container_Wrapper prints for every background (picture, tile layer, video or SVG). A motion target so a Ken Burns or parallax layer moves the background alone, never the block's content; it declares no style clusters because its look is governed by the Background panel.",
+					"availableWhen": {
+						"slot": "background",
+						"kinds": [
+							"image"
+						]
+					}
+				},
+				"background-video": {
+					"surface": true,
+					"prefix": "",
+					"selector": ".sgs-bg-media",
+					"label": "Background video",
+					"order": 8,
+					"clusters": [],
+					"availableWhen": {
+						"slot": "background",
+						"kinds": [
+							"video"
+						]
+					},
+					"_note": "The same `.sgs-bg-media` element when a device shows a video: an effect that suits video (not Ken Burns) reaches it through this part."
 				},
 				"svg-bg": {
+					"availableWhen": {"slot": "background", "kinds": ["svg"]},
 					"svg": true,
 					"surface": true,
 					"prefix": "",
@@ -770,40 +786,10 @@
 				"mobile": "1fr 1fr"
 			}
 		},
-		"backgroundImage": {
-			"type": "object"
-		},
-		"backgroundImageTablet": {
-			"type": "object"
-		},
-		"backgroundImageMobile": {
-			"type": "object"
-		},
 		"surfaceTone": {
 			"type": "string",
 			"enum": [ "auto", "light", "dark" ],
 			"default": "auto"
-		},
-		"backgroundSize": {
-			"type": "string",
-			"default": "cover",
-			"enum": [
-				"cover",
-				"contain",
-				"auto"
-			]
-		},
-		"backgroundPosition": {
-			"type": "string",
-			"default": "center center"
-		},
-		"backgroundAttachment": {
-			"type": "string",
-			"default": "scroll",
-			"enum": [
-				"scroll",
-				"fixed"
-			]
 		},
 		"backgroundOverlayColour": {
 			"type": "string"
@@ -813,10 +799,6 @@
 			"default": {
 				"desktop": 30
 			}
-		},
-		"overlayGradient": {
-			"type": "string",
-			"default": ""
 		},
 		"surfaceBlur": {
 			"type": "string",
@@ -830,37 +812,6 @@
 		"backgroundOverlayColourHover": {
 			"type": "string",
 			"default": ""
-		},
-		"overlayGradientHover": {
-			"type": "string",
-			"default": ""
-		},
-		"backgroundOverlayBlendMode": {
-			"type": "string",
-			"default": "normal",
-			"enum": [
-				"normal",
-				"multiply",
-				"screen",
-				"overlay",
-				"darken",
-				"lighten",
-				"color-dodge",
-				"color-burn",
-				"soft-light",
-				"hard-light",
-				"difference",
-				"exclusion"
-			]
-		},
-		"bgVideo": {
-			"type": "object"
-		},
-		"bgVideoTablet": {
-			"type": "object"
-		},
-		"bgVideoMobile": {
-			"type": "object"
 		},
 		"shadow": {
 			"type": "string"

@@ -1,0 +1,94 @@
+/*
+ * Spec 49 media renderer: the background layer (§7.8, §10.3). Loaded on the front end and in the editor for a block
+ * whose `background` slot prints a `.sgs-bg-media` element.
+ *
+ *   <section class="sgs-container …">
+ *     <div class="sgs-bg-media">   picture, tile layer, video stack or inline SVG
+ *     <span class="sgs-bg-overlay">
+ *     content
+ *
+ * The element is a real box, so a section's own background colour, its shape dividers and a Pinned photo all stack
+ * with it. Per-instance rules (Fit, Focal, Opacity, the tile and its Repeat and Tile size, the overlay's paint) are
+ * printed under `.{uid} > .sgs-bg-media`; everything here is static and low-specificity.
+ */
+
+.sgs-bg-media {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	box-sizing: border-box;
+	overflow: hidden;
+	overflow: clip;
+	pointer-events: none;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+}
+
+.sgs-bg-media > .sgs-media-picture {
+	display: contents;
+}
+
+/* Each kind fills the element; the slot's own Fit and Focal rules replace the cover default. */
+.sgs-bg-media .sgs-media-el,
+.sgs-bg-media > .sgs-media-stack {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	max-width: none;
+	min-width: 0;
+	object-fit: cover;
+}
+
+/* The stack is a grid holding the cover picture and the video, both full size. */
+.sgs-bg-media > .sgs-media-stack {
+	display: grid;
+}
+
+.sgs-bg-media > .sgs-media-stack > .sgs-media-el,
+.sgs-bg-media > .sgs-media-stack > .sgs-media-picture > .sgs-media-el {
+	position: relative;
+	grid-area: 1 / 1;
+}
+
+/* The pause button of an autoplaying video takes pointer events back from the layer. */
+.sgs-bg-media .sgs-media-pause {
+	pointer-events: auto;
+}
+
+/* The overlay sits above the media and below the content. */
+.sgs-bg-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+
+/* Pinned: the photo holds still while the page scrolls. iOS ignores a fixed attachment, and a visitor who prefers
+   less motion gets an ordinary scrolling photo (§10.3, the reset core Cover uses). */
+.sgs-bg-media--pinned {
+	background-attachment: fixed;
+}
+
+@supports (-webkit-touch-callout: inherit) {
+	.sgs-bg-media--pinned {
+		background-attachment: scroll;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-bg-media--pinned {
+		background-attachment: scroll;
+	}
+}
+
+/* An SVG set to show in front of the content sits above it. */
+.sgs-container--bg-front > .sgs-bg-media {
+	z-index: 2;
+}
+
+:where(.sgs-container--bg-front) > :where(:not(.sgs-bg-media):not(.sgs-bg-overlay)) {
+	position: relative;
+	z-index: 0;
+}
