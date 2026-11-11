@@ -32,6 +32,17 @@
       "__experimentalSkipSerialization": true
     },
     "sgs": {
+      "mediaElements": [
+      	{
+      		"prefix": "background",
+      		"context": "background",
+      		"kinds": [
+      			"image",
+      			"video",
+      			"svg"
+      		]
+      	}
+      ],
       "motion": true,
       "separators": {
         "separators": {
@@ -232,16 +243,6 @@
     "backgroundPosition": {
       "type": "string",
       "default": "center center"
-    },
-    "backgroundRepeat": {
-      "type": "string",
-      "default": "no-repeat",
-      "enum": [
-        "no-repeat",
-        "repeat",
-        "repeat-x",
-        "repeat-y"
-      ]
     },
     "backgroundAttachment": {
       "type": "string",
@@ -469,7 +470,26 @@
       "default": {
         "desktop": {}
       }
-    }
+    },
+  	"backgroundSource": {"type":"object","_generated":"media-atoms"},
+  	"backgroundLoading": {"type":"string","_generated":"media-atoms"},
+  	"backgroundAlt": {"type":"string","_generated":"media-atoms"},
+  	"backgroundDecorative": {"type":"boolean","_generated":"media-atoms"},
+  	"backgroundFit": {"type":"object","_generated":"media-atoms"},
+  	"backgroundRepeat": {"type":"object","_generated":"media-atoms"},
+  	"backgroundTileSize": {"type":"object","_generated":"media-atoms"},
+  	"backgroundFocal": {"type":"object","_generated":"media-atoms"},
+  	"backgroundPinned": {"type":"boolean","_generated":"media-atoms"},
+  	"backgroundOverlayGradient": {"type":"string","_generated":"media-atoms"},
+  	"backgroundOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
+  	"backgroundOverlayBlend": {"type":"string","_generated":"media-atoms"},
+  	"backgroundOpacity": {"type":"object","_generated":"media-atoms"},
+  	"backgroundSvgLayer": {"type":"string","_generated":"media-atoms"},
+  	"backgroundSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
+  	"backgroundSvgParts": {"type":"array","_generated":"media-atoms"},
+  	"backgroundSvgPartsTrigger": {"type":"string","_generated":"media-atoms"},
+  	"backgroundPlayback": {"type":"object","_generated":"media-atoms"},
+  	"backgroundCaptions": {"type":"object","_generated":"media-atoms"}
   },
   "example": {
     "attributes": {

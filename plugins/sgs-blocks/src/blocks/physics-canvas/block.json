@@ -30,6 +30,17 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"mediaElements": [
+				{
+					"prefix": "background",
+					"context": "background",
+					"kinds": [
+						"image",
+						"video",
+						"svg"
+					]
+				}
+			],
 			"motion": true,
 			"_comment_overlayNotAdopted": "backgroundOverlayColour/Opacity/OpacityTablet/OpacityMobile/ColourHover/BlendMode are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- same settled reasoning as sgs/container (see its block.json for the full note, 2026-09-03, Bean-directed). Detector rule 37-media-no-handroll's bare `background`/`bg`-prefix discriminator excludes this whole family from supports.sgs.mediaElements by design.",
 			"containerKind": "section",
@@ -210,16 +221,6 @@
 			"type": "string",
 			"default": "center center"
 		},
-		"backgroundRepeat": {
-			"type": "string",
-			"default": "no-repeat",
-			"enum": [
-				"no-repeat",
-				"repeat",
-				"repeat-x",
-				"repeat-y"
-			]
-		},
 		"backgroundSize": {
 			"type": "string",
 			"default": "cover",
@@ -363,7 +364,26 @@
 			"default": {
 				"desktop": {}
 			}
-		}
+		},
+		"backgroundSource": {"type":"object","_generated":"media-atoms"},
+		"backgroundLoading": {"type":"string","_generated":"media-atoms"},
+		"backgroundAlt": {"type":"string","_generated":"media-atoms"},
+		"backgroundDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundFit": {"type":"object","_generated":"media-atoms"},
+		"backgroundRepeat": {"type":"object","_generated":"media-atoms"},
+		"backgroundTileSize": {"type":"object","_generated":"media-atoms"},
+		"backgroundFocal": {"type":"object","_generated":"media-atoms"},
+		"backgroundPinned": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundOverlayGradient": {"type":"string","_generated":"media-atoms"},
+		"backgroundOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
+		"backgroundOverlayBlend": {"type":"string","_generated":"media-atoms"},
+		"backgroundOpacity": {"type":"object","_generated":"media-atoms"},
+		"backgroundSvgLayer": {"type":"string","_generated":"media-atoms"},
+		"backgroundSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundSvgParts": {"type":"array","_generated":"media-atoms"},
+		"backgroundSvgPartsTrigger": {"type":"string","_generated":"media-atoms"},
+		"backgroundPlayback": {"type":"object","_generated":"media-atoms"},
+		"backgroundCaptions": {"type":"object","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
