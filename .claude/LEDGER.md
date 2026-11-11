@@ -96,7 +96,7 @@ Governing documents: the fix register `plans/2026-10-02-eye-care-fix-register.md
 - Forms and choice flows created by the cloning system, and their analytics: `plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md`.
 - The automatic cloning tool (Mama's clone included), after the hand-built sites: `plans/2026-10-30-clone-recognition-fixes.md`.
 - Snooza configurator, not started: `plans/2026-08-03-snooza-configurator-build-plan.md`.
-- Deploy speed (scoped editor check, editor check beside gate:full): `plans/2026-11-11-deploy-speed.md`.
+- Optional editor-check speed-ups (`plans/patches/`): `plans/archive/2026-11-11-deploy-speed.md`.
 - Gate 3C item 4's G8 gap (lamalama corner pin): `plans/2026-10-01-header-nav-thread-plan.md` §7.
 
 ## Live state

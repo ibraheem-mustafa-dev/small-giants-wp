@@ -1,7 +1,7 @@
 ---
 doc_type: plan
 title: Faster SGS deploys (partial upload and the other ship speed-ups)
-status: active
+status: done
 created: 2026-11-11
 governs: plugins/sgs-blocks/scripts deploy modules; .claude/deploy-architecture.md
 ---
