@@ -1152,10 +1152,18 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 
 .sgs-account__od-chat-icon {
 	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	width: 36px;
 	height: 36px;
 	border-radius: 50%;
 	background: #25d366;
+	color: #fff;
+}
+
+.sgs-account__od-chat-glyph {
+	display: block;
 }
 
 .sgs-account__od-chat-sub {

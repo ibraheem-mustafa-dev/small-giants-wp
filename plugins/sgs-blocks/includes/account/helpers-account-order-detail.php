@@ -11,6 +11,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-account-orders-list.php';
+require_once dirname( __DIR__ ) . '/helpers-brand-glyphs.php';
 
 if ( ! function_exists( 'sgs_account_order_is_pickup' ) ) {
 	/**
@@ -223,7 +224,7 @@ if ( ! function_exists( 'sgs_account_order_detail_html' ) ) {
 		}
 		$number = preg_replace( '/\D+/', '', (string) ( $attributes['orderDetailWhatsAppNumber'] ?? '' ) );
 		if ( $on( 'orderDetailWhatsApp' ) && '' !== (string) $number ) {
-			$html .= '<a class="sgs-account__od-chat" href="' . esc_url( 'https://wa.me/' . $number ) . '" target="_blank" rel="noopener"><span class="sgs-account__od-chat-icon" aria-hidden="true"></span><span class="sgs-account__od-chat-text">'
+			$html .= '<a class="sgs-account__od-chat" href="' . esc_url( 'https://wa.me/' . $number ) . '" target="_blank" rel="noopener"><span class="sgs-account__od-chat-icon" aria-hidden="true">' . sgs_whatsapp_glyph_svg( 'sgs-account__od-chat-glyph', 19 ) . '</span><span class="sgs-account__od-chat-text">'
 				. esc_html( $text( 'orderDetailWhatsAppTitle' ) ) . '<span class="sgs-account__od-chat-sub">' . $fill( $text( 'orderDetailWhatsAppText' ) ) . '</span></span></a>';
 		}
 		return $html . '</div>';
