@@ -379,7 +379,6 @@ EXTRA = {
     ("sgs/responsive-logo", "darkLogoId"): ("source", "logoDarkSource"),
     ("sgs/responsive-logo", "logoDecorative"): ("alt", "logoDecorative"),
     ("sgs/responsive-logo", "alt"): ("alt", "logoAlt"),
-    ("sgs/responsive-logo", "inlineSvg"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
     ("sgs/nav-drawer", "chromeLogoId"): ("source", "chromeLogoSource"),
     ("sgs/nav-drawer", "chromeLogoUrl"): ("source", "chromeLogoSource"),
     ("sgs/nav-drawer", "chromeLogoIdTablet"): ("source", "chromeLogoSource"),
@@ -387,7 +386,6 @@ EXTRA = {
     ("sgs/nav-drawer", "chromeLogoIdMobile"): ("source", "chromeLogoSource"),
     ("sgs/nav-drawer", "chromeLogoUrlMobile"): ("source", "chromeLogoSource"),
     ("sgs/nav-drawer", "chromeLogoAlt"): ("alt", "chromeLogoAlt"),
-    ("sgs/nav-drawer", "chromeLogoInlineSvg"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
     ("sgs/nav-drawer", "backgroundImageDecorative"): ("alt", "backgroundDecorative"),
     ("sgs/before-after", "videoAutoplay"): ("fold", "beforePlayback and afterPlayback autoplay: written for each side whose Source is a video"),
     ("sgs/before-after", "videoAutoplayTablet"): ("fold", "beforePlayback and afterPlayback autoplay: written for each side whose Source is a video"),
@@ -409,10 +407,6 @@ EXTRA = {
     ("sgs/buybox", "previewRadius"): ("radius", "previewRadius"),
     ("sgs/buybox", "galleryThumbBorderColourHover"): ("rename", "thumbBorderColourHover"),
     ("sgs/product-card", "imageHeight"): ("sizing", "imageHeight"),
-    ("sgs/responsive-logo", "svgParts"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
-    ("sgs/responsive-logo", "svgPartsTrigger"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
-    ("sgs/nav-drawer", "chromeLogoSvgParts"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
-    ("sgs/nav-drawer", "chromeLogoSvgPartsTrigger"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
 }
 
 # Bases a slot owns beyond its declared atoms: the block stores them under the same grammar without declaring the atom.
@@ -432,6 +426,10 @@ _STAYS_GROUPS = (
     ("sgs/container", "layout, not media: the box ratio stays (§13)", ("boxAspectRatio",)),
     ("sgs/responsive-logo", "logo switching and sizing are the block's own layout (Appendix A)",
      ("logoSwitchCustomPx", "logoSwitchMode", "width", "maxWidth", "maxHeight", "shrinkWidth")),
+    ("sgs/responsive-logo", "the inline-SVG logo and its animated parts are the block's own attributes, declared in its block.json (Appendix A)",
+     ("inlineSvg", "svgParts", "svgPartsTrigger", "svgPartsHoverCooldown")),
+    ("sgs/nav-drawer", "the drawer's inline-SVG logo and its animated parts are the block's own attributes, declared in its block.json (Appendix A)",
+     ("chromeLogoInlineSvg", "chromeLogoSvgParts", "chromeLogoSvgPartsTrigger", "chromeLogoSvgPartsHoverCooldown")),
     ("sgs/nav-drawer", "chrome logo box and link are the drawer's own layout (Appendix A)",
      ("chromeLogoWidth", "chromeLogoLink", "chromeLogoShow", "chromeLogoBoxBg", "chromeLogoBoxBgGradient", "chromeLogoBoxPadding",
       "chromeLogoBoxRadius", "chromeLogoBoxShadow", "chromeLogoBoxShadowColour", "chromeLogoAlt")),

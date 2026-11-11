@@ -564,6 +564,10 @@ def migrate_radius(slot: Slot) -> None:
             out[TIER_DEVICE[tier]] = {k: raw[k] for k in V.CORNERS if k in raw}
         elif isinstance(raw, dict) and V.is_device_object(raw):
             out.update({d: v for d, v in raw.items() if v})
+        elif isinstance(raw, dict) and _set(raw):
+            ctx.drop(name, "deleted", "", "an object with no corner key (topLeft, topRight, bottomLeft, bottomRight) and no device key: "
+                                          "the old render read no radius from it, so it painted a square corner")
+            continue
         elif _set(raw):
             ctx.keep(name, "refused", "border radius is not a corner or device object")
             continue
@@ -695,7 +699,8 @@ def migrate_report(slot: Slot) -> None:
     for base, (family, reason) in M.BASE_FAMILY.items():
         if family == "report":
             for name in slot.all_old(base):
-                slot.ctx.keep(name, "reported", reason)
+                if name not in M.STAYS.get(slot.ctx.block, ()):  # a STAYS name is the block's own attribute: nothing to report
+                    slot.ctx.keep(name, "reported", reason)
 
 
 def migrate_slot(ctx: Ctx, olds: list[str], new: str, bases: list[str]) -> None:

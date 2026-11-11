@@ -171,7 +171,9 @@ def migrate_background(ctx: T.Ctx) -> None:
             ctx.put("backgroundSvgLayer", mapped)
             ctx.drop("bgSvgPosition", "converted", "backgroundSvgLayer")
         else:
-            ctx.keep("bgSvgPosition", "refused", f"layer order {layer!r} not recognised")
+            ctx.put("backgroundSvgLayer", "behind")
+            ctx.drop("bgSvgPosition", "converted", "backgroundSvgLayer",
+                     f"layer order {layer!r} is not background or foreground: the old render fell back to background (behind)")
     opacity = V.to_number(ctx.get("bgSvgOpacity"))
     if ctx.has("bgSvgOpacity"):
         if opacity is not None and opacity != 100 and "desktop" in source and source["desktop"].get("kind") == "svg":
@@ -703,6 +705,29 @@ def guard_declared(name: str, original: dict, new: dict, events: list):
     return copy.deepcopy(original), refusals
 
 
+RETIRED_HERO_SPLIT = re.compile(r"^splitImage")
+RETIRED_HERO_NOTE = ("the hero's own split image (splitImage, splitImageMobile and their settings) was retired before Spec 49: its render read "
+                     "only the splitMedia family, and the theme read splitImage's url for a preload only, so the value painted nothing")
+
+
+GALLERY_UNREAD = ("sgsHeight", "sgsHeightDesktop", "sgsHeightTablet", "sgsHeightMobile", "sgsMaxWidth")
+GALLERY_UNREAD_NOTE = ("the old gallery declared imageControlsExplicit, so the universal image-controls filter skipped it, and its own "
+                       "render.php never read this size setting: it painted nothing")
+
+
+def migrate_retired_hero_split(ctx: T.Ctx) -> None:
+    """Names the old render never read are deleted with a note: the hero's older split-image names (`splitImage*`) and the
+    gallery's universal image-controls size settings."""
+    if ctx.block == "sgs/gallery":
+        for name in GALLERY_UNREAD:
+            ctx.drop(name, "deleted", "", GALLERY_UNREAD_NOTE)
+    if ctx.block != "sgs/hero":
+        return
+    for name in list(ctx.attrs):
+        if RETIRED_HERO_SPLIT.match(name):
+            ctx.drop(name, "deleted", "", RETIRED_HERO_NOTE)
+
+
 def migrate_gallery_tile_fit(ctx: T.Ctx) -> None:
     """`tileFitContain` made every tile image contain whatever each item said; the gallery's own Fit carries that now: itemFit
     contain on every device it names (desktop always), and the items' own fits cleared so they cannot override it."""
@@ -744,6 +769,7 @@ def migrate_inert_settings(ctx: T.Ctx) -> None:
 def _migrate(name: str, attrs: dict):
     ctx = T.Ctx(name, attrs)
     migrate_inert_settings(ctx)
+    migrate_retired_hero_split(ctx)
     for slot in M.merged_slots(name):
         T.migrate_slot(ctx, slot["olds"], slot["new"], slot["bases"])
     if name in M.BACKGROUND_BLOCKS:
@@ -761,9 +787,13 @@ def _migrate(name: str, attrs: dict):
 def fill_sizes(ctx: T.Ctx, original: dict):
     """FR-49-16: every image Source gets an attachment id or its own size. A block with an image whose size cannot be read
     is refused whole: its old attributes stay as saved and the event names the attribute and the reason."""
-    failed = S.fill(ctx.attrs)
+    missing: list = []
+    failed = S.fill(ctx.attrs, missing)
     if failed:
         return copy.deepcopy(original), [("refused", name, "", note) for name, note in failed]
+    if any(e[0] in ("converted", "deleted") for e in ctx.events):
+        # Only a block being converted now reports it: a block already in the new shape stays clean for `check`.
+        ctx.events.extend(("reported", name, "", note) for name, note in missing)
     pin_naked_ratio_width(ctx)
     pin_hero_split_width(ctx)
     return ctx.attrs, ctx.events

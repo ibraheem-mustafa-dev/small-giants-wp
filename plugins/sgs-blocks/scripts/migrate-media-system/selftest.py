@@ -368,11 +368,11 @@ case("negative: an already migrated block is untouched", "sgs/media",
      {"source": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}}, "alt": "A", "fit": {"desktop": "cover"}, "opacity": {"desktop": 50}}, None)
 case("negative: hero mediaPadding and splitMediaPadding both set is refused", "sgs/hero",
      {"mediaPadding": {"desktop": {"top": "1px"}}, "splitMediaPadding": {"desktop": {"top": "2px"}}}, {"splitPadding": {"desktop": {"top": "2px"}}, "mediaPadding": {"desktop": {"top": "1px"}}})
-case("negative: inline SVG logo parts are reported and stay", "sgs/responsive-logo", {"inlineSvg": True, "svgParts": []}, None)
+case("inline SVG logo parts are the block's own attributes and stay untouched", "sgs/responsive-logo", {"inlineSvg": True, "svgParts": []}, None)
 case("negative: an out-of-vocabulary shape is refused and stays", "sgs/media", {"shape": "star"}, None)
 
 REFUSED_STAYS = ("negative: an unreadable photo object", "size: an unreadable image", "negative: an unreadable focal", "negative: Lottie", "negative: an out-of-vocabulary shape",
-                 "negative: hero mediaPadding", "negative: inline SVG")
+                 "negative: hero mediaPadding")
 
 
 def _fail(label: str, detail: str, failures: list[str]) -> None:
@@ -776,6 +776,32 @@ def run_http_retry(failures: list[str]) -> int:
         calls["n"] += 1
         raise urllib.error.HTTPError(request.full_url, 404, "Not Found", {}, None)
 
+    def gone410(request, timeout=0):
+        calls["n"] += 1
+        raise urllib.error.HTTPError(request.full_url, 410, "Gone", {}, None)
+
+    def forbidden(request, timeout=0):
+        calls["n"] += 1
+        raise urllib.error.HTTPError(request.full_url, 403, "Forbidden", {}, None)
+
+    def server_error(request, timeout=0):
+        calls["n"] += 1
+        raise urllib.error.HTTPError(request.full_url, 503, "Unavailable", {}, None)
+
+    def no_host(request, timeout=0):
+        calls["n"] += 1
+        raise urllib.error.URLError(S.socket.gaierror(S.DNS_NOT_FOUND[0], "Name or service not known"))
+
+    def bad_cert(request, timeout=0):
+        calls["n"] += 1
+        raise urllib.error.URLError(S.ssl.SSLCertVerificationError(1, "certificate has expired"))
+
+    def flaky_dns(request, timeout=0):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise urllib.error.URLError(S.socket.gaierror(S.DNS_NOT_FOUND[0], "Name or service not known"))
+        raise urllib.error.URLError(S.socket.timeout("timed out"))
+
     def always_drop(request, timeout=0):
         calls["n"] += 1
         raise ConnectionResetError("dropped")
@@ -785,7 +811,13 @@ def run_http_retry(failures: list[str]) -> int:
     checks = 0
     try:
         for opener, want, want_calls, label in ((flaky, (640, 480), 2, "a dropped first read is retried"),
-                                                 (gone, None, 1, "a 404 is not retried"),
+                                                 (gone, S.MISSING, 1, "a 404 is not retried and means the file is missing"),
+                                                 (gone410, S.MISSING, 1, "a 410 means the file is missing"),
+                                                 (forbidden, None, 1, "negative: a 403 says nothing about the file"),
+                                                 (server_error, None, S.HTTP_ATTEMPTS, "negative: a 5xx is transient: retried, then unreadable"),
+                                                 (no_host, S.MISSING, S.HTTP_ATTEMPTS, "a host that never resolves means the file is missing"),
+                                                 (bad_cert, S.MISSING, S.HTTP_ATTEMPTS, "an expired certificate means the host is abandoned: missing"),
+                                                 (flaky_dns, None, S.HTTP_ATTEMPTS, "negative: a resolver failure on one attempt only is transient"),
                                                  (always_drop, None, S.HTTP_ATTEMPTS, "negative: always dropped gives up")):
             calls["n"] = 0
             urllib.request.urlopen = opener
@@ -857,6 +889,84 @@ def run_sizes(failures: list[str]) -> int:
     return checks
 
 
+def run_missing_files(failures: list[str]) -> int:
+    """A file that is definitively not there converts with its url and no size and a `reported` event, and the converted block
+    is then clean for `check`; a transient failure still refuses. Negative controls: a transient failure, and a block with an
+    unreadable image that is already in the new shape (no event, so `check` stays quiet)."""
+    checks = 0
+    gone, flaky = "http://dead.test/a.jpg", "http://slow.test/b.jpg"
+    real = S.READER
+    S.READER = lambda url, _site: S.MISSING if url == gone else None
+    try:
+        for block, attrs in (("sgs/media", {"imageUrl": gone}), ("sgs/product-card", {"image": gone})):
+            checks += 1
+            S.activate("repo")
+            B.clear_memo()
+            new, events = B.migrate(block, attrs)
+            entries: list = []
+            S._entries(new, "", entries)
+            if not entries or any(e.get("width") or e.get("id") for _, e in entries) or entries[0][1].get("url") != gone:
+                _fail("missing file: converted", f"{block}: wanted the url with no size, got {new}", failures)
+            if not any(e[0] == "reported" and "could not be found" in e[3] for e in events) or any(e[0] == "refused" for e in events):
+                _fail("missing file: event", f"{block}: wanted a reported event and no refusal, got {events}", failures)
+            checks += 1
+            if B.old_attributes(block, new):
+                _fail("missing file: check", f"{block}: the converted block still counts as old: {B.old_attributes(block, new)}", failures)
+        checks += 1
+        B.clear_memo()
+        _, events = B.migrate("sgs/media", {"imageUrl": flaky})
+        if not any(e[0] == "refused" for e in events):
+            _fail("missing file: negative control", f"a transient failure was not refused: {events}", failures)
+    finally:
+        S.READER = real
+        B.clear_memo()
+    return checks
+
+
+def run_retired_names(failures: list[str]) -> int:
+    """Old names the old render never read, or fell back on: hero splitImage*, an object with no corner key as a media radius,
+    a bogus bgSvgPosition; and the inline-SVG logo attributes that stay on their own blocks."""
+    checks = 0
+    B.clear_memo()
+    hero = {"variant": "split", "splitImage": {"id": 1, "url": "http://x/a.jpg"}, "splitImageMobile": {"url": "http://x/b.jpg"},
+            "splitImageMobileObjectPosition": "top"}
+    new, events = B.migrate("sgs/hero", hero)
+    checks += 1
+    if any(k.startswith("splitImage") for k in new) or {e[1] for e in events if e[0] == "deleted"} != {"splitImage", "splitImageMobile", "splitImageMobileObjectPosition"}:
+        _fail("retired hero split", f"wanted the three names deleted, got {new} {events}", failures)
+    checks += 1
+    new, events = B.migrate("sgs/gallery", {"sgsHeightMobile": "10px", "sgsMaxWidth": "50%", "sgsObjectFit": "cover"})
+    if "sgsMaxWidth" in new or "sgsHeightMobile" in new or {e[1] for e in events if e[0] == "deleted"} != {"sgsMaxWidth", "sgsHeightMobile"}:
+        _fail("gallery unread size settings", f"wanted both deleted, got {new} {events}", failures)
+    checks += 1
+    new, events = B.migrate("sgs/hero", {"splitMediaFoo": "x"})
+    if not any(e[0] == "refused" for e in events):
+        _fail("retired hero split: negative control", f"an unmapped splitMedia name must still refuse: {events}", failures)
+    checks += 1
+    new, events = B.migrate("sgs/media", {"borderRadius": {"top": "16px", "left": "16px"}})
+    if "borderRadius" in new or "radius" in new or not any(e[0] == "deleted" for e in events):
+        _fail("media radius without corner key", f"wanted it deleted, got {new} {events}", failures)
+    checks += 1
+    new, events = B.migrate("sgs/media", {"borderRadius": "banana"})
+    if not any(e[0] == "refused" for e in events):
+        _fail("media radius: negative control", f"a bare string must still refuse: {events}", failures)
+    checks += 1
+    new, events = B.migrate("sgs/container", {"bgSvgContent": "<svg/>", "bgSvgPosition": "bogus"})
+    if "bgSvgPosition" in new or new.get("backgroundSvgLayer") != "behind" or any(e[0] == "refused" for e in events):
+        _fail("bogus svg layer", f"wanted the default layer (behind), got {new} {events}", failures)
+    for block, names in (("sgs/responsive-logo", ("inlineSvg", "svgParts", "svgPartsTrigger")),
+                         ("sgs/nav-drawer", ("chromeLogoInlineSvg", "chromeLogoSvgParts", "chromeLogoSvgPartsTrigger"))):
+        checks += 1
+        attrs = {n: ([] if "Parts" in n and "Trigger" not in n else "x") for n in names}
+        if B.old_attributes(block, attrs):
+            _fail("logo svg attributes stay", f"{block}: {B.old_attributes(block, attrs)}", failures)
+    checks += 1
+    if B.old_attributes("sgs/responsive-logo", {"logoUrl": "http://x/l.png", "inlineSvg": True}) == []:
+        _fail("logo svg attributes: negative control", "an old logo image attribute went unreported", failures)
+    B.clear_memo()
+    return checks
+
+
 def _png_blob() -> bytes:
     import struct
     return b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + b"IHDR" + struct.pack(">II", 7, 5) + b"\x08\x02\x00\x00\x00"
@@ -887,7 +997,7 @@ def _run(break_mapping: bool = False) -> int:
         M.rows.cache_clear()
         M.STAYS["sgs/post-grid"] = ()
     failures: list[str] = []
-    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_declared_guard(failures) + run_scope(failures) + run_sizes(failures) + run_http_retry(failures) + run_inplace_json(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
+    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_declared_guard(failures) + run_scope(failures) + run_sizes(failures) + run_http_retry(failures) + run_missing_files(failures) + run_retired_names(failures) + run_inplace_json(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
     for line in failures:
         print(line)
     print(f"migrate-media-system self-test: {total - len(failures)} of {total} checks passed"

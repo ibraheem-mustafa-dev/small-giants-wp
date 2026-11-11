@@ -5,7 +5,10 @@ A saved image can be a bare URL. `resolve(url)` finds, for the active site:
      sized copies included, to id, width, height, mime): `("id", id, (w, h))`;
   2. else the file's own size: read from the local uploads folder of a mirror, or over HTTP (first bytes only), or from a
      `data:` URI: `("size", None, (w, h))`;
-  3. else `None`: the caller refuses the block with a note.
+  3. else `("missing", None, (0, 0))` when the file is definitively not there (HTTP 404 or 410, a host that does not resolve, a
+     relative path whose file is not on the mirror): the old page drew a broken image there, so the caller writes the Source
+     with its url and no size and reports it;
+  4. else `None` (a timeout, a reset connection, a 5xx, a refused request): the caller refuses the block with a note.
 
 Sites are named by the caller (`activate("mirror:NAME")`, `activate("repo")`); the map of a site is registered when its
 export is read (`register`). Results are cached per site and URL. `READER` is the one place that touches a file or the
@@ -14,7 +17,10 @@ network, so the self-test replaces it.
 from __future__ import annotations
 
 import base64
+import posixpath
 import re
+import socket
+import ssl
 import struct
 import time
 import urllib.error
@@ -31,6 +37,7 @@ _CACHE: dict[tuple[str, str], tuple | None] = {}
 _ACTIVE = ["repo"]
 Size = tuple[int, int]
 Resolved = tuple[str, "int | None", Size]
+MISSING = "missing"  # what READER returns for a file that is definitively not there
 
 
 def activate(key: str) -> None:
@@ -153,13 +160,26 @@ def dimensions(data: bytes) -> Size | None:
 HTTP_ATTEMPTS = 3
 
 
-def _http(url: str) -> Size | None:
-    """The file's size from its first bytes over HTTP. A network failure (a dropped or slow connection) is retried
+def _dns_missing(exc: BaseException) -> bool:
+    """True when `exc` says the host does not exist (name not found) or cannot be trusted (certificate invalid); not a timeout."""
+    reason = getattr(exc, "reason", exc)
+    if isinstance(reason, ssl.SSLCertVerificationError):
+        return True  # an abandoned host: its certificate is expired or wrong, so a browser refuses to draw the image too
+    return isinstance(reason, socket.gaierror) and reason.errno in DNS_NOT_FOUND
+
+
+DNS_NOT_FOUND = tuple(code for code in (getattr(socket, "EAI_NONAME", None), getattr(socket, "EAI_NODATA", None), 11001) if code is not None)
+
+
+def _http(url: str) -> "Size | str | None":
+    """The file's size from its first bytes over HTTP, MISSING when the file is definitively not there (404, 410, or a host
+    name that does not resolve on any attempt), else None. A network failure (a dropped or slow connection) is retried
     up to HTTP_ATTEMPTS times with a short pause, so one pass reads what a second pass would; bytes that arrive but
     hold no readable size are not retried."""
     if not url.startswith(("http://", "https://")):
         return None
     request = urllib.request.Request(url, headers={"User-Agent": "sgs-media-migrate/1", "Range": f"bytes=0-{HEAD_LIMIT - 1}"})
+    dns_failures = 0
     for attempt in range(HTTP_ATTEMPTS):
         try:
             with urllib.request.urlopen(request, timeout=12) as response:
@@ -174,13 +194,16 @@ def _http(url: str) -> Size | None:
                         return found
                 return dimensions(data)
         except urllib.error.HTTPError as exc:
+            if exc.code in (404, 410):
+                return MISSING  # the file is not there; a retry cannot help
             if exc.code < 500:
-                return None  # 4xx: the file is not there; a retry cannot help
-        except Exception:  # noqa: BLE001 (any other network failure is retried, then means "could not be read")
-            pass
+                return None  # another 4xx (a refused hotlink, say) says nothing about the file
+        except Exception as exc:  # noqa: BLE001 (any other network failure is retried, then means "could not be read")
+            if _dns_missing(exc):
+                dns_failures += 1
         if attempt + 1 < HTTP_ATTEMPTS:
             time.sleep(1 + attempt)
-    return None
+    return MISSING if dns_failures == HTTP_ATTEMPTS else None
 
 
 def _local(mirror: str, rel: str) -> Size | None:
@@ -191,7 +214,19 @@ def _local(mirror: str, rel: str) -> Size | None:
     return dimensions(result.stdout) if result.returncode == 0 and result.stdout else None
 
 
-def _read(url: str, site: dict) -> Size | None:
+def _relative_missing(mirror: str, url: str) -> "str | None":
+    """MISSING when a site-relative path (`/products/a.jpg`, `a.jpg`, `../a.jpg`) names no file in the mirror's document root; None when it exists or
+    cannot be checked."""
+    path = url.split("?", 1)[0].split("#", 1)[0]
+    if not SAFE_REL.match(path):
+        return None
+    path = posixpath.normpath("/" + path.lstrip("/"))  # a browser clamps "../" at the site root
+    import corpus as C
+    result = C.wsl(f"test -e /var/www/local-{C.check_mirror_name(mirror)}{path}")
+    return MISSING if result.returncode == 1 else None
+
+
+def _read(url: str, site: dict) -> "Size | str | None":
     if url.startswith("data:"):
         head, _, body = url.partition(",")
         try:
@@ -203,10 +238,12 @@ def _read(url: str, site: dict) -> Size | None:
         local = _local(site["mirror"], found.group(1))
         if local:
             return local
+    if not url.startswith("//") and not re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:", url):  # site-relative or page-relative path
+        return _relative_missing(site["mirror"], url) if site.get("mirror") else None
     return _http("https:" + url if url.startswith("//") else url)
 
 
-READER: Callable[[str, dict], "Size | None"] = _read
+READER: Callable[[str, dict], "Size | str | None"] = _read
 
 
 def resolve(url: str) -> Resolved | None:
@@ -221,7 +258,9 @@ def resolve(url: str) -> Resolved | None:
         out = ("id", int(row[0]), (int(row[1] or 0), int(row[2] or 0)))
     else:
         size = READER(url, site)
-        if size:
+        if size == MISSING:
+            out = (MISSING, None, (0, 0))
+        elif size:
             out = ("size", None, size)
     _CACHE[(key, url)] = out
     return out
@@ -247,8 +286,12 @@ def _entries(node, path: str, found: list):
             _entries(value, path, found)
 
 
-def fill(attrs: dict) -> list[tuple[str, str]]:
-    """Give every image Source entry in `attrs` an id or a size, in place. Returns (attribute, note) for each entry that cannot get one."""
+MISSING_NOTE = "the file could not be found; it was a broken image before and prints nothing now"
+
+
+def fill(attrs: dict, missing: "list | None" = None) -> list[tuple[str, str]]:
+    """Give every image Source entry in `attrs` an id or a size, in place. Returns (attribute, note) for each entry that cannot get one.
+    An entry whose file is definitively not there keeps its url with no size and is appended to `missing` as (attribute, note)."""
     entries: list = []
     for name, value in attrs.items():
         _entries(value, name, entries)
@@ -260,6 +303,9 @@ def fill(attrs: dict) -> list[tuple[str, str]]:
         if got is None:
             failed.append((name, f"image {entry['url'][:120]!r} has no attachment id and its size could not be read (FR-49-16 refuses it): "
                                  "fix the URL or give the image a size by hand"))
+        elif got[0] == MISSING:
+            if missing is not None:
+                missing.append((name, f"{MISSING_NOTE}: {entry['url'][:120]!r}"))
         elif got[0] == "id":
             entry["id"] = got[1]
         else:
