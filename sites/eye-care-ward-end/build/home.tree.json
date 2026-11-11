@@ -647,7 +647,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -688,7 +687,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -730,7 +728,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           },
           {
@@ -771,7 +773,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -812,7 +813,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -855,7 +855,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           },
           {
@@ -899,7 +903,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -937,7 +940,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -980,7 +982,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           },
           {
@@ -1021,7 +1027,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -1062,7 +1067,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -1105,7 +1109,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           },
           {
@@ -1146,7 +1154,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -1187,7 +1194,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -1230,7 +1236,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           },
           {
@@ -1271,7 +1281,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -1312,7 +1321,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -1355,7 +1363,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           },
           {
@@ -1396,7 +1408,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -1437,7 +1448,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -1480,7 +1490,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           },
           {
@@ -1524,7 +1538,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -1562,7 +1575,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -1613,7 +1625,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           }
         ]
