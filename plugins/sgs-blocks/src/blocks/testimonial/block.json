@@ -966,6 +966,8 @@
 		"avatarBorderStyle": {"type":"string","_generated":"media-atoms"},
 		"avatarBorderColour": {"type":"string","_generated":"media-atoms"},
 		"avatarBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"avatarBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"avatarBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
 		"workSource": {"type":"object","_generated":"media-atoms"},
 		"workLoading": {"type":"string","_generated":"media-atoms"},
 		"workAlt": {"type":"string","_generated":"media-atoms"},

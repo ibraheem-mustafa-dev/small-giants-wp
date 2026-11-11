@@ -925,7 +925,9 @@
 		"photoBorderWidth": {"type":"object","_generated":"media-atoms"},
 		"photoBorderStyle": {"type":"string","_generated":"media-atoms"},
 		"photoBorderColour": {"type":"string","_generated":"media-atoms"},
-		"photoBorderColourHover": {"type":"string","_generated":"media-atoms"}
+		"photoBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"photoBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"photoBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
