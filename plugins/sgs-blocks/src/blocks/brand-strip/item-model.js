@@ -54,7 +54,7 @@ export function applySlotPatch( item, patch ) {
 /**
  * A Media Library attachment as a new strip item.
  *
- * @param {Object} media A WordPress media object from `MediaUpload`.
+ * @param {Object} media A WordPress media object from the media library picker.
  * @return {Object|null} The item, with a stable key; null when the attachment has no address.
  */
 export function resolveLogoItem( media ) {

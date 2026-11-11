@@ -2,7 +2,6 @@
  "_about": "Spec 49 FR-49-26 / AC-18: files allowed a raw <MediaUpload> because the file is not media this system prints. Read by scripts/check-media-contract.py once a block declares kinds.",
  "exempt": [
   { "path": "src/blocks/audio/edit.js", "reason": "Audio files are not a media kind the system prints (FR-49-26)" },
-  { "path": "src/blocks/hero/components/HeroBackgroundPanel.js", "reason": "The hero keeps its own Background panel until WP-9 adopts the hero onto the media background slot; WP-9 deletes this file and the entry" },
-  { "path": "src/blocks/nav-drawer/ChromePanel.js", "reason": "Holds the drawer's chromeLogo pickers, a logo slot Wave 3 adopts (Spec 49 section 10.4); Wave 3 moves them to MediaSlotField and deletes this entry" }
+  { "path": "src/blocks/hero/components/HeroBackgroundPanel.js", "reason": "The hero keeps its own Background panel until WP-9 adopts the hero onto the media background slot; WP-9 deletes this file and the entry" }
  ]
 }
