@@ -123,7 +123,7 @@ const PLAYBACK_SETTINGS = [
 ];
 
 const CAPTION_SETTINGS = [
-	row( { base: 'Caption', type: 'string', role: 'content', component: 'TextControl', label: 'Caption', panel: 'caption-and-link', order: 1 , slots: slotsOf( [ 'image', 'video' ], NOT_BACKGROUND ) } ),
+	row( { base: 'Caption', type: 'string', role: 'content', component: 'RichTextField', label: 'Caption', panel: 'caption-and-link', order: 1 , slots: slotsOf( [ 'image', 'video' ], NOT_BACKGROUND ) } ),
 	row( { base: 'CaptionTag', type: 'string', role: 'tag-identity', component: 'SelectControl', label: 'Caption tag', panel: 'caption-and-link', order: 2 , slots: slotsOf( [ 'image', 'video' ], NOT_BACKGROUND ) } ),
 ];
 

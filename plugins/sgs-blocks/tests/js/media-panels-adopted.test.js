@@ -46,6 +46,7 @@ jest.mock( '@wordpress/components', () => {
 		ToggleControl: Box( 'div' ),
 	};
 } );
+jest.mock( '../../src/components/SgsFreeTextField.js', () => ( { __esModule: true, default: () => null } ) );
 jest.mock( '../../src/components/SgsLengthControl.js', () => ( { __esModule: true, default: () => null } ) );
 jest.mock( '../../src/components/SgsBoxControl.js', () => ( { __esModule: true, default: () => null } ) );
 jest.mock( '../../src/components/GradientCapableColourControl.js', () => ( { __esModule: true, default: () => null } ) );

@@ -30,6 +30,7 @@ import { mediaAttrName, mediaStoredAttrName } from '../../MediaElementControls.j
 import FitField from '../FitField.js';
 import FocalField from '../FocalField.js';
 import MediaSlotCaptions from '../MediaSlotCaptions.js';
+import MediaSlotCaptionText from '../MediaSlotCaptionText.js';
 import MediaSlotField from '../MediaSlotField.js';
 import ShapeField from '../ShapeField.js';
 import { AspectRatioField, HeightField, LimitsGroup, WidthField } from '../SizingFields.js';
@@ -81,6 +82,18 @@ function Text( { row, io } ) {
 		<TextControl
 			__nextHasNoMarginBottom
 			__next40pxDefaultSize
+			label={ labelOf( row ) }
+			value={ isSet( io.own ) ? String( io.own ) : '' }
+			disabled={ isOff( row ) }
+			help={ reasonOf( row ) }
+			onChange={ ( v ) => io.write( v ) }
+		/>
+	);
+}
+
+function RichText( { row, io } ) {
+	return (
+		<MediaSlotCaptionText
 			label={ labelOf( row ) }
 			value={ isSet( io.own ) ? String( io.own ) : '' }
 			disabled={ isOff( row ) }
@@ -335,6 +348,7 @@ export const OWN_NOTE = [
 export const COMPONENT_MAP = {
 	ToggleControl: Toggle,
 	TextControl: Text,
+	RichTextField: RichText,
 	RangeControl: Range,
 	SelectControl: Select,
 	AltField: Alt,

@@ -109,7 +109,7 @@ const BASE_TABLE = {
 	// Media-padding atom.
 	Padding: [ 'padding', 'surface', 'sides', 'layout', 'SidesField', 'Padding', 'border-and-shape' ],
 	// Caption atom.
-	Caption: [ null, null, 'none', 'content', 'TextControl', 'Caption', 'caption-and-link' ],
+	Caption: [ null, null, 'none', 'content', 'RichTextField', 'Caption', 'caption-and-link' ],
 	CaptionTag: [ null, null, 'none', 'tag-identity', 'SelectControl', 'Caption tag', 'caption-and-link' ],
 	// Link atom.
 	LinkUrl: [ null, null, 'none', 'link-href', 'LinkField', 'Link', 'caption-and-link' ],

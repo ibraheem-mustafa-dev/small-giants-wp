@@ -47,7 +47,7 @@
   },
   "controlFiles": {
     "sgs/media:caption": [
-      "src/components/media/MediaSlotCaptions.js"
+      "src/components/media/MediaSlotCaptionText.js"
     ]
   },
   "unconvertible": {
