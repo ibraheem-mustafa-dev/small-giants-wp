@@ -18,27 +18,56 @@ check_build() {
   fi
 }
 
+# A tree on a Windows drive (/mnt/<x>/...) is read one file at a time through WSL's file bridge, which crawls when
+# several syncs run at once (25 to 60 minutes for the plugin's ~7,000 files). Windows' own tar.exe packs it on the
+# Windows side in seconds; the one archive crosses the bridge, unpacks under /tmp and is rsynced locally. A tree inside
+# WSL, or a machine without tar.exe, is rsynced directly as before. Usage: copy_tree SRC DEST [EXCLUDE...] where each
+# EXCLUDE is a top-level name (src, tests) or a name excluded anywhere (node_modules).
+WINTAR=/mnt/c/Windows/System32/tar.exe
+copy_tree() {
+  local src="$1" dest="$2"; shift 2
+  local rs=() tx=() name
+  # tar.exe (bsdtar) matches an exclude anywhere in the path, so "./src" would also drop vendor/*/*/src: it skips only
+  # node_modules (excluded everywhere anyway); the top-level names are excluded by the local rsync, which anchors them.
+  for name in "$@"; do
+    if [ "$name" = node_modules ]; then rs+=(--exclude=node_modules); tx+=(--exclude node_modules)
+    else rs+=(--exclude="/$name"); fi
+  done
+  if [[ "$src" == /mnt/* ]] && [ -x "$WINTAR" ]; then
+    local stage tarw tarl
+    stage="$(mktemp -d /tmp/sgs-sync.XXXXXX)"
+    tarl="$(dirname "$src")/.sgs-sync-$$-$(basename "$src").tar"
+    tarw="$(wslpath -w "$tarl")"
+    if (cd "$src" && "$WINTAR" -cf "$tarw" "${tx[@]}" .) && tar -xf "$tarl" -C "$stage"; then
+      rm -f "$tarl"
+      rsync -a --delete "${rs[@]}" "$stage/" "$dest/"
+      rm -rf "$stage"
+      return
+    fi
+    rm -f "$tarl"; rm -rf "$stage"
+    echo "copy_tree: tar.exe packing failed for $src; falling back to rsync over the file bridge" >&2
+  fi
+  rsync -a --delete "${rs[@]}" "$src/" "$dest/"
+}
+
 sync_site() {
   local site="$1" dir="/var/www/$1"
   [ -d "$dir/wp-content" ] || { echo "Missing $dir" >&2; exit 1; }
   echo "== $site"
 
   # sgs-blocks: the built plugin without sources, tests or dev dependencies.
-  rsync -a --delete \
-    --exclude=node_modules --exclude=/src --exclude=/tests --exclude=/.phpunit.cache \
-    "$REPO/plugins/sgs-blocks/" "$dir/wp-content/plugins/sgs-blocks/"
+  copy_tree "$REPO/plugins/sgs-blocks" "$dir/wp-content/plugins/sgs-blocks" node_modules src tests .phpunit.cache
 
   # Every other plugins/sgs-* folder that already exists on this site's copy.
   for p in "$REPO"/plugins/sgs-*/; do
     name="$(basename "$p")"
     [ "$name" = "sgs-blocks" ] && continue
     if [ -d "$dir/wp-content/plugins/$name" ]; then
-      rsync -a --delete --exclude=node_modules --exclude=/tests --exclude=/.phpunit.cache \
-        "$p" "$dir/wp-content/plugins/$name/"
+      copy_tree "${p%/}" "$dir/wp-content/plugins/$name" node_modules tests .phpunit.cache
     fi
   done
 
-  rsync -a --delete --exclude=node_modules "$REPO/theme/sgs-theme/" "$dir/wp-content/themes/sgs-theme/"
+  copy_tree "$REPO/theme/sgs-theme" "$dir/wp-content/themes/sgs-theme" node_modules
   # The theme.json its test site runs: the client snapshot a deploy ships there, so default paint measured here
   # carries that snapshot's paint key (mirror_theme_json.py).
   local tj
