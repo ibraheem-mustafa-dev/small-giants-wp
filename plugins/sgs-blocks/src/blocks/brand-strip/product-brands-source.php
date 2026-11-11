@@ -42,14 +42,38 @@ if ( ! function_exists( 'sgs_brand_strip_product_brands_available' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_brand_strip_media_source' ) ) {
+	/**
+	 * A brand's thumbnail (`sgs_brand_logo_media()`'s shape) as an item Source: the desktop file.
+	 *
+	 * @param array|null $media Thumbnail `{url,type,id,alt,mime,width,height}`, or null when the brand has none.
+	 * @return array|null `{desktop:{kind,id,url,width,height,mime}}`, or null.
+	 */
+	function sgs_brand_strip_media_source( $media ) {
+		if ( ! is_array( $media ) || empty( $media['url'] ) ) {
+			return null;
+		}
+		return array(
+			'desktop' => array(
+				'kind'   => 'image',
+				'id'     => absint( $media['id'] ?? 0 ),
+				'url'    => (string) $media['url'],
+				'width'  => absint( $media['width'] ?? 0 ),
+				'height' => absint( $media['height'] ?? 0 ),
+				'mime'   => (string) ( $media['mime'] ?? '' ),
+			),
+		);
+	}
+}
+
 if ( ! function_exists( 'sgs_brand_strip_get_product_brand_logos' ) ) {
 	/**
 	 * Query `product_brand` terms per the block's brand* attributes and
 	 * return an ordered list of logo-shaped entries.
 	 *
 	 * @param array $attributes Block attributes (render.php's $attributes).
-	 * @return array Logo-shaped entries (media/alt/name/linkUrl/linkTarget/
-	 *               linkRel/_key/objectFit). Empty when the taxonomy is
+	 * @return array Logo-shaped entries (source/alt/name/linkUrl/linkTarget/
+	 *               linkRel/_key). Empty when the taxonomy is
 	 *               missing or the query matches nothing.
 	 */
 	function sgs_brand_strip_get_product_brand_logos( array $attributes ) {
@@ -68,10 +92,6 @@ if ( ! function_exists( 'sgs_brand_strip_get_product_brand_logos' ) ) {
 		$hide_empty = ! isset( $attributes['brandHideEmpty'] ) || (bool) $attributes['brandHideEmpty'];
 		$link_terms = ! isset( $attributes['brandLinkToShop'] ) || (bool) $attributes['brandLinkToShop'];
 
-		$default_fit = ( isset( $attributes['logoFit'] ) && in_array( $attributes['logoFit'], array( 'contain', 'cover', 'fill', 'scale-down', 'none' ), true ) )
-			? $attributes['logoFit']
-			: 'contain';
-
 		$query = array(
 			'taxonomy'   => 'product_brand',
 			'orderby'    => $orderby,
@@ -87,12 +107,12 @@ if ( ! function_exists( 'sgs_brand_strip_get_product_brand_logos' ) ) {
 		// missing value first, so give every brand a position when using this order.
 		if ( 'term_order' === $orderby ) {
 			$query['meta_query'] = array(
-				'relation'     => 'OR',
-				'brand_order'  => array(
+				'relation'    => 'OR',
+				'brand_order' => array(
 					'key'  => 'order',
 					'type' => 'NUMERIC',
 				),
-				'no_order'     => array(
+				'no_order'    => array(
 					'key'     => 'order',
 					'compare' => 'NOT EXISTS',
 				),
@@ -120,7 +140,7 @@ if ( ! function_exists( 'sgs_brand_strip_get_product_brand_logos' ) ) {
 			}
 
 			$logos[] = array(
-				'media'      => sgs_brand_logo_media( $term->term_id ),
+				'source'     => sgs_brand_strip_media_source( sgs_brand_logo_media( $term->term_id ) ),
 				'alt'        => '',
 				'decorative' => false,
 				'name'       => $term->name,
@@ -128,7 +148,6 @@ if ( ! function_exists( 'sgs_brand_strip_get_product_brand_logos' ) ) {
 				'linkTarget' => '_self',
 				'linkRel'    => '',
 				'_key'       => 'pb-' . $term->term_id,
-				'objectFit'  => $default_fit,
 			);
 		}
 

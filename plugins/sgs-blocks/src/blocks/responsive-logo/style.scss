@@ -4,8 +4,9 @@
  * SGS-BEM naming:
  *   .sgs-responsive-logo              Root wrapper
  *   .sgs-responsive-logo__link        Wrapping <a> (when linkToHome = true)
- *   .sgs-responsive-logo__picture     <picture> element
- *   .sgs-responsive-logo__image--desktop  Main <img>
+ *   .sgs-responsive-logo__picture     Holder of the logo and its dark variant
+ *   .sgs-responsive-logo__image--desktop  The renderer's outermost logo element (the <img>, or the group around a <picture>)
+ *   .sgs-responsive-logo__dark        The dark variant's outermost element
  *   .sgs-responsive-logo__svg         Inline SVG wrapper (animation mode)
  *   .sgs-responsive-logo__svg--inline The inlineSvg logo's wrapper (dark-logo swap and colour treatment)
  *   .sgs-responsive-logo__picture--fallback  Static images in animation mode
@@ -50,7 +51,7 @@
 		text-decoration: none;
 	}
 
-	// ── Picture element ───────────────────────────────────────────────────────
+	// ── Picture holder ────────────────────────────────────────────────────────
 	&__picture {
 		display: block;
 		line-height: 0;
@@ -58,11 +59,21 @@
 	}
 
 	// ── Images ────────────────────────────────────────────────────────────────
+	// The renderer's outermost logo element carries `&__image--desktop`: the image itself, or the group that holds the
+	// responsive picture. Either way the image inside fills the logo's width and keeps its own proportions.
 	&__image--desktop {
 		display: block;
 		width: 100%;
 		height: auto;
 		max-width: 100%;
+	}
+
+	.sgs-media-el:not( .sgs-responsive-logo__dark ) {
+		display: block;
+		width: 100%;
+		height: auto;
+		max-width: 100%;
+		object-fit: contain;
 	}
 
 	// ── Dark-mode logo variant (U-17, design §3.1) ──────────────────────────────
@@ -80,6 +91,13 @@
 		display: none;
 		position: absolute;
 		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+
+	&__dark .sgs-media-el,
+	.sgs-media-el.sgs-responsive-logo__dark {
 		width: 100%;
 		height: 100%;
 		object-fit: contain;

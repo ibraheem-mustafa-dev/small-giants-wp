@@ -126,7 +126,7 @@ final class LengthStringSettingsTest extends TestCase {
 		$css = $this->css(
 			'sgs/responsive-logo',
 			array(
-				'logoUrl'     => 'https://example.test/logo.png',
+				'logoSource'  => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/logo.png', 'width' => 400, 'height' => 100 ) ),
 				'maxWidth'    => array( 'desktop' => '240px', 'mobile' => '50%' ),
 				'maxHeight'   => array( 'desktop' => '4rem', 'mobile' => '40px' ),
 				'shrinkWidth' => array( 'desktop' => '120px', 'mobile' => '80px' ),
@@ -141,7 +141,7 @@ final class LengthStringSettingsTest extends TestCase {
 	}
 
 	public function test_responsive_logo_refuses_hostile_lengths(): void {
-		$css = $this->css( 'sgs/responsive-logo', array( 'logoUrl' => 'https://example.test/logo.png', 'maxWidth' => array( 'desktop' => self::HOSTILE ), 'maxHeight' => array( 'desktop' => self::HOSTILE ), 'shrinkWidth' => array( 'desktop' => self::HOSTILE ) ) );
+		$css = $this->css( 'sgs/responsive-logo', array( 'logoSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/logo.png', 'width' => 400, 'height' => 100 ) ), 'maxWidth' => array( 'desktop' => self::HOSTILE ), 'maxHeight' => array( 'desktop' => self::HOSTILE ), 'shrinkWidth' => array( 'desktop' => self::HOSTILE ) ) );
 		$this->assertStringNotContainsString( 'body{', $css );
 		$this->assertStringNotContainsString( 'color:red', $css );
 	}

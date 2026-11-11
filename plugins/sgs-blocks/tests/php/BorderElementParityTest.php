@@ -197,7 +197,7 @@ final class BorderElementParityTest extends TestCase {
 		),
 		'trustpilot-reviews'        => array( 'attrs' => array( 'dataSource' => 'placeholder' ) ),
 		'audio'                     => array( 'attrs' => array( 'audioUrl' => 'https://example.test/parity.mp3' ) ),
-		'responsive-logo'           => array( 'attrs' => array( 'logoUrl' => 'https://example.test/parity.png' ) ),
+		'responsive-logo'           => array( 'attrs' => array( 'logoSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/parity.png', 'width' => 400, 'height' => 100 ) ) ) ),
 		'store-selector'            => array(
 			'attrs' => array(
 				'stores' => array(

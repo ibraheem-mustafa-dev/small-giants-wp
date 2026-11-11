@@ -388,7 +388,21 @@
 								"svg"
 							],
 							"context": "content",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning"
+							]
+						},
+						"logoDark": {
+							"kinds": [
+								"image"
+							],
+							"context": "content",
+							"add": true,
+							"atoms": [
+								"source"
+							]
 						}
 					},
 					"replace": []
@@ -401,7 +415,11 @@
 								"svg"
 							],
 							"context": "content",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning"
+							]
 						}
 					},
 					"replace": []
@@ -414,12 +432,14 @@
 								"svg"
 							],
 							"context": "content",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning"
+							]
 						}
 					},
-					"replace": [
-						"headerLogoHeight"
-					]
+					"replace": []
 				}
 			}
 		},

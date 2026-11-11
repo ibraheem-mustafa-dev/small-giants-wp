@@ -313,25 +313,10 @@
 			"items": {
 				"type": "object",
 				"properties": {
-					"media": {
-						"anyOf": [
-							{ "type": "string" },
-							{ "type": "null" },
-							{
-								"type": "object",
-								"properties": {
-									"url": { "type": "string" },
-									"type": { "type": "string" },
-									"id": { "type": "number" },
-									"alt": { "type": "string" },
-									"mime": { "type": "string" },
-									"width": { "type": "number" },
-									"height": { "type": "number" }
-								}
-							}
-						],
-						"role": "image-object",
-						"_note": "D1031 (2026-09-11) — TWO real shapes are accepted and both render (a THIRD, null, is the empty state): the object form { url, type, id, alt, mime, width, height } written by MediaPicker, and a bare URL STRING (for back-compat with starter patterns, though brand-strip doesn't currently use any such patterns). null is the empty state from addLogo()/Remove in edit.js -- it renders nothing, but must still validate so it doesn't wipe the rest of the array. Before this fix `media` was declared bare {\"type\":\"object\"} — WordPress's own WP_Block_Type::prepare_attributes_for_render() validates the WHOLE `logos` array against this schema on every server render (rest_validate_array_value_from_schema loops each item and returns the FIRST WP_Error it finds, wiping the array back to its `[]` default), so ANY item whose media was the actual object shape (every item added through the editor picker) silently blanked the ENTIRE logos array, not just that item, on the frontend. This is a sibling fix to D1027 (sgs/card-grid, same mechanism). Do not narrow this back to a single `type` -- object/null/string must all keep validating, or the array-wipe regresses. The object branch declares real `properties` (not a bare `{\"type\":\"object\"}`) so this stays scoped to the SGS media shape rather than accepting arbitrary object junk."
+					"source": {
+						"type": "object",
+						"description": "The logo's picture per device, the media Source shape: {desktop:{kind,id,url,width,height,mime}, tablet, mobile}. A device with no entry shows the wider device's file. No key is the empty state: the logo prints nothing.",
+						"role": "image-object"
 					},
 					"alt": {
 						"type": "string",
@@ -368,18 +353,14 @@
 						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit CSS so a fit value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed.",
 						"role": "technical"
 					},
-					"objectFit": {
-						"type": "string",
-						"enum": [
-							"",
-							"contain",
-							"cover",
-							"fill",
-							"scale-down",
-							"none"
-						],
-						"default": "",
-						"description": "Per-item object-fit override. Logos are not photographs — object-fit only, no focal-point/crosshair (Bean-locked convention: see sgs/testimonial orgLogo + this block's own block-wide logoFit). Falls back to the block-wide logoFit default when unset.",
+					"fit": {
+						"type": "object",
+						"description": "How this logo fills its tile per device (contain, cover, fill, scale-down or none). Empty uses the strip's own fit (logoFit).",
+						"role": "visual"
+					},
+					"focal": {
+						"type": "object",
+						"description": "The part of this logo kept in view when it is cropped, per device: {desktop:{x,y}} with x and y from 0 to 1.",
 						"role": "visual"
 					}
 				}
@@ -561,15 +542,6 @@
 		"tileRadius": {
 			"type": "number",
 			"default": 16
-		},
-		"tileShape": {
-			"type": "string",
-			"enum": [
-				"square",
-				"circle",
-				"none"
-			],
-			"default": "square"
 		},
 		"logoLayout": {
 			"type": "string",
@@ -874,19 +846,16 @@
 		],
 		"default": ""
 	},
-		"logoSource": {"type":"object","_generated":"media-atoms"},
 		"logoLoading": {"type":"string","_generated":"media-atoms"},
-		"logoAlt": {"type":"string","_generated":"media-atoms"},
-		"logoDecorative": {"type":"boolean","_generated":"media-atoms"},
 		"logoFit": {"type":"object","_generated":"media-atoms"},
-		"logoRepeat": {"type":"object","_generated":"media-atoms"},
-		"logoTileSize": {"type":"object","_generated":"media-atoms"},
 		"logoShape": {"type":"object","_generated":"media-atoms"},
 		"logoRadius": {"type":"object","_generated":"media-atoms"},
 		"logoBorderWidth": {"type":"object","_generated":"media-atoms"},
 		"logoBorderStyle": {"type":"string","_generated":"media-atoms"},
 		"logoBorderColour": {"type":"string","_generated":"media-atoms"},
 		"logoBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"logoBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"logoBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
 		"logoColour": {"type":"object","_generated":"media-atoms"},
 		"logoGreyscale": {"type":"number","_generated":"media-atoms"}
 	},

@@ -25,6 +25,10 @@
 					"kinds": [
 						"image",
 						"svg"
+					],
+					"atoms": [
+						"source",
+						"meaning"
 					]
 				}
 			],
@@ -325,11 +329,6 @@
 			"default": false,
 			"description": "Root polish: an optional header row above the progress bar — a logo, a 'Step N of M' eyebrow and a Close button (only shown when the flow is inside an sgs/modal)."
 		},
-		"headerLogo": {
-			"type": "object",
-			"default": {},
-			"description": "Root polish: the optional header's logo image, {id,url,alt}. Empty object = no logo shown."
-		},
 		"openerLabel": {
 			"type": "string",
 			"default": ""
@@ -371,6 +370,11 @@
 			"type": "string",
 			"default": "Step",
 			"description": "FR-43-24: the word before the question position, e.g. 'Question' gives 'Question 1 of 3'. A question with its own eyebrow shows that instead and is left out of the count."
+		},
+		"headerLogoHeight": {
+			"type": "number",
+			"default": 32,
+			"description": "The header logo's height in px (its width follows the image's own proportions)."
 		},
 		"stageColour": {
 			"type": "string",
@@ -461,52 +465,7 @@
 		"headerLogoSource": {"type":"object","_generated":"media-atoms"},
 		"headerLogoLoading": {"type":"string","_generated":"media-atoms"},
 		"headerLogoAlt": {"type":"string","_generated":"media-atoms"},
-		"headerLogoDecorative": {"type":"boolean","_generated":"media-atoms"},
-		"headerLogoFit": {"type":"object","_generated":"media-atoms"},
-		"headerLogoRepeat": {"type":"object","_generated":"media-atoms"},
-		"headerLogoTileSize": {"type":"object","_generated":"media-atoms"},
-		"headerLogoFocal": {"type":"object","_generated":"media-atoms"},
-		"headerLogoPinned": {"type":"boolean","_generated":"media-atoms"},
-		"headerLogoPadding": {"type":"object","_generated":"media-atoms"},
-		"headerLogoBackground": {"type":"string","_generated":"media-atoms"},
-		"headerLogoOverlayColour": {"type":"string","_generated":"media-atoms"},
-		"headerLogoOverlayColourHover": {"type":"string","_generated":"media-atoms"},
-		"headerLogoOverlayGradient": {"type":"string","_generated":"media-atoms"},
-		"headerLogoOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
-		"headerLogoOverlayOpacity": {"type":"object","_generated":"media-atoms"},
-		"headerLogoOverlayBlend": {"type":"string","_generated":"media-atoms"},
-		"headerLogoOpacity": {"type":"object","_generated":"media-atoms"},
-		"headerLogoBlend": {"type":"string","_generated":"media-atoms"},
-		"headerLogoBoxShadow": {"type":"string","_generated":"media-atoms"},
-		"headerLogoBoxShadowColour": {"type":"string","_generated":"media-atoms"},
-		"headerLogoBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
-		"headerLogoSvgLayer": {"type":"string","_generated":"media-atoms"},
-		"headerLogoSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
-		"headerLogoSvgParts": {"type":"array","default":[],"_generated":"media-atoms"},
-		"headerLogoSvgPartsTrigger": {"type":"string","_generated":"media-atoms"},
-		"headerLogoCaption": {"type":"string","_generated":"media-atoms"},
-		"headerLogoCaptionTag": {"type":"string","_generated":"media-atoms"},
-		"headerLogoLinkUrl": {"type":"string","_generated":"media-atoms"},
-		"headerLogoLinkOpensNewTab": {"type":"boolean","_generated":"media-atoms"},
-		"headerLogoLinkRel": {"type":"string","_generated":"media-atoms"},
-		"headerLogoLinkUrlSource": {"type":"string","_generated":"media-atoms"},
-		"headerLogoRatio": {"type":"object","_generated":"media-atoms"},
-		"headerLogoWidth": {"type":"object","_generated":"media-atoms"},
-		"headerLogoHeight": {"type":"object","_generated":"media-atoms"},
-		"headerLogoMinWidth": {"type":"object","_generated":"media-atoms"},
-		"headerLogoMaxWidth": {"type":"object","_generated":"media-atoms"},
-		"headerLogoMinHeight": {"type":"object","_generated":"media-atoms"},
-		"headerLogoMaxHeight": {"type":"object","_generated":"media-atoms"},
-		"headerLogoShape": {"type":"object","_generated":"media-atoms"},
-		"headerLogoRadius": {"type":"object","_generated":"media-atoms"},
-		"headerLogoBorderWidth": {"type":"object","_generated":"media-atoms"},
-		"headerLogoBorderStyle": {"type":"string","_generated":"media-atoms"},
-		"headerLogoBorderColour": {"type":"string","_generated":"media-atoms"},
-		"headerLogoBorderColourHover": {"type":"string","_generated":"media-atoms"},
-		"headerLogoColour": {"type":"object","_generated":"media-atoms"},
-		"headerLogoGreyscale": {"type":"number","_generated":"media-atoms"},
-		"headerLogoAlignment": {"type":"object","_generated":"media-atoms"},
-		"headerLogoOrder": {"type":"object","_generated":"media-atoms"}
+		"headerLogoDecorative": {"type":"boolean","_generated":"media-atoms"}
 	},
 	"providesContext": {
 		"sgs/choice-flow/productId": "flowProductId",

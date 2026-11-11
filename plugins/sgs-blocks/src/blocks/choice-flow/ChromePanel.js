@@ -12,11 +12,16 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { PanelBody, ToggleControl, Button } from '@wordpress/components';
+import { InspectorControls } from '@wordpress/block-editor';
+import { PanelBody, ToggleControl } from '@wordpress/components';
+import { MediaElementPanel } from '../../components';
+import metadata from './block.json';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+
+const LOGO_SLOT = metadata.supports.sgs.mediaElements.find( ( e ) => 'headerLogo' === e.prefix );
+
 /**
  * @param {Object}   o
  * @param {Object}   o.attributes    Block attributes.
@@ -24,7 +29,7 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
  * @return {JSX.Element} The panel, mounted inside its own InspectorControls.
  */
 export default function ChromePanel( { attributes, setAttributes } ) {
-	const { showHeader, headerLogo, closeLabel, closeStyle, stickyFooter } = attributes;
+	const { showHeader, closeLabel, closeStyle, stickyFooter } = attributes;
 
 	return (
 		<InspectorControls>
@@ -41,44 +46,6 @@ export default function ChromePanel( { attributes, setAttributes } ) {
 				/>
 				{ showHeader && (
 					<>
-						<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '4px' } }>
-							{ __( 'Logo', 'sgs-blocks' ) }
-						</p>
-						<MediaUploadCheck>
-							<MediaUpload
-								onSelect={ ( media ) =>
-									setAttributes( {
-										headerLogo: { id: media.id, url: media.url, alt: media.alt || '' },
-									} )
-								}
-								allowedTypes={ [ 'image' ] }
-								value={ headerLogo?.id }
-								render={ ( { open } ) => (
-									<div style={ { marginBottom: '8px' } }>
-										{ headerLogo?.url ? (
-											<>
-												<img
-													src={ headerLogo.url }
-													alt=""
-													style={ { maxWidth: '160px', display: 'block', marginBottom: '8px' } }
-												/>
-												<Button
-													variant="secondary"
-													onClick={ () => setAttributes( { headerLogo: {} } ) }
-													isDestructive
-												>
-													{ __( 'Remove logo', 'sgs-blocks' ) }
-												</Button>
-											</>
-										) : (
-											<Button variant="secondary" onClick={ open }>
-												{ __( 'Select logo', 'sgs-blocks' ) }
-											</Button>
-										) }
-									</div>
-								) }
-							/>
-						</MediaUploadCheck>
 						<SgsFreeTextField type="rich" noLink
 							label={ __( 'Close button label', 'sgs-blocks' ) }
 							value={ closeLabel }
@@ -103,6 +70,19 @@ export default function ChromePanel( { attributes, setAttributes } ) {
 					</>
 				) }
 			</PanelBody>
+
+			{ showHeader && (
+				<MediaElementPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					blockName="sgs/choice-flow"
+					blockSlug="sgs/choice-flow"
+					prefix="headerLogo"
+					atoms={ LOGO_SLOT.atoms }
+					kinds={ LOGO_SLOT.kinds }
+					context={ LOGO_SLOT.context }
+				/>
+			) }
 
 			<PanelBody title={ __( 'Footer', 'sgs-blocks' ) } initialOpen={ false }>
 				<ToggleControl

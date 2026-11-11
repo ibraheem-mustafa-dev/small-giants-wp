@@ -1,18 +1,11 @@
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import ServerSideRender from '../../components/ServerSideRender';
-import {
-	useBlockProps,
-	InspectorControls,
-	MediaUpload,
-	MediaUploadCheck,
-} from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	RangeControl,
 	ToggleControl,
 	SelectControl,
-	TextareaControl,
-	Button,
 } from '@wordpress/components';
 import {
 	ResponsiveOverride,
@@ -24,7 +17,13 @@ import {
 	SgsColourPanel,
 	SsrPreviewGuard,
 	SvgPartsControls,
+	MediaElementPanel,
 } from '../../components';
+import metadata from './block.json';
+
+const SLOTS = metadata.supports.sgs.mediaElements;
+const LOGO_SLOT = SLOTS.find( ( e ) => 'logo' === e.prefix );
+const DARK_SLOT = SLOTS.find( ( e ) => 'logoDark' === e.prefix );
 
 // Units offered on the max-width/max-height UnitControls (mirrors the shared
 // TypographyControls unit-set pattern — px is the common case for a logo cap;
@@ -75,89 +74,6 @@ function siteLogoHint( source ) {
 }
 
 /**
- * Renders a MediaUpload slot for a logo.
- *
- * @param {Object}   props
- * @param {number}   props.mediaId     Current media attachment ID (or undefined).
- * @param {string}   props.mediaUrl    Current image URL for preview (or undefined).
- * @param {Function} props.onSelect    Called with the media object on selection.
- * @param {Function} props.onRemove    Called when the remove button is clicked.
- * @param {string}   props.label       Button / panel label.
- * @param {string}   props.placeholder Fallback text when no image is selected.
- */
-function LogoSlot( {
-	mediaId,
-	mediaUrl,
-	onSelect,
-	onRemove,
-	label,
-	placeholder,
-} ) {
-	return (
-		<MediaUploadCheck>
-			<div className="sgs-responsive-logo-editor__slot">
-				<p className="sgs-responsive-logo-editor__slot-label">
-					{ label }
-				</p>
-				{ mediaUrl ? (
-					<div className="sgs-responsive-logo-editor__slot-preview">
-						<img
-							src={ mediaUrl }
-							alt={ label }
-							className="sgs-responsive-logo-editor__slot-img"
-						/>
-						<div className="sgs-responsive-logo-editor__slot-actions">
-							<MediaUpload
-								onSelect={ onSelect }
-								allowedTypes={ [ 'image' ] }
-								value={ mediaId }
-								render={ ( { open } ) => (
-									<Button
-										variant="secondary"
-										onClick={ open }
-										size="small"
-									>
-										{ __( 'Replace', 'sgs-blocks' ) }
-									</Button>
-								) }
-							/>
-							<Button
-								variant="tertiary"
-								onClick={ onRemove }
-								isDestructive
-								size="small"
-							>
-								{ __( 'Remove', 'sgs-blocks' ) }
-							</Button>
-						</div>
-					</div>
-				) : (
-					<MediaUpload
-						onSelect={ onSelect }
-						allowedTypes={ [ 'image' ] }
-						value={ mediaId }
-						render={ ( { open } ) => (
-							<Button
-								variant="secondary"
-								onClick={ open }
-								className="sgs-responsive-logo-editor__slot-upload"
-							>
-								{ __( 'Upload / Select', 'sgs-blocks' ) }
-							</Button>
-						) }
-					/>
-				) }
-				{ ! mediaUrl && placeholder && (
-					<p className="sgs-responsive-logo-editor__slot-placeholder">
-						{ placeholder }
-					</p>
-				) }
-			</div>
-		</MediaUploadCheck>
-	);
-}
-
-/**
  * Shown in the canvas when render.php resolves no logo at any tier.
  */
 function EmptyLogoPlaceholder() {
@@ -183,18 +99,12 @@ function EmptyLogoPlaceholder() {
  */
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		logoId,
-		logoIdTablet,
-		logoIdMobile,
 		logoSwitchMode,
 		logoSwitchCustomPx,
-		darkLogoId,
 		width,
 		shrinkWidth,
 		linkToHome,
 		inlineSvg,
-		alt,
-		logoDecorative,
 		borderColour,
 		borderColourGradient,
 		borderColourHover,
@@ -229,43 +139,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				: undefined,
 	} );
 
-	const onSelectDesktop = ( media ) => {
-		setAttributes( { logoId: media.id, logoUrl: media.url } );
-	};
-	const onRemoveDesktop = () => {
-		setAttributes( { logoId: undefined, logoUrl: '' } );
-	};
-
-	const onSelectTablet = ( media ) => {
-		setAttributes( { logoIdTablet: media.id, logoUrlTablet: media.url } );
-	};
-	const onRemoveTablet = () => {
-		setAttributes( { logoIdTablet: undefined, logoUrlTablet: '' } );
-	};
-
-	const onSelectMobile = ( media ) => {
-		setAttributes( { logoIdMobile: media.id, logoUrlMobile: media.url } );
-	};
-	const onRemoveMobile = () => {
-		setAttributes( { logoIdMobile: undefined, logoUrlMobile: '' } );
-	};
-
-	// Dark-mode logo variant (U-17, design §3.1).
-	const onSelectDarkLogo = ( media ) => {
-		setAttributes( { darkLogoId: media.id } );
-	};
-	const onRemoveDarkLogo = () => {
-		setAttributes( { darkLogoId: 0 } );
-	};
-
-	// Preview URLs come from the DECLARED, PERSISTED attrs.
-	const desktopUrl = attributes.logoUrl;
-	const tabletUrl = attributes.logoUrlTablet;
-	const mobileUrl = attributes.logoUrlMobile;
-
 	// Chain tier 1 is the block's own desktop image; when it is empty the
 	// frontend falls through to the site-level logo (Site Info, then WordPress).
-	const hasOwnLogo = !! ( logoId || desktopUrl );
+	const hasOwnLogo = !! ( attributes.logoSource?.desktop?.id || attributes.logoSource?.desktop?.url );
 	const siteLogo = getSiteLogo();
 	const siteLogoNote = hasOwnLogo ? '' : siteLogoHint( siteLogo.source );
 
@@ -280,53 +156,22 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				{ /* ── Panel 1: Logos by device ── */ }
+				{ /* ── Panel 1: the logo switch, the logo per device, and the logo for dark backgrounds ── */ }
 				<PanelBody
-					title={ __( 'Logos by device', 'sgs-blocks' ) }
+					title={ __( 'Logo switch', 'sgs-blocks' ) }
 					initialOpen
 				>
 					<p className="sgs-responsive-logo-editor__panel-hint">
 						{ __(
-							'Without a logo of its own, this block shows your site logo. Tablet and mobile fall back to the desktop logo when not set.',
+							'Without a logo of its own, this block shows your site logo. Switch the editor to Tablet or Mobile to give a device its own file; a device without one shows the desktop logo.',
 							'sgs-blocks'
 						) }
 					</p>
-
-					<LogoSlot
-						mediaId={ logoId }
-						mediaUrl={ desktopUrl }
-						onSelect={ onSelectDesktop }
-						onRemove={ onRemoveDesktop }
-						label={ __(
-							'Desktop logo (horizontal)',
-							'sgs-blocks'
-						) }
-						placeholder={ siteLogoNote }
-					/>
-
-					<LogoSlot
-						mediaId={ logoIdTablet }
-						mediaUrl={ tabletUrl }
-						onSelect={ onSelectTablet }
-						onRemove={ onRemoveTablet }
-						label={ __( 'Tablet logo (square)', 'sgs-blocks' ) }
-						placeholder={ __(
-							'Same as desktop when not set.',
-							'sgs-blocks'
-						) }
-					/>
-
-					<LogoSlot
-						mediaId={ logoIdMobile }
-						mediaUrl={ mobileUrl }
-						onSelect={ onSelectMobile }
-						onRemove={ onRemoveMobile }
-						label={ __( 'Mobile logo (mark/icon)', 'sgs-blocks' ) }
-						placeholder={ __(
-							'Same as desktop when not set.',
-							'sgs-blocks'
-						) }
-					/>
+					{ siteLogoNote && (
+						<p className="sgs-responsive-logo-editor__panel-hint">
+							{ siteLogoNote }
+						</p>
+					) }
 					<SelectControl
 						label={ __( 'Switch to compact logo', 'sgs-blocks' ) }
 						value={ logoSwitchMode || 'mobile' }
@@ -360,10 +205,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					{ 'custom' === logoSwitchMode && (
 						<RangeControl
-							label={ __(
-								'Custom breakpoint (px)',
-								'sgs-blocks'
-							) }
+							label={ __( 'Custom breakpoint (px)', 'sgs-blocks' ) }
 							help={ __(
 								'Below this width the compact logo shows.',
 								'sgs-blocks'
@@ -381,64 +223,28 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				{ /* ── Panel: Logo for dark backgrounds (U-13 §4.5). ── */ }
-				<PanelBody
-					title={ __( 'Logo for dark backgrounds', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<p className="sgs-responsive-logo-editor__panel-hint">
-						{ __(
-							'Shown in dark mode and wherever the logo sits on a dark background: a dark section or footer, or a header passing over a dark section. Leave empty to use the same logo everywhere.',
-							'sgs-blocks'
-						) }
-					</p>
-					<MediaUploadCheck>
-						<div className="sgs-responsive-logo-editor__slot">
-							{ darkLogoId ? (
-								<>
-									<p className="sgs-responsive-logo-editor__svg-id">
-										{ sprintf(
-											/* translators: %d: attachment ID */
-											__(
-												'Attachment ID: %d',
-												'sgs-blocks'
-											),
-											darkLogoId
-										) }
-									</p>
-									<Button
-										variant="secondary"
-										onClick={ onRemoveDarkLogo }
-										isDestructive
-										size="small"
-									>
-										{ __(
-											'Remove logo for dark backgrounds',
-											'sgs-blocks'
-										) }
-									</Button>
-								</>
-							) : (
-								<MediaUpload
-									onSelect={ onSelectDarkLogo }
-									allowedTypes={ [ 'image' ] }
-									value={ darkLogoId }
-									render={ ( { open } ) => (
-										<Button
-											variant="secondary"
-											onClick={ open }
-										>
-											{ __(
-												'Select logo for dark backgrounds',
-												'sgs-blocks'
-											) }
-										</Button>
-									) }
-								/>
-							) }
-						</div>
-					</MediaUploadCheck>
-				</PanelBody>
+				<MediaElementPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					blockName="sgs/responsive-logo"
+					blockSlug="sgs/responsive-logo"
+					prefix="logo"
+					atoms={ LOGO_SLOT.atoms }
+					kinds={ LOGO_SLOT.kinds }
+					context={ LOGO_SLOT.context }
+				/>
+
+				{ /* ── Logo for dark backgrounds (U-13 §4.5). ── */ }
+				<MediaElementPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					blockName="sgs/responsive-logo"
+					blockSlug="sgs/responsive-logo"
+					prefix="logoDark"
+					atoms={ DARK_SLOT.atoms }
+					kinds={ DARK_SLOT.kinds }
+					context={ DARK_SLOT.context }
+				/>
 
 				{ /* ── Panel 3: Sizing + behaviour ── */ }
 				<PanelBody
@@ -529,40 +335,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { linkToHome: val } )
 						}
 						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __(
-							'Decorative logo (hide from screen readers)',
-							'sgs-blocks'
-						) }
-						help={ __(
-							'Only use this if the logo is purely decorative — if it links to your homepage, keep this off so screen reader users can still navigate home. A site logo almost always carries meaning, so this should stay off in most cases.',
-							'sgs-blocks'
-						) }
-						checked={ !! logoDecorative }
-						onChange={ ( val ) =>
-							setAttributes( { logoDecorative: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-
-					<TextareaControl
-						label={ __( 'Alt text', 'sgs-blocks' ) }
-						help={
-							logoDecorative
-								? __(
-										'Disabled — the logo image is marked decorative and won’t be announced to screen readers.',
-										'sgs-blocks'
-								  )
-								: __(
-										'Describes what the logo depicts for screen readers. Leave empty to use "[Business name] home" automatically (or, for the site logo, its media-library alt text) — never just "logo".',
-										'sgs-blocks'
-								  )
-						}
-						value={ alt }
-						onChange={ ( val ) => setAttributes( { alt: val } ) }
-						disabled={ !! logoDecorative }
-						rows={ 2 }
 					/>
 				</PanelBody>
 			</InspectorControls>

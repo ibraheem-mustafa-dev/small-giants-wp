@@ -214,7 +214,16 @@
 
 /* Zero-specificity default size; chromeLogoWidth (scoped) sets the width and
    hands the height back to the image's own ratio. */
-:where(.sgs-nav-drawer__chrome-logo-image, .sgs-nav-drawer__chrome-logo > svg) {
+/* The renderer's image is the logo's `.sgs-media-el`, whether it prints bare or inside a responsive picture's group. */
+.sgs-nav-drawer__chrome-logo .sgs-media-el {
+	display: block;
+	width: auto;
+	height: var(--sgs-nd-chrome-logo-height, 32px);
+	max-width: 100%;
+	object-fit: contain;
+}
+
+:where(.sgs-nav-drawer__chrome-logo > svg) {
 	display: block;
 	width: auto;
 	height: 32px;

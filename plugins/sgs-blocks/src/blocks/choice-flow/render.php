@@ -256,7 +256,12 @@ echo '<div class="sgs-choice-flow__announcer" role="status" aria-live="polite" a
 
 // Questions only, as view.js counts them: a step holding a result is not numbered.
 $step_total = count( array_filter( $inner_parsed, static fn( $b ) => 'sgs/form-step' === ( $b['blockName'] ?? '' ) && false === strpos( (string) wp_json_encode( $b['innerBlocks'] ?? array() ), 'sgs\/choice-flow-result' ) ) );
-echo sgs_choice_flow_chrome_header_html( $chrome_attrs, $step_total, $resolved_product_name ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns pre-escaped markup.
+$sgs_cf_logo_css = '';
+$sgs_cf_header   = sgs_choice_flow_chrome_header_html( $chrome_attrs, $step_total, $resolved_product_name, $sgs_cf_logo_css );
+if ( '' !== $sgs_cf_logo_css ) {
+	echo '<style>' . wp_strip_all_tags( $sgs_cf_logo_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the media renderer builds the rules from sanitised settings; wp_strip_all_tags() blocks a </style> breakout.
+}
+echo $sgs_cf_header; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns pre-escaped markup.
 
 // FR-43-24: in 'showcase', this moves below into the step pane (the eyebrow
 // above each question) instead of sitting here above the progress line —

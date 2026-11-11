@@ -23,6 +23,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-logo-media.php';
+
 if ( ! function_exists( 'sgs_choice_flow_chrome_classes' ) ) {
 	/**
 	 * Extra wrapper modifier classes for the optional header/sticky footer.
@@ -92,16 +94,25 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 	 *                             overwrites it on first paint once it has run.
 	 * @param string $product_name The flow's resolved product's name (render.php's
 	 *                             $resolved_product_id), '' when none resolves.
+	 * @param string $logo_css     Receives the header logo's per-instance rules from the media renderer.
 	 * @return string Escaped HTML, or '' when the header is off.
 	 */
-	function sgs_choice_flow_chrome_header_html( array $attributes, int $step_count, string $product_name = '' ): string {
+	function sgs_choice_flow_chrome_header_html( array $attributes, int $step_count, string $product_name = '', string &$logo_css = '' ): string {
 		if ( empty( $attributes['showHeader'] ) ) {
 			return '';
 		}
 
-		$logo     = is_array( $attributes['headerLogo'] ?? null ) ? $attributes['headerLogo'] : array();
-		$logo_url = isset( $logo['url'] ) ? esc_url( (string) $logo['url'] ) : '';
-		$logo_alt = isset( $logo['alt'] ) ? sanitize_text_field( (string) $logo['alt'] ) : '';
+		// The header logo is the `headerLogo` slot, printed by the shared media renderer. The flow sits in a page, so
+		// the priority resolver decides its loading.
+		$logo_out  = sgs_logo_render(
+			sgs_logo_media_slot( null, 'headerLogo' ),
+			$attributes,
+			'sgs-cf-logo-' . substr( md5( (string) wp_json_encode( $attributes['headerLogoSource'] ?? null ) ), 0, 8 ),
+			'sgs/choice-flow',
+			array( 'extra_class' => 'sgs-choice-flow__chrome-logo' )
+		);
+		$logo_html = $logo_out['html'];
+		$logo_css  = $logo_out['css'];
 
 		$close_label_raw = isset( $attributes['closeLabel'] ) ? trim( (string) $attributes['closeLabel'] ) : '';
 		$close_label     = '' !== $close_label_raw ? $close_label_raw : __( 'Close', 'sgs-blocks' );
@@ -118,9 +129,7 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 
 		$html = '<div class="sgs-choice-flow__chrome-header" data-product-name="' . esc_attr( $product_name ) . '">';
 
-		if ( '' !== $logo_url ) {
-			$html .= '<img class="sgs-choice-flow__chrome-logo" src="' . esc_url( $logo_url ) . '" alt="' . esc_attr( $logo_alt ) . '"' . sgs_image_size_attrs( (string) $logo_url ) . ' />';
-		}
+		$html .= $logo_html;
 
 		$html .= '<span class="sgs-choice-flow__chrome-eyebrow" aria-live="polite">' . esc_html( $initial_eyebrow ) . '</span>';
 

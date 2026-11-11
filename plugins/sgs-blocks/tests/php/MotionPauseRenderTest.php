@@ -104,12 +104,26 @@ final class MotionPauseRenderTest extends TestCase {
 	private function brand_logos(): array {
 		return array(
 			array(
-				'media' => 'https://example.test/one.png',
-				'alt'   => 'One',
+				'source' => array(
+					'desktop' => array(
+						'kind'   => 'image',
+						'url'    => 'https://example.test/one.png',
+						'width'  => 120,
+						'height' => 60,
+					),
+				),
+				'alt'    => 'One',
 			),
 			array(
-				'media' => 'https://example.test/two.png',
-				'alt'   => 'Two',
+				'source' => array(
+					'desktop' => array(
+						'kind'   => 'image',
+						'url'    => 'https://example.test/two.png',
+						'width'  => 120,
+						'height' => 60,
+					),
+				),
+				'alt'    => 'Two',
 			),
 		);
 	}

@@ -35,6 +35,10 @@
 					"kinds": [
 						"image",
 						"svg"
+					],
+					"atoms": [
+						"source",
+						"meaning"
 					]
 				}
 			],
@@ -543,34 +547,6 @@
 			"type": "string",
 			"default": "",
 			"description": "Top row gradient fill; non-empty wins over chromeRowBg."
-		},
-		"chromeLogoId": {
-			"type": "number",
-			"description": "Top row logo, desktop: media library attachment ID. Wins over chromeLogoUrl."
-		},
-		"chromeLogoUrl": {
-			"type": "string",
-			"default": "",
-			"role": "content",
-			"description": "Top row logo URL, desktop, stored alongside the ID."
-		},
-		"chromeLogoIdTablet": {
-			"type": "number",
-			"description": "Tablet logo attachment ID; unset uses the desktop logo."
-		},
-		"chromeLogoUrlTablet": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"chromeLogoIdMobile": {
-			"type": "number",
-			"description": "Mobile logo attachment ID; unset uses the tablet logo."
-		},
-		"chromeLogoUrlMobile": {
-			"type": "string",
-			"default": "",
-			"role": "content"
 		},
 		"chromeLogoAlt": {
 			"type": "string",
@@ -1235,47 +1211,7 @@
 		"backgroundCaptions": {"type":"object","_generated":"media-atoms"},
 		"chromeLogoSource": {"type":"object","_generated":"media-atoms"},
 		"chromeLogoLoading": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoDecorative": {"type":"boolean","_generated":"media-atoms"},
-		"chromeLogoFit": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoRepeat": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoTileSize": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoFocal": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoPinned": {"type":"boolean","_generated":"media-atoms"},
-		"chromeLogoPadding": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoBackground": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoOverlayColour": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoOverlayColourHover": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoOverlayGradient": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoOverlayOpacity": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoOverlayBlend": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoOpacity": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoBlend": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoSvgLayer": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
-		"chromeLogoCaption": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoCaptionTag": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoLinkUrl": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoLinkOpensNewTab": {"type":"boolean","_generated":"media-atoms"},
-		"chromeLogoLinkRel": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoLinkUrlSource": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoRatio": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoHeight": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoMinWidth": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoMaxWidth": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoMinHeight": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoMaxHeight": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoShape": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoRadius": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoBorderWidth": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoBorderStyle": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoBorderColour": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoBorderColourHover": {"type":"string","_generated":"media-atoms"},
-		"chromeLogoColour": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoGreyscale": {"type":"number","_generated":"media-atoms"},
-		"chromeLogoAlignment": {"type":"object","_generated":"media-atoms"},
-		"chromeLogoOrder": {"type":"object","_generated":"media-atoms"}
+		"chromeLogoDecorative": {"type":"boolean","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

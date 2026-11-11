@@ -548,7 +548,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
-   "selector": ".sgs-brand-strip--effect-grayscale .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip",
+   "selector": ".sgs-brand-strip--effect-grayscale .sgs-brand-strip__item:hover .sgs-media-el",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -558,7 +558,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
-   "selector": ".sgs-brand-strip--effect-sepia .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip",
+   "selector": ".sgs-brand-strip--effect-sepia .sgs-brand-strip__item:hover .sgs-media-el",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -573,7 +573,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
-   "selector": ".sgs-brand-strip--hover-scale .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip",
+   "selector": ".sgs-brand-strip--hover-scale .sgs-brand-strip__item:hover .sgs-media-el",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
