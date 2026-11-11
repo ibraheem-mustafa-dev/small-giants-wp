@@ -1883,3 +1883,14 @@
 		transform: none;
 	}
 }
+
+/* Height Fill on the photo slot: the slot's box takes the photo box's height (set by the fixed height or by the Ratio rule),
+   not the 12rem the Fill helper gives a box nothing sizes. */
+.product-card .product-card-img.sgs-media-box--fill {
+	height: 100%;
+	min-height: 0;
+}
+
+.product-card .product-card-img.sgs-media-box--fill::before {
+	height: 0;
+}
