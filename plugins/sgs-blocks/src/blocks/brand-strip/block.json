@@ -36,10 +36,17 @@
 			"_comment_mediaElements": "Bridges the pre-existing `logoFit` control (contain, cover, fill, scale-down or none; default contain) onto the shared object-fit atom via STORED_AS in MediaElementControls.js/helpers-media-element.php — no new attribute, no new UI, the logo-fit dropdown stays the only control.",
 			"mediaElements": [
 				{
-					"prefix": "",
-					"context": "element",
+					"prefix": "logo",
+					"context": "item",
+					"kinds": [
+						"image"
+					],
 					"atoms": [
-						"object-fit"
+						"source",
+						"meaning",
+						"object-fit",
+						"shape",
+						"filter"
 					]
 				}
 			],
@@ -583,18 +590,6 @@
 			"default": 100,
 			"description": "Row layout: each brand's resting opacity in %, rising to full on hover or keyboard focus."
 		},
-		"logoFit": {
-			"type": "string",
-			"enum": [
-				"contain",
-				"cover",
-				"fill",
-				"scale-down",
-				"none"
-			],
-			"default": "contain",
-			"description": "How each logo sits in its tile: contain = whole logo scaled to the tile's longer axis keeping proportions; cover = fills the tile and crops; fill = stretches to the tile (may distort); scale-down = contain, never enlarged past natural size; none = natural size."
-		},
 		"tileBorderWidth": {
 			"type": "number",
 			"default": 0
@@ -878,7 +873,22 @@
 			"vertical-lr"
 		],
 		"default": ""
-	}
+	},
+		"logoSource": {"type":"object","_generated":"media-atoms"},
+		"logoLoading": {"type":"string","_generated":"media-atoms"},
+		"logoAlt": {"type":"string","_generated":"media-atoms"},
+		"logoDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"logoFit": {"type":"object","_generated":"media-atoms"},
+		"logoRepeat": {"type":"object","_generated":"media-atoms"},
+		"logoTileSize": {"type":"object","_generated":"media-atoms"},
+		"logoShape": {"type":"object","_generated":"media-atoms"},
+		"logoRadius": {"type":"object","_generated":"media-atoms"},
+		"logoBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"logoBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"logoBorderColour": {"type":"string","_generated":"media-atoms"},
+		"logoBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"logoColour": {"type":"object","_generated":"media-atoms"},
+		"logoGreyscale": {"type":"number","_generated":"media-atoms"}
 	},
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css",

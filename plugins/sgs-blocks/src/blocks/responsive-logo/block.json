@@ -33,6 +33,16 @@
 		},
 		"html": false,
 		"sgs": {
+			"mediaElements": [
+				{
+					"prefix": "logo",
+					"context": "content",
+					"kinds": [
+						"image",
+						"svg"
+					]
+				}
+			],
 			"motion": true,
 			"enabledExtensions": [
 				"childSizing",
@@ -436,7 +446,55 @@
 			"default": {
 				"desktop": {}
 			}
-		}
+		},
+		"logoSource": {"type":"object","_generated":"media-atoms"},
+		"logoLoading": {"type":"string","_generated":"media-atoms"},
+		"logoAlt": {"type":"string","_generated":"media-atoms"},
+		"logoFit": {"type":"object","_generated":"media-atoms"},
+		"logoRepeat": {"type":"object","_generated":"media-atoms"},
+		"logoTileSize": {"type":"object","_generated":"media-atoms"},
+		"logoFocal": {"type":"object","_generated":"media-atoms"},
+		"logoPinned": {"type":"boolean","_generated":"media-atoms"},
+		"logoPadding": {"type":"object","_generated":"media-atoms"},
+		"logoBackground": {"type":"string","_generated":"media-atoms"},
+		"logoOverlayColour": {"type":"string","_generated":"media-atoms"},
+		"logoOverlayColourHover": {"type":"string","_generated":"media-atoms"},
+		"logoOverlayGradient": {"type":"string","_generated":"media-atoms"},
+		"logoOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
+		"logoOverlayOpacity": {"type":"object","_generated":"media-atoms"},
+		"logoOverlayBlend": {"type":"string","_generated":"media-atoms"},
+		"logoOpacity": {"type":"object","_generated":"media-atoms"},
+		"logoBlend": {"type":"string","_generated":"media-atoms"},
+		"logoBoxShadow": {"type":"string","_generated":"media-atoms"},
+		"logoBoxShadowColour": {"type":"string","_generated":"media-atoms"},
+		"logoBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
+		"logoSvgLayer": {"type":"string","_generated":"media-atoms"},
+		"logoSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
+		"logoSvgParts": {"type":"array","default":[],"_generated":"media-atoms"},
+		"logoSvgPartsTrigger": {"type":"string","_generated":"media-atoms"},
+		"logoCaption": {"type":"string","_generated":"media-atoms"},
+		"logoCaptionTag": {"type":"string","_generated":"media-atoms"},
+		"logoLinkUrl": {"type":"string","_generated":"media-atoms"},
+		"logoLinkOpensNewTab": {"type":"boolean","_generated":"media-atoms"},
+		"logoLinkRel": {"type":"string","_generated":"media-atoms"},
+		"logoLinkUrlSource": {"type":"string","_generated":"media-atoms"},
+		"logoRatio": {"type":"object","_generated":"media-atoms"},
+		"logoWidth": {"type":"object","_generated":"media-atoms"},
+		"logoHeight": {"type":"object","_generated":"media-atoms"},
+		"logoMinWidth": {"type":"object","_generated":"media-atoms"},
+		"logoMaxWidth": {"type":"object","_generated":"media-atoms"},
+		"logoMinHeight": {"type":"object","_generated":"media-atoms"},
+		"logoMaxHeight": {"type":"object","_generated":"media-atoms"},
+		"logoShape": {"type":"object","_generated":"media-atoms"},
+		"logoRadius": {"type":"object","_generated":"media-atoms"},
+		"logoBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"logoBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"logoBorderColour": {"type":"string","_generated":"media-atoms"},
+		"logoBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"logoColour": {"type":"object","_generated":"media-atoms"},
+		"logoGreyscale": {"type":"number","_generated":"media-atoms"},
+		"logoAlignment": {"type":"object","_generated":"media-atoms"},
+		"logoOrder": {"type":"object","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
