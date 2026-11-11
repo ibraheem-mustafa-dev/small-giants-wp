@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { composeShadow, splitTop, parseLayer } from '../../src/utils/shadow-layers.js';
-import { css as atomCss, attrKeys } from '../../src/components/media/atoms/shadow.js';
+import { emit as atomEmit } from '../../src/components/media/atoms/shadow.js';
 
 const here = dirname( fileURLToPath( import.meta.url ) );
 const table = JSON.parse( readFileSync( join( here, '..', '..', 'tests', 'shared', 'shadow-compose-cases.json' ), 'utf8' ) );
@@ -54,15 +54,12 @@ eq( splitTop( '  a   b ', ' ' ), [ 'a', 'b' ], 'whitespace splits drop empty ent
 eq( parseLayer( 'inset 0 2px 4px' ).inset, true, 'parseLayer reads inset' );
 eq( parseLayer( '0 2px inset 4px' ), null, 'parseLayer rejects inset in the middle' );
 
-// The media atom rides the same composer: its custom properties carry the composed value.
-const keys = attrKeys( '', 'sgs/media' );
-const atomOut = atomCss( {
-	attributes: { [ keys.base ]: '0 4px 12px 0', [ keys.colour ]: '#000000', [ keys.hoverColour ]: '#FF0000' },
-	prefix: '',
-	blockSlug: 'sgs/media',
-} );
-eq( atomOut, [ '--sgs-media-box-shadow:0px 4px 12px 0px #000000', '--sgs-media-box-shadow-hover:0px 4px 12px 0px #FF0000' ], 'atom css() composes resting and hover' );
-eq( atomCss( { attributes: {}, prefix: '', blockSlug: 'sgs/media' } ), [], 'atom css() is empty with no shape' );
+// The media atom rides the same composer: its emitted rules carry the composed value.
+const SLOT = { prefix: '', kinds: [ 'image' ], context: 'content' };
+const atomOut = atomEmit( SLOT, { boxShadow: '0 4px 12px 0', boxShadowColour: '#000000', boxShadowColourHover: '#FF0000' }, 'u', false );
+eq( atomOut.includes( 'box-shadow:0px 4px 12px 0px #000000' ), true, 'atom emit() composes the resting shadow' );
+eq( atomOut.includes( 'box-shadow:0px 4px 12px 0px #FF0000' ), true, 'atom emit() composes the hover shadow' );
+eq( atomEmit( SLOT, {}, 'u', false ), '', 'atom emit() is empty with no shape' );
 
 console.log( `JS shadow composer: ${ compared } shared cases checked, ${ failed } failures (negative control caught ${ caught })` );
 process.exit( failed > 0 ? 1 : 0 );

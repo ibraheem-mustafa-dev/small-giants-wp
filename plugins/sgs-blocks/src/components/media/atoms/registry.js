@@ -268,7 +268,7 @@ export const MEDIA_ATOMS = {
 			},
 		},
 		vocabulary: {
-			// Spaced, matching MediaSizingPanel's RATIO_OPTIONS and the only
+			// Spaced, matching the sizing fields' ratio options and the only
 			// server-side ratio allowlist (image-sequence/render.php).
 			// `card-grid`/`gallery`/`post-grid` take free unspaced strings and
 			// are READ, not matched.

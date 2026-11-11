@@ -36,7 +36,7 @@
  *
  * `css()` returns nothing: playback behaviour (autoplay/loop/muted/controls/
  * playsinline/lazy, captions) is HTML element state, never a paintable CSS
- * property. See `assets/css/media-atoms/video-behaviour.css`.
+ * property. See `assets/css/media-base.css`.
  *
  * ⛔ THE CONTROL/LOGIC SPLIT IS A CONTRACT (`scripts/check-media-atom-purity.js`).
  * `control()` — the JSX/`@wordpress/components` half — lives in
@@ -173,17 +173,6 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
 		}
 		return undefined;
 	} );
-}
-
-/**
- * Playback behaviour is HTML element state (attributes/properties on
- * `<video>`), never a paintable CSS property. This atom emits no
- * custom-property declarations in either realm.
- *
- * @return {string[]} Always empty.
- */
-export function css() {
-	return [];
 }
 
 /**

@@ -138,33 +138,6 @@ export function validate( value ) {
 }
 
 /**
- * Custom-property declarations for this atom. Mirrors
- * `includes/media/atoms/media-padding.php`'s
- * `sgs_media_atom_media_padding_css()` exactly.
- *
- * @param {Object} props
- * @param {Object} props.attributes
- * @param {string} [props.prefix]
- * @param {string} [props.blockSlug]
- * @return {string[]} `--custom-property:value;` declarations, never bare rules.
- */
-export function css( { attributes, prefix = '', blockSlug = '' } ) {
-	const decls = [];
-	const key = attrKey( prefix, blockSlug );
-	const tiers = attributes[ key ] && 'object' === typeof attributes[ key ] ? attributes[ key ] : {};
-
-	[
-		[ tiers.desktop, '' ],
-		[ tiers.tablet, '-tablet' ],
-		[ tiers.mobile, '-mobile' ],
-	].forEach( ( pair ) => {
-		decls.push( ...sideDecls( pair[ 0 ], pair[ 1 ] ) );
-	} );
-
-	return decls;
-}
-
-/**
  * C3 emitter (the `surface` atom): `padding-*` per side once per device that sets its own, and `background-color`
  * (Background, all devices), on the surface. PHP twin: `sgs_media_atom_media_padding_emit()`.
  *

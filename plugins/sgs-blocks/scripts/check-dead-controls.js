@@ -1106,14 +1106,12 @@ const MEDIA_ELEMENT_ATOM_BASES = {
 		'Image', 'ImageId', 'ImageUrl', 'Video', 'VideoId', 'VideoUrl', 'Svg',
 		'SvgContent', 'Thumbnail', 'ThumbnailId',
 	],
-	'media-type': [ 'MediaType', 'VideoSource', 'VideoMimeType' ],
 	'video-behaviour': [
 		'VideoAutoplay', 'VideoLoop', 'VideoMuted', 'VideoControls',
 		'VideoPlaysInline', 'VideoLazyLoad', 'VideoCaptionsId', 'VideoCaptionsUrl',
 		'VideoCaptionsLabel', 'VideoCaptionsSrcLang',
 	],
 	meaning: [ 'ImageAlt', 'VideoAlt', 'ImageIsDecorative' ],
-	intrinsic: [ 'ImageWidth', 'ImageHeight' ],
 	'svg-presentation': [
 		'SvgAnimation', 'SvgAnimationSpeed', 'SvgOpacity', 'SvgPosition',
 		'SvgMinHeight', 'SvgTextShadow',

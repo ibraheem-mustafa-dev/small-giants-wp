@@ -40,15 +40,6 @@ export function emit( slot, attrs, uid, helper ) {
 }
 
 /**
- * The atom contract's custom-property declarations: none, this atom prints real properties through emit().
- *
- * @return {string[]} Always empty.
- */
-export function css() {
-	return [];
-}
-
-/**
  * @param {*} value Candidate Order.
  * @return {number} An integer from -20 to 20; 0 for anything else.
  */

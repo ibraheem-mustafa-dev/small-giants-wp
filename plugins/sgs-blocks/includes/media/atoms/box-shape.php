@@ -28,21 +28,6 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 2 ) . '/helpers-media-element.php';
 require_once dirname( __DIR__, 2 ) . '/helpers-tokens.php';
 
-if ( ! function_exists( 'sgs_media_atom_box_shape_clip_paths' ) ) {
-	/**
-	 * The shape -> clip-path map. Never `border-radius` — see module docblock.
-	 *
-	 * @return array<string,string>
-	 */
-	function sgs_media_atom_box_shape_clip_paths() {
-		return array(
-			'square'  => 'inset(0)',
-			'rounded' => 'inset(0 round 12px)',
-			'circle'  => 'circle(50%)',
-		);
-	}
-}
-
 if ( ! function_exists( 'sgs_media_atom_box_shape_normalise_ratio' ) ) {
 	/**
 	 * Normalise a ratio string in EITHER format ("16/10" or "16 / 10") to the

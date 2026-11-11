@@ -20,7 +20,7 @@
  * primitive one layer down (`sgs_background_paint_value()`, which already
  * does gradient-wins-over-colour + palette-token/raw-CSS-colour resolution)
  * and re-expresses the result, opacity clamp and blend-mode allowlist as
- * custom properties. `assets/css/media-atoms/overlay.css` applies them via
+ * custom properties. `assets/css/media-base.css` applies them via
  * `background-color`/`background-image`/`opacity`/`mix-blend-mode` on a
  * `.sgs-media-el::after` layer, which is how every existing overlay
  * (container/hero) paints today.
@@ -52,7 +52,7 @@
  * heavier scrim on the small screen", an opacity change, not a different hue
  * — colour/gradient/blend-mode stay untiered. Nesting mobile -> tablet ->
  * desktop -> the CSS initial (1) mirrors `object-fit.js`'s reasoning
- * (`assets/css/media-atoms/object-fit.css`'s own comment): an unset mobile
+ * (`assets/css/media-base.css`'s own comment): an unset mobile
  * value must fall through to tablet, not jump straight past it to desktop.
  *
  * `css()` mirrors `includes/media/atoms/overlay.php`'s
@@ -242,62 +242,6 @@ export function validate( value, kind = 'blendMode' ) {
 		return resolveColour( value );
 	}
 	return value && 'normal' !== value && BLEND_MODES.includes( value ) ? value : 'normal';
-}
-
-/**
- * Custom-property declarations for this atom. Mirrors
- * `includes/media/atoms/overlay.php`'s `sgs_media_atom_overlay_css()`
- * exactly.
- *
- * @param {Object} props
- * @param {Object} props.attributes
- * @param {string} [props.prefix]
- * @param {string} [props.blockSlug]
- * @return {string[]} `--custom-property:value;` declarations, never bare rules.
- */
-export function css( { attributes, prefix = '', blockSlug = '' } ) {
-	const decls = [];
-	const keys = attrKeys( prefix, blockSlug );
-
-	const paint = resolvePaint( attributes[ keys.colour ], attributes[ keys.gradient ] );
-	if ( '' === paint.property ) {
-		return decls;
-	}
-
-	if ( 'background-image' === paint.property ) {
-		decls.push( `--sgs-media-overlay-gradient:${ paint.value }` );
-	} else {
-		decls.push( `--sgs-media-overlay-colour:${ paint.value }` );
-	}
-
-	const hoverPaint = resolvePaint( attributes[ keys.colourHover ], attributes[ keys.gradientHover ] );
-	if ( 'background-image' === hoverPaint.property ) {
-		decls.push( `--sgs-media-overlay-gradient-hover:${ hoverPaint.value }` );
-	} else if ( 'background-color' === hoverPaint.property ) {
-		decls.push( `--sgs-media-overlay-colour-hover:${ hoverPaint.value }` );
-	}
-
-	const opacity = formatOpacityDecl( attributes[ keys.opacity ] );
-	if ( opacity ) {
-		decls.push( `--sgs-media-overlay-opacity:${ opacity.fraction }` );
-	}
-
-	const opacityTablet = formatOpacityDecl( attributes[ keys.opacityTablet ] );
-	if ( opacityTablet ) {
-		decls.push( `--sgs-media-overlay-opacity-tablet:${ opacityTablet.fraction }` );
-	}
-
-	const opacityMobile = formatOpacityDecl( attributes[ keys.opacityMobile ] );
-	if ( opacityMobile ) {
-		decls.push( `--sgs-media-overlay-opacity-mobile:${ opacityMobile.fraction }` );
-	}
-
-	const blendMode = attributes[ keys.blendMode ];
-	if ( blendMode && 'normal' !== blendMode && BLEND_MODES.includes( blendMode ) ) {
-		decls.push( `--sgs-media-overlay-blend:${ blendMode }` );
-	}
-
-	return decls;
 }
 
 /**

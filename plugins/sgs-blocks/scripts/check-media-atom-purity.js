@@ -5,7 +5,7 @@
  * WHY THIS EXISTS
  * ---------------
  * The atom contract originally put `control()` (JSX, `@wordpress/*` imports) in
- * the same module as `css()` / `validate()` / `disclosure()` (pure functions).
+ * the same module as `emit()` / `validate()` / `disclosure()` (pure functions).
  * That made the whole module unimportable outside webpack, for two independent
  * reasons — and BOTH had to be found before the cause was clear:
  *
@@ -20,7 +20,7 @@
  *
  * ⛔ SO THE SPLIT IS A CONTRACT, NOT A TIDY-UP:
  *
- *     src/components/media/atoms/<id>.js          pure — css/validate/disclosure
+ *     src/components/media/atoms/<id>.js          pure — emit/validate/disclosure
  *     src/components/media/atoms/<id>.control.js  the JSX control()
  *
  * The pure half is what the parity gate imports, what the renderer's logic
@@ -200,7 +200,7 @@ function problemsFor( name, raw ) {
 	//    'shown', and 'hidden' beside both 'disabled' and 'omitted'. Two names
 	//    for one concept is the exact divergence this whole layer exists to
 	//    remove, reintroduced inside it - and the parity gate could never catch
-	//    it, because it only compares css().
+	//    it, because it only compares emit().
 	//
 	//    'hidden' is worse than a synonym. The contract deliberately separates
 	//    OMITTED (structurally cannot apply - the control genuinely does not
@@ -221,7 +221,7 @@ function problemsFor( name, raw ) {
 	} );
 
 	// 4. It must still export the pure trio, or it is not an atom.
-	[ 'css', 'validate', 'disclosure' ].forEach( ( fn ) => {
+	[ 'emit', 'validate', 'disclosure' ].forEach( ( fn ) => {
 		if ( ! new RegExp( `export\\s+function\\s+${ fn }\\b` ).test( src ) ) {
 			out.push( `does not export ${ fn }() — the atom contract requires it` );
 		}
@@ -440,7 +440,7 @@ function selfTest() {
 
 	const pure =
 		"import { mediaStoredAttrName } from '../../MediaElementControls.js';\n" +
-		'export function css() { return []; }\n' +
+		'export function emit() { return []; }\n' +
 		'export function validate( v ) { return v; }\n' +
 		'export function disclosure() { return { state: 1 }; }\n';
 	ck( 'a pure logic module passes', problemsFor( 'x.js', pure ).length === 0 );
@@ -479,7 +479,7 @@ function selfTest() {
 		problemsFor( 'x.js', withControl ).some( ( p ) => p.includes( 'control()' ) )
 	);
 
-	const missing = 'export function css() { return []; }\n';
+	const missing = 'export function emit() { return []; }\n';
 	ck(
 		'a module missing validate()/disclosure() is REJECTED',
 		problemsFor( 'x.js', missing ).length === 2

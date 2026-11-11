@@ -128,17 +128,6 @@ export function validate( value ) {
 }
 
 /**
- * No CSS. Alt text and the decorative flag are HTML attributes
- * (`alt=""`/`aria-hidden="true"`/`role="presentation"`), never stylesheet
- * values.
- *
- * @return {Array} Always empty.
- */
-export function css() {
-	return [];
-}
-
-/**
  * C3 emitter: this atom prints no CSS of its own (see `includes/media/emit-none.php`).
  *
  * @return {string} Always ''.

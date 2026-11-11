@@ -2048,7 +2048,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Hover-spill-scale capability (2026-09-10, Bean-directed) — universal,
 			// composite-agnostic. Two-part shared mechanism mirroring the composite-
 			// mirror rule (Spec 02 "Composite wrapper rule"): the wrapper owns the OUTER stacking/overflow
-			// promotion, and the media-atom markers (`assets/css/media-element.css`)
+			// promotion, and the media-atom markers (`assets/css/media-base.css`)
 			// already own the transform target, so this capability needs zero
 			// block-specific selector knowledge.
 			//
@@ -3383,7 +3383,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			//
 			// A `lottie` layer's holder replaces $bg_img_html above and carries its own pause control.
 			// ----------------------------------------------------------------
-			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_*/wp_kses(), $inner_html is caller-rendered blocks, $inner_open/$inner_close built with esc_attr(), $bg_img_html built via sgs_responsive_image()/wp_get_attachment_image() (core-escaped).
+			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_*/wp_kses(), $inner_html is caller-rendered blocks, $inner_open/$inner_close built with esc_attr(), $bg_img_html built by the media renderer (core-escaped).
 			$open_attrs = '' !== $opt_extra_attr_html ? $wrapper_attributes . ' ' . $opt_extra_attr_html : $wrapper_attributes;
 			$element    = sprintf(
 				'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s%8$s%9$s%10$s</%1$s>',

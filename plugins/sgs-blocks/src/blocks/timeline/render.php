@@ -985,7 +985,7 @@ $sgs_tl_loop_i     = 0;
 					// tree flat and every existing rule intact.
 					//
 					// The helper's markup is already escaped: images via
-					// sgs_responsive_image(), SVG through wp_kses( …, sgs_allowed_svg_tags() ).
+					// the media renderer, SVG through wp_kses( …, sgs_allowed_svg_tags() ).
 					if ( '' !== $entry_media_html ) :
 						?>
 						<div class="sgs-timeline__media-slot"<?php echo $entry_media['decorative'] ? ' aria-hidden="true"' : ''; ?>>

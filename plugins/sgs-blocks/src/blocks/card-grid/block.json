@@ -185,7 +185,7 @@
           "label": "Card image",
           "order": 5,
           "clusters": [],
-          "_note": "Split from 'card-media' 2026-08-15 (element-manifest drift fix) — This element now names the actual `<img>`/`<video>` rendered by sgs_render_media(), not its wrapper (see 'image-wrap' below for that). Governed by the adopted `image` slot (imageFit, imageRadius, imageShape, imageLoading and each card's own focal point) plus imageRatio, not the Text/Fill/Layout style clusters. (overlayStyle removed 2026-08-06 — abandoned attribute, D338-cleared.)"
+          "_note": "Split from 'card-media' 2026-08-15 (element-manifest drift fix) — This element now names the actual `<img>`/`<video>` rendered by the media renderer, not its wrapper (see 'image-wrap' below for that). Governed by the adopted `image` slot (imageFit, imageRadius, imageShape, imageLoading and each card's own focal point) plus imageRatio, not the Text/Fill/Layout style clusters. (overlayStyle removed 2026-08-06 — abandoned attribute, D338-cleared.)"
         },
         "image-wrap": {
           "absentIn": [ "products" ],
