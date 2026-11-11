@@ -27,6 +27,8 @@ from deploy_common import REPO_ROOT, log
 HISTORY_ENV = "SGS_DEPLOY_TIMINGS_FILE"
 OTHER_LABEL = "(other, unaccounted)"
 STAGES: dict[str, float] = {}
+# Extra facts a stage reports for the history line (upload_mode, upload_bytes); added after the documented keys.
+NOTES: dict[str, Any] = {}
 
 
 def history_path() -> Path:
@@ -51,6 +53,11 @@ def stage(name: str, *, recorder: dict[str, float] | None = None) -> Iterator[No
         yield
     finally:
         record(name, time.monotonic() - began, recorder=recorder)
+
+
+def note(key: str, value: Any) -> None:
+    """Record one extra fact for this run's history line (the last value for a key wins)."""
+    NOTES[key] = value
 
 
 def timed(name: str, fn: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
@@ -132,4 +139,5 @@ def finish(*, target: str, theme_only: bool, blocks_only: bool, total_s: float, 
     log(format_summary(STAGES, total_s))
     entry = build_entry(commit=short_commit(), target=target, scope=scope_label(theme_only, blocks_only),
                         total_s=total_s, stages=STAGES, dry_run=dry_run)
+    entry.update(NOTES)
     append_history(entry, path)
