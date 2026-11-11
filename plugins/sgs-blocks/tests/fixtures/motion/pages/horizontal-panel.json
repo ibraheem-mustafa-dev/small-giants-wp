@@ -30,36 +30,31 @@
 					"date": "1990",
 					"title": "Milestone 1",
 					"description": "<p>Panel 1 of five.</p>",
-					"icon": "",
-					"image": 0
+					"icon": ""
 				},
 				{
 					"date": "1998",
 					"title": "Milestone 2",
 					"description": "<p>Panel 2 of five.</p>",
-					"icon": "",
-					"image": 0
+					"icon": ""
 				},
 				{
 					"date": "2006",
 					"title": "Milestone 3",
 					"description": "<p>Panel 3 of five.</p>",
-					"icon": "",
-					"image": 0
+					"icon": ""
 				},
 				{
 					"date": "2014",
 					"title": "Milestone 4",
 					"description": "<p>Panel 4 of five.</p>",
-					"icon": "",
-					"image": 0
+					"icon": ""
 				},
 				{
 					"date": "2022",
 					"title": "Milestone 5",
 					"description": "<p>Panel 5 of five.</p>",
-					"icon": "",
-					"image": 0
+					"icon": ""
 				}
 			],
 			"sgsMotion": {
