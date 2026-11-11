@@ -15,7 +15,7 @@ Plan date 2026-11-03. Found by the Eye Care stream (fix register R3-23) while pr
 | eye-care-test /about/ | 69.8 KB | 185.5 KB |
 | canary home | 80.3 KB | 194.2 KB |
 
-Every page is over on both. No gate measures either budget (the only budget gate is `check-motion-bundle-budget.py`).
+Every page is over on both. The live page-weight gate (section "Gate" below) now measures both budgets after each deploy that asks for it.
 
 ## Re-measured 2026-11-10: still over, and slow to paint on phones
 
