@@ -63,12 +63,8 @@
 	padding: 0;
 	background: none;
 	border-radius: 0;
-	fill: var(--_notice-border);
-	color: var(--_notice-border);
-}
-
-.wc-block-components-notice-banner.is-warning > svg {
-	fill: var(--_notice-border);
+	fill: var(--wp--preset--color--text, currentColor);
+	color: var(--wp--preset--color--text, currentColor);
 }
 
 .wc-block-components-notice-banner .wc-block-components-notice-banner__content {
@@ -88,6 +84,11 @@
 	float: none;
 	flex-shrink: 0;
 	margin: 0;
+}
+
+/* wc-blocks.css sets the colour of a notice's .wc-forward link with !important, so the text colour needs it here too. */
+.wc-block-components-notice-banner > .wc-block-components-notice-banner__content .wc-forward {
+	color: var(--wp--preset--color--text, currentColor) !important;
 }
 
 /* The action link reads as a text link like the site's other text links: the text colour, underlined, in the
