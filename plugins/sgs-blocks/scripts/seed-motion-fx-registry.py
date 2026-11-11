@@ -324,6 +324,12 @@ def main() -> int:
         )
         return 0
 
+    from framework_db import shared_schema_mismatch  # noqa: E402
+    refusal = shared_schema_mismatch(Path(__file__).resolve().parents[3])
+    if refusal:
+        print(f"[seed-motion-fx-registry] REFUSED: {refusal}", file=sys.stderr)
+        return 1
+
     con = sqlite3.connect(str(DB_PATH))
     cur = con.cursor()
     changed = 0
