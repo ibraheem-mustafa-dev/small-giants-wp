@@ -33,7 +33,6 @@
 		"sgs": {
 			"motion": true,
 			"collection": true,
-			"imageControls": false,
 			"elements": {
 				"wrapper": {
 					"label": "Wrapper",

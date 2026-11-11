@@ -918,19 +918,17 @@ FX_EFFECTS: list[dict] = [
         # 'image' — this effect's target is the block's own rendered <img>,
         # not a section/text/svg surface. See generate-fx-qualifying-blocks.py
         # `_block_provisions()` for how a block DECLARES this requirement
-        # (supports.sgs.imageControls === true, the project-mandated flag on
-        # every image-rendering block — never a hardcoded block-name list).
+        # (a rendered raster image or an adopted media slot with an image kind
+        # — never a hardcoded block-name list).
         "requires": "image",
         # creates_panel=0, DELIBERATE. Same containment reasoning as
         # `cursor-field`'s own row (D459/FR-38-25's "13 panels where none
-        # makes sense" containment failure): `imageControls` is declared on
-        # 15 of 83 blocks (7 with it `true` — see generate-fx-qualifying-
-        # blocks.py's own comment for the measured count), and several of
-        # those are decorative/logo-shaped blocks where a shader-treatment
+        # makes sense" containment failure): many blocks that print an image
+        # are decorative/logo-shaped blocks where a shader-treatment
         # panel is not a sensible default surface. Offering the effect
         # (in_picker=1) wherever a qualifying block ALREADY has a fx panel
         # for another reason, without unconditionally creating a NEW panel
-        # on every imageControls block, is the same measured containment
+        # on every image block, is the same measured containment
         # choice cursor-field made — not re-derived from scratch here.
         "creates_panel": 0,
         "media_kinds": "image",

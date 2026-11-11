@@ -10,9 +10,7 @@ does, and reports the two side by side.
 Comments are stripped (block + line) before counting, because a docblock naming a
 component is not a mount.
 
-⛔ STATE THE PREDICATE beside every figure. Three different true numbers exist for
-`imageControls` alone — 15 blocks DECLARE the key, 7 set it true, 8 set it false —
-and quoting one under another's name is how Spec 35 accumulated six stale figures.
+⛔ STATE THE PREDICATE beside every figure: quoting one count under another's name is how Spec 35 accumulated six stale figures.
 Not in `prebuild`, and must not be added: this is a census with no `--check` mode,
 and a non-gating script inside a gate chain is enforcement theatre.
 """
@@ -119,8 +117,6 @@ def main():
     el_states = 0
     supports_color = 0
     color_flag_true = 0
-    imagectl = 0
-    imagectl_true = 0
     boxfam = 0
     print('BLOCK.JSON DERIVED   (files: %d)' % len(files))
     for f in files:
@@ -139,13 +135,6 @@ def main():
                         st[k] += 1
                     if len(s) > 1:
                         multi_state += 1
-        # STATE THE PREDICATE. Three different true numbers exist here and they
-        # get confused: 15 blocks DECLARE the key, 7 set it true, 8 set it false.
-        # Spec 35 §7.5's "15 blocks declaring" is the DECLARE count and is correct.
-        if 'imageControls' in sgs:
-            imagectl += 1
-            if sgs['imageControls'] is True:
-                imagectl_true += 1
         if sgs.get('boxFamilies'):
             boxfam += 1
         col = sup.get('color')
@@ -162,8 +151,6 @@ def main():
           % (el_states, dict(st), multi_state))
     print('  declares supports.color         : %d   (>=1 sub-flag true: %d)'
           % (supports_color, color_flag_true))
-    print('  declares supports.sgs.imageControls : %d  (set true: %d)'
-          % (imagectl, imagectl_true))
     print('  declares supports.sgs.boxFamilies   : %d' % boxfam)
     tot_enum = sum(enums.values())
     print('  declared enums                  : %d' % tot_enum)

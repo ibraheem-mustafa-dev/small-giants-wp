@@ -126,9 +126,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( $block instanceof \WP_Block && isset( $block->block_type->supports ) && is_array( $block->block_type->supports ) ) {
 				$supports = $block->block_type->supports;
 			} elseif ( $block instanceof \WP_Block && ! empty( $block->name ) ) {
-				// Fallback lookup — mirrors the established pattern in
-				// includes/image-controls.php for reading a block's DECLARED
-				// supports from its registered block type.
+				// Fallback lookup: read the block's DECLARED supports from its
+				// registered block type.
 				$registered = \WP_Block_Type_Registry::get_instance()->get_registered( $block->name );
 				if ( null !== $registered && is_array( $registered->supports ?? null ) ) {
 					$supports = $registered->supports;

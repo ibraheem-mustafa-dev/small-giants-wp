@@ -60,7 +60,6 @@
 			},
 			"iconPicker": true,
 			"headerEssential": true,
-			"imageControls": false,
 			"scrim": {
 				"open": "[open]"
 			},

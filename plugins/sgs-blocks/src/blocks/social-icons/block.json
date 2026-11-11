@@ -47,7 +47,6 @@
 				"bindAttr": "linkUrl",
 				"_note": "Cloning lifts each draft link into an allowedBlocks child bound through this source and attribute when the brand registry knows its platform."
 			},
-			"imageControls": false,
 			"boxFamilies": {
 				"padding": [
 					"padding"

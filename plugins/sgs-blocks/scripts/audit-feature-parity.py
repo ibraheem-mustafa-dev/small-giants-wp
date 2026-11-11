@@ -70,7 +70,7 @@ def capabilities_from_db(conn, slug: str, source: str) -> set[str]:
         caps.add(norm(a["attr_name"]))
     for s in q(conn, "SELECT support_name, support_value FROM block_supports WHERE block_slug=? AND source=?", (slug, source)):
         caps.add(norm(s["support_name"]))
-        # unpack the custom `sgs` support object flags (imageControls, etc.)
+        # unpack the custom `sgs` support object flags (blockLink, etc.)
         if s["support_name"] == "sgs" and s.get("support_value"):
             try:
                 for k in json.loads(s["support_value"]).keys():

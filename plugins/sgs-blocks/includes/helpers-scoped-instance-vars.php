@@ -4,7 +4,7 @@
  * per-instance CSS custom-property VALUES to a block's root element without
  * writing a `style="…"` attribute (Spec 32 no-inline contract, FR-32-11).
  *
- * Used by child-sizing.php and image-controls.php, which attach `--sgs-*`
+ * Used by child-sizing.php, which attaches `--sgs-*`
  * custom properties through a scoped rule, never the root tag's `style`
  * attribute. That path is the ONLY
  * sanctioned no-inline mechanism already proven live by every migrated

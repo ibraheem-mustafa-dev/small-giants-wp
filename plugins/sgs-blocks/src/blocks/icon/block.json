@@ -47,7 +47,6 @@
 				"childSizing"
 			],
 			"iconPicker": true,
-			"imageControls": false,
 			"boxFamilies": {
 				"padding": [
 					"padding"

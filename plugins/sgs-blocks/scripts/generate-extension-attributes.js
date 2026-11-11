@@ -4,7 +4,7 @@
  * Single source of truth for the cross-block `sgs*` editor-extension attributes.
  *
  * The SGS editor extensions (animation, responsive-visibility, conditional-
- * visibility, hover-effects, parallax, custom-css, image-controls, block-link,
+ * visibility, hover-effects, parallax, custom-css, block-link,
  * click-effect) add `sgs*` attributes to blocks CLIENT-SIDE via
  * `addFilter('blocks.registerBlockType', ...)`. Blocks that preview through
  * `ServerSideRender` send those attributes to the WP-core block-renderer REST

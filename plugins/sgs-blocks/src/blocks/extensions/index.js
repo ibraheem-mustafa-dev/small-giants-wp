@@ -55,7 +55,6 @@ import './time-text';
 import './custom-css';
 import './focus-rests';
 import './block-defaults';
-import './image-controls';
 import './responsive-visibility';
 import './media-elements';
 import './cpt-default-panel';

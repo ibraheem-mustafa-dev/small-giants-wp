@@ -69,9 +69,6 @@ final class SGS_Blocks {
 		add_action( 'init', array( $this, 'register_inline_formats_style' ) );
 		add_filter( 'render_block', 'sgs_inline_formats_maybe_enqueue', 10, 2 );
 
-		// Image Controls extension — objectPosition / maxWidth / per-breakpoint height.
-		require_once SGS_BLOCKS_PATH . 'includes/image-controls.php';
-
 		// A cover-cropped image drawn wider than its box drops core's sizes="auto" (media/cover-crop.php).
 		require_once SGS_BLOCKS_PATH . 'includes/media/cover-crop.php';
 		add_filter( 'wp_content_img_tag', 'sgs_media_drop_auto_sizes', 20 );

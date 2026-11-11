@@ -10,7 +10,6 @@ import { backgroundPreview } from '../../src/utils/background-preview';
 import { containerWrapperPreview } from '../../src/utils/container-wrapper-preview';
 import { buttonPreviewStyle, labelCollapsedAt } from '../../src/blocks/button/preview-style';
 import { multiButtonFlexPreview } from '../../src/blocks/multi-button/preview-style';
-import { imageControlsCanvasVars } from '../../src/blocks/extensions/image-controls';
 
 describe( 'tierBoxShorthand', () => {
 	const padding = { desktop: { top: '10px', left: '20px' }, tablet: { top: '4px' } };
@@ -100,14 +99,5 @@ describe( 'buttonPreviewStyle', () => {
 describe( 'multiButtonFlexPreview', () => {
 	it( 'uses render.php mobile defaults when the mobile tier is unset', () => {
 		expect( multiButtonFlexPreview( { flexDirection: { desktop: 'row' } }, 'mobile' ) ).toMatchObject( { flexDirection: 'column', gap: '8px', alignItems: 'stretch' } );
-	} );
-} );
-
-describe( 'imageControlsCanvasVars', () => {
-	it( 'emits the same custom properties includes/image-controls.php injects', () => {
-		expect( imageControlsCanvasVars( { sgsObjectFit: 'contain', sgsHeight: { tablet: '300vh', mobile: '10;}body{' }, sgsObjectPosition: { x: 0.5, y: 0.5 } } ) ).toEqual( {
-			'--sgs-object-fit': 'contain',
-			'--sgs-height-tablet': '300vh',
-		} );
 	} );
 } );

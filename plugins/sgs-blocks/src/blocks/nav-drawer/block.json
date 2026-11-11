@@ -253,7 +253,7 @@
 						"css:box-shadow": "chromeLogoBoxShadow",
 						"css:box-shadow-color": "chromeLogoBoxShadowColour"
 					},
-					"_note": "The optional logo in the chrome row: a `<picture>` art-directed per device from chromeLogoId/chromeLogoUrl and their Tablet/Mobile siblings (the sgs/responsive-logo pattern). It opts out of the generic imageControls path on purpose, per Spec 36 FR-36-6: a logo is a different image per device, not one image with fit and focal controls. chromeLogoShow hides it per device; chromeLogoLink links it home."
+					"_note": "The optional logo in the chrome row: a `<picture>` art-directed per device from chromeLogoId/chromeLogoUrl and their Tablet/Mobile siblings (the sgs/responsive-logo pattern). It stays outside the generic image-controls path on purpose, per Spec 36 FR-36-6: a logo is a different image per device, not one image with fit and focal controls. chromeLogoShow hides it per device; chromeLogoLink links it home."
 				},
 				"chromeSlot": {
 					"selector": ".sgs-nav-drawer__chrome-slot",

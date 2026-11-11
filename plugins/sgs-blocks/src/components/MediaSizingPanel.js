@@ -22,8 +22,7 @@
  * WHY A PLAIN ATTRIBUTE, NOT A `supports.sgs` FLAG (open question 2, C19 design)
  * ---------------------------------------------------------------------------
  * `supports.sgs.*` flags in this codebase gate CAPABILITIES — whether a panel
- * exists at all for a given block (`showLayout`, `enableColumnShapePicker`,
- * `imageControls`, …). `mediaSizing` is not a capability switch: it is the
+ * exists at all for a given block (`showLayout`, `enableColumnShapePicker`, …). `mediaSizing` is not a capability switch: it is the
  * CLIENT'S CHOICE of box-shape mode, stored per instance exactly like
  * `objectFit` or `alignment` already are on this same block. It has to be a
  * real attribute because it round-trips through the editor and the cloning

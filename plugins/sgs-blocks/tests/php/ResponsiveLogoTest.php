@@ -283,18 +283,6 @@ class ResponsiveLogoTest extends TestCase {
 		$this->assertSame( array(), preg_grep( '/^(svgAnimation|animationStyle|animationSubstrate|lottie)/', array_keys( $data['attributes'] ) ) );
 	}
 
-	/**
-	 * Supports.sgs.imageControls stays undeclared: the logo has no fixed-size crop box for
-	 * object-fit/position to act on (Spec 35 capability routing).
-	 */
-	public function test_block_json_omits_image_controls_support(): void {
-		$data = json_decode(
-			file_get_contents( SGS_BLOCKS_PLUGIN_DIR . '/src/blocks/responsive-logo/block.json' ), // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-			associative: true
-		);
-		$this->assertArrayNotHasKey( 'imageControls', $data['supports']['sgs'] ?? array() );
-	}
-
 	// The render tests (switch modes, dark variant, alt, width, draw modifiers) run the real render.php through the QA
 	// harness in ResponsiveLogoMediaTest.php.
 

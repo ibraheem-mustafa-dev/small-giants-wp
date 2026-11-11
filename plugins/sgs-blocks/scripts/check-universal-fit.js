@@ -169,8 +169,6 @@ function readBlock( slug, rosterEntry ) {
 		// — ANY truthy `supports.spacing` (the object form used across this
 		// plugin) skips the extension; only a missing/false value lets it in.
 		hasNativeSpacingSupport: Boolean( supports.spacing ),
-		// image-controls.js: `!!blockNameOrSettings?.supports?.sgs?.imageControls`
-		imageControlsEnabled: Boolean( sgsSupports.imageControls ),
 		// hide-extensions.js: `supports?.sgs?.hideExtensions` array of slugs
 		// (DENYLIST — attached unless listed).
 		hideExtensions: Array.isArray( sgsSupports.hideExtensions )
@@ -272,21 +270,6 @@ const EXTENSIONS = [
 		// Legitimately universal (any block can meaningfully be hidden per
 		// device) — excluded from the "no-opt-out gap" finding.
 		isUtility: true,
-	},
-	{
-		id: 'imageControls',
-		file: 'image-controls.js',
-		panel: 'Image Controls',
-		attrs: [
-			'sgsObjectPosition', 'sgsMaxWidth', 'sgsHeight',
-		],
-		hideSlug: null, // opt-IN allowlist (supports.sgs.imageControls) — no opt-out needed.
-		appliesTo: ( b ) => b.imageControlsEnabled,
-		// Marks this extension exempt from the "no-opt-out gap" finding below:
-		// it is opt-IN (a block must declare supports.sgs.imageControls to see
-		// the panel at all), so there is nothing "bolted onto everything
-		// regardless" for it to opt back out of.
-		optIn: true,
 	},
 	{
 		id: 'blockDefaults',
@@ -772,7 +755,6 @@ function makeFakeBlock( overrides ) {
 			name: 'sgs/self-test',
 			supportsClassName: true,
 			hasNativeSpacingSupport: false,
-			imageControlsEnabled: false,
 			hideExtensions: [],
 			enabledExtensions: [],
 			ownCorpus: '',

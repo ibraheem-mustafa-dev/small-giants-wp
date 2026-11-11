@@ -116,8 +116,7 @@ require_once SGS_BLOCKS_PATH . 'includes/media/class-sgs-media-formats.php';
 require_once SGS_BLOCKS_PATH . 'includes/conditional-visibility.php';
 
 // Shared helper — scoped-<style> per-instance CSS var injection (Spec 32
-// no-inline contract). Required before block-link.php / image-controls.php,
-// which both depend on it.
+// no-inline contract). Required before block-link.php, which depends on it.
 require_once SGS_BLOCKS_PATH . 'includes/helpers-scoped-instance-vars.php';
 
 // Cross-block wrapper extensions (block link, child sizing in flex rows).

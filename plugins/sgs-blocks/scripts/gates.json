@@ -108,15 +108,6 @@
     "order": 12
   },
   {
-    "id": "surveys-check-image-controls-support",
-    "cmd": "python scripts/surveys/check-image-controls-support.py --check",
-    "tier": "fast",
-    "added_D": "D585",
-    "added_commit": "ceec53b3",
-    "budget_ms": 104,
-    "order": 13
-  },
-  {
     "id": "surveys-survey-control-parity",
     "cmd": "python scripts/surveys/survey-control-parity.py --check",
     "tier": "fast",

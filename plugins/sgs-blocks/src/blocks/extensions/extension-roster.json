@@ -11,7 +11,7 @@
 		"fields": "type, default (omitted = no default), enum, tier_shape, is_responsive, role (an existing roles.role_name), css_property/css_element/css_state/css_tier (omitted = NULL: no single CSS property to route, or a discovered enum), requires (companion attributes a calibration marker must also carry before the setting paints anything)",
 		"canvas_source": "An extension entry may set canvasSource: \"rest\" when its editor canvas is drawn from a server route its editor component fetches (no editor.BlockListBlock read). scripts/wiring-fingerprint/wf_extensions.py then counts a sgs/v1 route named in the entry's files as the canvas read of every attribute of the entry.",
 		"css_slots": "db-consistency check_routing allows one attribute per (css_property, css_element, css_state, css_tier) on a block, so a CSS slot is declared once. Controls that paint a slot a block can already own (width) keep css_property NULL.",
-		"css_element": "wrapper = the block root; image = the img/video inside it (assets/css/extensions.css .sgs-has-image-controls rules)"
+		"css_element": "wrapper = the block root; image = the img/video inside it"
 	},
 	"extensions": [
 		{
@@ -118,18 +118,6 @@
 				"sgsHideOnTablet": { "type": "boolean", "default": false, "role": "boolean-visibility", "css_property": "display", "css_element": "wrapper", "css_tier": "tablet" },
 				"sgsHideOnDesktop": { "type": "boolean", "default": false, "role": "boolean-visibility", "css_property": "display", "css_element": "wrapper", "css_tier": "desktop" },
 				"sgsCollapseVisibility": { "type": "string", "default": "", "role": "behaviour" }
-			}
-		},
-		{
-			"id": "imageControls",
-			"file": "image-controls.js",
-			"rule": { "mode": "flag", "flag": "imageControls" },
-			"attributes": {
-				"sgsObjectPosition": { "type": "object", "default": {}, "role": "layout", "css_property": "object-position", "css_element": "image" },
-				"sgsObjectFit": { "type": "string", "default": "", "enum": [ "", "cover", "contain", "fill", "none", "scale-down" ], "role": "layout", "css_property": "object-fit", "css_element": "image" },
-				"sgsMaxWidth": { "type": "string", "default": "", "role": "layout", "css_property": "max-width", "css_element": "image" },
-				"sgsHeight": { "type": "object", "default": {}, "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "height", "css_element": "image" },
-				"sgsColourTreatment": { "type": "string", "default": "", "enum": [ "", "white" ], "role": "visual", "css_property": "filter", "css_element": "image" }
 			}
 		},
 		{

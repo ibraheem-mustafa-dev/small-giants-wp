@@ -14,7 +14,7 @@ Surface flags (a block is "in scope" for an audit dimension if the flag is true)
   styling   — declares any of color/spacing/__experimentalBorder/typography/shadow support
   colour    — declares the `color` support (component colour pickers are the enableAlpha target)
   link      — has a url/link/href attribute (LinkControl migration target)
-  media     — declares sgs.imageControls, OR has an image/media/video attribute (media-controls target)
+  media     — has an image/media/video attribute (media-controls target)
   animation — declares a parallax/animation support or attribute (reduced-motion-gate target)
 
 `qualifies` (per block, ADDITIVE — does not touch `surfaces`):

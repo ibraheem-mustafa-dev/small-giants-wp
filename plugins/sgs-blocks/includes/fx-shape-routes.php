@@ -350,7 +350,7 @@ function sgs_expand_fx_shape_pair( string $block_content ): string {
 	 * block's own box — see this file's docblock's "NOT SHARED" note for why
 	 * the fix is duplicated rather than imported. `sgs_scope_class_for_root()`
 	 * reuses a uid class another injector already minted on this root this
-	 * render (hover-effects / parallax / image-controls) or mints a fresh
+	 * render (hover-effects / parallax) or mints a fresh
 	 * one, so the anchor name is unique per block instance.
 	 */
 	$root_tag_html = sgs_extract_root_opening_tag( $rest );

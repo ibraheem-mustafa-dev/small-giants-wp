@@ -99,7 +99,7 @@ _RE_BLOCK_SLUG = re.compile(r"`(sgs/[a-z][a-z0-9-]*)`")
 #
 # The canonical form is ONE syntax, three resolvers dispatched on extension:
 #     `path/to/file.php::function_name`          -> name must grep in that file
-#     `path/to/block.json::supports.sgs.imageControls` -> dot-path must resolve
+#     `path/to/block.json::supports.sgs.boxFamilies` -> dot-path must resolve
 #     `path/to/style.css::.sgs-hero__wrapper`    -> selector string must appear
 #
 # A wrong symbol citation is VISIBLY wrong (the name disagrees with the code

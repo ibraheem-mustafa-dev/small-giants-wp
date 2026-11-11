@@ -3,7 +3,7 @@
  * Register the SGS editor-extension `sgs*` attributes server-side.
  *
  * The SGS editor extensions (animation, responsive-visibility, conditional-
- * visibility, hover-effects, parallax, custom-css, image-controls, block-link,
+ * visibility, hover-effects, parallax, custom-css, block-link,
  * click-effect) add `sgs*` attributes to blocks CLIENT-SIDE via a
  * `blocks.registerBlockType` JS filter. Blocks that preview through
  * ServerSideRender send those attributes to the WP-core block-renderer REST
