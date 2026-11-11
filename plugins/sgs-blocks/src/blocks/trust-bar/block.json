@@ -1196,6 +1196,8 @@
 		"badgeBorderStyle": {"type":"string","_generated":"media-atoms"},
 		"badgeBorderColour": {"type":"string","_generated":"media-atoms"},
 		"badgeBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"badgeBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"badgeBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
 		"badgeColour": {"type":"object","_generated":"media-atoms"},
 		"badgeGreyscale": {"type":"number","_generated":"media-atoms"},
 		"backgroundSource": {"type":"object","_generated":"media-atoms"},

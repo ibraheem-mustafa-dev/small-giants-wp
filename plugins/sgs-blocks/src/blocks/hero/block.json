@@ -929,6 +929,7 @@
 		"splitBorderStyle": {"type":"string","_generated":"media-atoms"},
 		"splitBorderColour": {"type":"string","_generated":"media-atoms"},
 		"splitBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"splitBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
 		"splitColour": {"type":"object","_generated":"media-atoms"},
 		"splitGreyscale": {"type":"number","_generated":"media-atoms"},
 		"splitAlignment": {"type":"object","_generated":"media-atoms"},

@@ -3872,6 +3872,8 @@
 		"mainBorderStyle": {"type":"string","_generated":"media-atoms"},
 		"mainBorderColour": {"type":"string","_generated":"media-atoms"},
 		"mainBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"mainBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"mainBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
 		"mainBoxShadow": {"type":"string","_generated":"media-atoms"},
 		"mainBoxShadowColour": {"type":"string","_generated":"media-atoms"},
 		"mainBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
@@ -3884,6 +3886,8 @@
 		"thumbBorderStyle": {"type":"string","_generated":"media-atoms"},
 		"thumbBorderColour": {"type":"string","_generated":"media-atoms"},
 		"thumbBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"thumbBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"thumbBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
 		"previewSource": {"type":"object","_generated":"media-atoms"},
 		"previewLoading": {"type":"string","_generated":"media-atoms"},
 		"previewFit": {"type":"object","_generated":"media-atoms"},
@@ -3891,7 +3895,9 @@
 		"previewRadius": {"type":"object","_generated":"media-atoms"},
 		"previewBorderWidth": {"type":"object","_generated":"media-atoms"},
 		"previewBorderStyle": {"type":"string","_generated":"media-atoms"},
-		"previewBorderColourHover": {"type":"string","_generated":"media-atoms"}
+		"previewBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"previewBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"previewBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"}
 	},
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css",

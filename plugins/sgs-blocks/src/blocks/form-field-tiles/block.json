@@ -854,7 +854,9 @@
 		"tileMinHeight": {"type":"object","_generated":"media-atoms"},
 		"tileMaxHeight": {"type":"object","_generated":"media-atoms"},
 		"tileShape": {"type":"object","_generated":"media-atoms"},
-		"tileBorderColourHover": {"type":"string","_generated":"media-atoms"}
+		"tileBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"tileBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"tileBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

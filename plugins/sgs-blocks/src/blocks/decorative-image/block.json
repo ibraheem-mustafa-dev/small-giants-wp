@@ -234,6 +234,7 @@
     	"layerBorderWidth": {"type":"object","_generated":"media-atoms"},
     	"layerBorderColour": {"type":"string","_generated":"media-atoms"},
     	"layerBorderColourHover": {"type":"string","_generated":"media-atoms"},
+    	"layerBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
     	"layerBoxShadow": {"type":"string","_generated":"media-atoms"},
     	"layerBoxShadowColour": {"type":"string","_generated":"media-atoms"},
     	"layerBoxShadowColourHover": {"type":"string","_generated":"media-atoms"}

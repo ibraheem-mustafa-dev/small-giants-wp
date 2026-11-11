@@ -495,7 +495,9 @@
 		"optionBorderWidth": {"type":"object","_generated":"media-atoms"},
 		"optionBorderStyle": {"type":"string","_generated":"media-atoms"},
 		"optionBorderColour": {"type":"string","_generated":"media-atoms"},
-		"optionBorderColourHover": {"type":"string","_generated":"media-atoms"}
+		"optionBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"optionBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"optionBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

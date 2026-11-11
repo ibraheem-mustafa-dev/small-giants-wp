@@ -1782,7 +1782,9 @@
 		"entryBorderWidth": {"type":"object","_generated":"media-atoms"},
 		"entryBorderStyle": {"type":"string","_generated":"media-atoms"},
 		"entryBorderColour": {"type":"string","_generated":"media-atoms"},
-		"entryBorderColourHover": {"type":"string","_generated":"media-atoms"}
+		"entryBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"entryBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"entryBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"viewScriptModule": "file:./view.js",

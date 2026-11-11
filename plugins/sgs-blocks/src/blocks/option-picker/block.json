@@ -796,7 +796,9 @@
 		"swatchBorderWidth": {"type":"object","_generated":"media-atoms"},
 		"swatchBorderStyle": {"type":"string","_generated":"media-atoms"},
 		"swatchBorderColour": {"type":"string","_generated":"media-atoms"},
-		"swatchBorderColourHover": {"type":"string","_generated":"media-atoms"}
+		"swatchBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"swatchBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"swatchBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
