@@ -81,7 +81,6 @@ BLOCKS = PLUGIN / "src" / "blocks"
 EXEMPT: dict[tuple[str, str], tuple[str, str]] = {
     ("post-grid", "css-loop"): ("loading", "the .sgs-post-grid skeleton shimmer runs only while posts load"),
     ("product-search", "css-loop"): ("loading", "the results skeleton shimmer runs only while results load"),
-    ("hero", "video-autoplay"): ("deferred", "muted looping background video, aria-hidden"),
     ("nav-drawer", "css-loop"): ("deferred", "decorative drift on .sgs-drift shapes in the drawer"),
     ("business-info", "css-loop"): ("deferred", "decorative open-status dot pulse; the draft has no pause control (Ruling: WCAG 2.2 items follow the draft)"),
 }
