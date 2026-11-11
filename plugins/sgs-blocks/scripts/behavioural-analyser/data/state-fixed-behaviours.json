@@ -1228,12 +1228,12 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
-   "selector": ".sgs-gallery.sgs-has-grayscale .sgs-gallery__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-gallery__img",
+   "selector": ".sgs-gallery.sgs-has-grayscale .sgs-gallery__item:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-gallery__img-wrap .sgs-media-el",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
-   "selector": ".sgs-gallery.sgs-has-grayscale .sgs-gallery__item:hover .sgs-gallery__img",
+   "selector": ".sgs-gallery.sgs-has-grayscale .sgs-gallery__item:hover .sgs-gallery__img-wrap .sgs-media-el",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
