@@ -8,9 +8,11 @@ Discovers by glob, not by list:
 A script that does not mention a flag in its source is shown as "n/a" for it, not as a failure. Writes nothing;
 exits 1 when any run fails. Run from anywhere:  python plugins/sgs-blocks/scripts/run-motion-gates.py [--jobs N]
 
-The runs go JOBS at a time (default 4; --jobs 1 runs them one after another) and the table keeps discovery order.
-That is safe because every script writes only to its own temp folder under --check and --self-test (the real-tree
-writes sit behind --fix/--apply/--update-baseline, which this runner never passes). Self-test: --self-test.
+--jobs N runs N scripts at a time (default 1, one after another) and the table keeps discovery order. That is safe
+because every script writes only to its own temp folder under --check and --self-test (the real-tree writes sit behind
+--fix/--apply/--update-baseline, which this runner never passes). The default stays 1 because the full tier already
+runs six gates at once: four motion scripts on top of that pushed check-motion-entrance-cascade.py --self-test from
+33s to past the 600s timeout on a loaded machine (2026-11-11) and failed gate:full. Self-test: --self-test.
 """
 from __future__ import annotations
 
@@ -45,7 +47,7 @@ def run(script: Path, flag: str) -> tuple[str, float, str]:
     return ("ok" if done.returncode == 0 else "FAIL"), time.monotonic() - started, tail
 
 
-DEFAULT_JOBS = 4
+DEFAULT_JOBS = 1
 
 
 def discover(scripts: Path = SCRIPTS) -> list[tuple[Path, str]]:
