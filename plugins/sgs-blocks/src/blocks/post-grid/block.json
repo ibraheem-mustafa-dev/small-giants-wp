@@ -52,7 +52,7 @@
         }
       },
       "collection": true,
-      "_comment_mediaElements": "Spec 49 item slot `image` (kinds: image, source featured). Every card's picture is the post's featured image, printed by Post_Grid_REST::render_card() through SGS_Media_Element::render as an item of an item set; the settings every card shares (`imageRatio`, `imageHeight`, `imageFit`, `imageFocal`, `imageRadius`, `imageShape`, `imageLoading`) are block attributes, printed once per grid by Post_Grid_REST::media_css() so cards paged in later take them. A REST render is lazy and never high priority. The settings the post grid does not list in Spec 49 section 10.4 (Width, Min and Max width and height, Border, Repeat, Tile size, Pinned) come with the adopted sizing, shape and object-fit atoms.",
+      "_comment_mediaElements": "Spec 49 item slot `image` (kinds: image, source featured). Every card's picture is the post's featured image, printed by Post_Grid_REST::render_card() through SGS_Media_Element::render as an item of an item set; the settings every card shares (`imageRatio`, `imageHeight`, `imageFit`, `imageRadius`, `imageShape`, `imageLoading`) are block attributes, printed once per grid by Post_Grid_REST::media_css() so cards paged in later take them. A REST render is lazy and never high priority. The settings the post grid does not list in Spec 49 section 10.4 (Width, Min and Max width and height, Border, Repeat, Tile size, Pinned) come with the adopted sizing, shape and object-fit atoms.",
       "mediaElements": [
       	{
       		"prefix": "image",
@@ -64,7 +64,6 @@
       			"source",
       			"meaning",
       			"object-fit",
-      			"focal-point",
       			"sizing",
       			"shape"
       		]
@@ -235,7 +234,7 @@
             "css:aspect-ratio": "imageRatio",
             "css:height": "imageHeight"
           },
-          "_note": "Renamed from 'card-image' 2026-08-15 to match the DB's own css_element spelling - the audit script does exact-string matching, so the near-miss was real drift, not a false positive. imageRatio/imageHeight/showImage govern this element, and the adopted `image` slot's settings (imageFit, imageFocal, imageRadius, imageShape, imageLoading) paint the picture inside it; no Text/Fill/Layout style attrs exist for it.",
+          "_note": "Renamed from 'card-image' 2026-08-15 to match the DB's own css_element spelling - the audit script does exact-string matching, so the near-miss was real drift, not a false positive. imageRatio/imageHeight/showImage govern this element, and the adopted `image` slot's settings (imageFit, imageRadius, imageShape, imageLoading) paint the picture inside it; no Text/Fill/Layout style attrs exist for it.",
         	"absentIn": [ "minimal-no-image" ],
         	"absentWhy": "cardStyle minimal prints no image link and no placeholder for a post without a featured image."
         },
@@ -1777,14 +1776,8 @@
       "description": "Corner radius of every card, written to --sgs-card-radius on the block. Empty keeps the stylesheet's 8px."
     },
   	"imageRatio": {"type":"object","default":{"desktop":"16 / 9"},"description":"The ratio of each card's image area per device. Unset on every device keeps 16 / 9."},
-  	"imageSource": {"type":"object","_generated":"media-atoms"},
   	"imageLoading": {"type":"string","_generated":"media-atoms"},
-  	"imageAlt": {"type":"string","_generated":"media-atoms"},
   	"imageFit": {"type":"object","_generated":"media-atoms"},
-  	"imageRepeat": {"type":"object","_generated":"media-atoms"},
-  	"imageTileSize": {"type":"object","_generated":"media-atoms"},
-  	"imageFocal": {"type":"object","_generated":"media-atoms"},
-  	"imagePinned": {"type":"boolean","_generated":"media-atoms"},
   	"imageWidth": {"type":"object","_generated":"media-atoms"},
   	"imageMinWidth": {"type":"object","_generated":"media-atoms"},
   	"imageMaxWidth": {"type":"object","_generated":"media-atoms"},

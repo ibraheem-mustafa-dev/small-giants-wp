@@ -3,7 +3,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { resolveColourToken } from '../../../components';
-import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, isCssGradient, tierBoxLonghands, focalPointToObjectPosition } from '../../../utils';
+import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, isCssGradient, tierBoxLonghands } from '../../../utils';
 import { tierValueOf } from '../../../utils/responsive';
 import { IconPreview } from '../../../components/IconPicker';
 import { cardGradientPreview } from '../preview-style';
@@ -73,7 +73,6 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		imageRatio,
 		imageHeight,
 		imageFit,
-		imageFocal,
 		titleColour,
 		titleColourGradient,
 		excerptColour,
@@ -158,14 +157,12 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		</span>
 	);
 
-	// The frame's ratio at the previewed device (16 / 9 when the grid sets none), and the picture's fit and focal point.
+	// The frame's ratio at the previewed device (16 / 9 when the grid sets none), and the picture's fit.
 	const ratioValue = String( tierValueOf( imageRatio, tier ) || '16 / 9' );
 	const frameRatio = 'natural' === ratioValue ? 'auto' : ratioValue;
 	const fitValue   = tierValueOf( imageFit, tier ) || 'cover';
-	const focalValue = tierValueOf( imageFocal, tier );
 	const imageStyle = {
 		objectFit: fitValue,
-		objectPosition: 'cover' === fitValue ? focalPointToObjectPosition( focalValue || { x: 0.5, y: 0.5 } ) : undefined,
 	};
 	const imageHeightPx = ( 'mobile' === tier ? imageHeight?.mobile || imageHeight?.tablet || imageHeight?.desktop : 'tablet' === tier ? imageHeight?.tablet || imageHeight?.desktop : imageHeight?.desktop ) || '';
 

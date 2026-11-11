@@ -2,7 +2,7 @@
 /**
  * Post grid card media: each card's featured image goes through the shared media renderer (Spec 49 §7, §8.3).
  *
- * Every card of a grid shows its post's featured image with the grid's own settings (`imageFit`, `imageFocal`,
+ * Every card of a grid shows its post's featured image with the grid's own settings (`imageFit`,
  * `imageRadius`, `imageShape`, `imageLoading` and the rest of the adopted `image` slot), so the rules are the same for
  * every card and print once per grid (`media_css()`), under the grid's media scope class `{uid}-media`. Cards paged in
  * later by the REST route carry the same scope class and take the rules already on the page. A REST render is lazy and

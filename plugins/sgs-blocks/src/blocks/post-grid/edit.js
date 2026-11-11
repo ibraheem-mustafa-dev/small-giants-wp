@@ -523,7 +523,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
-			{ /* The settings every card's featured image shares (Spec 49 §10.4: Fit, Focal point, Ratio, Height, Radius, Shape):
+			{ /* The settings every card's featured image shares (Spec 49 §10.4: Fit, Ratio, Height, Radius, Shape):
 			   the adopted panels on the image slot, without a Source row, because each card shows its own post's image. */ }
 			{ showImage && (
 				<MediaElementPanel
@@ -532,7 +532,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					prefix="image"
 					blockSlug="sgs/post-grid"
 					blockName="sgs/post-grid"
-					atoms={ [ 'object-fit', 'focal-point', 'sizing', 'shape' ] }
+					atoms={ [ 'object-fit', 'sizing', 'shape' ] }
 					context="item"
 				/>
 			) }
