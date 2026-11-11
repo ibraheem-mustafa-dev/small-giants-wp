@@ -60,7 +60,7 @@ from deploy_timing import finish as finish_timings, record as record_stage, stag
 from deploy_ship import run_isolated, step_build, step_local_cleanup, step_remote_extract, step_scp, step_tar
 from deploy_qa_tier import motion_qa_action, shipped_uncommitted
 from deploy_litespeed_probe import step_litespeed_probe
-from deploy_verify import step_first_paint, step_motion_qa, step_purge_caches, step_scoped_selector_audit, step_verify, step_verify_payload, step_verify_theme_json
+from deploy_verify import page_weight_wanted, step_first_paint, step_motion_qa, step_page_weight, step_purge_caches, step_scoped_selector_audit, step_verify, step_verify_payload, step_verify_theme_json
 
 
 def step_gate_full(dry_run: bool) -> int:
@@ -223,6 +223,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--first-paint", action="store_true",
                    help="after the upload, run the live first-paint gate (CLS, late CSS, stylesheet-name stability) against this target; "
                         "the target needs an entry in scripts/data/first-paint.json")
+    p.add_argument("--page-weight", action="store_true",
+                   help="after the upload, run the live page-weight gate (transferred CSS < 100 KB and JS < 50 KB per page, "
+                        "with a baseline that only shrinks) against this target; always on with --motion-qa-tier full. "
+                        "The target needs an entry in scripts/data/page-weight.json")
     p.add_argument("--skip-purge", action="store_true",
                    help="Skip the post-deploy cache purge (OPcache + LiteSpeed). "
                         "NOT recommended: the deploy still lands, but warm caches "
@@ -554,6 +558,14 @@ def main() -> int:
             print("[DEPLOYED-BUT-FIRST-PAINT-FAILED] the deploy completed and the payload matches, but the live first-paint "
                   "gate failed (CLS above its limit, late CSS, or an unstable collected stylesheet name). Read the table above.",
                   flush=True)
+            return 1
+
+    # Post-deploy LIVE page-weight gate: opt-in, and always on for a release run (--motion-qa-tier full).
+    if page_weight_wanted(args.page_weight, args.motion_qa_tier) and deploy_blocks:
+        rc = timed("page-weight", step_page_weight, args.dry_run, target_key)
+        if rc != 0:
+            print("[DEPLOYED-BUT-PAGE-WEIGHT-FAILED] the deploy completed and the payload matches, but a page's transferred CSS "
+                  "or JS rose above its baseline (or above the budget it was under). Read the table above.", flush=True)
             return 1
 
     # Post-deploy structural gate: live scoped-selector match audit.

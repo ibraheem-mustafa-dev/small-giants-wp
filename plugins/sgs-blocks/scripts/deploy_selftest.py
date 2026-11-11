@@ -378,6 +378,60 @@ def self_test_motion_qa_args() -> list[str]:
     return failures
 
 
+def self_test_page_weight() -> list[str]:
+    """Self-test case 24: the live page-weight gate runs when asked or on a release run, builds its command, skips an
+    unknown target and only logs on a dry run (no deploy, no network). Each check is proven red on a planted fault."""
+    failures: list[str] = []
+
+    def captured(step, *args) -> tuple[list[list[str]], str]:
+        seen: list[list[str]] = []
+        original = deploy_verify.run
+        deploy_verify.run = lambda cmd, **kw: seen.append([Path(c).name if i < 2 else c for i, c in enumerate(cmd)]) or 0
+        buf = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(buf):
+                step(*args)
+        finally:
+            deploy_verify.run = original
+        return seen, buf.getvalue()
+
+    node = "node.exe" if os.name == "nt" else "node"
+    want = [[node, "check-page-weight.mjs", "--site", "sandybrown", "--check"]]
+
+    def check_wanted(fn) -> list[str]:
+        got = [fn(False, "none"), fn(True, "none"), fn(False, "full"), fn(False, "smoke")]
+        return [] if got == [False, True, True, False] else [f"wanted() gave {got}, not [False, True, True, False]"]
+
+    def check_cmd(step) -> list[str]:
+        got, _ = captured(step, False, "sandybrown")
+        return [] if got == want else [f"command is {got}, not {want}"]
+
+    def check_unknown(step) -> list[str]:
+        got, text = captured(step, False, "no-such-target")
+        return [] if not got and "SKIPPED" in text else [f"an unknown target ran {got} / logged {text!r}"]
+
+    def check_dry(step) -> list[str]:
+        got, text = captured(step, True, "sandybrown")
+        return [] if not got and "check-page-weight.mjs --site sandybrown --check" in text else [f"dry run ran {got} / logged {text!r}"]
+
+    real_step, real_wanted = deploy_verify.step_page_weight, deploy_verify.page_weight_wanted
+    cases = [
+        ("runs on --page-weight or --motion-qa-tier full only", check_wanted(real_wanted), check_wanted(lambda f, t: bool(f))),
+        ("the command names the target and --check", check_cmd(real_step),
+         check_cmd(lambda d, t: deploy_verify.run(["node", "check-page-weight.mjs", "--site", t], dry_run=False))),
+        ("a target with no data entry is skipped", check_unknown(real_step),
+         check_unknown(lambda d, t: deploy_verify.run(["node", "check-page-weight.mjs", "--site", t, "--check"], dry_run=False))),
+        ("a dry run logs the command and runs nothing", check_dry(real_step), check_dry(lambda d, t: deploy_verify.step_page_weight(False, t))),
+    ]
+    for label, real_problems, planted_problems in cases:
+        print(f"  [page-weight case] {label}: real={'GREEN' if not real_problems else 'RED'}; "
+              f"planted fault={'RED' if planted_problems else 'GREEN (check is vacuous)'}")
+        failures.extend(f"page-weight: {label}: {p}" for p in real_problems)
+        if not planted_problems:
+            failures.append(f"page-weight NEGATIVE CONTROL: {label}: the planted fault was not detected, so the check cannot fail")
+    return failures
+
+
 def self_test_upload_resume() -> list[str]:
     """Self-test case 21: the tarball upload resumes after a dropped connection (no network).
 
@@ -622,6 +676,7 @@ def self_test() -> int:
     failures.extend(deploy_multi.self_test())
     failures.extend(self_test_timing())
     failures.extend(self_test_motion_qa_args())
+    failures.extend(self_test_page_weight())
     failures.extend(self_test_litespeed_probe())
     failures.extend(self_test_upload_resume())
     failures.extend(deploy_qa_tier.self_test())
@@ -669,4 +724,6 @@ def self_test() -> int:
     print(" 22. LiteSpeed probe: a warning for each of media-lazy and img_optm-webp that is on, none when both are off or missing")
     print(" 23. media guard: a pre-cutover build skips, a clean export passes, an export with one old attribute is refused "
           "(negative control), an unreadable export fails closed")
+    print(" 24. page-weight gate: runs on --page-weight or --motion-qa-tier full only, its command names the target and --check, "
+          "a target with no data entry is skipped, a dry run only logs; each check is proven red on a planted fault")
     return 0
