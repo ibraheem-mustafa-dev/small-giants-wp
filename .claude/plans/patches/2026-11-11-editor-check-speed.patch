@@ -322,7 +322,7 @@ index 2f3e4b49f..3175bd1fb 100644
   *   node plugins/sgs-blocks/scripts/editor-crash/check-editor-loads.mjs --site local-indus [--ids 90,149] [--limit N] [--strict-invalid]
 + *     [--parallel N] [--changed-blocks sgs/a,sgs/b|none] [--state <file>]
 + *
-+ * --parallel N opens N editor pages at once (default 1: on 2026-11-11 three at once against local-mamas took longer than serial and the mirror dropped two requests). --changed-blocks limits the run to the
++ * --parallel N opens N editor pages at once (default 1: on 2026-11-11 three at once against local-mamas was about 10% faster than serial but the mirror dropped two requests). --changed-blocks limits the run to the
 + * targets that draw one of those blocks (through synced patterns and template parts), plus every target whose drawn
 + * content changed since the last clean run recorded in --state (select-targets.mjs); `none` opens only those. Without
 + * --changed-blocks every target is opened. --state names a JSON file of each target's drawn-content sha256, rewritten

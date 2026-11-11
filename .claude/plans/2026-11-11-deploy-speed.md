@@ -21,12 +21,13 @@ governs: plugins/sgs-blocks/scripts deploy modules; .claude/deploy-architecture.
 | Payload ceiling 55 MB, with what grew | `b50a4200a` | measured 46.1 MB |
 | The deploy worktree's `vendor/` is a real folder, so Composer never writes the shared checkout and shipped autoload files carry no temp path | `983218295` | mamas-test repeat sent nothing; self-test case 27 |
 | `run-motion-gates.py --jobs N` (default 1) | `d64bae4de`, `a43111864` | four at a time timed out a self-test inside `gate:full` under load, so the default stayed serial |
+| Second-opinion fixes: build staging cleanup and safer move, fast-tier wiring gate (`assert-gate-wiring`), cut-off listing retried, `vendor/` links limited to the shared `vendor/` | `7f4cfc080` | self-tests with planted faults; the wiring check fails on a reverted `build` script |
 
 ## Parked
 
 - **Editor check, change-scoped.** Built, unit-tested, not proven live; the code is `.claude/plans/patches/2026-11-11-editor-check-speed.patch` (`git apply` on main at `a43111864` applies cleanly). It records the sha256 of every file the editor loads after a clean run per mirror, and when only `build/blocks/<name>/` changed opens just the targets that draw those blocks (through synced patterns and template parts, `select-targets.mjs`, self-test with a negative control) plus targets whose content changed. Blocked on: a clean full run to record the baseline. On local-mamas every full run on 2026-11-11 hit `FAIL no-console-error page 148 contact`, a `TypeError ... reading 'forEach'` thrown by WooCommerce's own block script, intermittently (a three-at-once run did not hit it). Next: find why that WooCommerce script throws on the mirror's contact page (or whether the checker should ignore third-party script errors), get one clean run, then run a scoped run after a one-block change and compare its verdicts and time with a full run.
 - **Editor check beside `gate:full`.** In the same patch (`build_and_gate()` starts the check in a thread after the build; the timing table shows it as `editor-check (alongside gate-full)`). Not run live yet. Next: one `ship.py` run on an uncached commit with `--editor-check`, compare wall clock with the serial order.
-- **Not pursued:** three editors at once (measured slower than serial against the local mirror, which dropped two requests); a webpack persistent cache (webpack's own docs: the cache only hits at the same absolute path; with the fast gates now beside webpack, webpack's time is hidden anyway).
+- **Not pursued:** three editors at once by default (13m11s against 14m39s serial for 50 targets on local-mamas, but the mirror dropped two requests and left those targets unanswered; `--parallel N` stays in the patch); a webpack persistent cache (webpack's own docs: the cache only hits at the same absolute path; with the fast gates now beside webpack, webpack's time is hidden anyway).
 
 ## Known, outside this work
 
