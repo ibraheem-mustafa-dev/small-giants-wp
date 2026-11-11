@@ -457,9 +457,14 @@
    photo always were. */
 :where( .sgs-option-picker__swatch--image ) .sgs-media-el {
 	display: block;
-	width: 100%;
 	height: auto;
 	aspect-ratio: var( --sgs-op-swatch-ratio, 4 / 3 );
+}
+
+/* No width rule on the picture outside a tile: its printed width attribute (the file's width) sizes the pill, capped
+   to the row, as the bare swatch image always did. A tile's picture fills the tile. */
+.sgs-option-picker--tile .sgs-option-picker__swatch--image .sgs-media-el {
+	width: 100%;
 }
 
 /* Pills containing an image swatch need slightly less horizontal padding

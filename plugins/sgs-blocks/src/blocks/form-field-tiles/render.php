@@ -517,6 +517,8 @@ foreach ( $tiles as $i => $tile ) {
 }
 $tiles_inner_html = ob_get_clean();
 if ( '' !== $sgs_ft_media_css ) {
+	// The picture's group is a span: it is a block so the block's Width sizes it, ahead of the atoms' own rules.
+	$sgs_ft_media_css = '.' . $sgs_ft_uid . '-media{display:block;}' . $sgs_ft_media_css;
 	echo '<style>' . wp_strip_all_tags( $sgs_ft_media_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the media atoms' own scoped rules; tags stripped.
 }
 
