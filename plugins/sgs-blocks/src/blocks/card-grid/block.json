@@ -62,15 +62,21 @@
       "_comment_motionDelegate": "Spec 38A §6.2. In these source modes each result renders as the grid's template sgs/product-card, so the grid offers only its wrapper part as a motion target (every card part is a target of the template card's own Effects panel), and with the stagger's apply on it hands its entrance to each card root (Sgs_Motion_Delegate::child_motion). Read by includes/motion/class-sgs-motion-delegate.php and src/blocks/extensions/motion/source-mode.js.",
       "collection": true,
       "scalarStylingLift": true,
-      "imageControls": true,
-      "imageControlsExplicit": true,
-      "_comment_mediaElements": "Rule 37-media-no-handroll fix. Card-image object-fit now routes through the shared media-element atom layer instead of a style.css literal. NOT a new client control: prefix 'sgs' resolves (sgs_media_element_attr) to the SAME 'sgsObjectFit' attribute the legacy universal image-controls extension (imageControls/imageControlsExplicit above) already injects and already exposes an 'Object Fit' dropdown for in the inspector -- adding a second ObjectFitField here would give the client two controls for one property. render.php reads that existing value through SGS_Media_Element::style() and marks each card's <img>/<video> with the atom's scope class; style.css no longer hardcodes object-fit on .sgs-card-grid__image, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default). Mirrors sgs/gallery's identical fix.",
+      "_comment_mediaElements": "Spec 49 item slot `image` (kinds: image). Each card's own `source`, `alt`, `decorative`, `fit` and `focal` sit in `items[]`; the settings every card shares (`imageRatio`, `imageHeight`, `imageFit`, `imageRadius`, `imageShape`, `imageLoading`) are block attributes. render-items.php prints each card's photo through SGS_Media_Element::render as an item of an item set. A query-mode card uses the post's featured image as its source. The settings the card grid does not list in Spec 49 section 10.4 (Width, Min and Max width and height, Border, Repeat, Tile size, Pinned) come with the adopted sizing, shape and object-fit atoms and print as they do on the gallery.",
       "mediaElements": [
       	{
       		"prefix": "image",
       		"context": "item",
       		"kinds": [
       			"image"
+      		],
+      		"atoms": [
+      			"source",
+      			"meaning",
+      			"object-fit",
+      			"focal-point",
+      			"sizing",
+      			"shape"
       		]
       	}
       ],
@@ -175,7 +181,7 @@
           "absentIn": [ "products" ],
           "absentWhy": "source wc-product / cpt-collection print each result as the grid's template sgs/product-card, never the grid's own cards; every card part is a target of the template card's own Effects panel",
           "surface": true,
-          "selector": ".sgs-card-grid__media",
+          "selector": ".sgs-card-grid__image-wrap .sgs-media-el",
           "label": "Card image",
           "order": 5,
           "clusters": [],
@@ -186,7 +192,7 @@
               }
             }
           },
-          "_note": "Split from 'card-media' 2026-08-15 (element-manifest drift fix) — grayscaleHover resolves to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json). This element now names the actual `<img>`/`<video>` rendered by sgs_render_media(), not its wrapper (see 'image-wrap' below for that). Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio, not the Text/Fill/Layout style clusters. (overlayStyle removed 2026-08-06 — abandoned attribute, D338-cleared.) `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle in style.css, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
+          "_note": "Split from 'card-media' 2026-08-15 (element-manifest drift fix) — grayscaleHover resolves to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json). This element now names the actual `<img>`/`<video>` rendered by sgs_render_media(), not its wrapper (see 'image-wrap' below for that). Governed by the adopted `image` slot (imageFit, imageRadius, imageShape, imageLoading and each card's own focal point) plus imageRatio, not the Text/Fill/Layout style clusters. (overlayStyle removed 2026-08-06 — abandoned attribute, D338-cleared.) `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle in style.css, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
         },
         "image-wrap": {
           "absentIn": [ "products" ],
@@ -203,7 +209,7 @@
             "css:height": "imageHeight",
             "css:padding": "imagePadding"
           },
-          "_note": "Split from 'card-media' 2026-08-15 — the wrapping `<div class=\"sgs-card-grid__image-wrap\">` (render.php:695) that sets aspect-ratio via the `--sgs-card-grid-aspect` custom property (aspectRatio attr; markup-fallback derivation already resolves it to css_element='image-wrap'). Mirrors sgs/gallery's own 'img-wrap' element (same split, same reasoning). `prefix: \"\"` opted this element out of orphan-candidate scanning while it had no style attrs to claim; `imageFallbackColour` changed that, and the blanket opt-out ALSO hid the attrMap from check-element-manifest-conformance.js's cluster-resolution pass (an element's attrMap is only consulted for clusters it has actually declared) — with `clusters: []` the entry was inert, so `imageFallbackColour` was reported as an unrelated ORPHAN under the 'image' element instead, purely because its name happens to start with \"image\" (a literal-prefix collision). Fixed by narrowing this element's `prefix` to `\"imageFallback\"` (still opts it out of the OTHER `image*`-named attrs it doesn't own) and declaring `clusters: [\"fill\"]` so the `css:background-color` attrMap member actually resolves and claims `imageFallbackColour` — once claimed here, the 'image' element's separate prefix scan sees it as already-claimed and stops reporting it. `imageFallback` (the boolean toggle) has no css: mapping and stays an honest BY-DESIGN orphan here."
+          "_note": "Split from 'card-media' 2026-08-15 — the wrapping `<div class=\"sgs-card-grid__image-wrap\">` (render.php:695) that sets aspect-ratio via the `--sgs-card-grid-aspect` custom property (imageRatio attr; markup-fallback derivation already resolves it to css_element='image-wrap'). Mirrors sgs/gallery's own 'img-wrap' element (same split, same reasoning). `prefix: \"\"` opted this element out of orphan-candidate scanning while it had no style attrs to claim; `imageFallbackColour` changed that, and the blanket opt-out ALSO hid the attrMap from check-element-manifest-conformance.js's cluster-resolution pass (an element's attrMap is only consulted for clusters it has actually declared) — with `clusters: []` the entry was inert, so `imageFallbackColour` was reported as an unrelated ORPHAN under the 'image' element instead, purely because its name happens to start with \"image\" (a literal-prefix collision). Fixed by narrowing this element's `prefix` to `\"imageFallback\"` (still opts it out of the OTHER `image*`-named attrs it doesn't own) and declaring `clusters: [\"fill\"]` so the `css:background-color` attrMap member actually resolves and claims `imageFallbackColour` — once claimed here, the 'image' element's separate prefix scan sees it as already-claimed and stops reporting it. `imageFallback` (the boolean toggle) has no css: mapping and stays an honest BY-DESIGN orphan here."
         },
         "title": {
           "absentIn": [ "products" ],
@@ -399,7 +405,7 @@
       ],
       "default": "h3"
     },
-    "_comment_items_media": "Migrated 2026-05-05 â€” each item gains a unified `media` slot (image OR video). Legacy `image` retained on items for deprecation back-compat. New instances should write `media` via MediaPicker.",
+    "_comment_items_media": "Each card holds its picture as a media Source object under `source` (Spec 49 section 8.3); the editor writes it through MediaSlotField.",
     "items": {
       "type": "array",
       "default": [],
@@ -414,43 +420,26 @@
             "type": "string",
             "role": "text-content"
           },
-          "media": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "url": {
-                    "type": "string"
-                  },
-                  "type": {
-                    "type": "string"
-                  },
-                  "id": {
-                    "type": "number"
-                  },
-                  "alt": {
-                    "type": "string"
-                  },
-                  "mime": {
-                    "type": "string"
-                  },
-                  "width": {
-                    "type": "number"
-                  },
-                  "height": {
-                    "type": "number"
-                  }
-                }
-              }
-            ],
-            "role": "image-object",
-            "_note": "D1027 (2026-09-11) — TWO real shapes are accepted and both render (a THIRD, null, is the empty state), so this needed a genuine `anyOf`, not a single `type`. edit.js's MediaPicker writes the OBJECT form { url, type, id, alt, mime, width, height } (see MediaPicker.js's normaliseMedia()) consumed by sgs_render_media(); a BARE URL STRING (what the mega starter patterns use) is normalised to that object in render.php; `addItem()`/the picker's Remove action write `null` for an unset slot. Before this fix `media` was declared bare `{\"type\":\"string\"}` -- WordPress's own WP_Block_Type::prepare_attributes_for_render() validates the WHOLE `items` array against this schema on every server render (rest_validate_array_value_from_schema loops each item and returns the FIRST WP_Error it finds, wiping the array back to its `[]` default -- see rest-api.php's rest_validate_array_value_from_schema), so ANY item whose media was the real object shape (i.e. every item added through the actual editor picker, not a hand-authored pattern) silently blanked the ENTIRE grid, not just that item, on the real frontend. Do not narrow this back to a single `type` -- string/null/object must all keep validating, or the array-wipe regresses for whichever shape is dropped. The object branch declares real `properties` (not a bare `{\"type\":\"object\"}`) so this stays scoped to the SGS media shape rather than accepting arbitrary object junk."
+          "source": {
+            "type": "object",
+            "description": "The card's picture per device, the media Source shape: {desktop:{kind,id,url,width,height,mime}, tablet, mobile}. A device with no entry shows the wider device's file. Empty shows the image-fallback tile or nothing.",
+            "role": "image-object"
+          },
+          "alt": {
+            "type": "string",
+            "default": "",
+            "description": "The picture's description for screen readers. Blank when the card is decorative.",
+            "role": "image-alt"
+          },
+          "fit": {
+            "type": "object",
+            "description": "How this card's picture fills its image area per device. Empty uses the grid's own fit (imageFit).",
+            "role": "visual"
+          },
+          "focal": {
+            "type": "object",
+            "description": "The part of this card's picture kept in view when it is cropped, per device: {desktop:{x,y}} with x and y from 0 to 1.",
+            "role": "visual"
           },
           "badge": {
             "type": "string",
@@ -516,26 +505,6 @@
             "type": "string",
             "_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit/focal-point CSS so a crop value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed.",
             "role": "technical"
-          },
-          "objectFit": {
-            "type": "string",
-            "enum": [
-              "cover",
-              "contain",
-              "fill",
-              "none",
-              "scale-down"
-            ],
-            "default": "cover",
-            "role": "visual"
-          },
-          "focalPoint": {
-            "type": "object",
-            "default": {
-              "x": 0.5,
-              "y": 0.5
-            },
-            "role": "visual"
           }
         }
       }
@@ -555,10 +524,6 @@
       },
       "_comment": "Was the bare number \"30\", which the old flat path read as WordPress spacing-scale SLUG 30 = 1rem (theme.json settings.spacing.spacingSizes). A bare number now means px (Bean-ruled 2026-08-10), so the value is stated explicitly to render EXACTLY as before rather than jumping to 30px."
     },
-    "aspectRatio": {
-      "type": "string",
-      "default": "16 / 9"
-    },
     "imagePadding": {
       "type": "object",
       "default": {},
@@ -567,7 +532,7 @@
     "imageHeight": {
       "type": "object",
       "default": {},
-      "description": "A fixed height for each card's image area, per device (CSS length). Set, it replaces the aspect ratio: every image area is this tall and the image sits in it by its object fit (scale-down keeps a small logo at its own size). Empty keeps the aspect ratio."
+      "description": "A fixed height for each card's image area, per device (CSS length). Set, it replaces the ratio: every image area is this tall and the image sits in it by its object fit (scale-down keeps a small logo at its own size). Empty keeps the aspect ratio."
     },
     "titleColour": {
       "type": "string",
@@ -1364,6 +1329,7 @@
       "default": "",
       "description": "No-photo label colour. Theme token slug or raw colour. Empty = the tile's text colour at half strength."
     },
+  	"imageRatio": {"type":"object","default":{"desktop":"16 / 9"},"description":"The ratio of each card's image area per device. Unset on every device keeps 16 / 9."},
   	"imageSource": {"type":"object","_generated":"media-atoms"},
   	"imageLoading": {"type":"string","_generated":"media-atoms"},
   	"imageAlt": {"type":"string","_generated":"media-atoms"},
@@ -1373,25 +1339,6 @@
   	"imageTileSize": {"type":"object","_generated":"media-atoms"},
   	"imageFocal": {"type":"object","_generated":"media-atoms"},
   	"imagePinned": {"type":"boolean","_generated":"media-atoms"},
-  	"imageBackground": {"type":"string","_generated":"media-atoms"},
-  	"imageOverlayColour": {"type":"string","_generated":"media-atoms"},
-  	"imageOverlayColourHover": {"type":"string","_generated":"media-atoms"},
-  	"imageOverlayGradient": {"type":"string","_generated":"media-atoms"},
-  	"imageOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
-  	"imageOverlayOpacity": {"type":"object","_generated":"media-atoms"},
-  	"imageOverlayBlend": {"type":"string","_generated":"media-atoms"},
-  	"imageOpacity": {"type":"object","_generated":"media-atoms"},
-  	"imageBlend": {"type":"string","_generated":"media-atoms"},
-  	"imageBoxShadow": {"type":"string","_generated":"media-atoms"},
-  	"imageBoxShadowColour": {"type":"string","_generated":"media-atoms"},
-  	"imageBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
-  	"imageCaption": {"type":"string","_generated":"media-atoms"},
-  	"imageCaptionTag": {"type":"string","_generated":"media-atoms"},
-  	"imageLinkUrl": {"type":"string","_generated":"media-atoms"},
-  	"imageLinkOpensNewTab": {"type":"boolean","_generated":"media-atoms"},
-  	"imageLinkRel": {"type":"string","_generated":"media-atoms"},
-  	"imageLinkUrlSource": {"type":"string","_generated":"media-atoms"},
-  	"imageRatio": {"type":"object","_generated":"media-atoms"},
   	"imageWidth": {"type":"object","_generated":"media-atoms"},
   	"imageMinWidth": {"type":"object","_generated":"media-atoms"},
   	"imageMaxWidth": {"type":"object","_generated":"media-atoms"},
@@ -1402,11 +1349,7 @@
   	"imageBorderWidth": {"type":"object","_generated":"media-atoms"},
   	"imageBorderStyle": {"type":"string","_generated":"media-atoms"},
   	"imageBorderColour": {"type":"string","_generated":"media-atoms"},
-  	"imageBorderColourHover": {"type":"string","_generated":"media-atoms"},
-  	"imageColour": {"type":"object","_generated":"media-atoms"},
-  	"imageGreyscale": {"type":"number","_generated":"media-atoms"},
-  	"imageAlignment": {"type":"object","_generated":"media-atoms"},
-  	"imageOrder": {"type":"object","_generated":"media-atoms"}
+  	"imageBorderColourHover": {"type":"string","_generated":"media-atoms"}
   },
   "render": "file:./render.php",
   "editorScript": "file:./index.js",

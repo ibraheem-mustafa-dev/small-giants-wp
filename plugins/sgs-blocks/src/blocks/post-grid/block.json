@@ -52,13 +52,21 @@
         }
       },
       "collection": true,
-      "_comment_mediaElements": "37-media-no-handroll close-out (2026-09-03). The post-thumbnail <img> is ONE element rendered by Post_Grid_REST::render_card() (class sgs-post-grid__img) regardless of layout mode -- the two hardcoded object-fit:cover rules in style.css (grid-mode .sgs-post-grid__img and list-mode .sgs-post-grid--list .sgs-post-grid__image img) both target that same element via different ancestor-scoped selectors, never two elements. Unprefixed/single-slot, mirrors sgs/decorative-image's adoption shape. Only object-fit adopted (in scope for this pass) -- no attribute hand-declared, matching every existing adopter (decorative-image/before-after/media/hero): the runtime injection filter (src/blocks/extensions/media-elements.js) supplies objectFit/objectFitTablet/objectFitMobile, and the atom's own CSS var() chain already resolves to 'cover' when unset (assets/css/media-atoms/object-fit.css), matching this block's prior hardcoded default with zero attribute-default duplication.",
+      "_comment_mediaElements": "Spec 49 item slot `image` (kinds: image, source featured). Every card's picture is the post's featured image, printed by Post_Grid_REST::render_card() through SGS_Media_Element::render as an item of an item set; the settings every card shares (`imageRatio`, `imageHeight`, `imageFit`, `imageFocal`, `imageRadius`, `imageShape`, `imageLoading`) are block attributes, printed once per grid by Post_Grid_REST::media_css() so cards paged in later take them. A REST render is lazy and never high priority. The settings the post grid does not list in Spec 49 section 10.4 (Width, Min and Max width and height, Border, Repeat, Tile size, Pinned) come with the adopted sizing, shape and object-fit atoms.",
       "mediaElements": [
       	{
       		"prefix": "image",
       		"context": "item",
       		"kinds": [
       			"image"
+      		],
+      		"atoms": [
+      			"source",
+      			"meaning",
+      			"object-fit",
+      			"focal-point",
+      			"sizing",
+      			"shape"
       		]
       	}
       ],
@@ -224,10 +232,10 @@
           "order": 2,
           "clusters": [ "layout" ],
           "attrMap": {
-            "css:aspect-ratio": "aspectRatio",
+            "css:aspect-ratio": "imageRatio",
             "css:height": "imageHeight"
           },
-          "_note": "Renamed from 'card-image' 2026-08-15 to match the DB's own css_element spelling - the audit script does exact-string matching, so the near-miss was real drift, not a false positive. aspectRatio/imageSize/showImage govern this element; no supports.sgs.imageControls declared on this block (unlike gallery/hero/feature-grid), and no Text/Fill/Layout style attrs exist for it.",
+          "_note": "Renamed from 'card-image' 2026-08-15 to match the DB's own css_element spelling - the audit script does exact-string matching, so the near-miss was real drift, not a false positive. imageRatio/imageHeight/showImage govern this element, and the adopted `image` slot's settings (imageFit, imageFocal, imageRadius, imageShape, imageLoading) paint the picture inside it; no Text/Fill/Layout style attrs exist for it.",
         	"absentIn": [ "minimal-no-image" ],
         	"absentWhy": "cardStyle minimal prints no image link and no placeholder for a post without a featured image."
         },
@@ -517,14 +525,6 @@
         "desktop": "30px"
       }
     },
-    "aspectRatio": {
-      "type": "string",
-      "default": "16 / 9"
-    },
-    "imageSize": {
-      "type": "string",
-      "default": "medium_large"
-    },
     "showImage": {
       "type": "boolean",
       "default": true
@@ -691,7 +691,7 @@
     "imageHeight": {
       "type": "object",
       "default": {},
-      "description": "Fixed height of the card image frame per device ({desktop,tablet,mobile}). When set it wins over aspectRatio and the image covers the frame."
+      "description": "Fixed height of the card image frame per device ({desktop,tablet,mobile}). When set it wins over imageRatio and the image covers the frame."
     },
     "filterTaxonomy": {
       "type": "string",
@@ -1776,6 +1776,7 @@
       "default": "",
       "description": "Corner radius of every card, written to --sgs-card-radius on the block. Empty keeps the stylesheet's 8px."
     },
+  	"imageRatio": {"type":"object","default":{"desktop":"16 / 9"},"description":"The ratio of each card's image area per device. Unset on every device keeps 16 / 9."},
   	"imageSource": {"type":"object","_generated":"media-atoms"},
   	"imageLoading": {"type":"string","_generated":"media-atoms"},
   	"imageAlt": {"type":"string","_generated":"media-atoms"},
@@ -1784,26 +1785,6 @@
   	"imageTileSize": {"type":"object","_generated":"media-atoms"},
   	"imageFocal": {"type":"object","_generated":"media-atoms"},
   	"imagePinned": {"type":"boolean","_generated":"media-atoms"},
-  	"imagePadding": {"type":"object","_generated":"media-atoms"},
-  	"imageBackground": {"type":"string","_generated":"media-atoms"},
-  	"imageOverlayColour": {"type":"string","_generated":"media-atoms"},
-  	"imageOverlayColourHover": {"type":"string","_generated":"media-atoms"},
-  	"imageOverlayGradient": {"type":"string","_generated":"media-atoms"},
-  	"imageOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
-  	"imageOverlayOpacity": {"type":"object","_generated":"media-atoms"},
-  	"imageOverlayBlend": {"type":"string","_generated":"media-atoms"},
-  	"imageOpacity": {"type":"object","_generated":"media-atoms"},
-  	"imageBlend": {"type":"string","_generated":"media-atoms"},
-  	"imageBoxShadow": {"type":"string","_generated":"media-atoms"},
-  	"imageBoxShadowColour": {"type":"string","_generated":"media-atoms"},
-  	"imageBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
-  	"imageCaption": {"type":"string","_generated":"media-atoms"},
-  	"imageCaptionTag": {"type":"string","_generated":"media-atoms"},
-  	"imageLinkUrl": {"type":"string","_generated":"media-atoms"},
-  	"imageLinkOpensNewTab": {"type":"boolean","_generated":"media-atoms"},
-  	"imageLinkRel": {"type":"string","_generated":"media-atoms"},
-  	"imageLinkUrlSource": {"type":"string","_generated":"media-atoms"},
-  	"imageRatio": {"type":"object","_generated":"media-atoms"},
   	"imageWidth": {"type":"object","_generated":"media-atoms"},
   	"imageMinWidth": {"type":"object","_generated":"media-atoms"},
   	"imageMaxWidth": {"type":"object","_generated":"media-atoms"},
@@ -1814,11 +1795,7 @@
   	"imageBorderWidth": {"type":"object","_generated":"media-atoms"},
   	"imageBorderStyle": {"type":"string","_generated":"media-atoms"},
   	"imageBorderColour": {"type":"string","_generated":"media-atoms"},
-  	"imageBorderColourHover": {"type":"string","_generated":"media-atoms"},
-  	"imageColour": {"type":"object","_generated":"media-atoms"},
-  	"imageGreyscale": {"type":"number","_generated":"media-atoms"},
-  	"imageAlignment": {"type":"object","_generated":"media-atoms"},
-  	"imageOrder": {"type":"object","_generated":"media-atoms"}
+  	"imageBorderColourHover": {"type":"string","_generated":"media-atoms"}
   },
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
