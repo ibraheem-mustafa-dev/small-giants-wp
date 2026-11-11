@@ -14,7 +14,7 @@
 
 <!-- wp:sgs/mega-panel {"variant":"brands","style":"columns","maxWidth":{"desktop":"1080px"},"asideWidth":"300px","asideSeparator":{"style":"line","width":"3px","colour":"accent"},"brandsEyebrow":"Our Partners"} -->
 
-<!-- wp:sgs/card-grid {"variant":"card","columns":{"desktop":4,"tablet":3,"mobile":2},"gap":{"desktop":"10"},"cardRadius":"12px","aspectRatio":"3/2","items":[{"media":"https://placehold.co/200x120?text=Brand+1"},{"media":"https://placehold.co/200x120?text=Brand+2"},{"media":"https://placehold.co/200x120?text=Brand+3"},{"media":"https://placehold.co/200x120?text=Brand+4"}]} /-->
+<!-- wp:sgs/card-grid {"variant":"card","columns":{"desktop":4,"tablet":3,"mobile":2},"gap":{"desktop":"10"},"cardRadius":"12px","items":[{"source":{"desktop":{"kind":"image","url":"https://placehold.co/200x120?text=Brand+1","width":200,"height":120}}},{"source":{"desktop":{"kind":"image","url":"https://placehold.co/200x120?text=Brand+2","width":200,"height":120}}},{"source":{"desktop":{"kind":"image","url":"https://placehold.co/200x120?text=Brand+3","width":200,"height":120}}},{"source":{"desktop":{"kind":"image","url":"https://placehold.co/200x120?text=Brand+4","width":200,"height":120}}}],"imageRatio":{"desktop":"3 / 2"}} /-->
 
 <!-- wp:sgs/mega-aside -->
 <!-- wp:sgs/media {"source":{"desktop":{"kind":"image","url":"https://placehold.co/400x300/0F7E80/FFFFFF?text=Featured","width":400,"height":300}},"alt":"Featured"} /-->
