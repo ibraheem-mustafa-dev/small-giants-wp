@@ -101,7 +101,7 @@ final class CommerceLookCheckoutPartsTest extends TestCase {
 		$css    = $this->css( $attrs, 'checkout' );
 		$box    = '.sgs-x .wc-block-checkout__payment-method .wc-block-components-radio-control-accordion-option';
 		$rules  = array_filter( array_map( 'trim', explode( '}', $css ) ) );
-		$on_box = array_values( array_filter( $rules, static fn( string $r ): bool => 0 === strpos( $r, $box . '{' ) ) );
+		$on_box = array_values( array_filter( $rules, static fn( string $r ): bool => in_array( $box, explode( ',', explode( '{', $r )[0] ), true ) ) );
 		$text   = implode( '', $on_box );
 		$this->assertStringContainsString( 'background-color:white', $text, 'the option fill reaches the payment option box' );
 		$this->assertStringContainsString( 'border-top-left-radius:0px', $text, 'the option corners reach the payment option box (WooCommerce rounds the chosen one to 4px)' );

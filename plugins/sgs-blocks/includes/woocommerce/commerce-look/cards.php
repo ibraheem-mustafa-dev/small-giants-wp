@@ -60,14 +60,13 @@ function sgs_commerce_look_cards_css( array $attrs, string $block, string $root 
 	$css .= sgs_commerce_look_card_css( $attrs, 'sgsSummary', $summary, $b_summary ) . sgs_commerce_look_border_tiers( $summary, $b_summary );
 	$b_step = sgs_border_element_decls( $attrs, 'sgsStep', $step, array( 'colour' => array( 'base' => 'sgsStepBorderColour' ) ) );
 	$css .= sgs_commerce_look_card_css( $attrs, 'sgsStep', $step, $b_step ) . sgs_commerce_look_border_tiers( $step, $b_step );
-	$b_option = sgs_border_element_decls( $attrs, 'sgsOption', $option, array( 'colour' => array( 'base' => 'sgsOptionBorderColour' ) ) );
-	$css .= sgs_commerce_look_card_css( $attrs, 'sgsOption', $option, $b_option ) . sgs_commerce_look_border_tiers( $option, $b_option );
-	// The payment option boxes (WooCommerce draws each method as one accordion box around its inner label) take the same
-	// card look. The inner label already carries the option padding, so the box takes none.
-	$payment = sgs_commerce_look_selector( 'payment_option', $block, $root );
-	if ( '' !== $payment ) {
-		$b_payment = sgs_border_element_decls( $attrs, 'sgsOption', $payment, array( 'colour' => array( 'base' => 'sgsOptionBorderColour' ) ) );
-		$css      .= sgs_commerce_look_card_css( array_diff_key( $attrs, array( 'sgsOptionPadding' => true ) ), 'sgsOption', $payment, $b_payment ) . sgs_commerce_look_border_tiers( $payment, $b_payment );
+	// The payment option boxes (WooCommerce draws each method as one accordion box around its inner label) take the
+	// same card look; the inner label already carries the option padding, so the box takes none.
+	$option_cards = implode( ',', array_filter( array( $option, sgs_commerce_look_selector( 'payment_option', $block, $root ) ) ) );
+	$b_option     = sgs_border_element_decls( $attrs, 'sgsOption', $option_cards, array( 'colour' => array( 'base' => 'sgsOptionBorderColour' ) ) );
+	$css         .= sgs_commerce_look_card_css( array_diff_key( $attrs, array( 'sgsOptionPadding' => true ) ), 'sgsOption', $option_cards, $b_option ) . sgs_commerce_look_border_tiers( $option_cards, $b_option );
+	if ( '' !== $option ) {
+		$css .= sgs_emit_responsive_css( $option, array( array( 'value' => $attrs['sgsOptionPadding'] ?? null, 'css' => 'padding', 'box' => true, 'unit_default' => 'px' ) ) );
 	}
 	$b_notice = sgs_border_element_decls( $attrs, 'sgsNotice', $notice, array( 'colour' => array( 'base' => 'sgsNoticeBorderColour' ) ) );
 	$css .= sgs_commerce_look_card_css( $attrs, 'sgsNotice', $notice, $b_notice ) . sgs_commerce_look_border_tiers( $notice, $b_notice );
