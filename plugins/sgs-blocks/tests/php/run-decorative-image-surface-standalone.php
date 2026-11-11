@@ -6,13 +6,15 @@
  *
  * The surface-treatment effect (`src/shared/effects/fx-surface-treatment.js`) appends `canvas.sgs-webgl-surface` as a
  * child of the element that carries the layer's `data-sgs-fx="surface-treatment"` markup, so that element cannot be an
- * `<img>`. This runner renders the REAL `render.php` through the QA harness, hands the result to the real motion
- * renderer with the block's `sgsMotion` layers, and asserts:
- * - with a `surface-treatment` layer on the root, the root is a `<span class="sgs-decorative-image ...">` that carries the
- *   layer's `data-sgs-fx` markup and holds the `<img>` as a child, and the `<img>` carries no `data-sgs-fx` markup;
- * - with no such layer the root stays the bare `<img>` and no wrapper `<span>` is printed (the negative control: the
+ * `<img>`. The media renderer prints its helper (Spec 49 §7.3) for an effect that paints a layer, so this runner renders
+ * the REAL `render.php` through the QA harness, hands the result to the real motion renderer with the block's
+ * `sgsMotion` layers, and asserts:
+ * - with a `surface-treatment` layer on the root, the root is a `<span class="sgs-media-box sgs-decorative-image ...">`
+ *   that carries the layer's `data-sgs-fx` markup and holds the `<img>` as a child, and the `<img>` carries no
+ *   `data-sgs-fx` markup;
+ * - with no such layer the root stays the bare `<img>` and no helper `<span>` is printed (the negative control: the
  *   host appears because of the layer, not always);
- * - a layer of another effect on the root does not produce the host (the gate reads the effect slug);
+ * - a layer of an effect that paints nothing on the root does not produce the host (the renderer reads the effect slug);
  * - no `style` attribute is printed on any of the markups.
  * Exits 1 on any failure.
  *
@@ -103,7 +105,18 @@ $root_tag = static function ( string $html ): string {
 	return 1 === preg_match( '/^\s*<([a-z0-9]+)\b[^>]*>/i', $html, $m ) ? $m[0] : '';
 };
 
-$base  = array( 'imageUrl' => 'https://example.com/a.jpg', 'imageAlt' => 'A leaf' );
+$base  = array(
+	'layerSource' => array(
+		'desktop' => array(
+			'kind'   => 'image',
+			'id'     => 0,
+			'url'    => 'https://example.com/a.jpg',
+			'width'  => 600,
+			'height' => 400,
+		),
+	),
+	'layerAlt'    => 'A leaf',
+);
 $layer = static fn( string $effect ): array => array(
 	'sgsMotion' => array(
 		'v'        => 1,
@@ -127,7 +140,7 @@ $html_treated  = $render( $attrs_treated );
 $check( 0 !== strpos( $html_treated, 'HARNESS-ERROR' ), 'the treated block renders: ' . substr( $html_treated, 0, 160 ) );
 $out_treated = $through_motion( $attrs_treated, $html_treated );
 $tag         = $root_tag( $out_treated );
-$check( 0 === strpos( $tag, '<span' ) && false !== strpos( $tag, 'sgs-decorative-image' ), 'treated: the root is the span host carrying the block class: ' . $tag );
+$check( 0 === strpos( $tag, '<span' ) && false !== strpos( $tag, 'sgs-media-box' ) && false !== strpos( $tag, 'sgs-decorative-image' ), 'treated: the root is the span host carrying the block class: ' . $tag );
 $check( false !== strpos( $tag, 'data-sgs-fx="surface-treatment"' ), 'treated: the layer\'s data-sgs-fx markup lands on the span host: ' . $tag );
 $check( 1 === preg_match( '#<span\b[^>]*>\s*<img\b[^>]*>\s*</span>#', $out_treated ), 'treated: the img is a child of the host: ' . $out_treated );
 $check( 1 === preg_match( '#<img\b(?![^>]*data-sgs-fx)[^>]*>#', $out_treated ), 'treated: the img itself carries no data-sgs-fx markup' );
@@ -140,9 +153,9 @@ $check( 0 === strpos( $tag_plain, '<img' ) && false === strpos( $out_plain, '<sp
 $check( false === strpos( $out_plain, 'data-sgs-fx="surface-treatment"' ), 'untreated: no surface-treatment markup' );
 
 // 3. Another effect on the root does not make the host.
-$attrs_other = array_merge( $base, $layer( 'sheen' ) );
+$attrs_other = array_merge( $base, $layer( 'marquee' ) );
 $out_other   = $through_motion( $attrs_other, $render( $attrs_other ) );
-$check( 0 === strpos( $root_tag( $out_other ), '<img' ) && false === strpos( $out_other, '<span' ), 'another effect: the root stays the bare img: ' . $out_other );
+$check( 0 === strpos( $root_tag( $out_other ), '<img' ) && false === strpos( $out_other, '<span' ), 'an effect that paints nothing: the root stays the bare img: ' . $out_other );
 
 // 4. Negative control: the helper reads the effect slug, not just the presence of a layer.
 require_once $root . '/includes/helpers-motion-effect.php';

@@ -2,24 +2,20 @@
 /**
  * Server-side render for the SGS Floating layer (sgs/decorative-image).
  *
- * Outputs an absolute-positioned layer: an image alone (the naked `<img>` is the
- * root), or a wrapper holding an optional image plus inner blocks. Positioning,
- * rotation, opacity, and z-index are emitted into the block's OWN scoped
- * `<style>` tag.
+ * A layer is a picture alone, or a box holding inner blocks (text, a label, a badge) with an optional picture
+ * behind them, or an empty box that draws a ring, a disc or a tinted panel. The picture always prints through
+ * `SGS_Media_Element::render()` (Spec 49 C2) for the `layer` slot, kinds image and svg.
  *
- * NO-INLINE: this block emits zero inline style property declarations.
- * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * - Picture only: the renderer's outermost element is the layer root, so a bare image is a naked `<img>`. The media
+ *   atoms paint width, height, ratio, opacity, corners, border and shadow on it. The helper prints only for a mask
+ *   shape or an effect that paints a layer (surface treatment, parallax).
+ * - Inner blocks, or no picture: the layer root is a `<div>` or `<span>` and paints its own box (width, height,
+ *   opacity, fill, border, corners, shadow) from the shared assemblers. The picture inside fills it, so those
+ *   settings are withheld from the renderer.
  *
- * Scoping: this block declares `supports.anchor` — the scope token is
- * therefore a CLASS (`.sgs-di-XXXXXXXX`), never an id, so it can never
- * collide with a user-set anchor id (Spec 32 FR-32-4), mirroring sgs/label +
- * sgs/media.
- *
- * The runtime fade-on-scroll effect (`view.js`) mutates one CSS CUSTOM
- * PROPERTY (`--sgs-di-op`) — never a real CSS property — so the element
- * carries zero inline property declarations at any point in its lifecycle;
- * the scoped `<style>` below is the only place the actual `transform` and
- * `opacity` declarations exist.
+ * Position, rotation, flip, stacking and overflow belong to the layer root in both shapes. They print in the block's own
+ * scoped `<style>`, keyed on `.{uid}.sgs-decorative-image`. No inline style declarations (Spec 32); the scope token is a CLASS
+ * (`.sgs-di-XXXXXXXX`) because the block declares `supports.anchor` (FR-32-4); `view.js` only writes `--sgs-di-op`.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
@@ -31,163 +27,198 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
-require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-effect.php';
-require_once dirname( __DIR__, 3 ) . '/includes/media/atoms/box-shape.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-layer-edges.php';
 
-// ---------------------------------------------------------------------------
-// 0. Security sanitiser (contract §D) — every value that reaches the scoped
-// CSS blob is cast through this before concatenation.
-// ---------------------------------------------------------------------------
-
+// Every value that reaches the scoped CSS is cast through this or is a literal.
 $sgs_css_num = static function ( $value, int $decimals = 4 ): float {
 	return is_numeric( $value ) ? round( (float) $value, $decimals ) : 0.0;
 };
 
-// Extract attributes with defaults.
-$image_id            = $attributes['imageId'] ?? null;
-$image_url           = $attributes['imageUrl'] ?? '';
-$image_alt           = $attributes['imageAlt'] ?? '';
-// Spec 35 item 18 — default true (this block is decorative-by-design); an
-// operator who genuinely wants an accessible name can flip this in the
-// Accessibility panel, which is why $rendered_alt is not simply ''.
-$image_decorative    = (bool) ( $attributes['imageDecorative'] ?? true );
-$rendered_alt        = $image_decorative ? '' : $image_alt;
+$position_x_obj = sgs_responsive_normalise_object( $attributes['positionX'] ?? null );
+$position_y_obj = sgs_responsive_normalise_object( $attributes['positionY'] ?? null );
+$rotation_obj   = sgs_responsive_normalise_object( $attributes['rotation'] ?? null );
+$z_index        = $attributes['zIndex'] ?? 1;
+$flip_x         = $attributes['flipX'] ?? false;
+$fade_on_scroll = (bool) ( $attributes['fadeOnScroll'] ?? false );
+$overflow_raw   = $attributes['overflow'] ?? 'visible';
+$overflow       = in_array( $overflow_raw, array( 'visible', 'hidden', 'clip', 'scroll', 'auto' ), true ) ? $overflow_raw : 'visible';
+$decorative     = (bool) ( $attributes['layerDecorative'] ?? true );
+$has_content    = '' !== trim( (string) $content );
 
-// decorMedia is the unified image-or-video slot. For
-// back-compat, when only the legacy imageUrl is set, synthesise a decorMedia
-// object so downstream rendering can use sgs_render_media() for video while
-// keeping the rich image pipeline (srcset via sgs_responsive_image) for images.
-$decor_media         = $attributes['decorMedia'] ?? null;
-if ( empty( $decor_media ) && ! empty( $image_url ) ) {
-	$decor_media = array(
-		'url'  => $image_url,
-		'type' => 'image',
-		'id'   => $image_id ? absint( $image_id ) : 0,
-		'alt'  => (string) $image_alt,
-		'mime' => 'image/jpeg',
-	);
+// The slot comes from the block's own `supports.sgs.mediaElements` entry for the `layer` prefix.
+$sgs_di_slot = array(
+	'prefix'  => 'layer',
+	'kinds'   => array( 'image', 'svg' ),
+	'context' => 'element',
+);
+foreach ( (array) ( $block->block_type->supports['sgs']['mediaElements'] ?? array() ) as $sgs_di_entry ) {
+	if ( 'layer' === ( $sgs_di_entry['prefix'] ?? '' ) && ! empty( $sgs_di_entry['kinds'] ) ) {
+		$sgs_di_slot = array(
+			'prefix'  => 'layer',
+			'kinds'   => (array) $sgs_di_entry['kinds'],
+			'context' => (string) ( $sgs_di_entry['context'] ?? 'element' ),
+		);
+	}
 }
-// When decorMedia carries an image and the legacy imageUrl is empty, hydrate
-// the legacy fields so the existing srcset/responsive pipeline still runs.
-if ( empty( $image_url ) && ! empty( $decor_media['url'] ) && 'image' === ( $decor_media['type'] ?? 'image' ) ) {
-	$image_url = (string) $decor_media['url'];
-	$image_id  = isset( $decor_media['id'] ) ? absint( $decor_media['id'] ) : 0;
-	$image_alt = isset( $decor_media['alt'] ) ? (string) $decor_media['alt'] : '';
-}
-// `positionX`/`positionY`/`width`/`rotation` are TIER OBJECTS (Spec 35,
-// {desktop,tablet,mobile}) — normalise before reading any tier. The desktop
-// tier drives the base scoped rule below; the tablet and mobile tiers become
-// scoped @media rules on the same selector (768/1024 device tiers).
-$position_x_obj      = sgs_responsive_normalise_object( $attributes['positionX'] ?? null );
-$position_y_obj      = sgs_responsive_normalise_object( $attributes['positionY'] ?? null );
-$rotation_obj        = sgs_responsive_normalise_object( $attributes['rotation'] ?? null );
-$position_x          = $position_x_obj['desktop'] ?? 50;
-$position_y          = $position_y_obj['desktop'] ?? 50;
-$width_obj           = sgs_responsive_normalise_object( $attributes['width'] ?? null );
-$sgs_di_max_width    = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
-$rotation            = $rotation_obj['desktop'] ?? 0;
-$opacity             = $attributes['opacity'] ?? 100;
-$z_index             = $attributes['zIndex'] ?? 1;
-$flip_x              = $attributes['flipX'] ?? false;
-$fade_on_scroll      = (bool) ( $attributes['fadeOnScroll'] ?? false );
-// overflow is interpolated straight into the scoped <style> block below —
-// allow-list it against valid CSS `overflow` keywords (never trust it
-// unsanitised into a <style> element, contract §D CSS-injection guard).
-$allowed_overflows   = array( 'visible', 'hidden', 'clip', 'scroll', 'auto' );
-$overflow_raw        = $attributes['overflow'] ?? 'visible';
-$overflow            = in_array( $overflow_raw, $allowed_overflows, true ) ? $overflow_raw : 'visible';
 
-// Responsive overrides. positionX/positionY/rotation tablet+mobile tiers now
-// come off the normalised tier objects built above ($position_x_obj etc.) —
-// `positionXTablet`/`positionYTablet`/`rotationTablet` and their Mobile
-// siblings are no longer declared by block.json (folded into the object).
-$position_x_tablet   = $position_x_obj['tablet'] ?? null;
-$position_y_tablet   = $position_y_obj['tablet'] ?? null;
-$rotation_tablet     = $rotation_obj['tablet'] ?? null;
-$hide_on_tablet      = $attributes['hideOnTablet'] ?? false;
-
-$position_x_mobile   = $position_x_obj['mobile'] ?? null;
-$position_y_mobile   = $position_y_obj['mobile'] ?? null;
-$rotation_mobile     = $rotation_obj['mobile'] ?? null;
-$hide_on_mobile      = $attributes['hideOnMobile'] ?? false;
-
-// A layer needs media, inner content, or both, or it paints a box of its own (a ring, a
-// disc, a tinted panel). Content is the rendered inner blocks.
-$has_media   = ! ( empty( $decor_media['url'] ) && ! $image_url );
-$has_content = '' !== trim( (string) $content );
-
-// The box the layer paints itself: border, shadow and fill on the layer root, from the
-// same shared assemblers sgs/before-after uses. The uid and root selector are needed
-// here because the border's gradient ring is a standalone rule on the root.
 $uid      = 'sgs-di-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.sgs-decorative-image';
 
-$sgs_di_border = sgs_border_element_decls(
-	$attributes,
-	'',
-	$root_sel,
-	array(
-		'colour' => array(
-			'base'     => 'borderColour',
-			'gradient' => 'borderColourGradient',
-		),
-		'radius' => 'borderRadius',
-		'facts'  => true,
-	)
+// The layer's box settings: what the layer root paints when it is a box, and what the renderer paints on a bare picture.
+$sgs_di_is_box_key = static function ( string $name ): bool {
+	return 1 === preg_match( '/^layer((Min|Max)?(Width|Height)|Opacity|Radius|Border(Width|Style|Colour|ColourHover)|BoxShadow.*)$/', $name );
+};
+// The layer root paints the fill itself, with its gradient, so the renderer never writes a second one.
+$sgs_di_unrendered = array( 'layerBackground', 'layerPadding' );
+
+// Effects stored on the layer (any element of the motion document), so the renderer prints the helper an effect that paints a layer needs (§7.3).
+$sgs_di_effects = array();
+foreach ( (array) ( $attributes['sgsMotion']['elements'] ?? array() ) as $sgs_di_element ) {
+	foreach ( (array) ( $sgs_di_element['effects'] ?? array() ) as $sgs_di_layer ) {
+		if ( is_array( $sgs_di_layer ) && isset( $sgs_di_layer['effect'] ) ) {
+			$sgs_di_effects[] = (string) $sgs_di_layer['effect'];
+		}
+	}
+}
+
+$sgs_di_render = static function ( array $attrs, string $media_uid ) use ( $sgs_di_slot, $sgs_di_effects, $block ): array {
+	if ( ! class_exists( 'SGS_Media_Element' ) ) {
+		return array(
+			'html' => '',
+			'css'  => '',
+		);
+	}
+	return SGS_Media_Element::render(
+		$sgs_di_slot,
+		$attrs,
+		array(
+			'uid'       => $media_uid,
+			'block'     => $block->name ?? 'sgs/decorative-image',
+			'role'      => 'layer',
+			'effects'   => $sgs_di_effects,
+			'in_editor' => defined( 'REST_REQUEST' ) && REST_REQUEST,
+		)
+	);
+};
+
+// A layer that holds blocks is a box. A layer that is only a picture is the renderer's element.
+$sgs_di_as_box = $has_content;
+$media         = array(
+	'html' => '',
+	'css'  => '',
 );
-$sgs_di_shadow = sgs_shadow_decls(
-	$attributes,
-	array(
-		'base'         => 'boxShadow',
-		'colour'       => 'boxShadowColour',
-		'hover'        => 'boxShadowHover',
-		'hover_colour' => 'boxShadowColourHover',
+if ( $sgs_di_as_box ) {
+	$sgs_di_media_attrs = array_diff_key( array_filter( $attributes, static fn( $key ): bool => ! $sgs_di_is_box_key( (string) $key ), ARRAY_FILTER_USE_KEY ), array_flip( $sgs_di_unrendered ) );
+	// A radius-drawn shape is the box's corners; only a mask shape reaches the picture.
+	if ( ! sgs_media_has_mask( 'layer', $sgs_di_media_attrs ) ) {
+		unset( $sgs_di_media_attrs['layerShape'] );
+	}
+	$media = $sgs_di_render( $sgs_di_media_attrs, $uid . '-m' );
+} else {
+	$media = $sgs_di_render( array_diff_key( $attributes, array_flip( $sgs_di_unrendered ) ), $uid );
+	if ( '' === $media['html'] ) {
+		$sgs_di_as_box = true;
+	}
+}
+$has_media = '' !== $media['html'];
+
+// The shape a layer root takes when it is a box: a radius-drawn shape becomes border-radius on the root, a mask shape clips the picture.
+$sgs_di_shape_radius = array(
+	'circle'  => '50%',
+	'ellipse' => '50%',
+	'pill'    => '9999px',
+);
+$sgs_di_shape_at     = static function ( string $tier ) use ( $attributes ): string {
+	$shape = sgs_responsive_normalise_object( $attributes['layerShape'] ?? null );
+	$order = array( 'desktop', 'tablet', 'mobile' );
+	$seen  = '';
+	foreach ( array_slice( $order, 0, array_search( $tier, $order, true ) + 1 ) as $step ) {
+		$value = $shape[ $step ] ?? null;
+		if ( is_array( $value ) ) {
+			$value = $value['shape'] ?? '';
+		}
+		if ( is_string( $value ) && '' !== $value ) {
+			$seen = $value;
+		}
+	}
+	return $seen;
+};
+
+$sgs_di_border = array(
+	'base'   => array(),
+	'tablet' => array(),
+	'mobile' => array(),
+	'hover'  => array(),
+	'rules'  => array(),
+	'facts'  => array(
+		'style'     => 'none',
+		'has_width' => false,
+		'has_ring'  => false,
 	),
-	$block->name ?? ''
 );
-$sgs_di_fill   = sgs_background_paint_decl(
-	isset( $attributes['backgroundColour'] ) ? (string) $attributes['backgroundColour'] : '',
+$sgs_di_shadow = array(
+	'normal' => array(),
+	'hover'  => array(),
+);
+if ( $sgs_di_as_box ) {
+	$sgs_di_border = sgs_border_element_decls(
+		$attributes,
+		'layer',
+		$root_sel,
+		array(
+			'colour' => array(
+				'base'     => 'layerBorderColour',
+				'hover'    => 'layerBorderColourHover',
+				'gradient' => 'layerBorderColourGradient',
+			),
+			'radius' => 'layerRadius',
+			'facts'  => true,
+		)
+	);
+	$sgs_di_shadow = sgs_shadow_decls(
+		$attributes,
+		array(
+			'base'         => 'layerBoxShadow',
+			'colour'       => 'layerBoxShadowColour',
+			'hover_colour' => 'layerBoxShadowColourHover',
+		),
+		$block->name ?? ''
+	);
+}
+$sgs_di_fill = sgs_background_paint_decl(
+	isset( $attributes['layerBackground'] ) ? (string) $attributes['layerBackground'] : '',
 	isset( $attributes['backgroundColourGradient'] ) ? (string) $attributes['backgroundColourGradient'] : ''
 );
-$sgs_di_height = sgs_responsive_normalise_object( $attributes['height'] ?? null );
 
-// The layer's shape: the box-shape atom's vocabulary and clip-path map, applied to the layer root so a
-// shaped layer clips its fill, border, shadow, image and content together.
-$sgs_di_shape = sgs_media_atom_box_shape_validate_shape( $attributes['shape'] ?? null );
-$sgs_di_clip  = sgs_media_atom_box_shape_clip_paths()[ $sgs_di_shape ] ?? '';
-
-// A layer with no media and no content renders only when it has something to draw: a border
-// width at any tier, a gradient ring, a resting shadow or a fill. A height, a radius, a shape or a
-// hover shadow alone draws nothing. A border style of none draws no border or ring.
-// `layer-preview.js::layerPaintsBox` is the canvas twin; tests/fixtures/decorative-image-paints-box.json
-// is the table both are tested against.
+// A box with no picture and no blocks renders only when it has something to draw: a border width at any tier, a gradient ring, a
+// resting shadow or a fill. A height, a radius, a shape or a hover shadow alone draws nothing, and a border style of none draws no
+// border or ring. `layer-preview.js::layerPaintsBox` is the canvas twin; tests/fixtures/decorative-image-paints-box.json is the table
+// both are tested against.
 $sgs_di_has_width  = ! empty( $sgs_di_border['facts']['has_width'] );
 $sgs_di_has_ring   = ! empty( $sgs_di_border['facts']['has_ring'] );
 $sgs_di_paints_box = ( 'none' !== $sgs_di_border['facts']['style'] && ( $sgs_di_has_width || $sgs_di_has_ring ) )
 	|| array() !== $sgs_di_shadow['normal']
 	|| '' !== $sgs_di_fill;
-$sgs_di_shape_only = ! $has_media && ! $has_content;
-if ( $sgs_di_shape_only && ! $sgs_di_paints_box ) {
+if ( ! $has_media && ! $has_content && ! $sgs_di_paints_box ) {
 	return;
 }
 
 // ---------------------------------------------------------------------------
-// Scoped CSS assembly (contract §A). uid is a CLASS — this block declares
-// `supports.anchor`, so the scope token must never be an id (Spec 32 FR-32-4).
+// The layer's own scoped CSS: position, size (box only), opacity, stacking, transform, overflow.
 // ---------------------------------------------------------------------------
 
-// Base declarations — position/size/opacity/z-index/transform. `opacity`
-// reads a CSS custom property so the runtime fade-on-scroll in view.js only
-// ever mutates a --var VALUE, never a real CSS property (keeps the element at
-// zero inline property declarations even after JS runs).
-$pos_x_css        = $sgs_css_num( $position_x, 2 );
-$pos_y_css        = $sgs_css_num( $position_y, 2 );
-$opacity_css      = $sgs_css_num( $opacity / 100, 4 );
-$z_index_css      = (int) $sgs_css_num( $z_index, 0 );
+$pos_x_css   = $sgs_css_num( $position_x_obj['desktop'] ?? 50, 2 );
+$pos_y_css   = $sgs_css_num( $position_y_obj['desktop'] ?? 50, 2 );
+$z_index_css = (int) $sgs_css_num( $z_index, 0 );
 
-// The layer's edge offsets (includes/helpers-layer-edges.php): an axis anchored to its edges prints them and drops
-// its centre percentage and its half of the centring translate.
+$layer_opacity = sgs_responsive_normalise_object( $attributes['layerOpacity'] ?? null );
+$opacity_css   = static function ( $value ) use ( $sgs_css_num ): float {
+	return $sgs_css_num( max( 0, min( 100, (float) $value ) ) / 100, 4 );
+};
+$base_opacity  = is_numeric( $layer_opacity['desktop'] ?? null ) ? $opacity_css( $layer_opacity['desktop'] ) : 1.0;
+
+// Edge offsets (includes/helpers-layer-edges.php): an axis anchored to its edges prints them and drops its centre percentage and its
+// half of the centring translate.
 $sgs_di_edges = sgs_layer_edges( $attributes );
 if ( ! $sgs_di_edges['x'] && ! $sgs_di_edges['y'] ) {
 	$sgs_di_centring = 'translate(-50%, -50%)';
@@ -199,9 +230,7 @@ if ( ! $sgs_di_edges['x'] && ! $sgs_di_edges['y'] ) {
 	$sgs_di_centring = '';
 }
 
-// The whole transform is rebuilt per tier: rotation shares the one
-// `transform` property with the centring translate and the flip, so a tier
-// rule must carry every part.
+// The whole transform is rebuilt per tier: rotation shares the one `transform` property with the centring translate and the flip.
 $sgs_di_transform = function ( $rotation_deg ) use ( $sgs_css_num, $flip_x, $sgs_di_centring ) {
 	$parts   = '' !== $sgs_di_centring ? array( $sgs_di_centring ) : array();
 	$deg_css = $sgs_css_num( $rotation_deg, 2 );
@@ -214,71 +243,101 @@ $sgs_di_transform = function ( $rotation_deg ) use ( $sgs_css_num, $flip_x, $sgs
 	return $parts ? implode( ' ', $parts ) : 'none';
 };
 
-// Width and max width per device, each a length from the shared control (a narrower device inherits the wider
-// one's value, as the media queries do). A device whose width fits the content (`max-content`) is capped at the
-// parent unless a max width is set for it; a device whose width is fixed has no cap unless one is set. The desktop
-// declarations join the root rule; a narrower device prints its width when set and its max width when it differs.
-$sgs_di_size    = array();
-$sgs_di_w_eff   = '200px';
-$sgs_di_mw_set  = '';
-$sgs_di_cap_was = 'none';
-foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_di_tier ) {
-	$sgs_di_decls = array();
-	$sgs_di_w     = sgs_css_length_value( $width_obj[ $sgs_di_tier ] ?? '' );
-	if ( '' !== $sgs_di_w ) {
-		$sgs_di_w_eff = $sgs_di_w;
+// A box's width and max width per device, each a length (a narrower device inherits the wider one's value). A device whose width fits
+// the content (`max-content`) is capped at the parent unless a max width is set for it; a fixed width has no cap unless one is set.
+// A picture-only layer leaves width, max width and height to the media atoms.
+$sgs_di_size = array(
+	'desktop' => array(),
+	'tablet'  => array(),
+	'mobile'  => array(),
+);
+$sgs_di_hgt  = sgs_responsive_normalise_object( $attributes['layerHeight'] ?? null );
+if ( $sgs_di_as_box ) {
+	$width_obj      = sgs_responsive_normalise_object( $attributes['layerWidth'] ?? null );
+	$max_width_obj  = sgs_responsive_normalise_object( $attributes['layerMaxWidth'] ?? null );
+	$sgs_di_w_eff   = '200px';
+	$sgs_di_mw_set  = '';
+	$sgs_di_cap_was = 'none';
+	foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_di_tier ) {
+		$sgs_di_decls = array();
+		// Auto is Fit the content for a box: it sizes to what it holds.
+		$sgs_di_w = 'auto' === ( $width_obj[ $sgs_di_tier ] ?? '' ) ? 'max-content' : sgs_css_length_value( $width_obj[ $sgs_di_tier ] ?? '' );
+		if ( '' !== $sgs_di_w ) {
+			$sgs_di_w_eff = $sgs_di_w;
+		}
+		if ( '' !== $sgs_di_w || 'desktop' === $sgs_di_tier ) {
+			$sgs_di_decls[] = 'width:' . $sgs_di_w_eff;
+		}
+		$sgs_di_mw = sgs_css_length_value( $max_width_obj[ $sgs_di_tier ] ?? '' );
+		if ( '' !== $sgs_di_mw ) {
+			$sgs_di_mw_set = $sgs_di_mw;
+		}
+		$sgs_di_cap = '' !== $sgs_di_mw_set ? $sgs_di_mw_set : ( 'max-content' === $sgs_di_w_eff ? '100%' : 'none' );
+		if ( $sgs_di_cap !== $sgs_di_cap_was ) {
+			$sgs_di_decls[] = 'max-width:' . $sgs_di_cap;
+		}
+		$sgs_di_cap_was = $sgs_di_cap;
+		$sgs_di_h       = sgs_css_length_value( $sgs_di_hgt[ $sgs_di_tier ] ?? '' );
+		if ( '' !== $sgs_di_h ) {
+			$sgs_di_decls[] = 'height:' . $sgs_di_h;
+		}
+		if ( 'desktop' !== $sgs_di_tier && is_numeric( $layer_opacity[ $sgs_di_tier ] ?? null ) ) {
+			$sgs_di_decls[] = 'opacity:var(--sgs-di-op, ' . $opacity_css( $layer_opacity[ $sgs_di_tier ] ) . ')';
+		}
+		$sgs_di_size[ $sgs_di_tier ] = $sgs_di_decls;
 	}
-	if ( '' !== $sgs_di_w || 'desktop' === $sgs_di_tier ) {
-		$sgs_di_decls[] = 'width:' . $sgs_di_w_eff;
-	}
-	$sgs_di_mw = sgs_css_length_value( $sgs_di_max_width[ $sgs_di_tier ] ?? '' );
-	if ( '' !== $sgs_di_mw ) {
-		$sgs_di_mw_set = $sgs_di_mw;
-	}
-	$sgs_di_cap = '' !== $sgs_di_mw_set ? $sgs_di_mw_set : ( 'max-content' === $sgs_di_w_eff ? '100%' : 'none' );
-	if ( $sgs_di_cap !== $sgs_di_cap_was ) {
-		$sgs_di_decls[] = 'max-width:' . $sgs_di_cap;
-	}
-	$sgs_di_cap_was               = $sgs_di_cap;
-	$sgs_di_size[ $sgs_di_tier ] = $sgs_di_decls;
 }
-$size_decls = $sgs_di_size['desktop'];
+
+// Corner shape of a box root, per device: a radius-drawn shape replaces the corners.
+$sgs_di_shape_decl = array();
+if ( $sgs_di_as_box ) {
+	$sgs_di_shape_was = '';
+	foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_di_tier ) {
+		$sgs_di_radius = $sgs_di_shape_radius[ $sgs_di_shape_at( $sgs_di_tier ) ] ?? '';
+		if ( $sgs_di_radius !== $sgs_di_shape_was && ( '' !== $sgs_di_radius || '' !== $sgs_di_shape_was ) ) {
+			$sgs_di_shape_decl[ $sgs_di_tier ] = 'border-radius:' . ( '' !== $sgs_di_radius ? $sgs_di_radius : '0' );
+		}
+		$sgs_di_shape_was = $sgs_di_radius;
+	}
+}
 
 $root_decls = array_merge(
 	array( 'position:absolute' ),
 	$sgs_di_edges['x'] ? array() : array( 'left:' . $pos_x_css . '%' ),
 	$sgs_di_edges['y'] ? array() : array( 'top:' . $pos_y_css . '%' ),
 	$sgs_di_edges['tiers']['desktop'],
-	$size_decls,
+	$sgs_di_size['desktop'],
+	$sgs_di_as_box ? array( 'opacity:var(--sgs-di-op, ' . $base_opacity . ')' ) : array(),
+	! $sgs_di_as_box && $fade_on_scroll ? array( 'opacity:var(--sgs-di-op, ' . $base_opacity . ')' ) : array(),
 	array(
-		'opacity:var(--sgs-di-op, ' . $opacity_css . ')',
 		'z-index:' . $z_index_css,
-		'transform:' . $sgs_di_transform( $rotation ),
-		'overflow:' . $overflow,
+		'transform:' . $sgs_di_transform( $rotation_obj['desktop'] ?? 0 ),
 	),
+	$sgs_di_as_box || 'visible' !== $overflow ? array( 'overflow:' . $overflow ) : array(),
 	$sgs_di_border['base'],
+	isset( $sgs_di_shape_decl['desktop'] ) ? array( $sgs_di_shape_decl['desktop'] ) : array(),
 	$sgs_di_shadow['normal'],
-	'' !== $sgs_di_fill ? array( $sgs_di_fill ) : array(),
-	'' !== $sgs_di_clip ? array( 'clip-path:' . $sgs_di_clip ) : array(),
-	'' !== sgs_css_length_value( $sgs_di_height['desktop'] ?? '' ) ? array( 'height:' . sgs_css_length_value( $sgs_di_height['desktop'] ) ) : array()
+	'' !== $sgs_di_fill ? array( $sgs_di_fill ) : array()
 );
 
 $scoped_css   = array();
 $scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
+// A fixed width holds at every device unless the client sets a max width: the media base would cap a bare picture at its container.
+if ( ! $sgs_di_as_box && ! array_filter( sgs_responsive_normalise_object( $attributes['layerMaxWidth'] ?? null ) ) ) {
+	$scoped_css[] = '.' . $uid . '{max-width:none}';
+}
 
-// Tablet and mobile tiers. The desktop values are already in the base rule
-// above, so only the two lower tiers are passed to the shared emitter (its
-// base `attr` key is deliberately absent from the synthetic array).
-$sgs_di_tier_attrs = array(
-	'positionXTablet' => $sgs_di_edges['x'] ? null : $position_x_tablet,
-	'positionXMobile' => $sgs_di_edges['x'] ? null : $position_x_mobile,
-	'positionYTablet' => $sgs_di_edges['y'] ? null : $position_y_tablet,
-	'positionYMobile' => $sgs_di_edges['y'] ? null : $position_y_mobile,
-	'rotationTablet'  => $rotation_tablet,
-	'rotationMobile'  => $rotation_mobile,
-);
-$sgs_di_tier_css   = sgs_responsive_css_rule(
-	$sgs_di_tier_attrs,
+// Tablet and mobile: position and rotation through the shared emitter (desktop values are in the base rule), then the box's own
+// tier declarations. Tier rules print after the base rule, so a device value wins inside its query.
+$sgs_di_tier_css = sgs_responsive_css_rule(
+	array(
+		'positionXTablet' => $sgs_di_edges['x'] ? null : ( $position_x_obj['tablet'] ?? null ),
+		'positionXMobile' => $sgs_di_edges['x'] ? null : ( $position_x_obj['mobile'] ?? null ),
+		'positionYTablet' => $sgs_di_edges['y'] ? null : ( $position_y_obj['tablet'] ?? null ),
+		'positionYMobile' => $sgs_di_edges['y'] ? null : ( $position_y_obj['mobile'] ?? null ),
+		'rotationTablet'  => $rotation_obj['tablet'] ?? null,
+		'rotationMobile'  => $rotation_obj['mobile'] ?? null,
+	),
 	array(
 		array(
 			'attr'         => 'positionXDesktop',
@@ -309,18 +368,15 @@ $sgs_di_tier_css   = sgs_responsive_css_rule(
 if ( '' !== $sgs_di_tier_css ) {
 	$scoped_css[] = $sgs_di_tier_css;
 }
-
-// The box's own tiers (edge offsets, width and max width, border width and radius, height), its hover shadow and its gradient
-// ring. Tier rules print after the base rule, so a device value wins inside its query.
 foreach ( array( 'tablet', 'mobile' ) as $sgs_di_tier ) {
-	$sgs_di_max        = SGS_Breakpoints::max_for_tier( $sgs_di_tier );
-	$sgs_di_tier_decls = array_merge( $sgs_di_edges['tiers'][ $sgs_di_tier ], $sgs_di_size[ $sgs_di_tier ], $sgs_di_border[ $sgs_di_tier ] );
-	$sgs_di_tier_h     = sgs_css_length_value( $sgs_di_height[ $sgs_di_tier ] ?? '' );
-	if ( '' !== $sgs_di_tier_h ) {
-		$sgs_di_tier_decls[] = 'height:' . $sgs_di_tier_h;
-	}
+	$sgs_di_tier_decls = array_merge(
+		$sgs_di_edges['tiers'][ $sgs_di_tier ],
+		$sgs_di_size[ $sgs_di_tier ],
+		$sgs_di_border[ $sgs_di_tier ],
+		isset( $sgs_di_shape_decl[ $sgs_di_tier ] ) ? array( $sgs_di_shape_decl[ $sgs_di_tier ] ) : array()
+	);
 	if ( $sgs_di_tier_decls ) {
-		$scoped_css[] = SGS_Breakpoints::media_width( 'max', $sgs_di_max ) . '{' . $root_sel . '{' . implode( ';', $sgs_di_tier_decls ) . ';}}';
+		$scoped_css[] = SGS_Breakpoints::media_width( 'max', SGS_Breakpoints::max_for_tier( $sgs_di_tier ) ) . '{' . $root_sel . '{' . implode( ';', $sgs_di_tier_decls ) . ';}}';
 	}
 }
 if ( $sgs_di_border['hover'] ) {
@@ -331,407 +387,112 @@ if ( $sgs_di_shadow['hover'] ) {
 }
 $scoped_css = array_merge( $scoped_css, $sgs_di_border['rules'] );
 
-// ---------------------------------------------------------------------------
-// Media-atom layer (Wave 6, 2026-09-02) — object-fit / focal-point (element
-// scope) / overlay (box scope). Scoped to '.' . $uid alone (this block
-// declares `mediaElements: [{ prefix: "", ... }]`, so
-// `SGS_Media_Element::scope_class()` resolves to $uid itself with no
-// suffix — the SAME class every rendered node in this file already carries
-// somewhere in its ancestor chain: the naked <img> in default mode, or the
-// wrapper span in video/treated/boxed mode). Custom properties inherit, so
-// one rule on `.{uid}` feeds both `.sgs-media-el` and `.sgs-media-box`
-// wherever those markers land.
-//
-// object-fit/focal-point never emitted anything for this block before this
-// migration (it had no such controls) — this is new capability, wired via
-// the atom layer exactly per the migration brief, not a replacement of any
-// existing hand-rolled CSS (there was none to replace).
-$sgs_di_atoms        = array( 'object-fit', 'focal-point', 'overlay' );
-$sgs_di_requires_box = $has_media && class_exists( 'SGS_Media_Element' )
-	&& SGS_Media_Element::requires_box( $attributes, '', 'sgs/decorative-image', $sgs_di_atoms );
-if ( $has_media && class_exists( 'SGS_Media_Element' ) ) {
-	$sgs_di_atom_css = SGS_Media_Element::style( $attributes, '', 'sgs/decorative-image', $uid, $sgs_di_atoms );
-	if ( '' !== $sgs_di_atom_css ) {
-		$scoped_css[] = $sgs_di_atom_css;
-	}
+// The picture inside a box fills it.
+if ( $sgs_di_as_box && $has_media ) {
+	$scoped_css[] = '.' . $uid . ' .sgs-media-el{display:block;width:100%;height:auto}';
 }
 
-// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
-// CSS combinators like `>` intact (contract §D). Every value reaching
-// $scoped_css is pre-sanitised via $sgs_css_num (numeric cast) or a literal.
-$style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
+// wp_strip_all_tags (not esc_html) blocks a </style> breakout and leaves CSS combinators such as `>` intact.
+$style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) . $media['css'] ) . '</style>';
 
-// The editor's "Additional CSS class(es)" and the anchor reach whichever element is the block root (naked <img>,
-// treated/overlay wrapper or video wrapper) through the block wrapper attributes, parsed and merged the same way as
-// sgs/media's naked mode. Values are decoded once because every output path escapes them again.
+// "Additional CSS class(es)" and the anchor reach the layer root, whichever element that is, through the block wrapper attributes.
 $sgs_di_wrapper_attrs = get_block_wrapper_attributes();
 preg_match( '/class="([^"]*)"/', $sgs_di_wrapper_attrs, $sgs_di_class_match );
 preg_match( '/id="([^"]*)"/', $sgs_di_wrapper_attrs, $sgs_di_id_match );
 $sgs_di_extra_class = trim( wp_specialchars_decode( $sgs_di_class_match[1] ?? '', ENT_QUOTES ) );
 $sgs_di_anchor      = wp_specialchars_decode( $sgs_di_id_match[1] ?? '', ENT_QUOTES );
 
-// Loading hints: an ornament may load eagerly above the fold but never takes the page's priority slot.
-$sgs_di_loading = sgs_image_loading_attrs( false );
+/**
+ * Put the layer's identity on the first element of printed markup: its class, anchor and fade marker.
+ *
+ * @param string $html     Markup whose first element is the layer root.
+ * @param string $classes  Classes to add.
+ * @param string $anchor   Anchor id, or ''.
+ * @param bool   $fade     Whether the layer fades on scroll.
+ * @return string The markup.
+ */
+$sgs_di_mark_root = static function ( string $html, string $classes, string $anchor, bool $fade ): string {
+	$tags = new WP_HTML_Tag_Processor( $html );
+	if ( ! $tags->next_tag() ) {
+		return $html;
+	}
+	foreach ( preg_split( '/\s+/', $classes, -1, PREG_SPLIT_NO_EMPTY ) as $class ) {
+		$tags->add_class( $class );
+	}
+	if ( '' !== $anchor ) {
+		$tags->set_attribute( 'id', $anchor );
+	}
+	if ( $fade ) {
+		$tags->set_attribute( 'data-fade-on-scroll', 'true' );
+	}
+	return $tags->get_updated_html();
+};
 
-// Build data attributes — passed directly through $img_attrs for proper escaping.
-$img_attrs = array(
-	// `sgs-media-el` is the shared atom layer's marker for the REPLACED
-	// element (object-fit/focal-point read it) — added Wave 6, 2026-09-02.
-	'class'    => trim( 'sgs-decorative-image sgs-media-el ' . $uid . ' ' . $sgs_di_extra_class ),
-	'alt'      => $rendered_alt,
-	'loading'  => $sgs_di_loading['loading'],
-	'decoding' => $sgs_di_loading['decoding'],
-);
-if ( $image_decorative ) {
-	$img_attrs['aria-hidden'] = 'true';
-	$img_attrs['role']        = 'presentation';
+// A decorative picture is hidden from assistive technology; the layer's text and blocks never are.
+$sgs_di_hide_picture = static function ( string $html ): string {
+	$tags = new WP_HTML_Tag_Processor( $html );
+	while ( $tags->next_tag( 'img' ) ) {
+		$tags->set_attribute( 'aria-hidden', 'true' );
+	}
+	return $tags->get_updated_html();
+};
+if ( $has_media && $decorative ) {
+	$media['html'] = $sgs_di_hide_picture( $media['html'] );
 }
 
-if ( $fade_on_scroll ) {
-	$img_attrs['data-fade-on-scroll'] = 'true';
-}
-if ( $hide_on_tablet ) {
-	$img_attrs['data-hide-tablet'] = 'true';
-}
-if ( $hide_on_mobile ) {
-	$img_attrs['data-hide-mobile'] = 'true';
-}
-
-// Video branch: when decorMedia is a video, defer to sgs_render_media() and
-// wrap it in a positioned span so the existing position/transform/data-*
-// pipeline (parallax, fade, hide-on-*, responsive overrides) still applies.
-$is_video = $has_media && ! empty( $decor_media ) && isset( $decor_media['type'] ) && 'video' === $decor_media['type'];
-
-// The inner blocks sit in one content box after the media (or alone, with no media). Text and blocks inside a layer are
-// always read out, so a layer with content never hides its wrapper; imageDecorative governs the <img> only.
-$content_html = $has_content
-	? '<div class="sgs-decorative-image__content">' . $content . '</div>'
-	: '';
-$layer_tag    = $has_content ? 'div' : 'span';
-
-if ( $is_video ) {
-	$video_html = sgs_render_media( $decor_media, 'sgs/decorative-image' );
-	if ( '' === $video_html && ! $has_content ) {
-		return;
-	}
-
-	// Build wrapper attributes mirroring the image data-* pipeline. NO 'style'
-	// key — the wrapper carries zero inline property declarations; the
-	// positioning/transform/opacity rule lives in $style_tag_html above,
-	// scoped to $uid (contract §A).
-	//
-	// `sgs-media-box` (Wave 6, 2026-09-02) is added ONLY when the overlay
-	// atom actually emits box-scope CSS for these attribute values
-	// ($sgs_di_requires_box, value-aware) — this wrapper already carries the
-	// $uid class the atom CSS is scoped to, so no other change is needed for
-	// overlay to paint here. object-fit/focal-point are NOT wired onto the
-	// inner <video> in this branch: sgs_render_media() (includes/helpers-
-	// media.php, a shared file out of scope for this migration) has no class
-	// parameter to carry the `sgs-media-el` marker — a documented, narrow gap,
-	// not a silent drop (this block never had object-fit/focal-point controls
-	// for video before this migration either).
-	$video_wrapper_class = array( 'sgs-decorative-image', 'sgs-decorative-image--video' );
-	if ( 'section' === ( $attributes['anchorTo'] ?? 'parent' ) ) {
-		$video_wrapper_class[] = 'sgs-decorative-image--anchor-section';
-	}
-	if ( $has_content ) {
-		$video_wrapper_class[] = 'sgs-decorative-image--layer';
-		$video_wrapper_class[] = 'sgs-decorative-image--over-image';
-	}
-	if ( $sgs_di_requires_box ) {
-		$video_wrapper_class[] = SGS_Media_Element::CLASS_BOX;
-	}
-	$video_wrapper_class[] = $uid;
-	$video_wrapper_class[] = $sgs_di_extra_class;
-	$wrapper_attrs         = array(
-		'class' => trim( implode( ' ', $video_wrapper_class ) ),
-	);
-	if ( ! $has_content ) {
-		$wrapper_attrs['aria-hidden'] = 'true';
-		$wrapper_attrs['role']        = 'presentation';
-	}
-	if ( '' !== $sgs_di_anchor ) {
-		$wrapper_attrs['id'] = $sgs_di_anchor;
-	}
-	foreach ( $img_attrs as $key => $val ) {
-		if ( 0 === strpos( $key, 'data-' ) ) {
-			$wrapper_attrs[ $key ] = $val;
+if ( ! $sgs_di_as_box ) {
+	$classes = trim( 'sgs-decorative-image ' . ( 'section' === ( $attributes['anchorTo'] ?? 'parent' ) ? 'sgs-decorative-image--anchor-section ' : '' ) . $sgs_di_extra_class );
+	$out     = $sgs_di_mark_root( $media['html'], $classes, $sgs_di_anchor, $fade_on_scroll );
+	if ( $decorative ) {
+		$root = new WP_HTML_Tag_Processor( $out );
+		if ( $root->next_tag() ) {
+			$root->set_attribute( 'role', 'presentation' );
+			$out = $root->get_updated_html();
 		}
 	}
-
-	$wrapper_attr_strs = array();
-	foreach ( $wrapper_attrs as $key => $val ) {
-		$wrapper_attr_strs[] = sprintf( '%s="%s"', esc_attr( $key ), esc_attr( $val ) );
-	}
-
-	printf(
-		'%1$s<%2$s %3$s>%4$s%5$s</%2$s>',
-		$style_tag_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_num + wp_strip_all_tags.
-		$layer_tag, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal div or span.
-		implode( ' ', $wrapper_attr_strs ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each attr already escaped above.
-		$video_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_render_media() escapes attributes internally.
-		$content_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered inner blocks, escaped by their own renders.
-	);
+	echo $style_tag_html . $out; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS stripped of tags; the markup is built by the media renderer with per-attribute escaping.
 	return;
 }
 
-// ART-DIRECTION TIERS (2026-08-07). Image branch only — the video branch above
-// has already returned. Same {base}/{base}Tablet/{base}Mobile shape as
-// sgs/media and sgs/hero, so one client interaction covers "a different crop on
-// narrow screens" wherever images appear.
-//
-// ⚠ NAKED MODE. This block has NO wrapper element — sgs_responsive_image()
-// emits the <img> AS the block root. So each tier is a SIBLING <img> that must
-// itself carry the $uid class (the positioning/opacity/transform rule is scoped
-// to `.{uid}.sgs-decorative-image` and would not reach a tier img without it),
-// and the toggle selectors are COMPOUND (`.{uid}.sgs-decorative-image--mobile`),
-// never descendant — there is no ancestor to descend from.
-//
-// ⛔ Tier selectors are built from `'.' . $uid` (a bare single-class token),
-// never from $root_sel or any multi-member selector list: a descendant or
-// modifier appended to a LIST binds to the last member only, which on
-// sgs/media hid every image at every width before it was caught live.
-// SURFACE-TREATMENT WRAPPER GATE.
-//
-// The surface-treatment effect (`src/shared/effects/fx-surface-treatment.js`) takes the element that carries the
-// effect layer's `data-sgs-fx="surface-treatment"` markup as its host: it finds the `<img>` with
-// `el.querySelector( 'img' )` and appends `canvas.sgs-webgl-surface` as a CHILD of that element. An `<img>` is a void
-// element that cannot hold children, and `querySelector` only searches descendants, so on a bare `<img>` the effect
-// would find nothing and paint nothing, with no error anywhere. A block whose root stores a `surface-treatment` effect
-// layer therefore renders a `<span>` host carrying the root role (class, uid, a11y attributes and every `data-*`, which
-// is where the layer's markup lands), with the `<img>` inside it as plain fill-the-host media.
-//
-// The gate is conditional because the untreated path keeps the `<img>` as the root, and three things assume that:
-//   · $root_sel / $sgs_tier_sel are COMPOUND (`.{uid}.sgs-decorative-image`) — see the tier note above; a wrapper
-//     changes which element they must hit.
-//   · style.css binds `data-hide-tablet` / `data-hide-mobile` to whatever carries the class; splitting the pair across
-//     two elements breaks both.
-//   · view.js selects `.sgs-decorative-image[data-fade-on-scroll]` and writes --sgs-di-op onto the match. If BOTH the
-//     wrapper and the <img> kept the class + data-*, the fade would apply twice and the inner <img> would take its own
-//     position:absolute from $root_sel.
-// So in treated mode the WRAPPER takes over the root role wholesale and the inner <img> becomes plain fill-the-host
-// media, exactly the division the video branch above already uses.
-$has_treatment = $has_media && sgs_motion_root_has_effect( $attributes, 'surface-treatment' );
-
-// A real container is needed whenever EITHER the FX surface-treatment (a
-// <canvas> host) OR the overlay atom (a ::after box paint) needs one — a
-// replaced <img> supplies neither (Wave 6, 2026-09-02: see the overlay-atom
-// note further below, and the surface-treatment note above it — both name
-// the identical constraint independently). Generalising the wrapper-takes-
-// root-role shape this file already uses for $has_treatment means overlay
-// gets it for free with no second implementation.
-$sgs_di_wants_wrapper = $has_treatment || $sgs_di_requires_box || $has_content || $sgs_di_shape_only;
-
-$tier_imgs = array();
-foreach ( $has_media ? array( 'Tablet', 'Mobile' ) : array() as $sgs_tier ) {
-	$tier_id  = isset( $attributes[ 'imageId' . $sgs_tier ] ) ? absint( $attributes[ 'imageId' . $sgs_tier ] ) : 0;
-	$tier_url = isset( $attributes[ 'imageUrl' . $sgs_tier ] ) ? (string) $attributes[ 'imageUrl' . $sgs_tier ] : '';
-	if ( '' === $tier_url && 0 === $tier_id ) {
-		continue;
-	}
-	$tier_imgs[ strtolower( $sgs_tier ) ] = array(
-		'id'  => $tier_id,
-		'url' => $tier_url,
-	);
+// A box: a `<div>` when it holds blocks, otherwise a `<span>`.
+$sgs_di_classes = array( 'sgs-decorative-image' );
+if ( 'section' === ( $attributes['anchorTo'] ?? 'parent' ) ) {
+	$sgs_di_classes[] = 'sgs-decorative-image--anchor-section';
 }
-
-$base_class = $img_attrs['class'];
-
-// In treated mode the tier <img>s live INSIDE the wrapper and carry neither the
-// uid nor the base class (see the gate note above), so their toggle selectors
-// must be DESCENDANT rather than compound. Naked mode keeps the compound form
-// verbatim — there is still no ancestor to descend from there.
-$sgs_media_class = 'sgs-decorative-image__media';
-if ( ! empty( $tier_imgs ) ) {
-	// `$sgs_di_wants_wrapper` (Wave 6) generalises this gate: the same
-	// wrapper-takes-root-role tier-class shape now also applies when overlay
-	// alone needs the wrapper, not only fx-surface-treatment.
-	$img_attrs['class'] = $sgs_di_wants_wrapper
-		? $sgs_media_class . ' sgs-media-el ' . $sgs_media_class . '--desktop'
-		: $base_class . ' sgs-decorative-image--desktop';
-
-	$sgs_tier_sel = static function ( $tier ) use ( $uid, $sgs_di_wants_wrapper, $sgs_media_class ) {
-		if ( $sgs_di_wants_wrapper ) {
-			return '.' . $uid . ' .' . $sgs_media_class . '--' . $tier;
-		}
-		return '.' . $uid . '.sgs-decorative-image--' . $tier;
-	};
-	$tier_css = '';
-	if ( isset( $tier_imgs['mobile'] ) ) {
-		$tier_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
-		$tier_css .= SGS_Breakpoints::media( 'tablet-up' ) . '{' . $sgs_tier_sel( 'mobile' ) . '{display:none}}';
+if ( $has_content ) {
+	$sgs_di_classes[] = 'sgs-decorative-image--layer';
+	if ( $has_media ) {
+		$sgs_di_classes[] = 'sgs-decorative-image--over-image';
 	}
-	if ( isset( $tier_imgs['tablet'] ) ) {
-		$tier_css .= SGS_Breakpoints::media( 'tablet-only' ) . '{' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
-		$tier_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
-		$tier_css .= SGS_Breakpoints::media( 'desktop' ) . '{' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
-	}
-	// Re-assemble the <style> tag with the tier rules appended, through the same
-	// wp_strip_all_tags </style>-breakout guard the base rule uses (contract §D).
-	$scoped_css[]   = $tier_css;
-	$style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
 }
-
-// WRAPPER BRANCH — emit the container EITHER the WebGL host ($has_treatment)
-// OR the overlay atom's ::after box paint ($sgs_di_requires_box, Wave 6,
-// 2026-09-02) needs. Mirrors the video branch above: <style> printed BEFORE
-// the wrapper, wrapper carries no 'style' key (Spec 32), data-* lifted off
-// $img_attrs and nothing else. The two triggers share one wrapper when both
-// are active — a treated block that ALSO sets an overlay colour gets both
-// classes on the same span, not two.
-if ( $sgs_di_wants_wrapper ) {
-	if ( $has_treatment ) {
-		// The inner media carries neither uid nor base class, so $root_sel's
-		// position:absolute never reaches it — it only needs to fill the host.
-		// $root_sel's position:absolute on the wrapper is a containing block, so
-		// the canvas's inset:0 resolves against the wrapper.
-		$scoped_css[] = '.' . $uid . '.sgs-decorative-image--treated>.' . $sgs_media_class
-			. '{display:block;width:100%;height:auto}';
-	}
-	$style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
-
-	$sgs_di_wrapper_class = array( 'sgs-decorative-image' );
-	// A layer anchored to the section is lifted out of its parent's content column by sgs/hero (hero/render.php).
-	if ( 'section' === ( $attributes['anchorTo'] ?? 'parent' ) ) {
-		$sgs_di_wrapper_class[] = 'sgs-decorative-image--anchor-section';
-	}
-	if ( $has_content ) {
-		$sgs_di_wrapper_class[] = 'sgs-decorative-image--layer';
-		if ( $has_media ) {
-			$sgs_di_wrapper_class[] = 'sgs-decorative-image--over-image';
-		}
-	}
-	if ( $has_treatment ) {
-		$sgs_di_wrapper_class[] = 'sgs-decorative-image--treated';
-	}
-	if ( $sgs_di_shape_only ) {
-		$sgs_di_wrapper_class[] = 'sgs-decorative-image--shape';
-	}
-	if ( $sgs_di_requires_box ) {
-		// `sgs-media-box` is the shared atom layer's marker for the overlay's
-		// ::after paint (class-sgs-media-element.php::CLASS_BOX) — added
-		// ONLY when overlay actually emits box-scope CSS for these attribute
-		// values, so an instance that never sets an overlay colour/gradient
-		// renders byte-identically to before this migration.
-		$sgs_di_wrapper_class[] = SGS_Media_Element::CLASS_BOX;
-	}
-	$sgs_di_wrapper_class[] = $uid;
-	$sgs_di_wrapper_class[] = $sgs_di_extra_class;
-
-	$wrapper_attrs = array(
-		'class' => trim( implode( ' ', $sgs_di_wrapper_class ) ),
-	);
-	if ( '' !== $sgs_di_anchor ) {
-		$wrapper_attrs['id'] = $sgs_di_anchor;
-	}
-	if ( ( $image_decorative || $sgs_di_shape_only ) && ! $has_content ) {
-		$wrapper_attrs['aria-hidden'] = 'true';
-		$wrapper_attrs['role']        = 'presentation';
-	}
-	foreach ( $img_attrs as $sgs_key => $sgs_val ) {
-		if ( 0 === strpos( $sgs_key, 'data-' ) ) {
-			$wrapper_attrs[ $sgs_key ] = $sgs_val;
-		}
-	}
-
-	$wrapper_attr_strs = array();
-	foreach ( $wrapper_attrs as $sgs_key => $sgs_val ) {
-		$wrapper_attr_strs[] = sprintf( '%s="%s"', esc_attr( $sgs_key ), esc_attr( $sgs_val ) );
-	}
-
-	// Plain fill-the-host media: no uid, no base class, no data-* — but it
-	// KEEPS `sgs-media-el` (Wave 6) so object-fit/focal-point still reach it;
-	// the custom-property VALUES those atoms read are set on the wrapper via
-	// $sgs_di_atom_css above and inherit down through the DOM to this node.
-	// Without that stripping otherwise, view.js would match the inner <img>
-	// too and apply parallax twice, and $root_sel would absolutely-position
-	// it inside its own wrapper.
-	$media_attrs = array(
-		'class'    => empty( $tier_imgs ) ? $sgs_media_class . ' sgs-media-el' : $img_attrs['class'],
-		'alt'      => $rendered_alt,
-		'loading'  => $sgs_di_loading['loading'],
-		'decoding' => $sgs_di_loading['decoding'],
-	);
-	// With content the wrapper stays readable, so a decorative <img> hides itself.
-	if ( $has_content && $image_decorative ) {
-		$media_attrs['aria-hidden'] = 'true';
-	}
-
-	/*
-	 * ⚠ KNOWN LIMITATION — treatment + art-direction tiers samples the DESKTOP
-	 * image at every width. `fx-surface-treatment.js` takes
-	 * `el.querySelector( 'img' )`, i.e. the FIRST <img> in the wrapper, which is
-	 * always the desktop tier. The narrower tiers are hidden by `display:none`,
-	 * not removed, so on a phone the visible <img> is the mobile one while the
-	 * canvas painted over it was sampled from the desktop one.
-	 *
-	 * NOT fixed here, deliberately: the fix belongs in the shared JS module
-	 * (pick the tier that is actually visible, and repaint on the tier change),
-	 * and `fx-surface-treatment.js` is a shared mechanism used by every
-	 * treatment-qualifying block — a Rule 7 design-gate change, not a
-	 * side-effect of this block's wrapper fix. Recorded rather than left to be
-	 * rediscovered as a mystery, because every automated signal here is green:
-	 * the markup is correct, the canvas paints, and only the SOURCE PIXELS are
-	 * wrong. A block using a treatment with no tiers is unaffected.
-	 */
-	$media_html = $has_media
-		? sgs_responsive_image(
-			$image_id ? absint( $image_id ) : 0,
-			$image_url,
-			$rendered_alt,
-			'large',
-			$media_attrs
-		)
-		: '';
-	foreach ( $tier_imgs as $tier_key => $tier_media ) {
-		$tier_attrs          = $media_attrs;
-		$tier_attrs['class'] = $sgs_media_class . ' sgs-media-el ' . $sgs_media_class . '--' . $tier_key;
-		$media_html         .= sgs_responsive_image(
-			$tier_media['id'],
-			$tier_media['url'],
-			$rendered_alt,
-			'large',
-			$tier_attrs
-		);
-	}
-
-	printf(
-		'%1$s<%2$s %3$s>%4$s%5$s</%2$s>',
-		$style_tag_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_num + wp_strip_all_tags.
-		$layer_tag, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal div or span.
-		implode( ' ', $wrapper_attr_strs ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each attr already escaped above.
-		$media_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes all attributes internally.
-		$content_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered inner blocks, escaped by their own renders.
-	);
-	return;
+if ( ! $has_media && ! $has_content ) {
+	$sgs_di_classes[] = 'sgs-decorative-image--shape';
 }
+$sgs_di_classes[] = $uid;
+$sgs_di_classes[] = $sgs_di_extra_class;
 
-// Image branch: render using sgs_responsive_image helper — all attributes
-// escaped via $img_attrs. NO 'style' key on $img_attrs — the scoped
-// $style_tag_html (echoed first) carries the positioning/transform/opacity
-// rule (contract §A).
-// The anchor sits on the first (desktop) <img> only; tier siblings below copy everything else but must not repeat it.
+$sgs_di_box_attrs = array( 'class' => trim( implode( ' ', $sgs_di_classes ) ) );
 if ( '' !== $sgs_di_anchor ) {
-	$img_attrs['id'] = $sgs_di_anchor;
+	$sgs_di_box_attrs['id'] = $sgs_di_anchor;
 }
-echo $style_tag_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_num + wp_strip_all_tags.
-echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes all attributes internally.
-	$image_id ? absint( $image_id ) : 0,
-	$image_url,
-	$rendered_alt, // Empty when decorative (default); operator-set imageAlt otherwise.
-	'large',
-	$img_attrs
-);
+if ( ! $has_content ) {
+	$sgs_di_box_attrs['aria-hidden'] = 'true';
+	$sgs_di_box_attrs['role']        = 'presentation';
+}
+if ( $fade_on_scroll ) {
+	$sgs_di_box_attrs['data-fade-on-scroll'] = 'true';
+}
+$sgs_di_box_strs = array();
+foreach ( $sgs_di_box_attrs as $sgs_di_key => $sgs_di_val ) {
+	$sgs_di_box_strs[] = sprintf( '%s="%s"', esc_attr( $sgs_di_key ), esc_attr( $sgs_di_val ) );
+}
+$sgs_di_content_html = $has_content ? '<div class="sgs-decorative-image__content">' . $content . '</div>' : '';
 
-foreach ( $tier_imgs as $tier_key => $tier_media ) {
-	$tier_attrs          = $img_attrs;
-	$tier_attrs['class'] = $base_class . ' sgs-decorative-image--' . $tier_key;
-	unset( $tier_attrs['id'] );
-	echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes all attributes internally.
-		$tier_media['id'],
-		$tier_media['url'],
-		$rendered_alt, // Empty when decorative (default); operator-set imageAlt otherwise.
-		'large',
-		$tier_attrs
-	);
-}
+printf(
+	'%1$s<%2$s %3$s>%4$s%5$s</%2$s>',
+	$style_tag_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS stripped of tags.
+	$has_content ? 'div' : 'span', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal div or span.
+	implode( ' ', $sgs_di_box_strs ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each attribute escaped above.
+	$media['html'], // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by the media renderer with per-attribute escaping.
+	$sgs_di_content_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered inner blocks, escaped by their own renders.
+);

@@ -32,7 +32,17 @@
 								"svg"
 							],
 							"context": "element",
-							"from": ""
+							"from": "",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"sizing",
+								"opacity",
+								"shape",
+								"shadow"
+							]
 						}
 					},
 					"replace": []

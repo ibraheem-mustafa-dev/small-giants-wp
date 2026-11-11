@@ -8,7 +8,7 @@ import PAINTS_BOX_CASES from '../fixtures/decorative-image-paints-box.json';
 describe( 'layerPreviewStyle', () => {
 	it( 'Fit the content is max-content capped at the parent, inherited by a narrower tier', () => {
 		const attrs = {
-			width: { desktop: 'max-content' },
+			layerWidth: { desktop: 'max-content' },
 			rotation: { desktop: 12 },
 		};
 		const style = layerPreviewStyle( attrs, 'tablet', true );
@@ -19,7 +19,7 @@ describe( 'layerPreviewStyle', () => {
 
 	it( 'A length width uses the previewed tier, any unit, with no cap unless a max width is set', () => {
 		const attrs = {
-			width: { desktop: '60%', tablet: '40%' },
+			layerWidth: { desktop: '60%', tablet: '40%' },
 		};
 		expect( layerPreviewStyle( attrs, 'desktop', true ).width ).toBe( '60%' );
 		expect( layerPreviewStyle( attrs, 'tablet', true ).width ).toBe( '40%' );
@@ -28,13 +28,13 @@ describe( 'layerPreviewStyle', () => {
 	} );
 
 	it( 'Fixed stays in pixels; a max width applies per previewed tier, any unit, none by default', () => {
-		const attrs = { width: { desktop: '240px' }, maxWidth: { desktop: '30%', mobile: '12rem' } };
+		const attrs = { layerWidth: { desktop: '240px' }, layerMaxWidth: { desktop: '30%', mobile: '12rem' } };
 		expect( layerPreviewStyle( attrs, 'desktop', false ) ).toMatchObject( { width: '240px', maxWidth: '30%' } );
 		expect( layerPreviewStyle( attrs, 'tablet', false ).maxWidth ).toBe( '30%' );
 		expect( layerPreviewStyle( attrs, 'mobile', false ).maxWidth ).toBe( '12rem' );
-		expect( layerPreviewStyle( { width: { desktop: '240px' } }, 'desktop', false ).maxWidth ).toBeUndefined();
-		expect( layerPreviewStyle( { width: { desktop: 'max-content' }, maxWidth: { desktop: '320px' } }, 'desktop', true ).maxWidth ).toBe( '320px' );
-		const switched = layerPreviewStyle( { width: { desktop: 'max-content', mobile: '300px' } }, 'mobile', true );
+		expect( layerPreviewStyle( { layerWidth: { desktop: '240px' } }, 'desktop', false ).maxWidth ).toBeUndefined();
+		expect( layerPreviewStyle( { layerWidth: { desktop: 'max-content' }, layerMaxWidth: { desktop: '320px' } }, 'desktop', true ).maxWidth ).toBe( '320px' );
+		const switched = layerPreviewStyle( { layerWidth: { desktop: 'max-content', mobile: '300px' } }, 'mobile', true );
 		expect( switched.width ).toBe( '300px' );
 		expect( switched.maxWidth ).toBeUndefined();
 		expect( layerPreviewStyle( {}, 'desktop', true ).width ).toBe( '200px' );
@@ -54,11 +54,11 @@ describe( 'layerPreviewStyle', () => {
 
 describe( 'layerBoxPreview', () => {
 	const ring = {
-		borderWidth: { top: '2px', right: '2px', bottom: '2px', left: '2px' },
-		borderStyle: 'solid',
-		borderColour: 'rgba(216,202,80,.55)',
-		borderRadius: { desktop: { topLeft: '50%', topRight: '50%', bottomRight: '50%', bottomLeft: '50%' } },
-		height: { desktop: '340px', mobile: '120px' },
+		layerBorderWidth: { top: '2px', right: '2px', bottom: '2px', left: '2px' },
+		layerBorderStyle: 'solid',
+		layerBorderColour: 'rgba(216,202,80,.55)',
+		layerRadius: { desktop: { topLeft: '50%', topRight: '50%', bottomRight: '50%', bottomLeft: '50%' } },
+		layerHeight: { desktop: '340px', mobile: '120px' },
 	};
 
 	it( 'previews the ring: border, 50% radius and height, as render.php prints them', () => {
@@ -78,7 +78,7 @@ describe( 'layerBoxPreview', () => {
 
 	it( 'paints the fill and the shadow', () => {
 		const style = layerBoxPreview(
-			{ backgroundColour: '#112233', boxShadow: '0 4px 12px', boxShadowColour: '#000000' },
+			{ layerBackground: '#112233', layerBoxShadow: '0 4px 12px', layerBoxShadowColour: '#000000' },
 			'desktop'
 		);
 		expect( style.backgroundColor ).toBe( '#112233' );
@@ -87,7 +87,7 @@ describe( 'layerBoxPreview', () => {
 
 	it( 'a gradient fill wins over the flat colour', () => {
 		const style = layerBoxPreview(
-			{ backgroundColour: '#112233', backgroundColourGradient: 'linear-gradient(red, blue)' },
+			{ layerBackground: '#112233', backgroundColourGradient: 'linear-gradient(red, blue)' },
 			'desktop'
 		);
 		expect( style.backgroundImage ).toBe( 'linear-gradient(red, blue)' );
@@ -100,15 +100,18 @@ describe( 'layerBoxPreview', () => {
 } );
 
 describe( 'layerBoxPreview shape', () => {
-	it( 'clips the canvas layer to the shape render.php clips the root to', () => {
-		expect( layerBoxPreview( { shape: 'circle' }, 'desktop', [] ).clipPath ).toBe( 'circle(50%)' );
-		expect( layerBoxPreview( { shape: 'rounded' }, 'desktop', [] ).clipPath ).toBe( 'inset(0 round 12px)' );
-		expect( layerBoxPreview( { shape: 'square' }, 'desktop', [] ).clipPath ).toBe( 'inset(0)' );
+	it( 'draws a circle, ellipse or pill as the corners render.php gives the root', () => {
+		expect( layerBoxPreview( { layerShape: { desktop: { shape: 'circle' } } }, 'desktop', [] ).borderRadius ).toBe( '50%' );
+		expect( layerBoxPreview( { layerShape: { desktop: { shape: 'ellipse' } } }, 'desktop', [] ).borderRadius ).toBe( '50%' );
+		expect( layerBoxPreview( { layerShape: { desktop: { shape: 'pill' } } }, 'tablet', [] ).borderRadius ).toBe( '9999px' );
 	} );
 
-	it( 'no shape, none or an unknown shape prints no clip', () => {
-		[ {}, { shape: 'none' }, { shape: 'hexagon' } ].forEach( ( attrs ) => {
-			expect( layerBoxPreview( attrs, 'desktop', [] ).clipPath ).toBeUndefined();
+	it( 'a shape replaces the stored corners, and no shape, none or a mask shape leaves them', () => {
+		const corners = { layerRadius: { desktop: { topLeft: '8px' } } };
+		const shaped = layerBoxPreview( { ...corners, layerShape: { desktop: { shape: 'circle' } } }, 'desktop', [] );
+		expect( shaped.borderTopLeftRadius ).toBeUndefined();
+		[ {}, { layerShape: { desktop: { shape: 'none' } } }, { layerShape: { desktop: { shape: 'hexagon' } } } ].forEach( ( attrs ) => {
+			expect( layerBoxPreview( { ...corners, ...attrs }, 'desktop', [] ).borderRadius ).toBeUndefined();
 		} );
 	} );
 } );
@@ -120,10 +123,10 @@ describe( 'an empty layer draws exactly when render.php says', () => {
 	} );
 
 	it( 'a layer with no media and no content previews no box when it would not render one', () => {
-		const heightOnly = { height: { desktop: '80px' } };
+		const heightOnly = { layerHeight: { desktop: '80px' } };
 		expect( layerBoxPreview( heightOnly, 'desktop', [], true ) ).toEqual( {} );
 		expect( layerBoxPreview( heightOnly, 'desktop', [], false ).height ).toBe( '80px' );
-		expect( layerBoxPreview( { ...heightOnly, backgroundColour: '#112233' }, 'desktop', [], true ).height ).toBe( '80px' );
+		expect( layerBoxPreview( { ...heightOnly, layerBackground: '#112233' }, 'desktop', [], true ).height ).toBe( '80px' );
 	} );
 } );
 
