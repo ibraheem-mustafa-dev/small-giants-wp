@@ -207,7 +207,8 @@ $card_params = array(
 	'cardLink'                           => (bool) ( $attributes['cardLink'] ?? false ),
 	'excerptLength'                      => absint( $attributes['excerptLength'] ?? 20 ),
 	// Spec 49: the image slot's settings (Post_Grid_Media::settings), which the card's featured image is rendered with.
-	'imageMedia'                         => \SGS\Blocks\Post_Grid_Media::settings( $attributes, array( 'desktop' => $columns, 'tablet' => $columns_tablet, 'mobile' => $columns_mobile ) ),
+	// Load priority: 'first' or 'later'; anything else is automatic.
+	'imageMedia'                         => \SGS\Blocks\Post_Grid_Media::settings( array_merge( $attributes, array( 'imageLoading' => in_array( $attributes['imageLoading'] ?? '', array( 'first', 'later' ), true ) ? $attributes['imageLoading'] : '' ) ), array( 'desktop' => $columns, 'tablet' => $columns_tablet, 'mobile' => $columns_mobile ) ),
 	'titleColour'                        => $attributes['titleColour'] ?? '',
 	'excerptColour'                      => $attributes['excerptColour'] ?? 'text',
 	'metaColour'                         => $attributes['metaColour'] ?? 'text-muted',
