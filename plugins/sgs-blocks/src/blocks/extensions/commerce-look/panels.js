@@ -138,6 +138,21 @@ export function LineItemsPanel( { attributes, setAttributes, isCart } ) {
 			<PanelBody title={ __( 'Item price', 'sgs-blocks' ) } initialOpen={ false }>
 				<TextControls { ...shared } prefix="sgsItemPrice" />
 			</PanelBody>
+			{ ! isCart && (
+				<>
+					<ResponsiveLengthControl
+						scale="spacing"
+						label={ __( 'Space above the text and price', 'sgs-blocks' ) }
+						help={ __( 'WooCommerce pads the text and price columns of a summary line 4px at the top. Leave empty to keep that.', 'sgs-blocks' ) }
+						value={ attributes.sgsItemTextTop }
+						units={ LENGTH_UNITS }
+						onChange={ ( next ) => setAttributes( { sgsItemTextTop: next } ) }
+					/>
+					<PanelBody title={ __( 'Brand line', 'sgs-blocks' ) } initialOpen={ false }>
+						<TextControls { ...shared } prefix="sgsItemBrand" />
+					</PanelBody>
+				</>
+			) }
 			<PanelBody title={ __( 'Variant text', 'sgs-blocks' ) } initialOpen={ false }>
 				<TextControls { ...shared } prefix="sgsItemVariant" />
 			</PanelBody>
@@ -184,6 +199,14 @@ export function SummaryPanel( { attributes, setAttributes, isCart } ) {
 				value={ attributes.sgsSummaryRowDivider }
 				onChange={ ( next ) => setAttributes( { sgsSummaryRowDivider: next } ) }
 			/>
+			{ ! isCart && (
+				<ResponsiveBoxControl
+					presets
+					label={ __( 'Padding of the subtotal, shipping and tax rows', 'sgs-blocks' ) }
+					values={ boxTiers( attributes.sgsSummaryRowsPadding ) }
+					onChange={ ( tier, next ) => setAttributes( { sgsSummaryRowsPadding: writeTier( attributes.sgsSummaryRowsPadding, tier, next ) } ) }
+				/>
+			) }
 			<PanelBody title={ __( 'Total row label', 'sgs-blocks' ) } initialOpen={ false }>
 				<TextControls { ...shared } prefix="sgsTotalLabel" />
 			</PanelBody>
@@ -194,6 +217,12 @@ export function SummaryPanel( { attributes, setAttributes, isCart } ) {
 				label={ __( 'Line above the total row', 'sgs-blocks' ) }
 				value={ attributes.sgsTotalDivider }
 				onChange={ ( next ) => setAttributes( { sgsTotalDivider: next } ) }
+			/>
+			<ResponsiveBoxControl
+				presets
+				label={ __( 'Padding of the total row', 'sgs-blocks' ) }
+				values={ boxTiers( attributes.sgsTotalPadding ) }
+				onChange={ ( tier, next ) => setAttributes( { sgsTotalPadding: writeTier( attributes.sgsTotalPadding, tier, next ) } ) }
 			/>
 		</PanelBody>
 	);
@@ -285,6 +314,35 @@ export function CheckoutPanels( { attributes, setAttributes } ) {
 					help={ __( 'Stripe draws the card number, expiry and security code in its own frame; this hands it the form field settings above (border, radius, padding, text, label and focus line).', 'sgs-blocks' ) }
 					checked={ true === attributes.sgsStripeMatchFields }
 					onChange={ ( on ) => setAttributes( { sgsStripeMatchFields: on ? true : undefined } ) }
+				/>
+			</PanelBody>
+			<PanelBody title={ __( 'Delivery cards', 'sgs-blocks' ) } initialOpen={ false }>
+				<ResponsiveLengthControl
+					scale="spacing"
+					label={ __( 'Space below the cards', 'sgs-blocks' ) }
+					value={ attributes.sgsDeliveryGap }
+					units={ LENGTH_UNITS }
+					onChange={ ( next ) => setAttributes( { sgsDeliveryGap: next } ) }
+				/>
+				<PanelBody title={ __( 'Title and price', 'sgs-blocks' ) } initialOpen={ false }>
+					<TextControls { ...shared } prefix="sgsDeliveryTitle" />
+				</PanelBody>
+				<PanelBody title={ __( 'Description', 'sgs-blocks' ) } initialOpen={ false }>
+					<TextControls { ...shared } prefix="sgsDeliveryDescription" />
+				</PanelBody>
+			</PanelBody>
+			<PanelBody title={ __( 'Wallet divider', 'sgs-blocks' ) } initialOpen={ false }>
+				<TierBorderControl
+					label={ __( 'Line either side of the text', 'sgs-blocks' ) }
+					value={ attributes.sgsExpressRuleLine }
+					onChange={ ( next ) => setAttributes( { sgsExpressRuleLine: next } ) }
+				/>
+				<ResponsiveLengthControl
+					scale="spacing"
+					label={ __( 'Gap between the lines and the text', 'sgs-blocks' ) }
+					value={ attributes.sgsExpressRuleGap }
+					units={ LENGTH_UNITS }
+					onChange={ ( next ) => setAttributes( { sgsExpressRuleGap: next } ) }
 				/>
 			</PanelBody>
 			<PanelBody title={ __( 'Show order summary bar (phones)', 'sgs-blocks' ) } initialOpen={ false }>

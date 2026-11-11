@@ -1,6 +1,6 @@
 <?php
 /**
- * Cart and Checkout look: the line items (header row, thumbnail size, cell padding, quantity stepper, spacing between cards).
+ * Cart and Checkout look: the line items (header row, thumbnail size, cell padding, space above a summary line's text, quantity stepper, spacing between cards).
  *
  * @package SGS\Blocks
  */
@@ -60,6 +60,12 @@ function sgs_commerce_look_line_items_css( array $attrs, string $block, string $
 	$cell = sgs_commerce_look_selector( 'item_cell', $block, $root );
 	if ( '' !== $cell ) {
 		$css .= sgs_emit_responsive_css( $cell, array( array( 'value' => $attrs['sgsItemCellPadding'] ?? null, 'css' => 'padding', 'box' => true, 'unit_default' => 'px' ) ) );
+	}
+
+	// Space above the text and price columns of a checkout summary line (WooCommerce pads both 4px).
+	$text = sgs_commerce_look_selector( 'item_text', $block, $root );
+	if ( '' !== $text ) {
+		$css .= sgs_emit_responsive_css( $text, array( array( 'value' => $attrs['sgsItemTextTop'] ?? null, 'css' => 'padding-top', 'unit_default' => 'px' ) ) );
 	}
 
 	// Quantity stepper: corners (the buttons inherit the radius, so the stepper clips them) and width; its fill and edge print with the cards (cards.php).

@@ -424,6 +424,84 @@
 				"basket": "filled",
 				"action": "none"
 			}
+		},
+		"express_rule": {
+			"checkout": ".wc-block-components-express-payment-continue-rule",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width; the Stripe wallet row has loaded (the rule is drawn only with the wallet buttons)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"express_rule_line": {
+			"checkout": ".wc-block-components-express-payment-continue-rule::before, .wc-block-components-express-payment-continue-rule::after",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width; the Stripe wallet row has loaded (the two lines are pseudo-elements of the rule)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"delivery_title": {
+			"checkout": ".wc-block-checkout__shipping-method-option-title, .sgs-delivery-card__price",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; WooCommerce's block Local pickup is on (the Ship / Collect toggle is drawn as cards)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"delivery_description": {
+			"checkout": ".sgs-delivery-card__description",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; WooCommerce's block Local pickup is on",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"delivery_step": {
+			"checkout": ".wc-block-checkout__shipping-method",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; WooCommerce's block Local pickup is on (the Delivery step holds the Ship / Collect cards)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"item_brand": {
+			"checkout": ".sgs-checkout-item-brand",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; sgsItemShowBrand set and the product has a brand",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"item_text": {
+			"checkout": ".wc-block-components-order-summary-item__description, .wc-block-components-order-summary-item__total-price",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"summary_rows": {
+			"checkout": ".wp-block-woocommerce-checkout-order-summary-totals-block",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width (the block that holds the subtotal, discount, fee, shipping and tax rows)",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"field_text_active": {
+			"checkout": ".wc-block-components-form .wc-block-components-text-input.is-active input[type], .wc-block-components-form .wc-block-components-text-input input:-webkit-autofill",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width; a field that is focused or holds text (WooCommerce floats its label up and pads the field to make room)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
 		}
 	}
 }
