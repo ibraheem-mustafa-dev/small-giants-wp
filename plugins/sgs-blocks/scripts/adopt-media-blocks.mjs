@@ -25,7 +25,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { spawnSync } from 'child_process';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 import { findBlockJsons } from './lib/media-block-json.mjs';
 import {
@@ -46,7 +46,47 @@ const DATA_REL = path.join( 'scripts', 'data', 'media-adoption.json' );
 /** A refusal that names what it refused. */
 export class Refusal extends Error {}
 
-const toUrl = ( root, ...seg ) => 'file:///' + path.join( root, ...seg ).split( path.sep ).join( '/' );
+const toUrl = ( root, ...seg ) => pathToFileURL( path.join( root, ...seg ) ).href;
+
+/**
+ * Block name to block.json path for every block under a plugin directory.
+ *
+ * @param {string} root Plugin directory.
+ * @return {Map<string,string>} Name to path.
+ */
+function blockFilesByName( root ) {
+	return new Map( findBlockJsons( path.join( root, 'src', 'blocks' ) ).map( ( f ) => [ JSON.parse( fs.readFileSync( f, 'utf8' ) ).name, f ] ) );
+}
+
+/** Files the generator writes besides block.json files: its override list and the PHP type mirror. */
+const GENERATED_SHARED = [ path.join( 'scripts', 'attr-classification-overrides.json' ), path.join( 'includes', 'media-element-attributes.generated.php' ) ];
+
+/**
+ * Every file one adoption run may write, by absolute path, as its text now (a missing file is recorded as null).
+ *
+ * @param {string}   root  Plugin directory.
+ * @param {string[]} extra Further absolute paths to record.
+ * @return {Map<string,string|null>} Path to text.
+ */
+function captureFiles( root, extra = [] ) {
+	const paths = [ ...extra, ...GENERATED_SHARED.map( ( rel ) => path.join( root, rel ) ) ];
+	return new Map( paths.map( ( f ) => [ f, fs.existsSync( f ) ? fs.readFileSync( f, 'utf8' ) : null ] ) );
+}
+
+/**
+ * Put every captured file back as it was.
+ *
+ * @param {Map<string,string|null>} captured From captureFiles.
+ */
+function restoreFiles( captured ) {
+	for ( const [ f, text ] of captured ) {
+		if ( text === null ) {
+			fs.rmSync( f, { force: true } );
+		} else if ( fs.readFileSync( f, 'utf8' ) !== text ) {
+			fs.writeFileSync( f, text, 'utf8' );
+		}
+	}
+}
 
 /**
  * The slot vocabulary the generator accepts.
@@ -223,7 +263,7 @@ function specFor( data, name, waveIds ) {
 	return found ? spec : null;
 }
 
-function runGenerator( root, name ) {
+export function runGenerator( root, name ) {
 	const gen = path.join( root, 'scripts', 'generate-media-attributes.mjs' );
 	const run = spawnSync( process.execPath, name ? [ gen, '--block', name ] : [ gen ], { cwd: root, encoding: 'utf8' } );
 	const text = ( run.stderr || run.stdout || '' ).trim();
@@ -240,10 +280,13 @@ function runGenerator( root, name ) {
  * @param {Object}   data     Parsed data file.
  * @param {string[]} names    Block names to adopt, in order.
  * @param {string[]|null} waveIds Waves to take slots from (null for every wave that lists the block).
- * @return {{done: Object[], refused: Object[]}} One row per block.
+ * @param {Function} generate Runs the generator for one block name, or whole for null (a test seam; default `runGenerator`).
+ * @return {{done: Object[], refused: Object[]}} One row per block. When the final whole run refuses, every file the run
+ *   wrote is restored and every block of the run is reported refused.
  */
-export function adopt( root, data, names, waveIds ) {
-	const files = new Map( findBlockJsons( path.join( root, 'src', 'blocks' ) ).map( ( f ) => [ JSON.parse( fs.readFileSync( f, 'utf8' ) ).name, f ] ) );
+export function adopt( root, data, names, waveIds, generate = ( name ) => runGenerator( root, name ) ) {
+	const files = blockFilesByName( root );
+	const startOfRun = captureFiles( root, [ ...files.values() ] );
 	const done = [];
 	const refused = [];
 	for ( const name of names ) {
@@ -254,20 +297,21 @@ export function adopt( root, data, names, waveIds ) {
 			continue;
 		}
 		const original = fs.readFileSync( file, 'utf8' );
+		const beforeBlock = captureFiles( root, [ file ] );
 		try {
 			const edit = editBlockText( original, spec );
 			if ( edit.text !== original ) {
 				fs.writeFileSync( file, edit.text, 'utf8' );
 			}
-			const gen = runGenerator( root, name );
+			const gen = generate( name );
 			if ( ! gen.ok ) {
-				fs.writeFileSync( file, original, 'utf8' );
+				restoreFiles( beforeBlock );
 				refused.push( { name, reason: `the generator refused: ${ gen.message }` } );
 				continue;
 			}
 			done.push( { name, slots: edit.adopted, removed: edit.removed, changed: edit.text !== original, notes: gen.notes } );
 		} catch ( e ) {
-			fs.writeFileSync( file, original, 'utf8' );
+			restoreFiles( beforeBlock );
 			if ( ! ( e instanceof Refusal || e instanceof SyntaxError ) ) {
 				throw e;
 			}
@@ -277,9 +321,11 @@ export function adopt( root, data, names, waveIds ) {
 	// A per-block run appends that block's override entries after those already there, so their order follows the order
 	// of adoption. One whole run puts them in the generator's own order, which is the order its `--check` expects.
 	if ( done.length ) {
-		const whole = runGenerator( root, null );
+		const whole = generate( null );
 		if ( ! whole.ok ) {
-			refused.push( { name: '(whole generator run)', reason: whole.message } );
+			restoreFiles( startOfRun );
+			const reason = `the whole generator run refused: ${ whole.message } (every file this run wrote was restored)`;
+			refused.push( ...done.splice( 0 ).map( ( d ) => ( { name: d.name, reason } ) ), { name: '(whole generator run)', reason: whole.message } );
 		}
 	}
 	return { done, refused };
@@ -406,7 +452,9 @@ function snapshot( root ) {
 	for ( const f of findBlockJsons( path.join( root, 'src', 'blocks' ) ) ) {
 		out[ path.relative( root, f ) ] = fs.readFileSync( f, 'utf8' );
 	}
-	out.overrides = fs.readFileSync( path.join( root, 'scripts', 'attr-classification-overrides.json' ), 'utf8' );
+	for ( const rel of GENERATED_SHARED ) {
+		out[ rel ] = fs.readFileSync( path.join( root, rel ), 'utf8' );
+	}
 	return out;
 }
 
@@ -425,7 +473,7 @@ async function selfTest() {
 		copyTree( OWN_PLUGIN_DIR, tmp );
 		const data = loadData( tmp );
 		const vocab = await vocabulary( tmp );
-		const files = new Map( findBlockJsons( path.join( tmp, 'src', 'blocks' ) ).map( ( f ) => [ JSON.parse( fs.readFileSync( f, 'utf8' ) ).name, f ] ) );
+		const files = blockFilesByName( tmp );
 		ck( 'the data file is sound', validateData( data, vocab, files ).length === 0 );
 		const fresh = snapshot( tmp );
 		const generatorCheck = () => spawnSync( process.execPath, [ path.join( tmp, 'scripts', 'generate-media-attributes.mjs' ), '--check' ], { cwd: tmp, encoding: 'utf8' } );
@@ -434,6 +482,13 @@ async function selfTest() {
 		const first = checkAdoption( tmp, data );
 		ck( 'a fresh tree has every listed block pending and the check passes', first.problems.length === 0 && first.rows.every( ( r ) => r.state === 'pending' ) );
 
+		// NEGATIVE CONTROL 0: a failing final whole run leaves no earlier per-block edit on disk.
+		const failWhole = ( name ) => ( name ? runGenerator( tmp, name ) : { ok: false, message: 'planted whole-run failure', notes: [] } );
+		const wholeRun = adopt( tmp, data, allNames( data, [ 'wave-1' ] ), [ 'wave-1' ], failWhole );
+		ck(
+			'negative control: a failing whole generator run restores every file the run wrote and refuses the run',
+			wholeRun.done.length === 0 && wholeRun.refused.some( ( r ) => r.reason.includes( 'planted whole-run failure' ) ) && JSON.stringify( snapshot( tmp ) ) === JSON.stringify( fresh )
+		);
 		// NEGATIVE CONTROL 1: a slot prefix the block does not have is refused, naming it, and the block is untouched.
 		const bogus = JSON.parse( JSON.stringify( data ) );
 		bogus.waves[ 0 ].blocks[ 'sgs/gallery' ].slots = { nope: { kinds: [ 'image' ], context: 'item' } };
@@ -527,7 +582,7 @@ async function main() {
 	const root = path.resolve( valueOf( '--root' ) || OWN_PLUGIN_DIR );
 	const data = loadData( root, valueOf( '--data' ) );
 	const vocab = await vocabulary( root );
-	const files = new Map( findBlockJsons( path.join( root, 'src', 'blocks' ) ).map( ( f ) => [ JSON.parse( fs.readFileSync( f, 'utf8' ) ).name, f ] ) );
+	const files = blockFilesByName( root );
 	const dataProblems = validateData( data, vocab, files );
 	if ( dataProblems.length ) {
 		process.stderr.write( `media-adoption.json is not sound:\n  ${ dataProblems.join( '\n  ' ) }\n` );

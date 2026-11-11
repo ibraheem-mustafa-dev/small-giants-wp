@@ -165,6 +165,14 @@ def saved_only_scope(args) -> bool:
     return bool(args.mirror or args.content) and not (getattr(args, "repo", False) or args.target or getattr(args, "file", None))
 
 
+def refuse_unsupported_saved(args) -> None:
+    """Refuse on every saved-content input (mirror or content file) that holds a record this tool cannot rewrite."""
+    for name in args.mirror or []:
+        MIR.refuse_unsupported(C.mirror_export(name), f"mirror {name}")
+    for file in args.content or []:
+        MIR.refuse_unsupported(C.load_content(Path(file)), f"content {Path(file).name}")
+
+
 def cmd_fix(args) -> int:
     if args.apply and args.dry_run:
         raise SystemExit("--apply and --dry-run exclude each other")
@@ -172,6 +180,7 @@ def cmd_fix(args) -> int:
         raise SystemExit("--apply never writes a --content export file: use --mirror NAME to write a mirror, or run the dry run")
     if args.mirror and len(args.mirror) > 1 and args.apply:
         raise SystemExit("--apply writes one mirror at a time")
+    refuse_unsupported_saved(args)
     changed = 0
     files: list[Path] = [Path(f) for f in args.file or []]
     saved_only = saved_only_scope(args)
@@ -201,7 +210,6 @@ def cmd_fix(args) -> int:
                 sys.stdout.write(unified(label, post["post_content"], after))
     for name in args.mirror or []:
         posts = C.mirror_export(name)
-        MIR.refuse_unsupported(posts, name)
         plan = MIR.plan_rewrites(posts, fn_for)
         changed += len(plan)
         if args.apply and plan:
@@ -227,8 +235,7 @@ def cmd_check(args) -> int:
     saved_only = saved_only_scope(args)
     args.repo = not saved_only
     args.target = args.target or ([] if saved_only else list(CHECK_KINDS))
-    for name in args.mirror or []:
-        MIR.refuse_unsupported(C.mirror_export(name), name)
+    refuse_unsupported_saved(args)
     found: collections.Counter = collections.Counter()
     where: dict = {}
     for label, name, attrs in records(args):

@@ -12,6 +12,8 @@ from pathlib import Path
 
 import blocks as B
 import markup
+import apply_selftest
+import export_selftest
 import mapping as M
 
 U = "http://x/u.jpg"
@@ -247,6 +249,22 @@ def run_scope(failures: list[str]) -> int:
                 code = cli.main(["check", "--content", str(file), "--active", "on", *extra])
                 if code != want_exit:
                     _fail(f"scope: {label}", f"check exit {code}, expected {want_exit}", failures)
+        checks += 1
+        import mirror_selftest
+        script = mirror_selftest.checksum_script("xq9_")
+        if "xq9_posts" not in script or "wp_posts" in script:
+            _fail("mirror self-test: table prefix", f"the checksum command does not use the mirror's prefix: {script}", failures)
+        stuck = Path(tmp) / "unsupported.json"
+        stuck.write_text(json.dumps([{"store": "unsupported", "ID": "postmeta:7:_blob", "sub": "", "post_type": "postmeta:_blob", "post_name": "post-1", "post_content": "", "md5": ""}]), encoding="utf-8")
+        for command in ("check", "fix"):
+            checks += 1
+            extra = ["--active", "on"] if command == "check" else ["--dry-run"]
+            try:
+                cli.main([command, "--content", str(stuck), *extra])
+                _fail(f"unsupported record: {command} --content", "an unsupported record was not refused", failures)
+            except SystemExit as stop:
+                if "postmeta:7:_blob" not in str(stop):
+                    _fail(f"unsupported record: {command} --content", f"the refusal does not name the record: {stop}", failures)
     return checks
 
 
@@ -289,23 +307,49 @@ def run_consistency(failures: list[str]) -> int:
     return checks
 
 
+HERO_PROBE = {"splitMediaImageUrl": U, "splitMediaObjectFit": "contain"}
+
+
+def reset_caches() -> None:
+    """The one place the mapping's kept facts and the kept migration results are cleared."""
+    M.live_generated_maps.cache_clear()
+    M.live_declared_slots.cache_clear()
+    B.clear_memo()
+
+
+def frozen_independent(before_rows: str, before_out) -> bool:
+    """True when rows and a migration come out the same from fresh caches under the current (absent) paths."""
+    reset_caches()
+    return json.dumps(M.rows(), sort_keys=True) == before_rows and B.migrate("sgs/hero", HERO_PROBE) == before_out
+
+
 def run_frozen(failures: list[str]) -> int:
     """The frozen facts stand alone, every legacy attribute is classified, and dropped or unmapped values are reported."""
     checks = 0
     gone = Path(tempfile.gettempdir()) / "migrate-media-system-absent"
     saved = (M.GENERATED_PHP, M.BLOCKS_DIR)
-    before_rows, before_out = json.dumps(M.rows(), sort_keys=True), B.migrate("sgs/hero", {"splitMediaImageUrl": U, "splitMediaObjectFit": "contain"})
+    before_rows, before_out = json.dumps(M.rows(), sort_keys=True), B.migrate("sgs/hero", HERO_PROBE)
     M.GENERATED_PHP, M.BLOCKS_DIR = gone / "generated.php", gone / "blocks"
-    M.live_generated_maps.cache_clear()
-    M.live_declared_slots.cache_clear()
     try:
         checks += 1
-        if json.dumps(M.rows(), sort_keys=True) != before_rows or B.migrate("sgs/hero", {"splitMediaImageUrl": U, "splitMediaObjectFit": "contain"}) != before_out:
+        if not frozen_independent(before_rows, before_out):
             _fail("frozen: independence", "rows or a migration changed with the PHP mirror and block.json files absent", failures)
+        checks += 1
+        real = B._migrate
+        B._migrate = lambda _n, _a: ({"mirrorPresent": M.GENERATED_PHP.exists()}, [])
+        try:
+            M.GENERATED_PHP = saved[0]
+            reset_caches()
+            with_mirror = B.migrate("sgs/hero", HERO_PROBE)
+            M.GENERATED_PHP = gone / "generated.php"
+            caught = not frozen_independent(before_rows, with_mirror)
+        finally:
+            B._migrate = real
+        if not caught:
+            _fail("frozen: independence control", "a migration that reads the PHP mirror was not caught (a stale kept result hides it)", failures)
     finally:
         M.GENERATED_PHP, M.BLOCKS_DIR = saved
-        M.live_generated_maps.cache_clear()
-        M.live_declared_slots.cache_clear()
+        reset_caches()
     live = M.live_declared_slots
     M.live_declared_slots = lambda: {"sgs/media": [{"prefix": "", "atoms": None, "kinds": ["image"]}]}
     digest = hashlib.sha256(M.FROZEN.read_bytes()).hexdigest()
@@ -368,7 +412,7 @@ def run(break_mapping: bool = False) -> int:
         M.rows.cache_clear()
         M.STAYS["sgs/post-grid"] = ()
     failures: list[str] = []
-    total = run_cases(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures)
+    total = run_cases(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
     for line in failures:
         print(line)
     print(f"migrate-media-system self-test: {total - len(failures)} of {total} checks passed"

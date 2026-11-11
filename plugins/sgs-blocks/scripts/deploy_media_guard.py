@@ -40,9 +40,22 @@ def run_detector(content_file: Path) -> subprocess.CompletedProcess:
                           capture_output=True, text=True, encoding="utf-8")
 
 
-def verdict(returncode: int, stdout: str) -> tuple[bool, str]:
-    """(clean, summary): the detector's own count line and its first few offending blocks."""
-    lines = [ln for ln in stdout.splitlines() if ln.strip()]
+def parse_export(raw: str) -> list:
+    """The export's JSON list: the first line of `raw` that starts with `[` and parses as a list (warnings before it are skipped)."""
+    for line in raw.splitlines():
+        if line.startswith("["):
+            try:
+                posts = json.loads(line)
+            except ValueError:
+                continue
+            if isinstance(posts, list):
+                return posts
+    raise ValueError("no JSON list in the export output")
+
+
+def verdict(returncode: int, stdout: str, stderr: str = "") -> tuple[bool, str]:
+    """(clean, summary): the detector's own count line and its first few offending blocks, or its refusal message."""
+    lines = [ln for ln in (stdout + "\n" + stderr).splitlines() if ln.strip()]
     return returncode == 0, "\n".join(lines[: FIRST_LINES + 1])
 
 
@@ -71,7 +84,7 @@ def step_media_guard(dry_run: bool, use_alias: bool, target_key: str, wp_content
             raw = out.stdout
         else:
             raw = fetch(target_key)
-        posts = json.loads(raw[raw.index("["):])
+        posts = parse_export(raw)
     except (RuntimeError, subprocess.SubprocessError, OSError, ValueError) as e:
         err(f"[media-guard] {target_key}: cannot read saved content: {e}")
         err("fail-closed on purpose: unchecked saved content cannot be shown free of old media attributes")
@@ -80,7 +93,7 @@ def step_media_guard(dry_run: bool, use_alias: bool, target_key: str, wp_content
         path = Path(td) / f"{target_key}.json"
         path.write_text(json.dumps(posts), encoding="utf-8")
         res = run_detector(path)
-    clean, summary = verdict(res.returncode, res.stdout)
+    clean, summary = verdict(res.returncode, res.stdout, res.stderr)
     if clean:
         log(f"[media-guard] PASS: {target_key} saved content ({len(posts)} item(s)) holds no old media attributes")
         return 0
@@ -105,6 +118,12 @@ def self_test() -> list[str]:
         failures.append("media guard: a clean export was refused")
     if step_media_guard(False, False, "t", "/x/wp-content", fetch=lambda _t: old, post_cutover=True) != 1:
         failures.append("media guard NEGATIVE CONTROL: an export with an old attribute was not refused")
+    if step_media_guard(False, False, "t", "/x/wp-content", fetch=lambda _t: "Warning: x [y]\n" + good, post_cutover=True) != 0:
+        failures.append("media guard: a warning containing `[` before the JSON list broke the parse")
+    unsupported = json.dumps([{"store": "unsupported", "ID": "postmeta:3:_blob", "sub": "", "post_type": "postmeta:_blob",
+                               "post_name": "post-1", "post_status": "", "post_content": "", "md5": ""}])
+    if step_media_guard(False, False, "t", "/x/wp-content", fetch=lambda _t: unsupported, post_cutover=True) != 1:
+        failures.append("media guard NEGATIVE CONTROL: an unsupported record was not refused")
     if step_media_guard(False, False, "t", "/x/wp-content", fetch=lambda _t: "not json", post_cutover=True) != 1:
         failures.append("media guard: an unreadable export did not fail closed")
     return failures

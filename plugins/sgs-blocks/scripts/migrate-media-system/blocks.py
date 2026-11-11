@@ -479,6 +479,11 @@ def migrate_unmapped(ctx: T.Ctx) -> None:
 _MEMO: dict = {}
 
 
+def clear_memo() -> None:
+    """Forget every kept result (call wherever the mapping caches are cleared, so no result outlives the facts it came from)."""
+    _MEMO.clear()
+
+
 def migrate(name: str, attrs: dict):
     """(new attributes, events). Saved content repeats the same attribute set across revisions, so results are kept per input."""
     key = (name, json.dumps(attrs, sort_keys=True, ensure_ascii=True))

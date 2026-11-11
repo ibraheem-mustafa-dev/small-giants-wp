@@ -69,14 +69,14 @@ def plan_rewrites(posts: list[dict], fn: Callable) -> list[dict]:
 
 
 def unsupported(posts: list[dict]) -> list[str]:
-    """Option names that hold `wp:sgs/` markup in a shape this tool cannot rewrite."""
-    return [p["ID"] for p in posts if p.get("store") == "unsupported"]
+    """Names of the records (options, post meta) that hold `wp:sgs/` markup in a shape this tool cannot rewrite."""
+    return [str(p.get("ID")) for p in posts if p.get("store") == "unsupported"]
 
 
 def refuse_unsupported(posts: list[dict], name: str) -> None:
     names = unsupported(posts)
     if names:
-        raise SystemExit(f"{name}: option(s) {', '.join(names)} hold block markup in a shape this tool cannot rewrite; "
+        raise SystemExit(f"{name}: record(s) {', '.join(names)} hold block markup in a shape this tool cannot rewrite; "
                          "resolve them by hand before fix or check can pass")
 
 

@@ -3,8 +3,10 @@
  * Writes rewritten block markup straight to the database (never `wp_update_post`: kses and revisions mangle markup).
  *
  * Reads a JSON array from the file named by the first argument (`wp eval-file apply-content.php FILE`): [{store, ID, sub, md5, content}, ...] (the shape `export-content.php` prints,
- * with the new `content`). Every record is checked first: its stored value must still hash to `md5`, else nothing is
- * written. The writes run in one transaction; caches are cleared afterwards. Prints {"updated": N}.
+ * with the new `content`). Every table the records touch must be InnoDB (a MyISAM table cannot roll back), else nothing is
+ * written. Inside one transaction every record's stored value is re-read with `SELECT ... FOR UPDATE` and must still hash
+ * to `md5`, else the transaction is rolled back before any write; the writes follow in the same transaction. Caches are
+ * cleared afterwards. Prints {"updated": N}.
  *
  * @package SGS
  */
@@ -19,7 +21,7 @@ if ( ! is_array( $input ) ) {
 }
 
 /**
- * The current stored value of a record, or null when it no longer exists.
+ * The current stored value of a record, or null when it no longer exists. The read locks the row: call it inside a transaction.
  *
  * @param array $rec Record with store, ID and sub.
  * @return string|null
@@ -28,11 +30,11 @@ function sgs_media_current( $rec ) {
 	global $wpdb;
 	switch ( $rec['store'] ) {
 		case 'posts':
-			return $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID = %d", $rec['ID'] ) );
+			return $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID = %d FOR UPDATE", $rec['ID'] ) );
 		case 'postmeta':
-			return $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_id = %d", $rec['ID'] ) );
+			return $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_id = %d FOR UPDATE", $rec['ID'] ) );
 		case 'option':
-			$raw = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", $rec['ID'] ) );
+			$raw = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s FOR UPDATE", $rec['ID'] ) );
 			if ( null === $raw || '' === $rec['sub'] ) {
 				return $raw;
 			}
@@ -48,14 +50,30 @@ foreach ( $input as $i => $rec ) {
 		exit( 1 );
 	}
 	$input[ $i ]['sub'] = isset( $rec['sub'] ) ? (string) $rec['sub'] : '';
-	$now                = sgs_media_current( $input[ $i ] );
-	if ( null === $now || md5( $now ) !== $rec['md5'] ) {
-		fwrite( STDERR, "apply-content: {$rec['store']} {$rec['ID']} {$input[ $i ]['sub']} changed since the export; nothing was written\n" );
+}
+
+$tables = array(
+	'posts'    => $wpdb->posts,
+	'postmeta' => $wpdb->postmeta,
+	'option'   => $wpdb->options,
+);
+foreach ( array_unique( array_column( $input, 'store' ) ) as $store ) {
+	$engine = $wpdb->get_var( $wpdb->prepare( 'SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = %s', $tables[ $store ] ) );
+	if ( 'InnoDB' !== $engine ) {
+		fwrite( STDERR, "apply-content: table {$tables[ $store ]} is not InnoDB (engine: " . var_export( $engine, true ) . "), so a failed write could not be rolled back; nothing was written\n" );
 		exit( 1 );
 	}
 }
 
 $wpdb->query( 'START TRANSACTION' );
+foreach ( $input as $rec ) {
+	$now = sgs_media_current( $rec );
+	if ( null === $now || md5( $now ) !== $rec['md5'] ) {
+		$wpdb->query( 'ROLLBACK' );
+		fwrite( STDERR, "apply-content: {$rec['store']} {$rec['ID']} {$rec['sub']} changed since the export; nothing was written\n" );
+		exit( 1 );
+	}
+}
 $updated = 0;
 foreach ( $input as $rec ) {
 	$ok = false;

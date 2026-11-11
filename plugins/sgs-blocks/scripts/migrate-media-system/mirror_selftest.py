@@ -51,8 +51,21 @@ def drop_scratch() -> None:
     sh(f'mysql -e "DROP DATABASE IF EXISTS wp_{SCRATCH}"; rm -rf {dst} {MIR.backup_dir(SCRATCH)}', "scratch mirror delete")
 
 
+def checksum_script(prefix: str) -> str:
+    """The checksum command for the three content tables under the mirror's own table prefix."""
+    return f"wp --path={MIR.wp_path(SCRATCH)} --allow-root db query 'CHECKSUM TABLE " + ", ".join(f"{prefix}{t}" for t in TABLES) + "' --skip-column-names"
+
+
+def table_prefix() -> str:
+    """The scratch mirror's table prefix, read from `wp db prefix` (the copy keeps its source's prefix)."""
+    prefix = sh(f"wp --path={MIR.wp_path(SCRATCH)} --allow-root db prefix", "table prefix").strip()
+    if not re.fullmatch(r"[A-Za-z0-9_]+", prefix):
+        raise SystemExit(f"unexpected table prefix {prefix!r}")
+    return prefix
+
+
 def checksums() -> dict:
-    out = sh(f"wp --path={MIR.wp_path(SCRATCH)} --allow-root db query 'CHECKSUM TABLE " + ", ".join(f"wp_{t}" for t in TABLES) + "' --skip-column-names", "table checksum")
+    out = sh(checksum_script(table_prefix()), "table checksum")
     return {line.split("\t")[0]: line.split("\t")[1] for line in out.strip().splitlines()}
 
 

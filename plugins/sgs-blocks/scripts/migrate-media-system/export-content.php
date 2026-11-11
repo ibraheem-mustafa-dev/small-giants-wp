@@ -4,10 +4,35 @@
 // Stores: every row of the posts table whatever its post type or status (pages, posts, SGS types, wp_template,
 // wp_template_part, wp_block, wp_navigation, revisions), post meta values and options holding block markup
 // (`widget_block`, per widget), skipping transients. An option holding `wp:sgs/` markup in a shape this cannot rewrite
-// is listed as `unsupported`, so a check can refuse it.
+// is listed as `unsupported`, so a check can refuse it. Post meta gets the same test: a serialised or JSON-encoded value
+// holding `wp:sgs/` markup is `unsupported` (rewriting it as plain text would corrupt its `s:N:` lengths or JSON escapes).
 ini_set( 'display_errors', '0' );
 global $wpdb;
 $out  = array();
+
+/**
+ * True when a stored value is serialised PHP or a JSON object or array (markup inside is escaped, not plain).
+ *
+ * @param string $raw The stored value.
+ * @return bool
+ */
+function sgs_media_is_structured( $raw ) {
+	if ( is_serialized( $raw ) ) {
+		return true;
+	}
+	$trim = ltrim( $raw );
+	return '' !== $trim && ( '{' === $trim[0] || '[' === $trim[0] ) && is_array( json_decode( $raw, true ) );
+}
+
+/**
+ * True when a value names an SGS block, plain or with JSON-escaped slashes.
+ *
+ * @param string $raw The stored value.
+ * @return bool
+ */
+function sgs_media_has_sgs_block( $raw ) {
+	return false !== strpos( $raw, 'wp:sgs/' ) || false !== strpos( $raw, 'wp:sgs\/' );
+}
 $like = '%<!-- wp:%';
 
 $rows = $wpdb->get_results( $wpdb->prepare( "SELECT ID, post_type, post_name, post_status, post_content FROM {$wpdb->posts} WHERE post_content LIKE %s ORDER BY ID", $like ), ARRAY_A );
@@ -26,6 +51,21 @@ foreach ( $rows as $r ) {
 
 $rows = $wpdb->get_results( $wpdb->prepare( "SELECT meta_id, post_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_value LIKE %s ORDER BY meta_id", $like ), ARRAY_A );
 foreach ( $rows as $r ) {
+	if ( sgs_media_is_structured( $r['meta_value'] ) ) {
+		if ( sgs_media_has_sgs_block( $r['meta_value'] ) ) {
+			$out[] = array(
+				'store'        => 'unsupported',
+				'ID'           => 'postmeta:' . $r['meta_id'] . ':' . $r['meta_key'],
+				'sub'          => '',
+				'post_type'    => 'postmeta:' . $r['meta_key'],
+				'post_name'    => 'post-' . $r['post_id'],
+				'post_status'  => '',
+				'post_content' => '',
+				'md5'          => '',
+			);
+		}
+		continue;
+	}
 	$out[] = array(
 		'store'        => 'postmeta',
 		'ID'           => (int) $r['meta_id'],
@@ -50,7 +90,7 @@ $rows = $wpdb->get_results(
 foreach ( $rows as $r ) {
 	$name  = $r['option_name'];
 	$value = maybe_unserialize( $r['option_value'] );
-	if ( is_string( $value ) && ! is_serialized( $r['option_value'] ) ) {
+	if ( is_string( $value ) && ! sgs_media_is_structured( $r['option_value'] ) ) {
 		$out[] = array(
 			'store'        => 'option',
 			'ID'           => $name,
@@ -81,7 +121,7 @@ foreach ( $rows as $r ) {
 			}
 		}
 	}
-	if ( ! $found && false !== strpos( $r['option_value'], 'wp:sgs/' ) ) {
+	if ( ! $found && sgs_media_has_sgs_block( $r['option_value'] ) ) {
 		$out[] = array(
 			'store'        => 'unsupported',
 			'ID'           => $name,
