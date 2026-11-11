@@ -100,8 +100,10 @@ if ( ! function_exists( 'sgs_account_menu_look_css' ) ) {
 			// The focus ring replaces box-shadow, so the line is also handed to it as --sgs-focus-under.
 			$side   = 'inset ' . $width . ' 0 0 0 ' . $colour;
 			$under  = 'inset 0 -' . $width . ' 0 0 ' . $colour;
-			$css[]  = '@media (min-width:1024px){' . $link . '{box-shadow:' . $side . ';--sgs-focus-under:' . $side . ';}}';
-			$css[]  = '@media (max-width:1023px){' . $link . '{background:transparent;box-shadow:' . $under . ';--sgs-focus-under:' . $under . ';}}';
+			$css[]  = SGS_Breakpoints::media( 'desktop' ) . '{' . $link . '{box-shadow:' . $side . ';--sgs-focus-under:' . $side . ';}}';
+			$css[]  = SGS_Breakpoints::media( 'tablet' ) . '{' . $link . '{background:transparent;box-shadow:' . $under . ';--sgs-focus-under:' . $under . ';}}';
+			// Forced colours drop box-shadow, so the current item keeps a system-colour line there.
+			$css[]  = '@media (forced-colors:active){' . $link . '{border-inline-start:' . $width . ' solid CanvasText;}}';
 			$css[]  = $link . '::after{content:none;}';
 		}
 		$css[] = sgs_typography_css_rule( $attributes, 'menuCount', $root_sel . ' .sgs-account__menu-count', '', false, false, $tiered );

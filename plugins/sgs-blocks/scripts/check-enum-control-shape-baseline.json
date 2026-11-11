@@ -153,6 +153,12 @@
       "attr": "playerStyle",
       "disposition": "detector-limitation",
       "reason": "The gate's proximity-window heuristic (WINDOW=900) mis-binds this attribute to the unrelated <ToggleGroupControl> that controls a DIFFERENT attribute, toggleIcon (bars/speaker) — 898 chars away, just inside the window, and closer than either real <SelectControl> in the file. Verified 2026-09-26: playerStyle's real UI is a hand-rolled <button> grid (two grouped rows, static vs audio-reactive styles, each with a name + hint line) — it uses neither ToggleGroupControl nor SelectControl, so this 8-option enum should resolve 'unresolved' (one of the 612 blind-spot enums), not as a D812 violation. Same false-bind class already fixed for card-grid.layout, media.mediaType and quote.attributionFontStyle (see find_marks() docstring) — this one is architecturally the same failure, just still inside WINDOW."
+    },
+    {
+      "block": "account",
+      "attr": "menuActiveIndicatorStyle",
+      "disposition": "detector-limitation",
+      "reason": "The gate's proximity-window heuristic (WINDOW=900) mis-binds this attribute to the <ToggleGroupControl> just above it in MenuPanel.js, which controls a different attribute. Its real control is the account block's Choice helper (extraControls.js::Choice), a SelectControl, which D812 asks for here because the rendered labels ('Bar inside the item', 'Line on the edge') are longer than 12 characters."
     }
   ]
 }

@@ -114,8 +114,9 @@ ok( false !== strpos( $odcss, '.x .sgs-account__od-text{line-height:24px' ), 'th
 
 // 3b4) The current tab's line can be an inset edge that composes with the focus ring.
 $line = sgs_account_menu_look_css( array( 'menuActiveIndicatorStyle' => 'line', 'menuActiveIndicatorColour' => '#141414', 'menuActiveIndicatorWidth' => array( 'desktop' => '2px' ) ), '.x' );
-ok( false !== strpos( $line, '@media (min-width:1024px){.x nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a{box-shadow:inset 2px 0 0 0 #141414;--sgs-focus-under:inset 2px 0 0 0 #141414;}' ), 'the sidebar current item draws its line on the left edge and hands it to the focus ring' );
-ok( false !== strpos( $line, '@media (max-width:1023px){.x nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a{background:transparent;box-shadow:inset 0 -2px 0 0 #141414;--sgs-focus-under:inset 0 -2px 0 0 #141414;}' ), 'the tab row current item draws its line on the bottom edge and hands it to the focus ring' );
+ok( false !== strpos( $line, SGS_Breakpoints::media( 'desktop' ) . '{.x nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a{box-shadow:inset 2px 0 0 0 #141414;--sgs-focus-under:inset 2px 0 0 0 #141414;}' ), 'the sidebar current item draws its line on the left edge and hands it to the focus ring' );
+ok( false !== strpos( $line, SGS_Breakpoints::media( 'tablet' ) . '{.x nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a{background:transparent;box-shadow:inset 0 -2px 0 0 #141414;--sgs-focus-under:inset 0 -2px 0 0 #141414;}' ), 'the tab row current item draws its line on the bottom edge and hands it to the focus ring' );
+ok( false !== strpos( $line, '@media (forced-colors:active){.x nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a{border-inline-start:2px solid CanvasText;}}' ), 'in forced colours the current item keeps a system-colour line' );
 ok( false !== strpos( $line, 'is-active > a::after{content:none;}' ), 'the bar is not drawn in line style' );
 ok( false === strpos( sgs_account_menu_look_css( array( 'menuActiveIndicatorWidth' => array( 'desktop' => '2px' ) ), '.x' ), 'box-shadow:inset' ), 'without the line style no box-shadow line prints' );
 

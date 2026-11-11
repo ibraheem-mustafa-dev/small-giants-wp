@@ -167,8 +167,8 @@ function sgs_commerce_look_active_padding_css( array $attrs, string $block, stri
 		return '';
 	}
 	$css = '';
-	foreach ( array( '', ':focus' ) as $tail ) {
-		$selector = sgs_commerce_look_selector( 'field_text_active', $block, $root, $tail );
+	$selectors = array( sgs_commerce_look_selector( 'field_text_active', $block, $root, '' ), sgs_commerce_look_selector( 'field_text_active', $block, $root, ':focus' ) );
+	foreach ( $selectors as $selector ) {
 		if ( '' !== $selector ) {
 			$css .= sgs_emit_responsive_css( $selector, array( array( 'value' => $sides, 'css' => 'padding', 'box' => true, 'unit_default' => 'px' ) ) );
 		}
