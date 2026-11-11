@@ -68,11 +68,10 @@ export const MEDIA_BASES = {
 	// `source.control.js` (which only ever writes the Id/Url pair or
 	// SvgContent). Keeping them in this atom meant EVERY surface adopting
 	// `atoms:['source']` had these three dead names silently
-	// re-registered server-side by `sgs_register_media_element_attrs()`
+	// re-registered server-side by the old attribute register
 	// even after a block's own block.json stopped declaring them — exactly
 	// how hero's already-deleted `splitImage`/`splitImageMobile` kept
-	// reappearing in the live registered schema post-deploy. See
-	// `includes/media-element-attrs-register.php`'s module docblock.
+	// reappearing in the live registered schema post-deploy.
 	source: [
 		'ImageId',
 		'ImageUrl',

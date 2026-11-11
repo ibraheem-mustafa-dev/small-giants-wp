@@ -185,19 +185,4 @@ test( '33 (bug 10): a template child with several classes is still child-owned',
 	assert.ok( findings[ 0 ].key.includes( 'child-owned-selector' ), findings[ 0 ].key );
 } );
 
-// ---- 38-media-attr-parity ----
 
-test( "38 (bug 6): a second run with a different blocks directory is not served the first run's result", () => {
-	const rule = loadRule( '38-media-attr-parity.js' );
-	const withAtoms = ( atoms ) =>
-		JSON.stringify( {
-			name: 'sgs/b',
-			supports: { sgs: { mediaElements: [ { prefix: '', context: 'element', atoms } ] } },
-			attributes: {},
-		} );
-	const first = makeBlocksDir( { 'block.json': withAtoms( [ 'object-fit' ] ) } );
-	const second = makeBlocksDir( { 'block.json': withAtoms( [ 'no-such-atom-id' ] ) } );
-	const block = { tail: 'b', slug: 'sgs/b' };
-	assert.equal( rule.run( ctxFor( first ), block ).filter( ( f ) => f.kind === 'unknown-atom-id' ).length, 0 );
-	assert.equal( rule.run( ctxFor( second ), block ).filter( ( f ) => f.kind === 'unknown-atom-id' ).length, 1 );
-} );

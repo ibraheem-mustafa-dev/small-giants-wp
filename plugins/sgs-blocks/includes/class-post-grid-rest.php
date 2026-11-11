@@ -240,7 +240,7 @@ class Post_Grid_REST {
 				'default'           => '',
 				'sanitize_callback' => 'sanitize_text_field',
 			],
-			// 37-media-no-handroll: the block's own uid, round-tripped by
+			// the block's own uid, round-tripped by
 			// view.js so AJAX-paginated cards' featured images carry the same
 			// media-atom marker class as the initial render's — see the
 			// $sgs_pg_uid comment in render_card().

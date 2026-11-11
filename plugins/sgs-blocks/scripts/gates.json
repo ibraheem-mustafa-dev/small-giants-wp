@@ -815,15 +815,6 @@
     "order": 255
   },
   {
-    "id": "test-media-injection-parity",
-    "cmd": "node scripts/tests/test-media-injection-parity.mjs",
-    "tier": "fast",
-    "added_D": null,
-    "added_commit": null,
-    "budget_ms": 464,
-    "order": 87
-  },
-  {
     "id": "check-media-breakpoints",
     "cmd": "node scripts/check-media-breakpoints.js",
     "tier": "fast",

@@ -44,8 +44,7 @@
  * `Mobile`) ─────────────────────────────────────────────────────────────────
  * `OverlayOpacity` has been in `MEDIA_TIERED_BASES` (`MediaElementControls.js`)
  * for some time already, so the L1 injection layer
- * (`media-element-attrs-register.php` server-side, `mediaAttrKeys()` in the
- * editor) already registers `overlayOpacityTablet`/`overlayOpacityMobile`
+ * (the generated block.json attributes) already registers `overlayOpacityTablet`/`overlayOpacityMobile`
  * (and their prefixed siblings) on every current adopter of this atom — this
  * atom's OWN `attrKeys()`/`css()` were simply not reading them yet. Only
  * OPACITY is tiered, matching the wrapper's own doc comment

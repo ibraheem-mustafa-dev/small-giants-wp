@@ -1,27 +1,10 @@
 /**
- * Single source of truth for the media attribute TYPE map, JS -> PHP.
- *
- * `MEDIA_ATTR_TYPES` and `MEDIA_BASES` live in
- * `src/components/MediaElementControls.js`. The server needs the same
- * information to register the attributes on `register_block_type_args`, so this
- * script imports the REAL module and emits
- * `includes/media-element-attributes.generated.php`.
- *
- * ⛔ WHY GENERATE RATHER THAN HAND-MAINTAIN. WordPress coerces a value that does
- * not match its declared type back to the attribute's default, SILENTLY. If the
- * two type maps drift, the client's stored media does not error - it vanishes on
- * load (STOP-D328-SHAPE-NOT-JUST-VALUE). A hand-kept copy is a slow leak with no
- * failure signal.
- *
- * Imports the module rather than parsing it, for the same reason
- * `generate-svg-allowlist.js` executes its PHP: a parser would reimplement the
- * thing it mirrors and could then disagree with it.
- *
- * It also writes the atoms' attributes into each adopting block's committed
- * `block.json` (marked `"_generated": "media-atoms"`) and the matching entries
- * of `scripts/attr-classification-overrides.json`, through
- * `scripts/lib/media-block-json.mjs`. `--check` fails when the PHP mirror, any
- * block.json or the override file differs from what a run would write.
+ * Writes the atoms' attributes into each adopting block's committed `block.json` (marked
+ * `"_generated": "media-atoms"`) and the matching entries of `scripts/attr-classification-overrides.json`, through
+ * `scripts/lib/media-block-json.mjs`, from the registry's atoms and `src/components/media/emit/adopted-settings.js`.
+ * WordPress coerces a value that does not match its declared type back to the attribute's default, silently, so the
+ * block.json types come from the one registry. `--check` fails when any block.json or the override file differs from
+ * what a run would write.
  *
  * USAGE
  *   node scripts/generate-media-attributes.mjs                    # write
@@ -45,11 +28,6 @@ import {
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const PLUGIN_DIR = path.resolve( HERE, '..' );
-const OUT_FILE = path.join(
-	PLUGIN_DIR,
-	'includes',
-	'media-element-attributes.generated.php'
-);
 
 const toUrl = ( ...seg ) =>
 	'file:///' +
@@ -71,91 +49,6 @@ const { MEDIA_ATOMS } = await import( toUrl( 'src', 'components', 'media', 'atom
 const { adoptedAtomsForElement, adoptedSettingsForAtoms } = await import(
 	toUrl( 'src', 'components', 'media', 'emit', 'adopted-settings.js' )
 );
-
-function phpValue( value ) {
-	if ( Array.isArray( value ) ) {
-		return (
-			'array( ' + value.map( ( v ) => JSON.stringify( v ) ).join( ', ' ) + ' )'
-		);
-	}
-	return JSON.stringify( value );
-}
-
-function render() {
-	const bases = Object.keys( MEDIA_ATTR_TYPES )
-		.sort()
-		.map(
-			( b ) =>
-				`\t\t${ JSON.stringify( b ).padEnd( 26 ) } => ${ phpValue(
-					MEDIA_ATTR_TYPES[ b ]
-				) },`
-		);
-
-	const groups = Object.keys( MEDIA_BASES )
-		.sort()
-		.map( ( g ) => {
-			const list = MEDIA_BASES[ g ]
-				.map( ( b ) => `\n\t\t\t${ JSON.stringify( b ) },` )
-				.join( '' );
-			return `\t\t${ JSON.stringify( g ).padEnd( 14 ) } => array(${ list }\n\t\t),`;
-		} );
-
-	const tiered = MEDIA_TIERED_BASES.slice()
-		.sort()
-		.map( ( b ) => `
-		${ JSON.stringify( b ) },` )
-		.join( '' );
-
-	const atoms = Object.keys( MEDIA_ATOMS )
-		.sort()
-		.map( ( id ) => {
-			const list = MEDIA_ATOMS[ id ].bases
-				.map( ( b ) => `
-			${ JSON.stringify( b ) },` )
-				.join( '' );
-			return `		${ JSON.stringify( id ).padEnd( 20 ) } => array(${ list }
-		),`;
-		} );
-
-	return `<?php
-/**
- * GENERATED FILE - DO NOT EDIT.
- *
- * Source: src/components/MediaElementControls.js
- *         ( MEDIA_ATTR_TYPES + MEDIA_BASES )
- * Regenerate: node scripts/generate-media-attributes.mjs
- * Gate:       node scripts/generate-media-attributes.mjs --check
- *
- * Four maps, mirrored for the server so register_block_type_args() registers
- * exactly the schema the editor injects:
- *
- *   bases   base -> declared type
- *   groups  vocabulary group -> its bases
- *   tiered  the bases that carry Tablet/Mobile siblings
- *   atoms   atom id -> its bases (this is what drives SELECTIVE injection)
- *
- * Editing this by hand makes the two sides disagree - and a type mismatch does
- * not error, it makes WordPress silently coerce the stored value back to its
- * default, deleting the client's media on load.
- *
- * @package SGS\\Blocks
- */
-
-return array(
-	'bases'  => array(
-${ bases.join( '\n' ) }
-	),
-	'groups' => array(
-${ groups.join( '\n' ) }
-	),
-	'tiered' => array(${ tiered }
-	),
-	'atoms'  => array(
-${ atoms.join( '\n' ) }
-	),
-);
-`;
-}
 
 const BLOCKS_DIR = path.join( PLUGIN_DIR, 'src', 'blocks' );
 const OVERRIDES_FILE = path.join( HERE, 'attr-classification-overrides.json' );
@@ -402,11 +295,6 @@ function selfTest() {
 		unadopted !== fixText && none.next === unadopted && none.entries.length === 0
 	);
 
-	const php = render();
-	ck( 'render emits a php open tag', php.startsWith( '<?php' ) );
-	ck( 'render emits the object shapes', php.includes( '"Thumbnail"' ) && php.includes( '"object"' ) );
-	ck( 'render emits the groups', php.includes( '"behaviour"' ) );
-
 	fails.forEach( ( f ) => process.stdout.write( `  FAIL ${ f }\n` ) );
 	// NEGATIVE CONTROL - prove the harness can register a failure at all.
 	// A self-test never seen to go red is a decoration.
@@ -430,14 +318,8 @@ if ( process.argv.includes( '--self-test' ) ) {
 	process.exit( selfTest() );
 }
 
-const out = render();
-
 if ( process.argv.includes( '--check' ) ) {
 	const stale = [];
-	const current = fs.existsSync( OUT_FILE ) ? fs.readFileSync( OUT_FILE, 'utf8' ) : '';
-	if ( current !== out ) {
-		stale.push( 'includes/media-element-attributes.generated.php (PHP mirror differs from MediaElementControls.js)' );
-	}
 	const { files, entries, overridesText } = plan();
 	files.forEach( ( _text, file ) => stale.push( `${ rel( file ) } (generated media attributes differ from the registry)` ) );
 	if ( applyOverrideEntries( overridesText, entries, argBlock ) !== overridesText ) {
@@ -451,13 +333,10 @@ if ( process.argv.includes( '--check' ) ) {
 		);
 		process.exit( 1 );
 	}
-	process.stdout.write( '[generate-media-attributes] OK - PHP mirror, every block.json and the override entries match the registry.\n' );
+	process.stdout.write( '[generate-media-attributes] OK - every block.json and the override entries match the registry.\n' );
 	process.exit( 0 );
 }
 
-if ( ! argBlock ) {
-	fs.writeFileSync( OUT_FILE, out, 'utf8' );
-}
 const { files, entries, skipped, kept, overridesText } = plan();
 files.forEach( ( text, file ) => fs.writeFileSync( file, text, 'utf8' ) );
 const nextOverrides = applyOverrideEntries( overridesText, entries, argBlock );
@@ -476,5 +355,5 @@ if ( skipped.length ) {
 	);
 }
 process.stdout.write(
-	`[generate-media-attributes] wrote ${ argBlock ? '' : 'the PHP mirror, ' }${ files.size } changed block.json file(s) and ${ entries.length } override entries\n`
+	`[generate-media-attributes] wrote ${ files.size } changed block.json file(s) and ${ entries.length } override entries\n`
 );

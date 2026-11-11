@@ -14,7 +14,7 @@
  *
  * ── `OverlayOpacity` is TIERED (2026-09-03) — see the JS twin's docblock for
  * the full rationale. `OverlayOpacity` has been in `MEDIA_TIERED_BASES` for
- * some time already, so `media-element-attrs-register.php` already registers
+ * some time already, so the generated block.json attributes already include
  * `overlayOpacityTablet`/`overlayOpacityMobile` (and prefixed siblings) on
  * every current adopter; only this atom's own emitter was not reading them.
  * Colour/gradient/blend-mode stay untiered.

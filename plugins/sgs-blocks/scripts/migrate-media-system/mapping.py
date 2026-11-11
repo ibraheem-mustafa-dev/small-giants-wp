@@ -1,11 +1,11 @@
 """The Spec 49 §13 mapping rows as data.
 
 The facts the rows rest on are frozen in `mapping-frozen.json` beside this file: the base vocabulary, the per-device
-(tiered) bases and each atom's bases (from `includes/media-element-attributes.generated.php`), the pre-adoption
+(tiered) bases and each atom's bases (from the old generated PHP mirror, now deleted), the pre-adoption
 `supports.sgs.mediaElements` entries and attribute names of every block (from each `block.json`), the old defaults and
 types (from the framework database) and the mapping rows built from them. Stage B rewrites or deletes all of those
 sources, so every reader (`rows`, `survey`, `fix`, `check`, `self-test`) reads the frozen file only. `regenerate()`
-rebuilds it from the live files and refuses once any block declares `kinds` (the cutover marker, §8.3). This file holds
+is refused: the files it read are deleted. This file holds
 the decisions §13 and Appendix A make: which old name becomes which new one, which attributes stay and why, and which
 slots are exempt.
 """
@@ -28,7 +28,6 @@ DEVICES = ("desktop", "tablet", "mobile")
 TIERS = ("", "Tablet", "Mobile")
 TIER_DEVICE = {"": "desktop", "Tablet": "tablet", "Mobile": "mobile"}
 
-GENERATED_PHP = PLUGIN / "includes" / "media-element-attributes.generated.php"
 BLOCKS_DIR = PLUGIN / "src" / "blocks"
 
 
@@ -42,31 +41,6 @@ def attr_name(prefix: str, base: str) -> str:
 
 
 # ---------------------------------------------------------------- facts read from the code
-
-@lru_cache(maxsize=1)
-def live_generated_maps() -> dict:
-    """{'atoms': {atom: [bases]}, 'tiered': [..]} read from the generated PHP mirror (regeneration only)."""
-    text = GENERATED_PHP.read_text(encoding="utf-8")
-
-    def section(name: str) -> str:
-        start = text.index(f"'{name}'")
-        depth = 0
-        first = text.index("array(", start)
-        for k in range(first + len("array"), len(text)):
-            if text[k] == "(":
-                depth += 1
-            elif text[k] == ")":
-                depth -= 1
-                if depth == 0:
-                    return text[first : k + 1]
-        raise ValueError(name)
-
-    atoms: dict[str, list[str]] = {}
-    for m in re.finditer(r'"([a-z-]+)"\s*=>\s*array\(([^)]*)\)', section("atoms")):
-        atoms[m.group(1)] = re.findall(r'"([A-Za-z]+)"', m.group(2))
-    tiered = set(re.findall(r'"([A-Za-z]+)"', section("tiered")))
-    return {"atoms": atoms, "tiered": sorted(tiered)}
-
 
 @lru_cache(maxsize=1)
 def live_declared_slots() -> dict:
@@ -127,23 +101,6 @@ def migration_scope() -> frozenset[str] | None:
     if listed and not listed <= adopted:
         return frozenset(adopted)
     return None
-
-
-def live_db_attributes() -> dict:
-    """{block: {attr: [type, default_json]}} for source='sgs' attributes of the framework database (regeneration only)."""
-    path = framework_db_path()
-    if not Path(path).is_file():
-        raise SystemExit(f"regenerate needs the framework database: {path} is missing")
-    con = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
-    try:
-        out: dict[str, dict] = {}
-        for block, attr, kind, default in con.execute(
-            "SELECT block_slug, attr_name, attr_type, default_value FROM block_attributes WHERE source='sgs'"
-        ):
-            out.setdefault(block, {})[attr] = [kind, default]
-        return out
-    finally:
-        con.close()
 
 
 # ---------------------------------------------------------------- the frozen facts
@@ -630,51 +587,8 @@ def rows() -> list[dict]:
     return out
 
 
-def build_rows(declared: dict, maps: dict) -> list[dict]:
-    """The rows generated from a set of declared slots and atom maps (regeneration only)."""
-    tiered = set(maps["tiered"])
-    maps = {"atoms": maps["atoms"], "tiered": tiered, "bases": {b for group in maps["atoms"].values() for b in group}}
-    out: list[dict] = []
-    for block in sorted(declared):
-        for slot in merged_slots(block, declared, maps):
-            for old_prefix in slot["olds"]:
-                for base in slot["bases"]:
-                    family, target = BASE_FAMILY.get(base, ("refuse", "no mapping"))
-                    named = family != "report" and family != "refuse"
-                    for tier in TIERS if base in tiered or base in ("MediaType", "ImageAlt") else ("",):
-                        out.append({
-                            "block": block, "old": attr_name(old_prefix, base + tier), "family": family,
-                            "target": new_target(family, target, slot["new"]) if named else target,
-                            "new_prefix": slot["new"], "base": base, "tier": tier,
-                        })
-    for (block, old), (family, target) in sorted(EXTRA.items()):
-        out.append({"block": block, "old": old, "family": family, "target": target, "new_prefix": None, "base": None, "tier": ""})
-    for block in BACKGROUND_BLOCKS:
-        for old, family, target in BACKGROUND_OLD:
-            out.append({"block": block, "old": old, "family": family, "target": target, "new_prefix": "background", "base": None, "tier": ""})
-    for old, reason in REPORT_ALWAYS.items():
-        out.append({"block": "*", "old": old, "family": "report", "target": reason, "new_prefix": None, "base": None, "tier": ""})
-    return out
-
-
 def regenerate() -> dict:
-    """Rebuild `mapping-frozen.json` from the live files; refuses once any block declares `kinds` (§8.3)."""
-    if any_block_adopted():
-        raise SystemExit("regenerate refused: a block already declares `kinds` on a media slot, so the live files no longer "
-                         "describe the old shape. The frozen rows are final.")
-    declared, maps = live_declared_slots(), live_generated_maps()
-    attributes = {}
-    for block in declared:
-        data = json.loads((BLOCKS_DIR / block.split("/")[1] / "block.json").read_text(encoding="utf-8"))
-        attributes[block] = [k for k, v in data.get("attributes", {}).items()
-                             if not k.startswith("_") and not (isinstance(v, dict) and v.get("_generated"))]
-    wanted = set(declared) | set(BACKGROUND_BLOCKS) | {b for b, _ in EXTRA} | {"sgs/team-member", "sgs/decorative-image"}
-    db = {b: a for b, a in live_db_attributes().items() if b in wanted}
-    out = {"atoms": maps["atoms"], "tiered": maps["tiered"], "declared": declared, "attributes": attributes,
-           "dbAttributes": db, "rows": build_rows(declared, maps)}
-    tmp = FROZEN.with_suffix(".json.tmp")
-    tmp.write_text(json.dumps(out, indent=1, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
-    tmp.replace(FROZEN)
-    frozen.cache_clear()
-    rows.cache_clear()
-    return out
+    """Refused: the sources the frozen rows were built from (the generated PHP mirror, the pre-adoption `block.json`
+    entries, the old database defaults) no longer exist, so the frozen rows are final."""
+    raise SystemExit("regenerate refused: the old media-element attribute files are deleted, so the live files no longer "
+                     "describe the old shape. The frozen rows are final.")

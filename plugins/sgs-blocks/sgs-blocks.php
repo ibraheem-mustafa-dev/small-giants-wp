@@ -334,7 +334,6 @@ Css_Output_Settings::register();
 // stops rejecting them with "Invalid parameter(s): attributes". Attribute list
 // is generated from the extension JS by scripts/generate-extension-attributes.js.
 require_once SGS_BLOCKS_PATH . 'includes/extension-attrs-rest-register.php';
-require_once SGS_BLOCKS_PATH . 'includes/media-element-attrs-register.php';
 
 // Floating layers anchored to the whole section: marked by sgs/decorative-image, lifted by sgs/hero.
 require_once SGS_BLOCKS_PATH . 'includes/section-anchored-layers.php';

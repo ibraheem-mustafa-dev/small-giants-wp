@@ -648,7 +648,6 @@ def run_declared_guard(failures: list[str]) -> int:
 
 def reset_caches() -> None:
     """The one place the mapping's kept facts and the kept migration results are cleared."""
-    M.live_generated_maps.cache_clear()
     M.live_declared_slots.cache_clear()
     M.live_declared_attributes.cache_clear()
     B.clear_memo()
@@ -664,28 +663,28 @@ def run_frozen(failures: list[str]) -> int:
     """The frozen facts stand alone, every legacy attribute is classified, and dropped or unmapped values are reported."""
     checks = 0
     gone = Path(tempfile.gettempdir()) / "migrate-media-system-absent"
-    saved = (M.GENERATED_PHP, M.BLOCKS_DIR)
+    saved = M.BLOCKS_DIR
     before_rows, before_out = json.dumps(M.rows(), sort_keys=True), B.migrate("sgs/hero", HERO_PROBE)
-    M.GENERATED_PHP, M.BLOCKS_DIR = gone / "generated.php", gone / "blocks"
+    M.BLOCKS_DIR = gone / "blocks"
     try:
         checks += 1
         if not frozen_independent(before_rows, before_out):
-            _fail("frozen: independence", "rows or a migration changed with the PHP mirror and block.json files absent", failures)
+            _fail("frozen: independence", "rows or a migration changed with the block.json files absent", failures)
         checks += 1
         real = B._migrate
-        B._migrate = lambda _n, _a: ({"mirrorPresent": M.GENERATED_PHP.exists()}, [])
+        B._migrate = lambda _n, _a: ({"blocksPresent": M.BLOCKS_DIR.exists()}, [])
         try:
-            M.GENERATED_PHP = saved[0]
+            M.BLOCKS_DIR = saved
             reset_caches()
-            with_mirror = B.migrate("sgs/hero", HERO_PROBE)
-            M.GENERATED_PHP = gone / "generated.php"
-            caught = not frozen_independent(before_rows, with_mirror)
+            with_blocks = B.migrate("sgs/hero", HERO_PROBE)
+            M.BLOCKS_DIR = gone / "blocks"
+            caught = not frozen_independent(before_rows, with_blocks)
         finally:
             B._migrate = real
         if not caught:
-            _fail("frozen: independence control", "a migration that reads the PHP mirror was not caught (a stale kept result hides it)", failures)
+            _fail("frozen: independence control", "a migration that reads the block.json files was not caught (a stale kept result hides it)", failures)
     finally:
-        M.GENERATED_PHP, M.BLOCKS_DIR = saved
+        M.BLOCKS_DIR = saved
         reset_caches()
     live = M.live_declared_slots
     M.live_declared_slots = lambda: {"sgs/media": [{"prefix": "", "atoms": None, "kinds": ["image"]}]}

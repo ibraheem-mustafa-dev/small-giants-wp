@@ -56,7 +56,6 @@ import './custom-css';
 import './focus-rests';
 import './block-defaults';
 import './responsive-visibility';
-import './media-elements';
 import './cpt-default-panel';
 import './mega-section-page-panel';
 import './product-collection-same-term';

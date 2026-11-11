@@ -9,7 +9,7 @@
   cli.py self-test [--break] [--mirror [--keep]]
 
 The mapping rows and the facts they rest on are frozen in `mapping-frozen.json`; every command reads that file, never the
-PHP mirror or the block.json files. `rows --regenerate` rebuilds it from the live files and refuses once a block declares
+PHP mirror or the block.json files. `rows --regenerate` is refused; it used to rebuild it from the live files and refused once a block declared
 `kinds` on a media slot.
 
 `survey` counts old attributes per block and per target. `fix` rewrites block attributes per the mapping rows
