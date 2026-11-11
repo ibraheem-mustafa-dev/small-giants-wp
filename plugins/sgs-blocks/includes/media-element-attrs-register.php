@@ -104,6 +104,10 @@ function sgs_register_media_element_attrs( $args, $name ) {
 	$injected = array();
 
 	foreach ( $declared as $element ) {
+		// An entry that declares `kinds` has adopted the Spec 49 slot: block.json carries its generated attributes.
+		if ( ! empty( $element['kinds'] ) ) {
+			continue;
+		}
 		$prefix = isset( $element['prefix'] ) ? (string) $element['prefix'] : '';
 
 		// SELECTIVE INJECTION. An entry names the ATOMS it wants and receives

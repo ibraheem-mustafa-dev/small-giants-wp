@@ -46,14 +46,16 @@ import {
 } from '../../components/media/atoms/registry.js';
 
 /**
- * Read a block's declared media elements.
+ * Read a block's declared media elements that still take the legacy injection. An entry that declares `kinds` has
+ * adopted the Spec 49 slot: its attributes are written into block.json by `scripts/generate-media-attributes.mjs`,
+ * and its atom list may name adopted atoms this registry does not know.
  *
  * @param {Object} settings Block settings from registerBlockType.
  * @return {Array} Declared element descriptors (empty when the block opts out).
  */
 function declaredMediaElements( settings ) {
 	const declared = settings?.supports?.sgs?.mediaElements;
-	return Array.isArray( declared ) ? declared : [];
+	return Array.isArray( declared ) ? declared.filter( ( element ) => ! Array.isArray( element?.kinds ) ) : [];
 }
 
 /**
