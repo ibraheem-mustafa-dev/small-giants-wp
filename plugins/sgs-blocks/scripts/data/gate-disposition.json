@@ -1226,6 +1226,17 @@
    "package": "WP-15a",
    "lands": "B",
    "reason": "Reads sgs_media_atom_media_type_css; re-point at the renderer's media-type atom at cutover"
+  },
+  {
+   "path": "scripts/adopt-media-blocks.mjs",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/media-element-attrs-register.php"
+   ],
+   "package": "WP-15b",
+   "lands": "B",
+   "reason": "Names the generated PHP attribute mirror in its list of files an adoption rewrites; drop that name when §8.2 deletes the mirror"
   }
  ]
 }
