@@ -263,16 +263,29 @@ def parse_live_listing(raw: bytes, roots: list[tuple[str, str]]) -> tuple[Live |
     return Live(files, nodes, other), ""
 
 
+LISTING_ATTEMPTS = 3
+LISTING_TIMEOUT_S = 60
+
+
 def fetch_live_listing(use_alias: bool, wp_content: str, roots: list[tuple[str, str]], ssh_base: list[str],
-                       timeout: int = 180) -> tuple[Live | None, str]:
-    try:
-        done = subprocess.run(ssh_base + [live_listing_cmd(wp_content, roots)], capture_output=True, timeout=timeout,
-                              check=False)
-    except (subprocess.SubprocessError, OSError) as exc:
-        return None, f"ssh failed ({type(exc).__name__})"
-    if done.returncode != 0:
-        return None, f"ssh exit {done.returncode}"
-    return parse_live_listing(done.stdout, roots)
+                       timeout: int = LISTING_TIMEOUT_S, attempts: int = LISTING_ATTEMPTS,
+                       runner=subprocess.run) -> tuple[Live | None, str]:
+    """The live listing, asked up to `attempts` times. The host's link stalls at random: a listing that normally takes
+    about a second hung for 180s on 2026-11-11 and made a good deploy read as stale. A listing that arrives but
+    cannot be parsed is not retried (it would read the same)."""
+    why = "not asked"
+    for _ in range(max(1, attempts)):
+        try:
+            done = runner(ssh_base + [live_listing_cmd(wp_content, roots)], capture_output=True, timeout=timeout,
+                          check=False)
+        except (subprocess.SubprocessError, OSError) as exc:
+            why = f"ssh failed ({type(exc).__name__})"
+            continue
+        if done.returncode != 0:
+            why = f"ssh exit {done.returncode}"
+            continue
+        return parse_live_listing(done.stdout, roots)
+    return None, f"{why}, {max(1, attempts)} attempt(s)"
 
 
 # ---------------------------------------------------------------------------
@@ -801,8 +814,23 @@ def self_test() -> list[str]:
         def ignores_force(pl, lv, w, rts, force_full=False):
             return plan_delta(pl, lv, w, rts)
 
+        def stall_case(attempts: int) -> list[str]:
+            # The first ssh call stalls (a timeout), the second answers: the listing must still arrive.
+            good = sh(live_listing_cmd(WPC, roots), srv).stdout
+            calls = {"n": 0}
+
+            def runner(cmd, **kw):
+                calls["n"] += 1
+                if calls["n"] == 1:
+                    raise subprocess.TimeoutExpired(cmd, kw.get("timeout", 0))
+                return subprocess.CompletedProcess(cmd, 0, good, b"")
+
+            live_, why_ = fetch_live_listing(True, WPC, roots, ["ssh"], attempts=attempts, runner=runner)
+            return [] if live_ is not None else [f"one stalled ssh call lost the listing ({why_})"]
+
         cases = [
             ("an unchanged payload uploads nothing", nothing_case(plan_delta), nothing_case(always_all)),
+            ("one stalled ssh call does not lose the live listing", stall_case(LISTING_ATTEMPTS), stall_case(1)),
             ("one changed file of the same size sends only that file", one_file_case(plan_delta), one_file_case(size_only)),
             ("a deleted file is deleted on the server", delete_case(build_remote_apply_cmd), delete_case(no_delete_list)),
             ("a missing, garbled, cut-off or symlink-holding listing gives a full upload",
