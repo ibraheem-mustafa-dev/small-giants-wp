@@ -220,30 +220,30 @@ If the client needs CSS that cannot be expressed via tokens, add it to the clien
 
 ## Render helpers
 
-### sgs_responsive_image
+### Printing media from a block
 
-Located in `includes/helpers-media.php`. Outputs a fully optimised `<img>` with:
+A block never prints its own `<img>`. It declares a slot in `block.json::supports.sgs.mediaElements` (prefix, kinds, context content, background, item or layer), generates the slot's attributes, and prints it from `render.php`:
 
-- `srcset` and `sizes` attributes (through `wp_get_attachment_image()` when the attachment ID is known).
-- `loading="lazy"` and `decoding="async"` by default.
-- Explicit `width`/`height` resolved from the attachment metadata, so the browser reserves the space.
-- The supplied alt text.
-
-```php
-echo sgs_responsive_image(
-    $attachment_id,       // int — attachment post ID (0 when only a URL is known)
-    $url,                 // string — image URL, used when there is no attachment ID
-    $alt,                 // string — alt text
-    'large',              // string — WordPress image size
-    [
-        'class'         => 'sgs-hero__image',
-        'fetchpriority' => 'high',  // omit for lazy-loaded images
-        'loading'       => 'eager',
-    ]
-);
+```bash
+cd plugins/sgs-blocks && node scripts/generate-media-attributes.mjs --block <slug>   # writes the slot's attributes into block.json
 ```
 
-For an above-the-fold hero image, the theme injects a `<link rel="preload" as="image">` tag into `<head>` (`functions.php`, `inc/font-preloading.php`) to shorten LCP.
+```php
+$media = SGS_Media_Element::render( array( 'prefix' => 'split', 'kinds' => array( 'image', 'video', 'svg' ), 'context' => 'content' ), $attributes, $context );
+echo $media['html'];   // pass $media['css'] to the CSS collector; an empty source returns empty html
+```
+
+The renderer chooses `<img>` with `srcset`, `<picture>` or one `<video>` with `<source media>` per device kind, reserves the file's width and height, sets `loading` and `fetchpriority` through `SGS_Media_Priority::resolve`, and prints a background slot as `.sgs-bg-media` and `.sgs-bg-overlay` (`includes/media/render-background.php`). The base CSS is `assets/css/media-base.css`. Spec 49 is the contract; `plugins/sgs-blocks/CLAUDE.md` "Media" lists the editor components and gates.
+
+To try saved content on a branch build without touching the four real mirrors, use a scratch mirror (`scripts/local-wp/README.md`). From PowerShell, or Git Bash with `MSYS_NO_PATHCONV=1`:
+
+```bash
+wsl -d Ubuntu -u root -- bash /mnt/e/<worktree>/scripts/local-wp/scratch-mirror.sh create local-sandybrown local-mediatest-<name> <port>
+wsl -d Ubuntu -u root -- bash /mnt/e/<worktree>/scripts/local-wp/sync-build.sh local-mediatest-<name>
+python plugins/sgs-blocks/scripts/migrate-media-system/cli.py fix --mirror mediatest-<name> --apply     # backs up first, prints the restore command
+python plugins/sgs-blocks/scripts/migrate-media-system/cli.py check --mirror mediatest-<name> --active on  # exit 1 while any old attribute remains
+python plugins/sgs-blocks/scripts/migrate-media-system/cli.py restore --mirror mediatest-<name> --backup <file>
+```
 
 ---
 
@@ -294,6 +294,8 @@ Gitignored; never committed.
 ### Adding a block attribute? Reseed FIRST, then commit the classifier, then deploy
 
 **Order matters, and getting it wrong costs a full build-and-deploy cycle**.
+
+A media slot's attributes are never hand-written: declare the slot in `supports.sgs.mediaElements` and run `node plugins/sgs-blocks/scripts/generate-media-attributes.mjs --block <slug>`, then reseed as below.
 
 1. **Reseed before building.** `check-wiring-fingerprint` fails the build when an attribute is declared in a committed `block.json` but absent from the framework DB. Run `/sgs-update` first; the gate's own message says so.
 2. **Commit the regenerated `css-property-classifications.json` before deploying.** The reseed regenerates it, and `build-deploy.py` builds from an isolated worktree **at HEAD** — so an uncommitted classifier means the deploy's build sees each new attribute carrying a `css_property` in the DB with nothing declaring it in the derived layer. The F6 check #8 Reseed-Survival gate (`db-consistency/run.py`, the `css_property_reseed` check; #9 is the `fx_effects` twin, which the same sequence applies to) then fails them as rogue seeds that would vanish on the next reseed, and the suite has **no baseline by design**. A local `npm run build` passes at this point while the deploy's build fails, because only the deploy builds at HEAD.

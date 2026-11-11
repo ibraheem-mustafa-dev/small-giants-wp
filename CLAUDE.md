@@ -13,7 +13,7 @@ SGS is a standalone WordPress block framework and AI website-builder: theme + bl
 - **Decide defaults on merit, not on what the canary renders.** The framework is pre-production: a changed default costs nothing and there is no content to protect.
 - **Same change in more than 3 files: build the detector first** with the migration-method skill (`.claude/skills/migration-method/SKILL.md`) before the 4th edit.
 - **DB first, no hardcoded lookup dicts.** Framework facts and counts live in `~/.claude/skills/sgs-wp-engine/sgs-framework.db` (`/sgs-db`, `/wp-blocks`); never cache a count in a doc. Open it read-only (`sqlite3.connect(f'file:{db}?mode=ro', uri=True)`); `sgs-update-v2.py` is the only writer (reference tables via `plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py`).
-- **Cite code by symbol, never by line** (`path/file.php::function_name`, `block.json::supports.sgs.imageControls`); a verification claim carries the command that produced it. `lint-spec-drift.py` enforces this.
+- **Cite code by symbol, never by line** (`path/file.php::function_name`, `block.json::supports.sgs.mediaElements`); a verification claim carries the command that produced it. `lint-spec-drift.py` enforces this.
 - **Docs state current truth only.** Replace stale text in place; why a decision was made goes in the doc it changes and the commit message.
 
 ## Non-negotiables
