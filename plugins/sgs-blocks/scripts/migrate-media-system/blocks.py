@@ -76,6 +76,7 @@ def _source_from_objects(ctx: T.Ctx, names: dict, target: str, id_name: str | No
 
 # ---------------------------------------------------------------- background family
 
+NO_MIN_HEIGHT = {"sgs/multi-button": "keep", "sgs/nav-drawer": "delete"}
 SVG_LAYER_KEPT = ("bgSvgContent", "bgSvgPosition", "bgSvgOpacity", "bgSvgMinHeight", "bgSvgTextShadow")
 
 
@@ -159,7 +160,11 @@ def migrate_background(ctx: T.Ctx) -> None:
             ctx.put("backgroundOpacity", {"desktop": opacity})
         ctx.drop("bgSvgOpacity", "converted", "backgroundOpacity", "100 is the default")
     min_height = ctx.get("bgSvgMinHeight")
-    if ctx.has("bgSvgMinHeight"):
+    if ctx.has("bgSvgMinHeight") and ctx.block in NO_MIN_HEIGHT:
+        # These blocks declare no `minHeight` to receive it: multi-button keeps its own bgSvgMinHeight, nav-drawer never had one.
+        if NO_MIN_HEIGHT[ctx.block] == "delete":
+            ctx.drop("bgSvgMinHeight", "deleted", "", "nav-drawer declares neither bgSvgMinHeight nor minHeight")
+    elif ctx.has("bgSvgMinHeight"):
         text = V.length_string(min_height)
         if text:
             existing = V.device_values(ctx.get("minHeight")) if ctx.has("minHeight") else {}

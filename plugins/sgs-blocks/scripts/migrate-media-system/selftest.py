@@ -112,6 +112,8 @@ case("site-footer: image plus svg overlay blend and pinned strength still apply"
      {"backgroundImage": {"url": U}, "bgSvgContent": SVG, "backgroundOverlayColour": "#000", "backgroundOverlayBlendMode": "multiply"},
      {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, "bgSvgContent": SVG, "backgroundOverlayColour": "#000",
       "backgroundOverlayBlend": "multiply", "backgroundOverlayOpacity": {"desktop": 30}})
+case("multi-button: svg min height stays on its declared bgSvgMinHeight (no minHeight to receive it)", "sgs/multi-button",
+     {"bgSvgContent": SVG, "bgSvgMinHeight": "300px"}, {"backgroundSource": {"desktop": {"kind": "svg", "markup": SVG}}, "bgSvgMinHeight": "300px"})
 case("negative: a migrated photo beside a kept svg layer is untouched", "sgs/container",
      {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, **KEPT}, None)
 case("negative: an unreadable photo object beside an svg is refused and both stay", "sgs/container",
