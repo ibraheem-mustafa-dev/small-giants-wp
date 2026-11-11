@@ -192,18 +192,16 @@
               {
                 "name": "sgs/media",
                 "attributes": {
-                  "mediaType": "image",
-                  "imageUrl": "",
-                  "imageAlt": "",
                   "linkUrl": "",
                   "height": {
                     "desktop": "40px"
                   },
-                  "objectFit": "contain",
                   "maxWidth": {
                     "desktop": "180px"
                   },
-                  "alignment": "start",
+                  "alignment": {
+                    "desktop": "start"
+                  },
                   "metadata": {
                     "bindings": {
                       "imageUrl": {
@@ -226,7 +224,18 @@
                       }
                     }
                   },
-                  "className": "cr-ref-product-5"
+                  "className": "cr-ref-product-5",
+                  "source": {
+                    "desktop": {
+                      "kind": "image"
+                    }
+                  },
+                  "fit": {
+                    "desktop": "contain"
+                  },
+                  "width": {
+                    "desktop": "auto"
+                  }
                 }
               },
               {

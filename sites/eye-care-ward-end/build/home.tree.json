@@ -3261,13 +3261,6 @@
       {
         "name": "sgs/media",
         "attributes": {
-          "mediaType": "image",
-          "imageId": 202,
-          "imageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg",
-          "imageAlt": "Person wearing sunglasses outdoors",
-          "objectFit": "cover",
-          "objectPosition": "50% 20%",
-          "mediaSizing": "fill",
           "minHeight": {
             "desktop": "430px"
           },
@@ -3303,6 +3296,26 @@
                 }
               }
             }
+          },
+          "source": {
+            "desktop": {
+              "kind": "image",
+              "id": 202,
+              "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg"
+            }
+          },
+          "alt": "Person wearing sunglasses outdoors",
+          "fit": {
+            "desktop": "cover"
+          },
+          "focal": {
+            "desktop": {
+              "x": 0.5,
+              "y": 0.2
+            }
+          },
+          "height": {
+            "desktop": "fill"
           }
         }
       },

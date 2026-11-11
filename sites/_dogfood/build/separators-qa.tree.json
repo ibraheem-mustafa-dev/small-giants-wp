@@ -1149,29 +1149,54 @@
    },
    "mediaItems": [
     {
-     "id": 3459,
-     "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-     "alt": ""
+     "alt": "",
+     "source": {
+      "desktop": {
+       "kind": "image",
+       "id": 3459,
+       "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+      }
+     }
     },
     {
-     "id": 3459,
-     "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-     "alt": ""
+     "alt": "",
+     "source": {
+      "desktop": {
+       "kind": "image",
+       "id": 3459,
+       "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+      }
+     }
     },
     {
-     "id": 3459,
-     "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-     "alt": ""
+     "alt": "",
+     "source": {
+      "desktop": {
+       "kind": "image",
+       "id": 3459,
+       "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+      }
+     }
     },
     {
-     "id": 3459,
-     "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-     "alt": ""
+     "alt": "",
+     "source": {
+      "desktop": {
+       "kind": "image",
+       "id": 3459,
+       "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+      }
+     }
     },
     {
-     "id": 3459,
-     "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-     "alt": ""
+     "alt": "",
+     "source": {
+      "desktop": {
+       "kind": "image",
+       "id": 3459,
+       "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+      }
+     }
     }
    ]
   }

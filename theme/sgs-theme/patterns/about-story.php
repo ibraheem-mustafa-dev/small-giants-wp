@@ -14,7 +14,7 @@
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"45% 55%","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|60"}} -->
 
 		<!-- wp:sgs/container -->
-			<!-- wp:sgs/media {"imageUrl":"https://placehold.co/500x600/0F7E80/FFFFFF?text=About+Image","imageAlt":"About us","borderRadius":{"topLeft":"16px","topRight":"16px","bottomLeft":"16px","bottomRight":"16px"}} /-->
+			<!-- wp:sgs/media {"source":{"desktop":{"kind":"image","url":"https://placehold.co/500x600/0F7E80/FFFFFF?text=About+Image"}},"alt":"About us","radius":{"desktop":{"topLeft":"16px","topRight":"16px","bottomRight":"16px","bottomLeft":"16px"}}} /-->
 		<!-- /wp:sgs/container -->
 
 		<!-- wp:sgs/container {"sgsCustomCss":"&selector{align-self:center;}","flexWrap":"wrap"} -->

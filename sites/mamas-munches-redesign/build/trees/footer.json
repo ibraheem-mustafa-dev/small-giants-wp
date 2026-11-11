@@ -267,56 +267,85 @@
                                     },
                                     "mediaItems": [
                                         {
-                                            "id": 96,
-                                            "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-hero-mug-1.jpg",
                                             "alt": "A mug beside a Mama's Munches cookie",
                                             "linkUrl": "https://www.instagram.com/mamasmunches/",
                                             "linkLabel": "View on Instagram",
-                                            "_key": "mm-ig-1"
+                                            "_key": "mm-ig-1",
+                                            "source": {
+                                                "desktop": {
+                                                    "kind": "image",
+                                                    "id": 96,
+                                                    "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-hero-mug-1.jpg"
+                                                }
+                                            }
                                         },
                                         {
-                                            "id": 95,
-                                            "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-gift-heart-1.jpg",
                                             "alt": "A heart-shaped gift of Mama's Munches cookies",
                                             "linkUrl": "https://www.instagram.com/mamasmunches/",
                                             "linkLabel": "View on Instagram",
-                                            "_key": "mm-ig-2"
+                                            "_key": "mm-ig-2",
+                                            "source": {
+                                                "desktop": {
+                                                    "kind": "image",
+                                                    "id": 95,
+                                                    "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-gift-heart-1.jpg"
+                                                }
+                                            }
                                         },
                                         {
-                                            "id": 97,
-                                            "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-pair-love-1.jpg",
                                             "alt": "Two Mama's Munches cookies side by side",
                                             "linkUrl": "https://www.instagram.com/mamasmunches/",
                                             "linkLabel": "View on Instagram",
-                                            "_key": "mm-ig-3"
+                                            "_key": "mm-ig-3",
+                                            "source": {
+                                                "desktop": {
+                                                    "kind": "image",
+                                                    "id": 97,
+                                                    "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-pair-love-1.jpg"
+                                                }
+                                            }
                                         },
                                         {
-                                            "id": 93,
-                                            "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-bags-pink.jpg",
                                             "alt": "Pink Mama's Munches cookie bags",
                                             "linkUrl": "https://www.instagram.com/mamasmunches/",
                                             "linkLabel": "View on Instagram",
-                                            "_key": "mm-ig-4"
+                                            "_key": "mm-ig-4",
+                                            "source": {
+                                                "desktop": {
+                                                    "kind": "image",
+                                                    "id": 93,
+                                                    "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-bags-pink.jpg"
+                                                }
+                                            }
                                         },
                                         {
-                                            "id": 98,
-                                            "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-tray-love.jpg",
                                             "alt": "A tray of freshly baked Mama's Munches cookies",
                                             "linkUrl": "https://www.instagram.com/mamasmunches/",
                                             "linkLabel": "View on Instagram",
-                                            "_key": "mm-ig-5"
+                                            "_key": "mm-ig-5",
+                                            "source": {
+                                                "desktop": {
+                                                    "kind": "image",
+                                                    "id": 98,
+                                                    "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-tray-love.jpg"
+                                                }
+                                            }
                                         },
                                         {
-                                            "id": 94,
-                                            "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-bun-case-1.jpg",
                                             "alt": "Cookies in a bun case",
                                             "linkUrl": "https://www.instagram.com/mamasmunches/",
                                             "linkLabel": "View on Instagram",
-                                            "_key": "mm-ig-6"
+                                            "_key": "mm-ig-6",
+                                            "source": {
+                                                "desktop": {
+                                                    "kind": "image",
+                                                    "id": 94,
+                                                    "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-bun-case-1.jpg"
+                                                }
+                                            }
                                         }
                                     ],
                                     "enableLightbox": false,
-                                    "aspectRatio": "1 / 1",
                                     "columns": {
                                         "desktop": 6,
                                         "tablet": 3,
@@ -386,7 +415,10 @@
                                             "bottom": "12px"
                                         }
                                     },
-                                    "shadowHoverColour": "#3A2A22"
+                                    "shadowHoverColour": "#3A2A22",
+                                    "itemRatio": {
+                                        "desktop": "1 / 1"
+                                    }
                                 }
                             }
                         ]

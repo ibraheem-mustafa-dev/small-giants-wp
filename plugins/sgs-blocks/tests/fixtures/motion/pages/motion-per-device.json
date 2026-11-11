@@ -497,9 +497,14 @@
 					{
 						"name": "sgs/media",
 						"attributes": {
-							"imageId": 4602,
-							"imageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/indus-diamond.png",
-							"imageAlt": "Sample image"
+							"source": {
+								"desktop": {
+									"kind": "image",
+									"id": 4602,
+									"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/indus-diamond.png"
+								}
+							},
+							"alt": "Sample image"
 						}
 					},
 					{
