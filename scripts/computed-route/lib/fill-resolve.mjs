@@ -84,7 +84,7 @@ function fillContent( st, rec, ref, cal ) {
 	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts, imageAlts: blockMediaSlots( rec.name ).filter( ( s ) => 'content' === s.context && s.alt ).map( ( s ) => s.alt ), pictureSlot: pictureSlotOf( atDesktop ) } ) );
 	// The fact record speaks for the element the image is drawn by: the target whose slot is the image's own (a nested image names its slot).
 	const reads = Object.fromEntries( CONTENT_WIDTHS.map( ( w ) => [ w, mediaAt( Object.fromEntries( rec.targets.map( ( t ) => [ t.slot, st.reads.widths[ w ]?.[ t.id ] ] ) ) ) ] ) );
-	const imageSlot = Object.entries( atDesktop ).find( ( [ , s ] ) => s && ! s.missing && ( s.img || s.media?.length ) )?.[ 0 ] ?? '';
+	const imageSlot = Object.entries( atDesktop ).find( ( [ , s ] ) => s && ! s.missing && s.img )?.[ 0 ] ?? '';
 	const imageTarget = rec.targets.find( ( t ) => t.slot === imageSlot && t.finder?.tpl ) ?? rec.targets.find( ( t ) => t.finder?.tpl );
 	const media = mediaDecisions( { slots: blockMediaSlots( rec.name ), attributes: node.attributes || {}, reads, caption: captionOf( atDesktop ), media: { ...st.media, origin: st.origin }, fact: factImage( st.facts, imageTarget?.finder.tpl, st.rootComponent ) } );
 	take( media );

@@ -1,5 +1,5 @@
 // FR-48-55 menu item labels and FR-48-58 carried ids (each MUST FAIL when its rule breaks): a menu item shows the draft
-// link's own text, and a skeleton's logoId and menu ref come from the media map and the menu map, never a hand-set value.
+// link's own text, and a skeleton's logo Source and menu ref come from the media map and the menu map, never a hand-set value.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'crypto';
@@ -162,23 +162,24 @@ const facts = loadFacts( { db, client: 'eye-care-ward-end', repo: REPO, siteName
 const propose = ( o = {} ) => proposeSkeleton( { inventory, facts, surface: 'footer', db, ...o } );
 const nodes = ( list ) => list.flatMap( ( n ) => [ n, ...nodes( n.innerBlocks || [] ) ] );
 const logoNode = ( r ) => nodes( r.skeleton ).find( ( n ) => 'sgs/responsive-logo' === n.name );
+const SRC81 = { desktop: { kind: 'image', id: 81, url: 'https://t.test/a.svg', mime: 'image/svg+xml' } };
 const logoRow = ( r ) => r.proposal.rows.find( ( x ) => 'sgs/responsive-logo' === x.block );
 
-test( 'MUST FAIL: a carried logoId reaches the logo node and the row names where it came from', () => {
-	const r = propose( { carried: { logo: () => ( { id: 81, asset: 'a.svg' } ), menu: () => null } } );
-	assert.equal( logoNode( r ).attributes.logoId, 81 );
-	assert.deepEqual( logoRow( r ).carried, { logoId: 'media-map.json: a.svg' } );
-	assert.equal( undefined, logoNode( propose() ).attributes.logoId );
+test( 'MUST FAIL: a carried logo Source reaches the logo node and the row names where it came from', () => {
+	const r = propose( { carried: { logo: () => ( { id: 81, asset: 'a.svg', url: 'https://t.test/a.svg' } ), menu: () => null } } );
+	assert.deepEqual( logoNode( r ).attributes.logoSource, SRC81 );
+	assert.deepEqual( logoRow( r ).carried, { logoSource: 'media-map.json: a.svg' } );
+	assert.equal( undefined, logoNode( propose() ).attributes.logoSource );
 } );
 
 test( 'MUST FAIL: a carried id wins over a differing decision value, which is reported and never applied; an equal one is silent', () => {
 	const key = logoRow( propose() ).key;
-	const decide = ( id ) => ( { surfaces: { footer: { [ key ]: { block: 'sgs/responsive-logo', attributes: { logoId: id }, signature: logoRow( propose() ).tag + '|' + logoRow( propose() ).words } } } } );
-	const carried = { logo: () => ( { id: 81, asset: 'a.svg' } ), menu: () => null };
+	const decide = ( id ) => ( { surfaces: { footer: { [ key ]: { block: 'sgs/responsive-logo', attributes: { logoSource: { desktop: { kind: 'image', id, url: 'https://t.test/a.svg', mime: 'image/svg+xml' } } }, signature: logoRow( propose() ).tag + '|' + logoRow( propose() ).words } } } } );
+	const carried = { logo: () => ( { id: 81, asset: 'a.svg', url: 'https://t.test/a.svg' } ), menu: () => null };
 	const differs = propose( { carried, clientDecisions: decide( 6 ) } );
-	assert.equal( logoNode( differs ).attributes.logoId, 81 );
-	assert.match( logoRow( differs ).stale, /sets logoId 6, which is not applied; the build carries 81/ );
+	assert.deepEqual( logoNode( differs ).attributes.logoSource, SRC81 );
+	assert.match( logoRow( differs ).stale, /sets logoSource .*"id":6.*, which is not applied; the build carries .*"id":81/ );
 	const same = propose( { carried, clientDecisions: decide( 81 ) } );
-	assert.equal( logoNode( same ).attributes.logoId, 81 );
+	assert.deepEqual( logoNode( same ).attributes.logoSource, SRC81 );
 	assert.ok( ! logoRow( same ).stale );
 } );

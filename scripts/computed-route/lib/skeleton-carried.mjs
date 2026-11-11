@@ -73,7 +73,7 @@ export function mediaEntry( { map, site, repo, folder, file } ) {
 	const hits = ( map?.sites?.[ recordSite( site ) ]?.files || [] ).filter( ( f ) => f.sha256 === want && Number.isInteger( f.id ) );
 	const ids = new Set( hits.map( ( h ) => h.id ) );
 	if ( 1 === ids.size ) {
-		return { id: hits[ 0 ].id, asset: hits[ 0 ].asset, url: hits[ 0 ].url };
+		return { id: hits[ 0 ].id, asset: hits[ 0 ].asset, ...( hits[ 0 ].url ? { url: hits[ 0 ].url } : {} ) };
 	}
 	return { reason: ids.size ? `${ file } matches different attachments (${ [ ...ids ].join( ', ' ) })` : `${ file } (sha256 ${ want.slice( 0, 8 ) }) is not in the media map for ${ recordSite( site ) }` };
 }

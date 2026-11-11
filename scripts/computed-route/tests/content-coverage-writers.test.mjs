@@ -87,31 +87,31 @@ test( 'every ICON_SETTINGS name is written by iconDecisions for some draft mark'
 
 // A skeleton fixture: one block per case, the facts read from it by the real loader.
 const SK = {
-	blocks: blocks( 'sgs/shell', 'sgs/root', 'sgs/logo', 'sgs/business-info', 'sgs/plain', 'sgs/navlike' ),
+	blocks: blocks( 'sgs/shell', 'sgs/root', 'sgs/responsive-logo', 'sgs/business-info', 'sgs/plain', 'sgs/navlike' ),
 	block_attributes: [
 		attr( 'sgs/shell', 'tagName', 'string', { enum_values: '["div","section"]' } ), attr( 'sgs/shell', 'layout', 'string', { enum_values: '["stack","flex"]' } ),
 		attr( 'sgs/root', 'layout', 'string', { enum_values: '["stack","flex"]' } ),
-		attr( 'sgs/logo', 'logoId', 'integer' ),
+		attr( 'sgs/responsive-logo', 'logoSource', 'object' ),
 		attr( 'sgs/business-info', 'displayType', 'string', { enum_values: '["copyright","phone"]' } ), attr( 'sgs/business-info', 'copyrightPrefix', 'string' ), attr( 'sgs/business-info', 'label', 'string', { role: 'text-content' } ),
 		attr( 'sgs/plain', 'heading', 'string', { role: 'text-content' } ), attr( 'sgs/plain', 'url', 'string', { role: 'link-href' } ), attr( 'sgs/plain', 'linkTarget', 'string' ),
 		attr( 'sgs/navlike', 'ref', 'integer' ),
 	],
 	block_composition: [
 		{ block_slug: 'sgs/shell', composition_role: 'wrapper-shell' }, { block_slug: 'sgs/root', composition_role: 'section-root' },
-		{ block_slug: 'sgs/logo', composition_role: 'leaf' }, { block_slug: 'sgs/business-info', composition_role: 'leaf' }, { block_slug: 'sgs/plain', composition_role: 'leaf' }, { block_slug: 'sgs/navlike', composition_role: 'leaf' },
+		{ block_slug: 'sgs/responsive-logo', composition_role: 'leaf' }, { block_slug: 'sgs/business-info', composition_role: 'leaf' }, { block_slug: 'sgs/plain', composition_role: 'leaf' }, { block_slug: 'sgs/navlike', composition_role: 'leaf' },
 	],
-	block_capabilities: [ { block_slug: 'sgs/logo', capability: 'logo' } ],
+	block_capabilities: [ { block_slug: 'sgs/responsive-logo', capability: 'logo' } ],
 };
 test( 'every setting skeletonSettings claims is written by contentAttrs or carriedAttrs', () => {
 	const db = openDb( fixtureDb( SK ) );
 	const facts = loadFacts( { db, client: '' } );
 	const m = { words: ( e ) => e.words ?? '', textWithBreaks: ( e ) => e.words ?? '', blockKids: () => [] };
-	const carried = { logo: () => ( { id: 5, asset: 'logo.png' } ), menu: () => 9 };
+	const carried = { logo: () => ( { id: 5, asset: 'logo.png', url: 'https://t.test/logo.png' } ), menu: () => 9 };
 	const { contentAttrs, carriedAttrs } = makeContent( { m, facts, view: 1440, carried, surfaceKind: 'header', siteLink: ( href ) => ( { kind: 'url', value: href } ) } );
 	const e = { key: 'k', tag: 'nav', words: 'Hello', display: 'flex', flexDirection: 'column', attrs: { href: '/x', target: '_blank' } };
 	const writes = ( block, top = {} ) => new Set( [ ...Object.keys( contentAttrs( block, e, top ).a ), ...Object.keys( carriedAttrs( block, e ).attrs ) ] );
 	// Each block is driven as a plain element and, for the Site Info block, as a Site Info line too: a claim holds when some input writes it.
-	const cases = [ [ 'sgs/shell', [ {} ] ], [ 'sgs/root', [ {} ] ], [ 'sgs/logo', [ {} ] ], [ 'sgs/business-info', [ {}, { siteInfoKind: 'copyright' } ] ], [ 'sgs/plain', [ {} ] ], [ 'sgs/navlike', [ {} ] ] ];
+	const cases = [ [ 'sgs/shell', [ {} ] ], [ 'sgs/root', [ {} ] ], [ 'sgs/responsive-logo', [ {} ] ], [ 'sgs/business-info', [ {}, { siteInfoKind: 'copyright' } ] ], [ 'sgs/plain', [ {} ] ], [ 'sgs/navlike', [ {} ] ] ];
 	const claimedAll = [];
 	for ( const [ block, tops ] of cases ) {
 		const s = skeletonSettings( facts, block );
@@ -120,7 +120,7 @@ test( 'every setting skeletonSettings claims is written by contentAttrs or carri
 		const w = new Set( tops.flatMap( ( top ) => [ ...writes( block, top ) ] ) );
 		assert.deepEqual( claimed.filter( ( a ) => ! w.has( a ) ), [], `${ block }: a claimed setting the skeleton writer never writes` );
 	}
-	for ( const a of [ 'tagName', 'layout', 'logoId', 'displayType', 'copyrightPrefix', 'heading', 'url', 'linkTarget', 'ref' ] ) {
+	for ( const a of [ 'tagName', 'layout', 'logoSource', 'displayType', 'copyrightPrefix', 'heading', 'url', 'linkTarget', 'ref' ] ) {
 		assert.ok( claimedAll.includes( a ), `${ a } is claimed by some fixture block` );
 	}
 } );
