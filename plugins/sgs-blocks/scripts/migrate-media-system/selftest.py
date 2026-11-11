@@ -15,14 +15,34 @@ import markup
 import apply_selftest
 import export_selftest
 import mapping as M
+import sizes as S
 
 U = "http://x/u.jpg"
 CASES: list[tuple] = []
+# The sizes the stub file reader knows (the real reader reads the file or the site's attachment map).
+STUB_SIZES = {U: (640, 480), "http://x/t.jpg": (320, 240), "http://x/m.jpg": (160, 120), "http://x/m.svg": (100, 100),
+              "http://x/p.jpg": (50, 50), "http://x/v.mp4": (1, 1)}
+
+
+def _stub_read(url: str, _site: dict):
+    return STUB_SIZES.get(url)
+
+
+def _sized(node):
+    """An expected output with the stub's width and height added to each bare-URL image Source entry (FR-49-16)."""
+    if isinstance(node, dict):
+        out = {k: _sized(v) for k, v in node.items()}
+        if out.get("kind") == "image" and out.get("url") in STUB_SIZES and not out.get("id") and not (out.get("width") and out.get("height")):
+            out["width"], out["height"] = STUB_SIZES[out["url"]]
+        return out
+    if isinstance(node, list):
+        return [_sized(v) for v in node]
+    return node
 
 
 def case(label: str, block: str, attrs: dict, expected: dict | None) -> None:
     """expected None means a negative control: the output equals the input."""
-    CASES.append((label, block, attrs, attrs if expected is None else expected))
+    CASES.append((label, block, attrs, attrs if expected is None else _sized(expected)))
 
 
 # ---- source, alt, decorative (sgs/media)
@@ -31,19 +51,20 @@ case("media: image id and url, alt, decorative", "sgs/media",
      {"source": {"desktop": {"kind": "image", "id": 5, "url": U}}, "alt": "A", "decorative": True})
 case("media: per-device files and a differing tablet alt", "sgs/media",
      {"imageUrl": U, "imageUrlTablet": "http://x/t.jpg", "imageAlt": "A", "imageAltTablet": "B"},
-     {"source": {"desktop": {"kind": "image", "url": U}, "tablet": {"kind": "image", "url": "http://x/t.jpg", "alt": "B"}}, "alt": "A"})
+     {"source": {"desktop": {"kind": "image", "url": U}, "tablet": {"kind": "image", "url": "http://x/t.jpg", "alt": "B"}}, "alt": "A", "width": {"desktop": "100%"}})
 case("media: video with poster, captions, mime and the old defaults pinned", "sgs/media",
      {"mediaType": "video", "videoSource": "internal", "videoId": 9, "videoUrl": U, "videoMimeType": "video/mp4",
       "thumbnailId": 4, "thumbnail": "http://x/p.jpg", "videoCaptionsUrl": "http://x/c.vtt", "videoAutoplay": True},
      {"source": {"desktop": {"kind": "video", "id": 9, "url": U, "mime": "video/mp4", "poster": {"id": 4, "url": "http://x/p.jpg"},
                              "captions": {"url": "http://x/c.vtt", "label": "English", "lang": "en"}}},
-      "playback": {"autoplay": True, "muted": True, "inline": True, "loop": False, "controls": True, "lazy": True}})
+      "playback": {"autoplay": True, "muted": True, "inline": True, "loop": False, "controls": True, "lazy": True},
+      "width": {"desktop": "100%"}})
 case("media: external YouTube url is an embed", "sgs/media",
      {"mediaType": "video", "videoSource": "external", "videoUrl": "https://youtu.be/abcdefghijk"},
      {"source": {"desktop": {"kind": "embed", "url": "https://youtu.be/abcdefghijk"}},
       "playback": {"autoplay": False, "muted": True, "inline": True, "loop": False, "controls": True, "lazy": True}})
 case("media: inline svg", "sgs/media", {"mediaType": "svg", "svgContent": "<svg/>"},
-     {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}})
+     {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "width": {"desktop": "100%"}})
 case("media: intrinsic size folded into Source", "sgs/media", {"imageUrl": U, "imageWidth": 600, "imageHeight": 400},
      {"source": {"desktop": {"kind": "image", "url": U, "width": 600, "height": 400}}})
 # ---- sizing
@@ -53,6 +74,48 @@ case("media: sizing height gains Width auto", "sgs/media", {"mediaSizing": "heig
 case("media: sizing ratio", "sgs/media", {"mediaSizing": "ratio", "aspectRatio": "4/5", "height": {"desktop": "300px"}},
      {"height": {"desktop": "auto"}, "ratio": {"desktop": "4 / 5"}})
 case("media: sizing auto drops the inert height and ratio", "sgs/media", {"mediaSizing": "auto", "aspectRatio": "1 / 1", "height": {"desktop": "9px"}}, {})
+# FR-49-16: an image Source gets its own size (a bare URL is refused by the renderer); the stub reader supplies it here.
+case("size: a bare image URL gets the file's width and height", "sgs/media", {"imageUrl": "http://x/t.jpg"},
+     {"source": {"desktop": {"kind": "image", "url": "http://x/t.jpg", "width": 320, "height": 240}}})
+case("size: a size saved on the block is kept, not read again", "sgs/media", {"imageUrl": U, "imageWidth": 999, "imageHeight": 111},
+     {"source": {"desktop": {"kind": "image", "url": U, "width": 999, "height": 111}}})
+case("size: a per-device image gets its own size", "sgs/media", {"imageUrl": U, "imageUrlMobile": "http://x/m.jpg"},
+     {"source": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}, "mobile": {"kind": "image", "url": "http://x/m.jpg", "width": 160, "height": 120}}, "width": {"desktop": "100%"}})
+case("size: a hero split image gets its size", "sgs/hero", {"splitMediaImageUrl": "http://x/m.svg"},
+     {"splitSource": {"desktop": {"kind": "image", "url": "http://x/m.svg", "width": 100, "height": 100}}})
+case("size: an unreadable image is refused and the block stays as saved", "sgs/media", {"imageUrl": "http://x/unreadable.png", "imageAlt": "A"}, None)
+case("size: an unreadable image in a migrated block is refused", "sgs/media", {"source": {"desktop": {"kind": "image", "url": "http://x/unreadable.png"}}}, None)
+case("size: a video's url is not an image and needs no size", "sgs/media", {"mediaType": "video", "videoUrl": "http://x/v.mp4", "mediaSizing": "height", "height": {"desktop": "200px"}},
+     {"source": {"desktop": {"kind": "video", "url": "http://x/v.mp4"}}, "width": {"desktop": "100%"},
+      "playback": {"autoplay": False, "muted": True, "inline": True, "loop": False, "controls": True, "lazy": True}})
+# Width pins for sgs/media (measured on the old block): a figure's media was 100% wide, a bare image its file's width.
+case("pin: an image in a figure (caption) with no sizing is 100% wide", "sgs/media", {"imageUrl": U, "caption": "C"},
+     {"source": {"desktop": {"kind": "image", "url": U}}, "caption": "C", "width": {"desktop": "100%"}})
+case("pin: a bare image with no sizing keeps the new default (its own width)", "sgs/media", {"imageUrl": U},
+     {"source": {"desktop": {"kind": "image", "url": U}}})
+case("pin: a linked image is a figure, 100% wide", "sgs/media", {"imageUrl": U, "linkUrl": "https://x.test/"},
+     {"source": {"desktop": {"kind": "image", "url": U}}, "linkUrl": "https://x.test/", "width": {"desktop": "100%"}})
+case("pin: a figure image in height mode gets no Width auto (a Height alone is already 100% wide)", "sgs/media",
+     {"imageUrl": U, "caption": "C", "mediaSizing": "height", "height": {"desktop": "200"}},
+     {"source": {"desktop": {"kind": "image", "url": U}}, "caption": "C", "height": {"desktop": "200px"}})
+case("pin: a bare image in height mode keeps its proportions: Width auto", "sgs/media",
+     {"imageUrl": U, "mediaSizing": "height", "height": {"desktop": "440px"}},
+     {"source": {"desktop": {"kind": "image", "url": U}}, "height": {"desktop": "440px"}, "width": {"desktop": "auto"}})
+case("pin: a Height the old block ignored on an SVG is dropped and the SVG is 100% wide", "sgs/media",
+     {"mediaType": "svg", "svgContent": "<svg/>", "caption": "C", "mediaSizing": "height", "height": {"desktop": "200px"}},
+     {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "caption": "C", "width": {"desktop": "100%"}})
+case("pin: a stored Width is never overwritten", "sgs/media", {"mediaType": "svg", "svgContent": "<svg/>", "width": {"desktop": "50%"}},
+     {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "width": {"desktop": "50%"}})
+case("pin: an embed keeps the embed default (100% wide, 16 / 9)", "sgs/media", {"mediaType": "video", "videoSource": "external", "videoUrl": "https://youtu.be/abcdefghijk"},
+     {"source": {"desktop": {"kind": "embed", "url": "https://youtu.be/abcdefghijk"}},
+      "playback": {"autoplay": False, "muted": True, "inline": True, "loop": False, "controls": True, "lazy": True}})
+case("pin: a bare image with a ratio was drawn at its file's width", "sgs/media", {"imageUrl": U, "mediaSizing": "ratio", "aspectRatio": "4/3"},
+     {"source": {"desktop": {"kind": "image", "url": U}}, "height": {"desktop": "auto"}, "ratio": {"desktop": "4 / 3"}, "width": {"desktop": "640px"}})
+case("pin: a figure image with a ratio keeps the new default (100% wide)", "sgs/media", {"imageUrl": U, "caption": "C", "mediaSizing": "ratio", "aspectRatio": "4/3"},
+     {"source": {"desktop": {"kind": "image", "url": U}}, "caption": "C", "height": {"desktop": "auto"}, "ratio": {"desktop": "4 / 3"}})
+case("pin: the hero's split Height mode still writes Width auto (the pins are sgs/media's)", "sgs/hero",
+     {"splitMediaSizing": "height", "splitMediaHeight": {"desktop": "300px"}},
+     {"splitHeight": {"desktop": "300px"}, "splitWidth": {"desktop": "auto"}})
 case("media: numeric height becomes px", "sgs/before-after", {"height": {"desktop": 400}}, None)
 # ---- fit, focal
 case("media: fit and keyword focal", "sgs/media", {"objectFit": "contain", "objectFitMobile": "cover", "objectPosition": "left top"},
@@ -115,7 +178,7 @@ case("site-footer: image plus svg overlay blend and pinned strength still apply"
 case("multi-button: svg min height stays on its declared bgSvgMinHeight (no minHeight to receive it)", "sgs/multi-button",
      {"bgSvgContent": SVG, "bgSvgMinHeight": "300px"}, {"backgroundSource": {"desktop": {"kind": "svg", "markup": SVG}}, "bgSvgMinHeight": "300px"})
 case("negative: a migrated photo beside a kept svg layer is untouched", "sgs/container",
-     {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, **KEPT}, None)
+     {"backgroundSource": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}}, **KEPT}, None)
 case("negative: an unreadable photo object beside an svg is refused and both stay", "sgs/container",
      {"backgroundImage": {"url": U, "zzz": 1}, "bgSvgContent": SVG}, None)
 # ---- other blocks
@@ -139,7 +202,7 @@ case("media: a video alt on an image is reported as dropped", "sgs/media",
 case("media: a video alt on a video becomes the alt", "sgs/media",
      {"mediaType": "video", "videoUrl": U, "videoAlt": "V", "videoAutoplay": True, "videoMuted": True, "videoLoop": False, "videoControls": True,
       "videoPlaysInline": True, "videoLazyLoad": True},
-     {"source": {"desktop": {"kind": "video", "url": U}}, "alt": "V",
+     {"source": {"desktop": {"kind": "video", "url": U}}, "alt": "V", "width": {"desktop": "100%"},
       "playback": {"autoplay": True, "muted": True, "inline": True, "loop": False, "controls": True, "lazy": True}})
 case("team-member: photo object and the old default shape circle pinned", "sgs/team-member",
      {"photo": {"id": 2, "url": U}},
@@ -178,13 +241,13 @@ case("negative: an unreadable focal position is refused and stays", "sgs/media",
 case("negative: Lottie is reported and stays", "sgs/media", {"mediaType": "lottie", "imageUrl": U}, None)
 case("negative: a block with no media attribute is untouched", "sgs/heading", {"content": "Hi", "level": "h2"}, None)
 case("negative: an already migrated block is untouched", "sgs/media",
-     {"source": {"desktop": {"kind": "image", "url": U}}, "alt": "A", "fit": {"desktop": "cover"}, "opacity": {"desktop": 50}}, None)
+     {"source": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}}, "alt": "A", "fit": {"desktop": "cover"}, "opacity": {"desktop": 50}}, None)
 case("negative: hero mediaPadding and splitMediaPadding both set is refused", "sgs/hero",
      {"mediaPadding": {"desktop": {"top": "1px"}}, "splitMediaPadding": {"desktop": {"top": "2px"}}}, {"splitPadding": {"desktop": {"top": "2px"}}, "mediaPadding": {"desktop": {"top": "1px"}}})
 case("negative: inline SVG logo parts are reported and stay", "sgs/responsive-logo", {"inlineSvg": True, "svgParts": []}, None)
 case("negative: an out-of-vocabulary shape is refused and stays", "sgs/media", {"shape": "star"}, None)
 
-REFUSED_STAYS = ("negative: an unreadable photo object", "negative: an unreadable focal", "negative: Lottie", "negative: an out-of-vocabulary shape",
+REFUSED_STAYS = ("negative: an unreadable photo object", "size: an unreadable image", "negative: an unreadable focal", "negative: Lottie", "negative: an out-of-vocabulary shape",
                  "negative: hero mediaPadding", "negative: inline SVG")
 
 
@@ -464,7 +527,75 @@ LEGACY_UNDECLARED = {
 }
 
 
+def run_sizes(failures: list[str]) -> int:
+    """FR-49-16 against a registered attachment map: an own upload (a sized copy too) gets its attachment id, another file
+    its read size, and the same URL on another site resolves on that site's map. Negative control: a site without the
+    upload in its map does not borrow another site's id."""
+    checks = 0
+    files = {"2026/09/photo.jpeg": [41, 1200, 800, "image/jpeg"], "2026/09/photo-300x200.jpeg": [41, 300, 200, "image/jpeg"]}
+    S.register("mirror:a", files)
+    S.register("mirror:b", {"2026/09/photo.jpeg": [77, 1200, 800, "image/jpeg"]})
+    try:
+        for key, url, want in (
+            ("mirror:a", "http://old.test/wp-content/uploads/2026/09/photo.jpeg", {"id": 41}),
+            ("mirror:a", "http://old.test/wp-content/uploads/2026/09/photo-300x200.jpeg", {"id": 41}),
+            ("mirror:b", "http://old.test/wp-content/uploads/2026/09/photo.jpeg", {"id": 77}),
+            ("mirror:a", U, {"width": 640, "height": 480}),
+        ):
+            checks += 1
+            S.activate(key)
+            B.clear_memo()
+            new, _ = B.migrate("sgs/media", {"imageUrl": url})
+            entry = new.get("source", {}).get("desktop", {})
+            if {k: entry.get(k) for k in want} != want or ("id" in want and "width" in entry):
+                _fail("sizes: own upload", f"{key} {url}: wanted {want}, got {entry}", failures)
+        checks += 1
+        S.activate("mirror:c")
+        B.clear_memo()
+        got = B.migrate("sgs/media", {"imageUrl": "http://old.test/wp-content/uploads/2026/09/photo.jpeg"})[0]
+        if "source" in got:
+            _fail("sizes: negative control", "an upload missing from the site's map was resolved from another site's map", failures)
+        checks += 1
+        S.activate("repo")
+        B.clear_memo()
+        _, events = B.migrate("sgs/media", {"imageUrl": "http://x/unreadable.png"})
+        if not any(e[0] == "refused" and "size could not be read" in e[3] for e in events):
+            _fail("sizes: refusal", f"no refused event naming the size: {events}", failures)
+        checks += 1
+        got = [S.dimensions(blob) for blob in (_png_blob(), _jpeg_blob(), b'<svg xmlns="x" viewBox="0 0 30 20"></svg>', b"not an image")]
+        if got != [(7, 5), (9, 4), (30, 20), None]:
+            _fail("sizes: file headers", f"png, jpeg, svg, junk read as {got}", failures)
+    finally:
+        for key in ("mirror:a", "mirror:b"):
+            S._SITES.pop(key, None)
+        S.activate("repo")
+        B.clear_memo()
+    return checks
+
+
+def _png_blob() -> bytes:
+    import struct
+    return b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + b"IHDR" + struct.pack(">II", 7, 5) + b"\x08\x02\x00\x00\x00"
+
+
+def _jpeg_blob() -> bytes:
+    import struct
+    return b"\xff\xd8\xff\xe0" + struct.pack(">H", 4) + b"\x00\x00" + b"\xff\xc0" + struct.pack(">HBHH", 11, 8, 4, 9) + b"\x00\x00\x00\x00"
+
+
 def run(break_mapping: bool = False) -> int:
+    saved_reader = S.READER
+    S.READER = _stub_read
+    S.activate("repo")
+    B.clear_memo()
+    try:
+        return _run(break_mapping)
+    finally:
+        S.READER = saved_reader
+        B.clear_memo()
+
+
+def _run(break_mapping: bool = False) -> int:
     if break_mapping:
         M.NEW_PREFIX[("sgs/hero", "splitMedia")] = "splitMedium"
         M.BASE_FAMILY["ObjectFit"] = ("fit", "Fitt")
@@ -472,7 +603,7 @@ def run(break_mapping: bool = False) -> int:
         M.rows.cache_clear()
         M.STAYS["sgs/post-grid"] = ()
     failures: list[str] = []
-    total = run_cases(failures) + run_svg_keep(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
+    total = run_cases(failures) + run_svg_keep(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures) + run_sizes(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
     for line in failures:
         print(line)
     print(f"migrate-media-system self-test: {total - len(failures)} of {total} checks passed"

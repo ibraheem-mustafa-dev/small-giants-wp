@@ -8,6 +8,7 @@ import re
 from typing import Any
 
 import mapping as M
+import sizes as S
 import transform as T
 import values as V
 from mapping import DEVICES, TIERS, TIER_DEVICE
@@ -515,7 +516,7 @@ def clear_memo() -> None:
 
 def migrate(name: str, attrs: dict):
     """(new attributes, events). Saved content repeats the same attribute set across revisions, so results are kept per input."""
-    key = (name, json.dumps(attrs, sort_keys=True, ensure_ascii=True))
+    key = (name, S.active(), json.dumps(attrs, sort_keys=True, ensure_ascii=True))
     if key not in _MEMO:
         _MEMO[key] = _migrate(name, attrs)
     new, events = _MEMO[key]
@@ -534,7 +535,28 @@ def _migrate(name: str, attrs: dict):
     migrate_report_always(ctx)
     migrate_unlisted(ctx)
     migrate_unmapped(ctx)
+    return fill_sizes(ctx, attrs)
+
+
+def fill_sizes(ctx: T.Ctx, original: dict):
+    """FR-49-16: every image Source gets an attachment id or its own size. A block with an image whose size cannot be read
+    is refused whole: its old attributes stay as saved and the event names the attribute and the reason."""
+    failed = S.fill(ctx.attrs)
+    if failed:
+        return copy.deepcopy(original), [("refused", name, "", note) for name, note in failed]
+    pin_naked_ratio_width(ctx)
     return ctx.attrs, ctx.events
+
+
+def pin_naked_ratio_width(ctx: T.Ctx) -> None:
+    """A linkless, captionless image with a Ratio and no Width was drawn at its file's own width; the new default is 100%."""
+    if not getattr(ctx, "pin_width_px", False) or ctx.has("width"):
+        return
+    entry = ((ctx.get("source") or {}).get("desktop") or {}) if isinstance(ctx.get("source"), dict) else {}
+    width = S.intrinsic_width(entry) if entry.get("kind") == "image" else None
+    if width:
+        ctx.put("width", {"desktop": f"{width}px"})
+        ctx.events.append(("pinned", "mediaSizing", "width", f"old image with a ratio and no width was drawn at its file's own width: {width}px written explicitly"))
 
 
 def needs_migration(name: str, attrs: dict):

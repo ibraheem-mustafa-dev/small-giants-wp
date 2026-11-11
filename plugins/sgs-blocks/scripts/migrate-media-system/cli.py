@@ -39,6 +39,7 @@ import blocks as B  # noqa: E402
 import corpus as C  # noqa: E402
 import mapping as M  # noqa: E402
 import mirror as MIR  # noqa: E402
+import sizes as S  # noqa: E402
 
 MEDIAISH = re.compile(r"image|video|svg|photo|avatar|logo|poster|thumb|aspectratio|objectfit|objectposition|focal|lottie|^media", re.I)
 NOT_MEDIA = re.compile(r"Typography|FontFamily|FontSize|FontStyle|FontWeight|LetterSp|LineHeight|TextStroke|TextTrans|TextDec|"
@@ -69,6 +70,12 @@ def group(label: str) -> str:
     return ":".join(parts[:2]) if parts[0] in ("mirror", "content") else parts[0]
 
 
+def site_key(label: str) -> str:
+    """The site a record belongs to, for reading image sizes: `mirror:NAME`, `content:STEM`, or `repo` for repo files."""
+    g = group(label)
+    return g if g.startswith(("mirror:", "content:")) else "repo"
+
+
 def survey(recs) -> dict:
     per: dict = collections.defaultdict(lambda: collections.defaultdict(lambda: {"status": "", "count": 0, "statuses": collections.Counter(), "targets": collections.Counter()}))
     instances: dict = collections.defaultdict(collections.Counter)
@@ -77,6 +84,7 @@ def survey(recs) -> dict:
     seen: dict = collections.defaultdict(collections.Counter)
     for label, name, attrs in recs:
         g = group(label)
+        S.activate(site_key(label))
         seen[name][g] += 1
         if "__unparseable__" in attrs:
             unclassified[name]["__unparseable__"] += 1
@@ -210,6 +218,7 @@ def cmd_fix(args) -> int:
         targets = C.repo_targets()
         for kind in args.target or CHECK_KINDS:
             files += targets.get(kind, [])
+    S.activate("repo")
     for path in files:
         before = C.read_text(path)
         after, count, reformatted = C.rewrite_file_text(path, fn_for)
@@ -223,7 +232,9 @@ def cmd_fix(args) -> int:
         else:
             sys.stdout.write(unified(label, before, after))
     for file in args.content or []:
-        for post in C.load_content(Path(file)):
+        posts = C.load_content(Path(file))
+        S.activate(f"content:{Path(file).stem}")
+        for post in posts:
             after, count = C.rewrite_post(post, fn_for)
             if count:
                 changed += 1
@@ -232,6 +243,7 @@ def cmd_fix(args) -> int:
                 sys.stdout.write(unified(label, post["post_content"], after))
     for name in args.mirror or []:
         posts = C.mirror_export(name)
+        S.activate(f"mirror:{name}")
         plan = MIR.plan_rewrites(posts, fn_for)
         changed += len(plan)
         if args.apply and plan:
@@ -265,6 +277,7 @@ def cmd_check(args) -> int:
     for label, name, attrs in records(args):
         if "__unparseable__" in attrs or not in_scope(name):
             continue
+        S.activate(site_key(label))
         for attr, status in B.old_attributes(name, attrs):
             found[(name, attr, status)] += 1
             where.setdefault((name, attr, status), label)

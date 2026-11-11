@@ -394,6 +394,67 @@ def _normalise_sizing_value(base: str, raw: Any, unit: str = "px") -> dict:
     return V.length_device_object(raw, unit)
 
 
+def saved(slot: Slot, base: str, tier: str = ""):
+    """The value an old attribute was saved with, read from the input (the source step has already retired it from the working copy)."""
+    for name in slot.old_names(base, tier):
+        if name in slot.ctx.original:
+            return slot.ctx.original[name]
+    return None
+
+
+OLD_MEDIA_BASES = ("MediaType", "ImageUrl", "ImageId", "VideoUrl", "VideoId", "SvgContent", "MediaSizing")
+
+
+def old_media_kind(slot: Slot) -> str:
+    """What the old `sgs/media` drew on desktop: image, video, svg or embed (a YouTube or Vimeo address on an external video)."""
+    kind = saved(slot, "MediaType") or "image"
+    if kind == "video" and (saved(slot, "VideoSource") or "external") != "internal" and EMBED.search(str(saved(slot, "VideoUrl") or "")):
+        return "embed"
+    return kind
+
+
+def old_media_figure(slot: Slot, kind: str, mode: str) -> bool:
+    """True when the old `sgs/media` wrapped the media in a `<figure>` (its `img` then filled the figure's width);
+    a linkless, captionless image with no overlay, no per-device file and no Fill was the bare `<img>`, at its own width."""
+    ctx = slot.ctx
+    if kind != "image" or mode == "fill":
+        return True
+    original = ctx.original
+    if original.get("caption") or original.get("linkUrl") or original.get("overlayColour") or original.get("overlayGradient"):
+        return True
+    return any(_set(saved(slot, base, tier)) for base in ("ImageUrl", "ImageId") for tier in ("Tablet", "Mobile"))
+
+
+def pin_media_sizing(slot: Slot, mode: str, height: dict, width: dict) -> tuple[dict, dict]:
+    """§13's sizing pins for `sgs/media`, from what the old block drew (measured on the 2026-11 sandybrown mirror, main's code):
+    a figure's `img`, `video`, `svg` and `iframe` were 100% of the container wide, a bare `img` its file's own width;
+    the old CSS ignored a saved Height on a video and on an SVG. The new default is the file's own size, and a Height or
+    a Ratio alone is 100% wide, so the Width the old block drew is written only where it differs from that."""
+    ctx = slot.ctx
+    kind = old_media_kind(slot)
+    figure = old_media_figure(slot, kind, mode)
+    width = dict(width)
+    if (not any(saved(slot, base) is not None for base in OLD_MEDIA_BASES) or "desktop" in width
+            or kind not in ("image", "video", "svg")):
+        return height, width
+    if mode == "height" and kind in ("video", "svg"):
+        for tier in TIERS:
+            for name in slot.old_names("Height", tier):
+                ctx.drop(name, "deleted", "", f"a Height on {'an SVG' if kind == 'svg' else 'a video'} was ignored by the old block (it drew the file at the container's width and its own proportions)")
+        height = {}
+        width["desktop"] = "100%"
+        ctx.events.append(("pinned", "mediaSizing", slot.target("Width"), f"old {kind} in height mode was drawn 100% wide: Width 100% written explicitly"))
+    elif mode == "height" and kind == "image" and not figure:
+        width["desktop"] = "auto"
+        ctx.events.append(("pinned", "mediaSizing", slot.target("Width"), "old bare image with a height kept its proportions: Width auto written explicitly"))
+    elif mode == "ratio" and kind == "image" and not figure:
+        ctx.pin_width_px = True
+    elif mode == "auto" and figure:
+        width["desktop"] = "100%"
+        ctx.events.append(("pinned", "mediaSizing", slot.target("Width"), f"old {kind} in a figure was drawn 100% wide: Width 100% written explicitly"))
+    return height, width
+
+
 def migrate_sizing(slot: Slot) -> None:
     ctx = slot.ctx
     mode = slot.get("MediaSizing")
@@ -415,11 +476,14 @@ def migrate_sizing(slot: Slot) -> None:
         new_height, new_ratio = {"desktop": "auto"}, ratio
     elif mode == "height":
         new_height, new_ratio = height, {}
-        for device in DEVICES:
-            if device in new_height and device not in width and new_height[device] not in ("auto", "fill"):
-                width[device] = "auto"
+        if ctx.block != "sgs/media":
+            for device in DEVICES:
+                if device in new_height and device not in width and new_height[device] not in ("auto", "fill"):
+                    width[device] = "auto"
     else:
         new_height, new_ratio = {}, {}
+    if ctx.block == "sgs/media":
+        new_height, width = pin_media_sizing(slot, mode, new_height, width)
     if new_height:
         ctx.put(slot.target("Height"), new_height)
     if new_ratio:

@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Callable, Iterator
 
 import markup
+import sizes
 from mapping import REPO
 
 MARKUP_SUFFIXES = {".php", ".html", ".txt", ".md"}
@@ -163,14 +164,18 @@ def mirror_export(name: str, fresh: bool = False) -> list[dict]:
     out, err = wsl_text(result)
     if result.returncode != 0 or not out.strip().startswith("["):
         raise SystemExit(f"wp-cli export of {name} failed: {err.strip()[:300] or out.strip()[:300]}")
-    _EXPORTS[name] = json.loads(out)
+    posts, files = sizes.split_export(json.loads(out))
+    sizes.register(f"mirror:{name}", files, mirror=name)
+    _EXPORTS[name] = posts
     return _EXPORTS[name]
 
 
 def load_content(path: Path) -> list[dict]:
-    posts = json.loads(read_text(path))
-    if not isinstance(posts, list):
+    records = json.loads(read_text(path))
+    if not isinstance(records, list):
         raise SystemExit(f"{path}: expected a wp-cli post list (JSON array)")
+    posts, files = sizes.split_export(records)
+    sizes.register(f"content:{path.stem}", files)
     return posts
 
 
