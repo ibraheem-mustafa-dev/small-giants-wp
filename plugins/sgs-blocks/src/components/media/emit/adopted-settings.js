@@ -31,7 +31,12 @@ const OVERLAY = 'overlay-and-filters';
 
 const PIXELS = [ 'image', 'video', 'svg' ];
 const EVERYWHERE = slotsOf( ALL_KINDS, ALL_CONTEXTS );
+/** An item set keeps each item's source, alt, decorative flag and focal point inside the item (§8.3), so the block holds no attribute for them. */
+const NOT_ITEM = ALL_CONTEXTS.filter( ( context ) => 'item' !== context );
 const OFF_BACKGROUND = slotsOf( ALL_KINDS, NOT_BACKGROUND );
+/** Tile, tile size and Pinned are a painted background's settings (§8, §9.3): an element slot never offers them. */
+const BACKGROUND_IMAGE = slotsOf( [ 'image' ], [ 'background' ] );
+
 
 /**
  * One C1 entry in §8's vocabulary.
@@ -60,24 +65,24 @@ function row( o ) {
 }
 
 const SOURCE_SETTINGS = [
-	row( { base: 'Source', type: 'object', responsive: true, role: 'content', component: 'MediaSlotField', label: 'Media', panel: MEDIA, order: 1 } ),
+	row( { base: 'Source', type: 'object', responsive: true, role: 'content', component: 'MediaSlotField', label: 'Media', panel: MEDIA, order: 1, slots: slotsOf( ALL_KINDS, NOT_ITEM ) } ),
 	row( { base: 'Loading', type: 'string', role: 'behaviour', component: 'SelectControl', label: 'Load priority', panel: MEDIA, order: 5 , slots: slotsOf( [ 'image', 'video' ], ALL_CONTEXTS ) } ),
 ];
 
 const MEANING_SETTINGS = [
-	row( { base: 'Alt', type: 'string', role: 'image-alt', component: 'MediaSlotField', label: 'Alt text', panel: MEDIA, order: 2 } ),
-	row( { base: 'Decorative', type: 'boolean', role: 'behaviour', component: 'MediaSlotField', label: 'Decorative', panel: MEDIA, order: 3 , slots: slotsOf( PIXELS, ALL_CONTEXTS ) } ),
+	row( { base: 'Alt', type: 'string', role: 'image-alt', component: 'MediaSlotField', label: 'Alt text', panel: MEDIA, order: 2, slots: slotsOf( ALL_KINDS, NOT_ITEM ) } ),
+	row( { base: 'Decorative', type: 'boolean', role: 'behaviour', component: 'MediaSlotField', label: 'Decorative', panel: MEDIA, order: 3 , slots: slotsOf( PIXELS, NOT_ITEM ) } ),
 ];
 
 const FIT_SETTINGS = [
 	row( { base: 'Fit', type: 'string', responsive: true, emitter: 'plain', property: 'object-fit', paintNode: 'media', role: 'visual', component: 'FitField', label: 'How it fills', panel: SIZES, order: 8 , slots: slotsOf( PIXELS, ALL_CONTEXTS ) } ),
-	row( { base: 'Repeat', type: 'string', responsive: true, emitter: 'plain', property: 'background-repeat', paintNode: 'media', role: 'visual', component: 'SelectControl', label: 'Tile', panel: SIZES, order: 10 , slots: slotsOf( [ 'image' ], ALL_CONTEXTS ) } ),
-	row( { base: 'TileSize', type: 'string', responsive: true, emitter: 'plain', property: 'background-size', paintNode: 'media', role: 'visual', component: 'LengthField', label: 'Tile size', panel: SIZES, order: 11 , slots: slotsOf( [ 'image' ], ALL_CONTEXTS ) } ),
+	row( { base: 'Repeat', type: 'string', responsive: true, emitter: 'plain', property: 'background-repeat', paintNode: 'media', role: 'visual', component: 'SelectControl', label: 'Tile', panel: SIZES, order: 10 , slots: BACKGROUND_IMAGE } ),
+	row( { base: 'TileSize', type: 'string', responsive: true, emitter: 'plain', property: 'background-size', paintNode: 'media', role: 'visual', component: 'LengthField', label: 'Tile size', panel: SIZES, order: 11 , slots: BACKGROUND_IMAGE } ),
 ];
 
 const FOCAL_SETTINGS = [
-	row( { base: 'Focal', type: 'object', responsive: true, emitter: 'focal', property: 'object-position', paintNode: 'media', role: 'visual', component: 'FocalField', label: 'Focal point', panel: SIZES, order: 9 , slots: slotsOf( [ 'image', 'video' ], ALL_CONTEXTS ) } ),
-	row( { base: 'Pinned', type: 'boolean', emitter: 'plain', property: 'background-attachment', paintNode: 'media', role: 'visual', component: 'ToggleControl', label: 'Keep the photo still while the page scrolls', panel: SIZES, order: 12 , slots: slotsOf( [ 'image' ], ALL_CONTEXTS ) } ),
+	row( { base: 'Focal', type: 'object', responsive: true, emitter: 'focal', property: 'object-position', paintNode: 'media', role: 'visual', component: 'FocalField', label: 'Focal point', panel: SIZES, order: 9 , slots: slotsOf( [ 'image', 'video' ], NOT_ITEM ) } ),
+	row( { base: 'Pinned', type: 'boolean', emitter: 'plain', property: 'background-attachment', paintNode: 'media', role: 'visual', component: 'ToggleControl', label: 'Keep the photo still while the page scrolls', panel: SIZES, order: 12 , slots: BACKGROUND_IMAGE } ),
 ];
 
 const PADDING_SETTINGS = [

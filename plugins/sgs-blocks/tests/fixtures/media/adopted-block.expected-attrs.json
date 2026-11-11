@@ -22,14 +22,5 @@
 	},
 	"overlayOpacity": {
 		"type": "object"
-	},
-	"pinned": {
-		"type": "boolean"
-	},
-	"repeat": {
-		"type": "object"
-	},
-	"tileSize": {
-		"type": "object"
 	}
 }

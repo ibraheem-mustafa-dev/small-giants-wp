@@ -319,6 +319,14 @@ function selfTest() {
 		JSON.stringify( Object.keys( writtenMap ).sort() ) === JSON.stringify( Object.keys( expectedAttrs ).sort() ) &&
 			Object.keys( expectedAttrs ).every( ( n ) => JSON.stringify( writtenMap[ n ] ) === JSON.stringify( expectedAttrs[ n ] ) )
 	);
+	// Tile, tile size and Pinned are a background's settings (§8, §9.3): an element slot is never given them, a background slot is.
+	const bgBlock = JSON.parse( fixText );
+	bgBlock.supports.sgs.mediaElements[ 0 ].context = 'background';
+	const bgNames = Object.keys( JSON.parse( planBlock( JSON.stringify( bgBlock ), new Set() ).next ).attributes );
+	ck(
+		'an element slot writes no Repeat, TileSize or Pinned; a background slot writes all three',
+		! [ 'repeat', 'tileSize', 'pinned' ].some( ( n ) => n in writtenMap ) && [ 'repeat', 'tileSize', 'pinned' ].every( ( n ) => bgNames.includes( n ) )
+	);
 	ck(
 		'adopted fixture: one override entry per generated attribute, each with a role and no css_property',
 		done.entries.length === written.length &&
