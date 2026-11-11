@@ -10,7 +10,6 @@ import {
 	PanelBody,
 	SelectControl,
 	RangeControl,
-	ToggleControl,
 	TextControl,
 } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
@@ -256,7 +255,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		borderColourGradient,
 		shadowHover,
 		scaleHover,
-		grayscaleHover,
 		transitionDuration,
 		transitionEasing,
 		backgroundColour,
@@ -587,7 +585,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						setAttributes( {
 							cardStyle: 'elevated',
 							scaleHover: '',
-							grayscaleHover: false,
 							transitionDuration: '300',
 							transitionEasing: 'ease-in-out',
 							shadowHover: '',
@@ -639,24 +636,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							placeholder="1.03"
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
-						hasValue={ () => grayscaleHover !== false }
-						onDeselect={ () =>
-							setAttributes( { grayscaleHover: false } )
-						}
-					>
-						<ToggleControl
-							label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
-							checked={ grayscaleHover }
-							onChange={ ( val ) => setAttributes( { grayscaleHover: val } ) }
-							help={ __(
-								'Desaturates the media at rest; restores full colour on hover.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem

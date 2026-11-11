@@ -301,17 +301,6 @@
 	height: 100%;
 }
 
-/* Grayscale hover (#130) */
-.sgs-gallery.sgs-has-grayscale .sgs-gallery__img-wrap .sgs-media-el {
-	filter: grayscale(100%);
-	transition: filter var( --sgs-transition-duration ) var( --sgs-transition-easing );
-}
-
-.sgs-gallery.sgs-has-grayscale .sgs-gallery__item:hover .sgs-gallery__img-wrap .sgs-media-el,
-.sgs-gallery.sgs-has-grayscale .sgs-gallery__item:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-gallery__img-wrap .sgs-media-el {
-	filter: grayscale(0%);
-}
-
 /* Hover Shadow (#88, #102) */
 .sgs-gallery.sgs-has-hover .sgs-gallery__item:hover {
 	box-shadow: var(--sgs-hover-shadow, none);

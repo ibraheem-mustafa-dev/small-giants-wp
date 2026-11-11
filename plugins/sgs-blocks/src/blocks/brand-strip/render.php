@@ -151,7 +151,7 @@ $root_text_colour_gradient = $attributes['textColourGradient'] ?? '';
 $root_text_hover_colour    = $attributes['textColourHover'] ?? '';
 $root_text_hover_gradient  = $attributes['textColourHoverGradient'] ?? '';
 // Sanitise values.
-$allowed_img_effects = array( 'none', 'grayscale', 'sepia' );
+$allowed_img_effects = array( 'none', 'sepia' );
 $safe_image_effect   = in_array( $image_effect, $allowed_img_effects, true ) ? $image_effect : 'none';
 // tileShadow sanitisation happens at emission time via sgs_shadow_value()
 // (helpers-tokens.php) — it either passes a raw CSS shadow through (normalising

@@ -128,7 +128,6 @@ $hover_shadow           = $attributes['cardShadowHover'] ?? '';
 $hover_shadow_colour    = $attributes['cardShadowColourHover'] ?? '';
 $card_shadow            = $attributes['cardShadow'] ?? '';
 $card_shadow_colour     = $attributes['cardShadowColour'] ?? '';
-$hover_grayscale        = (bool) ( $attributes['grayscaleHover'] ?? false );
 $hover_overlay          = (bool) ( $attributes['overlayHover'] ?? false );
 $display_mode           = $attributes['displayMode'] ?? 'full';
 $is_compact             = 'compact' === $display_mode;
@@ -187,9 +186,6 @@ $sgs_classes = array(
 
 if ( $is_compact ) {
 	$sgs_classes[] = 'sgs-team-member--compact';
-}
-if ( $hover_grayscale ) {
-	$sgs_classes[] = 'sgs-has-grayscale';
 }
 if ( $hover_overlay ) {
 	$sgs_classes[] = 'sgs-has-hover-overlay';

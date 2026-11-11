@@ -127,16 +127,6 @@
 	.sgs-info-box.sgs-has-hover:hover {
 		box-shadow: var(--sgs-hover-shadow, none);
 	}
-
-	/* Grayscale to colour (#130) */
-	.sgs-info-box.sgs-has-grayscale img {
-		filter: grayscale(100%);
-		transition: filter var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
-	}
-
-	.sgs-info-box.sgs-has-grayscale:hover img {
-		filter: grayscale(0%);
-	}
 }
 
 /* ===== Reduced motion ===== */

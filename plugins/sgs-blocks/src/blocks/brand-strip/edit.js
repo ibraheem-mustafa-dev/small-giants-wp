@@ -49,7 +49,6 @@ const BLOCK_ATOMS = LOGO_ENTRY.atoms.filter( ( id ) => ! [ 'source', 'meaning' ]
 
 const IMAGE_EFFECT_OPTIONS = [
 	{ label: __( 'None (full colour)', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Greyscale', 'sgs-blocks' ), value: 'grayscale' },
 	{ label: __( 'Sepia', 'sgs-blocks' ), value: 'sepia' },
 ];
 
@@ -860,7 +859,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<SelectControl
 						label={ __( 'Image effect', 'sgs-blocks' ) }
 						help={ __(
-							'Apply greyscale or sepia to logos, full colour on hover.',
+							'Apply sepia to logos, full colour on hover. For grey to colour, use the Hover state of the logo in the Motion panel.',
 							'sgs-blocks'
 						) }
 						value={ imageEffect }

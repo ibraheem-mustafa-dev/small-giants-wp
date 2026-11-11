@@ -188,7 +188,6 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 		cardShadowHover,
 		cardShadowColourHover,
 		scaleHover,
-		grayscaleHover,
 		transitionDuration,
 		transitionEasing,
 		displayMode,
@@ -374,7 +373,6 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 							cardShadowHover: '',
 							cardShadowColourHover: null,
 							scaleHover: '',
-							grayscaleHover: false,
 							transitionDuration: '300',
 							transitionEasing: 'ease-in-out',
 						} )
@@ -486,19 +484,6 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 							step={ 0.01 }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
-						hasValue={ () => grayscaleHover !== false }
-						onDeselect={ () => setAttributes( { grayscaleHover: false } ) }
-					>
-						<ToggleControl
-							label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
-							help={ __( 'Desaturates the photo at rest; restores full colour on hover.', 'sgs-blocks' ) }
-							checked={ grayscaleHover }
-							onChange={ ( val ) => setAttributes( { grayscaleHover: val } ) }
-							__nextHasNoMarginBottom
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem

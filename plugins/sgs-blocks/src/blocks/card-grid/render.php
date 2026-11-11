@@ -94,7 +94,6 @@ $card_border_width        = $attributes['cardBorderWidth'] ?? array();
 $card_radius              = $attributes['cardRadius'] ?? '';
 $card_shadow              = $attributes['cardShadow'] ?? '';
 $card_shadow_colour       = $attributes['cardShadowColour'] ?? '';
-$hover_grayscale          = ! empty( $attributes['grayscaleHover'] );
 $query_post_type          = sanitize_key( $attributes['queryPostType'] ?? 'post' );
 $query_per_page           = absint( $attributes['queryPostsPerPage'] ?? 6 );
 $query_category           = absint( $attributes['queryCategory'] ?? 0 );
@@ -289,9 +288,6 @@ if ( $hover_scale ) {
 }
 if ( $hover_shadow ) {
 	$class_names[] = 'sgs-has-hover';
-}
-if ( $hover_grayscale ) {
-	$class_names[] = 'sgs-has-grayscale';
 }
 // A client-set image overlay replaces the overlay variant's built-in caption
 // gradient, so the two never stack.

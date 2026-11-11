@@ -233,16 +233,6 @@
 	.sgs-team-member.sgs-has-hover:hover {
 		box-shadow: var(--sgs-hover-shadow, none);
 	}
-
-	/* Grayscale to colour (#130) */
-	.sgs-team-member.sgs-has-grayscale .sgs-team-member__photo img {
-		filter: grayscale(100%);
-		transition: filter var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
-	}
-
-	.sgs-team-member.sgs-has-grayscale:hover .sgs-team-member__photo img {
-		filter: grayscale(0%);
-	}
 }
 
 @media (prefers-reduced-motion: reduce) {

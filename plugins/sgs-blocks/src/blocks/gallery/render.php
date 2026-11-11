@@ -82,7 +82,6 @@ $show_captions   = (bool) ( $attributes['showCaptions'] ?? false );
 $caption_reveal  = (bool) ( $attributes['captionReveal'] ?? false );
 
 $hover_scale     = sanitize_text_field( $attributes['scaleHover'] ?? '' );
-$hover_grayscale = (bool) ( $attributes['grayscaleHover'] ?? false );
 // The hover shadow of an item: a theme shadow name or custom layers (`6px 6px 0 0`) in `shadowHover`, its colour in
 // `shadowHoverColour` (ignored for a theme name, which carries its own colour); the shared composer builds the value, so a
 // custom value beats the preset the way every other block's shadow does.
@@ -392,7 +391,6 @@ $wrapper_classes = implode( ' ', array_filter( [
 	// A real aspect ratio (not empty or auto): style.css fills each tile with its picture.
 	array() !== $sgs_gal_ratio_tiers ? 'sgs-gallery--fixed-aspect' : '',
 	$hover_shadow   ? 'sgs-has-hover'                 : '',
-	$hover_grayscale ? 'sgs-has-grayscale'             : '',
 	( $show_captions && $caption_reveal ) ? 'sgs-gallery--caption-reveal' : '',
 	$uid,
 	// Skip-serialised `color` support also stops WP auto-adding the standard

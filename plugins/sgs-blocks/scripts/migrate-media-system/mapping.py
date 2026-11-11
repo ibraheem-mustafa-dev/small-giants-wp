@@ -492,10 +492,23 @@ REPORT_ALWAYS = {
     "sgsObjectFit": "Fit (universal image-controls extension: per-block target)",
     "imageZoomHover": "Hover effect on the media part (WP-10a)",
     "scaleHover": "Hover effect on the media part (WP-10a)",
-    "grayscaleHover": "Hover effect on the media part (WP-10a)",
     "sgsColourTreatment": "Colour (natural, greyscale, white) or Hover filter (WP-10a)",
 }
 REPORT_PATTERNS = (re.compile(r"^sgsHoverZoom"),)
+
+# Attributes the report skips: `sgs/button`'s `scaleHover` scales the whole button (the Hover state route does not replace it), and
+# `sgs/brand-strip`'s `imageEffect` keeps its sepia value (its grayscale value moves to the Hover state).
+REPORT_EXEMPT = {("sgs/button", "scaleHover"), ("sgs/brand-strip", "imageEffect")}
+
+# Grey to colour moves to the image part's Hover state (`hover-grayscale-to-colour`): block -> (attribute, value that
+# switches it on, part, whether one item or the whole block triggers it). The attribute is then deleted.
+HOVER_GRAYSCALE = {
+    "sgs/card-grid": ("grayscaleHover", True, "image", "item"),
+    "sgs/gallery": ("grayscaleHover", True, "image", "item"),
+    "sgs/team-member": ("grayscaleHover", True, "image", "root"),
+    "sgs/info-box": ("grayscaleHover", True, "media", "root"),
+    "sgs/brand-strip": ("imageEffect", "grayscale", "logo", "item"),
+}
 
 # Old background names shared by container, hero, trust-bar, multi-button, physics-canvas, site header and footer and
 # nav-drawer: (old name, family, new name).

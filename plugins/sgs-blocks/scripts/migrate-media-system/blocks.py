@@ -275,7 +275,8 @@ def migrate_extras(ctx: T.Ctx) -> None:
                 ctx.put(target, True)
             ctx.drop(old, "converted", target)
         elif family == "report":
-            ctx.keep(old, "reported", target)
+            if (ctx.block, old) not in M.REPORT_EXEMPT:
+                ctx.keep(old, "reported", target)
         elif family == "fit":
             fit = value if isinstance(value, dict) else ({"desktop": value} if value in T.FIT_OK else {})
             if fit:
@@ -625,8 +626,56 @@ def apply_pins(ctx: T.Ctx) -> None:
                 ctx.put("photoRatio", {"desktop": "1 / 1"})
 
 
+GRAYSCALE_STATE = {
+    "preset": "hover-grayscale-to-colour",
+    "values": {"duration": "token:duration.medium", "easing": "token:easing.emphasised", "grayscale": 0, "restGrayscale": 1},
+}
+
+
+def migrate_hover_grayscale(ctx: T.Ctx) -> None:
+    """Grey to colour is the image part's Hover state: the old switch becomes that state and the attribute goes.
+
+    A switch that is off is deleted. A part that already holds a Hover state keeps it and the switch is refused, so
+    nothing a client set is overwritten.
+    """
+    rule = M.HOVER_GRAYSCALE.get(ctx.block)
+    if not rule or not ctx.has(rule[0]):
+        return
+    name, on, part, source = rule
+    value = ctx.get(name)
+    if value != on:
+        if name == "imageEffect":
+            return  # sepia and none stay on the attribute
+        ctx.drop(name, "deleted", "", "off is the default")
+        return
+    motion = ctx.get("sgsMotion")
+    if motion is None:
+        motion = {"v": 1, "elements": {}}
+    if not isinstance(motion, dict) or not isinstance(motion.get("elements", {}), dict):
+        ctx.keep(name, "refused", "sgsMotion is not an object: the Hover state cannot be added")
+        return
+    elements = motion.setdefault("elements", {})
+    held = elements.get(part)
+    state = held["hover"].get("state") if isinstance(held, dict) and isinstance(held.get("hover"), dict) else None
+    if state:
+        # A zoom (or other values) already on the part joins the grey to colour values in the one state, when the same trigger drives both.
+        if state.get("preset") or state.get("source", "root") != source or not isinstance(state.get("values"), dict):
+            ctx.keep(name, "refused", f"the {part} part already holds a different Hover state")
+            return
+        state["values"] = {**state["values"], "grayscale": 0, "restGrayscale": 1}
+        state["source"] = source
+        ctx.put("sgsMotion", motion)
+        ctx.drop(name, "converted", f"sgsMotion.elements.{part}.hover.state")
+        return
+    elements[part] = {**(held if isinstance(held, dict) else {}), "hover": {**((held or {}).get("hover") or {}), "state": {"source": source, **copy.deepcopy(GRAYSCALE_STATE)}}}
+    ctx.put("sgsMotion", motion)
+    ctx.drop(name, "converted", f"sgsMotion.elements.{part}.hover.state")
+
+
 def migrate_report_always(ctx: T.Ctx) -> None:
     for name in list(ctx.attrs):
+        if (ctx.block, name) in M.REPORT_EXEMPT:
+            continue
         if name in M.REPORT_ALWAYS:
             ctx.keep(name, "reported", M.REPORT_ALWAYS[name])
         elif any(p.match(name) for p in M.REPORT_PATTERNS):
@@ -770,6 +819,7 @@ def _migrate(name: str, attrs: dict):
     ctx = T.Ctx(name, attrs)
     migrate_inert_settings(ctx)
     migrate_retired_hero_split(ctx)
+    migrate_hover_grayscale(ctx)
     for slot in M.merged_slots(name):
         T.migrate_slot(ctx, slot["olds"], slot["new"], slot["bases"])
     if name in M.BACKGROUND_BLOCKS:

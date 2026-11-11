@@ -363,6 +363,15 @@ case("timeline: entry image id, video and empty entries fold into source; the de
                   {"date": "2021", "source": {"desktop": {"kind": "video", "id": 9, "url": "http://x/v.mp4"}}, "decorative": True}]})
 case("timeline: an SVG entry keeps its old keys (the slot takes images and video)", "sgs/timeline",
      {"entries": [{"date": "2019", "mediaType": "svg", "svg": "<svg/>"}]}, None)
+# ---- grey to colour is the image part's Hover state
+case("gallery: grayscaleHover becomes the image part's item Hover state", "sgs/gallery", {"grayscaleHover": True},
+     {"sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"source": "item", **{"preset": "hover-grayscale-to-colour", "values": {"duration": "token:duration.medium", "easing": "token:easing.emphasised", "grayscale": 0, "restGrayscale": 1}}}}}}}})
+case("brand-strip: imageEffect grayscale becomes the logo part's item Hover state", "sgs/brand-strip", {"imageEffect": "grayscale"},
+     {"sgsMotion": {"v": 1, "elements": {"logo": {"hover": {"state": {"source": "item", **{"preset": "hover-grayscale-to-colour", "values": {"duration": "token:duration.medium", "easing": "token:easing.emphasised", "grayscale": 0, "restGrayscale": 1}}}}}}}})
+case("negative: brand-strip sepia stays on the attribute and is not reported", "sgs/brand-strip", {"imageEffect": "sepia"}, None)
+case("negative: sgs/button scaleHover is not media and stays", "sgs/button", {"scaleHover": "1.05"}, None)
+case("negative: grayscaleHover over an existing preset state is refused and stays", "sgs/card-grid",
+     {"grayscaleHover": True, "sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"preset": "hover-image-zoom", "values": {"scale": 1.05}}}}}}}, None)
 # ---- negative controls: refusals keep the old attribute; unrelated and new-shape attributes stay byte-identical
 case("negative: an unreadable focal position is refused and stays", "sgs/media", {"objectPosition": "calc(1px + 2px) 5px"}, None)
 case("negative: Lottie is reported and stays", "sgs/media", {"mediaType": "lottie", "imageUrl": U}, None)
@@ -375,7 +384,7 @@ case("inline SVG logo parts are the block's own attributes and stay untouched", 
 case("negative: an out-of-vocabulary shape is refused and stays", "sgs/media", {"shape": "star"}, None)
 
 REFUSED_STAYS = ("negative: an unreadable photo object", "size: an unreadable image", "negative: an unreadable focal", "negative: Lottie", "negative: an out-of-vocabulary shape",
-                 "negative: hero mediaPadding")
+                 "negative: hero mediaPadding", "negative: grayscaleHover over")
 
 
 def _fail(label: str, detail: str, failures: list[str]) -> None:

@@ -64,7 +64,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		source,
 		overlayColour,
 		overlayGradient,
-		grayscaleHover,
 	} = attributes;
 
 	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
@@ -131,8 +130,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		'sgs-card-grid',
 		`sgs-card-grid--${ variant }`,
 		overlayColour || overlayGradient ? 'sgs-card-grid--has-image-overlay' : '',
-		// The grayscale hover, as render.php classes the grid (style.css paints it on the canvas too).
-		grayscaleHover ? 'sgs-has-grayscale' : '',
 	].filter( Boolean ).join( ' ' );
 
 	const previewTier = usePreviewTier();

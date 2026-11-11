@@ -351,13 +351,8 @@
 	border-radius: 0;
 }
 
-/* ===== Logo image effect (greyscale / sepia) =====
- * Generalised from the original boolean `greyscale` attribute (2026-07-17)
- * to a 3-way `imageEffect` attribute (none/grayscale/sepia) so a client can
- * pick either treatment. Both effects keep the same hover-to-full-colour
- * transition the original greyscale effect had. */
-.sgs-brand-strip--effect-grayscale .sgs-brand-strip__logo,
-.sgs-brand-strip--effect-grayscale .sgs-brand-strip__item .sgs-media-el,
+/* ===== Logo image effect (sepia) =====
+ * `imageEffect` (none/sepia); grey to colour is the logo part's Hover state. */
 .sgs-brand-strip--effect-sepia .sgs-brand-strip__logo,
 .sgs-brand-strip--effect-sepia .sgs-brand-strip__item .sgs-media-el {
 	opacity: 0.6;
@@ -366,18 +361,11 @@
 	transition-property: filter, opacity;
 }
 
-.sgs-brand-strip--effect-grayscale .sgs-brand-strip__logo,
-.sgs-brand-strip--effect-grayscale .sgs-brand-strip__item .sgs-media-el {
-	filter: grayscale(100%);
-}
-
 .sgs-brand-strip--effect-sepia .sgs-brand-strip__logo,
 .sgs-brand-strip--effect-sepia .sgs-brand-strip__item .sgs-media-el {
 	filter: sepia(100%);
 }
 
-.sgs-brand-strip--effect-grayscale .sgs-brand-strip__item:hover .sgs-brand-strip__logo,
-.sgs-brand-strip--effect-grayscale .sgs-brand-strip__item:hover .sgs-media-el,
 .sgs-brand-strip--effect-sepia .sgs-brand-strip__item:hover .sgs-brand-strip__logo,
 .sgs-brand-strip--effect-sepia .sgs-brand-strip__item:hover .sgs-media-el {
 	filter: none;

@@ -41,7 +41,7 @@
  *   cardStyle, iconPosition, backgroundColour, backgroundColourGradient,
  *   backgroundColourHover, backgroundColourHoverGradient, textColour, textColourGradient,
  *   textColourHover, textColourHoverGradient, linkColour, linkColourHover,
- *   borderColourHover, scaleHover, shadowHover, grayscaleHover,
+ *   borderColourHover, scaleHover, shadowHover,
  *   transitionDuration, transitionEasing.
  *
  * D744 — background/text/link colour were migrated OFF native supports.color
@@ -100,7 +100,6 @@ $sgs_icon_position = isset( $attributes['iconPosition'] ) ? $attributes['iconPos
 $sgs_hover_scale         = isset( $attributes['scaleHover'] ) ? $attributes['scaleHover'] : '';
 $sgs_hover_shadow        = isset( $attributes['shadowHover'] ) ? $attributes['shadowHover'] : '';
 $sgs_hover_shadow_colour = isset( $attributes['shadowColourHover'] ) ? $attributes['shadowColourHover'] : '';
-$sgs_hover_gray          = isset( $attributes['grayscaleHover'] ) ? (bool) $attributes['grayscaleHover'] : false;
 
 // D744 — background/text/link colour, block-private replacements for the
 // retired native supports.color.background/text/link/gradients. Read raw
@@ -223,9 +222,6 @@ $sgs_safe_hover_shadow = sgs_shadow_value_composed( $sgs_hover_shadow, $sgs_hove
 if ( '' !== $sgs_safe_hover_shadow ) {
 	$sgs_wrapper_styles[] = '--sgs-hover-shadow:' . $sgs_safe_hover_shadow;
 	$sgs_classes[]        = 'sgs-has-hover';
-}
-if ( $sgs_hover_gray ) {
-	$sgs_classes[] = 'sgs-has-grayscale';
 }
 
 // D744/D971: has-text-color / has-background / has-*-gradient-background /

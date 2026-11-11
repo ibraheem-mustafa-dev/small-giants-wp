@@ -146,14 +146,7 @@
 					"label": "Image",
 					"order": 2,
 					"clusters": [],
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:filter": "grayscaleHover"
-							}
-						}
-					},
-					"_note": "The item picture: printed by the shared media renderer (Spec 49), whose fit, focal point, ratio, radius and shape the Images panel and the block-level item settings write. `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
+					"_note": "The item picture: printed by the shared media renderer (Spec 49), whose fit, focal point, ratio, radius and shape the Images panel and the block-level item settings write."
 				},
 				"caption": {
 					"text": true,
@@ -494,10 +487,6 @@
 			"default": true
 		},
 		"captionReveal": {
-			"type": "boolean",
-			"default": false
-		},
-		"grayscaleHover": {
 			"type": "boolean",
 			"default": false
 		},

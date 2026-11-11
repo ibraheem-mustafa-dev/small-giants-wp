@@ -1,8 +1,8 @@
 /**
- * Gallery settings-tab Hover Effects panel: scale, transition, grayscale and shadow.
+ * Gallery settings-tab Hover Effects panel: scale, transition and shadow.
  */
 import { __ } from '@wordpress/i18n';
-import { RangeControl, SelectControl, ToggleControl } from '@wordpress/components';
+import { RangeControl, SelectControl } from '@wordpress/components';
 // ToolsPanel/ToolsPanelItem exist only as `__experimental*` on WP 7.1 (unprefixed = undefined,
 // React error #130 on selecting the block): they must come from the primitives boundary.
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
@@ -14,16 +14,14 @@ export default function GalleryHoverEffectsPanel( { attributes, setAttributes, s
 		scaleHover,
 		transitionDuration,
 		transitionEasing,
-		grayscaleHover,
 	} = attributes;
 
 	return (
 		<>
 				{ /* Panel 3: Hover Effects — moved ahead of Content 2026-09-08
 				     (rule 41 dom-order-vs-declared-order finding). This panel
-				     holds Image's owned attrs (
-				     grayscaleHover; block.json supports.sgs.elements.image,
-				     order 2) alongside the block-wide hover-effect controls
+				     holds the block-wide hover-effect controls (Image,
+				     block.json supports.sgs.elements.image, order 2, takes its Hover state from the Motion panel) alongside the block-wide hover-effect controls
 				     (scaleHover/transitionDuration/Easing/
 				     shadowHover). render.php genuinely draws
 				     <img> before <figcaption> (Image element order 2 before
@@ -39,7 +37,6 @@ export default function GalleryHoverEffectsPanel( { attributes, setAttributes, s
 							scaleHover: '',
 							transitionDuration: '300',
 							transitionEasing: 'ease',
-							grayscaleHover: false,
 							shadowHover: '',
 							shadowHoverColour: '',
 						} )
@@ -117,24 +114,6 @@ export default function GalleryHoverEffectsPanel( { attributes, setAttributes, s
 							onChange={ set( 'transitionEasing' ) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
-						hasValue={ () => grayscaleHover !== false }
-						onDeselect={ () =>
-							setAttributes( { grayscaleHover: false } )
-						}
-					>
-						<ToggleControl
-							label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
-							checked={ grayscaleHover }
-							onChange={ set( 'grayscaleHover' ) }
-							help={ __(
-								'Desaturates images at rest; restores full colour on hover.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
