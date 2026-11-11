@@ -454,7 +454,14 @@
 								"image"
 							],
 							"context": "content",
-							"from": "sgs"
+							"from": "sgs",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"shape"
+							]
 						}
 					},
 					"replace": [
@@ -463,26 +470,44 @@
 				},
 				"sgs/testimonial": {
 					"slots": {
-						"photo": {
+						"avatar": {
 							"kinds": [
 								"image"
 							],
 							"context": "content",
-							"from": "avatar"
+							"from": "avatar",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"shape"
+							]
 						},
 						"logo": {
 							"kinds": [
 								"image"
 							],
 							"context": "content",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit"
+							]
 						},
 						"work": {
 							"kinds": [
 								"image"
 							],
 							"context": "content",
-							"from": "work"
+							"from": "work",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point"
+							]
 						}
 					},
 					"replace": []
@@ -612,7 +637,12 @@
 								"image"
 							],
 							"context": "content",
-							"from": ""
+							"from": "",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit"
+							]
 						}
 					},
 					"replace": []
