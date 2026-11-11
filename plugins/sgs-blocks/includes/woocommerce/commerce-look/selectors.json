@@ -1,5 +1,255 @@
 {
-	"_comment": "The one table of WooCommerce selectors the Cart and Checkout look settings paint. Read by includes/woocommerce/commerce-look/selectors.php (the writer) and scripts/computed-route/lib/site-check-commerce-look.mjs (the drift probe). Selectors are read from the DOM WooCommerce renders on wc_version, never guessed. cart / checkout: selector list relative to the block root (a missing key means the row does not apply to that block; no comma inside a functional pseudo-class). state: prose. needs: machine-readable state for the probe (basket filled; viewport any|wide|narrow; action none|open-coupon-on-cart|tick-order-note|optional).",
+	"_comment": "The one table of WooCommerce selectors the Cart and Checkout look settings paint. Read by includes/woocommerce/commerce-look/selectors.php (the writer) and scripts/computed-route/lib/site-check-commerce-look.mjs (the drift probe). Selectors are read from the DOM WooCommerce renders on wc_version, never guessed. cart / checkout: selector list relative to the block root (a missing key means the row does not apply to that block; no comma inside a functional pseudo-class). state: prose. needs: machine-readable state for the probe (basket filled; viewport any|wide|narrow; action none|open-coupon-on-cart|tick-order-note|optional). columns: the property kinds a row can take (attribute suffixes, CSS property, inspector control kind); a row's `columns` list names the extra settings it carries, its attribute names are the row prefix plus the column suffix (`prefix` overrides the row id), generated into src/blocks/extensions/commerce-look/attributes-table.generated.js and the extension roster by scripts/generate-commerce-look-table.js, printed by includes/woocommerce/commerce-look/table.php and drawn by src/blocks/extensions/commerce-look/table-panels.js. `label` names the row in the inspector; `probe: false` leaves a row out of the selector-drift probe.",
+	"columns": {
+		"margin": {
+			"kind": "box",
+			"css": "margin",
+			"role": "layout",
+			"attrs": [
+				[
+					"Margin",
+					"object"
+				]
+			],
+			"label": "Margin"
+		},
+		"padding": {
+			"kind": "box",
+			"css": "padding",
+			"role": "layout",
+			"attrs": [
+				[
+					"Padding",
+					"object"
+				]
+			],
+			"label": "Padding"
+		},
+		"gap": {
+			"kind": "length",
+			"css": "gap",
+			"role": "layout",
+			"attrs": [
+				[
+					"Gap",
+					"object"
+				]
+			],
+			"label": "Gap"
+		},
+		"inner_gap": {
+			"kind": "length",
+			"css": "gap",
+			"role": "layout",
+			"attrs": [
+				[
+					"InnerGap",
+					"object"
+				]
+			],
+			"label": "Gap between the parts"
+		},
+		"column_gap": {
+			"kind": "length",
+			"css": "column-gap",
+			"role": "layout",
+			"attrs": [
+				[
+					"ColumnGap",
+					"object"
+				]
+			],
+			"label": "Column gap"
+		},
+		"width": {
+			"kind": "length",
+			"css": "width",
+			"role": "layout",
+			"attrs": [
+				[
+					"Width",
+					"object"
+				]
+			],
+			"label": "Width"
+		},
+		"height": {
+			"kind": "length",
+			"css": "height",
+			"role": "layout",
+			"attrs": [
+				[
+					"Height",
+					"object"
+				]
+			],
+			"label": "Height"
+		},
+		"min_width": {
+			"kind": "length",
+			"css": "min-width",
+			"role": "layout",
+			"attrs": [
+				[
+					"MinWidth",
+					"object"
+				]
+			],
+			"label": "Minimum width"
+		},
+		"min_height": {
+			"kind": "length",
+			"css": "min-height",
+			"role": "layout",
+			"attrs": [
+				[
+					"MinHeight",
+					"object"
+				]
+			],
+			"label": "Minimum height"
+		},
+		"radius": {
+			"kind": "length",
+			"css": "border-radius",
+			"role": "visual",
+			"attrs": [
+				[
+					"Radius",
+					"object"
+				]
+			],
+			"label": "Corner radius"
+		},
+		"border": {
+			"kind": "border",
+			"css": "border",
+			"role": "visual",
+			"attrs": [
+				[
+					"Border",
+					"object"
+				]
+			],
+			"label": "Border"
+		},
+		"border_top": {
+			"kind": "border",
+			"css": "border-top",
+			"role": "visual",
+			"attrs": [
+				[
+					"BorderTop",
+					"object"
+				]
+			],
+			"label": "Top border"
+		},
+		"border_bottom": {
+			"kind": "border",
+			"css": "border-bottom",
+			"role": "visual",
+			"attrs": [
+				[
+					"BorderBottom",
+					"object"
+				]
+			],
+			"label": "Bottom border"
+		},
+		"shadow": {
+			"kind": "shadow",
+			"css": "box-shadow",
+			"role": "visual",
+			"attrs": [
+				[
+					"Shadow",
+					"string"
+				],
+				[
+					"ShadowColour",
+					"string"
+				]
+			],
+			"label": "Shadow"
+		},
+		"text": {
+			"kind": "text",
+			"css": "typography",
+			"role": "typography",
+			"attrs": [
+				[
+					"FontSize",
+					"number"
+				],
+				[
+					"FontSizeUnit",
+					"string"
+				],
+				[
+					"FontSizeTablet",
+					"number"
+				],
+				[
+					"FontSizeMobile",
+					"number"
+				],
+				[
+					"FontFamily",
+					"string"
+				],
+				[
+					"FontWeight",
+					"string"
+				],
+				[
+					"FontStyle",
+					"string"
+				],
+				[
+					"LineHeight",
+					"number"
+				],
+				[
+					"LineHeightUnit",
+					"string"
+				],
+				[
+					"LetterSpacing",
+					"number"
+				],
+				[
+					"LetterSpacingUnit",
+					"string"
+				],
+				[
+					"TextTransform",
+					"string"
+				],
+				[
+					"TextDecoration",
+					"string"
+				],
+				[
+					"TextAlign",
+					"string"
+				]
+			],
+			"label": "Text"
+		},
+		"decoration": {
+			"kind": "decoration",
+			"css": "text-decoration",
+			"role": "typography",
+			"attrs": [
+				[
+					"TextDecoration",
+					"string"
+				]
+			],
+			"label": "Underline"
+		}
+	},
 	"rows": {
 		"field_text": {
 			"cart": ".wc-block-components-text-input input[type]",
@@ -9,7 +259,8 @@
 			"needs": {
 				"basket": "filled",
 				"action": "open-coupon-on-cart"
-			}
+			},
+			"label": "Form field"
 		},
 		"field_select": {
 			"checkout": ".wc-blocks-components-select__select",
@@ -37,7 +288,11 @@
 			"needs": {
 				"basket": "filled",
 				"action": "open-coupon-on-cart"
-			}
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Field label"
 		},
 		"field_wrap": {
 			"cart": ".wc-block-components-text-input",
@@ -47,7 +302,11 @@
 			"needs": {
 				"basket": "filled",
 				"action": "open-coupon-on-cart"
-			}
+			},
+			"columns": [
+				"gap"
+			],
+			"label": "Form field wrapper"
 		},
 		"item": {
 			"cart": ".wc-block-cart-items__row",
@@ -56,7 +315,14 @@
 			"state": "basket filled; any user; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"margin",
+				"width",
+				"min_height",
+				"inner_gap"
+			],
+			"label": "Item"
 		},
 		"item_wide": {
 			"cart": ".is-large .wc-block-cart-items__row",
@@ -91,7 +357,12 @@
 			"state": "basket filled; any user; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"margin"
+			],
+			"label": "Item picture box",
+			"prefix": "sgsItemImageBox"
 		},
 		"item_image_img": {
 			"cart": "table.wc-block-cart-items .wc-block-cart-items__row .wc-block-cart-item__image img",
@@ -100,7 +371,15 @@
 			"state": "basket filled with a product that has an image; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"margin",
+				"padding",
+				"width",
+				"height"
+			],
+			"label": "Item picture",
+			"prefix": "sgsItemImage"
 		},
 		"item_stepper": {
 			"cart": ".wc-block-components-quantity-selector",
@@ -108,7 +387,13 @@
 			"state": "basket filled; any user; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"margin",
+				"padding",
+				"height"
+			],
+			"label": "Quantity stepper"
 		},
 		"item_name": {
 			"cart": "table.wc-block-cart-items .wc-block-cart-items__row .wc-block-components-product-name",
@@ -117,7 +402,11 @@
 			"state": "basket filled; any user; any width (the cart name rule is table-qualified in WooCommerce's cart.css, so the row repeats it)",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Item name"
 		},
 		"item_price": {
 			"cart": ".wc-block-components-product-price",
@@ -126,7 +415,11 @@
 			"state": "basket filled; any user; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Item price"
 		},
 		"summary": {
 			"cart": ".wc-block-cart__sidebar .wp-block-woocommerce-cart-order-summary-block",
@@ -135,7 +428,14 @@
 			"state": "basket filled; any user; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"margin",
+				"gap",
+				"width",
+				"min_height"
+			],
+			"label": "Order summary card"
 		},
 		"summary_sidebar": {
 			"cart": ".wc-block-cart__sidebar",
@@ -152,7 +452,11 @@
 			"state": "basket filled; any user; the sidebar title shows at every width, the title above the place-order button at narrow widths only",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Summary heading"
 		},
 		"step": {
 			"checkout": ".wc-block-components-checkout-step",
@@ -160,7 +464,14 @@
 			"state": "basket filled; guest; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"margin",
+				"gap",
+				"width",
+				"min_height"
+			],
+			"label": "Checkout step"
 		},
 		"step_title": {
 			"checkout": ".wc-block-components-checkout-step__title",
@@ -168,7 +479,12 @@
 			"state": "basket filled; guest; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"gap",
+				"decoration"
+			],
+			"label": "Step title"
 		},
 		"option": {
 			"checkout": "label.wc-block-components-radio-control__option, .wc-block-checkout__shipping-method-option",
@@ -176,7 +492,13 @@
 			"state": "basket filled; a shipping zone with a rate; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"margin",
+				"width",
+				"min_height"
+			],
+			"label": "Option card"
 		},
 		"option_chosen": {
 			"checkout": "label.wc-block-components-radio-control__option-checked.wc-block-components-radio-control__option--checked-option-highlighted, .wc-block-checkout__shipping-method-option--selected",
@@ -184,7 +506,11 @@
 			"state": "basket filled; a shipping zone with a rate; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"padding"
+			],
+			"label": "Chosen option card"
 		},
 		"notice": {
 			"cart": ".wc-block-components-notice-banner, .sgs-commerce-note",
@@ -194,7 +520,14 @@
 			"needs": {
 				"basket": "filled",
 				"action": "optional"
-			}
+			},
+			"columns": [
+				"margin",
+				"gap",
+				"width",
+				"min_height"
+			],
+			"label": "Notice"
 		},
 		"summary_bar": {
 			"checkout": ".wc-block-components-checkout-order-summary__title",
@@ -203,7 +536,13 @@
 			"needs": {
 				"basket": "filled",
 				"viewport": "narrow"
-			}
+			},
+			"columns": [
+				"margin",
+				"gap"
+			],
+			"label": "Order summary bar",
+			"prefix": "sgsBar"
 		},
 		"terms": {
 			"checkout": ".wc-block-checkout__terms",
@@ -211,7 +550,14 @@
 			"state": "basket filled; any user; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"border_top",
+				"padding",
+				"margin",
+				"decoration"
+			],
+			"label": "Terms"
 		},
 		"total_label": {
 			"cart": ".wc-block-components-totals-footer-item .wc-block-components-totals-item__label",
@@ -220,7 +566,11 @@
 			"state": "basket filled; any user; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Total label"
 		},
 		"total_value": {
 			"cart": ".wc-block-components-totals-footer-item .wc-block-components-totals-item__value",
@@ -229,7 +579,11 @@
 			"state": "basket filled; any user; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Total value"
 		},
 		"summary_row_label": {
 			"cart": ".wc-block-components-totals-item:not(.wc-block-components-totals-footer-item) .wc-block-components-totals-item__label",
@@ -238,7 +592,11 @@
 			"state": "basket filled; any user; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Summary row label"
 		},
 		"summary_row_value": {
 			"cart": ".wc-block-components-totals-item:not(.wc-block-components-totals-footer-item) .wc-block-components-totals-item__value",
@@ -247,7 +605,11 @@
 			"state": "basket filled; any user; any width",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Summary row value"
 		},
 		"summary_row_divider": {
 			"cart": ".wc-block-components-totals-wrapper:has(.wc-block-components-totals-item):not(:has(.wc-block-components-totals-footer-item)):not(:first-child)",
@@ -275,7 +637,11 @@
 			"needs": {
 				"basket": "filled",
 				"action": "optional"
-			}
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Item variant"
 		},
 		"item_remove": {
 			"cart": "table.wc-block-cart-items .wc-block-cart-items__row .wc-block-cart-item__quantity .wc-block-cart-item__remove-link",
@@ -283,7 +649,11 @@
 			"state": "basket filled; any user; any width (table-qualified like WooCommerce's own rule)",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Remove link"
 		},
 		"item_cell": {
 			"cart": "table.wc-block-cart-items .wc-block-cart-items__row > td",
@@ -336,7 +706,12 @@
 			"state": "basket filled; any user; any width (the cart's Proceed to checkout and the checkout's Place order; the theme's woocommerce.css paints the same two buttons from the primary preset)",
 			"needs": {
 				"basket": "filled"
-			}
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Primary button",
+			"prefix": "sgsButton"
 		},
 		"field_label_active": {
 			"cart": ".wc-block-components-text-input.is-active label",
@@ -393,7 +768,12 @@
 			"needs": {
 				"basket": "filled",
 				"action": "none"
-			}
+			},
+			"columns": [
+				"margin",
+				"gap"
+			],
+			"label": "Coupon section"
 		},
 		"coupon_input": {
 			"cart": ".wp-block-woocommerce-cart-order-summary-coupon-form-block .wc-block-components-totals-coupon__input.wc-block-components-text-input input[type],.wp-block-woocommerce-cart-order-summary-coupon-form-block .wc-block-components-totals-coupon__input.wc-block-components-text-input",
@@ -423,6 +803,787 @@
 			"needs": {
 				"basket": "filled",
 				"action": "none"
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Coupon label",
+			"prefix": "sgsCouponLabel"
+		},
+		"express_rule": {
+			"checkout": ".wc-block-components-express-payment-continue-rule",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width; the Stripe wallet row has loaded (the rule is drawn only with the wallet buttons)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			},
+			"columns": [
+				"text",
+				"margin"
+			],
+			"label": "Wallet divider text"
+		},
+		"express_rule_line": {
+			"checkout": ".wc-block-components-express-payment-continue-rule::before, .wc-block-components-express-payment-continue-rule::after",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width; the Stripe wallet row has loaded (the two lines are pseudo-elements of the rule)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"delivery_title": {
+			"checkout": ".wc-block-checkout__shipping-method-option-title, .sgs-delivery-card__price",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; WooCommerce's block Local pickup is on (the Ship / Collect toggle is drawn as cards)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Delivery card title"
+		},
+		"delivery_description": {
+			"checkout": ".sgs-delivery-card__description",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; WooCommerce's block Local pickup is on",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Delivery card description"
+		},
+		"delivery_step": {
+			"checkout": ".wc-block-checkout__shipping-method",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; WooCommerce's block Local pickup is on (the Delivery step holds the Ship / Collect cards)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"item_brand": {
+			"checkout": ".sgs-checkout-item-brand",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; sgsItemShowBrand set and the product has a brand",
+			"needs": {
+				"basket": "filled"
+			},
+			"columns": [
+				"decoration"
+			],
+			"label": "Item brand"
+		},
+		"item_text": {
+			"checkout": ".wc-block-components-order-summary-item__description, .wc-block-components-order-summary-item__total-price",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"summary_rows": {
+			"checkout": ".wp-block-woocommerce-checkout-order-summary-totals-block",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width (the block that holds the subtotal, discount, fee, shipping and tax rows)",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"field_text_active": {
+			"checkout": ".wc-block-components-form .wc-block-components-text-input.is-active input[type], .wc-block-components-form .wc-block-components-text-input input:-webkit-autofill",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width; a field that is focused or holds text (WooCommerce floats its label up and pads the field to make room)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"item_description": {
+			"checkout": ".wc-block-components-order-summary-item__description",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			},
+			"columns": [
+				"padding"
+			],
+			"label": "Item text"
+		},
+		"step_number": {
+			"checkout": ".wc-block-components-checkout-step--with-step-number .wc-block-components-checkout-step__title::before",
+			"label": "Step number",
+			"columns": [
+				"text"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"place_order_text": {
+			"checkout": ".wc-block-components-checkout-place-order-button .wc-block-components-button__text",
+			"label": "Place order button text",
+			"columns": [
+				"width"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"place_order_label": {
+			"checkout": ".wc-block-components-checkout-place-order-button__text",
+			"label": "Place order button label",
+			"columns": [
+				"width"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"shipping_option_control": {
+			"checkout": ".wc-block-checkout__shipping-option .wc-block-components-radio-control",
+			"label": "Shipping options list",
+			"columns": [
+				"gap"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"shipping_free": {
+			"checkout": ".wc-block-checkout__shipping-option .wc-block-checkout__shipping-option--free",
+			"label": "Free shipping label",
+			"columns": [
+				"text"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"shipping_value": {
+			"checkout": ".wc-block-components-totals-shipping .wc-block-components-totals-item__value,.wc-block-components-totals-shipping .wc-block-components-totals-item__value strong",
+			"label": "Shipping total",
+			"columns": [
+				"text"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"shipping_value_strong": {
+			"checkout": ".wc-block-components-totals-shipping .wc-block-components-totals-item__value strong",
+			"label": "Shipping total (bold part)",
+			"columns": [
+				"text"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"radio_option_flat": {
+			"checkout": ".wc-block-components-radio-control__option,.wc-block-components-radio-control__option--checked-option-highlighted,.wc-block-components-radio-control-accordion-option--checked-option-highlighted",
+			"label": "Option card shadow reset",
+			"columns": [
+				"shadow"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"radio_option_checked_flat": {
+			"checkout": ".wc-block-components-radio-control label.wc-block-components-radio-control__option.wc-block-components-radio-control__option-checked",
+			"label": "Chosen option card shadow reset",
+			"columns": [
+				"shadow"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"radio_option_layout": {
+			"checkout": ".wc-block-components-radio-control__option-layout",
+			"label": "Option card layout",
+			"columns": [
+				"width"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"radio_label_group": {
+			"checkout": ".wc-block-components-radio-control__label-group",
+			"label": "Option label group",
+			"columns": [
+				"gap"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"shipping_label": {
+			"checkout": ".wc-block-checkout__shipping-option .wc-block-components-radio-control__label",
+			"label": "Shipping option label",
+			"columns": [
+				"text"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"shipping_secondary": {
+			"checkout": ".wc-block-checkout__shipping-option .wc-block-components-radio-control__secondary-label",
+			"label": "Shipping option price",
+			"columns": [
+				"text"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"shipping_description": {
+			"checkout": ".wc-block-checkout__shipping-option .wc-block-components-radio-control__description-group",
+			"label": "Shipping option description",
+			"columns": [
+				"text",
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"login_prompt": {
+			"checkout": ".wc-block-checkout__login-prompt,.sgs-checkout-login-prefix",
+			"label": "Sign in prompt",
+			"columns": [
+				"text"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"checkbox_label": {
+			"checkout": ".wc-block-components-checkbox__label",
+			"label": "Checkbox label",
+			"columns": [
+				"text"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"create_account_label": {
+			"checkout": ".wc-block-checkout__create-account .wc-block-components-checkbox__label",
+			"label": "Create account label",
+			"columns": [
+				"text"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"checkbox_wrap_label": {
+			"checkout": ".wc-block-components-checkbox label",
+			"label": "Checkbox row",
+			"columns": [
+				"text",
+				"padding"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"express_content": {
+			"checkout": ".wc-block-components-express-payment__content",
+			"label": "Wallet buttons box",
+			"columns": [
+				"border",
+				"padding",
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"express_buttons": {
+			"checkout": ".wc-block-components-express-payment__event-buttons",
+			"label": "Wallet buttons grid",
+			"columns": [
+				"gap"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"payment_option_label": {
+			"checkout": ".wc-block-components-radio-control-accordion-option .wc-block-components-radio-control__option",
+			"label": "Payment option inner label",
+			"columns": [
+				"border",
+				"padding"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"summary_title_flex": {
+			"checkout": ".wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title,.checkout-order-summary-block-fill-wrapper .wc-block-components-checkout-step__heading",
+			"label": "Summary heading row",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"summary_edit": {
+			"checkout": ".sgs-checkout-summary-edit",
+			"label": "Order summary Edit link",
+			"columns": [
+				"text",
+				"border_bottom"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"totals_item": {
+			"checkout": ".wc-block-components-totals-item",
+			"label": "Totals line",
+			"columns": [
+				"padding",
+				"margin",
+				"text"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"checkout_root": {
+			"checkout": "&",
+			"label": "Checkout block",
+			"columns": [
+				"padding"
+			],
+			"wc_version": "11.2.1",
+			"state": "the block root itself (the scope class); not probed",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			},
+			"probe": false
+		},
+		"step_spaced": {
+			"checkout": ".wc-block-components-checkout-step:not(.wc-block-checkout__shipping-method)",
+			"label": "Checkout step spacing (not delivery)",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"shipping_option": {
+			"checkout": ".wc-block-checkout__shipping-option",
+			"label": "Shipping options box",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"shipping_fields": {
+			"checkout": ".wc-block-checkout__shipping-fields",
+			"label": "Shipping address box",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"use_billing": {
+			"checkout": ".wc-block-checkout__use-address-for-billing",
+			"label": "Use same address for billing",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"address_wrapper": {
+			"checkout": ".wc-block-components-address-address-wrapper",
+			"label": "Address line wrapper",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"payment_method": {
+			"checkout": ".wc-block-checkout__payment-method",
+			"label": "Payment methods box",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"order_notes": {
+			"checkout": ".wc-block-checkout__order-notes",
+			"label": "Order note box",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"actions": {
+			"checkout": ".wc-block-checkout__actions",
+			"label": "Place order row",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"step_heading": {
+			"checkout": ".wc-block-components-checkout-step__heading",
+			"label": "Step heading",
+			"columns": [
+				"margin",
+				"height",
+				"min_height"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"step_heading_container": {
+			"checkout": ".wc-block-components-checkout-step__heading-container",
+			"label": "Step heading box",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"field_in_step": {
+			"checkout": ".wc-block-components-checkout-step__content .wc-block-components-text-input,.wc-block-components-address-form .wc-block-components-text-input",
+			"label": "Fields in a step",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"radio_labels": {
+			"checkout": ".wc-block-components-radio-control__label,.wc-block-components-radio-control__secondary-label,.wc-block-checkout__shipping-option--free",
+			"label": "Option labels",
+			"columns": [
+				"text"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"radio_descriptions": {
+			"checkout": ".wc-block-components-radio-control__description-group,.wc-block-components-radio-control__secondary-description,.wc-block-components-radio-control__secondary-description *",
+			"label": "Option descriptions",
+			"columns": [
+				"text"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"checkbox_input": {
+			"checkout": ".wc-block-components-checkbox .wc-block-components-checkbox__input[type=checkbox]",
+			"label": "Checkbox tick box",
+			"columns": [
+				"width",
+				"height",
+				"min_width",
+				"min_height",
+				"radius"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"summary_fill": {
+			"checkout": ".checkout-order-summary-block-fill",
+			"label": "Order summary card (phone drawer)",
+			"columns": [
+				"border",
+				"radius"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"summary_inner": {
+			"checkout": ".wc-block-components-order-summary,.wc-block-components-order-summary__content",
+			"label": "Order summary inner",
+			"columns": [
+				"padding"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"cart_items_wrap": {
+			"checkout": ".wp-block-woocommerce-checkout-order-summary-cart-items-block.wc-block-components-totals-wrapper",
+			"label": "Summary item list box",
+			"columns": [
+				"padding"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"summary_title_box": {
+			"checkout": ".wc-block-components-checkout-order-summary__title,.checkout-order-summary-block-fill-wrapper .wc-block-components-checkout-step__heading-container",
+			"label": "Summary heading box",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"summary_title_text": {
+			"checkout": ".wc-block-components-checkout-order-summary__title-text,.checkout-order-summary-block-fill-wrapper .wc-block-components-title",
+			"label": "Summary heading text",
+			"columns": [
+				"margin",
+				"text"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"summary_title_text_deep": {
+			"checkout": ".wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title .wc-block-components-checkout-order-summary__title-text",
+			"label": "Summary heading text (sidebar)",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"summary_item_name": {
+			"checkout": ".wc-block-components-order-summary-item .wc-block-components-product-name",
+			"label": "Summary item name box",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"summary_item_metadata": {
+			"checkout": ".wc-block-components-order-summary-item .wc-block-components-product-metadata",
+			"label": "Summary item variant box",
+			"columns": [
+				"margin"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"totals_wrapper": {
+			"checkout": ".wc-block-components-totals-wrapper:not(.wp-block-woocommerce-checkout-order-summary-coupon-form-block):not(:has(.wc-block-components-totals-footer-item))",
+			"label": "Totals blocks",
+			"columns": [
+				"padding"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"address_form": {
+			"checkout": ".wc-block-components-address-form",
+			"label": "Address form",
+			"columns": [
+				"column_gap"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"field_input": {
+			"checkout": ".wc-block-components-text-input input[type]",
+			"element": "field-text-input",
+			"label": "Text field input (padding and height)",
+			"columns": [
+				"padding",
+				"height"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
 			}
 		}
 	}

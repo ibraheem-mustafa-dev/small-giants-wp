@@ -12,7 +12,8 @@ Steps, each stopping the run on failure:
      (GENERATED; a change to those files themselves never triggers a reseed). The reseed runs on a private copy (publish-framework-db.py begin, sgs-update-v2.py --db, seed_reference_data.py, regenerate) and the
      regenerated files are committed.
   3. ONE build-deploy.py pass for the target, with SGS_FRAMEWORK_DB pointing at the copy when reseeded: build, both gate
-     tiers, the editor check on the target's own mirror (TARGETS["editor_mirror"] in deploy_common.py) and the deploy.
+     tiers and the deploy; with --editor-check (off by default) also the editor check on the target's own mirror
+     (TARGETS["editor_mirror"] in deploy_common.py).
      That pass records the gate pass publish needs, so no separate --gate-only run is made.
   4. Publish the copy to the shared framework DB (only when reseeded).
   5. git push origin HEAD:main (unless --no-push).
@@ -97,7 +98,8 @@ def last_reseed_commit(git_fn) -> str:
     return git_fn("log", "-1", "--format=%H", "--", *GENERATED)
 
 
-def plan(target: str, reseed: bool, copy: str, takeover: bool, push: bool) -> list[tuple[str, list[str], dict]]:
+def plan(target: str, reseed: bool, copy: str, takeover: bool, push: bool,
+         editor_check: bool = False) -> list[tuple[str, list[str], dict]]:
     """The ordered steps: (name, argv, extra env). Pure, so the self-test can read it."""
     py = sys.executable
     s = "plugins/sgs-blocks/scripts/"
@@ -112,8 +114,10 @@ def plan(target: str, reseed: bool, copy: str, takeover: bool, push: bool) -> li
             ("commit-generated", ["git", "commit", "-q", "-m", "chore(db): generated files from a private reseed (ship.py)", "--", *GENERATED], {}),
         ]
     deploy = [py, s + "build-deploy.py", "--target", target]
+    # The editor check opens every page of a local mirror in the block editor (about 15 minutes); it is asked for with
+    # --editor-check, never run by default (Bean, 2026-11-11).
     mirror = deploy_common.TARGETS.get(target, {}).get("editor_mirror")
-    if mirror:
+    if editor_check and mirror:
         deploy += ["--editor-check", mirror]
     if takeover:
         deploy.append("--takeover")
@@ -134,6 +138,8 @@ def main() -> int:
     ap.add_argument("--target", required=True, help="One target from deploy_common.TARGETS")
     ap.add_argument("--reseed", choices=("auto", "yes", "no"), default="auto")
     ap.add_argument("--takeover", action="store_true", help="Passed to build-deploy.py (see its help)")
+    ap.add_argument("--editor-check", action="store_true",
+                    help="Also open the target's local mirror in the block editor before upload (about 15 minutes; off by default)")
     ap.add_argument("--no-push", action="store_true")
     ap.add_argument("--plan", action="store_true", help="Print the steps and exit")
     args = ap.parse_args()
@@ -167,7 +173,7 @@ def main() -> int:
           + (f" ({len(hits)} reason(s): {', '.join(hits[:4])}{' ...' if len(hits) > 4 else ''})" if hits else ""))
 
     copy = str(Path(tempfile.gettempdir()) / f"ship-{os.getpid()}.db")
-    steps = plan(args.target, reseed, copy, args.takeover, not args.no_push)
+    steps = plan(args.target, reseed, copy, args.takeover, not args.no_push, args.editor_check)
     for name, argv, env in steps:
         shown = " ".join(argv[1:] if argv[0] == sys.executable else argv)
         print(f"[ship] {name}: {shown}" + (f"  (env {env})" if env else ""), flush=True)

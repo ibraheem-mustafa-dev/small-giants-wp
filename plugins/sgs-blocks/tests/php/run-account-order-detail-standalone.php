@@ -101,6 +101,8 @@ ok( false !== strpos( $html, 'aria-current="step"' ), 'the current step is marke
 ok( false !== strpos( $html, 'sgs-account__od-item-brand">Ray-Ban' ) && false !== strpos( $html, 'Tinted to match' ) && false !== strpos( $html, '£248' ), 'the item row carries brand, name, options and total' );
 ok( 3 === substr_count( $html, 'sgs-account__od-box-title' ), 'three boxes: address, payment, total' );
 ok( false !== strpos( $html, 'href="https://wa.me/447960597847"' ) && false !== strpos( $html, 'Message me with EC-1700.' ), 'the WhatsApp card links to the number and quotes the order' );
+ok( 1 === preg_match( '#<span class="sgs-account__od-chat-icon" aria-hidden="true"><svg class="sgs-account__od-chat-glyph"[^>]*width="19" height="19"#', $html ), 'the WhatsApp card icon is the WhatsApp glyph from the brand registry at 19px, drawn in the markup' );
+ok( 2 === substr_count( $html, 'class="sgs-account__od-box sgs-account__od-box--text"' ), 'the address and payment boxes are plain text boxes (block flow), the total box keeps its row layout' );
 $pick = $has ? sgs_account_order_steps( new Fake_Order( 'completed', 'pickup_location' ), $all ) : array();
 ok( array() !== $pick && 'Collected' === end( $pick )['label'], 'a pickup order uses the pickup labels for the last step' );
 ok( $has && array() === sgs_account_order_steps( new Fake_Order( 'cancelled' ), $all ), 'a cancelled order has no track' );

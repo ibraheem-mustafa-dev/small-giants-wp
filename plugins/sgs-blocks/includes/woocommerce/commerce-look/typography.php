@@ -1,6 +1,6 @@
 <?php
 /**
- * Cart and Checkout look: the text styles (step titles, field labels, line-item name, price, variant text and remove link, summary heading, summary rows, total label and value, terms).
+ * Cart and Checkout look: the text styles (step titles, field labels, line-item name, price, brand, variant text and remove link, delivery card title and description, summary heading, summary rows, total label and value, terms).
  *
  * @package SGS\Blocks
  */
@@ -28,6 +28,9 @@ function sgs_commerce_look_typography_css( array $attrs, string $block, string $
 		'sgsItemPrice'       => array( 'item_price' ),
 		'sgsItemVariant'     => array( 'item_variant' ),
 		'sgsItemRemove'      => array( 'item_remove' ),
+		'sgsItemBrand'       => array( 'item_brand' ),
+		'sgsDeliveryTitle'   => array( 'delivery_title' ),
+		'sgsDeliveryDescription' => array( 'delivery_description' ),
 		'sgsSummaryHeading'  => array( 'summary_heading' ),
 		'sgsSummaryRowLabel' => array( 'summary_row_label' ),
 		'sgsSummaryRowValue' => array( 'summary_row_value' ),

@@ -576,8 +576,9 @@ def main() -> int:
                   flush=True)
             return 1
 
-    # Post-deploy LIVE page-weight gate: opt-in, and always on for a release run (--motion-qa-tier full).
-    if page_weight_wanted(args.page_weight, args.motion_qa_tier) and deploy_blocks:
+    # Post-deploy LIVE page-weight gate: opt-in, and always on for a release run (--motion-qa-tier full). It runs for
+    # any scope, theme-only included, since theme CSS counts towards the budget too.
+    if page_weight_wanted(args.page_weight, args.motion_qa_tier):
         rc = timed("page-weight", step_page_weight, args.dry_run, target_key)
         if rc != 0:
             print("[DEPLOYED-BUT-PAGE-WEIGHT-FAILED] the deploy completed and the payload matches, but a page's transferred CSS "

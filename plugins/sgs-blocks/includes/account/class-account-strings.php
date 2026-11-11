@@ -103,7 +103,9 @@ final class Account_Strings {
 		foreach ( self::$values as $key => $text ) {
 			// The register panel heading shares WooCommerce's "Register" text with the submit button, so it is set
 			// by `register_heading()` on the finished markup, not by the gettext map.
-			if ( 'registerHeading' === $key ) {
+			// `passwordMismatch` is also kept out of the map: the reset template recognises WooCommerce's queued
+			// notice by that original text and swaps in the client's wording itself.
+			if ( 'registerHeading' === $key || 'passwordMismatch' === $key ) {
 				continue;
 			}
 			$map[ self::supported()[ $key ] ] = $text;

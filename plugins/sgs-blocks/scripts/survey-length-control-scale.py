@@ -109,7 +109,9 @@ GENERIC_FILES = {
     'components/media/SizingFields.js': ('spacing', "the Spec 49 media sizing fields: width, height and the four limits are box lengths for any slot"),
     'components/motion/DistanceAtom.js': ('spacing', 'motion distance length'),
     'components/media/panels/component-map.js': ('spacing', 'media panel length fields (Width, Height, limits): box lengths, presets off'),
+    'blocks/extensions/commerce-look/table-panels.js': ('spacing', "the commerce-look table's length column (margins, gaps, widths and heights of WooCommerce parts): box lengths for every row"),
     'blocks/timeline/card-device-controls.js': ('spacing', "the timeline's per-device card gap and image height (TierLengthItem): box lengths"),
+    'blocks/account/CellPanels.js': ('spacing', "the account block's gap, margin, padding-side, width, min-height, radius and rule-width rows: box lengths, each row named in the file's row tables"),
 }
 EXTENSION_ATTRS =sorted(k.split('/', 1)[1] for k in ROLE_EXCEPTIONS if k.startswith('extension/'))
 

@@ -25,7 +25,7 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 | 00 | [00-naming-conventions.md](00-naming-conventions.md) | Naming rules + the naming linter | active |
 | 01 | [01-SGS-THEME.md](01-SGS-THEME.md) | Block theme (theme.json v3, templates, fonts) | shipped |
 | 02 | [02-SGS-BLOCKS.md](02-SGS-BLOCKS.md) | Block specifications + customisation standards, including the variation + style registration pattern | active |
-| 02 | [02-SGS-BLOCKS-REFERENCE.md](02-SGS-BLOCKS-REFERENCE.md) | Auto-generated per-block attribute reference. Gitignored: generated locally by `/sgs-update` (`generate-block-reference.py`), never hand-edited: fix the generator instead | active |
+| 02 | `02-SGS-BLOCKS-REFERENCE.md` (local only) | Auto-generated per-block attribute reference. Gitignored: generated locally by `/sgs-update` (`generate-block-reference.py`), never hand-edited: fix the generator instead | active |
 | 03 | [03-SGS-BOOKING.md](03-SGS-BOOKING.md) | Booking plugin | deferred |
 | 04 | [04-SGS-FORMS.md](04-SGS-FORMS.md) | Forms (built into sgs-blocks) | active |
 | 05 | [05-SGS-CLIENT-NOTES.md](05-SGS-CLIENT-NOTES.md) | Visual annotation system | active (live on sandybrown) |

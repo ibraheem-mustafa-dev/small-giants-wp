@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from wf_paths import COLLECTOR_JS, MEDIA_FACTS_MJS, Roots
+from wf_table import table_attribute_names
 
 ATTR_COLUMNS = (
     "block_slug", "attr_name", "attr_type", "css_property", "css_element", "css_state",
@@ -76,6 +77,7 @@ class Inputs:
     roster: list[dict]
     collectors: Collectors
     seeded: set = field(default_factory=set)  # (block, attr) rows of every DB source
+    table_names: frozenset = frozenset()      # settings the commerce-look table builds from a row prefix and a column suffix
 
     @property
     def facts(self) -> dict:
@@ -157,4 +159,5 @@ def load_inputs(roots: Roots, with_dump: bool = True) -> Inputs:
         db.close()
     bj, uses = load_blockjson(roots)
     return Inputs(rows=rows, suffixes=suffixes, blockjson=bj, uses_context=uses,
-                  roster=load_roster(roots), collectors=collectors, seeded=seeded)
+                  roster=load_roster(roots), collectors=collectors, seeded=seeded,
+                  table_names=table_attribute_names(roots.plugin))

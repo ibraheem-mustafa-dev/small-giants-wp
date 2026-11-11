@@ -1,6 +1,6 @@
 <?php
 /**
- * Cart and Checkout look: the line items (header row, thumbnail size, cell padding, quantity stepper, spacing between cards).
+ * Cart and Checkout look: the line items (header row, thumbnail size, cell padding, space above a summary line's text, quantity stepper, spacing between cards).
  *
  * @package SGS\Blocks
  */
@@ -62,6 +62,18 @@ function sgs_commerce_look_line_items_css( array $attrs, string $block, string $
 		$css .= sgs_emit_responsive_css( $cell, array( array( 'value' => $attrs['sgsItemCellPadding'] ?? null, 'css' => 'padding', 'box' => true, 'unit_default' => 'px' ) ) );
 	}
 
+	// Space above the text and price columns of a checkout summary line (WooCommerce pads both 4px).
+	$text = sgs_commerce_look_selector( 'item_text', $block, $root );
+	if ( '' !== $text ) {
+		$css .= sgs_emit_responsive_css( $text, array( array( 'value' => $attrs['sgsItemTextTop'] ?? null, 'css' => 'padding-top', 'unit_default' => 'px' ) ) );
+	}
+
+	// Gap between the brand, name and variant lines of a checkout summary line (WooCommerce stacks them 4px apart).
+	$description = sgs_commerce_look_selector( 'item_description', $block, $root );
+	if ( '' !== $description ) {
+		$css .= sgs_emit_responsive_css( $description, array( array( 'value' => $attrs['sgsItemTextGap'] ?? null, 'css' => 'gap', 'unit_default' => 'px' ) ) );
+	}
+
 	// Quantity stepper: corners (the buttons inherit the radius, so the stepper clips them) and width; its fill and edge print with the cards (cards.php).
 	$stepper = sgs_commerce_look_selector( 'item_stepper', $block, $root );
 	$radius  = sgs_css_single_length_value( (string) ( $attrs['sgsItemStepperRadius'] ?? '' ) );
@@ -73,9 +85,8 @@ function sgs_commerce_look_line_items_css( array $attrs, string $block, string $
 	}
 
 	// WooCommerce's 1px rules above the picture, name and total cells of each line item.
-	$separator = sgs_commerce_look_selector( 'item_cell', $block, $root );
-	if ( '' !== $separator && true === ( $attrs['sgsItemHideSeparators'] ?? false ) ) {
-		$css .= $separator . '{border-top-width:0;}';
+	if ( '' !== $cell && true === ( $attrs['sgsItemHideSeparators'] ?? false ) ) {
+		$css .= $cell . '{border-top-width:0;}';
 	}
 
 	// Space between line-item cards.
@@ -141,20 +152,18 @@ add_filter( 'render_block', __NAMESPACE__ . '\sgs_commerce_look_summary_extras_i
  * the order summary, and the text before the Log in link (`sgsCheckoutStrings.loginPrefix`, kept with its trailing
  * space). All are Checkout-only; Cart has its own summary.
  *
- * @param array<string, mixed> $attrs Stored block attributes.
- * @param string               $bag   Address of the bag page.
  * The signed-in line (`sgsCheckoutStrings.signedInLine`, `%s` standing for the customer's email) is resolved here for
  * the signed-in customer and shown at the end of the Contact step; guests get none.
  *
+ * @param array<string, mixed> $attrs Stored block attributes.
+ * @param string               $bag   Address of the bag page.
  * @return array{editLabel:string,editUrl:string,brand:bool,loginPrefix:string,signedInLine:string}|array{} Empty when none is set.
  */
 function sgs_commerce_look_summary_extras( array $attrs, string $bag ): array {
 	$label  = trim( sanitize_text_field( (string) ( $attrs['sgsSummaryEditLinkLabel'] ?? '' ) ) );
 	$brand  = true === ( $attrs['sgsItemShowBrand'] ?? false );
 	$raw    = is_array( $attrs['sgsCheckoutStrings'] ?? null ) ? (string) ( $attrs['sgsCheckoutStrings']['loginPrefix'] ?? '' ) : '';
-	$prefix = '' === trim( $raw ) ? '' : mb_substr( str_replace( array( "
-", "
-", "	" ), ' ', wp_specialchars_decode( wp_strip_all_tags( $raw ) ) ), 0, 120 );
+	$prefix = '' === trim( $raw ) ? '' : mb_substr( str_replace( array( "\r", "\n", "\t" ), ' ', wp_specialchars_decode( wp_strip_all_tags( $raw ) ) ), 0, 120 );
 	$signed = '';
 	$line   = is_array( $attrs['sgsCheckoutStrings'] ?? null ) ? trim( sanitize_text_field( (string) ( $attrs['sgsCheckoutStrings']['signedInLine'] ?? '' ) ) ) : '';
 	if ( '' !== $line && function_exists( 'is_user_logged_in' ) && is_user_logged_in() ) {

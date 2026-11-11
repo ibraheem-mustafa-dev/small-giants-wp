@@ -31,7 +31,8 @@
      },
      "stubWoocommerce": true,
      "unexercised": {
-      "authGrid": "WooCommerce prints the sign-in and register pair (id customer_login) through its login template; the harness renders no WooCommerce template, so the class the block adds to it is not in the HTML"
+      "authGrid": "WooCommerce prints the sign-in and register pair (id customer_login) through its login template; the harness renders no WooCommerce template, so the class the block adds to it is not in the HTML",
+      "lostForm": "WooCommerce prints the forgotten-password and new-password form (lost_reset_password, on the lost-password endpoint) through its own template; the harness renders no WooCommerce template, so the class the block adds to it (sgs-account__lost-form) is not in the HTML"
      }
     },
     "logged-in-dashboard": {

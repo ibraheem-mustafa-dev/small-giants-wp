@@ -11,7 +11,7 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, CheckboxControl, TextControl } from '@wordpress/components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { ResponsiveControl, ResponsiveOverride, IconPicker, SgsLengthControl } from '../../components';
-import { Toggle } from './extraControls';
+import { Toggle, Choice } from './extraControls';
 import { patchTier } from '../../utils';
 
 const DEFAULT_MENU_ICONS = {
@@ -65,6 +65,7 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 					showMenuIcons: undefined,
 					navIcons: undefined,
 					menuActiveIndicatorWidth: undefined,
+					menuActiveIndicatorStyle: undefined,
 					menuOrdersCount: undefined,
 					menuOrder: undefined,
 					tabHeadings: undefined,
@@ -99,6 +100,24 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 					</ToggleGroupControl>
 				) }
 			</ResponsiveControl>
+			</ToolsPanelItem>
+
+			<ToolsPanelItem
+				label={ __( 'Active item marker', 'sgs-blocks' ) }
+				hasValue={ () => !! attributes.menuActiveIndicatorStyle }
+				onDeselect={ () => setAttributes( { menuActiveIndicatorStyle: undefined } ) }
+			>
+				<Choice
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					name="menuActiveIndicatorStyle"
+					label={ __( 'Active item marker', 'sgs-blocks' ) }
+					help={ __( 'A line on the item’s edge keeps showing while the item has keyboard focus.', 'sgs-blocks' ) }
+					options={ [
+						{ label: __( 'Bar inside the item', 'sgs-blocks' ), value: '' },
+						{ label: __( 'Line on the edge', 'sgs-blocks' ), value: 'line' },
+					] }
+				/>
 			</ToolsPanelItem>
 
 			<ToolsPanelItem

@@ -1,4 +1,4 @@
-"""ship.py: reseed only when a block.json or a seeder changed; one build-deploy pass that carries the editor check;
+"""ship.py: reseed only when a block.json or a seeder changed; one build-deploy pass (the editor check only when asked);
 publish only after that pass; push last.
 
 Run: python plugins/sgs-blocks/scripts/tests/test_ship.py
@@ -64,7 +64,9 @@ check("publish comes after the one build-deploy pass", names.index("publish") > 
 steps = {n: (a, e) for n, a, e in ship.plan("eye-care-test", True, "C:/t/x.db", True, True)}
 argv, env = steps["build-deploy"]
 check("build-deploy reads the private copy", env == {"SGS_FRAMEWORK_DB": "C:/t/x.db"}, env)
-check("build-deploy runs the target's editor check", "--editor-check" in argv and argv[argv.index("--editor-check") + 1] == deploy_common.TARGETS["eye-care-test"]["editor_mirror"], argv)
+check("no editor check unless asked", "--editor-check" not in argv, argv)
+argv_ec = [a for n, a, _ in ship.plan("eye-care-test", False, "C:/t/x.db", False, False, editor_check=True) if n == "build-deploy"][0]
+check("--editor-check runs the target's editor check", "--editor-check" in argv_ec and argv_ec[argv_ec.index("--editor-check") + 1] == deploy_common.TARGETS["eye-care-test"]["editor_mirror"], argv_ec)
 check("--takeover passes through", "--takeover" in argv)
 check("no --gate-only, --skip-verify or --allow-dirty", not {"--gate-only", "--skip-verify", "--allow-dirty"} & set(argv))
 

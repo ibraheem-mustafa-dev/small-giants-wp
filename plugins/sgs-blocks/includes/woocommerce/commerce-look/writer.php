@@ -27,6 +27,7 @@ require_once __DIR__ . '/line-items.php';
 require_once __DIR__ . '/summary.php';
 require_once __DIR__ . '/buttons.php';
 require_once __DIR__ . '/payment-coupon.php';
+require_once __DIR__ . '/table.php';
 
 const SGS_COMMERCE_LOOK_BLOCKS = array(
 	'woocommerce/cart'     => 'cart',
@@ -56,6 +57,7 @@ function sgs_commerce_look_css( array $attrs, string $block, string $scope ): st
 		. sgs_commerce_look_summary_css( $set, $block, $root )
 		. sgs_commerce_look_payment_coupon_css( $set, $block, $root )
 		. sgs_commerce_look_layout_css( $set, $block, $root )
+		. sgs_commerce_look_table_css( $set, $block, $root )
 		. sgs_commerce_look_button_css( $set, $block, $root );
 }
 

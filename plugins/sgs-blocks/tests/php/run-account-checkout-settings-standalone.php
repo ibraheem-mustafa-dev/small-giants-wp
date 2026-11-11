@@ -202,6 +202,8 @@ if ( function_exists( 'SGS\Blocks\sgs_commerce_look_summary_extras' ) ) {
 	ok( false !== strpos( $js, '&&' ) && false === strpos( $js, '&#038;' ), 'the summary extras script is printed with its && intact' );
 	$c = SGS\Blocks\sgs_commerce_look_summary_extras( array( 'sgsCheckoutStrings' => array( 'loginPrefix' => 'Already have an account? ' ) ), 'https://example.test/bag/' );
 	ok( 'Already have an account?' === ( $c['loginPrefix'] ?? null ) && '' === $c['editLabel'] && false === $c['brand'], 'loginPrefix alone configures the prefix and is stripped of tags and edge spaces (the span margin makes the gap)' );
+	$c = SGS\Blocks\sgs_commerce_look_summary_extras( array( 'sgsCheckoutStrings' => array( 'loginPrefix' => "Have\r\nan\naccount?\tSign " ) ), 'https://example.test/bag/' );
+	ok( 'Have  an account? Sign' === ( $c['loginPrefix'] ?? null ), 'loginPrefix turns a carriage return, a line feed and a tab into spaces' );
 	$sl = array( 'sgsCheckoutStrings' => array( 'signedInLine' => 'Signed in as %s. This order will be saved to your account.' ) );
 	$GLOBALS['user_email'] = 'bean@example.test';
 	$c = SGS\Blocks\sgs_commerce_look_summary_extras( $sl, 'https://example.test/bag/' );

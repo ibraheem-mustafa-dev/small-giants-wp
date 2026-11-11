@@ -46,6 +46,12 @@ def scan_extensions(inp: Inputs, fe: FrontEnd, css: CssIndex, js: str, editor: E
         prefixes |= {c["prefix"] for c in fx.get("prefixCalls", []) if PREFIX_FN_RE.search(c.get("fn") or "") and c["idx"] <= 1}
     family = {(p + s) if p else lower_first(s) for p in prefixes for s in suffixes}
     derived = fe.hook_derived()
+    # Settings the commerce-look table builds from a row prefix and a column suffix: the panels file draws a control for
+    # every column and table.php prints every column, so each name the table defines (wf_table.py) is credited when
+    # that file is reached, and a name the table no longer defines is not.
+    table = getattr(inp, "table_names", frozenset())
+    table_control = any(f.endswith("commerce-look/table-panels.js") for f in ctl_files)
+    table_emitter = any(t.path.replace("\\", "/").endswith("commerce-look/table.php") for t in fe.hook_reach())
     # ShadowControl keys: a shadow base names its colour, hover and hover-colour attributes too.
     for f in ctl_files:
         for sb in files.get(f, {}).get("shadowBases", []):
@@ -66,6 +72,10 @@ def scan_extensions(inp: Inputs, fe: FrontEnd, css: CssIndex, js: str, editor: E
                 ch.helpers.add(h)
                 if fe.analyser.emits_css(h) or "css" in h:
                     ch.decl = True
+            if attr in table and table_emitter:
+                ch.read = True
+                ch.helpers.add("sgs_commerce_look_table_attributes")
+                ch.decl = True
             row = {"attr_name": attr, "role": spec.get("role"), "css_property": spec.get("css_property")}
             signals = {
                 "class_rule": any(css.has_class(c) for c in ch.classes if own_modifier(c)),
@@ -85,7 +95,7 @@ def scan_extensions(inp: Inputs, fe: FrontEnd, css: CssIndex, js: str, editor: E
                 rec["class"] = "not-paint"
                 records.append(rec)
                 continue
-            ctl = attr in family or any(attr in files.get(f, {}).get("setKeys", []) or (files.get(f, {}).get("callsSet") and attr in files.get(f, {}).get("literals", []))
+            ctl = attr in family or (attr in table and table_control) or any(attr in files.get(f, {}).get("setKeys", []) or (files.get(f, {}).get("callsSet") and attr in files.get(f, {}).get("literals", []))
                                        for f in ctl_files)
             canvas = rest_canvas or (blb and any(attr in files.get(f, {}).get("canvasReads", {}) for f in fam_files))
             missing, details = [], {}

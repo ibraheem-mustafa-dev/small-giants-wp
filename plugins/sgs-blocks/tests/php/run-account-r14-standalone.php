@@ -104,9 +104,28 @@ $same = sgs_account_edit_account_markup( $cards, array( 'addressEmptyText' => 'N
 ok( false !== strpos( $same, '<address>Same as delivery address</address>' ) && false !== strpos( $same, '<address>No delivery address saved yet.</address>' ), 'an empty billing card says same as delivery while a delivery address is saved' );
 ok( $cards === sgs_account_edit_account_markup( $cards, array() ), 'without the setting WooCommerce\'s line stays' );
 
+// 3b2) The row list's items summary takes type settings (size and unit shown here).
+$rowcss = sgs_account_orders_look_css( array( 'ordersRowList' => true, 'ordersSummaryFontSize' => array( 'desktop' => 14 ), 'ordersSummaryFontSizeUnit' => 'px' ), '.x' );
+ok( false !== strpos( $rowcss, '.x .sgs-account__orders-list .sgs-account__order .sgs-account__order-summary{font-size:14px' ), 'the order row summary takes its font size setting' );
+
+// 3b3) The order page's address and payment text takes type settings (line height shown here).
+$odcss = sgs_account_order_detail_look_css( array( 'orderDetailTextLineHeight' => array( 'desktop' => 24 ), 'orderDetailTextLineHeightUnit' => 'px' ), '.x' );
+ok( false !== strpos( $odcss, '.x .sgs-account__od-text{line-height:24px' ), 'the order page text takes its line height setting' );
+
+// 3b4) The current tab's line can be an inset edge that composes with the focus ring.
+$line = sgs_account_menu_look_css( array( 'menuActiveIndicatorStyle' => 'line', 'menuActiveIndicatorColour' => '#141414', 'menuActiveIndicatorWidth' => array( 'desktop' => '2px' ) ), '.x' );
+ok( false !== strpos( $line, SGS_Breakpoints::media( 'desktop' ) . '{.x nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a{box-shadow:inset 2px 0 0 0 #141414;--sgs-focus-under:inset 2px 0 0 0 #141414;}' ), 'the sidebar current item draws its line on the left edge and hands it to the focus ring' );
+ok( false !== strpos( $line, SGS_Breakpoints::media( 'tablet' ) . '{.x nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a{background:transparent;box-shadow:inset 0 -2px 0 0 #141414;--sgs-focus-under:inset 0 -2px 0 0 #141414;}' ), 'the tab row current item draws its line on the bottom edge and hands it to the focus ring' );
+ok( false !== strpos( $line, '@media (forced-colors:active){.x nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a{border-inline-start:2px solid CanvasText;}}' ), 'in forced colours the current item keeps a system-colour line' );
+ok( false !== strpos( $line, 'is-active > a::after{content:none;}' ), 'the bar is not drawn in line style' );
+ok( false === strpos( sgs_account_menu_look_css( array( 'menuActiveIndicatorWidth' => array( 'desktop' => '2px' ) ), '.x' ), 'box-shadow:inset' ), 'without the line style no box-shadow line prints' );
+
 // 3c) Motion parts carry the block's own classes.
 $marked = sgs_account_edit_account_markup( '<div class="woocommerce-MyAccount-content"></div><div class="u-columns col2-set" id="customer_login"></div>', array() );
 ok( false !== strpos( $marked, 'woocommerce-MyAccount-content sgs-account__tab-content"' ) && false !== strpos( $marked, 'u-columns col2-set sgs-account__auth-grid" id="customer_login"' ), 'the tab content and the sign-in pair carry classes of the block' );
+
+$lost = sgs_account_edit_account_markup( '<form method="post" class="woocommerce-ResetPassword lost_reset_password"><input type="password" name="password_1" /></form>', array() );
+ok( false !== strpos( $lost, '<form method="post" class="woocommerce-ResetPassword lost_reset_password sgs-account__lost-form">' ), 'the forgotten-password and new-password form carries a class of the block (a motion part)' );
 
 // 4) Saved items: the empty card while the list is empty, else the panel.
 Account_Endpoints::$active = array( 'tabHeadings' => true, 'wishlistEmptyHeading' => 'Nothing saved yet.', 'wishlistEmptyText' => 'Tap the heart.', 'wishlistEmptyButtonLabel' => 'Shop sunglasses' );

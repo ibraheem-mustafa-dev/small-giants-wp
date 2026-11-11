@@ -19,6 +19,7 @@ require_once dirname( __DIR__ ) . '/helpers-border-style.php';
 require_once dirname( __DIR__ ) . '/helpers-colour-variants.php';
 require_once dirname( __DIR__ ) . '/helpers-button-preset.php';
 require_once __DIR__ . '/helpers-account-header.php';
+require_once __DIR__ . '/helpers-account-cells-css.php';
 
 if ( ! function_exists( 'sgs_account_box_shape_css' ) ) {
 	/**
@@ -91,6 +92,21 @@ if ( ! function_exists( 'sgs_account_menu_look_css' ) ) {
 				)
 			);
 		}
+		if ( 'line' === ( $attributes['menuActiveIndicatorStyle'] ?? '' ) ) {
+			$link   = $root_sel . ' nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a';
+			$colour = sgs_colour_value( (string) ( $attributes['menuActiveIndicatorColour'] ?? '' ) );
+			$colour = '' !== $colour ? $colour : 'currentColor';
+			$width  = is_array( $attributes['menuActiveIndicatorWidth'] ?? null ) ? (string) ( $attributes['menuActiveIndicatorWidth']['desktop'] ?? '' ) : '';
+			$width  = '' !== $width ? sgs_account_length_transform( $width ) : '3px';
+			// The focus ring replaces box-shadow, so the line is also handed to it as --sgs-focus-under.
+			$side   = 'inset ' . $width . ' 0 0 0 ' . $colour;
+			$under  = 'inset 0 -' . $width . ' 0 0 ' . $colour;
+			$css[]  = SGS_Breakpoints::media( 'desktop' ) . '{' . $link . '{box-shadow:' . $side . ';--sgs-focus-under:' . $side . ';}}';
+			$css[]  = SGS_Breakpoints::media( 'tablet' ) . '{' . $link . '{background:transparent;box-shadow:' . $under . ';--sgs-focus-under:' . $under . ';}}';
+			// Forced colours drop box-shadow, so the current item keeps a system-colour line there.
+			$css[]  = '@media (forced-colors:active){' . $link . '{border-inline-start:' . $width . ' solid CanvasText;}}';
+			$css[]  = $link . '::after{content:none;}';
+		}
 		$css[] = sgs_typography_css_rule( $attributes, 'menuCount', $root_sel . ' .sgs-account__menu-count', '', false, false, $tiered );
 		$css[] = sgs_text_states_css( $root_sel . ' .sgs-account__menu-count', $attributes, array( 'base' => 'menuCountColour' ) );
 		return implode( '', array_filter( $css ) );
@@ -144,6 +160,7 @@ if ( ! function_exists( 'sgs_account_orders_look_css' ) ) {
 				$css[] = sgs_typography_css_rule( $attributes, $prefix, $row . ' ' . $cell[0], '', false, false, $tiered );
 				$css[] = sgs_text_states_css( $row . ' ' . $cell[0], $attributes, array( 'base' => $cell[1] ) );
 			}
+			$css[] = sgs_typography_css_rule( $attributes, 'ordersSummary', $row . ' ' . ( $row_list ? '.sgs-account__order-summary' : '.woocommerce-orders-table__cell-order-summary' ), '', false, false, $tiered );
 			$pill  = $row . ( $row_list ? ' .sgs-account__order-status' : ' .woocommerce-orders-table__cell-order-status' );
 			$css[] = sgs_typography_css_rule( $attributes, 'ordersPill', $pill, '', false, false, $tiered );
 			$css[] = sgs_fill_states_css( $pill, $attributes, array( 'base' => 'ordersPillBackground' ) );
@@ -453,6 +470,19 @@ if ( ! function_exists( 'sgs_account_login_look_css' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_account_order_detail_look_css' ) ) {
+	/**
+	 * Order page: the type of the address and payment text.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $root_sel   Scoped root selector.
+	 * @return string CSS text (may be '').
+	 */
+	function sgs_account_order_detail_look_css( array $attributes, string $root_sel ): string {
+		return sgs_typography_css_rule( $attributes, 'orderDetailText', $root_sel . ' .sgs-account__od-text', '', false, false, sgs_object_attr_keys( 'sgs/account' ) );
+	}
+}
+
 if ( ! function_exists( 'sgs_account_look_css' ) ) {
 	/**
 	 * All Round 9 look rules for one sgs/account instance.
@@ -464,9 +494,11 @@ if ( ! function_exists( 'sgs_account_look_css' ) ) {
 	function sgs_account_look_css( array $attributes, string $root_sel ): string {
 		return sgs_account_menu_look_css( $attributes, $root_sel )
 			. sgs_account_orders_look_css( $attributes, $root_sel )
+			. sgs_account_order_detail_look_css( $attributes, $root_sel )
 			. sgs_account_address_look_css( $attributes, $root_sel )
 			. sgs_account_details_look_css( $attributes, $root_sel )
 			. sgs_account_login_look_css( $attributes, $root_sel )
-			. sgs_account_header_css( $attributes, $root_sel );
+			. sgs_account_header_css( $attributes, $root_sel )
+			. sgs_account_cells_css( $attributes, $root_sel );
 	}
 }

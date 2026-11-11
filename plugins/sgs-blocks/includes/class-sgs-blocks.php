@@ -170,7 +170,7 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/product-filter-look.php';
 
 		// Cart and Checkout look settings (FR-30-18) -- `woocommerce/cart` and `woocommerce/checkout` only.
-		// One writer for the front end (render_block) and the editor canvas (GET sgs/v1/commerce-look/css).
+		// One writer for the front end (render_block) and the editor canvas (POST sgs/v1/commerce-look/css).
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/commerce-look/writer.php';
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/commerce-look/rest.php';
 		// Checkout wording (client-side gettext filter) and the optional mobile field under Contact.

@@ -190,6 +190,11 @@ function sgs_wc_page_runs_without_classic_scripts(): bool {
 		return false;
 	}
 
+	// The site-wide store notice's dismiss link is driven by `woocommerce` and `js-cookie`.
+	if ( function_exists( 'is_store_notice_showing' ) && is_store_notice_showing() ) {
+		return false;
+	}
+
 	// Nothing rendered from blocks means a classic PHP template printed the page.
 	return sgs_wc_block_rendered() && ! sgs_wc_classic_markup_rendered();
 }
@@ -297,13 +302,35 @@ function sgs_page_needs_wc_frontend(): bool {
 		}
 	}
 
-	foreach ( array( 'woocommerce_cart', 'woocommerce_checkout', 'woocommerce_my_account', 'product_page', 'add_to_cart' ) as $shortcode ) {
+	foreach ( sgs_wc_shortcode_tags() as $shortcode ) {
 		if ( has_shortcode( $post->post_content, $shortcode ) ) {
 			return true;
 		}
 	}
 
 	return false;
+}
+
+/**
+ * Every shortcode WooCommerce has registered on this request (`[products]`, `[product_category]`,
+ * `[woocommerce_cart]` and the rest), read from the shortcode registry rather than a fixed list,
+ * so a shortcode WooCommerce adds later is covered too.
+ *
+ * @return string[]
+ */
+function sgs_wc_shortcode_tags(): array {
+	global $shortcode_tags;
+
+	$tags = array();
+	foreach ( (array) $shortcode_tags as $tag => $callback ) {
+		$owner = is_array( $callback ) ? $callback[0] : $callback;
+		$owner = is_object( $owner ) ? get_class( $owner ) : (string) $owner;
+		if ( 0 === strpos( ltrim( $owner, '\\' ), 'WC_Shortcodes' ) ) {
+			$tags[] = (string) $tag;
+		}
+	}
+
+	return $tags;
 }
 
 /**
@@ -400,8 +427,14 @@ function sgs_configurator_optimise_assets(): void {
 		)
 	);
 
-	if ( $strip_off_wc_pages ) {
+	// Only a block theme has rendered the whole template by now, so only there can the
+	// `woocommerce/*` render flag vouch for header and footer parts.
+	if ( $strip_off_wc_pages && wp_is_block_theme() ) {
 		sgs_dequeue_wc_styles_off_wc_pages();
+	}
+
+	if ( $strip_on_block_shop && ! $has_configurator && ! $strip_off_wc_pages ) {
+		add_action( 'wp_footer', __NAMESPACE__ . '\\sgs_restore_jquery_for_queued_wc_js', 1 );
 	}
 
 	foreach ( $wc_handles as $handle ) {
@@ -418,6 +451,24 @@ function sgs_configurator_optimise_assets(): void {
 }
 
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\\sgs_configurator_optimise_assets', 99 );
+
+/**
+ * Bring jQuery back in the footer when code queued inline WooCommerce JavaScript.
+ *
+ * `wc_enqueue_js()` snippets print as `jQuery( function( $ ) { … } )` after the footer
+ * scripts, with no declared dependency, so `sgs_jquery_still_needed()` cannot see them.
+ * Hooked at `wp_footer` priority 1 on block-built shop and product pages only, before the
+ * footer scripts print at priority 20.
+ *
+ * @return void
+ */
+function sgs_restore_jquery_for_queued_wc_js(): void {
+	global $wc_queued_js;
+
+	if ( ! empty( $wc_queued_js ) ) {
+		wp_enqueue_script( 'jquery' );
+	}
+}
 
 /**
  * Drop `wp-polyfill` as a dependency of front-end scripts.

@@ -1,9 +1,14 @@
 /**
  * Attribute definitions for the Cart and Checkout look extension (commerce-look). No attribute carries a `default`:
  * absent means WooCommerce's and the theme's own look. Generated list; one line per attribute so
- * scripts/generate-extension-attributes.js and check-extension-roster.js read it.
+ * scripts/generate-extension-attributes.js and check-extension-roster.js read it. The row-by-column settings of
+ * includes/woocommerce/commerce-look/selectors.json are in attributes-table.generated.js
+ * (scripts/generate-commerce-look-table.js), spread in first; a name there never repeats one written here.
  */
+import { COMMERCE_LOOK_TABLE_ATTRIBUTES } from './attributes-table.generated';
+
 export const COMMERCE_LOOK_ATTRIBUTES = {
+	...COMMERCE_LOOK_TABLE_ATTRIBUTES,
 	sgsFieldBackground: { type: 'string' },
 	sgsFieldBorderWidth: { type: 'object' },
 	sgsFieldBorderStyle: { type: 'string' },
@@ -296,4 +301,50 @@ export const COMMERCE_LOOK_ATTRIBUTES = {
 	sgsCouponLabelTextTransform: { type: 'string' },
 	sgsCouponLabelColour: { type: 'string' },
 	sgsStripeMatchFields: { type: 'boolean' },
+	sgsDeliveryTitleFontSize: { type: 'number' },
+	sgsDeliveryTitleFontSizeUnit: { type: 'string' },
+	sgsDeliveryTitleFontSizeTablet: { type: 'number' },
+	sgsDeliveryTitleFontSizeMobile: { type: 'number' },
+	sgsDeliveryTitleFontFamily: { type: 'string' },
+	sgsDeliveryTitleFontWeight: { type: 'string' },
+	sgsDeliveryTitleFontStyle: { type: 'string' },
+	sgsDeliveryTitleLineHeight: { type: 'number' },
+	sgsDeliveryTitleLineHeightUnit: { type: 'string' },
+	sgsDeliveryTitleLetterSpacing: { type: 'number' },
+	sgsDeliveryTitleLetterSpacingUnit: { type: 'string' },
+	sgsDeliveryTitleTextTransform: { type: 'string' },
+	sgsDeliveryTitleColour: { type: 'string' },
+	sgsDeliveryDescriptionFontSize: { type: 'number' },
+	sgsDeliveryDescriptionFontSizeUnit: { type: 'string' },
+	sgsDeliveryDescriptionFontSizeTablet: { type: 'number' },
+	sgsDeliveryDescriptionFontSizeMobile: { type: 'number' },
+	sgsDeliveryDescriptionFontFamily: { type: 'string' },
+	sgsDeliveryDescriptionFontWeight: { type: 'string' },
+	sgsDeliveryDescriptionFontStyle: { type: 'string' },
+	sgsDeliveryDescriptionLineHeight: { type: 'number' },
+	sgsDeliveryDescriptionLineHeightUnit: { type: 'string' },
+	sgsDeliveryDescriptionLetterSpacing: { type: 'number' },
+	sgsDeliveryDescriptionLetterSpacingUnit: { type: 'string' },
+	sgsDeliveryDescriptionTextTransform: { type: 'string' },
+	sgsDeliveryDescriptionColour: { type: 'string' },
+	sgsItemBrandFontSize: { type: 'number' },
+	sgsItemBrandFontSizeUnit: { type: 'string' },
+	sgsItemBrandFontSizeTablet: { type: 'number' },
+	sgsItemBrandFontSizeMobile: { type: 'number' },
+	sgsItemBrandFontFamily: { type: 'string' },
+	sgsItemBrandFontWeight: { type: 'string' },
+	sgsItemBrandFontStyle: { type: 'string' },
+	sgsItemBrandLineHeight: { type: 'number' },
+	sgsItemBrandLineHeightUnit: { type: 'string' },
+	sgsItemBrandLetterSpacing: { type: 'number' },
+	sgsItemBrandLetterSpacingUnit: { type: 'string' },
+	sgsItemBrandTextTransform: { type: 'string' },
+	sgsItemBrandColour: { type: 'string' },
+	sgsExpressRuleLine: { type: 'object' },
+	sgsExpressRuleGap: { type: 'object' },
+	sgsDeliveryGap: { type: 'object' },
+	sgsItemTextTop: { type: 'object' },
+	sgsItemTextGap: { type: 'object' },
+	sgsSummaryRowsPadding: { type: 'object' },
+	sgsTotalPadding: { type: 'object' },
 };

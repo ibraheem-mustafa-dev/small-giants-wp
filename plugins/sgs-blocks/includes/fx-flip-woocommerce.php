@@ -20,9 +20,11 @@
  * Runs at `render_block_woocommerce/product-collection` priority 10 — the
  * same priority the motion layer renderer's neighbours use, and, load-bearingly, BEFORE the registry's p99 sniff.
  *
- * Only a collection that inherits the page's query (`query.inherit`, the shop and
- * product-taxonomy archives) can be re-filtered: WooCommerce's product filters act on
- * the main query. A fixed collection (related products, a hand-picked rail) never
+ * Only a collection that WooCommerce's product filters can act on gets it: one that
+ * inherits the page's query (`query.inherit`, the shop and product-taxonomy archives)
+ * or one marked filterable (`query.filterable`, a collection beside Product Filters on
+ * an ordinary page); WooCommerce applies filters to exactly those two
+ * (`ProductCollection\Controller`). A fixed collection (related products, a hand-picked rail) never
  * re-filters, so it gets no attribute, and a page with only those loads no GSAP (about
  * 39 KB of transferred JavaScript on a single product page, measured 2026-11-11).
  *
@@ -39,7 +41,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * @param string $block_content The rendered block HTML.
  * @param array  $block         Parsed block data: only a collection whose
- *                               `query.inherit` is true can be re-filtered.
+ *                               `query.inherit` or `query.filterable` is true
+ *                               can be re-filtered.
  * @return string Block HTML, with the attribute added when eligible.
  */
 function sgs_inject_flip_on_product_collection( string $block_content, array $block ): string {
@@ -60,7 +63,8 @@ function sgs_inject_flip_on_product_collection( string $block_content, array $bl
 		return $block_content;
 	}
 
-	if ( empty( $block['attrs']['query']['inherit'] ) ) {
+	$query = $block['attrs']['query'] ?? array();
+	if ( empty( $query['inherit'] ) && empty( $query['filterable'] ) ) {
 		return $block_content;
 	}
 

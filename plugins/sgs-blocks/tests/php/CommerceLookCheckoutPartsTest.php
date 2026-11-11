@@ -128,4 +128,30 @@ final class CommerceLookCheckoutPartsTest extends TestCase {
 		$this->assertStringNotContainsString( 'padding', $text, 'the box holds an inner label that already carries the option padding' );
 		$this->assertStringContainsString( $box . '--checked-option-highlighted{background-color:var(--wp--preset--color--surface-stage', $css, 'the chosen fill reaches the chosen payment option box' );
 	}
+
+	public function test_the_canvas_css_route_takes_a_post_with_the_edit_posts_check(): void {
+		$root   = $this->root();
+		$script = tempnam( sys_get_temp_dir(), 'sgscr' );
+		file_put_contents(
+			$script,
+			"<?php\ndefine( 'ABSPATH', " . var_export( $root, true ) . " );\ndefine( 'SGS_BLOCKS_PATH', ABSPATH );\n"
+			. "require ABSPATH . 'scripts/qa/lib/wp-stubs.php';\nrequire ABSPATH . 'includes/render-helpers.php';\n"
+			. "class WP_REST_Server { const READABLE = 'GET'; const CREATABLE = 'POST'; }\n"
+			. "function register_rest_route( \$ns, \$route, \$args ) { \$GLOBALS['sgs_route'] = array( \$ns, \$route, \$args ); }\n"
+			. "require ABSPATH . 'includes/woocommerce/commerce-look/rest.php';\n"
+			. "\SGS\Blocks\sgs_commerce_look_register_route();\n"
+			. "\$a = \$GLOBALS['sgs_route'][2];\n"
+			. "echo json_encode( array( 'route' => \$GLOBALS['sgs_route'][0] . \$GLOBALS['sgs_route'][1], 'methods' => \$a['methods'], 'args' => array_keys( \$a['args'] ), 'has_permission' => is_callable( \$a['permission_callback'] ) ) );\n"
+		);
+		try {
+			$out = json_decode( (string) shell_exec( escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( $script ) . ' 2>&1' ), true );
+		} finally {
+			unlink( $script );
+		}
+		$this->assertIsArray( $out, 'the route file loads and registers' );
+		$this->assertSame( 'sgs/v1/commerce-look/css', $out['route'] );
+		$this->assertSame( 'POST', $out['methods'], 'the attributes travel in the request body, so a long attribute set never meets a URL length limit' );
+		$this->assertSame( array( 'block', 'attributes' ), $out['args'] );
+		$this->assertTrue( $out['has_permission'], 'the edit_posts permission callback stays' );
+	}
 }

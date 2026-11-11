@@ -12,7 +12,7 @@ require __DIR__ . '/stubs/motion-render-stubs.php';
 
 $parts    = SGS\Blocks\Motion\Sgs_Motion_Targets::parts( 'sgs/account' );
 $failures = 0;
-foreach ( array( 'headerBlock', 'authGrid', 'tabContent' ) as $part ) {
+foreach ( array( 'headerBlock', 'authGrid', 'lostForm', 'tabContent' ) as $part ) {
 	$ok = isset( $parts[ $part ] );
 	echo ( $ok ? 'PASS ' : 'FAIL ' ) . "$part is a motion target\n";
 	$failures += $ok ? 0 : 1;

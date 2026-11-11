@@ -1,6 +1,6 @@
 <?php
 /**
- * Cart and Checkout look: the summary's row dividers and the two-column layout (sidebar width, gap between columns).
+ * Cart and Checkout look: the summary's row dividers, the padding of its rows block and total row, and the two-column layout (sidebar width, gap between columns).
  *
  * @package SGS\Blocks
  */
@@ -20,7 +20,7 @@ require_once __DIR__ . '/selectors.php';
  * @param array<string, mixed> $attrs Set attributes.
  * @param string               $block 'cart' or 'checkout'.
  * @param string               $root  Scope selector.
- * @return string CSS text; '' when neither divider is set.
+ * @return string CSS text; '' when no divider or padding is set.
  */
 function sgs_commerce_look_summary_css( array $attrs, string $block, string $root ): string {
 	$css = '';
@@ -31,6 +31,16 @@ function sgs_commerce_look_summary_css( array $attrs, string $block, string $roo
 		$selector = sgs_commerce_look_selector( $row, $block, $root );
 		if ( '' !== $selector ) {
 			$css .= sgs_emit_responsive_css( $selector, sgs_tiered_border_specs( $attrs[ $attr ] ?? array(), 'border-top' ) );
+		}
+	}
+	// The padding of the block that holds the subtotal, shipping and tax rows, and of the total row.
+	foreach ( array(
+		'sgsSummaryRowsPadding' => 'summary_rows',
+		'sgsTotalPadding'       => 'total_divider',
+	) as $attr => $row ) {
+		$selector = sgs_commerce_look_selector( $row, $block, $root );
+		if ( '' !== $selector ) {
+			$css .= sgs_emit_responsive_css( $selector, array( array( 'value' => $attrs[ $attr ] ?? null, 'css' => 'padding', 'box' => true, 'unit_default' => 'px' ) ) );
 		}
 	}
 	return $css;

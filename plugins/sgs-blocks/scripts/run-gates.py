@@ -341,6 +341,21 @@ def do_assert_wired() -> int:
           f"{'yes' if not orphan_gen else 'NO — ' + str(orphan_gen)}")
     print(f"  package.json defines gate:full : {'yes' if has_alias else 'NO'}")
 
+    # The fast tier runs from `npm run build` through scripts/build-with-gates.mjs (beside webpack). If `build` went back
+    # to a bare `wp-scripts build`, or that file stopped calling the fast tier, every build would skip 232 gates and
+    # still read green. This check runs in the full tier, which the deploy runs whatever `build` says.
+    runner = _PLUGIN_DIR / "scripts" / "build-with-gates.mjs"
+    runner_text = runner.read_text(encoding="utf-8", errors="replace") if runner.exists() else ""
+    fast_wired = ("build-with-gates.mjs" in pkg.get("build", "")
+                  and re.search(r"'scripts/run-gates\.py',\s*'--tier',\s*'fast'", runner_text) is not None)
+    print(f"  npm run build runs the fast tier (build-with-gates.mjs) : {'yes' if fast_wired else 'NO'}")
+    if not fast_wired:
+        print()
+        print("  FAIL — `npm run build` no longer runs the fast tier through scripts/build-with-gates.mjs.")
+        print("         Every build would skip the fast gates and read green.")
+        print(_RULE)
+        return 1
+
     if orphan_gen:
         print()
         print(f"  FAIL — generator record(s) not in the prebuild chain: {orphan_gen}")

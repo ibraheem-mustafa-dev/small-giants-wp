@@ -136,12 +136,14 @@ TARBALL_NAME = f"sgs-deploy-{RUN_ID}.tgz"
 # The full package sent once when a delta fails its staged check (deploy_ship.step_ship).
 FULL_PACKAGE_NAME = f"sgs-deploy-{RUN_ID}-full.tgz"
 REMOTE_STAGING_DIR = f"sgs-deploy-{RUN_ID}"
-# Ceiling for the payload's total bytes (deploy_ship.step_collect). Measured 2026-11-11 on the shared checkout:
-# 43.7MB (build/ 25.4MB, includes/ 6.6MB, assets/ 4.3MB, the runtime vendor/ packages 4.1MB, the theme 0.9MB), with
-# scripts/, the dev-only vendor packages (composer's own `dev-package-names` list, see TAR_EXCLUDES) and the
-# test/pipeline residue excluded. It exists to catch a stray untracked tree landing inside the plugin or theme folder.
-# Raise it ONLY after measuring, and say what grew.
-TARBALL_MAX_MB = 45
+# Ceiling for the payload's total bytes (deploy_ship.step_collect). It exists to catch a stray untracked tree landing
+# inside the plugin or theme folder (a reference checkout or node_modules adds tens to hundreds of MB). Measured
+# 2026-11-11 at ea4b0ae70 in the isolated worktree: 46.1MB (build/ 29.7MB, includes/ 6.6MB, assets/ 4.2MB, the
+# runtime vendor/ packages 3.7MB, the theme 1.0MB), with scripts/, the dev-only vendor packages (composer's own
+# `dev-package-names` list, see TAR_EXCLUDES) and the test/pipeline residue excluded. Raised from 45 that day because
+# vendor/ now ships as real files (the old tar stored the worktree's link to it, which shipped nothing) and build/
+# grew from about 25MB; 55 keeps a 1.2x margin. Raise it ONLY after measuring, and say what grew.
+TARBALL_MAX_MB = 55
 
 # WP-internal post types whose post_content structurally cannot carry SGS block
 # markup. Everything else on the site — pages, posts, reusable blocks, templates,

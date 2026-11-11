@@ -5,7 +5,9 @@
 //   node scripts/check-page-weight.mjs --selftest
 // Sums the transferred (compressed) bytes of every CSS and JS response from the site's own origin that a cold page
 // load makes, including late loads after a scroll to network idle, and takes the median of --runs loads per page.
-// Third-party files (payment forms, captchas) are reported beside the verdict but never judged.
+// Third-party files (payment forms, captchas) are reported beside the verdict but never judged. "Own" means the
+// origin the page finally loaded from (after redirects) plus any `assetOrigins` the site lists (a CDN host).
+// A page that answers 400 or above is not measured: the run stops with exit code 2.
 // Verdict per page and kind (css, js): a page over budget fails when it exceeds its baseline plus
 // the tolerance (the baseline only ratchets down); a page under budget fails when it goes over budget.
 // Data: scripts/data/page-weight.json. Runs strictly one load at a time.
@@ -88,12 +90,11 @@ function selftest() {
   process.exit(bad ? 1 : 0);
 }
 
-async function measure(chromium, url, width) {
+async function measure(chromium, url, width, assetOrigins = []) {
   const br = await chromium.launch();
   const ctx = await br.newContext({ viewport: { width, height: 900 } });
   try {
     const pg = await ctx.newPage();
-    const origin = new URL(url).origin;
     const responses = [];
     const pending = [];
     pg.on('requestfinished', (req) => {
@@ -105,16 +106,24 @@ async function measure(chromium, url, width) {
         const sizes = await req.sizes().catch(() => null);
         // Transferred = response body as received on the wire (compressed) plus headers, as the browser counts transferSize.
         const bytes = sizes ? sizes.responseBodySize + sizes.responseHeadersSize : 0;
-        responses.push({ kind, bytes, url: req.url(), thirdParty: new URL(req.url()).origin !== origin });
+        responses.push({ kind, bytes, url: req.url(), origin: new URL(req.url()).origin });
       })());
     });
     const bust = url + (url.includes('?') ? '&' : '?') + 'pwcb=' + Date.now();
-    await pg.goto(bust, { waitUntil: 'load', timeout: 90000 });
+    const doc = await pg.goto(bust, { waitUntil: 'load', timeout: 90000 });
+    // An error page, a 404 or a bot challenge is light and would pass (or ratchet a baseline down): refuse it.
+    if (!doc || doc.status() >= 400) throw new Error(`${url} answered ${doc ? doc.status() : 'nothing'}; not measured`);
+    const own = new Set([new URL(pg.url()).origin, ...assetOrigins]);
     await pg.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
-    // Scroll once to the bottom and back so lazily loaded scripts and styles are counted.
-    await pg.evaluate(async () => { window.scrollTo(0, document.body.scrollHeight); await new Promise((r) => setTimeout(r, 800)); window.scrollTo(0, 0); });
+    // Scroll down a viewport at a time, then back, so scripts and styles that load as a section comes into view count.
+    await pg.evaluate(async () => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      for (let y = 0; y < document.documentElement.scrollHeight; y += Math.round(window.innerHeight * 0.8)) { window.scrollTo(0, y); await pause(250); }
+      window.scrollTo(0, document.documentElement.scrollHeight); await pause(800); window.scrollTo(0, 0);
+    });
     await pg.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
     await Promise.all(pending);
+    for (const r of responses) r.thirdParty = !own.has(r.origin);
     return { ...sumWeights(responses), files: responses.map((r) => ({ kind: r.kind, kb: +(r.bytes / KB).toFixed(1), thirdParty: !!r.thirdParty, url: r.thirdParty ? r.url : r.url.replace(/^https?:\/\/[^/]+/, '') })) };
   } finally { await ctx.close(); await br.close(); }
 }
@@ -131,6 +140,7 @@ async function main() {
   const RUNS = Number(opt('runs', 3));
   const WIDTH = Number(opt('width', data.width || 1440));
   const pages = opt('pages') ? String(opt('pages')).split(',') : site.pages;
+  if (UPDATE && (WIDTH !== (data.width || 1440) || RUNS !== 3)) { console.error(`--update-baseline needs the data file's width (${data.width || 1440}) and 3 runs, since baselines are kept for that measurement only`); process.exit(2); }
   const budget = { css: data.budgetKb.css * KB, js: data.budgetKb.js * KB };
   const tol = data.toleranceKb * KB;
   const base = (data.baseline[siteKey] ||= {});
@@ -139,7 +149,7 @@ async function main() {
   console.log(`page weight  ${siteKey}  ${WIDTH}px  median of ${RUNS}  budget CSS ${data.budgetKb.css} KB / JS ${data.budgetKb.js} KB (transferred)`);
   for (const p of pages) {
     const runs = [];
-    for (let i = 0; i < RUNS; i++) runs.push(await measure(chromium, site.url + p, WIDTH));
+    for (let i = 0; i < RUNS; i++) runs.push(await measure(chromium, site.url + p, WIDTH, site.assetOrigins || []));
     const css = median(runs.map((r) => r.css)), js = median(runs.map((r) => r.js));
     const last = runs[runs.length - 1];
     const row = { css, js, cssFiles: last.cssFiles, jsFiles: last.jsFiles, thirdPartyKb: +((median(runs.map((r) => r.thirdPartyCss + r.thirdPartyJs))) / KB).toFixed(1), files: last.files.sort((a, b) => b.kb - a.kb) };

@@ -1,0 +1,622 @@
+diff --git a/plugins/sgs-blocks/scripts/build-deploy.py b/plugins/sgs-blocks/scripts/build-deploy.py
+index 81a162fa6..44cf7e8b7 100644
+--- a/plugins/sgs-blocks/scripts/build-deploy.py
++++ b/plugins/sgs-blocks/scripts/build-deploy.py
+@@ -92,18 +92,26 @@ def step_gate_full(dry_run: bool) -> int:
+     return run([resolve_exe("npm"), "run", "gate:full"], dry_run=False, cwd=PLUGIN_DIR)
+ 
+ 
+-def editor_check_step(args: argparse.Namespace) -> int:
++def editor_check_wanted(args: argparse.Namespace) -> bool:
++    return bool(args.editor_check) and not args.dry_run and not args.built_by_parent
++
++
++def editor_check_step(args: argparse.Namespace, stage_name: str = "editor-check") -> int:
+     """The opt-in editor-crash check (--editor-check); 0 when not requested or clean."""
+-    if not args.editor_check or args.dry_run or args.built_by_parent:
++    if not editor_check_wanted(args):
+         return 0
+-    rc = timed("editor-check", deploy_editor_check.run, REPO_ROOT, args.editor_check, log)
++    rc = timed(stage_name, deploy_editor_check.run, REPO_ROOT, args.editor_check, log)
+     if rc != 0:
+         print(f"[ABORTED] reason: editor-check-failed (exit {rc}). Nothing was uploaded.", flush=True)
+     return rc
+ 
+ 
+ def build_and_gate(args: argparse.Namespace, deploy_blocks: bool) -> int:
+-    """[1/5] the build and the pre-deploy gate:full, once per commit.
++    """[1/5] the build, then the pre-deploy gate:full and the editor check side by side.
++
++    Both start after the build, read build/ only and finish before anything is uploaded, so the editor check
++    (--editor-check) runs in a thread while gate:full runs; the result is the first failure of the two. Measured
++    2026-11-10: gate:full 185s and the editor check 559s one after the other.
+ 
+     A commit that already built and passed gate:full against the same framework DB
+     is restored from deploy_cache instead (isolated runs only), and a multi-site
+@@ -139,6 +147,20 @@ def build_and_gate(args: argparse.Namespace, deploy_blocks: bool) -> int:
+             print(f"[ABORTED] reason: build-failed (exit {rc})", flush=True)
+             return 1
+ 
++    # The editor check runs while gate:full runs (its node output is printed as it comes).
++    import threading
++    editor_rc = [0]
++    editor = None
++    if editor_check_wanted(args):
++        editor = threading.Thread(target=lambda: editor_rc.__setitem__(0, editor_check_step(args, "editor-check (alongside gate-full)")),
++                                  name="editor-check", daemon=True)
++        editor.start()
++
++    def editor_result() -> int:
++        if editor is not None:
++            editor.join()
++        return editor_rc[0]
++
+     # Before tar, so an abort costs nothing; see step_gate_full() for why it is not optional.
+     if args.skip_gate_full:
+         log("[gate:full] SKIPPED (--skip-gate-full) — four gates did NOT run")
+@@ -146,13 +168,18 @@ def build_and_gate(args: argparse.Namespace, deploy_blocks: bool) -> int:
+         began = time.time()
+         rc = timed("gate-full", step_gate_full, args.dry_run)
+         if rc != 0:
++            editor_result()
+             print(f"[ABORTED] reason: gate-full-failed (exit {rc}). Nothing was "
+                   "uploaded.", flush=True)
+             return 1
+         deploy_cache.record_pass(key, REPO_ROOT, BUILD_DIR, time.time() - began)
+     else:
+         record_stage("gate-full (cached)", 0.0)
+-    return 0
++    began = time.time()
++    rc = editor_result()
++    if editor is not None and time.time() - began >= 0.5:
++        record_stage("editor-check (after gate-full)", time.time() - began)
++    return rc
+ 
+ 
+ # ---------------------------------------------------------------------------
+@@ -374,7 +401,7 @@ def main() -> int:
+             err(f"--gate-only exists to record a gate:full pass; it cannot run with {', '.join(refused)}")
+             print("[ABORTED] reason: gate-only-conflicting-flags", flush=True)
+             return 1
+-        rc = build_and_gate(args, deploy_blocks) or editor_check_step(args)
++        rc = build_and_gate(args, deploy_blocks)
+         recorded = deploy_cache.gate_pass(deploy_cache.run_key(REPO_ROOT, no_cache=False, isolated=True))
+         if rc == 0 and not recorded:
+             err("--gate-only finished but no gate:full pass is on record for this commit and framework DB "
+@@ -390,7 +417,7 @@ def main() -> int:
+     if len(target_keys) > 1:
+         log(f"[multi] {len(target_keys)} sites: {', '.join(target_keys)}; one build and "
+             "gate:full, then every site at the same time")
+-        rc = build_and_gate(args, deploy_blocks) or editor_check_step(args)
++        rc = build_and_gate(args, deploy_blocks)
+         if rc != 0:
+             return rc
+         if args.dry_run:
+@@ -430,7 +457,7 @@ def main() -> int:
+         print("[ABORTED] reason: media-guard-refused (saved content still holds old media attributes)", flush=True)
+         return 1
+ 
+-    rc = build_and_gate(args, deploy_blocks) or editor_check_step(args)
++    rc = build_and_gate(args, deploy_blocks)
+     if rc != 0:
+         return rc
+ 
+diff --git a/plugins/sgs-blocks/scripts/deploy_editor_check.py b/plugins/sgs-blocks/scripts/deploy_editor_check.py
+index d8b85c900..19276b179 100644
+--- a/plugins/sgs-blocks/scripts/deploy_editor_check.py
++++ b/plugins/sgs-blocks/scripts/deploy_editor_check.py
+@@ -8,13 +8,24 @@ It overwrites the plugin and theme of the named mirror with this tree's build (s
+ opt-in and takes only a `local-*` mirror, never a live or test site. The mirror is shared with other sessions: tell them
+ before running it.
+ 
++Only what changed is opened. After a clean run, the sha256 of every file the editor loads (editor_manifest) is recorded
++for that mirror in ~/.cache/sgs-deploy/editor-check-<mirror>.json, and the checker records each target's drawn content
++beside it. The next run compares: when every changed file sits inside one block's build folder (build/blocks/<name>/),
++the checker opens only the targets that draw those blocks, plus targets whose content changed (--changed-blocks);
++any other change (extensions, shared bundles, PHP, the theme, a snapshot) or no record opens everything. Editors open
++EDITOR_PARALLEL at a time.
++
+ Self-test:  python plugins/sgs-blocks/scripts/deploy_editor_check.py --self-test
+ """
+ from __future__ import annotations
+ 
++import hashlib
++import json
++import os
+ import re
+ import subprocess
+ import sys
++import time
+ from pathlib import Path
+ from typing import Callable
+ 
+@@ -23,6 +34,56 @@ CHECKER = Path("plugins") / "sgs-blocks" / "scripts" / "editor-crash" / "check-e
+ SYNC = Path("scripts") / "local-wp" / "sync-build.sh"
+ SYNC_TIMEOUT_S = 900
+ CHECK_TIMEOUT_S = 2400
++EDITOR_PARALLEL = 1
++RECORD_DIR = Path.home() / ".cache" / "sgs-deploy"
++# What the editor loads from this tree (what sync-build.sh copies, minus sources, tooling and reports).
++EDITOR_ROOTS = ("plugins/sgs-blocks", "theme/sgs-theme", "scripts/local-wp/mu-plugins")
++EDITOR_SKIP = {"node_modules", "src", "tests", "scripts", "reports", ".claude", ".superpowers", "pipeline-state",
++               "stackable", "_retired", ".phpunit.cache", ".pytest_cache", ".ruff_cache", "__pycache__", ".git"}
++BLOCK_BUILD = re.compile(r"plugins/sgs-blocks/build/blocks/([^/]+)/")
++
++
++def editor_manifest(repo: Path) -> dict[str, str]:
++    """sha256 of every file the editor can load from this tree, plus the client snapshots the mirrors' theme.json come from."""
++    out: dict[str, str] = {}
++    files = list((repo / "sites").glob("*/theme-snapshot*.json"))
++    for rel in EDITOR_ROOTS:
++        base = repo / rel
++        if not base.is_dir():
++            continue
++        for dirpath, dirnames, filenames in os.walk(base, followlinks=True):
++            dirnames[:] = [d for d in dirnames if d not in EDITOR_SKIP]
++            files += [Path(dirpath) / f for f in filenames]
++    for f in files:
++        try:
++            out[f.relative_to(repo).as_posix()] = hashlib.sha256(f.read_bytes()).hexdigest()
++        except OSError:
++            continue
++    return out
++
++
++def changed_blocks(previous: dict[str, str] | None, current: dict[str, str], repo: Path) -> set[str] | None:
++    """The block names whose build folders hold every change, or None when the whole editor must be checked."""
++    if not previous:
++        return None
++    changed = {q for q in set(previous) | set(current) if previous.get(q) != current.get(q)}
++    names: set[str] = set()
++    for path in changed:
++        m = BLOCK_BUILD.match(path)
++        if not m:
++            return None
++        block_json = repo / "plugins/sgs-blocks/build/blocks" / m.group(1) / "block.json"
++        if not block_json.is_file():
++            return None
++        try:
++            names.add(json.loads(block_json.read_text(encoding="utf-8"))["name"])
++        except (OSError, ValueError, KeyError):
++            return None
++    return names
++
++
++def record_path(site: str) -> Path:
++    return RECORD_DIR / f"editor-check-{site}.json"
+ 
+ 
+ def to_wsl(path: Path) -> str:
+@@ -55,14 +116,30 @@ def run(repo: Path, site: str, log: Callable[[str], None]) -> int:
+     if synced.returncode != 0:
+         log(f"[editor-check] sync failed (exit {synced.returncode}): {(synced.stderr or synced.stdout).strip()[-300:]}")
+         return 1
+-    log(f"[editor-check] opening {site}'s pages, posts and templates in the block editor")
++    manifest = editor_manifest(repo)
+     try:
+-        checked = subprocess.run(["node", str(repo / CHECKER), "--site", site], cwd=repo, text=True, encoding="utf-8", errors="replace", timeout=CHECK_TIMEOUT_S)
++        previous = json.loads(record_path(site).read_text(encoding="utf-8")).get("manifest")
++    except (OSError, ValueError):
++        previous = None
++    scope = changed_blocks(previous, manifest, repo)
++    args = ["--parallel", str(EDITOR_PARALLEL), "--state", str(RECORD_DIR / f"editor-check-{site}-content.json")]
++    if scope is None:
++        why = "no clean run on record" if not previous else "files outside one block changed"
++        log(f"[editor-check] opening {site}'s pages, posts and templates in the block editor ({why}: every target)")
++    else:
++        args += ["--changed-blocks", ",".join(sorted(scope)) or "none"]
++        log(f"[editor-check] only {len(scope)} block(s) changed since the last clean run on {site} "
++            f"({', '.join(sorted(scope)[:6]) or 'none'}): opening the targets that draw them and any edited content")
++    RECORD_DIR.mkdir(parents=True, exist_ok=True)
++    try:
++        checked = subprocess.run(["node", str(repo / CHECKER), "--site", site, *args], cwd=repo, text=True, encoding="utf-8", errors="replace", timeout=CHECK_TIMEOUT_S)
+     except subprocess.TimeoutExpired:
+         log(f"[editor-check] UNANSWERED: the editor run on {site} took longer than {CHECK_TIMEOUT_S}s (not a pass)")
+         return 2
+     if checked.returncode == 0:
+         log("[editor-check] every target loaded with no crashed block and no console error")
++        record_path(site).write_text(json.dumps({"when": time.strftime("%Y-%m-%dT%H:%M:%S"), "manifest": manifest}),
++                                     encoding="utf-8")
+     elif checked.returncode == 2:
+         log("[editor-check] UNANSWERED: the mirror could not be measured (not a pass); see the lines above")
+     return checked.returncode
+@@ -78,6 +155,50 @@ def self_test() -> list[str]:
+         failures.append("a non-mirror target was not refused")
+     if to_wsl(Path("C:/a/b")) != "/mnt/c/a/b":
+         failures.append("to_wsl did not convert a drive path")
++    failures += _self_test_scope()
++    return failures
++
++
++def _self_test_scope() -> list[str]:
++    """changed_blocks: block-only changes give their names, anything else gives a full run (planted: a rule that
++    scopes any change under build/, which would skip every target after an extension or shared-bundle change)."""
++    import tempfile
++    failures: list[str] = []
++    with tempfile.TemporaryDirectory(prefix="sgs-editor-scope-") as td:
++        repo = Path(td)
++        for slug in ("card", "hero"):
++            d = repo / "plugins/sgs-blocks/build/blocks" / slug
++            d.mkdir(parents=True)
++            (d / "block.json").write_text(json.dumps({"name": f"sgs/{slug}"}), encoding="utf-8")
++        base = {"plugins/sgs-blocks/build/blocks/card/index.js": "a", "plugins/sgs-blocks/build/blocks/hero/style-index.css": "b",
++                "plugins/sgs-blocks/build/extensions/index.js": "c", "theme/sgs-theme/theme.json": "d"}
++
++        def loose(previous, current, repo_):
++            if not previous:
++                return None
++            changed = {q for q in set(previous) | set(current) if previous.get(q) != current.get(q)}
++            if not all(q.startswith("plugins/sgs-blocks/build/") for q in changed):
++                return None
++            return {f"sgs/{BLOCK_BUILD.match(q).group(1)}" for q in changed if BLOCK_BUILD.match(q)}
++
++        cases = [
++            ("no record runs everything", None, base, None),
++            ("nothing changed opens nothing by block", base, dict(base), set()),
++            ("a change inside one block's build folder scopes to that block", base,
++             {**base, "plugins/sgs-blocks/build/blocks/card/index.js": "z"}, {"sgs/card"}),
++            ("a shared-bundle change runs everything", base, {**base, "plugins/sgs-blocks/build/extensions/index.js": "z"}, None),
++            ("a theme change runs everything", base, {**base, "theme/sgs-theme/theme.json": "z"}, None),
++            ("a removed block folder runs everything", {**base, "plugins/sgs-blocks/build/blocks/gone/index.js": "q"}, base, None),
++        ]
++        planted_caught = False
++        for label, prev, cur, want in cases:
++            got = changed_blocks(prev, cur, repo)
++            if got != want:
++                failures.append(f"changed_blocks: {label}: got {got}, expected {want}")
++            if loose(prev, cur, repo) != want:
++                planted_caught = True
++        if not planted_caught:
++            failures.append("changed_blocks NEGATIVE CONTROL: a rule scoping any build/ change was not caught")
+     return failures
+ 
+ 
+@@ -86,7 +207,7 @@ if __name__ == "__main__":
+         problems = self_test()
+         for line in problems:
+             print("FAIL", line)
+-        print("self-test:", "FAIL" if problems else "ok (mirror names, refusal of a live target, drive-path conversion)")
++        print("self-test:", "FAIL" if problems else "ok (mirror names, refusal of a live target, drive-path conversion, change-scoped runs)")
+         sys.exit(1 if problems else 0)
+     print(__doc__)
+     sys.exit(2)
+diff --git a/plugins/sgs-blocks/scripts/deploy_timing.py b/plugins/sgs-blocks/scripts/deploy_timing.py
+index 3e28eb2c7..b936a08cf 100644
+--- a/plugins/sgs-blocks/scripts/deploy_timing.py
++++ b/plugins/sgs-blocks/scripts/deploy_timing.py
+@@ -26,6 +26,7 @@ from deploy_common import REPO_ROOT, log
+ 
+ HISTORY_ENV = "SGS_DEPLOY_TIMINGS_FILE"
+ OTHER_LABEL = "(other, unaccounted)"
++ALONGSIDE = "(alongside"
+ STAGES: dict[str, float] = {}
+ # Extra facts a stage reports for the history line (upload_mode, upload_bytes); added after the documented keys.
+ NOTES: dict[str, Any] = {}
+@@ -73,7 +74,9 @@ def format_summary(stages: dict[str, float], total_s: float | None = None) -> st
+     the gap is shown as its own row so no time is hidden.
+     """
+     rows = dict(stages)
+-    summed = sum(rows.values())
++    # A stage that ran alongside another (its name says "(alongside ...)") is shown, but the wall clock it shared
++    # is already counted in the other stage, so it stays out of the sum and the shares.
++    summed = sum(v for k, v in rows.items() if ALONGSIDE not in k)
+     total = summed if total_s is None else max(total_s, summed)
+     if total - summed >= 0.5:
+         rows[OTHER_LABEL] = total - summed
+@@ -82,7 +85,7 @@ def format_summary(stages: dict[str, float], total_s: float | None = None) -> st
+     lines = ["[time] ---- stage timings, slowest first ----",
+              f"[time] {'stage':<{width}}  {'seconds':>9}  {'share':>6}"]
+     for name, secs in ordered:
+-        pct = (secs / total * 100.0) if total > 0 else 0.0
++        pct = (secs / total * 100.0) if total > 0 and ALONGSIDE not in name else 0.0
+         lines.append(f"[time] {name:<{width}}  {secs:>9.1f}  {pct:>5.1f}%")
+     lines.append(f"[time] {'TOTAL':<{width}}  {total:>9.1f}  100.0%")
+     return "\n".join(lines)
+diff --git a/plugins/sgs-blocks/scripts/editor-crash/check-editor-loads.mjs b/plugins/sgs-blocks/scripts/editor-crash/check-editor-loads.mjs
+index 2f3e4b49f..3175bd1fb 100644
+--- a/plugins/sgs-blocks/scripts/editor-crash/check-editor-loads.mjs
++++ b/plugins/sgs-blocks/scripts/editor-crash/check-editor-loads.mjs
+@@ -7,6 +7,13 @@
+  *
+  * Usage (repo root; the mirror must already hold the build under test, `scripts/local-wp/sync-build.sh <local-site>`):
+  *   node plugins/sgs-blocks/scripts/editor-crash/check-editor-loads.mjs --site local-indus [--ids 90,149] [--limit N] [--strict-invalid]
++ *     [--parallel N] [--changed-blocks sgs/a,sgs/b|none] [--state <file>]
++ *
++ * --parallel N opens N editor pages at once (default 1: on 2026-11-11 three at once against local-mamas was about 10% faster than serial but the mirror dropped two requests). --changed-blocks limits the run to the
++ * targets that draw one of those blocks (through synced patterns and template parts), plus every target whose drawn
++ * content changed since the last clean run recorded in --state (select-targets.mjs); `none` opens only those. Without
++ * --changed-blocks every target is opened. --state names a JSON file of each target's drawn-content sha256, rewritten
++ * after a clean run that listed every target (not with --ids or --limit).
+  *
+  * What it records for every target (each in its own editor load):
+  *   crashed    elements the editor draws for a block whose edit() threw: "This block has encountered an error ..."
+@@ -28,6 +35,7 @@ import fs from 'fs';
+ import path from 'path';
+ import { chromium } from 'playwright';
+ import { loadSite, makeReporter } from '../motion-qa/probe-editor-canvas-lib.mjs';
++import { drawnContent, selectTargets, sha } from './select-targets.mjs';
+ import { importedNamesByPackage, runtimeOnlyPackages } from '../check-wp-package-exports.mjs';
+ 
+ const args = process.argv.slice( 2 );
+@@ -43,6 +51,11 @@ if ( ! siteKey || ! /^local-[a-z0-9-]+$/.test( siteKey ) ) {
+ const onlyIds = option( 'ids' ) ? option( 'ids' ).split( ',' ).map( ( v ) => v.trim() ).filter( Boolean ) : null;
+ const limit = Number( option( 'limit', '0' ) ); // 0 = every target
+ const strictInvalid = args.includes( '--strict-invalid' );
++const parallel = Math.max( 1, Number( option( 'parallel', '1' ) ) || 1 );
++const changedArg = option( 'changed-blocks' );
++const changedBlocks = changedArg === null ? null : new Set( changedArg === 'none' ? [] : changedArg.split( ',' ).map( ( v ) => v.trim() ).filter( Boolean ) );
++const statePath = option( 'state' );
++let drawnShas = null; // key -> sha of every listed target, written to --state after a clean full listing
+ const reporter = makeReporter();
+ const { verdict, control, note, attempt } = reporter;
+ 
+@@ -114,15 +127,21 @@ function plantCrash() {
+ 
+ const browser = await chromium.launch( { headless: true } );
+ const context = await browser.newContext( { viewport: { width: 1440, height: 900 } } );
+-const page = await context.newPage();
+ const writes = [];
+-let consoleErrors = [];
+-page.on( 'dialog', ( dialog ) => dialog.accept().catch( () => {} ) );
+-page.on( 'pageerror', ( error ) => consoleErrors.push( `pageerror: ${ String( error.message ).slice( 0, 200 ) }` ) );
+-page.on( 'console', ( message ) => {
+-	if ( message.type() === 'error' && ! /Failed to load resource/i.test( message.text() ) ) consoleErrors.push( message.text().slice( 0, 200 ) );
+-} );
+-const guardWrites = () => page.route( '**/*', ( route ) => {
++/** A page whose console and page errors collect in its own list (pages run side by side). */
++async function newWorkerPage() {
++	const worker = await context.newPage();
++	worker.errors = [];
++	worker.on( 'dialog', ( dialog ) => dialog.accept().catch( () => {} ) );
++	worker.on( 'pageerror', ( error ) => worker.errors.push( `pageerror: ${ String( error.message ).slice( 0, 200 ) }` ) );
++	worker.on( 'console', ( message ) => {
++		if ( message.type() === 'error' && ! /Failed to load resource/i.test( message.text() ) ) worker.errors.push( message.text().slice( 0, 200 ) );
++	} );
++	return worker;
++}
++const page = await newWorkerPage();
++// The guard sits on the context, so every page opened later is guarded too.
++const guardWrites = () => context.route( '**/*', ( route ) => {
+ 	const request = route.request();
+ 	if ( [ 'GET', 'HEAD', 'OPTIONS' ].includes( request.method() ) || /\/wp\/v2\/block-renderer\//.test( request.url() ) ) return route.continue();
+ 	writes.push( `${ request.method() } ${ request.url() }` );
+@@ -132,7 +151,9 @@ const guardWrites = () => page.route( '**/*', ( route ) => {
+ const finish = async () => {
+ 	verdict( ! writes.some( isContentWrite ), 'no-content-write', { aborted: writes.length, content: writes.filter( isContentWrite ).slice( 0, 3 ) } );
+ 	await browser.close();
+-	process.exit( reporter.exitCode() );
++	const code = reporter.exitCode();
++	if ( code === 0 && statePath && drawnShas ) fs.writeFileSync( statePath, JSON.stringify( drawnShas, null, 1 ) + '\n' );
++	process.exit( code );
+ };
+ 
+ /** The mirror's login. loadSite() expects WP_URL_LOCAL_INDUS; the mirror files name the key WP_URL_LOCALINDUS. */
+@@ -186,8 +207,8 @@ const targets = await attempt( 'list-targets', async () => {
+ 			}
+ 			return all;
+ 		};
+-		const [ pages, posts, templates, parts ] = await Promise.all( [ get( 'wp/v2/pages?status=any' ), get( 'wp/v2/posts?status=any' ), get( 'wp/v2/templates' ), get( 'wp/v2/template-parts' ) ] );
+-		return { pages, posts, templates, parts };
++		const [ pages, posts, templates, parts, synced ] = await Promise.all( [ get( 'wp/v2/pages?status=any' ), get( 'wp/v2/posts?status=any' ), get( 'wp/v2/templates' ), get( 'wp/v2/template-parts' ), get( 'wp/v2/blocks?status=any' ) ] );
++		return { pages, posts, templates, parts, synced };
+ 	} );
+ 	// A target whose saved content holds no block (an emptied calibration page) has nothing for the editor to validate: it is
+ 	// listed as a note, never opened, so it can neither hang the run nor read as clean.
+@@ -197,24 +218,39 @@ const targets = await attempt( 'list-targets', async () => {
+ 		empty.length && note( `no-blocks-to-validate ${ kind }`, { ids: empty.map( ( t ) => t.id ) } );
+ 		found[ kind ] = found[ kind ].filter( hasBlocks );
+ 	}
++	const patterns = new Map( found.synced.map( ( b ) => [ String( b.id ), b.content?.raw ?? '' ] ) );
++	const partsBySlug = new Map( found.parts.map( ( t ) => [ t.slug, t.content?.raw ?? '' ] ) );
++	const drawn = ( t ) => drawnContent( t.content?.raw ?? '', patterns, partsBySlug );
+ 	const list = [
+-		...found.pages.map( ( p ) => ( { label: `page ${ p.id } ${ p.slug }`, id: String( p.id ), url: `/wp-admin/post.php?post=${ p.id }&action=edit` } ) ),
+-		...found.posts.map( ( p ) => ( { label: `post ${ p.id } ${ p.slug }`, id: String( p.id ), url: `/wp-admin/post.php?post=${ p.id }&action=edit` } ) ),
+-		...found.templates.map( ( t ) => ( { label: `template ${ t.id }`, id: t.id, url: `/wp-admin/site-editor.php?postType=wp_template&postId=${ encodeURIComponent( t.id ) }&canvas=edit` } ) ),
+-		...found.parts.map( ( t ) => ( { label: `part ${ t.id }`, id: t.id, url: `/wp-admin/site-editor.php?postType=wp_template_part&postId=${ encodeURIComponent( t.id ) }&canvas=edit` } ) ),
++		...found.pages.map( ( p ) => ( { key: `page:${ p.id }`, label: `page ${ p.id } ${ p.slug }`, id: String( p.id ), url: `/wp-admin/post.php?post=${ p.id }&action=edit`, drawn: drawn( p ) } ) ),
++		...found.posts.map( ( p ) => ( { key: `post:${ p.id }`, label: `post ${ p.id } ${ p.slug }`, id: String( p.id ), url: `/wp-admin/post.php?post=${ p.id }&action=edit`, drawn: drawn( p ) } ) ),
++		...found.templates.map( ( t ) => ( { key: `template:${ t.id }`, label: `template ${ t.id }`, id: t.id, url: `/wp-admin/site-editor.php?postType=wp_template&postId=${ encodeURIComponent( t.id ) }&canvas=edit`, drawn: drawn( t ) } ) ),
++		...found.parts.map( ( t ) => ( { key: `part:${ t.id }`, label: `part ${ t.id }`, id: t.id, url: `/wp-admin/site-editor.php?postType=wp_template_part&postId=${ encodeURIComponent( t.id ) }&canvas=edit`, drawn: drawn( t ) } ) ),
+ 	];
+ 	const wanted = onlyIds ? list.filter( ( t ) => onlyIds.includes( t.id ) ) : list;
+ 	const chosen = limit > 0 ? wanted.slice( 0, limit ) : wanted;
+ 	if ( ! chosen.length ) throw new Error( 'no pages, posts, templates or template parts to open' );
+ 	if ( chosen.length < wanted.length ) note( 'truncated-by-limit', { opened: chosen.length, available: wanted.length } );
+-	return chosen;
++	if ( ! onlyIds && ! ( limit > 0 ) ) drawnShas = Object.fromEntries( list.map( ( t ) => [ t.key, sha( t.drawn ) ] ) );
++	if ( changedBlocks === null ) return chosen;
++	let previous = null;
++	try {
++		previous = statePath && fs.existsSync( statePath ) ? JSON.parse( fs.readFileSync( statePath, 'utf8' ) ) : null;
++	} catch ( error ) {
++		note( 'state-unreadable', { statePath, error: String( error.message ).slice( 0, 120 ) } );
++	}
++	const { selected, why } = selectTargets( chosen, changedBlocks, previous );
++	note( 'scoped-to-changed-blocks', { blocks: [ ...changedBlocks ].slice( 0, 12 ), opened: selected.length, of: chosen.length,
++		why: Object.fromEntries( selected.slice( 0, 12 ).map( ( t ) => [ t.key, why[ t.key ] ] ) ) } );
++	// The negative control and the import-name check need one open editor, so a run that selects nothing opens the first.
++	return selected.length ? selected : [ { ...chosen[ 0 ], controlOnly: true } ];
+ } );
+ if ( ! targets ) await finish();
+ note( 'targets', { count: targets.length } );
+ 
+-/** Opens one target and waits for its blocks to load and stop changing. Returns the editor state. */
+-async function openTarget( target ) {
+-	consoleErrors = [];
++/** Opens one target in `page` and waits for its blocks to load and stop changing. Returns the editor state. */
++async function openTarget( page, target ) {
++	page.errors = [];
+ 	await page.goto( `${ site.url }${ target.url }`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
+ 	await page.waitForSelector( 'iframe[name="editor-canvas"]', { timeout: 60000 } );
+ 	const deadline = Date.now() + 60000;
+@@ -236,10 +272,12 @@ async function openTarget( target ) {
+ 
+ let controlDone = false;
+ let namesChecked = false;
+-for ( const target of targets ) {
+-	const state = await attempt( `open ${ target.label }`, () => openTarget( target ) );
+-	if ( ! state ) continue;
+-	const errors = [ ...new Set( consoleErrors ) ];
++
++/** Open one target in `page` and record its verdicts; the first call also runs the name check and the negative control. */
++async function checkTarget( page, target ) {
++	const state = await attempt( `open ${ target.label }`, () => openTarget( page, target ) );
++	if ( ! state ) return;
++	const errors = [ ...new Set( page.errors ) ];
+ 	verdict( state.crashed.length === 0, `no-crash ${ target.label }`, { blocks: state.blocks, crashed: [ ...new Set( state.crashed ) ] } );
+ 	verdict( errors.length === 0, `no-console-error ${ target.label }`, { errors: errors.slice( 0, 3 ) } );
+ 	if ( state.invalid.length ) {
+@@ -267,4 +305,14 @@ for ( const target of targets ) {
+ 		} );
+ 	}
+ }
++
++// The first target runs alone (it carries the name check and the planted crash); the rest share `parallel` pages.
++await checkTarget( page, targets[ 0 ] );
++const queue = targets.slice( 1 );
++const workers = [ page ];
++for ( let i = 1; i < Math.min( parallel, queue.length ); i++ ) workers.push( await newWorkerPage() );
++note( 'pages-at-once', { parallel: workers.length } );
++await Promise.all( workers.map( async ( worker ) => {
++	while ( queue.length ) await checkTarget( worker, queue.shift() );
++} ) );
+ await finish();
+diff --git a/plugins/sgs-blocks/scripts/editor-crash/select-targets.mjs b/plugins/sgs-blocks/scripts/editor-crash/select-targets.mjs
+new file mode 100644
+index 000000000..7e8f9155a
+--- /dev/null
++++ b/plugins/sgs-blocks/scripts/editor-crash/select-targets.mjs
+@@ -0,0 +1,132 @@
++#!/usr/bin/env node
++/**
++ * select-targets.mjs: which editor targets a check must open when only some blocks changed.
++ *
++ * check-editor-loads.mjs opens every page, post, template and template part of a mirror (46 on local-eye-care, about
++ * 12 s each). When the deploy knows the build changed only inside `build/blocks/<name>/` (deploy_editor_check.py), the
++ * targets that can show a new crash are the ones whose content holds one of those blocks, read through what the editor
++ * draws with them: synced patterns (`wp:block {"ref":N}`) and, for a template, its template parts
++ * (`wp:template-part {"slug":"header"}`). A target whose drawn content changed since the last clean run on this mirror
++ * is opened too, whatever its blocks.
++ *
++ * Self-test: node plugins/sgs-blocks/scripts/editor-crash/select-targets.mjs --self-test
++ *
++ * @package SGS\Blocks
++ */
++import crypto from 'crypto';
++import { fileURLToPath } from 'url';
++
++const BLOCK_COMMENT = /<!--\s+wp:([a-z][a-z0-9-]*(?:\/[a-z][a-z0-9-]*)?)(?=[\s/]|-->)/g;
++const SYNCED_REF = /<!--\s+wp:block\s+(\{[^}]*\})/g;
++const PART_REF = /<!--\s+wp:template-part\s+(\{[^}]*\})/g;
++
++/** Every block name in `content`, core names written `core/<name>`. */
++export function blockNamesIn( content ) {
++	const names = new Set();
++	for ( const match of ( content || '' ).matchAll( BLOCK_COMMENT ) ) {
++		names.add( match[ 1 ].includes( '/' ) ? match[ 1 ] : `core/${ match[ 1 ] }` );
++	}
++	return names;
++}
++
++function refs( content, pattern, key ) {
++	const out = [];
++	for ( const match of ( content || '' ).matchAll( pattern ) ) {
++		try {
++			const value = JSON.parse( match[ 1 ] )[ key ];
++			if ( value !== undefined ) out.push( String( value ) );
++		} catch ( error ) {
++			// An attribute object this reader cannot parse: the raw content still counts.
++		}
++	}
++	return out;
++}
++
++/** The content the editor draws for a target: its own, plus synced patterns and template parts, followed to depth 5. */
++export function drawnContent( content, patterns, parts, depth = 0 ) {
++	if ( depth > 5 ) return content || '';
++	let out = content || '';
++	for ( const id of refs( content, SYNCED_REF, 'ref' ) ) {
++		if ( patterns.has( id ) ) out += '\n' + drawnContent( patterns.get( id ), patterns, parts, depth + 1 );
++	}
++	for ( const slug of refs( content, PART_REF, 'slug' ) ) {
++		if ( parts.has( slug ) ) out += '\n' + drawnContent( parts.get( slug ), patterns, parts, depth + 1 );
++	}
++	return out;
++}
++
++export const sha = ( text ) => crypto.createHash( 'sha256' ).update( text || '' ).digest( 'hex' );
++
++/**
++ * targets: [{ key, drawn }]; changed: a Set of block names, or null for "everything may have changed";
++ * previous: { key: sha } from the last clean run on this mirror, or null. Returns { selected, why }.
++ */
++export function selectTargets( targets, changed, previous ) {
++	if ( changed === null ) return { selected: targets, why: Object.fromEntries( targets.map( ( t ) => [ t.key, 'full run' ] ) ) };
++	const selected = [];
++	const why = {};
++	for ( const target of targets ) {
++		const hits = [ ...blockNamesIn( target.drawn ) ].filter( ( name ) => changed.has( name ) );
++		if ( hits.length ) {
++			why[ target.key ] = `holds ${ hits.slice( 0, 3 ).join( ', ' ) }`;
++		} else if ( ! previous || previous[ target.key ] !== sha( target.drawn ) ) {
++			why[ target.key ] = previous && target.key in previous ? 'content changed since the last clean run' : 'not checked before';
++		} else {
++			continue;
++		}
++		selected.push( target );
++	}
++	return { selected, why };
++}
++
++function selfTest() {
++	const patterns = new Map( [ [ '7', '<!-- wp:sgs/hero {"a":1} /-->' ] ] );
++	const parts = new Map( [ [ 'header', '<!-- wp:sgs/nav-bar --><!-- /wp:sgs/nav-bar -->' ] ] );
++	const raw = {
++		'page:1': '<!-- wp:sgs/card /--><!-- wp:paragraph --><p>x</p><!-- /wp:paragraph -->',
++		'page:2': '<!-- wp:block {"ref":7} /-->',
++		'template:index': '<!-- wp:template-part {"slug":"header","theme":"sgs-theme"} /--><!-- wp:sgs/cardx /-->',
++		'part:header': parts.get( 'header' ),
++		'page:3': '<!-- wp:sgs/quote /-->',
++	};
++	const targets = ( draw ) => Object.entries( raw ).map( ( [ key, content ] ) => ( { key, drawn: draw( content ) } ) );
++	const real = ( c ) => drawnContent( c, patterns, parts );
++	const rawOnly = ( c ) => c; // planted fault: patterns and parts not followed
++	const previous = Object.fromEntries( targets( real ).map( ( t ) => [ t.key, sha( t.drawn ) ] ) );
++	const keys = ( result ) => result.selected.map( ( t ) => t.key ).sort();
++	const cases = [
++		[ 'a changed block selects the targets that draw it, through synced patterns and template parts',
++			( draw ) => keys( selectTargets( targets( draw ), new Set( [ 'sgs/hero', 'sgs/nav-bar' ] ), previous ) ),
++			[ 'page:2', 'part:header', 'template:index' ] ],
++		[ 'a name is matched whole (sgs/card does not select sgs/cardx)',
++			( draw ) => keys( selectTargets( targets( draw ), new Set( [ 'sgs/card' ] ), previous ) ), [ 'page:1' ] ],
++		[ 'nothing changed and nothing edited selects nothing',
++			( draw ) => keys( selectTargets( targets( draw ), new Set(), previous ) ), [] ],
++		[ 'a target whose content changed is opened',
++			( draw ) => keys( selectTargets( targets( draw ), new Set(), { ...previous, 'page:3': 'old' } ) ), [ 'page:3' ] ],
++		[ 'with no record every target is new',
++			( draw ) => keys( selectTargets( targets( draw ), new Set(), null ) ).length, 5 ],
++		[ 'a full run selects every target', ( draw ) => keys( selectTargets( targets( draw ), null, previous ) ).length, 5 ],
++	];
++	let failed = 0;
++	let plantedCaught = false;
++	for ( const [ label, run, want ] of cases ) {
++		const got = JSON.stringify( run( real ) );
++		const ok = got === JSON.stringify( want );
++		if ( JSON.stringify( run( rawOnly ) ) !== JSON.stringify( want ) ) plantedCaught = true;
++		console.log( `${ ok ? 'ok  ' : 'FAIL' } ${ label }${ ok ? '' : `: got ${ got }` }` );
++		if ( ! ok ) failed++;
++	}
++	console.log( `${ plantedCaught ? 'ok  ' : 'FAIL' } NEGATIVE CONTROL: a selector that reads raw content only misses a block drawn through a pattern or part` );
++	if ( ! plantedCaught ) failed++;
++	if ( blockNamesIn( '<!-- wp:paragraph --><!-- wp:sgs/a-b {"x":1} /--><!-- wp:core/image -->' ).size !== 3 ) {
++		console.log( 'FAIL blockNamesIn did not read core and namespaced names' );
++		failed++;
++	}
++	console.log( `select-targets self-test: ${ failed ? 'FAIL' : 'ok' }` );
++	return failed ? 1 : 0;
++}
++
++if ( process.argv[ 1 ] && fileURLToPath( import.meta.url ) === process.argv[ 1 ] && process.argv.includes( '--self-test' ) ) {
++	process.exit( selfTest() );
++}

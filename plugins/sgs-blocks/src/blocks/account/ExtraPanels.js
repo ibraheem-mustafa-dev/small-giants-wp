@@ -155,6 +155,8 @@ export function AddressesPanel( { attributes, setAttributes } ) {
 					<TextField { ...p } name="addressAddLabel" label={ __( 'Add link (card with no address)', 'sgs-blocks' ) } help={ __( 'Empty = “Add” plus the card title.', 'sgs-blocks' ) } />
 					<TextField { ...p } name="addressSaveLabel" label={ __( 'Save button', 'sgs-blocks' ) } />
 					<TextField { ...p } name="addressCancelLabel" label={ __( 'Cancel link', 'sgs-blocks' ) } />
+					<TextField { ...p } name="addressLine1Label" label={ __( 'First address line label', 'sgs-blocks' ) } help={ __( 'For example “Address”. Empty = WooCommerce’s own label.', 'sgs-blocks' ) } />
+					<TextField { ...p } name="addressCityLabel" label={ __( 'Town field label', 'sgs-blocks' ) } help={ __( 'For example “Town or city”. Empty = WooCommerce’s own label.', 'sgs-blocks' ) } />
 					<TextField { ...p } name="addressLine2Label" label={ __( 'Second address line label', 'sgs-blocks' ) } help={ __( 'For example “Flat / building”. Empty = WooCommerce’s own label.', 'sgs-blocks' ) } />
 					<TextField { ...p } name="addressPairs" label={ __( 'Fields side by side', 'sgs-blocks' ) } help={ __( 'Comma-separated, for example “city, postcode”. First and last name already sit together.', 'sgs-blocks' ) } />
 					<TextField { ...p } name="addressHideFields" label={ __( 'Fields to leave out', 'sgs-blocks' ) } help={ __( 'Comma-separated, for example “company, state”. A left-out field keeps its saved value (the billing email falls back to the account email), so a required one still passes WooCommerce’s check.', 'sgs-blocks' ) } />
