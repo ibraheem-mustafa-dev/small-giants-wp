@@ -264,6 +264,18 @@ BASE_FAMILY = {
     "LinkOpensNewTab": ("keep", "LinkOpensNewTab"), "LinkRel": ("keep", "LinkRel"), "LinkUrlSource": ("keep", "LinkUrlSource"),
 }
 
+# The attributes a "fold" EXTRA row writes (its row target is a note, not a name): known to the unmapped-attribute check.
+FOLD_TARGETS = {"sgs/before-after": ("beforePlayback", "afterPlayback")}
+
+# Old values the old render clamped before drawing: (block, old name) -> (lowest, highest). The migration writes what was drawn.
+CLAMPS = {("sgs/trust-bar", "badgeImageSize"): (24, 160)}
+# The old default of a clamped number: the new block's own default is the same, so the saved value is dropped.
+CLAMP_DEFAULTS = {("sgs/trust-bar", "badgeImageSize"): 60}
+
+# Blocks whose old Shape string drew only the values listed (the new Shape each becomes); any other value painted nothing.
+# option-picker's colour dot has a 3px stylesheet radius, so "square" (radius 0) is an explicit none, never a deleted default.
+OLD_SHAPE_DRAWN = {"sgs/option-picker": {"round": "circle", "square": "none"}}
+
 # Old attributes outside the prefix grammar: (block, old name) -> (family, full new attribute name or note).
 EXTRA = {
     ("sgs/media", "displayWidth"): ("delete", "deleted (§13): sizes are derived"),
@@ -371,9 +383,9 @@ EXTRA = {
     ("sgs/nav-drawer", "chromeLogoAlt"): ("alt", "chromeLogoAlt"),
     ("sgs/nav-drawer", "chromeLogoInlineSvg"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
     ("sgs/nav-drawer", "backgroundImageDecorative"): ("alt", "backgroundDecorative"),
-    ("sgs/before-after", "videoAutoplay"): ("report", "folds into Playback per side: needs each side's video kind"),
-    ("sgs/before-after", "videoAutoplayTablet"): ("report", "folds into Playback per side: needs each side's video kind"),
-    ("sgs/before-after", "videoAutoplayMobile"): ("report", "folds into Playback per side: needs each side's video kind"),
+    ("sgs/before-after", "videoAutoplay"): ("fold", "beforePlayback and afterPlayback autoplay: written for each side whose Source is a video"),
+    ("sgs/before-after", "videoAutoplayTablet"): ("fold", "beforePlayback and afterPlayback autoplay: written for each side whose Source is a video"),
+    ("sgs/before-after", "videoAutoplayMobile"): ("fold", "beforePlayback and afterPlayback autoplay: written for each side whose Source is a video"),
     ("sgs/choice-flow", "headerLogo"): ("source", "headerLogoSource"),
     ("sgs/buybox", "mainPhotoRadius"): ("radius", "mainRadius"),
     ("sgs/buybox", "galleryThumbBorderRadius"): ("radius", "thumbRadius"),
@@ -448,6 +460,7 @@ _STAYS_GROUPS = (
     ("sgs/google-reviews", "remote avatar and card logo on an exempt block (Appendix A)",
      ("logoPosition", "avatarSize", "avatarBorderRadius", "showCardLogo", "cardLogoSize", "avatarTextAlign", "avatarTextColour")),
     ("sgs/hero", "content order is layout, not media", ("splitContentOrder",)),
+    ("sgs/option-picker", "the colour dot's own length: it draws a colour chip, not a picture, so it is no Width or Fit (W3c)", ("swatchSize",)),
     ("sgs/option-picker", "swatch selected-state ring and tick are picker UI, not media",
      ("swatchRingWidth", "swatchRingColour", "swatchTickInside", "swatchTickColour")),
     ("sgs/decorative-image", "a floating layer's position, rotation, order and visibility describe the layer, not its media (Appendix A)",
@@ -506,7 +519,7 @@ TYPOGRAPHY = re.compile(r"Typography|FontFamily|FontSize|FontStyle|FontWeight|Le
 
 def known_names(block: str) -> set[str]:
     """Every old name or new target a mapping row, a STAYS entry or a wildcard row gives this block."""
-    out = set(STAYS.get(block, ()))
+    out = set(STAYS.get(block, ())) | set(FOLD_TARGETS.get(block, ()))
     for row in rows():
         if row["block"] in (block, "*"):
             out |= {row["old"], row["target"]}

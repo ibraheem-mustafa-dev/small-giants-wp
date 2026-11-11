@@ -285,13 +285,18 @@ def migrate_playback(slot: Slot) -> None:
 
 # ---------------------------------------------------------------- fit, focal, sizing, shape, opacity
 
+def _size_kept(ctx: Ctx, name: str) -> bool:
+    """An old `Size` attribute that is not a fit: a STAYS entry (the option-picker dot's length) or an EXTRA row (trust-bar's badge size)."""
+    return name in M.STAYS.get(ctx.block, ()) or (ctx.block, name) in M.EXTRA
+
+
 def migrate_fit(slot: Slot) -> None:
     ctx = slot.ctx
     fit: dict = {}
     for tier in TIERS:
         for base in ("ObjectFit", "Size"):
             name = slot.present(base, tier)
-            if not name:
+            if not name or (base == "Size" and _size_kept(ctx, name)):
                 continue
             raw = ctx.get(name)
             if raw in FIT_OK or (base == "Size" and raw in ("cover", "contain")):
@@ -303,7 +308,10 @@ def migrate_fit(slot: Slot) -> None:
     if fit:
         ctx.put(slot.target("Fit"), fit)
     for base in ("ObjectFit", "Size"):
-        slot.retire(base, "converted", slot.target("Fit"))
+        for tier in TIERS:
+            for name in slot.old_names(base, tier):
+                if not (base == "Size" and _size_kept(ctx, name)):
+                    ctx.drop(name, "converted", slot.target("Fit"))
 
 
 def _focal(slot: Slot, base: str, target: str) -> None:
@@ -520,6 +528,14 @@ def migrate_shape(slot: Slot) -> None:
     if isinstance(raw, dict):
         return
     radius_target, shape_target = slot.target("Radius"), slot.target("Shape")
+    drawn = M.OLD_SHAPE_DRAWN.get(ctx.block)
+    if drawn is not None and isinstance(raw, str):
+        if raw in drawn:
+            ctx.drop(name, "converted", shape_target, f"{raw!r} drew a {drawn[raw]} dot")
+            ctx.put(shape_target, {"desktop": {"shape": drawn[raw]}})
+        else:
+            ctx.drop(name, "deleted", "", f"the old render drew nothing for shape {raw!r}")
+        return
     if raw in (None, "", "none", "square"):
         ctx.drop(name, "deleted", "", f"shape {raw!r} draws nothing")
     elif raw == "rounded":

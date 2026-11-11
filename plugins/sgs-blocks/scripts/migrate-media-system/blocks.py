@@ -235,6 +235,16 @@ def migrate_extras(ctx: T.Ctx) -> None:
         if b != block or not ctx.has(old):
             continue
         value = ctx.get(old)
+        if (b, old) in M.CLAMPS:
+            number = V.to_number(value)
+            if number is None:
+                ctx.keep(old, "refused", f"{value!r} is not a number")
+                continue
+            low, high = M.CLAMPS[(b, old)]
+            value = max(low, min(high, int(abs(number))))
+            if value == M.CLAMP_DEFAULTS.get((b, old)):
+                ctx.drop(old, "deleted", "", f"{value} is the old default and the new block's own default")
+                continue
         if family == "delete":
             ctx.drop(old, "deleted", "", target)
         elif family == "rename":
@@ -268,7 +278,40 @@ def migrate_extras(ctx: T.Ctx) -> None:
                 _move(ctx, old, target, value)
         elif family == "source":
             pass  # handled by migrate_object_sources
+        elif family == "fold":
+            pass  # handled by migrate_before_after_playback
     migrate_object_sources(ctx)
+    migrate_before_after_playback(ctx)
+
+
+def migrate_before_after_playback(ctx: T.Ctx) -> None:
+    """`videoAutoplay` drove the autoplay of any video side of sgs/before-after (the old front end read it for both sides). Each side
+    whose migrated Source holds a video gets `{side}Playback` with autoplay, merged into a Playback the side already has. The
+    Tablet and Mobile values are dropped: Playback is not per device. With no video side the old values painted nothing."""
+    if ctx.block != "sgs/before-after":
+        return
+    names = [n for n in ("videoAutoplay", "videoAutoplayTablet", "videoAutoplayMobile") if ctx.has(n)]
+    if not names:
+        return
+    desktop = ctx.get("videoAutoplay")
+    sides = []
+    for side in ("before", "after"):
+        source = ctx.get(f"{side}Source")
+        if isinstance(source, dict) and any(isinstance(e, dict) and e.get("kind") == "video" for e in source.values()):
+            sides.append(side)
+    for side in sides:
+        playback = dict(ctx.get(f"{side}Playback")) if isinstance(ctx.get(f"{side}Playback"), dict) else {}
+        if isinstance(desktop, bool):
+            playback["autoplay"] = desktop
+        if playback:
+            ctx.put(f"{side}Playback", playback)
+    for name in names:
+        if not sides:
+            ctx.drop(name, "deleted", "", "inert: neither side shows a video")
+        elif name == "videoAutoplay":
+            ctx.drop(name, "converted", ", ".join(f"{s}Playback" for s in sides))
+        else:
+            ctx.drop(name, "deleted", "", "Playback is not per device: the desktop value is written")
 
 
 def _move(ctx: T.Ctx, old: str, target: str, value: Any) -> None:
@@ -356,6 +399,14 @@ def _plain_shape(ctx: T.Ctx, old: str, target: str, value: Any) -> None:
         return
     prefix = target[: -len("Shape")]
     radius, shape = M.attr_name(prefix, "Radius"), M.attr_name(prefix, "Shape")
+    drawn = M.OLD_SHAPE_DRAWN.get(ctx.block)
+    if drawn is not None:
+        if value in drawn:
+            ctx.drop(old, "converted", shape, f"{value!r} drew a {drawn[value]} dot")
+            ctx.put(shape, {"desktop": {"shape": drawn[value]}})
+        else:
+            ctx.drop(old, "deleted", "", f"the old render drew nothing for shape {value!r}")
+        return
     if value in ("", "none", "square"):
         if M.old_default(ctx.block, old) not in (None, "", "none", "square"):
             ctx.drop(old, "converted", shape, f"{value!r} written as an explicit none: the old default {M.old_default(ctx.block, old)!r} must not return")
@@ -696,6 +747,7 @@ def fill_sizes(ctx: T.Ctx, original: dict):
     if failed:
         return copy.deepcopy(original), [("refused", name, "", note) for name, note in failed]
     pin_naked_ratio_width(ctx)
+    pin_hero_split_width(ctx)
     return ctx.attrs, ctx.events
 
 
@@ -708,6 +760,28 @@ def pin_naked_ratio_width(ctx: T.Ctx) -> None:
     if width:
         ctx.put("width", {"desktop": f"{width}px"})
         ctx.events.append(("pinned", "mediaSizing", "width", f"old image with a ratio and no width was drawn at its file's own width: {width}px written explicitly"))
+
+
+def pin_hero_split_width(ctx: T.Ctx) -> None:
+    """The old hero drew its split image at the file's own width (the image forced that width onto the grid column); the new
+    default, no Width, fills the grid cell. A hero whose old split image is migrated here and has no Width of its own gets
+    `splitWidth` as each device's own file width in px, so the page does not change. A hero already in the new shape (no old
+    split name converted) is never pinned."""
+    if ctx.block != "sgs/hero" or ctx.has("splitWidth") or not isinstance(ctx.get("splitSource"), dict):
+        return
+    if not any(e[0] == "converted" and e[2] == "splitSource" for e in ctx.events):
+        return
+    pinned: dict = {}
+    for device in DEVICES:
+        entry = ctx.get("splitSource").get(device)
+        if isinstance(entry, dict) and entry.get("kind") == "image":
+            width = S.intrinsic_width(entry)
+            if width:
+                pinned[device] = f"{width}px"
+    if "desktop" not in pinned:
+        return
+    ctx.put("splitWidth", pinned)
+    ctx.events.append(("pinned", "splitMediaWidth", "splitWidth", f"old split image was drawn at its file's own width: {pinned} written explicitly"))
 
 
 def needs_migration(name: str, attrs: dict):

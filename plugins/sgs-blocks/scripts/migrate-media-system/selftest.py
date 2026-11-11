@@ -80,10 +80,51 @@ case("size: a bare image URL gets the file's width and height", "sgs/media", {"i
      {"source": {"desktop": {"kind": "image", "url": "http://x/t.jpg", "width": 320, "height": 240}}})
 case("size: a size saved on the block is kept, not read again", "sgs/media", {"imageUrl": U, "imageWidth": 999, "imageHeight": 111},
      {"source": {"desktop": {"kind": "image", "url": U, "width": 999, "height": 111}}})
+# ---- Stage B decorative package rules (each with a negative control)
+G1, G2 = "linear-gradient(90deg,#000,#fff)", "linear-gradient(0deg,#111,#222)"
+VIDEO = "http://x/v.mp4"
+case("hero split width: an old image with no width is pinned to its file's own width (the old image forced it on the grid column)", "sgs/hero",
+     {"splitMediaImageUrl": U}, {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitWidth": {"desktop": "640px"}})
+case("negative: a hero already in the new shape is not pinned", "sgs/hero",
+     {"splitSource": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}}}, None)
+case("hero split width: a video is not pinned", "sgs/hero", {"splitMediaType": "video", "splitMediaVideoUrl": "http://x/v.mp4"},
+     {"splitSource": {"desktop": {"kind": "video", "url": "http://x/v.mp4"}}})
+case("hero overlay: the gradient and its hover take the overlay family's names, the old strength 30 is pinned", "sgs/hero",
+     {"overlayGradient": G1, "overlayGradientHover": G2},
+     {"backgroundOverlayGradient": G1, "backgroundOverlayGradientHover": G2, "backgroundOverlayOpacity": {"desktop": 30}})
+case("trust-bar badge size: the number becomes Width in px (the old render drew it square)", "sgs/trust-bar", {"badgeImageSize": 96},
+     {"badgeWidth": {"desktop": "96px"}})
+case("trust-bar badge size: clamped to the 24 to 160 range the old render drew", "sgs/trust-bar", {"badgeImageSize": 200},
+     {"badgeWidth": {"desktop": "160px"}})
+case("trust-bar badge size: the old default 60 is the new default and is dropped", "sgs/trust-bar", {"badgeImageSize": 60}, {})
+case("negative: trust-bar Width already written is left alone", "sgs/trust-bar", {"badgeWidth": {"desktop": "96px"}}, None)
+case("option-picker swatchSize: the colour dot's own length stays", "sgs/option-picker", {"swatchSize": "20px"}, None)
+case("option-picker swatchShape: square is an explicit none (the stylesheet dot has a 3px radius)", "sgs/option-picker", {"swatchShape": "square"},
+     {"swatchShape": {"desktop": {"shape": "none"}}})
+case("option-picker swatchShape: round is a circle", "sgs/option-picker", {"swatchShape": "round"}, {"swatchShape": {"desktop": {"shape": "circle"}}})
+case("option-picker swatchShape: a value the old render never drew is deleted", "sgs/option-picker", {"swatchShape": "rounded"}, {})
+case("negative: option-picker swatchShape already an object", "sgs/option-picker", {"swatchShape": {"desktop": {"shape": "none"}}}, None)
+case("choice-flow-question optionMediaSize: the share of the picture band stays (the render still reads it)", "sgs/choice-flow-question",
+     {"optionMediaSize": {"desktop": 80, "mobile": 100}}, None)
+case("choice-flow optionMediaSize: stays", "sgs/choice-flow", {"optionMediaSize": {"desktop": 80}}, None)
+case("before-after: autoplay folds into the Playback of a video side", "sgs/before-after",
+     {"beforeMediaType": "video", "beforeVideoUrl": VIDEO, "videoAutoplay": True, "videoAutoplayTablet": False},
+     {"beforeSource": {"desktop": {"kind": "video", "url": VIDEO}}, "beforePlayback": {"autoplay": True}})
+case("before-after: autoplay merges into a Playback the side already has and reaches both video sides", "sgs/before-after",
+     {"beforeMediaType": "video", "beforeVideoUrl": VIDEO, "afterMediaType": "video", "afterVideoUrl": VIDEO,
+      "videoAutoplay": True, "afterPlayback": {"muted": True, "loop": True}},
+     {"beforeSource": {"desktop": {"kind": "video", "url": VIDEO}}, "afterSource": {"desktop": {"kind": "video", "url": VIDEO}},
+      "beforePlayback": {"autoplay": True}, "afterPlayback": {"muted": True, "loop": True, "autoplay": True}})
+case("before-after: autoplay with no video side is inert and deleted, an image side gets no Playback", "sgs/before-after",
+     {"beforeImageUrl": U, "videoAutoplay": True, "videoAutoplayMobile": True},
+     {"beforeSource": {"desktop": {"kind": "image", "url": U}}})
+case("before-after: a video side with no saved autoplay (the old default false) gets no Playback", "sgs/before-after",
+     {"beforeMediaType": "video", "beforeVideoUrl": VIDEO},
+     {"beforeSource": {"desktop": {"kind": "video", "url": VIDEO}}})
 case("size: a per-device image gets its own size", "sgs/media", {"imageUrl": U, "imageUrlMobile": "http://x/m.jpg"},
      {"source": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}, "mobile": {"kind": "image", "url": "http://x/m.jpg", "width": 160, "height": 120}}, "width": {"desktop": "100%"}})
 case("size: a hero split image gets its size", "sgs/hero", {"splitMediaImageUrl": "http://x/m.svg"},
-     {"splitSource": {"desktop": {"kind": "image", "url": "http://x/m.svg", "width": 100, "height": 100}}})
+     {"splitSource": {"desktop": {"kind": "image", "url": "http://x/m.svg", "width": 100, "height": 100}}, "splitWidth": {"desktop": "100px"}})
 case("size: an unreadable image is refused and the block stays as saved", "sgs/media", {"imageUrl": "http://x/unreadable.png", "imageAlt": "A"}, None)
 case("size: an unreadable image in a migrated block is refused", "sgs/media", {"source": {"desktop": {"kind": "image", "url": "http://x/unreadable.png"}}}, None)
 case("size: a video's url is not an image and needs no size", "sgs/media", {"mediaType": "video", "videoUrl": "http://x/v.mp4", "mediaSizing": "height", "height": {"desktop": "200px"}},
@@ -123,16 +164,17 @@ case("media: fit and keyword focal", "sgs/media", {"objectFit": "contain", "obje
      {"fit": {"desktop": "contain", "mobile": "cover"}, "focal": {"desktop": {"x": 0.0, "y": 0.0}}})
 case("hero split: focal strings per device, redundant centre dropped, percentage read", "sgs/hero",
      {"splitMediaImageUrl": U, "splitMediaObjectPosition": {"desktop": "66% 94%", "tablet": "center center", "mobile": "center center"}},
-     {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitFocal": {"desktop": {"x": 0.66, "y": 0.94}, "tablet": {"x": 0.5, "y": 0.5}}})
+     {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitFocal": {"desktop": {"x": 0.66, "y": 0.94}, "tablet": {"x": 0.5, "y": 0.5}}, "splitWidth": {"desktop": "640px"}})
 case("hero split: the baked mobile focal default is not pinned (Appendix A)", "sgs/hero", {"splitMediaImageUrl": U},
-     {"splitSource": {"desktop": {"kind": "image", "url": U}}})
+     {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitWidth": {"desktop": "640px"}})
 case("hero split: out-of-vocabulary fit 'custom' renders as unset and is deleted", "sgs/hero", {"splitMediaObjectFit": "custom"}, {})
 case("hero split: width number with its retired unit partner", "sgs/hero", {"splitMediaWidth": {"desktop": 40}, "splitMediaWidthUnit": "%"},
      {"splitWidth": {"desktop": "40%"}})
 case("hero split: per-tier type, files, alt and a zero id", "sgs/hero",
      {"splitMediaType": "image", "splitMediaImageUrl": U, "splitMediaImageIdMobile": 0, "splitMediaImageUrlMobile": "http://x/m.jpg",
       "splitMediaImageAlt": "A", "splitMediaImageAltMobile": "M"},
-     {"splitSource": {"desktop": {"kind": "image", "url": U}, "mobile": {"kind": "image", "url": "http://x/m.jpg", "alt": "M"}}, "splitAlt": "A"})
+     {"splitSource": {"desktop": {"kind": "image", "url": U}, "mobile": {"kind": "image", "url": "http://x/m.jpg", "alt": "M"}}, "splitAlt": "A",
+      "splitWidth": {"desktop": "640px", "mobile": "160px"}})
 # ---- shape, radius, opacity, overlay
 case("media: rounded becomes Corners 12px", "sgs/media", {"shape": "rounded"}, {"radius": {"desktop": {"topLeft": "12px", "topRight": "12px", "bottomRight": "12px", "bottomLeft": "12px"}}})
 case("media: circle becomes Shape circle", "sgs/media", {"shape": "circle"}, {"shape": {"desktop": {"shape": "circle"}}})
@@ -380,7 +422,7 @@ def run_background_rules(failures: list[str]) -> int:
             new, _ = B.migrate("sgs/container", attrs)
             if new.get("backgroundFit", {}).get("desktop") == "tile" or "backgroundRepeat" in new:
                 _fail(f"tile rule: {size} with {repeat}", f"became a tile or kept a repeat: {new}", failures)
-    for name in ("container", "multi-button", "physics-canvas", "site-header", "site-footer", "trust-bar", "nav-drawer"):
+    for name in ("container", "hero", "multi-button", "physics-canvas", "site-header", "site-footer", "trust-bar", "nav-drawer"):
         checks += 1
         new, _ = B.migrate(f"sgs/{name}", {"overlayGradient": G1, "overlayGradientHover": G2})
         if new.get("backgroundOverlayGradient") != G1 or new.get("backgroundOverlayGradientHover") != G2 or "overlayGradient" in new:
