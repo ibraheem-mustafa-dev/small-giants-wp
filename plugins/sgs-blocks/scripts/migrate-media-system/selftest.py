@@ -96,6 +96,26 @@ case("container: svg background with layer, opacity and min height", "sgs/contai
       "backgroundOpacity": {"desktop": 60}, "minHeight": {"desktop": "300px"}})
 case("container: tiled background", "sgs/container", {"backgroundImage": {"url": U}, "backgroundSize": "auto", "backgroundRepeat": "repeat"},
      {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, "backgroundFit": {"desktop": "tile"}, "backgroundRepeat": {"desktop": "repeat"}})
+SVG = "<svg><path d='M0 0'/></svg>"
+KEPT = {"bgSvgContent": SVG, "bgSvgPosition": "foreground", "bgSvgOpacity": 60, "bgSvgMinHeight": "300px", "bgSvgTextShadow": "0 1px #000"}
+case("container: image plus svg: the photo becomes the Source, the SVG and its settings stay on the kept layer", "sgs/container",
+     {"backgroundImage": {"url": U, "id": 3}, "backgroundImageMobile": {"url": "http://x/m.jpg"}, "backgroundSize": "cover", **KEPT},
+     {"backgroundSource": {"desktop": {"kind": "image", "id": 3, "url": U}, "mobile": {"kind": "image", "url": "http://x/m.jpg"}},
+      "backgroundFit": {"desktop": "cover"}, **KEPT})
+case("container: video plus svg: the video becomes the Source, the SVG stays; its parts move to the declared parts attributes", "sgs/container",
+     {"bgVideo": {"url": "http://x/v.mp4"}, "bgSvgParts": [{"id": "a"}], "bgSvgPartsTrigger": "scroll", **KEPT},
+     {"backgroundSource": {"desktop": {"kind": "video", "url": "http://x/v.mp4"}}, "backgroundSvgParts": [{"id": "a"}],
+      "backgroundSvgPartsTrigger": "scroll", **KEPT})
+case("container: an empty image object beside an svg does not stop the svg becoming the Source", "sgs/container",
+     {"backgroundImage": {}, "bgSvgContent": SVG}, {"backgroundSource": {"desktop": {"kind": "svg", "markup": SVG}}})
+case("site-footer: image plus svg overlay blend and pinned strength still apply", "sgs/site-footer",
+     {"backgroundImage": {"url": U}, "bgSvgContent": SVG, "backgroundOverlayColour": "#000", "backgroundOverlayBlendMode": "multiply"},
+     {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, "bgSvgContent": SVG, "backgroundOverlayColour": "#000",
+      "backgroundOverlayBlend": "multiply", "backgroundOverlayOpacity": {"desktop": 30}})
+case("negative: a migrated photo beside a kept svg layer is untouched", "sgs/container",
+     {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, **KEPT}, None)
+case("negative: an unreadable photo object beside an svg is refused and both stay", "sgs/container",
+     {"backgroundImage": {"url": U, "zzz": 1}, "bgSvgContent": SVG}, None)
 # ---- other blocks
 case("decorative-image: legacy files, tiers and the old default decorative=true pinned", "sgs/decorative-image",
      {"imageId": 8, "imageUrl": U, "imageUrlTablet": "http://x/t.jpg", "hideOnTablet": True},
@@ -162,7 +182,7 @@ case("negative: hero mediaPadding and splitMediaPadding both set is refused", "s
 case("negative: inline SVG logo parts are reported and stay", "sgs/responsive-logo", {"inlineSvg": True, "svgParts": []}, None)
 case("negative: an out-of-vocabulary shape is refused and stays", "sgs/media", {"shape": "star"}, None)
 
-REFUSED_STAYS = ("negative: an unreadable focal", "negative: Lottie", "negative: an out-of-vocabulary shape",
+REFUSED_STAYS = ("negative: an unreadable photo object", "negative: an unreadable focal", "negative: Lottie", "negative: an out-of-vocabulary shape",
                  "negative: hero mediaPadding", "negative: inline SVG")
 
 
@@ -190,6 +210,44 @@ def run_cases(failures: list[str]) -> int:
         if not label.startswith(REFUSED_STAYS) and remaining:
             _fail(label, f"old attributes still reported after the fix: {remaining}", failures)
     return count
+
+
+def svg_lost(old: dict, new: dict) -> str:
+    """Empty when the SVG a block saved is still present afterwards (kept layer or Source), else why it was lost."""
+    markup_in = old.get("bgSvgContent")
+    if not isinstance(markup_in, str) or not markup_in.strip():
+        return ""
+    if new.get("bgSvgContent") == markup_in:
+        return ""
+    for entry in (new.get("backgroundSource") or {}).values():
+        if isinstance(entry, dict) and entry.get("kind") == "svg" and entry.get("markup") == markup_in:
+            return ""
+    return "the saved SVG is in neither bgSvgContent nor an svg Source"
+
+
+def run_svg_keep(failures: list[str]) -> int:
+    """Every saved image-or-video-plus-SVG block keeps its SVG on all seven blocks; a lossy migration is caught (negative control)."""
+    checks = 0
+    seven = ("container", "multi-button", "physics-canvas", "site-header", "site-footer", "trust-bar", "nav-drawer")
+    for name in seven:
+        for label, extra in (("image", {"backgroundImage": {"url": U}}), ("video", {"bgVideo": {"url": "http://x/v.mp4"}}),
+                             ("tablet image", {"backgroundImageTablet": {"url": U}})):
+            checks += 1
+            attrs = {**extra, **KEPT}
+            new, _ = B.migrate(f"sgs/{name}", attrs)
+            lost = svg_lost(attrs, new)
+            if lost:
+                _fail(f"svg kept: {name} {label}", lost, failures)
+            if B.old_attributes(f"sgs/{name}", new):
+                _fail(f"svg kept: {name} {label}", f"old attributes remain after the fix: {B.old_attributes(f'sgs/{name}', new)}", failures)
+    checks += 1
+    lossy = {"backgroundSource": {"desktop": {"kind": "image", "url": U}}}
+    if not svg_lost({"backgroundImage": {"url": U}, "bgSvgContent": SVG}, lossy):
+        _fail("svg kept: negative control", "a migration that drops the SVG beside a photo was not caught", failures)
+    checks += 1
+    if svg_lost({"backgroundImage": {"url": U}, "bgSvgContent": SVG}, {"backgroundSource": lossy["backgroundSource"], "bgSvgContent": SVG}):
+        _fail("svg kept: control", "a migration that keeps the SVG was reported as losing it", failures)
+    return checks
 
 
 def run_carriers(failures: list[str]) -> int:
@@ -412,7 +470,7 @@ def run(break_mapping: bool = False) -> int:
         M.rows.cache_clear()
         M.STAYS["sgs/post-grid"] = ()
     failures: list[str] = []
-    total = run_cases(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
+    total = run_cases(failures) + run_svg_keep(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
     for line in failures:
         print(line)
     print(f"migrate-media-system self-test: {total - len(failures)} of {total} checks passed"

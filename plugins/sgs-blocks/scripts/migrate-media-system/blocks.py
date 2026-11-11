@@ -76,15 +76,26 @@ def _source_from_objects(ctx: T.Ctx, names: dict, target: str, id_name: str | No
 
 # ---------------------------------------------------------------- background family
 
+SVG_LAYER_KEPT = ("bgSvgContent", "bgSvgPosition", "bgSvgOpacity", "bgSvgMinHeight", "bgSvgTextShadow")
+
+
+def _kept_svg_layer(ctx: T.Ctx, has_svg: bool, names: list[str]) -> bool:
+    """True when the block's SVG stays on its own SVG layer: kinds are exclusive per device, so an SVG saved beside an image or
+    video (old attributes still present, or an image or video already in `backgroundSource`) is never moved into the Source."""
+    if not has_svg:
+        return False
+    if any(object_entry(ctx.get(n)) for n in names):
+        return True
+    existing = ctx.get("backgroundSource")
+    return isinstance(existing, dict) and any(isinstance(e, dict) and e.get("kind") not in (None, "svg") for e in existing.values())
+
+
 def migrate_background(ctx: T.Ctx) -> None:
     image = {d: ("backgroundImage" + t) for t, d in ((t, TIER_DEVICE[t]) for t in TIERS) if ctx.has("backgroundImage" + t)}
     video = {d: ("bgVideo" + t) for t, d in ((t, TIER_DEVICE[t]) for t in TIERS) if ctx.has("bgVideo" + t)}
     svg = ctx.get("bgSvgContent")
     has_svg = isinstance(svg, str) and svg.strip() != ""
-    if has_svg and (image or video):
-        for name in ("bgSvgContent", *image.values(), *video.values()):
-            ctx.keep(name, "refused", "an SVG background combined with an image or video: kinds are exclusive per device")
-        return
+    keep_layer = _kept_svg_layer(ctx, has_svg, [*image.values(), *video.values()])
     source: dict = {}
     consumed: list[str] = []
     alt_text = ""
@@ -112,7 +123,7 @@ def migrate_background(ctx: T.Ctx) -> None:
             elif got:
                 ctx.keep(image[device], "refused", f"unexpected keys {got[2]} in a media object")
                 return
-    if has_svg:
+    if has_svg and not keep_layer:
         source["desktop"] = {"kind": "svg", "markup": svg}
         consumed.append("bgSvgContent")
     if source:
@@ -125,7 +136,15 @@ def migrate_background(ctx: T.Ctx) -> None:
     # Background fit, focal point, pinned and repeat.
     if any(ctx.has(n) for n in ("backgroundSize", "backgroundRepeat", "backgroundAttachment", "backgroundPosition")):
         T.migrate_background_fit(ctx)
-    # SVG presentation.
+    # SVG presentation. A kept SVG layer keeps its own settings (names in SVG_LAYER_KEPT); only its parts move.
+    if keep_layer:
+        for old in ("bgSvgParts", "bgSvgPartsTrigger"):
+            new = "background" + old[2:]
+            if ctx.has(old):
+                ctx.put(new, ctx.get(old))
+                ctx.drop(old, "converted", new)
+        _tail_overlay(ctx)
+        return
     layer = ctx.get("bgSvgPosition")
     if layer is not None:
         mapped = {"background": "behind", "foreground": "front"}.get(layer)
@@ -156,6 +175,11 @@ def migrate_background(ctx: T.Ctx) -> None:
         if ctx.has(old):
             ctx.put(new, ctx.get(old))
             ctx.drop(old, "converted", new)
+    _tail_overlay(ctx)
+
+
+def _tail_overlay(ctx: T.Ctx) -> None:
+    """Overlay blend rename and the pinned overlay-strength default."""
     if ctx.has("backgroundOverlayBlendMode"):
         ctx.put("backgroundOverlayBlend", ctx.get("backgroundOverlayBlendMode"))
         ctx.drop("backgroundOverlayBlendMode", "converted", "backgroundOverlayBlend")
