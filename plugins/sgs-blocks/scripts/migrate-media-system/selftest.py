@@ -68,6 +68,18 @@ case("media: inline svg", "sgs/media", {"mediaType": "svg", "svgContent": "<svg/
      {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "width": {"desktop": "100%"}})
 case("media: intrinsic size folded into Source", "sgs/media", {"imageUrl": U, "imageWidth": 600, "imageHeight": 400},
      {"source": {"desktop": {"kind": "image", "url": U, "width": 600, "height": 400}}})
+# ---- SVG presentation animation becomes an Effects layer on the SVG part (WP-10b)
+case("svg animation: wave fast becomes an svg-loop layer", "sgs/media",
+     {"mediaType": "svg", "svgContent": "<svg/>", "svgAnimation": "wave", "svgAnimationSpeed": "fast"},
+     {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "width": {"desktop": "100%"},
+      "sgsMotion": {"v": 1, "elements": {"svg": {"effects": [{"id": "svg-loop", "effect": "svg-loop", "values": {"motion": "wave", "duration": 3000, "amplitude": 1}}]}}}})
+case("svg animation: float becomes an ambient-float layer, speed defaulting to medium", "sgs/media",
+     {"mediaType": "svg", "svgContent": "<svg/>", "svgAnimation": "float"},
+     {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "width": {"desktop": "100%"},
+      "sgsMotion": {"v": 1, "elements": {"svg": {"effects": [{"id": "ambient-float", "effect": "ambient-float", "values": {"travel": -10, "axis": "y", "period": 2000, "easing": "ease-in-out", "direction": "alternate"}}]}}}})
+case("svg animation: none is deleted with no layer", "sgs/media",
+     {"mediaType": "svg", "svgContent": "<svg/>", "svgAnimation": "none", "svgAnimationSpeed": "slow"},
+     {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "width": {"desktop": "100%"}})
 # ---- sizing
 case("media: sizing fill", "sgs/media", {"mediaSizing": "fill", "height": {"desktop": "300px"}}, {"height": {"desktop": "fill"}})
 case("media: sizing height gains Width auto", "sgs/media", {"mediaSizing": "height", "height": {"desktop": "440px", "mobile": "300px"}, "width": {"mobile": "50%"}},

@@ -643,6 +643,54 @@ def migrate_renames(slot: Slot) -> None:
                 ctx.drop(name, "converted", new_name)
 
 
+# The SVG presentation animation words become Effects layers on the SVG part, with the durations and shapes the
+# old stylesheets drew (the Spec 38A migration mapper `Sgs_Motion_Map_Looping_Media` holds the same table).
+SVG_LOOP_MS = {"pulse": {"slow": 5000, "medium": 3000, "fast": 1500}, "wave": {"slow": 8000, "medium": 5000, "fast": 3000}}
+FLOAT_PERIOD_MS = {"slow": 3000, "medium": 2000, "fast": 1000}
+SVG_PARTS = {"": "svg", "background": "svg-bg"}
+
+
+def migrate_svg_animation(slot: Slot) -> None:
+    """`svgAnimation` and `svgAnimationSpeed`: an SVG loop (pulse, wave) or ambient float layer on the slot's SVG part."""
+    ctx = slot.ctx
+    anim = slot.present("SvgAnimation")
+    speed = slot.present("SvgAnimationSpeed")
+    held = [n for n in (anim, speed) if n]
+    part = SVG_PARTS.get(slot.new)
+    if not held or part is None:
+        return
+    word = ctx.get(anim, "none") if anim else "none"
+    if word not in ("none", "pulse", "float", "wave"):
+        ctx.keep(anim, "reported", "SVG animation word outside none, pulse, float and wave: resolved by hand")
+        return
+    speed_word = ctx.get(speed, "medium") if speed else "medium"
+    speed_word = speed_word if speed_word in FLOAT_PERIOD_MS else "medium"
+    layer = None
+    if word == "float":
+        layer = {"id": "ambient-float", "effect": "ambient-float",
+                 "values": {"travel": -10, "axis": "y", "period": FLOAT_PERIOD_MS[speed_word], "easing": "ease-in-out", "direction": "alternate"}}
+    elif word in SVG_LOOP_MS:
+        layer = {"id": "svg-loop", "effect": "svg-loop",
+                 "values": {"motion": word, "duration": SVG_LOOP_MS[word][speed_word], "amplitude": 1}}
+    if layer is not None:
+        motion = ctx.get("sgsMotion")
+        if motion is None:
+            motion = {"v": 1, "elements": {}}
+        if not isinstance(motion, dict) or not isinstance(motion.get("elements", {}), dict):
+            for name in held:
+                ctx.keep(name, "refused", "sgsMotion is not an object: the SVG loop cannot be added")
+            return
+        layers = motion.setdefault("elements", {}).setdefault(part, {}).setdefault("effects", [])
+        if any(isinstance(l, dict) and l.get("effect") == layer["effect"] for l in layers):
+            for name in held:
+                ctx.keep(name, "refused", f"the {part} part already holds a {layer['effect']} layer")
+            return
+        layers.append(layer)
+        ctx.put("sgsMotion", motion)
+    for name in held:
+        ctx.drop(name, "converted" if layer is not None else "deleted", f"sgsMotion.elements.{part}" if layer is not None else "", "" if layer is not None else "animation none")
+
+
 def migrate_report(slot: Slot) -> None:
     for base, (family, reason) in M.BASE_FAMILY.items():
         if family == "report":
@@ -652,6 +700,7 @@ def migrate_report(slot: Slot) -> None:
 
 def migrate_slot(ctx: Ctx, olds: list[str], new: str, bases: list[str]) -> None:
     slot = Slot(ctx, olds, new, bases)
+    migrate_svg_animation(slot)
     migrate_report(slot)
     migrate_source(slot)
     migrate_alt(slot)

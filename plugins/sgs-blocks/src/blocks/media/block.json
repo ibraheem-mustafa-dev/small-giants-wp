@@ -72,6 +72,16 @@
 						"layout"
 					],
 					"motionSelector": ".sgs-media-el",
+					"svg": true,
+					"availableWhen": {
+						"slot": "",
+						"kinds": [
+							"image",
+							"video",
+							"embed",
+							"svg"
+						]
+					},
 					"attrMap": {
 						"css:opacity": "opacity",
 						"css:height": "height",

@@ -94,7 +94,8 @@ def live_declared_attributes() -> dict:
     for path in sorted(BLOCKS_DIR.glob("*/block.json")):
         data = json.loads(path.read_text(encoding="utf-8"))
         if data.get("name"):
-            out[data["name"]] = set(data.get("attributes") or {}) | extensions
+            motion = {"sgsMotion"} if (data.get("supports") or {}).get("sgs", {}).get("motion") else set()
+            out[data["name"]] = set(data.get("attributes") or {}) | extensions | motion
     return out
 
 
