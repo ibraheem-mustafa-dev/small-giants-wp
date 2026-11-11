@@ -69,6 +69,8 @@ from __future__ import annotations
 #                                         CustomWiggle), so it never gets a fx_effects
 #                                         row at all -- flagged, not silently
 #                                         dropped: there is nothing to seed here.
+#   media_kinds             optional: the media kinds ('image', 'video', 'svg', comma separated) the effect needs of a
+#                          media slot, read by the editor's kind filter (Spec 49 section 10.1). Absent means every kind.
 #   requires                'text'|'svg'|'svg-subtree'|'section'|'item-set'|
 #                          'track'|'marquee-track'|'surface'|'image'|'none' — what the effect
 #                          needs OF ITS TARGET, derived from each §2 row's
@@ -931,6 +933,7 @@ FX_EFFECTS: list[dict] = [
         # on every imageControls block, is the same measured containment
         # choice cursor-field made — not re-derived from scratch here.
         "creates_panel": 0,
+        "media_kinds": "image",
     },
     {
         # Generative background (Spec 38, D874 technique spec — the
@@ -1154,6 +1157,7 @@ FX_EFFECTS: list[dict] = [
         "scope": "block",
         "requires": "surface",
         "creates_panel": 0,
+        "media_kinds": "image",
     },
     {
         # Spec 38A FR-38A-52 (Effects, Tier V, Part (SVG) or background SVG layer). Pulse or wave, no GSAP.

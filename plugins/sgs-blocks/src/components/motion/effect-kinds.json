@@ -1,5 +1,0 @@
-{
-	"_why": "The media kinds an effect needs beyond what the schema's x-part-kinds says (svg and text). Read by kind-fit.js. Curated data until fx_effects.requires carries a media kind (Spec 49 section 10.1: Ken Burns and surface treatment are for images).",
-	"ken-burns": [ "image" ],
-	"surface-treatment": [ "image" ]
-}

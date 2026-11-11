@@ -141,9 +141,10 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
     fx_cols = {r[1] for r in conn.execute("PRAGMA table_info(fx_effects)").fetchall()}
     owned_column = "owned_properties" if "owned_properties" in fx_cols else "''"
     panels_column = "panels" if "panels" in fx_cols else "''"
+    kinds_column = "media_kinds" if "media_kinds" in fx_cols else "''"
     db_rows = conn.execute(
         "SELECT effect, tier, plugin_set, owns_scroll_transform, reduced_motion, editor_story, "
-        f"scope, requires, pins, triggers, {creates_panel_column}, {in_picker_column}, {owned_column}, {panels_column} FROM fx_effects"
+        f"scope, requires, pins, triggers, {creates_panel_column}, {in_picker_column}, {owned_column}, {panels_column}, {kinds_column} FROM fx_effects"
     ).fetchall()
     db_by_effect = {r[0]: r for r in db_rows}
 
@@ -163,7 +164,7 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
         (
             _, db_tier, db_plugin_set_json, db_owns, db_reduced, db_editor,
             db_scope, db_requires, db_pins, db_triggers, db_creates_panel,
-            db_in_picker, db_owned, db_panels,
+            db_in_picker, db_owned, db_panels, db_kinds,
         ) = db_row
         try:
             db_plugin_set = json.loads(db_plugin_set_json)
@@ -220,6 +221,10 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
             mismatches.append(
                 f"in_picker: db={db_in_picker!r} expected={expected.get('in_picker', 0)!r}"
             )
+
+        # Spec 49 section 10.1: the media kinds an effect needs reach the editor's kind filter through the DB.
+        if db_kinds != expected.get("media_kinds", ""):
+            mismatches.append(f"media_kinds: db={db_kinds!r} expected={expected.get('media_kinds', '')!r}")
 
         # Spec 38A section 6.4: the channels/slots an effect writes and the panels that may offer it come from the
         # motion schema, so a hand edit, or a schema change without a reseed, shows up here.

@@ -1,6 +1,7 @@
 {
 	"ambient-float": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"translate",
@@ -28,6 +29,7 @@
 	},
 	"carousel-loop": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [],
 			"properties": [],
@@ -43,6 +45,7 @@
 	},
 	"cursor-field": {
 		"in_picker": true,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"::before",
@@ -80,6 +83,7 @@
 	},
 	"curtain": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"injected"
@@ -106,6 +110,7 @@
 	},
 	"draggable": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"transform"
@@ -127,6 +132,7 @@
 	},
 	"draw": {
 		"in_picker": true,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [],
 			"inner": "the SVG stroke",
@@ -150,6 +156,7 @@
 	},
 	"flip": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"transform"
@@ -171,6 +178,7 @@
 	},
 	"follow-pointer": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [],
 			"properties": [],
@@ -190,6 +198,7 @@
 	},
 	"generative-background": {
 		"in_picker": true,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [],
 			"properties": [],
@@ -209,6 +218,7 @@
 	},
 	"glare": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"injected"
@@ -235,6 +245,7 @@
 	},
 	"grid-dots": {
 		"in_picker": true,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [],
 			"properties": [],
@@ -254,6 +265,7 @@
 	},
 	"horizontal-panel": {
 		"in_picker": true,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"scale",
@@ -279,6 +291,7 @@
 	},
 	"image-sequence": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [],
 			"properties": [],
@@ -298,6 +311,9 @@
 	},
 	"ken-burns": {
 		"in_picker": false,
+		"media_kinds": [
+			"image"
+		],
 		"owned_properties": {
 			"channels": [
 				"translate",
@@ -325,6 +341,7 @@
 	},
 	"lottie": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [],
 			"properties": [],
@@ -347,6 +364,7 @@
 	},
 	"magnet": {
 		"in_picker": true,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"translate"
@@ -371,6 +389,7 @@
 	},
 	"marquee": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [],
 			"properties": [],
@@ -391,6 +410,7 @@
 	},
 	"morph": {
 		"in_picker": true,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [],
 			"properties": [],
@@ -412,6 +432,7 @@
 	},
 	"motion-path": {
 		"in_picker": true,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"transform"
@@ -433,6 +454,7 @@
 	},
 	"page-transitions": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [],
 			"properties": [],
@@ -448,6 +470,7 @@
 	},
 	"parallax": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"translate",
@@ -475,6 +498,7 @@
 	},
 	"particles": {
 		"in_picker": true,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [],
 			"properties": [],
@@ -494,6 +518,7 @@
 	},
 	"pin-scrub": {
 		"in_picker": true,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"transform"
@@ -516,6 +541,7 @@
 	},
 	"ripple": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"::after"
@@ -546,6 +572,7 @@
 	},
 	"scramble": {
 		"in_picker": true,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [],
 			"inner": "the text characters",
@@ -569,6 +596,7 @@
 	},
 	"scroll-progress": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"scale"
@@ -593,6 +621,7 @@
 	},
 	"scroll-smoother": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [],
 			"properties": [],
@@ -608,6 +637,7 @@
 	},
 	"scrub": {
 		"in_picker": true,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"translate",
@@ -638,6 +668,7 @@
 	},
 	"sheen": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"injected"
@@ -666,6 +697,7 @@
 	},
 	"split-reveal": {
 		"in_picker": true,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [],
 			"inner": "the unit spans it creates",
@@ -688,6 +720,9 @@
 	},
 	"surface-treatment": {
 		"in_picker": true,
+		"media_kinds": [
+			"image"
+		],
 		"owned_properties": {
 			"channels": [],
 			"properties": [],
@@ -707,6 +742,7 @@
 	},
 	"svg-loop": {
 		"in_picker": false,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"rotate",
@@ -736,6 +772,7 @@
 	},
 	"wave-gradient": {
 		"in_picker": true,
+		"media_kinds": [],
 		"owned_properties": {
 			"channels": [
 				"::before",
