@@ -16,6 +16,7 @@ from pathlib import Path
 import deploy_cache
 import deploy_delta
 import deploy_media_guard
+import deploy_minify
 import deploy_multi
 import deploy_qa_tier
 import deploy_timing
@@ -918,6 +919,7 @@ def self_test() -> int:
     failures.extend(self_test_litespeed_probe())
     failures.extend(self_test_upload_resume())
     failures.extend(deploy_delta.self_test())
+    failures.extend(deploy_minify.self_test())
     failures.extend(self_test_ship())
     failures.extend(self_test_vendor_shell())
     failures.extend(deploy_qa_tier.self_test())
@@ -979,4 +981,6 @@ def self_test() -> int:
           "second apply, a changed and a deleted file land in one delta apply")
     print(" 27. the isolated worktree's vendor/ is a real folder: composer's writes stay in the worktree (no temp-worktree "
           "base path in the shared or shipped autoloader), packages are read from the shared checkout; red on a whole-folder link")
+    print(" 28. hand-written CSS is minified in the payload (theme assets/ and plugin assets/ only; style.css, build/ and JS "
+          "untouched; licence comments and strings kept); a failing minifier, a dropped file or an emptied file is refused")
     return 0
