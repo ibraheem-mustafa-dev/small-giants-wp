@@ -470,7 +470,7 @@
 		"blend": {"type":"string","_generated":"media-atoms"},
 		"svgLayer": {"type":"string","_generated":"media-atoms"},
 		"svgTextShadow": {"type":"boolean","_generated":"media-atoms"},
-		"svgParts": {"type":"array","_generated":"media-atoms"},
+		"svgParts": {"type":"array","default":[],"_generated":"media-atoms"},
 		"svgPartsTrigger": {"type":"string","_generated":"media-atoms"},
 		"playback": {"type":"object","_generated":"media-atoms"},
 		"captions": {"type":"object","_generated":"media-atoms"},
