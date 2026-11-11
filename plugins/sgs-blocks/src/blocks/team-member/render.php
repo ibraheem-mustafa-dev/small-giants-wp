@@ -595,6 +595,8 @@ if ( class_exists( 'SGS_Media_Element' ) && array() !== array_filter( $photo_sou
 		'context' => 'content',
 	);
 	$sgs_tm_attrs = $attributes;
+	// A photo with no Shape of its own is a circle (the block's default outline).
+	$sgs_tm_attrs['photoShape'] = $photo_shape_attr;
 	if ( '' === trim( (string) ( $attributes['photoAlt'] ?? '' ) ) ) {
 		$sgs_tm_attrs['photoAlt'] = (string) $name;
 	}

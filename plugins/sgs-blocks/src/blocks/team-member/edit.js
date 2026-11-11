@@ -44,6 +44,9 @@ import MediaElementPanel from '../../components/MediaElementPanel';
 import SlotPicture from '../../components/media/SlotPicture';
 import metadata from './block.json';
 
+/** A photo with no Shape of its own is a circle (the block's default outline); render.php applies the same default. */
+const DEFAULT_PHOTO_SHAPE = { desktop: { shape: 'circle' } };
+
 const PHOTO_ENTRY = metadata.supports.sgs.mediaElements.find( ( e ) => 'photo' === e.prefix );
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
@@ -179,7 +182,6 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 		backgroundColour,
 		backgroundColourGradient,
 		cardStyle,
-		photoShape,
 		overlayHover,
 		cardShadow,
 		cardShadowColour,
@@ -219,7 +221,8 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 
 	const photoUid = 'sgs-team-member-' + clientId.slice( 0, 8 );
 	// The wrapper clips the bio overlay to the photo's outline: a circle is the one shape it follows.
-	const photoOutline = 'circle' === ( ( photoShape || { desktop: { shape: 'circle' } } ).desktop?.shape ?? '' ) ? 'circle' : 'none';
+	const photoAttributes = attributes.photoShape ? attributes : { ...attributes, photoShape: DEFAULT_PHOTO_SHAPE };
+	const photoOutline = 'circle' === ( photoAttributes.photoShape.desktop?.shape ?? '' ) ? 'circle' : 'none';
 
 	// Social links repeater helpers — mirror trust-bar pattern.
 	const updateSocialLink = ( index, updated ) => {
@@ -340,7 +343,7 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 				] }
 			/>
 			<MediaElementPanel
-				attributes={ attributes }
+				attributes={ photoAttributes }
 				setAttributes={ setAttributes }
 				blockName="sgs/team-member"
 				blockSlug="sgs/team-member"
@@ -728,7 +731,7 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 			<div { ...blockProps }>
 				<div className={ `sgs-team-member__photo sgs-team-member__photo--${ photoOutline } ${ photoUid }` }>
 					<SlotPicture
-						attributes={ attributes }
+						attributes={ photoAttributes }
 						setAttributes={ setAttributes }
 						prefix="photo"
 						kinds={ PHOTO_ENTRY.kinds }

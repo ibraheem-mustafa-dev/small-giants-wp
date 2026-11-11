@@ -274,11 +274,6 @@
 				"desktop": {}
 			}
 		},
-		"photoShape": {
-			"type": "object",
-			"default": { "desktop": { "shape": "circle" } },
-			"description": "The photo's shape (Spec 49 shape setting). The default is a circle."
-		},
 		"photoRatio": {
 			"type": "object",
 			"default": { "desktop": "1 / 1" },
@@ -928,6 +923,7 @@
 		"photoTileSize": {"type":"object","_generated":"media-atoms"},
 		"photoFocal": {"type":"object","_generated":"media-atoms"},
 		"photoPinned": {"type":"boolean","_generated":"media-atoms"},
+		"photoShape": {"type":"object","_generated":"media-atoms"},
 		"photoRadius": {"type":"object","_generated":"media-atoms"},
 		"photoBorderWidth": {"type":"object","_generated":"media-atoms"},
 		"photoBorderStyle": {"type":"string","_generated":"media-atoms"},
