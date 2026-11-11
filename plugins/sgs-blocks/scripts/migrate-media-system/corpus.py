@@ -71,9 +71,85 @@ def file_blocks(path: Path) -> list[tuple[str, dict]]:
     return list(markup.iter_markup_blocks(text))
 
 
+def json_spans(text: str) -> dict[tuple, tuple[int, int]]:
+    """{path: (start, end)} of every value in a JSON text; a path is a tuple of object keys and array indexes."""
+    spans: dict[tuple, tuple[int, int]] = {}
+    decoder = json.JSONDecoder()
+    ws = re.compile(r"[ \t\r\n]*")
+
+    def skip(i: int) -> int:
+        return ws.match(text, i).end()
+
+    def value(i: int, path: tuple) -> int:
+        i = skip(i)
+        start = i
+        if text[i] == "{":
+            i = skip(i + 1)
+            if text[i] == "}":
+                i += 1
+            else:
+                while True:
+                    key, i = decoder.raw_decode(text, skip(i))
+                    i = skip(i)
+                    i = value(i + 1, path + (key,))  # past ':'
+                    i = skip(i)
+                    if text[i] == ",":
+                        i += 1
+                        continue
+                    i += 1  # '}'
+                    break
+        elif text[i] == "[":
+            i = skip(i + 1)
+            if text[i] == "]":
+                i += 1
+            else:
+                n = 0
+                while True:
+                    i = skip(value(i, path + (n,)))
+                    n += 1
+                    if text[i] == ",":
+                        i += 1
+                        continue
+                    i += 1  # ']'
+                    break
+        else:
+            _, i = decoder.raw_decode(text, i)
+        spans[path] = (start, i)
+        return i
+
+    value(0, ())
+    return spans
+
+
+def _changed_paths(old, new, path: tuple, out: list) -> None:
+    """The shallowest paths where old and new differ, recursing only where both are objects with the same keys or
+    arrays of the same length."""
+    if old == new:
+        return
+    if isinstance(old, dict) and isinstance(new, dict) and list(old) == list(new):
+        for key in old:
+            _changed_paths(old[key], new[key], path + (key,), out)
+    elif isinstance(old, list) and isinstance(new, list) and len(old) == len(new):
+        for n, (a, b) in enumerate(zip(old, new)):
+            _changed_paths(a, b, path + (n,), out)
+    else:
+        out.append(path)
+
+
+def _dump_at(value, text: str, start: int, end: int, indent: str | None) -> str:
+    """value serialised to sit where text[start:end] sat: one line if that span was one line, else indented from the
+    column its line starts at."""
+    if "\n" not in text[start:end] or indent is None:
+        return json.dumps(value, ensure_ascii=False)
+    line_start = text.rfind("\n", 0, start) + 1
+    lead = re.match(r"[ \t]*", text[line_start:start]).group(0)
+    return json.dumps(value, indent=indent, ensure_ascii=False).replace("\n", "\n" + lead)
+
+
 def rewrite_file_text(path: Path, fn) -> tuple[str, int, bool]:
-    """(new text, changed block count, reformatted). A JSON file with a changed block is re-serialised with the indent
-    of its first indented line; a file with no changed block comes back byte for byte."""
+    """(new text, changed block count, reformatted). In a JSON file only the values that changed are replaced in
+    place, so the rest of the file (hand formatting, inline objects) stays byte for byte; a file with no changed block
+    comes back unchanged. `reformatted` is always False now (kept for callers)."""
     text = read_text(path)
     if path.suffix.lower() != ".json":
         new, count = markup.rewrite_markup(text, fn)
@@ -85,15 +161,23 @@ def rewrite_file_text(path: Path, fn) -> tuple[str, int, bool]:
         return new, count, False
     first = re.search(r'\n([ \t]+)\S', text)
     indent: str | None = first.group(1) if first else None
-    unchanged = json.dumps(data, indent=indent, ensure_ascii=False)
+    before = json.loads(text)
     data, count = markup.rewrite_json(data, fn)
     if not count:
         return text, 0, False
-    new = json.dumps(data, indent=indent, ensure_ascii=False)
-    if text.endswith("\n"):
-        new += "\n"
-        unchanged += "\n"
-    return new, count, unchanged != text
+    paths: list = []
+    _changed_paths(before, data, (), paths)
+    spans = json_spans(text)
+    out = text
+    for p in sorted(paths, key=lambda q: spans[q][0], reverse=True):
+        node = data
+        for key in p:
+            node = node[key]
+        start, end = spans[p]
+        out = out[:start] + _dump_at(node, out, start, end, indent) + out[end:]
+    if json.loads(out) != data:
+        raise SystemExit(f"{path}: in-place JSON rewrite did not reproduce the migrated data; nothing written")
+    return out, count, False
 
 
 def write_atomic(path: Path, text: str) -> None:

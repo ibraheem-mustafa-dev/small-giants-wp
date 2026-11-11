@@ -11,6 +11,7 @@ import tempfile
 from pathlib import Path
 
 import blocks as B
+import corpus as C
 import markup
 import apply_selftest
 import export_selftest
@@ -576,6 +577,31 @@ LEGACY_UNDECLARED = {
 }
 
 
+def run_inplace_json(failures: list[str]) -> int:
+    """A hand-formatted JSON file keeps every unchanged byte when one block in it is rewritten: inline objects
+    elsewhere stay inline. Negative control: a file whose block does not change comes back identical."""
+    import tempfile
+    text = ('{\n  "keep": { "a": 1, "b": [1, 2] },\n  "tree": [\n    {\n      "name": "sgs/x",\n'
+            '      "attributes": { "old": 1 }\n    }\n  ]\n}\n')
+
+    def rename(name, attrs):
+        return {"new": attrs["old"]} if "old" in attrs else attrs
+
+    checks = 0
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "hand.json"
+        path.write_bytes(text.encode("utf-8"))
+        out, count, _ = C.rewrite_file_text(path, rename)
+        checks += 1
+        if count != 1 or '"keep": { "a": 1, "b": [1, 2] }' not in out or json.loads(out)["tree"][0]["attributes"] != {"new": 1}:
+            failures.append(f"FAIL in-place JSON: unchanged bytes not kept or block not rewritten: {out!r}")
+        same, count, _ = C.rewrite_file_text(path, lambda n, a: a)
+        checks += 1
+        if count or same != text:
+            failures.append("FAIL in-place JSON negative: a file with no changed block was altered")
+    return checks
+
+
 def run_http_retry(failures: list[str]) -> int:
     """A dropped connection is retried, so one pass reads the size; a 404 is not retried. Negative control: a reader
     that always drops returns None after every attempt."""
@@ -700,7 +726,7 @@ def _run(break_mapping: bool = False) -> int:
         M.rows.cache_clear()
         M.STAYS["sgs/post-grid"] = ()
     failures: list[str] = []
-    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures) + run_sizes(failures) + run_http_retry(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
+    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures) + run_sizes(failures) + run_http_retry(failures) + run_inplace_json(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
     for line in failures:
         print(line)
     print(f"migrate-media-system self-test: {total - len(failures)} of {total} checks passed"
