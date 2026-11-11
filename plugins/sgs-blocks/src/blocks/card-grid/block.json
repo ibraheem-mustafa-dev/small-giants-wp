@@ -66,13 +66,13 @@
       "imageControlsExplicit": true,
       "_comment_mediaElements": "Rule 37-media-no-handroll fix. Card-image object-fit now routes through the shared media-element atom layer instead of a style.css literal. NOT a new client control: prefix 'sgs' resolves (sgs_media_element_attr) to the SAME 'sgsObjectFit' attribute the legacy universal image-controls extension (imageControls/imageControlsExplicit above) already injects and already exposes an 'Object Fit' dropdown for in the inspector -- adding a second ObjectFitField here would give the client two controls for one property. render.php reads that existing value through SGS_Media_Element::style() and marks each card's <img>/<video> with the atom's scope class; style.css no longer hardcodes object-fit on .sgs-card-grid__image, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default). Mirrors sgs/gallery's identical fix.",
       "mediaElements": [
-        {
-          "prefix": "sgs",
-          "context": "element",
-          "atoms": [
-            "object-fit"
-          ]
-        }
+      	{
+      		"prefix": "image",
+      		"context": "item",
+      		"kinds": [
+      			"image"
+      		]
+      	}
       ],
       "arrayContentLift": true,
       "boxFamilies": {
@@ -1363,7 +1363,50 @@
       "type": "string",
       "default": "",
       "description": "No-photo label colour. Theme token slug or raw colour. Empty = the tile's text colour at half strength."
-    }
+    },
+  	"imageSource": {"type":"object","_generated":"media-atoms"},
+  	"imageLoading": {"type":"string","_generated":"media-atoms"},
+  	"imageAlt": {"type":"string","_generated":"media-atoms"},
+  	"imageDecorative": {"type":"boolean","_generated":"media-atoms"},
+  	"imageFit": {"type":"object","_generated":"media-atoms"},
+  	"imageRepeat": {"type":"object","_generated":"media-atoms"},
+  	"imageTileSize": {"type":"object","_generated":"media-atoms"},
+  	"imageFocal": {"type":"object","_generated":"media-atoms"},
+  	"imagePinned": {"type":"boolean","_generated":"media-atoms"},
+  	"imageBackground": {"type":"string","_generated":"media-atoms"},
+  	"imageOverlayColour": {"type":"string","_generated":"media-atoms"},
+  	"imageOverlayColourHover": {"type":"string","_generated":"media-atoms"},
+  	"imageOverlayGradient": {"type":"string","_generated":"media-atoms"},
+  	"imageOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
+  	"imageOverlayOpacity": {"type":"object","_generated":"media-atoms"},
+  	"imageOverlayBlend": {"type":"string","_generated":"media-atoms"},
+  	"imageOpacity": {"type":"object","_generated":"media-atoms"},
+  	"imageBlend": {"type":"string","_generated":"media-atoms"},
+  	"imageBoxShadow": {"type":"string","_generated":"media-atoms"},
+  	"imageBoxShadowColour": {"type":"string","_generated":"media-atoms"},
+  	"imageBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
+  	"imageCaption": {"type":"string","_generated":"media-atoms"},
+  	"imageCaptionTag": {"type":"string","_generated":"media-atoms"},
+  	"imageLinkUrl": {"type":"string","_generated":"media-atoms"},
+  	"imageLinkOpensNewTab": {"type":"boolean","_generated":"media-atoms"},
+  	"imageLinkRel": {"type":"string","_generated":"media-atoms"},
+  	"imageLinkUrlSource": {"type":"string","_generated":"media-atoms"},
+  	"imageRatio": {"type":"object","_generated":"media-atoms"},
+  	"imageWidth": {"type":"object","_generated":"media-atoms"},
+  	"imageMinWidth": {"type":"object","_generated":"media-atoms"},
+  	"imageMaxWidth": {"type":"object","_generated":"media-atoms"},
+  	"imageMinHeight": {"type":"object","_generated":"media-atoms"},
+  	"imageMaxHeight": {"type":"object","_generated":"media-atoms"},
+  	"imageShape": {"type":"object","_generated":"media-atoms"},
+  	"imageRadius": {"type":"object","_generated":"media-atoms"},
+  	"imageBorderWidth": {"type":"object","_generated":"media-atoms"},
+  	"imageBorderStyle": {"type":"string","_generated":"media-atoms"},
+  	"imageBorderColour": {"type":"string","_generated":"media-atoms"},
+  	"imageBorderColourHover": {"type":"string","_generated":"media-atoms"},
+  	"imageColour": {"type":"object","_generated":"media-atoms"},
+  	"imageGreyscale": {"type":"number","_generated":"media-atoms"},
+  	"imageAlignment": {"type":"object","_generated":"media-atoms"},
+  	"imageOrder": {"type":"object","_generated":"media-atoms"}
   },
   "render": "file:./render.php",
   "editorScript": "file:./index.js",

@@ -54,13 +54,13 @@
       "collection": true,
       "_comment_mediaElements": "37-media-no-handroll close-out (2026-09-03). The post-thumbnail <img> is ONE element rendered by Post_Grid_REST::render_card() (class sgs-post-grid__img) regardless of layout mode -- the two hardcoded object-fit:cover rules in style.css (grid-mode .sgs-post-grid__img and list-mode .sgs-post-grid--list .sgs-post-grid__image img) both target that same element via different ancestor-scoped selectors, never two elements. Unprefixed/single-slot, mirrors sgs/decorative-image's adoption shape. Only object-fit adopted (in scope for this pass) -- no attribute hand-declared, matching every existing adopter (decorative-image/before-after/media/hero): the runtime injection filter (src/blocks/extensions/media-elements.js) supplies objectFit/objectFitTablet/objectFitMobile, and the atom's own CSS var() chain already resolves to 'cover' when unset (assets/css/media-atoms/object-fit.css), matching this block's prior hardcoded default with zero attribute-default duplication.",
       "mediaElements": [
-        {
-          "prefix": "",
-          "context": "element",
-          "atoms": [
-            "object-fit"
-          ]
-        }
+      	{
+      		"prefix": "image",
+      		"context": "item",
+      		"kinds": [
+      			"image"
+      		]
+      	}
       ],
       "elements": {
         "page-button": {
@@ -1775,7 +1775,50 @@
       "type": "string",
       "default": "",
       "description": "Corner radius of every card, written to --sgs-card-radius on the block. Empty keeps the stylesheet's 8px."
-    }
+    },
+  	"imageSource": {"type":"object","_generated":"media-atoms"},
+  	"imageLoading": {"type":"string","_generated":"media-atoms"},
+  	"imageAlt": {"type":"string","_generated":"media-atoms"},
+  	"imageFit": {"type":"object","_generated":"media-atoms"},
+  	"imageRepeat": {"type":"object","_generated":"media-atoms"},
+  	"imageTileSize": {"type":"object","_generated":"media-atoms"},
+  	"imageFocal": {"type":"object","_generated":"media-atoms"},
+  	"imagePinned": {"type":"boolean","_generated":"media-atoms"},
+  	"imagePadding": {"type":"object","_generated":"media-atoms"},
+  	"imageBackground": {"type":"string","_generated":"media-atoms"},
+  	"imageOverlayColour": {"type":"string","_generated":"media-atoms"},
+  	"imageOverlayColourHover": {"type":"string","_generated":"media-atoms"},
+  	"imageOverlayGradient": {"type":"string","_generated":"media-atoms"},
+  	"imageOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
+  	"imageOverlayOpacity": {"type":"object","_generated":"media-atoms"},
+  	"imageOverlayBlend": {"type":"string","_generated":"media-atoms"},
+  	"imageOpacity": {"type":"object","_generated":"media-atoms"},
+  	"imageBlend": {"type":"string","_generated":"media-atoms"},
+  	"imageBoxShadow": {"type":"string","_generated":"media-atoms"},
+  	"imageBoxShadowColour": {"type":"string","_generated":"media-atoms"},
+  	"imageBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
+  	"imageCaption": {"type":"string","_generated":"media-atoms"},
+  	"imageCaptionTag": {"type":"string","_generated":"media-atoms"},
+  	"imageLinkUrl": {"type":"string","_generated":"media-atoms"},
+  	"imageLinkOpensNewTab": {"type":"boolean","_generated":"media-atoms"},
+  	"imageLinkRel": {"type":"string","_generated":"media-atoms"},
+  	"imageLinkUrlSource": {"type":"string","_generated":"media-atoms"},
+  	"imageRatio": {"type":"object","_generated":"media-atoms"},
+  	"imageWidth": {"type":"object","_generated":"media-atoms"},
+  	"imageMinWidth": {"type":"object","_generated":"media-atoms"},
+  	"imageMaxWidth": {"type":"object","_generated":"media-atoms"},
+  	"imageMinHeight": {"type":"object","_generated":"media-atoms"},
+  	"imageMaxHeight": {"type":"object","_generated":"media-atoms"},
+  	"imageShape": {"type":"object","_generated":"media-atoms"},
+  	"imageRadius": {"type":"object","_generated":"media-atoms"},
+  	"imageBorderWidth": {"type":"object","_generated":"media-atoms"},
+  	"imageBorderStyle": {"type":"string","_generated":"media-atoms"},
+  	"imageBorderColour": {"type":"string","_generated":"media-atoms"},
+  	"imageBorderColourHover": {"type":"string","_generated":"media-atoms"},
+  	"imageColour": {"type":"object","_generated":"media-atoms"},
+  	"imageGreyscale": {"type":"number","_generated":"media-atoms"},
+  	"imageAlignment": {"type":"object","_generated":"media-atoms"},
+  	"imageOrder": {"type":"object","_generated":"media-atoms"}
   },
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
