@@ -40,7 +40,8 @@
  * @package SGS\Blocks
  */
 
-import '../../shared/nav-interactivity/store';
+// eslint-disable-next-line import/no-unresolved -- a webpack external: the script module `@sgs/nav-store` (one copy per page).
+import '@sgs/nav-store';
 import '../../shared/nav-interactivity/mega-disclosure';
 import { initNavIndicator } from '../../shared/effects/nav-indicator';
 import { initLabelMagnet } from '../../shared/effects/label-magnet';

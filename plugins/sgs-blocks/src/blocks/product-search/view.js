@@ -33,7 +33,8 @@
 // runtime merges repeat `sgs/nav` registrations as a no-op (see the store's
 // own header comment) — bundling a second copy here is the documented and
 // safe pattern, not a duplicate utility.
-import '../../shared/nav-interactivity/store.js';
+// eslint-disable-next-line import/no-unresolved -- a webpack external: the script module `@sgs/nav-store` (one copy per page).
+import '@sgs/nav-store';
 import { QUERY_MOBILE } from '../../utils/breakpoints';
 
 /**
