@@ -766,6 +766,29 @@ def run_inplace_json(failures: list[str]) -> int:
     return checks
 
 
+def run_remote_paths(failures: list[str]) -> int:
+    """On a remote site (no mirror): a bare token names no file, so it is MISSING without a read; a site-relative path is
+    read over HTTP against the site's address; a page-relative file path is not guessed (None: the block is refused)."""
+    import sizes as S
+    seen: list[str] = []
+    real_http = S._http
+    S._http = lambda url: (seen.append(url), (10, 20))[1]
+    try:
+        site = {"files": {}, "mirror": None, "base": "https://example.test"}
+        checks = [
+            ("remote paths: a bare token is missing", S._read("crzq7marker", site) == S.MISSING),
+            ("remote paths: a site-relative path is read against the site", S._read("/wp-content/a.jpg", site) == (10, 20) and seen == ["https://example.test/wp-content/a.jpg"]),
+            ("remote paths: negative control, a page-relative file path is not guessed", S._read("img/a.jpg", site) is None),
+            ("remote paths: negative control, no base leaves a site-relative path unread", S._read("/a.jpg", {"files": {}, "mirror": None}) is None),
+        ]
+    finally:
+        S._http = real_http
+    for label, ok in checks:
+        if not ok:
+            _fail(label, "unexpected result", failures)
+    return len(checks)
+
+
 def run_http_retry(failures: list[str]) -> int:
     """A dropped connection is retried, so one pass reads the size; a 404 is not retried. Negative control: a reader
     that always drops returns None after every attempt."""
@@ -1013,7 +1036,7 @@ def _run(break_mapping: bool = False) -> int:
         M.rows.cache_clear()
         M.STAYS["sgs/post-grid"] = ()
     failures: list[str] = []
-    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_declared_guard(failures) + run_scope(failures) + run_sizes(failures) + run_http_retry(failures) + run_missing_files(failures) + run_retired_names(failures) + run_inplace_json(failures) + export_selftest.run(failures) + apply_selftest.run(failures) + remote_selftest.run(failures)
+    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_declared_guard(failures) + run_scope(failures) + run_sizes(failures) + run_http_retry(failures) + run_remote_paths(failures) + run_missing_files(failures) + run_retired_names(failures) + run_inplace_json(failures) + export_selftest.run(failures) + apply_selftest.run(failures) + remote_selftest.run(failures)
     for line in failures:
         print(line)
     print(f"migrate-media-system self-test: {total - len(failures)} of {total} checks passed"

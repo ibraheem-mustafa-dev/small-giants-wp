@@ -71,6 +71,9 @@ class Remote:
         self.wp = C.check_wp_path(root if root.startswith("/") else f"{self.home}/{root}")
         self.backups = C.check_wp_path(f"{self.home}/{BACKUP_SUBDIR}/{self.target}")
         self.exported: list[dict] | None = None
+        # The site's own address (`domains/<host>/public_html`), which a site-relative image path is read against.
+        parts = root.split("/")
+        self.base_url = f"https://{parts[parts.index('domains') + 1]}" if "domains" in parts[:-1] else None
 
     def _home(self) -> str:
         code, out, err = self.runner.run('printf %s "$HOME"')
@@ -100,7 +103,7 @@ class Remote:
         if code != 0 or posts is None:
             raise SystemExit(f"export of {self.target} failed (exit {code}): {err.strip()[:300] or out.strip()[:300]}")
         records, files = sizes.split_export(posts)
-        sizes.register(f"remote:{self.target}", files)
+        sizes.register(f"remote:{self.target}", files, base=self.base_url)
         self.exported = records
         return records
 

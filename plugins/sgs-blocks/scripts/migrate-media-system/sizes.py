@@ -48,9 +48,10 @@ def active() -> str:
     return _ACTIVE[0]
 
 
-def register(key: str, files: dict, mirror: str | None = None) -> None:
-    """Install a site's attachment map ({upload-relative path: [id, width, height, mime]}); `mirror` names the WSL mirror whose uploads folder can be read."""
-    _SITES[key] = {"files": {k: tuple(v) for k, v in (files or {}).items()}, "mirror": mirror}
+def register(key: str, files: dict, mirror: str | None = None, base: str | None = None) -> None:
+    """Install a site's attachment map ({upload-relative path: [id, width, height, mime]}); `mirror` names the WSL mirror whose
+    uploads folder can be read; `base` is a remote site's own address (`https://host`), which a site-relative path is read against."""
+    _SITES[key] = {"files": {k: tuple(v) for k, v in (files or {}).items()}, "mirror": mirror, "base": base}
     for cached in [k for k in _CACHE if k[0] == key]:
         del _CACHE[cached]
 
@@ -239,7 +240,13 @@ def _read(url: str, site: dict) -> "Size | str | None":
         if local:
             return local
     if not url.startswith("//") and not re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:", url):  # site-relative or page-relative path
-        return _relative_missing(site["mirror"], url) if site.get("mirror") else None
+        if site.get("mirror"):
+            return _relative_missing(site["mirror"], url)
+        if "/" not in url and "." not in url:
+            return MISSING  # a bare token (a test marker, a stray word) names no file: the old page drew a broken image
+        if url.startswith("/") and site.get("base"):
+            return _http(site["base"].rstrip("/") + url)
+        return None
     return _http("https:" + url if url.startswith("//") else url)
 
 
