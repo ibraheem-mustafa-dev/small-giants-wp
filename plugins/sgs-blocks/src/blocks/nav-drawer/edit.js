@@ -26,8 +26,6 @@ import {
 	useInnerBlocksProps,
 	InspectorControls,
 	useSettings,
-	MediaUpload,
-	MediaUploadCheck,
 	store as blockEditorStore,
 } from '@wordpress/block-editor';
 import {
@@ -44,46 +42,15 @@ import chromeColourRows from './chrome-colour-rows';
 import ChromePreview from './ChromePreview';
 import { shellBorderStyle, closeBorderStyle, closeFillStyle } from './chrome-preview-style';
 import { useSelect } from '@wordpress/data';
+import BackgroundLayers from '../../components/media/BackgroundLayers';
+import { BackgroundPanel } from '../container/components/BackgroundPanel';
 
-/** backgroundSize control options — mirrors sgs/container's BackgroundPanel. */
-const BG_SIZE_OPTIONS = [
-	{ label: __( 'Cover', 'sgs-blocks' ), value: 'cover' },
-	{ label: __( 'Contain', 'sgs-blocks' ), value: 'contain' },
-	{ label: __( 'Auto', 'sgs-blocks' ), value: 'auto' },
-];
-
-/** backgroundPosition control options — mirrors sgs/container's BackgroundPanel. */
-const BG_POSITION_OPTIONS = [
-	{ label: __( 'Centre centre', 'sgs-blocks' ), value: 'center center' },
-	{ label: __( 'Top centre', 'sgs-blocks' ), value: 'top center' },
-	{ label: __( 'Bottom centre', 'sgs-blocks' ), value: 'bottom center' },
-	{ label: __( 'Centre left', 'sgs-blocks' ), value: 'center left' },
-	{ label: __( 'Centre right', 'sgs-blocks' ), value: 'center right' },
-	{ label: __( 'Top left', 'sgs-blocks' ), value: 'top left' },
-	{ label: __( 'Top right', 'sgs-blocks' ), value: 'top right' },
-	{ label: __( 'Bottom left', 'sgs-blocks' ), value: 'bottom left' },
-	{ label: __( 'Bottom right', 'sgs-blocks' ), value: 'bottom right' },
-];
-
-/** backgroundRepeat control options — mirrors sgs/container's BackgroundPanel. */
-const BG_REPEAT_OPTIONS = [
-	{ label: __( 'No repeat', 'sgs-blocks' ), value: 'no-repeat' },
-	{ label: __( 'Repeat', 'sgs-blocks' ), value: 'repeat' },
-	{ label: __( 'Repeat X', 'sgs-blocks' ), value: 'repeat-x' },
-	{ label: __( 'Repeat Y', 'sgs-blocks' ), value: 'repeat-y' },
-];
-
-/** backgroundAttachment control options — mirrors sgs/container's BackgroundPanel. */
-const BG_ATTACHMENT_OPTIONS = [
-	{ label: __( 'Scroll', 'sgs-blocks' ), value: 'scroll' },
-	{ label: __( 'Fixed', 'sgs-blocks' ), value: 'fixed' },
-];
 import { useDrawerPreviewToggle, LogicalAlignControl, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
 	SgsBorderControl, IconPicker, IconPreview, TypographyControls, StarterLookPresetControl,
 	ShadowControl, SurfaceGroundControls, ScrimControls, scrimColourRow,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass, resolveTier, flattenPresetSetting, tierBoxLonghands, tierLengthPreview } from '../../utils';
+import { backgroundMediaPreview, resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass, resolveTier, flattenPresetSetting, tierBoxLonghands, tierLengthPreview } from '../../utils';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
@@ -156,12 +123,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		drawerPadding,
 		submenuModel,
 		ariaLabel,
-		backgroundImage,
-		backgroundImageDecorative,
-		backgroundSize,
-		backgroundPosition,
-		backgroundRepeat,
-		backgroundAttachment,
 		anchorOffset,
 	} = attributes;
 
@@ -357,16 +318,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		maxWidth: isCompact ? tierLengthPreview( panelSize, activeDeviceTier ) || compactWidthFallback : undefined,
 		...shellBorderStyle( attributes, activeDeviceTier, palette ),
 		marginInline: isCompact ? 'auto' : undefined,
-		// Editor-only preview of the background image (render.php paints the same
-		// picture onto a `.{uid}::before` layer, never the root itself — see that
-		// file's comment). Layered UNDER the shellStyle backgroundColor above via
-		// backgroundBlendMode so a translucent panel colour still shows through,
-		// matching the frontend's colour-then-image paint order.
-		backgroundImage: backgroundImage?.url ? `url(${ backgroundImage.url })` : undefined,
-		backgroundSize: backgroundImage?.url ? backgroundSize : undefined,
-		backgroundPosition: backgroundImage?.url ? backgroundPosition : undefined,
-		backgroundRepeat: backgroundImage?.url ? backgroundRepeat : undefined,
-		backgroundAttachment: backgroundImage?.url && backgroundAttachment === 'fixed' ? 'fixed' : undefined,
 	};
 	const bodyStyle = {
 		alignItems: ALIGN_ITEMS[ drawerAlign ] || 'flex-start',
@@ -382,13 +333,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		...resolveTextColourPreviewStyle( drawerTextColour, drawerTextColourGradient, ( v ) => resolveColourToken( v, palette ) ),
 	};
 
-	// Spec 35 item 18 — mirrors render.php's aria-describedby logic so the
-	// editor canvas reflects the same accessible-description decision the
-	// frontend makes (canvas/frontend parity, check-simple-surface-cap CHECK A).
-	const bgImageA11yProps =
-		backgroundImage?.url && ! ( backgroundImageDecorative ?? true ) && backgroundImage.alt
-			? { 'aria-describedby': `${ drawerRef || 'sgs-nav-drawer' }-bg-note` }
-			: {};
+	// The drawer's background (Spec 49 §7.8): the media layer and overlay the shared wrapper prints, at the previewed device.
+	const bgPreview = backgroundMediaPreview( attributes, palette, gradientPresets, activeDeviceTier );
 
 	// Close-LABEL typography canvas mirror. The close-text span
 	// below is hand-authored JSX, not a render.php-rendered node (this block
@@ -488,9 +434,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		// modifier class) never applies. Keyed to the ACTIVE EDITOR DEVICE's
 		// resolved style (§4.9) so switching the device toggle shows what that
 		// tier actually ships, not just the desktop value.
-		className: `sgs-nav-drawer sgs-nav-drawer__editor sgs-nav-drawer--close-${ closeStyleRenderActive }${ previewOpen ? '' : ' sgs-nav-drawer__editor--collapsed' }${ toneClass ? ` ${ toneClass }` : '' }`,
-		style: shellStyle,
-		...bgImageA11yProps,
+		className: `sgs-nav-drawer sgs-nav-drawer__editor sgs-nav-drawer--close-${ closeStyleRenderActive }${ previewOpen ? '' : ' sgs-nav-drawer__editor--collapsed' }${ toneClass ? ` ${ toneClass }` : '' }${ bgPreview.className ? ` ${ bgPreview.className }` : '' }`,
+		style: { ...shellStyle, ...bgPreview.style },
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
@@ -992,107 +937,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					/>
 				</PanelBody>
 
-				{ /* Its OWN panel rather than folded into "Drawer container": that panel
-				   already carries ~10 controls, and inspector-scan rule 03 flags a PanelBody
-				   that dense with no ToolsPanel. Separate is also the clearer grouping. */ }
-				<PanelBody title={ __( 'Drawer background image', 'sgs-blocks' ) } initialOpen={ false }>
-					{ /* Background image — a SCOPED control (not <BackgroundPanel>, which is
-					     all-or-nothing and writes 17 attrs including video/SVG/parallax/
-					     Ken-burns/overlay-blend, none of which apply to a full-screen dialog).
-					     Painted on a `.{uid}::before` media layer by render.php, same
-					     pattern as sgs/container's own background image. */ }
-					<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '4px' } }>
-						{ __( 'Background image', 'sgs-blocks' ) }
-					</p>
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ ( media ) =>
-								setAttributes( { backgroundImage: { id: media.id, url: media.url, alt: media.alt } } )
-							}
-							allowedTypes={ [ 'image' ] }
-							value={ backgroundImage?.id }
-							render={ ( { open } ) => (
-								<div style={ { marginBottom: '8px' } }>
-									{ backgroundImage?.url ? (
-										<>
-											<img src={ backgroundImage.url } alt="" style={ { maxWidth: '100%', marginBottom: '8px' } } />
-											<Button variant="secondary" onClick={ () => setAttributes( { backgroundImage: undefined } ) } isDestructive>
-												{ __( 'Remove image', 'sgs-blocks' ) }
-											</Button>
-										</>
-									) : (
-										<Button variant="secondary" onClick={ open }>
-											{ __( 'Select image', 'sgs-blocks' ) }
-										</Button>
-									) }
-								</div>
-							) }
-						/>
-					</MediaUploadCheck>
-					{ backgroundImage?.url && (
-						<>
-							<SelectControl
-								label={ __( 'Size', 'sgs-blocks' ) }
-								value={ backgroundSize }
-								options={ BG_SIZE_OPTIONS }
-								onChange={ ( val ) => setAttributes( { backgroundSize: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<SelectControl
-								label={ __( 'Position', 'sgs-blocks' ) }
-								value={ backgroundPosition }
-								options={ BG_POSITION_OPTIONS }
-								onChange={ ( val ) => setAttributes( { backgroundPosition: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<SelectControl
-								label={ __( 'Repeat', 'sgs-blocks' ) }
-								value={ backgroundRepeat }
-								options={ BG_REPEAT_OPTIONS }
-								onChange={ ( val ) => setAttributes( { backgroundRepeat: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<SelectControl
-								label={ __( 'Attachment', 'sgs-blocks' ) }
-								value={ backgroundAttachment }
-								options={ BG_ATTACHMENT_OPTIONS }
-								onChange={ ( val ) => setAttributes( { backgroundAttachment: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							{ /* Spec 35 item 18 — see block.json's own comment on
-							     backgroundImageDecorative. Default true matches this
-							     image's existing behaviour (it paints as a CSS
-							     background, never announced to assistive tech). */ }
-							<ToggleControl
-								label={ __( 'Decorative image', 'sgs-blocks' ) }
-								help={ __(
-									'On (recommended): purely visual, adds no information. Turn off only if this image genuinely needs a description for screen-reader users.',
-									'sgs-blocks'
-								) }
-								checked={ backgroundImageDecorative ?? true }
-								onChange={ ( val ) => setAttributes( { backgroundImageDecorative: val } ) }
-								__nextHasNoMarginBottom
-							/>
-							{ ! ( backgroundImageDecorative ?? true ) && (
-								<TextControl
-									label={ __( 'Image description', 'sgs-blocks' ) }
-									value={ backgroundImage?.alt || '' }
-									onChange={ ( val ) =>
-										setAttributes( {
-											backgroundImage: { ...backgroundImage, alt: val },
-										} )
-									}
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							) }
-						</>
-					) }
-				</PanelBody>
+				{ /* The drawer's background is the shared Background panel for the `background` slot. */ }
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 
 				{ /* Spec 36 §14 FR-41-12 — the close button offers the same three things
 				   the OPEN side does: a chosen icon, a chosen word, and both
@@ -1387,6 +1233,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
 				<ChromePreview attributes={ attributes } deviceTier={ activeDeviceTier } palette={ palette }>
 					{ /* closeStyle preview -- mirrors render.php's three real, visually
 						distinct close-button markups, so the "Close button style"

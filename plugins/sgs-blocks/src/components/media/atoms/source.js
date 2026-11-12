@@ -85,7 +85,6 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
 			SvgContent: [ 'svg' ],
 			Thumbnail: [ 'video' ],
 			ThumbnailId: [ 'video' ],
-			LottieId: [ 'lottie' ],
 		}[ base ];
 		return wanted && ! kindIn( c, ...wanted ) ? omitted() : undefined;
 	} );
@@ -108,48 +107,6 @@ export function validate( value ) {
 		return TYPE_VOCABULARY.includes( value.type ) ? value : null;
 	}
 	return value;
-}
-
-/**
- * Custom-property VALUES for a painted BACKDROP. Element-scope surfaces (an
- * `<img>`/`<video>` tag) never call this for paint — the chosen media reaches
- * the page via markup (`src`), not CSS, which is why `sgs/media`'s own
- * mechanism is "sibling-markup" per the census, not a stylesheet rule.
- *
- * Only an IMAGE source is paintable as `background-image`. A video or SVG
- * backdrop needs its own DOM (a `<video>` element or inline `<svg>`), not a
- * CSS property — this atom emits nothing for those types. That is an honest
- * limit of a "both scopes, one concept" atom, not an oversight: see the
- * task report for the explicit call-out.
- *
- * @param {Object} ctx
- * @param {Object} ctx.attributes
- * @param {string} ctx.prefix
- * @param {string} ctx.blockSlug
- * @return {string[]} `--custom-property:value` declarations.
- */
-export function css( { attributes, prefix, blockSlug } ) {
-	const attrs = attributes || {};
-	const name = ( base ) => mediaStoredAttrName( blockSlug, prefix, base );
-	const type = resolveMediaType( attrs, prefix, blockSlug );
-	const out = [];
-
-	if ( 'image' !== type ) {
-		return out;
-	}
-
-	const push = ( varName, suffix ) => {
-		const url = attrs[ name( 'ImageUrl' + suffix ) ];
-		if ( url ) {
-			out.push( `${ varName }:url("${ url }")` );
-		}
-	};
-
-	push( '--sgs-media-background-image', '' );
-	push( '--sgs-media-background-image-tablet', 'Tablet' );
-	push( '--sgs-media-background-image-mobile', 'Mobile' );
-
-	return out;
 }
 
 /**

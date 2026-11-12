@@ -68,11 +68,10 @@ export const MEDIA_BASES = {
 	// `source.control.js` (which only ever writes the Id/Url pair or
 	// SvgContent). Keeping them in this atom meant EVERY surface adopting
 	// `atoms:['source']` had these three dead names silently
-	// re-registered server-side by `sgs_register_media_element_attrs()`
+	// re-registered server-side by the old attribute register
 	// even after a block's own block.json stopped declaring them — exactly
 	// how hero's already-deleted `splitImage`/`splitImageMobile` kept
-	// reappearing in the live registered schema post-deploy. See
-	// `includes/media-element-attrs-register.php`'s module docblock.
+	// reappearing in the live registered schema post-deploy.
 	source: [
 		'ImageId',
 		'ImageUrl',
@@ -81,14 +80,7 @@ export const MEDIA_BASES = {
 		'SvgContent',
 		'Thumbnail',
 		'ThumbnailId',
-		// Added 2026-09-26 (U-17, design §3.1) — the Lottie media type's own
-		// slot. Integer attachment ID ONLY, no `LottieUrl` sibling: the URL is
-		// resolved at render from the ID (`wp_get_attachment_url()`), same
-		// pattern `VideoId` uses when `VideoSource` is 'internal'.
-		'LottieId',
 	],
-	// Which of the three types is showing.
-	type: [ 'MediaType', 'VideoSource', 'VideoMimeType' ],
 	// Meaning / accessibility. Per-instance by design: the same logo is
 	// meaningful in a header and decorative in a footer strip.
 	meaning: [ 'ImageAlt', 'VideoAlt', 'ImageDecorative' ],
@@ -106,11 +98,6 @@ export const MEDIA_BASES = {
 		'VideoCaptionsUrl',
 		'VideoCaptionsLabel',
 		'VideoCaptionsSrcLang',
-		// Added 2026-09-26 (U-17, design §3.1) — shown ONLY for the 'lottie'
-		// media type (video-behaviour.control.js's per-type branch).
-		// `VideoLoop` above is REUSED for Lottie's own loop toggle.
-		'LottieTrigger',
-		'LottieSpeed',
 	],
 	// SVG presentation.
 	svg: [
@@ -121,8 +108,6 @@ export const MEDIA_BASES = {
 		'SvgMinHeight',
 		'SvgTextShadow',
 	],
-	// Intrinsic dimensions, written from the chosen media rather than edited.
-	intrinsic: [ 'ImageWidth', 'ImageHeight' ],
 
 	// ── PRESENTATION (atoms 7-10). Added from the census's presentation half.
 	//
@@ -211,12 +196,13 @@ export const MEDIA_BASES = {
  *
  * ⛔ Declaring a tier for a base nothing varies per device creates attributes no
  * renderer reads - the dead-control class `check-dead-controls.js` gates. This
- * list is the single source for BOTH injection filters; neither derives the
- * tiered set from group membership any more.
+ * list is the single source for the tiered set: the attribute generator and the atom
+ * settings (`atom-settings.js::settingsForBases`) both read it; neither derives
+ * the tiered set from group membership.
  */
 export const MEDIA_TIERED_BASES = [
 	...[ 'ImageId', 'ImageUrl', 'VideoId', 'VideoUrl',
-		'SvgContent', 'Thumbnail', 'ThumbnailId', 'LottieId' ],
+		'SvgContent', 'Thumbnail', 'ThumbnailId' ],
 	...[ 'VideoAutoplay', 'VideoLoop', 'VideoMuted', 'VideoControls',
 		'VideoPlaysInline', 'VideoLazyLoad', 'VideoCaptionsId', 'VideoCaptionsUrl',
 		'VideoCaptionsLabel', 'VideoCaptionsSrcLang' ],
@@ -260,19 +246,12 @@ export const MEDIA_ATTR_TYPES = {
 	VideoId: 'integer',
 	ThumbnailId: 'integer',
 	VideoCaptionsId: 'integer',
-	// Added 2026-09-26 (U-17, design §3.1).
-	LottieId: 'integer',
-	LottieTrigger: 'string',
-	LottieSpeed: 'number',
 	// Strings.
 	ImageUrl: 'string',
 	VideoUrl: 'string',
 	ImageAlt: 'string',
 	VideoAlt: 'string',
 	SvgContent: 'string',
-	MediaType: 'string',
-	VideoSource: 'string',
-	VideoMimeType: 'string',
 	VideoCaptionsUrl: 'string',
 	VideoCaptionsLabel: 'string',
 	VideoCaptionsSrcLang: 'string',
@@ -291,14 +270,12 @@ export const MEDIA_ATTR_TYPES = {
 	VideoLazyLoad: 'boolean',
 	// Numbers.
 	SvgOpacity: 'number',
-	ImageWidth: 'number',
-	ImageHeight: 'number',
 
 	// ── PRESENTATION.
 	//
 	// ⛔ ONE BASE CARRIES A TYPE CONFLICT ACROSS SURFACES, and the type declared
 	// here is what a FRESH adoption gets - never a retrofit of an existing one.
-	// A block's own declaration always wins at injection, so the divergent
+	// A block's own declaration always wins when the attribute generator writes it, so the divergent
 	// surfaces keep their shape and the atom READS it (see the atom registry's
 	// `reads` field):
 	//
@@ -381,7 +358,7 @@ export function mediaAttrType( base, tier ) {
  * distinct cases. Three are `sgs/before-after`'s shared autoplay - ONE toggle governing BOTH
  * video slots per its sync contract, so it is deliberately block-level rather
  * than per-prefix. `decorMedia` is listed for `sgs/decorative-image` because it
- * is a legacy composite object with no prefix/base decomposition at all.
+ * is a composite object with no prefix/base decomposition at all.
  *
  * An entry here is a name the shared layer must READ AS-IS. It is never a
  * licence to rename the stored attribute.

@@ -30,7 +30,6 @@
 			"motion": true,
 			"headerEssential": true,
 			"iconPicker": true,
-			"imageControls": false,
 			"elements": {
 				"icon": {
 					"label": "Icon",

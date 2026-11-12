@@ -35,7 +35,8 @@
 
 /* (0,2,0) so the whole drawing always shows: it outranks the shared
  * `.sgs-media-el` sizing rule (0,1,0) whatever the stylesheet order. */
-.sgs-measured-diagram__frame > .sgs-measured-diagram__drawing {
+.sgs-measured-diagram__frame > .sgs-measured-diagram__drawing,
+.sgs-measured-diagram__frame > .sgs-measured-diagram__drawing img {
 	display: block;
 	width: 100%;
 	height: 100%;

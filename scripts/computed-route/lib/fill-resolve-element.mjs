@@ -76,20 +76,6 @@ export function answeredWidths( prop, draft, res ) {
 	} );
 }
 
-// The fixed-ratio equivalent for a property whose declared values are not plain. When it lands a write, the not-plain
-// values it replaces stay on that write's `note`; when nothing is written (the result is `equal`, or the setting already
-// holds the value) `landed` is false and the caller keeps the not-plain rows.
-export function ratioWrite( st, rec, target, prop, draft, notPlain, ctx ) {
-	const before = st.out.writes.length;
-	const eq = fillEquivalent( st, rec, target, prop, draft, ctx );
-	const landed = 'intrinsic-ratio' === eq?.condition && st.out.writes.length > before;
-	if ( landed && notPlain.length ) {
-		const note = `replaces the not-plain declared values ${ notPlain.map( ( n ) => `${ n.property } ${ n.value }` ).join( '; ' ) }`;
-		st.out.writes.slice( before ).forEach( ( w ) => Object.assign( w, { note } ) );
-	}
-	return { eq, landed };
-}
-
 export function unmapped( st, rec, ref, row ) {
 	st.out.unmapped.push( { node: ref, block: rec.name, slot: '', ...row } );
 }
@@ -259,23 +245,16 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 				settled( st, rec, ref, { slot, property: prop, value: valueText( Object.fromEntries( undeclared.map( ( w ) => [ w, rendered[ w ] ] ) ) ), widths: undeclared.map( Number ), reason: 'used-size', detail: `the code declares no ${ prop } length at ${ undeclared.join( ', ' ) }px: the rendered value is a layout result` } );
 			}
 			if ( ! Object.keys( draft ).length ) {
-				// Nothing plain to write; an element of fixed ratio still takes its rendered height as a maximum height.
-				const { landed } = notPlain.length ? ratioWrite( st, rec, target, prop, draft, notPlain, { baselineFn, apply, rendered } ) : { landed: false };
-				if ( ! landed ) {
-					notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
-				}
+				// Nothing plain to write: the not-plain values are rows.
+				notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
 				continue;
 			}
 		}
 		const fluid = fluidSamples( st, target, layer, prop );
 		const alternates = layer ? [] : alternateSlots( cal, prop, draft, rec.targets.map( ( t ) => t.slot ), target.slot );
 		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...alternates.filter( ( s ) => s !== slot ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ), contextAt } );
-		const { eq, landed } = 'gap' === res.status && 'no-setting' === res.gap && ! layer ? ratioWrite( st, rec, target, prop, draft, notPlain, { baselineFn, apply, rendered } ) : { eq: null, landed: false };
-		// A maximum height written from the rendered heights replaces the not-plain rows (each width's height is what it
-		// paints) and carries their values on its note; a result that wrote nothing keeps them as rows.
-		if ( ! landed ) {
-			notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
-		}
+		const eq = 'gap' === res.status && 'no-setting' === res.gap && ! layer ? fillEquivalent( st, rec, target, prop, draft, { baselineFn, apply } ) : null;
+		notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
 		if ( 'equal' === res.status || 'equal' === eq?.status ) {
 			settled( st, rec, ref, { slot, property: prop, value: valueText( draft ), widths: Object.keys( draft ).map( Number ), reason: 'equal', detail: 'the element already shows this value at every width (its parent, the theme or its calibrated default paint)' } );
 		}

@@ -824,7 +824,7 @@ final class Sgs_Motion_Renderer {
 			);
 			$css      .= $emitted['css'];
 			$css      .= Sgs_Motion_Effect_Properties::css( $element, $resolved['selector'] );
-			$fx_attrs  = Sgs_Motion_Fx_Emitter::attrs( $element, $name, $target );
+			$fx_attrs  = Sgs_Motion_Fx_Emitter::attrs( $element, $name, $target, (array) $attrs );
 			if ( $resolved['match']['root'] ) {
 				$root_attrs = Sgs_Motion_Fx_Emitter::merge( $root_attrs, $fx_attrs, $name, $target );
 			} else {

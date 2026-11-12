@@ -18,8 +18,7 @@
 		"sgs/measured-diagram"
 	],
 	"usesContext": [
-		"sgs/measuredDiagramWidth",
-		"sgs/measuredDiagramHeight",
+		"sgs/measuredDiagramSource",
 		"sgs/measuredDiagramTickLength",
 		"postId",
 		"postType"

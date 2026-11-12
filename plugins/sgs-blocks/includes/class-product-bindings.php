@@ -448,6 +448,7 @@ final class Product_Bindings {
 					'price_html'      => \wp_kses_post( $product->get_price_html() ),
 					'is_variable'     => $is_variable,
 					'price_from_html' => $price_from_html,
+					'image_id'        => (int) $image_id,
 					'image_url'       => \esc_url( (string) $image_url ),
 					'image_alt'       => \sanitize_text_field( (string) $image_alt ),
 					'short_desc'      => \wp_kses_post( $product->get_short_description() ),
@@ -496,6 +497,7 @@ final class Product_Bindings {
 			'id'             => $product_id,
 			'title'          => \esc_html( \get_the_title( $product_id ) ),
 			'price_html'     => $price_html,
+			'image_id'       => (int) $thumb_id,
 			'image_url'      => \esc_url( (string) $image_url ),
 			'image_alt'      => \sanitize_text_field( (string) $image_alt ),
 			'short_desc'     => \wp_kses(

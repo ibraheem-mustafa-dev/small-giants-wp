@@ -1,5 +1,5 @@
 // Carried IDs (Spec 48 FR-48-58): an attachment or menu id the skeleton takes from what was built, never from a
-// hand-set decision. A logo block's `logoId` is the media-map attachment of the file the draft element draws: an <img>'s
+// hand-set decision. A logo block's Source (`logoSource`, the slot `supports.sgs.mediaElements` declares) is the media-map attachment of the file the draft element draws: an <img>'s
 // `src`, or, for a custom element that loads its image by an attribute value (`<x-logo variant="square">` with
 // `{ square: './assets/logo-square.svg' }` in its script), the file that script's source map names for that value.
 // The entry is chosen by the local sha256 of the draft's own file against the media map's source `sha256` (not
@@ -73,12 +73,12 @@ export function mediaEntry( { map, site, repo, folder, file } ) {
 	const hits = ( map?.sites?.[ recordSite( site ) ]?.files || [] ).filter( ( f ) => f.sha256 === want && Number.isInteger( f.id ) );
 	const ids = new Set( hits.map( ( h ) => h.id ) );
 	if ( 1 === ids.size ) {
-		return { id: hits[ 0 ].id, asset: hits[ 0 ].asset };
+		return { id: hits[ 0 ].id, asset: hits[ 0 ].asset, ...( hits[ 0 ].url ? { url: hits[ 0 ].url } : {} ) };
 	}
 	return { reason: ids.size ? `${ file } matches different attachments (${ [ ...ids ].join( ', ' ) })` : `${ file } (sha256 ${ want.slice( 0, 8 ) }) is not in the media map for ${ recordSite( site ) }` };
 }
 
-// What the skeleton carries for one client and site: { logo( e, view ) -> { id, asset } | { reason } | null, menu( kind ) -> id | null,
+// What the skeleton carries for one client and site: { logo( e, view ) -> { id, asset, url } | { reason } | null, menu( kind ) -> id | null,
 // attribute( slug ) -> { id } | { reason } | null (null when no site is named) }.
 export function carriedIds( { repo, client, site, rootComponent = null } ) {
 	const build = path.join( repo, 'sites', client, 'build' );

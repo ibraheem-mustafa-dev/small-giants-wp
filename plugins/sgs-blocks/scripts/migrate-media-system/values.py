@@ -11,6 +11,7 @@ PCT = re.compile(r"^-?\d+(?:\.\d+)?%$")
 RATIO = re.compile(r"^\d+(?:\.\d+)?\s*/\s*\d+(?:\.\d+)?$")
 PX = re.compile(r"^(\d+(?:\.\d+)?)px$")
 CORNERS = ("topLeft", "topRight", "bottomRight", "bottomLeft")
+SIDES = ("top", "right", "bottom", "left")
 
 
 def is_device_object(value: Any) -> bool:
@@ -64,6 +65,19 @@ def normalise_ratio(value: Any) -> str | None:
     return None
 
 
+CSS_POSITION_TOKEN = re.compile(r"^(?:left|right|top|bottom|center|-?(?:\d+\.?\d*|\.\d+)(?:%|[a-z]{1,4})?)$")
+
+
+def inert_position(text: Any) -> bool:
+    """True for a string that is no CSS position at all (a template placeholder such as `{{ heroPos }}`, a stray word, five or more
+    tokens): the browser dropped the whole `object-position` declaration, so the old image sat at its default focal point. A string
+    holding a function (`calc(...)`) or any readable token form is not inert: it has a focal meaning or must be read by hand."""
+    if not isinstance(text, str) or not text.strip() or "(" in text:
+        return False
+    tokens = text.lower().split()
+    return len(tokens) > 4 or not all(CSS_POSITION_TOKEN.match(t) for t in tokens)
+
+
 def parse_position(text: Any):
     """A CSS position string as {x, y} in 0..1, or None when it cannot be read (px, calc, unknown words)."""
     if not isinstance(text, str):
@@ -110,6 +124,8 @@ def focal_value(raw: Any):
             except (TypeError, ValueError):
                 bad.append(item)
             continue
+        if inert_position(item):
+            continue  # the browser ignored it: no focal meaning to keep or refuse (the caller says so)
         parsed = parse_position(item)
         if parsed is None:
             bad.append(item)

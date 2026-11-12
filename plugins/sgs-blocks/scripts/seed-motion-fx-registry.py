@@ -82,7 +82,7 @@ from seed_motion_fx_data import FX_ATTR_CSS_PROPERTY, FX_EFFECTS  # noqa: E402,F
 FX_EFFECTS_COLUMNS = (
     "effect", "tier", "plugin_set", "owns_scroll_transform",
     "reduced_motion", "editor_story", "scope", "requires",
-    "pins", "triggers", "creates_panel", "in_picker",
+    "pins", "triggers", "creates_panel", "in_picker", "media_kinds",
 )
 
 
@@ -102,6 +102,7 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
             triggers                TEXT NOT NULL DEFAULT 'scroll',
             creates_panel           INTEGER NOT NULL DEFAULT 1,
             in_picker               INTEGER NOT NULL DEFAULT 0,
+            media_kinds             TEXT NOT NULL DEFAULT '',
             created_at              TEXT DEFAULT (datetime('now'))
         )
         """
@@ -182,6 +183,12 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
     if "in_picker" not in existing_cols:
         cur.execute("ALTER TABLE fx_effects ADD COLUMN in_picker INTEGER NOT NULL DEFAULT 0")
         print("  [set]  fx_effects: added column 'in_picker' (migration)")
+    # Spec 49 section 10.1: the media kinds an effect needs of a media slot ('image', 'video', 'svg', comma separated;
+    # '' fits every kind). `requires` stays the block-provision token the qualifying-blocks generator reads: Ken Burns
+    # needs a 'surface' there and an image here. The editor reads it through generated-fx-effect-meta.json.
+    if "media_kinds" not in existing_cols:
+        cur.execute("ALTER TABLE fx_effects ADD COLUMN media_kinds TEXT NOT NULL DEFAULT ''")
+        print("  [set]  fx_effects: added column 'media_kinds' (migration)")
     # Spec 38A section 6.4: the channels/slots an effect writes and the panels that may offer it.
     if "owned_properties" not in existing_cols:
         cur.execute("ALTER TABLE fx_effects ADD COLUMN owned_properties TEXT NOT NULL DEFAULT '{}'")
@@ -197,7 +204,7 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
         effect = row["effect"]
         existing = cur.execute(
             "SELECT tier, plugin_set, owns_scroll_transform, reduced_motion, editor_story, "
-            "scope, requires, pins, triggers, creates_panel, in_picker FROM fx_effects WHERE effect = ?",
+            "scope, requires, pins, triggers, creates_panel, in_picker, media_kinds FROM fx_effects WHERE effect = ?",
             (effect,),
         ).fetchone()
         plugin_set_json = json.dumps(row["plugin_set"])
@@ -212,13 +219,14 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
             # declares it offerable from the generic "Scroll & effects" picker.
             # See the column's migration note for why this direction fails safe.
             row.get("in_picker", 0),
+            row.get("media_kinds", ""),
         )
         if existing is None:
             cur.execute(
                 "INSERT INTO fx_effects "
                 "(effect, tier, plugin_set, owns_scroll_transform, reduced_motion, "
-                "editor_story, scope, requires, pins, triggers, creates_panel, in_picker) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "editor_story, scope, requires, pins, triggers, creates_panel, in_picker, media_kinds) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (effect, *target),
             )
             changed += 1
@@ -230,7 +238,7 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
         cur.execute(
             "UPDATE fx_effects SET tier=?, plugin_set=?, owns_scroll_transform=?, "
             "reduced_motion=?, editor_story=?, scope=?, requires=?, pins=?, triggers=?, "
-            "creates_panel=?, in_picker=? WHERE effect=?",
+            "creates_panel=?, in_picker=?, media_kinds=? WHERE effect=?",
             (*target, effect),
         )
         changed += 1
@@ -315,6 +323,12 @@ def main() -> int:
             "(building off committed generated artefacts; see .claude/dev-setup.md)."
         )
         return 0
+
+    from framework_db import shared_schema_mismatch  # noqa: E402
+    refusal = shared_schema_mismatch(Path(__file__).resolve().parents[3])
+    if refusal:
+        print(f"[seed-motion-fx-registry] REFUSED: {refusal}", file=sys.stderr)
+        return 1
 
     con = sqlite3.connect(str(DB_PATH))
     cur = con.cursor()

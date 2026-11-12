@@ -55,7 +55,7 @@ def copy_channel(ch: Channel) -> Channel:
 
 class Resolver:
     def __init__(self, passed: dict[str, BlockResult], rows: dict[tuple[str, str], dict], blockjson: dict,
-                 dump: dict, css: CssIndex, js: str, paint: PaintClassifier) -> None:
+                 dump: dict, css: CssIndex, js: str, paint: PaintClassifier, media=None) -> None:
         self.passed = passed
         self.rows = rows
         self.blockjson = blockjson
@@ -63,15 +63,17 @@ class Resolver:
         self.css = css
         self.js = js
         self.paint = paint
+        self.media = media   # wf_media_system.MediaSystem, or None
         self._done: dict[tuple[str, str], Resolved] = {}
         self._anim: dict[str, dict[str, str]] = {}
 
-    def signals(self, ch: Channel, toggle: bool, enum: list | None = None) -> dict:
+    def signals(self, ch: Channel, toggle: bool, enum: list | None = None, media_no_css: bool = False) -> dict:
         css, js = self.css, self.js
         return {
             # The value only selects which rows come back, and in what order.
             "query_only": ch.query and not ch.kinds() and not ch.forwards,
             "enum": enum or [],
+            "media_no_css": media_no_css,
             "class_rule": any(css.has_class(c) for c in ch.classes if own_modifier(c)),
             "cp_reader": any(css.cp_read(cp) for cp in ch.cps),
             "decl_channel": ch.decl or ch.gate_decl,
@@ -103,7 +105,6 @@ class Resolver:
         if d.get("renderVia") == "media-element-atom" and not ch.kinds():
             ch.read = True
             ch.decl = True
-            ch.helpers.add("sgs_media_element_style")
             where = where or "media-atom"
         for fb, fa in sorted(ch.forwards):
             if (fb, fa) in stack or (fb, fa) == key or fb not in self.passed or fa not in self.passed[fb].channels:
@@ -119,7 +120,8 @@ class Resolver:
             ch.fwd_tokens |= tokens
             ch.ctx_tokens |= tokens
             where = where or "forwarded"
-        category, basis = self.paint.classify(self.rows[key], self.signals(ch, toggle, self._enum(block, attr)))
+        category, basis = self.paint.classify(self.rows[key], self.signals(ch, toggle, self._enum(block, attr),
+                                  bool(self.media) and self.media.no_css(block, attr)))
         res = Resolved(ch=ch, where=where, category=category, basis=basis)
         if not stack:
             self._done[key] = res

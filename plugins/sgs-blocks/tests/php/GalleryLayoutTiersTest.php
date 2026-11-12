@@ -30,8 +30,8 @@ final class GalleryLayoutTiersTest extends TestCase {
 				array(
 					'layout'     => $layout,
 					'mediaItems' => array(
-						array( 'id' => 1, 'url' => 'https://example.test/a.jpg', 'alt' => 'A' ),
-						array( 'id' => 2, 'url' => 'https://example.test/b.jpg', 'alt' => 'B' ),
+						array( 'source' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/a.jpg', 'width' => 800, 'height' => 600 ) ), 'alt' => 'A' ),
+						array( 'source' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/b.jpg', 'width' => 800, 'height' => 600 ) ), 'alt' => 'B' ),
 					),
 				),
 				$extra

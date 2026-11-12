@@ -8,43 +8,38 @@ import { useSettings } from '@wordpress/block-editor';
 import { IconPreview } from '../../../components';
 import {
 	colourVar,
-	focalPointToObjectPosition,
 	BandWrap,
+	usePreviewTier,
 } from '../../../utils';
+import ItemSlotPicture from '../../../components/media/ItemSlotPicture.js';
 import { glyphSizePx } from '../../../utils/font-size-preset';
+import { itemFile } from '../item-model';
 import ProductTemplateCanvas from './ProductTemplateCanvas';
 
 import AuthoredText from '../../../components/AuthoredText';
 /**
- * A card's image, video or empty placeholder for the canvas.
+ * A card's picture or empty placeholder for the canvas. The picture goes through the shared item-set canvas path, so
+ * every setting of the `image` slot (Border, Radius, Shape, Width, Height, Fit, Focal point) shows as on the page.
  *
- * @param {Object} item           Card item.
- * @param {Object} itemMediaStyle Style object for the media element.
+ * @param {Object} attributes Block attributes (the slot's shared settings).
+ * @param {Object} item       Card item.
+ * @param {number} index      The card's position.
+ * @param {string} uid        Scope class base for this block instance.
+ * @param {string} device     The previewed device.
  * @return {JSX.Element} The media element.
  */
-function renderMedia( item, itemMediaStyle ) {
-	if ( ! item.media?.url ) {
+function renderMedia( attributes, item, index, uid, device ) {
+	if ( ! itemFile( item, device ).url ) {
 		return <span className="sgs-card-grid__image-placeholder" />;
 	}
-	if ( item.media.type === 'video' ) {
-		return (
-			// eslint-disable-next-line jsx-a11y/media-has-caption
-			<video
-				src={ item.media.url }
-				className="sgs-card-grid__image sgs-card-grid__media"
-				style={ itemMediaStyle }
-				muted
-				loop
-				playsInline
-			/>
-		);
-	}
 	return (
-		<img
-			src={ item.media.url }
-			alt={ item.media.alt || '' }
+		<ItemSlotPicture
+			attributes={ attributes }
+			item={ item }
+			index={ index }
+			prefix="image"
+			uid={ uid }
 			className="sgs-card-grid__image sgs-card-grid__media"
-			style={ itemMediaStyle }
 		/>
 	);
 }
@@ -66,6 +61,7 @@ export default function CardGridCanvas( {
 	HeadingTag,
 } ) {
 	const [ fontSizes ] = useSettings( 'typography.fontSizes' );
+	const device = usePreviewTier();
 	const {
 		variant,
 		glyphSize,
@@ -171,23 +167,11 @@ export default function CardGridCanvas( {
 								) }
 							</p>
 						) }
-						{ items.map( ( item ) => {
-							const itemMediaStyle = {
-								objectFit: item.objectFit || 'cover',
-								objectPosition:
-									'cover' === ( item.objectFit || 'cover' )
-										? focalPointToObjectPosition(
-												item.focalPoint || {
-													x: 0.5,
-													y: 0.5,
-												}
-										  )
-										: undefined,
-							};
+						{ items.map( ( item, itemIndex ) => {
 							// Glyph + image-fallback tile preview — mirrors render.php's
 							// item_use_fallback/item_glyph_slug logic so the canvas
 							// matches the frontend.
-							const hasMedia = !! item.media?.url;
+							const hasMedia = !! itemFile( item, device ).url;
 							const useFallback = !! imageFallback && ! hasMedia;
 							const wrapClassName = [
 								'sgs-card-grid__image-wrap',
@@ -297,8 +281,11 @@ export default function CardGridCanvas( {
 											} }
 										>
 											{ renderMedia(
+												attributes,
 												item,
-												itemMediaStyle
+												itemIndex,
+												`sgs-cg-${ clientId.slice( 0, 8 ) }`,
+												device
 											) }
 											{ overlayStyle && (
 												<span

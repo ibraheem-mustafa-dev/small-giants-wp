@@ -11,18 +11,40 @@ import tempfile
 from pathlib import Path
 
 import blocks as B
+import corpus as C
 import markup
 import apply_selftest
 import export_selftest
+import remote_selftest
 import mapping as M
+import sizes as S
 
 U = "http://x/u.jpg"
 CASES: list[tuple] = []
+# The sizes the stub file reader knows (the real reader reads the file or the site's attachment map).
+STUB_SIZES = {U: (640, 480), "http://x/t.jpg": (320, 240), "http://x/m.jpg": (160, 120), "http://x/m.svg": (100, 100),
+              "http://x/p.jpg": (50, 50), "http://x/v.mp4": (1, 1)}
+
+
+def _stub_read(url: str, _site: dict):
+    return STUB_SIZES.get(url)
+
+
+def _sized(node):
+    """An expected output with the stub's width and height added to each bare-URL image Source entry (FR-49-16)."""
+    if isinstance(node, dict):
+        out = {k: _sized(v) for k, v in node.items()}
+        if out.get("kind") == "image" and out.get("url") in STUB_SIZES and not out.get("id") and not (out.get("width") and out.get("height")):
+            out["width"], out["height"] = STUB_SIZES[out["url"]]
+        return out
+    if isinstance(node, list):
+        return [_sized(v) for v in node]
+    return node
 
 
 def case(label: str, block: str, attrs: dict, expected: dict | None) -> None:
     """expected None means a negative control: the output equals the input."""
-    CASES.append((label, block, attrs, attrs if expected is None else expected))
+    CASES.append((label, block, attrs, attrs if expected is None else _sized(expected)))
 
 
 # ---- source, alt, decorative (sgs/media)
@@ -31,21 +53,34 @@ case("media: image id and url, alt, decorative", "sgs/media",
      {"source": {"desktop": {"kind": "image", "id": 5, "url": U}}, "alt": "A", "decorative": True})
 case("media: per-device files and a differing tablet alt", "sgs/media",
      {"imageUrl": U, "imageUrlTablet": "http://x/t.jpg", "imageAlt": "A", "imageAltTablet": "B"},
-     {"source": {"desktop": {"kind": "image", "url": U}, "tablet": {"kind": "image", "url": "http://x/t.jpg", "alt": "B"}}, "alt": "A"})
+     {"source": {"desktop": {"kind": "image", "url": U}, "tablet": {"kind": "image", "url": "http://x/t.jpg", "alt": "B"}}, "alt": "A", "width": {"desktop": "100%"}})
 case("media: video with poster, captions, mime and the old defaults pinned", "sgs/media",
      {"mediaType": "video", "videoSource": "internal", "videoId": 9, "videoUrl": U, "videoMimeType": "video/mp4",
       "thumbnailId": 4, "thumbnail": "http://x/p.jpg", "videoCaptionsUrl": "http://x/c.vtt", "videoAutoplay": True},
      {"source": {"desktop": {"kind": "video", "id": 9, "url": U, "mime": "video/mp4", "poster": {"id": 4, "url": "http://x/p.jpg"},
                              "captions": {"url": "http://x/c.vtt", "label": "English", "lang": "en"}}},
-      "playback": {"autoplay": True, "muted": True, "inline": True, "loop": False, "controls": True, "lazy": True}})
+      "playback": {"autoplay": True, "muted": True, "inline": True, "loop": False, "controls": True, "lazy": True},
+      "width": {"desktop": "100%"}})
 case("media: external YouTube url is an embed", "sgs/media",
      {"mediaType": "video", "videoSource": "external", "videoUrl": "https://youtu.be/abcdefghijk"},
      {"source": {"desktop": {"kind": "embed", "url": "https://youtu.be/abcdefghijk"}},
       "playback": {"autoplay": False, "muted": True, "inline": True, "loop": False, "controls": True, "lazy": True}})
 case("media: inline svg", "sgs/media", {"mediaType": "svg", "svgContent": "<svg/>"},
-     {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}})
+     {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "width": {"desktop": "100%"}})
 case("media: intrinsic size folded into Source", "sgs/media", {"imageUrl": U, "imageWidth": 600, "imageHeight": 400},
      {"source": {"desktop": {"kind": "image", "url": U, "width": 600, "height": 400}}})
+# ---- SVG presentation animation becomes an Effects layer on the SVG part (WP-10b)
+case("svg animation: wave fast becomes an svg-loop layer", "sgs/media",
+     {"mediaType": "svg", "svgContent": "<svg/>", "svgAnimation": "wave", "svgAnimationSpeed": "fast"},
+     {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "width": {"desktop": "100%"},
+      "sgsMotion": {"v": 1, "elements": {"media": {"effects": [{"id": "svg-loop", "effect": "svg-loop", "values": {"motion": "wave", "duration": 3000, "amplitude": 1}}]}}}})
+case("svg animation: float becomes an ambient-float layer, speed defaulting to medium", "sgs/media",
+     {"mediaType": "svg", "svgContent": "<svg/>", "svgAnimation": "float"},
+     {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "width": {"desktop": "100%"},
+      "sgsMotion": {"v": 1, "elements": {"media": {"effects": [{"id": "ambient-float", "effect": "ambient-float", "values": {"travel": -10, "axis": "y", "period": 2000, "easing": "ease-in-out", "direction": "alternate"}}]}}}})
+case("svg animation: none is deleted with no layer", "sgs/media",
+     {"mediaType": "svg", "svgContent": "<svg/>", "svgAnimation": "none", "svgAnimationSpeed": "slow"},
+     {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "width": {"desktop": "100%"}})
 # ---- sizing
 case("media: sizing fill", "sgs/media", {"mediaSizing": "fill", "height": {"desktop": "300px"}}, {"height": {"desktop": "fill"}})
 case("media: sizing height gains Width auto", "sgs/media", {"mediaSizing": "height", "height": {"desktop": "440px", "mobile": "300px"}, "width": {"mobile": "50%"}},
@@ -53,22 +88,128 @@ case("media: sizing height gains Width auto", "sgs/media", {"mediaSizing": "heig
 case("media: sizing ratio", "sgs/media", {"mediaSizing": "ratio", "aspectRatio": "4/5", "height": {"desktop": "300px"}},
      {"height": {"desktop": "auto"}, "ratio": {"desktop": "4 / 5"}})
 case("media: sizing auto drops the inert height and ratio", "sgs/media", {"mediaSizing": "auto", "aspectRatio": "1 / 1", "height": {"desktop": "9px"}}, {})
+# FR-49-16: an image Source gets its own size (a bare URL is refused by the renderer); the stub reader supplies it here.
+case("size: a bare image URL gets the file's width and height", "sgs/media", {"imageUrl": "http://x/t.jpg"},
+     {"source": {"desktop": {"kind": "image", "url": "http://x/t.jpg", "width": 320, "height": 240}}})
+case("size: a size saved on the block is kept, not read again", "sgs/media", {"imageUrl": U, "imageWidth": 999, "imageHeight": 111},
+     {"source": {"desktop": {"kind": "image", "url": U, "width": 999, "height": 111}}})
+# ---- Stage B decorative package rules (each with a negative control)
+G1, G2 = "linear-gradient(90deg,#000,#fff)", "linear-gradient(0deg,#111,#222)"
+VIDEO = "http://x/v.mp4"
+case("hero split width: an old image with no width is pinned to its file's own width (the old image forced it on the grid column)", "sgs/hero",
+     {"splitMediaImageUrl": U}, {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitWidth": {"desktop": "640px"}})
+case("hero motion: the saved split-image part moves to split-media (the renderer's part name)", "sgs/hero",
+     {"sgsMotion": {"v": 1, "elements": {"split-image": {"hover": {"state": {"values": {"restRotate": -8}}}}}}},
+     {"sgsMotion": {"v": 1, "elements": {"split-media": {"hover": {"state": {"values": {"restRotate": -8}}}}}}})
+case("negative: a hero that saves both split-image and split-media keeps both as saved", "sgs/hero",
+     {"sgsMotion": {"v": 1, "elements": {"split-image": {"hover": {"state": {"values": {"restRotate": -8}}}}, "split-media": {"hover": {"state": {"values": {"scale": 1.05}}}}}}}, None)
+case("negative: a part no rename names is left as saved", "sgs/hero",
+     {"sgsMotion": {"v": 1, "elements": {"headline": {"hover": {"state": {"values": {"scale": 1.05}}}}}}}, None)
+case("negative: a hero already in the new shape is not pinned", "sgs/hero",
+     {"splitSource": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}}}, None)
+case("hero split width: a video is not pinned", "sgs/hero", {"splitMediaType": "video", "splitMediaVideoUrl": "http://x/v.mp4"},
+     {"splitSource": {"desktop": {"kind": "video", "url": "http://x/v.mp4"}}})
+case("hero overlay: the gradient and its hover take the overlay family's names, the old strength 30 is pinned", "sgs/hero",
+     {"overlayGradient": G1, "overlayGradientHover": G2},
+     {"backgroundOverlayGradient": G1, "backgroundOverlayGradientHover": G2, "backgroundOverlayOpacity": {"desktop": 30}})
+case("trust-bar: the badge shadow (a STAYS entry under the unlisted badgeImage prefix) is kept, not refused", "sgs/trust-bar",
+     {"badgeStyle": "image-badge", "badgeImageShadow": "soft", "badgeImageShadowColour": "#000"}, None)
+case("trust-bar badge size: the number becomes Width in px (the old render drew it square)", "sgs/trust-bar", {"badgeImageSize": 96},
+     {"badgeWidth": {"desktop": "96px"}})
+case("trust-bar badge size: clamped to the 24 to 160 range the old render drew", "sgs/trust-bar", {"badgeImageSize": 200},
+     {"badgeWidth": {"desktop": "160px"}})
+case("trust-bar badge size: the old default 60 is the new default and is dropped", "sgs/trust-bar", {"badgeImageSize": 60}, {})
+case("negative: trust-bar Width already written is left alone", "sgs/trust-bar", {"badgeWidth": {"desktop": "96px"}}, None)
+case("option-picker swatchSize: the colour dot's own length stays", "sgs/option-picker", {"swatchSize": "20px"}, None)
+case("option-picker swatchShape: square is an explicit none (the stylesheet dot has a 3px radius)", "sgs/option-picker", {"swatchShape": "square"},
+     {"swatchShape": {"desktop": {"shape": "none"}}})
+case("option-picker swatchShape: round is a circle", "sgs/option-picker", {"swatchShape": "round"}, {"swatchShape": {"desktop": {"shape": "circle"}}})
+case("option-picker swatchShape: a value the old render never drew is deleted", "sgs/option-picker", {"swatchShape": "rounded"}, {})
+case("negative: option-picker swatchShape already an object", "sgs/option-picker", {"swatchShape": {"desktop": {"shape": "none"}}}, None)
+case("choice-flow-question optionMediaSize: the share of the picture band stays (the render still reads it)", "sgs/choice-flow-question",
+     {"optionMediaSize": {"desktop": 80, "mobile": 100}}, None)
+case("choice-flow optionMediaSize: stays", "sgs/choice-flow", {"optionMediaSize": {"desktop": 80}}, None)
+case("before-after: autoplay folds into the Playback of a video side", "sgs/before-after",
+     {"beforeMediaType": "video", "beforeVideoUrl": VIDEO, "videoAutoplay": True, "videoAutoplayTablet": False},
+     {"beforeSource": {"desktop": {"kind": "video", "url": VIDEO}}, "beforePlayback": {"autoplay": True}})
+case("before-after: autoplay merges into a Playback the side already has and reaches both video sides", "sgs/before-after",
+     {"beforeMediaType": "video", "beforeVideoUrl": VIDEO, "afterMediaType": "video", "afterVideoUrl": VIDEO,
+      "videoAutoplay": True, "afterPlayback": {"muted": True, "loop": True}},
+     {"beforeSource": {"desktop": {"kind": "video", "url": VIDEO}}, "afterSource": {"desktop": {"kind": "video", "url": VIDEO}},
+      "beforePlayback": {"autoplay": True}, "afterPlayback": {"muted": True, "loop": True, "autoplay": True}})
+case("before-after: autoplay with no video side is inert and deleted, an image side gets no Playback", "sgs/before-after",
+     {"beforeImageUrl": U, "videoAutoplay": True, "videoAutoplayMobile": True},
+     {"beforeSource": {"desktop": {"kind": "image", "url": U}}})
+case("before-after: a video side with no saved autoplay (the old default false) gets no Playback", "sgs/before-after",
+     {"beforeMediaType": "video", "beforeVideoUrl": VIDEO},
+     {"beforeSource": {"desktop": {"kind": "video", "url": VIDEO}}})
+case("responsive-logo: alt becomes logoAlt (a header and footer keep their alt)", "sgs/responsive-logo", {"alt": "Example Foods Ltd"},
+     {"logoAlt": "Example Foods Ltd"})
+case("responsive-logo: an empty alt is the default and is deleted", "sgs/responsive-logo", {"alt": ""}, {})
+case("negative: responsive-logo already holding logoAlt", "sgs/responsive-logo", {"logoAlt": "Example Foods Ltd"}, None)
+case("responsive-logo: colourTreatment stays", "sgs/responsive-logo", {"colourTreatment": "white"}, None)
+case("brand-strip tile: none (no card) becomes the none Shape", "sgs/brand-strip", {"tileShape": "none"}, {"logoShape": {"desktop": {"shape": "none"}}})
+case("brand-strip tile: circle becomes the circle Shape", "sgs/brand-strip", {"tileShape": "circle"}, {"logoShape": {"desktop": {"shape": "circle"}}})
+case("brand-strip tile: square is the old default and writes nothing", "sgs/brand-strip", {"tileShape": "square"}, {})
+case("negative: brand-strip logoShape already an object", "sgs/brand-strip", {"logoShape": {"desktop": {"shape": "none"}}}, None)
+case("choice-flow: the header logo object's alt is carried to headerLogoAlt", "sgs/choice-flow",
+     {"headerLogo": {"id": 5, "url": U, "alt": "Brand"}}, {"headerLogoSource": {"desktop": {"kind": "image", "id": 5, "url": U}}, "headerLogoAlt": "Brand"})
+case("choice-flow: a header logo with no alt gets no headerLogoAlt", "sgs/choice-flow", {"headerLogo": {"id": 5, "url": U}},
+     {"headerLogoSource": {"desktop": {"kind": "image", "id": 5, "url": U}}})
+case("size: a per-device image gets its own size", "sgs/media", {"imageUrl": U, "imageUrlMobile": "http://x/m.jpg"},
+     {"source": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}, "mobile": {"kind": "image", "url": "http://x/m.jpg", "width": 160, "height": 120}}, "width": {"desktop": "100%"}})
+case("size: a hero split image gets its size", "sgs/hero", {"splitMediaImageUrl": "http://x/m.svg"},
+     {"splitSource": {"desktop": {"kind": "image", "url": "http://x/m.svg", "width": 100, "height": 100}}, "splitWidth": {"desktop": "100px"}})
+case("size: an unreadable image is refused and the block stays as saved", "sgs/media", {"imageUrl": "http://x/unreadable.png", "imageAlt": "A"}, None)
+case("size: an unreadable image in a migrated block is refused", "sgs/media", {"source": {"desktop": {"kind": "image", "url": "http://x/unreadable.png"}}}, None)
+case("size: a video's url is not an image and needs no size", "sgs/media", {"mediaType": "video", "videoUrl": "http://x/v.mp4", "mediaSizing": "height", "height": {"desktop": "200px"}},
+     {"source": {"desktop": {"kind": "video", "url": "http://x/v.mp4"}}, "width": {"desktop": "100%"},
+      "playback": {"autoplay": False, "muted": True, "inline": True, "loop": False, "controls": True, "lazy": True}})
+# Width pins for sgs/media (measured on the old block): a figure's media was 100% wide, a bare image its file's width.
+case("pin: an image in a figure (caption) with no sizing is 100% wide", "sgs/media", {"imageUrl": U, "caption": "C"},
+     {"source": {"desktop": {"kind": "image", "url": U}}, "caption": "C", "width": {"desktop": "100%"}})
+case("pin: a bare image with no sizing keeps the new default (its own width)", "sgs/media", {"imageUrl": U},
+     {"source": {"desktop": {"kind": "image", "url": U}}})
+case("pin: a linked image is a figure, 100% wide", "sgs/media", {"imageUrl": U, "linkUrl": "https://x.test/"},
+     {"source": {"desktop": {"kind": "image", "url": U}}, "linkUrl": "https://x.test/", "width": {"desktop": "100%"}})
+case("pin: a figure image in height mode gets no Width auto (a Height alone is already 100% wide)", "sgs/media",
+     {"imageUrl": U, "caption": "C", "mediaSizing": "height", "height": {"desktop": "200"}},
+     {"source": {"desktop": {"kind": "image", "url": U}}, "caption": "C", "height": {"desktop": "200px"}})
+case("pin: a bare image in height mode keeps its proportions: Width auto", "sgs/media",
+     {"imageUrl": U, "mediaSizing": "height", "height": {"desktop": "440px"}},
+     {"source": {"desktop": {"kind": "image", "url": U}}, "height": {"desktop": "440px"}, "width": {"desktop": "auto"}})
+case("pin: a Height the old block ignored on an SVG is dropped and the SVG is 100% wide", "sgs/media",
+     {"mediaType": "svg", "svgContent": "<svg/>", "caption": "C", "mediaSizing": "height", "height": {"desktop": "200px"}},
+     {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "caption": "C", "width": {"desktop": "100%"}})
+case("pin: a stored Width is never overwritten", "sgs/media", {"mediaType": "svg", "svgContent": "<svg/>", "width": {"desktop": "50%"}},
+     {"source": {"desktop": {"kind": "svg", "markup": "<svg/>"}}, "width": {"desktop": "50%"}})
+case("pin: an embed keeps the embed default (100% wide, 16 / 9)", "sgs/media", {"mediaType": "video", "videoSource": "external", "videoUrl": "https://youtu.be/abcdefghijk"},
+     {"source": {"desktop": {"kind": "embed", "url": "https://youtu.be/abcdefghijk"}},
+      "playback": {"autoplay": False, "muted": True, "inline": True, "loop": False, "controls": True, "lazy": True}})
+case("pin: a bare image with a ratio was drawn at its file's width", "sgs/media", {"imageUrl": U, "mediaSizing": "ratio", "aspectRatio": "4/3"},
+     {"source": {"desktop": {"kind": "image", "url": U}}, "height": {"desktop": "auto"}, "ratio": {"desktop": "4 / 3"}, "width": {"desktop": "640px"}})
+case("pin: a figure image with a ratio keeps the new default (100% wide)", "sgs/media", {"imageUrl": U, "caption": "C", "mediaSizing": "ratio", "aspectRatio": "4/3"},
+     {"source": {"desktop": {"kind": "image", "url": U}}, "caption": "C", "height": {"desktop": "auto"}, "ratio": {"desktop": "4 / 3"}})
+case("pin: the hero's split Height mode still writes Width auto (the pins are sgs/media's)", "sgs/hero",
+     {"splitMediaSizing": "height", "splitMediaHeight": {"desktop": "300px"}},
+     {"splitHeight": {"desktop": "300px"}, "splitWidth": {"desktop": "auto"}})
 case("media: numeric height becomes px", "sgs/before-after", {"height": {"desktop": 400}}, None)
 # ---- fit, focal
 case("media: fit and keyword focal", "sgs/media", {"objectFit": "contain", "objectFitMobile": "cover", "objectPosition": "left top"},
      {"fit": {"desktop": "contain", "mobile": "cover"}, "focal": {"desktop": {"x": 0.0, "y": 0.0}}})
 case("hero split: focal strings per device, redundant centre dropped, percentage read", "sgs/hero",
      {"splitMediaImageUrl": U, "splitMediaObjectPosition": {"desktop": "66% 94%", "tablet": "center center", "mobile": "center center"}},
-     {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitFocal": {"desktop": {"x": 0.66, "y": 0.94}, "tablet": {"x": 0.5, "y": 0.5}}})
+     {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitFocal": {"desktop": {"x": 0.66, "y": 0.94}, "tablet": {"x": 0.5, "y": 0.5}}, "splitWidth": {"desktop": "640px"}})
 case("hero split: the baked mobile focal default is not pinned (Appendix A)", "sgs/hero", {"splitMediaImageUrl": U},
-     {"splitSource": {"desktop": {"kind": "image", "url": U}}})
+     {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitWidth": {"desktop": "640px"}})
 case("hero split: out-of-vocabulary fit 'custom' renders as unset and is deleted", "sgs/hero", {"splitMediaObjectFit": "custom"}, {})
 case("hero split: width number with its retired unit partner", "sgs/hero", {"splitMediaWidth": {"desktop": 40}, "splitMediaWidthUnit": "%"},
      {"splitWidth": {"desktop": "40%"}})
 case("hero split: per-tier type, files, alt and a zero id", "sgs/hero",
      {"splitMediaType": "image", "splitMediaImageUrl": U, "splitMediaImageIdMobile": 0, "splitMediaImageUrlMobile": "http://x/m.jpg",
       "splitMediaImageAlt": "A", "splitMediaImageAltMobile": "M"},
-     {"splitSource": {"desktop": {"kind": "image", "url": U}, "mobile": {"kind": "image", "url": "http://x/m.jpg", "alt": "M"}}, "splitAlt": "A"})
+     {"splitSource": {"desktop": {"kind": "image", "url": U}, "mobile": {"kind": "image", "url": "http://x/m.jpg", "alt": "M"}}, "splitAlt": "A",
+      "splitWidth": {"desktop": "640px"}})
 # ---- shape, radius, opacity, overlay
 case("media: rounded becomes Corners 12px", "sgs/media", {"shape": "rounded"}, {"radius": {"desktop": {"topLeft": "12px", "topRight": "12px", "bottomRight": "12px", "bottomLeft": "12px"}}})
 case("media: circle becomes Shape circle", "sgs/media", {"shape": "circle"}, {"shape": {"desktop": {"shape": "circle"}}})
@@ -96,6 +237,72 @@ case("container: svg background with layer, opacity and min height", "sgs/contai
       "backgroundOpacity": {"desktop": 60}, "minHeight": {"desktop": "300px"}})
 case("container: tiled background", "sgs/container", {"backgroundImage": {"url": U}, "backgroundSize": "auto", "backgroundRepeat": "repeat"},
      {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, "backgroundFit": {"desktop": "tile"}, "backgroundRepeat": {"desktop": "repeat"}})
+SVG = "<svg><path d='M0 0'/></svg>"
+KEPT = {"bgSvgContent": SVG, "bgSvgPosition": "foreground", "bgSvgOpacity": 60, "bgSvgMinHeight": "300px", "bgSvgTextShadow": "0 1px #000"}
+case("container: image plus svg: the photo becomes the Source, the SVG and its settings stay on the kept layer", "sgs/container",
+     {"backgroundImage": {"url": U, "id": 3}, "backgroundImageMobile": {"url": "http://x/m.jpg"}, "backgroundSize": "cover", **KEPT},
+     {"backgroundSource": {"desktop": {"kind": "image", "id": 3, "url": U}, "mobile": {"kind": "image", "url": "http://x/m.jpg"}},
+      "backgroundFit": {"desktop": "cover"}, **KEPT})
+case("container: video plus svg: the video becomes the Source, the SVG stays; its parts move to the declared parts attributes", "sgs/container",
+     {"bgVideo": {"url": "http://x/v.mp4"}, "bgSvgParts": [{"id": "a"}], "bgSvgPartsTrigger": "scroll", **KEPT},
+     {"backgroundSource": {"desktop": {"kind": "video", "url": "http://x/v.mp4"}}, "backgroundSvgParts": [{"id": "a"}],
+      "backgroundSvgPartsTrigger": "scroll", **KEPT})
+case("container: an empty image object beside an svg does not stop the svg becoming the Source", "sgs/container",
+     {"backgroundImage": {}, "bgSvgContent": SVG}, {"backgroundSource": {"desktop": {"kind": "svg", "markup": SVG}}})
+case("site-footer: image plus svg overlay blend and pinned strength still apply", "sgs/site-footer",
+     {"backgroundImage": {"url": U}, "bgSvgContent": SVG, "backgroundOverlayColour": "#000", "backgroundOverlayBlendMode": "multiply"},
+     {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, "bgSvgContent": SVG, "backgroundOverlayColour": "#000",
+      "backgroundOverlayBlend": "multiply", "backgroundOverlayOpacity": {"desktop": 30}})
+case("multi-button: svg min height stays on its declared bgSvgMinHeight (no minHeight to receive it)", "sgs/multi-button",
+     {"bgSvgContent": SVG, "bgSvgMinHeight": "300px"}, {"backgroundSource": {"desktop": {"kind": "svg", "markup": SVG}}, "bgSvgMinHeight": "300px"})
+case("negative: a migrated photo beside a kept svg layer is untouched", "sgs/container",
+     {"backgroundSource": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}}, **KEPT}, None)
+case("negative: an unreadable photo object beside an svg is refused and both stay", "sgs/container",
+     {"backgroundImage": {"url": U, "zzz": 1}, "bgSvgContent": SVG}, None)
+G1, G2 = "linear-gradient(90deg,#000,#fff)", "linear-gradient(0deg,#111,#222)"
+case("container: overlayGradient and its hover take the overlay family's names, the old strength 30 is pinned", "sgs/container",
+     {"overlayGradient": G1, "overlayGradientHover": G2, "backgroundImage": {"url": U}},
+     {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, "backgroundOverlayGradient": G1, "backgroundOverlayGradientHover": G2,
+      "backgroundOverlayOpacity": {"desktop": 30}})
+case("trust-bar: an empty overlayGradient is dropped, not written", "sgs/trust-bar", {"overlayGradient": ""}, {})
+case("container: cover with repeat-x stays Fit cover, the inert repeat is dropped", "sgs/container",
+     {"backgroundImage": {"url": U}, "backgroundSize": "cover", "backgroundRepeat": "repeat-x"},
+     {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, "backgroundFit": {"desktop": "cover"}})
+case("container: contain with repeat stays Fit contain", "sgs/container",
+     {"backgroundImage": {"url": U}, "backgroundSize": "contain", "backgroundRepeat": "repeat"},
+     {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, "backgroundFit": {"desktop": "contain"}})
+case("container: no saved size means the old default cover, so a repeat alone is dropped", "sgs/container",
+     {"backgroundImage": {"url": U}, "backgroundRepeat": "repeat-y"}, {"backgroundSource": {"desktop": {"kind": "image", "url": U}}})
+case("container: size auto with repeat-x is a tile with that repeat", "sgs/container",
+     {"backgroundImage": {"url": U}, "backgroundSize": "auto", "backgroundRepeat": "repeat-x"},
+     {"backgroundSource": {"desktop": {"kind": "image", "url": U}}, "backgroundFit": {"desktop": "tile"}, "backgroundRepeat": {"desktop": "repeat-x"}})
+case("gallery: tileFitContain merges into the saved itemFit and clears each item's own fit", "sgs/gallery",
+     {"tileFitContain": True, "itemFit": {"desktop": "cover", "mobile": "cover"},
+      "mediaItems": [{"source": {"desktop": {"kind": "image", "url": U}}, "fit": {"desktop": "cover"}, "_key": "k"}]},
+     {"itemFit": {"desktop": "contain", "mobile": "contain"}, "mediaItems": [{"source": {"desktop": {"kind": "image", "url": U}}, "_key": "k"}]})
+case("gallery: tileFitContain with no saved itemFit writes desktop contain", "sgs/gallery", {"tileFitContain": True}, {"itemFit": {"desktop": "contain"}})
+case("gallery: tileFitContain false is the default and is dropped, itemFit untouched", "sgs/gallery",
+     {"tileFitContain": False, "itemFit": {"desktop": "cover"}}, {"itemFit": {"desktop": "cover"}})
+case("negative: a gallery without tileFitContain is untouched", "sgs/gallery", {"itemFit": {"desktop": "cover"}, "mediaItems": [{"fit": {"desktop": "contain"}, "_key": "k"}]}, None)
+case("negative: an already migrated overlay gradient is untouched", "sgs/container",
+     {"backgroundOverlayGradient": G1, "backgroundOverlayOpacity": {"desktop": 50}}, None)
+# ---- W3b: product-card logo and image height, buybox preview, thumb hover colour, sticker shape
+case("product-card: the brand logo box becomes the logo slot's sizing", "sgs/product-card",
+     {"brandLogoHeight": {"desktop": "24px", "mobile": "16px"}, "brandLogoWidth": {"desktop": "auto"}, "brandLogoMaxHeight": {"desktop": 32}, "brandLogoMaxWidth": {"tablet": "80%"}},
+     {"logoHeight": {"desktop": "24px", "mobile": "16px"}, "logoWidth": {"desktop": "auto"}, "logoMaxHeight": {"desktop": "32px"}, "logoMaxWidth": {"tablet": "80%"}})
+case("product-card: an old string imageHeight becomes the image slot's Height", "sgs/product-card",
+     {"imageHeight": "180px"}, {"imageHeight": {"desktop": "180px"}})
+case("negative: a product-card imageHeight already per device is untouched", "sgs/product-card", {"imageHeight": {"desktop": "180px"}}, None)
+case("buybox: preview border width and radius strings become Sides and Corners", "sgs/buybox",
+     {"previewBorderWidth": "2px", "previewRadius": "6px"},
+     {"previewBorderWidth": {"top": "2px", "right": "2px", "bottom": "2px", "left": "2px"},
+      "previewRadius": {"desktop": {"topLeft": "6px", "topRight": "6px", "bottomRight": "6px", "bottomLeft": "6px"}}})
+case("negative: buybox preview border width and radius already reshaped are untouched", "sgs/buybox",
+     {"previewBorderWidth": {"top": "2px", "right": "2px", "bottom": "2px", "left": "2px"}, "previewRadius": {"desktop": {"topLeft": "6px", "topRight": "6px", "bottomRight": "6px", "bottomLeft": "6px"}}}, None)
+case("buybox: the thumb hover border colour takes the slot's name", "sgs/buybox",
+     {"galleryThumbBorderColourHover": "primary"}, {"thumbBorderColourHover": "primary"})
+case("negative: buybox galleryStickerShape stays its own enum and writes no Corners", "sgs/buybox",
+     {"galleryStickerShape": "rounded", "galleryStickerRadius": "4px"}, None)
 # ---- other blocks
 case("decorative-image: legacy files, tiers and the old default decorative=true pinned", "sgs/decorative-image",
      {"imageId": 8, "imageUrl": U, "imageUrlTablet": "http://x/t.jpg", "hideOnTablet": True},
@@ -117,7 +324,7 @@ case("media: a video alt on an image is reported as dropped", "sgs/media",
 case("media: a video alt on a video becomes the alt", "sgs/media",
      {"mediaType": "video", "videoUrl": U, "videoAlt": "V", "videoAutoplay": True, "videoMuted": True, "videoLoop": False, "videoControls": True,
       "videoPlaysInline": True, "videoLazyLoad": True},
-     {"source": {"desktop": {"kind": "video", "url": U}}, "alt": "V",
+     {"source": {"desktop": {"kind": "video", "url": U}}, "alt": "V", "width": {"desktop": "100%"},
       "playback": {"autoplay": True, "muted": True, "inline": True, "loop": False, "controls": True, "lazy": True}})
 case("team-member: photo object and the old default shape circle pinned", "sgs/team-member",
      {"photo": {"id": 2, "url": U}},
@@ -151,19 +358,86 @@ case("hero: mediaPadding and background move to the split surface", "sgs/hero",
 case("timeline: media height, ratio, radius and width", "sgs/timeline",
      {"mediaHeight": {"tablet": 190}, "mediaAspectRatio": {"desktop": "4/5"}, "mediaBorderRadius": {"desktop": "4px"}, "milestoneMediaWidth": "180px"},
      {"entryHeight": {"tablet": "190px"}, "entryRatio": {"desktop": "4 / 5"}, "entryRadius": {"desktop": "4px"}, "entryWidth": {"desktop": "180px"}})
+case("timeline: entry image id, video and empty entries fold into source; the decorative switch moves onto each entry", "sgs/timeline",
+     {"entries": [{"date": "2019", "image": 7, "imageUrl": U, "mediaType": "image", "video": [], "svg": ""},
+                  {"date": "2020", "image": 0, "mediaType": "image", "video": [], "svg": ""},
+                  {"date": "2021", "image": 0, "mediaType": "video", "video": {"id": 9, "url": "http://x/v.mp4"}, "svg": ""}],
+      "milestoneMediaDecorative": True},
+     {"entries": [{"date": "2019", "source": {"desktop": {"kind": "image", "id": 7, "url": U}}, "decorative": True},
+                  {"date": "2020"},
+                  {"date": "2021", "source": {"desktop": {"kind": "video", "id": 9, "url": "http://x/v.mp4"}}, "decorative": True}]})
+case("timeline: an SVG entry keeps its old keys (the slot takes images and video)", "sgs/timeline",
+     {"entries": [{"date": "2019", "mediaType": "svg", "svg": "<svg/>"}]}, None)
+# ---- grey to colour is the image part's Hover state
+case("gallery: grayscaleHover becomes the image part's item Hover state", "sgs/gallery", {"grayscaleHover": True},
+     {"sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"source": "item", **{"preset": "hover-grayscale-to-colour", "values": {"duration": "token:duration.medium", "easing": "token:easing.emphasised", "grayscale": 0, "restGrayscale": 1}}}}}}}})
+case("brand-strip: imageEffect grayscale becomes the logo part's item Hover state", "sgs/brand-strip", {"imageEffect": "grayscale"},
+     {"sgsMotion": {"v": 1, "elements": {"logo": {"hover": {"state": {"source": "item", **{"preset": "hover-grayscale-to-colour", "values": {"duration": "token:duration.medium", "easing": "token:easing.emphasised", "grayscale": 0, "restGrayscale": 1}}}}}}}})
+case("negative: brand-strip sepia stays on the attribute and is not reported", "sgs/brand-strip", {"imageEffect": "sepia"}, None)
+case("negative: sgs/button scaleHover is not media and stays", "sgs/button", {"scaleHover": "1.05"}, None)
+case("negative: grayscaleHover over an existing preset state is refused and stays", "sgs/card-grid",
+     {"grayscaleHover": True, "sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"preset": "hover-image-zoom", "values": {"scale": 1.05}}}}}}}, None)
 # ---- negative controls: refusals keep the old attribute; unrelated and new-shape attributes stay byte-identical
 case("negative: an unreadable focal position is refused and stays", "sgs/media", {"objectPosition": "calc(1px + 2px) 5px"}, None)
 case("negative: Lottie is reported and stays", "sgs/media", {"mediaType": "lottie", "imageUrl": U}, None)
 case("negative: a block with no media attribute is untouched", "sgs/heading", {"content": "Hi", "level": "h2"}, None)
 case("negative: an already migrated block is untouched", "sgs/media",
-     {"source": {"desktop": {"kind": "image", "url": U}}, "alt": "A", "fit": {"desktop": "cover"}, "opacity": {"desktop": 50}}, None)
+     {"source": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}}, "alt": "A", "fit": {"desktop": "cover"}, "opacity": {"desktop": 50}}, None)
 case("negative: hero mediaPadding and splitMediaPadding both set is refused", "sgs/hero",
      {"mediaPadding": {"desktop": {"top": "1px"}}, "splitMediaPadding": {"desktop": {"top": "2px"}}}, {"splitPadding": {"desktop": {"top": "2px"}}, "mediaPadding": {"desktop": {"top": "1px"}}})
-case("negative: inline SVG logo parts are reported and stay", "sgs/responsive-logo", {"inlineSvg": True, "svgParts": []}, None)
+case("inline SVG logo parts are the block's own attributes and stay untouched", "sgs/responsive-logo", {"inlineSvg": True, "svgParts": []}, None)
 case("negative: an out-of-vocabulary shape is refused and stays", "sgs/media", {"shape": "star"}, None)
 
-REFUSED_STAYS = ("negative: an unreadable focal", "negative: Lottie", "negative: an out-of-vocabulary shape",
-                 "negative: hero mediaPadding", "negative: inline SVG")
+# ---- Stage B release: live-site refusals and the hover and effect settings that became motion layers
+case("media: a template placeholder focal position was ignored by the browser and is deleted", "sgs/media", {"objectPosition": "{{ heroPos }}"}, {})
+case("media: negative control, a readable focal position still converts", "sgs/media", {"objectPosition": "center 30%"}, {"focal": {"desktop": {"x": 0.5, "y": 0.3}}})
+case("negative: refused a pixel focal position stays", "sgs/media", {"objectPosition": "10px 20px"}, None)
+case("buybox: the interim selected-thumbnail border colour is the Current state colour", "sgs/buybox",
+     {"thumbSelectedBorderColour": "text"}, {"galleryThumbBorderColourCurrent": "text"})
+case("negative: refused buybox selected colour beside a different Current colour stays", "sgs/buybox",
+     {"thumbSelectedBorderColour": "text", "galleryThumbBorderColourCurrent": "primary"}, None)
+case("hero: the split media border hover colour and gradient are the split slot's own", "sgs/hero",
+     {"splitMediaBorderColourHover": "#13579b", "splitMediaBorderColourHoverGradient": "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"},
+     {"splitBorderColourHover": "#13579b", "splitBorderColourHoverGradient": "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"})
+case("hero: split media Ken Burns becomes a loop layer on the split-media part, duration in ms", "sgs/hero",
+     {"splitMediaKenBurns": True, "splitMediaAnimationDuration": 30},
+     {"sgsMotion": {"v": 1, "elements": {"split-media": {"effects": [{"id": "ken-burns", "effect": "ken-burns", "values": {"mode": "loop", "zoomStart": 100, "zoomEnd": 106, "easing": "ease-in-out", "duration": 30000}}]}}}})
+case("hero: split media parallax beside a Ken Burns wins, as the old render ran it", "sgs/hero",
+     {"splitMediaKenBurns": True, "splitMediaParallax": True},
+     {"sgsMotion": {"v": 1, "elements": {"split-media": {"effects": [{"id": "parallax", "effect": "parallax", "values": {"speedRatio": 0.01, "basis": "page"}}]}}}})
+case("hero: split media motion switched off writes nothing", "sgs/hero", {"splitMediaKenBurns": False, "splitMediaParallax": False, "splitMediaAnimationDuration": 20}, {})
+case("negative: refused hero Ken Burns over an existing Ken Burns layer stays", "sgs/hero",
+     {"splitMediaKenBurns": True, "sgsMotion": {"v": 1, "elements": {"split-media": {"effects": [{"id": "ken-burns", "effect": "ken-burns", "values": {"mode": "loop"}}]}}}}, None)
+case("card-grid: imageZoomHover on becomes the image part's item zoom, the saved percent and ms overriding", "sgs/card-grid",
+     {"imageZoomHover": True, "sgsHoverZoom": 105, "sgsHoverZoomDuration": 900},
+     {"sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"source": "item", "values": {"scale": 1.05, "duration": 900, "easing": "ease"}}}}}}})
+case("card-grid: imageZoomHover on with no saved percent takes the old default look (1.1 over 500ms)", "sgs/card-grid", {"imageZoomHover": True},
+     {"sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"source": "item", "values": {"scale": 1.1, "duration": 500, "easing": "ease"}}}}}}})
+case("gallery: imageZoomHover off is deleted with no state", "sgs/gallery", {"imageZoomHover": False}, {})
+case("team-member: imageZoomHover on is triggered by the whole card", "sgs/team-member", {"imageZoomHover": True},
+     {"photoShape": {"desktop": {"shape": "circle"}}, "photoRatio": {"desktop": "1 / 1"}, "sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"source": "root", "values": {"scale": 1.1, "duration": 500, "easing": "ease"}}}}}}})
+case("gallery: zoom and grey to colour share the one item state", "sgs/gallery", {"imageZoomHover": True, "grayscaleHover": True},
+     {"sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"source": "item", "values": {"scale": 1.05, "duration": 300, "easing": "ease", "grayscale": 0, "restGrayscale": 1}}}}}}})
+case("negative: refused imageZoomHover over a different saved Hover state stays", "sgs/card-grid",
+     {"imageZoomHover": True, "sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"source": "item", "values": {"scale": 1.3}}}}}}}, None)
+case("negative: refused imageZoomHover that is not a boolean stays", "sgs/card-grid", {"imageZoomHover": "yes"}, None)
+case("media: the photo zoom extension on becomes the media part's root zoom", "sgs/media",
+     {"sgsHoverImageZoom": True, "sgsHoverZoom": 105, "sgsHoverZoomDuration": 1400},
+     {"sgsMotion": {"v": 1, "elements": {"media": {"hover": {"state": {"source": "root", "values": {"scale": 1.05, "duration": 1400, "easing": "ease"}}}}}}})
+case("product-card: the photo zoom extension on becomes the image part's root zoom", "sgs/product-card",
+     {"sgsHoverImageZoom": True, "sgsHoverZoom": 106, "sgsHoverZoomDuration": 900},
+     {"sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"source": "root", "values": {"scale": 1.06, "duration": 900, "easing": "ease"}}}}}}})
+case("product-card: a zoom percent with the switch off was never read and is deleted", "sgs/product-card",
+     {"sgsHoverImageZoom": False, "sgsHoverZoom": 106, "sgsHoverZoomDuration": 900}, {})
+case("icon: scaleHover 1 scaled nothing and is deleted", "sgs/icon", {"scaleHover": 1}, {})
+case("icon: scaleHover above 1 becomes the shape part's Hover scale", "sgs/icon", {"scaleHover": 1.2},
+     {"sgsMotion": {"v": 1, "elements": {"shape": {"hover": {"state": {"source": "root", "values": {"scale": 1.2}}}}}}})
+case("negative: refused icon scaleHover that is no scale stays", "sgs/icon", {"scaleHover": "big"}, None)
+case("negative: card-grid scaleHover is still declared by the block and stays unreported", "sgs/card-grid", {"scaleHover": "1.05"}, None)
+
+REFUSED_STAYS = ("negative: an unreadable photo object", "size: an unreadable image", "negative: an unreadable focal", "negative: Lottie", "negative: an out-of-vocabulary shape",
+                 "negative: hero mediaPadding", "negative: grayscaleHover over", "negative: refused")
+
 
 
 def _fail(label: str, detail: str, failures: list[str]) -> None:
@@ -190,6 +464,66 @@ def run_cases(failures: list[str]) -> int:
         if not label.startswith(REFUSED_STAYS) and remaining:
             _fail(label, f"old attributes still reported after the fix: {remaining}", failures)
     return count
+
+
+def svg_lost(old: dict, new: dict) -> str:
+    """Empty when the SVG a block saved is still present afterwards (kept layer or Source), else why it was lost."""
+    markup_in = old.get("bgSvgContent")
+    if not isinstance(markup_in, str) or not markup_in.strip():
+        return ""
+    if new.get("bgSvgContent") == markup_in:
+        return ""
+    for entry in (new.get("backgroundSource") or {}).values():
+        if isinstance(entry, dict) and entry.get("kind") == "svg" and entry.get("markup") == markup_in:
+            return ""
+    return "the saved SVG is in neither bgSvgContent nor an svg Source"
+
+
+def run_svg_keep(failures: list[str]) -> int:
+    """Every saved image-or-video-plus-SVG block keeps its SVG on all seven blocks; a lossy migration is caught (negative control)."""
+    checks = 0
+    seven = ("container", "multi-button", "physics-canvas", "site-header", "site-footer", "trust-bar", "nav-drawer")
+    for name in seven:
+        for label, extra in (("image", {"backgroundImage": {"url": U}}), ("video", {"bgVideo": {"url": "http://x/v.mp4"}}),
+                             ("tablet image", {"backgroundImageTablet": {"url": U}})):
+            checks += 1
+            attrs = {**extra, **KEPT}
+            new, _ = B.migrate(f"sgs/{name}", attrs)
+            lost = svg_lost(attrs, new)
+            if lost:
+                _fail(f"svg kept: {name} {label}", lost, failures)
+            if B.old_attributes(f"sgs/{name}", new):
+                _fail(f"svg kept: {name} {label}", f"old attributes remain after the fix: {B.old_attributes(f'sgs/{name}', new)}", failures)
+    checks += 1
+    lossy = {"backgroundSource": {"desktop": {"kind": "image", "url": U}}}
+    if not svg_lost({"backgroundImage": {"url": U}, "bgSvgContent": SVG}, lossy):
+        _fail("svg kept: negative control", "a migration that drops the SVG beside a photo was not caught", failures)
+    checks += 1
+    if svg_lost({"backgroundImage": {"url": U}, "bgSvgContent": SVG}, {"backgroundSource": lossy["backgroundSource"], "bgSvgContent": SVG}):
+        _fail("svg kept: control", "a migration that keeps the SVG was reported as losing it", failures)
+    return checks
+
+
+def run_background_rules(failures: list[str]) -> int:
+    """Negative controls: cover or contain never becomes a tile whatever the repeat; an overlay gradient is never lost."""
+    checks = 0
+    for size in ("cover", "contain", None):
+        for repeat in ("repeat", "repeat-x", "repeat-y"):
+            checks += 1
+            attrs = {"backgroundImage": {"url": U}, **({"backgroundSize": size} if size else {}), "backgroundRepeat": repeat}
+            new, _ = B.migrate("sgs/container", attrs)
+            if new.get("backgroundFit", {}).get("desktop") == "tile" or "backgroundRepeat" in new:
+                _fail(f"tile rule: {size} with {repeat}", f"became a tile or kept a repeat: {new}", failures)
+    for name in ("container", "hero", "multi-button", "physics-canvas", "site-header", "site-footer", "trust-bar", "nav-drawer"):
+        checks += 1
+        new, _ = B.migrate(f"sgs/{name}", {"overlayGradient": G1, "overlayGradientHover": G2})
+        if new.get("backgroundOverlayGradient") != G1 or new.get("backgroundOverlayGradientHover") != G2 or "overlayGradient" in new:
+            _fail(f"overlay names: {name}", f"gradient lost or not renamed: {new}", failures)
+    checks += 1
+    unmigrated = {"overlayGradient": G1, "overlayGradientHover": G2}
+    if unmigrated.get("backgroundOverlayGradient") == G1:
+        _fail("overlay names: control", "an unmigrated block was read as carrying the gradient under its new name", failures)
+    return checks
 
 
 def run_carriers(failures: list[str]) -> int:
@@ -310,10 +644,61 @@ def run_consistency(failures: list[str]) -> int:
 HERO_PROBE = {"splitMediaImageUrl": U, "splitMediaObjectFit": "contain"}
 
 
+def run_declared_guard(failures: list[str]) -> int:
+    """A target the block's block.json does not declare refuses the block whole (negative control); a declared one passes; the
+    known narrowed slots delete what painted nothing and refuse a decorative-image overlay that did paint."""
+    checks = 0
+    svg = {"layerSource": {"desktop": {"kind": "svg", "markup": "<svg/>"}}}
+    original = {"imageUrl": U}
+    declared = B.guard_declared("sgs/media", original, {"alt": "A"}, [("converted", "imageAlt", "alt", "")])
+    undeclared = B.guard_declared("sgs/media", original, {"noSuchTarget": 1}, [("converted", "imageUrl", "noSuchTarget", "")])
+    checks += 1
+    if declared != ({"alt": "A"}, [("converted", "imageAlt", "alt", "")]):
+        _fail("guard: declared target", f"a declared target was changed: {declared}", failures)
+    checks += 1
+    refused = [e for e in undeclared[1] if e[0] == "refused"]
+    if undeclared[0] != original or len(refused) != 1 or "noSuchTarget" not in refused[0][3] or refused[0][1] != "imageUrl":
+        _fail("guard: undeclared target (negative control)", f"expected a refusal naming noSuchTarget and imageUrl, got {undeclared}", failures)
+    checks += 1
+    scope = M.migration_scope()
+    outside = sorted(set(M.live_declared_attributes()) - set(scope)) if scope is not None else []
+    if outside:
+        unscoped = B.guard_declared(outside[0], original, {"noSuchTarget": 1}, [])
+        if unscoped[0] != {"noSuchTarget": 1}:
+            _fail("guard: unadopted block", f"{outside[0]}, outside the migration scope, was refused", failures)
+    for label, block, attrs, want_events, want_refused, want_keep in (
+        ("repeat and attachment on an image delete", "sgs/media", {"attachment": "fixed", "repeat": "repeat"}, {"deleted"}, False, None),
+        ("repeat and attachment on a decorative image delete", "sgs/decorative-image", {**svg, "attachment": "fixed", "repeat": "repeat"}, {"deleted"}, False, None),
+        ("an overlay that painted nothing deletes", "sgs/decorative-image", {**svg, "overlayOpacity": 40, "overlayBlendMode": "multiply"}, {"deleted"}, False, None),
+        ("an overlay colour refuses the block", "sgs/decorative-image", {**svg, "overlayColour": "#f00"}, {"refused"}, True, "overlayColour"),
+    ):
+        checks += 1
+        new, events = B.migrate(block, attrs)
+        kinds = {e[0] for e in events} - {"pinned"}
+        problems = []
+        if want_events != kinds:
+            problems.append(f"events {sorted(kinds)}, expected {sorted(want_events)}")
+        if want_refused != (new == attrs):
+            problems.append("the block was " + ("not refused whole" if want_refused else "left unchanged"))
+        if not want_refused and any(k in new for k in ("attachment", "repeat", *B.OVERLAY_SETTINGS)):
+            problems.append(f"a deleted attribute is still saved: {new}")
+        if want_keep and not any(e[1] == want_keep and "layerOverlayColour" in e[3] for e in events):
+            problems.append(f"the refusal does not name {want_keep} and its target: {events}")
+        if problems:
+            _fail(f"guard: {label}", "; ".join(problems), failures)
+    checks += 1
+    before = M.live_declared_attributes.cache_info().misses
+    B.guard_declared("sgs/media", original, {"alt": "A"}, [])
+    B.guard_declared("sgs/gallery", original, {"alt": "A"}, [])
+    if M.live_declared_attributes.cache_info().misses != before:
+        _fail("guard: declarations cached", "the live block.json files were read again within a run", failures)
+    return checks
+
+
 def reset_caches() -> None:
     """The one place the mapping's kept facts and the kept migration results are cleared."""
-    M.live_generated_maps.cache_clear()
     M.live_declared_slots.cache_clear()
+    M.live_declared_attributes.cache_clear()
     B.clear_memo()
 
 
@@ -327,28 +712,28 @@ def run_frozen(failures: list[str]) -> int:
     """The frozen facts stand alone, every legacy attribute is classified, and dropped or unmapped values are reported."""
     checks = 0
     gone = Path(tempfile.gettempdir()) / "migrate-media-system-absent"
-    saved = (M.GENERATED_PHP, M.BLOCKS_DIR)
+    saved = M.BLOCKS_DIR
     before_rows, before_out = json.dumps(M.rows(), sort_keys=True), B.migrate("sgs/hero", HERO_PROBE)
-    M.GENERATED_PHP, M.BLOCKS_DIR = gone / "generated.php", gone / "blocks"
+    M.BLOCKS_DIR = gone / "blocks"
     try:
         checks += 1
         if not frozen_independent(before_rows, before_out):
-            _fail("frozen: independence", "rows or a migration changed with the PHP mirror and block.json files absent", failures)
+            _fail("frozen: independence", "rows or a migration changed with the block.json files absent", failures)
         checks += 1
         real = B._migrate
-        B._migrate = lambda _n, _a: ({"mirrorPresent": M.GENERATED_PHP.exists()}, [])
+        B._migrate = lambda _n, _a: ({"blocksPresent": M.BLOCKS_DIR.exists()}, [])
         try:
-            M.GENERATED_PHP = saved[0]
+            M.BLOCKS_DIR = saved
             reset_caches()
-            with_mirror = B.migrate("sgs/hero", HERO_PROBE)
-            M.GENERATED_PHP = gone / "generated.php"
-            caught = not frozen_independent(before_rows, with_mirror)
+            with_blocks = B.migrate("sgs/hero", HERO_PROBE)
+            M.BLOCKS_DIR = gone / "blocks"
+            caught = not frozen_independent(before_rows, with_blocks)
         finally:
             B._migrate = real
         if not caught:
-            _fail("frozen: independence control", "a migration that reads the PHP mirror was not caught (a stale kept result hides it)", failures)
+            _fail("frozen: independence control", "a migration that reads the block.json files was not caught (a stale kept result hides it)", failures)
     finally:
-        M.GENERATED_PHP, M.BLOCKS_DIR = saved
+        M.BLOCKS_DIR = saved
         reset_caches()
     live = M.live_declared_slots
     M.live_declared_slots = lambda: {"sgs/media": [{"prefix": "", "atoms": None, "kinds": ["image"]}]}
@@ -383,7 +768,7 @@ def run_frozen(failures: list[str]) -> int:
         ("unmapped event", "sgs/trust-bar", {"badgeImageZzz": "x"}, "refused", "unmapped legacy attribute"),
         ("dropped tablet alt", "sgs/media", {"imageUrl": U, "imageAlt": "A", "imageAltTablet": "B"}, "deleted", "dropped value 'B'"),
         ("dropped video alt", "sgs/media", {"imageUrl": U, "videoAlt": "V"}, "deleted", "dropped value 'V'"),
-        ("report: brand logo box", "sgs/product-card", {"brandLogoHeight": {"desktop": "20px"}}, "reported", "WP-9"),
+        ("report: preview image id", "sgs/buybox", {"previewImageId": 5}, "reported", "WP-9"),
     ):
         checks += 1
         _, events = B.migrate(block, attrs)
@@ -401,10 +786,368 @@ def run_frozen(failures: list[str]) -> int:
 LEGACY_UNDECLARED = {
     ("sgs/hero", "splitMediaWidthUnit"), ("sgs/hero", "splitMediaHeightUnit"), ("sgs/hero", "splitMediaMaxWidthUnit"),
     ("sgs/hero", "splitMediaMaxHeightUnit"), ("sgs/hero", "splitMediaBackground"), ("sgs/card-grid", "imageSize"),
+    ("sgs/buybox", "thumbSelectedBorderColour"),  # the interim attribute of a49e09cb6, replaced before the database's seed
 }
 
 
+def run_hover_tables(failures: list[str]) -> int:
+    """The hover tables name real parts, and only attributes the block no longer declares are converted (a declared one stays):
+    every REPORT_EXEMPT pair is declared by its block.json (so the exemption cannot outlive the attribute), every converted hover
+    attribute is declared by no block that converts it, and every part a table writes is a declared motion part of its block."""
+    checks = 0
+    declared = {}
+    for path in sorted(M.BLOCKS_DIR.glob("*/block.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        declared[data["name"]] = set(data.get("attributes") or {})
+    for block, attr in sorted(M.REPORT_EXEMPT - {("sgs/button", "scaleHover"), ("sgs/brand-strip", "imageEffect")}):  # those two are exempt for other reasons
+        checks += 1
+        if attr not in declared.get(block, set()):
+            _fail("hover tables: exempt", f"{block} no longer declares {attr}: it is not exempt, it is lost", failures)
+    parts = M.live_motion_parts()
+    for block, rule in M.HOVER_IMAGE_ZOOM.items():
+        checks += 2
+        if "imageZoomHover" in declared.get(block, set()):
+            _fail("hover tables: image zoom", f"{block} still declares imageZoomHover, so converting it deletes a live setting", failures)
+        if rule[0] not in parts.get(block, set()):
+            _fail("hover tables: image zoom", f"{block} has no motion part {rule[0]}", failures)
+    for block, rule in M.HOVER_EXTENSION_ZOOM.items():
+        checks += 1
+        if rule[0] not in parts.get(block, set()):
+            _fail("hover tables: extension zoom", f"{block} has no motion part {rule[0]}", failures)
+    for block, rule in M.HOVER_SCALE.items():
+        checks += 2
+        if "scaleHover" in declared.get(block, set()):
+            _fail("hover tables: scale", f"{block} still declares scaleHover", failures)
+        if rule[0] not in parts.get(block, set()):
+            _fail("hover tables: scale", f"{block} has no motion part {rule[0]}", failures)
+    checks += 1
+    if "split-media" not in parts.get("sgs/hero", set()):
+        _fail("hover tables: hero split motion", "sgs/hero has no split-media motion part", failures)
+    try:
+        import jsonschema
+    except ImportError:
+        return checks  # the schema proof needs the jsonschema package; the table checks above stand without it
+    validator = jsonschema.Draft202012Validator(json.loads((M.PLUGIN / "schemas" / "motion.schema.json").read_text(encoding="utf-8")))
+    for label, _block, _attrs, expected in CASES:
+        if isinstance(expected, dict) and "sgsMotion" in expected and "sgsMotion" not in _attrs:
+            checks += 1
+            errors = [e.message for e in validator.iter_errors(expected["sgsMotion"])]
+            if errors:
+                _fail("hover tables: schema", f"{label}: the motion object the migration writes breaks motion.schema.json: {errors[0][:160]}", failures)
+    checks += 1
+    if not list(validator.iter_errors({"v": 1, "elements": {"image": {"hover": {"state": {"source": "item", "values": {"scale": "big"}}}}}})):
+        _fail("hover tables: schema negative control", "a Hover state with a non-numeric scale passed the schema", failures)
+    return checks
+
+
+
+def run_inplace_json(failures: list[str]) -> int:
+    """A hand-formatted JSON file keeps every unchanged byte when one block in it is rewritten: inline objects
+    elsewhere stay inline. Negative control: a file whose block does not change comes back identical."""
+    import tempfile
+    text = ('{\n  "keep": { "a": 1, "b": [1, 2] },\n  "tree": [\n    {\n      "name": "sgs/x",\n'
+            '      "attributes": { "old": 1 }\n    }\n  ]\n}\n')
+
+    def rename(name, attrs):
+        return {"new": attrs["old"]} if "old" in attrs else attrs
+
+    checks = 0
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "hand.json"
+        path.write_bytes(text.encode("utf-8"))
+        out, count, _ = C.rewrite_file_text(path, rename)
+        checks += 1
+        if count != 1 or '"keep": { "a": 1, "b": [1, 2] }' not in out or json.loads(out)["tree"][0]["attributes"] != {"new": 1}:
+            failures.append(f"FAIL in-place JSON: unchanged bytes not kept or block not rewritten: {out!r}")
+        same, count, _ = C.rewrite_file_text(path, lambda n, a: a)
+        checks += 1
+        if count or same != text:
+            failures.append("FAIL in-place JSON negative: a file with no changed block was altered")
+    return checks
+
+
+def run_remote_paths(failures: list[str]) -> int:
+    """On a remote site (no mirror): a bare token names no file, so it is MISSING without a read; a site-relative path is
+    read over HTTP against the site's address; a page-relative path is read against the site root like a mirror does (an unsafe path is not guessed: None, the block is refused)."""
+    import sizes as S
+    seen: list[str] = []
+    real_http = S._http
+    S._http = lambda url, own_host=None: (seen.append((url, own_host)), (10, 20))[1]
+    try:
+        site = {"files": {}, "mirror": None, "base": "https://example.test"}
+        checks = [
+            ("remote paths: a bare token is missing", S._read("crzq7marker", site) == S.MISSING),
+            ("remote paths: a site-relative path is read against the site", S._read("/wp-content/a.jpg", site) == (10, 20) and seen == [("https://example.test/wp-content/a.jpg", "example.test")]),
+            ("remote paths: a page-relative path is read against the site root, '../' clamped there", (seen.clear(), S._read("../../research/a.jpeg", site))[1] == (10, 20) and seen == [("https://example.test/research/a.jpeg", "example.test")]),
+            ("remote paths: a page-relative path with no slash is read at the root", (seen.clear(), S._read("assets/brands/a.jpg", site))[1] == (10, 20) and seen == [("https://example.test/assets/brands/a.jpg", "example.test")]),
+            ("remote paths: an absolute URL on the site's own host is read as the site's own file", (seen.clear(), S._read("https://example.test/wp-includes/a.png", site))[1] == (10, 20) and seen == [("https://example.test/wp-includes/a.png", "example.test")]),
+            ("remote paths: negative control, another host is not given the site's own-host exemption", (seen.clear(), S._read("https://other.test/a.png", site))[1] == (10, 20) and seen == [("https://other.test/a.png", "example.test")]),
+            ("remote paths: negative control, a page-relative path with unsafe characters is not guessed", S._read("img/a b$.jpg", site) is None),
+            ("remote paths: negative control, no base leaves a site-relative path unread", S._read("/a.jpg", {"files": {}, "mirror": None}) is None),
+        ]
+    finally:
+        S._http = real_http
+    for label, ok in checks:
+        if not ok:
+            _fail(label, "unexpected result", failures)
+    return len(checks)
+
+
+def run_http_retry(failures: list[str]) -> int:
+    """A dropped connection is retried, so one pass reads the size; a 404 is not retried. Negative control: a reader
+    that always drops returns None after every attempt."""
+    import io
+    import urllib.error
+    import urllib.request
+    png = bytes.fromhex("89504e470d0a1a0a0000000d49484452") + (640).to_bytes(4, "big") + (480).to_bytes(4, "big") + bytes.fromhex("0802000000")
+    calls = {"n": 0}
+
+    class Resp(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def flaky(request, timeout=0):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise ConnectionResetError("dropped")
+        return Resp(png)
+
+    def gone(request, timeout=0):
+        calls["n"] += 1
+        raise urllib.error.HTTPError(request.full_url, 404, "Not Found", {}, None)
+
+    def gone410(request, timeout=0):
+        calls["n"] += 1
+        raise urllib.error.HTTPError(request.full_url, 410, "Gone", {}, None)
+
+    def forbidden(request, timeout=0):
+        calls["n"] += 1
+        raise urllib.error.HTTPError(request.full_url, 403, "Forbidden", {}, None)
+
+    def server_error(request, timeout=0):
+        calls["n"] += 1
+        raise urllib.error.HTTPError(request.full_url, 503, "Unavailable", {}, None)
+
+    def no_host(request, timeout=0):
+        calls["n"] += 1
+        raise urllib.error.URLError(S.socket.gaierror(S.DNS_NOT_FOUND[0], "Name or service not known"))
+
+    def bad_cert(request, timeout=0):
+        calls["n"] += 1
+        raise urllib.error.URLError(S.ssl.SSLCertVerificationError(1, "certificate has expired"))
+
+    def flaky_dns(request, timeout=0):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise urllib.error.URLError(S.socket.gaierror(S.DNS_NOT_FOUND[0], "Name or service not known"))
+        raise urllib.error.URLError(S.socket.timeout("timed out"))
+
+    def always_drop(request, timeout=0):
+        calls["n"] += 1
+        raise ConnectionResetError("dropped")
+
+    real_open, real_sleep = urllib.request.urlopen, S.time.sleep
+    S.time.sleep = lambda _s: None
+    checks = 0
+    try:
+        for opener, want, want_calls, label in ((flaky, (640, 480), 2, "a dropped first read is retried"),
+                                                 (gone, S.MISSING, 1, "a 404 is not retried and means the file is missing"),
+                                                 (gone410, S.MISSING, 1, "a 410 means the file is missing"),
+                                                 (forbidden, None, 1, "negative: a 403 says nothing about the file"),
+                                                 (server_error, None, S.HTTP_ATTEMPTS, "negative: a 5xx is transient: retried, then unreadable"),
+                                                 (no_host, S.MISSING, S.HTTP_ATTEMPTS, "a host that never resolves means the file is missing"),
+                                                 (bad_cert, S.MISSING, S.HTTP_ATTEMPTS, "an expired certificate means the host is abandoned: missing"),
+                                                 (flaky_dns, None, S.HTTP_ATTEMPTS, "negative: a resolver failure on one attempt only is transient"),
+                                                 (always_drop, None, S.HTTP_ATTEMPTS, "negative: always dropped gives up")):
+            calls["n"] = 0
+            urllib.request.urlopen = opener
+            got = S._http("http://remote.test/x.png")
+            checks += 1
+            if got != want or calls["n"] != want_calls:
+                failures.append(f"FAIL http retry: {label}: got {got} after {calls['n']} call(s), want {want} after {want_calls}")
+
+        def verifying(request, timeout=0, context=None):
+            calls["n"] += 1
+            if context is None or context.verify_mode != S.ssl.CERT_NONE:
+                raise urllib.error.URLError(S.ssl.SSLCertVerificationError(1, "unable to get local issuer certificate"))
+            return Resp(png)
+
+        urllib.request.urlopen = verifying
+        for url, own, want, label in (("https://site.test/products/a.png", "site.test", (640, 480), "the site's own file is read without the certificate check"),
+                                      ("https://other.test/a.png", "site.test", S.MISSING, "negative: another host is still certificate-checked"),
+                                      ("https://site.test/products/a.png", None, S.MISSING, "negative: no own host, still certificate-checked")):
+            checks += 1
+            got = S._http(url, own_host=own)
+            if got != want:
+                failures.append(f"FAIL http own host: {label}: got {got}, want {want}")
+    finally:
+        urllib.request.urlopen, S.time.sleep = real_open, real_sleep
+    return checks
+
+
+def run_sizes(failures: list[str]) -> int:
+    """FR-49-16 against a registered attachment map: an own upload (a sized copy too) gets its attachment id, another file
+    its read size, and the same URL on another site resolves on that site's map. Negative control: a site without the
+    upload in its map does not borrow another site's id."""
+    checks = 0
+    files = {"2026/09/photo.jpeg": [41, 1200, 800, "image/jpeg"], "2026/09/photo-300x200.jpeg": [41, 300, 200, "image/jpeg"]}
+    S.register("mirror:a", files)
+    S.register("mirror:b", {"2026/09/photo.jpeg": [77, 1200, 800, "image/jpeg"]})
+    try:
+        for key, url, want in (
+            ("mirror:a", "http://old.test/wp-content/uploads/2026/09/photo.jpeg", {"id": 41}),
+            ("mirror:a", "http://old.test/wp-content/uploads/2026/09/photo-300x200.jpeg", {"id": 41}),
+            ("mirror:b", "http://old.test/wp-content/uploads/2026/09/photo.jpeg", {"id": 77}),
+            ("mirror:a", U, {"width": 640, "height": 480}),
+        ):
+            checks += 1
+            S.activate(key)
+            B.clear_memo()
+            new, _ = B.migrate("sgs/media", {"imageUrl": url})
+            entry = new.get("source", {}).get("desktop", {})
+            if {k: entry.get(k) for k in want} != want or ("id" in want and "width" in entry):
+                _fail("sizes: own upload", f"{key} {url}: wanted {want}, got {entry}", failures)
+        checks += 1
+        S.activate("mirror:c")
+        B.clear_memo()
+        got = B.migrate("sgs/media", {"imageUrl": "http://old.test/wp-content/uploads/2026/09/photo.jpeg"})[0]
+        if "source" in got:
+            _fail("sizes: negative control", "an upload missing from the site's map was resolved from another site's map", failures)
+        checks += 1
+        S.activate("repo")
+        B.clear_memo()
+        _, events = B.migrate("sgs/media", {"imageUrl": "http://x/unreadable.png"})
+        if not any(e[0] == "refused" and "size could not be read" in e[3] for e in events):
+            _fail("sizes: refusal", f"no refused event naming the size: {events}", failures)
+        checks += 1
+        got = [S.dimensions(blob) for blob in (_png_blob(), _jpeg_blob(), b'<svg xmlns="x" viewBox="0 0 30 20"></svg>', b"not an image")]
+        if got != [(7, 5), (9, 4), (30, 20), None]:
+            _fail("sizes: file headers", f"png, jpeg, svg, junk read as {got}", failures)
+    finally:
+        for key in ("mirror:a", "mirror:b"):
+            S._SITES.pop(key, None)
+        S.activate("repo")
+        B.clear_memo()
+    original = S.resolve
+    try:
+        for label, got, expected in (("a 2200 by 1467 upload prints the 1024 large size", ("id", 5, (2200, 1467)), 1024),
+                                     ("an upload under the bound prints its own width", ("id", 6, (800, 600)), 800),
+                                     ("a tall upload is bounded by its height", ("id", 7, (1000, 2000)), 512),
+                                     ("a file that is no upload prints its own width", ("size", None, (2200, 1467)), 2200)):
+            checks += 1
+            S.resolve = lambda url, got=got: got
+            width = S.printed_width({"kind": "image", "url": "http://x/big.jpg"})
+            if width != expected:
+                _fail(f"printed width: {label}", f"expected {expected}, got {width}", failures)
+    finally:
+        S.resolve = original
+    return checks
+
+
+def run_missing_files(failures: list[str]) -> int:
+    """A file that is definitively not there converts with its url and no size and a `reported` event, and the converted block
+    is then clean for `check`; a transient failure still refuses. Negative controls: a transient failure, and a block with an
+    unreadable image that is already in the new shape (no event, so `check` stays quiet)."""
+    checks = 0
+    gone, flaky = "http://dead.test/a.jpg", "http://slow.test/b.jpg"
+    real = S.READER
+    S.READER = lambda url, _site: S.MISSING if url == gone else None
+    try:
+        for block, attrs in (("sgs/media", {"imageUrl": gone}), ("sgs/product-card", {"image": gone})):
+            checks += 1
+            S.activate("repo")
+            B.clear_memo()
+            new, events = B.migrate(block, attrs)
+            entries: list = []
+            S._entries(new, "", entries)
+            if not entries or any(e.get("width") or e.get("id") for _, e in entries) or entries[0][1].get("url") != gone:
+                _fail("missing file: converted", f"{block}: wanted the url with no size, got {new}", failures)
+            if not any(e[0] == "reported" and "could not be found" in e[3] for e in events) or any(e[0] == "refused" for e in events):
+                _fail("missing file: event", f"{block}: wanted a reported event and no refusal, got {events}", failures)
+            checks += 1
+            if B.old_attributes(block, new):
+                _fail("missing file: check", f"{block}: the converted block still counts as old: {B.old_attributes(block, new)}", failures)
+        checks += 1
+        B.clear_memo()
+        _, events = B.migrate("sgs/media", {"imageUrl": flaky})
+        if not any(e[0] == "refused" for e in events):
+            _fail("missing file: negative control", f"a transient failure was not refused: {events}", failures)
+    finally:
+        S.READER = real
+        B.clear_memo()
+    return checks
+
+
+def run_retired_names(failures: list[str]) -> int:
+    """Old names the old render never read, or fell back on: hero splitImage*, an object with no corner key as a media radius,
+    a bogus bgSvgPosition; and the inline-SVG logo attributes that stay on their own blocks."""
+    checks = 0
+    B.clear_memo()
+    hero = {"variant": "split", "splitImage": {"id": 1, "url": "http://x/a.jpg"}, "splitImageMobile": {"url": "http://x/b.jpg"},
+            "splitImageMobileObjectPosition": "top"}
+    new, events = B.migrate("sgs/hero", hero)
+    checks += 1
+    if any(k.startswith("splitImage") for k in new) or {e[1] for e in events if e[0] == "deleted"} != {"splitImage", "splitImageMobile", "splitImageMobileObjectPosition"}:
+        _fail("retired hero split", f"wanted the three names deleted, got {new} {events}", failures)
+    checks += 1
+    new, events = B.migrate("sgs/gallery", {"sgsHeightMobile": "10px", "sgsMaxWidth": "50%", "sgsObjectFit": "cover"})
+    if "sgsMaxWidth" in new or "sgsHeightMobile" in new or {e[1] for e in events if e[0] == "deleted"} != {"sgsMaxWidth", "sgsHeightMobile"}:
+        _fail("gallery unread size settings", f"wanted both deleted, got {new} {events}", failures)
+    checks += 1
+    new, events = B.migrate("sgs/hero", {"splitMediaFoo": "x"})
+    if not any(e[0] == "refused" for e in events):
+        _fail("retired hero split: negative control", f"an unmapped splitMedia name must still refuse: {events}", failures)
+    checks += 1
+    new, events = B.migrate("sgs/media", {"borderRadius": {"top": "16px", "left": "16px"}})
+    if "borderRadius" in new or "radius" in new or not any(e[0] == "deleted" for e in events):
+        _fail("media radius without corner key", f"wanted it deleted, got {new} {events}", failures)
+    checks += 1
+    new, events = B.migrate("sgs/media", {"borderRadius": "banana"})
+    if not any(e[0] == "refused" for e in events):
+        _fail("media radius: negative control", f"a bare string must still refuse: {events}", failures)
+    checks += 1
+    new, events = B.migrate("sgs/container", {"bgSvgContent": "<svg/>", "bgSvgPosition": "bogus"})
+    if "bgSvgPosition" in new or new.get("backgroundSvgLayer") != "behind" or any(e[0] == "refused" for e in events):
+        _fail("bogus svg layer", f"wanted the default layer (behind), got {new} {events}", failures)
+    for block, names in (("sgs/responsive-logo", ("inlineSvg", "svgParts", "svgPartsTrigger")),
+                         ("sgs/nav-drawer", ("chromeLogoInlineSvg", "chromeLogoSvgParts", "chromeLogoSvgPartsTrigger"))):
+        checks += 1
+        attrs = {n: ([] if "Parts" in n and "Trigger" not in n else "x") for n in names}
+        if B.old_attributes(block, attrs):
+            _fail("logo svg attributes stay", f"{block}: {B.old_attributes(block, attrs)}", failures)
+    checks += 1
+    if B.old_attributes("sgs/responsive-logo", {"logoUrl": "http://x/l.png", "inlineSvg": True}) == []:
+        _fail("logo svg attributes: negative control", "an old logo image attribute went unreported", failures)
+    B.clear_memo()
+    return checks
+
+
+def _png_blob() -> bytes:
+    import struct
+    return b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + b"IHDR" + struct.pack(">II", 7, 5) + b"\x08\x02\x00\x00\x00"
+
+
+def _jpeg_blob() -> bytes:
+    import struct
+    return b"\xff\xd8\xff\xe0" + struct.pack(">H", 4) + b"\x00\x00" + b"\xff\xc0" + struct.pack(">HBHH", 11, 8, 4, 9) + b"\x00\x00\x00\x00"
+
+
 def run(break_mapping: bool = False) -> int:
+    saved_reader = S.READER
+    S.READER = _stub_read
+    S.activate("repo")
+    B.clear_memo()
+    try:
+        return _run(break_mapping)
+    finally:
+        S.READER = saved_reader
+        B.clear_memo()
+
+
+def _run(break_mapping: bool = False) -> int:
     if break_mapping:
         M.NEW_PREFIX[("sgs/hero", "splitMedia")] = "splitMedium"
         M.BASE_FAMILY["ObjectFit"] = ("fit", "Fitt")
@@ -412,7 +1155,7 @@ def run(break_mapping: bool = False) -> int:
         M.rows.cache_clear()
         M.STAYS["sgs/post-grid"] = ()
     failures: list[str] = []
-    total = run_cases(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
+    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_declared_guard(failures) + run_scope(failures) + run_sizes(failures) + run_http_retry(failures) + run_remote_paths(failures) + run_hover_tables(failures) + run_missing_files(failures) + run_retired_names(failures) + run_inplace_json(failures) + export_selftest.run(failures) + apply_selftest.run(failures) + remote_selftest.run(failures)
     for line in failures:
         print(line)
     print(f"migrate-media-system self-test: {total - len(failures)} of {total} checks passed"

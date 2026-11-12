@@ -18,7 +18,8 @@
  * @package
  */
 
-import '../../shared/nav-interactivity/store';
+// eslint-disable-next-line import/no-unresolved -- a webpack external: the script module `@sgs/nav-store` (one copy per page).
+import '@sgs/nav-store';
 import initDrawerMotionState from './drawer-motion-state';
 import { bootSvgParts } from '../../shared/svg-parts/svg-parts';
 

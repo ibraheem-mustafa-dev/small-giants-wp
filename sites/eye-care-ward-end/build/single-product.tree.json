@@ -88,21 +88,7 @@
               },
               "thumbGap": "2px",
               "thumbStripOffset": "2px",
-              "galleryThumbBorderWidth": {
-                "top": "1px",
-                "right": "1px",
-                "bottom": "1px",
-                "left": "1px"
-              },
-              "galleryThumbBorderStyle": "solid",
-              "galleryThumbBorderColour": "border",
               "galleryThumbBorderColourCurrent": "text",
-              "galleryThumbBorderRadius": {
-                "topLeft": "0px",
-                "topRight": "0px",
-                "bottomRight": "0px",
-                "bottomLeft": "0px"
-              },
               "thumbSelectedScale": 100,
               "showLadder": false,
               "priceFontFamily": "heading",
@@ -186,24 +172,38 @@
                     }
                   }
                 }
+              },
+              "thumbRadius": {
+                "desktop": {
+                  "topLeft": "0px",
+                  "topRight": "0px",
+                  "bottomRight": "0px",
+                  "bottomLeft": "0px"
+                }
+              },
+              "thumbBorderStyle": "solid",
+              "thumbBorderColour": "border",
+              "thumbBorderWidth": {
+                "top": "1px",
+                "right": "1px",
+                "bottom": "1px",
+                "left": "1px"
               }
             },
             "innerBlocks": [
               {
                 "name": "sgs/media",
                 "attributes": {
-                  "mediaType": "image",
-                  "imageUrl": "",
-                  "imageAlt": "",
                   "linkUrl": "",
                   "height": {
                     "desktop": "40px"
                   },
-                  "objectFit": "contain",
                   "maxWidth": {
                     "desktop": "180px"
                   },
-                  "alignment": "start",
+                  "alignment": {
+                    "desktop": "start"
+                  },
                   "metadata": {
                     "bindings": {
                       "imageUrl": {
@@ -226,7 +226,18 @@
                       }
                     }
                   },
-                  "className": "cr-ref-product-5"
+                  "className": "cr-ref-product-5",
+                  "source": {
+                    "desktop": {
+                      "kind": "image"
+                    }
+                  },
+                  "fit": {
+                    "desktop": "contain"
+                  },
+                  "width": {
+                    "desktop": "auto"
+                  }
                 }
               },
               {
@@ -1690,13 +1701,18 @@
                                   },
                                   "captionLetterSpacingUnit": "em",
                                   "captionTextTransform": "uppercase",
-                                  "drawingImageId": 1293,
-                                  "drawingImageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/eye-care-sizing-frame-front.svg",
                                   "drawingImageWidth": 680,
                                   "drawingImageHeight": 300,
-                                  "drawingImageAlt": "Front view of the frame",
                                   "tickLength": 1.765,
-                                  "className": "cr-ref-product-121"
+                                  "className": "cr-ref-product-121",
+                                  "drawingSource": {
+                                    "desktop": {
+                                      "kind": "image",
+                                      "id": 1293,
+                                      "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/eye-care-sizing-frame-front.svg"
+                                    }
+                                  },
+                                  "drawingAlt": "Front view of the frame"
                                 },
                                 "innerBlocks": [
                                   {
@@ -1881,13 +1897,18 @@
                                   },
                                   "captionLetterSpacingUnit": "em",
                                   "captionTextTransform": "uppercase",
-                                  "drawingImageId": 1294,
-                                  "drawingImageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/eye-care-sizing-frame-side.svg",
                                   "drawingImageWidth": 680,
                                   "drawingImageHeight": 230,
-                                  "drawingImageAlt": "Side view of the frame",
                                   "tickLength": 1.765,
-                                  "className": "cr-ref-product-127"
+                                  "className": "cr-ref-product-127",
+                                  "drawingSource": {
+                                    "desktop": {
+                                      "kind": "image",
+                                      "id": 1294,
+                                      "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/eye-care-sizing-frame-side.svg"
+                                    }
+                                  },
+                                  "drawingAlt": "Side view of the frame"
                                 },
                                 "innerBlocks": [
                                   {
@@ -2666,7 +2687,6 @@
                           "showWishlist": true,
                           "rrpMetaKey": "_sgs_rrp",
                           "swatchMaxVisible": 4,
-                          "imageAspectRatio": "1 / 1",
                           "showShadow": false,
                           "borderRadius": {
                             "desktop": {
@@ -2701,7 +2721,10 @@
                           "attributeTagText": "Polarised",
                           "attributeTagFontWeight": "400",
                           "attributeTagBorderColour": "border-strong",
-                          "className": "cr-ref-product-109"
+                          "className": "cr-ref-product-109",
+                          "imageRatio": {
+                            "desktop": "1 / 1"
+                          }
                         }
                       }
                     ]
@@ -2828,7 +2851,6 @@
                           "showWishlist": true,
                           "rrpMetaKey": "_sgs_rrp",
                           "swatchMaxVisible": 4,
-                          "imageAspectRatio": "1 / 1",
                           "showShadow": false,
                           "borderRadius": {
                             "desktop": {
@@ -2863,7 +2885,10 @@
                           "attributeTagText": "Polarised",
                           "attributeTagFontWeight": "400",
                           "attributeTagBorderColour": "border-strong",
-                          "className": "cr-ref-product-114"
+                          "className": "cr-ref-product-114",
+                          "imageRatio": {
+                            "desktop": "1 / 1"
+                          }
                         }
                       }
                     ]

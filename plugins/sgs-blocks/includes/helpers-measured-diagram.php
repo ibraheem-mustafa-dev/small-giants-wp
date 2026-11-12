@@ -40,6 +40,35 @@ if ( ! function_exists( 'sgs_measured_diagram_box' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_measured_diagram_source_size' ) ) {
+	/**
+	 * The width and height of a drawing's source: the first device whose file reports both (a library file reports its
+	 * own through its attachment). A source with no size returns nulls, and `sgs_measured_diagram_box()` then stands in
+	 * its 16:9 box.
+	 *
+	 * @param mixed $source The stored `drawingSource` object (`{desktop,tablet,mobile}` entries).
+	 * @return array{0: mixed, 1: mixed} Width, height.
+	 */
+	function sgs_measured_diagram_source_size( $source ): array {
+		if ( ! is_array( $source ) || ! function_exists( 'sgs_media_resolve_sources' ) ) {
+			return array( null, null );
+		}
+		$resolved = sgs_media_resolve_sources(
+			array(
+				'prefix' => 'drawing',
+				'kinds'  => array( 'image', 'svg' ),
+			),
+			array( 'drawingSource' => $source )
+		);
+		foreach ( $resolved as $entry ) {
+			if ( is_array( $entry ) && $entry['width'] > 0 && $entry['height'] > 0 ) {
+				return array( $entry['width'], $entry['height'] );
+			}
+		}
+		return array( null, null );
+	}
+}
+
 if ( ! function_exists( 'sgs_measured_diagram_pct' ) ) {
 	/**
 	 * A position as a % of the drawing box, cast and clamped to 0–100.

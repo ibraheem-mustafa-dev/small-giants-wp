@@ -86,16 +86,17 @@ PICTURE_PROP = re.compile(r"^\s*(background-size|object-fit|object-position)\s*$
 
 
 def generated_media_sizes(blocks_dir: Path = BLOCKS) -> set[tuple[str, str]]:
-    """(block name, attr) of every `Size` setting the media generator wrote into a block.json.
+    """(block name, attr) of every size setting the media generator wrote into a block.json.
 
-    That is a media atom's `Size` base, which paints `background-size`, never a tap target's box.
-    The generator leaves css_property to the seeder, so the framework DB may hold no property for it.
+    A media slot's `Size` (background-size), `Width`, `Height` and their min and max (the sizing atom) size the slot's own
+    media box, never a tap target's box. The generator leaves css_property to the seeder, so the framework DB may hold
+    no property for them.
     """
     out: set[tuple[str, str]] = set()
     for f in blocks_dir.glob("*/block.json"):
         attrs = json.loads(f.read_text(encoding="utf-8")).get("attributes") or {}
         for name, d in attrs.items():
-            if isinstance(d, dict) and d.get("_generated") == "media-atoms" and name.endswith("Size"):
+            if isinstance(d, dict) and d.get("_generated") == "media-atoms" and re.search(r"(Size|Width|Height)$", name):
                 out.add((f.parent.name, name))
     return out
 

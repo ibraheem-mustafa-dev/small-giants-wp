@@ -21,7 +21,7 @@
 	"supports": {
 		"sgs": {
 			"motion": true,
-			"_comment_overlayNotAdopted": "backgroundOverlayColour/Opacity/OpacityTablet/OpacityMobile/ColourHover/BlendMode are deliberately NOT routed through supports.sgs.mediaElements' overlay atom (detector rule 37-media-no-handroll) -- same reasoning as sgs/container (see its block.json for the full note): this block's overlay renders through the shared SGS_Container_Wrapper, whose own sgs_overlay_decls()-based emission is already more capable than the atom (until the atom system gains a caller-supplied-selector mode). Tracked as a future atom-layer capability, not a silent gap.",
+			"_comment_overlayNotAdopted": "The background is the media system's `background` slot (supports.sgs.mediaElements, Spec 49 section 7.8): the Background panel is the shared media panel, and SGS_Container_Wrapper (via SGS_Background_Media) prints the element and overlay. An SVG drawn over a photo or video is the block's own kept layer (bgSvg* attributes).",
 			"collection": true,
 			"iconPicker": true,
 			"is_section_root": true,
@@ -34,13 +34,30 @@
 			],
 			"arrayContentLift": true,
 			"scalarStylingLift": true,
-			"_comment_mediaElements": "badgeImageObjectFit already matches mediaAttrName('badgeImage','ObjectFit') — wired directly onto the existing attribute, no rename/bridge needed (detector rule 37-media-no-handroll).",
+			"_comment_mediaElements": "The `badge` slot: each image badge's own picture (`items[].source`) printed by the shared media renderer, with the block-level Fit (contain when unset), Width (60px when unset), Radius, Shape and Colour. The `background` slot is the bar's own background.",
 			"mediaElements": [
 				{
-					"prefix": "badgeImage",
-					"context": "element",
+					"prefix": "badge",
+					"context": "item",
+					"kinds": [
+						"image"
+					],
 					"atoms": [
-						"object-fit"
+						"source",
+						"meaning",
+						"object-fit",
+						"sizing",
+						"shape",
+						"filter"
+					]
+				},
+				{
+					"prefix": "background",
+					"context": "background",
+					"kinds": [
+						"image",
+						"video",
+						"svg"
 					]
 				}
 			],
@@ -61,10 +78,13 @@
 				],
 				"text-only": [],
 				"image-badge": [
-					"badgeImageBorderRadius",
-					"badgeImageSize",
 					"badgeImageShadow",
-					"badgeImageObjectFit"
+					"badgeFit",
+					"badgeWidth",
+					"badgeRadius",
+					"badgeShape",
+					"badgeColour",
+					"badgeGreyscale"
 				]
 			},
 			"boxFamilies": {
@@ -101,10 +121,6 @@
 					"attrMap": {
 						"css:background-color": "backgroundColour",
 						"css:color": "textColour",
-						"css:background-attachment": "backgroundAttachment",
-						"css:background-position": "backgroundPosition",
-						"css:background-repeat": "backgroundRepeat",
-						"css:background-size": "backgroundSize",
 						"css:background-image": "backgroundOverlayColour",
 						"css:margin": "margin",
 						"css:max-width": "maxWidth",
@@ -289,26 +305,42 @@
 					],
 					"prefix": "badgeImage",
 					"attrMap": {
-						"css:width": "badgeImageSize",
-						"css:height": "badgeImageSize",
-						"css:object-fit": "badgeImageObjectFit",
-						"css:border-radius": "badgeImageBorderRadius",
 						"css:box-shadow": "badgeImageShadow"
 					},
-					"_note": "The <img> in the image-badge variant (render.php:281-297, .sgs-trust-bar__badge-img). Mirrors icon-badge size/border-radius/box-shadow plus an image-specific object-fit; badgeImageSize maps css:width AND css:height (a single square dimension, render.php:284-285). Emitted only when badgeStyle=image-badge."
+					"_note": "The picture inside the image-badge variant's `.sgs-trust-bar__badge-img` box (render.php). Its size, fit, corners, shape and colour are the `badge` media slot's own settings; the shadow is the block's and sits on the picture. Emitted only when badgeStyle=image-badge."
 				},
 				"background": {
-					"absentIn": ["bg-css-layer"],
-					"absentWhy": "A tiled, sized, parallax, fixed or per-device background image paints on the root's ::before layer (SGS_Container_Wrapper::render, $sgs_bg_img_is_simple false), so no element carries the image; a layer on the root reaches the section.",
 					"surface": true,
 					"prefix": "",
-					"selector": ".sgs-container__image-bg",
-					"label": "Background image",
+					"selector": ".sgs-bg-media",
+					"label": "Background",
 					"order": 8,
 					"clusters": [],
-					"_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
+					"_note": "`.sgs-bg-media`, the element SGS_Container_Wrapper prints for every background (picture, tile layer, video or SVG). A motion target so a Ken Burns or parallax layer moves the background alone, never the block's content; it declares no style clusters because its look is governed by the Background panel.",
+					"availableWhen": {
+						"slot": "background",
+						"kinds": [
+							"image"
+						]
+					}
+				},
+				"background-video": {
+					"surface": true,
+					"prefix": "",
+					"selector": ".sgs-bg-media",
+					"label": "Background video",
+					"order": 8,
+					"clusters": [],
+					"availableWhen": {
+						"slot": "background",
+						"kinds": [
+							"video"
+						]
+					},
+					"_note": "The same `.sgs-bg-media` element when a device shows a video: an effect that suits video (not Ken Burns) reaches it through this part."
 				},
 				"svg-bg": {
+					"availableWhen": {"slot": "background", "kinds": ["svg"]},
 					"svg": true,
 					"surface": true,
 					"prefix": "",
@@ -424,37 +456,30 @@
 						"type": "string",
 						"role": "color"
 					},
-					"media": {
-						"type": "object",
-						"role": "image-object",
-						"properties": {
-							"url": {
-								"type": "string"
-							},
-							"alt": {
-								"type": "string"
-							}
-						}
-					},
-					"decorative": {
-						"type": "boolean",
-						"default": false,
-						"description": "image-badge variant only. Explicit editorial choice (WCAG 2.1 AA 1.1.1) that this badge's image carries no information — render.php blanks its alt text and adds aria-hidden so assistive tech skips it entirely.",
-						"role": "boolean-visibility"
-					},
 					"_key": {
 						"type": "string",
 						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit CSS (image-badge variant only) so a fit value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed.",
 						"role": "technical"
 					},
-					"objectFit": {
+					"source": {
+						"type": "object",
+						"description": "The item's picture per device, the media Source shape: {desktop:{kind,id,url,width,height,mime}, tablet, mobile}. A device with no entry shows the wider device's file.",
+						"role": "image-object"
+					},
+					"alt": {
 						"type": "string",
-						"enum": [
-							"cover",
-							"contain"
-						],
-						"default": "cover",
-						"description": "image-badge variant only. Per-item object-fit override — badges are logos/certification marks, so no focal-point/crop field exists here by design (see sgs/testimonial orgLogo, sgs/brand-strip logoFit).",
+						"default": "",
+						"description": "The picture's description for screen readers. Blank when the picture is decorative.",
+						"role": "image-alt"
+					},
+					"decorative": {
+						"type": "boolean",
+						"default": false,
+						"role": "boolean-visibility"
+					},
+					"fit": {
+						"type": "object",
+						"description": "How this item's picture fills its box per device. Empty uses the block's own fit.",
 						"role": "visual"
 					}
 				}
@@ -666,14 +691,6 @@
 			"default": "",
 			"description": "Unset (default) falls through to style.css's framework-default fallback (rgba(0,0,0,0.08))."
 		},
-		"badgeImageBorderRadius": {
-			"type": "string",
-			"default": ""
-		},
-		"badgeImageSize": {
-			"type": "number",
-			"default": 60
-		},
 		"badgeImageShadow": {
 			"type": "string",
 			"default": ""
@@ -684,17 +701,6 @@
 		"badgeImageShadowColourHover": {
 			"type": "string",
 			"default": ""
-		},
-		"badgeImageObjectFit": {
-			"type": "string",
-			"default": "contain",
-			"enum": [
-				"cover",
-				"contain",
-				"fill",
-				"none",
-				"scale-down"
-			]
 		},
 		"textColour": {
 			"type": "string",
@@ -761,50 +767,10 @@
 				"mobile": "1fr 1fr"
 			}
 		},
-		"backgroundImage": {
-			"type": "object"
-		},
-		"backgroundImageTablet": {
-			"type": "object"
-		},
-		"backgroundImageMobile": {
-			"type": "object"
-		},
 		"surfaceTone": {
 			"type": "string",
 			"enum": [ "auto", "light", "dark" ],
 			"default": "auto"
-		},
-		"backgroundSize": {
-			"type": "string",
-			"default": "cover",
-			"enum": [
-				"cover",
-				"contain",
-				"auto"
-			]
-		},
-		"backgroundPosition": {
-			"type": "string",
-			"default": "center center"
-		},
-		"backgroundRepeat": {
-			"type": "string",
-			"default": "no-repeat",
-			"enum": [
-				"no-repeat",
-				"repeat",
-				"repeat-x",
-				"repeat-y"
-			]
-		},
-		"backgroundAttachment": {
-			"type": "string",
-			"default": "scroll",
-			"enum": [
-				"scroll",
-				"fixed"
-			]
 		},
 		"backgroundOverlayColour": {
 			"type": "string"
@@ -814,10 +780,6 @@
 			"default": {
 				"desktop": 30
 			}
-		},
-		"overlayGradient": {
-			"type": "string",
-			"default": ""
 		},
 		"surfaceBlur": {
 			"type": "string",
@@ -831,37 +793,6 @@
 		"backgroundOverlayColourHover": {
 			"type": "string",
 			"default": ""
-		},
-		"overlayGradientHover": {
-			"type": "string",
-			"default": ""
-		},
-		"backgroundOverlayBlendMode": {
-			"type": "string",
-			"default": "normal",
-			"enum": [
-				"normal",
-				"multiply",
-				"screen",
-				"overlay",
-				"darken",
-				"lighten",
-				"color-dodge",
-				"color-burn",
-				"soft-light",
-				"hard-light",
-				"difference",
-				"exclusion"
-			]
-		},
-		"bgVideo": {
-			"type": "object"
-		},
-		"bgVideoTablet": {
-			"type": "object"
-		},
-		"bgVideoMobile": {
-			"type": "object"
 		},
 		"shadow": {
 			"type": "string"
@@ -1249,7 +1180,44 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"badgeLoading": {"type":"string","_generated":"media-atoms"},
+		"badgeFit": {"type":"object","_generated":"media-atoms"},
+		"badgeRatio": {"type":"object","_generated":"media-atoms"},
+		"badgeWidth": {"type":"object","_generated":"media-atoms"},
+		"badgeHeight": {"type":"object","_generated":"media-atoms"},
+		"badgeMinWidth": {"type":"object","_generated":"media-atoms"},
+		"badgeMaxWidth": {"type":"object","_generated":"media-atoms"},
+		"badgeMinHeight": {"type":"object","_generated":"media-atoms"},
+		"badgeMaxHeight": {"type":"object","_generated":"media-atoms"},
+		"badgeShape": {"type":"object","_generated":"media-atoms"},
+		"badgeRadius": {"type":"object","_generated":"media-atoms"},
+		"badgeBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"badgeBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"badgeBorderColour": {"type":"string","_generated":"media-atoms"},
+		"badgeBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"badgeBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"badgeBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
+		"badgeColour": {"type":"object","_generated":"media-atoms"},
+		"badgeGreyscale": {"type":"number","_generated":"media-atoms"},
+		"backgroundSource": {"type":"object","_generated":"media-atoms"},
+		"backgroundLoading": {"type":"string","_generated":"media-atoms"},
+		"backgroundAlt": {"type":"string","_generated":"media-atoms"},
+		"backgroundDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundFit": {"type":"object","_generated":"media-atoms"},
+		"backgroundRepeat": {"type":"object","_generated":"media-atoms"},
+		"backgroundTileSize": {"type":"object","_generated":"media-atoms"},
+		"backgroundFocal": {"type":"object","_generated":"media-atoms"},
+		"backgroundPinned": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundOverlayGradient": {"type":"string","_generated":"media-atoms"},
+		"backgroundOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
+		"backgroundOverlayBlend": {"type":"string","_generated":"media-atoms"},
+		"backgroundOpacity": {"type":"object","_generated":"media-atoms"},
+		"backgroundSvgLayer": {"type":"string","_generated":"media-atoms"},
+		"backgroundSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundSvgParts": {"type":"array","default":[],"_generated":"media-atoms"},
+		"backgroundSvgPartsTrigger": {"type":"string","_generated":"media-atoms"},
+		"backgroundPlayback": {"type":"object","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

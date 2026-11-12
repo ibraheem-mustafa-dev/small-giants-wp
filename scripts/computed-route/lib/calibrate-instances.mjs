@@ -109,19 +109,15 @@ export function preconditionsFor( row, schema, current = {}, ctx = {} ) {
 	if ( slot && ctx.variantAttr && current[ ctx.variantAttr ] !== slot.variant_value ) {
 		out[ ctx.variantAttr ] = slot.variant_value;
 	}
-	// A variant whose media renders only with an image (hero's split media is absent without splitMediaImageUrl) gets
-	// the calibration image in that variant's own base image slots, so its media settings have an element to paint.
+	// A variant whose media renders only with an image (hero's split media is absent without a splitSource) gets
+	// the calibration image in that variant's own Source slots, so its media settings have an element to paint.
 	if ( slot && ctx.image ) {
 		for ( const s of ( ctx.variantSlots || [] ).filter( ( x ) => x.variant_value === slot.variant_value ) ) {
 			const name = s.unique_slot;
-			if ( ! schema[ name ] || ( current[ name ] ?? '' ) !== '' ) {
+			if ( 'object' !== schema[ name ]?.type || ! /Source$|^source$/.test( name ) || ! isEmpty( current[ name ] ) ) {
 				continue;
 			}
-			if ( /ImageUrl$/.test( name ) ) {
-				out[ name ] = ctx.image.url;
-			} else if ( /ImageId$/.test( name ) ) {
-				out[ name ] = ctx.image.id;
-			}
+			out[ name ] = imageSource( ctx.image );
 		}
 	}
 	// A setting the render gates on another attribute's value that no toggle or variant names: the block's fixture lists
@@ -158,15 +154,19 @@ export function preconditionsFor( row, schema, current = {}, ctx = {} ) {
 	Object.assign( out, shadowPartners( row.attr_name, first, schema ) );
 	// A background image under an overlay or scrim, and under a setting that only shapes an image (its size, position,
 	// attachment, repeat, origin, clip or blend): none of them paints on a block with no image.
-	if ( ( /overlay|scrim/i.test( row.attr_name ) || IMAGE_SHAPING.test( row.attr_name ) || properties.some( ( p ) => IMAGE_SHAPING_PROPS.test( p ) ) ) && ctx.image && schema.backgroundImage && ! current.backgroundImage ) {
-		out.backgroundImage = { ...ctx.image };
+	if ( ( /overlay|scrim/i.test( row.attr_name ) || IMAGE_SHAPING.test( row.attr_name ) || properties.some( ( p ) => IMAGE_SHAPING_PROPS.test( p ) ) ) && ctx.image && 'object' === schema.backgroundSource?.type && isEmpty( current.backgroundSource ) ) {
+		out.backgroundSource = imageSource( ctx.image );
 	}
 	return out;
 }
 
+// The calibration image as a Source value (Spec 49 section 8): one desktop entry every device inherits.
+const imageSource = ( image ) => ( { desktop: { kind: 'image', id: image.id, url: image.url } } );
+const isEmpty = ( v ) => undefined === v || null === v || '' === v || ( 'object' === typeof v && 0 === Object.keys( v ).length );
+
 // The resting overlay colour an overlay hover is read over: any colour but MARKER_HEX.
 const OVERLAY_REST_HEX = '#2b2b2b';
-const IMAGE_SHAPING = /^background(Size|Position|Attachment|Repeat|Origin|Clip|Blend)/;
+const IMAGE_SHAPING = /^background(Fit|Focal|Pinned|Repeat|TileSize|Opacity|Blend|Origin|Clip)/;
 const IMAGE_SHAPING_PROPS = /^background-(size|position|attachment|repeat|origin|clip|blend-mode)$/;
 
 const LAYOUT_PROPS = /^(flex-direction|flex-wrap|justify-content|align-items|align-content|grid-template-columns|grid-template-rows|gap|row-gap|column-gap)$/;
@@ -181,7 +181,7 @@ export function layoutModes( schema, current = {} ) {
 }
 
 // One variant's attributes: the fixture's base attributes with the variant's laid over them, where a variant value of null
-// removes that attribute (a variant with no image is `{ decorMedia: null }`: the block then has no such setting at all, which
+// removes that attribute (a variant with no image is `{ layerSource: null }`: the block then has no such setting at all, which
 // the page builder accepts, where an object setting given null is refused and the instance is lost).
 export function variantAttributes( base = {}, variant = {} ) {
 	const out = { ...( base || {} ), ...variant };

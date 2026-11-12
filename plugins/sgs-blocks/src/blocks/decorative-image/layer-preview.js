@@ -2,9 +2,10 @@
  * Floating layer — canvas twin of the positioned root rule render.php emits.
  *
  * Position, size, opacity, stacking and transform are read for the previewed tier (a narrower tier inherits from the
- * wider one, as the frontend's @media overrides do). Width and max width are lengths per tier, as render.php reads
- * them: a width of max-content (Fit the content) is capped at the parent unless a max width is set; any other width
- * has no cap unless one is set. An axis with an edge offset set is placed by its edges instead of its centre
+ * wider one, as the frontend's @media overrides do). Width (`layerWidth`) and max width (`layerMaxWidth`) are lengths per
+ * tier, as render.php reads them for a box layer: a width of max-content or auto (Fit the content) is capped at the
+ * parent unless a max width is set; any other width has no cap unless one is set. The canvas always previews a layer
+ * as a box, whose picture fills it. An axis with an edge offset set is placed by its edges instead of its centre
  * (`layerEdges`).
  */
 
@@ -13,15 +14,21 @@ import { cssLengthValue } from '../../utils/css-length';
 import { sgsBorderPreview } from '../../utils/border-preview';
 import { backgroundPaintPreview } from '../../utils/background-preview';
 import { composeShadow } from '../../utils/shadow-layers';
-import { css as boxShapeCss } from '../../components/media/atoms/box-shape';
 
-const EDGES = {
-	top: 'positionTop',
-	right: 'positionRight',
-	bottom: 'positionBottom',
-	left: 'positionLeft',
-};
+/**
+ * The four edge offsets, each read by its own attribute name.
+ *
+ * @param {Object} attributes Block attributes.
+ * @return {Object} Edge to its per-device value object.
+ */
+const edgeValues = ( attributes ) => ( {
+	top: attributes.positionTop,
+	right: attributes.positionRight,
+	bottom: attributes.positionBottom,
+	left: attributes.positionLeft,
+} );
 const TIERS = [ 'desktop', 'tablet', 'mobile' ];
+const SHAPE_RADIUS = { circle: '50%', ellipse: '50%', pill: '9999px' };
 
 /**
  * The layer's edge anchoring, the canvas twin of includes/helpers-layer-edges.php::sgs_layer_edges: an axis whose edge
@@ -34,8 +41,8 @@ const TIERS = [ 'desktop', 'tablet', 'mobile' ];
  */
 export function layerEdges( attributes, tier ) {
 	const out = { x: false, y: false, offsets: {} };
-	for ( const [ property, attr ] of Object.entries( EDGES ) ) {
-		const tiers = attributes[ attr ] || {};
+	for ( const [ property, stored ] of Object.entries( edgeValues( attributes ) ) ) {
+		const tiers = stored || {};
 		if (
 			TIERS.some( ( t ) => '' !== cssLengthValue( tiers[ t ] ?? '' ) )
 		) {
@@ -64,10 +71,10 @@ export function layerPreviewStyle( attributes, tier ) {
 	const {
 		positionX,
 		positionY,
-		width,
-		maxWidth,
+		layerWidth: width,
+		layerMaxWidth: maxWidth,
 		rotation,
-		opacity,
+		layerOpacity: opacity,
 		zIndex,
 		flipX,
 		overflow,
@@ -85,8 +92,11 @@ export function layerPreviewStyle( attributes, tier ) {
 	const x = resolveTier( positionX, tier, 50 ).value;
 	const y = resolveTier( positionY, tier, 50 ).value;
 	const degrees = resolveTier( rotation, tier, 0 ).value;
+	const rawWidth = resolveTier( width, tier, '' ).value ?? '';
 	const tierWidth =
-		cssLengthValue( resolveTier( width, tier, '' ).value ?? '' ) || '200px';
+		'auto' === rawWidth
+			? 'max-content'
+			: cssLengthValue( rawWidth ) || '200px';
 	const setCap = cssLengthValue(
 		resolveTier( maxWidth, tier, '' ).value ?? ''
 	);
@@ -99,7 +109,7 @@ export function layerPreviewStyle( attributes, tier ) {
 		...( edges.y ? {} : { top: `${ y }%` } ),
 		...edges.offsets,
 		...size,
-		opacity: ( opacity ?? 100 ) / 100,
+		opacity: Number( resolveTier( opacity, tier, 100 ).value ?? 100 ) / 100,
 		zIndex: zIndex ?? 1,
 		overflow: overflow ?? 'visible',
 		pointerEvents: 'auto',
@@ -157,13 +167,13 @@ function hasBorderWidth( widthValues ) {
  */
 export function layerPaintsBox( attributes, palette ) {
 	const {
-		borderWidth,
-		borderStyle,
-		borderColourGradient,
-		backgroundColour,
+		layerBorderWidth: borderWidth,
+		layerBorderStyle: borderStyle,
+		layerBorderColourGradient: borderColourGradient,
+		layerBackground: backgroundColour,
 		backgroundColourGradient,
-		boxShadow,
-		boxShadowColour,
+		layerBoxShadow: boxShadow,
+		layerBoxShadowColour: boxShadowColour,
 	} = attributes;
 	const bordered =
 		'none' !==
@@ -206,16 +216,16 @@ export function layerBoxPreview(
 		return {};
 	}
 	const {
-		borderWidth,
-		borderStyle,
-		borderColour,
-		borderColourGradient,
-		borderRadius,
-		backgroundColour,
+		layerBorderWidth: borderWidth,
+		layerBorderStyle: borderStyle,
+		layerBorderColour: borderColour,
+		layerBorderColourGradient: borderColourGradient,
+		layerRadius: borderRadius,
+		layerBackground: backgroundColour,
 		backgroundColourGradient,
-		boxShadow,
-		boxShadowColour,
-		height,
+		layerBoxShadow: boxShadow,
+		layerBoxShadowColour: boxShadowColour,
+		layerHeight: height,
 	} = attributes;
 
 	const style = {
@@ -242,14 +252,14 @@ export function layerBoxPreview(
 		style.boxShadow = shadow;
 	}
 
-	// The shape's clip-path comes from the box-shape atom's own emitter, the way the hero canvas reads it.
-	const clip = boxShapeCss( {
-		attributes,
-		prefix: '',
-		blockSlug: 'sgs/decorative-image',
-	} ).find( ( decl ) => decl.startsWith( '--sgs-media-clip-path:' ) );
-	if ( clip ) {
-		style.clipPath = clip.slice( clip.indexOf( ':' ) + 1 );
+	// A radius-drawn shape (circle, ellipse, pill) is the box's corners, as render.php prints it.
+	const shape = resolveTier( attributes.layerShape, tier, '' ).value;
+	const radius = SHAPE_RADIUS[ 'object' === typeof shape ? shape?.shape : shape ];
+	if ( radius ) {
+		Object.keys( style )
+			.filter( ( key ) => /^border.+Radius$/.test( key ) )
+			.forEach( ( key ) => delete style[ key ] );
+		style.borderRadius = radius;
 	}
 
 	const tierHeight = resolveTier( height, tier, '' ).value;

@@ -47,18 +47,3 @@ if ( ! function_exists( 'sgs_media_atom_caption_requires' ) ) {
 		);
 	}
 }
-
-if ( ! function_exists( 'sgs_media_atom_caption_css' ) ) {
-	/**
-	 * No CSS. Caption text/tag are HTML content and structure, never
-	 * stylesheet values.
-	 *
-	 * @param array  $attributes Block attributes.
-	 * @param string $prefix     Surface prefix.
-	 * @param string $block_slug Block slug.
-	 * @return array Always empty.
-	 */
-	function sgs_media_atom_caption_css( array $attributes, $prefix, $block_slug ) {
-		return array();
-	}
-}

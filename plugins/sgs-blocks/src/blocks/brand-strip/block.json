@@ -36,10 +36,17 @@
 			"_comment_mediaElements": "Bridges the pre-existing `logoFit` control (contain, cover, fill, scale-down or none; default contain) onto the shared object-fit atom via STORED_AS in MediaElementControls.js/helpers-media-element.php — no new attribute, no new UI, the logo-fit dropdown stays the only control.",
 			"mediaElements": [
 				{
-					"prefix": "",
-					"context": "element",
+					"prefix": "logo",
+					"context": "item",
+					"kinds": [
+						"image"
+					],
 					"atoms": [
-						"object-fit"
+						"source",
+						"meaning",
+						"object-fit",
+						"shape",
+						"filter"
 					]
 				}
 			],
@@ -105,6 +112,8 @@
 					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none."
 				},
 				"logo": {
+					"surface": true,
+					"selector": ".sgs-brand-strip__item .sgs-media-el",
 					"label": "Logo image only",
 					"order": 4,
 					"clusters": [
@@ -114,7 +123,7 @@
 						"css:object-fit": "logoFit",
 						"css:max-width": "logoMaxWidth"
 					},
-					"_note": "Governed by its own logoFit/imageEffect selects (supports.sgs.imageControls removed 2026-08-11, Spec 35 capability-routing doctrine — it was fully redundant dead weight on top of this bespoke mechanism, never a real control surface) — outside the Text/Fill/Layout style clusters, so it declares no clusters. logoFit's attrMap entry added 2026-09-03 to close a db-consistency 'undeclared-subelement' finding (the classifier had no manifest signal to trace logoFit's element/selector to).",
+					"_note": "Governed by its own logoFit/imageEffect selects (the universal image-controls extension removed 2026-08-11, Spec 35 capability-routing doctrine — it was fully redundant dead weight on top of this bespoke mechanism, never a real control surface) — outside the Text/Fill/Layout style clusters, so it declares no clusters. logoFit's attrMap entry added 2026-09-03 to close a db-consistency 'undeclared-subelement' finding (the classifier had no manifest signal to trace logoFit's element/selector to).",
 					"absentIn": [ "text" ],
 					"absentWhy": "Text mode prints each brand as text, with no logo image."
 				},
@@ -299,32 +308,17 @@
 				"desktop": {}
 			}
 		},
-		"_comment_logos_media": "Migrated 2026-05-05 — each logo entry uses the unified media-slot shape { url, type: 'image', id, alt, mime } via shared MediaPicker (image-only). Legacy { image: {...} } shape is NOT migrated — all deprecations were deleted plugin-wide at D271; there is no deprecated.js. New instances write the unified shape. allowedTypes={ [ 'image' ] } enforces no video on logos. alt/linkUrl/linkTarget/name are per-item JS runtime keys, declared here for schema clarity (array-item sub-properties are not subject to the D338 top-level attr-discard rule).",
+		"_comment_logos_media": "Each logo entry holds its picture as a per-device media Source (source), with alt, decorative, fit, focal, name and the link keys beside it (Spec 49 section 8.3); the logo prints through the shared item renderer and the item picker accepts images only. Array-item sub-properties are declared here for schema clarity (they are not subject to the D338 top-level attribute discard rule).",
 		"logos": {
 			"type": "array",
 			"default": [],
 			"items": {
 				"type": "object",
 				"properties": {
-					"media": {
-						"anyOf": [
-							{ "type": "string" },
-							{ "type": "null" },
-							{
-								"type": "object",
-								"properties": {
-									"url": { "type": "string" },
-									"type": { "type": "string" },
-									"id": { "type": "number" },
-									"alt": { "type": "string" },
-									"mime": { "type": "string" },
-									"width": { "type": "number" },
-									"height": { "type": "number" }
-								}
-							}
-						],
-						"role": "image-object",
-						"_note": "D1031 (2026-09-11) — TWO real shapes are accepted and both render (a THIRD, null, is the empty state): the object form { url, type, id, alt, mime, width, height } written by MediaPicker, and a bare URL STRING (for back-compat with starter patterns, though brand-strip doesn't currently use any such patterns). null is the empty state from addLogo()/Remove in edit.js -- it renders nothing, but must still validate so it doesn't wipe the rest of the array. Before this fix `media` was declared bare {\"type\":\"object\"} — WordPress's own WP_Block_Type::prepare_attributes_for_render() validates the WHOLE `logos` array against this schema on every server render (rest_validate_array_value_from_schema loops each item and returns the FIRST WP_Error it finds, wiping the array back to its `[]` default), so ANY item whose media was the actual object shape (every item added through the editor picker) silently blanked the ENTIRE logos array, not just that item, on the frontend. This is a sibling fix to D1027 (sgs/card-grid, same mechanism). Do not narrow this back to a single `type` -- object/null/string must all keep validating, or the array-wipe regresses. The object branch declares real `properties` (not a bare `{\"type\":\"object\"}`) so this stays scoped to the SGS media shape rather than accepting arbitrary object junk."
+					"source": {
+						"type": "object",
+						"description": "The logo's picture per device, the media Source shape: {desktop:{kind,id,url,width,height,mime}, tablet, mobile}. A device with no entry shows the wider device's file. No key is the empty state: the logo prints nothing.",
+						"role": "image-object"
 					},
 					"alt": {
 						"type": "string",
@@ -361,18 +355,14 @@
 						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit CSS so a fit value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed.",
 						"role": "technical"
 					},
-					"objectFit": {
-						"type": "string",
-						"enum": [
-							"",
-							"contain",
-							"cover",
-							"fill",
-							"scale-down",
-							"none"
-						],
-						"default": "",
-						"description": "Per-item object-fit override. Logos are not photographs — object-fit only, no focal-point/crosshair (Bean-locked convention: see sgs/testimonial orgLogo + this block's own block-wide logoFit). Falls back to the block-wide logoFit default when unset.",
+					"fit": {
+						"type": "object",
+						"description": "How this logo fills its tile per device (contain, cover, fill, scale-down or none). Empty uses the strip's own fit (logoFit).",
+						"role": "visual"
+					},
+					"focal": {
+						"type": "object",
+						"description": "The part of this logo kept in view when it is cropped, per device: {desktop:{x,y}} with x and y from 0 to 1.",
 						"role": "visual"
 					}
 				}
@@ -555,15 +545,6 @@
 			"type": "number",
 			"default": 16
 		},
-		"tileShape": {
-			"type": "string",
-			"enum": [
-				"square",
-				"circle",
-				"none"
-			],
-			"default": "square"
-		},
 		"logoLayout": {
 			"type": "string",
 			"enum": [
@@ -582,18 +563,6 @@
 			"type": "number",
 			"default": 100,
 			"description": "Row layout: each brand's resting opacity in %, rising to full on hover or keyboard focus."
-		},
-		"logoFit": {
-			"type": "string",
-			"enum": [
-				"contain",
-				"cover",
-				"fill",
-				"scale-down",
-				"none"
-			],
-			"default": "contain",
-			"description": "How each logo sits in its tile: contain = whole logo scaled to the tile's longer axis keeping proportions; cover = fills the tile and crops; fill = stretches to the tile (may distort); scale-down = contain, never enlarged past natural size; none = natural size."
 		},
 		"tileBorderWidth": {
 			"type": "number",
@@ -878,7 +847,19 @@
 			"vertical-lr"
 		],
 		"default": ""
-	}
+	},
+		"logoLoading": {"type":"string","_generated":"media-atoms"},
+		"logoFit": {"type":"object","_generated":"media-atoms"},
+		"logoShape": {"type":"object","_generated":"media-atoms"},
+		"logoRadius": {"type":"object","_generated":"media-atoms"},
+		"logoBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"logoBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"logoBorderColour": {"type":"string","_generated":"media-atoms"},
+		"logoBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"logoBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"logoBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
+		"logoColour": {"type":"object","_generated":"media-atoms"},
+		"logoGreyscale": {"type":"number","_generated":"media-atoms"}
 	},
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css",

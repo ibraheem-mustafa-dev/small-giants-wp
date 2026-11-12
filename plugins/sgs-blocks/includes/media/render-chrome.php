@@ -196,6 +196,33 @@ if ( ! function_exists( 'sgs_media_sibling_css' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_link_tap_css' ) ) {
+	/**
+	 * The tap-area floor of a link around a slot: `.sgs-media-link` keeps 44px unless the client set a size, then the size
+	 * is the tap area (a control's tap area fits its own shape). Prints `--sgs-media-tap-min:0px` at each device whose
+	 * resolved Height, Max height or Max width is set, and the floor back where a narrower device unsets them.
+	 *
+	 * @param string $uid   Scope class, no dot.
+	 * @param array  $slot  Slot.
+	 * @param array  $attrs Attributes.
+	 * @return string CSS, '' when no device is sized.
+	 */
+	function sgs_media_link_tap_css( string $uid, array $slot, array $attrs ): string {
+		require_once __DIR__ . '/atoms/sizing.php';
+		$rules = array();
+		$prev  = false;
+		foreach ( sgs_media_devices() as $device ) {
+			$r     = sgs_media_atom_sizing_resolve( $attrs, $slot, $device );
+			$sized = ( null !== $r['Height'] && 'fill' !== $r['Height'] ) || null !== $r['MaxHeight'] || null !== $r['MaxWidth'];
+			if ( $sized !== $prev ) {
+				sgs_media_add( $rules, '.' . $uid, $device, '--sgs-media-tap-min', $sized ? '0px' : '44px' );
+			}
+			$prev = $sized;
+		}
+		return sgs_media_rules_css( $rules );
+	}
+}
+
 if ( ! function_exists( 'sgs_media_caption_css' ) ) {
 	/**
 	 * Caption width follows the media when Width resolves to `auto` (Spec 49 §7.1): Gutenberg's table-caption pattern.

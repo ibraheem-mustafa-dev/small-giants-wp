@@ -1,0 +1,937 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/team-member",
+	"version": "0.4.0",
+	"title": "SGS Team Member",
+	"category": "sgs-content",
+	"description": "Team member card with photo, name, role, bio, and social links.",
+	"keywords": [
+		"team",
+		"member",
+		"staff",
+		"person",
+		"profile"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "admin-users",
+	"supports": {
+		"align": false,
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": false,
+			"text": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"motion": true,
+			"imageControls": true,
+			"imageControlsExplicit": true,
+			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03, CORRECTED same day via /qc-council). NOT a new client control: prefix 'sgs' resolves (sgs_media_element_attr) to the SAME 'sgsObjectFit' attribute imageControlsExplicit's legacy image-controls extension already injects and already exposes an 'Object fit' dropdown for -- the original unprefixed entry here created a SECOND, dead 'Object fit' dropdown (QC-council finding: two identically-labelled controls in the same inspector) and, worse, left the legacy sgs_media_position_css() call in render.php free to emit a literal object-fit declaration from any PRE-EXISTING sgsObjectFit value on the SAME selector the atom now paints -- a live double-emission risk for any team-member instance saved before this fix, not just a cosmetic duplicate. render.php now clears sgsObjectFit before that call (mirrors sgs/gallery's identical fix) so only object-position emits from the legacy path, and the atom owns object-fit exclusively via this SAME attribute. style.css's hardcoded object-fit:cover was removed; the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` atom stylesheet paints the identical default.",
+			"mediaElements": [
+				{
+					"prefix": "sgs",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
+			"scalarContentLift": true,
+			"presetSelectors": [
+				"cardStyle"
+			],
+			"enabledExtensions": [
+				"blockLink"
+			],
+			"elements": {
+				"card": {
+					"restingShadow": true,
+					"label": "Card",
+					"order": 1,
+					"clusters": [
+						"layout",
+						"fill",
+						"text",
+						"motion"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:max-width": "maxWidth",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:background-color": "backgroundColour",
+						"css:color": "textColour",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
+						"css:text-align": "textAlign",
+						"css:transition-duration": "transitionDuration",
+						"css:transition-timing-function": "transitionEasing",
+						"css:box-shadow": "cardShadow",
+						"css:box-shadow-color": "cardShadowColour",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:color-gradient": "textColourGradient",
+						"css:border-color-gradient": "borderColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:box-shadow": "cardShadowHover",
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					},
+					"_note": "D294 content-KIND, no-wrapper (render.php:5-47) — the root <div> IS the block, no SGS_Container_Wrapper call (dropped 2026-07-10). FR-35-5 Task 4c fix (2026-07-21, Bean's Option A): the card now has a RESTING-state `cardShadow` attr (render.php:118,247-256; style.css –sgs-card-shadow fallback) alongside the existing hover-only `cardShadowHover` (render.php:239-243), so cardShadowHover is STATE_OK not STATE_WITHOUT_BASE — same fix shape as card-grid's cardShadow (Task 4). An empty cardShadow control means the card inherits the theme token exactly as before. `scaleHover` (transform:scale on hover) has no matching cluster member (no css:transform exists in the vocabulary) — an honest ORPHAN, not a gap. Typography FULLY migrated off native WP support (Bean-locked architecture decision, 2026-09-05, D971/D972 full-replacement track) — root prefix '' (fontSize/fontWeight/fontStyle/lineHeight via TypographyControls + sgs_typography_css_rule(); textAlign is now a plain block-private attribute rendered via the block's own has-text-align-* class mechanism, no longer WP-native supports.typography.textAlign). letter-spacing/text-transform/text-decoration/font-family are supported by the shared helper but have no editor control on this block yet — honest gaps."
+				},
+				"image": {
+					"selector": ".sgs-team-member__photo",
+					"label": "Photo",
+					"order": 2,
+					"clusters": [],
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:filter": "grayscaleHover"
+							}
+						}
+					},
+					"_note": "Renamed from 'photo' 2026-08-15 (element-manifest drift fix) — grayscaleHover resolves to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json). The real rendered class is `.sgs-team-member__photo` (render.php:295) — the label stays 'Photo' (client-facing, unchanged) even though the manifest KEY is now 'image', matching the sibling-block vocabulary. Governed by the universal image-controls extension (supports.sgs.imageControls) plus photoShape/overlayHover/grayscaleHover behaviour toggles — none are Text/Fill/Layout style-cluster members. `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
+				},
+				"name": {
+					"text": true,
+					"label": "Name",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"prefix": "name",
+					"attrMap": {
+						"tag": "headingLevel",
+						"css:background-image": "nameColourGradient",
+						"css:-webkit-text-stroke-width": "nameTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "nameTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "nameColourHover",
+								"css:-webkit-text-stroke-color": "nameTextStrokeColourHover"
+							}
+						}
+					},
+					"_note_hover": "nameColourHover (2026-09-05) -- render.php:637-639 emits sgs_hover_state_rules( $name_colour_sel, 'color:...', ':focus-visible' ), where $name_colour_sel = $root_sel . ' .sgs-team-member__name' (render.php:627). That is the NAME element's OWN :hover/:focus-visible, not the card root's, so css_element=name / css_state=hover is what render.php actually does. Declared explicitly because the `name` prefix convention resolves css:color to the RESTING nameColour only -- it cannot reach a state, so without this entry the derived DB left css_element/css_state NULL and nameColourHover collided with roleColourHover on the identical (color, NULL, NULL) routing slot.",
+					"_note": "css:color resolves via the default convention (nameColour). No nameFontSize/nameFontWeight/etc attrs exist — honest gaps; only the card-root fontSize (typography.fontSize) governs name/role/bio text size uniformly. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:320, `.sgs-team-member__name`) but doesn't match the `name` prefix convention on its own. `nameColourGradient` (2026-09-03) is the text-colour gradient sibling to nameColour, same background-clip:text mechanism as sgs/counter's numberColourGradient."
+				},
+				"role": {
+					"text": true,
+					"label": "Role",
+					"order": 4,
+					"clusters": [
+						"text"
+					],
+					"prefix": "role",
+					"attrMap": {
+						"css:background-image": "roleColourGradient",
+						"css:-webkit-text-stroke-width": "roleTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "roleTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "roleColourHover",
+								"css:-webkit-text-stroke-color": "roleTextStrokeColourHover"
+							}
+						}
+					},
+					"_note_hover": "roleColourHover (2026-09-05) -- render.php:648-650 emits sgs_hover_state_rules( $role_colour_sel, 'color:...', ':focus-visible' ), where $role_colour_sel = $root_sel . ' .sgs-team-member__role' (render.php:628). The ROLE element's own :hover/:focus-visible, exactly mirroring nameColourHover above. Same reason for the explicit declaration: the `role` prefix convention only reaches the resting roleColour, leaving the hover attribute at (color, NULL, NULL) and colliding with nameColourHover.",
+					"_note": "css:color resolves via the default convention (roleColour, default 'text-muted'). No per-element font-size/weight — honest gaps. `roleColourGradient` (2026-09-03) is the text-colour gradient sibling to roleColour, same background-clip:text mechanism."
+				},
+				"bio": {
+					"text": true,
+					"label": "Bio",
+					"order": 5,
+					"clusters": [
+						"text"
+					],
+					"prefix": "bio",
+					"_note": "Typography now independently controlled (Task 4, 2026-09-07) via the shared TypographyControls targets switcher — bioFontSize/FontWeight/etc resolve via the default `bio` prefix convention. No bioColour exists; bio text still inherits the card root's colour.",
+					"absentIn": [ "compact" ],
+					"absentWhy": "The compact display drops the bio and the social links.",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "bioTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "bioTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "bioTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"social": {
+					"label": "Social links",
+					"order": 6,
+					"clusters": [
+						"text"
+					],
+					"prefix": "socialLink",
+					"attrMap": {
+						"css:flex-wrap": "flexWrap",
+						"css:font-size": "socialLinkFontSize",
+						"css:font-weight": "socialLinkFontWeight",
+						"css:font-style": "socialLinkFontStyle",
+						"css:font-family": "socialLinkFontFamily",
+						"css:text-transform": "socialLinkTextTransform",
+						"css:text-decoration": "socialLinkTextDecoration",
+						"css:line-height": "socialLinkLineHeight",
+						"css:letter-spacing": "socialLinkLetterSpacing",
+						"css:text-align": "socialLinkTextAlign",
+						"css:text-wrap": "socialLinkTextWrap",
+						"css:-webkit-text-stroke-width": "socialLinkTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "socialLinkTextStrokeColour",
+						"css:column-count": "socialLinkTextColumns",
+						"css:writing-mode": "socialLinkWritingMode"
+					},
+					"_note": "socialLinks is a content array (platform+url); icons are fixed Lucide glyphs (render.php) with no per-icon colour control. The link text size, weight, style, family, transform, decoration, line-height, letter-spacing, alignment, wrap, columns and writing mode are painted on .sgs-team-member__social-link by sgs_typography_css_rule( $attributes, 'socialLink', … ); the stylesheet keeps the default size inside :where() so this surface out-ranks it.",
+					"absentIn": [ "compact" ],
+					"absentWhy": "The compact display drops the bio and the social links.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "socialLinkTextStrokeColourHover"
+							}
+						}
+					}
+				}
+			},
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				],
+				"margin": [
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
+				]
+			},
+			"spacingDefaults": {
+				"padding": {
+					"top": "var(--wp--preset--spacing--40)",
+					"right": "var(--wp--preset--spacing--40)",
+					"bottom": "var(--wp--preset--spacing--40)",
+					"left": "var(--wp--preset--spacing--40)"
+				}
+			}
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-team-member"
+	},
+	"attributes": {
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the social links wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"photo": {
+			"type": "object"
+		},
+		"photoTablet": {
+			"type": "object"
+		},
+		"photoMobile": {
+			"type": "object"
+		},
+		"photoDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Marks the photo as purely decorative (empty alt + aria-hidden) — for edge cases such as a placeholder silhouette graphic. Most team photos identify the person and should keep their alt text."
+		},
+		"name": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"headingLevel": {
+			"type": "string",
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p"
+			],
+			"default": "h3"
+		},
+		"role": {
+			"type": "string",
+			"default": ""
+		},
+		"bio": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"socialLinks": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"platform": {
+						"type": "string",
+						"role": "enum-mode"
+					},
+					"url": {
+						"type": "string",
+						"role": "url-href"
+					},
+					"linkSource": {
+						"type": "string",
+						"role": "enum-mode"
+					},
+					"opensInNewTab": {
+						"type": "boolean",
+						"role": "boolean-visibility"
+					},
+					"rel": {
+						"type": "string",
+						"role": "technical"
+					}
+				}
+			}
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"nameColour": {
+			"type": "string",
+			"default": ""
+		},
+		"nameColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"roleColour": {
+			"type": "string",
+			"default": "text-muted"
+		},
+		"roleColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"cardStyle": {
+			"type": "string",
+			"default": "elevated"
+		},
+		"displayMode": {
+			"type": "string",
+			"default": "full"
+		},
+		"photoShape": {
+			"type": "string",
+			"default": "circle"
+		},
+		"scaleHover": {
+			"type": "string",
+			"default": ""
+		},
+		"cardShadowHover": {
+			"type": "string",
+			"default": ""
+		},
+		"cardShadowColourHover": {
+			"type": "string"
+		},
+		"cardShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"cardShadowColour": {
+			"type": "string"
+		},
+		"grayscaleHover": {
+			"type": "boolean",
+			"default": false
+		},
+		"transitionDuration": {
+			"type": "string",
+			"default": "300"
+		},
+		"transitionEasing": {
+			"type": "string",
+			"default": "ease-in-out"
+		},
+		"overlayHover": {
+			"type": "boolean",
+			"default": false
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"nameColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"roleColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"textAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"nameFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"nameFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"nameFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"nameFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"nameFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"nameTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"nameTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"nameLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"nameLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"nameLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"nameLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"nameTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"nameTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"nameTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"nameTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"nameTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"nameTextColumns": {
+			"type": "number"
+		},
+		"nameWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"roleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"roleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"roleFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"roleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"roleFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"roleTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"roleTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"roleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"roleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"roleLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"roleLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"roleTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"roleTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"roleTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"roleTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"roleTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"roleTextColumns": {
+			"type": "number"
+		},
+		"roleWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"bioFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"bioFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"bioFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"bioFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"bioFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"bioTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"bioTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"bioLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"bioLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"bioLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"bioLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"bioTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"bioTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"bioTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"bioTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"bioTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"bioTextColumns": {
+			"type": "number"
+		},
+		"bioWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"socialLinkFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"socialLinkFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"socialLinkFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"socialLinkFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"socialLinkFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"socialLinkTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"socialLinkTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"socialLinkLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"socialLinkLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"socialLinkLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"socialLinkLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"socialLinkTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"socialLinkTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"socialLinkTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"socialLinkTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"socialLinkTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"socialLinkTextColumns": {
+			"type": "number"
+		},
+		"socialLinkWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"name": "Jordan Taylor",
+			"role": "Team Lead",
+			"bio": "A brief supporting statement that explains your value proposition.",
+			"photoShape": "circle",
+			"cardStyle": "elevated"
+		}
+	}
+}

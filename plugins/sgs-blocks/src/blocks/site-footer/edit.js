@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import BackgroundLayers from '../../components/media/BackgroundLayers';
 import { useEffect, useRef, useState } from 'react';
 import {
 	useBlockProps,
@@ -24,7 +25,7 @@ import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiv
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import {
 	backgroundPaintPreview,
-	backgroundPreview,
+	backgroundMediaPreview,
 	spacingPreview,
 	svgBackgroundPreview,
 	textPaintPreview,
@@ -174,22 +175,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		colourPalette
 	);
 
-	const bgPreview = backgroundPreview( {
-		backgroundImage: attributes.backgroundImage,
-		bgVideo: attributes.bgVideo,
-		backgroundSize: attributes.backgroundSize,
-		backgroundPosition: attributes.backgroundPosition,
-		backgroundRepeat: attributes.backgroundRepeat,
-		backgroundAttachment: attributes.backgroundAttachment,
-		backgroundOverlayColour: attributes.backgroundOverlayColour,
-		overlayGradient: attributes.overlayGradient,
-		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
-		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
-		backgroundColour: attributes.backgroundColour,
-		backgroundColourGradient: attributes.backgroundColourGradient,
-		surfaceBlur: attributes.surfaceBlur,
-		surfaceSaturate: attributes.surfaceSaturate,
-	}, colourPalette, gradientPresets );
+
 
 	// Decorative SVG background layer — editor mirror. Deliberately
 	// NOT folded into backgroundPreview()'s return: that helper paints via
@@ -218,6 +204,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
 		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
 	}, [] );
+
+	const bgPreview = backgroundMediaPreview( attributes, colourPalette, gradientPresets, previewTier );
 
 	// Padding/margin canvas preview. `padding`/`margin` are each ONE
 	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
@@ -604,11 +592,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			     with it rather than added alongside the spread. */ }
 			{ wrapper.hasBandProps ? (
 				<div ref={ refEl } { ...blockProps }>
+					<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
 					{ svgLayer }
 					<div { ...innerBlocksProps } />
 				</div>
 			) : (
 				<div ref={ refEl } { ...innerBlocksProps }>
+					<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
 					{ svgLayer }
 					{ innerBlocksProps.children }
 				</div>

@@ -11,6 +11,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 import { colourVar } from '../../utils';
+import { logoUrlFor } from '../../utils/logo-source';
 import { firstQuestionProgress } from './preview-style';
 
 import AuthoredText from '../../components/AuthoredText';
@@ -21,7 +22,7 @@ import AuthoredText from '../../components/AuthoredText';
  * @return {JSX.Element} The preview rows.
  */
 export default function ChromePreview( { attributes, questionTotal } ) {
-	const { showHeader, flowLayout, headerLogo, closeStyle, closeLabel, stepCountLabel, progressColour, progressColourGradient, progressStyle: progressVariant, showPricePanel, stageNote } = attributes;
+	const { showHeader, flowLayout, headerLogoSource, headerLogoAlt, headerLogoDecorative, closeStyle, closeLabel, stepCountLabel, progressColour, progressColourGradient, progressStyle: progressVariant, showPricePanel, stageNote } = attributes;
 	const showcase = 'showcase' === flowLayout;
 	const hasHeader = !! showHeader || showcase;
 	const label = stepCountLabel && stepCountLabel.trim() ? stepCountLabel.trim() : __( 'Step', 'sgs-blocks' );
@@ -37,7 +38,7 @@ export default function ChromePreview( { attributes, questionTotal } ) {
 					questionTotal
 			  )
 			: stepCountText;
-	const logoUrl = headerLogo && headerLogo.url ? headerLogo.url : '';
+	const logoUrl = logoUrlFor( headerLogoSource, 'desktop' );
 	const closeText = closeLabel && closeLabel.trim() ? closeLabel.trim() : __( 'Close', 'sgs-blocks' );
 	const fillColour = colourVar( progressColour );
 	const progressStyle = { '--sgs-choice-flow-progress': firstQuestionProgress( attributes, questionTotal ) };
@@ -72,7 +73,7 @@ export default function ChromePreview( { attributes, questionTotal } ) {
 			{ hasHeader && (
 				<div className="sgs-choice-flow__chrome-header">
 					{ logoUrl && (
-						<img className="sgs-choice-flow__chrome-logo" src={ logoUrl } alt={ headerLogo.alt || '' } />
+						<img className="sgs-choice-flow__chrome-logo" src={ logoUrl } alt={ headerLogoDecorative ? '' : headerLogoAlt || '' } />
 					) }
 					<span className="sgs-choice-flow__chrome-eyebrow">{ eyebrowText }</span>
 					{ 'text' === closeStyle ? (

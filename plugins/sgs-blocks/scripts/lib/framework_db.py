@@ -58,6 +58,37 @@ def framework_db_path() -> Path:
     return shared_framework_db_path()
 
 
+SCHEMA_REL = "plugins/sgs-blocks/scripts/dbschema/schema.sql"
+
+
+def shared_schema_mismatch(repo_root: Path) -> str | None:
+    """Why this tree must not write the shared database, or None when it may.
+
+    The shared database follows `origin/main`'s schema; every other session gates against it. A tree whose
+    `schema.sql` differs from `origin/main`'s (a feature branch adding a column) would put that schema into the
+    shared database, and every ship from `main` then fails `check_schema_drift`. Such a tree writes a copy instead
+    ($SGS_FRAMEWORK_DB). Returns None when $SGS_FRAMEWORK_DB is set, when the tree's schema equals origin/main's, or
+    when git cannot answer (no repo, no origin/main): the guard only refuses what it can prove."""
+    if os.environ.get(ENV):
+        return None
+    import subprocess
+    try:
+        main_schema = subprocess.run(["git", "-C", str(repo_root), "show", f"origin/main:{SCHEMA_REL}"],
+                                     capture_output=True, timeout=30)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    local = Path(repo_root) / SCHEMA_REL
+    if main_schema.returncode != 0 or not local.is_file():
+        return None
+    def norm(b: bytes) -> bytes:
+        return b.replace(b"\r\n", b"\n").strip()
+    if norm(main_schema.stdout) == norm(local.read_bytes()):
+        return None
+    return (f"this tree's {SCHEMA_REL} differs from origin/main's, so writing the shared framework database would give "
+            f"every other session a schema main does not have; set {ENV} to a private copy (for example the one "
+            f"`publish-framework-db.py begin --copy` makes) and run again")
+
+
 def skills_root() -> Path:
     """The folder that holds the skills: ~/.claude/skills."""
     for root in SKILL_ROOTS:

@@ -14,6 +14,7 @@ from wf_editor import EditorModel
 from wf_extensions import scan_extensions
 from wf_inputs import Inputs
 from wf_links import LinkEnv, assess
+from wf_media_system import MediaSystem
 from wf_paint import SWITCH_ROLES, PaintClassifier
 from wf_pass import BlockJob, FrontPass, PassRun
 from wf_paths import Roots
@@ -58,7 +59,8 @@ def scan(roots: Roots, inp: Inputs) -> dict:
     # (conditional-visibility.js writes responsive-visibility.js's toggles).
     ext_attrs = {a for ext in inp.roster for a in (ext.get("attributes") or {})}
     passed = run.result(local)
-    resolver = Resolver(passed, {(r["block_slug"], r["attr_name"]): r for r in inp.rows}, inp.blockjson, inp.dump, css, js, paint)
+    media = MediaSystem(inp.media_system, roots.plugin)   # what the shared panels, renderer and canvas give an adopted block
+    resolver = Resolver(passed, {(r["block_slug"], r["attr_name"]): r for r in inp.rows}, inp.blockjson, inp.dump, css, js, paint, media)
 
     records: list[dict] = []
     findings: list[dict] = []
@@ -94,7 +96,8 @@ def scan(roots: Roots, inp: Inputs) -> dict:
                 continue
             ctx_canvas = bool(key) and bool(set(inp.context_reads.get(key, {}).get("editor", ()))
                                             & set(inp.uses_context.get(key, ())))
-            res_l = assess(r, cat, ch, d, be, ctx_canvas, b2, env, frozenset(bjson.get("allowedBlocks") or ()))
+            res_l = assess(r, cat, ch, d, be, ctx_canvas, b2, env, frozenset(bjson.get("allowedBlocks") or ()),
+                           media.credits(block, attr, be.files, bdir))
             rec.update({"control": be.control.get(attr), "canvas": res_l["canvas"], "frontend": where or d.get("renderVia"),
                         "channel": res_l["channel"], "cps": sorted(ch.cps), "helpers": sorted(ch.helpers)[:8],
                         "missing": res_l["missing"], "class": res_l["class"]})

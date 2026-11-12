@@ -1,0 +1,1802 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/timeline",
+	"version": "0.1.0",
+	"title": "SGS Timeline",
+	"category": "sgs-content",
+	"description": "Date-based timeline with vertical or horizontal orientation and an optional scroll effect.",
+	"keywords": [
+		"timeline",
+		"history",
+		"events",
+		"dates",
+		"milestones"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "list-view",
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": false,
+			"gradients": false,
+			"text": false,
+			"__experimentalSkipSerialization": true
+		},
+		"shadow": {
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"motionItems": "entry",
+			"motion": true,
+			"iconPicker": true,
+			"fx": {
+				"providesNatively": [
+					"scrub",
+					"pin-scrub",
+					"horizontal-panel"
+				]
+			},
+			"boxFamilies": {
+				"padding": [
+					"padding",
+					"contentPadding",
+					"cardPadding"
+				],
+				"margin": [
+					"margin",
+					"dateMargin",
+					"contentMargin",
+					"descriptionMargin"
+				],
+				"borderRadius": [
+					"borderRadius",
+					"cardBorderRadius",
+					"mediaBorderRadius"
+				],
+				"borderWidth": [
+					"borderWidth",
+					"cardBorderWidth"
+				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"order": 1,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
+						"css:background-color": "backgroundColour",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-radius": "borderRadius",
+						"css:border-width": "borderWidth",
+						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:border-style": "borderStyle",
+						"css:box-shadow": "native:shadow"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					},
+					"_note": "Root <div> (Step 4a moved the <ol> inside it as `.sgs-timeline__list`, wrapped in `.sgs-timeline__track`, so a horizontal scroll effect can resolve a plain <div> direct child; an <ol> may only contain <li>). No `layer` declared (leaf content block, no grid/flex attrs despite align:wide/full). block.json's native `typography` support is declared here but rendered via `selectors.typography` against `.sgs-timeline__title` (render.php:258-268), NOT this root — see the `title` element below, which owns the text-cluster typography members instead. borderWidth/borderColour/borderStyle are custom scalar/object attrs (no WP-native per-side width support), verified live in render.php:143-155."
+				},
+				"title": {
+					"label": "Entry title",
+					"order": 2,
+					"clusters": [
+						"text"
+					],
+					"prefix": "title",
+					"attrMap": {
+						"css:font-size": "titleFontSize",
+						"css:line-height": "titleLineHeight",
+						"css:font-weight": "titleFontWeight",
+						"css:font-style": "titleFontStyle",
+						"tag": "headingLevel",
+						"css:-webkit-text-stroke-width": "titleTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "titleTextStrokeColour",
+						"css:color": "titleColour",
+						"css:color-gradient": "titleColourGradient"
+					},
+					"_note": "Typography full-replacement migration (D971/D972, 2026-09-06) — the WP-native `supports.typography` support (fontSize/lineHeight/fontWeight/fontStyle) that used to paint this element via the declared `selectors.typography: '.sgs-timeline__title'` is REMOVED; replaced by the shared `TypographyControls` component (edit.js) + `sgs_typography_css_rule()` helper (render.php), scoped to `.sgs-timeline__title` exactly as the old native selector was. `letterSpacing`/`textTransform`/`textAlign` were also native sub-flags on this block's old `supports.typography` and have NO shared-component equivalent (mirrors sgs/accordion's own declared gaps for letterSpacing/textTransform/fontFamily) — dropped as honest gaps, not carried forward. No independent title colour control exists (colour is the shared wrapper `color.text`) — pre-existing honest gap. `attrMap.tag` — `headingLevel` sets the rendered tag on this element (render.php) and this element has an explicit `prefix`, but `tag` is not a CSS property so it still needs its own map entry.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "titleTextStrokeColourHover",
+								"css:color": "titleColourHover",
+								"css:color-gradient": "titleColourHoverGradient"
+							}
+						}
+					}
+				},
+				"connector": {
+					"selector": ".wp-block-sgs-timeline",
+					"motion": false,
+					"label": "Connector line / node",
+					"order": 3,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "connectorColour",
+						"css:background-image": "connectorColourGradient",
+						"css:border-style": "connectorLineStyle"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "connectorColourHover",
+								"css:background-image": "connectorColourHoverGradient"
+							}
+						}
+					},
+					"_note": "connectorColour drives the `--sgs-connector-colour` custom property, painted as `background-color` on the connector line + node dot (style.scss:64, 84-96, 236, 244-256, 316, 334) — a scoped CSS-var mechanism, not a WP-native background. No prefix declared (connectorColour does not follow the `{prefix}Colour` convention for an element named `connector`) — resolved via explicit attrMap only. connectorColourGradient (2026-09-06, colour-conformance closeout) is the `--sgs-connector-colour-gradient` sibling, same `sgs_custom_property_gradient_decls()` shape already proven on brand-strip/post-grid/social-icons/form/gallery/before-after/option-picker/tabs — style.scss's solid connector-line + node-dot rules gain a matching `background-image:var(--sgs-connector-colour-gradient,none)` line; the dashed/dotted connector-style variants already override with a full `background:` shorthand, so the gradient sibling is naturally superseded there with no extra guard needed. connectorColourHover/HoverGradient (2026-09-06, colour-conformance FILL closeout) are the `--sgs-connector-colour-hover`/`-hover-gradient` siblings, same `sgs_custom_property_gradient_decls()` 5-arg form proven on before-after's `handleColour`; style.scss adds a `:hover, :focus-visible` pair on each of the 4 plain background-colour consumers (vertical line, horizontal line, node dot, node icon), fallback-chaining hover -> resting -> CSS default. The dashed/dotted variants remain naturally superseded on hover exactly as on rest — no extra guard needed. ⚠ connectorFillColour used to carry a `\"css:stroke\"` entry HERE, claiming it painted an SVG path — corrected 2026-09-05/06 after reading style.scss in full: zero `stroke:` consumers exist for `--sgs-timeline-fill-colour` anywhere in the file. Its real attrMap entry moved to the new `progress` element below, both because the manifest fact was wrong (no stroke, real property is background-color/border-color/box-shadow/gradient-stop) AND because keeping it here would have collided as a literal duplicate JSON key against this element's own `css:background-color`/`css:background-image` (connectorColour/connectorColourGradient) — JSON objects silently drop the earlier of two identical keys on parse, which would have orphaned connectorColour's routing."
+				},
+				"progress": {
+					"label": "Progress fill",
+					"order": 4,
+					"clusters": [
+						"fill"
+					],
+					"attrMap": {
+						"css:background-color": "connectorFillColour",
+						"css:background-image": "connectorFillColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "connectorFillColourHover",
+								"css:background-image": "connectorFillColourHoverGradient"
+							}
+						}
+					},
+					"_note": "connectorFillColour drives `--sgs-timeline-fill-colour`, the scroll-driven progress overlay colour — a DIFFERENT set of DOM nodes from the resting `connector` element's line/dot: `.sgs-timeline__progress-fill`/`-glow` (background-color, style.scss:89), the progress head `::after` (radial-gradient + box-shadow, :120-126), `.sgs-timeline__spark` (radial-gradient + box-shadow, :248-255), `.sgs-timeline__node.is-reached::before` and `.is-reached .sgs-timeline__node-icon` (background-color, :875,890), and the carousel-mode `.is-reached` entry border (`border-top-color`, :1671). Deliberately its own element rather than folded into `connector` — see the note on `connector` above for why a shared attrMap object there is a JSON key collision, not just a naming choice. Only the plain `background-color:` lines (:89, :875, :890) are in scope for the fill-custom-property-gradient migration; the composed gradient-stop/box-shadow/border-color consumers are left untouched as before. connectorFillColourHover/HoverGradient (2026-09-06, colour-conformance FILL closeout) follow the same scope: `.sgs-timeline__progress-fill` cannot receive pointer events directly (its `.sgs-timeline__progress` ancestor is `pointer-events:none`), so its hover rule is keyed on `.sgs-timeline:hover`/`:focus-within` instead of self-hover; the `.is-reached` dot and node-icon ARE self-hoverable and use the same pattern as `connector` above.",
+					"absentIn": [
+						"plain"
+					],
+					"absentWhy": "The progress fill prints only with connectorProgressFill on."
+				},
+				"date": {
+					"label": "Entry date",
+					"order": 4,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "date",
+					"attrMap": {
+						"css:margin": "dateMargin",
+						"css:color": "dateColour",
+						"css:color-gradient": "dateColourGradient",
+						"css:text-transform": "dateTextTransform",
+						"css:font-size": "dateFontSize",
+						"css:line-height": "dateLineHeight",
+						"css:letter-spacing": "dateLetterSpacing",
+						"css:font-family": "dateFontFamily",
+						"css:font-weight": "dateFontWeight",
+						"css:font-style": "dateFontStyle",
+						"css:-webkit-text-stroke-width": "dateTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "dateTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "dateColourHover",
+								"css:color-gradient": "dateColourHoverGradient",
+								"css:-webkit-text-stroke-color": "dateTextStrokeColourHover"
+							}
+						}
+					},
+					"_note": "dateColour drives `--sgs-date-colour`, applied via a `:not([style*='color'])` CSS fallback on `.sgs-timeline__date` (style.scss:358-360) so an inline colour override always wins. Resolves via default convention (`date`+`Colour`). dateColourGradient/Hover/HoverGradient (2026-09-07, colour-conformance TEXT closeout, corrected same session) are routed through the standard text-colour trio in render.php, scoped to `.sgs-timeline__date` directly — NOT the sgs_custom_property_gradient_decls() background-image chain a first pass mistakenly copied from connectorColour (a FILL/background attribute) — dateColour paints text (color:), which that mechanism cannot express."
+				},
+				"description-text": {
+					"selector": ".sgs-timeline__description",
+					"motion": false,
+					"label": "Description",
+					"order": 1,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "descriptionText",
+					"attrMap": {
+						"css:margin": "descriptionMargin",
+						"css:color": "descriptionTextColour",
+						"css:color-gradient": "descriptionTextColourGradient",
+						"css:font-size": "descriptionTextFontSize",
+						"css:line-height": "descriptionTextLineHeight",
+						"css:font-family": "descriptionTextFontFamily",
+						"css:font-weight": "descriptionTextFontWeight",
+						"css:font-style": "descriptionTextFontStyle"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "descriptionTextColourHover",
+								"css:color-gradient": "descriptionTextColourHoverGradient"
+							}
+						}
+					}
+				},
+				"description": {
+					"selector": ".sgs-timeline__description a",
+					"motion": false,
+					"label": "Description links",
+					"attrMap": {
+						"css:color": "descriptionLinkColour",
+						"css:color-link-gradient": "descriptionLinkColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "descriptionLinkColourHover",
+								"css:color-link-gradient": "descriptionLinkColourHoverGradient"
+							}
+						}
+					},
+					"order": 1,
+					"clusters": [
+						"text"
+					],
+					"_note": "The links inside each entry's description: descriptionLinkColourHover and its gradient paint them on hover (the DB names their element `description`). The resting link colour and underline sit on the `entry` element's link members. The selector is the element calibration hovers."
+				},
+				"content": {
+					"selector": ".sgs-timeline__content",
+					"motion": false,
+					"label": "Entry text area",
+					"order": 1,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:margin": "contentMargin",
+						"css:padding": "contentPadding"
+					}
+				},
+				"entry-odd": {
+					"selector": ".sgs-timeline__entry:nth-child(odd)",
+					"motion": false,
+					"label": "Odd entries (row stripe A)",
+					"order": 1,
+					"clusters": [
+						"fill"
+					],
+					"_note": "The odd rows the row stripes band (style.scss .sgs-timeline--row-stripes .sgs-timeline__entry:nth-child(odd)); rowStripeColourA and its hover are custom properties on the root, so no attrMap here. The selector is the element calibration hovers for the stripe A hover."
+				},
+				"entry-even": {
+					"selector": ".sgs-timeline__entry:nth-child(even)",
+					"motion": false,
+					"label": "Even entries (row stripe B)",
+					"order": 1,
+					"clusters": [
+						"fill"
+					],
+					"_note": "The even rows the row stripes band (style.scss .sgs-timeline--row-stripes .sgs-timeline__entry:nth-child(even)); rowStripeColourB and its hover are custom properties on the root, so no attrMap here. The selector is the element calibration hovers for the stripe B hover."
+				},
+				"entry": {
+					"label": "Each timeline entry",
+					"order": 1,
+					"clusters": [
+						"layout",
+						"text"
+					],
+					"attrMap": {
+						"css:text-decoration-link": "descriptionLinkUnderline",
+						"css:text-decoration-thickness-link": "descriptionLinkUnderlineThickness",
+						"css:text-decoration-color-link": "descriptionLinkUnderlineColour",
+						"css:text-decoration-offset-link": "descriptionLinkUnderlineOffset",
+						"css:min-height": "milestoneMinHeight",
+						"css:margin-bottom": "entryGap",
+						"css:flex-basis": "cardWidth",
+						"css:max-width": "cardMaxWidth"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:text-decoration-color-link": "descriptionLinkUnderlineColourHover"
+							}
+						}
+					},
+					"_note": "Per-entry fields (date/title/description/icon/image) are plain repeater content from the `entries` array — no independent per-entry style controls exist beyond the block-wide title/date/connector colours above. `supports.sgs.imageControls` was removed 2026-08-11 (Spec 35 capability-routing doctrine) — the per-entry image renders at natural/auto size with no crop box, so object-fit/position never applied; the declaration was dead weight, not a manifest element. Mirrors sgs/accordion's `item` element and sgs/quote's `quote-body`. Task 3 (2026-08-30) maps `milestoneMinHeight`/`entryGap` here: both are genuine CSS custom-property VALUES routed via the scoped `<style>` (Spec 32), same convention as `connectorColour`/`dateColour` above. `milestoneSize` is deliberately NOT mapped — it is a layout-MODE selector, not a CSS property, and this block maps none of its siblings (`orientation`, `contentLayout`, `mobileLayout`, `rowStripes`). A first draft invented a bare `variant` attrMap key for it; measured against the whole tree, 46 of the 47 non-`css:`/`native:` attrMap keys are `anim:*` and `variant` had zero precedent, with no reader for it in audit-element-manifest or sgs-update. Mode selectors belong in the ORPHAN:BY-DESIGN bucket the audit already uses for `iconPosition`/`tileShape`/`logoFit`/`labelCollapse`, not in attrMap. ⚠ The design doc §8 predicted these new attributes would need a cross-track `/sgs-update` reseed. MEASURED: they do not. `check-element-manifest-conformance` failed only because this element declared `\"clusters\": []`, so an attrMap entry on it had no cluster member to be claimed by; regenerating `attr-role-map.json` alone did NOT clear it (that map derives from the DB, which does not know a brand-new attribute). Declaring the `layout` cluster took UNCLASSIFIED to 0 with no DB write at all."
+				},
+				"card": {
+					"selector": ".sgs-timeline__entry",
+					"motion": false,
+					"label": "Entry card (horizontal)",
+					"order": 1,
+					"layer": "GRID",
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "card",
+					"attrMap": {
+						"css:background-color": "cardBackgroundColour",
+						"css:background-image": "cardBackgroundColourGradient",
+						"css:padding": "cardPadding",
+						"css:border-radius": "cardBorderRadius",
+						"css:border-width": "cardBorderWidth",
+						"css:border-color": "cardBorderColour",
+						"css:border-color-gradient": "cardBorderColourGradient",
+						"css:border-style": "cardBorderStyle",
+						"css:box-shadow": "cardShadow",
+						"css:column-gap": "cardColumnGap",
+						"css:grid-template-areas": "cardLayout"
+					},
+					"_note": "The card box of each entry in a horizontal timeline (background, padding, border, radius, shadow), printed on the entry element only when orientation is horizontal. With contentLayout 'same-side' the entry also becomes a two-column card (text on one side, media on the other, contentSide choosing the text side) from 768px up.",
+					"absentIn": [ "vertical" ],
+					"absentWhy": "The card box prints only for the horizontal orientation."
+				},
+				"image": {
+					"selector": ".sgs-timeline__media-slot",
+					"label": "Entry image",
+					"order": 4,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:aspect-ratio": "mediaAspectRatio",
+						"css:border-radius": "mediaBorderRadius",
+						"css:height": "mediaHeight"
+					},
+					"_note": "The picture (or video or SVG) each entry prints opposite its text. The entry image takes entrance and hover from the Motion panel; mediaAspectRatio crops the slot to a ratio per device and mediaBorderRadius rounds it.",
+					"absentIn": [ "progress", "plain" ],
+					"absentWhy": "The entry image renders only for an entry that has an image; these paths render entries without one."
+				},
+				"dateActive": {
+					"motion": false,
+					"label": "Active entry year",
+					"order": 5,
+					"clusters": [
+						"text"
+					],
+					"prefix": "dateActive",
+					"state": "current",
+					"attrMap": {
+						"css:color": "dateActiveColour",
+						"css:-webkit-text-stroke-width": "dateActiveTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "dateActiveTextStrokeColour"
+					}
+				},
+				"panelRow": {
+					"selector": ".sgs-timeline__panel-row",
+					"motion": false,
+					"label": "Pinned header row",
+					"order": 6,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "panelRow",
+					"attrMap": {
+						"css:gap": "panelRowGap",
+						"css:margin-bottom": "panelRowSpacing"
+					},
+					"_note": "Holds the counter, the progress bar and the hint above the pinned cards; printed only when panelProgressBar is on or panelHint is set."
+				},
+				"strip": {
+					"selector": ".sgs-timeline__list",
+					"motion": false,
+					"label": "Card row (horizontal)",
+					"order": 7,
+					"clusters": ["layout"],
+					"attrMap": {
+						"css:column-gap": "cardGap"
+					},
+					"_note": "The row of cards of a horizontal timeline. cardGap is the space between neighbouring cards per device; the swipeable layout reads it through --sgs-tl-card-gap.",
+					"absentIn": ["vertical"],
+					"absentWhy": "Only the horizontal orientation lays its entries out as a row of cards."
+				},
+				"cardTablet": {
+					"selector": ".sgs-timeline__entry",
+					"motion": false,
+					"label": "Entry card, tablet shadow",
+					"order": 8,
+					"clusters": ["fill", "layout"],
+					"attrMap": {
+						"css:box-shadow": "cardShadowTablet", "css:box-shadow-color": "cardShadowTabletColour"
+					},
+					"_note": "The card shadow at 1023px and below; cardShadowTabletColour is its colour.",
+					"absentIn": ["vertical"],
+					"absentWhy": "The card box prints only for the horizontal orientation."
+				},
+				"cardMobile": {
+					"selector": ".sgs-timeline__entry",
+					"motion": false,
+					"label": "Entry card, mobile shadow",
+					"order": 9,
+					"clusters": ["fill", "layout"],
+					"attrMap": {
+						"css:box-shadow": "cardShadowMobile", "css:box-shadow-color": "cardShadowMobileColour"
+					},
+					"_note": "The card shadow at 767px and below; cardShadowMobileColour is its colour.",
+					"absentIn": ["vertical"],
+					"absentWhy": "The card box prints only for the horizontal orientation."
+				},
+				"panelContent": {
+					"selector": ".wp-block-sgs-timeline",
+					"motion": false,
+					"label": "Pinned content width",
+					"order": 6,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:max-width": "panelContentMaxWidth",
+						"css:padding": "panelContentGutter"
+					},
+					"_note": "Pinned-horizontal only. The root's left and right padding becomes max(gutter, (100% - max width) / 2 + gutter): the counter row and the card strip share one centred column no wider than the max width, with the gutter at each side (horizontal-panel.php). Both are per-device px; unset leaves the root's own padding."
+				},
+				"counter": {
+					"selector": ".sgs-timeline__counter",
+					"motion": false,
+					"label": "Progress counter",
+					"order": 7,
+					"clusters": [
+						"text"
+					],
+					"prefix": "counter",
+					"attrMap": {
+						"css:color": "counterColour",
+						"css:font-size": "counterFontSize",
+						"css:line-height": "counterLineHeight",
+						"css:letter-spacing": "counterLetterSpacing",
+						"css:font-family": "counterFontFamily",
+						"css:font-weight": "counterFontWeight",
+						"css:font-style": "counterFontStyle",
+						"css:text-transform": "counterTextTransform"
+					}
+				},
+				"panelTrack": {
+					"selector": ".sgs-timeline__panel-track",
+					"motion": false,
+					"label": "Progress bar track",
+					"order": 8,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "panelBar",
+					"attrMap": {
+						"css:background-color": "panelBarTrackColour",
+						"css:height": "panelBarHeight"
+					}
+				},
+				"panelFill": {
+					"selector": ".sgs-timeline__panel-fill",
+					"motion": false,
+					"label": "Progress bar fill",
+					"order": 9,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "panelBar",
+					"attrMap": {
+						"css:background-color": "panelBarFillColour",
+						"css:background-image": "panelBarFillGradient"
+					}
+				},
+				"hint": {
+					"selector": ".sgs-timeline__panel-hint",
+					"motion": false,
+					"label": "Header row hint",
+					"order": 10,
+					"clusters": [
+						"text"
+					],
+					"prefix": "hint",
+					"attrMap": {
+						"css:color": "hintColour",
+						"css:font-size": "hintFontSize",
+						"css:line-height": "hintLineHeight",
+						"css:letter-spacing": "hintLetterSpacing",
+						"css:font-family": "hintFontFamily",
+						"css:font-weight": "hintFontWeight",
+						"css:font-style": "hintFontStyle",
+						"css:text-transform": "hintTextTransform"
+					}
+				}
+			}
+		}
+	},
+	"selectors": {
+		"root": ".sgs-timeline",
+		"typography": ".sgs-timeline__title"
+	},
+	"attributes": {
+		"descriptionLinkUnderline": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"always",
+				"hover",
+				"sweep"
+			],
+			"default": "",
+			"description": "How a link inside the text is underlined: '' the theme's underline, none, always, hover (an underline on hover and keyboard focus), or sweep (a line sweeps in on hover and keyboard focus). sgs_link_underline_css()."
+		},
+		"descriptionLinkUnderlineThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the link underline for always, hover and sweep (a CSS length); empty uses the theme's link-sweep thickness or the browser's."
+		},
+		"descriptionLinkUnderlineColour": {
+			"type": "string",
+			"default": "",
+			"description": "The link underline's colour for always, hover and sweep (a palette slug or any CSS colour); empty draws it in the link's own colour. sgs_link_underline_css()."
+		},
+		"descriptionLinkUnderlineColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "The link underline's colour while the link is hovered or focused with the keyboard (a palette slug or any CSS colour); empty keeps the colour it has at rest. sgs_link_underline_css()."
+		},
+		"descriptionLinkUnderlineOffset": {
+			"type": "string",
+			"default": "",
+			"description": "Gap between the link text and its underline for always and hover (a CSS length); empty uses the browser's. The sweep is a background line, so it ignores the gap. sgs_link_underline_css()."
+		},
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"orientation": {
+			"type": "string",
+			"default": "vertical",
+			"sgs": {
+				"meaning": {
+					"what": "Lays the timeline entries out down the page (vertical) or across it (horizontal); a horizontal timeline is the one the pinned horizontal scroll effect moves sideways.",
+					"trigger": "always, from page load",
+					"parameters": {
+						"value": {
+							"unit": "vertical or horizontal"
+						}
+					}
+				}
+			}
+		},
+		"headingLevel": {
+			"type": "string",
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p"
+			],
+			"default": "h3"
+		},
+		"contentLayout": {
+			"type": "string",
+			"enum": [
+				"alternating",
+				"same-side",
+				"single-column"
+			],
+			"default": "alternating",
+			"description": "How entries line up. Replaces the old `alignment` attribute (Task 3a) — 'alternating' and 'single-column' render identically to the old 'alternating'/'left'+'centre'. 'same-side' (Task 3b) is two-sided like 'alternating' but does not flip per row — every entry places the date and content on the same side, per the `contentSide` attribute."
+		},
+		"contentSide": {
+			"type": "string",
+			"enum": [
+				"start",
+				"end"
+			],
+			"default": "end",
+			"description": "Which side the content sits on when contentLayout is 'same-side'. 'end' (default) puts content on the right, date on the left. 'start' mirrors it. Meaningless — and hidden in the editor — for 'alternating'/'single-column'."
+		},
+		"mobileLayout": {
+			"type": "string",
+			"enum": [
+				"stacked",
+				"carousel"
+			],
+			"default": "stacked",
+			"description": "How the timeline behaves at 767px and below, independently of orientation/alignment. 'stacked' is today's collapse (unchanged). 'carousel' is a native horizontal scroll-snap row, ≤767px only — inert above that width in either orientation.",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses whether the timeline collapses to a stacked column or becomes a horizontal scroll-snap carousel on narrow screens.",
+					"trigger": "viewport width of 767px or below",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"stacked",
+								"carousel"
+							]
+						}
+					}
+				}
+			}
+		},
+		"entries": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"date": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"title": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"description": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"icon": {
+						"type": "string",
+						"role": "icon-slug"
+					},
+					"image": {
+						"type": [
+							"number",
+							"string"
+						],
+						"role": "image-object"
+					},
+					"mediaType": {
+						"type": "string",
+						"role": "enum-mode"
+					},
+					"video": {
+						"type": "object",
+						"role": "image-object"
+					},
+					"svg": {
+						"type": "string",
+						"role": "svg"
+					}
+				}
+			},
+			"default": [
+				{
+					"date": "2020-01-01",
+					"title": "First Milestone",
+					"description": "<p>Description of this milestone.</p>",
+					"icon": "",
+					"image": 0
+				},
+				{
+					"date": "2022-06-15",
+					"title": "Second Milestone",
+					"description": "<p>Description of this milestone.</p>",
+					"icon": "",
+					"image": 0
+				},
+				{
+					"date": "2024-12-01",
+					"title": "Third Milestone",
+					"description": "<p>Description of this milestone.</p>",
+					"icon": "",
+					"image": 0
+				}
+			]
+		},
+		"connectorLineStyle": {
+			"type": "string",
+			"default": "solid",
+			"description": "Line style of the connector: solid, dashed or dotted (the border style picker). Solid paints the connector colour or gradient as a background; dashed and dotted draw a zero-height line with a border of the connector thickness and colour, so a gradient is ignored (the style wins)."
+		},
+		"connectorColour": {
+			"type": "string",
+			"default": "border"
+		},
+		"connectorColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the connector line + node dot background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over connectorColour."
+		},
+		"connectorColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Connector line/node background colour on :hover/:focus-visible (colour-conformance FILL closeout 2026-09-06). Falls back to connectorColour, then the CSS default, when unset."
+		},
+		"connectorColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the connector's :hover/:focus-visible background. Non-empty wins over connectorColourHover; falls back to connectorColourGradient, then none."
+		},
+		"connectorProgressFill": {
+			"type": "boolean",
+			"default": false
+		},
+		"connectorFillColour": {
+			"type": "string",
+			"default": "accent"
+		},
+		"connectorFillColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over connectorFillColour."
+		},
+		"connectorFillColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Progress-fill background colour on :hover/:focus-within (colour-conformance FILL closeout 2026-09-06) — hovering anywhere on the timeline, since the progress-fill layer itself sits under a pointer-events:none ancestor. Falls back to connectorFillColour, then the CSS default, when unset."
+		},
+		"connectorFillColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the progress-fill's hover background. Non-empty wins over connectorFillColourHover; falls back to connectorFillColourGradient, then none."
+		},
+		"dateColour": {
+			"type": "string",
+			"default": "",
+			"description": "Date text colour. Empty follows the generic text colour (textColour), then the inherited text colour."
+		},
+		"dateColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the date text via background-clip:text (helpers-tokens.php sgs_resolve_text_colour_or_gradient()/sgs_text_colour_decl(), the text trio — not sgs_custom_property_gradient_decls(), which cannot express background-clip:text). Non-empty wins over dateColour."
+		},
+		"dateColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Date text colour on :hover/:focus-visible (colour-conformance TEXT closeout 2026-09-07). Falls back to dateColour, then the CSS default, when unset."
+		},
+		"dateColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the date text on :hover/:focus-visible via background-clip:text. Non-empty wins over dateColourHover; falls back to dateColourGradient, then none."
+		},
+		"titleColour": {
+			"type": "string",
+			"default": "",
+			"description": "Entry title text colour. Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"titleColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Entry title text gradient (CSS string, wins over the flat colour). Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"titleColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Entry title text colour on :hover/:focus-visible. Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"titleColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Entry title text gradient on :hover/:focus-visible. Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"descriptionTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Entry description text colour. Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"descriptionTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Entry description text gradient (CSS string, wins over the flat colour). Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"descriptionTextColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Entry description text colour on :hover/:focus-visible. Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"descriptionTextColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Entry description text gradient on :hover/:focus-visible. Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"descriptionLinkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionLinkColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting description links via background-clip:text (helpers-tokens.php sgs_link_colour_css). Non-empty wins over descriptionLinkColour."
+		},
+		"descriptionLinkColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionLinkColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting description links on :hover/:focus-visible via background-clip:text. Non-empty wins over descriptionLinkColourHover; falls back to descriptionLinkColourGradient, then none."
+		},
+		"titleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"titleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"titleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"titleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"scrollEffect": {
+			"type": "string",
+			"enum": [
+				"basic",
+				"scrub",
+				"pinned-journey",
+				"pinned-horizontal"
+			],
+			"default": "basic",
+			"description": "A layout-MODE selector, not a CSS property — deliberately absent from any element's attrMap (see the `entry` element note). Curated wrapper around the generic GSAP scroll-effects picker: 'basic' runs no GSAP scroll effect (the entry reveal is the sgsMotion entrance); 'scrub' ties milestone motion directly to scroll position; 'pinned-journey' pins the timeline and reveals milestones as the connector fills (vertical only); 'pinned-horizontal' pins and slides the track sideways (horizontal only).",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses how the timeline reacts to scrolling: no scroll effect, scrubbed milestones, a pinned journey or a pinned horizontal track.",
+					"trigger": "scrolling the page through the timeline",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"basic",
+								"scrub",
+								"pinned-journey",
+								"pinned-horizontal"
+							]
+						}
+					}
+				}
+			}
+		},
+		"milestoneMediaWidth": {
+			"type": "string",
+			"default": "180px"
+		},
+		"milestoneSize": {
+			"type": "string",
+			"enum": [
+				"compact",
+				"full-height"
+			],
+			"default": "compact",
+			"description": "Task 3 (2026-08-30). 'compact' is today's content-driven row height. 'full-height' gives each milestone a minimum height and lets its media fill the column, hero-split style — from tablet width (768px) up only; phones always render the compact size (there's no room for a full-height row on a 375px screen)."
+		},
+		"milestoneMinHeight": {
+			"type": "string",
+			"default": "80vh",
+			"description": "Only meaningful when milestoneSize is 'full-height'. A SelectControl-driven CSS length (see sgs/hero's own minHeight control) — never free text, so a non-technical client can't type an invalid value and silently break the layout."
+		},
+		"entryGap": {
+			"type": "string",
+			"default": "",
+			"description": "Space between milestones. Empty inherits today's hardcoded default (var(--wp--preset--spacing--40, 2rem)) so existing timelines render byte-identical until a client sets this explicitly."
+		},
+		"datePosition": {
+			"type": "string",
+			"enum": [
+				"own-column",
+				"inline"
+			],
+			"default": "inline",
+			"description": "Replaces the old `showDateColumn` boolean (Task 3a). 'own-column' only takes effect when contentLayout is 'single-column' — on phones the date always sits above the title, so there's room for it."
+		},
+		"milestoneMediaDecorative": {
+			"type": "boolean",
+			"default": false
+		},
+		"rowStripes": {
+			"type": "boolean",
+			"default": false
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the wrapper text via background-clip:text (helpers-tokens.php sgs_resolve_text_colour_or_gradient()/sgs_text_colour_decl(), the text trio). Non-empty wins over textColour."
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Wrapper text colour on :hover/:focus-visible (colour-conformance TEXT closeout 2026-09-07). Falls back to textColour, then the CSS default, when unset."
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the wrapper text on :hover/:focus-visible via background-clip:text. Non-empty wins over textColourHover; falls back to textColourGradient, then none."
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"rowStripeColourA": {
+			"type": "string",
+			"default": ""
+		},
+		"rowStripeColourAGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the odd-row background band via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over rowStripeColourA. No attrMap entry — rowStripeColourA/B both target the entry element's background-color via mutually exclusive :nth-child(odd)/:nth-child(even) selectors, not the declared states vocabulary, so claiming css:background-color for either would misrepresent ownership (see the entry element note in supports.sgs.elements)."
+		},
+		"rowStripeColourAHover": {
+			"type": "string",
+			"default": "",
+			"description": "Odd-row background colour on that row's own :hover/:focus-within (colour-conformance FILL closeout 2026-09-06). Falls back to rowStripeColourA, then transparent, when unset. No attrMap entry — see rowStripeColourAGradient's description."
+		},
+		"rowStripeColourAHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the odd row's hover background. Non-empty wins over rowStripeColourAHover; falls back to rowStripeColourAGradient, then none. No attrMap entry — see rowStripeColourAGradient's description."
+		},
+		"rowStripeColourB": {
+			"type": "string",
+			"default": "surface-alt"
+		},
+		"rowStripeColourBGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the even-row background band via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over rowStripeColourB. No attrMap entry — see rowStripeColourAGradient's description."
+		},
+		"rowStripeColourBHover": {
+			"type": "string",
+			"default": "",
+			"description": "Even-row background colour on that row's own :hover/:focus-within (colour-conformance FILL closeout 2026-09-06). Falls back to rowStripeColourB, then transparent, when unset. No attrMap entry — see rowStripeColourAGradient's description."
+		},
+		"rowStripeColourBHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the even row's hover background. Non-empty wins over rowStripeColourBHover; falls back to rowStripeColourBGradient, then none. No attrMap entry — see rowStripeColourAGradient's description."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ::before ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour at render time."
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"titleFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"titleTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"titleLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"titleTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"titleTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"titleTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"titleTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextColumns": {
+			"type": "number"
+		},
+		"titleWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"panelCounter": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pinned-horizontal only: renders a progress counter fed by the motion engine's pin progress.",
+			"sgs": {
+				"meaning": {
+					"what": "Shows a progress counter that follows how far through the pinned horizontal timeline the visitor has scrolled.",
+					"trigger": "scrolling while the horizontal timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
+		},
+		"panelCounterFormat": {
+			"type": "string",
+			"enum": [
+				"padded-index-of-total",
+				"index-of-total",
+				"percent"
+			],
+			"default": "padded-index-of-total",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses how the progress counter reads: padded index of total, index of total, or percentage.",
+					"trigger": "scrolling while the horizontal timeline is pinned, when the counter is on",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"padded-index-of-total",
+								"index-of-total",
+								"percent"
+							]
+						}
+					}
+				}
+			}
+		},
+		"panelProximityFocus": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pinned-horizontal only: entries scale and fade by distance from the centre.",
+			"sgs": {
+				"meaning": {
+					"what": "Scales and fades horizontal timeline entries by their distance from the centre of the view.",
+					"trigger": "scrolling while the horizontal timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
+		},
+		"panelFocusScale": {
+			"type": "number",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the scale of the entry nearest the centre.",
+					"trigger": "scrolling while the horizontal timeline is pinned, when proximity focus is on",
+					"parameters": {
+						"value": {
+							"unit": "factor (0 to 2; unset uses the engine default)"
+						}
+					}
+				}
+			}
+		},
+		"panelEdgeScale": {
+			"type": "number",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the scale of entries furthest from the centre.",
+					"trigger": "scrolling while the horizontal timeline is pinned, when proximity focus is on",
+					"parameters": {
+						"value": {
+							"unit": "factor (0 to 2; unset uses the engine default 0.94)"
+						}
+					}
+				}
+			}
+		},
+		"panelFocusOpacity": {
+			"type": "number",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the opacity of the entry nearest the centre.",
+					"trigger": "scrolling while the horizontal timeline is pinned, when proximity focus is on",
+					"parameters": {
+						"value": {
+							"unit": "factor (0 to 1; unset uses the engine default)"
+						}
+					}
+				}
+			}
+		},
+		"panelEdgeOpacity": {
+			"type": "number",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the opacity of entries furthest from the centre.",
+					"trigger": "scrolling while the horizontal timeline is pinned, when proximity focus is on",
+					"parameters": {
+						"value": {
+							"unit": "factor (0 to 1; unset uses the engine default 0.55)"
+						}
+					}
+				}
+			}
+		},
+		"panelTravelEnd": {
+			"type": "string",
+			"enum": [
+				"first-start",
+				"track-end"
+			],
+			"default": "first-start",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses where the pinned row stops travelling: the last card's left edge at the first card's starting position, or the end of the strip (trailing padding included) at the right edge of the section.",
+					"trigger": "scrolling while the horizontal timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "first-start or track-end"
+						}
+					}
+				}
+			}
+		},
+		"dateMargin": {
+			"type": "object",
+			"default": {},
+			"description": "Margin around each entry's date, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin."
+		},
+		"contentMargin": {
+			"type": "object",
+			"default": {},
+			"description": "Margin around each entry's text area (title and description), per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin."
+		},
+		"contentPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Padding inside each entry's text area (title and description), per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet padding."
+		},
+		"descriptionMargin": {
+			"type": "object",
+			"default": {},
+			"description": "Margin around each entry's description, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin."
+		},
+		"dateActiveColour": {
+			"type": "string",
+			"default": "",
+			"description": "Year text colour while its entry carries data-sgs-fx-panel-active. Empty keeps dateColour.",
+			"sgs": {
+				"meaning": {
+					"what": "Changes the year text colour of the entry currently nearest the centre.",
+					"trigger": "scrolling while the horizontal timeline is pinned, for the active entry",
+					"parameters": {
+						"value": {
+							"unit": "CSS colour or theme colour token slug"
+						}
+					}
+				}
+			}
+		},
+		"dateActiveTextStrokeWidth": {
+			"type": "object",
+			"default": {},
+			"sgs": {
+				"meaning": {
+					"what": "Sets the outline width of the year text of the active entry.",
+					"trigger": "scrolling while the horizontal timeline is pinned, for the active entry",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} of CSS length"
+						}
+					}
+				}
+			}
+		},
+		"dateActiveTextStrokeColour": {
+			"type": "string",
+			"default": "",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the outline colour of the year text of the active entry.",
+					"trigger": "scrolling while the horizontal timeline is pinned, for the active entry",
+					"parameters": {
+						"value": {
+							"unit": "CSS colour or theme colour token slug"
+						}
+					}
+				}
+			}
+		},
+		"panelTransitionMs": {
+			"type": "integer",
+			"default": 0,
+			"description": "Pinned-horizontal only: milliseconds over which the year colour, year outline colour, card opacity and card scale ease when the active card changes. 0 prints no transition (maximum 3000).",
+			"sgs": {
+				"meaning": {
+					"what": "Eases the year and card changes when the card nearest the centre changes.",
+					"trigger": "scrolling while the horizontal timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "milliseconds (0 to 3000; 0 is no transition)"
+						}
+					}
+				}
+			}
+		},
+		"dateTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": "",
+			"description": "Letter case of the entry date. Empty keeps the stylesheet's uppercase."
+		},
+		"panelCounterBasis": {
+			"type": "string",
+			"enum": [
+				"progress",
+				"active"
+			],
+			"default": "progress",
+			"description": "Pinned-horizontal only: whether the counter follows the scroll progress or the card nearest the centre.",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses whether the counter reads the scroll progress or the card nearest the centre of the view.",
+					"trigger": "scrolling while the horizontal timeline is pinned, when the counter is on",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"progress",
+								"active"
+							]
+						}
+					}
+				}
+			}
+		},
+		"panelProgressBar": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pinned-horizontal only: draws a progress bar beside the counter that fills as the pinned scroll advances.",
+			"sgs": {
+				"meaning": {
+					"what": "Shows a bar that fills as the visitor scrolls through the pinned horizontal timeline.",
+					"trigger": "scrolling while the horizontal timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
+		},
+		"panelHint": {
+			"type": "string",
+			"default": "",
+			"description": "Pinned-horizontal only: a short hint shown at the end of the header row (for example a scroll prompt). Empty prints none."
+		},
+		"panelBarHeight": {
+			"type": "number",
+			"default": 4,
+			"description": "Height in pixels of the progress bar track and fill."
+		},
+		"panelBarTrackColour": {
+			"type": "string",
+			"default": "",
+			"description": "Progress bar track colour (token slug or CSS colour). Empty draws the text colour at low strength."
+		},
+		"panelBarFillColour": {
+			"type": "string",
+			"default": "",
+			"description": "Progress bar fill colour (token slug or CSS colour). Empty draws the text colour."
+		},
+		"panelBarFillGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Progress bar fill gradient (CSS gradient string). Non-empty wins over panelBarFillColour."
+		},
+		"panelContentMaxWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Pinned-horizontal only: widest the counter row and card strip may be, in px per device tier {desktop,tablet,mobile}; centred. Empty applies no cap.",
+			"sgs": {
+				"meaning": {
+					"what": "Caps the width of the pinned horizontal timeline's content and centres it.",
+					"trigger": "viewport wider than the cap plus both gutters",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} of px"
+						}
+					}
+				}
+			}
+		},
+		"panelContentGutter": {
+			"type": "object",
+			"default": {},
+			"description": "Pinned-horizontal only: space at each side of the content column, in px per device tier {desktop,tablet,mobile}. Used with the max width; alone it replaces the root's side padding. Empty keeps the root padding (40px when a max width is set).",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the side space of the pinned horizontal timeline's content column.",
+					"trigger": "always, while the timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} of px"
+						}
+					}
+				}
+			}
+		},
+		"cardBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Horizontal timeline: background colour of each entry card. Empty keeps the entry transparent."
+		},
+		"cardBackgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"cardPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: padding inside each entry card, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). Empty keeps the stylesheet padding."
+		},
+		"cardBorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: corner radius of each entry card, per device."
+		},
+		"cardBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: border width of each entry card (per-side box, or a tier object of boxes)."
+		},
+		"cardBorderStyle": {
+			"type": "string",
+			"default": "solid",
+			"enum": ["none", "solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset"]
+		},
+		"cardBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"cardBorderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"cardShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Horizontal timeline: box-shadow shape of each entry card (the shared ShadowControl value)."
+		},
+		"cardShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"cardColumnGap": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline, text-beside-image cards: the gap between the text column and the image column, per device ({desktop,tablet,mobile} tier object of CSS lengths). Empty keeps the theme spacing. The image column is as wide as milestoneMediaWidth."
+		},
+		"cardLayout": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline, Text beside image content layout: how each card is laid out per device ({desktop,tablet,mobile} tier object). 'side' puts the text beside the image; 'stacked' puts the image on top with the date and text below it. Empty keeps the text beside the image."
+		},
+		"cardGap": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: the space between neighbouring cards per device ({desktop,tablet,mobile} tier object of CSS lengths; a bare number is pixels). Empty keeps no gap on the pinned row and the theme spacing on the swipeable cards."
+		},
+		"cardShadowTablet": {
+			"type": "string",
+			"default": "",
+			"description": "Horizontal timeline: box-shadow shape of each entry card at 1023px and below (the shared ShadowControl value). Empty keeps cardShadow."
+		},
+		"cardShadowTabletColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the tablet card shadow."
+		},
+		"cardShadowMobile": {
+			"type": "string",
+			"default": "",
+			"description": "Horizontal timeline: box-shadow shape of each entry card at 767px and below (the shared ShadowControl value). Empty keeps the tablet shadow, then cardShadow."
+		},
+		"cardShadowMobileColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the mobile card shadow."
+		},
+		"mediaHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Entry image slot height per device ({desktop,tablet,mobile} tier object of CSS lengths; a bare number is pixels). The picture fills and crops to this height and the aspect ratio is ignored where a height is set. Empty keeps the aspect ratio or the picture's natural shape."
+		},
+		"cardMaxWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: the widest an entry card may grow, per device ({desktop,tablet,mobile} tier object of CSS lengths such as 900px). Empty means no cap."
+		},
+		"mediaAspectRatio": {
+			"type": "object",
+			"default": {},
+			"description": "Entry image slot aspect ratio per device ({desktop,tablet,mobile} tier object of ratios such as \"4 / 5\"). Empty keeps the image at its natural shape."
+		},
+		"mediaBorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Entry image slot corner radius per device ({desktop,tablet,mobile} tier object of corner boxes)."
+		},
+		"dateFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"dateFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"dateFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"dateFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"dateFontStyle": {
+			"type": "string",
+			"default": "",
+			"enum": ["", "normal", "italic"]
+		},
+		"dateLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"dateLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"dateLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"dateLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"dateTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"dateTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"dateTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionTextFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"descriptionTextFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"descriptionTextFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionTextFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionTextFontStyle": {
+			"type": "string",
+			"default": "",
+			"enum": ["", "normal", "italic"]
+		},
+		"descriptionTextLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"descriptionTextLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"cardWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Width of each card as a percentage, per device tier {desktop,tablet,mobile}. Swipeable cards (767px and below): a percentage of the row. Horizontal timeline at 768px and up: a percentage of the viewport width. Empty keeps 85% up to 320px on phones and 220px on larger screens.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets how wide each swipeable timeline card is, so the next card peeks in from the side.",
+					"trigger": "viewport 767px and below with the swipeable cards layout",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} of percent of the row"
+						}
+					}
+				}
+			}
+		},
+		"panelRowGap": {
+			"type": "number",
+			"default": 20,
+			"description": "Space in pixels between the counter, bar and hint in the header row."
+		},
+		"panelRowSpacing": {
+			"type": "number",
+			"default": 36,
+			"description": "Space in pixels between the header row and the cards."
+		},
+		"counterColour": {
+			"type": "string",
+			"default": "",
+			"description": "Progress counter text colour (token slug or CSS colour). Empty inherits."
+		},
+		"hintColour": {
+			"type": "string",
+			"default": "",
+			"description": "Header row hint text colour (token slug or CSS colour). Empty inherits."
+		},
+		"panelPinLength": {
+			"type": "object",
+			"default": {},
+			"description": "Pinned-horizontal only: scroll distance in vh per card, per device tier {desktop,tablet,mobile}. Empty keeps the engine default.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets how much page scroll each card of the pinned horizontal timeline takes.",
+					"trigger": "scrolling while the horizontal timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} of vh per card"
+						}
+					}
+				}
+			}
+		},
+		"panelPinTail": {
+			"type": "object",
+			"default": {},
+			"description": "Pinned-horizontal only: extra scroll distance in vh added after the last card, per device tier {desktop,tablet,mobile}.",
+			"sgs": {
+				"meaning": {
+					"what": "Adds extra scroll distance at the end of the pinned horizontal timeline.",
+					"trigger": "scrolling while the horizontal timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} of vh"
+						}
+					}
+				}
+			}
+		},
+		"counterFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"counterFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"counterFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"counterFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"counterFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"counterLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"counterLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"counterLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"counterLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"counterTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"hintFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"hintFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"hintFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"hintFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"hintFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"hintLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"hintLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"hintLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"hintLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"hintTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
+	"viewScriptModule": "file:./view.js",
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"example": {
+		"attributes": {
+			"orientation": "vertical",
+			"contentLayout": "alternating",
+			"entries": [
+				{
+					"date": "2018-01-01",
+					"title": "Company Founded",
+					"description": "<p>Our story began with a vision and a handshake.</p>",
+					"icon": "building",
+					"image": 0
+				},
+				{
+					"date": "2020-06-01",
+					"title": "First Milestone",
+					"description": "<p>Reached an important milestone in our growth.</p>",
+					"icon": "flag",
+					"image": 0
+				},
+				{
+					"date": "2023-03-15",
+					"title": "National Expansion",
+					"description": "<p>Grew our reach across the UK.</p>",
+					"icon": "map",
+					"image": 0
+				}
+			]
+		}
+	}
+}

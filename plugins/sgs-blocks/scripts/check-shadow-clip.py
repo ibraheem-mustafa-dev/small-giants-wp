@@ -72,6 +72,7 @@ ALLOW: dict[tuple[str, str], str] = {
     (r"src/blocks/cart/style\.css", r"."): "cart drawer internals (a scrolling line list and a progress bar): they hold rows, not shadowed tiles",
     (r"src/blocks/free-delivery-bar/style\.css", r"__track"): "progress bar track cropped to its pill shape",
     (r"src/blocks/choice-flow/style\.css", r"layout-showcase"): "showcase layout body scrolls inside a fixed-height frame that owns the surface",
+    (r"assets/css/media-bg\.css", r"sgs-bg-media"): "background layer: it holds only the photo, video or SVG that is the background, no shadowed child, and it must crop to the section's edge (Spec 49 section 7.8)",
     (r"src/blocks/nav-drawer/style\.css", r"."): "off-canvas drawer: the viewport edge is the frame",
     (r"src/blocks/modal/style\.css", r"scroll-locked"): "page scroll lock on the body",
     (r"src/blocks/mega-panel/style\.css", r"\.sgs-mega-group >"): "heading text truncation",

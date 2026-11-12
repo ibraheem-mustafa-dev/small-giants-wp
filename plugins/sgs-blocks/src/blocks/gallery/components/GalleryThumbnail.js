@@ -1,114 +1,107 @@
 /**
- * Draggable thumbnail for the sgs/gallery inspector's image strip.
+ * One item of the sgs/gallery inspector's Images panel: a draggable card with its media field, fit, focal point,
+ * caption and link.
  */
-import { __ } from '@wordpress/i18n';
-import { SelectControl, TextControl, ToggleControl, FocalPointPicker } from '@wordpress/components';
+import { __, sprintf } from '@wordpress/i18n';
+import { TextControl } from '@wordpress/components';
 import { LinkPopoverField } from '../../../components';
+import MediaSlotField from '../../../components/media/MediaSlotField.js';
+import FitField from '../../../components/media/FitField.js';
+import FocalField from '../../../components/media/FocalField.js';
 import { LINK_SOURCES_ALL } from '../../../shared/link-source-options';
-import { focalPointToObjectPosition } from '../../../utils';
+import { ITEM_SLOT, itemFile, itemToSlotAttrs } from '../item-model';
 
 /**
- * A single draggable thumbnail in the image picker strip.
- *
  * @param {Object}   props
- * @param {Object}   props.image       Image data object.
- * @param {number}   props.index       Position in the images array.
- * @param {Function} props.onRemove    Called when the remove button is clicked.
- * @param {Function} props.onDragStart Called when drag begins.
- * @param {Function} props.onDragOver  Called when dragged over this item.
- * @param {Function} props.onDrop      Called when dropped on this item.
- * @param {Function} props.onUpdateLink Called with (index, patch) to set the item's linkUrl, linkTarget or linkLabel.
- * @param {Function} props.onUpdateText Called with (index, patch) to set the item's alt or caption.
+ * @param {Object}   props.item         The `mediaItems` entry.
+ * @param {number}   props.index        Position in the items array.
+ * @param {number}   props.count        How many items there are.
+ * @param {Function} props.onRemove     Called with the index when Remove is pressed.
+ * @param {Function} props.onMove       Called with (from, to).
+ * @param {Function} props.onDragStart  Called with the index when a drag begins.
+ * @param {Function} props.onDrop       Called with the index when something is dropped on this card.
+ * @param {Function} props.onUpdateSlot Called with (index, patch) for a media field's `item*` patch.
+ * @param {Function} props.onUpdate     Called with (index, patch) for the item's own caption and link fields.
  */
-export default function GalleryThumbnail( {
-	image,
-	index,
-	onRemove,
-	onDragStart,
-	onDragOver,
-	onDrop,
-	onToggleDecorative,
-	onUpdateCrop,
-	onUpdateLink,
-	onUpdateText,
-} ) {
-	const fit = image.objectFit || 'cover';
+export default function GalleryThumbnail( { item, index, count, onRemove, onMove, onDragStart, onDrop, onUpdateSlot, onUpdate } ) {
+	const file = itemFile( item );
+	const preview = file.poster || ( 'video' === file.kind ? '' : file.url );
+	const slotAttrs = itemToSlotAttrs( item );
+	const setSlot = ( patch ) => onUpdateSlot( index, patch );
+	/* translators: %d: the item's position in the gallery. */
+	const title = sprintf( __( 'Item %d', 'sgs-blocks' ), index + 1 );
+
 	return (
 		<div
 			className="sgs-gallery-editor__thumb"
-			draggable
-			onDragStart={ () => onDragStart( index ) }
-			onDragOver={ ( e ) => {
-				e.preventDefault();
-				onDragOver( index );
-			} }
+			onDragOver={ ( e ) => e.preventDefault() }
 			onDrop={ () => onDrop( index ) }
 			role="listitem"
 		>
-			<img
-				src={ image.url }
-				alt={ image.alt || '' }
-				className="sgs-gallery-editor__thumb-img"
-				style={ {
-					objectFit: fit,
-					objectPosition:
-						'cover' === fit
-							? focalPointToObjectPosition( image.focalPoint || { x: 0.5, y: 0.5 } )
-							: undefined,
-				} }
-			/>
-			<button
-				type="button"
-				className="sgs-gallery-editor__thumb-remove"
-				onClick={ () => onRemove( index ) }
-				aria-label={ __( 'Remove image', 'sgs-blocks' ) }
-			>
-				&times;
-			</button>
-			{ /* Item 18 (2026-09-02, decorative-image-aria) — per-item decorative
-			     toggle. This is a REPEATER (mediaItems array), so the flag lives
-			     on the item object (`decorative`), not as a top-level block
-			     attribute. When true, render.php blanks this item's alt text and
-			     adds aria-hidden="true" so the image is hidden from assistive
-			     tech (WCAG 2.1 AA 1.1.1). The picture's description and caption
-			     are the item's own `alt` and `caption` fields, edited below. */ }
-			<ToggleControl
-				className="sgs-gallery-editor__thumb-decorative"
-				label={ __( 'Decorative — hide from screen readers', 'sgs-blocks' ) }
-				checked={ !! image.decorative }
-				onChange={ ( value ) => onToggleDecorative( index, value ) }
-				__nextHasNoMarginBottom
-			/>
-			{ ! image.decorative && (
-				<TextControl
-					label={ __( 'Image description (alt text)', 'sgs-blocks' ) }
-					help={ __( 'Read out by screen readers. Describe what the picture shows.', 'sgs-blocks' ) }
-					value={ image.alt || '' }
-					onChange={ ( val ) => onUpdateText( index, { alt: val } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-			) }
+			<div className="sgs-gallery-editor__thumb-head">
+				<span
+					className="sgs-gallery-editor__thumb-handle"
+					draggable
+					onDragStart={ () => onDragStart( index ) }
+					title={ __( 'Drag to reorder', 'sgs-blocks' ) }
+				>
+					{ preview ? (
+						<img src={ preview } alt="" className="sgs-gallery-editor__thumb-img" />
+					) : (
+						<span className="sgs-gallery-editor__thumb-img sgs-gallery-editor__thumb-img--empty" />
+					) }
+				</span>
+				<strong className="sgs-gallery-editor__thumb-title">{ title }</strong>
+				<button
+					type="button"
+					className="sgs-gallery-editor__thumb-move"
+					onClick={ () => onMove( index, index - 1 ) }
+					disabled={ 0 === index }
+					aria-label={ __( 'Move earlier', 'sgs-blocks' ) }
+				>
+					&uarr;
+				</button>
+				<button
+					type="button"
+					className="sgs-gallery-editor__thumb-move"
+					onClick={ () => onMove( index, index + 1 ) }
+					disabled={ index >= count - 1 }
+					aria-label={ __( 'Move later', 'sgs-blocks' ) }
+				>
+					&darr;
+				</button>
+				<button
+					type="button"
+					className="sgs-gallery-editor__thumb-remove"
+					onClick={ () => onRemove( index ) }
+					aria-label={ __( 'Remove item', 'sgs-blocks' ) }
+				>
+					&times;
+				</button>
+			</div>
+			<MediaSlotField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ ITEM_SLOT.prefix } slot={ ITEM_SLOT } label={ __( 'Media', 'sgs-blocks' ) } />
+			<FitField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ ITEM_SLOT.prefix } slot={ ITEM_SLOT } />
+			<FocalField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ ITEM_SLOT.prefix } />
 			<TextControl
 				label={ __( 'Caption', 'sgs-blocks' ) }
 				help={ __( 'Shown with the picture when the gallery shows captions.', 'sgs-blocks' ) }
-				value={ image.caption || '' }
-				onChange={ ( val ) => onUpdateText( index, { caption: val } ) }
+				value={ item.caption || '' }
+				onChange={ ( val ) => onUpdate( index, { caption: val } ) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
-			{ /* Per-item link: a linked item renders as an <a> to this URL and never opens the
-			     lightbox. The label is the link's accessible name (empty falls back to the alt text). */ }
+			{ /* A linked item renders as an <a> to this URL and never opens the lightbox. The label is the link's
+			     accessible name (empty falls back to the alt text). */ }
 			<LinkPopoverField
 				label={ __( 'Link', 'sgs-blocks' ) }
 				emptyLabel={ __( 'Link this item', 'sgs-blocks' ) }
-				value={ { url: image.linkUrl || '', linkTarget: image.linkTarget || '', linkSource: image.linkUrlSource || '' } }
+				value={ { url: item.linkUrl || '', linkTarget: item.linkTarget || '', linkSource: item.linkUrlSource || '' } }
 				linkSources={ LINK_SOURCES_ALL }
 				targetMode="boolean"
 				showRel={ false }
 				onChange={ ( next ) => {
 					const patch = {};
-					const nextSource = 'linkSource' in next ? next.linkSource : image.linkUrlSource || '';
+					const nextSource = 'linkSource' in next ? next.linkSource : item.linkUrlSource || '';
 					if ( 'linkSource' in next ) {
 						patch.linkUrlSource = next.linkSource;
 					}
@@ -122,47 +115,18 @@ export default function GalleryThumbnail( {
 					if ( 'linkTarget' in next ) {
 						patch.linkTarget = '_blank' === next.linkTarget ? '_blank' : '';
 					}
-					onUpdateLink( index, patch );
+					onUpdate( index, patch );
 				} }
 			/>
-			{ !! ( image.linkUrl || image.linkUrlSource ) && (
+			{ !! ( item.linkUrl || item.linkUrlSource ) && (
 				<TextControl
 					label={ __( 'Link label', 'sgs-blocks' ) }
 					help={ __( 'Read out by screen readers. Empty uses the image description.', 'sgs-blocks' ) }
-					value={ image.linkLabel || '' }
-					onChange={ ( val ) => onUpdateLink( index, { linkLabel: val } ) }
+					value={ item.linkLabel || '' }
+					onChange={ ( val ) => onUpdate( index, { linkLabel: val } ) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
-			) }
-			{ /* Spec 35 Part 4 — per-item crop, same shape as sgs/card-grid's
-			     repeater panel. 'image' type only: object-fit on a <video>
-			     thumbnail here shows a static poster frame, not a meaningful
-			     crop preview, and this block's video items are rare enough
-			     that a bespoke second control isn't worth the panel clutter. */ }
-			{ 'image' === image.type && (
-				<>
-					<SelectControl
-						className="sgs-gallery-editor__thumb-fit"
-						label={ __( 'Image fit', 'sgs-blocks' ) }
-						value={ fit }
-						options={ [
-							{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
-							{ label: __( 'Contain (fit within, no crop)', 'sgs-blocks' ), value: 'contain' },
-						] }
-						onChange={ ( val ) => onUpdateCrop( index, { objectFit: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ 'cover' === fit && (
-						<FocalPointPicker
-							label={ __( 'Focal point', 'sgs-blocks' ) }
-							url={ image.url }
-							value={ image.focalPoint || { x: 0.5, y: 0.5 } }
-							onChange={ ( val ) => onUpdateCrop( index, { focalPoint: val } ) }
-						/>
-					) }
-				</>
 			) }
 		</div>
 	);

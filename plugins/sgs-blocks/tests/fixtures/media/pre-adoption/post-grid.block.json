@@ -1,0 +1,1795 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/post-grid",
+  "version": "0.2.0",
+  "title": "SGS Post Grid",
+  "category": "sgs-content",
+  "description": "Display posts in grid, list, masonry, or carousel layouts with AJAX filtering and pagination.",
+  "keywords": [
+    "posts",
+    "grid",
+    "blog",
+    "query",
+    "news",
+    "articles",
+    "cards",
+    "masonry",
+    "carousel"
+  ],
+  "textdomain": "sgs-blocks",
+  "icon": "grid-view",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "html": false,
+    "color": {
+      "background": false,
+      "text": false,
+      "gradients": false,
+      "__experimentalSkipSerialization": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true,
+      "__experimentalSkipSerialization": true
+    },
+    "sgs": {
+      "motionItems": "card",
+      "motion": true,
+      "separators": {
+        "separators": {
+          "axes": [
+            "row",
+            "column"
+          ],
+          "edges": false,
+          "hover": false,
+          "sweep": false
+        }
+      },
+      "collection": true,
+      "_comment_mediaElements": "37-media-no-handroll close-out (2026-09-03). The post-thumbnail <img> is ONE element rendered by Post_Grid_REST::render_card() (class sgs-post-grid__img) regardless of layout mode -- the two hardcoded object-fit:cover rules in style.css (grid-mode .sgs-post-grid__img and list-mode .sgs-post-grid--list .sgs-post-grid__image img) both target that same element via different ancestor-scoped selectors, never two elements. Unprefixed/single-slot, mirrors sgs/decorative-image's adoption shape. Only object-fit adopted (in scope for this pass) -- no attribute hand-declared, matching every existing adopter (decorative-image/before-after/media/hero): the runtime injection filter (src/blocks/extensions/media-elements.js) supplies objectFit/objectFitTablet/objectFitMobile, and the atom's own CSS var() chain already resolves to 'cover' when unset (assets/css/media-atoms/object-fit.css), matching this block's prior hardcoded default with zero attribute-default duplication.",
+      "mediaElements": [
+        {
+          "prefix": "",
+          "context": "element",
+          "atoms": [
+            "object-fit"
+          ]
+        }
+      ],
+      "elements": {
+        "page-button": {
+          "motion": false,
+          "selector": ".sgs-post-grid__page-btn",
+          "label": "Pagination page button",
+          "order": 10,
+          "clusters": [
+            "text"
+          ],
+          "prefix": "pageButton",
+          "attrMap": {
+            "css:-webkit-text-stroke-width": "pageButtonTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "pageButtonTextStrokeColour"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:-webkit-text-stroke-color": "pageButtonTextStrokeColourHover"
+              }
+            }
+          }
+        },
+        "filter": {
+          "selector": ".sgs-post-grid__filter",
+          "absentIn": [ "card-badge", "overlay-badge", "flat-inline-category", "minimal-no-image", "card-placeholder" ],
+          "absentWhy": "The filter buttons print only with showFilters on; these paths render the grid without them.",
+          "label": "Filter chip",
+          "order": 10,
+          "clusters": [ "text", "fill", "layout" ],
+          "attrMap": {
+            "css:border-width": "filterBorderWidth",
+            "css:border-color": "filterBorderColour",
+            "css:background-color": "filterBackground",
+            "css:color": "filterTextColour",
+            "css:font-weight": "filterFontWeight",
+            "css:padding": "filterPadding",
+            "css:min-height": "filterMinHeight"
+          },
+          "states": {
+            "current": {
+              "attrMap": {
+                "css:border-width": "filterActiveBorderWidth",
+                "css:border-color": "filterActiveBorderColour",
+                "css:background-color": "filterActiveBackground",
+                "css:color": "filterActiveTextColour"
+              }
+            }
+          }
+        },
+        "load-more": {
+          "motion": false,
+          "selector": ".sgs-post-grid__load-more",
+          "label": "Load more button",
+          "order": 11,
+          "clusters": [
+            "text"
+          ],
+          "prefix": "loadMore",
+          "attrMap": {
+            "css:-webkit-text-stroke-width": "loadMoreTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "loadMoreTextStrokeColour"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:-webkit-text-stroke-color": "loadMoreTextStrokeColourHover"
+              }
+            }
+          }
+        },
+        "badge": {
+          "selector": ".sgs-post-grid__badge",
+          "label": "Badge",
+          "order": 12,
+          "absentIn": [ "flat-inline-category", "minimal-no-image" ],
+          "absentWhy": "cardStyle flat and minimal print the category as the inline label (sgs-post-grid__category), not the image-overlaid badge (sgs-post-grid__badge).",
+          "clusters": [
+            "text"
+          ],
+          "prefix": "badge",
+          "attrMap": {
+            "css:-webkit-text-stroke-width": "badgeTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "badgeTextStrokeColour"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:-webkit-text-stroke-color": "badgeTextStrokeColourHover"
+              }
+            }
+          }
+        },
+        "grid": {
+          "label": "Grid",
+          "layer": "OUTER",
+          "_layer_note": "Block root and grid/list/masonry/carousel track combined. layer_detect.py's MF-3 guard makes the root OUTER regardless of its own display:grid.",
+          "order": 1,
+          "clusters": [
+            "fill",
+            "layout",
+            "animation"
+          ],
+          "isWrapper": true,
+          "attrMap": {
+            "css:background-color": "native:color.background",
+            "css:color": "native:color.text",
+            "css:margin": "native:spacing.margin",
+            "css:max-width": "maxWidth",
+            "css:border-width": "borderWidth",
+            "css:border-style": "borderStyle",
+            "css:border-color": "borderColour",
+            "css:border-radius": "borderRadius",
+            "css:gap": "gap",
+            "css:grid-template-columns": "gridTemplateColumns",
+            "css:grid-template-rows": "gridTemplateRows",
+            "css:grid-auto-rows": "gridAutoRows",
+            "css:justify-items": "justifyItems",
+            "css:justify-content": "justifyContent",
+            "css:align-content": "alignContent",
+            "css:flex-direction": "flexDirection",
+            "css:flex-wrap": "flexWrap",
+            "css:border-color-gradient": "borderColourGradient"
+          },
+          "_note": "No `display`/`align-items`/`order`/`overflow` attribute exists on this block — honest GAPs."
+        },
+        "card": {
+          "restingShadow": true,
+          "label": "Each post card",
+          "order": 1,
+          "clusters": [
+            "fill",
+            "layout"
+          ],
+          "prefix": "card",
+          "attrMap": {
+            "css:background-color": "cardBgColour",
+            "css:box-shadow": "shadow",
+            "css:border-radius": "cardRadius",
+            "css:background-image": "cardBgColourGradient"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:background-color": "backgroundColourHover",
+                "css:border-color": "borderColourHover",
+                "css:transform": "scaleHover",
+                "css:box-shadow": "shadowHover"
+              },
+              "noBaseByDesign": [
+                "css:transform",
+                "css:border-color"
+              ],
+              "_noBaseByDesignNote": "css:transform (scaleHover) legitimately has NO resting counterpart: a card's resting scale is 1 by definition, so a 'resting scale' control would be clutter rather than capability. Bean-ruled 2026-08-20. NOT a suppression hatch — css:box-shadow was ALSO hover-only on this element and was fixed by BUILDING the resting control (shadow/shadowColour), not by adding it here. Use only where the resting value is genuinely implicit. css:border-color (borderColourHover) added 2026-09-03: same shape — no cardBorderColour base attribute exists on this element at all, hover-only by the same original design as scaleHover."
+            }
+          },
+          "_note": "cardStyle (card/flat/overlay/minimal) is a preset, not a Layout-cluster control; no static border/padding/radius attrs exist for the card — background/shadow are client-overridable (cardBgColour/shadow+shadowColour), the rest hover-only (backgroundColourHover/borderColourHover/shadowHover), same shape as sgs/card-grid's card-tile gap. scaleHover is declared here (css:transform on the card element's :hover) so the generator seeds it css_property='transform' / css_element='card' / css_state='hover' — fixing the derived-classifier smell (was 'background-color,transform' / css_state NULL) at SOURCE (FP-1 declarative channel) and giving the per-element state-lift a clean row to route the draft's `.sgs-post-grid__card:hover{transform:scale(N)}` onto. shadowHover added to this attrMap 2026-08-16 (shadow-architecture migration off the preset-only picker, matching sgs/card-grid's card-tile 'css:box-shadow':'shadowHover' hover mapping) — shadowColourHover (the sibling colour attr) is classified via scripts/attr-classification-overrides.json, same pattern as the other shadow-colour companion attrs (D621/D622). shadow/shadowColour added 2026-08-20 to close a STATE_WITHOUT_BASE conformance gap (client could style shadowHover but had no resting shadow attribute) — mirrors the hover pair exactly, on the BASE attrMap rather than a state. An unset shadow is an honest gap: style.css's `--sgs-card-shadow` custom property keeps its existing hardcoded default (the cardStyle preset's look), and render.php only emits an inline override of that same property when shadow is non-empty, so the preset is unchanged until the client sets a value. shadowColour is the companion colour attr, same pattern as shadowColourHover."
+        },
+        "image": {
+          "label": "Post image",
+          "order": 2,
+          "clusters": [ "layout" ],
+          "attrMap": {
+            "css:aspect-ratio": "aspectRatio",
+            "css:height": "imageHeight"
+          },
+          "_note": "Renamed from 'card-image' 2026-08-15 to match the DB's own css_element spelling - the audit script does exact-string matching, so the near-miss was real drift, not a false positive. aspectRatio/imageSize/showImage govern this element; no supports.sgs.imageControls declared on this block (unlike gallery/hero/feature-grid), and no Text/Fill/Layout style attrs exist for it.",
+        	"absentIn": [ "minimal-no-image" ],
+        	"absentWhy": "cardStyle minimal prints no image link and no placeholder for a post without a featured image."
+        },
+        "title": {
+          "text": true,
+          "label": "Post title",
+          "order": 4,
+          "clusters": [
+            "text",
+            "layout"
+          ],
+          "prefix": "title",
+          "_note": "css:color resolves via the default convention (titleColour). states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below for the one-attr/four-elements ancestor-hover shape this closes. titleColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php rather than via the block's --sgs-pg-* custom-property chain (which cannot carry a gradient). Typography (font-size/weight/style/line-height) migrated off WP-native `supports.typography` onto the shared TypographyControls/sgs_typography_css_rule() mechanism 2026-09-05 (D971/D972) -- this element was the native support's actual target (block.json `selectors.typography` pointed at `.sgs-post-grid__title`, not the block root), so prefix 'title' carries the new attrs cleanly via the default {prefix}{Suffix} convention.",
+          "attrMap": {
+            "css:color": "titleColour",
+            "css:color-gradient": "titleColourGradient",
+            "css:font-size": "titleFontSize",
+            "css:font-weight": "titleFontWeight",
+            "css:font-style": "titleFontStyle",
+            "css:line-height": "titleLineHeight",
+            "css:margin": "titleMargin",
+            "css:-webkit-text-stroke-width": "titleTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "titleTextStrokeColour"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:color": "textColourHover",
+                "css:-webkit-text-stroke-color": "titleTextStrokeColourHover"
+              }
+            }
+          }
+        },
+        "excerpt": {
+          "text": true,
+          "label": "Post excerpt",
+          "order": 5,
+          "clusters": [
+            "text",
+            "layout"
+          ],
+          "prefix": "excerpt",
+          "_note": "css:color resolves via the default convention (excerptColour). excerptLength is a content-length control, not a style member. states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below. excerptColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php.",
+          "attrMap": {
+            "css:color": "excerptColour",
+            "css:color-gradient": "excerptColourGradient",
+            "css:margin": "excerptMargin",
+            "css:-webkit-text-stroke-width": "excerptTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "excerptTextStrokeColour"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:color": "textColourHover",
+                "css:-webkit-text-stroke-color": "excerptTextStrokeColourHover"
+              }
+            }
+          }
+        },
+        "meta": {
+          "label": "Meta (date/author)",
+          "order": 6,
+          "clusters": [
+            "text",
+            "layout"
+          ],
+          "prefix": "meta",
+          "_note": "css:color resolves via the default convention (metaColour). states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below. metaColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php.",
+          "attrMap": {
+            "css:color": "metaColour",
+            "css:color-gradient": "metaColourGradient",
+            "css:margin": "metaMargin",
+            "css:-webkit-text-stroke-width": "metaTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "metaTextStrokeColour"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:color": "textColourHover",
+                "css:-webkit-text-stroke-color": "metaTextStrokeColourHover"
+              }
+            }
+          }
+        },
+        "category-badge": {
+          "selector": ".sgs-post-grid__category-badge",
+          "label": "Category badge",
+          "order": 7,
+          "clusters": [
+            "text",
+            "fill"
+          ],
+          "prefix": "categoryBadge",
+          "attrMap": {
+            "css:color": "categoryBadgeColour",
+            "css:color-gradient": "categoryBadgeColourGradient",
+            "css:background-color": "categoryBadgeBgColour",
+            "css:background-image": "categoryBadgeBgColourGradient",
+            "css:-webkit-text-stroke-width": "categoryTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "categoryTextStrokeColour",
+            "css:padding": "categoryPadding",
+            "css:border-radius": "categoryRadius"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:background-color": "categoryBadgeBgColourHover",
+                "css:background-image": "categoryBadgeBgColourHoverGradient",
+                "css:color": "categoryBadgeColourHover",
+                "css:-webkit-text-stroke-color": "categoryTextStrokeColourHover"
+              }
+            }
+          },
+          "_note": "css:color resolves via the default convention (categoryBadgeColour). categoryBadgeColourGradient (2026-09-05) is the text-colour gradient sibling, same D956-shape recipe as title/meta/readMore on this block -- emitted as a direct decl targeting both .sgs-post-grid__badge and .sgs-post-grid__category in render.php (the two mutually-exclusive elements this one block-level attribute drives, per cardStyle). Hover background/gradient (categoryBadgeBgColourHover/categoryBadgeBgColourHoverGradient) follow the same pattern as sgs/before-after's handleColourHover: emitted as custom properties via sgs_custom_property_gradient_decls() in card_vars_decls(), consumed by style.css hover rules with fallback chain so unset hover is byte-identical to before."
+        },
+        "read-more": {
+          "selector": ".sgs-post-grid__readmore",
+          "label": "Read more link",
+          "order": 8,
+          "clusters": [
+            "text",
+            "layout"
+          ],
+          "prefix": "readMore",
+          "_note": "css:color resolves via the default convention (readMoreColour). readMoreText is content, not style. states.hover.attrMap added 2026-09-04 (D956): textColourHover is ONE attribute that paints FOUR descendant elements (title link/excerpt/meta/read-more) simultaneously on the CARD's hover -- render.php's own comment calls this an 'ancestor-hover shape' (the card receives :hover/:focus-within; each descendant already carries its own resting colour, so the rule targets them individually via sgs_hover_state_rules()'s $suffix param). It previously resolved css_element=NULL/derived_selector=NULL (an undeclared sub-element paint, F6 Check #8) because the manifest's attrMap model has no established one-attr-many-elements shape -- declared here on all 4 real target elements' states.hover, since that is what genuinely happens, not a workaround. No other block in this codebase currently needs this shape (checked); if a second one appears, consider whether the manifest schema itself should grow a first-class 'targets multiple elements' declaration rather than repeating this pattern by hand a third time. readMoreColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php.",
+          "attrMap": {
+            "css:color": "readMoreColour",
+            "css:color-gradient": "readMoreColourGradient",
+            "css:margin": "readMoreMargin",
+            "css:align-self": "readMorePin",
+            "css:-webkit-text-stroke-width": "readMoreTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "readMoreTextStrokeColour"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:color": "textColourHover",
+                "css:-webkit-text-stroke-color": "readMoreTextStrokeColourHover"
+              }
+            }
+          }
+        },
+        "content": {
+          "label": "Card text area",
+          "order": 3,
+          "clusters": [],
+          "prefix": "",
+          "attrMap": {
+            "css:padding": "contentPadding"
+          }
+        },
+        "inner": {
+          "label": "Scroll track",
+          "layer": "GRID",
+          "order": 9,
+          "clusters": [],
+          "prefix": "",
+          "attrMap": {
+            "css:grid-template-columns": "columns"
+          },
+          "_note": "The scroll/grid track (.sgs-post-grid__inner, render.php line 331) - the element that actually scrolls in carousel mode and carries the real grid-template-columns (render.php line 509-536), distinct from the 'grid' (root) element above. columns is claimed via explicit attrMap rather than declaring 'layout' in clusters: a first draft used clusters:[\"layout\"] with layer:\"GRID\", which reached the SAME bare (no-prefix) arrangement members the 'grid' element also reaches (both bare-prefix, both layer OUTER/GRID) and produced 3 CONTESTED findings - including 'order', which on this block is the WP_Query sort-order attribute (asc/desc), nothing to do with CSS order, a coincidental bare-name collision this element's clusters declaration would otherwise have manufactured. clusters:[] + explicit attrMap avoids all of it while still claiming columns cleanly. Found live 2026-08-15: DB tagged 1 attr css_element='inner', undeclared until now."
+        },
+        "content-band": {
+        	"label": "Content band",
+        	"layer": "CONTENT",
+        	"order": 13,
+        	"clusters": [
+        		"layout"
+        	],
+        	"prefix": "contentBand",
+        	"attrMap": {
+        		"css:max-width": "contentWidth",
+        		"css:padding": "native:spacing.padding"
+        	}
+        }
+      },
+      "fx": {
+        "providesNatively": [
+          "draggable"
+        ],
+        "_comment_providesNatively": "Spec 38 FR-38-13 / §7. This block owns drag-to-scroll through its OWN inspector toggle, which targets the DESCENDANT element that actually scrolls. The generic 'Scroll & effects' picker stamps data-sgs-fx onto the block ROOT, which is not the scroller here — so offering `draggable` there too would give the client TWO controls for ONE capability, and the picker's one would silently do nothing. Declaring it here removes the dud picker entry via generate-fx-qualifying-blocks.py without removing the capability, exactly as sgs/responsive-logo does for `draw`. Ruled 2026-07-31 after the roster derivation surfaced it on five blocks at once (gallery had it latently already). NOTE sgs/timeline deliberately does NOT carry this: its scroller IS the block root, so the picker lands correctly there."
+      },
+      "colourExemptions": {
+        "text-hover": {
+          "rule": "states",
+          "reason": "textColourHover is one shared ancestor-hover accent overriding four independently-based colours (titleColour/excerptColour/metaColour/readMoreColour on title-link/excerpt/meta/read-more, render.php:660-696) on card hover — not paired 1:1 by name, by design (Bean 2026-09-07): a single hover accent for the whole card, not four independent per-element hovers. Confirmed via investigation, not a missing per-element hover state."
+        }
+      },
+      "spacingDefaults": {
+        "filterPadding": {
+          "top": "var(--wp--preset--spacing--20)",
+          "right": "var(--wp--preset--spacing--30)",
+          "bottom": "var(--wp--preset--spacing--20)",
+          "left": "var(--wp--preset--spacing--30)"
+        }
+      },
+      "boxFamilies": {
+        "borderRadius": [
+          "borderRadius"
+        ],
+        "borderWidth": [
+          "borderWidth"
+        ]
+      }
+    }
+  },
+  "selectors": {
+    "root": ".wp-block-sgs-post-grid"
+  },
+  "attributes": {
+    "separators": {
+      "type": "object",
+      "default": {},
+      "description": "The lines drawn between the items of a grid or flex layout (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour }, column: { same } }. `row` is the line between rows, `column` between columns; an axis with no width draws nothing. Drawn centred in the gap by CSS gap decorations (column-rule / row-rule) where the browser has them, and by a small script painting the same lines elsewhere. Spacing only when empty."
+    },
+    "shadowLiftOnHover": {
+      "type": "boolean",
+      "default": true
+    },
+    "postType": {
+      "type": "string",
+      "default": "post"
+    },
+    "postsPerPage": {
+      "type": "number",
+      "default": 6
+    },
+    "orderBy": {
+      "type": "string",
+      "default": "date"
+    },
+    "order": {
+      "type": "string",
+      "default": "desc"
+    },
+    "categories": {
+      "type": "array",
+      "default": []
+    },
+    "tags": {
+      "type": "array",
+      "default": []
+    },
+    "excludeCurrent": {
+      "type": "boolean",
+      "default": true
+    },
+    "offset": {
+      "type": "number",
+      "default": 0
+    },
+    "layout": {
+      "type": "string",
+      "default": "grid",
+      "enum": [
+        "grid",
+        "list",
+        "masonry",
+        "carousel"
+      ]
+    },
+    "alignItems": {
+        "type": "object",
+        "default": {}
+    },
+    "cardStyle": {
+      "type": "string",
+      "default": "card",
+      "enum": [
+        "card",
+        "flat",
+        "overlay",
+        "minimal"
+      ]
+    },
+    "columns": {
+      "type": "object",
+      "default": {
+        "desktop": 3,
+        "tablet": 2,
+        "mobile": 1
+      }
+    },
+    "gap": {
+      "type": "object",
+      "default": {
+        "desktop": "30px"
+      }
+    },
+    "aspectRatio": {
+      "type": "string",
+      "default": "16 / 9"
+    },
+    "imageSize": {
+      "type": "string",
+      "default": "medium_large"
+    },
+    "showImage": {
+      "type": "boolean",
+      "default": true
+    },
+    "imageDecorative": {
+      "type": "boolean",
+      "default": false,
+      "description": "Block-level (not per-post): every post's featured image in this grid is dynamically pulled from WordPress, so a per-item toggle would be meaningless as the query result changes. When true, each card's featured image renders with an empty alt attribute and aria-hidden, so screen readers skip it entirely instead of announcing the media library's per-post alt text."
+    },
+    "showTitle": {
+      "type": "boolean",
+      "default": true
+    },
+    "showExcerpt": {
+      "type": "boolean",
+      "default": true
+    },
+    "excerptLength": {
+      "type": "number",
+      "default": 20
+    },
+    "showDate": {
+      "type": "boolean",
+      "default": true
+    },
+    "dateFormat": {
+      "type": "string",
+      "default": "",
+      "description": "PHP date format for the card date. Empty uses the site's date_format option."
+    },
+    "keepEmptyColumns": {
+      "type": "boolean",
+      "default": false,
+      "description": "When on, a grid with fewer posts than columns keeps every column at its full width instead of stretching the cards."
+    },
+    "showAuthor": {
+      "type": "boolean",
+      "default": false
+    },
+    "showCategory": {
+      "type": "boolean",
+      "default": true
+    },
+    "showReadMore": {
+      "type": "boolean",
+      "default": true
+    },
+    "readMoreText": {
+      "type": "string",
+      "default": "Read more"
+    },
+    "cardLink": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whole card is the link: the title link stretches over the card (one tab stop, named by the post title) and the read more becomes a visual cue, not a second link. Off keeps the title, image and read more as separate links."
+    },
+    "readMoreIcon": {
+      "type": "string",
+      "default": "",
+      "description": "Icon after the read more text: empty keeps the text arrow, 'none' shows no icon, any other value is a Lucide icon slug."
+    },
+    "readMorePin": {
+      "type": "object",
+      "default": {},
+      "description": "Per-device ({desktop,tablet,mobile} tier object) placement of the read more link: 'pinned' makes each card a column so the link sits as a full-width row at the card's bottom, whatever the excerpt length; 'inline' keeps it directly after the excerpt. Empty keeps it directly after the excerpt. Not applied to the list layout."
+    },
+    "emptyMessage": {
+      "type": "string",
+      "default": "",
+      "description": "Shown in place of the grid when the query returns no posts. Empty shows nothing."
+    },
+    "errorMessage": {
+      "type": "string",
+      "default": "",
+      "description": "Shown on the live site when a page or filter fails to load. Empty keeps the posts that were showing."
+    },
+    "pagination": {
+      "type": "string",
+      "default": "none",
+      "enum": [
+        "none",
+        "standard",
+        "load-more",
+        "infinite"
+      ]
+    },
+    "showFilters": {
+      "type": "boolean",
+      "default": false,
+      "sgs": {
+        "meaning": {
+          "what": "Shows or hides the category filter bar above the grid.",
+          "trigger": "always",
+          "parameters": {
+            "value": {
+              "unit": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "filterBorderWidth": {
+      "type": "string",
+      "default": "2px",
+      "description": "Border width of the filter chips. Set 0 for no outline."
+    },
+    "filterBorderColour": {
+      "type": "string",
+      "default": "",
+      "description": "Border colour of the filter chips. Empty keeps the primary colour."
+    },
+    "filterBackground": {
+      "type": "string",
+      "default": "",
+      "description": "Resting fill of the filter chips. Empty keeps transparent."
+    },
+    "filterTextColour": {
+      "type": "string",
+      "default": "",
+      "description": "Resting text colour of the filter chips. Empty inherits the text colour."
+    },
+    "filterFontWeight": {
+      "type": "string",
+      "default": "",
+      "description": "Font weight of the filter chips (100 to 900). Empty keeps 600."
+    },
+    "filterMinHeight": {
+      "type": "string",
+      "default": "",
+      "description": "Minimum height of the filter chips. Empty keeps 44px."
+    },
+    "filterActiveBackground": {
+      "type": "string",
+      "default": "",
+      "description": "Fill of the active filter chip. Empty keeps the primary colour."
+    },
+    "filterActiveTextColour": {
+      "type": "string",
+      "default": "",
+      "description": "Text colour of the active filter chip. Empty keeps the inverse text colour."
+    },
+    "filterActiveBorderColour": {
+      "type": "string",
+      "default": "",
+      "description": "Border colour of the active filter chip. Empty keeps the primary colour."
+    },
+    "filterActiveBorderWidth": {
+      "type": "string",
+      "default": "3px",
+      "description": "Border width of the active filter chip. Set 0 for no outline."
+    },
+    "filterOrder": {
+      "type": "string",
+      "default": "name",
+      "enum": [ "name", "count", "term_order" ],
+      "description": "Order of the filter chips: name (alphabetical), count (most posts first) or term_order (the filterTermIds list)."
+    },
+    "filterTermIds": {
+      "type": "array",
+      "items": { "type": "integer" },
+      "default": [],
+      "description": "Term IDs in the order the filter chips show when filterOrder is term_order; terms not listed follow in name order."
+    },
+    "imageHeight": {
+      "type": "object",
+      "default": {},
+      "description": "Fixed height of the card image frame per device ({desktop,tablet,mobile}). When set it wins over aspectRatio and the image covers the frame."
+    },
+    "filterTaxonomy": {
+      "type": "string",
+      "default": "category"
+    },
+    "titleColour": {
+      "type": "string",
+      "default": ""
+    },
+    "titleColourGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "titleFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "titleFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "titleFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "titleFontStyle": {
+      "type": "string",
+      "default": ""
+    },
+    "titleLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "titleLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "excerptColour": {
+      "type": "string",
+      "default": "text"
+    },
+    "excerptColourGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "metaColour": {
+      "type": "string",
+      "default": "text-muted"
+    },
+    "metaColourGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "categoryBadgeColour": {
+      "type": "string",
+      "default": "text-inverse"
+    },
+    "categoryBadgeColourGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "categoryBadgeBgColour": {
+      "type": "string",
+      "default": "primary"
+    },
+    "categoryBadgeBgColourGradient": {
+      "type": "string",
+      "default": "",
+      "description": "CSS gradient string painting the category badge background with a masked gradient instead of a flat colour (D636 gradient rollout). Non-empty wins over categoryBadgeBgColour."
+    },
+    "categoryBadgeBgColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "categoryBadgeBgColourHoverGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "readMoreColour": {
+      "type": "string",
+      "default": ""
+    },
+    "readMoreColourGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "cardBgColour": {
+      "type": "string",
+      "default": "surface"
+    },
+    "cardBgColourGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "backgroundColourHover": {
+      "type": "string"
+    },
+    "textColourHover": {
+      "type": "string"
+    },
+    "textColourHoverGradient": {
+      "type": "string",
+      "default": "",
+      "description": "CSS gradient string painting the card's descendant text (title link/excerpt/meta/read-more) on hover with a masked text-clip gradient instead of a flat colour (D636 text-gradient rollout). Non-empty wins over textColourHover."
+    },
+    "borderColourHover": {
+      "type": "string"
+    },
+    "scaleHover": {
+      "type": "string",
+      "default": ""
+    },
+    "shadow": {
+      "type": "string",
+      "default": ""
+    },
+    "shadowColour": {
+      "type": "string"
+    },
+    "shadowHover": {
+      "type": "string",
+      "default": ""
+    },
+    "shadowColourHover": {
+      "type": "string"
+    },
+    "transitionDuration": {
+      "type": "string",
+      "default": "300"
+    },
+    "transitionEasing": {
+      "type": "string",
+      "default": "ease"
+    },
+    "carouselAutoplay": {
+      "type": "boolean",
+      "default": false
+    },
+    "carouselPauseButton": {
+      "type": "boolean",
+      "default": false,
+      "description": "Show a pause / play button while autoplay runs (off by default). Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients. Keyboard focus, hover and touch pause autoplay either way."
+    },
+    "carouselSpeed": {
+      "type": "number",
+      "default": 5000
+    },
+    "carouselShowDots": {
+      "type": "boolean",
+      "default": true
+    },
+    "carouselShowArrows": {
+      "type": "boolean",
+      "default": true
+    },
+    "dragToScroll": {
+      "type": "boolean",
+      "default": false
+    },
+    "dragMomentum": {
+      "type": "boolean",
+      "default": true
+    },
+    "loopCarousel": {
+      "type": "boolean",
+      "default": false
+    },
+    "contentWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "maxWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "gridTemplateColumns": {
+      "type": "object",
+      "default": {}
+    },
+    "gridTemplateRows": {
+      "type": "object",
+      "default": {}
+    },
+    "gridAutoRows": {
+      "type": "string",
+      "default": ""
+    },
+    "justifyItems": {
+      "type": "string",
+      "default": "stretch",
+      "enum": [
+        "stretch",
+        "start",
+        "center",
+        "end"
+      ]
+    },
+    "alignContent": {
+      "type": "string",
+      "default": "stretch",
+      "enum": [
+        "stretch",
+        "start",
+        "center",
+        "end",
+        "space-between",
+        "space-around",
+        "space-evenly"
+      ]
+    },
+    "flexDirection": {
+      "type": "string",
+      "default": "",
+      "enum": [
+        "",
+        "row",
+        "column"
+      ]
+    },
+    "flexWrap": {
+      "type": "string",
+      "default": "wrap",
+      "enum": [
+        "wrap",
+        "nowrap"
+      ]
+    },
+    "justifyContent": {
+      "type": "string",
+      "default": "",
+      "enum": [
+        "",
+        "flex-start",
+        "center",
+        "flex-end",
+        "space-between",
+        "space-around"
+      ]
+    },
+    "borderWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "borderStyle": {
+      "type": "string",
+      "enum": [
+        "none",
+        "solid",
+        "dashed",
+        "dotted",
+        "double",
+        "groove",
+        "ridge",
+        "inset",
+        "outset"
+      ],
+      "default": "solid"
+    },
+    "borderColour": {
+      "type": "string",
+      "default": ""
+    },
+    "borderColourGradient": {
+      "type": "string",
+      "default": "",
+      "description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+    },
+    "borderRadius": {
+      "type": "object",
+      "default": {
+        "desktop": {}
+      }
+    },
+    "titleFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "titleTextTransform": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ],
+      "default": ""
+    },
+    "titleTextDecoration": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "underline",
+        "line-through"
+      ],
+      "default": ""
+    },
+    "titleLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "titleLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "titleTextAlign": {
+        "type": "object",
+        "default": {}
+    },
+    "titleTextWrap": {
+      "type": "string",
+      "enum": [
+        "",
+        "wrap",
+        "nowrap",
+        "balance",
+        "pretty",
+        "stable"
+      ],
+      "default": ""
+    },
+    "titleTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "titleTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "titleTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "titleTextColumns": {
+      "type": "number"
+    },
+    "titleWritingMode": {
+      "type": "string",
+      "enum": [
+        "",
+        "horizontal-tb",
+        "vertical-rl",
+        "vertical-lr"
+      ],
+      "default": ""
+    },
+    "pageButtonFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "pageButtonFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "pageButtonFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "pageButtonFontStyle": {
+      "type": "string",
+      "default": ""
+    },
+    "pageButtonFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "pageButtonTextTransform": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ],
+      "default": ""
+    },
+    "pageButtonTextDecoration": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "underline",
+        "line-through"
+      ],
+      "default": ""
+    },
+    "pageButtonLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "pageButtonLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "pageButtonLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "pageButtonLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "pageButtonTextWrap": {
+      "type": "string",
+      "enum": [
+        "",
+        "wrap",
+        "nowrap",
+        "balance",
+        "pretty",
+        "stable"
+      ],
+      "default": ""
+    },
+    "pageButtonTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "pageButtonTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "pageButtonTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "pageButtonTextColumns": {
+      "type": "number"
+    },
+    "pageButtonWritingMode": {
+      "type": "string",
+      "enum": [
+        "",
+        "horizontal-tb",
+        "vertical-rl",
+        "vertical-lr"
+      ],
+      "default": ""
+    },
+    "loadMoreFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "loadMoreFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "loadMoreFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "loadMoreFontStyle": {
+      "type": "string",
+      "default": ""
+    },
+    "loadMoreFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "loadMoreTextTransform": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ],
+      "default": ""
+    },
+    "loadMoreTextDecoration": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "underline",
+        "line-through"
+      ],
+      "default": ""
+    },
+    "loadMoreLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "loadMoreLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "loadMoreLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "loadMoreLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "loadMoreTextWrap": {
+      "type": "string",
+      "enum": [
+        "",
+        "wrap",
+        "nowrap",
+        "balance",
+        "pretty",
+        "stable"
+      ],
+      "default": ""
+    },
+    "loadMoreTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "loadMoreTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "loadMoreTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "loadMoreTextColumns": {
+      "type": "number"
+    },
+    "loadMoreWritingMode": {
+      "type": "string",
+      "enum": [
+        "",
+        "horizontal-tb",
+        "vertical-rl",
+        "vertical-lr"
+      ],
+      "default": ""
+    },
+    "metaFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "metaFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "metaFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "metaFontStyle": {
+      "type": "string",
+      "default": ""
+    },
+    "metaFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "metaTextTransform": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ],
+      "default": ""
+    },
+    "metaTextDecoration": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "underline",
+        "line-through"
+      ],
+      "default": ""
+    },
+    "metaLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "metaLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "metaLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "metaLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "metaTextAlign": {
+        "type": "object",
+        "default": {}
+    },
+    "metaTextWrap": {
+      "type": "string",
+      "enum": [
+        "",
+        "wrap",
+        "nowrap",
+        "balance",
+        "pretty",
+        "stable"
+      ],
+      "default": ""
+    },
+    "metaTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "metaTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "metaTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "metaTextColumns": {
+      "type": "number"
+    },
+    "metaWritingMode": {
+      "type": "string",
+      "enum": [
+        "",
+        "horizontal-tb",
+        "vertical-rl",
+        "vertical-lr"
+      ],
+      "default": ""
+    },
+    "badgeFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "badgeFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "badgeFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "badgeFontStyle": {
+      "type": "string",
+      "default": ""
+    },
+    "badgeFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "badgeTextTransform": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ],
+      "default": ""
+    },
+    "badgeTextDecoration": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "underline",
+        "line-through"
+      ],
+      "default": ""
+    },
+    "badgeLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "badgeLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "badgeLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "badgeLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "badgeTextAlign": {
+        "type": "object",
+        "default": {}
+    },
+    "badgeTextWrap": {
+      "type": "string",
+      "enum": [
+        "",
+        "wrap",
+        "nowrap",
+        "balance",
+        "pretty",
+        "stable"
+      ],
+      "default": ""
+    },
+    "badgeTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "badgeTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "badgeTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "badgeTextColumns": {
+      "type": "number"
+    },
+    "badgeWritingMode": {
+      "type": "string",
+      "enum": [
+        "",
+        "horizontal-tb",
+        "vertical-rl",
+        "vertical-lr"
+      ],
+      "default": ""
+    },
+    "categoryFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "categoryFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "categoryFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "categoryFontStyle": {
+      "type": "string",
+      "default": ""
+    },
+    "categoryFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "categoryTextTransform": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ],
+      "default": ""
+    },
+    "categoryTextDecoration": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "underline",
+        "line-through"
+      ],
+      "default": ""
+    },
+    "categoryLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "categoryLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "categoryLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "categoryLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "categoryTextAlign": {
+        "type": "object",
+        "default": {}
+    },
+    "categoryTextWrap": {
+      "type": "string",
+      "enum": [
+        "",
+        "wrap",
+        "nowrap",
+        "balance",
+        "pretty",
+        "stable"
+      ],
+      "default": ""
+    },
+    "categoryTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "categoryTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "categoryTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "categoryTextColumns": {
+      "type": "number"
+    },
+    "categoryWritingMode": {
+      "type": "string",
+      "enum": [
+        "",
+        "horizontal-tb",
+        "vertical-rl",
+        "vertical-lr"
+      ],
+      "default": ""
+    },
+    "excerptFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "excerptFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "excerptFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "excerptFontStyle": {
+      "type": "string",
+      "default": ""
+    },
+    "excerptFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "excerptTextTransform": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ],
+      "default": ""
+    },
+    "excerptTextDecoration": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "underline",
+        "line-through"
+      ],
+      "default": ""
+    },
+    "excerptLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "excerptLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "excerptLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "excerptLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "excerptTextAlign": {
+        "type": "object",
+        "default": {}
+    },
+    "excerptTextWrap": {
+      "type": "string",
+      "enum": [
+        "",
+        "wrap",
+        "nowrap",
+        "balance",
+        "pretty",
+        "stable"
+      ],
+      "default": ""
+    },
+    "excerptTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "excerptTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "excerptTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "excerptTextColumns": {
+      "type": "number"
+    },
+    "excerptWritingMode": {
+      "type": "string",
+      "enum": [
+        "",
+        "horizontal-tb",
+        "vertical-rl",
+        "vertical-lr"
+      ],
+      "default": ""
+    },
+    "readMoreFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "readMoreFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "readMoreFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "readMoreFontStyle": {
+      "type": "string",
+      "default": ""
+    },
+    "readMoreFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "readMoreTextTransform": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ],
+      "default": ""
+    },
+    "readMoreTextDecoration": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "underline",
+        "line-through"
+      ],
+      "default": ""
+    },
+    "readMoreLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "readMoreLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "readMoreLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "readMoreLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "readMoreTextAlign": {
+        "type": "object",
+        "default": {}
+    },
+    "readMoreTextWrap": {
+      "type": "string",
+      "enum": [
+        "",
+        "wrap",
+        "nowrap",
+        "balance",
+        "pretty",
+        "stable"
+      ],
+      "default": ""
+    },
+    "readMoreTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "readMoreTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "readMoreTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "readMoreTextColumns": {
+      "type": "number"
+    },
+    "readMoreWritingMode": {
+      "type": "string",
+      "enum": [
+        "",
+        "horizontal-tb",
+        "vertical-rl",
+        "vertical-lr"
+      ],
+      "default": ""
+    },
+    "categoryBadgeColourHover": {
+      "type": "string",
+      "description": "Category badge text colour on :hover/:focus-within (colour-conformance text-colour trio closeout, 2026-09-07). Emitted as a direct decl targeting .sgs-post-grid__badge and .sgs-post-grid__category (the two mutually-exclusive elements per cardStyle) via sgs_hover_state_rules() in render.php.",
+      "default": ""
+    },
+    "metaLayout": {
+      "type": "string",
+      "enum": [
+        "",
+        "inline"
+      ],
+      "default": "",
+      "description": "Flat and minimal cards: 'inline' puts the category label and the date on one row (category left, date right). Empty keeps the label and the date on separate lines."
+    },
+    "contentPadding": {
+      "type": "object",
+      "default": {},
+      "description": "Padding of the card text area (title, excerpt, read more), per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet padding (20px; 24px 20px 20px on overlay cards; none on minimal cards)."
+    },
+    "metaMargin": {
+      "type": "object",
+      "default": {},
+      "description": "Margin around the meta line (date and author) and the inline category and date row, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin (8px below)."
+    },
+    "titleMargin": {
+      "type": "object",
+      "default": {},
+      "description": "Margin around the card title, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin (10px below)."
+    },
+    "excerptMargin": {
+      "type": "object",
+      "default": {},
+      "description": "Margin around the card excerpt, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin (12px below)."
+    },
+    "readMoreMargin": {
+      "type": "object",
+      "default": {},
+      "description": "Margin around the read more link, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps none."
+    },
+    "filterPadding": {
+      "type": "object",
+      "default": {},
+      "description": "Padding of the filter chips, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet padding (8px 20px)."
+    },
+    "categoryPadding": {
+      "type": "object",
+      "default": {},
+      "description": "Padding of the plain category label (flat and minimal cards), per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). Empty keeps the stylesheet's none."
+    },
+    "categoryRadius": {
+      "type": "string",
+      "default": "",
+      "description": "Corner radius of the plain category label and its painted background (flat and minimal cards). Empty keeps square corners."
+    },
+    "cardRadius": {
+      "type": "string",
+      "default": "",
+      "description": "Corner radius of every card, written to --sgs-card-radius on the block. Empty keeps the stylesheet's 8px."
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScriptModule": "file:./view.js",
+  "render": "file:./render.php",
+  "example": {
+    "attributes": {
+      "layout": "grid",
+      "columns": 3,
+      "cardStyle": "card",
+      "showImage": true,
+      "showExcerpt": true,
+      "postsPerPage": 6
+    }
+  }
+}

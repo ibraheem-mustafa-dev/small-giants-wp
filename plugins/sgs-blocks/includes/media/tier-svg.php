@@ -1,7 +1,7 @@
 <?php
 /**
- * Tier media: inline SVG. The tier branch of `sgs_tier_media_render()` and the id-prefixing the media renderer
- * applies to each per-device SVG sibling.
+ * Inline SVG for the media renderer: the id-prefixing it applies to each per-device SVG sibling, and the named-part
+ * animation attribute.
  *
  * @package SGS\Blocks
  */
@@ -10,23 +10,35 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once dirname( __DIR__ ) . '/helpers-svg-kses.php';
 require_once dirname( __DIR__ ) . '/helpers-svg-document.php';
 require_once dirname( __DIR__ ) . '/helpers-svg-instance-scope.php';
 
-if ( ! function_exists( 'sgs_tier_media_svg_html' ) ) {
+if ( ! function_exists( 'sgs_media_svg_parts_attr' ) ) {
 	/**
-	 * One tier's inline SVG, sanitised and wrapped in a decorative span.
+	 * Put a slot's named-part animation on its inline SVG: the cleaned parts as `data-sgs-svg-parts` on the `<svg>`,
+	 * which src/shared/svg-parts/svg-parts.js reads. The SVG is returned as it came when there are no parts to animate.
 	 *
-	 * @param array  $spec       The tier spec ( `svg`: markup ).
-	 * @param string $class_attr Space-separated classes.
-	 * @return string The wrapped markup.
+	 * @param string $svg     The `<svg>` markup from `sgs_media_svg_element()`.
+	 * @param mixed  $parts   The slot's stored `SvgParts` list.
+	 * @param string $trigger The slot's `SvgPartsTrigger` ('' for the default, `load`).
+	 * @return string The `<svg>` markup.
 	 */
-	function sgs_tier_media_svg_html( array $spec, string $class_attr ): string {
-		return sprintf(
-			'<span class="%s" aria-hidden="true">%s</span>',
-			esc_attr( $class_attr ),
-			wp_kses( (string) ( $spec['svg'] ?? '' ), sgs_allowed_svg_tags() )
-		);
+	function sgs_media_svg_parts_attr( string $svg, $parts, string $trigger ): string {
+		if ( '' === $svg || empty( $parts ) || ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
+			return $svg;
+		}
+		require_once dirname( __DIR__ ) . '/helpers-svg-parts.php';
+		$json = sgs_svg_parts_data( $parts, '' !== $trigger ? $trigger : 'load' );
+		if ( '' === $json ) {
+			return $svg;
+		}
+		$tags = new WP_HTML_Tag_Processor( $svg );
+		if ( ! $tags->next_tag() || 'SVG' !== $tags->get_tag() ) {
+			return $svg;
+		}
+		$tags->set_attribute( 'data-sgs-svg-parts', $json );
+		return trim( $tags->get_updated_html() );
 	}
 }
 

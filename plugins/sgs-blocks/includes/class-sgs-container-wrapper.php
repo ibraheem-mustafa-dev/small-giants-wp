@@ -51,7 +51,7 @@ require_once __DIR__ . '/helpers-surface-ground.php';
 // sgs_css_length_or_sizing_keyword() — the `$sgs_css_length` closure's sanitiser.
 require_once __DIR__ . '/helpers-css-sizing-keyword.php';
 require_once __DIR__ . '/motion/class-sgs-motion-background-lottie.php';
-require_once __DIR__ . '/class-sgs-background-layer.php';
+require_once __DIR__ . '/media/class-sgs-background-media.php';
 
 if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
@@ -125,9 +125,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( $block instanceof \WP_Block && isset( $block->block_type->supports ) && is_array( $block->block_type->supports ) ) {
 				$supports = $block->block_type->supports;
 			} elseif ( $block instanceof \WP_Block && ! empty( $block->name ) ) {
-				// Fallback lookup — mirrors the established pattern in
-				// includes/image-controls.php for reading a block's DECLARED
-				// supports from its registered block type.
+				// Fallback lookup: read the block's DECLARED supports from its
+				// registered block type.
 				$registered = \WP_Block_Type_Registry::get_instance()->get_registered( $block->name );
 				if ( null !== $registered && is_array( $registered->supports ?? null ) ) {
 					$supports = $registered->supports;
@@ -507,7 +506,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// Background and overlay attributes read universally (no kind gate): a block only gets a
 			// working background when its own block.json declares them.
-			$bg                     = SGS_Background_Layer::read( $attributes, $opts );
+			// Every block's background renders through the media system's background class.
+			$bgc                    = SGS_Background_Media::class;
+			$bg                     = $bgc::read( $attributes, $opts );
 			$bg_image               = $bg['image'];
 			$bg_image_tablet        = $bg['image_tablet'];
 			$bg_image_mobile        = $bg['image_mobile'];
@@ -1004,7 +1005,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			// SVG background attrs, universal.
-			$bg_svg             = SGS_Background_Layer::read_svg( $attributes );
+			$bg_svg             = $bgc::read_svg( $attributes );
 			$bg_svg_content    = $bg_svg['content'];
 			$bg_svg_position   = $bg_svg['position'];
 			$bg_svg_min_height = $bg_svg['min_height'];
@@ -1193,7 +1194,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			// Background image media: the <img> fast path or the CSS layer, and the object-fit rules.
-			$sgs_media                = SGS_Background_Layer::media( $bg, $opt_bg_img_class );
+			$sgs_media                = $bgc::media( $bg, $opt_bg_img_class );
 			$bg_img_html              = $sgs_media['img_html'];
 			$sgs_bg_img_style_decls   = $sgs_media['img_style_decls'];
 			$sgs_bg_video_style_decls = $sgs_media['video_style_decls'];
@@ -1640,7 +1641,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$classes[] = 'sgs-container--sized';
 			}
 
-			$classes = array_merge( $classes, SGS_Background_Layer::modifier_classes( $bg, $bg_svg ) );
+			$classes = array_merge( $classes, $bgc::modifier_classes( $bg, $bg_svg ) );
 
 			// Grid column count classes — section + layout kinds.
 			// Emit a shorthand sgs-cols-* class ONLY when the corresponding tier has
@@ -1694,11 +1695,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			);
 
 			// Video HTML, then the Lottie holder that takes the image's place.
-			$video_html = SGS_Background_Layer::video_html( $bg );
-			[ $bg_img_html, $video_html ] = SGS_Background_Layer::lottie_holder( $has_bg_lottie_layer, $bg_img_html, $video_html );
+			$video_html = $bgc::video_html( $bg );
+			[ $bg_img_html, $video_html ] = $bgc::lottie_holder( $has_bg_lottie_layer, $bg_img_html, $video_html );
 
 			// Overlay HTML and paint; suppressed by the no_overlay option.
-			[ $overlay_html, $overlay_decls ] = SGS_Background_Layer::overlay( $attributes, $opt_no_overlay );
+			[ $overlay_html, $overlay_decls ] = $bgc::overlay( $attributes, $opt_no_overlay );
 
 			// ----------------------------------------------------------------
 			// Shape dividers — section kind only.
@@ -2047,7 +2048,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Hover-spill-scale capability (2026-09-10, Bean-directed) — universal,
 			// composite-agnostic. Two-part shared mechanism mirroring the composite-
 			// mirror rule (Spec 02 "Composite wrapper rule"): the wrapper owns the OUTER stacking/overflow
-			// promotion, and the media-atom markers (`assets/css/media-element.css`)
+			// promotion, and the media-atom markers (`assets/css/media-base.css`)
 			// already own the transform target, so this capability needs zero
 			// block-specific selector knowledge.
 			//
@@ -2194,7 +2195,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// Background scoped rules: media layer, <img> and <video> object-fit, overlay paint, hover and tiers.
 			// They come before the @media tier overrides below so a narrower viewport still wins.
-			$responsive_css .= SGS_Background_Layer::scoped_css( (string) $uid, $sgs_media, $overlay_decls, $bg, $attributes );
+			$responsive_css .= $bgc::scoped_css( (string) $uid, $sgs_media, $overlay_decls, $bg, $attributes );
 
 			// Base content-band scoped rule (Spec 32, D293 no-inline contract) —
 			// emitted whenever base band-level CSS exists (contentWidth / band padding /
@@ -2450,7 +2451,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 
 					// Responsive bg image overrides.
-					$responsive_css .= SGS_Background_Layer::tier_css( (string) $uid, $bg );
+					$responsive_css .= $bgc::tier_css( (string) $uid, $bg );
 
 				// QB-2: Responsive gridTemplateColumns — section + layout kinds.
 				if ( $is_section || $is_layout ) {
@@ -2568,8 +2569,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			// SVG background layer and its scoped opacity rule.
-			$responsive_css .= SGS_Background_Layer::svg_opacity_css( (string) $uid, $bg_svg );
-			$svg_html         = SGS_Background_Layer::svg_html( $attributes, $bg_svg );
+			$responsive_css .= $bgc::svg_opacity_css( (string) $uid, $bg_svg );
+			$svg_html         = $bgc::svg_html( $attributes, $bg_svg );
 
 			// SVG position routing.
 			$svg_bg_html = ( $has_bg_svg && 'background' === $bg_svg_position ) ? $svg_html : '';
@@ -3382,7 +3383,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			//
 			// A `lottie` layer's holder replaces $bg_img_html above and carries its own pause control.
 			// ----------------------------------------------------------------
-			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_*/wp_kses(), $inner_html is caller-rendered blocks, $inner_open/$inner_close built with esc_attr(), $bg_img_html built via sgs_responsive_image()/wp_get_attachment_image() (core-escaped).
+			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_*/wp_kses(), $inner_html is caller-rendered blocks, $inner_open/$inner_close built with esc_attr(), $bg_img_html built by the media renderer (core-escaped).
 			$open_attrs = '' !== $opt_extra_attr_html ? $wrapper_attributes . ' ' . $opt_extra_attr_html : $wrapper_attributes;
 			$element    = sprintf(
 				'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s%8$s%9$s%10$s</%1$s>',

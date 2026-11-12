@@ -28,6 +28,23 @@ export function drawingBox( width, height ) {
 }
 
 /**
+ * The width and height of a drawing's source (twin of sgs_measured_diagram_source_size()): the first device whose file
+ * reports both.
+ *
+ * @param {Object} source The stored `drawingSource` object.
+ * @return {Array} [ width, height ], or [ undefined, undefined ] when no file reports a size.
+ */
+export function sourceSize( source ) {
+	for ( const device of [ 'desktop', 'tablet', 'mobile' ] ) {
+		const entry = source?.[ device ];
+		if ( entry && Number( entry.width ) > 0 && Number( entry.height ) > 0 ) {
+			return [ entry.width, entry.height ];
+		}
+	}
+	return [ undefined, undefined ];
+}
+
+/**
  * A % of the drawing box, clamped to 0–100 (twin of sgs_measured_diagram_pct()).
  *
  * @param {*}      value    Raw value.

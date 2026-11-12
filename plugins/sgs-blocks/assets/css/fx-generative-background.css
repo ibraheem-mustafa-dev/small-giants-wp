@@ -25,7 +25,8 @@
  * motion, rather than skipping the CSS-fallback discipline entirely).
  */
 
-[data-sgs-fx~="generative-background"] {
+/* A background part (`.sgs-bg-media`) keeps the absolute position media-bg.css gives it. */
+[data-sgs-fx~="generative-background"]:not(.sgs-bg-media) {
 	position: relative;
 	overflow: hidden;
 	background-color: var( --sgs-genbg-ground, var( --wp--preset--color--surface ) );
@@ -202,6 +203,17 @@
 	}
 	[data-sgs-fx~="generative-background"][data-sgs-fx-off-tablet~="generative-background"],
 	[data-sgs-fx~="generative-background"][data-sgs-fx-disable-tablet] {
+		background-image: none;
+		background-color: transparent;
+	}
+}
+@media (min-width: 1024px) {
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-desktop~="generative-background"] .sgs-generative-background__canvas,
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-desktop~="generative-background"] .sgs-generative-background__webgl-canvas,
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-desktop~="generative-background"] .sgs-generative-background__toggle {
+		display: none;
+	}
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-desktop~="generative-background"] {
 		background-image: none;
 		background-color: transparent;
 	}

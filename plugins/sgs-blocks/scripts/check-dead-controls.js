@@ -288,42 +288,6 @@ const EXTENSION_EDITOR_ONLY_ATTRS = new Set();
 // masquerade as dead controls.
 const KEY_NOISE = new Set( [ 'id', 'url', 'alt', 'true', 'false', 'null', 'undefined' ] );
 
-// Attributes that are genuinely dead to THIS gate's render/editor scope (no
-// render.php/save.js/view.js consumer, no editor control) but are kept alive
-// deliberately for a NON-render consumer: the Python cloning pipeline. This is
-// structurally distinct from every exemption above — not a WP `supports`-
-// backed attribute (`core-supports`), not editor-only UI wiring
-// (`editor-only`), not a naming-convention/object-literal artefact
-// (`key-noise`/`system-attr`) — so it gets its own reason rather than being
-// folded into one of those.
-//
-// `sgs/hero`'s `splitImage`/`splitImageMobile` USED to be the DB-side
-// routing anchors for the scalar-media art-direction mechanism, kept alive
-// here purely so `/sgs-update` Stage 9's orphan-prune wouldn't silently
-// delete their `block_attributes` rows (`role='scalar-media'`) and lose the
-// routing entirely — the exact 2026-08-02 regression this mechanism existed
-// to prevent. 2026-09-02 (Wave 7b): the anchor was re-pointed onto
-// `splitMediaType` (genuinely read by render.php, so it needs no dead-control
-// exemption of its own) and `splitImage`/`splitImageMobile` were deleted from
-// block.json outright — nothing declares them any more, so this gate can
-// never see them, and the two-entry roster below is now empty. Source of
-// truth for the re-anchor: `plugins/sgs-blocks/scripts/data/scalar-media-
-// roles.json`'s `__RE_ANCHOR_2026_09_02` note.
-//
-// The exemption MECHANISM (Set + isCloningPipelineAnchorAttr helper) is kept
-// rather than deleted — it is a general-purpose category (a declared attr
-// that is dead to THIS gate's render/editor scope but load-bearing for the
-// Python cloning pipeline elsewhere), not hero-specific, and a future
-// virtual-only anchor could need it again. Keyed by `block::attr` (same
-// convention as inspector-scan rule 34's dumpRowKey()) so any future entry
-// can never accidentally widen to catch an unrelated block's same-named
-// attribute.
-const CLONING_PIPELINE_ANCHOR_ATTRS = new Set( [] );
-
-function isCloningPipelineAnchorAttr( blockName, attr ) {
-	return CLONING_PIPELINE_ANCHOR_ATTRS.has( blockName + '::' + attr );
-}
-
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -1106,14 +1070,12 @@ const MEDIA_ELEMENT_ATOM_BASES = {
 		'Image', 'ImageId', 'ImageUrl', 'Video', 'VideoId', 'VideoUrl', 'Svg',
 		'SvgContent', 'Thumbnail', 'ThumbnailId',
 	],
-	'media-type': [ 'MediaType', 'VideoSource', 'VideoMimeType' ],
 	'video-behaviour': [
 		'VideoAutoplay', 'VideoLoop', 'VideoMuted', 'VideoControls',
 		'VideoPlaysInline', 'VideoLazyLoad', 'VideoCaptionsId', 'VideoCaptionsUrl',
 		'VideoCaptionsLabel', 'VideoCaptionsSrcLang',
 	],
 	meaning: [ 'ImageAlt', 'VideoAlt', 'ImageIsDecorative' ],
-	intrinsic: [ 'ImageWidth', 'ImageHeight' ],
 	'svg-presentation': [
 		'SvgAnimation', 'SvgAnimationSpeed', 'SvgOpacity', 'SvgPosition',
 		'SvgMinHeight', 'SvgTextShadow',
@@ -1378,9 +1340,6 @@ function checkFullyDeadAttrs( block, wrapperControlled, sharedCorpus, contextCon
 		}
 		if ( EDITOR_ONLY_ATTRS.has( attr ) || KEY_NOISE.has( attr ) ) {
 			continue; // by-design editor-only, or stray non-attribute key
-		}
-		if ( isCloningPipelineAnchorAttr( block.name, attr ) ) {
-			continue; // kept alive for the Python cloning pipeline — see CLONING_PIPELINE_ANCHOR_ATTRS
 		}
 
 		// Attrs with a control are CHECK 1/2's responsibility (own edit.js, or the
@@ -1884,24 +1843,19 @@ function findingKey( f ) {
 //                         wrong by the definition above.
 //   'none'                none of the above resolved it.
 //
-// `exempt` / `exemptReason` surface the SAME FOUR exemptions
+// `exempt` / `exemptReason` surface the SAME THREE exemptions
 // checkFullyDeadAttrs() applies BEFORE resolving consumption (isSystemAttr() /
-// EDITOR_ONLY_ATTRS / KEY_NOISE / CLONING_PIPELINE_ANCHOR_ATTRS — see that
-// function's own comment), PLUS a fifth, dump-only exemption this function
-// alone applies (Important 4, 2026-08-27): 'core-supports'. Without them,
-// `renderConsumed: false` conflates a genuinely dead control with a by-design
-// editor-only attr (the mechanism currently has no live example —
-// `templateMode` was it until removed as vestigial, see
-// `.superpowers/sdd/task-3-report.md`), a registered extension attr, a
-// WP-native `supports`-backed attribute (e.g. `anchor`, `lock`) that
-// WordPress core itself renders, or a cloning-pipeline routing anchor (the
-// mechanism currently has no live example either — `sgs/hero::splitImage`/
-// `splitImageMobile` were its only entries and both were DELETED from
-// block.json 2026-09-02, Wave 7b, once the DB anchor moved to
-// `splitMediaType` — see CLONING_PIPELINE_ANCHOR_ATTRS above, currently
-// empty) — none of the five are a finding.
+// EDITOR_ONLY_ATTRS / KEY_NOISE — see that function's own comment), PLUS a
+// fourth, dump-only exemption this function alone applies (Important 4,
+// 2026-08-27): 'core-supports'. Without them, `renderConsumed: false`
+// conflates a genuinely dead control with a by-design editor-only attr (the
+// mechanism currently has no live example — `templateMode` was it until
+// removed as vestigial, see `.superpowers/sdd/task-3-report.md`), a
+// registered extension attr, or a WP-native `supports`-backed attribute
+// (e.g. `anchor`, `lock`) that WordPress core itself renders — none of the
+// four are a finding.
 // `exemptReason` is one of 'system-attr' / 'editor-only' / 'key-noise' /
-// 'core-supports' / 'cloning-pipeline-anchor' / null (not exempt).
+// 'core-supports' / null (not exempt).
 //
 // 'core-supports' — CONSUMPTION RESOLUTION BELONGS TO THE PRODUCER (design
 // decision, Important 4). A block.json attribute IS consumed when its own
@@ -1975,11 +1929,6 @@ function dumpAttributeRows( blocks, wrapperControlled, sharedCorpus, contextCons
 				exemptReason = 'key-noise';
 			} else if ( isCoreSupportsAttr( attr, block.supports ) ) {
 				exemptReason = 'core-supports';
-			} else if ( isCloningPipelineAnchorAttr( block.name, attr ) ) {
-				// Render/editor-dead by design — kept alive as a routing anchor for
-				// the Python cloning pipeline's scalar-media mechanism. Source of
-				// truth: plugins/sgs-blocks/scripts/data/scalar-media-roles.json.
-				exemptReason = 'cloning-pipeline-anchor';
 			}
 
 			let renderVia = 'none';
@@ -3252,10 +3201,7 @@ function runDumpJsonSelfTest( log ) {
 	// SGS_Media_Element::style() for unrelated atoms.
 	//
 	// 2026-09-02 (Wave 7b): `splitImage`/`splitImageMobile` were DELETED from
-	// block.json outright (the DB-anchor role that was their only remaining
-	// reason to exist moved to `splitMediaType`, which render.php genuinely
-	// reads — see scripts/data/scalar-media-roles.json's
-	// `__RE_ANCHOR_2026_09_02` note). That removed this negative control's
+	// block.json outright. That removed this negative control's
 	// fixture: sgs/hero currently declares no unexempt orphaned attribute at
 	// all (verified via `--dump-json` the same day), so there is nothing live
 	// left to assert a FAIL against without inventing one. Rather than either

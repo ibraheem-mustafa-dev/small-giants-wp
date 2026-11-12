@@ -75,22 +75,6 @@ COMPONENTS_DIR = os.path.join(ROOT, 'plugins', 'sgs-blocks', 'src', 'components'
 
 BORDER_ATTR_RE = re.compile(r'border', re.IGNORECASE)
 
-# A block need not mount <SgsBorderControl> directly in its own edit.js -- it can
-# delegate border rendering to an ATOM's own control file (box-shape.control.js ->
-# MediaPanelLayout -> MediaBoxShapeControls.js -> SgsBorderControl), three
-# composition layers deep. A literal `'SgsBorderControl' in edit_js` text search
-# can't see through that chain (confirmed live on sgs/media, 2026-09-02).
-#
-# This is a small, explicit lookup -- not a general "walk every import" resolver --
-# because there is currently exactly ONE atom that delegates border this way. Add a
-# new entry here (never a per-block special case) the day a second one appears.
-BORDER_DELEGATING_ATOMS = {
-    'box-shape': os.path.join(
-        COMPONENTS_DIR, 'media', 'controls', 'MediaBoxShapeControls.js'
-    ),
-}
-
-
 # A block's edit.js need not mount <SgsBorderControl> directly OR via a
 # block.json-declared atom -- it can also delegate straight to a SHARED
 # React component file it plainly `import`s (no atoms/block.json wiring at
@@ -104,7 +88,7 @@ BORDER_DELEGATING_ATOMS = {
 # import + JSX-mount either, same blind spot as the atom-delegation case
 # above, just one composition layer shallower.
 #
-# Same discipline as BORDER_DELEGATING_ATOMS: a small, explicit lookup, not a
+# A small, explicit lookup, not a
 # general import-graph walker. Add a new entry the day a second shared-panel
 # delegation shape appears -- never a per-block special case.
 BORDER_DELEGATING_SHARED_FILES = {
@@ -133,28 +117,12 @@ def _delegated_shared_file_mounts_sgs_border_control(edit_js):
     return False
 
 
-def _delegated_atom_mounts_sgs_border_control(bj):
-    """For each border-delegating atom declared on the block (in any atom-bearing
-    list nested under `supports.sgs`, e.g. block.json's `mediaElements[].atoms`),
-    check whether that atom's OWN control file mounts <SgsBorderControl>. Returns
-    True only when a delegating atom is declared AND its control file confirms
-    the mount. Ground truth: sgs/media's `supports.sgs.mediaElements[0].atoms`
-    declares "box-shape" -- confirmed 2026-09-02 by reading block.json directly."""
-    sgs_supports = ((bj or {}).get('supports') or {}).get('sgs') or {}
-    for key, value in sgs_supports.items():
-        if not isinstance(value, list):
-            continue
-        for entry in value:
-            if not isinstance(entry, dict):
-                continue
-            atoms = entry.get('atoms')
-            if not isinstance(atoms, list):
-                continue
-            for atom in atoms:
-                control_path = BORDER_DELEGATING_ATOMS.get(atom)
-                if control_path and 'SgsBorderControl' in _read(control_path):
-                    return True
-    return False
+def _adopted_media_slot_owns_border(bj):
+    """A media slot that declares `kinds` (Spec 49 §8.3, adopted) gets its border from the media system's
+    adopted Border and shape panel (`src/components/media/panels/component-map.js`), which is that slot's
+    sanctioned border control in place of a hand-mounted <SgsBorderControl>."""
+    entries = (((bj or {}).get('supports') or {}).get('sgs') or {}).get('mediaElements') or []
+    return any(isinstance(e, dict) and e.get('kinds') for e in entries)
 
 # The ratcheted ceiling: current known-open population for each open category, so a
 # regression (a new NATIVE_FULL block appearing, or an existing PRIVATE block losing
@@ -167,11 +135,9 @@ CEILING = {
     # one reason this file permits.
     'NATIVE_FULL': 37,
     # 8 -> 0 on 2026-09-02: sgs/media was misclassified as PRIVATE_NEEDS_SWAP -- its
-    # border control is mounted via the box-shape atom's own composition chain
-    # (box-shape.control.js -> MediaPanelLayout -> MediaBoxShapeControls.js ->
-    # SgsBorderControl), which the classifier's flat `edit.js` text search could
-    # not see through. It already uses SgsBorderControl; fixing the detector to
-    # follow the delegation reclassifies it PRIVATE_DONE. Lowered because the
+    # border control is mounted by a shared media panel (now the adopted Border and
+    # shape panel, credited by _adopted_media_slot_owns_border), which a flat
+    # `edit.js` text search cannot see. Lowered because the
     # population was already 0, not because a block was migrated -- see D881
     # section "Border controls" in CLAUDE.md for the corrected classification.
     # ⚑ RAISED 0 -> 2, 2026-09-15, WITH REASON (not silently): the same
@@ -192,11 +158,10 @@ CEILING = {
     # (`src/shared/nav-menu-panels/ItemsPanel.js`,
     # `.../DropdownStylePanel.js`) rather than mounting `SgsBorderControl`
     # directly in their own edit.js — a plain-import delegation one layer
-    # shallower than the box-shape atom shape above, and just as invisible to
+    # just as invisible to
     # a flat per-file text search. Fixed via
     # `_delegated_shared_file_mounts_sgs_border_control()` +
-    # `BORDER_DELEGATING_SHARED_FILES` (same explicit-lookup discipline as
-    # `BORDER_DELEGATING_ATOMS`). Separately, `submenuLinkBorderWidth/Style/
+    # `BORDER_DELEGATING_SHARED_FILES`. Separately, `submenuLinkBorderWidth/Style/
     # Colour/ColourHover` genuinely HAD NO editor control anywhere (verified
     # live, unlike `item*`/`submenu*` which were already fully wired) even
     # though render.php already consumed them
@@ -292,7 +257,7 @@ def classify_block(block_dir):
     uses_sgs_border_control = (
         'SgsBorderControl' in edit_js
         or 'SgsBorderControl' in own_editor_js
-        or _delegated_atom_mounts_sgs_border_control(bj)
+        or _adopted_media_slot_owns_border(bj)
         or _delegated_shared_file_mounts_sgs_border_control(edit_js)
     )
 

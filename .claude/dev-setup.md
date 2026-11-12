@@ -220,30 +220,30 @@ If the client needs CSS that cannot be expressed via tokens, add it to the clien
 
 ## Render helpers
 
-### sgs_responsive_image
+### Printing media from a block
 
-Located in `includes/helpers-media.php`. Outputs a fully optimised `<img>` with:
+A block never prints its own `<img>`. It declares a slot in `block.json::supports.sgs.mediaElements` (prefix, kinds, context content, background, item or layer), generates the slot's attributes, and prints it from `render.php`:
 
-- `srcset` and `sizes` attributes (through `wp_get_attachment_image()` when the attachment ID is known).
-- `loading="lazy"` and `decoding="async"` by default.
-- Explicit `width`/`height` resolved from the attachment metadata, so the browser reserves the space.
-- The supplied alt text.
-
-```php
-echo sgs_responsive_image(
-    $attachment_id,       // int — attachment post ID (0 when only a URL is known)
-    $url,                 // string — image URL, used when there is no attachment ID
-    $alt,                 // string — alt text
-    'large',              // string — WordPress image size
-    [
-        'class'         => 'sgs-hero__image',
-        'fetchpriority' => 'high',  // omit for lazy-loaded images
-        'loading'       => 'eager',
-    ]
-);
+```bash
+cd plugins/sgs-blocks && node scripts/generate-media-attributes.mjs --block <slug>   # writes the slot's attributes into block.json
 ```
 
-For an above-the-fold hero image, the theme injects a `<link rel="preload" as="image">` tag into `<head>` (`functions.php`, `inc/font-preloading.php`) to shorten LCP.
+```php
+$media = SGS_Media_Element::render( array( 'prefix' => 'split', 'kinds' => array( 'image', 'video', 'svg' ), 'context' => 'content' ), $attributes, $context );
+echo $media['html'];   // pass $media['css'] to the CSS collector; an empty source returns empty html
+```
+
+The renderer chooses `<img>` with `srcset`, `<picture>` or one `<video>` with `<source media>` per device kind, reserves the file's width and height, sets `loading` and `fetchpriority` through `SGS_Media_Priority::resolve`, and prints a background slot as `.sgs-bg-media` and `.sgs-bg-overlay` (`includes/media/render-background.php`). The base CSS is `assets/css/media-base.css`. Spec 49 is the contract; `plugins/sgs-blocks/CLAUDE.md` "Media" lists the editor components and gates.
+
+To try saved content on a branch build without touching the four real mirrors, use a scratch mirror (`scripts/local-wp/README.md`). From PowerShell, or Git Bash with `MSYS_NO_PATHCONV=1`:
+
+```bash
+wsl -d Ubuntu -u root -- bash /mnt/e/<worktree>/scripts/local-wp/scratch-mirror.sh create local-sandybrown local-mediatest-<name> <port>
+wsl -d Ubuntu -u root -- bash /mnt/e/<worktree>/scripts/local-wp/sync-build.sh local-mediatest-<name>
+python plugins/sgs-blocks/scripts/migrate-media-system/cli.py fix --mirror mediatest-<name> --apply     # backs up first, prints the restore command
+python plugins/sgs-blocks/scripts/migrate-media-system/cli.py check --mirror mediatest-<name> --active on  # exit 1 while any old attribute remains
+python plugins/sgs-blocks/scripts/migrate-media-system/cli.py restore --mirror mediatest-<name> --backup <file>
+```
 
 ---
 
@@ -295,9 +295,11 @@ Gitignored; never committed.
 
 **Order matters, and getting it wrong costs a full build-and-deploy cycle**.
 
+A media slot's attributes are never hand-written: declare the slot in `supports.sgs.mediaElements` and run `node plugins/sgs-blocks/scripts/generate-media-attributes.mjs --block <slug>`, then reseed as below.
+
 1. **Reseed before building.** `check-wiring-fingerprint` fails the build when an attribute is declared in a committed `block.json` but absent from the framework DB. Run `/sgs-update` first; the gate's own message says so.
 2. **Commit the regenerated `css-property-classifications.json` before deploying.** The reseed regenerates it, and `build-deploy.py` builds from an isolated worktree **at HEAD** — so an uncommitted classifier means the deploy's build sees each new attribute carrying a `css_property` in the DB with nothing declaring it in the derived layer. The F6 check #8 Reseed-Survival gate (`db-consistency/run.py`, the `css_property_reseed` check; #9 is the `fx_effects` twin, which the same sequence applies to) then fails them as rogue seeds that would vanish on the next reseed, and the suite has **no baseline by design**. A local `npm run build` passes at this point while the deploy's build fails, because only the deploy builds at HEAD.
-3. **Then run `python plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py`, and only then deploy.** Run it from the shared checkout, or from a worktree carrying the copied packages (below, "Reseeding from a clean worktree"): it validates the motion presets with an ES-module script that imports `ajv`, a bare worktree has no `node_modules`, and ES modules ignore `NODE_PATH`. First check `git status --short -- plugins/sgs-blocks/scripts/data/motion-presets.json plugins/sgs-blocks/scripts/dbschema/` is empty, so it reads HEAD's data. After a normal reseed the reference seed must be re-asserted (it restores `sgs/hero.splitMediaType = scalar-media`); without it `dbschema-check_value_identity` fails the deploy's build and nothing is uploaded.
+3. **Then run `python plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py`, and only then deploy.** Run it from the shared checkout, or from a worktree carrying the copied packages (below, "Reseeding from a clean worktree"): it validates the motion presets with an ES-module script that imports `ajv`, a bare worktree has no `node_modules`, and ES modules ignore `NODE_PATH`. First check `git status --short -- plugins/sgs-blocks/scripts/data/motion-presets.json plugins/sgs-blocks/scripts/dbschema/` is empty, so it reads HEAD's data. After a normal reseed run the reference seed again; `dbschema/check_value_identity.py` (a build gate) holds the load-bearing rows and fails the deploy's build, so nothing is uploaded, when one has drifted.
 
 Both gates are correct; the sequence is the thing to remember. The same at-HEAD isolation is why an uncommitted fix cannot ship even though the deploy prints `[DONE]` with every gate green.
 
@@ -576,7 +578,7 @@ Row counts drift — query `/sgs-db` (or the column meanings above) rather than 
 - **`blocks.tier`** — TEXT column, CHECK constraint `IN ('block', 'class-section', 'pattern')`. Populated by `/sgs-update` Stage 1 from each block's `supports.sgs.is_section_root` flag in `block.json`. Operator-set per block, not algorithmically inferred.
 - **`block_composition`** — the container roster has `wraps_block` + `container_kind` populated (values `section|layout|content`).
 - **`slots`** — composite PK on `(slot_name, scope)`; element-scope and section-scope rows. Role is derived from `property_suffixes`, not stored on the slot row.
-- **`roles`** — base roles plus `scalar-media`. `INSERT OR REPLACE` from `_ROLE_CLASSIFICATION_MAP`.
+- **`roles`** — the base roles. `INSERT OR REPLACE` from `_ROLE_CLASSIFICATION_MAP`.
 - **`html_tag_to_core_block`** — seeded by `dbschema/seed_reference_data.py` from `plugins/sgs-blocks/scripts/data/atomic-tag-map.json`; the source of the atomic-tag map (no hardcoded dict).
 
 ### canonical_slot assignment

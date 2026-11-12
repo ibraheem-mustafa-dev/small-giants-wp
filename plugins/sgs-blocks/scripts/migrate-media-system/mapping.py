@@ -1,11 +1,11 @@
 """The Spec 49 §13 mapping rows as data.
 
 The facts the rows rest on are frozen in `mapping-frozen.json` beside this file: the base vocabulary, the per-device
-(tiered) bases and each atom's bases (from `includes/media-element-attributes.generated.php`), the pre-adoption
+(tiered) bases and each atom's bases (from the old generated PHP mirror, now deleted), the pre-adoption
 `supports.sgs.mediaElements` entries and attribute names of every block (from each `block.json`), the old defaults and
 types (from the framework database) and the mapping rows built from them. Stage B rewrites or deletes all of those
 sources, so every reader (`rows`, `survey`, `fix`, `check`, `self-test`) reads the frozen file only. `regenerate()`
-rebuilds it from the live files and refuses once any block declares `kinds` (the cutover marker, §8.3). This file holds
+is refused: the files it read are deleted. This file holds
 the decisions §13 and Appendix A make: which old name becomes which new one, which attributes stay and why, and which
 slots are exempt.
 """
@@ -28,7 +28,6 @@ DEVICES = ("desktop", "tablet", "mobile")
 TIERS = ("", "Tablet", "Mobile")
 TIER_DEVICE = {"": "desktop", "Tablet": "tablet", "Mobile": "mobile"}
 
-GENERATED_PHP = PLUGIN / "includes" / "media-element-attributes.generated.php"
 BLOCKS_DIR = PLUGIN / "src" / "blocks"
 
 
@@ -44,31 +43,6 @@ def attr_name(prefix: str, base: str) -> str:
 # ---------------------------------------------------------------- facts read from the code
 
 @lru_cache(maxsize=1)
-def live_generated_maps() -> dict:
-    """{'atoms': {atom: [bases]}, 'tiered': [..]} read from the generated PHP mirror (regeneration only)."""
-    text = GENERATED_PHP.read_text(encoding="utf-8")
-
-    def section(name: str) -> str:
-        start = text.index(f"'{name}'")
-        depth = 0
-        first = text.index("array(", start)
-        for k in range(first + len("array"), len(text)):
-            if text[k] == "(":
-                depth += 1
-            elif text[k] == ")":
-                depth -= 1
-                if depth == 0:
-                    return text[first : k + 1]
-        raise ValueError(name)
-
-    atoms: dict[str, list[str]] = {}
-    for m in re.finditer(r'"([a-z-]+)"\s*=>\s*array\(([^)]*)\)', section("atoms")):
-        atoms[m.group(1)] = re.findall(r'"([A-Za-z]+)"', m.group(2))
-    tiered = set(re.findall(r'"([A-Za-z]+)"', section("tiered")))
-    return {"atoms": atoms, "tiered": sorted(tiered)}
-
-
-@lru_cache(maxsize=1)
 def live_declared_slots() -> dict:
     """{block: [{prefix, atoms|None, kinds|None}]} from every block.json's supports.sgs.mediaElements."""
     out: dict[str, list[dict]] = {}
@@ -82,26 +56,63 @@ def live_declared_slots() -> dict:
     return out
 
 
+EXTENSION_PHP = PLUGIN / "includes" / "extension-attributes.generated.php"
+
+
+@lru_cache(maxsize=1)
+def live_declared_attributes() -> dict:
+    """{block name: attribute names it takes}: its block.json on disk plus the universal `sgs*` extension attributes the plugin
+    injects into every block (sgsHideOnTablet and the rest). Read once per run (guard against writing a name the block dropped)."""
+    extensions = set(re.findall(r"^\s*'(sgs[A-Za-z0-9]+)'\s*=>", EXTENSION_PHP.read_text(encoding="utf-8"), re.M)) if EXTENSION_PHP.is_file() else set()
+    out: dict[str, set[str]] = {}
+    for path in sorted(BLOCKS_DIR.glob("*/block.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if data.get("name"):
+            motion = {"sgsMotion"} if (data.get("supports") or {}).get("sgs", {}).get("motion") else set()
+            out[data["name"]] = set(data.get("attributes") or {}) | extensions | motion
+    return out
+
+
+@lru_cache(maxsize=1)
+def live_motion_parts() -> dict:
+    """{block name: parts it declares in supports.sgs.elements that take motion} from every block.json on disk. A part marked
+    `"motion": false` takes none."""
+    out: dict[str, set[str]] = {}
+    for path in sorted(BLOCKS_DIR.glob("*/block.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        elements = ((data.get("supports") or {}).get("sgs") or {}).get("elements") or {}
+        out[data["name"]] = {k for k, v in elements.items() if not (isinstance(v, dict) and v.get("motion") is False)}
+    return out
+
+
 def any_block_adopted() -> bool:
     """True once any block declares `kinds` on a media slot: the cutover marker (§8.3)."""
     return any(e["kinds"] for entries in live_declared_slots().values() for e in entries)
 
 
-def live_db_attributes() -> dict:
-    """{block: {attr: [type, default_json]}} for source='sgs' attributes of the framework database (regeneration only)."""
-    path = framework_db_path()
-    if not Path(path).is_file():
-        raise SystemExit(f"regenerate needs the framework database: {path} is missing")
-    con = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
-    try:
-        out: dict[str, dict] = {}
-        for block, attr, kind, default in con.execute(
-            "SELECT block_slug, attr_name, attr_type, default_value FROM block_attributes WHERE source='sgs'"
-        ):
-            out.setdefault(block, {})[attr] = [kind, default]
-        return out
-    finally:
-        con.close()
+ADOPTION_MAP = PLUGIN / "scripts" / "data" / "media-adoption.json"
+
+
+def adopted_blocks() -> set[str]:
+    """Blocks whose block.json declares `kinds` on at least one media slot."""
+    return {b for b, entries in live_declared_slots().items() if any(e["kinds"] for e in entries)}
+
+
+@lru_cache(maxsize=1)
+def migration_scope() -> frozenset[str] | None:
+    """The blocks `fix` rewrites and `check` enforces under `--active auto`.
+
+    While Stage B adopts wave by wave, only the adopted blocks: rewriting a block that has not adopted would hand its
+    render.php attributes it cannot read. Once every block `media-adoption.json` lists has adopted, None (every block).
+    """
+    listed: set[str] = set()
+    if ADOPTION_MAP.is_file():
+        for wave in json.loads(ADOPTION_MAP.read_text(encoding="utf-8")).get("waves", []):
+            listed |= set(wave.get("blocks", {}))
+    adopted = adopted_blocks()
+    if listed and not listed <= adopted:
+        return frozenset(adopted)
+    return None
 
 
 # ---------------------------------------------------------------- the frozen facts
@@ -223,6 +234,22 @@ BASE_FAMILY = {
     "LinkOpensNewTab": ("keep", "LinkOpensNewTab"), "LinkRel": ("keep", "LinkRel"), "LinkUrlSource": ("keep", "LinkUrlSource"),
 }
 
+# The attributes a "fold" EXTRA row writes (its row target is a note, not a name): known to the unmapped-attribute check.
+FOLD_TARGETS = {"sgs/before-after": ("beforePlayback", "afterPlayback")}
+
+# Old values the old render clamped before drawing: (block, old name) -> (lowest, highest). The migration writes what was drawn.
+CLAMPS = {("sgs/trust-bar", "badgeImageSize"): (24, 160)}
+# The old default of a clamped number: the new block's own default is the same, so the saved value is dropped.
+CLAMP_DEFAULTS = {("sgs/trust-bar", "badgeImageSize"): 60}
+
+# Blocks whose old Shape string drew only the values listed (the new Shape each becomes); any other value painted nothing.
+# option-picker's colour dot has a 3px stylesheet radius, so "square" (radius 0) is an explicit none, never a deleted default.
+OLD_SHAPE_DRAWN = {
+    "sgs/option-picker": {"round": "circle", "square": "none"},
+    # brand-strip's tile: "none" is the no-card tile; "square" is the old default (the tile the stylesheet already draws)
+    "sgs/brand-strip": {"circle": "circle", "none": "none"},
+}
+
 # Old attributes outside the prefix grammar: (block, old name) -> (family, full new attribute name or note).
 EXTRA = {
     ("sgs/media", "displayWidth"): ("delete", "deleted (§13): sizes are derived"),
@@ -259,12 +286,12 @@ EXTRA = {
     ("sgs/timeline", "milestoneMediaWidth"): ("sizing", "entryWidth"),
     ("sgs/trust-bar", "badgeImageSize"): ("sizing", "badgeWidth"),
     ("sgs/trust-bar", "badgeImageBorderRadius"): ("radius", "badgeRadius"),
-    ("sgs/product-card", "brandLogoHeight"): ("report", "brand logo box: the `logo` slot is named by WP-9"),
-    ("sgs/product-card", "brandLogoWidth"): ("report", "brand logo box: the `logo` slot is named by WP-9"),
-    ("sgs/product-card", "brandLogoMaxHeight"): ("report", "brand logo box: the `logo` slot is named by WP-9"),
-    ("sgs/product-card", "brandLogoMaxWidth"): ("report", "brand logo box: the `logo` slot is named by WP-9"),
-    ("sgs/hero", "splitMediaBorderColourHover"): ("report", "Hover effect on the media part (WP-10a)"),
-    ("sgs/hero", "splitMediaBorderColourHoverGradient"): ("report", "Hover effect on the media part (WP-10a)"),
+    ("sgs/product-card", "brandLogoHeight"): ("sizing", "logoHeight"),
+    ("sgs/product-card", "brandLogoWidth"): ("sizing", "logoWidth"),
+    ("sgs/product-card", "brandLogoMaxHeight"): ("sizing", "logoMaxHeight"),
+    ("sgs/product-card", "brandLogoMaxWidth"): ("sizing", "logoMaxWidth"),
+    ("sgs/hero", "splitMediaBorderColourHover"): ("rename", "splitBorderColourHover"),
+    ("sgs/hero", "splitMediaBorderColourHoverGradient"): ("rename", "splitBorderColourHoverGradient"),
     ("sgs/brand-strip", "tileShape"): ("shape", "logoShape"),
     ("sgs/brand-strip", "logoFit"): ("fit", "logoFit"),
     ("sgs/trust-bar", "badgeImageObjectFit"): ("fit", "badgeFit"),
@@ -289,7 +316,6 @@ EXTRA = {
     ("sgs/image-sequence", "thumbnailDecorative"): ("alt", "thumbnailDecorative"),
     ("sgs/image-sequence", "aspectRatio"): ("sizing", "thumbnailRatio"),
     ("sgs/option-picker", "swatchShape"): ("shape", "swatchShape"),
-    ("sgs/buybox", "galleryStickerShape"): ("shape", "galleryStickerShape"),
     ("sgs/measured-diagram", "drawingImageId"): ("source", "drawingSource"),
     ("sgs/measured-diagram", "drawingImageUrl"): ("source", "drawingSource"),
     ("sgs/measured-diagram", "drawingImageAlt"): ("alt", "drawingAlt"),
@@ -321,7 +347,7 @@ EXTRA = {
     ("sgs/responsive-logo", "logoUrlMobile"): ("source", "logoSource"),
     ("sgs/responsive-logo", "darkLogoId"): ("source", "logoDarkSource"),
     ("sgs/responsive-logo", "logoDecorative"): ("alt", "logoDecorative"),
-    ("sgs/responsive-logo", "inlineSvg"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
+    ("sgs/responsive-logo", "alt"): ("alt", "logoAlt"),
     ("sgs/nav-drawer", "chromeLogoId"): ("source", "chromeLogoSource"),
     ("sgs/nav-drawer", "chromeLogoUrl"): ("source", "chromeLogoSource"),
     ("sgs/nav-drawer", "chromeLogoIdTablet"): ("source", "chromeLogoSource"),
@@ -329,11 +355,10 @@ EXTRA = {
     ("sgs/nav-drawer", "chromeLogoIdMobile"): ("source", "chromeLogoSource"),
     ("sgs/nav-drawer", "chromeLogoUrlMobile"): ("source", "chromeLogoSource"),
     ("sgs/nav-drawer", "chromeLogoAlt"): ("alt", "chromeLogoAlt"),
-    ("sgs/nav-drawer", "chromeLogoInlineSvg"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
     ("sgs/nav-drawer", "backgroundImageDecorative"): ("alt", "backgroundDecorative"),
-    ("sgs/before-after", "videoAutoplay"): ("report", "folds into Playback per side: needs each side's video kind"),
-    ("sgs/before-after", "videoAutoplayTablet"): ("report", "folds into Playback per side: needs each side's video kind"),
-    ("sgs/before-after", "videoAutoplayMobile"): ("report", "folds into Playback per side: needs each side's video kind"),
+    ("sgs/before-after", "videoAutoplay"): ("fold", "beforePlayback and afterPlayback autoplay: written for each side whose Source is a video"),
+    ("sgs/before-after", "videoAutoplayTablet"): ("fold", "beforePlayback and afterPlayback autoplay: written for each side whose Source is a video"),
+    ("sgs/before-after", "videoAutoplayMobile"): ("fold", "beforePlayback and afterPlayback autoplay: written for each side whose Source is a video"),
     ("sgs/choice-flow", "headerLogo"): ("source", "headerLogoSource"),
     ("sgs/buybox", "mainPhotoRadius"): ("radius", "mainRadius"),
     ("sgs/buybox", "galleryThumbBorderRadius"): ("radius", "thumbRadius"),
@@ -347,10 +372,13 @@ EXTRA = {
     ("sgs/buybox", "galleryThumbBorderColour"): ("rename", "thumbBorderColour"),
     ("sgs/buybox", "galleryThumbBorderWidth"): ("rename", "thumbBorderWidth"),
     ("sgs/buybox", "previewImageId"): ("report", "preview image Source: slot named by WP-9"),
-    ("sgs/responsive-logo", "svgParts"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
-    ("sgs/responsive-logo", "svgPartsTrigger"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
-    ("sgs/nav-drawer", "chromeLogoSvgParts"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
-    ("sgs/nav-drawer", "chromeLogoSvgPartsTrigger"): ("report", "inline SVG Source plus SvgParts: shape set by WP-9"),
+    ("sgs/buybox", "previewBorderWidth"): ("sides", "previewBorderWidth"),
+    ("sgs/buybox", "previewRadius"): ("radius", "previewRadius"),
+    ("sgs/buybox", "galleryThumbBorderColourHover"): ("rename", "thumbBorderColourHover"),
+    # The interim attribute (a49e09cb6) that painted the selected thumbnail's border; a3800aa67 replaced it with the shared border
+    # panel's Current state, which extras.php::sgs_buybox_extras_scoped_css paints on the same element with the same colour value.
+    ("sgs/buybox", "thumbSelectedBorderColour"): ("rename", "galleryThumbBorderColourCurrent"),
+    ("sgs/product-card", "imageHeight"): ("sizing", "imageHeight"),
 }
 
 # Bases a slot owns beyond its declared atoms: the block stores them under the same grammar without declaring the atom.
@@ -370,6 +398,10 @@ _STAYS_GROUPS = (
     ("sgs/container", "layout, not media: the box ratio stays (§13)", ("boxAspectRatio",)),
     ("sgs/responsive-logo", "logo switching and sizing are the block's own layout (Appendix A)",
      ("logoSwitchCustomPx", "logoSwitchMode", "width", "maxWidth", "maxHeight", "shrinkWidth")),
+    ("sgs/responsive-logo", "the inline-SVG logo and its animated parts are the block's own attributes, declared in its block.json (Appendix A)",
+     ("inlineSvg", "svgParts", "svgPartsTrigger", "svgPartsHoverCooldown")),
+    ("sgs/nav-drawer", "the drawer's inline-SVG logo and its animated parts are the block's own attributes, declared in its block.json (Appendix A)",
+     ("chromeLogoInlineSvg", "chromeLogoSvgParts", "chromeLogoSvgPartsTrigger", "chromeLogoSvgPartsHoverCooldown")),
     ("sgs/nav-drawer", "chrome logo box and link are the drawer's own layout (Appendix A)",
      ("chromeLogoWidth", "chromeLogoLink", "chromeLogoShow", "chromeLogoBoxBg", "chromeLogoBoxBgGradient", "chromeLogoBoxPadding",
       "chromeLogoBoxRadius", "chromeLogoBoxShadow", "chromeLogoBoxShadowColour", "chromeLogoAlt")),
@@ -399,10 +431,12 @@ _STAYS_GROUPS = (
     ("sgs/before-after", "slider caption text, not media", ("beforeLabel", "afterLabel")),
     ("sgs/gallery", "the items array is rewritten by the items migration, not by a row", ("mediaItems",)),
     ("sgs/cart", "small fixed thumbnail on an exempt block (Appendix A)", ("itemThumbBg", "itemThumbSize", "itemThumbRadius", "iconSvg")),
+    ("sgs/buybox", "the sticker's own enum (rounded, pill, tag) draws a badge, not a media Shape or Corners (W3b)", ("galleryStickerShape",)),
     ("sgs/media", "player readout typography (§13: videoTime typography stays)", ("videoTimeTextColumns",)),
     ("sgs/google-reviews", "remote avatar and card logo on an exempt block (Appendix A)",
      ("logoPosition", "avatarSize", "avatarBorderRadius", "showCardLogo", "cardLogoSize", "avatarTextAlign", "avatarTextColour")),
     ("sgs/hero", "content order is layout, not media", ("splitContentOrder",)),
+    ("sgs/option-picker", "the colour dot's own length: it draws a colour chip, not a picture, so it is no Width or Fit (W3c)", ("swatchSize",)),
     ("sgs/option-picker", "swatch selected-state ring and tick are picker UI, not media",
      ("swatchRingWidth", "swatchRingColour", "swatchTickInside", "swatchTickColour")),
     ("sgs/decorative-image", "a floating layer's position, rotation, order and visibility describe the layer, not its media (Appendix A)",
@@ -430,10 +464,57 @@ REPORT_ALWAYS = {
     "sgsObjectFit": "Fit (universal image-controls extension: per-block target)",
     "imageZoomHover": "Hover effect on the media part (WP-10a)",
     "scaleHover": "Hover effect on the media part (WP-10a)",
-    "grayscaleHover": "Hover effect on the media part (WP-10a)",
     "sgsColourTreatment": "Colour (natural, greyscale, white) or Hover filter (WP-10a)",
 }
 REPORT_PATTERNS = (re.compile(r"^sgsHoverZoom"),)
+
+# Motion parts an adopted block renamed or replaced: block -> {saved part name: part it is now}. The hero's old split image was the
+# part `split-image`; the renderer prints it as `split-media`. A scan of the saved `sgsMotion.elements` names on the four real
+# mirrors (2026-11-11) found no other part the adopted blocks' block.json no longer declares; add a pair here when one appears.
+MOTION_PART_RENAMES = {
+    "sgs/hero": {"split-image": "split-media"},
+}
+
+# Attributes the report skips: `sgs/button`'s `scaleHover` scales the whole button (the Hover state route does not replace it), and
+# `sgs/brand-strip`'s `imageEffect` keeps its sepia value (its grayscale value moves to the Hover state).
+REPORT_EXEMPT = {("sgs/button", "scaleHover"), ("sgs/brand-strip", "imageEffect"),
+                 # Still declared and rendered by their own render.php: the card (or box) scales on hover, not the image, so nothing moves.
+                 ("sgs/card-grid", "scaleHover"), ("sgs/gallery", "scaleHover"), ("sgs/info-box", "scaleHover"),
+                 ("sgs/post-grid", "scaleHover"), ("sgs/team-member", "scaleHover")}
+
+# `imageZoomHover` (the old per-block "zoom the photo on hover" switch) becomes the image part's Hover state: block -> (part, source
+# (one item or the whole block triggers it), scale, duration ms, easing), the look the switch drew on main before the motion model
+# (card-grid and team-member: `.sgs-has-img-zoom` scale(var(--sgs-hover-zoom, 1.1)) over `--sgs-hover-zoom-duration, 0.5s ease`;
+# gallery and post-grid: scale 1.05 over the block's transition duration, 300ms ease). A saved `sgsHoverZoom` (percent) and
+# `sgsHoverZoomDuration` (ms) on the same block override scale and duration, as the old `--sgs-hover-zoom*` custom properties did.
+# `false` is off: no state. The attribute is then deleted.
+HOVER_IMAGE_ZOOM = {
+    "sgs/card-grid": ("image", "item", 1.1, 500, "ease"),
+    "sgs/gallery": ("image", "item", 1.05, 300, "ease"),
+    "sgs/post-grid": ("image", "item", 1.05, 300, "ease"),
+    "sgs/team-member": ("image", "root", 1.1, 500, "ease"),
+}
+
+# The universal Hover Effects extension's photo zoom (`sgsHoverImageZoom` on, with `sgsHoverZoom` percent and `sgsHoverZoomDuration` ms)
+# on blocks that had no switch of their own: block -> (part, scale when no percent was saved, duration ms when none was saved). The
+# old runtime read the percent and duration only while the switch was on, so they are deleted when it is off or absent.
+HOVER_EXTENSION_ZOOM = {
+    "sgs/media": ("media", 1.1, 500),
+    "sgs/product-card": ("image", 1.1, 500),
+}
+
+# `sgs/icon`'s `scaleHover` (a scale factor, old default 1.1) becomes the `shape` part's Hover state; 1 scaled nothing and is deleted.
+HOVER_SCALE = {"sgs/icon": ("shape", "root")}
+
+# Grey to colour moves to the image part's Hover state (`hover-grayscale-to-colour`): block -> (attribute, value that
+# switches it on, part, whether one item or the whole block triggers it). The attribute is then deleted.
+HOVER_GRAYSCALE = {
+    "sgs/card-grid": ("grayscaleHover", True, "image", "item"),
+    "sgs/gallery": ("grayscaleHover", True, "image", "item"),
+    "sgs/team-member": ("grayscaleHover", True, "image", "root"),
+    "sgs/info-box": ("grayscaleHover", True, "media", "root"),
+    "sgs/brand-strip": ("imageEffect", "grayscale", "logo", "item"),
+}
 
 # Old background names shared by container, hero, trust-bar, multi-button, physics-canvas, site header and footer and
 # nav-drawer: (old name, family, new name).
@@ -461,7 +542,7 @@ TYPOGRAPHY = re.compile(r"Typography|FontFamily|FontSize|FontStyle|FontWeight|Le
 
 def known_names(block: str) -> set[str]:
     """Every old name or new target a mapping row, a STAYS entry or a wildcard row gives this block."""
-    out = set(STAYS.get(block, ()))
+    out = set(STAYS.get(block, ())) | set(FOLD_TARGETS.get(block, ()))
     for row in rows():
         if row["block"] in (block, "*"):
             out |= {row["old"], row["target"]}
@@ -530,55 +611,26 @@ def new_target(family: str, target: str, new_prefix: str) -> str:
 
 @lru_cache(maxsize=1)
 def rows() -> list[dict]:
-    """Every mapping row {block, old, family, target, new_prefix, base, tier}, read from the frozen file."""
-    return frozen()["rows"]
-
-
-def build_rows(declared: dict, maps: dict) -> list[dict]:
-    """The rows generated from a set of declared slots and atom maps (regeneration only)."""
-    tiered = set(maps["tiered"])
-    maps = {"atoms": maps["atoms"], "tiered": tiered, "bases": {b for group in maps["atoms"].values() for b in group}}
-    out: list[dict] = []
-    for block in sorted(declared):
-        for slot in merged_slots(block, declared, maps):
-            for old_prefix in slot["olds"]:
-                for base in slot["bases"]:
-                    family, target = BASE_FAMILY.get(base, ("refuse", "no mapping"))
-                    named = family != "report" and family != "refuse"
-                    for tier in TIERS if base in tiered or base in ("MediaType", "ImageAlt") else ("",):
-                        out.append({
-                            "block": block, "old": attr_name(old_prefix, base + tier), "family": family,
-                            "target": new_target(family, target, slot["new"]) if named else target,
-                            "new_prefix": slot["new"], "base": base, "tier": tier,
-                        })
+    """Every mapping row {block, old, family, target, new_prefix, base, tier}: the frozen file's, with the rows of `EXTRA` (the
+    attributes outside the prefix grammar, which Stage B packages amend after the freeze) taking precedence over the frozen
+    copy of the same (block, old), and any `EXTRA` entry the frozen file lacks added."""
+    out = []
+    seen = set()
+    for row in frozen()["rows"]:
+        key = (row["block"], row["old"])
+        if row.get("base") is None and row.get("new_prefix") is None and key in EXTRA:
+            family, target = EXTRA[key]
+            row = {**row, "family": family, "target": target}
+            seen.add(key)
+        out.append(row)
     for (block, old), (family, target) in sorted(EXTRA.items()):
-        out.append({"block": block, "old": old, "family": family, "target": target, "new_prefix": None, "base": None, "tier": ""})
-    for block in BACKGROUND_BLOCKS:
-        for old, family, target in BACKGROUND_OLD:
-            out.append({"block": block, "old": old, "family": family, "target": target, "new_prefix": "background", "base": None, "tier": ""})
-    for old, reason in REPORT_ALWAYS.items():
-        out.append({"block": "*", "old": old, "family": "report", "target": reason, "new_prefix": None, "base": None, "tier": ""})
+        if (block, old) not in seen and not any(r["block"] == block and r["old"] == old for r in out):
+            out.append({"block": block, "old": old, "family": family, "target": target, "new_prefix": None, "base": None, "tier": ""})
     return out
 
 
 def regenerate() -> dict:
-    """Rebuild `mapping-frozen.json` from the live files; refuses once any block declares `kinds` (§8.3)."""
-    if any_block_adopted():
-        raise SystemExit("regenerate refused: a block already declares `kinds` on a media slot, so the live files no longer "
-                         "describe the old shape. The frozen rows are final.")
-    declared, maps = live_declared_slots(), live_generated_maps()
-    attributes = {}
-    for block in declared:
-        data = json.loads((BLOCKS_DIR / block.split("/")[1] / "block.json").read_text(encoding="utf-8"))
-        attributes[block] = [k for k, v in data.get("attributes", {}).items()
-                             if not k.startswith("_") and not (isinstance(v, dict) and v.get("_generated"))]
-    wanted = set(declared) | set(BACKGROUND_BLOCKS) | {b for b, _ in EXTRA} | {"sgs/team-member", "sgs/decorative-image"}
-    db = {b: a for b, a in live_db_attributes().items() if b in wanted}
-    out = {"atoms": maps["atoms"], "tiered": maps["tiered"], "declared": declared, "attributes": attributes,
-           "dbAttributes": db, "rows": build_rows(declared, maps)}
-    tmp = FROZEN.with_suffix(".json.tmp")
-    tmp.write_text(json.dumps(out, indent=1, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
-    tmp.replace(FROZEN)
-    frozen.cache_clear()
-    rows.cache_clear()
-    return out
+    """Refused: the sources the frozen rows were built from (the generated PHP mirror, the pre-adoption `block.json`
+    entries, the old database defaults) no longer exist, so the frozen rows are final."""
+    raise SystemExit("regenerate refused: the old media-element attribute files are deleted, so the live files no longer "
+                     "describe the old shape. The frozen rows are final.")

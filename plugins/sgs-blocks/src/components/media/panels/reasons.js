@@ -20,6 +20,8 @@ const TRANSLATED = {
 	[ REASONS.corners ]: () => __( 'Corners are not used while a shape is chosen.', 'sgs-blocks' ),
 	[ REASONS.borders ]: () => __( 'Borders are not available on this shape. Choose Circle, Ellipse or Pill to keep a border.', 'sgs-blocks' ),
 	[ REASONS.shadowFollowsShape ]: () => __( 'Shadows follow the shape', 'sgs-blocks' ),
+	[ REASONS.pinnedParallax ]: () => __( 'Pinned cannot hold while the background has parallax.', 'sgs-blocks' ),
+	[ REASONS.pinnedTransform ]: () => __( 'Pinned cannot hold with a moving entrance or hover on this block.', 'sgs-blocks' ),
 };
 
 /**

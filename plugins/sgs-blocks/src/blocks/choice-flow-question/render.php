@@ -43,6 +43,7 @@ require __DIR__ . '/helpers-description-style.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-product-attribute-step.php';
 // D5/D7: option-image + title-weight helpers below live in the chrome file
 // (this file was already at the 300-line cap) — required explicitly.
+require_once dirname( __DIR__, 3 ) . '/includes/media/render-item-slot.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-chrome.php';
 // FR-43-24: the intro-paragraph helper (this file is at the 300-line cap).
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-showcase.php';
@@ -108,6 +109,22 @@ if ( '' !== $question ) {
 
 echo sgs_choice_flow_question_intro_html( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes internally.
 
+// The options' pictures: one item of the `option` slot each (Spec 49 §8.3). The block-level rules (Fit, Width, Shape)
+// print once, each option's own source, alt, fit and focal point under its own scope class.
+$sgs_cfq_media_css    = '';
+$sgs_cfq_render_media = sgs_media_item_renderer(
+	sgs_media_item_slot_for( $block, 'option' ),
+	$attributes,
+	'sgs/choice-flow-question',
+	$sgs_cfq_uid . '-media',
+	array(
+		'desktop' => 0,
+		'tablet'  => 0,
+		'mobile'  => 0,
+	),
+	$sgs_cfq_media_css
+);
+
 // Option polish (Spec 43 §5): `isDefault` pre-selects one option per step
 // (client-side, view.js reads data-default — choice-flow/defaults.js)
 // without auto-advancing. Only the FIRST flagged option renders
@@ -116,7 +133,7 @@ $default_rendered = false;
 
 if ( $is_product_attribute_step ) {
 	echo '<ul class="sgs-choice-flow-question__options sgs-choice-flow-question__options--' . esc_attr( $options_layout ) . '">';
-	foreach ( $generated_options as $generated_option ) {
+	foreach ( $generated_options as $generated_index => $generated_option ) {
 		$merged       = sgs_choice_flow_merge_option_extras( $generated_option, $options, $product_attribute );
 		$label        = (string) $merged['label'];
 		$value        = (string) $merged['value'];
@@ -128,8 +145,8 @@ if ( $is_product_attribute_step ) {
 		$description  = (string) $merged['description'];
 		$is_default   = ! empty( $merged['isDefault'] ) && ! $default_rendered;
 
-		// D5: own image first, else the term's swatch image (option-picker's).
-		$option_image = sgs_choice_flow_resolve_option_image( $merged, $product_attribute );
+		// D5: own picture first, else the term's swatch image (option-picker's).
+		$option_media = $sgs_cfq_render_media( sgs_choice_flow_option_media_item( $merged, $product_attribute ), (int) $generated_index );
 
 		if ( '' === $label ) {
 			continue;
@@ -161,10 +178,8 @@ if ( $is_product_attribute_step ) {
 		if ( '' !== $badge ) {
 			echo '<span class="sgs-choice-flow-question__option-badge">' . esc_html( $badge ) . '</span>';
 		}
-		if ( '' !== $option_image['url'] ) {
-			echo '<span class="sgs-choice-flow-question__option-media">';
-			echo '<img src="' . esc_url( $option_image['url'] ) . '" alt="' . esc_attr( $option_image['alt'] ) . '"' . sgs_image_size_attrs( (string) $option_image['url'] ) . ' loading="lazy" />';
-			echo '</span>';
+		if ( '' !== $option_media ) {
+			echo '<span class="sgs-choice-flow-question__option-media">' . $option_media . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by SGS_Media_Element::render() with per-attribute escaping.
 		}
 		echo '<span class="sgs-choice-flow-question__option-label">' . esc_html( $label ) . '</span>';
 		if ( '' !== $description ) {
@@ -183,16 +198,14 @@ if ( $is_product_attribute_step ) {
 		echo ' data-price-group="' . esc_attr( $price_group ) . '" data-price-group-label="' . esc_attr( $group_label ) . '"';
 	}
 	echo '>';
-	foreach ( $options as $option ) {
+	foreach ( $options as $option_index => $option ) {
 		$label        = isset( $option['label'] ) ? (string) $option['label'] : '';
 		$value        = isset( $option['value'] ) ? (string) $option['value'] : '';
 		$next_step_id = isset( $option['nextStepId'] ) ? (string) $option['nextStepId'] : '';
 		$tags         = isset( $option['tags'] ) && is_array( $option['tags'] ) ? array_map( 'strval', $option['tags'] ) : array();
 
-		// FR-43-15: optional per-option image; no URL renders no media zone.
-		$image     = isset( $option['image'] ) && is_array( $option['image'] ) ? $option['image'] : array();
-		$image_url = isset( $image['url'] ) ? (string) $image['url'] : '';
-		$image_alt = isset( $image['alt'] ) ? (string) $image['alt'] : '';
+		// FR-43-15: optional per-option picture; no source renders no media zone.
+		$option_media = $sgs_cfq_render_media( (array) $option, (int) $option_index );
 
 		// FR-43-16: optional per-option help text. Only render the toggle +
 		// panel when non-empty — an option with no helpText gets no '?'
@@ -260,10 +273,8 @@ if ( $is_product_attribute_step ) {
 			echo '<span class="sgs-choice-flow-question__option-badge">' . esc_html( $badge ) . '</span>';
 		}
 
-		if ( '' !== $image_url ) {
-			echo '<span class="sgs-choice-flow-question__option-media">';
-			echo '<img src="' . esc_url( $image_url ) . '" alt="' . esc_attr( $image_alt ) . '"' . sgs_image_size_attrs( (string) $image_url ) . ' loading="lazy" />';
-			echo '</span>';
+		if ( '' !== $option_media ) {
+			echo '<span class="sgs-choice-flow-question__option-media">' . $option_media . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by SGS_Media_Element::render() with per-attribute escaping.
 		}
 
 		echo '<span class="sgs-choice-flow-question__option-label">' . esc_html( $label ) . '</span>';
@@ -313,5 +324,5 @@ $sgs_cfq_html   = ob_get_clean();
 $sgs_cfq_tagged = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_by_class( $sgs_cfq_html, 'sgs-choice-flow-question__option' );
 $sgs_cfq_style  = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/choice-flow-question', $sgs_cfq_uid, $attributes, $sgs_cfq_tagged['count'], '.sgs-choice-flow-question__option' );
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- the block's own markup, escaped where it was printed; the rules come from the collector.
-echo sgs_choice_flow_question_description_css( $attributes, $sgs_cfq_uid ) . sgs_choice_flow_question_media_size_css( $attributes, $sgs_cfq_uid ) . (string) $sgs_cfq_style . ( null === $sgs_cfq_style ? $sgs_cfq_html : $sgs_cfq_tagged['html'] );
+echo sgs_choice_flow_question_description_css( $attributes, $sgs_cfq_uid ) . sgs_choice_flow_question_media_size_css( $attributes, $sgs_cfq_uid ) . ( '' === $sgs_cfq_media_css ? '' : '<style>' . wp_strip_all_tags( $sgs_cfq_media_css ) . '</style>' ) . (string) $sgs_cfq_style . ( null === $sgs_cfq_style ? $sgs_cfq_html : $sgs_cfq_tagged['html'] );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

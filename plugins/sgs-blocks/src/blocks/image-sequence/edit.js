@@ -5,16 +5,18 @@ import {
 	TextControl,
 	SelectControl,
 	RangeControl,
-	ToggleControl,
 	Notice,
 	Button,
 	Spinner,
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
-import MediaPicker from '../../components/MediaPicker';
+import MediaElementPanel from '../../components/MediaElementPanel';
+import SlotPicture from '../../components/media/SlotPicture';
+import { AspectRatioField } from '../../components/media/SizingFields';
+import { useActiveDevice } from '../../components/media/deviceValues';
+import metadata from './block.json';
 import FrameSummary from './frame-summary';
-import { ResponsiveControl, MEDIA_SIZING_RATIO_OPTIONS } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
@@ -28,10 +30,7 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  */
 const MAX_FRAME_COUNT = 200;
 
-// The ratio options are MediaSizingPanel's exported RATIO_OPTIONS; their values
-// equal block.json's `aspectRatio` enum, which render.php validates against
-// (tests/js/image-sequence-aspect-enum.test.js).
-const ASPECT_RATIO_OPTIONS = MEDIA_SIZING_RATIO_OPTIONS;
+const THUMBNAIL_ENTRY = metadata.supports.sgs.mediaElements.find( ( e ) => 'thumbnail' === e.prefix );
 
 // Must stay in sync with `$allowed_ext` in render.php AND the `enum` on the three
 // *FrameExt attrs in block.json — all three now list the same five values. They did
@@ -202,12 +201,9 @@ function FrameSourceFields( { label, help, url, count, pad, ext, onChange } ) {
 	);
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
-		thumbnail,
-		thumbnailAlt,
-		thumbnailDecorative,
-		aspectRatio,
+		thumbnailRatio,
 		desktopFramesUrl,
 		desktopFrameCount,
 		desktopFramePad,
@@ -226,15 +222,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		className: 'sgs-image-sequence-editor',
 	} );
 
-	const onSelectPoster = ( media ) => {
-		setAttributes( {
-			thumbnail: media
-				? { id: media.id, url: media.url, alt: media.alt || '' }
-				: null,
-		} );
-	};
-
-	const onRemovePoster = () => setAttributes( { thumbnail: null } );
+	const device = useActiveDevice();
+	const uid = 'sgs-is-' + clientId.slice( 0, 8 );
+	// The stage's ratio at the device being edited: a narrower device inherits the wider one.
+	const ratioTiers = thumbnailRatio || { desktop: '16 / 9' };
+	let stageRatio = ratioTiers.desktop || '16 / 9';
+	if ( 'tablet' === device ) {
+		stageRatio = ratioTiers.tablet || stageRatio;
+	} else if ( 'mobile' === device ) {
+		stageRatio = ratioTiers.mobile || ratioTiers.tablet || stageRatio;
+	}
+	const stageAspect = 'natural' === stageRatio ? 'auto' : stageRatio;
 
 	const desktopConfigured = Boolean(
 		desktopFramesUrl && desktopFrameCount > 0
@@ -247,127 +245,27 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			<MediaElementPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/image-sequence"
+				blockSlug="sgs/image-sequence"
+				prefix="thumbnail"
+				atoms={ THUMBNAIL_ENTRY.atoms }
+				kinds={ THUMBNAIL_ENTRY.kinds }
+				context={ THUMBNAIL_ENTRY.context }
+				panelContent={ {
+					'size-and-crop': (
+						<AspectRatioField
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix="thumbnail"
+							slot={ { prefix: 'thumbnail', kinds: THUMBNAIL_ENTRY.kinds, context: THUMBNAIL_ENTRY.context } }
+						/>
+					),
+				} }
+			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Thumbnail', 'sgs-blocks' ) }>
-					<p>
-						{ __(
-							'Always shown to visitors without JavaScript, and to anyone with reduced-motion enabled. Choose the same image as your sequence’s first frame for a seamless handoff.',
-							'sgs-blocks'
-						) }
-					</p>
-					<MediaPicker
-						value={ thumbnail }
-						onChange={ onSelectPoster }
-						onRemove={ onRemovePoster }
-						allowedTypes={ [ 'image' ] }
-						label={ __( 'Select thumbnail image', 'sgs-blocks' ) }
-					/>
-					<ToggleControl
-						label={ __(
-							'Decorative — hide from screen readers',
-							'sgs-blocks'
-						) }
-						checked={ Boolean( thumbnailDecorative ) }
-						onChange={ ( value ) =>
-							setAttributes( { thumbnailDecorative: value } )
-						}
-						help={
-							thumbnailDecorative
-								? __(
-										'Screen readers will skip this thumbnail entirely — use only when it carries no information the sequence itself doesn’t already convey.',
-										'sgs-blocks'
-								  )
-								: __(
-										'Turn on when the thumbnail is decoration rather than information.',
-										'sgs-blocks'
-								  )
-						}
-						__nextHasNoMarginBottom
-					/>
-					{ /* Art direction (2026-08-07). The canvas sequence already
-					     art-directs itself per device (the three frame pipelines
-					     below); this gives the SAME per-device choice to the
-					     fail-open thumbnail, which is what a no-JS or
-					     reduced-motion visitor actually sees. Same
-					     device-switched shape as sgs/media and sgs/hero. */ }
-					<ResponsiveControl
-						label={ __( 'Thumbnail for this screen size', 'sgs-blocks' ) }
-					>
-						{ ( bp ) => {
-							if ( 'desktop' === bp ) {
-								return (
-									<p style={ { margin: 0, fontStyle: 'italic' } }>
-										{ __(
-											'The thumbnail above is used on desktop. Switch to tablet or mobile to set a different crop.',
-											'sgs-blocks'
-										) }
-									</p>
-								);
-							}
-							const key =
-								'tablet' === bp
-									? 'thumbnailTablet'
-									: 'thumbnailMobile';
-							return (
-								<MediaPicker
-									value={ attributes[ key ] }
-									allowedTypes={ [ 'image' ] }
-									onChange={ ( media ) =>
-										setAttributes( {
-											[ key ]: media
-												? {
-														id: media.id,
-														url: media.url,
-														alt: media.alt || '',
-												  }
-												: null,
-										} )
-									}
-									onRemove={ () =>
-										setAttributes( { [ key ]: null } )
-									}
-									label={ __( 'Set thumbnail', 'sgs-blocks' ) }
-									instructionsImage={ __(
-										'Optional. Leave empty to reuse the desktop thumbnail at this width.',
-										'sgs-blocks'
-									) }
-								/>
-							);
-						} }
-					</ResponsiveControl>
-					<TextControl
-						label={ __( 'Thumbnail alt text', 'sgs-blocks' ) }
-						help={
-							thumbnailDecorative
-								? __(
-										'Disabled — the thumbnail is set to decorative above, so no alt text is rendered.',
-										'sgs-blocks'
-								  )
-								: __(
-										'Describes the sequence for screen readers and no-JS visitors.',
-										'sgs-blocks'
-								  )
-						}
-						value={ thumbnailAlt }
-						onChange={ ( value ) =>
-							setAttributes( { thumbnailAlt: value } )
-						}
-						disabled={ thumbnailDecorative }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Aspect ratio', 'sgs-blocks' ) }
-						value={ aspectRatio }
-						options={ ASPECT_RATIO_OPTIONS }
-						onChange={ ( value ) =>
-							setAttributes( { aspectRatio: value } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
-
 				<PanelBody
 					title={ __( 'Frame source', 'sgs-blocks' ) }
 					initialOpen={ desktopConfigured }
@@ -531,38 +429,23 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ ! thumbnail ? (
-					<div className="sgs-image-sequence-editor__placeholder">
-						<MediaPicker
-							value={ null }
-							onChange={ onSelectPoster }
-							onRemove={ onRemovePoster }
-							allowedTypes={ [ 'image' ] }
-							label={ __( 'Select Thumbnail Image', 'sgs-blocks' ) }
-							instructionsImage={ __(
-								'An image sequence needs a thumbnail frame. Add one to get started, then configure the frame source in the sidebar.',
-								'sgs-blocks'
-							) }
-						/>
-					</div>
-				) : (
-					<div
-						className="sgs-image-sequence-editor__preview-wrapper"
-						style={ { aspectRatio } }
-					>
-						<img
-							src={ thumbnail.url }
-							alt={
-								thumbnail.alt ||
-								__(
-									'Image sequence thumbnail preview',
-									'sgs-blocks'
-								)
-							}
-							className="sgs-image-sequence-editor__preview"
-						/>
-					</div>
-				) }
+				<div
+					className="sgs-image-sequence-editor__preview-wrapper"
+					style={ { aspectRatio: stageAspect } }
+				>
+					<SlotPicture
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="thumbnail"
+						kinds={ THUMBNAIL_ENTRY.kinds }
+						context={ THUMBNAIL_ENTRY.context }
+						uid={ uid }
+						className="sgs-image-sequence-editor__preview"
+						fallbackAlt={ __( 'Image sequence thumbnail preview', 'sgs-blocks' ) }
+						title={ __( 'Thumbnail image', 'sgs-blocks' ) }
+						instructions={ __( 'An image sequence needs a thumbnail frame. Add one to get started, then configure the frame source in the sidebar.', 'sgs-blocks' ) }
+					/>
+				</div>
 
 				<Notice status="info" isDismissible={ false }>
 					{ __(

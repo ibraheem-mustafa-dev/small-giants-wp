@@ -1,6 +1,6 @@
 // Motion rules that write block settings beside the sgsMotion document (the motion family calls them):
-//   - the hero's inline SVG part animation (`bgSvgParts`, `bgSvgPartsTrigger`): the client's `build/hero-svg-parts.json` holds the
-//     per-id values the draft's setHeroSvgEl script plays; they go on the hero that holds the SVG (`bgSvgContent`) the records
+//   - the hero's inline SVG part animation (`backgroundSvgParts`, `backgroundSvgPartsTrigger`): the client's `build/hero-svg-parts.json` holds the
+//     per-id values the draft's setHeroSvgEl script plays; they go on the hero that holds the SVG (the Background Source's inline SVG markup) the records
 //     name. A client without the file, or a hero whose SVG lacks a named id, gets a no-setting row.
 //   - the testimonial slider's change animation (`changeTransition`, `changeDistance`, `changeDuration`, `changeEasing`): the
 //     state record that plays when the slide changes (opacity and translateX in).
@@ -9,7 +9,7 @@ import { attrRow } from './db.mjs';
 import { draftId, recordsFor } from './apply-records.mjs';
 import { recordsOf } from './apply-motion-calls.mjs';
 import { settle } from './apply-chrome-records.mjs';
-import { animatedBackground } from './apply-svg-file.mjs';
+import { animatedBackground, inlineBackground } from './apply-svg-file.mjs';
 
 const EASING_SRC = new URL( '../../../plugins/sgs-blocks/includes/helpers-motion-easing.php', import.meta.url );
 const norm = ( s ) => String( s ?? '' ).replace( /\s+/g, '' ).replace( /(^|[(,])0?\./g, '$10.' ).toLowerCase();
@@ -59,28 +59,29 @@ export function heroSvgParts( { target, block, saved, records, clientData, anima
 		return [];
 	}
 	// A hero whose background image is an SVG file that animates itself already plays that motion: nothing inline to animate.
-	const file = saved.bgSvgContent ? null : animatedBackground( saved, readSvg );
+	const markup = inlineBackground( saved );
+	const file = markup ? null : animatedBackground( saved, readSvg );
 	if ( file ) {
-		return [ { status: 'equal', prop: 'bgSvgParts', why: `${ target.tpl } draws an inline SVG part animation (${ named[ 0 ].id } to ${ named[ named.length - 1 ].id }); the hero's background is the animated SVG file ${ file[ 0 ].split( '/' ).pop() }, which plays it` } ];
+		return [ { status: 'equal', prop: 'backgroundSvgParts', why: `${ target.tpl } draws an inline SVG part animation (${ named[ 0 ].id } to ${ named[ named.length - 1 ].id }); the hero's background is the animated SVG file ${ file[ 0 ].split( '/' ).pop() }, which plays it` } ];
 	}
-	if ( ! saved.bgSvgContent ) {
-		return [ { status: 'no-setting', prop: 'bgSvgParts', why: `${ target.tpl } draws an inline SVG part animation (${ named[ 0 ].id } to ${ named[ named.length - 1 ].id }) and the hero holds no bgSvgContent to animate` } ];
+	if ( ! markup ) {
+		return [ { status: 'no-setting', prop: 'backgroundSvgParts', why: `${ target.tpl } draws an inline SVG part animation (${ named[ 0 ].id } to ${ named[ named.length - 1 ].id }) and the hero's Background Source holds no inline SVG to animate` } ];
 	}
 	const data = clientData?.hero;
-	if ( ! data?.bgSvgParts?.length ) {
-		return [ { status: 'no-setting', prop: 'bgSvgParts', why: `${ target.tpl } draws an inline SVG part animation (${ named.map( ( r ) => r.id ).join( ', ' ) }) and the client has no build/hero-svg-parts.json` } ];
+	if ( ! data?.backgroundSvgParts?.length ) {
+		return [ { status: 'no-setting', prop: 'backgroundSvgParts', why: `${ target.tpl } draws an inline SVG part animation (${ named.map( ( r ) => r.id ).join( ', ' ) }) and the client has no build/hero-svg-parts.json` } ];
 	}
-	const have = ids( saved.bgSvgContent );
-	const wanted = data.bgSvgParts.flatMap( ( p ) => [ p.target, p.copyShapeFrom ] ).filter( Boolean );
+	const have = ids( markup );
+	const wanted = data.backgroundSvgParts.flatMap( ( p ) => [ p.target, p.copyShapeFrom ] ).filter( Boolean );
 	const missing = [ ...new Set( wanted ) ].filter( ( id ) => ! have.has( id ) );
 	if ( missing.length ) {
-		return [ { status: 'no-setting', prop: 'bgSvgParts', why: `the hero's saved SVG has no element with id ${ missing.join( ', ' ) }, which hero-svg-parts.json animates` } ];
+		return [ { status: 'no-setting', prop: 'backgroundSvgParts', why: `the hero's saved SVG has no element with id ${ missing.join( ', ' ) }, which hero-svg-parts.json animates` } ];
 	}
 	return [ settle( {
-		prop: 'bgSvgParts',
-		why: `${ target.tpl } plays ${ data.bgSvgParts.length } SVG part animations (${ named[ 0 ].id } to ${ named[ named.length - 1 ].id })`,
+		prop: 'backgroundSvgParts',
+		why: `${ target.tpl } plays ${ data.backgroundSvgParts.length } SVG part animations (${ named[ 0 ].id } to ${ named[ named.length - 1 ].id })`,
 		saved,
-		writes: [ { attr: 'bgSvgParts', value: data.bgSvgParts }, ...( data.bgSvgPartsTrigger ? [ { attr: 'bgSvgPartsTrigger', value: data.bgSvgPartsTrigger } ] : [] ) ],
+		writes: [ { attr: 'backgroundSvgParts', value: data.backgroundSvgParts }, ...( data.backgroundSvgPartsTrigger ? [ { attr: 'backgroundSvgPartsTrigger', value: data.backgroundSvgPartsTrigger } ] : [] ) ],
 		record: named[ 0 ].id,
 	} ) ];
 }

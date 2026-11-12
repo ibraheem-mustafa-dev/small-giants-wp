@@ -79,6 +79,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const { execFileSync } = require( 'child_process' );
 const { makeFinding } = require( '../core/finding' );
+const { mediaSystemOwns } = require( '../core/media-facts' );
 
 // The blocking gate this rule now consumes. Resolved relative to this file so
 // it is correct regardless of cwd — one level up from rules/ (inspector-scan/),
@@ -119,21 +120,11 @@ let cachedDumpError = null;
 // `null` (not-exempt) or ignored. 'core-supports' added Task 4 (2026-08-27,
 // IMPORTANT 4): a WP-native `supports`-backed attribute (anchor/lock/align)
 // is consumed by WordPress core itself, not by this block's own render code.
-// 'cloning-pipeline-anchor' added 2026-09-02: render/editor-dead by design,
-// kept alive as a routing anchor for the Python cloning pipeline's
-// scalar-media mechanism. Its only entries (`sgs/hero::splitImage`/
-// `splitImageMobile`) were deleted from block.json the same day (Wave 7b)
-// once the DB anchor moved to `splitMediaType`, which IS render-consumed and
-// needs no exemption — CLONING_PIPELINE_ANCHOR_ATTRS in check-dead-
-// controls.js is currently empty, so this reason value is unused today but
-// kept in the vocabulary for a future virtual-only anchor. Source of truth:
-// plugins/sgs-blocks/scripts/data/scalar-media-roles.json.
 const KNOWN_EXEMPT_REASONS = new Set( [
 	'system-attr',
 	'editor-only',
 	'key-noise',
 	'core-supports',
-	'cloning-pipeline-anchor',
 ] );
 
 /**
@@ -301,7 +292,11 @@ module.exports = {
 		const blockJson = ctx.json( blockJsonFile );
 		if ( ! blockJson.ok ) return []; // malformed/absent block.json is roster-drift/parse-error territory
 
-		const attrNames = Object.keys( blockJson.data.attributes || {} );
+		// An attribute the shared media system controls and reads (its panels offer a control for the slot, its renderer
+		// reads the base by a computed key) is named by no block file; see core/media-facts.js.
+		const attrNames = Object.keys( blockJson.data.attributes || {} ).filter(
+			( name ) => ! mediaSystemOwns( ctx.blocksDir, blockJson.data.name, name )
+		);
 
 		let rows;
 		try {

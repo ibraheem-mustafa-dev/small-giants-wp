@@ -1,7 +1,7 @@
-// A draft `aspect-ratio` reaches sgs/media's `aspectRatio` setting. The seeder takes an attribute's css_property from the
-// block's `supports.sgs.elements.<name>.attrMap` (`"css:<property>": "<attr>"`); the framework DB row of `aspectRatio` was
-// seeded with none, so Fill raised the row as no-setting. The DB is never written here: the row is patched on a temporary
-// copy to the value block.json declares, and Fill's resolver is run against it.
+// A draft `aspect-ratio` reaches sgs/media's `ratio` setting. The seeder takes an attribute's css_property from the
+// block's `supports.sgs.elements.<name>.attrMap` (`"css:<property>": "<attr>"`), so the framework DB row of `ratio` carries
+// `aspect-ratio` once the DB is seeded from the current block.json. The DB is never written here: the row is set on a
+// temporary copy to the value block.json declares (what the seeder derives), and Fill's resolver is run against it.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -36,16 +36,16 @@ function patchedDb( attr, property ) {
 	return { db: openDb( file ), dir };
 }
 
-test( 'MUST FAIL: sgs/media block.json declares aspectRatio as the aspect-ratio setting of its element', () => {
-	assert.equal( declaredProperty( 'aspectRatio' ), 'aspect-ratio' );
+test( 'MUST FAIL: sgs/media block.json declares ratio as the aspect-ratio setting of its element', () => {
+	assert.equal( declaredProperty( 'ratio' ), 'aspect-ratio' );
 } );
 
-test( 'MUST FAIL: a draft aspect-ratio is written to sgs/media aspectRatio once its row carries the declared css_property', () => {
-	const { db, dir } = patchedDb( 'aspectRatio', declaredProperty( 'aspectRatio' ) );
+test( 'MUST FAIL: a draft aspect-ratio is written to sgs/media ratio (one value per device) once its row carries the declared css_property', () => {
+	const { db, dir } = patchedDb( 'ratio', declaredProperty( 'ratio' ) );
 	try {
 		const v = '3 / 2';
-		const r = resolve( { block: 'sgs/media', slot: '', prop: 'aspect-ratio', perWidth: { 375: v, 768: v, 1440: v } }, { db, snapshot, calibration: { settings: { aspectRatio: { slot: '', property: 'aspect-ratio' } } } } );
-		assert.deepEqual( r.writes, [ { attr: 'aspectRatio', value: '3 / 2', merge: 'replace' } ] );
+		const r = resolve( { block: 'sgs/media', slot: '', prop: 'aspect-ratio', perWidth: { 375: v, 768: v, 1440: v } }, { db, snapshot, calibration: { settings: { ratio: { slot: '', property: 'aspect-ratio' } } } } );
+		assert.deepEqual( r.writes, [ { attr: 'ratio', value: { mobile: v, tablet: v, desktop: v }, merge: 'deep' } ] );
 	} finally {
 		db.close();
 		fs.rmSync( dir, { recursive: true, force: true } );
@@ -53,10 +53,10 @@ test( 'MUST FAIL: a draft aspect-ratio is written to sgs/media aspectRatio once 
 } );
 
 test( 'negative control: a row with no css_property is raised as no-setting, which is the fault block.json now fixes at the seeder', () => {
-	const { db, dir } = patchedDb( 'aspectRatio', null );
+	const { db, dir } = patchedDb( 'ratio', null );
 	try {
 		const v = '3 / 2';
-		const r = resolve( { block: 'sgs/media', slot: '', prop: 'aspect-ratio', perWidth: { 375: v, 768: v, 1440: v } }, { db, snapshot, calibration: { settings: { aspectRatio: { slot: '', property: 'aspect-ratio' } } } } );
+		const r = resolve( { block: 'sgs/media', slot: '', prop: 'aspect-ratio', perWidth: { 375: v, 768: v, 1440: v } }, { db, snapshot, calibration: { settings: { ratio: { slot: '', property: 'aspect-ratio' } } } } );
 		assert.equal( r.writes, undefined );
 		assert.equal( r.gap, 'no-setting' );
 	} finally {

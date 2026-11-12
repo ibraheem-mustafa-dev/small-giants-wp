@@ -111,12 +111,12 @@ export function timelineStripPreviewStyle( attributes, tier ) {
  * @return {Object} React style fragment.
  */
 export function timelineMediaPreviewStyle( attributes, tier ) {
-	const style = sgsBorderPreview( { radiusValues: attributes.mediaBorderRadius }, tier );
-	const ratio = RATIO_RE.exec( String( tierValueOf( attributes.mediaAspectRatio, tier ) ?? '' ) );
+	const style = sgsBorderPreview( { radiusValues: attributes.entryRadius }, tier );
+	const ratio = RATIO_RE.exec( String( tierValueOf( attributes.entryRatio, tier ) ?? '' ) );
 	if ( ratio && Number( ratio[ 1 ] ) > 0 && Number( ratio[ 2 ] ?? 1 ) > 0 ) {
 		style.aspectRatio = ratio[ 2 ] ? `${ ratio[ 1 ] } / ${ ratio[ 2 ] }` : ratio[ 1 ];
 	}
-	const height = lengthOf( tierValueOf( attributes.mediaHeight, tier ) );
+	const height = lengthOf( tierValueOf( attributes.entryHeight, tier ) );
 	if ( height ) {
 		style.height = height;
 		style.aspectRatio = 'auto';
@@ -125,4 +125,16 @@ export function timelineMediaPreviewStyle( attributes, tier ) {
 		style.overflow = 'hidden';
 	}
 	return style;
+}
+
+/**
+ * The media column's width at a device (the Width setting of the entry media), as the custom property the stylesheet
+ * reads.
+ *
+ * @param {Object} entryWidth The stored Width, one value per device.
+ * @param {string} tier       Previewed device tier.
+ * @return {string} A CSS length, or '' for the stylesheet's own default.
+ */
+export function timelineMediaWidth( entryWidth, tier ) {
+	return lengthOf( tierValueOf( entryWidth, tier ) );
 }

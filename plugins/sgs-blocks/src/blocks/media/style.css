@@ -1,99 +1,15 @@
-/* sgs/media — frontend styling is inline per-instance. Block defaults only. */
+/* sgs/media: block defaults only. Every per-instance setting is a scoped rule printed by the media renderer. */
 .wp-block-sgs-media {
 	margin: 0;
 	display: block;
 }
 
-/* Image element.
-   width:100% fills the grid/flex track (so the image isn't invisible when the
-   track has no intrinsic size contribution from the img itself).
-   min-width:0 lets the image shrink below its intrinsic width inside a
-   min-content track — without it, grid's min-width:auto on the item can
-   produce a 0×0 rendered box even though naturalWidth is non-zero.
-   Both are safe in normal block flow: width:100% on a block-level img is
-   standard practice; min-width:0 is a no-op outside grid/flex. */
-.wp-block-sgs-media img,
-.wp-block-sgs-media .sgs-media__img {
-	display: block;
-	width: 100%;
-	min-width: 0;
-}
-
-/* Naked/root mode (linkless image — the img IS the block root, id + class on
-   the same element; see the :where() note below). Core-img parity defaults:
-   intrinsic width, never overflow. width:100% is deliberately NOT applied —
-   that is the figure/grid-track behaviour above, and before this rule existed
-   the root form matched NEITHER selector above (so no naked-mode instance can
-   depend on fill-width; live-proven: a 500px-intrinsic image at width:100%
-   ballooned to the 1392px content column, and without any rule the theme's
-   constrained-layout max-width 1200px let it overflow a 375px viewport).
-   Same (0,2,0) specificity as the per-instance scoped attr rules, which win
-   by source order (D303: class-match + source-order, never an ID). */
-.wp-block-sgs-media.sgs-media__img {
-	min-width: 0;
-}
-
-/* object-fit is OWNED BY THE ATOM LAYER (Wave 5a). The rule now lives once, in
-   assets/css/media-element.css, keyed on `.sgs-media-el` and carrying the same
-   measured `cover` default this rule used to supply.
-   Deleting it here is the GUT half of INSERT -> VERIFY -> GUT: leaving both
-   would give one property two writers, and the surviving one would be invisible
-   until the values disagreed. The video element gains the default it never had
-   — this rule only ever matched `__img`, so an unset video previously rendered
-   at the browser default `fill`. All four surfaces in the census measure
-   `cover`, so that is the standard being applied, not a regression. */
-
-/* Video element — mirrors image defaults so shared styling attrs apply uniformly */
-.wp-block-sgs-media video,
-.wp-block-sgs-media .sgs-media__video {
-	display: block;
-	max-width: 100%;
-	height: auto;
-}
-
-/* iframe embeds (YouTube / Vimeo) — maintain aspect ratio and fill container */
-.wp-block-sgs-media iframe.sgs-media__video {
-	display: block;
-	width: 100%;
-	border: 0;
-}
-
-/* 16:9 fallback (D9) — supplied as an OVERRIDABLE :where() default so an
-   explicit aspectRatio (emitted per-instance as scoped CSS by render.php from
-   style.dimensions.aspectRatio — the native support, D402 — or any other
-   override) always wins. Prevents the embed collapsing when no ratio is set. */
-:where( .wp-block-sgs-media iframe.sgs-media__video ) {
-	aspect-ratio: 16 / 9;
-}
-
-/* Caption */
-.wp-block-sgs-media figcaption,
-.wp-block-sgs-media .sgs-media__caption {
+/* The caption (the renderer prints `.sgs-media-caption`). :where() keeps these defaults below the scoped
+   typography and colour rules the block prints. */
+:where(.wp-block-sgs-media) .sgs-media-caption {
 	margin-top: 0.5em;
 	font-size: 0.9em;
 	color: var(--wp--preset--color--text-muted);
-}
-
-/* Link wrapper — full-block hit area */
-.wp-block-sgs-media .sgs-media__link {
-	display: block;
-	min-width: var(--sgs-media-tap-min, 44px);
-	min-height: var(--sgs-media-tap-min, 44px);
-}
-
-/* ===== SVG foreground mode ===== */
-
-/* Base SVG wrapper — fills the figure, displays block so it takes natural height */
-.wp-block-sgs-media .sgs-media__svg {
-	display: block;
-	width: 100%;
-	line-height: 0; /* collapse whitespace-induced gap below inline SVG */
-}
-
-.wp-block-sgs-media .sgs-media__svg svg {
-	display: block;
-	width: 100%;
-	height: auto;
 }
 
 /* =========================================================================
@@ -108,10 +24,18 @@
     background: #000;
     line-height: 0;
 }
-.sgs-video video.sgs-media__video {
+.sgs-video video.sgs-media-video {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+}
+
+/* In the renderer's stack the player takes the video's grid cell and lets the cover show through until the poster is set. */
+.sgs-media-stack > .sgs-video {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    background: transparent;
 }
 
 /* Centre play — shown when paused, hidden when playing. */
@@ -134,11 +58,6 @@
 .sgs-video__centre svg { width: 34px; height: 34px; margin-left: 3px; }
 .sgs-video__centre:hover { transform: scale( 1.06 ); }
 .sgs-video.is-playing .sgs-video__centre { opacity: 0; pointer-events: none; }
-
-/* Per-device "Show Controls" tier resolved off (view.js) — chromeless playback,
-   e.g. a background-video use case that is only chromeless on mobile. */
-.sgs-video--no-controls .sgs-video__centre,
-.sgs-video--no-controls .sgs-video__bar { display: none; }
 
 /* Bottom bar — hover/focus reveal on desktop; always visible on touch. */
 .sgs-video__bar {

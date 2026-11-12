@@ -97,5 +97,7 @@ No scene graph. No 3D. No geometry beyond a fullscreen quad. No dependency.
 | `index.js` | The public surface. Exports **exactly** `initSurface`. |
 | `renderer.js` | The one swappable file. Raw WebGL2. |
 | `capability.js` | `probeSurface()` — context + **program link** check, then release. |
+| `aurora.js`, `wave-gradient.js`, `generative-background.js` | Full-element renderers of the motion system's generative backgrounds (each renders into a canvas the caller supplies, not a photograph through `initSurface`). |
+| `generative-background-transform.js` | The generative background's fold maths: pure functions with no DOM or WebGL, checked by `scripts/generative-background/verify-transform.mjs`. |
 
 `probeSurface()` deliberately does more than "does a WebGL2 context exist". A context can be created successfully on drivers where a program still fails to link. Checking creation alone produces a canvas that exists and never paints — indistinguishable from success in every gate except a pixel read.

@@ -1,12 +1,13 @@
 /**
  * SGS motion: the per-device off switch for Tier V effect runtimes (Spec 38A FR-38A-23).
  *
- * The emitter (`Sgs_Motion_Fx_Emitter`) writes two switches per tier (tablet, mobile) on an element:
+ * The emitter (`Sgs_Motion_Fx_Emitter`) writes two switches per tier (tablet, mobile) on an element, and the off list for desktop:
  *  - `data-sgs-fx-disable-<tier>`: written from the layer's per-device off setting. Present = every effect
  *    on the element is off at that tier.
  *  - `data-sgs-fx-off-<tier>`: a motion layer's `off` list, space-separated effect slugs in the `data-sgs-fx`
  *    vocabulary. Only the listed effects are off at that tier, so a sibling effect on the same element keeps running.
- * Desktop is never off. These are the same semantics and the same tier queries as the Tier G gate in
+ * Desktop has no stored off setting: it is off only when the server writes `data-sgs-fx-off-desktop` because the media
+ * slot behind the part shows a kind the effect does not fit there (`Sgs_Motion_Device_Scope`). These are the same semantics and the same tier queries as the Tier G gate in
  * `gsap/provider.js`; this module imports nothing from `gsap/`, so a vanilla bundle never pulls GSAP in.
  *
  * Fail-open: an effect that is off never starts, and one that is torn down leaves the server-rendered element as it
@@ -64,10 +65,10 @@ export function currentTier() {
  */
 export function isEffectOffAtThisTier( el, effect ) {
 	const tier = currentTier();
-	if ( tier !== 'mobile' && tier !== 'tablet' ) {
+	if ( ! tier ) {
 		return false;
 	}
-	if ( el.hasAttribute( `data-sgs-fx-disable-${ tier }` ) ) {
+	if ( tier !== 'desktop' && el.hasAttribute( `data-sgs-fx-disable-${ tier }` ) ) {
 		return true;
 	}
 	const off = el.getAttribute( `data-sgs-fx-off-${ tier }` ) || '';

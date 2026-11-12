@@ -76,22 +76,10 @@ final class ProductCardDisplaySwitchesTest extends TestCase {
 		$this->assertSame( $base['css'], $this->card( array( 'cardPadding' => array( 'top' => '20', 'right' => '20', 'bottom' => '20', 'left' => '20' ), 'cardPaddingTier' => array() ) )['css'] );
 	}
 
-	public function test_photo_fill_modifier_only_when_on(): void {
-		$this->assertStringContainsString( 'product-card--image-fill', $this->card( array( 'imageFill' => true ) )['html'] );
-		$this->assertStringNotContainsString( 'product-card--image-fill', $this->card()['html'], 'negative control' );
-	}
-
-	public function test_image_size_is_checked_against_the_offered_sizes(): void {
-		if ( ! defined( 'ABSPATH' ) ) {
-			define( 'ABSPATH', __DIR__ );
-		}
-		require_once dirname( __DIR__, 2 ) . '/includes/product-card-image-size.php';
-		$this->assertSame( 'large', sgs_product_card_image_size( array( 'imageSize' => 'large' ) ) );
-		$this->assertSame( '', sgs_product_card_image_size( array() ), 'negative control: default keeps the thumbnail' );
-		$this->assertSame( '', sgs_product_card_image_size( array( 'imageSize' => 'evil-size' ) ), 'an unknown size is refused' );
-		$this->assertSame( 'x', sgs_product_card_image_url_at_size( 'x', '' ), 'no size, no change' );
-		$data = array( 'image_url' => 'u.jpg', 'wc_id' => 5 );
-		$this->assertSame( $data, sgs_product_card_image_size_apply( $data, array() ), 'negative control: data untouched when unset' );
-		$this->assertNull( sgs_product_card_image_size_apply( null, array( 'imageSize' => 'large' ) ) );
+	public function test_photo_sized_modifier_only_when_the_photo_slot_sets_a_ratio_or_height(): void {
+		$this->assertStringContainsString( 'product-card--image-sized', $this->card( array( 'imageRatio' => array( 'desktop' => '1 / 1' ) ) )['html'] );
+		$this->assertStringContainsString( 'product-card--image-sized', $this->card( array( 'imageHeight' => array( 'desktop' => '180px' ) ) )['html'] );
+		$this->assertStringNotContainsString( 'product-card--image-sized', $this->card( array( 'imageHeight' => array( 'desktop' => 'fill' ) ) )['html'], 'Height Fill keeps the fixed-height box: the photo fills it' );
+		$this->assertStringNotContainsString( 'product-card--image-sized', $this->card()['html'], 'negative control' );
 	}
 }

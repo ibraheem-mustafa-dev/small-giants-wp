@@ -127,16 +127,6 @@
 	.sgs-info-box.sgs-has-hover:hover {
 		box-shadow: var(--sgs-hover-shadow, none);
 	}
-
-	/* Grayscale to colour (#130) */
-	.sgs-info-box.sgs-has-grayscale img {
-		filter: grayscale(100%);
-		transition: filter var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
-	}
-
-	.sgs-info-box.sgs-has-grayscale:hover img {
-		filter: grayscale(0%);
-	}
 }
 
 /* ===== Reduced motion ===== */
@@ -190,9 +180,8 @@
    "legacy media attrs mediaType/image/icon/boxMedia/mediaEmoji predate the
    FR-22-6 InnerBlocks migration ... were REMOVED from block.json"), and a
    repo-wide search finds zero occurrences of this class outside this file.
-   The object-fit declarations were removed to clear inspector-scan rule
-   37-media-no-handroll's static text scan (which flags file content
-   regardless of live-DOM reachability) — wiring a client-facing objectFit
+   The object-fit declarations were removed (a static text scan flags file
+   content regardless of live-DOM reachability) — wiring a client-facing objectFit
    control per the media-atom system was deliberately NOT done, since that
    would create a control that governs nothing (no element ever receives
    this class). The rest of the dead ruleset is left untouched — out of

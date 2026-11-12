@@ -27,6 +27,9 @@ import { makeContent } from './skeleton-write-content.mjs';
 import { makeSlotRows } from './skeleton-write-slots.mjs';
 import { siteLinkResolver } from './draft-link.mjs';
 
+// A carried or decided value as text: an id as itself, a Source object as its JSON.
+const shown = ( v ) => ( v && 'object' === typeof v ? JSON.stringify( v ) : String( v ) );
+
 export const COVERAGE_WRITES = [
 	'construct:dc-import',
 	'construct:sc-for',
@@ -194,7 +197,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const { attrs: carry, said, missing } = carriedAttrs( block, e );
 		carryProblems.push( ...missing );
 		Object.assign( a, carry, null != collapse?.value ? { [ collapseAttr ]: collapse.value } : {}, top.attributes || {}, carry );
-		const clash = Object.keys( carry ).filter( ( k ) => undefined !== top.attributes?.[ k ] && String( top.attributes[ k ] ) !== String( carry[ k ] ) );
+		const clash = Object.keys( carry ).filter( ( k ) => undefined !== top.attributes?.[ k ] && shown( top.attributes[ k ] ) !== shown( carry[ k ] ) );
 		r.handover && handover.push( r.handover );
 		const node = base( e, block, a );
 		// A linked form reads nothing from the draft: the saved form's own surface holds its look (Spec 48 §2). Nor does a
@@ -230,7 +233,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		}
 		nodeOfKey[ e.key ] = node;
 		handover.length && ( node.handover = handover );
-		const clashSaid = clash.map( ( k ) => `the client decision sets ${ k } ${ top.attributes[ k ] }, which is not applied; the build carries ${ carry[ k ] } (${ said[ k ] })` );
+		const clashSaid = clash.map( ( k ) => `the client decision sets ${ k } ${ shown( top.attributes[ k ] ) }, which is not applied; the build carries ${ shown( carry[ k ] ) } (${ said[ k ] })` );
 		const row = record( e, r, { attributes: a, ...( Object.keys( carry ).length ? { carried: said } : {} ), ...( missing.length ? { carriedMissing: missing } : {} ), ...( clash.length ? { stale: [ r.stale, ...clashSaid ].filter( Boolean ).join( '; ' ) } : {} ) } );
 		const slots = {};
 		m.kids( e ).filter( ( k ) => m.isPart( k ) && 'svg' === k.tag && k.visible[ 1440 ] ).forEach( ( k ) => {

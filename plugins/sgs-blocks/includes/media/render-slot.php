@@ -57,8 +57,9 @@ function sgs_media_item_atom_ids(): array {
  *
  * @param array $slot    `{prefix, kinds, context}`.
  * @param array $attrs   Block attributes.
- * @param array $context `{uid, block, area, section_index, item_set:{index,columns,block_rules}, in_editor, extra_class, anchor}`
- *                       plus `effects`, `entrance` and `hover` for §7.3.
+ * @param array $context `{uid, block, area, section_index, item_set:{index,columns,block_rules}, in_editor, extra_class, anchor,
+ *                       device_queries}` (device_queries: device => the media condition that shows that device's image, for a
+ *                       block with its own switch width) plus `effects`, `entrance` and `hover` for §7.3.
  * @return array{html:string,css:string,needs_helper:bool,lead_candidate:bool}
  */
 function sgs_media_render_slot( array $slot, array $attrs, array $context = array() ): array {
@@ -179,21 +180,72 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	$columns    = sgs_media_device_values( $item_set['columns'] ?? 0 );
 	$widths     = sgs_media_device_values( $attr( 'Width' ) );
 	$max_widths = sgs_media_device_values( $attr( 'MaxWidth' ) );
-	$sizes      = array();
-	foreach ( sgs_media_devices() as $device ) {
-		$sizes[ $device ] = sgs_media_sizes_for_width( $widths[ $device ], 'lazy' === $loading, (int) $columns[ $device ], $max_widths[ $device ] );
+	// `item_width`: a fixed px width per device where the items are not sized by the column count (a swipe row's tracks).
+	$item_widths = (array) ( $item_set['item_width'] ?? array() );
+	// `item_cap`: a px width every item stays within on every device (a brand strip's logo box is at most its Max height).
+	$item_cap = sgs_media_sizes_px( $item_set['item_cap'] ?? null );
+	if ( null === $item_cap && isset( $item_set['item_cap'] ) && is_numeric( $item_set['item_cap'] ) && (float) $item_set['item_cap'] > 0 ) {
+		$item_cap = (float) $item_set['item_cap'];
 	}
-	$crop_id = $image_files ? (int) reset( $image_files )['id'] : 0;
-	if ( $crop_id > 0 && ! empty( $context['block'] ) && function_exists( 'sgs_media_cover_crop_plan' ) ) {
-		$plan = sgs_media_cover_crop_plan( $attrs, $prefix, (string) $context['block'], $crop_id );
-		if ( ! empty( $plan['sizes'] ) ) {
+	if ( null !== $item_cap ) {
+		foreach ( sgs_media_devices() as $device ) {
+			$m_px = sgs_media_sizes_px( $max_widths[ $device ] );
+			if ( null === $m_px || $item_cap < $m_px ) {
+				$max_widths[ $device ] = $item_cap . 'px';
+			}
+		}
+	}
+	// A px Height with no Width leaves the width automatic: the image's own shape (Height x ratio), or less where the
+	// container clamps it (a logo sized by height). That figure joins Max width as a cap on the slot's width.
+	$heights = sgs_media_device_values( $attr( 'Height' ) );
+	foreach ( sgs_media_devices() as $device ) {
+		$file  = $images[ $device ] ?? null;
+		$h_px  = sgs_media_sizes_px( $heights[ $device ] );
+		$w_set = null !== $widths[ $device ] && '' !== $widths[ $device ];
+		if ( $w_set || null === $h_px || ! is_array( $file ) || (int) ( $file['width'] ?? 0 ) <= 0 || (int) ( $file['height'] ?? 0 ) <= 0 ) {
+			continue;
+		}
+		$h_cap = (int) ceil( $h_px * (int) $file['width'] / (int) $file['height'] );
+		$m_px  = sgs_media_sizes_px( $max_widths[ $device ] );
+		if ( null === $m_px || $h_cap < $m_px ) {
+			$max_widths[ $device ] = $h_cap . 'px';
+		}
+	}
+	$avail       = class_exists( 'Sgs_Layout_Width' ) ? Sgs_Layout_Width::own() : null;
+	$sizes       = array();
+	foreach ( sgs_media_devices() as $device ) {
+		$sizes[ $device ] = sgs_media_sizes_for_width( $widths[ $device ], 'lazy' === $loading, (int) $columns[ $device ], $max_widths[ $device ], $avail[ $device ] ?? null, $item_widths[ $device ] ?? null );
+	}
+	$crop_id    = $image_files ? (int) reset( $image_files )['id'] : 0;
+	$cover_crop = false;
+	if ( $crop_id > 0 && function_exists( 'sgs_media_cover_crop_plan' ) ) {
+		$boxes = array();
+		foreach ( null !== $avail ? sgs_media_devices() : array() as $device ) {
+			if ( isset( $avail[ $device ] ) ) {
+				$boxes[ $device ] = sgs_media_width_model( $widths[ $device ], (int) $columns[ $device ], $max_widths[ $device ], $avail[ $device ], $item_widths[ $device ] ?? null );
+			}
+		}
+		$plan = sgs_media_cover_crop_plan( $attrs, $slot, $crop_id, $boxes, class_exists( 'Sgs_Layout_Width' ) ? Sgs_Layout_Width::box() : null );
+		if ( ! empty( $plan['widens'] ) ) {
+			// The crop draws the file wider than its box, so `auto` (the box width) would pick a file too small: the marker
+			// lets sgs_media_drop_auto_sizes take out the `auto` core adds to lazy images later in the_content.
+			$cover_crop = true;
+		}
+		if ( ! empty( $plan['by_device'] ) ) {
+			$sizes = (array) $plan['by_device'];
+		} elseif ( ! empty( $plan['sizes'] ) ) {
 			$sizes = array_fill_keys( sgs_media_devices(), (string) $plan['sizes'] );
+		} elseif ( ! empty( $plan['widens'] ) ) {
+			// The drawn width is unknown (a fill box of a landscape image: the box shape, so the crop, cannot be read), and the
+			// box width alone would pick a file that is too small. Printing no `sizes` leaves WordPress's own hint for the
+			// attachment, which is as wide as the file, so the browser picks a file wide enough.
+			$sizes = array_fill_keys( sgs_media_devices(), '' );
 		}
 	}
 
 	// The media elements: one sibling per kind, per distinct embed and per distinct SVG.
 	$scope    = $uid . ( $uid !== $block_uid ? ' ' . $block_uid : '' );
-	$direct   = 'sgs-media-el' . ( $plain ? ' sgs-media sgs-media--renderer ' . $scope : '' );
+	$direct   = 'sgs-media-el' . ( $plain ? ' sgs-media sgs-media--renderer ' . trim( $scope . ' ' . (string) ( $context['extra_class'] ?? '' ) ) : '' );
 	$siblings = array();
 	$html     = '';
 	if ( $image_files ) {
@@ -210,6 +262,8 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 				'loading'         => $loading,
 				'fetchpriority'   => $fetch,
 				'sizes'           => $sizes,
+				'queries'         => (array) ( $context['device_queries'] ?? array() ),
+				'cover_crop'      => $cover_crop,
 			)
 		);
 		$siblings['sgs-media-sib--image'] = array_keys( $image_files );
@@ -262,11 +316,20 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 		++$n;
 		$class = $plain ? $direct . ' sgs-media-svg' : 'sgs-media-el sgs-media-svg sgs-media-sib sgs-media-sib--svg-' . $n;
 		$label = $alt_of( $entry['source'] );
-		$html .= sgs_media_svg_element( $entry['source']['markup'], $class, $uid . '-s' . $n . '-', $label, '' === $label, $fit );
+		$html .= sgs_media_svg_parts_attr( sgs_media_svg_element( $entry['source']['markup'], $class, $uid . '-s' . $n . '-', $label, '' === $label, $fit ), $attr( 'SvgParts' ), (string) $attr( 'SvgPartsTrigger' ) );
 		$siblings[ 'sgs-media-sib--svg-' . $n ] = $entry['devices'];
 	}
 	if ( '' === $html ) {
 		return $result;
+	}
+	// A bare media element is the block's root, so it carries the anchor too (unless it already holds an id of its own).
+	if ( $plain && '' !== trim( (string) ( $context['anchor'] ?? '' ) ) ) {
+		$html = (string) preg_replace_callback(
+			'/^<([a-z]+)\b([^>]*)>/i',
+			static fn( array $m ): string => false === stripos( $m[2], ' id="' ) ? '<' . $m[1] . ' id="' . esc_attr( trim( (string) $context['anchor'] ) ) . '"' . $m[2] . '>' : $m[0],
+			$html,
+			1
+		);
 	}
 
 	// Nesting, innermost first. The outermost printed element carries the uid, the block classes and the anchor.
@@ -295,7 +358,7 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	}
 	if ( $has_figure ) {
 		$out = '<figure' . ( $grouped ? ( $fill ? ' class="sgs-fill-wrap"' : '' ) : $outer( $fill ? 'sgs-fill-wrap' : '' ) ) . '>' . $out
-			. '<' . $caption_tag . ' class="sgs-media-caption">' . wp_kses_post( $caption ) . '</' . $caption_tag . '></figure>';
+			. '<' . $caption_tag . ' class="sgs-media-caption">' . ( function_exists( 'sgs_rich_text_kses' ) ? sgs_rich_text_kses( $caption ) : wp_kses_post( $caption ) ) . '</' . $caption_tag . '></figure>';
 	}
 
 	if ( $grouped ) {
@@ -307,6 +370,9 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	$css       = sgs_media_sibling_css( $uid, $plain ? array() : $siblings );
 	if ( $has_figure ) {
 		$css .= sgs_media_caption_css( $uid, sgs_media_width_is_auto( $prefix, $attrs ) );
+	}
+	if ( $has_link ) {
+		$css .= sgs_media_link_tap_css( $uid, $slot, $attrs );
 	}
 	foreach ( sgs_media_atom_emitter_ids() as $id ) {
 		$emit = 'sgs_media_atom_' . $id . '_emit';

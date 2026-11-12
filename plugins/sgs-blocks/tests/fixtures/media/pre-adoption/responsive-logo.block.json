@@ -1,0 +1,453 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/responsive-logo",
+	"version": "0.1.0",
+	"title": "SGS Responsive Logo",
+	"category": "sgs-content",
+	"description": "Three-slot logo block (desktop / tablet / mobile) with optional SVG animation. Competitive moat: H/Square/Mark aspect-ratio variants per breakpoint.",
+	"keywords": [
+		"logo",
+		"responsive",
+		"branding",
+		"header",
+		"svg",
+		"animation"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "format-image",
+	"supports": {
+		"align": [
+			"left",
+			"center",
+			"right",
+			"wide"
+		],
+		"anchor": true,
+		"color": {
+			"background": false,
+			"gradients": false,
+			"text": false,
+			"__experimentalSkipSerialization": true,
+			"_comment": "Declared-but-disabled (mirrors sgs/brand-strip). backgroundColour/backgroundColourGradient/backgroundColourHover/backgroundColourHoverGradient are fully custom SgsColourPanel-driven attrs — this satisfies audit-block-uniformity.py's supports_color_missing check without exposing WP's native colour UI, which SGS never uses."
+		},
+		"html": false,
+		"sgs": {
+			"motion": true,
+			"enabledExtensions": [
+				"childSizing",
+				"blockLink"
+			],
+			"blockLinkAutoUrl": true,
+			"blockLinkAutoHelp": "The whole logo block becomes the home link, not just the logo image — so anything else placed inside it (a wordmark, a strapline) is part of the same link. Needs “Link to home” switched on. The Lottie pause button stays clickable on top of it.",
+			"_comment_blockLink": "S10 shared stretched link. The block supplies its own destination (home_url('/')), so blockLinkAutoUrl replaces the Block Link panel's URL field with a single toggle (sgsBlockLinkAuto) and render.php hands the URL over via includes/helpers-stretched-link.php::sgs_stretched_link_handover. The inner <a class=\"sgs-responsive-logo__link\"> is ALWAYS printed while the block links home: it is the real, visible, named link the extension lends the stretched surface to, so the accessible name comes from the logo's own content rather than from $link_aria_label on an empty anchor. The injected overlay is inert (tabindex=\"-1\" aria-hidden=\"true\") and is a mouse hit area only; the Hover panel's link part carries the hover opacity. The pause control already prints as a sibling AFTER the link, which is the shape the overlay needs, and extensions.css raises it above the overlay unchanged.",
+			"headerEssential": true,
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				],
+				"margin": [
+					"margin"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
+				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"order": 1,
+					"clusters": [
+						"layout"
+					],
+					"isWrapper": true,
+					"prefix": "",
+					"attrMap": {
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:width": "width",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient",
+								"css:background-color": "backgroundColourHover",
+								"css:background-image": "backgroundColourHoverGradient"
+							}
+						}
+					},
+					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-responsive-logo — display:inline-block hardcoded, no attribute, so no `layer`/arrangement members). `width` is declared explicitly so the `image` element does not contend for it. Traced through render.php: `$sel = '.' . $uid . '.wp-block-sgs-responsive-logo'` (the WRAPPER selector) is the target of `width`, which emits `{$sel}{--logo-width:...}`, consumed by style.scss's `.sgs-responsive-logo{width:var(--logo-width,100%)}` on the wrapper class itself. `maxHeight` is NOT a wrapper property: it caps the <img> (see the `image` element) and, when any tier is set, render.php also emits `{$sel}{width:auto}` so the root shrinks to the image. (`width` is ALSO written as a literal HTML `width=\"...\"` sizing attribute on the <img> tag — an intrinsic-size hint, not a CSS property, so it does not compete for `css:width` ownership.) Empty-string prefix resolves the bare width/maxWidth attrs case-insensitively via the default {suffix} convention (Width/MaxWidth/MaxHeight). The background-colour pair `backgroundColour`/`backgroundColourGradient`/`backgroundColourHover`/`backgroundColourHoverGradient` mirrors sgs/brand-strip's root background pair exactly (`sgs_background_paint_decl()` gradient-wins-flat, scoped to `$sel`, hover via `sgs_hover_state_rules()` on `:focus-within`) so the block's own background tile can be set independently whether it sits in the site header or inside `sgs/nav-drawer`. No box-shadow/gap/aspect-ratio attribute or native support exists (no shadow supports declared on this block) — honest gaps. The <img>/<picture> itself has no crop-box scenario (width:100%/max-width:100%, natural aspect), so the block does not opt into supports.sgs.imageControls (universal image extension); the block's own per-device logoId*/logoUrl* art-direction tiers are its real media mechanism. logoId/logoIdTablet/logoIdMobile/logoSwitchMode are media-source/behaviour scalars with no cluster member — deliberately undeclared (no prefix claims them)."
+				},
+				"image": {
+					"surface": true,
+					"label": "Logo image",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:max-width": "maxWidth",
+						"css:max-height": "maxHeight"
+					},
+					"_note": "The <img> element. Declaring it gives the slot its true owner via the manifest-first precedence (css_property = manifest_css_property or emission_css_property); without it, its attrs fall to the classifier's emission heuristic and FOUR of them (width, alt, logoSwitchCustomPx, logoDecorative) are each assigned css_property='max-width' — two of which are not CSS at all (`alt` is a string, `logoDecorative` a boolean). The only real owner of max-width is the `maxWidth` tier object (render.php). `maxHeight` (a tier object) paints `max-height` onto `.sgs-responsive-logo__image--desktop` and `.sgs-responsive-logo__dark` with `width:auto`, so the logo image renders no taller than the value at that tier and its width follows from its aspect ratio. The empty-string prefix is not the cause of that over-match: the over-assignment is in the classifier's emission heuristic, not this manifest."
+				},
+				"link": {
+					"label": "Home link",
+					"order": 3,
+					"selector": ".sgs-responsive-logo__link"
+				}
+			}
+		},
+		"_comment_parallax": "Parallax deliberately excluded — not appropriate for a header logo."
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-responsive-logo"
+	},
+	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"align": {
+			"type": "string",
+			"default": "left",
+			"_comment": "FR-36-22 basics: left is the default placement (NN/g: 6x better home-return); the block emits no alignment margin, its parent places it. Plain string (no enum) mirrors WP core's auto-injected align attribute shape — matches the supports.align list above without a coercion risk (an out-of-enum stored value silently resets to default)."
+		},
+		"logoId": {
+			"type": "number",
+			"_comment": "Desktop/base logo — media library attachment ID. The base attr carries no tier suffix, matching the framework's universal responsive-tier convention (e.g. backgroundImage/backgroundImageTablet/backgroundImageMobile) rather than a desktop/tablet/mobile PREFIX scheme, which is structurally invisible to the DB's modifier_suffixes tier-detection (a suffix strip, not a prefix strip)."
+		},
+		"logoUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"_comment": "Media-library URL for this tier's logo, stored ALONGSIDE the attachment ID, as every other SGS image block declares an image (sgs/media imageUrl+imageId, sgs/decorative-image, sgs/product-card): the ID wins at render and the URL is the fallback (media/render.php). WHY IT MATTERS BEYOND TIDINESS: the `image-alt` role pairs an alt attr to a SIBLING image attr via block_attributes.alt_companion_attr, and walk.py only captures alt when that companion is attr_type='string'. With three bare attachment IDs (type=number) and no string image attr there is nothing to name as the companion; this attr is that companion."
+		},
+		"logoIdTablet": {
+			"type": "number"
+		},
+		"logoUrlTablet": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"logoIdMobile": {
+			"type": "number"
+		},
+		"logoUrlMobile": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"logoSwitchMode": {
+			"type": "string",
+			"default": "mobile",
+			"enum": [
+				"mobile",
+				"tablet",
+				"custom"
+			],
+			"_comment": "When the compact/alternate logo replaces the desktop logo. mobile = at the mobile tier (<=767px viewport); tablet = at the tablet tier (<=1023px viewport); custom = at the operator's own breakpoint (<= logoSwitchCustomPx, viewport). Only takes effect once an alternate (mobile or tablet) logo is set."
+		},
+		"logoSwitchCustomPx": {
+			"type": "number",
+			"default": 1024
+		},
+		"darkLogoId": {
+			"type": "number",
+			"default": 0,
+			"_comment": "U-13 §4.5 (was U-17 design §3.1). Media library attachment ID for a dark-mode logo variant. Shown wherever the logo sits on a dark ground: site dark mode (:root[data-theme=\"dark\"] / :root[data-theme=\"auto\"][data-prefers-dark=\"true\"]), a nearer static section tone (ancestor .sgs-on-dark, stamped by helpers-surface-tone.php), or a header's live scroll state (ancestor .sgs-site-header.is-header-on-dark). A nearer .sgs-on-light ancestor, or the header's own .is-header-on-light state, shows the normal logo even under site dark mode -- live header state outranks a static section class. Interacts with colourTreatment: when this dark variant is showing, colourTreatment 'auto' never applies its white filter to it (the dedicated dark logo always wins over the filter)."
+		},
+		"width": {
+			"type": "number",
+			"description": "Desktop logo width in px. No `default`: WP only injects a DECLARED default, so an untouched instance has no `width` key, which render.php reads as 'fill 100% of the containing column/element' (style.scss's `var(--logo-width, 100%)` fallback) instead of a hardcoded pixel value. An operator who moves the Sizing panel's RangeControl gets an explicit px width."
+		},
+		"shrinkWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Logo width while an ancestor SGS header (`sgs/site-header` headerShrink) or header row (`sgs/site-header-row` rowShrink) is in its shrunk scroll state. One CSS length per device, such as 120px or 60%. The default is empty: an untouched instance has no `shrinkWidth` value, so render.php emits nothing and the logo stays its resting width when the header shrinks. Height is not a separate attribute: the <img> keeps `height:auto` (style.scss), so the shrunk logo scales at its natural aspect ratio instead of being stretched/squashed."
+		},
+		"maxWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"maxHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"linkToHome": {
+			"type": "boolean",
+			"default": true
+		},
+		"inlineSvg": {
+			"type": "boolean",
+			"default": false
+		},
+		"svgParts": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"target": {
+						"type": "string",
+						"role": "technical"
+					},
+					"eachChild": {
+						"type": "boolean",
+						"role": "behaviour"
+					},
+					"draw": {
+						"type": "boolean",
+						"role": "behaviour"
+					},
+					"fromOpacity": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"fromX": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"fromY": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"fromRotate": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"fromScale": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"duration": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"delay": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"stagger": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"easing": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"origin": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"loopRotate": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"loopDuration": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverReplay": {
+						"type": "boolean",
+						"role": "behaviour"
+					},
+					"hoverRate": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverRateDuration": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"fromFill": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"fromClip": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"toScale": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"toFill": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"settleAt": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"holdUntil": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"copyShapeFrom": {
+						"type": "string",
+						"role": "technical"
+					},
+					"easingCustom": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"hoverScale": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverX": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverY": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverRotate": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverDuration": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverStagger": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverEasing": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"hoverEasingCustom": {
+						"type": "string",
+						"role": "behaviour"
+					}
+				}
+			},
+			"description": "Named parts of the inline logo SVG to animate: per part an element id (or CSS selector), an entrance (opacity, scale, offset, rotation, stroke draw, duration, delay, easing), a continuous rotation and a hover replay. Used only while inlineSvg is on. Read by src/shared/svg-parts/svg-parts.js."
+		},
+		"svgPartsTrigger": {
+			"type": "string",
+			"enum": [ "load", "visible", "every-visible" ],
+			"default": "visible",
+			"description": "When the parts' entrance plays: on page load, the first time the logo is on screen, or each time it comes on screen."
+		},
+		"svgPartsHoverCooldown": {
+			"type": "number",
+			"default": 1400,
+			"description": "Least time between two hover replays of the parts, in ms."
+		},
+		"alt": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"logoDecorative": {
+			"type": "boolean",
+			"default": false,
+			"_comment": "WCAG 2.1 AA 1.1.1 explicit editorial decorative-image flag (mirrors sgs/timeline's milestoneMediaDecorative). Block-level, not per-tier: one flag covers the logo concept across logoId/logoIdTablet/logoIdMobile the same way `alt` already does. A site logo wrapped in a homepage link is almost never truly decorative — but this block sets the <a>'s aria-label independently of the <img> alt (see render.php's $link_aria_label), so the link keeps its accessible name ('Go to [Site] homepage') even when the logo image itself is marked decorative. render.php blanks alt + adds aria-hidden on the <img> when true."
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"colourTreatment": {
+			"type": "string",
+			"enum": [
+				"",
+				"white",
+				"auto"
+			],
+			"default": "",
+			"description": "Forces the logo IMAGE (not its background tile) to pure white via a CSS filter. '' = no override, the image renders as uploaded. 'white' = always white, regardless of ground. 'auto' (U-13 §4.5) = white only wherever the logo sits on a dark ground (same signals as darkLogoId: site dark mode, nearest static section tone, live header scroll state) -- never on a light ground, and never on a dedicated dark-logo image that is currently showing (darkLogoId wins over the filter)."
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"width": 240,
+			"linkToHome": true,
+			"alt": "Acme Co. home"
+		}
+	}
+}

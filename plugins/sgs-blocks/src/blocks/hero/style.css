@@ -103,45 +103,6 @@ section.sgs-hero {
 	grid-template-columns: 1fr 1fr;
 }
 
-/* Background image (standard variant — <img> for LCP fetchpriority support) */
-.sgs-hero__bg-img {
-	position: absolute;
-	inset: 0;
-	z-index: 0;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	object-position: center;
-	pointer-events: none;
-}
-
-/* Background video */
-.sgs-hero__video-bg {
-	position: absolute;
-	inset: 0;
-	z-index: 0;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	pointer-events: none;
-}
-
-/* The background image, video and overlay are rendered inside the wrapper's
-   content cap (.sgs-container__inner), which is capped by contentWidth and as
-   tall as the content. Taking the cap out of positioning makes those
-   absolute/inset:0 layers cover the whole hero, not just the content box. */
-.sgs-hero > .sgs-container__inner {
-	position: static;
-}
-
-/* Overlay */
-.sgs-hero__overlay {
-	position: absolute;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-}
-
 /* Content area — a flex column. render.php also writes verticalAlignment here as
    justify-content, which positions the content WITHIN this column. That only has
    an effect on the split variant, where the grid stretches this column to the
@@ -252,11 +213,16 @@ section.sgs-hero {
 	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
-/* Sub-headline */
-.sgs-hero__subheadline {
+/* Sub-headline: the sgs/text child the content template gives this class. Its type defaults have zero
+   specificity so the child's own typography settings always win; the margin keeps class weight so the
+   layout gap rules do not replace it. */
+:where(.sgs-hero__subheadline) {
 	font-size: clamp(1.125rem, 2.5vw, var(--wp--preset--font-size--large));
 	font-weight: 500;
 	line-height: 1.5;
+}
+
+.sgs-hero__subheadline {
 	margin: 0 0 var(--wp--preset--spacing--40) 0;
 }
 
@@ -269,10 +235,8 @@ section.sgs-hero {
 	color: var(--wp--preset--color--text-inverse, #C0D5D6);
 }
 
-/* Split image — defaults let CSS Grid drive column sizing, then the image fills
-   its wrapper. All visual constraints (aspect ratio, max height, border radius,
-   padding, object-fit, object-position) come from block attributes via inline
-   styles emitted by render.php. Style.css holds only structural defaults. */
+/* The split media's grid cell: the media renderer's root fills it by default, and the slot's Width, Height and Ratio
+   settings (scoped rules under the block's class) take over when set. */
 .sgs-hero__media {
 	position: relative;
 	width: 100%;
@@ -285,111 +249,11 @@ section.sgs-hero {
 	height: auto;
 }
 
-/* Media overlay — Wave 6 (2026-09-01). The hand-rolled `.sgs-hero__media-overlay`
-   span + its own rule (position/inset/z-index/pointer-events) were REMOVED. The
-   overlay now paints via the shared `assets/css/media-atoms/overlay.css` rule
-   (`.sgs-media-box::after`), which `.sgs-hero__media` qualifies for directly —
-   render.php adds the universal `sgs-media-box` marker class to this same
-   element. No hero-specific overlay CSS is needed: the shared rule's own
-   `position:absolute;inset:0;pointer-events:none` already does the job, and
-   `.sgs-hero__media` above already carries `position:relative` for it to
-   anchor against. */
-
-.sgs-hero__split-image {
-	width: 100%;
-	height: 100%;
-	display: block;
-}
-
-/* object-fit's own structural default used to be hardcoded here
-   (`object-fit: cover`). Wave 6 (2026-09-01): REMOVED — this element now also
-   carries the universal `sgs-media-el` marker class, and the shared
-   `assets/css/media-atoms/object-fit.css` rule already supplies the identical
-   'cover' fallback via `var(--sgs-media-object-fit, cover)`. Both rules were
-   (0,1,0) specificity, so keeping this one risked a load-order race that could
-   silently override a client's own Object fit choice — removing it makes the
-   shared atom rule the single source of truth instead of a coin-flip. */
-
-/* ── Split-image hover zoom ── MIGRATED 2026-09-10 to the shared
- * `hoverSpillScale` wrapper capability (`class-sgs-container-wrapper.php`,
- * declared via `supports.sgs.enabledExtensions` in this block's block.json).
- * The wrapper now owns: the root's `overflow-x:clip;overflow-y:visible;
- * position:relative;z-index:2` (this used to live on `.sgs-hero--split`
- * here — it was TRAPPING the media's own z-index inside a stacking context
- * this rule itself created, so a document-later sibling section always
- * painted over the spilling image at the page level) + the
- * `transition-property:transform` + `:hover`/`:focus-within` scale-to-1.05
- * rule (this used to live here too, keyed to `.sgs-hero__split-image`
- * directly — now generic, keyed to the shared `.sgs-media-box`/
- * `.sgs-media-el` marker pair every split-media tier already carries).
- *
- * What STAYS here, deliberately: the split media COLUMN's own overflow.
- * `.sgs-hero__media` (the `.sgs-media-box`) must itself be `overflow:
- * visible` so the zoom can escape it in the first place — that is a
- * hero-specific structural decision (this column, not its section root),
- * not part of the shared capability's contract. */
+/* The zoom on hover (the shared `hoverSpillScale` wrapper capability) needs the column itself to be overflow: visible,
+   so the scaled media can escape it. */
 .sgs-hero--split .sgs-hero__media {
 	overflow: visible;
 }
-
-/* ── Split media sizing ──
- *
- * ⛔ `splitImageBleed` and its three modifier classes were DELETED 2026-08-26.
- * Read this before reintroducing any "bleed" toggle.
- *
- * The attribute was a client-facing toggle whose ON state genuinely broke the
- * image: it carried `margin-right:-spacing-40; max-width:calc(50% + spacing-40)`,
- * a hardcoded cap that OVERRODE the media column's real 1fr track (measured
- * live: grid track 736.5px, media constrained to 392px) so `object-fit:cover`
- * cropped hard. That compensation rule was written for an older hero shape
- * whose outer split grid carried its own padding; this grid has none, so the
- * term was a naked default beating faithfully-transferred CSS — the
- * FP-1 / "hardcoded defaults are cheats to remove" pattern.
- *
- * The cap was removed 2026-08-25 (`6db78e0e7`, "Hero media cell 392 -> 733px"),
- * which left the toggle INERT. Measured 2026-08-26 across five conditions —
- * editor desktop/tablet/mobile on the real homepage, the live frontend at a
- * narrow width, and a dedicated test page — toggling it changed NOTHING: same
- * geometry, same computed height, same object-fit. Deleting it is therefore
- * behaviour-neutral by measurement, not by assumption.
- *
- * ⚠ WHAT THE DELETION HAD TO PRESERVE, and why these rules are now
- * unconditional rather than gone: the IMAGE half of the old modifier was
- * redundant (`.sgs-hero__split-image` above already sets width/height 100% +
- * object-fit:cover), but the VIDEO and SVG tiers had NO other sizing anywhere —
- * their only `width/height:100%` came from the bleed rules (added at D600 for
- * exactly that reason: a bled video kept its native aspect ratio and overflowed
- * its column). Dropping them with the toggle would have reintroduced that bug.
- * Filling the media column is correct for a split hero regardless of any
- * toggle, so the gate is removed and the sizing kept.
- *
- * ⚠ Still open, and NOT what the toggle caused: video/svg tiers have no
- * width/height/border/padding/object-fit CONTROLS at all — the whole
- * splitMedia* control family is scoped to `.sgs-hero__split-image`. That is a
- * pre-existing capability gap, unchanged by this deletion.
- *
- * `sgs_tier_media_render()` always emits a `{base}--{type}` class
- * (`sgs-hero__split-media--video` / `--svg`), so these target the type directly
- * and need no render.php branch. */
-.sgs-hero__split-media--video,
-.sgs-hero__split-media--svg {
-	border-radius: 0;
-	width: 100%;
-	height: 100%;
-}
-
-/* object-fit's own structural default used to be hardcoded here too
-   (`.sgs-hero__split-media--video { object-fit: cover }`, same (0,1,0)
-   race-with-the-shared-atom risk as `.sgs-hero__split-image` above). REMOVED
-   Wave 6 (2026-09-01) for the identical reason — the video tier also now
-   carries the `sgs-media-el` marker, and `object-fit.css`'s own
-   `var(--sgs-media-object-fit, cover)` fallback already supplies 'cover'. */
-
-.sgs-hero__split-media--svg svg {
-	width: 100%;
-	height: 100%;
-}
-
 
 /* ===== Responsive ===== */
 

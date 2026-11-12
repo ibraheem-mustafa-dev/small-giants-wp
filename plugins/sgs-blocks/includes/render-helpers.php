@@ -34,8 +34,11 @@
  *                                     (a painted surface's dark/light tone from
  *                                     its top-down layers)
  *
- *   helpers-media.php               — sgs_responsive_image, sgs_render_stars,
- *                                     sgs_render_media
+ *   media/hidden-render.php         — sgs_in_hidden_render_context
+ *
+ *   media/cover-crop.php            — sgs_media_cover_crop_plan, sgs_media_drop_auto_sizes
+ *
+ *   helpers-stars.php               — sgs_render_stars
  *
  *   helpers-configurator-pricing.php — sgs_configurator_format_minor,
  *                                      sgs_configurator_mode_price,
@@ -107,12 +110,6 @@
  *                                     never inline. sgs_typography_css_rule
  *                                     is implemented on top of it.)
  *
- *   helpers-media-position.php      — sgs_media_position_css,
- *                                     sgs_media_position_focal_to_css (Spec 35
- *                                     capability-routing doctrine, mechanism
- *                                     (c) — explicitly-wired object-fit/
- *                                     object-position, caller owns selector)
- *
  *   helpers-svg-gradient.php        — sgs_svg_stroke_gradient,
  *                                     sgs_svg_inject_defs (D636/D644 icon/SVG
  *                                     gradient mechanism — converts a
@@ -176,7 +173,6 @@ require_once __DIR__ . '/helpers-responsive.php';
 require_once __DIR__ . '/helpers-separators-css.php';
 require_once __DIR__ . '/helpers-container-separators.php';
 require_once __DIR__ . '/helpers-typography.php';
-require_once __DIR__ . '/helpers-media-position.php';
 require_once __DIR__ . '/helpers-colour-wcag.php';
 require_once __DIR__ . '/helpers-surface-tone.php';
 require_once __DIR__ . '/helpers-scrim.php';
@@ -184,8 +180,9 @@ require_once __DIR__ . '/helpers-motion-easing.php';
 require_once __DIR__ . '/helpers-state-motion-model.php';
 require_once __DIR__ . '/helpers-nav-drawer-motion-model.php';
 require_once __DIR__ . '/helpers-item-effects.php';
-require_once __DIR__ . '/helpers-media.php';
-require_once __DIR__ . '/helpers-tier-media.php';
+require_once __DIR__ . '/media/hidden-render.php';
+require_once __DIR__ . '/media/cover-crop.php';
+require_once __DIR__ . '/helpers-stars.php';
 require_once __DIR__ . '/helpers-media-element.php';
 require_once __DIR__ . '/helpers-configurator-pricing.php';
 require_once __DIR__ . '/helpers-value-ladder.php';
@@ -220,11 +217,9 @@ require_once __DIR__ . '/helpers-icon-shadow.php';
 require_once __DIR__ . '/helpers-end-shape.php';
 require_once __DIR__ . '/helpers-flex-wrap.php';
 require_once __DIR__ . '/helpers-inline-formats.php';
-require_once __DIR__ . '/media/atoms/media-type.php';
 require_once __DIR__ . '/media/atoms/video-behaviour.php';
 require_once __DIR__ . '/class-sgs-media-element.php';
 require_once __DIR__ . '/media/atoms/source.php';
-require_once __DIR__ . '/media/atoms/intrinsic.php';
 require_once __DIR__ . '/media/atoms/meaning.php';
 // ⛔ EVERY atom twin is required here, not just the ones a block happened to
 // need. `sgs_media_element_style()` dispatches by naming convention and SKIPS a

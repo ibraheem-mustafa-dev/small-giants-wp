@@ -279,22 +279,6 @@
 			}
 		}
 	},
-	"Captions": {
-		"type": "object",
-		"additionalProperties": false,
-		"properties": {
-			"id": {
-				"type": "integer",
-				"minimum": 0
-			},
-			"label": {
-				"type": "string"
-			},
-			"lang": {
-				"type": "string"
-			}
-		}
-	},
 	"Caption": {
 		"type": "string"
 	},
@@ -417,7 +401,13 @@
 	"BorderColour": {
 		"type": "string"
 	},
+	"BorderColourGradient": {
+		"type": "string"
+	},
 	"BorderColourHover": {
+		"type": "string"
+	},
+	"BorderColourHoverGradient": {
 		"type": "string"
 	},
 	"Colour": {

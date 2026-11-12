@@ -7,11 +7,14 @@ the adoption marker (Spec 49 section 8.3). Once one does, it enforces:
   AC-2   For each adopting block: no flat `...Tablet` / `...Mobile` media attribute
          (FR-49-2), one focal shape, an object `{x,y}` (FR-49-4), and no per-device
          alt attribute (FR-49-3).
-  G7     No entry declares `kinds` with `context: background` until the renderer prints a
-         background layer (`sgs-bg-media`, WP-8).
+  G7     No entry declares `kinds` with `context: background` unless the renderer declares a
+         background capability (`includes/media/background-capability.json`: its renderer function,
+         element and overlay classes, stylesheet and kinds) that covers every kind the entry names.
   AC-18  Raw `<MediaUpload` appears only in `MediaSlotField.js` and the files in
          `scripts/data/media-picker-exemptions.json`; the core focal picker and the old
-         focal field appear nowhere but `FocalField.js` (FR-49-26).
+         focal field appear nowhere but `FocalField.js` (FR-49-26). While Stage B adopts wave
+         by wave (some block `media-adoption.json` lists has not adopted), it reads only the
+         adopted blocks' folders; once every listed block has adopted, all of `src/`.
 
     python scripts/check-media-contract.py --check
     python scripts/check-media-contract.py --self-test
@@ -30,11 +33,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PLUGIN = os.path.dirname(HERE)
 FIXTURE = os.path.join(PLUGIN, 'tests', 'fixtures', 'media', 'adopted-block.json')
 EXEMPTIONS = os.path.join(HERE, 'data', 'media-picker-exemptions.json')
+ADOPTION_MAP = os.path.join(HERE, 'data', 'media-adoption.json')
 
 EMIT_DIR = os.path.join(PLUGIN, 'src', 'components', 'media', 'emit')
 LEGACY_REGISTRY = os.path.join(PLUGIN, 'src', 'components', 'MediaElementControls.js')
 RENDERER_DIR = os.path.join(PLUGIN, 'includes', 'media')
-BACKGROUND_MARKER = 'sgs-bg-media'
+BACKGROUND_CAPABILITY = os.path.join(RENDERER_DIR, 'background-capability.json')
 WORD = re.compile(r'[A-Z][a-z0-9]*|[a-z0-9]+')
 DEVICE_SUFFIX = re.compile(r'(Tablet|Mobile)$')
 FOCAL_NAME = re.compile(r'(focal|objectPosition)', re.I)
@@ -115,22 +119,53 @@ def contract_problems(block: dict, label: str) -> list[str]:
     return out
 
 
-def background_supported() -> bool:
-    """Whether the renderer prints a background layer (`sgs-bg-media`, built by WP-8)."""
-    for path in glob.glob(os.path.join(RENDERER_DIR, '**', '*.php'), recursive=True):
-        if BACKGROUND_MARKER in _read(path):
-            return True
-    return False
+def background_capability() -> dict | None:
+    """The renderer's declared background capability, or None when the file is absent or unreadable."""
+    try:
+        data = json.loads(_read(BACKGROUND_CAPABILITY)).get('background')
+    except (OSError, ValueError):
+        return None
+    return data if isinstance(data, dict) else None
 
 
-def background_problems(block: dict, label: str, supported: bool | None = None) -> list[str]:
-    """An entry with `context: background` and `kinds` adopts a renderer branch that does not exist yet."""
-    if supported is None:
-        supported = background_supported()
-    if supported:
-        return []
-    return [f'{label}: the entry with prefix {e.get("prefix", "")!r} declares kinds on a background context, but the renderer has no background layer yet (WP-8, `{BACKGROUND_MARKER}`); drop kinds until it lands'
-            for e in adopted_entries(block) if e.get('context') == 'background']
+def capability_gaps(cap: dict | None, plugin: str = PLUGIN) -> list[str]:
+    """What a declared capability lacks to be real: the renderer function in its file, both classes in the stylesheet."""
+    if cap is None:
+        return ['no capability declared']
+    gaps = []
+    renderer, source, sheet = cap.get('renderer'), cap.get('renderer_file'), cap.get('stylesheet')
+    try:
+        code = _read(os.path.join(plugin, str(source)))
+    except (OSError, TypeError):
+        code = ''
+    if not renderer or not re.search(r'function\s+' + re.escape(str(renderer)) + r'\s*\(', code):
+        gaps.append(f'{source} does not define {renderer}()')
+    try:
+        css = _read(os.path.join(plugin, str(sheet)))
+    except (OSError, TypeError):
+        css = ''
+    for key in ('element_class', 'overlay_class'):
+        if not cap.get(key) or '.' + str(cap[key]) not in css:
+            gaps.append(f'{sheet} does not style .{cap.get(key)}')
+    if not cap.get('kinds'):
+        gaps.append('no kinds declared')
+    return gaps
+
+
+def background_problems(block: dict, label: str, capability: dict | None | bool = False, plugin: str = PLUGIN) -> list[str]:
+    """An entry with `context: background` and `kinds` needs a declared capability that is real and covers its kinds."""
+    cap = background_capability() if capability is False else capability
+    gaps = capability_gaps(cap, plugin)
+    out = []
+    for e in adopted_entries(block):
+        if e.get('context') != 'background':
+            continue
+        missing = [k for k in (e.get('kinds') or []) if k not in ((cap or {}).get('kinds') or [])]
+        if gaps:
+            out.append(f'{label}: the entry with prefix {e.get("prefix", "")!r} declares kinds on a background context, but the renderer has no usable background capability ({"; ".join(gaps)})')
+        elif missing:
+            out.append(f"{label}: the entry with prefix {e.get('prefix', '')!r} declares background kinds {missing} that the renderer's capability does not list")
+    return out
 
 
 def picker_problems(files: dict[str, str], exempt: set[str]) -> list[str]:
@@ -160,6 +195,22 @@ def load_sources() -> dict[str, str]:
     return files
 
 
+def listed_blocks() -> set[str]:
+    """Every block name `media-adoption.json` lists in any wave (empty when the file is missing)."""
+    if not os.path.exists(ADOPTION_MAP):
+        return set()
+    with open(ADOPTION_MAP, encoding='utf-8') as fh:
+        return {name for wave in json.load(fh).get('waves', []) for name in wave.get('blocks', {})}
+
+
+def picker_scope(adopters: list[tuple[str, dict]], listed: set[str]) -> list[str] | None:
+    """Folder prefixes AC-18 reads while adoption is partial; None (all of `src/`) once every listed block adopted."""
+    adopted = {b.get('name') for _, b in adopters}
+    if listed and not listed <= adopted:
+        return sorted(os.path.dirname(p) + '/' for p, _ in adopters)
+    return None
+
+
 def load_exemptions() -> set[str]:
     if not os.path.exists(EXEMPTIONS):
         return set()
@@ -176,7 +227,11 @@ def check() -> int:
     for p, b in adopters:
         problems += contract_problems(b, p)
         problems += background_problems(b, p)
-    problems += picker_problems(load_sources(), load_exemptions())
+    sources = load_sources()
+    scope = picker_scope(adopters, listed_blocks())
+    if scope is not None:
+        sources = {p: t for p, t in sources.items() if p.startswith(tuple(scope))}
+    problems += picker_problems(sources, load_exemptions())
     if problems:
         print(f'media-contract: FAIL ({len(problems)})')
         for m in problems:
@@ -221,11 +276,23 @@ def self_test() -> int:
            'attributes': {'gapTablet': {'type': 'string'}, 'fontSizeMobile': {'type': 'string'}, 'photoSource': {'type': 'object'}}}
     if contract_problems(own, 'own'):
         print('self-test FAIL: a non-media device attribute was flagged'); ok = False
-    bg_block = {'supports': {'sgs': {'mediaElements': [{'prefix': 'background', 'context': 'background', 'kinds': ['image']}]}}}
-    if not background_problems(bg_block, 'bg', supported=False) or background_problems(bg_block, 'bg', supported=True):
-        print('self-test FAIL: kinds on a background entry is refused only until the renderer supports it'); ok = False
-    if background_problems({'supports': {'sgs': {'mediaElements': [{'prefix': '', 'context': 'background'}]}}}, 'bg', supported=False):
+    bg_block = {'supports': {'sgs': {'mediaElements': [{'prefix': 'background', 'context': 'background', 'kinds': ['image', 'video']}]}}}
+    real = background_capability()
+    if real is None or capability_gaps(real):
+        print(f'self-test FAIL: the shipped background capability is not real: {capability_gaps(real)}'); ok = False
+    if background_problems(bg_block, 'bg', real):
+        print('self-test FAIL: an entry the shipped capability covers was refused'); ok = False
+    if not background_problems(bg_block, 'bg', None):
+        print('self-test FAIL: kinds on a background entry with no capability declared was not refused'); ok = False
+    if not background_problems(bg_block, 'bg', dict(real or {}, kinds=['image'])):
+        print('self-test FAIL: a background kind the capability does not list was not refused'); ok = False
+    for key in ('renderer', 'element_class', 'overlay_class'):
+        if not background_problems(bg_block, 'bg', dict(real or {}, **{key: 'sgs_nothing_here' if key == 'renderer' else 'sgs-nothing-here'})):
+            print(f'self-test FAIL: a capability whose {key} is not real was accepted'); ok = False
+    if background_problems({'supports': {'sgs': {'mediaElements': [{'prefix': '', 'context': 'background'}]}}}, 'bg', None):
         print('self-test FAIL: a background entry without kinds was refused'); ok = False
+    if background_problems({'supports': {'sgs': {'mediaElements': [{'prefix': 'layer', 'context': 'element', 'kinds': ['image']}]}}}, 'el', None):
+        print('self-test FAIL: a non-background entry was held to the background capability'); ok = False
     pickers = picker_problems({
         'src/blocks/x/edit.js': '<MediaUpload onSelect={f} />',
         'src/components/media/MediaSlotField.js': '<MediaUpload onSelect={f} />',
@@ -236,6 +303,11 @@ def self_test() -> int:
     if len(pickers) != 2 or not any('x/edit.js' in m and 'MediaUpload' in m for m in pickers) \
             or not any('y/edit.js' in m and 'focal' in m for m in pickers):
         print(f'self-test FAIL: picker gate gave {pickers}'); ok = False
+    partial = [('src/blocks/media/block.json', {'name': 'sgs/media'})]
+    if picker_scope(partial, {'sgs/media', 'sgs/hero'}) != ['src/blocks/media/']:
+        print('self-test FAIL: partial adoption must read only the adopted block folders'); ok = False
+    if picker_scope(partial, {'sgs/media'}) is not None or picker_scope(partial, set()) is not None:
+        print('self-test FAIL: full adoption (or no adoption map) must read all of src/'); ok = False
     print('media-contract self-test: ' + ('OK' if ok else 'FAIL'))
     return 0 if ok else 1
 

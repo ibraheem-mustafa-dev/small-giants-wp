@@ -58,7 +58,6 @@ import drawerPreviewCss from './drawer-preview';
 import DrawerShellControls from './DrawerShellControls';
 import DrawerHoverControls from './DrawerHoverControls';
 import sectionColourRows from './section-colour-rows';
-import MediaElementPanel from '../../components/MediaElementPanel';
 import {
 	colourVar,
 	resolveShadowPreviewComposed,
@@ -108,7 +107,7 @@ const MEDIA_CARDS_TEMPLATE = [
 			columns: { desktop: 4, tablet: 2, mobile: 1 },
 			gap: { desktop: '14' },
 			cardRadius: '18px',
-			aspectRatio: '16/10',
+			imageRatio: { desktop: '16 / 10' },
 		},
 	],
 ];
@@ -129,7 +128,7 @@ const BRANDS_TEMPLATE = [
 			columns: { desktop: 4, tablet: 3, mobile: 2 },
 			gap: { desktop: '10' },
 			cardRadius: '12px',
-			aspectRatio: '3/2',
+			imageRatio: { desktop: '3 / 2' },
 		},
 	],
 	[ 'sgs/mega-aside' ],
@@ -1376,22 +1375,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						</>
 					) }
-					{ /* The aside banner's crop mode is a genuine client control
-					   (style.css/render.php do not hardcode object-fit:cover;
-					   the shared media-atoms system paints the same default).
-					   The aside's image is rendered by a CHILD block (sgs/mega-
-					   aside), so this is parent-paints-child, same as
-					   this panel's other Aside-panel controls above. */ }
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix=""
-						blockSlug="sgs/mega-panel"
-						insertion="element"
-						atoms={ [ 'object-fit' ] }
-						mediaType="image"
-						scope="element"
-					/>
 				</PanelBody>
 
 				<PanelBody

@@ -8,18 +8,18 @@ Finds every `<ServerSideRender>` JSX usage across `src/blocks/*/edit.js` and rep
 
 | Block | File | Line | Wrapped in `<Disabled>`? |
 |---|---|---|---|
-| sgs/account | src/blocks/account/edit.js | 373 | yes |
-| sgs/before-after | src/blocks/before-after/edit.js | 943 | yes |
-| sgs/brand-strip | src/blocks/brand-strip/edit.js | 1164 | yes |
+| sgs/account | src/blocks/account/edit.js | 388 | yes |
+| sgs/before-after | src/blocks/before-after/edit.js | 567 | yes |
+| sgs/brand-strip | src/blocks/brand-strip/edit.js | 1013 | yes |
 | sgs/business-info | src/blocks/business-info/edit.js | 956 | yes |
 | sgs/form | src/blocks/form/FormEmbedEdit.js | 141 | yes |
 | sgs/free-delivery-bar | src/blocks/free-delivery-bar/edit.js | 411 | yes |
-| sgs/gift-order | src/blocks/gift-order/edit.js | 102 | yes |
+| sgs/gift-order | src/blocks/gift-order/edit.js | 111 | yes |
 | sgs/google-rating-badge | src/blocks/google-rating-badge/edit.js | 629 | yes |
-| sgs/google-reviews | src/blocks/google-reviews/edit.js | 657 | yes |
-| sgs/nav-bar-menu | src/blocks/nav-bar-menu/edit.js | 967 | yes |
-| sgs/nav-drawer | src/blocks/nav-drawer/ChromePreview.js | 122 | yes |
-| sgs/nav-drawer-menu | src/blocks/nav-drawer-menu/edit.js | 809 | yes |
-| sgs/product-card | src/blocks/product-card/edit.js | 3546 | yes |
-| sgs/responsive-logo | src/blocks/responsive-logo/edit.js | 846 | yes |
+| sgs/google-reviews | src/blocks/google-reviews/edit.js | 647 | yes |
+| sgs/nav-bar-menu | src/blocks/nav-bar-menu/edit.js | 969 | yes |
+| sgs/nav-drawer | src/blocks/nav-drawer/ChromePreview.js | 109 | yes |
+| sgs/nav-drawer-menu | src/blocks/nav-drawer-menu/edit.js | 810 | yes |
+| sgs/product-card | src/blocks/product-card/edit.js | 3484 | yes |
+| sgs/responsive-logo | src/blocks/responsive-logo/edit.js | 631 | yes |
 | sgs/trustpilot-reviews | src/blocks/trustpilot-reviews/edit.js | 807 | yes |

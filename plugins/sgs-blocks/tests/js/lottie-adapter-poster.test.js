@@ -42,8 +42,8 @@ describe( 'lottie-adapter destroy', () => {
 
 	beforeEach( () => {
 		mockEmptyOnDestroy.enabled = true;
-		document.body.innerHTML = '<span class="sgs-lottie"><img class="sgs-lottie__poster" alt=""></span>';
-		container = document.querySelector( '.sgs-lottie' );
+		document.body.innerHTML = '<span class="sgs-lottie-layer"><img class="sgs-lottie__poster" alt=""></span>';
+		container = document.querySelector( '.sgs-lottie-layer' );
 		poster = container.querySelector( 'img' );
 	} );
 

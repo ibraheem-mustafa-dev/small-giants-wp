@@ -1,11 +1,11 @@
 /**
- * Position from the edges: the Floating layer's top, right, bottom and left offsets per device, through the shared
- * length control. An axis with an edge set is placed by that edge at every device instead of by its centre
+ * Position: the Floating layer's centre position (X and Y, a percentage of its section) and its top, right, bottom and
+ * left offsets per device, through the shared length control. An axis with an edge set is placed by that edge at every device instead of by its centre
  * percentage (includes/helpers-layer-edges.php::sgs_layer_edges; canvas twin `layer-preview.js::layerEdges`).
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, SelectControl } from '@wordpress/components';
+import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';
 import { SgsLengthControl, ResponsiveOverride } from '../../components';
 
 const EDGE_UNITS = [
@@ -13,6 +13,11 @@ const EDGE_UNITS = [
 	{ value: '%', label: '%' },
 	{ value: 'em', label: 'em' },
 	{ value: 'rem', label: 'rem' },
+];
+
+const CENTRE = [
+	[ 'positionX', __( 'Position X (%)', 'sgs-blocks' ) ],
+	[ 'positionY', __( 'Position Y (%)', 'sgs-blocks' ) ],
 ];
 
 const EDGES = [
@@ -26,15 +31,37 @@ const EDGES = [
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Block `setAttributes`.
- * @return {JSX.Element} The Position from the edges panel.
+ * @return {JSX.Element} The Position panel.
  */
 export default function LayerEdgePanel( { attributes, setAttributes } ) {
 	return (
 		<InspectorControls>
 			<PanelBody
-				title={ __( 'Position from the edges', 'sgs-blocks' ) }
+				title={ __( 'Position', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
+				{ CENTRE.map( ( [ attr, label ] ) => (
+					<ResponsiveOverride
+						key={ attr }
+						label={ label }
+						value={ attributes[ attr ] }
+						onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<RangeControl
+								help={ inherited ? __( 'Leave empty to use the desktop value', 'sgs-blocks' ) : undefined }
+								value={ ownValue || effectiveValue || 50 }
+								onChange={ ( v ) => setOwnValue( v ) }
+								min={ 0 }
+								max={ 100 }
+								step={ 1 }
+								allowReset={ inherited }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
+				) ) }
 				<p className="components-base-control__help">
 					{ __(
 						'Set an edge to place the layer that far from the side of its section; a negative value pushes it past the side. Setting Left or Right replaces Position X, and Top or Bottom replaces Position Y, on every device.',

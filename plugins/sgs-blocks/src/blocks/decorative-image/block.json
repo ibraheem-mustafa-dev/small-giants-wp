@@ -31,13 +31,34 @@
         },
         "sgs": {
             "motion": true,
-            "_comment_mediaElements": "Adopts object-fit, focal-point and overlay only, unprefixed (one media slot). box-shape is NOT adopted as an atom: its Width, Height and border bases are this block's own width, height and border attributes, so the atom would put --sgs-media-width and a second border on the inner image of every wrapper layer and add second Width, Height and border rows. The layer takes the atom's SHAPE only: the block-private `shape` attribute uses the atom's vocabulary and clip-path map (box-shape.js::validateShape, sgs_media_atom_box_shape_clip_paths) and clips the layer root. The layer paints its own box (border, radius, fill, shadow, height) on its root through the block-private attributes below, built from the shared border, shadow and fill assemblers (sgs_border_element_decls, sgs_shadow_decls, sgs_background_paint_decl), the way sgs/before-after does for its frame.",
+            "_comment_mediaElements": "Spec 49 slot `layer` (kinds image and svg; the video branch is gone). The slot's atoms are narrowed to §10.4's Settings column for this block (Source, Fit, Focal, Width, Max width, Height, Ratio, Opacity, Shape, Blend, Radius, Border, Shadow); the layer's own position, rotation, anchor, stacking, flip, fade on scroll and overflow stay block attributes. `layerBackground`, `layerBorderColourGradient` and `backgroundColourGradient` are the layer's own box paint, not media atoms.",
             "mediaElements": [
-                { "prefix": "", "context": "element", "atoms": [ "object-fit", "focal-point", "overlay" ] }
+                {
+                    "prefix": "layer",
+                    "context": "element",
+                    "kinds": [
+                        "image",
+                        "svg"
+                    ],
+                    "atoms": [
+                        "source",
+                        "meaning",
+                        "object-fit",
+                        "focal-point",
+                        "sizing",
+                        "opacity",
+                        "shape",
+                        "shadow"
+                    ]
+                }
             ],
             "boxFamilies": {
-                "borderRadius": [ "borderRadius" ],
-                "borderWidth": [ "borderWidth" ]
+                "borderRadius": [
+                    "borderRadius"
+                ],
+                "borderWidth": [
+                    "borderWidth"
+                ]
             },
             "fx": {
                 "motionSurface": true,
@@ -47,26 +68,31 @@
                 "image": {
                     "label": "Image",
                     "order": 1,
-                    "clusters": [ "layout", "fill", "border", "position", "animation" ],
+                    "clusters": [
+                        "layout",
+                        "fill",
+                        "border",
+                        "position",
+                        "animation"
+                    ],
                     "isWrapper": true,
                     "prefix": "",
                     "attrMap": {
-                        "css:max-width": "maxWidth",
-                        "css:width": "width",
-                        "css:opacity": "opacity",
+                        "css:max-width": "layerMaxWidth",
+                        "css:width": "layerWidth",
+                        "css:opacity": "layerOpacity",
                         "css:z-index": "zIndex",
                         "css:transform": "rotation",
-                        "css:background-color": "backgroundColour",
+                        "css:background-color": "layerBackground",
                         "css:background-image": "backgroundColourGradient",
-                        "css:border-width": "borderWidth",
-                        "css:border-style": "borderStyle",
-                        "css:border-color": "borderColour",
-                        "css:border-color-gradient": "borderColourGradient",
-                        "css:border-radius": "borderRadius",
-                        "css:clip-path": "shape",
-                        "css:box-shadow": "boxShadow",
-                        "css:box-shadow-color": "boxShadowColour",
-                        "css:height": "height",
+                        "css:border-width": "layerBorderWidth",
+                        "css:border-style": "layerBorderStyle",
+                        "css:border-color": "layerBorderColour",
+                        "css:border-color-gradient": "layerBorderColourGradient",
+                        "css:border-radius": "layerRadius",
+                        "css:box-shadow": "layerBoxShadow",
+                        "css:box-shadow-color": "layerBoxShadowColour",
+                        "css:height": "layerHeight",
                         "css:top": "positionTop",
                         "css:right": "positionRight",
                         "css:bottom": "positionBottom",
@@ -75,8 +101,8 @@
                     "states": {
                         "hover": {
                             "attrMap": {
-                                "css:box-shadow": "boxShadowHover",
-                                "css:box-shadow-color": "boxShadowColourHover"
+                                "css:box-shadow-color": "layerBoxShadowColourHover",
+                                "css:border-color": "layerBorderColourHover"
                             }
                         }
                     },
@@ -86,55 +112,25 @@
         }
     },
     "attributes": {
-        "_comment_decorMedia": "Migrated 2026-05-05 — legacy imageId/imageUrl/imageAlt retained for deprecation. New instances should use decorMedia (unified image-or-video slot).",
-        "decorMedia": {
-            "type": "object",
-            "default": null
-        },
-        "imageId": {
-            "type": "number"
-        },
-        "imageUrl": {
-            "type": "string",
-            "role": "content"
-        },
-        "_comment_artDirection": "Art-direction tiers (2026-08-07) — same {base}/{base}Tablet/{base}Mobile shape and ID-wins-URL-falls-back pairing as sgs/media and sgs/hero, so a client meets ONE interaction for 'a different crop on narrow screens' wherever images appear. A tier left empty falls back to the desktop image at that width (degrade to MORE content, never less). Image-only: the decorMedia video branch returns before the tier siblings are built.",
-        "imageIdTablet": {
-            "type": "number"
-        },
-        "imageUrlTablet": {
-            "type": "string",
-            "role": "content"
-        },
-        "imageIdMobile": {
-            "type": "number"
-        },
-        "imageUrlMobile": {
-            "type": "string",
-            "role": "content"
-        },
-        "imageAlt": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "imageDecorative": {
-            "type": "boolean",
-            "default": true,
-            "_comment": "Spec 35 item 18 / {element}Decorative convention (matches sgs/media's imageDecorative). Default true because a floating image is decoration by default. It governs only the <img> (alt empty plus aria-hidden when on, imageAlt when off); text and blocks inside the layer are always read out."
-        },
         "positionX": {
-			"type": "object",
-			"default": {"desktop": 50}
-		},
+            "type": "object",
+            "default": {
+                "desktop": 50
+            }
+        },
         "positionY": {
-			"type": "object",
-			"default": {"desktop": 50}
-		},
+            "type": "object",
+            "default": {
+                "desktop": 50
+            }
+        },
         "_comment_anchorTo": "Where the edge offsets are measured from. parent (default): the layer's containing block, which inside sgs/hero is the content column. section: sgs/hero prints the layer as a direct child of the hero root, so the offsets are measured from the whole section and do not drift when the copy changes size. Outside a hero the two are the same.",
         "anchorTo": {
             "type": "string",
-            "enum": [ "parent", "section" ],
+            "enum": [
+                "parent",
+                "section"
+            ],
             "default": "parent"
         },
         "_comment_edges": "Edge offsets, per device: a length from the shared length control, negative values included. An axis whose edge (left or right; top or bottom) holds a value at any device is placed by its edges at every device and drops its centre percentage and its half of the centring translate; an axis with none keeps positionX/positionY. Unset prints nothing.",
@@ -154,23 +150,11 @@
             "type": "object",
             "default": {}
         },
-        "_comment_width": "Width per device: a length from the shared length control (px, %, em, rem, vw) or max-content (Fit the content: the layer sizes to its content, capped at the parent unless maxWidth is set). A narrower device inherits the wider one's value.",
-        "width": {
-			"type": "object",
-			"default": {"desktop": "200px"}
-		},
-        "_comment_maxWidth": "The layer's widest size per device: any length the shared length control stores (px, %, em, rem, vw) or none. Unset prints no cap (CSS's own initial value), so a fixed width holds at every device unless the client limits it; Fit the content keeps its max-width:100% until a value is set.",
-        "maxWidth": {
-            "type": "object",
-            "default": {}
-        },
         "rotation": {
-			"type": "object",
-			"default": {"desktop": 0}
-		},
-        "opacity": {
-            "type": "number",
-            "default": 100
+            "type": "object",
+            "default": {
+                "desktop": 0
+            }
         },
         "zIndex": {
             "type": "number",
@@ -188,18 +172,8 @@
             "type": "string",
             "default": "visible"
         },
-        "_comment_shape": "Named shape on the layer root, the vocabulary sgs/media offers (box-shape atom): none, rounded, circle, square. Prints clip-path only; unset prints nothing. A shape alone draws nothing: an empty layer still needs a border, a fill or a shadow.",
-        "shape": {
-            "type": "string",
-            "enum": [ "none", "rounded", "circle", "square" ],
-            "default": "none"
-        },
-        "_comment_box": "The box the layer paints on its own root, so an empty layer can draw a ring, a disc or a tinted panel. Every attribute prints nothing while unset. A layer with no media and no content renders only when a border width, a gradient ring, a shadow or a fill is set.",
-        "height": {
-            "type": "object",
-            "default": {}
-        },
-        "backgroundColour": {
+        "_comment_box": "The box a layer paints itself when it holds inner blocks, or holds no media and so draws a ring, a disc or a tinted panel: fill (layerBackground, backgroundColourGradient), border (layerBorderWidth, layerBorderStyle, layerBorderColour, layerBorderColourGradient), radius (layerRadius) and shadow (layerBoxShadow, layerBoxShadowColour, layerBoxShadowColourHover), through the shared border, shadow and fill assemblers on the layer root. A layer that is only a picture hands those settings to the media renderer, which paints them on the picture. Every attribute prints nothing while unset. A layer with no media and no content renders only when a border width, a gradient ring, a resting shadow or a fill gives it something to draw.",
+        "layerBackground": {
             "type": "string",
             "default": ""
         },
@@ -207,51 +181,58 @@
             "type": "string",
             "default": ""
         },
-        "borderWidth": {
-            "type": "object",
-            "default": {}
-        },
-        "borderStyle": {
+        "layerBorderColourGradient": {
             "type": "string",
-            "enum": [ "none", "solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset" ],
+            "default": ""
+        },
+        "layerDecorative": {
+            "type": "boolean",
+            "default": true,
+            "_comment": "A floating image is decoration by default (Spec 49 Appendix A). It governs only the image: alt is empty and the image is hidden from assistive tech while on; text and blocks inside the layer are always read out."
+        },
+        "layerWidth": {
+            "type": "object",
+            "default": {
+                "desktop": "200px"
+            }
+        },
+        "layerBorderStyle": {
+            "type": "string",
+            "enum": [
+                "none",
+                "solid",
+                "dashed",
+                "dotted",
+                "double",
+                "groove",
+                "ridge",
+                "inset",
+                "outset"
+            ],
             "default": "solid"
         },
-        "borderColour": {
-            "type": "string",
-            "default": ""
-        },
-        "borderColourGradient": {
-            "type": "string",
-            "default": ""
-        },
-        "borderRadius": {
-            "type": "object",
-            "default": {}
-        },
-        "boxShadow": {
-            "type": "string",
-            "default": ""
-        },
-        "boxShadowColour": {
-            "type": "string",
-            "default": ""
-        },
-        "boxShadowColourHover": {
-            "type": "string",
-            "default": ""
-        },
-        "boxShadowHover": {
-            "type": "string",
-            "default": ""
-        },
-        "hideOnTablet": {
-            "type": "boolean",
-            "default": false
-        },
-        "hideOnMobile": {
-            "type": "boolean",
-            "default": false
-        }
+        "layerFit": {"type":"object","_generated":"media-atoms"},
+    	"layerSource": {"type":"object","_generated":"media-atoms"},
+    	"layerLoading": {"type":"string","_generated":"media-atoms"},
+    	"layerAlt": {"type":"string","_generated":"media-atoms"},
+    	"layerFocal": {"type":"object","_generated":"media-atoms"},
+    	"layerRatio": {"type":"object","_generated":"media-atoms"},
+    	"layerHeight": {"type":"object","_generated":"media-atoms"},
+    	"layerMinWidth": {"type":"object","_generated":"media-atoms"},
+    	"layerMaxWidth": {"type":"object","_generated":"media-atoms"},
+    	"layerMinHeight": {"type":"object","_generated":"media-atoms"},
+    	"layerMaxHeight": {"type":"object","_generated":"media-atoms"},
+    	"layerOpacity": {"type":"object","_generated":"media-atoms"},
+    	"layerBlend": {"type":"string","_generated":"media-atoms"},
+    	"layerShape": {"type":"object","_generated":"media-atoms"},
+    	"layerRadius": {"type":"object","_generated":"media-atoms"},
+    	"layerBorderWidth": {"type":"object","_generated":"media-atoms"},
+    	"layerBorderColour": {"type":"string","_generated":"media-atoms"},
+    	"layerBorderColourHover": {"type":"string","_generated":"media-atoms"},
+    	"layerBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
+    	"layerBoxShadow": {"type":"string","_generated":"media-atoms"},
+    	"layerBoxShadowColour": {"type":"string","_generated":"media-atoms"},
+    	"layerBoxShadowColourHover": {"type":"string","_generated":"media-atoms"}
     },
     "render": "file:./render.php",
     "editorScript": "file:./index.js",
@@ -260,10 +241,18 @@
     "viewScriptModule": "file:./view.js",
     "example": {
         "attributes": {
-            "positionX": { "desktop": 80 },
-            "positionY": { "desktop": 20 },
-            "width": { "desktop": "200px" },
-            "rotation": { "desktop": 15 },
+            "positionX": {
+                "desktop": 80
+            },
+            "positionY": {
+                "desktop": 20
+            },
+            "width": {
+                "desktop": "200px"
+            },
+            "rotation": {
+                "desktop": 15
+            },
             "opacity": 100
         }
     }

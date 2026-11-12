@@ -653,14 +653,11 @@
 	grid-template-columns: var(--sgs-cart-item-thumb, 64px) 1fr;
 }
 
-/* object-fit is deliberately NOT declared here (rule 37-media-no-handroll
-   fix) — item-row-template.js appends the shared .sgs-media-el marker class
-   to this <img> at runtime, so assets/css/media-atoms/object-fit.css's
-   `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` rule owns it
-   (identical `cover` fallback to the value this replaces). The placeholder
-   `<span>` sharing this selector is unaffected either way — object-fit does
-   nothing on a non-replaced element. */
+/* Cover unless the client sets a Fit per device: render-scoped-css.php prints that as a scoped rule on the
+   thumbnail. The placeholder `<span>` sharing this selector is unaffected either way — object-fit does nothing on a
+   non-replaced element. */
 :where(.sgs-cart__panel) .sgs-cart__item-thumb {
+	object-fit: cover;
 	display: block;
 	width: 100%;
 	height: auto;

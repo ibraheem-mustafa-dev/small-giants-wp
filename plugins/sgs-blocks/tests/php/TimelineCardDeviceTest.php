@@ -68,7 +68,7 @@ final class TimelineCardDeviceTest extends TestCase {
 	}
 
 	public function test_image_height_replaces_the_aspect_ratio_per_device(): void {
-		$out = $this->block( array( 'mediaAspectRatio' => array( 'desktop' => '4 / 5' ), 'mediaHeight' => array( 'tablet' => 190 ) ) );
+		$out = $this->block( array( 'entryRatio' => array( 'desktop' => '4 / 5' ), 'entryHeight' => array( 'tablet' => '190px' ) ) );
 		$this->assertMatchesRegularExpression( '/@media ?\(max-width:1023px\)\{[^{]*\.sgs-timeline__media-slot\{height:190px;aspect-ratio:auto;\}/', $out['css'] );
 	}
 

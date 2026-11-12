@@ -9,7 +9,8 @@
  * positions it.
  */
 
-[data-sgs-fx~="grid-dots"] {
+/* A background part (`.sgs-bg-media`) keeps the absolute position media-bg.css gives it; the canvas sits inside it. */
+[data-sgs-fx~="grid-dots"]:not(.sgs-bg-media) {
 	/* The canvas is absolutely positioned, so the host is its containing block.
 	   `isolation: isolate` keeps the canvas's stacking local to the emitter, so
 	   a z-index here can never reach out and reorder anything on the page —
@@ -145,6 +146,11 @@
 @media (min-width: 768px) and (max-width: 1023.98px) {
 	[data-sgs-fx~="grid-dots"][data-sgs-fx-off-tablet~="grid-dots"] .sgs-grid-dots__canvas,
 	[data-sgs-fx~="grid-dots"][data-sgs-fx-disable-tablet] .sgs-grid-dots__canvas {
+		display: none;
+	}
+}
+@media (min-width: 1024px) {
+	[data-sgs-fx~="grid-dots"][data-sgs-fx-off-desktop~="grid-dots"] .sgs-grid-dots__canvas {
 		display: none;
 	}
 }

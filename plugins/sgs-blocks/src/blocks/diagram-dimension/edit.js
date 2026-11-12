@@ -19,7 +19,7 @@ import { ResponsiveOverride } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { patchTier, resolveTier, usePreviewTier } from '../../utils';
 import { dimensionPaths } from '../../utils/diagram-geometry';
-import { clampPct, dotRadius, drawingBox, lockedEndpoints } from '../measured-diagram/drawing-box';
+import { clampPct, dotRadius, drawingBox, lockedEndpoints, sourceSize } from '../measured-diagram/drawing-box';
 import LinePanel from './line-panel';
 
 import AuthoredText from '../../components/AuthoredText';
@@ -50,7 +50,7 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 
 	const overlayRef = useRef( null );
 	const previewTier = usePreviewTier();
-	const [ boxW, boxH ] = drawingBox( context[ 'sgs/measuredDiagramWidth' ], context[ 'sgs/measuredDiagramHeight' ] );
+	const [ boxW, boxH ] = drawingBox( ...sourceSize( context[ 'sgs/measuredDiagramSource' ] ) );
 	const tickLength = context[ 'sgs/measuredDiagramTickLength' ];
 	const { sx, sy, ex, ey } = lockedEndpoints( { startX, startY, endX, endY, orientation } );
 	const paths = dimensionPaths(

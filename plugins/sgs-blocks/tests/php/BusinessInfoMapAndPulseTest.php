@@ -42,6 +42,7 @@ final class BusinessInfoMapAndPulseTest extends TestCase {
 		$this->assertStringContainsString( 'loading="lazy"', $out['html'] );
 		$this->assertStringContainsString( 'title="', $out['html'] );
 		$this->assertStringNotContainsString( 'style="', $out['html'] );
+		$this->assertDoesNotMatchRegularExpression( '/<iframe[^>]*\s(width|height)="/', $out['html'], 'the map frame is sized by CSS, not attributes (Spec 49 FR-49-17)' );
 		$this->assertMatchesRegularExpression( '/\.sgs-business-map iframe\{height:460px;?\}/', $out['css'] );
 		$this->assertStringContainsString( 'filter:grayscale(.35) contrast(1.05);', $out['css'] );
 	}

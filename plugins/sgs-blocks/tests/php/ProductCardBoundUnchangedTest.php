@@ -3,7 +3,7 @@
  * A product-bound sgs/product-card (live-data mode) renders the same HTML and scoped CSS with the B11 attributes at
  * their defaults as it did before B11 (the commit just before the mode landed), for a simple product, a product with
  * no photo, a variable product on the read-only card and a variable product on the configurator card (a ranged
- * price). Both renders run the real render.php in the QA harness (a child process) against the same
+ * price; the photo's own markup is not compared, see render()). Both renders run the real render.php in the QA harness (a child process) against the same
  * `--product-file` / `--manifest-file` fixtures from tests/fixtures/motion/render-paths.json; the baseline renders
  * from a `git archive` of the base commit. Only the per-instance hash suffix is normalised.
  *
@@ -35,8 +35,6 @@ final class ProductCardBoundUnchangedTest extends TestCase {
 		'ctaActionMetaKey'    => '',
 		'ctaChoicesToPage'    => false,
 		'priceFromLowest'     => false,
-		'imageSize'           => '',
-		'imageFill'           => false,
 		'showCtaIcon'         => true,
 		'showCtaShadow'       => true,
 		'showSwatches'        => true,
@@ -90,7 +88,12 @@ final class ProductCardBoundUnchangedTest extends TestCase {
 		$decoded = json_decode( substr( $out, (int) strpos( $out, '{"ok"' ) ), true );
 		$this->assertIsArray( $decoded, 'harness did not return JSON: ' . substr( $out, 0, 400 ) );
 		$this->assertTrue( $decoded['ok'] ?? false, 'render.php failed: ' . ( $decoded['error'] ?? $out ) );
-		return (string) preg_replace( '/sgs-([a-z0-9-]+)-[0-9a-f]{8}/', 'sgs-$1-HASH', (string) $decoded['html'] . "\n/*css*/\n" . (string) $decoded['css'] );
+		$text = (string) $decoded['html'] . "\n/*css*/\n" . (string) $decoded['css'];
+		// The photo is the media renderer's since Spec 49 (its markup, bindings and srcset are pinned by the picture tests),
+		// so only where it sits is compared here (whitespace around it included).
+		$text = (string) preg_replace( '/\s*<img\b[^>]*>\s*/s', '<img>', $text );
+		$text = str_replace( '"imageSrcset":"",', '', $text );
+		return (string) preg_replace( '/sgs-([a-z0-9-]+)-[0-9a-f]{8}/', 'sgs-$1-HASH', $text );
 	}
 
 	/** @return array<string,array{0:string}> */
@@ -131,7 +134,7 @@ final class ProductCardBoundUnchangedTest extends TestCase {
 		$plugin   = dirname( __DIR__, 2 );
 
 		$before = $this->render( self::$base_dir, $attrs, $path );
-		foreach ( array( 'showCtaIcon' => false, 'showCtaShadow' => false, 'imageFill' => true ) as $key => $value ) {
+		foreach ( array( 'showCtaIcon' => false, 'showCtaShadow' => false, 'imageHeight' => array( 'desktop' => '180px' ) ) as $key => $value ) {
 			$flipped = $this->render( $plugin, array_merge( $attrs, self::DEFAULTS, array( $key => $value ) ), $path );
 			$this->assertNotSame( $before, $flipped, 'negative control: flipping ' . $key . ' must change the render' );
 		}

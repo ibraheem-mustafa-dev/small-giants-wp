@@ -830,7 +830,7 @@ def run() -> None:
     # ran it (root cause: .claude/reports/2026-06-30-role-derivation-root-cause.md).
     # Fills NULL content roles + UPGRADES the generic 'content' catch-all to a
     # specific content-bearing role (high-confidence name-regex only). DB-driven;
-    # never touches a specific non-'content' role (protects scalar-media etc.).
+    # never touches a specific non-'content' role.
     # ------------------------------------------------------------------
     _rd = apply_role_detection_inline(conn)
     # Every tier's count is printed, not just the content ones: a tier that claims rows
@@ -1819,7 +1819,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
       - UPGRADE: role = 'content' (the generic catch-all) → a SPECIFIC
         content-bearing role, ONLY on a high-confidence Tier-1 attr-name regex
         match (proposed != 'content'). Never touches a row whose role is a
-        specific non-'content' value (protects 'scalar-media' etc.).
+        specific non-'content' value.
 
     TIER 0A (companion) runs FIRST, before the `rows` snapshot below is even taken --
     see `apply_companion_role_tier()`'s docstring for why that ordering is load-bearing.

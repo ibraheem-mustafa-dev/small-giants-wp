@@ -76,7 +76,7 @@ header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown] {
 	backdrop-filter: none;
 }
 
-header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown] > .sgs-container__overlay {
+header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown] > .sgs-bg-overlay {
 	opacity: 0;
 }
 

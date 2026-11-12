@@ -100,23 +100,6 @@ if ( '' !== $post_grid_preset_bg_slug ) {
 	$post_grid_classes[] = 'has-' . $post_grid_preset_bg_slug . '-background-color';
 }
 
-// 37-media-no-handroll: the featured-image object-fit control. Emitted ONCE
-// here (a `.{uid}{...}` bare-selector rule, not per-card) — every card's
-// <img class="sgs-post-grid__img sgs-media-el {uid}"> shares the same
-// block-level value (see the $sgs_pg_uid comment in class-post-grid-rest.php
-// for how AJAX-injected cards pick up the same rule). Replaces the two
-// hardcoded `object-fit: cover` declarations style.css used to carry
-// (grid-mode .sgs-post-grid__img + list-mode .sgs-post-grid--list
-// .sgs-post-grid__image img — both target this one element) — when unset,
-// assets/css/media-atoms/object-fit.css's own var() fallback already
-// resolves to 'cover', so removing them changes nothing by default.
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$post_grid_media_css = SGS_Media_Element::style( $attributes, '', 'sgs/post-grid', $uid, array( 'object-fit' ) );
-	if ( '' !== $post_grid_media_css ) {
-		$responsive_css .= $post_grid_media_css;
-	}
-}
-
 // FR-32-4 as amended (D345): the per-instance card custom-property VALUES used
 // to ride inline on EVERY card root (class-post-grid-rest.php). They are
 // per-block-instance, not per-card, so they emit once here as a scoped
@@ -183,26 +166,11 @@ if ( '' !== $post_grid_filter_vars ) {
 	$responsive_css .= $root_sel . '{' . $post_grid_filter_vars . '}';
 }
 
-// imageHeight: a fixed image frame per device that wins over aspectRatio. A descendant rule on
-// the block root, so cards that view.js pages in later take it too.
-$post_grid_img_tiers = $attributes['imageHeight'] ?? null;
-if ( is_array( $post_grid_img_tiers ) && array() !== $post_grid_img_tiers ) {
-	$responsive_css .= sgs_emit_responsive_css(
-		$root_sel . ' .sgs-post-grid__image',
-		array(
-			array(
-				'value'     => $post_grid_img_tiers,
-				'css'       => 'height',
-				'transform' => static fn( $raw ): string => sgs_css_length_value( $raw ),
-			),
-			array(
-				'value'     => $post_grid_img_tiers,
-				'css'       => 'aspect-ratio',
-				'transform' => static fn( $raw ): string => '' !== sgs_css_length_value( $raw ) ? 'auto' : '',
-			),
-		)
-	);
-}
+// The image frame's ratio per device (imageRatio) and a fixed frame height per device (imageHeight), which wins over
+// the ratio, then the picture's own rules (Spec 49: fit, focal point, radius, shape), printed once for every card.
+// Descendant rules on the block root, so cards that view.js pages in later take them too.
+$responsive_css .= \SGS\Blocks\Post_Grid_Media::frame_css( $attributes, $root_sel . ' .sgs-post-grid__image' );
+$responsive_css .= \SGS\Blocks\Post_Grid_Media::media_css( $uid, $card_params['imageMedia'] );
 
 // categoryPadding / categoryRadius: padding (per device) and corner radius of the plain category
 // label. The label's painted background (categoryBadgeBgColour, the ::after layer below) takes

@@ -2,10 +2,12 @@
 /**
  * Server-side render for the SGS Responsive Logo block.
  *
- * Outputs a <picture> element with up to three logo slots (desktop / tablet /
- * mobile) or, when a `draw` layer on the wrapper names an SVG, an inline SVG for
- * desktop with static images for smaller breakpoints. A `lottie` layer on the
- * wrapper plays over the <picture>, which is its poster.
+ * The logo prints through `SGS_Media_Element::render()` for the `logo` slot (`logoSource` per device, `logoAlt`,
+ * `logoDecorative`, loading from the priority resolver) and the dark variant through the `logoDark` slot. The block's own
+ * switch mode and width (`logoSwitchMode`, `logoSwitchCustomPx`) choose which file each device shows
+ * (`includes/helpers-logo-media.php::sgs_logo_switched_source`). When a `draw` layer on the wrapper names an SVG, an
+ * inline SVG is desktop with static images for smaller breakpoints. A `lottie` layer on the wrapper plays over the
+ * logo, which is its poster.
  *
  * With `inlineSvg` on and an SVG desktop logo, the logo's own file is printed
  * inline instead of the <img>, so its own animation plays and the block's custom
@@ -20,8 +22,9 @@
  * SGS-BEM naming:
  *   .sgs-responsive-logo              — root wrapper
  *   .sgs-responsive-logo__link        — home link (when linkToHome = true)
- *   .sgs-responsive-logo__picture     — <picture> element
- *   .sgs-responsive-logo__image (+ --desktop) / --tablet / --mobile — img elements
+ *   .sgs-responsive-logo__picture     — the span holding the logo and its dark variant
+ *   .sgs-responsive-logo__image (+ --desktop) — the renderer's outermost logo element
+ *   .sgs-responsive-logo__dark        — the dark variant's outermost element
  *   .sgs-responsive-logo__svg         — inline SVG wrapper (draw layer or inlineSvg)
  *   .sgs-responsive-logo__svg--inline — the inlineSvg logo's wrapper (dark-logo swap, colour treatment)
  *   .sgs-responsive-logo__svg--swaps  — the inline SVG hides below 1024px for a compact logo
@@ -65,24 +68,16 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ── Attribute extraction ──────────────────────────────────────────────────────
 
-$desktop_logo_id  = isset( $attributes['logoId'] ) ? absint( $attributes['logoId'] ) : 0;
-$tablet_logo_id   = isset( $attributes['logoIdTablet'] ) ? absint( $attributes['logoIdTablet'] ) : 0;
-$mobile_logo_id   = isset( $attributes['logoIdMobile'] ) ? absint( $attributes['logoIdMobile'] ) : 0;
-// Fill-width default: `width` carries no `default` in block.json (see that
-// file's own attribute comment), so `isset()` here is a real "did the
-// operator ever set this" check — WP's `prepare_attributes_for_render()` only
-// injects a declared schema default, so an untouched instance genuinely has
-// no `width` key. $width_explicit
-// drives the scoped `--logo-width` CSS emission below (skipped when unset,
-// letting style.scss's `var(--logo-width, 100%)` fallback fill the column);
-// `$width` itself still falls back to 240 here ONLY for the <img width="">
-// HTML attribute further down, which needs a real integer to stay valid
-// markup and is a harmless intrinsic-size hint, not the visual constraint.
-$width_explicit   = isset( $attributes['width'] );
-$width            = $width_explicit ? absint( $attributes['width'] ) : 240;
-$link_to_home     = isset( $attributes['linkToHome'] ) ? (bool) $attributes['linkToHome'] : true;
-$alt              = isset( $attributes['alt'] ) ? sanitize_text_field( $attributes['alt'] ) : '';
-$logo_decorative  = ! empty( $attributes['logoDecorative'] );
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-logo-media.php';
+
+// Fill-width default: `width` carries no `default` in block.json, so `isset()` is a real "did the operator ever set
+// this" check. $width_explicit drives the scoped `--logo-width` rule below (skipped when unset, letting style.scss's
+// `var(--logo-width, 100%)` fill the column).
+$width_explicit  = isset( $attributes['width'] );
+$width           = $width_explicit ? absint( $attributes['width'] ) : 240;
+$link_to_home    = isset( $attributes['linkToHome'] ) ? (bool) $attributes['linkToHome'] : true;
+$alt             = isset( $attributes['logoAlt'] ) ? sanitize_text_field( $attributes['logoAlt'] ) : '';
+$logo_decorative = ! empty( $attributes['logoDecorative'] );
 
 // Background colour. Mirrors sgs/brand-strip's root background pair exactly: gradient (via
 // background-image) wins over the flat colour when set+valid, base + hover.
@@ -98,80 +93,40 @@ $draw_layer       = \SGS\Blocks\Motion\Sgs_Motion_Draw_Asset::find( $attributes[
 $svg_animation_id = null !== $draw_layer ? $draw_layer['asset'] : 0;
 $inline_svg_on    = ! empty( $attributes['inlineSvg'] );
 
-// ── Dark-mode logo variant (U-17, design §3.1). ──
-$dark_logo_id  = isset( $attributes['darkLogoId'] ) ? absint( $attributes['darkLogoId'] ) : 0;
-$dark_logo_url = $dark_logo_id > 0 ? (string) wp_get_attachment_url( $dark_logo_id ) : '';
-
-// ── Early exit: nothing to render ────────────────────────────────────────────
-
-// ── Resolve image URLs ────────────────────────────────────────────────────────
-// When no desktop logo is set on the block, fall back to the site-level logo:
-// the Site Info logo, then the WP site's custom logo (Appearance → Customise →
-// Site Identity → Logo). Operators who upload a single site logo get all three
-// breakpoints pointing at it automatically.
-
-// ID-wins-URL-fallback — the same resolution order every other SGS
-// image block uses (media/render.php: "imageId wins; fall back to
-// imageUrl"). The attachment ID stays authoritative because it resolves to the
-// CURRENT file if the media item is replaced, while the stored URL survives when
-// the ID is absent — which is the case for a cloned block, where the draft gave
-// a `<img src>` and no library item exists yet.
-//
-// That fallback also gives `alt` an `attr_type='string'` sibling to name as its
-// `alt_companion_attr`, which is what walk.py requires before it will capture
-// alt text at all. Three bare attachment IDs could never satisfy it.
-$sgs_logo_url_attr = static function ( $key ) use ( $attributes ): string {
-	return isset( $attributes[ $key ] ) ? esc_url_raw( (string) $attributes[ $key ] ) : '';
-};
-
-$desktop_logo_url_attr = $sgs_logo_url_attr( 'logoUrl' );
-$tablet_logo_url_attr  = $sgs_logo_url_attr( 'logoUrlTablet' );
-$mobile_logo_url_attr  = $sgs_logo_url_attr( 'logoUrlMobile' );
-
-// Logo resolution chain (FR-36-22), first non-empty wins: (1) this block's own
-// logoId / logoUrl, tested by the condition below; (2) Site Info `logo`;
-// (3) WordPress core `custom_logo` theme mod; (4) nothing, so no logo element
-// is rendered at all. Tiers 2 and 3 are resolved together by
-// Sgs_Site_Info_Logo::resolve_id().
+// ── Logo source ──────────────────────────────────────────────────────────────
+// Logo resolution chain (FR-36-22), first non-empty wins: (1) this block's own `logoSource` desktop file; (2) Site Info
+// `logo`; (3) WordPress core `custom_logo` theme mod; (4) nothing, so no logo element is rendered at all. Tiers 2 and 3
+// are resolved together by Sgs_Site_Info_Logo::resolve_id(). Tablet and mobile files of the block stay its own.
+$sgs_logo_stored    = is_array( $attributes['logoSource'] ?? null ) ? $attributes['logoSource'] : array();
 $sgs_logo_from_site = false;
-if ( 0 === $desktop_logo_id && '' === $desktop_logo_url_attr ) {
+if ( null === sgs_logo_device_entry( $sgs_logo_stored, 'desktop' ) ) {
 	require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-site-info-logo.php';
 	$sgs_site_logo_id = \SGS\Blocks\Sgs_Site_Info_Logo::resolve_id();
-	if ( $sgs_site_logo_id > 0 ) {
-		$desktop_logo_id    = $sgs_site_logo_id;
-		$sgs_logo_from_site = true;
-	} else {
+	if ( $sgs_site_logo_id <= 0 ) {
 		return;
 	}
+	$sgs_logo_stored['desktop'] = array(
+		'kind' => 'image',
+		'id'   => $sgs_site_logo_id,
+	);
+	$sgs_logo_from_site         = true;
 }
+$desktop_entry   = sgs_logo_device_entry( $sgs_logo_stored, 'desktop' );
+$desktop_logo_id = absint( $desktop_entry['id'] ?? 0 );
+$desktop_url     = sgs_logo_entry_url( $desktop_entry );
+$compact_entry   = sgs_logo_device_entry( $sgs_logo_stored, 'mobile' ) ?? sgs_logo_device_entry( $sgs_logo_stored, 'tablet' );
+$compact_url     = sgs_logo_entry_url( $compact_entry );
+$switch_mode     = isset( $attributes['logoSwitchMode'] ) ? sanitize_key( $attributes['logoSwitchMode'] ) : 'mobile';
+$sgs_logo_switch = sgs_logo_switched_source( $sgs_logo_stored, $switch_mode, absint( $attributes['logoSwitchCustomPx'] ?? 1024 ) );
 
-$desktop_url = $desktop_logo_id > 0 ? wp_get_attachment_url( $desktop_logo_id ) : '';
-if ( ! $desktop_url ) {
-	$desktop_url = $desktop_logo_url_attr;
-}
-if ( ! $desktop_url ) {
-	return;
-}
-$desktop_url = (string) $desktop_url;
+// Dark-mode logo variant (U-17, design §3.1).
+$dark_entry    = sgs_logo_device_entry( $attributes['logoDarkSource'] ?? null, 'desktop' );
+$dark_logo_url = sgs_logo_entry_url( $dark_entry );
 
-$tablet_url = $tablet_logo_id > 0 ? (string) wp_get_attachment_url( $tablet_logo_id ) : '';
-if ( '' === $tablet_url ) {
-	$tablet_url = $tablet_logo_url_attr;
-}
-$mobile_url = $mobile_logo_id > 0 ? (string) wp_get_attachment_url( $mobile_logo_id ) : '';
-if ( '' === $mobile_url ) {
-	$mobile_url = $mobile_logo_url_attr;
-}
-
-// Fall back to desktop when optional slots are empty.
-$effective_tablet_url = $tablet_url ? $tablet_url : $desktop_url;
-$effective_mobile_url = $mobile_url ? $mobile_url : $desktop_url;
-
-// Functional default alt (FR-36-22 basics) — never the literal "logo" (an
-// a11y anti-pattern: it tells a screen-reader user WHAT the graphic is, not
-// what it DOES). Falls back to "[Business] home" so the alt communicates
-// destination intent; an operator-authored value always wins. A logo taken from
-// the site-level tiers falls back to its own media-library alt text first.
+// Functional default alt (FR-36-22 basics): never the literal "logo" (it tells a screen-reader user WHAT the graphic
+// is, not what it DOES). Falls back to "[Business] home" so the alt communicates destination intent; an
+// operator-authored value always wins. A logo taken from the site-level tiers falls back to its own media-library alt
+// text first.
 if ( '' === $alt && $sgs_logo_from_site ) {
 	$alt = sanitize_text_field( (string) get_post_meta( $desktop_logo_id, '_wp_attachment_image_alt', true ) );
 }
@@ -183,29 +138,9 @@ if ( '' === $alt ) {
 	);
 }
 
-// Decorative override (WCAG 2.1 AA 1.1.1, FR-detector-18) — blanks the alt and
-// hides the <img> from assistive tech. Safe on THIS block even when linked:
-// the wrapping <a>'s accessible name comes from $link_aria_label below (set
-// independently of the image), not from the <img alt>, so a linked-home logo
-// keeps its "Go to [Site] homepage" announcement either way. Never strips the
-// link itself — that stays an operator decision (linkToHome).
-$img_alt         = $logo_decorative ? '' : $alt;
-// The box the desktop logo draws at: the printed width, and the height that keeps the file's own aspect ratio.
-$logo_size       = sgs_image_intrinsic_size( $desktop_url );
-$logo_height     = null !== $logo_size && $logo_size[0] > 0 ? max( 1, (int) round( $width * $logo_size[1] / $logo_size[0] ) ) : 0;
-$img_tail_attrs = ( $logo_height > 0 ? ' height="' . $logo_height . '"' : '' ) . ( $logo_decorative ? ' aria-hidden="true"' : '' );
-// The same box for any other file the picture swaps in: the printed width and the height that keeps THAT file's ratio.
-$sgs_logo_height_for = static function ( string $url ) use ( $width, $desktop_url, $logo_height ): int {
-	if ( $url === $desktop_url ) {
-		return $logo_height;
-	}
-	$size = sgs_image_intrinsic_size( $url );
-	return null !== $size && $size[0] > 0 ? max( 1, (int) round( $width * $size[1] / $size[0] ) ) : 0;
-};
-$sgs_logo_source_size = static function ( string $url ) use ( $width, $sgs_logo_height_for ): string {
-	$height = $sgs_logo_height_for( $url );
-	return $height > 0 ? ' width="' . absint( $width ) . '" height="' . $height . '"' : '';
-};
+// Decorative override (WCAG 2.1 AA 1.1.1): blanks the alt and hides the logo from assistive tech. Safe on THIS block
+// even when linked: the wrapping <a>'s accessible name comes from $link_aria_label below, not from the image alt.
+$img_alt = $logo_decorative ? '' : $alt;
 
 // The wrapping <a>'s accessible name is driven DISTINCTLY from the <img alt>
 // (FR-36-22): the image alt describes WHAT the graphic depicts, the link's
@@ -408,15 +343,14 @@ $scoped_css[] = sgs_emit_responsive_css(
 	$sel,
 	array(
 		array(
-			'value' => $attributes['maxWidth'] ?? null,
-			'css'   => 'max-width',
+			'value'        => $attributes['maxWidth'] ?? null,
+			'css'          => 'max-width',
 			'unit_default' => 'px',
 		),
 	)
 );
 
-// --- Maximum height caps the logo IMAGE (light, tablet/mobile picture sources
-// and the dark variant), not the root: the image keeps its aspect ratio
+// --- Maximum height caps the logo IMAGE (every media element the renderer prints: light, compact and dark), not the root: the image keeps its aspect ratio
 // (`width:auto`), so its width follows from the capped height, and the root
 // drops its fill-width default (`width:auto`) so the block box shrinks to the
 // image instead of filling its container. Both `width:auto` rules start at the
@@ -448,13 +382,13 @@ if ( $rl_has_max_height ) {
 			},
 		),
 	);
-	$scoped_css[] = sgs_responsive_css_rule( $rl_auto_tiers, $rl_auto_width, $sel . ',' . $sel . ' .sgs-responsive-logo__image--desktop,' . $sel . ' .sgs-responsive-logo__svg svg' );
-	$scoped_css[] = sgs_emit_responsive_css(
-		$sel . ' .sgs-responsive-logo__image--desktop,' . $sel . ' .sgs-responsive-logo__dark,' . $sel . ' .sgs-responsive-logo__svg svg',
+	$scoped_css[]  = sgs_responsive_css_rule( $rl_auto_tiers, $rl_auto_width, $sel . ',' . $sel . ' .sgs-media-el,' . $sel . ' .sgs-responsive-logo__svg svg' );
+	$scoped_css[]  = sgs_emit_responsive_css(
+		$sel . ' .sgs-media-el,' . $sel . ' .sgs-responsive-logo__svg svg',
 		array(
 			array(
-				'value' => $attributes['maxHeight'] ?? null,
-				'css'   => 'max-height',
+				'value'        => $attributes['maxHeight'] ?? null,
+				'css'          => 'max-height',
 				'unit_default' => 'px',
 			),
 		)
@@ -575,6 +509,84 @@ if ( ! $has_svg_animation && $inline_svg_on && $desktop_logo_id > 0 ) {
 	);
 }
 
+// ── Logo media: the light logo (every device) and the dark variant, both through the shared renderer ──────────────
+
+$sgs_rl_slot   = sgs_logo_media_slot( $block, 'logo' );
+$sgs_rl_attrs  = array(
+	'logoSource'     => $sgs_logo_switch['source'],
+	'logoAlt'        => $alt,
+	'logoDecorative' => $logo_decorative,
+	'logoLoading'    => is_string( $attributes['logoLoading'] ?? null ) ? $attributes['logoLoading'] : '',
+);
+$sgs_rl_main   = array(
+	'html' => '',
+	'css'  => '',
+);
+$sgs_rl_compat = array(
+	'html' => '',
+	'css'  => '',
+);
+$sgs_rl_swaps  = '' !== $compact_url;
+if ( $has_svg_animation ) {
+	// Animation mode: the inline SVG is desktop; the static files show at tablet and below (a hidden fallback above).
+	$sgs_rl_compat = sgs_logo_render(
+		$sgs_rl_slot,
+		$sgs_rl_attrs,
+		$uid . '-f',
+		'sgs/responsive-logo',
+		array(
+			'extra_class'    => 'sgs-responsive-logo__image sgs-responsive-logo__image--desktop',
+			'device_queries' => $sgs_logo_switch['queries'],
+		)
+	);
+} elseif ( '' !== $inline_logo_html ) {
+	// Inline logo: the SVG file itself at every width; a compact logo swaps in below 1024px.
+	if ( $sgs_rl_swaps ) {
+		$sgs_rl_compat = sgs_logo_render(
+			$sgs_rl_slot,
+			array_merge( $sgs_rl_attrs, array( 'logoSource' => array( 'desktop' => $compact_entry ) ) ),
+			$uid . '-f',
+			'sgs/responsive-logo',
+			array(
+				'extra_class' => 'sgs-responsive-logo__image sgs-responsive-logo__image--desktop',
+			)
+		);
+	}
+} else {
+	$sgs_rl_main = sgs_logo_render(
+		$sgs_rl_slot,
+		$sgs_rl_attrs,
+		$uid . '-l',
+		'sgs/responsive-logo',
+		array(
+			'extra_class'    => 'sgs-responsive-logo__image sgs-responsive-logo__image--desktop',
+			'device_queries' => $sgs_logo_switch['queries'],
+		)
+	);
+	if ( '' === $sgs_rl_main['html'] ) {
+		return;
+	}
+}
+$sgs_rl_dark = array(
+	'html' => '',
+	'css'  => '',
+);
+if ( '' !== $dark_logo_url ) {
+	// Hidden by default; shown (and the light logo hidden) per the ground rules in style.scss. It sits over the light
+	// logo's box, so it takes that box's size and reserves none of its own.
+	$sgs_rl_dark = sgs_logo_render(
+		sgs_logo_media_slot( $block, 'logoDark' ),
+		array( 'logoDarkSource' => array( 'desktop' => $dark_entry ) ),
+		$uid . '-d',
+		'sgs/responsive-logo',
+		array(
+			'extra_class' => 'sgs-responsive-logo__dark',
+			'hidden'      => true,
+		)
+	);
+}
+$scoped_css[] = $sgs_rl_main['css'] . $sgs_rl_compat['css'] . $sgs_rl_dark['css'];
+
 // ── Build inner markup ────────────────────────────────────────────────────────
 
 ob_start();
@@ -588,115 +600,24 @@ if ( $print_inner_link ) {
 }
 
 if ( $has_svg_animation && $svg_html ) {
-	// Animation mode: inline SVG for desktop; static images for tablet + mobile.
-	//
 	// The draw layer's attributes sit on the block root (the motion renderer prints them), and `fx-draw.js` searches
 	// that element's descendants for drawable shapes, so this wrapper span only holds the sanitised SVG.
 	echo '<span class="sgs-responsive-logo__svg" aria-hidden="true">';
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rebuilt through sgs_svg_sanitise_document().
 	echo $svg_html;
 	echo '</span>';
-
-	// Hidden static images for tablet and mobile (displayed by CSS media queries).
-	printf(
-		'<picture class="sgs-responsive-logo__picture sgs-responsive-logo__picture--fallback">' .
-		'<source media="' . SGS_Breakpoints::query( 'mobile' ) . '" srcset="%1$s"' . $sgs_logo_source_size( $effective_mobile_url ) . '>' .
-		'<source media="' . SGS_Breakpoints::query( 'tablet' ) . '" srcset="%2$s"' . $sgs_logo_source_size( $effective_tablet_url ) . '>' .
-		'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager"%6$s>' .
-		'</picture>',
-		esc_url( $effective_mobile_url ),
-		esc_url( $effective_tablet_url ),
-		esc_url( $desktop_url ),
-		esc_attr( $img_alt ),
-		absint( $width ),
-		$img_tail_attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
-	);
+	echo '<span class="sgs-responsive-logo__picture sgs-responsive-logo__picture--fallback">' . $sgs_rl_compat['html'] . '</span>' . $sgs_rl_dark['html']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the media renderer escapes its own output.
 } elseif ( '' !== $inline_logo_html ) {
-	// Inline logo: the SVG file itself at every width; a compact logo (mobile, else tablet slot) swaps in below 1024px.
-	$inline_compact_url = '' !== $mobile_url ? $mobile_url : $tablet_url;
-	printf( '<span class="sgs-responsive-logo__svg sgs-responsive-logo__svg--inline%s">', '' !== $inline_compact_url ? ' sgs-responsive-logo__svg--swaps' : '' );
+	printf( '<span class="sgs-responsive-logo__svg sgs-responsive-logo__svg--inline%s">', $sgs_rl_swaps ? ' sgs-responsive-logo__svg--swaps' : '' );
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rebuilt through sgs_svg_sanitise_document(); added attributes escaped by sgs_svg_inline_root_attributes().
 	echo $inline_logo_html;
 	echo '</span>';
-	if ( '' !== $inline_compact_url ) {
-		printf(
-			'<picture class="sgs-responsive-logo__picture sgs-responsive-logo__picture--fallback">' .
-			'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%1$s" alt="%2$s" width="%3$d" loading="eager" decoding="async"%4$s>' .
-			'</picture>',
-			esc_url( $inline_compact_url ),
-			esc_attr( $img_alt ),
-			absint( $width ),
-			( $sgs_logo_height_for( $inline_compact_url ) > 0 ? ' height="' . $sgs_logo_height_for( $inline_compact_url ) . '"' : '' ) . ( $logo_decorative ? ' aria-hidden="true"' : '' ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
-		);
+	if ( $sgs_rl_swaps ) {
+		echo '<span class="sgs-responsive-logo__picture sgs-responsive-logo__picture--fallback">' . $sgs_rl_compat['html'] . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the media renderer escapes its own output.
 	}
+	echo $sgs_rl_dark['html']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the media renderer escapes its own output.
 } else {
-	// Standard mode: the compact/alternate logo replaces the desktop logo per
-	// logoSwitchMode. mobile/tablet swap at fixed viewport tiers; custom swaps
-	// at the operator's own chosen viewport width (logoSwitchCustomPx). All
-	// three use <picture><source media>. No switch happens until an alternate
-	// logo is set.
-	$switch_mode = isset( $attributes['logoSwitchMode'] ) ? sanitize_key( $attributes['logoSwitchMode'] ) : 'mobile';
-	$compact_url = '' !== $mobile_url ? $mobile_url : $tablet_url; // square/stacked alt, else the tablet slot.
-	$has_alt     = '' !== $compact_url;
-
-	if ( 'custom' === $switch_mode && $has_alt ) {
-		// The compact logo covers the operator's own breakpoint band
-		// (<= logoSwitchCustomPx viewport), clamped to a sane pixel range.
-		$custom_px = max( 320, min( 2000, absint( $attributes['logoSwitchCustomPx'] ?? 1024 ) ) );
-		printf(
-			'<picture class="sgs-responsive-logo__picture">' .
-			'<source media="(max-width: %5$dpx)" srcset="%1$s"' . $sgs_logo_source_size( $compact_url ) . '>' .
-			'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async"%6$s>' .
-			'</picture>',
-			esc_url( $compact_url ),
-			esc_url( $desktop_url ),
-			esc_attr( $img_alt ),
-			absint( $width ),
-			absint( $custom_px ),
-			$img_tail_attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
-		);
-	} elseif ( 'tablet' === $switch_mode && $has_alt ) {
-		// The compact logo covers the whole tablet + mobile band (<=1023px viewport).
-		printf(
-			'<picture class="sgs-responsive-logo__picture">' .
-			'<source media="' . SGS_Breakpoints::query( 'tablet' ) . '" srcset="%1$s"' . $sgs_logo_source_size( $compact_url ) . '>' .
-			'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async"%5$s>' .
-			'</picture>',
-			esc_url( $compact_url ),
-			esc_url( $desktop_url ),
-			esc_attr( $img_alt ),
-			absint( $width ),
-			$img_tail_attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
-		);
-	} else {
-		// mobile (default): compact at <=767px; a distinct tablet logo (if set) fills
-		// the 768-1023 band. Empty slots fall back to desktop (no switch = one logo).
-		printf(
-			'<picture class="sgs-responsive-logo__picture">' .
-			'<source media="' . SGS_Breakpoints::query( 'mobile' ) . '" srcset="%1$s"' . $sgs_logo_source_size( $effective_mobile_url ) . '>' .
-			'<source media="' . SGS_Breakpoints::query( 'tablet' ) . '" srcset="%2$s"' . $sgs_logo_source_size( $effective_tablet_url ) . '>' .
-			'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async"%6$s>' .
-			'</picture>',
-			esc_url( $effective_mobile_url ),
-			esc_url( $effective_tablet_url ),
-			esc_url( $desktop_url ),
-			esc_attr( $img_alt ),
-			absint( $width ),
-			$img_tail_attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
-		);
-	}
-}
-
-// Dark-mode logo variant (U-17, design §3.1). Hidden by default; shown (and the light logo hidden)
-// under :root[data-theme="dark"] / :root[data-theme="auto"][data-prefers-dark="true"]
-// via style.css. It carries no width/height attributes: it is positioned
-// absolutely over the light logo's box (style.css), so it takes that box's size
-// and reserves none of its own.
-if ( '' !== $dark_logo_url ) {
-	printf(
-		'<img class="sgs-responsive-logo__dark" src="%s" alt="" aria-hidden="true" loading="eager" decoding="async">',
-		esc_url( $dark_logo_url )
-	);
+	echo '<span class="sgs-responsive-logo__picture">' . $sgs_rl_main['html'] . $sgs_rl_dark['html'] . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the media renderer escapes its own output.
 }
 
 if ( $print_inner_link ) {
@@ -711,6 +632,7 @@ $inner_html = ob_get_clean();
 // (sgs_css_length_value() / wp_style_engine_get_styles), so no un-sanitised value
 // survives here.
 
+$scoped_css = array_filter( $scoped_css, 'strlen' );
 if ( $scoped_css ) :
 	?>
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>

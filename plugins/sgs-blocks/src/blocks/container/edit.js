@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import BackgroundLayers from '../../components/media/BackgroundLayers';
 import {
 	useBlockProps,
 	useInnerBlocksProps,
@@ -43,7 +44,7 @@ import {
 	resolveResponsiveTier,
 	backgroundPaintPreview,
 	textPaintPreview,
-	backgroundPreview,
+	backgroundMediaPreview,
 	svgBackgroundPreview,
 	tierBoxLonghands,
 	resolveContentWidthPreview,
@@ -232,30 +233,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		bgSvgTextShadow: attributes.bgSvgTextShadow,
 	} );
 
-	const bgPreview = backgroundPreview(
-		{
-			backgroundImage: attributes.backgroundImage,
-			backgroundImageTablet: attributes.backgroundImageTablet,
-			backgroundImageMobile: attributes.backgroundImageMobile,
-			surfaceTone: attributes.surfaceTone,
-			bgVideo: attributes.bgVideo,
-			backgroundSize: attributes.backgroundSize,
-			backgroundPosition: attributes.backgroundPosition,
-			backgroundRepeat: attributes.backgroundRepeat,
-			backgroundAttachment: attributes.backgroundAttachment,
-			backgroundOverlayColour: attributes.backgroundOverlayColour,
-			overlayGradient: attributes.overlayGradient,
-			backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
-			backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
-			backgroundColour: attributes.backgroundColour,
-			backgroundColourGradient: attributes.backgroundColourGradient,
-			surfaceBlur: attributes.surfaceBlur,
-			surfaceSaturate: attributes.surfaceSaturate,
-		},
-		colourPalette,
-		gradientPresets,
-		previewTier
-	);
+	const bgPreview = backgroundMediaPreview( attributes, colourPalette, gradientPresets, previewTier );
 
 	const style = {
 		gap: gapCssValue( gap, previewTier ),
@@ -1219,6 +1197,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 			{ hasBandProps ? (
 				<div { ...blockProps }>
+					<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
 					{ svgLayer }
 					<ShapeDividerPreview
 						attributes={ attributes }
@@ -1241,6 +1220,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				// it rather than added alongside the spread (which React would
 				// silently discard).
 				<div { ...innerBlocksProps }>
+					<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
 					{ svgLayer }
 					<ShapeDividerPreview
 						attributes={ attributes }

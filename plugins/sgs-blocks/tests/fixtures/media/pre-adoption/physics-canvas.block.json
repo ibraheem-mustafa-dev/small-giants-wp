@@ -1,0 +1,378 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/physics-canvas",
+	"version": "0.1.0",
+	"title": "SGS Physics Canvas",
+	"category": "sgs-layout",
+	"description": "A container-equivalent section whose DECORATIVE children become throwable, physics-driven bodies (Spec 38 FR-38-27 / D447). Only non-interactive, non-textual content may be placed inside — nothing operable or must-read, because a thrown object has no discrete single-pointer alternative for WCAG 2.5.7. Physics are disabled under prefers-reduced-motion; children still render, static, in their authored positions.",
+	"keywords": [
+		"physics",
+		"drag",
+		"throw",
+		"decorative",
+		"gsap",
+		"canvas"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "screenoptions",
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": false,
+			"text": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"motion": true,
+			"_comment_overlayNotAdopted": "backgroundOverlayColour/Opacity/OpacityTablet/OpacityMobile/ColourHover/BlendMode are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- same settled reasoning as sgs/container (see its block.json for the full note, 2026-09-03, Bean-directed). Detector rule 37-media-no-handroll's bare `background`/`bg`-prefix discriminator excludes this whole family from supports.sgs.mediaElements by design.",
+			"containerKind": "section",
+			"enabledExtensions": [
+				"background"
+			],
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				],
+				"margin": [
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
+				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "backgroundColour",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:max-width": "maxWidth",
+						"css:min-height": "minHeight",
+						"css:border-color-gradient": "borderColourGradient"
+					},
+					"_note": "composite wrapper rule (.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md §13.6, D152): this block MUST mirror sgs/container's wrapper capabilities (padding, max-width, contentWidth, gap, background) rather than diverging — it is a section-KIND composite so it KEEPS SGS_Container_Wrapper rather than going block-private (D294). Background migrated off native color.background onto the flat `backgroundColour` attr (D635-pattern). `supports.color.text` was turned OFF WITHOUT a replacement flat attr — every allowed child (core/image, sgs/media, sgs/icon, sgs/decorative-image) is decorative/non-textual and sgs/icon always sets its own explicit `iconColour`, so inherited `color` never painted anything visible here; adding a `textColour` attr would be a control with no visible effect."
+				},
+				"content-band": {
+					"label": "Content band (throw arena)",
+					"layer": "CONTENT",
+					"order": 2,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "contentBand",
+					"attrMap": {
+						"css:max-width": "contentWidth",
+						"css:padding": "padding"
+					},
+					"_note": "The __inner band IS the physics arena — its rendered box is what view.js reads as Draggable's bounds and the Physics2D floor/wall geometry."
+				},
+				"background": {
+					"absentIn": ["bg-css-layer"],
+					"absentWhy": "A tiled, sized, parallax, fixed or per-device background image paints on the root's ::before layer (SGS_Container_Wrapper::render, $sgs_bg_img_is_simple false), so no element carries the image; a layer on the root reaches the section.",
+					"surface": true,
+					"prefix": "",
+					"selector": ".sgs-container__image-bg",
+					"label": "Background image",
+					"order": 3,
+					"clusters": [],
+					"_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
+				},
+				"svg-bg": {
+					"svg": true,
+					"surface": true,
+					"prefix": "",
+					"selector": ".sgs-container__svg-bg",
+					"label": "Background SVG",
+					"order": 4,
+					"clusters": [],
+					"_note": "`.sgs-container__svg-bg`, the wrapper SGS_Container_Wrapper prints around a background or foreground SVG (bgSvg*). A motion target so an SVG loop or `draw` effect layer reaches the SVG alone; it declares no style clusters because its look is governed by the bgSvg* controls."
+				}
+			}
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-physics-canvas"
+	},
+	"attributes": {
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"minHeight": {
+			"type": "object",
+			"default": {
+				"desktop": "480px",
+				"mobile": "320px"
+			}
+		},
+		"contentWidth": {
+			"type": "object",
+			"default": {
+				"desktop": "full"
+			}
+		},
+		"shadow": {
+			"type": "string"
+		},
+		"shadowColour": {
+			"type": "string"
+		},
+		"shadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundAttachment": {
+			"type": "string",
+			"default": "scroll",
+			"enum": [
+				"scroll",
+				"fixed"
+			]
+		},
+		"backgroundImage": {
+			"type": "object"
+		},
+		"backgroundImageMobile": {
+			"type": "object"
+		},
+		"backgroundImageTablet": {
+			"type": "object"
+		},
+		"surfaceTone": {
+			"type": "string",
+			"enum": [ "auto", "light", "dark" ],
+			"default": "auto"
+		},
+		"backgroundOverlayColour": {
+			"type": "string"
+		},
+		"backgroundOverlayOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 30
+			}
+		},
+		"backgroundPosition": {
+			"type": "string",
+			"default": "center center"
+		},
+		"backgroundRepeat": {
+			"type": "string",
+			"default": "no-repeat",
+			"enum": [
+				"no-repeat",
+				"repeat",
+				"repeat-x",
+				"repeat-y"
+			]
+		},
+		"backgroundSize": {
+			"type": "string",
+			"default": "cover",
+			"enum": [
+				"cover",
+				"contain",
+				"auto"
+			]
+		},
+		"bgSvgContent": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgMinHeight": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgOpacity": {
+			"type": "number",
+			"default": 100
+		},
+		"bgSvgPosition": {
+			"type": "string",
+			"default": "background",
+			"enum": [
+				"background",
+				"foreground"
+			]
+		},
+		"bgSvgTextShadow": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgVideo": {
+			"type": "object"
+		},
+		"bgVideoTablet": {
+			"type": "object"
+		},
+		"bgVideoMobile": {
+			"type": "object"
+		},
+		"overlayGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"surfaceBlur": {
+			"type": "string",
+			"default": "",
+			"description": "Backdrop blur: a single CSS length (for example 24px) that blurs whatever sits behind this block. Emitted by SGS_Container_Wrapper via includes/helpers-surface-ground.php; empty emits nothing."
+		},
+		"surfaceSaturate": {
+			"type": "number",
+			"description": "Backdrop saturation as a whole-number percentage (for example 150), paired with surfaceBlur. Unset emits nothing; 0 is a legal value."
+		},
+		"backgroundOverlayColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayBlendMode": {
+			"type": "string",
+			"default": "normal",
+			"enum": [
+				"normal",
+				"multiply",
+				"screen",
+				"overlay",
+				"darken",
+				"lighten",
+				"color-dodge",
+				"color-burn",
+				"soft-light",
+				"hard-light",
+				"difference",
+				"exclusion"
+			]
+		},
+		"physicsGravity": {
+			"type": "number",
+			"default": 1400,
+			"description": "Downward acceleration applied to a thrown body, px/s²."
+		},
+		"physicsBounce": {
+			"type": "number",
+			"default": 0.55,
+			"description": "Restitution (0-1) applied when a body hits an arena edge."
+		},
+		"physicsEdgeResistance": {
+			"type": "number",
+			"default": 0.5,
+			"description": "GSAP Draggable edgeResistance (0-1) — higher resists dragging a body past the arena bounds."
+		},
+		"tagName": {
+			"type": "string",
+			"enum": [
+				"div",
+				"section",
+				"article",
+				"aside",
+				"nav",
+				"header",
+				"footer",
+				"figure"
+			],
+			"default": "section"
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"minHeight": "360px"
+		}
+	}
+}

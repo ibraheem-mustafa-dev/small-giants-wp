@@ -423,19 +423,18 @@
 	flex: 0 0 var( --sgs-mm-aside-w, 340px );
 	width: var( --sgs-mm-aside-w, 340px );
 }
-.wp-block-sgs-mega-panel .sgs-mega-aside .sgs-media__img,
 .wp-block-sgs-mega-panel .sgs-mega-aside img {
 	max-height: 170px;
 	/* This rule's specificity (0,3,0) is BEATEN by render.php's scoped
 	   `$aside_sel` rule (0,4,0:
-	   `.{uid}.wp-block-sgs-mega-panel .sgs-mega-aside .sgs-media__img`), so
+	   `.{uid}.wp-block-sgs-mega-panel .sgs-mega-aside img`), so
 	   this declaration does not win on the frontend (see render.php's own note
 	   at the matching rule). It is kept as `var()` with the same `cover`
 	   fallback so this stylesheet still paints something sane if render.php's
 	   scoped `<style>` is ever absent from the page. */
 	object-fit: var( --sgs-media-object-fit, cover );
 	width: 100%;
-	border-radius: 12px;
+	border-radius: var( --sgs-mega-aside-img-radius, 12px );
 }
 .wp-block-sgs-mega-panel:not( .sgs-mega-panel--aside-sep-none ) .sgs-mega-aside {
 	/* Width falls back to 0: the divider's width is the asideSeparator control's

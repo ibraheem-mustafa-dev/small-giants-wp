@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Gate: the media-element stylesheet's breakpoints must match the ONE source.
+ * Gate: the media stylesheets' breakpoints must match the ONE source.
  *
  * WHY THIS EXISTS
  * ---------------
- * CSS cannot read a PHP constant, so `assets/css/media-element.css` restates
- * the two device breakpoints as literals. That restatement is the only place in
+ * CSS cannot read a PHP constant, so the media stylesheets (`assets/css/media-*.css`)
+ * restate a device breakpoint as a literal where they need one. That restatement is the only place in
  * the media layer where the numbers are typed by hand, and a hand-typed
  * breakpoint drifts: `extensions.css`'s Image Controls block already carries
  * `min-width:769px` / `max-width:768px` against this project's 767/1023
@@ -28,7 +28,17 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 
 const PLUGIN = path.resolve( __dirname, '..' );
-const CSS = path.join( PLUGIN, 'assets', 'css', 'media-element.css' );
+const CSS_DIR = path.join( PLUGIN, 'assets', 'css' );
+
+/** The media system's stylesheets (media-base.css, media-bg.css and the rest), as one text. */
+function mediaCss() {
+	return fs
+		.readdirSync( CSS_DIR )
+		.filter( ( f ) => /^media-[a-z]+\.css$/.test( f ) )
+		.sort()
+		.map( ( f ) => fs.readFileSync( path.join( CSS_DIR, f ), 'utf8' ) )
+		.join( String.fromCharCode( 10 ) );
+}
 const PHP_SRC = path.join( PLUGIN, 'includes', 'class-sgs-breakpoints.php' );
 const JS_SRC = path.join( PLUGIN, 'src', 'utils', 'responsive.js' );
 
@@ -109,16 +119,12 @@ function evaluate( cssText, phpText, jsText ) {
 
 	const expected = [ php.mobile, php.tablet ].sort( ( a, b ) => a - b );
 	const unexpected = widths.filter( ( w ) => ! expected.includes( w ) );
-	const absent = expected.filter( ( w ) => ! widths.includes( w ) );
 
 	unexpected.forEach( ( w ) =>
 		problems.push(
-			`media-element.css uses max-width:${ w }px, which is not a device breakpoint ` +
+			`the media stylesheets use max-width:${ w }px, which is not a device breakpoint ` +
 				`(expected ${ expected.join( ' or ' ) })`
 		)
-	);
-	absent.forEach( ( w ) =>
-		problems.push( `media-element.css never uses the ${ w }px breakpoint` )
 	);
 
 	return { problems, php, js, widths };
@@ -126,7 +132,7 @@ function evaluate( cssText, phpText, jsText ) {
 
 function run() {
 	const r = evaluate(
-		fs.readFileSync( CSS, 'utf8' ),
+		mediaCss(),
 		fs.readFileSync( PHP_SRC, 'utf8' ),
 		fs.readFileSync( JS_SRC, 'utf8' )
 	);
@@ -163,10 +169,9 @@ function selfTest() {
 		d.problems.some( ( p ) => p.includes( '768px' ) )
 	);
 
-	// A stylesheet missing a breakpoint entirely is also wrong — a tier with no
-	// rule silently renders at the tier above.
+	// A stylesheet that restates only one breakpoint, or none, is fine: the renderer prints the tier rules.
 	const half = '@media (max-width: 767px){}';
-	ck( 'a MISSING breakpoint is reported', evaluate( half, PHP, JS ).problems.length === 1 );
+	ck( 'a stylesheet using one breakpoint passes', evaluate( half, PHP, JS ).problems.length === 0 );
 
 	// Fails closed when the source cannot be read, rather than assuming 767/1023.
 	const blind = evaluate( good, 'nothing useful here', JS );
@@ -192,7 +197,7 @@ function selfTest() {
 	ck(
 		'the REAL stylesheet passes against the REAL source',
 		evaluate(
-			fs.readFileSync( CSS, 'utf8' ),
+			mediaCss(),
 			fs.readFileSync( PHP_SRC, 'utf8' ),
 			fs.readFileSync( JS_SRC, 'utf8' )
 		).problems.length === 0

@@ -74,10 +74,9 @@ final class FocusGroundClassTest extends TestCase {
 		$out = $this->render_block(
 			'sgs/before-after',
 			array(
-				'beforeMediaType' => 'video',
-				'beforeVideoUrl'  => 'https://example.test/before.mp4',
-				'afterImageUrl'   => 'https://example.test/after.jpg',
-				'height'      => array( 'desktop' => '400px' ),
+				'beforeSource' => array( 'desktop' => array( 'kind' => 'video', 'url' => 'https://example.test/before.mp4', 'mime' => 'video/mp4', 'poster' => array( 'url' => 'https://example.test/poster.jpg', 'width' => 1200, 'height' => 800 ) ) ),
+				'afterSource'  => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/after.jpg', 'width' => 1200, 'height' => 800 ) ),
+				'height'       => array( 'desktop' => '400px' ),
 			)
 		);
 		$this->assertTrue( $this->has_token( $this->classes_of( $out['html'], 'wp-block-sgs-before-after__video-toggle' ), 'sgs-focus--duotone' ), 'the toggle sits over imagery' );

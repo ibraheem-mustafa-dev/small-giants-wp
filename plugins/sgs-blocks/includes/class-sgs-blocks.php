@@ -62,22 +62,21 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/class-block-defaults.php';
 		Block_Defaults::register();
 
-		// Image Controls extension — objectPosition / maxWidth / per-breakpoint height.
-		require_once SGS_BLOCKS_PATH . 'includes/image-controls.php';
-
 		// The universal rich-text formats (Spec 02 FR-2-4 highlight, FR-2-5 inline photo). Their stylesheet is
 		// registered once; the page loads it only when a block's markup holds either format (the render_block
 		// filter), and the editor canvas always loads it (enqueue_editor_extension_styles()).
 		require_once SGS_BLOCKS_PATH . 'includes/helpers-inline-formats.php';
 		add_action( 'init', array( $this, 'register_inline_formats_style' ) );
 		add_filter( 'render_block', 'sgs_inline_formats_maybe_enqueue', 10, 2 );
+		// An inline photo is a small decoration in a line of text: lazy, with sizes=auto (helpers-inline-formats.php).
+		add_filter( 'wp_content_img_tag', 'sgs_inline_photo_img_tag', 25 );
 
 		// The shared `sgs/nav` store module that the header's view modules import (`@sgs/nav-store`).
 		require_once SGS_BLOCKS_PATH . 'includes/nav-store-module.php';
 		add_action( 'init', 'sgs_register_nav_store_module', 5 );
 
-		// A cover-cropped image drawn wider than its box drops core's sizes="auto" (helpers-media.php).
-		require_once SGS_BLOCKS_PATH . 'includes/helpers-media.php';
+		// A cover-cropped image drawn wider than its box drops core's sizes="auto" (media/cover-crop.php).
+		require_once SGS_BLOCKS_PATH . 'includes/media/cover-crop.php';
 		add_filter( 'wp_content_img_tag', 'sgs_media_drop_auto_sizes', 20 );
 
 		// Tier G motion registry (Spec 38 §4.4) — registers the GSAP
@@ -440,21 +439,8 @@ final class SGS_Blocks {
 		// target for `device-visibility.php`'s `wp_style_is()` check, so it
 		// must keep enqueueing exactly the hand-maintained extensions.css
 		// file it always has, not be repurposed to also carry this.
-		// The media-element layer's ONE stylesheet (Spec: architecture v2 L4).
-		// A shared layer has no block.json to hang a `style:` entry on, so it is
-		// enqueued in BOTH realms -- here for the canvas iframe, and in
-		// enqueue_frontend_assets() for the page. The canvas then resolves the
-		// device tier from the iframe width by construction, which is what the
-		// device-preview switcher wants; nothing computes a preview tier in JS.
-		$media_element_css = SGS_BLOCKS_PATH . 'assets/css/media-element.css';
-		if ( file_exists( $media_element_css ) ) {
-			wp_enqueue_style(
-				'sgs-media-element-editor',
-				SGS_BLOCKS_URL . 'assets/css/media-element.css',
-				[],
-				SGS_BLOCKS_VERSION
-			);
-		}
+		// The media system's stylesheets (base, overlay, mask, video), in both realms: here for the canvas iframe, and in
+		// enqueue_frontend_assets() for the page. A shared layer has no block.json to hang a `style:` entry on.
 		foreach ( array( 'base', 'overlay', 'mask', 'video' ) as $sgs_media_sheet ) {
 			if ( file_exists( SGS_BLOCKS_PATH . 'assets/css/media-' . $sgs_media_sheet . '.css' ) ) {
 				wp_enqueue_style(
@@ -566,19 +552,6 @@ final class SGS_Blocks {
 			wp_enqueue_style(
 				'sgs-extensions',
 				SGS_BLOCKS_URL . 'assets/css/extensions.css',
-				[],
-				SGS_BLOCKS_VERSION
-			);
-		}
-
-		// Front-end half of the media-element layer's dual enqueue. Same file,
-		// separate handle -- the editor handle is a guard target and must not be
-		// reused, the same discipline `sgs-extensions-editor` carries above.
-		$media_element_css = SGS_BLOCKS_PATH . 'assets/css/media-element.css';
-		if ( file_exists( $media_element_css ) ) {
-			wp_enqueue_style(
-				'sgs-media-element',
-				SGS_BLOCKS_URL . 'assets/css/media-element.css',
 				[],
 				SGS_BLOCKS_VERSION
 			);

@@ -100,16 +100,6 @@ export function validate( value ) {
 }
 
 /**
- * No CSS. Caption text/tag are HTML content and structure, never stylesheet
- * values — same contract as the `meaning` atom's `css()`.
- *
- * @return {Array} Always empty.
- */
-export function css() {
-	return [];
-}
-
-/**
  * C3 emitter: this atom prints no CSS of its own (see `includes/media/emit-none.php`).
  *
  * @return {string} Always ''.

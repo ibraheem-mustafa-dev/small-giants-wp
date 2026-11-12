@@ -4,12 +4,13 @@
   cli.py survey [--json] [--out FILE] [--repo] [--mirror NAME]... [--content FILE]...
   cli.py fix    [--dry-run | --apply] [--target KIND]... [--file PATH]... [--content FILE]... [--mirror NAME]
   cli.py check  [--active auto|on|off] [--target KIND]... [--content FILE]... [--mirror NAME]...
-  cli.py restore --mirror NAME --backup FILE
+  cli.py restore (--mirror NAME | --remote TARGET) --backup FILE
+  (survey, fix and check also take --remote TARGET: a live test site over SSH; fix --remote --apply backs up on the server first)
   cli.py rows   [--json | --regenerate]
   cli.py self-test [--break] [--mirror [--keep]]
 
 The mapping rows and the facts they rest on are frozen in `mapping-frozen.json`; every command reads that file, never the
-PHP mirror or the block.json files. `rows --regenerate` rebuilds it from the live files and refuses once a block declares
+PHP mirror or the block.json files. `rows --regenerate` is refused; it used to rebuild it from the live files and refused once a block declared
 `kinds` on a media slot.
 
 `survey` counts old attributes per block and per target. `fix` rewrites block attributes per the mapping rows
@@ -18,7 +19,9 @@ content of a local mirror (`mirror.py`): database backup first, direct `$wpdb` w
 command; `restore` returns a mirror to a backup. Saved content means every store holding block markup: all post types and
 statuses, post meta and options (`export-content.php`). `check` exits 1 while
 any old attribute remains on a target (with `--mirror` or `--content` it reads only those, unless `--target` is named); it stays silent (exit 0) until a block declares `kinds` on a media slot
-(`--active auto`), the cutover marker of Spec 49 §8.3. `self-test` runs the fixtures, negative controls and the
+(`--active auto`), the cutover marker of Spec 49 §8.3. While some blocks `media-adoption.json` lists have not adopted,
+`fix` and `check --active auto` touch only the adopted blocks (`mapping.migration_scope`; `--all-blocks` lifts it), so a
+wave's migration never hands an unadopted block attributes its render.php cannot read. `self-test` runs the fixtures, negative controls and the
 idempotence proof.
 """
 from __future__ import annotations
@@ -37,6 +40,8 @@ import blocks as B  # noqa: E402
 import corpus as C  # noqa: E402
 import mapping as M  # noqa: E402
 import mirror as MIR  # noqa: E402
+import remote as REM  # noqa: E402
+import sizes as S  # noqa: E402
 
 MEDIAISH = re.compile(r"image|video|svg|photo|avatar|logo|poster|thumb|aspectratio|objectfit|objectposition|focal|lottie|^media", re.I)
 NOT_MEDIA = re.compile(r"Typography|FontFamily|FontSize|FontStyle|FontWeight|LetterSp|LineHeight|TextStroke|TextTrans|TextDec|"
@@ -47,7 +52,7 @@ CHECK_KINDS = ("patterns", "theme-templates", "build", "fixtures", "calibration"
 def records(args) -> list[tuple[str, str, dict]]:
     """(target label, block name, attributes) over every selected target."""
     out: list[tuple[str, str, dict]] = []
-    kinds = args.target or (list(C.repo_targets()) if getattr(args, "repo", True) or not (args.mirror or args.content) else [])
+    kinds = args.target or (list(C.repo_targets()) if getattr(args, "repo", True) or not (args.mirror or args.content or getattr(args, "remote", None)) else [])
     if kinds:
         targets = C.repo_targets()
         for kind in kinds:
@@ -56,6 +61,8 @@ def records(args) -> list[tuple[str, str, dict]]:
                 out += [(f"{kind}:{rel}", n, a) for n, a in C.file_blocks(path)]
     for name in args.mirror or []:
         out += [(f"mirror:{name}:{label}", n, a) for label, n, a in C.content_blocks(C.mirror_export(name))]
+    for name in getattr(args, "remote", None) or []:
+        out += [(f"remote:{name}:{label}", n, a) for label, n, a in C.content_blocks(REM.remote_export(name))]
     for file in args.content or []:
         out += [(f"content:{Path(file).stem}:{label}", n, a) for label, n, a in C.content_blocks(C.load_content(Path(file)))]
     return out
@@ -64,7 +71,13 @@ def records(args) -> list[tuple[str, str, dict]]:
 def group(label: str) -> str:
     """Target group of a record label: `patterns`, `build`, `mirror:<name>` and so on."""
     parts = label.split(":")
-    return ":".join(parts[:2]) if parts[0] in ("mirror", "content") else parts[0]
+    return ":".join(parts[:2]) if parts[0] in ("mirror", "remote", "content") else parts[0]
+
+
+def site_key(label: str) -> str:
+    """The site a record belongs to, for reading image sizes: `mirror:NAME`, `content:STEM`, or `repo` for repo files."""
+    g = group(label)
+    return g if g.startswith(("mirror:", "remote:", "content:")) else "repo"
 
 
 def survey(recs) -> dict:
@@ -75,6 +88,7 @@ def survey(recs) -> dict:
     seen: dict = collections.defaultdict(collections.Counter)
     for label, name, attrs in recs:
         g = group(label)
+        S.activate(site_key(label))
         seen[name][g] += 1
         if "__unparseable__" in attrs:
             unclassified[name]["__unparseable__"] += 1
@@ -151,7 +165,26 @@ def cmd_survey(args) -> int:
     return 0
 
 
+SCOPE: frozenset[str] | None = None
+
+
+def set_scope(args) -> None:
+    """Limit fix and check to the adopted blocks while adoption is partial (`mapping.migration_scope`);
+    `--all-blocks` lifts the limit."""
+    global SCOPE
+    SCOPE = None if getattr(args, "all_blocks", False) else M.migration_scope()
+    if SCOPE is not None:
+        print(f"migrate-media-system: adoption is partial; scope is the {len(SCOPE)} adopted block(s): "
+              + ", ".join(sorted(SCOPE)) + " (--all-blocks for every block)", file=sys.stderr)
+
+
+def in_scope(name: str) -> bool:
+    return SCOPE is None or name in SCOPE
+
+
 def fn_for(_name: str, _attrs: dict):
+    if not in_scope(_name):
+        return _attrs
     new, _ = B.migrate(_name, _attrs)
     return new
 
@@ -162,13 +195,15 @@ def unified(label: str, before: str, after: str) -> str:
 
 def saved_only_scope(args) -> bool:
     """True when `--content` or `--mirror` is named and nothing asks for repo files (`--repo`, `--target`, `--file`)."""
-    return bool(args.mirror or args.content) and not (getattr(args, "repo", False) or args.target or getattr(args, "file", None))
+    return bool(args.mirror or args.content or getattr(args, "remote", None)) and not (getattr(args, "repo", False) or args.target or getattr(args, "file", None))
 
 
 def refuse_unsupported_saved(args) -> None:
     """Refuse on every saved-content input (mirror or content file) that holds a record this tool cannot rewrite."""
     for name in args.mirror or []:
         MIR.refuse_unsupported(C.mirror_export(name), f"mirror {name}")
+    for name in getattr(args, "remote", None) or []:
+        MIR.refuse_unsupported(REM.remote_export(name), f"remote {name}")
     for file in args.content or []:
         MIR.refuse_unsupported(C.load_content(Path(file)), f"content {Path(file).name}")
 
@@ -178,9 +213,10 @@ def cmd_fix(args) -> int:
         raise SystemExit("--apply and --dry-run exclude each other")
     if args.apply and args.content:
         raise SystemExit("--apply never writes a --content export file: use --mirror NAME to write a mirror, or run the dry run")
-    if args.mirror and len(args.mirror) > 1 and args.apply:
-        raise SystemExit("--apply writes one mirror at a time")
+    if len(args.mirror or []) + len(args.remote or []) > 1 and args.apply:
+        raise SystemExit("--apply writes one mirror or remote target at a time")
     refuse_unsupported_saved(args)
+    set_scope(args)
     changed = 0
     files: list[Path] = [Path(f) for f in args.file or []]
     saved_only = saved_only_scope(args)
@@ -188,6 +224,7 @@ def cmd_fix(args) -> int:
         targets = C.repo_targets()
         for kind in args.target or CHECK_KINDS:
             files += targets.get(kind, [])
+    S.activate("repo")
     for path in files:
         before = C.read_text(path)
         after, count, reformatted = C.rewrite_file_text(path, fn_for)
@@ -201,7 +238,9 @@ def cmd_fix(args) -> int:
         else:
             sys.stdout.write(unified(label, before, after))
     for file in args.content or []:
-        for post in C.load_content(Path(file)):
+        posts = C.load_content(Path(file))
+        S.activate(f"content:{Path(file).stem}")
+        for post in posts:
             after, count = C.rewrite_post(post, fn_for)
             if count:
                 changed += 1
@@ -210,6 +249,7 @@ def cmd_fix(args) -> int:
                 sys.stdout.write(unified(label, post["post_content"], after))
     for name in args.mirror or []:
         posts = C.mirror_export(name)
+        S.activate(f"mirror:{name}")
         plan = MIR.plan_rewrites(posts, fn_for)
         changed += len(plan)
         if args.apply and plan:
@@ -219,6 +259,18 @@ def cmd_fix(args) -> int:
             print(f"mirror {name}: {len(plan)} row(s) would change (dry run: nothing written)", file=sys.stderr)
         else:
             print(f"mirror {name}: nothing to rewrite; no backup taken", file=sys.stderr)
+    for name in args.remote or []:
+        posts = REM.remote_export(name)
+        S.activate(f"remote:{name}")
+        plan = MIR.plan_rewrites(posts, fn_for)
+        changed += len(plan)
+        if args.apply and plan:
+            REM.get(name).apply_fix(plan)
+        elif not args.apply:
+            MIR.print_diffs(plan, unified)
+            print(f"remote {name}: {len(plan)} row(s), {sum(r['blocks'] for r in plan)} block(s) would change (dry run: nothing written)", file=sys.stderr)
+        else:
+            print(f"remote {name}: nothing to rewrite; no backup taken", file=sys.stderr)
     print(f"\n{'applied to' if args.apply else 'would change'} {changed} file(s)/post(s)", file=sys.stderr)
     return 0
 
@@ -236,11 +288,14 @@ def cmd_check(args) -> int:
     args.repo = not saved_only
     args.target = args.target or ([] if saved_only else list(CHECK_KINDS))
     refuse_unsupported_saved(args)
+    if args.active == "auto":
+        set_scope(args)
     found: collections.Counter = collections.Counter()
     where: dict = {}
     for label, name, attrs in records(args):
-        if "__unparseable__" in attrs:
+        if "__unparseable__" in attrs or not in_scope(name):
             continue
+        S.activate(site_key(label))
         for attr, status in B.old_attributes(name, attrs):
             found[(name, attr, status)] += 1
             where.setdefault((name, attr, status), label)
@@ -282,19 +337,25 @@ def main(argv=None) -> int:
             p.add_argument("--out")
             p.add_argument("--repo", action="store_true", help="include the repo targets (default when nothing else is named)")
             p.add_argument("--mirror", action="append", help="read-only wp-cli export of a local mirror: " + "a folder name under /var/www/local-")
+            p.add_argument("--remote", action="append", help="read-only export of a live test site over SSH: a deploy_common.TARGETS key")
         if name != "survey":
             p.add_argument("--repo", action="store_true", help="include the repo targets (default when no --content or --mirror is named)")
+            p.add_argument("--all-blocks", action="store_true",
+                           help="every block, even while adoption is partial (default: only the adopted blocks until all have adopted)")
         if name == "fix":
             p.add_argument("--apply", action="store_true")
             p.add_argument("--dry-run", action="store_true")
             p.add_argument("--file", action="append")
             p.add_argument("--mirror", action="append", help="a local mirror's saved content (a folder name under /var/www/local-)")
+            p.add_argument("--remote", action="append", help="a live test site's saved content over SSH (a deploy_common.TARGETS key); --apply backs up on the server first")
         if name == "check":
             p.add_argument("--mirror", action="append", help="a local mirror's saved content (a folder name under /var/www/local-)")
+            p.add_argument("--remote", action="append", help="a live test site's saved content over SSH (a deploy_common.TARGETS key)")
             p.add_argument("--active", choices=("auto", "on", "off"), default="auto")
             p.add_argument("--self-test", action="store_true", help="run the self-test first (the gate form)")
     restore_parser = sub.add_parser("restore", help="import a database backup `fix --mirror --apply` made")
-    restore_parser.add_argument("--mirror", required=True)
+    restore_parser.add_argument("--mirror")
+    restore_parser.add_argument("--remote", help="a deploy_common.TARGETS key: import a backup on that server")
     restore_parser.add_argument("--backup", required=True, help="the backup path `fix` printed (WSL path)")
     rows_parser = sub.add_parser("rows")
     rows_parser.add_argument("--json", action="store_true")
@@ -312,7 +373,12 @@ def main(argv=None) -> int:
             code = mirror_selftest.run(args.keep) or code
         return code
     if args.cmd == "restore":
-        MIR.restore(args.mirror, args.backup)
+        if bool(args.mirror) == bool(args.remote):
+            raise SystemExit("restore needs exactly one of --mirror NAME or --remote TARGET")
+        if args.remote:
+            REM.get(args.remote).restore(args.backup)
+        else:
+            MIR.restore(args.mirror, args.backup)
         return 0
     return {"survey": cmd_survey, "fix": cmd_fix, "check": cmd_check, "rows": cmd_rows}[args.cmd](args)
 

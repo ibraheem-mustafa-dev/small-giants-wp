@@ -142,56 +142,6 @@ export function liftOn( attributes = {}, prefix = '' ) {
 }
 
 /**
- * Custom-property declarations for this atom. Mirrors
- * `includes/media/atoms/shadow.php`'s `sgs_media_atom_shadow_css()` exactly.
- *
- * @param {Object} props
- * @param {Object} props.attributes
- * @param {string} [props.prefix]
- * @param {string} [props.blockSlug]
- * @param {Object<string,string>} [props.hoverMap] `settings.custom.shadowHover` (design H4/H5,
- *   task lift-2) — the AUTOMATIC LIFT this atom draws when no explicit hover colour is set.
- *   Threaded in by the caller (`canvasStyle.js::elementCustomProperties()`) because this
- *   module has no WordPress data access of its own (the purity contract,
- *   `scripts/check-media-atom-purity.js`); absent/undefined simply means no lift resolves.
- * @return {string[]} `--custom-property:value;` declarations, never bare rules.
- */
-export function css( { attributes, prefix = '', blockSlug = '', hoverMap } = {} ) {
-	const decls = [];
-	const keys = attrKeys( prefix, blockSlug );
-	const shape = attributes[ keys.base ];
-	if ( ! shape ) {
-		return decls;
-	}
-
-	const colour = attributes[ keys.colour ];
-	const resting = resolveShadow( shape, colour );
-	if ( resting ) {
-		decls.push( `--sgs-media-box-shadow:${ resting }` );
-	}
-
-	const hoverColour = attributes[ keys.hoverColour ];
-	if ( hoverColour ) {
-		const hover = resolveShadow( shape, hoverColour );
-		if ( hover ) {
-			decls.push( `--sgs-media-box-shadow-hover:${ hover }` );
-		}
-	} else if ( liftOn( attributes, prefix ) ) {
-		// AUTOMATIC LIFT — only when NO explicit hover colour is set; the explicit branch
-		// above always wins outright. Mirrors `sgs_media_atom_shadow_css()`'s PHP branch,
-		// minus the block-TYPE-level `supports.sgs.shadowLift` gate (unavailable to a
-		// plain-Node-importable module without a WordPress import — no media-atom adopter is
-		// an overlay block, so the attribute-level switch alone is the gate that matters here).
-		const lift = 'string' === typeof shape ? shadowHoverValue( shape, colour, hoverMap ) : '';
-		if ( lift ) {
-			decls.push( `--sgs-media-box-shadow-hover:${ lift }` );
-		}
-	}
-
-	return decls;
-}
-
-/**
  * C3 emitter: `box-shadow` on the surface (with its forced-colours fallback) and, on hover, the hover colour. A slot that
  * has a mask shape at any device draws the shadow as `filter:drop-shadow()` instead, because a mask clips a box-shadow.
  * PHP twin: `sgs_media_atom_shadow_emit()`.

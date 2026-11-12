@@ -356,7 +356,10 @@
 	margin-bottom: 16px;
 }
 
-.sgs-choice-flow__chrome-logo {
+/* The renderer's outermost logo element: the image itself, or the group around a responsive picture whose image is the
+   logo's `.sgs-media-el`. */
+.sgs-choice-flow__chrome-logo,
+.sgs-choice-flow__chrome-logo .sgs-media-el {
 	max-height: 32px;
 	width: auto;
 	height: auto;
@@ -1023,7 +1026,8 @@
 	}
 }
 
-.sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-logo {
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-logo,
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-logo .sgs-media-el {
 	height: var(--sgs-choice-flow-logo-height, 32px);
 	max-height: none;
 	margin-right: -2px;

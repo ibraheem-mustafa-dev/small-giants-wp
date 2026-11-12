@@ -36,6 +36,12 @@
    "block": "sgs/site-footer-row",
    "attr": "hidePromotedPlaceholder",
    "reason": "Deliberately editor-only, never rendered on the frontend (added 2026-09-17, Bean-directed fix for the mandatory RowQuickInsertAppender promoted-placeholder panel). It gates which renderAppender edit.js mounts for an empty row -- render.php has no notion of appenders at all, since that's purely an editor UI concept. Consumed directly in edit.js's renderAppender condition (hasInnerBlocks || hidePromotedPlaceholder ? undefined : ...), which is control-side logic, not render output -- matches the same class of editor-state attr as previewShrunk in the same file, just persisted per-instance instead of transient."
+  },
+  {
+   "check": "block",
+   "block": "sgs/card-grid",
+   "attr": "imageLoading",
+   "reason": "Not dead (2026-11-12, Spec 49 Stage B): render-item-media.php passes the block attributes to the shared item renderer (includes/media/render-item-slot.php::sgs_media_item_slot_attrs), and includes/media/render-slot.php reads the slot's Loading through its $attr( 'Loading' ) closure, which builds 'imageLoading' from the slot prefix at run time; the static scanner never sees the literal name. The shared Loading setting is the slot's only loading control, offered by card-grid's own panel row."
   }
  ]
 }

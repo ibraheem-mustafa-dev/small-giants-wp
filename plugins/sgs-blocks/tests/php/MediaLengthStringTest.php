@@ -20,6 +20,15 @@ final class MediaLengthStringTest extends TestCase {
 
 	use BlockHarnessRenderTrait;
 
+	private const HERO_SOURCE = array(
+		'desktop' => array(
+			'kind'   => 'image',
+			'url'    => 'https://example.test/a.jpg',
+			'width'  => 800,
+			'height' => 600,
+		),
+	);
+
 	/**
 	 * Hero split image: attribute, CSS property.
 	 *
@@ -27,10 +36,10 @@ final class MediaLengthStringTest extends TestCase {
 	 */
 	public static function hero_sizes(): array {
 		return array(
-			'width'      => array( 'splitMediaWidth', 'width' ),
-			'height'     => array( 'splitMediaHeight', 'height' ),
-			'max width'  => array( 'splitMediaMaxWidth', 'max-width' ),
-			'max height' => array( 'splitMediaMaxHeight', 'max-height' ),
+			'width'      => array( 'splitWidth', 'width' ),
+			'height'     => array( 'splitHeight', 'height' ),
+			'max width'  => array( 'splitMaxWidth', 'max-width' ),
+			'max height' => array( 'splitMaxHeight', 'max-height' ),
 		);
 	}
 
@@ -46,75 +55,76 @@ final class MediaLengthStringTest extends TestCase {
 			$this->render_block(
 				'sgs/hero',
 				array(
-					'variant'            => 'split',
-					'splitMediaObjectFit' => 'custom',
-					$attr                => array(
+					'variant'     => 'split',
+					'splitSource' => self::HERO_SOURCE,
+					$attr         => array(
 						'desktop' => '240px',
 						'mobile'  => '80%',
 					),
-				)
+				),
+				array(),
+				array(),
+				'',
+				true
 			)['css']
 		);
-		$this->assertMatchesRegularExpression( '/(?<!\}\})\.sgs-hero__split-media\{(?:[a-z-]+:[^;}]+;)*' . preg_quote( $prop, '/' ) . ':240px;?\}/', $css, 'desktop base rule' );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^@]*\.sgs-hero__split-media\{' . preg_quote( $prop, '/' ) . ':80%;?\}/', $css, 'mobile rule' );
+		$this->assertMatchesRegularExpression( '/(?<!\}\})\.sgs-hero-[0-9a-f]+-split\{(?:[a-z-]+:[^;}]+;)*' . preg_quote( $prop, '/' ) . ':240px;(?:[a-z-]+:[^;}]+;)*\}/', $css, 'desktop base rule' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^@]*\.sgs-hero-[0-9a-f]+-split\{' . preg_quote( $prop, '/' ) . ':80%;?\}/', $css, 'mobile rule' );
 	}
 
-	public function test_hero_split_image_keyword_and_old_number_shape(): void {
+	public function test_hero_split_image_max_height_prints_and_no_limit_keyword_prints_nothing(): void {
 		$css = $this->normalised(
 			$this->render_block(
 				'sgs/hero',
 				array(
-					'variant'             => 'split',
-					'splitMediaObjectFit' => 'custom',
-					'splitMediaMaxWidth'  => array( 'desktop' => 'none' ),
-					'splitMediaMaxHeight' => array( 'desktop' => '50vh' ),
-				)
+					'variant'        => 'split',
+					'splitSource'    => self::HERO_SOURCE,
+					'splitMaxWidth'  => array( 'desktop' => 'none' ),
+					'splitMaxHeight' => array( 'desktop' => '50vh' ),
+				),
+				array(),
+				array(),
+				'',
+				true
 			)['css']
 		);
-		$this->assertStringContainsString( 'max-width:none;', $css, 'keyword prints as itself' );
+		$this->assertStringContainsString( 'max-height:50vh;', $css, 'the value prints in the base rule' );
+		$this->assertStringNotContainsString( 'max-width:none', $css, 'a keyword that means no limit prints nothing on the slot' );
 	}
 
-	public function test_media_atom_sizes_print_per_device_as_custom_properties(): void {
+	public function test_media_sizes_print_per_device_as_scoped_rules(): void {
 		$css = $this->normalised(
 			$this->render_block(
 				'sgs/media',
 				array(
-					'mediaType'   => 'image',
-					'imageUrl'    => 'https://example.test/a.jpg',
-					'mediaSizing' => 'height',
-					'height'      => array(
+					'source'    => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/a.jpg', 'width' => 800, 'height' => 600 ) ),
+					'height'    => array(
 						'desktop' => '320px',
 						'mobile'  => '50vh',
 					),
-					'width'       => array( 'desktop' => '100%' ),
-					'maxWidth'    => array(
+					'width'     => array( 'desktop' => '100%' ),
+					'maxWidth'  => array(
 						'desktop' => '640px',
 						'mobile'  => 'none',
 					),
-					'maxHeight'   => array( 'tablet' => 'calc(100% - 2rem)' ),
+					'maxHeight' => array( 'tablet' => 'calc(100% - 2rem)' ),
 				)
 			)['css']
 		);
-		$this->assertStringContainsString( '--sgs-media-height:320px', $css );
-		$this->assertStringContainsString( '--sgs-media-height-mobile:50vh', $css );
-		$this->assertStringContainsString( '--sgs-media-width:100%', $css );
-		$this->assertStringContainsString( '--sgs-media-width-mobile:auto', $css, 'a tier with a height and no width keeps the ratio width' );
-		$this->assertStringNotContainsString( '--sgs-media-width:auto', $css, 'the desktop tier has a width, so it is not auto' );
-		$this->assertStringContainsString( '--sgs-media-max-width:640px', $css );
-		$this->assertStringContainsString( '--sgs-media-max-width-mobile:none', $css );
-		$this->assertStringContainsString( '--sgs-media-max-height-tablet:calc(100%-2rem)', $css );
+		$this->assertMatchesRegularExpression( '/\.sgs-media-[a-z0-9]+\{height:320px;max-width:640px;width:100%;\}/', $css, 'the desktop values print in the base rule' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-media-[a-z0-9]+\{height:50vh;max-width:none;\}\}/', $css, 'the phone values print in the phone query, a keyword as itself' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:1023px\)\{\.sgs-media-[a-z0-9]+\{max-height:calc\(100%-2rem\);\}\}/', $css, 'the tablet value prints in the tablet query' );
 	}
 
-	public function test_media_atom_ignores_the_old_number_shape(): void {
+	public function test_media_ignores_the_old_number_shape(): void {
 		$css = $this->render_block(
 			'sgs/media',
 			array(
-				'mediaType' => 'image',
-				'imageUrl'  => 'https://example.test/a.jpg',
-				'maxWidth'  => array( 'desktop' => 640 ),
+				'source'   => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/a.jpg', 'width' => 800, 'height' => 600 ) ),
+				'maxWidth' => array( 'desktop' => 640 ),
 			)
 		)['css'];
-		$this->assertStringNotContainsString( '--sgs-media-max-width:640', $css );
+		$this->assertStringNotContainsString( 'max-width:640', $css );
 	}
 
 	public function test_before_after_stage_height_and_max_width_print_per_device(): void {
@@ -122,8 +132,8 @@ final class MediaLengthStringTest extends TestCase {
 			$this->render_block(
 				'sgs/before-after',
 				array(
-					'beforeImageUrl' => 'https://example.test/before.jpg',
-					'afterImageUrl'  => 'https://example.test/after.jpg',
+					'beforeSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/before.jpg', 'width' => 1200, 'height' => 800 ) ),
+					'afterSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/after.jpg', 'width' => 1200, 'height' => 800 ) ),
 					'height'         => array(
 						'desktop' => '420px',
 						'mobile'  => '60vh',
@@ -142,7 +152,7 @@ final class MediaLengthStringTest extends TestCase {
 	}
 
 	public function test_before_after_defaults_to_a_400px_stage(): void {
-		$css = $this->normalised( $this->render_block( 'sgs/before-after', array( 'beforeImageUrl' => 'https://example.test/b.jpg', 'afterImageUrl' => 'https://example.test/a.jpg' ) )['css'] );
+		$css = $this->normalised( $this->render_block( 'sgs/before-after', array( 'beforeSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/b.jpg', 'width' => 1200, 'height' => 800 ) ), 'afterSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/a.jpg', 'width' => 1200, 'height' => 800 ) ) ) )['css'] );
 		$this->assertMatchesRegularExpression( '/__stage\{height:400px/', $css );
 	}
 }

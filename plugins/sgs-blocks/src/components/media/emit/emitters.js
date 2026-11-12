@@ -10,11 +10,9 @@ import { emit as boxShape } from '../atoms/box-shape.js';
 import { emit as caption } from '../atoms/caption.js';
 import { emit as filter } from '../atoms/filter.js';
 import { emit as focalPoint } from '../atoms/focal-point.js';
-import { emit as intrinsic } from '../atoms/intrinsic.js';
 import { emit as layout } from '../atoms/layout.js';
 import { emit as link } from '../atoms/link.js';
 import { emit as mediaPadding } from '../atoms/media-padding.js';
-import { emit as mediaType } from '../atoms/media-type.js';
 import { emit as meaning } from '../atoms/meaning.js';
 import { emit as objectFit } from '../atoms/object-fit.js';
 import { emit as opacity } from '../atoms/opacity.js';
@@ -31,12 +29,10 @@ export const MEDIA_EMITTERS = Object.freeze( {
 	caption,
 	filter,
 	'focal-point': focalPoint,
-	intrinsic,
 	layout,
 	link,
 	meaning,
 	'media-padding': mediaPadding,
-	'media-type': mediaType,
 	'object-fit': objectFit,
 	opacity,
 	overlay,

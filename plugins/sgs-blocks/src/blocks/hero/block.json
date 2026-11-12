@@ -40,104 +40,85 @@
 				"hoverSpillScale"
 			],
 			"_comment_hoverSpillScale": "2026-09-10, Bean-directed — shared wrapper capability (class-sgs-container-wrapper.php), migrated off hero's own private CSS. Promotes the whole composite root's stacking context above a document-later sibling and lets the split-media hover-zoom spill past its column without a page-level horizontal scrollbar. Universal — targets the shared .sgs-media-box/.sgs-media-el marker pair, so it applies to ANY composite that opts in, not just hero. Inert on the standard variant (no .sgs-media-box descendant there).",
-			"_comment_mediaElements": "Wave 6 (2026-09-01, uniform-prefix rename 2026-09-07). Migrates the split-media feature (image/video/SVG slot beside the text column) onto the shared media-atom system — NOT the section-level background (bgVideo/backgroundOverlay*), which stays on SGS_Container_Wrapper. Every split-media attribute uses ONE uniform prefix, 'splitMedia' — the earlier three-prefix split ('split'/'splitMedia'/'media') was naming drift, not a real constraint. The one exception is the media-type atom (base literally 'MediaType'), which stays prefix 'split' to avoid a double-noun 'splitMediaMediaType'; it already produces the correct 'splitMediaType' name. The source atom's picker writes a NEW {base}Id/{base}Url pair (its own canonical shape) rather than hero's legacy composite {id,url,alt} object. NO read-time fallback to the legacy object — Bean-locked (2026-09-02): FP-14 bans exactly that shape, and this block already carries a 2026-08-13 precedent of deleting an identically-shaped bridge for the same reason. An already-published hero instance holding only the legacy splitImage/splitVideo/splitSvg shape renders an EMPTY split-media slot until re-uploaded through the new picker (see render.php's own comment at the split-media source resolution).",
 			"mediaElements": [
 				{
 					"prefix": "split",
-					"context": "element",
-					"atoms": [
-						"media-type"
+					"context": "content",
+					"kinds": [
+						"image",
+						"video",
+						"svg"
 					]
 				},
 				{
-					"prefix": "splitMedia",
-					"context": "element",
-					"atoms": [
-						"source",
-						"object-fit",
-						"focal-point",
-						"box-shape",
-						"media-padding",
-						"overlay",
-						"shadow"
+					"prefix": "background",
+					"context": "background",
+					"kinds": [
+						"image",
+						"video",
+						"svg"
 					]
 				}
 			],
 			"variantAttr": "variant",
 			"variants": {
-				"standard": [
-					"backgroundImage"
-				],
+				"standard": [],
 				"split": [
-					"splitMediaImageId",
-					"splitMediaImageUrl",
-					"splitMediaImageAlt",
-					"splitMediaImageAltTablet",
-					"splitMediaImageAltMobile",
-					"splitMediaImageIdTablet",
-					"splitMediaImageUrlTablet",
-					"splitMediaImageIdMobile",
-					"splitMediaImageUrlMobile",
-					"splitMediaType",
-					"splitMediaTypeTablet",
-					"splitMediaTypeMobile",
-					"splitMediaVideoId",
-					"splitMediaVideoUrl",
-					"splitMediaVideoIdTablet",
-					"splitMediaVideoUrlTablet",
-					"splitMediaVideoIdMobile",
-					"splitMediaVideoUrlMobile",
-					"splitMediaSvgContent",
-					"splitMediaSvgContentTablet",
-					"splitMediaSvgContentMobile",
-					"splitMediaDecorative",
-					"splitMediaObjectFit",
-					"splitMediaObjectPosition",
-					"splitMediaWidth",
-					"splitMediaAlign",
-					"splitMediaHeight",
-					"splitMediaBorderRadius",
-					"splitMediaBorderRadiusTablet",
-					"splitMediaBorderRadiusMobile",
-					"splitMediaBorderStyle",
-					"splitMediaBorderWidth",
-					"splitMediaBorderColour",
-					"splitMediaBorderColourGradient",
-					"splitMediaBorderColourHover",
-					"splitMediaBorderColourHoverGradient",
-					"splitMediaPadding",
-					"splitMediaBackground",
-					"splitMediaMediaSizing",
-					"splitMediaShape",
-					"splitMediaAspectRatio",
-					"splitMediaMinHeight",
-					"splitMediaMaxWidth",
-					"splitMediaMaxHeight",
-					"splitMediaOverlayColour",
-					"splitMediaOverlayGradient",
-					"splitMediaBoxShadow",
-					"splitMediaBoxShadowColour",
-					"splitMediaBoxShadowColourHover",
-					"splitContentOrder"
+					"splitBorderColourGradient",
+					"splitContentOrder",
+					"splitSource",
+					"splitLoading",
+					"splitAlt",
+					"splitDecorative",
+					"splitFit",
+					"splitFocal",
+					"splitPadding",
+					"splitBackground",
+					"splitOverlayColour",
+					"splitOverlayColourHover",
+					"splitOverlayGradient",
+					"splitOverlayGradientHover",
+					"splitOverlayOpacity",
+					"splitOverlayBlend",
+					"splitOpacity",
+					"splitBlend",
+					"splitBoxShadow",
+					"splitBoxShadowColour",
+					"splitBoxShadowColourHover",
+					"splitSvgLayer",
+					"splitSvgTextShadow",
+					"splitSvgParts",
+					"splitSvgPartsTrigger",
+					"splitPlayback",
+					"splitCaptions",
+					"splitCaption",
+					"splitCaptionTag",
+					"splitLinkUrl",
+					"splitLinkOpensNewTab",
+					"splitLinkRel",
+					"splitLinkUrlSource",
+					"splitRatio",
+					"splitWidth",
+					"splitHeight",
+					"splitMinWidth",
+					"splitMaxWidth",
+					"splitMinHeight",
+					"splitMaxHeight",
+					"splitShape",
+					"splitRadius",
+					"splitBorderWidth",
+					"splitBorderStyle",
+					"splitBorderColour",
+					"splitBorderColourHover",
+					"splitColour",
+					"splitGreyscale",
+					"splitAlignment",
+					"splitOrder"
 				]
 			},
 			"boxFamilies": {
 				"contentPadding": [
 					"contentPadding"
-				],
-				"mediaPadding": [
-					"mediaPadding"
-				],
-				"splitMediaPadding": [
-					"splitMediaPadding"
-				],
-				"splitMediaBorderWidth": [
-					"splitMediaBorderWidth"
-				],
-				"splitMediaBorderRadius": [
-					"splitMediaBorderRadius",
-					"splitMediaBorderRadiusTablet",
-					"splitMediaBorderRadiusMobile"
 				],
 				"padding": [
 					"padding"
@@ -273,16 +254,10 @@
 					"layer": "GRID_AREA",
 					"order": 5,
 					"clusters": [
-						"fill",
 						"layout",
 						"animation"
 					],
-					"prefix": "image",
-					"attrMap": {
-						"css:background-color": "mediaBackground",
-						"css:justify-content": "splitMediaAlign"
-					},
-					"_note": "The `media` grid-area. Most box/border members resolve via the default `image{Suffix}` convention (splitMediaBorderWidth/Style/Colour/Radius/Padding). `mediaBackground` (a second, plainer background attr alongside `mediaBackgroundColour`) is a genuine ORPHAN — two overlapping attrs for one concept, not modelled here. The motion of the split media is the sgsMotion model's `media` part, not attributes."
+					"_note": "The `media` grid-area: the grid cell around the split media. Column placement is `splitContentOrder`. The media itself is the `split-media` element below; its settings are the split slot."
 				},
 				"headline": {
 					"motion": false,
@@ -310,105 +285,94 @@
 					"clusters": [],
 					"_note": "CTAs render via InnerBlocks (sgs/multi-button > sgs/button children, FR-22-6) — no scalar cta* content/style attrs remain on this block, so nothing to cluster-map here."
 				},
-				"overlay": {
-					"label": "Overlay",
-					"layer": "OUTER",
-					"order": 10,
-					"clusters": [],
-					"prefix": "",
-					"attrMap": {
-						"css:background-color": "backgroundOverlayColour",
-						"css:background-image": "overlayGradient"
-					},
-					"_note": "The decorative dimming overlay layered over the section background (`.sgs-hero__overlay`, a sibling <span> — render.php ~line 992-1000). Distinct from the wrapper's own background and from the split-media's own media-overlay below. REPOINTED 2026-08-16 (D643): this mapped `overlayGradientFrom`, deleted by the D636 storage collapse (837f7c97); `overlayGradient` now holds the complete CSS gradient string, so the old note about Angle/To being honest gaps no longer applies — there are no sibling scalars left to strand. `clusters: []` (revised 2026-08-15, first draft declared 'fill' and that recreated 15 CONTESTED findings against `wrapper`, which ALSO reaches the same bare fill-cluster members with no prefix — clusters=[] plus the explicit attrMap above still claims the two mapped attrs cleanly via placement-reach's TIER-1/authoritative path, with zero collision risk from the unmapped fill members). `prefix: \"\"` opts this element out of orphan-candidate scanning. Found live 2026-08-15: DB tagged 4 attrs css_element='overlay', undeclared until now."
-				},
-				"media-overlay": {
-					"motion": false,
-					"label": "Media overlay",
-					"layer": "GRID_AREA",
-					"order": 11,
-					"clusters": [],
-					"prefix": "",
-					"attrMap": {
-						"css:background-color": "splitMediaOverlayColour",
-						"css:background-image": "splitMediaOverlayGradient"
-					},
-					"_note": "A second decorative overlay layered on top of the split-media column only (`.sgs-hero__media-overlay`, render.php ~line 1170) — separate from the section-level `overlay` element above; mirrors its shape 1:1 but scoped to the foreground media instead of the section background. REPOINTED 2026-08-16 (D643): this mapped `mediaOverlayGradientFrom`, deleted by the D636 storage collapse (837f7c97); same one-string shape and same removal of the stranded-sibling note as `overlay` above. `clusters: []`, same CONTESTED-avoidance rationale as `overlay` above. `prefix: \"\"` opt-out, same rationale. Found live 2026-08-15: DB tagged 4 attrs css_element='media-overlay', undeclared until now."
-				},
-				"split-image": {
-					"absentIn": [
-						"standard"
-					],
-					"absentWhy": "The split image exists only in the split variant.",
-					"surface": true,
-					"label": "Split image",
-					"layer": "GRID_AREA",
-					"order": 12,
-					"clusters": [],
-					"prefix": "",
-					"attrMap": {},
-					"_note": "The IMAGE type's extra class, applied by sgs_tier_media_render()'s per-type $extra argument so it lands ONLY on an <img> tier. It intentionally carries NO attrMap: as of 2026-08-27 (commit 33816708e) every splitMedia* control paints on the type-agnostic `.sgs-hero__split-media` base class instead, so video and SVG tiers obey the same controls — they previously obeyed none. The class is still emitted and still load-bearing for STATIC, image-only styling in style.css: the base width/height/object-fit/display rule (style.css:292) and the hover-zoom transform (style.css:305-318). Neither is attribute-driven, so neither belongs to an attr and neither maps here."
-				},
 				"split-media": {
 					"absentIn": [
 						"standard"
 					],
-					"absentWhy": "The split media holder exists only in the split variant.",
+					"absentWhy": "The split media exists only in the split variant.",
 					"surface": true,
 					"label": "Split media",
 					"layer": "GRID_AREA",
 					"order": 13,
-					"clusters": [],
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"motionSelector": ".sgs-hero__media .sgs-media-el",
 					"prefix": "",
 					"attrMap": {
-						"css:width": "splitMediaWidth",
-						"css:height": "splitMediaHeight",
-						"css:max-width": "splitMediaMaxWidth",
-						"css:border-radius": "splitMediaBorderRadius",
-						"css:border-color": "splitMediaBorderColour",
-						"css:border-color-gradient": "splitMediaBorderColourGradient",
-						"css:border-style": "splitMediaBorderStyle",
-						"css:border-width": "splitMediaBorderWidth",
-						"css:padding": "splitMediaPadding",
-						"css:background-color": "splitMediaBackground",
-						"css:object-fit": "splitMediaObjectFit",
-						"css:object-position": "splitMediaObjectPosition",
-						"css:box-shadow": "splitMediaBoxShadow",
-						"css:box-shadow-color": "splitMediaBoxShadowColour"
+						"css:height": "splitHeight",
+						"css:max-width": "splitMaxWidth",
+						"css:max-height": "splitMaxHeight",
+						"css:border-width": "splitBorderWidth",
+						"css:border-style": "splitBorderStyle",
+						"css:border-color": "splitBorderColour",
+						"css:border-color-gradient": "splitBorderColourGradient",
+						"css:border-radius": "splitRadius",
+						"css:object-fit": "splitFit",
+						"css:object-position": "splitFocal",
+						"css:aspect-ratio": "splitRatio",
+						"css:box-shadow": "splitBoxShadow",
+						"css:box-shadow-color": "splitBoxShadowColour",
+						"css:padding": "splitPadding",
+						"css:background-color": "splitBackground",
+						"css:opacity": "splitOpacity"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:border-color": "splitMediaBorderColourHover",
-								"css:border-color-gradient": "splitMediaBorderColourHoverGradient",
-								"css:box-shadow-color": "splitMediaBoxShadowColourHover"
+								"css:border-color": "splitBorderColourHover",
+								"css:box-shadow-color": "splitBoxShadowColourHover"
 							}
 						}
 					},
-					"_note": "The type-agnostic base class emitted by sgs_tier_media_render() — carries `sgs-hero__split-media` plus `--{tier}` and `--{type}` modifiers on EVERY tier node whatever its type. It OWNS the whole splitMedia* control family as of 2026-08-27 (commit 33816708e): width, height, border-radius, border-color/style/width, padding, object-fit and object-position all emit scoped to this class in render.php, which is what lets a video or SVG tier honour them. object-fit/object-position emit on the compound `.sgs-hero__split-media--image,.sgs-hero__split-media--video` selector — replaced-element properties do nothing on the <span> wrapping inline SVG — and a BEM MODIFIER is never an element, so the classifier's deriver cuts at the `--` and still resolves here. ⛔ WHY THIS MAP MOVED: it lived on split-image, which pinned 16 block_attributes.css_element rows to a class those properties no longer paint on. The tier variants (splitMediaPaddingTablet, splitMediaObjectPositionMobile, …) were already correct because they carry no attrMap key and fall through to selector derivation — that split is what exposed the stale manifest. `css:max-width` added 2026-09-05 (db-consistency residual close-out), routed to `splitMediaMaxWidth` (a per-device object of length strings, unit inside the string, so a percentage is `\"60%\"`). It is the sole max-width writer for split media."
+					"_note": "The split media element the renderer prints (`SGS_Media_Element::render`, class `sgs-hero__split-media`); every setting is a split slot attribute."
 				},
 				"background": {
-					"absentIn": [
-						"bg-css-layer"
-					],
-					"absentWhy": "A tiled, sized, parallax, fixed or per-device background image paints on the root's ::before layer (SGS_Container_Wrapper::render, $sgs_bg_img_is_simple false), so no element carries the image; a layer on the root reaches the section.",
 					"surface": true,
 					"prefix": "",
-					"selector": ".sgs-hero__background",
-					"label": "Background image",
+					"selector": ".sgs-bg-media",
+					"label": "Background",
 					"order": 14,
 					"clusters": [],
-					"_note": "`.sgs-hero__background`, on the background <img> on both variants: the standard variant's own `.sgs-hero__bg-img` (hero paints its own and nulls backgroundImage before the wrapper) and the split variant's wrapper `.sgs-container__image-bg` (render.php passes it as the wrapper's bg_img_class). A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
+					"_note": "`.sgs-bg-media`, the element SGS_Container_Wrapper prints for every background (picture, tile layer, video or SVG). A motion target so a Ken Burns or parallax layer moves the background alone, never the block's content; it declares no style clusters because its look is governed by the Background panel.",
+					"availableWhen": {
+						"slot": "background",
+						"kinds": [
+							"image"
+						]
+					}
 				},
 				"svg-bg": {
+					"selector": ".sgs-container__svg-bg",
+					"availableWhen": {
+						"slot": "background",
+						"kinds": [
+							"svg"
+						]
+					},
 					"svg": true,
 					"surface": true,
 					"prefix": "",
-					"selector": ".sgs-container__svg-bg",
 					"label": "Background SVG",
 					"order": 15,
 					"clusters": [],
-					"_note": "`.sgs-container__svg-bg`, the wrapper SGS_Container_Wrapper prints around a background or foreground SVG (bgSvg*). A motion target so an SVG loop or `draw` effect layer reaches the SVG alone; it declares no style clusters because its look is governed by the bgSvg* controls."
+					"_note": "`.sgs-container__svg-bg`, the wrapper SGS_Container_Wrapper prints around a background or foreground SVG (bgSvg*). A motion target so a `draw` effect layer reaches the SVG alone."
+				},
+				"background-video": {
+					"surface": true,
+					"prefix": "",
+					"selector": ".sgs-bg-media",
+					"label": "Background video",
+					"order": 16,
+					"clusters": [],
+					"availableWhen": {
+						"slot": "background",
+						"kinds": [
+							"video"
+						]
+					},
+					"_note": "The same `.sgs-bg-media` element when a device shows a video: an effect that suits video (not Ken Burns) reaches it through this part."
 				}
 			}
 		}
@@ -445,9 +409,6 @@
 			"type": "string",
 			"default": "left"
 		},
-		"backgroundImage": {
-			"type": "object"
-		},
 		"surfaceTone": {
 			"type": "string",
 			"enum": [
@@ -456,116 +417,6 @@
 				"dark"
 			],
 			"default": "auto"
-		},
-		"_comment_sourceAtomPair": "Wave 6 (2026-09-01) — the `source` atom's own canonical shape (prefix 'splitMedia'), written by HeroSplitMediaPanelLayout's new picker. Hand-declared here (rather than left to the mediaElements auto-injection filter alone) because render.php/edit.js destructure these as literal variables to resolve the split-media source (no legacy fallback — see the mediaElements comment above) — check-undeclared-attrs.py flags any literal destructure of an attribute block.json doesn't declare, regardless of whether a runtime filter would also inject it. The legacy `splitImageTablet`/`splitVideo`/`splitVideoTablet`/`splitVideoMobile`/`splitSvg`/`splitSvgTablet`/`splitSvgMobile` attributes these replace were REMOVED (not just retired) 2026-09-02 — Bean-locked (FP-14 strict reading): with no read-time fallback, nothing on either the render or editor side consumed them any more, so they were genuinely dead declarations, not merely superseded ones. `variants.split` above was updated to `splitMediaImageUrl`/`splitMediaImageUrlMobile` (the new discriminating names) in the same commit. `splitImage`/`splitImageMobile` (the two composite object attrs previously declared here) were kept alive for one extra day purely because `scripts/dbschema/check_value_identity.py` anchored the cloning pipeline's scalar-media role assignment on their literal names — see `scripts/data/scalar-media-roles.json`'s `__RE_ANCHOR_2026_09_02` note. That anchor moved onto `splitMediaType` the following day (Wave 7b, same date), which IS genuinely read by render.php to select the media family, closing the last reason these two dead declarations needed to survive — they are deleted in the same commit as the re-anchor, and `check_value_identity.py`'s assertions were repointed at `splitMediaType` alongside them.",
-		"splitMediaImageId": {
-			"type": "integer",
-			"default": 0
-		},
-		"splitMediaImageUrl": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaImageAlt": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaImageAltTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaImageAltMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaImageIdTablet": {
-			"type": "integer",
-			"default": 0
-		},
-		"splitMediaImageUrlTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaImageIdMobile": {
-			"type": "integer",
-			"default": 0
-		},
-		"splitMediaImageUrlMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaType": {
-			"type": "string",
-			"default": "image",
-			"enum": [
-				"image",
-				"video",
-				"svg",
-				"lottie"
-			]
-		},
-		"splitMediaTypeTablet": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"image",
-				"video",
-				"svg",
-				"lottie"
-			]
-		},
-		"splitMediaTypeMobile": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"image",
-				"video",
-				"svg",
-				"lottie"
-			]
-		},
-		"splitMediaVideoId": {
-			"type": "integer",
-			"default": 0
-		},
-		"splitMediaVideoUrl": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaVideoIdTablet": {
-			"type": "integer",
-			"default": 0
-		},
-		"splitMediaVideoUrlTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaVideoIdMobile": {
-			"type": "integer",
-			"default": 0
-		},
-		"splitMediaVideoUrlMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaSvgContent": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaSvgContentTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaSvgContentMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaDecorative": {
-			"type": "boolean",
-			"default": false,
-			"description": "WCAG 2.1 AA 1.1.1 (finding 18, 2026-09-02). When true, the split-media element (image/video/svg — the only real <img>/<video>/svg this block renders) is hidden from assistive tech: render.php blanks its alt text and marks it aria-hidden. Does NOT apply to backgroundImage, which paints via CSS background-image and is never exposed to a screen reader."
 		},
 		"label": {
 			"type": "string",
@@ -679,163 +530,12 @@
 			"type": "object",
 			"default": {}
 		},
-		"bgVideo": {
-			"type": "object"
-		},
-		"bgVideoTablet": {
-			"type": "object"
-		},
-		"bgVideoMobile": {
-			"type": "object"
-		},
-		"splitMediaObjectFit": {
-			"type": "string",
-			"default": "cover"
-		},
-		"splitMediaObjectPosition": {
-			"type": "object",
-			"default": {
-				"desktop": "center center",
-				"mobile": "center 20%"
-			}
-		},
-		"splitMediaWidth": {
-			"type": "object",
-			"default": {}
-		},
-		"splitMediaAlign": {
-			"type": "object",
-			"default": {},
-			"description": "Per device tier: where the split image sits inside its column when it is narrower than the column ('start', 'center' or 'end'). Unset prints nothing."
-		},
-		"splitMediaHeight": {
-			"type": "object",
-			"default": {}
-		},
-		"splitMediaBorderRadius": {
-			"type": "object",
-			"default": {}
-		},
-		"splitMediaBorderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"splitMediaBorderRadiusMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"splitMediaBorderStyle": {
-			"type": "string",
-			"default": "solid"
-		},
-		"splitMediaBorderWidth": {
-			"type": "object",
-			"default": {}
-		},
-		"splitMediaBorderColour": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaBorderColourGradient": {
+		"splitBorderColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the split-image border instead of a flat colour. Non-empty wins over splitMediaBorderColour at render time (D636)."
-		},
-		"splitMediaBorderColourHover": {
-			"type": "string",
-			"default": "",
-			"_comment": "Hover colour (2026-09-07), colour-only — no hover variant for width/style/radius, matching sgs/button's/sgs/container's own states.hover.attrMap convention."
-		},
-		"splitMediaBorderColourHoverGradient": {
-			"type": "string",
-			"default": "",
-			"description": "Hover gradient — wins over splitMediaBorderColourHover when set. Only takes effect when splitMediaBorderColourGradient (resting) is also set, matching sgs/button's own accepted masked-gradient limitation (D636)."
-		},
-		"splitMediaBoxShadow": {
-			"type": "string",
-			"default": "",
-			"description": "Split media box shadow SHAPE, painted on the framed media element by the shared shadow media atom: a theme shadow preset slug, layers ([inset] X Y BLUR SPREAD, comma-separated), or none. Colour is splitMediaBoxShadowColour."
-		},
-		"splitMediaBoxShadowColour": {
-			"type": "string",
-			"default": "",
-			"description": "Split media box shadow colour: site, a palette slug or a CSS colour, with an optional N% opacity; one entry for every layer or a list matching the layers."
-		},
-		"splitMediaBoxShadowColourHover": {
-			"type": "string",
-			"default": "",
-			"description": "Split media box shadow colour on hover (same shape as splitMediaBoxShadowColour). Only applies once splitMediaBoxShadow is set."
-		},
-		"splitMediaPadding": {
-			"type": "object",
-			"default": {
-				"desktop": {}
-			}
-		},
-		"_comment_boxShapeNewBases": "C19 item 3 (2026-09-04) — the box-shape atom's remaining bases (Wave 6 only adopted object-fit/focal-point). Hand-declared, not left to auto-injection, because render.php/edit.js destructure them as literal variables (same precedent as the 'source atom pair' comment above). Mirrors sgs/media's own shapes exactly: MediaSizing carries no default (a 'default':null on a typed attr 400s SSR previews); Shape/AspectRatio/MinHeight/MaxWidth/MaxHeight match box-shape.js's MEDIA_ATTR_TYPES map. A percentage max-width is a `splitMediaMaxWidth` length string such as `\"60%\"`.",
-		"_comment_splitMediaMediaSizing": "DOUBLE-NOUN ON PURPOSE — do NOT rename to splitMediaSizing. The box-shape atom control resolves its key as prefix + base (MediaElementControls.js mediaAttrName), the base string is literally 'MediaSizing', and STORED_AS carries no sgs/hero override — so the control reads and writes splitMedia+MediaSizing. Renaming the DECLARATION alone (tried 2026-09-07, reverted the same session) leaves the control writing splitMediaMediaSizing while render.php reads splitMediaSizing: the value saves, nothing errors, and aspect-ratio silently stops emitting. The attribute is also runtime-INJECTED via the atom registration, so a block.json-only census cannot see the break. Same exemption already applied to splitMediaType. Shortening the name would require STORED_AS entries in BOTH twins plus the converter and its test, for a cosmetic gain.",
-		"splitMediaMediaSizing": {
-			"type": "string",
-			"enum": [
-				"auto",
-				"height",
-				"ratio",
-				"fill"
-			]
-		},
-		"splitMediaShape": {
-			"type": "string",
-			"default": "none",
-			"enum": [
-				"none",
-				"rounded",
-				"circle",
-				"square"
-			]
-		},
-		"splitMediaAspectRatio": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaMinHeight": {
-			"type": "object",
-			"default": {}
-		},
-		"splitMediaMaxWidth": {
-			"type": "object",
-			"default": {}
-		},
-		"splitMediaMaxHeight": {
-			"type": "object",
-			"default": {}
-		},
-		"splitMediaBackground": {
-			"type": "string",
-			"default": "",
-			"description": "Background colour painted on the split media element itself (the image, video or SVG box), so a contained logo or a transparent image sits on a solid ground instead of the section background showing beside it. A palette slug or any CSS colour."
-		},
-		"mediaBackground": {
-			"type": "string",
-			"default": ""
-		},
-		"mediaBackgroundGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaOverlayColour": {
-			"type": "string"
-		},
-		"splitMediaOverlayGradient": {
-			"type": "string",
-			"default": ""
+			"description": "CSS gradient string painting the split media border instead of a flat colour. Non-empty wins over splitBorderColour at render time (D636)."
 		},
 		"contentPadding": {
-			"type": "object",
-			"default": {
-				"desktop": {}
-			}
-		},
-		"mediaPadding": {
 			"type": "object",
 			"default": {
 				"desktop": {}
@@ -901,20 +601,6 @@
 				"nowrap"
 			]
 		},
-		"backgroundAttachment": {
-			"type": "string",
-			"default": "scroll",
-			"enum": [
-				"scroll",
-				"fixed"
-			]
-		},
-		"backgroundImageMobile": {
-			"type": "object"
-		},
-		"backgroundImageTablet": {
-			"type": "object"
-		},
 		"backgroundOverlayColour": {
 			"type": "string"
 		},
@@ -923,29 +609,6 @@
 			"default": {
 				"desktop": 30
 			}
-		},
-		"backgroundPosition": {
-			"type": "string",
-			"default": "center center"
-		},
-		"backgroundRepeat": {
-			"type": "string",
-			"default": "no-repeat",
-			"enum": [
-				"no-repeat",
-				"repeat",
-				"repeat-x",
-				"repeat-y"
-			]
-		},
-		"backgroundSize": {
-			"type": "string",
-			"default": "cover",
-			"enum": [
-				"cover",
-				"contain",
-				"auto"
-			]
 		},
 		"bgSvgContent": {
 			"type": "string",
@@ -970,158 +633,6 @@
 		"bgSvgTextShadow": {
 			"type": "boolean",
 			"default": false
-		},
-		"bgSvgParts": {
-			"type": "array",
-			"default": [],
-			"items": {
-				"type": "object",
-				"properties": {
-					"target": {
-						"type": "string",
-						"role": "technical"
-					},
-					"eachChild": {
-						"type": "boolean",
-						"role": "behaviour"
-					},
-					"draw": {
-						"type": "boolean",
-						"role": "behaviour"
-					},
-					"fromOpacity": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"fromX": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"fromY": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"fromRotate": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"fromScale": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"duration": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"delay": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"stagger": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"easing": {
-						"type": "string",
-						"role": "behaviour"
-					},
-					"origin": {
-						"type": "string",
-						"role": "behaviour"
-					},
-					"loopRotate": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"loopDuration": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"hoverReplay": {
-						"type": "boolean",
-						"role": "behaviour"
-					},
-					"hoverRate": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"hoverRateDuration": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"fromFill": {
-						"type": "string",
-						"role": "behaviour"
-					},
-					"fromClip": {
-						"type": "string",
-						"role": "behaviour"
-					},
-					"toScale": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"toFill": {
-						"type": "string",
-						"role": "behaviour"
-					},
-					"settleAt": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"holdUntil": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"copyShapeFrom": {
-						"type": "string",
-						"role": "technical"
-					},
-					"easingCustom": {
-						"type": "string",
-						"role": "behaviour"
-					},
-					"hoverScale": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"hoverX": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"hoverY": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"hoverRotate": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"hoverDuration": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"hoverStagger": {
-						"type": "number",
-						"role": "behaviour"
-					},
-					"hoverEasing": {
-						"type": "string",
-						"role": "behaviour"
-					},
-					"hoverEasingCustom": {
-						"type": "string",
-						"role": "behaviour"
-					}
-				}
-			},
-			"description": "Named parts of the background SVG to animate: per part an element id (or CSS selector), an entrance (opacity, scale, offset, rotation, colour, wipe, stroke draw, timing, easing), a staged end look, a continuous rotation. Read by src/shared/svg-parts/svg-parts.js."
-		},
-		"bgSvgPartsTrigger": {
-			"type": "string",
-			"enum": [ "load", "visible", "every-visible" ],
-			"default": "load",
-			"description": "When the background SVG parts' entrance plays: on page load, the first time the hero is on screen, or each time it comes on screen."
 		},
 		"columns": {
 			"type": "object",
@@ -1175,10 +686,6 @@
 			"type": "object",
 			"default": {}
 		},
-		"overlayGradient": {
-			"type": "string",
-			"default": ""
-		},
 		"surfaceBlur": {
 			"type": "string",
 			"default": "",
@@ -1191,28 +698,6 @@
 		"backgroundOverlayColourHover": {
 			"type": "string",
 			"default": ""
-		},
-		"overlayGradientHover": {
-			"type": "string",
-			"default": ""
-		},
-		"backgroundOverlayBlendMode": {
-			"type": "string",
-			"default": "normal",
-			"enum": [
-				"normal",
-				"multiply",
-				"screen",
-				"overlay",
-				"darken",
-				"lighten",
-				"color-dodge",
-				"color-burn",
-				"soft-light",
-				"hard-light",
-				"difference",
-				"exclusion"
-			]
 		},
 		"shadow": {
 			"type": "string"
@@ -1400,7 +885,73 @@
 		"contentGap": {
 			"type": "object",
 			"description": "Space between the stacked items of the content column (eyebrow, heading, text, buttons) per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Unset prints no gap."
-		}
+		},
+		"splitSource": {"type":"object","_generated":"media-atoms"},
+		"splitLoading": {"type":"string","_generated":"media-atoms"},
+		"splitAlt": {"type":"string","_generated":"media-atoms"},
+		"splitDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"splitFit": {"type":"object","_generated":"media-atoms"},
+		"splitFocal": {"type":"object","_generated":"media-atoms"},
+		"splitPadding": {"type":"object","_generated":"media-atoms"},
+		"splitBackground": {"type":"string","_generated":"media-atoms"},
+		"splitOverlayColour": {"type":"string","_generated":"media-atoms"},
+		"splitOverlayColourHover": {"type":"string","_generated":"media-atoms"},
+		"splitOverlayGradient": {"type":"string","_generated":"media-atoms"},
+		"splitOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
+		"splitOverlayOpacity": {"type":"object","_generated":"media-atoms"},
+		"splitOverlayBlend": {"type":"string","_generated":"media-atoms"},
+		"splitOpacity": {"type":"object","_generated":"media-atoms"},
+		"splitBlend": {"type":"string","_generated":"media-atoms"},
+		"splitBoxShadow": {"type":"string","_generated":"media-atoms"},
+		"splitBoxShadowColour": {"type":"string","_generated":"media-atoms"},
+		"splitBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
+		"splitSvgLayer": {"type":"string","_generated":"media-atoms"},
+		"splitSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
+		"splitSvgParts": {"type":"array","default":[],"_generated":"media-atoms"},
+		"splitSvgPartsTrigger": {"type":"string","_generated":"media-atoms"},
+		"splitPlayback": {"type":"object","_generated":"media-atoms"},
+		"splitCaption": {"type":"string","_generated":"media-atoms"},
+		"splitCaptionTag": {"type":"string","_generated":"media-atoms"},
+		"splitLinkUrl": {"type":"string","_generated":"media-atoms"},
+		"splitLinkOpensNewTab": {"type":"boolean","_generated":"media-atoms"},
+		"splitLinkRel": {"type":"string","_generated":"media-atoms"},
+		"splitLinkUrlSource": {"type":"string","_generated":"media-atoms"},
+		"splitRatio": {"type":"object","_generated":"media-atoms"},
+		"splitWidth": {"type":"object","_generated":"media-atoms"},
+		"splitHeight": {"type":"object","_generated":"media-atoms"},
+		"splitMinWidth": {"type":"object","_generated":"media-atoms"},
+		"splitMaxWidth": {"type":"object","_generated":"media-atoms"},
+		"splitMinHeight": {"type":"object","_generated":"media-atoms"},
+		"splitMaxHeight": {"type":"object","_generated":"media-atoms"},
+		"splitShape": {"type":"object","_generated":"media-atoms"},
+		"splitRadius": {"type":"object","_generated":"media-atoms"},
+		"splitBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"splitBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"splitBorderColour": {"type":"string","_generated":"media-atoms"},
+		"splitBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"splitBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
+		"splitColour": {"type":"object","_generated":"media-atoms"},
+		"splitGreyscale": {"type":"number","_generated":"media-atoms"},
+		"splitAlignment": {"type":"object","_generated":"media-atoms"},
+		"splitOrder": {"type":"object","_generated":"media-atoms"},
+		"backgroundSource": {"type":"object","_generated":"media-atoms"},
+		"backgroundLoading": {"type":"string","_generated":"media-atoms"},
+		"backgroundAlt": {"type":"string","_generated":"media-atoms"},
+		"backgroundDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundFit": {"type":"object","_generated":"media-atoms"},
+		"backgroundRepeat": {"type":"object","_generated":"media-atoms"},
+		"backgroundTileSize": {"type":"object","_generated":"media-atoms"},
+		"backgroundFocal": {"type":"object","_generated":"media-atoms"},
+		"backgroundPinned": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundOverlayGradient": {"type":"string","_generated":"media-atoms"},
+		"backgroundOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
+		"backgroundOverlayBlend": {"type":"string","_generated":"media-atoms"},
+		"backgroundOpacity": {"type":"object","_generated":"media-atoms"},
+		"backgroundSvgLayer": {"type":"string","_generated":"media-atoms"},
+		"backgroundSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundSvgParts": {"type":"array","default":[],"_generated":"media-atoms"},
+		"backgroundSvgPartsTrigger": {"type":"string","_generated":"media-atoms"},
+		"backgroundPlayback": {"type":"object","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

@@ -7,29 +7,23 @@
  * sgs/button blocks (D270/D293).
  * FP-14: NO legacy scalar fallback.
  *
- * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
- *   variant, alignment, backgroundImage, backgroundOverlayColour, overlayOpacity,
- *   splitImage, splitImageMobile, splitMediaObjectPosition (TIER OBJECT, Priority 4
- *   2026-09-07), minHeight*, background/text/border colour
+ * The background (`backgroundSource` and its settings) prints through SGS_Container_Wrapper and SGS_Background_Media
+ * (`.sgs-bg-media`, `.sgs-bg-overlay`); the split media (`splitSource` and its settings) prints through
+ * SGS_Media_Element::render() inside the `.sgs-hero__media` grid cell (Spec 49 7.1, 7.8).
+ *
+ * Scalar STYLING/LAYOUT attributes consumed here (wrapper/shell level):
+ *   variant, alignment, minHeight*, background/text/border colour
  *   (resting + Hover, each with a {attr}Gradient sibling — D702),
- *   transitionDuration, transitionEasing,
- *   bgVideo*,
- *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth,
- *   splitMediaObjectFit/Position, splitMediaWidth, splitMediaHeight (per-device length objects), splitMediaBorderStyle/Colour,
- *   splitColumnRatio*, splitGap*,
- *   splitContentOrder, splitContentOrderTablet, splitContentOrderMobile,
- *   verticalAlignment.
+ *   transitionDuration, transitionEasing, gridTemplateColumns, gap, splitContentOrder, verticalAlignment,
+ *   contentPadding, contentBackground, contentGap, textAlign.
  *   Headline / sub-headline / label FONT-SIZE (all breakpoints) is
  *   owned by the child sgs/heading / sgs/text / sgs/label blocks — not emitted
  *   here.
  *
- * BOX-GROUP (contract §B, 2026-07-09): splitMediaBorderRadius, splitMediaBorderWidth,
- * splitMediaPadding, mediaPadding, contentPadding are box
- * OBJECTS ({top,right,bottom,left} / {topLeft,topRight,bottomLeft,bottomRight},
- * base + Tablet + Mobile tiers) — no more flat per-side attrs. The block's `padding` is read + emitted entirely by
- * SGS_Container_Wrapper on the content band (a split hero has no band, so it
- * stays on the section); the other 3 families are read + emitted here,
- * block-private.
+ * BOX-GROUP (contract B, 2026-07-09): contentPadding is a box
+ * OBJECT ({top,right,bottom,left}, base + Tablet + Mobile tiers) — no more flat per-side attrs. The block's `padding`
+ * is read + emitted entirely by SGS_Container_Wrapper on the content band (a split hero has no band, so it
+ * stays on the section); contentPadding is read + emitted here, block-private.
  *
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
@@ -70,164 +64,10 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // ctaSecondary*) are deliberately NOT read here. FP-14: no fallback.
 $variant   = $attributes['variant'] ?? 'standard';
 $alignment = $attributes['alignment'] ?? 'left';
-$bg_image  = $attributes['backgroundImage'] ?? null;
-// `overlayColour`/`overlayOpacity` were renamed to `backgroundOverlayColour`/
-// `backgroundOverlayOpacity` (the shared container owns those names); only the
-// canonical name is read (D270). These dynamic blocks save <InnerBlocks.Content/>,
-// so no save-markup deprecation is needed.
-// Raw here; sanitised via sgs_colour_value() at the scoped-CSS concat site (matches the
-// sibling colour pattern — media/content/image-border — so the sanitiser is locally
-// obvious at every concatenation point and never double-applied to a resolved var()).
-// Raw (undefaulted) value — used to decide WHETHER an overlay colour was
-// explicitly set (the ungate condition below).
-$overlay_colour_raw = $attributes['backgroundOverlayColour'] ?? '';
-// D718: hero gates its overlay exactly like SGS_Container_Wrapper does — no
-// colour set, no overlay (FP-9/D152: one shared control must not behave two
-// ways). Hero still renders ALL its own media layers (so it controls their
-// stacking), and its background image is a REAL <img> with fetchpriority="high"
-// (the preload scanner finds it; the wrapper's CSS background-image is only
-// discovered after the selector matches) — that is a genuine LCP win and it stays.
-// D717: `backgroundOverlayOpacity` is the real 0-100 dimming attribute (see
-// sgs_overlay_decls() in helpers-tokens.php) — alpha is off on that colour row.
-// backgroundOverlayOpacity is a TIER OBJECT {desktop,tablet,mobile} (Spec 35
-// migration, 2026-09-06); Tablet/Mobile siblings are no longer declared by
-// any block.json. A raw read here would hand sgs_overlay_decls() an array,
-// which is_numeric() silently rejects -- the desktop opacity would vanish
-// with no error, same failure mode as the pre-fix minHeight bug.
-$overlay_opacity_obj = sgs_responsive_normalise_object( $attributes['backgroundOverlayOpacity'] ?? null );
-$overlay_opacity     = $overlay_opacity_obj['desktop'] ?? null;
-// Read here (same pattern SGS_Container_Wrapper uses) so the overlay's own CSS
-// rule below can paint it. overlayGradient is ONE attribute holding the complete
-// CSS gradient value, validated through sgs_css_gradient_value() at the point of
-// emission below.
-$overlay_gradient_value = sgs_css_gradient_value( $attributes['overlayGradient'] ?? '' );
-// D6/Step 8 (2026-08-22) — hover + responsive-tier siblings, plus blend mode,
-// for the same overlay pair. Raw (undefaulted) values, exactly like
-// $overlay_colour_raw above — resolved once, at the point of emission, by
-// sgs_overlay_decls() itself (the same shared owner SGS_Container_Wrapper
-// calls), never a second hand-rolled resolver here.
-$overlay_colour_hover_raw   = $attributes['backgroundOverlayColourHover'] ?? '';
-$overlay_gradient_hover_raw = $attributes['overlayGradientHover'] ?? '';
-// D739: hero paints its OWN overlay (it opts out of the wrapper's), so it needs
-// its own copy of the tier reads — and this is the SECOND OWNER that made D718's
-// lesson recur: updating the shared wrapper alone left these four stranded, which
-// audit-block-file-consistency caught as undeclared_render_ref. The tier axis is
-// OPACITY now; null means this tier does not override.
-$overlay_opacity_tablet = $overlay_opacity_obj['tablet'] ?? null;
-$overlay_opacity_mobile = $overlay_opacity_obj['mobile'] ?? null;
-$overlay_blend_mode     = $attributes['backgroundOverlayBlendMode'] ?? '';
-// The split column's sources are TYPED, one family per media kind:
-// splitImage* (image), splitVideo* (video), splitSvg* (inline SVG), each with a
-// per-tier splitMediaType* saying which kind that tier uses.
-//
-// ⛔ The `splitMedia` unified image-or-video slot (added 2026-05-05) and the two
-// synthesise/hydrate bridges that kept it in sync with splitImage were DELETED
-// 2026-08-13 (Bean: no legacy elements as fallbacks; the framework is
-// pre-production, so there is nothing to migrate). They also contradicted this
-// file's own FP-14 contract at the top — "NO legacy scalar fallback" — and
-// FP-14, which bans exactly the `if ( empty($new) && !empty($legacy) )` shape.
-// Wave 6 (2026-09-01) — the `source` atom (prefix 'splitMedia') writes a NEW
-// {base}Id/{base}Url pair (its own canonical shape — `source.control.js`'s
-// `pairPickerRow()` always writes this, never the legacy composite object),
-// which is NOT the shape hero's `splitImage`/`splitVideo` attributes declare
-// (a composite `{id,url,alt}` object). NO legacy fallback is read here —
-// Bean-locked (2026-09-02): FP-14 bans exactly the
-// `if ( empty($new) && !empty($legacy) )` shape, and this very block already
-// carries a 2026-08-13 precedent of deleting an identically-shaped bridge
-// for the same reason (see the comment block above this one). An
-// already-published hero instance that only has the legacy `splitImage`/
-// `splitVideo`/`splitSvg` shape renders an EMPTY split-media slot until
-// re-uploaded through the new picker — a deliberate, accepted consequence of
-// the strict reading, not an oversight. The legacy attributes stay DECLARED
-// in block.json (never renamed — D338), simply unread and unwritten going
-// forward.
-$sgs_hero_resolve_split_image = static function ( array $attributes, string $suffix ) {
-	$url = (string) ( $attributes[ 'splitMediaImageUrl' . $suffix ] ?? '' );
-	if ( '' === $url ) {
-		return null;
-	}
-	return array(
-		'id'  => absint( $attributes[ 'splitMediaImageId' . $suffix ] ?? 0 ),
-		'url' => $url,
-		'alt' => (string) ( $attributes[ 'splitMediaImageAlt' . $suffix ] ?? '' ),
-	);
-};
-$sgs_hero_resolve_split_video = static function ( array $attributes, string $suffix ) {
-	$url = (string) ( $attributes[ 'splitMediaVideoUrl' . $suffix ] ?? '' );
-	if ( '' === $url ) {
-		return null;
-	}
-	return array(
-		'id'  => absint( $attributes[ 'splitMediaVideoId' . $suffix ] ?? 0 ),
-		'url' => $url,
-	);
-};
-$sgs_hero_resolve_split_svg   = static function ( array $attributes, string $suffix ) {
-	return (string) ( $attributes[ 'splitMediaSvgContent' . $suffix ] ?? '' );
-};
-// Lottie tier (U-17, design §3.1) — `LottieId` only (integer attachment id,
-// no URL sibling, matching how the `source` atom stores it everywhere else).
-// The poster is that SAME tier's `Thumbnail`/`ThumbnailId` (already injected
-// by the `source` atom for prefix 'splitMedia'), falling back to that tier's
-// own image when no poster was set (design §5).
-$sgs_hero_resolve_split_lottie = static function ( array $attributes, string $suffix ) {
-	$id = absint( $attributes[ 'splitMediaLottieId' . $suffix ] ?? 0 );
-	if ( ! $id ) {
-		return null;
-	}
-	return array( 'id' => $id );
-};
-$sgs_hero_resolve_split_poster = static function ( array $attributes, string $suffix, $tier_image ) {
-	$poster_id  = absint( $attributes[ 'splitMediaThumbnailId' . $suffix ] ?? 0 );
-	$poster_url = '';
-	if ( $poster_id ) {
-		$poster_src = wp_get_attachment_image_url( $poster_id, 'large' );
-		if ( $poster_src ) {
-			$poster_url = $poster_src;
-		}
-	}
-	if ( '' === $poster_url ) {
-		$poster_url = (string) ( $attributes[ 'splitMediaThumbnail' . $suffix ] ?? '' );
-	}
-	if ( '' === $poster_url && ! empty( $tier_image['url'] ) ) {
-		$poster_url = (string) $tier_image['url'];
-	}
-	if ( '' === $poster_url ) {
-		return '';
-	}
-	$poster_loading = sgs_image_loading_attrs();
-	return sprintf(
-		'<img src="%s" alt="" aria-hidden="true"%s class="sgs-media-el" loading="%s" fetchpriority="%s" decoding="%s" />',
-		esc_url( $poster_url ),
-		sgs_image_size_attrs( $poster_url ),
-		esc_attr( $poster_loading['loading'] ),
-		esc_attr( $poster_loading['fetchpriority'] ),
-		esc_attr( $poster_loading['decoding'] )
-	);
-};
-$split_image                   = $sgs_hero_resolve_split_image( $attributes, '' );
-$split_image_tablet            = $sgs_hero_resolve_split_image( $attributes, 'Tablet' );
-$split_image_mobile            = $sgs_hero_resolve_split_image( $attributes, 'Mobile' );
-// Per-tier media TYPE (2026-08-13). The split media column may be an image on one
-// device and a video or inline SVG on another, so each tier carries its own type
-// alongside its own source. '' on a narrower tier = inherit the next wider tier,
-// matching the fall-back-UP rule the source tiers already use (Spec 35 D3/D5).
-$split_media_type        = $attributes['splitMediaType'] ?? 'image';
-$split_media_type_tablet = $attributes['splitMediaTypeTablet'] ?? '';
-$split_media_type_mobile = $attributes['splitMediaTypeMobile'] ?? '';
-$split_video             = $sgs_hero_resolve_split_video( $attributes, '' );
-$split_video_tablet      = $sgs_hero_resolve_split_video( $attributes, 'Tablet' );
-$split_video_mobile      = $sgs_hero_resolve_split_video( $attributes, 'Mobile' );
-$split_svg               = $sgs_hero_resolve_split_svg( $attributes, '' );
-$split_svg_tablet        = $sgs_hero_resolve_split_svg( $attributes, 'Tablet' );
-$split_svg_mobile        = $sgs_hero_resolve_split_svg( $attributes, 'Mobile' );
-// ⛔ The `splitMedia` -> `splitVideo` alias bridge was DELETED here 2026-08-13.
-// `splitVideo*` is the only video source; a video is set through its own control.
-// splitMediaObjectPosition/Tablet/Mobile (the object-position triple) are read
-// entirely by the `focal-point` atom's own PHP twin now (Wave 6, 2026-09-01) —
-// see the `SGS_Media_Element::style()` call further down this file. The three
-// local variables that used to hold them here were removed along with the
-// hand-rolled emission they fed.
+// The background overlay's colour and gradient: the hero's own `has-background` flag below reads them.
+$overlay_colour_raw     = $attributes['backgroundOverlayColour'] ?? '';
+$overlay_gradient_value = sgs_css_gradient_value( $attributes['backgroundOverlayGradient'] ?? '' );
+
 // Free-text embedded length strings (e.g. "600px") — sanitised before reaching
 // the scoped <style> rule below (was esc_attr()-only, which does not strip
 // ;{}() and so cannot prevent CSS-rule breakout).
@@ -245,11 +85,6 @@ $min_height_mobile = sgs_css_length_value( $min_height_obj['mobile'] ?? '360px' 
 // scoped font-size <style> is emitted here. headline/subHeadline margin-bottom
 // and subHeadlineMaxWidth controls were retired (Spec 35 Phase 2.3) once the
 // content moved to child InnerBlocks at FR-22-6.
-// splitImageHeight / splitImageHeightTablet / splitImageMobileHeight were removed
-// — they duplicated `splitMediaHeight` on the same property AND the same element
-// (`.sgs-hero__split-image`). See the consolidation note at the emission site.
-// Height for the split image now comes solely from the `splitMediaHeight` object.
-
 // D702 — root background/text colour, resting + hover, each with a sibling
 // `{attr}Gradient` (D636 storage shape: two attributes, gradient wins when
 // set+valid, mirrors borderColour/borderColourHover above). Distinct from the
@@ -266,42 +101,6 @@ $hover_text_colour                  = $attributes['textColourHover'] ?? '';
 $hover_text_colour_gradient         = $attributes['textColourHoverGradient'] ?? '';
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
-
-// Background video attributes.
-$bg_video_attr   = $attributes['bgVideo'] ?? null;
-$bg_video_tablet = $attributes['bgVideoTablet'] ?? null;
-$bg_video_mobile = $attributes['bgVideoMobile'] ?? null;
-
-
-// ── Phase 1: Image display attributes ──────────────────────────────────────
-// $image_object_fit is still read directly (it feeds the sizing-mode
-// resolver below). $image_object_position was removed —
-// the `focal-point` atom's own PHP twin reads `splitMediaObjectPosition*`
-// directly now (Wave 6).
-$image_object_fit = $attributes['splitMediaObjectFit'] ?? 'cover';
-
-// splitMediaWidth and splitMediaHeight are per-device objects of CSS length
-// strings ({desktop,tablet,mobile}, unit inside each string). They print through
-// sgs_emit_responsive_css() below.
-$image_height_desktop = sgs_responsive_normalise_object( $attributes['splitMediaHeight'] ?? null )['desktop'] ?? null;
-
-// splitMediaPadding — inner padding on the <img> element itself. Owned
-// tier-object attr {desktop,tablet,mobile}, each { top, right, bottom, left }
-// (folded from the pre-migration flat trio, matching accordion/button/
-// container's already-proven pattern).
-$sgs_split_media_padding_tiers = sgs_responsive_normalise_object( $attributes['splitMediaPadding'] ?? null, true );
-$image_padding_obj             = is_array( $sgs_split_media_padding_tiers['desktop'] ) ? $sgs_split_media_padding_tiers['desktop'] : array();
-$image_padding_tablet_obj      = is_array( $sgs_split_media_padding_tiers['tablet'] ) ? $sgs_split_media_padding_tiers['tablet'] : array();
-$image_padding_mobile_obj      = is_array( $sgs_split_media_padding_tiers['mobile'] ) ? $sgs_split_media_padding_tiers['mobile'] : array();
-
-// mediaPadding — outer padding + background on the .sgs-hero__media wrapper.
-// Owned tier-object attr {desktop,tablet,mobile}, each { top, right, bottom,
-// left } (folded from the pre-migration flat trio, matching splitMediaPadding/
-// accordion/button/container's already-proven pattern).
-$sgs_media_padding_tiers  = sgs_responsive_normalise_object( $attributes['mediaPadding'] ?? null, true );
-$media_padding_obj        = is_array( $sgs_media_padding_tiers['desktop'] ) ? $sgs_media_padding_tiers['desktop'] : array();
-$media_padding_tablet_obj = is_array( $sgs_media_padding_tiers['tablet'] ) ? $sgs_media_padding_tiers['tablet'] : array();
-$media_padding_mobile_obj = is_array( $sgs_media_padding_tiers['mobile'] ) ? $sgs_media_padding_tiers['mobile'] : array();
 
 // contentPadding — padding on the .sgs-hero__content wrapper. TIER-OF-BOXES
 // OBJECT {desktop,tablet,mobile} as of Spec 35 box-tier migration (2026-08-11)
@@ -442,15 +241,6 @@ $styles = array();
 
 // Transition custom properties — consumed by CSS vars on the block and its children.
 $styles = array_merge( $styles, sgs_transition_vars( $attributes ) );
-
-// Standard variant: use <img> instead of CSS background-image so the browser can
-// discover the LCP resource early and apply fetchpriority="high". The same rule as the
-// shared Background panel's wrapper path (SGS_Container_Wrapper::render): a tablet or mobile
-// image swaps on the wrapper's ::before layer inside @media rules, which a lone <img> cannot
-// follow, so with any tier image set the whole background stays on the wrapper's CSS path.
-$has_standard_bg_image = ! $is_split && ! empty( $bg_image['url'] )
-	&& empty( $attributes['backgroundImageTablet']['url'] )
-	&& empty( $attributes['backgroundImageMobile']['url'] );
 
 // Generate a unique ID for responsive CSS scoping. This is a CLASS (contract
 // §B3-style scoping — matches the container/quote/heading convention): the
@@ -688,12 +478,6 @@ if ( $is_split ) {
 	if ( '' !== $hero_gap_mobile ) {
 		$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . '{gap:' . $hero_gap_mobile . '}}';
 	}
-	// Split-image height is NOT emitted here. The `splitImageHeight` family wrote
-	// `height` to `.sgs-hero__split-image` — the exact same property on the exact
-	// same element as `splitMediaHeight` below, so the two contended for one routing
-	// slot. `splitMediaHeight` is the survivor: it carries a length string with its own unit,
-	// forces no `object-fit`, and is named consistently across all three tiers. See the splitMediaHeight block below.
-
 	// Desktop/base column order. Blank ('') = natural DOM order (content is
 	// first in markup, so it lands in the first/left grid track). 'media-first'
 	// swaps: image first/left, content second/right. This is a LEFT/RIGHT
@@ -741,298 +525,6 @@ if ( $is_split ) {
 		$responsive_css .= '.' . $uid . '{flex-wrap:' . esc_attr( $flex_wrap ) . '}';
 	}
 }
-
-// ── splitMediaPadding: box-object family — base + tablet + mobile (on the <img>
-// element). Gated on $is_split, matching the old emission's scope.
-if ( $is_split ) {
-	$img_pad_base = sgs_box_object_longhands( $image_padding_obj, 'padding' );
-	if ( null !== $img_pad_base ) {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{' . $img_pad_base . '}';
-	}
-	$img_pad_tab = sgs_box_object_longhands( $image_padding_tablet_obj, 'padding' );
-	if ( null !== $img_pad_tab ) {
-		$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . ' .sgs-hero__split-media{' . $img_pad_tab . '}}';
-	}
-	$img_pad_mob = sgs_box_object_longhands( $image_padding_mobile_obj, 'padding' );
-	if ( null !== $img_pad_mob ) {
-		$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . ' .sgs-hero__split-media{' . $img_pad_mob . '}}';
-	}
-}
-
-// ── Split-media border (width, style, colour, hover, gradient ring and
-// radius at three tiers) through the shared assembler. Gated on $is_split to
-// match the old emission, which only ran inside the split-image branch. The
-// base rule prints before the tier rules so a desktop radius never beats them.
-if ( $is_split ) {
-	$split_media_sel    = '.' . $uid . ' .sgs-hero__split-media';
-	$split_media_border = sgs_border_element_decls(
-		$attributes,
-		'splitMedia',
-		$split_media_sel,
-		array(
-			'colour' => array(
-				'base'           => 'splitMediaBorderColour',
-				'hover'          => 'splitMediaBorderColourHover',
-				'gradient'       => 'splitMediaBorderColourGradient',
-				'hover_gradient' => 'splitMediaBorderColourHoverGradient',
-			),
-			'radius' => false,
-		)
-	);
-	if ( $split_media_border['base'] ) {
-		$responsive_css .= $split_media_sel . '{' . implode( ';', $split_media_border['base'] ) . ';}';
-	}
-	// The radius follows the box-shape media atom's storage, one corner object
-	// per tier attribute, which the atom's control writes for every media
-	// element. The desktop rule prints before the tier rules.
-	$split_media_radius = array(
-		''                          => sgs_corner_object_longhands( $attributes['splitMediaBorderRadius'] ?? null ),
-		SGS_Breakpoints::media( 'tablet' ) => sgs_corner_object_longhands( $attributes['splitMediaBorderRadiusTablet'] ?? null ),
-		SGS_Breakpoints::media( 'mobile' )  => sgs_corner_object_longhands( $attributes['splitMediaBorderRadiusMobile'] ?? null ),
-	);
-	foreach ( $split_media_radius as $split_media_query => $split_media_decls ) {
-		if ( null === $split_media_decls ) {
-			continue;
-		}
-		$split_media_rule = $split_media_sel . '{' . $split_media_decls . ';}';
-		$responsive_css  .= '' === $split_media_query ? $split_media_rule : $split_media_query . '{' . $split_media_rule . '}';
-	}
-	if ( $split_media_border['hover'] ) {
-		$responsive_css .= sgs_hover_state_rules( $split_media_sel, implode( ';', $split_media_border['hover'] ) . ';' );
-	}
-	$responsive_css .= implode( '', $split_media_border['rules'] );
-
-	// Background colour of the media element itself: shows through a contained
-	// or transparent image where the section background would otherwise show.
-	$split_media_bg = trim( (string) ( $attributes['splitMediaBackground'] ?? '' ) );
-	if ( '' !== $split_media_bg ) {
-		$split_media_bg_value = sgs_colour_value( $split_media_bg );
-		if ( '' !== $split_media_bg_value ) {
-			$responsive_css .= $split_media_sel . '{background-color:' . $split_media_bg_value . ';}';
-		}
-	}
-
-	// ── box shadow — the shared `shadow` atom (prefix 'splitMedia') sets
-	// `--sgs-media-box-shadow`/`--sgs-media-box-shadow-hover` on the same scope class,
-	// painted by the shared `.sgs-media-el` rule (assets/css/media-atoms/shadow.css) on the
-	// framed element that also carries the split media's border and radius. The split
-	// column (`.sgs-hero__media`) is `overflow:visible` (style.css) and the hero root is
-	// `overflow-x:clip;overflow-y:visible` (the wrapper's hoverSpillScale rule), so the
-	// shadow is clipped only at the hero's own left/right edges, or by the column itself
-	// in the Ken Burns mode, which clips it to animate inside it.
-	// ── object-fit / object-position — Wave 6 (2026-09-01). Now emitted by the
-	// shared `object-fit`/`focal-point` atoms (prefix 'splitMedia', which
-	// reproduces `splitMediaObjectFit`/`splitMediaObjectPosition*` EXACTLY —
-	// see block.json's `_comment_mediaElements`), via `SGS_Media_Element::style()`.
-	// REPLACES the hand-rolled `object-fit`/`object-position` CSS this block
-	// used to build directly (base + tablet tiers here; the mobile-tier
-	// override that used to live separately near the media-assembly site
-	// below is ALSO replaced — the atom's own `css()` already emits all three
-	// tiers). Targets the universal `.sgs-media-el` marker class, added to
-	// every tier element (image/video/svg) via `sgs_tier_media_render()`'s
-	// `$extra` parameter below — object-fit/object-position are no-ops on the
-	// SVG `<span>` tier regardless of whether the rule reaches it (replaced-
-	// element properties only), so a single unscoped-by-type marker is safe.
-	// The atom's own `validate()` rejects unknown fit values to ''.
-	$responsive_css .= SGS_Media_Element::style(
-		$attributes,
-		'splitMedia',
-		'sgs/hero',
-		$uid,
-		array( 'object-fit', 'focal-point', 'shadow' )
-	);
-}
-
-// ── splitMediaWidth: per device, under every fit and every split media type ───
-// Width paints on the frame wrapper `.sgs-hero__split-media`, so it applies to
-// image, video and svg frames alike.
-$responsive_css .= sgs_emit_responsive_css(
-	'.' . $uid . ' .sgs-hero__split-media',
-	array(
-		array(
-			'value' => $attributes['splitMediaWidth'] ?? null,
-			'css'   => 'width',
-			'unit_default' => 'px',
-		),
-	)
-);
-
-// ── splitMediaAlign: per device, where a narrower-than-column image sits ──────
-// The media column becomes a flex row only when a tier is set, so an unset hero prints nothing.
-$split_align_map   = array(
-	'start'  => 'flex-start',
-	'center' => 'center',
-	'end'    => 'flex-end',
-);
-$split_align_css   = sgs_emit_responsive_css(
-	'.' . $uid . ' .sgs-hero__media',
-	array(
-		array(
-			'value'     => $attributes['splitMediaAlign'] ?? null,
-			'css'       => 'justify-content',
-			'transform' => static function ( $raw ) use ( $split_align_map ) {
-				return $split_align_map[ (string) $raw ] ?? '';
-			},
-		),
-	)
-);
-if ( '' !== $split_align_css ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__media{display:flex}' . $split_align_css;
-}
-
-// ── splitMediaHeight: base + tablet + mobile, UNCONDITIONAL ────────────────────
-// Height, like width, applies under every object-fit.
-// Emitted base -> tablet -> mobile so the later, narrower @media rule wins at
-// its own width (same cascade convention as gap/grid-template-columns above).
-//
-// ⚠ Desktop tier ALWAYS emits, even when unset (2026-09-10 fix). style.css's
-// `.sgs-hero__split-image{height:100%}` structural default is (0,1,0) — the
-// SAME specificity as the shared media-atom stylesheet's
-// `.sgs-media-el{height:var(--sgs-media-height,auto)}` rule
-// (assets/css/media-element.css), which loads AFTER this block's own
-// style-index.css and so wins the tie. No hero split-media element ever
-// emits a `--sgs-media-height` custom property (height is not one of the
-// registered atoms — see includes/media/atoms/), so that var() always
-// resolves to its `auto` fallback: the split column silently stopped
-// filling its grid area at every breakpoint. It only LOOKED correct on
-// desktop by coincidence (the grid column's width happened to roughly
-// equal the row's content-driven height for a square source image);
-// narrower tablet widths exposed the real, always-present defect. This
-// scoped `.{uid} .sgs-hero__split-media{height:100%}` rule at (0,2,0)
-// beats the atom rule regardless of stylesheet load order — matching the
-// project's established fix for this exact class of bug (a shared
-// (0,1,0) fallback silently beating a block default at equal or lower
-// specificity; see plugins/sgs-blocks/CLAUDE.md's media-atom findings).
-// An explicit `splitMediaHeight` value below still overrides it.
-if ( null === $image_height_desktop || '' === sgs_css_length_value( $image_height_desktop ) ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{height:100%}';
-}
-$responsive_css .= sgs_emit_responsive_css(
-	'.' . $uid . ' .sgs-hero__split-media',
-	array(
-		array(
-			'value' => $attributes['splitMediaHeight'] ?? null,
-			'css'   => 'height',
-			'unit_default' => 'px',
-		),
-	)
-);
-
-// ── C19 item 3 (2026-09-04): box-shape atom's remaining bases — sizing MODE,
-// named SHAPE, aspect ratio, min-height, max-width/height/percent. Reuses the
-// atom's own PHP twin helper functions (includes/media/atoms/box-shape.php,
-// already required via render-helpers.php) rather than reimplementing them by
-// hand. Deliberately does NOT gate the pre-existing width/height emission
-// above by sizing mode — those stay UNGATED for back-compat (see the comment
-// on the height block above: gating by mode would silently drop height for
-// any pre-existing hero that set it while objectFit stayed 'cover', which
-// resolves to mode 'auto'). Mode instead governs the EDITOR disclosure only
-// (which control is greyed) plus these NEW, additive properties, which are
-// inert on every pre-existing hero (their attrs default empty/'none').
-$image_media_sizing = sgs_media_atom_box_shape_resolve_sizing_mode( $attributes['splitMediaMediaSizing'] ?? null, $image_object_fit, $attributes, 'splitMedia', 'sgs/hero' );
-$image_shape        = sgs_media_atom_box_shape_validate_shape( $attributes['splitMediaShape'] ?? null );
-$image_aspect_ratio = sgs_media_atom_box_shape_normalise_ratio( $attributes['splitMediaAspectRatio'] ?? null );
-
-// An explicit width AND height win over the ratio: both set (neither empty nor
-// 'auto') at desktop means the frame is already fully dimensioned.
-$sgs_hero_dimension_is_set = static function ( $value ): bool {
-	$css = sgs_css_length_value( $value );
-	return '' !== $css && 'auto' !== $css;
-};
-$image_width_desktop       = sgs_responsive_normalise_object( $attributes['splitMediaWidth'] ?? null )['desktop'] ?? null;
-$image_has_width_and_height = $sgs_hero_dimension_is_set( $image_width_desktop ) && $sgs_hero_dimension_is_set( $image_height_desktop );
-
-if ( 'ratio' === $image_media_sizing && '' !== $image_aspect_ratio && ! $image_has_width_and_height ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{aspect-ratio:' . esc_attr( $image_aspect_ratio ) . '}';
-}
-
-if ( 'none' !== $image_shape ) {
-	$image_clip_paths = sgs_media_atom_box_shape_clip_paths();
-	if ( isset( $image_clip_paths[ $image_shape ] ) ) {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{clip-path:' . esc_attr( $image_clip_paths[ $image_shape ] ) . '}';
-	}
-}
-
-// splitMediaMinHeight — a SINGLE tier-object attr {desktop,tablet,mobile},
-// matching the atom's own control shape (box-shape.control.js only ever
-// writes the .desktop key — no separate Tablet/Mobile sibling attrs, unlike
-// every other tier family in this file).
-$image_min_height_obj = sgs_media_atom_box_shape_resolve_tier_object( $attributes['splitMediaMinHeight'] ?? null );
-$image_min_height_bp  = array(
-	'desktop' => '',
-	'tablet'  => '1023px',
-	'mobile'  => '767px',
-);
-foreach ( $image_min_height_bp as $sgs_hero_min_height_tier => $sgs_hero_min_height_bp ) {
-	$sgs_hero_min_height_val = $image_min_height_obj[ $sgs_hero_min_height_tier ] ?? null;
-	$sgs_hero_min_height_css = sgs_css_length_value( $sgs_hero_min_height_val ?? '' );
-	if ( '' === $sgs_hero_min_height_css ) {
-		continue;
-	}
-	$sgs_hero_min_height_decl = '.' . $uid . ' .sgs-hero__split-media{min-height:' . esc_attr( $sgs_hero_min_height_css ) . '}';
-	$responsive_css          .= '' === $sgs_hero_min_height_bp
-		? $sgs_hero_min_height_decl
-		: SGS_Breakpoints::media_width( 'max', $sgs_hero_min_height_bp ) . '{' . $sgs_hero_min_height_decl . '}';
-}
-
-// splitMediaMaxWidth / splitMediaMaxHeight — per-device length strings.
-$responsive_css .= sgs_emit_responsive_css(
-	'.' . $uid . ' .sgs-hero__split-media',
-	array(
-		array(
-			'value' => $attributes['splitMediaMaxWidth'] ?? null,
-			'css'   => 'max-width',
-			'unit_default' => 'px',
-		),
-		array(
-			'value' => $attributes['splitMediaMaxHeight'] ?? null,
-			'css'   => 'max-height',
-			'unit_default' => 'px',
-		),
-	)
-);
-
-// ── mediaPadding: box-object family — base + tablet + mobile (on .sgs-hero__media).
-$media_pad_base = sgs_box_object_longhands( $media_padding_obj, 'padding' );
-if ( null !== $media_pad_base ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__media{' . $media_pad_base . '}';
-}
-$media_pad_tab = sgs_box_object_longhands( $media_padding_tablet_obj, 'padding' );
-if ( null !== $media_pad_tab ) {
-	$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . ' .sgs-hero__media{' . $media_pad_tab . '}}';
-}
-$media_pad_mob = sgs_box_object_longhands( $media_padding_mobile_obj, 'padding' );
-if ( null !== $media_pad_mob ) {
-	$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . ' .sgs-hero__media{' . $media_pad_mob . '}}';
-}
-
-// mediaBackground — moved here from the inline style="" on the media wrapper
-// (contract §A). The shared per-area schema attr; the legacy mediaBackgroundColour
-// attr was removed 2026-07-23 (it duplicated this on css:background-color / element
-// media and collided in the routing DB — mediaBackground is the sole canonical source).
-// Gradient support (D561) mirrors the whole-block overlay's
-// linear-gradient(%ddeg,%s,%s) shape 1:1 (includes/class-sgs-container-wrapper.php ~1159-1176).
-$media_bg_resolved = $attributes['mediaBackground'] ?? '';
-// mediaBackgroundGradient is ONE attribute holding the complete CSS gradient
-// value, validated through sgs_css_gradient_value().
-$media_bg_gradient_value = sgs_css_gradient_value( $attributes['mediaBackgroundGradient'] ?? '' );
-if ( $media_bg_gradient_value ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__media{background-image:' . $media_bg_gradient_value . '}';
-} elseif ( $media_bg_resolved ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__media{background-color:' . sgs_colour_value( $media_bg_resolved ) . '}';
-}
-
-// mediaOverlay — a SEPARATE overlay layered on TOP of the split media (image/
-// video/SVG), distinct from mediaBackground above (which paints BEHIND an
-// object-fit:cover image and is therefore invisible whenever media is
-// present). Wave 6 (2026-09-01): the hand-rolled colour/gradient resolution
-// that used to live here, plus the `$media_overlay_html` span it fed, are
-// GONE — `splitMediaOverlayColour`/`splitMediaOverlayGradient` (+ Hover/Opacity/
-// BlendMode siblings) are now read entirely by the shared `overlay` atom's
-// PHP twin (`sgs_media_atom_overlay_css()`), which routes through the SAME
-// `sgs_background_paint_value()` primitive `sgs_overlay_decls()` itself uses
-// — see the `SGS_Media_Element::style()` call at the media-assembly site
-// further down this file, and block.json's `_comment_mediaElements`.
 
 // ── contentPadding: box-object family — base + tablet + mobile (on .sgs-hero__content).
 $content_pad_base = sgs_box_object_longhands( $content_padding_obj, 'padding' );
@@ -1201,138 +693,7 @@ if ( ( '' !== $overlay_colour_raw || $overlay_gradient_value
 // ride through via extra_classes / extra_styles; hero keeps ALL its own media
 // layers (LCP <img>, video, svg, overlay) as bespoke interior.
 
-// Build video background.
-// bgVideo / bgVideoMobile override the background image on their respective viewports.
-// These attributes are NOT gated by $variant — any variant (standard/split) can carry a
-// video background. The dedicated 'video' variant was retired 2026-08-12 — it was a dead
-// duplicate: the shared BackgroundPanel already exposes this same bgVideo* family on
-// every variant, and hero has always rendered it unconditionally, as below.
-$video_html     = '';
-$has_attr_video = ! empty( $bg_video_attr['url'] );
-
-if ( $has_attr_video ) {
-	$desktop_src = $bg_video_attr['url'];
-	// Tiers fall back UPWARD (mobile -> tablet -> desktop), matching
-	// SGS_Container_Wrapper::render()'s three-tier resolution. Hero duplicates the
-	// wrapper's video path rather than calling it (a composite wrapper divergence
-	// predating this change) — so the two must be kept in step by hand until hero
-	// is routed through the wrapper. If you change one, change the other.
-	$has_tablet_src = ! empty( $bg_video_tablet['url'] );
-	$tablet_src     = $has_tablet_src ? $bg_video_tablet['url'] : $desktop_src;
-	$mobile_src     = ! empty( $bg_video_mobile['url'] ) ? $bg_video_mobile['url'] : $tablet_src;
-
-	if ( $desktop_src === $mobile_src && $desktop_src === $tablet_src ) {
-		// Single source across every tier — no viewport switching needed.
-		$video_html = sprintf(
-			'<video class="sgs-hero__video-bg" autoplay loop muted playsinline aria-hidden="true">' .
-			'<source src="%s" type="video/mp4"></video>',
-			esc_url( $desktop_src )
-		);
-	} else {
-		// Multiple sources — JS swaps src based on viewport via data attributes.
-		// `data-src-tablet` is emitted ONLY when a tablet override was actually set,
-		// so a block with no tablet value renders byte-identically to before.
-		$tablet_attr = $has_tablet_src
-			? sprintf( ' data-src-tablet="%s"', esc_attr( $tablet_src ) )
-			: '';
-
-		$video_html = sprintf(
-			'<video class="sgs-hero__video-bg sgs-hero__video-bg--responsive" autoplay loop muted playsinline aria-hidden="true"' .
-			' data-src-desktop="%s"%s data-src-mobile="%s">' .
-			'<source src="%s" type="video/mp4"></video>',
-			esc_attr( $desktop_src ),
-			$tablet_attr,
-			esc_attr( $mobile_src ),
-			esc_url( $desktop_src )
-		);
-	}
-
-	// object-fit/object-position for the section background video — reads the
-	// SAME backgroundSize/backgroundPosition attributes the shared
-	// BackgroundPanel's Image tab already writes (the Video tab's new Size/
-	// Position controls now write into them too, via the object-fit/
-	// focal-point media atoms at backdrop scope — no second attribute
-	// family). Mirrors SGS_Container_Wrapper::render()'s equivalent
-	// `.sgs-container__video-bg` rule for sgs/container,
-	// multi-button, physics-canvas, site-footer, site-header, trust-bar —
-	// but hero hand-rolls its OWN video markup rather than calling the
-	// wrapper for it (see the "composite wrapper divergence" note above this
-	// block), so this reads the shared attributes directly and emits its own
-	// scoped rule using hero's own $uid/$responsive_css, exactly like the
-	// split-media object-fit/object-position rule further up in this file.
-	// No-inline contract (Spec 32): routes to the scoped <style>, never onto
-	// the <video> tag itself.
-	// ⚠ Uses `sgs_media_atom_focal_point_validate()` (includes/media/atoms/
-	// focal-point.php, globbed in by render-helpers.php — the SAME validator
-	// the split-media object-position rule above already calls), NOT the old
-	// `$sgs_css_object_position` closure — that closure was REMOVED from this
-	// file in the Wave 6 split-media migration (see the note near the top of
-	// this file); calling it here would fatal.
-	$bg_video_size          = $attributes['backgroundSize'] ?? 'cover';
-	$allowed_bg_video_sizes = array( 'cover', 'contain', 'auto' );
-	if ( ! in_array( $bg_video_size, $allowed_bg_video_sizes, true ) ) {
-		$bg_video_size = 'cover';
-	}
-	$bg_video_position = sgs_media_atom_focal_point_validate( $attributes['backgroundPosition'] ?? 'center center', 'Position' );
-	if ( '' === $bg_video_position ) {
-		$bg_video_position = 'center center';
-	}
-	$responsive_css .= '.' . $uid . ' .sgs-hero__video-bg{object-fit:' . esc_attr( $bg_video_size ) . ';object-position:' . esc_attr( $bg_video_position ) . '}';
-}
-
-// Build standard background image element.
-// Using an <img> instead of CSS background-image lets the browser discover the LCP
-// resource early and apply fetchpriority="high".
-//
-// PAGE-SCOPED counter (Fix 3, adversarial-review corrected 2026-08-21): LCP
-// priority is a property of the PAGE's render order, not of this block's own
-// code path — a private `static $sgs_hero_count` here only knew "am I first
-// within HERO's own render calls", so a hero background image followed by a
-// sgs/container background image would previously mark BOTH
-// `fetchpriority=high`, prioritising neither. sgs_next_background_image_index()
-// (helpers-media.php) is now the ONE counter shared with
-// SGS_Container_Wrapper's own background-image fast path, so only the image
-// that renders first ON THE PAGE — whichever block it belongs to — gets the
-// high-priority hint; every later instance stays lazy.
-$bg_img_html = '';
-// A `lottie` layer on the background part plays in a holder that takes the image's class (Spec 38A FR-38A-52).
-require_once dirname( __DIR__, 3 ) . '/includes/motion/class-sgs-motion-background-lottie.php';
-$sgs_hero_lottie_layer = \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::has_layer( $attributes );
-if ( $has_standard_bg_image ) {
-	require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
-
-	$img_id         = ! empty( $bg_image['id'] ) ? absint( $bg_image['id'] ) : 0;
-	$sgs_is_first   = 1 === sgs_next_background_image_index();
-	$fetch_priority = $sgs_is_first ? 'high' : 'auto';
-	$loading        = $sgs_is_first ? 'eager' : 'lazy';
-
-	$img_attrs = array(
-		'class'         => $sgs_hero_lottie_layer ? \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::POSTER_CLASS : 'sgs-hero__bg-img sgs-hero__background',
-		'aria-hidden'   => 'true',
-		'fetchpriority' => $fetch_priority,
-		'loading'       => $loading,
-		'decoding'      => $sgs_is_first ? 'sync' : 'async',
-		'alt'           => '',
-	);
-
-	$bg_img_html = sgs_responsive_image(
-		$img_id,
-		$bg_image['url'],
-		'',
-		'full',
-		$img_attrs
-	);
-}
-if ( $sgs_hero_lottie_layer ) {
-	$bg_img_html = '<div class="sgs-hero__bg-img sgs-hero__background sgs-container__lottie-bg" aria-hidden="true">' . $bg_img_html . '</div>';
-}
-
-// Build overlay. NO-INLINE: this block emits zero inline style property
-// declarations. Contract + mechanism: Spec 32. Enforced by
-// scripts/audit-inline-styling.js --check. background-color/opacity move to
-
-// ── Root border: resting rule first, then its gradient ring, then the tier
-// radii (computed above with the hover paint). ──
+// ── Root border: resting rule first, then its gradient ring, then the tier radii (computed above with the hover paint). ──
 if ( $border['base'] ) {
 	$responsive_css .= $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
@@ -1342,55 +703,6 @@ if ( $border['tablet'] ) {
 }
 if ( $border['mobile'] ) {
 	$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
-}
-
-// the scoped <style> ($responsive_css, appended below) — the element carries
-// only its class. Hero renders its own overlay instead of the shared
-// wrapper's (per the C3 double-emit guard above).
-$overlay_html = '';
-// D718: the EXISTENCE test is the shared helper's own return value, not a
-// separate hand-written condition. sgs_overlay_decls() returns '' when there is
-// nothing to paint, so "is there an overlay?" and "what does it paint?" are one
-// decision in one place. SGS_Container_Wrapper gates the identical way, so the
-// two sites cannot drift apart on policy.
-// D6/Step 8 (2026-08-22): blend mode joins the same call — one shared owner,
-// not a second emitter appended after it (the exact divergence D718 closed
-// for existence/opacity; blend mode does not reopen it).
-$overlay_decls = sgs_overlay_decls( $overlay_colour_raw, $overlay_gradient_value, $overlay_opacity, $overlay_blend_mode );
-if ( '' !== $overlay_decls ) {
-	$overlay_html    = '<span class="sgs-hero__overlay" aria-hidden="true"></span>';
-	$responsive_css .= '.' . $uid . ' .sgs-hero__overlay{' . $overlay_decls . '}';
-
-	// Overlay HOVER state (D6, 2026-08-22) — same shared owner
-	// (sgs_overlay_decls()), same pattern as SGS_Container_Wrapper. Opacity
-	// and blend mode are not re-passed: the base rule above already declared
-	// them, and the more specific `:hover`/`:focus-visible` selector only
-	// needs to override colour/gradient. Gated on the span existing at all
-	// (the outer `'' !== $overlay_decls` check) — a hover-only value with no
-	// resting paint has nothing to select, matching D717/D718's "no colour
-	// set means no overlay" rule.
-	if ( '' !== $overlay_colour_hover_raw || '' !== $overlay_gradient_hover_raw ) {
-		$overlay_hover_paint = sgs_overlay_decls( $overlay_colour_hover_raw, $overlay_gradient_hover_raw );
-		if ( '' !== $overlay_hover_paint ) {
-			$responsive_css .= sgs_emit_state_colour_css(
-				'.' . $uid . ' .sgs-hero__overlay',
-				array(),
-				array( $overlay_hover_paint )
-			);
-		}
-	}
-
-	// Overlay responsive TIERS (D739) — the tier axis is OPACITY, not colour.
-	// Project-standard 768/1024 breakpoints. Only the opacity declaration is
-	// re-emitted: colour, gradient and blend mode are deliberately NOT per-tier,
-	// so restating them here would make the @media rule a second owner of those
-	// properties and it would silently outrank a later desktop edit.
-	if ( null !== $overlay_opacity_tablet && '' !== $overlay_opacity_tablet ) {
-		$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . ' .sgs-hero__overlay{opacity:' . esc_attr( (float) $overlay_opacity_tablet / 100 ) . '}}';
-	}
-	if ( null !== $overlay_opacity_mobile && '' !== $overlay_opacity_mobile ) {
-		$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . ' .sgs-hero__overlay{opacity:' . esc_attr( (float) $overlay_opacity_mobile / 100 ) . '}}';
-	}
 }
 
 // FR-22-6: all content (label, headline, sub-headline, CTAs) is rendered via
@@ -1414,203 +726,62 @@ if ( '' !== $overlay_decls ) {
 list( $content_in_column, $section_layers_html ) = \SGS\Blocks\sgs_lift_section_anchored_layers( (string) $content );
 $content_html = '<div class="sgs-hero__content">' . $content_in_column . '</div>';
 
-// ── Build split media area — image / video / SVG, per device tier ─────────
-// 2026-08-13: unified onto the shared sgs_tier_media_render() helper
-// (includes/helpers-tier-media.php) so a device tier can be a DIFFERENT media
-// TYPE (image on desktop, video on tablet, inline SVG on mobile), which the
-// old hand-rolled sibling-<img>-only logic this replaces could never express —
-// splitMediaType*/splitVideo*/splitSvg* were declared + read into local vars
-// above but never reached any output. A tier resolves to an explicit type only
-// when splitMediaType* names one, OR (back-compat) when splitMediaType* is ''
-// ("inherit") and that SAME tier already carries a source of its own — so every
-// pre-2026-08-13 hero, which only ever set splitImage*/, keeps rendering
-// byte-identically. A tier with nothing resolved is simply absent from
-// $split_tiers; the helper's own upward cascade (mobile -> tablet -> desktop,
-// Spec 35 D3/D5) takes over from there, matching every other tier family here.
-$sgs_hero_resolve_split_type = static function ( string $declared_type, $image, $video, string $svg, $lottie = null ): string {
-	if ( 'video' === $declared_type ) {
-		return ! empty( $video['url'] ) ? 'video' : '';
-	}
-	if ( 'svg' === $declared_type ) {
-		return '' !== trim( $svg ) ? 'svg' : '';
-	}
-	if ( 'lottie' === $declared_type ) {
-		return ! empty( $lottie['id'] ) ? 'lottie' : '';
-	}
-	// 'image' is STRICT, exactly like 'video' and 'svg' above. ⛔ It previously
-	// fell through to inference when the tier had no image, to cover a
-	// pre-2026-08-13 hero whose desktop media was a video carried by the legacy
-	// `splitMedia` object. That object and its bridges are deleted, so the
-	// fall-through has nothing left to protect and would only mask a genuine
-	// misconfiguration (type says image, no image set) by silently rendering
-	// something else.
-	if ( 'image' === $declared_type ) {
-		return ! empty( $image['url'] ) ? 'image' : '';
-	}
-	// '' (inherit) — NOT legacy: this is the canonical cascade. A tier that
-	// names no type infers from whichever source it carries, and a tier with
-	// nothing is absent, so the helper's upward cascade supplies it.
-	if ( ! empty( $image['url'] ) ) {
-		return 'image';
-	}
-	if ( ! empty( $video['url'] ) ) {
-		return 'video';
-	}
-	if ( '' !== trim( $svg ) ) {
-		return 'svg';
-	}
-	return '';
-};
-
-// Per-tier alt (reversed from Spec 35 D5, 2026-09-08 — see
-// helpers-tier-media.php's updated $alt docblock for the full reasoning).
-// `$split_image`/`$split_image_tablet`/`$split_image_mobile` already resolve
-// each tier's OWN `splitMediaImageAlt{Tablet,Mobile}` attribute (declared in
-// block.json, `$sgs_hero_resolve_split_image()` above) — this was previously
-// discarded, collapsing every tier onto the desktop alt alone. Passing the
-// array opts into `sgs_tier_media_render()`'s fallback-UP cascade, so a hero
-// that only ever set the desktop alt (every pre-2026-09-08 instance) keeps
-// rendering byte-identically; only an instance with a genuinely different
-// per-tier alt (art-directed mobile image, not a crop) now renders it.
-$sgs_hero_split_alt = array(
-	'desktop' => (string) ( $split_image['alt'] ?? '' ),
-	'tablet'  => (string) ( $split_image_tablet['alt'] ?? '' ),
-	'mobile'  => (string) ( $split_image_mobile['alt'] ?? '' ),
-);
-
-// Decorative-image toggle (finding 18, 2026-09-02, WCAG 2.1 AA 1.1.1). Only the
-// split-media element — the sole real <img>/<video>/svg this block renders —
-// gets this; backgroundImage paints via CSS background-image and is never
-// exposed to assistive tech, so it carries no such toggle. When on, every
-// tier's alt is blanked (covers the image tier) and the media wrapper is
-// marked aria-hidden (covers video/svg tiers, which have no alt attribute of
-// their own), mirroring sgs/timeline's milestoneMediaDecorative treatment.
-$split_media_decorative = ! empty( $attributes['splitMediaDecorative'] );
-if ( $split_media_decorative ) {
-	$sgs_hero_split_alt = array(
-		'desktop' => '',
-		'tablet'  => '',
-		'mobile'  => '',
-	);
-}
-
-$split_tiers = array();
-foreach (
-	array(
-		'desktop' => array( $split_media_type, $split_image, $split_video, $split_svg, $sgs_hero_resolve_split_lottie( $attributes, '' ) ),
-		'tablet'  => array( $split_media_type_tablet, $split_image_tablet, $split_video_tablet, $split_svg_tablet, $sgs_hero_resolve_split_lottie( $attributes, 'Tablet' ) ),
-		'mobile'  => array( $split_media_type_mobile, $split_image_mobile, $split_video_mobile, $split_svg_mobile, $sgs_hero_resolve_split_lottie( $attributes, 'Mobile' ) ),
-	) as $sgs_hero_tier_name => $sgs_hero_tier_args
-) {
-	list( $sgs_hero_tier_type_attr, $sgs_hero_tier_image, $sgs_hero_tier_video, $sgs_hero_tier_svg, $sgs_hero_tier_lottie ) = $sgs_hero_tier_args;
-	$sgs_hero_resolved_type = $sgs_hero_resolve_split_type( (string) $sgs_hero_tier_type_attr, $sgs_hero_tier_image, $sgs_hero_tier_video, $sgs_hero_tier_svg, $sgs_hero_tier_lottie );
-	if ( '' === $sgs_hero_resolved_type ) {
-		continue;
-	}
-	if ( 'svg' === $sgs_hero_resolved_type ) {
-		$split_tiers[ $sgs_hero_tier_name ] = array(
-			'type' => 'svg',
-			'svg'  => $sgs_hero_tier_svg,
-		);
-		continue;
-	}
-	if ( 'lottie' === $sgs_hero_resolved_type ) {
-		$sgs_hero_tier_suffix               = 'desktop' === $sgs_hero_tier_name ? '' : ucfirst( $sgs_hero_tier_name );
-		$split_tiers[ $sgs_hero_tier_name ] = array(
-			'type'   => 'lottie',
-			'media'  => array( 'id' => absint( $sgs_hero_tier_lottie['id'] ?? 0 ) ),
-			'poster' => $sgs_hero_resolve_split_poster( $attributes, $sgs_hero_tier_suffix, $sgs_hero_tier_image ),
-		);
-		continue;
-	}
-	$sgs_hero_tier_media    = 'video' === $sgs_hero_resolved_type ? $sgs_hero_tier_video : $sgs_hero_tier_image;
-	$sgs_hero_tier_media_id = ! empty( $sgs_hero_tier_media['id'] ) ? absint( $sgs_hero_tier_media['id'] ) : 0;
-	$sgs_hero_tier_width    = ! empty( $sgs_hero_tier_media['width'] ) ? absint( $sgs_hero_tier_media['width'] ) : 0;
-	$sgs_hero_tier_height   = ! empty( $sgs_hero_tier_media['height'] ) ? absint( $sgs_hero_tier_media['height'] ) : 0;
-	// Image tier only: fall back to WP attachment metadata when the stored
-	// attribute lacks explicit dimensions (prevents CLS) — mirrors the
-	// pre-refactor desktop-image behaviour (tablet/mobile never had this).
-	if ( 'image' === $sgs_hero_resolved_type && ( ! $sgs_hero_tier_width || ! $sgs_hero_tier_height ) ) {
-		$sgs_hero_resolve_id = $sgs_hero_tier_media_id;
-		if ( 0 === $sgs_hero_resolve_id && ! empty( $sgs_hero_tier_media['url'] ) ) {
-			$sgs_hero_resolve_id = absint( attachment_url_to_postid( $sgs_hero_tier_media['url'] ) );
-		}
-		if ( $sgs_hero_resolve_id > 0 ) {
-			$sgs_hero_src_data = wp_get_attachment_image_src( $sgs_hero_resolve_id, 'large' );
-			if ( $sgs_hero_src_data && ! empty( $sgs_hero_src_data[1] ) && ! empty( $sgs_hero_src_data[2] ) ) {
-				$sgs_hero_tier_width  = $sgs_hero_tier_width ? $sgs_hero_tier_width : (int) $sgs_hero_src_data[1];
-				$sgs_hero_tier_height = $sgs_hero_tier_height ? $sgs_hero_tier_height : (int) $sgs_hero_src_data[2];
-			}
-		}
-	}
-	$split_tiers[ $sgs_hero_tier_name ] = array(
-		'type'  => $sgs_hero_resolved_type,
-		'media' => array(
-			'id'     => $sgs_hero_tier_media_id,
-			'url'    => (string) ( $sgs_hero_tier_media['url'] ?? '' ),
-			'width'  => $sgs_hero_tier_width,
-			'height' => $sgs_hero_tier_height,
-		),
-	);
-}
-
+// ── Split media: one slot through the media renderer (Spec 49 §7.1) ─────────
+// `SGS_Media_Element::render()` prints the picture, video, SVG and embed siblings, the helper box (padding, background,
+// radius, border, shadow, overlay), and every setting's scoped CSS. The hero keeps the grid cell around it.
 $media_html = '';
-if ( $is_split && ! empty( $split_tiers ) ) {
-	// `sgs-hero__split-image` is kept as the IMAGE type's extra class — but ONLY
-	// for style.css's structural rules (base 100%/100% sizing + the hover-zoom
-	// transform, both scoped to `.sgs-hero__split-image`; see style.css ~292 and
-	// ~305-318). It is NOT what the editor-controlled splitMedia* CSS below
-	// targets any more (fixed 2026-08-27): padding/border-radius/border/width/
-	// height now target the shared `.sgs-hero__split-media` base so they reach
-	// video and SVG tiers too, and object-fit/object-position target the
-	// `--image, --video` compound (replaced-element properties only — a lie on
-	// the SVG `<span>`). Previously ALL of that CSS was scoped to
-	// `.sgs-hero__split-image`, so video/SVG tiers silently ignored every one of
-	// those controls despite the inspector offering them.
-	$sgs_hero_split_image_class = 'sgs-hero__split-image';
-	// Wave 6 (2026-09-01) — every tier element (image/video/svg) now ALSO
-	// carries the universal `sgs-media-el` marker + the `object-fit`/
-	// `focal-point` atoms' scope class (prefix 'splitMedia'), so the shared
-	// `.sgs-media-el`-keyed stylesheet (`assets/css/media-atoms/object-fit.css`
-	// + `focal-point.css`) can reach these elements — the SAME mechanism
-	// `sgs/media`/`sgs/before-after` use, not a hero-private duplicate. This
-	// is what lets `SGS_Media_Element::style()` above (which computed this
-	// exact scope class) actually paint: a rule with nowhere to attach is a
-	// silent no-op, so the class MUST reach the same element the rule targets.
-	$sgs_hero_media_el_extra = 'sgs-media-el ' . SGS_Media_Element::scope_class( $uid, 'splitMedia' );
-	$sgs_hero_tier_result    = sgs_tier_media_render(
-		$split_tiers,
-		'sgs-hero__split-media',
-		$uid,
-		$sgs_hero_split_alt,
+if ( $is_split ) {
+	// The slot's own scope class: the hero's `$uid` is the section's, and a rule printed for the media must not reach it.
+	$sgs_hero_split_uid = $uid . '-split';
+	// Grid tracks per device (`gridTemplateColumns` tiers; a device that sets none takes the wider one's, and the mobile
+	// default is one track).
+	$sgs_hero_split_columns = array();
+	$sgs_hero_split_tracks  = 2;
+	foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_hero_split_device ) {
+		$sgs_hero_split_template = trim( (string) ( $split_col_tiers[ $sgs_hero_split_device ] ?? '' ) );
+		if ( '' === $sgs_hero_split_template && 'mobile' === $sgs_hero_split_device ) {
+			$sgs_hero_split_template = '1fr';
+		}
+		if ( '' !== $sgs_hero_split_template ) {
+			$sgs_hero_split_tracks = max( 1, count( preg_split( '/\s+(?![^(]*\))/', $sgs_hero_split_template ) ?: array() ) );
+		}
+		$sgs_hero_split_columns[ $sgs_hero_split_device ] = $sgs_hero_split_tracks;
+	}
+	$sgs_hero_split     = SGS_Media_Element::render(
 		array(
-			'image'  => $sgs_hero_split_image_class . ' ' . $sgs_hero_media_el_extra,
-			'video'  => $sgs_hero_media_el_extra,
-			'svg'    => $sgs_hero_media_el_extra,
-			'lottie' => $sgs_hero_media_el_extra,
+			'prefix'  => 'split',
+			'kinds'   => array( 'image', 'video', 'svg' ),
+			'context' => 'content',
+		),
+		$attributes,
+		array(
+			'uid'         => $sgs_hero_split_uid,
+			'block'       => 'sgs/hero',
+			'extra_class' => 'sgs-hero__split-media',
+			'in_editor'   => defined( 'REST_REQUEST' ) && REST_REQUEST,
+			// The media is one grid column wide: its `sizes` divide the viewport by the track count, so the browser
+			// does not fetch a file as wide as the whole viewport.
+			'item_set'    => array( 'columns' => $sgs_hero_split_columns ),
 		)
 	);
-	if ( '' !== $sgs_hero_tier_result['html'] ) {
-		// Wave 6 — the `overlay` atom (prefix 'media', attachesTo: 'box') paints
-		// via `.sgs-media-box::after`, so `.sgs-hero__media` (this wrapper IS
-		// that "box") carries the universal `sgs-media-box` marker + its own
-		// scope class. REPLACES the hand-rolled `$media_overlay_html` span +
-		// its manual background-color/background-image CSS string below —
-		// that mechanism bypassed `sgs_overlay_decls()` entirely (no opacity,
-		// no blend mode, no hover state); the shared `overlay.css` rule gives
-		// all three for free, with zero hero-specific overlay CSS. The marker
-		// is added UNCONDITIONALLY (matching every other adopting block) —
-		// `overlay.css`'s own `::after` paints fully transparent when no
-		// custom property is set, so an unused marker costs nothing.
-		$media_class = 'sgs-hero__media sgs-media-box ' . SGS_Media_Element::scope_class( $uid, 'splitMedia' );
-		$responsive_css .= SGS_Media_Element::style( $attributes, 'splitMedia', 'sgs/hero', $uid, array( 'overlay' ) );
-		// Decorative wrapper: covers video/svg tiers, which carry no alt attribute
-		// of their own; the image tier's alt was already blanked above.
-		$media_aria_hidden = $split_media_decorative ? ' aria-hidden="true"' : '';
-		$media_html        = '<div class="' . esc_attr( $media_class ) . '"' . $media_aria_hidden . '>' . $sgs_hero_tier_result['html'] . '</div>';
-		// ⛔ CALLER CONTRACT (helpers-tier-media.php): this MUST be appended to
-		// $responsive_css BEFORE it is printed below — it is, at line ~1166.
-		$responsive_css .= $sgs_hero_tier_result['css'];
+	if ( '' !== $sgs_hero_split['html'] ) {
+		$media_html = '<div class="sgs-hero__media">' . $sgs_hero_split['html'] . '</div>';
+		// Unset Width and Height fill the grid cell (the slot's own rules, printed after these on the same selector, win when set).
+		$sgs_hero_split_set = static function ( string $name ) use ( $attributes ): bool {
+			$tiers = sgs_responsive_normalise_object( $attributes[ $name ] ?? null );
+			return '' !== trim( (string) ( $tiers['desktop'] ?? '' ) );
+		};
+		$sgs_hero_split_fill = '';
+		if ( ! $sgs_hero_split_set( 'splitWidth' ) ) {
+			$sgs_hero_split_fill .= 'width:100%;';
+		}
+		if ( ! $sgs_hero_split_set( 'splitHeight' ) && ! $sgs_hero_split_set( 'splitRatio' ) ) {
+			$sgs_hero_split_fill .= 'height:100%;';
+		}
+		if ( '' !== $sgs_hero_split_fill ) {
+			$responsive_css .= '.' . $sgs_hero_split_uid . '{display:block;' . $sgs_hero_split_fill . '}';
+		}
+		$responsive_css .= $sgs_hero_split['css'];
 	}
 }
 
@@ -1626,71 +797,21 @@ if ( $responsive_css ) {
 	printf( '<style id="%s">%s</style>', esc_attr( $uid ), wp_strip_all_tags( $responsive_css ) );
 }
 
-// WS-4: assemble hero's bespoke interior, then wrap it in the shared sgs/container
-// element via the helper (section KIND). Hero renders ALL its own media layers
-// (LCP <img>, bg-video, svg, overlay) + its own min-height (via $styles), so every
-// attr that would drive a DUPLICATE helper layer is nulled in the helper's attr
-// copy (C3 double-emit guard) and no_overlay is passed. In split mode wrap_inner
-// is false so a stray contentWidth can never inject an __inner div that would sit
-// between the section grid and its __content/__media grid items.
-$hero_inner_html = $bg_img_html . $video_html . $overlay_html
-	. $content_html . $media_html . $section_layers_html;
+// WS-4: wrap the hero's interior in the shared sgs/container element (section KIND). The wrapper prints the background
+// (`.sgs-bg-media`, `.sgs-bg-overlay`) through SGS_Background_Media, since the block declares `backgroundSource`, and the
+// kept SVG layer (`bgSvg*`). Hero's own min-height rides $styles and is nulled in the helper's attribute copy so the
+// wrapper does not print it twice. In split mode wrap_inner is false so a stray contentWidth can never inject an __inner
+// div that would sit between the section grid and its __content/__media grid items.
+$hero_inner_html = $content_html . $media_html . $section_layers_html;
 
-$hero_helper_attrs   = $attributes;
-$sgs_hero_null_attrs = array(
-	'bgVideo',
-	'bgVideoMobile',
-	// ⛔ `bgSvgContent` was REMOVED from this list on 2026-09-05. It had no
-	// counterpart to guard against. The C3 double-emit guard exists because hero
-	// builds its own copy of a layer the wrapper would otherwise also paint —
-	// $video_html (:1029), $bg_img_html (:1116), $overlay_html (:1240). There is
-	// no hero-built SVG layer: `svg_html` appears ZERO times in this file, and
-	// `bgSvg` appears in exactly one file under includes/ (the container
-	// wrapper), so nothing else painted it either. The comment above says hero
-	// renders its own "svg" — that refers to the SPLIT-MEDIA SVG family
-	// (splitImageSvg / $sgs_hero_resolve_split_svg, :159-177), which is a
-	// different family on a different element and is unaffected by this.
-	//
-	// Nulling it meant the wrapper's `$has_bg_svg = ! empty( $bg_svg_content )`
-	// gate (class-sgs-container-wrapper.php:975) was permanently false, so the
-	// seven bgSvg* attributes hero declares in block.json — and offers a client
-	// in the Background panel — rendered NOTHING, on the page or in the editor.
-	// A client could set a decorative background SVG, its position, opacity,
-	// min-height, text-shadow, animation and speed, and see no effect anywhere.
-	// Restoring it makes hero paint this layer exactly as the other seven
-	// wrapper-adopting blocks do, per the composite wrapper rule. (Eight blocks declare
-	// bgSvgContent in total INCLUDING hero, so the others number seven.)
-	//
-	// minHeight is a TIER OBJECT (Spec 35 pass 3b) — nulling the one attr
-	// nulls all three tiers; the old minHeightTablet/minHeightMobile entries
-	// no longer exist as real attribute keys.
-	'minHeight',
-);
-if ( $has_standard_bg_image ) {
-	// C3 double-emit guard: the standard variant paints its own private LCP
-	// <img> (fetchpriority/loading/decoding) for backgroundImage, so the
-	// wrapper must not ALSO paint one. Split, and a standard hero with a
-	// tablet or mobile image, have no private <img>, so nothing is nulled and
-	// SGS_Container_Wrapper paints every tier on its `.{uid}::before` layer.
-	$sgs_hero_null_attrs = array_merge(
-		$sgs_hero_null_attrs,
-		array( 'backgroundImage', 'backgroundImageTablet', 'backgroundImageMobile' )
-	);
-}
-foreach ( $sgs_hero_null_attrs as $sgs_hero_null_attr ) {
-	$hero_helper_attrs[ $sgs_hero_null_attr ] = null;
-}
+// minHeight is a tier object: nulling the one attribute nulls all three tiers.
+$hero_helper_attrs              = $attributes;
+$hero_helper_attrs['minHeight'] = null;
 
 $hero_helper_opts = array(
 	'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'section',
 	'extra_classes' => $classes,
 	'extra_styles'  => $styles,
-	'no_overlay'    => true,
-	// The hero prints its own background (and its Lottie holder), never the wrapper's.
-	'no_background_holder' => true,
-	// The split variant's background image is the wrapper's <img>; it carries the
-	// hero's `background` motion part class, as the standard variant's own <img> does.
-	'bg_img_class'  => 'sgs-hero__background',
 );
 if ( $is_split ) {
 	$hero_helper_opts['wrap_inner'] = false;

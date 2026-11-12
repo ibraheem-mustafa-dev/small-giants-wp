@@ -20,10 +20,25 @@
 	],
 	"supports": {
 		"sgs": {
+			"mediaElements": [
+				{
+					"prefix": "tile",
+					"context": "item",
+					"kinds": [
+						"image"
+					],
+					"atoms": [
+						"source",
+						"meaning",
+						"object-fit",
+						"sizing",
+						"shape"
+					]
+				}
+			],
 			"motionItems": "tile",
 			"motion": true,
 			"iconPicker": true,
-			"imageControls": false,
 			"elements": {
 				"tile": {
 					"label": "Each tile",
@@ -300,14 +315,31 @@
 						"type": "string",
 						"role": "enum-mode"
 					},
-					"image": {
-						"type": "string",
-						"role": "image-object"
-					},
 					"description": {
 						"type": "string",
 						"default": "",
 						"role": "text-content"
+					},
+					"source": {
+						"type": "object",
+						"description": "The item's picture per device, the media Source shape: {desktop:{kind,id,url,width,height,mime}, tablet, mobile}. A device with no entry shows the wider device's file.",
+						"role": "image-object"
+					},
+					"alt": {
+						"type": "string",
+						"default": "",
+						"description": "The picture's description for screen readers. Blank when the picture is decorative.",
+						"role": "image-alt"
+					},
+					"decorative": {
+						"type": "boolean",
+						"default": false,
+						"role": "boolean-visibility"
+					},
+					"fit": {
+						"type": "object",
+						"description": "How this item's picture fills its box per device. Empty uses the block's own fit.",
+						"role": "visual"
 					}
 				}
 			}
@@ -811,7 +843,20 @@
 			"type": "object",
 			"default": {},
 			"description": "Cross-axis alignment of a tile's contents as a {desktop,tablet,mobile} object of start, center, end or stretch. Empty = centre."
-		}
+		},
+		"tileLoading": {"type":"string","_generated":"media-atoms"},
+		"tileFit": {"type":"object","_generated":"media-atoms"},
+		"tileRatio": {"type":"object","_generated":"media-atoms"},
+		"tileWidth": {"type":"object","_generated":"media-atoms"},
+		"tileHeight": {"type":"object","_generated":"media-atoms"},
+		"tileMinWidth": {"type":"object","_generated":"media-atoms"},
+		"tileMaxWidth": {"type":"object","_generated":"media-atoms"},
+		"tileMinHeight": {"type":"object","_generated":"media-atoms"},
+		"tileMaxHeight": {"type":"object","_generated":"media-atoms"},
+		"tileShape": {"type":"object","_generated":"media-atoms"},
+		"tileBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"tileBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"tileBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

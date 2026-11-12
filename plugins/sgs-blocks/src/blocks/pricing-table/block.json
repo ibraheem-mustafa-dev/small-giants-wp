@@ -62,7 +62,6 @@
 			},
 			"collection": true,
 			"iconPicker": true,
-			"imageControls": false,
 			"arrayContentLift": true,
 			"elements": {
 				"wrapper": {

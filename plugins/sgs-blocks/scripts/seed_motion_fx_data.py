@@ -69,6 +69,8 @@ from __future__ import annotations
 #                                         CustomWiggle), so it never gets a fx_effects
 #                                         row at all -- flagged, not silently
 #                                         dropped: there is nothing to seed here.
+#   media_kinds             optional: the media kinds ('image', 'video', 'svg', comma separated) the effect needs of a
+#                          media slot, read by the editor's kind filter (Spec 49 section 10.1). Absent means every kind.
 #   requires                'text'|'svg'|'svg-subtree'|'section'|'item-set'|
 #                          'track'|'marquee-track'|'surface'|'image'|'none' — what the effect
 #                          needs OF ITS TARGET, derived from each §2 row's
@@ -527,7 +529,7 @@ FX_EFFECTS: list[dict] = [
         # U-17 (`.claude/reports/2026-09-26-u17-lottie-design.md` §3.3, Spec 38
         # §1.2a, D1151). The Lottie player — `lottie-web` 5.13.0 light build,
         # SVG renderer, playing a designer-supplied animation file
-        # (`data-sgs-fx="lottie"`, rendered by `sgs_render_lottie()`).
+        # (`data-sgs-fx="lottie"`, rendered by the removed Lottie span printer).
         "effect": "lottie",
         # in_picker=0: not offered in the generic effects picker — a
         # Lottie instance is chosen via the media-type atom (mediaType:
@@ -916,21 +918,20 @@ FX_EFFECTS: list[dict] = [
         # 'image' — this effect's target is the block's own rendered <img>,
         # not a section/text/svg surface. See generate-fx-qualifying-blocks.py
         # `_block_provisions()` for how a block DECLARES this requirement
-        # (supports.sgs.imageControls === true, the project-mandated flag on
-        # every image-rendering block — never a hardcoded block-name list).
+        # (a rendered raster image or an adopted media slot with an image kind
+        # — never a hardcoded block-name list).
         "requires": "image",
         # creates_panel=0, DELIBERATE. Same containment reasoning as
         # `cursor-field`'s own row (D459/FR-38-25's "13 panels where none
-        # makes sense" containment failure): `imageControls` is declared on
-        # 15 of 83 blocks (7 with it `true` — see generate-fx-qualifying-
-        # blocks.py's own comment for the measured count), and several of
-        # those are decorative/logo-shaped blocks where a shader-treatment
+        # makes sense" containment failure): many blocks that print an image
+        # are decorative/logo-shaped blocks where a shader-treatment
         # panel is not a sensible default surface. Offering the effect
         # (in_picker=1) wherever a qualifying block ALREADY has a fx panel
         # for another reason, without unconditionally creating a NEW panel
-        # on every imageControls block, is the same measured containment
+        # on every image block, is the same measured containment
         # choice cursor-field made — not re-derived from scratch here.
         "creates_panel": 0,
+        "media_kinds": "image",
     },
     {
         # Generative background (Spec 38, D874 technique spec — the
@@ -1154,6 +1155,7 @@ FX_EFFECTS: list[dict] = [
         "scope": "block",
         "requires": "surface",
         "creates_panel": 0,
+        "media_kinds": "image",
     },
     {
         # Spec 38A FR-38A-52 (Effects, Tier V, Part (SVG) or background SVG layer). Pulse or wave, no GSAP.

@@ -71,11 +71,11 @@ const propose = ( o = {} ) => proposeSkeleton( { inventory, facts, surface: 'foo
 test( 'MUST FAIL: a logo the build could not carry (no media entry, several attachments) is reported on its row and in the proposal\'s problems', () => {
 	const none = propose( { carried: { logo: () => ( { reason: 'a.svg (sha256 abcd1234) is not in the media map for t' } ), menu: () => null } } );
 	const row = none.proposal.rows.find( ( x ) => 'sgs/responsive-logo' === x.block );
-	assert.match( row.carriedMissing[ 0 ], /no logoId is carried: a\.svg .* is not in the media map/ );
-	assert.ok( none.problems.some( ( p ) => /no logoId is carried: a\.svg/.test( p ) ) );
-	assert.ok( none.proposal.problems.some( ( p ) => /no logoId is carried/.test( p ) ) );
+	assert.match( row.carriedMissing[ 0 ], /no logoSource is carried: a\.svg .* is not in the media map/ );
+	assert.ok( none.problems.some( ( p ) => /no logoSource is carried: a\.svg/.test( p ) ) );
+	assert.ok( none.proposal.problems.some( ( p ) => /no logoSource is carried/.test( p ) ) );
 	const many = propose( { carried: { logo: () => ( { reason: 'a.svg matches different attachments (1, 2)' } ), menu: () => null } } );
 	assert.ok( many.problems.some( ( p ) => /different attachments \(1, 2\)/.test( p ) ) );
 	const fine = propose( { carried: { logo: () => null, menu: () => null } } );
-	assert.ok( ! fine.problems.some( ( p ) => /no logoId is carried/.test( p ) ) );
+	assert.ok( ! fine.problems.some( ( p ) => /no logoSource is carried/.test( p ) ) );
 } );

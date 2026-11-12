@@ -30,7 +30,8 @@ const WIDTHS = [ 375, 768, 1440 ];
 const TOLERANCE = 0.5;
 
 function readCss( block ) {
-	const rel = `src/blocks/${ block }/style.css`;
+	// A shared stylesheet is named by its path under the plugin (`assets/css/media-base`); a block by its folder.
+	const rel = block.startsWith( 'assets/' ) ? `${ block }.css` : `src/blocks/${ block }/style.css`;
 	if ( BASELINE ) {
 		return execFileSync( 'git', [ 'show', `${ BASELINE }:plugins/sgs-blocks/${ rel }` ], { cwd: subjectRoot, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 } );
 	}

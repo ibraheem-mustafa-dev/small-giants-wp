@@ -1,0 +1,402 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/choice-flow-question",
+	"version": "0.1.0",
+	"title": "SGS Choice Flow — Question",
+	"category": "sgs-forms",
+	"description": "A plain multiple-choice question step. Each option can route to a specific next step, or fall through to the next step in flow order.",
+	"keywords": [
+		"quiz",
+		"question",
+		"choice",
+		"branching",
+		"flow"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "editor-help",
+	"parent": [
+		"sgs/form-step"
+	],
+	"usesContext": [ "sgs/choice-flow/productId" ],
+	"supports": {
+		"html": false,
+		"sgs": {
+			"motionItems": "option",
+			"motion": true,
+			"elements": {
+				"option": {
+					"label": "Each option",
+					"layer": "CONTENT",
+					"order": 1,
+					"selector": ".sgs-choice-flow-question__option",
+					"clusters": []
+				},
+				"option-description": {
+					"selector": ".sgs-choice-flow-question__option-description",
+					"label": "Option description",
+					"order": 5,
+					"clusters": [
+						"text"
+					],
+					"prefix": "optionDescription",
+					"attrMap": {
+						"css:font-size": "optionDescriptionFontSize",
+						"css:font-weight": "optionDescriptionFontWeight",
+						"css:line-height": "optionDescriptionLineHeight",
+						"css:color": "optionDescriptionColour",
+						"css:-webkit-text-stroke-width": "optionDescriptionTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "optionDescriptionTextStrokeColour"
+					},
+					"_note": "The optional line under an option's label (render.php, printed only when the option has a description); scoped CSS from helpers-description-style.php.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "optionDescriptionTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"option-badge": {
+					"selector": ".sgs-choice-flow-question__option-badge",
+					"label": "Option badge",
+					"order": 6,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"prefix": "optionBadge",
+					"attrMap": {
+						"css:background-color": "optionBadgeColour",
+						"css:color": "optionBadgeTextColour"
+					},
+					"_note": "The small tag on an option card (a solid tag on picture cards, a soft tag on text cards; render.php prints it only when the option has a badge); scoped CSS from helpers-description-style.php. Empty keeps the stylesheet's own paint for each card kind."
+				},
+				"question": {
+					"selector": ".sgs-choice-flow-question__title",
+					"text": true,
+					"label": "Question text",
+					"layer": "CONTENT",
+					"order": 2,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:font-weight": "questionFontWeight"
+					},
+					"_note": "v1 (Spec 43 Phase 2): plain-question step only, no colour/typography attrMap yet — kept minimal per FR-43-1's plain-question scope. Element declared for structural documentation; no styling attrs exist on this block to map."
+				},
+				"intro": {
+					"text": true,
+					"label": "Intro paragraph",
+					"layer": "CONTENT",
+					"order": 4,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:max-width": "introWidth"
+					},
+					"_note": "introWidth: the intro's width in ch as a class (sgs-choice-flow-question__intro--w{n}, includes/choice-flow-showcase.php), never an inline style."
+				},
+				"options": {
+					"label": "Options list",
+					"layer": "CONTENT",
+					"order": 3,
+					"clusters": [
+						"layout"
+					],
+					"_note": "v1: no per-option colour/layout attrs yet — plain list, styled by the block's own stylesheet only."
+				}
+			}
+		}
+	},
+	"attributes": {
+		"question": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"intro": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-24 (v1.8.0): an optional short paragraph shown under the question title, in both layouts — capped to about 56 characters wide in the showcase layout (style.css's own max-width). Empty string = no intro paragraph."
+		},
+		"introWidth": {
+			"type": "string",
+			"enum": [ "", "52", "56", "58", "60", "64", "none" ],
+			"default": "",
+			"description": "How wide the intro paragraph runs, in characters (ch), in the showcase layout. Empty = the layout's 56. 'none' = the full column."
+		},
+		"showNextStepInline": {
+			"type": "boolean",
+			"default": false,
+			"description": "Open the chosen option's next step underneath the question on the same screen (its fields and its Add to bag in the footer) instead of moving to it with Continue. 'continue' advance mode only (src/blocks/choice-flow/flow-inline.js)."
+		},
+		"layout": {
+			"type": "string",
+			"enum": [ "grid", "list" ],
+			"default": "grid",
+			"description": "User-reported gap (2026-09-15): the reference quiz flows show several steps with options stacked VERTICALLY, styled differently to a grid step (smaller side-by-side thumbnail rather than a full-width image banner) — 'grid' keeps the existing 1-col-mobile/2-col-desktop card grid; 'list' forces a single-column stacked row layout at every breakpoint, letting an operator vary this per step/question rather than one fixed layout for the whole flow."
+		},
+		"priceGroup": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-17 (v1.4.0): names one group in the site-wide add-on price list (WooCommerce > Add-on prices). When set, this question is a priced add-on step — each option's `value` is expected to be one of that group's option keys, and its price is read from the list at render time, never typed into the block. Empty string = plain question, no pricing."
+		},
+		"productAttribute": {
+			"type": "string",
+			"default": "",
+			"description": "Spec 43 Phase 3/4 (FR-43-10/10a): a `pa_*` taxonomy on the flow's own product. When set, this step is a product-option step — its options are generated from the product's attribute terms at render time (not typed), and it can't be combined with `priceGroup` (the editor clears `priceGroup` when this is chosen). Empty string = not a product-option step."
+		},
+		"answersMin": {
+			"type": "integer",
+			"default": 1,
+			"minimum": 1,
+			"maximum": 12,
+			"description": "FR-43-27: the least answers a shopper must pick before Continue is enabled. Only read on a plain question (no priceGroup, no productAttribute) whose answersMax is above 1."
+		},
+		"answersMax": {
+			"type": "integer",
+			"default": 1,
+			"minimum": 1,
+			"maximum": 12,
+			"description": "FR-43-27: the most answers a shopper may pick. 1 (the default) is a single-choice question; above 1 the options act as toggles and a pick past the most is refused with a live-region message. The chosen labels travel as one FR-43-21 cart-line row. Ignored on a priced add-on or product-option step."
+		},
+		"optionMediaSize": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device size of this question's option pictures as a percentage of the picture band's width ({desktop, tablet, mobile}); overrides the flow's own optionMediaSize for this question only. Empty = the flow's value."
+		},
+		"questionFontWeight": {
+			"type": "string",
+			"enum": [ "400", "500", "600", "700", "800" ],
+			"default": "700",
+			"description": "D7 (2026-09-26 plan, Bean's review): the step heading's font-weight. Defaults to 700 (bold) — titles read too weak at the browser's UA default. Emitted as a class per weight (never inline style — Spec 32), see style.css's `__title--w{weight}` rules."
+		},
+		"options": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"summaryText": { "type": "string", "role": "text-content" },
+					"stageEffect": { "type": "string", "role": "enum-mode" },
+					"label": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"value": {
+						"type": "string",
+						"role": "technical"
+					},
+					"nextStepId": {
+						"type": "string",
+						"description": "Empty string = advance to the next step in flow order (default, FR-43-2). '__terminal__' = jump to the reachable result step. Any other value = the 0-based DOM-order position of a sibling sgs/form-step within the same sgs/choice-flow, resolved at editor-time by the step picker (not a clientId — clientId is editor-only and unresolvable by render.php/the runtime store, see choice-flow-question/edit.js and choice-flow/view.js).",
+						"role": "technical"
+					},
+					"tags": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"default": [],
+						"description": "FR-43-12: tags this option contributes to the path's accumulated tag set when chosen, for matching against a sgs/choice-flow-result's own matchTags. Empty when the flow only ever has one result (the common case).",
+						"role": "technical"
+					},
+					"image": {
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "integer"
+							},
+							"url": {
+								"type": "string"
+							},
+							"alt": {
+								"type": "string"
+							}
+						},
+						"description": "FR-43-15 (v1.3.0): optional per-option media attachment, shape matches sgs/media's own imageId/imageUrl/imageAlt attribute trio (nested here since this is one entry in a repeater, not a scalar block attribute). Renders in the option card's 16:9 preview zone. Optional — an option with no image (or an empty object) renders exactly as before, a plain text card.",
+						"role": "image-object"
+					},
+					"helpText": {
+						"type": "string",
+						"default": "",
+						"description": "FR-43-16 (v1.3.0): optional per-option explanatory copy, revealed by a floating '?' toggle overlaid on the option card. Empty string = no toggle button renders at all (not a disabled one).",
+						"role": "text-content"
+					},
+					"addToBagNow": {
+						"type": "boolean",
+						"default": false,
+						"description": "FR-43-20 (v1.4.0): choosing this option adds the page's product with NO add-ons and ends the flow (the draft's 'No prescription — keep the lenses they come with'). Clears any add-on answers already accumulated on this path; the operator still routes it to a result step via `nextStepId` (usually the add-to-bag terminal) — this flag only guarantees the add-on list is empty when it gets there.",
+						"role": "boolean-visibility"
+					},
+					"isDefault": {
+						"type": "boolean",
+						"default": false,
+						"description": "Spec 43 Phase 3/4 §1/§5: pre-selects this option on load and records it as the answer, without auto-advancing. Rendering this pre-selection (Wave 2, question view.js) is not built here — only the stored flag.",
+						"role": "state-modifier-boolean"
+					},
+					"badge": {
+						"type": "string",
+						"default": "",
+						"description": "Spec 43 Phase 3/4 §1/§5: short pill label (up to 20 characters) rendered on the option card, e.g. 'Popular'. Empty string = no badge. Printed by render.php.",
+						"role": "text-content"
+					},
+					"description": {
+						"type": "string",
+						"default": "",
+						"description": "Spec 43 Phase 3/4 §1/§5: one line of explanatory copy (up to 140 characters) rendered under the option's label. Empty string = no description line. Printed by render.php.",
+						"role": "text-content"
+					}
+				}
+			}
+		},
+		"eyebrow": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-24: replaces the 'Question N of M' line above this question, e.g. 'Last bit, and it can wait'. A question with its own eyebrow is left out of the count."
+		},
+		"pricePrefix": {
+			"type": "string",
+			"enum": [ "plus", "from" ],
+			"default": "plus",
+			"description": "FR-43-17: how option prices read: 'plus' gives '+£30.00', 'from' gives 'from £59.00' (a starting price later choices add to)."
+		},
+		"summaryLabel": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-19: the stage line's label for this unpriced question's answer, e.g. 'Prescription'. Empty uses the step's label."
+		},
+		"showInBagLine": {
+			"type": "boolean",
+			"default": true,
+			"description": "Whether this unpriced question's answer is named in the bag, cart, checkout and email line summary. Off keeps the answer on the order for the shop owner and leaves it off the shopper's line, e.g. an arrangement such as 'Send it later'."
+		},
+		"optionDescriptionFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"optionDescriptionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"optionDescriptionFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"optionDescriptionFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"optionDescriptionFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"optionDescriptionLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"optionDescriptionLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"optionDescriptionLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"optionDescriptionLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"optionDescriptionTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"optionDescriptionTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"optionDescriptionTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"optionDescriptionTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"optionDescriptionTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"optionDescriptionTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"optionDescriptionTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"optionDescriptionColour": {
+			"type": "string",
+			"default": ""
+		},
+		"optionBadgeColour": {
+			"type": "string",
+			"default": "",
+			"description": "Fill of the option badge tag, a palette slug or hex. Empty keeps the stylesheet's paint: accent on a picture card, accent-light on a text card."
+		},
+		"optionBadgeTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of the option badge tag, a palette slug or hex. Empty keeps the stylesheet's paint: inherited on a picture card, accent-text on a text card."
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"example": {
+		"attributes": {
+			"question": "Which service suits you?",
+			"options": [
+				{
+					"label": "Something quick",
+					"value": "quick",
+					"nextStepId": ""
+				},
+				{
+					"label": "A full consultation",
+					"value": "full",
+					"nextStepId": "__terminal__"
+				}
+			]
+		}
+	}
+}

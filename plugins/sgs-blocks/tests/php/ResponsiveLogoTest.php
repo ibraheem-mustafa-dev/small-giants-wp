@@ -4,11 +4,10 @@
  *
  * Covers:
  *   - block.json structure and attribute contracts.
- *   - render.php output for all attribute combinations.
  *   - sgs_svg_kses_allowed_tags() shape.
  *
- * Self-contained — no WordPress installation required. WordPress functions
- * are stubbed below so the render logic can execute without a full WP bootstrap.
+ * Self-contained — no WordPress installation required. The WordPress functions the shared site-logo tests need
+ * (ResponsiveLogoChainTest) are stubbed below.
  *
  * @package SGS\Blocks\Tests
  */
@@ -228,36 +227,6 @@ if ( ! function_exists( 'add_filter' ) ) {
 	}
 }
 
-// ── Test helper ───────────────────────────────────────────────────────────────
-
-/**
- * Execute render.php with the given attributes and return the captured output.
- *
- * Loads render-helpers.php (which provides sgs_svg_kses_allowed_tags) if it
- * has not already been loaded, then includes render.php in a clean scope with
- * only the $attributes variable set.
- *
- * @param array<string, mixed> $attributes Block attributes.
- * @return string Rendered HTML.
- */
-function render_responsive_logo( array $attributes ): string {
-	$helpers_path = SGS_BLOCKS_PLUGIN_DIR . '/includes/render-helpers.php';
-	if ( file_exists( $helpers_path ) && ! function_exists( 'sgs_svg_kses_allowed_tags' ) ) {
-		require_once $helpers_path; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- test helper.
-	}
-
-	$render_path = SGS_BLOCKS_PLUGIN_DIR . '/src/blocks/responsive-logo/render.php';
-
-	// WordPress hands every render.php $attributes, $content and $block; a render outside a block instance has no
-	// WP_Block, which the stretched-link handover reads as "nothing to hand over".
-	$content = '';
-	$block   = null;
-
-	ob_start();
-	include $render_path; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- test helper.
-	return ob_get_clean();
-}
-
 /**
  * Class ResponsiveLogoTest
  */
@@ -295,12 +264,11 @@ class ResponsiveLogoTest extends TestCase {
 		);
 		$attrs = $data['attributes'];
 
-		$this->assertArrayHasKey( 'logoId', $attrs );
-		$this->assertArrayHasKey( 'logoIdTablet', $attrs );
-		$this->assertArrayHasKey( 'logoIdMobile', $attrs );
+		$this->assertArrayHasKey( 'logoSource', $attrs );
+		$this->assertArrayHasKey( 'logoDarkSource', $attrs );
 		$this->assertArrayHasKey( 'width', $attrs );
 		$this->assertArrayHasKey( 'linkToHome', $attrs );
-		$this->assertArrayHasKey( 'alt', $attrs );
+		$this->assertArrayHasKey( 'logoAlt', $attrs );
 	}
 
 	/**
@@ -315,313 +283,8 @@ class ResponsiveLogoTest extends TestCase {
 		$this->assertSame( array(), preg_grep( '/^(svgAnimation|animationStyle|animationSubstrate|lottie)/', array_keys( $data['attributes'] ) ) );
 	}
 
-	/**
-	 * Supports.sgs.imageControls stays undeclared: the logo has no fixed-size crop box for
-	 * object-fit/position to act on (Spec 35 capability routing).
-	 */
-	public function test_block_json_omits_image_controls_support(): void {
-		$data = json_decode(
-			file_get_contents( SGS_BLOCKS_PLUGIN_DIR . '/src/blocks/responsive-logo/block.json' ), // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-			associative: true
-		);
-		$this->assertArrayNotHasKey( 'imageControls', $data['supports']['sgs'] ?? array() );
-	}
-
-	// ── render.php: desktop-only slot ────────────────────────────────────────
-
-	/**
-	 * Render with desktop logo only: must output exactly two source elements.
-	 */
-	public function test_render_desktop_only_has_two_sources(): void {
-		$html = render_responsive_logo( array( 'logoId' => 10 ) );
-
-		$this->assertSame(
-			2,
-			substr_count( $html, '<source ' ),
-			'render.php must output two <source> elements.'
-		);
-	}
-
-	/**
-	 * Render with desktop logo only: both source srcsets must point to desktop URL.
-	 */
-	public function test_render_desktop_only_sources_both_point_to_desktop(): void {
-		$html        = render_responsive_logo( array( 'logoId' => 10 ) );
-		$desktop_url = 'https://example.com/wp-content/uploads/logo-10.png';
-
-		preg_match_all( '/srcset="([^"]+)"/', $html, $matches );
-		foreach ( $matches[1] as $srcset ) {
-			$this->assertSame(
-				$desktop_url,
-				$srcset,
-				'When only desktop logo is set, both <source> srcsets must use the desktop URL.'
-			);
-		}
-	}
-
-	// ── render.php: all three slots ───────────────────────────────────────────
-
-	/**
-	 * Render with all three logo IDs: each breakpoint source must use the correct URL.
-	 */
-	public function test_render_all_three_slots_uses_correct_urls(): void {
-		$html        = render_responsive_logo(
-			array(
-				'logoId' => 10,
-				'logoIdTablet'  => 20,
-				'logoIdMobile'  => 30,
-			)
-		);
-		$desktop_url = 'https://example.com/wp-content/uploads/logo-10.png';
-		$tablet_url  = 'https://example.com/wp-content/uploads/logo-20.png';
-		$mobile_url  = 'https://example.com/wp-content/uploads/logo-30.png';
-
-		$this->assertMatchesRegularExpression(
-			'#<source media="\(max-width:767px\)" srcset="' . preg_quote( $mobile_url, '#' ) . '">#',
-			$html,
-			'Mobile source must use logoIdMobile URL.'
-		);
-
-		$this->assertMatchesRegularExpression(
-			'#<source media="\(max-width:1023px\)" srcset="' . preg_quote( $tablet_url, '#' ) . '">#',
-			$html,
-			'Tablet source must use logoIdTablet URL.'
-		);
-
-		$this->assertStringContainsString(
-			'src="' . $desktop_url . '"',
-			$html,
-			'img src must use logoId URL.'
-		);
-	}
-
-	// ── render.php: each swapped file keeps its own ratio ─────────────────────
-
-	/**
-	 * Each <source> prints the width and the height of ITS file, so a compact logo with another ratio does not
-	 * take the desktop logo's height when it swaps in. The <img> keeps the desktop file's pair.
-	 */
-	public function test_render_sources_carry_their_own_file_height(): void {
-		$base = 'https://example.com/wp-content/uploads/';
-		$GLOBALS['sgs_test_img_sizes'] = array(
-			$base . 'logo-10.png' => array( 400, 100 ),
-			$base . 'logo-20.png' => array( 300, 150 ),
-			$base . 'logo-30.png' => array( 100, 100 ),
-		);
-		$html = render_responsive_logo(
-			array(
-				'logoId'       => 10,
-				'logoIdTablet' => 20,
-				'logoIdMobile' => 30,
-				'width'        => 200,
-			)
-		);
-		unset( $GLOBALS['sgs_test_img_sizes'] );
-
-		$this->assertStringContainsString( 'srcset="' . $base . 'logo-30.png" width="200" height="200">', $html, 'The mobile source keeps its square ratio.' );
-		$this->assertStringContainsString( 'srcset="' . $base . 'logo-20.png" width="200" height="100">', $html, 'The tablet source keeps its 2:1 ratio.' );
-		$this->assertMatchesRegularExpression( '#<img [^>]*src="' . preg_quote( $base . 'logo-10.png', '#' ) . '"[^>]*width="200"[^>]*height="50"#', $html, 'The img keeps the desktop file pair.' );
-	}
-
-	// ── render.php: linkToHome ────────────────────────────────────────────────
-
-	/**
-	 * linkToHome=true must wrap the logo in an anchor with rel="home".
-	 */
-	public function test_render_link_to_home_true_wraps_in_anchor(): void {
-		$html = render_responsive_logo(
-			array(
-				'logoId' => 10,
-				'linkToHome'    => true,
-			)
-		);
-
-		$this->assertStringContainsString( '<a class="sgs-responsive-logo__link"', $html );
-		$this->assertStringContainsString( 'href="https://example.com/"', $html );
-		$this->assertStringContainsString( 'rel="home"', $html );
-	}
-
-	/**
-	 * linkToHome=false must not output any anchor element.
-	 */
-	public function test_render_link_to_home_false_has_no_anchor(): void {
-		$html = render_responsive_logo(
-			array(
-				'logoId' => 10,
-				'linkToHome'    => false,
-			)
-		);
-
-		$this->assertStringNotContainsString( '<a ', $html );
-	}
-
-	// ── render.php: draw layer ───────────────────────────────────────────────
-
-	/**
-	 * Attributes for a logo whose wrapper part carries a draw layer.
-	 *
-	 * @param string $trigger Draw trigger: load, scroll or hover.
-	 * @return array<string,mixed>
-	 */
-	private function draw_attributes( string $trigger ): array {
-		$layer = array(
-			'effect'  => 'draw',
-			'trigger' => $trigger,
-			'values'  => array( 'asset' => 99 ),
-		);
-		$part  = 'hover' === $trigger ? array( 'effects' => array( $layer ) ) : array( 'entrance' => array( 'text' => array( $layer ) ) );
-
-		return array(
-			'logoId'    => 10,
-			'sgsMotion' => array( 'elements' => array( 'wrapper' => $part ) ),
-		);
-	}
-
-	/**
-	 * The retired data-animation attribute is never printed.
-	 */
-	public function test_render_prints_no_data_animation_attribute(): void {
-		$this->assertStringNotContainsString( 'data-animation', render_responsive_logo( $this->draw_attributes( 'load' ) ) );
-	}
-
-	/**
-	 * A logo with no draw layer carries no animate modifier class.
-	 */
-	public function test_render_without_draw_layer_has_no_animation_modifier(): void {
-		$this->assertStringNotContainsString( 'sgs-responsive-logo--animate', render_responsive_logo( array( 'logoId' => 10 ) ) );
-	}
-
-	/**
-	 * A load draw layer adds the --animate-draw BEM modifier class.
-	 */
-	public function test_render_animation_modifier_class_draw(): void {
-		$this->assertStringContainsString( 'sgs-responsive-logo--animate-draw', render_responsive_logo( $this->draw_attributes( 'load' ) ) );
-	}
-
-	/**
-	 * A hover draw layer adds the --animate-hover BEM modifier class.
-	 */
-	public function test_render_animation_modifier_class_hover(): void {
-		$this->assertStringContainsString( 'sgs-responsive-logo--animate-hover', render_responsive_logo( $this->draw_attributes( 'hover' ) ) );
-	}
-
-	/**
-	 * A scroll draw layer adds the --animate-scroll BEM modifier class.
-	 */
-	public function test_render_animation_modifier_class_scroll(): void {
-		$this->assertStringContainsString( 'sgs-responsive-logo--animate-scroll', render_responsive_logo( $this->draw_attributes( 'scroll' ) ) );
-	}
-
-	// ── render.php: empty state ───────────────────────────────────────────────
-
-	/**
-	 * Render with no logoId must return empty string (early exit).
-	 */
-	public function test_render_without_desktop_logo_returns_empty(): void {
-		$html = render_responsive_logo( array() );
-		$this->assertSame( '', $html );
-	}
-
-	// ── render.php: BEM class contracts ──────────────────────────────────────
-
-	/**
-	 * Root wrapper must carry the sgs-responsive-logo class.
-	 */
-	public function test_render_root_has_bem_class(): void {
-		$html = render_responsive_logo( array( 'logoId' => 10 ) );
-		$this->assertStringContainsString( 'sgs-responsive-logo', $html );
-	}
-
-	/**
-	 * picture element must carry sgs-responsive-logo__picture class.
-	 */
-	public function test_render_picture_has_bem_class(): void {
-		$html = render_responsive_logo( array( 'logoId' => 10 ) );
-		$this->assertStringContainsString( 'sgs-responsive-logo__picture', $html );
-	}
-
-	/**
-	 * img element must carry sgs-responsive-logo__image--desktop class.
-	 */
-	public function test_render_img_has_bem_class(): void {
-		$html = render_responsive_logo( array( 'logoId' => 10 ) );
-		$this->assertStringContainsString( 'sgs-responsive-logo__image--desktop', $html );
-	}
-
-	// ── render.php: width CSS custom property ─────────────────────────────────
-
-	/**
-	 * Width attribute must be emitted as a --logo-width CSS custom property.
-	 */
-	public function test_render_sets_logo_width_custom_property(): void {
-		$html = render_responsive_logo(
-			array(
-				'logoId' => 10,
-				'width'         => 320,
-			)
-		);
-
-		$this->assertStringContainsString( '--logo-width:320px', $html );
-	}
-
-	/**
-	 * The default (left) placement must not emit an alignment margin: an auto margin
-	 * would take a flex row's free space before its own justify-content runs.
-	 */
-	public function test_render_default_left_emits_no_auto_margin(): void {
-		$html = render_responsive_logo(
-			array(
-				'logoId' => 10,
-				'width'  => 320,
-			)
-		);
-
-		$this->assertStringNotContainsString( 'margin-inline-end:auto', $html );
-		$this->assertStringNotContainsString( 'margin-inline-start:0', $html );
-		$this->assertStringContainsString( 'sgs-responsive-logo', $html, 'control: the logo still renders' );
-	}
-
-	/**
-	 * Control for the test above: an explicit non-default alignment also emits no auto margin
-	 * and still renders the logo.
-	 */
-	public function test_render_explicit_center_emits_no_auto_margin(): void {
-		$html = render_responsive_logo(
-			array(
-				'logoId' => 10,
-				'width'  => 320,
-				'align'  => 'center',
-			)
-		);
-
-		$this->assertStringContainsString( 'sgs-responsive-logo', $html );
-		$this->assertStringNotContainsString( 'margin-inline-end:auto', $html );
-	}
-
-	// ── render.php: alt text ──────────────────────────────────────────────────
-
-	/**
-	 * Empty alt falls back to "[site name] home", naming the link's destination (FR-36-22;
-	 * the get_bloginfo stub returns 'Test Site').
-	 */
-	public function test_render_alt_text_uses_site_name_home_when_empty(): void {
-		$html = render_responsive_logo( array( 'logoId' => 10 ) );
-		$this->assertStringContainsString( 'alt="Test Site home"', $html );
-	}
-
-	/**
-	 * Provided alt text must appear in the rendered img tag.
-	 */
-	public function test_render_alt_text_uses_provided_value(): void {
-		$html = render_responsive_logo(
-			array(
-				'logoId' => 10,
-				'alt'           => 'Acme Corp logo',
-			)
-		);
-
-		$this->assertStringContainsString( 'alt="Acme Corp logo"', $html );
-	}
+	// The render tests (switch modes, dark variant, alt, width, draw modifiers) run the real render.php through the QA
+	// harness in ResponsiveLogoMediaTest.php.
 
 	// ── PHP lint ──────────────────────────────────────────────────────────────
 

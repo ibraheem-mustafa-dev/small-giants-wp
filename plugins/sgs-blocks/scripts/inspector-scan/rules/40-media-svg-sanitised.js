@@ -12,7 +12,7 @@
 // (`sgs_before_after_resolve_svg()`, which calls `wp_kses( $svg_content,
 // sgs_svg_kses_allowed_tags() )` directly — the SAME underlying allowlist
 // function `sgs_allowed_svg_tags()` merely wraps) +
-// includes/helpers-tier-media.php:169-173 (`sgs_tier_media_render()`, the
+// includes/media/render-slot.php (`SGS_Media_Element::render()`, the
 // shared multi-tier renderer, which ALSO calls `wp_kses( …,
 // sgs_allowed_svg_tags() )` internally for any 'svg'-typed tier it renders) +
 // src/blocks/media/edit.js:24,491 (`import { sanitiseSvg } from '../../utils'`
@@ -28,7 +28,7 @@
 //              underlying sgs_svg_kses_allowed_tags(), which
 //              sgs_allowed_svg_tags() merely delegates to (helpers-tier-
 //              media.php:78-80) — wrapping any render.php echo of
-//              SVG-shaped content. sgs_tier_media_render() (the shared
+//              SVG-shaped content. SGS_Media_Element::render() (the shared
 //              multi-tier media renderer) also counts as sanitised: it calls
 //              this SAME wp_kses()/sgs_allowed_svg_tags() pair INTERNALLY for
 //              any 'svg'-typed tier it is handed, so a block that routes its
@@ -44,7 +44,7 @@
 //   2. PHP — render.php directly reads an SVG-content-shaped attribute
 //      (`$attributes['xSvgContent']` et al.) without the file showing
 //      evidence of `wp_kses(...)` + `sgs_allowed_svg_tags(`/
-//      `sgs_svg_kses_allowed_tags(`, or of `sgs_tier_media_render(`
+//      `sgs_svg_kses_allowed_tags(`, or of `SGS_Media_Element::render(`
 //      (which sanitises internally).
 //
 // ── THE ATTRIBUTE-NAME HEURISTIC (investigated empirically, not assumed) ──
@@ -105,9 +105,9 @@
 //     is sanitised entirely inside that shared class, again outside this
 //     rule's per-block render.php scope. `splitSvg` IS read directly by
 //     hero/render.php (`$split_svg = (string)( $attributes['splitSvg'] ??
-//     '' )`, line 135) but is then routed through `sgs_tier_media_render()`
+//     '' )`, line 135) but is then routed through `SGS_Media_Element::render()`
 //     (line 1265), which sanitises internally — recognised via the
-//     `sgs_tier_media_render(` file-level exemption.
+//     `SGS_Media_Element::render(` file-level exemption.
 // **Expected live population: 0.** A non-zero result is a bug in this rule,
 // not the framework, unless a NEW SVG-mounting surface has landed since
 // 2026-09-01 without adopting either sanitiser — re-derive by hand before
@@ -128,7 +128,7 @@
 //   - Condition 2's "does this file show sanitiser evidence" check is
 //     FILE-LEVEL, not locus-level: once a render.php calls `wp_kses(` +
 //     `sgs_allowed_svg_tags(`/`sgs_svg_kses_allowed_tags(` (or
-//     `sgs_tier_media_render(`) ANYWHERE, every direct SVG-attribute read in
+//     `SGS_Media_Element::render(`) ANYWHERE, every direct SVG-attribute read in
 //     that file goes silent — mirroring rule 37/38's own file-level
 //     "adopted-by-call" exemption precedent in this directory. A block with
 //     TWO SVG-content attrs, one genuinely wrapped and one not, would be
@@ -179,14 +179,14 @@ function isSvgMarkupAttrName( name ) {
 /**
  * A PHP file "shows sanitiser evidence" for SVG output when it either calls
  * the shared multi-tier renderer (which sanitises SVG tiers internally —
- * helpers-tier-media.php:169-173), or calls wp_kses() together with either
+ * includes/helpers-svg-kses.php), or calls wp_kses() together with either
  * name of the shared allowlist function — sgs_allowed_svg_tags() is a thin
- * delegate to sgs_svg_kses_allowed_tags() (helpers-tier-media.php:78-80),
+ * delegate to sgs_svg_kses_allowed_tags() (includes/helpers-svg-kses.php),
  * so either counts as "the correct sanitiser" for this rule's purposes.
  */
 function phpFileShowsSanitiserEvidence( text ) {
 	if ( typeof text !== 'string' ) return false;
-	if ( text.indexOf( 'sgs_tier_media_render(' ) !== -1 ) return true;
+	if ( text.indexOf( 'SGS_Media_Element::render(' ) !== -1 ) return true;
 	const callsWpKses = text.indexOf( 'wp_kses(' ) !== -1;
 	const callsAllowlist =
 		text.indexOf( 'sgs_allowed_svg_tags(' ) !== -1 ||
@@ -214,7 +214,7 @@ function findAttributeReads( text ) {
  * Detects variables assigned from calls to svgBackgroundPreview(). Returns
  * a Set of variable names whose .markup property is safe for
  * dangerouslySetInnerHTML because they come from a delegate that sanitises
- * internally (like sgs_tier_media_render() on the PHP side).
+ * internally (like SGS_Media_Element::render() on the PHP side).
  *
  * Pattern: `const varName = svgBackgroundPreview(...)` or
  * `let varName = svgBackgroundPreview(...)` or
@@ -271,7 +271,7 @@ module.exports = {
 	title:
 		'A block mounts (edit.js dangerouslySetInnerHTML) or echoes (render.php) SVG-shaped ' +
 		'content without routing it through the shared sanitiser (sanitiseSvg() on the JS side, ' +
-		'wp_kses( …, sgs_allowed_svg_tags() ) or sgs_tier_media_render() on the PHP side)',
+		'wp_kses( …, sgs_allowed_svg_tags() ) or SGS_Media_Element::render() on the PHP side)',
 	scope: 'per-block',
 	needs: [ 'json:block.json', 'text:edit.js', 'text:render.php' ],
 	run( ctx, block ) {
@@ -364,7 +364,7 @@ module.exports = {
 									`render.php reads the SVG-markup attribute "${ attrName }" directly ` +
 									'(`$attributes[...]`), but this file shows no evidence of routing it ' +
 									'through `wp_kses( …, sgs_allowed_svg_tags() )` (or the identical ' +
-									'`sgs_svg_kses_allowed_tags()`) or the shared `sgs_tier_media_render()` — ' +
+									'`sgs_svg_kses_allowed_tags()`) or the shared `SGS_Media_Element::render()` — ' +
 									'unsanitised SVG markup echoed to the frontend can carry a <script> or ' +
 									'event-handler XSS payload.',
 								fix:
@@ -372,7 +372,7 @@ module.exports = {
 									attrName +
 									"'], sgs_allowed_svg_tags() )` — see sgs/media/render.php's SVG render " +
 									'path for the reference pattern — or route the value through ' +
-									'`sgs_tier_media_render()` (helpers-tier-media.php), which sanitises SVG ' +
+									'`SGS_Media_Element::render()` (includes/media/render-slot.php), which sanitises SVG ' +
 									'tiers internally.',
 								keyParts: [ 'unsanitised-svg-echo-render', attrName ],
 							} )

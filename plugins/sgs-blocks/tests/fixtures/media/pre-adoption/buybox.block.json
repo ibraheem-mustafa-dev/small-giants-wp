@@ -1,0 +1,3941 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/buybox",
+	"version": "1.2.2",
+	"title": "Buybox",
+	"category": "sgs-content",
+	"description": "WooCommerce single-product PDP area: renders the full product hero (gallery column + configurator column) as a responsive 2-column CSS Grid. Gallery column shows the variation-aware image gallery (main image + thumbnail strip, driven by the sgs/product-card Interactivity store). Configurator column renders per-axis option-picker pills, live price row, comparative value ladder, stock status, back-in-stock notify form, and an accessible add-to-cart form. Falls back to core WC blocks for simple products or when WooCommerce is absent.",
+	"keywords": [
+		"buybox",
+		"product",
+		"cart",
+		"add to cart",
+		"woocommerce",
+		"configurator",
+		"pdp"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "cart",
+	"supports": {
+		"html": false,
+		"align": false,
+		"interactivity": true,
+		"color": {
+			"background": false,
+			"text": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"spacingDefaults": {
+				"pickerLabelLinkPadding": {
+					"bottom": "1px"
+				},
+				"galleryStickerPadding": {
+					"top": "var(--wp--preset--spacing--20)",
+					"right": "12px",
+					"bottom": "var(--wp--preset--spacing--20)",
+					"left": "12px"
+				}
+			},
+			"motion": {
+				"states": [
+					"image-changed"
+				]
+			},
+			"_comment_mediaElements": "Two independently-scoped media elements: 'main' is the gallery-col.php .product-card__media .product-card-img (the large PDP display image); 'thumb' is the .product-card__thumb img thumbnail-rail image (a distinct role — a small selectable preview, not the same image rendered twice). Mirrors sgs/before-after's before/after prefix pattern so a client can set a different fit for each.",
+			"mediaElements": [
+				{
+					"prefix": "main",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				},
+				{
+					"prefix": "thumb",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
+			"boxFamilies": {
+				"margin": [
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"galleryThumbBorderWidth": [
+					"galleryThumbBorderWidth"
+				],
+				"galleryThumbBorderRadius": [
+					"galleryThumbBorderRadius"
+				]
+			},
+			"elements": {
+				"thumbs": {
+					"selector": ".sgs-buybox .product-card__thumbs",
+					"motion": false,
+					"label": "Gallery thumbnail strip",
+					"order": 21,
+					"clusters": [
+						"layout"
+					],
+					"layer": "OUTER",
+					"attrMap": {
+						"css:flex-wrap": "thumbsFlexWrap"
+					},
+					"_note": "The gallery thumbnail strip: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"picker-option": {
+					"motion": false,
+					"selector": ".sgs-buybox .sgs-option-picker--tile .sgs-option-picker__pill-label",
+					"label": "Option tile name",
+					"clusters": [
+						"text"
+					],
+					"prefix": "pickerOption",
+					"attrMap": {
+						"css:font-size": "pickerOptionFontSize",
+						"css:font-weight": "pickerOptionFontWeight",
+						"css:letter-spacing": "pickerOptionLetterSpacing",
+						"css:line-height": "pickerOptionLineHeight",
+						"css:text-transform": "pickerOptionTextTransform",
+						"css:color": "pickerOptionColour"
+					},
+					"_note": "The name under each colour or size tile; render.php scopes the pickerOption* rule to it."
+				},
+				"picker-value": {
+					"motion": false,
+					"selector": ".sgs-buybox .sgs-buybox__picker-selected-value",
+					"label": "Chosen picker value",
+					"clusters": [
+						"text"
+					],
+					"prefix": "pickerValue",
+					"attrMap": {
+						"css:font-size": "pickerValueFontSize",
+						"css:line-height": "pickerValueLineHeight",
+						"css:color": "pickerValueColour"
+					},
+					"_note": "The chosen option beside a picker's label (e.g. Ivory after COLOUR); render.php scopes the pickerValue* rule to it."
+				},
+				"price-row": {
+					"selector": ".sgs-buybox .buybox__price-row",
+					"motion": false,
+					"label": "Price row",
+					"order": 22,
+					"clusters": [
+						"layout"
+					],
+					"layer": "OUTER",
+					"attrMap": {
+						"css:flex-wrap": "priceRowFlexWrap",
+						"css:gap": "priceRowGap"
+					},
+					"_note": "The price row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"stock-hairline": {
+					"selector": ".sgs-buybox .sgs-buybox__stock-hairline",
+					"motion": false,
+					"label": "Stock line hairline",
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:margin": "stockLineHairlineMargin"
+					},
+					"_note": "The rule between the price row and an above-pickers stock line; an unset side keeps the 8px default."
+				},
+				"meter": {
+					"selector": ".sgs-buybox-guided__meter",
+					"motion": false,
+					"label": "Guided step meter",
+					"order": 23,
+					"clusters": [
+						"layout"
+					],
+					"layer": "OUTER",
+					"attrMap": {
+						"css:flex-wrap": "meterFlexWrap"
+					},
+					"_note": "The guided step meter: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"nav": {
+					"selector": ".sgs-buybox-guided__nav",
+					"motion": false,
+					"label": "Guided Back and Next row",
+					"order": 24,
+					"clusters": [
+						"layout"
+					],
+					"layer": "OUTER",
+					"attrMap": {
+						"css:flex-wrap": "navFlexWrap"
+					},
+					"_note": "The guided back and next row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"wrapper": {
+					"label": "Buybox wrapper",
+					"order": 1,
+					"clusters": [
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:margin": "margin",
+						"css:background-color": "backgroundColour",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius"
+					},
+					"_note": "supports.color is explicitly {background:false,text:false} and spacing.padding is false — this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling). layout is scoped to margin only; every other layout member is an honest gap.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					}
+				},
+				"rrp-pill": {
+					"selector": ".buybox__rrp-pill",
+					"label": "RRP saving pill",
+					"order": 2,
+					"clusters": [
+						"fill",
+						"text"
+					],
+					"attrMap": {
+						"css:background-color": "rrpPillBackgroundColour",
+						"css:color": "rrpPillTextColour",
+						"css:padding": "rrpPillPadding",
+						"css:border-radius": "rrpPillRadius"
+					},
+					"_note": "FR-Wave-B. SSR-only chip shown when a configured RRP meta key resolves to a genuine saving on the default variation (includes/product-rrp.php::sgs_product_rrp_saving). Background/text colour both live here rather than on the wrapper element, since this is a distinct visual element from the price row it sits beside."
+				},
+				"stock-in-stock": {
+					"motion": false,
+					"label": "In-stock label",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "stockInStockColour"
+					},
+					"_note": "FR-Wave-B. Shown only when showStockStatus is on. Colours both the label text and the status dot (extras.php::sgs_buybox_extras_scoped_css). Split into three separate elements (in/low/out) because each is its own css:color target — one element manifest entry cannot map three attributes to the same css_property key."
+				},
+				"stock-low-stock": {
+					"motion": false,
+					"label": "Low-stock label",
+					"order": 4,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "stockLowStockColour"
+					},
+					"_note": "FR-Wave-B. See stock-in-stock note — same mechanism, the low-stock state (WooCommerce per-variation stock management, extras.php::sgs_buybox_stock_status)."
+				},
+				"stock-out-of-stock": {
+					"motion": false,
+					"label": "Out-of-stock label",
+					"order": 5,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "stockOutOfStockColour"
+					},
+					"_note": "FR-Wave-B. See stock-in-stock note — same mechanism, the out-of-stock state."
+				},
+				"add-to-cart": {
+					"selector": ".buybox__add-to-cart",
+					"label": "Add to bag button",
+					"order": 6,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "addToCartBackgroundColour",
+						"css:border-color": "addToCartBorderColour",
+						"css:font-size": "addToCartFontSize",
+						"css:font-weight": "addToCartFontWeight",
+						"css:text-transform": "addToCartTextTransform",
+						"css:letter-spacing": "addToCartLetterSpacing",
+						"css:min-height": "addToCartMinHeight",
+						"css:padding": "addToCartPadding",
+						"css:box-shadow": "addToCartShadow",
+						"css:box-shadow-color": "addToCartShadowColour"
+					},
+					"_note": "The add-to-cart button (.buybox__add-to-cart): its own look, distinct from the wrapper's border and the price's typography."
+				},
+				"sticky-bar": {
+					"selector": ".sgs-buybox__bar",
+					"label": "Add-to-basket bar",
+					"order": 20,
+					"clusters": [
+						"fill",
+						"text"
+					],
+					"attrMap": {
+						"css:background-color": "stickyBarBackground",
+						"css:color": "stickyBarText",
+						"css:border-color": "stickyBarBorderColour"
+					},
+					"_note": "The fixed bar at the bottom of the screen (render.php, sticky-bar.js) holding the live price, the chosen options and an Add button. The three colours print as --sgs-buybox-bar-bg / -text / -border on the block root; style.css reads them with the surface, text and border tokens as fallbacks. The Add button inside is styled by the add-to-cart element.",
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "The bar prints only when a device tier switches stickyBar to after-button; it is off by default, so no default render path holds it."
+				},
+				"gallery-thumb": {
+					"selector": ".sgs-buybox__gallery-thumb",
+					"label": "Gallery thumbnails",
+					"order": 9,
+					"clusters": [
+						"fill"
+					],
+					"attrMap": {
+						"css:grid-template-columns": "thumbsPerRow",
+						"css:gap": "thumbGap",
+						"css:margin-top": "thumbStripOffset",
+						"css:border-radius": "galleryThumbBorderRadius",
+						"css:border-width": "galleryThumbBorderWidth",
+						"css:border-style": "galleryThumbBorderStyle",
+						"css:border-color": "galleryThumbBorderColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "galleryThumbBorderColourHover"
+							}
+						},
+						"current": {
+							"attrMap": {
+								"css:border-color": "galleryThumbBorderColourCurrent",
+								"css:transform": "thumbSelectedScale"
+							}
+						}
+					},
+					"_note": "The thumbnail rail buttons (.product-card__thumb). A per-device thumbsPerRow fluid grid (0 = the fixed 64px scrolling rail) with thumbGap and thumbStripOffset, plus the shared border pair on SgsBorderControl: galleryThumbBorderWidth (box), galleryThumbBorderStyle, galleryThumbBorderColour / Hover / Current (Current is the selected [aria-current=true] thumbnail) and galleryThumbBorderRadius (a flat corner object, single tier), and the selected thumbnail's scale. Emitted per instance by extras.php::sgs_buybox_extras_scoped_css through sgs_border_states_css(). Empty width, colours and radius, and scale 105, keep the stylesheet defaults (2px transparent border, primary-token selected border, the main image's radius, scale 1.05); scale 100 turns the selected scale off."
+				},
+				"main-photo": {
+					"selector": ".sgs-buybox__main-photo",
+					"label": "Main photo",
+					"order": 19,
+					"clusters": [],
+					"_note": "The main gallery photo (.sgs-buybox__main-photo), a motion part: the target of a photo entrance."
+				},
+				"valueLadder": {
+					"selector": ".buybox__value-ladder",
+					"label": "Value ladder",
+					"order": 7,
+					"clusters": [
+						"text"
+					],
+					"prefix": "valueLadder",
+					"_note": "The comparative per-pack price ladder wrapper (.buybox__value-ladder); its font settings cascade to the pack and per-unit text. No colour attribute exists for this element - an honest gap. Emitted by render.php sgs_typography_css_rule( $attributes, 'valueLadder', $root_sel . ' .buybox__value-ladder' ).",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "valueLadderTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "valueLadderTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "valueLadderTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"valueLadderSaving": {
+					"selector": ".buybox__value-ladder__saving",
+					"label": "Value ladder saving",
+					"order": 8,
+					"clusters": [
+						"text"
+					],
+					"prefix": "valueLadderSaving",
+					"_note": "The per-row \"save X%\" text (.value-ladder__saving). style.css sizes it absolutely, so the wrapper setting cannot reach it - it has its own prefix. No colour attribute exists for this element - an honest gap.",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "valueLadderSavingTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "valueLadderSavingTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "valueLadderSavingTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"notifyHeading": {
+					"text": true,
+					"selector": ".sgs-buybox__notify-heading",
+					"label": "Notify heading",
+					"order": 10,
+					"clusters": [
+						"text"
+					],
+					"prefix": "notifyHeading",
+					"attrMap": {
+						"css:font-size": "notifyHeadingFontSize",
+						"css:font-weight": "notifyHeadingFontWeight",
+						"css:font-style": "notifyHeadingFontStyle",
+						"css:font-family": "notifyHeadingFontFamily",
+						"css:text-transform": "notifyHeadingTextTransform",
+						"css:text-decoration": "notifyHeadingTextDecoration",
+						"css:line-height": "notifyHeadingLineHeight",
+						"css:letter-spacing": "notifyHeadingLetterSpacing",
+						"css:text-align": "notifyHeadingTextAlign",
+						"css:text-wrap": "notifyHeadingTextWrap",
+						"css:-webkit-text-stroke-width": "notifyHeadingTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "notifyHeadingTextStrokeColour",
+						"css:column-count": "notifyHeadingTextColumns",
+						"css:writing-mode": "notifyHeadingWritingMode"
+					},
+					"_note": "The back-in-stock form heading (.sgs-buybox__notify-heading).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "notifyHeadingTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"notifyLabel": {
+					"selector": ".sgs-buybox__notify-label",
+					"label": "Notify labels",
+					"order": 11,
+					"clusters": [
+						"text"
+					],
+					"prefix": "notifyLabel",
+					"attrMap": {
+						"css:font-size": "notifyLabelFontSize",
+						"css:font-weight": "notifyLabelFontWeight",
+						"css:font-style": "notifyLabelFontStyle",
+						"css:font-family": "notifyLabelFontFamily",
+						"css:text-transform": "notifyLabelTextTransform",
+						"css:text-decoration": "notifyLabelTextDecoration",
+						"css:line-height": "notifyLabelLineHeight",
+						"css:letter-spacing": "notifyLabelLetterSpacing",
+						"css:text-align": "notifyLabelTextAlign",
+						"css:text-wrap": "notifyLabelTextWrap",
+						"css:-webkit-text-stroke-width": "notifyLabelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "notifyLabelTextStrokeColour",
+						"css:column-count": "notifyLabelTextColumns",
+						"css:writing-mode": "notifyLabelWritingMode"
+					},
+					"_note": "The email field label and the consent checkbox label of the back-in-stock form (.sgs-buybox__notify-label, .sgs-buybox__notify-consent-label): one role, the text that names a form control. No colour attribute exists for this element - an honest gap.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "notifyLabelTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"notifyInput": {
+					"selector": ".sgs-buybox__notify-email",
+					"label": "Notify email input",
+					"order": 12,
+					"clusters": [
+						"text"
+					],
+					"prefix": "notifyInput",
+					"attrMap": {
+						"css:font-size": "notifyInputFontSize",
+						"css:font-weight": "notifyInputFontWeight",
+						"css:font-style": "notifyInputFontStyle",
+						"css:font-family": "notifyInputFontFamily",
+						"css:text-transform": "notifyInputTextTransform",
+						"css:text-decoration": "notifyInputTextDecoration",
+						"css:line-height": "notifyInputLineHeight",
+						"css:letter-spacing": "notifyInputLetterSpacing",
+						"css:text-align": "notifyInputTextAlign",
+						"css:text-wrap": "notifyInputTextWrap",
+						"css:-webkit-text-stroke-width": "notifyInputTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "notifyInputTextStrokeColour",
+						"css:column-count": "notifyInputTextColumns",
+						"css:writing-mode": "notifyInputWritingMode"
+					},
+					"_note": "The typed text and placeholder of the back-in-stock email field (.sgs-buybox__notify-email).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "notifyInputTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"notifySubmit": {
+					"selector": ".sgs-buybox__notify-submit",
+					"label": "Notify button",
+					"order": 13,
+					"clusters": [
+						"text"
+					],
+					"prefix": "notifySubmit",
+					"attrMap": {
+						"css:font-size": "notifySubmitFontSize",
+						"css:font-weight": "notifySubmitFontWeight",
+						"css:font-style": "notifySubmitFontStyle",
+						"css:font-family": "notifySubmitFontFamily",
+						"css:text-transform": "notifySubmitTextTransform",
+						"css:text-decoration": "notifySubmitTextDecoration",
+						"css:line-height": "notifySubmitLineHeight",
+						"css:letter-spacing": "notifySubmitLetterSpacing",
+						"css:text-align": "notifySubmitTextAlign",
+						"css:text-wrap": "notifySubmitTextWrap",
+						"css:-webkit-text-stroke-width": "notifySubmitTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "notifySubmitTextStrokeColour",
+						"css:column-count": "notifySubmitTextColumns",
+						"css:writing-mode": "notifySubmitWritingMode"
+					},
+					"_note": "The back-in-stock form submit button label (.sgs-buybox__notify-submit).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "notifySubmitTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"notifyStatus": {
+					"text": true,
+					"selector": ".sgs-buybox__notify-status",
+					"label": "Notify status message",
+					"order": 14,
+					"clusters": [
+						"text"
+					],
+					"prefix": "notifyStatus",
+					"attrMap": {
+						"css:font-size": "notifyStatusFontSize",
+						"css:font-weight": "notifyStatusFontWeight",
+						"css:font-style": "notifyStatusFontStyle",
+						"css:font-family": "notifyStatusFontFamily",
+						"css:text-transform": "notifyStatusTextTransform",
+						"css:text-decoration": "notifyStatusTextDecoration",
+						"css:line-height": "notifyStatusLineHeight",
+						"css:letter-spacing": "notifyStatusLetterSpacing",
+						"css:text-align": "notifyStatusTextAlign",
+						"css:text-wrap": "notifyStatusTextWrap",
+						"css:-webkit-text-stroke-width": "notifyStatusTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "notifyStatusTextStrokeColour",
+						"css:column-count": "notifyStatusTextColumns",
+						"css:writing-mode": "notifyStatusWritingMode"
+					},
+					"_note": "The success or error message written under the back-in-stock form (.sgs-buybox__notify-status).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "notifyStatusTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"savingBadge": {
+					"selector": ".sgs-buybox__saving-badge",
+					"label": "Gallery saving badge",
+					"order": 15,
+					"clusters": [
+						"text"
+					],
+					"prefix": "savingBadge",
+					"attrMap": {
+						"css:font-size": "savingBadgeFontSize",
+						"css:font-weight": "savingBadgeFontWeight",
+						"css:font-style": "savingBadgeFontStyle",
+						"css:font-family": "savingBadgeFontFamily",
+						"css:text-transform": "savingBadgeTextTransform",
+						"css:text-decoration": "savingBadgeTextDecoration",
+						"css:line-height": "savingBadgeLineHeight",
+						"css:letter-spacing": "savingBadgeLetterSpacing",
+						"css:text-wrap": "savingBadgeTextWrap",
+						"css:-webkit-text-stroke-width": "savingBadgeTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "savingBadgeTextStrokeColour",
+						"css:column-count": "savingBadgeTextColumns",
+						"css:writing-mode": "savingBadgeWritingMode"
+					},
+					"_note": "The saving badge over the gallery photo (.sgs-buybox__saving-badge).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "savingBadgeTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"gallery-sticker": {
+					"selector": ".sgs-buybox__gallery-sticker",
+					"label": "Photo sticker",
+					"order": 16,
+					"motion": false,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "gallerySticker",
+					"attrMap": {
+						"css:background": "galleryStickerBackgroundColour",
+						"css:color": "galleryStickerTextColour",
+						"css:border-width": "galleryStickerBorderWidth",
+						"css:border-style": "galleryStickerBorderStyle",
+						"css:border-color": "galleryStickerBorderColour",
+						"css:border-radius": "galleryStickerRadius",
+						"css:transform": "galleryStickerRotation",
+						"css:top": "galleryStickerOffsetY",
+						"css:right": "galleryStickerOffsetX",
+						"css:padding": "galleryStickerPadding"
+					},
+					"_note": "The sticker over the main photo (.sgs-buybox__gallery-sticker, gallery-sticker.php). The text, corner and shape are layout settings, not paint: galleryStickerText, galleryStickerPosition, galleryStickerShape, galleryStickerDecorative. Offsets print on the side the corner names (top or bottom, left or right). Typography prints under the gallerySticker prefix."
+				},
+				"stock": {
+					"text": true,
+					"selector": ".buybox__stock",
+					"label": "Stock line",
+					"order": 16,
+					"clusters": [
+						"text"
+					],
+					"prefix": "stock",
+					"attrMap": {
+						"css:font-size": "stockFontSize",
+						"css:font-weight": "stockFontWeight",
+						"css:font-style": "stockFontStyle",
+						"css:font-family": "stockFontFamily",
+						"css:text-transform": "stockTextTransform",
+						"css:text-decoration": "stockTextDecoration",
+						"css:line-height": "stockLineHeight",
+						"css:letter-spacing": "stockLetterSpacing",
+						"css:text-align": "stockTextAlign",
+						"css:text-wrap": "stockTextWrap",
+						"css:-webkit-text-stroke-width": "stockTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "stockTextStrokeColour",
+						"css:column-count": "stockTextColumns",
+						"css:writing-mode": "stockWritingMode"
+					},
+					"_note": "The stock line (.buybox__stock), in both the always-on form and the status-dot form. Its colour comes from the three stock-status colour elements.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "stockTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"guidedMeter": {
+					"selector": ".sgs-buybox-guided__meter",
+					"label": "Guided progress meter",
+					"order": 17,
+					"clusters": [
+						"text"
+					],
+					"prefix": "guidedMeter",
+					"attrMap": {
+						"css:font-size": "guidedMeterFontSize",
+						"css:font-weight": "guidedMeterFontWeight",
+						"css:font-style": "guidedMeterFontStyle",
+						"css:font-family": "guidedMeterFontFamily",
+						"css:text-transform": "guidedMeterTextTransform",
+						"css:text-decoration": "guidedMeterTextDecoration",
+						"css:line-height": "guidedMeterLineHeight",
+						"css:letter-spacing": "guidedMeterLetterSpacing",
+						"css:text-align": "guidedMeterTextAlign",
+						"css:text-wrap": "guidedMeterTextWrap",
+						"css:-webkit-text-stroke-width": "guidedMeterTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "guidedMeterTextStrokeColour",
+						"css:column-count": "guidedMeterTextColumns",
+						"css:writing-mode": "guidedMeterWritingMode"
+					},
+					"_note": "Guided layout: the meter step text, its step number and the compact \"2 of 4\" line (.sgs-buybox-guided__meter-btn, .sgs-buybox-guided__meter-index, .sgs-buybox-guided__meter-compact). The number sits inside the step, so one setting governs the whole step.",
+					"absentIn": [
+						"main"
+					],
+					"absentWhy": "The step meter and group titles print only in the guided layout (buyboxLayout guided).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "guidedMeterTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"guidedGroupTitle": {
+					"text": true,
+					"selector": ".sgs-buybox-guided__group-title",
+					"label": "Guided group title",
+					"order": 18,
+					"clusters": [
+						"text"
+					],
+					"prefix": "guidedGroupTitle",
+					"attrMap": {
+						"css:font-size": "guidedGroupTitleFontSize",
+						"css:font-weight": "guidedGroupTitleFontWeight",
+						"css:font-style": "guidedGroupTitleFontStyle",
+						"css:font-family": "guidedGroupTitleFontFamily",
+						"css:text-transform": "guidedGroupTitleTextTransform",
+						"css:text-decoration": "guidedGroupTitleTextDecoration",
+						"css:line-height": "guidedGroupTitleLineHeight",
+						"css:letter-spacing": "guidedGroupTitleLetterSpacing",
+						"css:text-align": "guidedGroupTitleTextAlign",
+						"css:text-wrap": "guidedGroupTitleTextWrap",
+						"css:-webkit-text-stroke-width": "guidedGroupTitleTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "guidedGroupTitleTextStrokeColour",
+						"css:column-count": "guidedGroupTitleTextColumns",
+						"css:writing-mode": "guidedGroupTitleWritingMode"
+					},
+					"_note": "Guided layout: the heading above each question (.sgs-buybox-guided__group-title).",
+					"absentIn": [
+						"main"
+					],
+					"absentWhy": "The step meter and group titles print only in the guided layout (buyboxLayout guided).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "guidedGroupTitleTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"rrpChip": {
+					"selector": ".buybox__rrp-pill",
+					"label": "RRP saving pill text",
+					"order": 16,
+					"clusters": [
+						"text"
+					],
+					"prefix": "rrpChip",
+					"attrMap": {
+						"css:font-size": "rrpChipFontSize",
+						"css:font-weight": "rrpChipFontWeight",
+						"css:font-style": "rrpChipFontStyle",
+						"css:font-family": "rrpChipFontFamily",
+						"css:text-transform": "rrpChipTextTransform",
+						"css:text-decoration": "rrpChipTextDecoration",
+						"css:line-height": "rrpChipLineHeight",
+						"css:letter-spacing": "rrpChipLetterSpacing"
+					},
+					"_note": "The type of the RRP saving pill beside the RRP (extras.php, render.php rrpChip rule). Its colours and padding live on the rrp-pill element."
+				},
+				"picker-label-link": {
+					"selector": ".sgs-buybox__picker-label-link",
+					"label": "Size-guide link",
+					"order": 17,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "The size-guide link prints only when the buybox has link text (pickerLabelLinkText) set, which the render fixtures do not set.",
+					"attrMap": {
+						"css:color": "pickerLabelLinkColour",
+						"css:border-bottom-color": "pickerLabelLinkUnderlineColour",
+						"css:padding": "pickerLabelLinkPadding"
+					}
+				},
+				"picker-box": {
+					"selector": ".sgs-buybox__pick-box",
+					"label": "Picker box",
+					"order": 18,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "The box around the pickers prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:background-color": "pickerBoxBackgroundColour",
+						"css:border-color": "pickerBoxBorderColour",
+						"css:border-width": "pickerBoxBorderWidth",
+						"css:border-radius": "pickerBoxRadius",
+						"css:padding": "pickerBoxPadding",
+						"css:gap": "pickerBoxGap"
+					}
+				},
+				"pick-preview": {
+					"selector": ".sgs-buybox__pick-preview",
+					"label": "Pick a set preview box",
+					"order": 19,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:background-color": "previewBackgroundColour",
+						"css:border-color": "previewBorderColour",
+						"css:border-width": "previewBorderWidth",
+						"css:border-radius": "previewRadius",
+						"css:padding": "previewPadding"
+					}
+				},
+				"pick-summary": {
+					"text": true,
+					"selector": ".sgs-buybox__pick-summary",
+					"label": "Pick a set summary",
+					"order": 20,
+					"clusters": [
+						"text"
+					],
+					"prefix": "pickSummary",
+					"attrMap": {
+						"css:font-size": "pickSummaryFontSize",
+						"css:font-weight": "pickSummaryFontWeight",
+						"css:font-style": "pickSummaryFontStyle",
+						"css:font-family": "pickSummaryFontFamily",
+						"css:text-transform": "pickSummaryTextTransform",
+						"css:text-decoration": "pickSummaryTextDecoration",
+						"css:line-height": "pickSummaryLineHeight",
+						"css:letter-spacing": "pickSummaryLetterSpacing",
+						"css:text-wrap": "pickSummaryTextWrap",
+						"css:-webkit-text-stroke-width": "pickSummaryTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "pickSummaryTextStrokeColour",
+						"css:column-count": "pickSummaryTextColumns",
+						"css:writing-mode": "pickSummaryWritingMode",
+						"css:color": "pickSummaryColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "pickSummaryTextStrokeColourHover"
+							}
+						}
+					},
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator)."
+				},
+				"pick-option": {
+					"selector": ".sgs-buybox__pick-option",
+					"label": "Pick a set option pill",
+					"order": 21,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:border-radius": "pickOptionRadius",
+						"css:padding": "pickOptionPadding",
+						"css:gap": "pickOptionGap",
+						"css:background-color": "pickSelectedBackgroundColour",
+						"css:border-color": "pickSelectedBorderColour"
+					},
+					"_note": "The background and border colour here are the SELECTED look: one pair of custom properties (--sgs-pick-sel-bg, --sgs-pick-sel-border) that a checked pick-several option and every option picker in the box read."
+				},
+				"pick-tile": {
+					"selector": ".sgs-buybox__pick-box",
+					"label": "Pick a set priced tiles",
+					"order": 22,
+					"clusters": [
+						"layout"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:padding": "pickTilePadding",
+						"css:gap": "pickTileGap"
+					}
+				},
+				"pick-pill-look": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker__pill, .sgs-buybox__pick-option",
+					"motion": false,
+					"label": "Pick a set option look",
+					"order": 28,
+					"clusters": [
+						"fill",
+						"text"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:background-color": "pickerPillBackgroundColour",
+						"css:border-color": "pickerPillBorderColour",
+						"css:font-weight": "pickerPillFontWeight"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:translate": "pickerPillHoverOffsetX",
+								"css:translate-y": "pickerPillHoverOffsetY"
+							},
+							"noBaseByDesign": [
+								"css:translate",
+								"css:translate-y"
+							],
+							"_noBaseByDesignNote": "An option's resting shift is none by definition; the hover shift is the hover look itself. Not a suppression hatch."
+						},
+						"current": {
+							"attrMap": {
+								"css:box-shadow": "pickerPillSelectedShadow",
+								"css:box-shadow-color": "pickerPillSelectedShadowColour",
+								"css:translate": "pickerPillSelectedOffsetX",
+								"css:translate-y": "pickerPillSelectedOffsetY"
+							},
+							"noBaseByDesign": [
+								"css:box-shadow",
+								"css:box-shadow-color"
+							],
+							"_noBaseByDesignNote": "The selected option's offset shadow is the selected look itself: an option's resting shadow is none by definition here, as is its resting shift (pickerPillSelectedOffsetX/Y have no resting twin either). Not a suppression hatch: the option picker's own resting pillShadow stays reachable through the picker."
+						}
+					},
+					"_note": "The resting fill, border and weight and the selected shadow and shift of every option in the pick area: forwarded to each sgs/option-picker, printed as custom properties and a checked-option rule for the flavour pills."
+				},
+				"pick-dot": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker__swatch--colour, .sgs-buybox-pick__swatch",
+					"motion": false,
+					"label": "Pick a set colour dot",
+					"order": 29,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:border-radius": "pickerDotShape",
+						"css:width": "pickerDotSize",
+						"css:height": "pickerGroupDotSize",
+						"css:border-width": "pickerDotRingThickness",
+						"css:border-color": "pickerDotRingColour",
+						"css:color": "pickerDotTickColour"
+					},
+					"_note": "pickerDotSize sizes the option pickers' dots and pickerGroupDotSize the pick-several groups' dots; pickerDotTickInside moves the selected tick into the dot."
+				},
+				"pick-heading": {
+					"selector": ".sgs-buybox-pick__hint, .sgs-buybox__picker-hint",
+					"motion": false,
+					"label": "Pick a set heading hint",
+					"order": 30,
+					"clusters": [
+						"colour"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:color": "pickerHintColour"
+					}
+				},
+				"pick-tile-columns": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker--tile .sgs-option-picker__options",
+					"motion": false,
+					"label": "Pick a set tile columns",
+					"order": 31,
+					"clusters": [
+						"layout"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:grid-template-columns": "pickTileColumns"
+					}
+				},
+				"pick-tile-number": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker--tile .sgs-option-picker__pill-label",
+					"motion": false,
+					"label": "Pick a set tile number",
+					"order": 23,
+					"clusters": [
+						"text"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:font-size": "pickTileNumberSize",
+						"css:font-weight": "pickTileNumberWeight"
+					}
+				},
+				"pick-tile-price": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker--tile .sgs-option-picker__sub-label",
+					"motion": false,
+					"label": "Pick a set tile price line",
+					"order": 24,
+					"clusters": [
+						"text"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:font-size": "pickTilePriceSize",
+						"css:font-weight": "pickTilePriceWeight"
+					}
+				},
+				"pick-tile-each": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker--tile .sgs-option-picker__term-description",
+					"motion": false,
+					"label": "Pick a set tile each-line",
+					"order": 25,
+					"clusters": [
+						"text"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:font-size": "pickTileEachSize"
+					}
+				},
+				"pick-priced-pill": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__pill",
+					"motion": false,
+					"label": "Pick a set priced pill text",
+					"order": 26,
+					"clusters": [
+						"text"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:font-size": "pickPricedFontSize",
+						"css:min-height": "pickPricedMinHeight",
+						"css:display": "pickPricedLayout"
+					}
+				},
+				"pick-badge": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker__term-badge, .sgs-buybox__pick-box .sgs-buybox-pick__option-badge",
+					"motion": false,
+					"label": "Pick a set term badge",
+					"order": 27,
+					"clusters": [
+						"colour"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:background-color": "pickBadgeBackgroundColour",
+						"css:color": "pickBadgeTextColour"
+					}
+				},
+				"rrp-price": {
+					"selector": ".buybox__rrp-price",
+					"motion": false,
+					"label": "Struck RRP price",
+					"order": 17,
+					"clusters": [
+						"text"
+					],
+					"prefix": "rrpPrice",
+					"attrMap": {
+						"css:font-size": "rrpPriceFontSize",
+						"css:font-weight": "rrpPriceFontWeight",
+						"css:font-style": "rrpPriceFontStyle",
+						"css:font-family": "rrpPriceFontFamily",
+						"css:text-transform": "rrpPriceTextTransform",
+						"css:text-decoration": "rrpPriceTextDecoration",
+						"css:line-height": "rrpPriceLineHeight",
+						"css:letter-spacing": "rrpPriceLetterSpacing",
+						"css:text-align": "rrpPriceTextAlign",
+						"css:text-wrap": "rrpPriceTextWrap",
+						"css:-webkit-text-stroke-width": "rrpPriceTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "rrpPriceTextStrokeColour",
+						"css:column-count": "rrpPriceTextColumns",
+						"css:writing-mode": "rrpPriceWritingMode"
+					},
+					"_note": "The struck RRP price (.buybox__rrp-price). Its colour stays the price row's; render.php scopes the rrpPrice* rule to it.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "rrpPriceTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"main-photo-frame": {
+					"selector": ".sgs-buybox__main-photo-frame",
+					"label": "Main photo",
+					"order": 19,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "mainPhotoBackgroundColour",
+						"css:border-width": "mainPhotoBorderWidth",
+						"css:border-style": "mainPhotoBorderStyle",
+						"css:border-color": "mainPhotoBorderColour",
+						"css:border-radius": "mainPhotoRadius",
+						"css:box-shadow": "mainPhotoShadow",
+						"css:box-shadow-color": "mainPhotoShadowColour"
+					},
+					"_note": "The box that frames the main photo (.product-card__media; the photo inside it is .sgs-buybox__main-photo). Ground, border and shadow print on the box from render.php; the radius prints as --sgs-buybox-img-radius on the block root so the thumbnails follow it."
+				}
+			},
+			"fx": {
+				"providesNatively": [
+					"draggable"
+				],
+				"_comment_providesNatively": "Spec 38 FR-38-13. This block's horizontal scroller is `.product-card__thumbs`, a DESCENDANT, while the generic 'Scroll & effects' picker stamps data-sgs-fx onto the block ROOT — so a picker entry here would be a control that silently does nothing. The CSS-derived `track` provision (2026-07-31) correctly sees the scroller and would otherwise offer it. Declared here to suppress that entry. Own drag toggle SHIPPED 2026-07-31 (register Step 3): `dragToScroll`/`dragMomentum` attrs below, mirroring sgs/gallery + sgs/post-grid + sgs/google-reviews. Proven on a product-page fixture (product 541/540 variation gallery expanded to 10 images so the 64px-thumb strip genuinely overflows its ~644px column at 1440px) BEFORE this attr existed: scrollWidth 712 > clientWidth 644, confirming the scroller is real. The toggle itself ships unverified live in THIS session — it needs a build + deploy this session did not run (constrained to no-deploy) — so re-run the same fixture after deploy and confirm cursor:grab + data-sgs-fx=\"draggable\" appear before treating the capability as proven end-to-end."
+			}
+		}
+	},
+	"usesContext": [
+		"postId"
+	],
+	"attributes": {
+		"thumbsFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the gallery thumbnails wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"priceRowFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the price, RRP and saving badge wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"meterFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the step meter buttons of the guided flow wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"navFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the Back and Next buttons of the guided flow wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"soldOutLabel": {
+			"type": "string",
+			"default": "(sold out)",
+			"description": "Aria-label suffix appended to pill labels when a combination is sold out. Shown to screen readers only."
+		},
+		"unavailableLabel": {
+			"type": "string",
+			"default": "(unavailable)",
+			"description": "Aria-label suffix appended to pill labels when a combination does not exist for the current selections."
+		},
+		"notifyEnabled": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the 'notify me when back in stock' email-capture form on out-of-stock variations."
+		},
+		"notifyMeLabel": {
+			"type": "string",
+			"default": "Notify me",
+			"description": "Heading/label for the back-in-stock notify-me form."
+		},
+		"addToCartLabel": {
+			"type": "string",
+			"default": "",
+			"description": "Override the Add to Cart button label. Empty = use the default translated string."
+		},
+		"addToCartAction": {
+			"type": "string",
+			"default": "cart",
+			"enum": [
+				"cart",
+				"modal"
+			],
+			"description": "'cart' adds the selected variation to the cart directly (default). 'modal' opens an sgs/modal instead — used when the modal holds a choice-flow that asks further questions and finishes the purchase (Spec 43 Phase 3/4)."
+		},
+		"addToCartModalId": {
+			"type": "string",
+			"default": "",
+			"description": "The HTML anchor set on the sgs/modal block this button opens, when addToCartAction is 'modal'. Empty falls back to cart mode even when 'modal' is selected."
+		},
+		"buyboxProductId": {
+			"type": "integer",
+			"default": 0,
+			"description": "The product this buy box shows, by ID. 0 (default) shows the product of the page it sits on. Set it to place a buy box on a page that is not a product page, such as the home page."
+		},
+		"buyboxLayout": {
+			"type": "string",
+			"default": "standard",
+			"enum": [
+				"standard",
+				"guided",
+				"configurator"
+			],
+			"description": "'standard' (default) shows every axis picker at once. 'guided' turns the buy box into a one-decision-per-screen flow behind a segmented progress meter (Spec 43 FR-43-23). 'configurator' (Pick a set) shows every picker plus pick-several groups, a live preview and one summary on the product page itself."
+		},
+		"guidedAutoAdvance": {
+			"type": "boolean",
+			"default": true,
+			"description": "Guided layout only: move to the next group automatically a short beat after a choice is made (instant under prefers-reduced-motion). Off = the shopper always presses Next."
+		},
+		"guidedAnswerAttributes": {
+			"type": "boolean",
+			"default": true,
+			"description": "Guided layout only: also walk the product's other visible, non-variation attributes (e.g. Topping, Dietary) as answer groups, in the product's own attribute order. Off = only the variation-forming axes appear."
+		},
+		"guidedNextLabel": {
+			"type": "string",
+			"default": "Next",
+			"description": "Guided layout only: the Next button's wording."
+		},
+		"guidedBackLabel": {
+			"type": "string",
+			"default": "Back",
+			"description": "Guided layout only: the Back button's wording."
+		},
+		"guidedMeterStyle": {
+			"type": "string",
+			"default": "segments",
+			"enum": [
+				"segments",
+				"bar",
+				"dots"
+			],
+			"description": "Guided layout only: the progress meter's shape. 'segments' (default) shows an index and the chosen value per group. 'bar' shows a single filled progress track. 'dots' always shows the compact narrow-container dots, regardless of container width."
+		},
+		"guidedMeterColour": {
+			"type": "string",
+			"default": "",
+			"description": "Guided layout only: the meter's done/current colour. Empty = the theme's primary preset colour."
+		},
+		"perUnitDenomination": {
+			"type": "string",
+			"default": "",
+			"description": "Override the per-unit denomination template. Use %s as the placeholder for the unit label (e.g. 'per bar', 'per 100g'). Empty = translated default 'per %s'."
+		},
+		"showLadder": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the comparative value-ladder table. Set false to suppress it (e.g. in narrow sidebar contexts)."
+		},
+		"valueLadderFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"valueLadderFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"valueLadderFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"valueLadderTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"valueLadderLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"valueLadderLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"valueLadderTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"valueLadderTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderTextColumns": {
+			"type": "number"
+		},
+		"valueLadderWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"valueLadderSavingFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"valueLadderSavingFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderSavingFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"valueLadderSavingFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderSavingTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"valueLadderSavingTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"valueLadderSavingLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"valueLadderSavingLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"valueLadderSavingTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"valueLadderSavingTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderSavingTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderSavingTextColumns": {
+			"type": "number"
+		},
+		"valueLadderSavingWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"framingMode": {
+			"type": "string",
+			"default": "loss-aversion",
+			"enum": [
+				"savings",
+				"loss-aversion",
+				"neutral"
+			],
+			"description": "Saving-label framing: 'savings' (positive), 'loss-aversion' (adds 'vs buying singly' tail), or 'neutral' (no saving label)."
+		},
+		"decoyEnabled": {
+			"type": "boolean",
+			"default": false,
+			"description": "When true, the 'Best value' badge targets the 2nd-largest pack (decoy effect) instead of the largest."
+		},
+		"dragToScroll": {
+			"type": "boolean",
+			"default": false,
+			"description": "Lets desktop shoppers click and drag the thumbnail strip, on top of its native scroll/swipe. Spec 38 FR-38-13."
+		},
+		"dragMomentum": {
+			"type": "boolean",
+			"default": true,
+			"description": "When drag-to-scroll is on, keep coasting briefly after release like a real scroll flick."
+		},
+		"loopCarousel": {
+			"type": "boolean",
+			"default": false,
+			"description": "Scrolling or dragging the thumbnail strip past the last image continues into the first, and back again — never a dead end. Independent of drag-to-scroll; combinable or standalone. Spec 38 §11 loop FR."
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"stickyEnabled": {
+			"type": "boolean",
+			"default": false,
+			"description": "Keep the configurator column (price, pickers, add-to-cart) pinned in view while the shopper scrolls a long product description below it. Off by default. Disabled below 768px regardless of this setting — a stuck column on a phone-width screen fights the shopper's scroll."
+		},
+		"stickyOffset": {
+			"type": "string",
+			"default": "",
+			"description": "Extra CSS length (e.g. \"12px\", \"1rem\") between the sticky column and the sticky header, on top of the header's own live height. Empty = flush against the header."
+		},
+		"stickyBar": {
+			"type": "object",
+			"default": {},
+			"description": "Add-to-basket bar, per device tier: 'after-button' shows a fixed bar at the bottom of the screen (price, chosen options, Add button) once the in-page Add button has scrolled out of view; 'off' or unset prints nothing at that tier. A tier left unset follows the next larger one. Unset everywhere prints no bar (sticky-bar.js, render.php)."
+		},
+		"stickyBarBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Background colour of the add-to-basket bar: a palette slug or any CSS colour. Empty = the surface colour token."
+		},
+		"stickyBarText": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of the add-to-basket bar (price and options line): a palette slug or any CSS colour. Empty = the text colour token."
+		},
+		"stickyBarBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the add-to-basket bar's top edge line: a palette slug or any CSS colour. Empty = the border colour token."
+		},
+		"stackBelow": {
+			"type": "string",
+			"default": "mobile",
+			"enum": [
+				"mobile",
+				"tablet"
+			],
+			"description": "Where the gallery and configurator sit side by side: 'mobile' = from 768px up (stacked on phones), 'tablet' = from 1024px up (stacked on phones and tablets)."
+		},
+		"galleryColumnRatio": {
+			"type": "number",
+			"default": 0,
+			"description": "The gallery column's share of the grid against the configurator column's fixed 1fr (e.g. 1.353 for a gallery ~1.35x the configurator's width). 0 (default/empty) keeps today's 1.15. Applies only at the width where the two columns actually sit side by side for this instance's own stackBelow setting (768px for 'mobile', 1024px for 'tablet')."
+		},
+		"galleryColumnGap": {
+			"type": [
+				"string",
+				"object"
+			],
+			"default": "",
+			"description": "Gap between the gallery and configurator columns: a spacing preset slug (e.g. \"50\") or a custom length (e.g. \"60px\"), validated by sgs_css_length_value(), or a per-device {desktop, tablet, mobile} object of those (a saved string is the desktop value). Empty (default) keeps today's clamp(1.5rem, 4vw, 3rem). Same breakpoint rule as galleryColumnRatio: a tier applies only while the columns sit side by side."
+		},
+		"rrpMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "Post-meta key holding the recommended retail price (a plain number in the shop's major currency unit, e.g. \"171.00\"). Empty = the saving pill is off. Set per-site to whatever meta key stores RRP for that catalogue."
+		},
+		"rrpSavingFormat": {
+			"type": "string",
+			"default": "amount",
+			"enum": [
+				"amount",
+				"percentage"
+			],
+			"description": "How the saving pill is worded: a money amount (\"Save £32\") or a percentage (\"Save 19%\")."
+		},
+		"rrpPillBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpPillTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"showStockStatus": {
+			"type": "boolean",
+			"default": false,
+			"description": "Replace the plain out-of-stock line with an always-visible in-stock / low-stock / out-of-stock indicator (coloured dot + label). Off keeps today's behaviour (a line shown only when out of stock). Reflects the initially-selected variation only — it does not update if the shopper swaps to a different combination."
+		},
+		"stockInStockColour": {
+			"type": "string",
+			"default": ""
+		},
+		"stockLowStockColour": {
+			"type": "string",
+			"default": ""
+		},
+		"stockOutOfStockColour": {
+			"type": "string",
+			"default": ""
+		},
+		"thumbsPerRow": {
+			"type": "object",
+			"default": {},
+			"description": "Thumbnails per row at each device tier, {desktop, tablet, mobile}, each 0 to 8. 0 (or unset on desktop) keeps the fixed-size scrolling strip at that tier. 1 to 8 turns the strip into a grid of that many equal columns that fill the gallery width, each thumbnail square; extra images wrap onto more rows, and a column never shrinks below the 48px touch-target floor. An unset tablet or mobile tier inherits the next larger one."
+		},
+		"thumbGap": {
+			"type": [
+				"string",
+				"object"
+			],
+			"default": "",
+			"description": "CSS length of the gap between gallery thumbnails (e.g. \"2px\"), or a per-device {desktop, tablet, mobile} object of lengths (a saved string is the desktop value). Empty keeps the stylesheet's 0.5rem."
+		},
+		"galleryThumbSize": {
+			"type": "object",
+			"default": {},
+			"description": "Width and height of each gallery thumbnail in the fixed-size strip, per device {desktop, tablet, mobile}, each a CSS length (e.g. \"88px\"). A thumbnail never goes below the 48px touch-target floor. Empty keeps the stylesheet's 64px. Ignored at a tier where Thumbnails per row is 1 to 8."
+		},
+		"thumbStripOffset": {
+			"type": "string",
+			"default": "",
+			"description": "CSS length of the space between the main product image and the thumbnail strip (e.g. \"2px\"). Empty keeps the stylesheet's 0.75rem."
+		},
+		"galleryThumbBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width of every gallery thumbnail, a {top, right, bottom, left} box of CSS lengths (e.g. \"1px\" on each side). Empty keeps the stylesheet's 2px."
+		},
+		"galleryThumbBorderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid",
+			"description": "Border style of every gallery thumbnail. Read only when a width is set."
+		},
+		"galleryThumbBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Resting border colour of the gallery thumbnails (palette slug or colour). Empty keeps the stylesheet's transparent border."
+		},
+		"galleryThumbBorderColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour of a gallery thumbnail on hover or keyboard focus (palette slug or colour). Empty leaves the border unchanged."
+		},
+		"galleryThumbBorderColourCurrent": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour of the selected gallery thumbnail, the one carrying aria-current=true (palette slug or colour). Empty keeps the primary-token colour."
+		},
+		"galleryThumbBorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Corner radius of every gallery thumbnail, a flat {topLeft, topRight, bottomRight, bottomLeft} corner object of CSS lengths (not a tier envelope), read by sgs_corner_object_longhands(). Empty keeps the stylesheet's inheritance of the main image's radius (--sgs-buybox-img-radius, 8px). The selected thumbnail's border follows it, being on the same element."
+		},
+		"thumbSelectedScale": {
+			"type": "number",
+			"default": 105,
+			"description": "Scale of the selected gallery thumbnail, in percent. 105 is the stylesheet's 1.05 lift; 100 turns the scale off."
+		},
+		"extrasBeforeCount": {
+			"type": "number",
+			"default": 0,
+			"description": "How many of the extras slot's first child blocks render at the top of the configurator column, above the price. The rest stay below the add-to-cart form. 0 = all below, the current behaviour."
+		},
+		"extrasBeforeCartCount": {
+			"type": "number",
+			"default": 0,
+			"description": "After the extrasBeforeCount children (above the price), how many of the NEXT extras-slot children render between the pickers/stock status and the add-to-cart form. The rest stay below the form. 0 = none, the current behaviour."
+		},
+		"pickerSwatchStyle": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"outlined",
+				"filled",
+				"ghost",
+				"tile"
+			],
+			"description": "Pill style forwarded to an option-picker axis whose terms carry a colour or image swatch (e.g. Colour), detected via each term's _sgs_swatch_color/_sgs_swatch_image_id meta. Empty = that picker's own default."
+		},
+		"pickerStyle": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"outlined",
+				"filled",
+				"ghost",
+				"tile"
+			],
+			"description": "Pill style forwarded to every other option-picker axis (no colour/image swatch, e.g. Size). Empty = that picker's own default."
+		},
+		"pickerSubLabelMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "Term-meta key forwarded to every option picker as its subLabelMetaKey — a second caption line under each option (e.g. a frame size's eye/bridge/temple measurement). Empty = no second line."
+		},
+		"pickerShowSelectedTick": {
+			"type": "boolean",
+			"default": false,
+			"description": "Forwarded to every option picker's showSelectedTick. Off by default: a selected option is already carried by its border, background and text colour, its photo and its price, so the tick is the exception rather than the rule."
+		},
+		"priceFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Font family for the current-price element, sourced from theme.json's typography.fontFamilies preset list via the shared TypographyControls font-family picker. Empty = inherit the theme's default (body) font."
+		},
+		"priceFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"priceFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"priceFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"priceLineHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Line height for the current-price element. Unitless ratio, same shape as every other TypographyControls-driven prefix."
+		},
+		"priceLineHeightUnit": {
+			"type": "string",
+			"default": "",
+			"description": "Companion unit for priceLineHeight. Empty = unitless (the TypographyControls convention — a unitless ratio recomputes correctly against nested text, unlike a fixed em/px line-height)."
+		},
+		"pickerLabelFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Font size for each axis picker's label (e.g. \"Colour\"). Forwarded to sgs/option-picker's own labelFontSize when the picker renders its native legend (pickerShowSelectedValue off); applied directly to this block's own label element when pickerShowSelectedValue replaces the legend with a label+value row. Empty = that picker's own default."
+		},
+		"pickerLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pickerLabelLetterSpacing": {
+			"type": "object",
+			"default": {},
+			"description": "Letter spacing for each axis picker's label. Same forward-or-own-render split as pickerLabelFontSize."
+		},
+		"pickerLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pickerLabelTextTransform": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"description": "Letter case for each axis picker's label (e.g. \"COLOUR\"). Same forward-or-own-render split as pickerLabelFontSize."
+		},
+		"pickerLabelColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour for each axis picker's label. Same forward-or-own-render split as pickerLabelFontSize."
+		},
+		"pickerValueFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Font size for the chosen value shown beside each axis picker's label (e.g. \"Ivory\"). Own-render path only — this element exists only when pickerShowSelectedValue or pickerLabelLinkAxis replaces sgs/option-picker's legend, so there is nothing to forward. Empty = inherited from the buybox."
+		},
+		"pickerValueColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour for the chosen value shown beside each axis picker's label. Own-render path only, like pickerValueFontSize. Empty = the muted text colour from the block's stylesheet."
+		},
+		"pickerValueFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pickerValueLineHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Line height for the chosen value element. Unitless ratio, same shape as every other TypographyControls-driven prefix."
+		},
+		"pickerValueLineHeightUnit": {
+			"type": "string",
+			"default": "",
+			"description": "Companion unit for pickerValueLineHeight. Empty = unitless (the TypographyControls convention — a unitless ratio recomputes correctly against nested text, unlike a fixed em/px line-height)."
+		},
+		"pickerOptionFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Font size for each option tile's name (e.g. \"Ivory\" under a colour tile, \"Large\" on a size tile). Emitted by this block as a scoped rule on the tile name inside the buybox; empty = the option picker's own look."
+		},
+		"pickerOptionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pickerOptionFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Font weight for each option tile's name. Empty = the option picker's own look."
+		},
+		"pickerOptionLetterSpacing": {
+			"type": "object",
+			"default": {},
+			"description": "Letter spacing for each option tile's name."
+		},
+		"pickerOptionLetterSpacingUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pickerOptionLineHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Line height for each option tile's name. Unitless ratio, same shape as every other TypographyControls-driven prefix."
+		},
+		"pickerOptionLineHeightUnit": {
+			"type": "string",
+			"default": "",
+			"description": "Companion unit for pickerOptionLineHeight. Empty = unitless."
+		},
+		"pickerOptionTextTransform": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"description": "Letter case for each option tile's name. Empty = the option picker's own look."
+		},
+		"pickerOptionColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour for each option tile's name. Empty = the option picker's own pill text colour (resting, hover and selected)."
+		},
+		"pickerShowSelectedValue": {
+			"type": "boolean",
+			"default": false,
+			"description": "Shows the chosen value (e.g. \"Ivory\") at the right of the axis label, in the muted text colour — updates live when the shopper picks a different option. Off (default) keeps today's plain label. On replaces sgs/option-picker's own visible legend with this block's own label+value row (option-picker has no equivalent control to forward to)."
+		},
+		"pickerAlwaysShowAxes": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "string"
+			},
+			"description": "Axis taxonomy slugs (e.g. \"pa_frame-size\") that always show their picker, even with only one choice. Empty (default) keeps today's single-variant suppression — every axis with fewer than 2 terms is skipped."
+		},
+		"pickerBandAxis": {
+			"type": "string",
+			"default": "",
+			"description": "Which axis's picker shows a band letter instead of its terms' raw names (e.g. Small/Medium/Large size bands). The taxonomy slug (e.g. \"pa_frame-size\"). Empty (default) = off, every picker shows its terms' own labels unchanged."
+		},
+		"pickerBandScale": {
+			"type": "string",
+			"default": "",
+			"description": "Ordered band scale for pickerBandAxis, as comma-separated \"Label:max\" pairs (e.g. \"S:52,M:57,L\" — the last entry may omit \":max\" for an open-ended top band). Each of the axis's OWN numeric term names is matched against these bands in order; two of a product's own sizes landing in the same band each get the letter plus their own number (\"M 53\", \"M 56\") so the tiles stay distinct. Empty (default) = off."
+		},
+		"pickerLabelLinkAxis": {
+			"type": "string",
+			"default": "",
+			"description": "Which axis's picker label gets a text link at its right (e.g. \"Which size am I?\" beside Size). The taxonomy slug (e.g. \"pa_frame-size\"). Empty (default) = off. Mutually exclusive with pickerShowSelectedValue on the SAME axis — the link wins for that one axis; every other axis is unaffected."
+		},
+		"pickerLabelLinkText": {
+			"type": "string",
+			"default": "",
+			"description": "The link's wording (e.g. \"Which size am I?\"). Empty = no link, even when pickerLabelLinkAxis is set."
+		},
+		"pickerLabelLinkUrl": {
+			"type": "string",
+			"default": "",
+			"description": "The link's destination (e.g. \"#size-guide\"). Empty = no link, even when pickerLabelLinkAxis is set."
+		},
+		"pickerVariationSwatch": {
+			"type": "boolean",
+			"default": true,
+			"description": "A colour/swatch axis tile shows the matching variation's OWN photo when that variation has its own featured image; otherwise the term-meta swatch tile (colour chip or the term's own shared image). On by default; off keeps every tile as the term-meta swatch."
+		},
+		"rrpShowPrice": {
+			"type": "boolean",
+			"default": false,
+			"description": "When the RRP saving applies, also show \"RRP <amount>\" in the price row with the amount struck through (plus a visually-hidden \"Recommended retail price\" label for screen readers)."
+		},
+		"rrpSavingPrefix": {
+			"type": "string",
+			"default": "Save",
+			"description": "The words before the amount in the RRP saving pill, e.g. \"You save\" gives \"You save £32\". Also used with the percentage format (\"You save 19%\")."
+		},
+		"gallerySavingBadge": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show a saving badge on the gallery's main photo, using the SAME rrpMetaKey saving as the price row's pill. Hidden automatically when there is no genuine saving. Off (default) — no badge, byte-identical to today."
+		},
+		"gallerySavingBadgeFormat": {
+			"type": "string",
+			"default": "Save {amount} off RRP",
+			"description": "The badge's wording. {amount} is replaced with the formatted saving (e.g. \"£51\"). Empty or missing the {amount} token falls back to the default wording."
+		},
+		"gallerySavingBadgePosition": {
+			"type": "string",
+			"default": "top-right",
+			"enum": [
+				"top-right",
+				"top-left",
+				"bottom-right",
+				"bottom-left"
+			],
+			"description": "Where the badge sits on the main photo."
+		},
+		"galleryStickerText": {
+			"type": "string",
+			"default": "",
+			"description": "A short phrase (for example \"baked with love\") printed on a corner of the main photo, inside the gallery column, so it stays on the photo while the column is pinned. Empty = no sticker, byte-identical to today."
+		},
+		"galleryStickerPosition": {
+			"type": "string",
+			"enum": [
+				"top-left",
+				"top-right",
+				"bottom-left",
+				"bottom-right"
+			],
+			"default": "bottom-right",
+			"description": "Which corner of the main photo the sticker sits on."
+		},
+		"galleryStickerOffsetX": {
+			"type": "string",
+			"default": "",
+			"description": "Distance from the photo's side edge, as a CSS length. Empty = 14px."
+		},
+		"galleryStickerOffsetY": {
+			"type": "string",
+			"default": "",
+			"description": "Distance from the photo's top or bottom edge, as a CSS length. Empty = 14px."
+		},
+		"galleryStickerBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Fill of the sticker (palette slug or colour). Empty keeps the stylesheet's text-colour fill."
+		},
+		"galleryStickerTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of the sticker (palette slug or colour). Empty keeps the stylesheet's inverse text colour."
+		},
+		"galleryStickerBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width of the sticker, a {top, right, bottom, left} box of CSS lengths, or per-device {desktop, tablet, mobile} boxes. Empty = no border."
+		},
+		"galleryStickerBorderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid",
+			"description": "Border style of the sticker. Read only when a width is set."
+		},
+		"galleryStickerBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour of the sticker (palette slug or colour)."
+		},
+		"galleryStickerShape": {
+			"type": "string",
+			"enum": [
+				"rounded",
+				"pill",
+				"tag"
+			],
+			"default": "rounded",
+			"description": "The sticker's outline: rounded corners (see galleryStickerRadius), a pill, or a tag with a notched end."
+		},
+		"galleryStickerRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Corner radius of the rounded shape as a CSS length. Empty = square corners."
+		},
+		"galleryStickerRotation": {
+			"type": "number",
+			"default": 0,
+			"description": "Tilt of the sticker in degrees (negative tilts left). 0 = upright."
+		},
+		"galleryStickerPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Padding of the sticker, a {top, right, bottom, left} box. An unset side keeps the stylesheet's 8px 12px."
+		},
+		"galleryStickerDecorative": {
+			"type": "boolean",
+			"default": true,
+			"description": "On = the sticker is hidden from screen readers (decoration). Off = it is read as text."
+		},
+		"addToCartShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Resting shadow of the add-to-cart button (shadow preset or value). Empty = none."
+		},
+		"addToCartShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the add-to-cart button's resting shadow (palette slug or colour)."
+		},
+		"addToCartShadowHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover shadow shape of the add-to-cart button. Empty = the automatic lift of the resting shadow."
+		},
+		"addToCartShadowColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the add-to-cart button's hover shadow (palette slug or colour)."
+		},
+		"addToCartShadowLiftOnHover": {
+			"type": "boolean",
+			"default": true,
+			"description": "With a resting shadow set and no hover shadow, the hover shadow grows by the automatic lift. Off keeps the resting shadow on hover."
+		},
+		"addToCartStyle": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"primary",
+				"secondary",
+				"outline"
+			],
+			"description": "Add-to-cart button style preset (matches the SGS button presets). Empty = today's accent-colour look."
+		},
+		"addToCartShowPrice": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show the current price at the right end of the add-to-cart button (label on the left, price on the right)."
+		},
+		"addToCartTextTransform": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"description": "Letter case for the add-to-cart button's label. Empty = today's look."
+		},
+		"addToCartLetterSpacing": {
+			"type": "object",
+			"default": {},
+			"description": "Letter spacing for the add-to-cart button's label."
+		},
+		"addToCartLetterSpacingUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"addToCartFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Font weight for the add-to-cart button's label. Empty = today's 700 (style.css default)."
+		},
+		"addToCartFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Font size for the add-to-cart button's label."
+		},
+		"addToCartFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"addToCartBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour for the add-to-cart button (a palette slug or raw CSS colour, resolved via sgs_colour_value()). Empty = the active addToCartStyle preset's own border (today's look). An outline preset may carry a translucent border; this override lets a different add-to-cart instance (e.g. a white-fill button beside it) paint a solid border instead, without changing the shared preset for every other outline button on the site."
+		},
+		"addToCartBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Background colour for the add-to-cart button (a palette slug or raw CSS colour, resolved via sgs_colour_value()). Empty = the active addToCartStyle preset's own background (today's look)."
+		},
+		"addToCartMinHeight": {
+			"type": "string",
+			"default": "",
+			"description": "Minimum height for the add-to-cart button, as a CSS length (e.g. \"56px\"). Empty = today's 48px (style.css default)."
+		},
+		"addToCartShowIcon": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the cart icon inside the add-to-cart button. Off hides the icon, keeping the label (and price, when addToCartShowPrice is on)."
+		},
+		"addToCartHoverLift": {
+			"type": "boolean",
+			"default": false,
+			"description": "Forces the add-to-cart button to lift on hover, using the site-wide button hover lift and timing (2px over 0.18s when the site sets none). Off = the button follows the site-wide button hover only."
+		},
+		"stockInStockLabel": {
+			"type": "string",
+			"default": "",
+			"description": "Replaces the in-stock label text only (e.g. \"In stock — dispatched next working day\"). Empty = WooCommerce's own availability text. Low-stock and out-of-stock wording are unchanged."
+		},
+		"stockLinePosition": {
+			"type": "string",
+			"default": "below",
+			"enum": [
+				"below",
+				"above"
+			],
+			"description": "Where the stock line renders relative to the axis pickers. 'below' (default, today's position) — after the pickers. 'above' — between the price row and the pickers."
+		},
+		"stockLineHairline": {
+			"type": "boolean",
+			"default": false,
+			"description": "Only applies when stockLinePosition is 'above'. Adds a 1px hairline rule (in the border colour) between the price row and the stock line."
+		},
+		"stockLineHairlineMargin": {
+			"type": "object",
+			"description": "Space above and below the stock-line hairline, a {top, bottom} box. An unset side keeps the stylesheet's 8px."
+		},
+		"notifyHeadingFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyHeadingFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"notifyHeadingFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyHeadingFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"notifyHeadingFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyHeadingTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"notifyHeadingTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"notifyHeadingLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyHeadingLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyHeadingLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyHeadingLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyHeadingTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyHeadingTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"notifyHeadingTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyHeadingTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyHeadingTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyHeadingTextColumns": {
+			"type": "number"
+		},
+		"notifyHeadingWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"notifyLabelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"notifyLabelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyLabelFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"notifyLabelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyLabelTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"notifyLabelTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"notifyLabelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyLabelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyLabelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyLabelTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyLabelTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"notifyLabelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyLabelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyLabelTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyLabelTextColumns": {
+			"type": "number"
+		},
+		"notifyLabelWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"notifyInputFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyInputFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"notifyInputFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyInputFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"notifyInputFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyInputTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"notifyInputTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"notifyInputLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyInputLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyInputLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyInputLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyInputTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyInputTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"notifyInputTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyInputTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyInputTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyInputTextColumns": {
+			"type": "number"
+		},
+		"notifyInputWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"notifySubmitFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"notifySubmitFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"notifySubmitFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"notifySubmitFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"notifySubmitFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"notifySubmitTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"notifySubmitTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"notifySubmitLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"notifySubmitLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifySubmitLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"notifySubmitLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifySubmitTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"notifySubmitTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"notifySubmitTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"notifySubmitTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"notifySubmitTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"notifySubmitTextColumns": {
+			"type": "number"
+		},
+		"notifySubmitWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"notifyStatusFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyStatusFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"notifyStatusFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyStatusFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"notifyStatusFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyStatusTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"notifyStatusTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"notifyStatusLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyStatusLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyStatusLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyStatusLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyStatusTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyStatusTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"notifyStatusTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyStatusTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyStatusTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyStatusTextColumns": {
+			"type": "number"
+		},
+		"notifyStatusWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"savingBadgeFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"savingBadgeFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"savingBadgeFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"savingBadgeTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"savingBadgeLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"savingBadgeLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"savingBadgeTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"savingBadgeTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeTextColumns": {
+			"type": "number"
+		},
+		"savingBadgeWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"stockFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"stockFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"stockFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"stockFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"stockFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"stockTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"stockTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"stockLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"stockLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"stockLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"stockLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"stockTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"stockTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"stockTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"stockTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"stockTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"stockTextColumns": {
+			"type": "number"
+		},
+		"stockWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"guidedMeterFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedMeterFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"guidedMeterFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"guidedMeterFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"guidedMeterFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"guidedMeterTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"guidedMeterTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"guidedMeterLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedMeterLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"guidedMeterLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedMeterLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"guidedMeterTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedMeterTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"guidedMeterTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedMeterTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"guidedMeterTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"guidedMeterTextColumns": {
+			"type": "number"
+		},
+		"guidedMeterWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"guidedGroupTitleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedGroupTitleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"guidedGroupTitleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"guidedGroupTitleFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"guidedGroupTitleFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"guidedGroupTitleTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"guidedGroupTitleTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"guidedGroupTitleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedGroupTitleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"guidedGroupTitleLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedGroupTitleLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"guidedGroupTitleTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedGroupTitleTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"guidedGroupTitleTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedGroupTitleTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"guidedGroupTitleTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"guidedGroupTitleTextColumns": {
+			"type": "number"
+		},
+		"guidedGroupTitleWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"rrpChipFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpChipFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"rrpChipFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpChipFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"rrpChipFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpChipTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"rrpChipTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"rrpChipLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpChipLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"rrpChipLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpChipLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"rrpPillPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the RRP saving pill { top, right, bottom, left }. Rendered via sgs_label_box_css_rule(). Empty = the stylesheet default (0.35em 0.6em)."
+		},
+		"pickerLabelLinkColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of the picker-label link (e.g. \"Which size am I?\"). Theme token slug or raw CSS colour. Empty = the muted text colour."
+		},
+		"pickerLabelLinkUnderlineColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the 1px line under the picker-label link (its bottom border). Empty = the theme border colour."
+		},
+		"pickerLabelLinkPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the picker-label link { top, right, bottom, left }. Empty = 1px at the bottom only."
+		},
+		"pickerPillFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Font size for the option pills of every non-tile picker (e.g. the size pills), forwarded to sgs/option-picker's pillFontSize. Empty = the option picker's own size."
+		},
+		"pickerPillFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pickerPillBorderWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Border width of every option pill and tile in the pickers (CSS length, e.g. \"1px\"), forwarded to sgs/option-picker's pillBorderWidth. Empty = the option picker's own 2px."
+		},
+		"pickerPillSelectedTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of a selected option pill or tile in the pickers, forwarded to sgs/option-picker's pillSelectedTextColour. Empty = the option picker default."
+		},
+		"groupStyles": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: the look of each option group, keyed by attribute (for example pa_flavour). Each value is one of the option picker's own styles: filled, outlined, ghost or tile. A group not listed uses the picker style."
+		},
+		"summaryText": {
+			"type": "string",
+			"default": "Your {pack}: {split}",
+			"description": "Pick a set only: the one-line summary under the preview. Tokens: {pack}, {pack_label}, {variation}, {split}, {picks}, {count}. Unknown tokens are removed."
+		},
+		"previewImageId": {
+			"type": "integer",
+			"default": 0,
+			"description": "Pick a set only: the media-library image the live preview draws on (for example a tray or a vest). 0 = a plain tinted shape."
+		},
+		"previewLayerAxis": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: the variation attribute (for example pa_chip) whose chosen option's colour is scattered over the preview as small squares. Empty = none."
+		},
+		"showPriceRow": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the price row (current price, sale price, saving and per-unit note) above the pickers. Off hides the whole row."
+		},
+		"pickerBoxBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: background of the box around the pickers. A palette slug or a hex colour. Empty = no fill."
+		},
+		"pickerBoxBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: border colour of the box around the pickers. A palette slug or a hex colour."
+		},
+		"pickerBoxBorderWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: border width of the box around the pickers (CSS length, for example 2px). Empty = no border."
+		},
+		"pickerBoxRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: corner radius of the box around the pickers (CSS length)."
+		},
+		"pickerBoxPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: padding inside the box around the pickers, per device {desktop, tablet, mobile}, each a top/right/bottom/left box. Empty keeps the box default."
+		},
+		"pickerBoxGap": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: space between the pick groups inside the box, per device {desktop, tablet, mobile}, each a CSS length such as 20px. Empty keeps the stylesheet gap."
+		},
+		"pickerPillBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: resting fill of every option pill and tile (the pack tiles, base and chip pills and the flavour pills), forwarded to sgs/option-picker as pillBgColour. A palette slug or a hex colour. Empty = each picker's own fill."
+		},
+		"pickerPillBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: resting border colour of every option pill and tile, forwarded to sgs/option-picker as pillBorderColour."
+		},
+		"pickerPillFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: font weight of every option pill and tile text (a number such as 700), forwarded to sgs/option-picker as pillFontWeight. Empty = each picker's own weight."
+		},
+		"pickerPillSelectedShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: shadow of a selected option pill or tile as a shape (X Y blur spread, for example 3px 3px 0 0), forwarded to sgs/option-picker as pillSelectedShadow. Empty = no shadow."
+		},
+		"pickerPillSelectedShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: colour of the selected option shadow (palette slug or colour)."
+		},
+		"pickerPillSelectedOffsetX": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: horizontal shift of a selected option (CSS length, for example -2px)."
+		},
+		"pickerPillSelectedOffsetY": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: vertical shift of a selected option (CSS length, for example -2px)."
+		},
+		"pickerPillHoverOffsetX": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: horizontal shift of an unselected option while the pointer is over it (CSS length, for example -2px), forwarded to sgs/option-picker as pillHoverOffsetX and printed for the flavour pills."
+		},
+		"pickerPillHoverOffsetY": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: vertical shift of an option on hover (CSS length, for example -2px)."
+		},
+		"pickerPillHoverStill": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pick a set only: options keep their fill and text colour on hover (no brightening); only the hover shift moves them. Off by default."
+		},
+		"pickerLabelFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Font weight of each group heading, forwarded to sgs/option-picker as labelFontWeight and also applied to the pick-several group title. Empty = the stylesheet weight."
+		},
+		"pickGroupHeadings": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: per-group heading text and hint, keyed by the attribute key, for example {\"pa_size\":{\"text\":\"How many\",\"hint\":\"\"}}. Empty text keeps the WooCommerce attribute name."
+		},
+		"pickGroupNumbers": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pick a set only: number the group headings in order (1 · How many, 2 · Base). Off by default."
+		},
+		"pickerHintColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: colour of the hint beside a group heading (palette slug or colour)."
+		},
+		"pickerDotShape": {
+			"type": "string",
+			"enum": [
+				"",
+				"round",
+				"square"
+			],
+			"default": "",
+			"description": "Pick a set only: shape of the colour dots in the pickers (round or square), forwarded to sgs/option-picker as swatchShape. Empty keeps the stylesheet shape."
+		},
+		"pickerDotSize": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: size of the colour dot in an option picker (CSS length such as 20px), forwarded as swatchSize."
+		},
+		"pickerGroupDotSize": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: size of the colour dot in the pick-several groups (CSS length such as 22px)."
+		},
+		"pickerDotRingThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: width of the ring around every colour dot (CSS length such as 2px)."
+		},
+		"pickerDotRingColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: colour of the ring around every colour dot (palette slug or colour)."
+		},
+		"pickerDotTickInside": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pick a set only: draw the selected tick inside the colour dot instead of the separate tick. Off by default."
+		},
+		"pickerDotTickColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: colour of the tick inside the colour dot (palette slug or colour). Empty = white."
+		},
+		"pickTilePriceLine": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pick a set only: show each pack tile's total price (for example £9.50) between the number and the each-price. Off by default."
+		},
+		"pickTilePriceWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: font weight of the price line on a pack tile (a number such as 700)."
+		},
+		"pickTileNumberWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: font weight of the number on a pack tile (a number such as 400)."
+		},
+		"pickTileColumns": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: number of columns of pack tiles per device {desktop, tablet, mobile}, each a whole number from 1 to 12. Empty keeps the automatic columns."
+		},
+		"pickSummaryFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"pickSummaryFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pickSummaryFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"pickSummaryFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"pickSummaryFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"pickSummaryTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"pickSummaryTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"pickSummaryLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"pickSummaryLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"pickSummaryLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"pickSummaryLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"pickSummaryTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"pickSummaryTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"pickSummaryTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pickSummaryTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pickSummaryTextColumns": {
+			"type": "number"
+		},
+		"pickSummaryWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"pickHideGallery": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pick a set only: hide the product photo gallery so the picker, preview and summary fill the width. Off by default."
+		},
+		"pickHidePreview": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pick a set only: hide the preview picture (image and flavour dots). The summary line and per-unit line then sit under the pick groups at full width. Off by default."
+		},
+		"previewBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: background of the live preview box. A palette slug or a hex colour."
+		},
+		"previewBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: border colour of the live preview box."
+		},
+		"previewBorderWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: border width of the live preview box (CSS length)."
+		},
+		"previewRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: corner radius of the live preview box (CSS length)."
+		},
+		"previewPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: padding inside the live preview box, per device ({desktop, tablet, mobile} boxes)."
+		},
+		"pickSummaryColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: colour of the one-line summary under the preview."
+		},
+		"pickSelectedBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: background of a selected option in every group, pick-several and priced."
+		},
+		"pickSelectedBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: border colour of a selected option in every group."
+		},
+		"pickOptionRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: corner radius of the pick-several option pills (CSS length, for example 999px)."
+		},
+		"pickOptionPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: padding inside each pick-several option pill, per device."
+		},
+		"pickOptionGap": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: space between the pick-several option pills (CSS length)."
+		},
+		"pickTilePadding": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: padding inside each priced option tile (for example the pack sizes), per device."
+		},
+		"pickTileGap": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: space between the priced option tiles (CSS length)."
+		},
+		"pickPricedRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: corner radius of the pill-style priced options (for example base and chips; not the pack tiles), CSS length such as 999px. Empty keeps the option picker's radius."
+		},
+		"pickPricedPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: padding inside each pill-style priced option (not the pack tiles), per device."
+		},
+		"pickPricedGap": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: space between the pill-style priced options (CSS length, for example 8px)."
+		},
+		"pickPricedFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: text size of the pill-style priced options (not the pack tiles), per device {desktop, tablet, mobile}, each a CSS length such as 16px."
+		},
+		"pickPricedLayout": {
+			"type": "string",
+			"enum": [
+				"",
+				"columns",
+				"auto"
+			],
+			"default": "",
+			"description": "Pick a set only: how the pill-style priced options sit. Empty or columns keeps the fixed grid of columns; auto lets each pill size to its own text and wrap in a row."
+		},
+		"pickPricedMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: minimum height of the pill-style priced options (not the pack tiles), per device {desktop, tablet, mobile}, each a CSS length such as 48px. Empty keeps the pill's own height."
+		},
+		"pickBadgeBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: fill of the pack tile's term badge (for example Most popular) and of a pick-several option badge (palette slug or colour). Empty keeps the stylesheet's primary fill."
+		},
+		"pickBadgeTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: text colour of the term badge. Empty picks a colour that reads 4.5:1 on the badge fill whenever the stylesheet's own text colour does not."
+		},
+		"pickTileNumberSize": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: text size of the number on a pack tile (for example the 20 in a pack of 20), per device {desktop, tablet, mobile}, each a CSS length such as 26px. Empty keeps today's single tile size."
+		},
+		"pickTilePriceSize": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: text size of the price line on a pack tile, per device {desktop, tablet, mobile}, each a CSS length such as 14px. Empty keeps today's single tile size."
+		},
+		"pickTileEachSize": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: text size of the each-line (for example the price per cookie) on a pack tile, per device {desktop, tablet, mobile}, each a CSS length such as 12px. Empty keeps today's single tile size."
+		},
+		"pickSelectedTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: text colour on a selected option in every group, including the pack tile's small lines. Empty picks black or white, whichever reads best on the selected fill (4.5:1) when a selected fill is set."
+		},
+		"mainPhotoBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Ground colour behind the main product photo (palette slug or colour). Empty keeps the stylesheet's surface colour."
+		},
+		"mainPhotoBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width of the main photo box, a {top, right, bottom, left} box of CSS lengths, or per-device {desktop, tablet, mobile} boxes. Empty keeps the stylesheet's 1px."
+		},
+		"mainPhotoBorderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid",
+			"description": "Border style of the main photo box. Read only when a width is set."
+		},
+		"mainPhotoBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour of the main photo box (palette slug or colour). Empty keeps the stylesheet's faint border."
+		},
+		"mainPhotoRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Corner radius of the main photo box as a CSS length. Prints as --sgs-buybox-img-radius, so the gallery thumbnails follow it unless they set their own. Empty keeps 8px."
+		},
+		"mainPhotoShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Box shadow of the main photo box (shadow preset or value)."
+		},
+		"mainPhotoShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the main photo box shadow (palette slug or colour)."
+		},
+		"rrpPillRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Corner radius of the RRP saving pill as a CSS length. Empty keeps the stylesheet's 4px."
+		},
+		"priceRowGap": {
+			"type": "string",
+			"default": "",
+			"description": "CSS length of the gap between the price, RRP and saving pill. Empty keeps 8px."
+		},
+		"addToCartPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Padding of the add-to-cart button, a {top, right, bottom, left} box. An unset side keeps the stylesheet's 12px 24px."
+		},
+		"rrpPriceFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpPriceFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"rrpPriceFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpPriceFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"rrpPriceFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpPriceTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"rrpPriceTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"rrpPriceLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpPriceLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"rrpPriceLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpPriceLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"rrpPriceTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpPriceTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"rrpPriceTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpPriceTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpPriceTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpPriceTextColumns": {
+			"type": "number"
+		},
+		"rrpPriceWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"galleryStickerFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"galleryStickerFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"galleryStickerFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"galleryStickerFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"galleryStickerFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"galleryStickerTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"galleryStickerTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"galleryStickerLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"galleryStickerLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"galleryStickerLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"galleryStickerLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"galleryStickerTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"galleryStickerTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"galleryStickerTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"galleryStickerTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"galleryStickerTextColumns": {
+			"type": "number"
+		},
+		"galleryStickerWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"viewScriptModule": [
+		"file:./notify-view.js",
+		"file:./guided.js",
+		"file:./sticky-bar.js",
+		"file:./configurator-view.js"
+	]
+}

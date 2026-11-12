@@ -1328,9 +1328,11 @@ class SGS_Motion_Registry {
 	 * gates every Tier G effect; this file touches neither.
 	 *
 	 * Do NOT make this registry skip an enqueue because a disable flag or an
-	 * off list is present: they only ever disable a TABLET or MOBILE tier, never
-	 * desktop, so the effect can always still fire at ≥1024px regardless of
-	 * how the flags are set. Enqueue must stay keyed purely on whether
+	 * off list is present: the flags only ever disable a TABLET or MOBILE tier,
+	 * and `data-sgs-fx-off-desktop` (written by `Sgs_Motion_Device_Scope` when a
+	 * media slot shows a kind the effect does not fit on desktop) names a
+	 * desktop-off effect only while the same element can carry it on another
+	 * device, so the script may still be needed. Enqueue must stay keyed purely on whether
 	 * `data-sgs-fx` is present at all — exactly what `extract_effects()`
 	 * below already does — or a desktop visitor would silently get no
 	 * script for an effect the block genuinely still needs there.

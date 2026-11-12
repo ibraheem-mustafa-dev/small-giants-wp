@@ -2,6 +2,33 @@
 	"_doc": "attr-classification-overrides.json — the hand-authored, reseed-durable OVERRIDE layer for block_attributes classification corrections (role/derived_selector/css_property/css_element/css_state/css_tier/box_family/etc). Lifted verbatim from sgs-update-v2.py ATTR_CLASSIFICATION_OVERRIDES (Bean request, 2026-07-21). This is the single source of truth Bean asked for — sgs-update-v2.py now READS this file rather than declaring the dict inline. Applied AFTER the derived classifier layer (css-property-classifications.json) as Stage 1 sub-step C, so an override here wins on any field conflict with the derived layer. Records here exist to correct genuine mis-derivations OR to record cases where what the code DOES and what it MEANS differ (e.g. sgs/tabs tabIndicatorColour delivers via box-shadow but is a COLOUR value type) — never to correct plain accuracy bugs in the classifier, which should be fixed at the classifier itself. Two entries added 2026-07-21 for the value-type-vs-delivery-property fix: sgs/tabs tabIndicatorColour/tabActiveIndicatorColour resolve via the classifier chain-walk to box-shadow (render.php:84-100 colour_props array -> style.css:120 inset box-shadow underline) — accurate but unusable for a consumer picking a control type. The manifest (tabs/block.json supports.sgs.elements.tab.attrMap) already declares these as css:border-color (its own documented rationale: the active variant renders via [aria-selected='true'], not CSS :active, and drives the underline/box-shadow INDICATOR colour). css_property overridden here to border-color to match that already-established, coordinator-approved manifest vocabulary — a colour-family property a consumer control-picker can route to a colour picker, not a shadow control. 18 entries added 2026-07-22 (Spec 31 coupled UN-EXCLUDE + HOVER-LIFT): scaleHover (10 blocks, excl. sgs/post-grid whose scaleHover is a per-item css_element=card derived-selector attr with a multi-property css_property, out of this base-domain resolver channel) / grayscaleHover (4 blocks) / imageZoomHover (4 blocks incl. sgs/post-grid, whose imageZoomHover IS root-scoped) now carry css_property=transform|filter + css_state=hover — these attrs have NO un-suffixed base sibling (the effect only ever exists as a hover interaction), so the new converter.db.db_lookup.attr_for_state_property direct-lookup channel resolves them by (css_property, css_state) rather than the base+Hover-suffix-append convention tabIndicatorColour-style pairs use. 1 entry added 2026-08-02 (property_suffixes Rating/Speed suffix-role fix, migrations/2026-08-01-rating-speed-suffix-role.py): the property_suffixes 'Rating' suffix was reclassified from the wrong 'number-css-px' to the common case 'behaviour' (it is right for 3 of the 4 attrs it matches: sgs/star-rating.maxRating, sgs/google-reviews.minRating, sgs/testimonial.showRating are all configuration, not content). sgs/star-rating.rating is the one genuine exception — the star/numeric rating VALUE ITSELF, a content-bearing display value matching the existing 'rating' role's own exemplar (sgs/testimonial.ratingStars, registered by migrations/2026-06-21-register-rating-role.py). Declared here as a single-attr override rather than bending the suffix rule to fit the minority case, per this layer's job (Layer 3, applied LAST, wins over the suffix-derived role on any conflict) — see check_css_property_reseed.py's docstring for the layering contract.",
 	"entries": [
 		{
+			"slug": "sgs/card-grid",
+			"attr": "imageRatio",
+			"fields": {
+				"role": "layout",
+				"tier_shape": "tier_object"
+			},
+			"_reason": "2026-11-12 (Spec 49 Stage B): the item set's block-level image ratio per device (section 8.3), a tier object of CSS aspect-ratio values the shared item renderer prints on each item's picture box; the block declares it itself, so the media generator writes no entry for it."
+		},
+		{
+			"slug": "sgs/post-grid",
+			"attr": "imageRatio",
+			"fields": {
+				"role": "layout",
+				"tier_shape": "tier_object"
+			},
+			"_reason": "2026-11-12 (Spec 49 Stage B): the item set's block-level image ratio per device (section 8.3), a tier object of CSS aspect-ratio values the shared item renderer prints on each item's picture box; the block declares it itself, so the media generator writes no entry for it."
+		},
+		{
+			"slug": "sgs/gallery",
+			"attr": "itemRatio",
+			"fields": {
+				"role": "layout",
+				"tier_shape": "tier_object"
+			},
+			"_reason": "2026-11-12 (Spec 49 Stage B): the item set's block-level image ratio per device (section 8.3), a tier object of CSS aspect-ratio values the shared item renderer prints on each item's picture box; the block declares it itself, so the media generator writes no entry for it."
+		},
+		{
 			"slug": "sgs/account",
 			"attr": "ordersNumberPrefix",
 			"fields": {
@@ -113,13 +140,6 @@
 		{
 			"slug": "sgs/heading",
 			"attr": "level",
-			"fields": {
-				"role": "tag-identity"
-			}
-		},
-		{
-			"slug": "sgs/media",
-			"attr": "mediaType",
 			"fields": {
 				"role": "tag-identity"
 			}
@@ -644,14 +664,6 @@
 			}
 		},
 		{
-			"slug": "sgs/team-member",
-			"attr": "photo",
-			"fields": {
-				"role": "image-object",
-				"derived_selector": ".sgs-team-member__photo"
-			}
-		},
-		{
 			"slug": "sgs/testimonial",
 			"attr": "quoteFontStyle",
 			"fields": {
@@ -693,30 +705,6 @@
 				"derived_selector": ".sgs-testimonial__rating svg",
 				"css_property": "height,width",
 				"_why": "ratingSize sets the star SVGs' width and height attributes (testimonial/render.php), not font-size."
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "avatarMedia",
-			"fields": {
-				"role": "image-object",
-				"derived_selector": ".sgs-testimonial__avatar"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "orgLogo",
-			"fields": {
-				"role": "image-object",
-				"derived_selector": ".sgs-testimonial__logo"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "workMedia",
-			"fields": {
-				"role": "image-object",
-				"derived_selector": ".sgs-testimonial__work"
 			}
 		},
 		{
@@ -1049,14 +1037,6 @@
 			}
 		},
 		{
-			"slug": "sgs/media",
-			"attr": "displayWidth",
-			"fields": {
-				"role": "behaviour"
-			},
-			"_reason": "2026-11-04: the width the image is drawn at per device, read by sgs_media_cover_crop_plan to print the `sizes` attribute; it paints no CSS, so the name-derived layout role is wrong."
-		},
-		{
 			"slug": "sgs/timeline",
 			"attr": "contentLayout",
 			"fields": {
@@ -1101,22 +1081,6 @@
 			"fields": {
 				"role": "image-alt",
 				"alt_companion_attr": "image"
-			}
-		},
-		{
-			"slug": "sgs/media",
-			"attr": "imageAlt",
-			"fields": {
-				"role": "image-alt",
-				"alt_companion_attr": "imageUrl"
-			}
-		},
-		{
-			"slug": "sgs/decorative-image",
-			"attr": "imageAlt",
-			"fields": {
-				"role": "image-alt",
-				"alt_companion_attr": "imageUrl"
 			}
 		},
 		{
@@ -1334,38 +1298,6 @@
 			}
 		},
 		{
-			"slug": "sgs/card-grid",
-			"attr": "grayscaleHover",
-			"fields": {
-				"css_property": "filter",
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/gallery",
-			"attr": "grayscaleHover",
-			"fields": {
-				"css_property": "filter",
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/info-box",
-			"attr": "grayscaleHover",
-			"fields": {
-				"css_property": "filter",
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/team-member",
-			"attr": "grayscaleHover",
-			"fields": {
-				"css_property": "filter",
-				"css_state": "hover"
-			}
-		},
-		{
 			"slug": "sgs/quote",
 			"attr": "backgroundColourHover",
 			"fields": {
@@ -1443,30 +1375,6 @@
 			"attr": "step",
 			"fields": {
 				"canonical_slot": null
-			}
-		},
-		{
-			"slug": "sgs/responsive-logo",
-			"attr": "logoUrl",
-			"fields": {
-				"role": "image-object",
-				"_note": "The string image attr `alt` names via alt_companion_attr. Must be role='image-object' AND attr_type='string' together — walk.py:295 requires both before it will capture alt text."
-			}
-		},
-		{
-			"slug": "sgs/before-after",
-			"attr": "beforeVideoAlt",
-			"fields": {
-				"role": "a11y-text",
-				"_note": "2026-08-05: role='a11y-text', NOT 'image-alt'. media-render.php:138 reads `beforeVideoAlt` and media-render.php:183-188 emits it as aria-label= on the <video> (with a translated fallback) -- there is no image companion for it to name, and the a11y-text role description explicitly rejects image-alt for an aria-label with no companion image. a11y-text is classification='styling-behaviour', so the row is excluded from the content walk. HAND-DECLARED DELIBERATELY: root-caused 2026-08-05 as IRREDUCIBLE today -- the content-role fingerprint DOES structurally propose a11y-text for this shape, but it is a read-only proposer and its write step is not built or wired into sgs-update-v2.py. Retire this entry when that writer ships. The sibling image alts need NO entry: the companion tier (detector5) derives them from source."
-			}
-		},
-		{
-			"slug": "sgs/before-after",
-			"attr": "afterVideoAlt",
-			"fields": {
-				"role": "a11y-text",
-				"_note": "2026-08-05: role='a11y-text', NOT 'image-alt'. media-render.php:138 reads `afterVideoAlt` and media-render.php:183-188 emits it as aria-label= on the <video> (with a translated fallback) -- there is no image companion for it to name, and the a11y-text role description explicitly rejects image-alt for an aria-label with no companion image. a11y-text is classification='styling-behaviour', so the row is excluded from the content walk. HAND-DECLARED DELIBERATELY: root-caused 2026-08-05 as IRREDUCIBLE today -- the content-role fingerprint DOES structurally propose a11y-text for this shape, but it is a read-only proposer and its write step is not built or wired into sgs-update-v2.py. Retire this entry when that writer ships. The sibling image alts need NO entry: the companion tier (detector5) derives them from source."
 			}
 		},
 		{
@@ -2280,13 +2188,6 @@
 		},
 		{
 			"slug": "sgs/decorative-image",
-			"attr": "decorMedia",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/decorative-image",
 			"attr": "rotation",
 			"fields": {
 				"role": "styling"
@@ -2340,26 +2241,6 @@
 			"fields": {
 				"role": "content"
 			}
-		},
-		{
-			"slug": "sgs/team-member",
-			"attr": "photoTablet",
-			"fields": {
-				"css_property": null,
-				"css_tier": null,
-				"css_layer": null
-			},
-			"_why": "MIS-DERIVED css_property cleared 2026-08-29. photoTablet is an OBJECT-typed media attribute (a WP media object: url/id/alt), not a CSS length — its own base sibling `photo` correctly carries css_property=NULL, so the row was self-inconsistent. ROOT CAUSE, proven not guessed: the derived layer (behavioural-analyser/css-property-classifications.json) claims css_property='max-width' + css_tier='tablet' because render.php:264 emits `sprintf('<source media=\"(max-width:1023px)\" srcset=\"%s\"', ...)` — the classifier read the media-query CONDITION inside an HTML <source> element's `media` ATTRIBUTE as if it were a CSS property emission. The breakpoints prove the mechanism beyond doubt: photoTablet took tier `tablet` from `max-width:1023px` and photoMobile took tier `mobile` from `max-width:767px` (render.php:261), which are exactly this project's tablet/mobile device-tier breakpoints. The tiers are rendered as <picture><source media> alternates (render.php:255-266), i.e. an art-direction source swap; nothing here emits a max-width DECLARATION, and style.css contains no max-width rule for the photo at all. Class checked comprehensively: the fingerprint (css_property='max-width' AND css_tier IS NOT NULL) returns exactly these two rows across the whole DB, and of the three files emitting `<source media=` only this block's inline sprintf trips it (sgs/responsive-logo and includes/helpers-media.php route through the shared helper). Overridden rather than fixed at the classifier because the classifier fix — teaching the behavioural analyser that a `media` attribute is not a CSS emission — is a shared-analyser change with real blast radius for a 2-row defect; the root cause is recorded here so that fix can be made deliberately later."
-		},
-		{
-			"slug": "sgs/team-member",
-			"attr": "photoMobile",
-			"fields": {
-				"css_property": null,
-				"css_tier": null,
-				"css_layer": null
-			},
-			"_why": "MIS-DERIVED css_property cleared 2026-08-29 — the mobile twin of the sgs/team-member.photoTablet entry directly above; see that entry for the full root cause. Here the derived layer claims css_property='max-width' + css_tier='mobile', read out of `<source media=\"(max-width:767px)\">` at render.php:261. NOTE for anyone carrying forward the 2026-08-29 handoff prompt: that prompt stated `photoMobile` NO LONGER EXISTS in the DB, removed by the 2026-08-28 ghost-row prune. That is FALSE — re-verified against the live DB on 2026-08-29, both rows are present and both were mis-derived identically."
 		},
 		{
 			"slug": "sgs/testimonial",
@@ -2723,29 +2604,6 @@
 			"_why": "2026-09-06. See rowStripeColourAGradient's entry (added alongside this one) -- same alternating-row disambiguation, opposite parity."
 		},
 		{
-			"_why": "Check#12 roleguess: svgContent/svgContentMobile/svgContentTablet carry no canonical_slot at all, unlike their imageUrl*/videoUrl* siblings which already correctly mirror each other ('image'/'video'). There is no plain 'svg' row in slots.json (only 'background-svg') -- sgs/media's mediaType enum treats svg as a first-class peer of image/video, so the gap is the missing slot row, not a misclassification. New plain 'svg' slot added to slots.json alongside this fix. canonical_slot_aliases added 2026-09-06 (Check#12 Build 2 widening, same class as imageUrl/videoUrl below): 'background-svg' is the same SVG element under the art-direction background-media naming split (slots.json Task B) and previously fell through to insertion-order guessing among sgs/media's 6-role content-bearing set.",
-			"slug": "sgs/media",
-			"attr": "svgContent",
-			"fields": {
-				"canonical_slot": "svg",
-				"canonical_slot_aliases": "[\"background-svg\"]"
-			}
-		},
-		{
-			"slug": "sgs/media",
-			"attr": "svgContentTablet",
-			"fields": {
-				"canonical_slot": "svg"
-			}
-		},
-		{
-			"slug": "sgs/media",
-			"attr": "svgContentMobile",
-			"fields": {
-				"canonical_slot": "svg"
-			}
-		},
-		{
 			"_why": "Check#12 roleguess: sgs/button.label has no canonical_slot at all, so any of button/button-outline/button-primary/buttonSecondary falls to insertion-order guessing among {iconTitle, label, linkTarget, url}. label is the button's visible text and the only plausible target of the four; url/linkTarget are link-href, iconTitle is icon-only text. canonical_slot='button' covers the base variant slot; canonical_slot_aliases (Check#12 Build 2 multi-value mechanism) additionally names the 3 sibling style-variant slots -- button-outline/button-primary/buttonSecondary -- so all 4 button slots resolve to this same attr via the exact-match/CONFIRMED path rather than any fallback guess. The attr-name fallback (pass 2 in attr_name_for_slot_or_alias) still catches a literal '__label' token regardless.",
 			"slug": "sgs/button",
 			"attr": "label",
@@ -2755,41 +2613,10 @@
 			}
 		},
 		{
-			"_why": "bgVideoMobile/bgVideoTablet are art-direction tier siblings of bgVideo, which already correctly carries canonical_slot='background-video'. The siblings were left unset, so a tier-specific bg-video BEM token on this block falls to guessing instead of matching its own tier.",
-			"slug": "sgs/multi-button",
-			"attr": "bgVideoTablet",
-			"fields": {
-				"canonical_slot": "background-video"
-			}
-		},
-		{
-			"slug": "sgs/multi-button",
-			"attr": "bgVideoMobile",
-			"fields": {
-				"canonical_slot": "background-video"
-			}
-		},
-		{
 			"slug": "sgs/multi-button",
 			"attr": "bgSvgContent",
 			"fields": {
 				"canonical_slot": "background-svg"
-			}
-		},
-		{
-			"_why": "Check#12 Build 2 (canonical_slot multi-value widening, 2026-09-06). sgs/media.imageUrl's canonical_slot='image' already resolves the plain 'image' slot; the 'avatar' and 'background-image' slots are the same physical <img> element under a different draft naming convention and previously fell through to insertion-order guessing among imageUrl/videoUrl/svgContent/thumbnail (role='image-object' vs 'content' vs 'svg'). canonical_slot_aliases names both as extra slots this attr also answers to -- the exact-match/CONFIRMED path in both attr_name_for_slot_or_alias and _slot_extraction_role now resolves them directly rather than guessing.",
-			"slug": "sgs/media",
-			"attr": "imageUrl",
-			"fields": {
-				"canonical_slot_aliases": "[\"avatar\", \"background-image\"]"
-			}
-		},
-		{
-			"_why": "Check#12 Build 2 (canonical_slot multi-value widening, 2026-09-06). Same shape as sgs/media.imageUrl immediately above: videoUrl's canonical_slot='video' already resolves the plain 'video' slot; 'background-video' is the same video element under the art-direction background-media naming split (slots.json Task B) and previously fell through to insertion-order guessing.",
-			"slug": "sgs/media",
-			"attr": "videoUrl",
-			"fields": {
-				"canonical_slot_aliases": "[\"background-video\"]"
 			}
 		},
 		{
@@ -3652,22 +3479,6 @@
 				"role": "typography",
 				"css_property": "letter-spacing",
 				"css_element": "link"
-			}
-		},
-		{
-			"slug": "sgs/container",
-			"attr": "overlayGradient",
-			"fields": {
-				"css_property": "background-image",
-				"css_element": "overlay"
-			}
-		},
-		{
-			"slug": "sgs/container",
-			"attr": "overlayGradientHover",
-			"fields": {
-				"css_property": "background-image",
-				"css_element": "overlay"
 			}
 		},
 		{
@@ -6575,15 +6386,6 @@
 			}
 		},
 		{
-			"slug": "sgs/hero",
-			"attr": "splitMediaMinHeight",
-			"fields": {
-				"css_property": "min-height",
-				"css_layer": "GRID_AREA",
-				"_reason": "2026-09-21 seed fix. The derived classifier (extract-signatures.py, css-property-classifications.json) gave this attr css_property='max-width,min-height': a min-height control claiming max-width, which sgs/hero.splitMediaMaxWidth already owns. render.php (splitMediaMinHeight block) paints only min-height from this attr, and its max-width comes from splitMediaMaxWidth. With both claiming max-width the per-area resolver would have found two attrs for it, and with splitMediaMaxWidth gone a max-width would have landed in a min-height control."
-			}
-		},
-		{
 			"slug": "sgs/nav-bar-menu",
 			"attr": "itemMagnetStrength",
 			"fields": {
@@ -7281,62 +7083,6 @@
 			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
 		},
 		{
-			"slug": "sgs/container",
-			"attr": "backgroundOverlayBlendMode",
-			"fields": {
-				"css_property": "mix-blend-mode"
-			},
-			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "backgroundOverlayBlendMode",
-			"fields": {
-				"css_property": "mix-blend-mode"
-			},
-			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
-			"slug": "sgs/multi-button",
-			"attr": "backgroundOverlayBlendMode",
-			"fields": {
-				"css_property": "mix-blend-mode"
-			},
-			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
-			"slug": "sgs/physics-canvas",
-			"attr": "backgroundOverlayBlendMode",
-			"fields": {
-				"css_property": "mix-blend-mode"
-			},
-			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
-			"slug": "sgs/site-footer",
-			"attr": "backgroundOverlayBlendMode",
-			"fields": {
-				"css_property": "mix-blend-mode"
-			},
-			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
-			"slug": "sgs/site-header",
-			"attr": "backgroundOverlayBlendMode",
-			"fields": {
-				"css_property": "mix-blend-mode"
-			},
-			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "backgroundOverlayBlendMode",
-			"fields": {
-				"css_property": "mix-blend-mode"
-			},
-			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
 			"slug": "sgs/social-icons",
 			"attr": "childIconColour",
 			"fields": {
@@ -7730,16 +7476,6 @@
 			"_reason": "2026-10-20: includes/nav-menu-caret-css.php::sgs_nav_menu_caret_css writes width and height from submenuCaretSize for the drawer menu exactly as for the bar menu (whose row holds height,width); the drawer's classifier entry was dropped at the 54943b0dc reseed when caretBoxSize took the caret-box element's height,width."
 		},
 		{
-			"slug": "sgs/responsive-logo",
-			"attr": "logoId",
-			"fields": {
-				"role": "image-object",
-				"css_property": null,
-				"css_element": null
-			},
-			"_why": "2026-10-21: logoId is a media-library attachment ID. src/blocks/responsive-logo/render.php reads it as `$desktop_logo_id = absint( $attributes['logoId'] )` and resolves the image from it; it carries no length, so the max-width the classifier derived (the logo's width comes from the separate `width` attribute through --logo-width) is an emission side effect. Same shape as logoIdTablet and logoIdMobile, whose rows keep their derivation until a separate pass. Spec 48 5.4 Res 7."
-		},
-		{
 			"slug": "sgs/nav-bar-menu",
 			"attr": "featuredItemIds",
 			"fields": {
@@ -7782,26 +7518,6 @@
 				"css_layer": null
 			},
 			"_why": "2026-10-21: line geometry in percent of the drawing box. src/blocks/diagram-dimension/render.php reads `sgs_measured_diagram_pct( $attributes['endY'] ?? null, 50.0 )` and feeds it to sgs_diagram_dimension_paths(), which builds SVG path data; nothing writes a top value from it (block.json notes: line geometry is drawing content with no CSS property; labelX and labelY carry the left and top). Matches startY, which has no role or css_property. Spec 48 3.6 item 14."
-		},
-		{
-			"slug": "sgs/responsive-logo",
-			"attr": "logoIdTablet",
-			"fields": {
-				"role": "image-object",
-				"css_property": null,
-				"css_element": null
-			},
-			"_why": "2026-10-21: the tablet-tier logo attachment ID. src/blocks/responsive-logo/render.php reads it as `$tablet_logo_id = absint( $attributes['logoIdTablet'] )` and resolves the tablet image from it; it carries no length, so the max-width the classifier derived is an emission side effect (the logo's width comes from the separate `width` attribute through --logo-width). Same as logoId. Spec 48 5.4 Res 7."
-		},
-		{
-			"slug": "sgs/responsive-logo",
-			"attr": "logoIdMobile",
-			"fields": {
-				"role": "image-object",
-				"css_property": null,
-				"css_element": null
-			},
-			"_why": "2026-10-21: the mobile-tier logo attachment ID. src/blocks/responsive-logo/render.php reads it as `$mobile_logo_id = absint( $attributes['logoIdMobile'] )` and resolves the mobile image from it; it carries no length, so the max-width the classifier derived is an emission side effect (the logo's width comes from the separate `width` attribute through --logo-width). Same as logoId. Spec 48 5.4 Res 7."
 		},
 		{
 			"slug": "sgs/business-info",
@@ -7990,12 +7706,553 @@
 		{"slug": "sgs/form-field-tiles", "attr": "selectedCheckPosition", "fields": {"role": "behaviour"}, "_reason": "2026-11-06 (round 8): where the selected tick shows (inline start or corner); a class switch."},
 		{"slug": "sgs/mega-panel", "attr": "drawerHoverEasingCustom", "fields": {"role": "technical"}, "_reason": "2026-11-06 (round 8): a custom cubic-bezier used when the drawer hover easing is custom; companion of drawerHoverEasing."},
 		{"slug": "sgs/accordion", "attr": "panelEasingCustom", "fields": {"role": "technical"}, "_reason": "2026-11-08 (round 8): a custom cubic-bezier used when the answer slide easing is custom; companion of panelEasing."},
-		{"slug": "sgs/hero", "attr": "bgSvgParts", "fields": {"role": "behaviour"}, "_reason": "2026-11-06 (round 8): per-part animation data for the hero background SVG; no CSS value."},
-		{"slug": "sgs/hero", "attr": "bgSvgPartsTrigger", "fields": {"role": "behaviour"}, "_reason": "2026-11-06 (round 8): when the hero background SVG parts play."},
 		{"slug": "sgs/timeline", "attr": "cardLayout", "fields": {"role": "enum-mode", "css_property": "grid-template-areas", "css_element": "card", "css_layer": "GRID"}, "_reason": "2026-11-08 (round 8, AB7): per-device card strip setting of the horizontal timeline; paints grid-template-areas on the card element."},
 		{"slug": "sgs/timeline", "attr": "cardGap", "fields": {"css_property": "column-gap", "css_element": "strip", "css_layer": "GRID"}, "_reason": "2026-11-08 (round 8, AB7): per-device card strip setting of the horizontal timeline; paints column-gap on the strip element."},
 		{"slug": "sgs/timeline", "attr": "cardShadowTablet", "fields": {"css_property": "box-shadow", "css_element": "cardTablet"}, "_reason": "2026-11-08 (round 8, AB7): per-device card strip setting of the horizontal timeline; paints box-shadow on the cardTablet element."},
 		{"slug": "sgs/timeline", "attr": "cardShadowMobile", "fields": {"css_property": "box-shadow", "css_element": "cardMobile"}, "_reason": "2026-11-08 (round 8, AB7): per-device card strip setting of the horizontal timeline; paints box-shadow on the cardMobile element."},
-		{"slug": "sgs/timeline", "attr": "mediaHeight", "fields": {"css_property": "height", "css_element": "image"}, "_reason": "2026-11-08 (round 8, AB7): per-device card strip setting of the horizontal timeline; paints height on the image element."}
+		{"slug": "sgs/before-after", "attr": "beforeSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/before-after", "attr": "beforeLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/before-after", "attr": "beforeAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/before-after", "attr": "beforeDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/before-after", "attr": "beforeFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/before-after", "attr": "beforeFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/before-after", "attr": "beforePlayback", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/before-after", "attr": "afterSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/before-after", "attr": "afterLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/before-after", "attr": "afterAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/before-after", "attr": "afterDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/before-after", "attr": "afterFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/before-after", "attr": "afterFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/before-after", "attr": "afterPlayback", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/brand-strip", "attr": "logoLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/brand-strip", "attr": "logoFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/brand-strip", "attr": "logoShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/brand-strip", "attr": "logoRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/brand-strip", "attr": "logoBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/brand-strip", "attr": "logoBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/brand-strip", "attr": "logoBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/brand-strip", "attr": "logoBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/brand-strip", "attr": "logoBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/brand-strip", "attr": "logoBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/brand-strip", "attr": "logoColour", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/brand-strip", "attr": "logoGreyscale", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainRatio", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainMinWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainMaxWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainMinHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainMaxHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainBoxShadow", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainBoxShadowColour", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainBoxShadowColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainPadding", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "mainBackground", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "thumbFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "thumbShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "thumbRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "thumbBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "thumbBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "thumbBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "thumbBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "thumbBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "thumbBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "previewSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "previewLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "previewFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "previewShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "previewRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "previewBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "previewBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "previewBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "previewBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/buybox", "attr": "previewBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageMinWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageMaxWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageMinHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageMaxHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/card-grid", "attr": "imageBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionRatio", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionMinWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionMaxWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionMinHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionMaxHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow-question", "attr": "optionBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow", "attr": "headerLogoSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow", "attr": "headerLogoLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow", "attr": "headerLogoAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/choice-flow", "attr": "headerLogoDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundRepeat", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundTileSize", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundPinned", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundOverlayGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundOverlayGradientHover", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundOverlayBlend", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundOpacity", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundSvgLayer", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundSvgTextShadow", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundSvgParts", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundSvgPartsTrigger", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/container", "attr": "backgroundPlayback", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerRatio", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerMinWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerMaxWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerMinHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerMaxHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerOpacity", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerBlend", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerBoxShadow", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerBoxShadowColour", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/decorative-image", "attr": "layerBoxShadowColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/form-field-tiles", "attr": "tileLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/form-field-tiles", "attr": "tileFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/form-field-tiles", "attr": "tileRatio", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/form-field-tiles", "attr": "tileWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/form-field-tiles", "attr": "tileHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/form-field-tiles", "attr": "tileMinWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/form-field-tiles", "attr": "tileMaxWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/form-field-tiles", "attr": "tileMinHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/form-field-tiles", "attr": "tileMaxHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/form-field-tiles", "attr": "tileShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/form-field-tiles", "attr": "tileBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/form-field-tiles", "attr": "tileBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/form-field-tiles", "attr": "tileBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemMinWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemMaxWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemMinHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemMaxHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/gallery", "attr": "itemBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitPadding", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitBackground", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitOverlayColour", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitOverlayColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitOverlayGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitOverlayGradientHover", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitOverlayOpacity", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitOverlayBlend", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitOpacity", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitBlend", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitBoxShadow", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitBoxShadowColour", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitBoxShadowColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitSvgLayer", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitSvgTextShadow", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitSvgParts", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitSvgPartsTrigger", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitPlayback", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitCaption", "fields": {"role": "content"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitCaptionTag", "fields": {"role": "tag-identity"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitLinkUrl", "fields": {"role": "link-href"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitLinkOpensNewTab", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitLinkRel", "fields": {"role": "technical"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitLinkUrlSource", "fields": {"role": "technical"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitRatio", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitMinWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitMaxWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitMinHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitMaxHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitColour", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitGreyscale", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitAlignment", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "splitOrder", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundRepeat", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundTileSize", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundPinned", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundOverlayGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundOverlayGradientHover", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundOverlayBlend", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundOpacity", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundSvgLayer", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundSvgTextShadow", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundSvgParts", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundSvgPartsTrigger", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/hero", "attr": "backgroundPlayback", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/image-sequence", "attr": "thumbnailSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/image-sequence", "attr": "thumbnailLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/image-sequence", "attr": "thumbnailFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/measured-diagram", "attr": "drawingSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/measured-diagram", "attr": "drawingLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/measured-diagram", "attr": "drawingAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/measured-diagram", "attr": "drawingDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "source", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "loading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "alt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "decorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "fit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "focal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "background", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "overlayOpacity", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "overlayBlend", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "opacity", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "blend", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "svgLayer", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "svgTextShadow", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "svgParts", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "svgPartsTrigger", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "playback", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "ratio", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "width", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "minWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "minHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "shape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "radius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "colour", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "greyscale", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/media", "attr": "alignment", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundRepeat", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundTileSize", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundPinned", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundOverlayGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundOverlayGradientHover", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundOverlayBlend", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundOpacity", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundSvgLayer", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundSvgTextShadow", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundSvgParts", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundSvgPartsTrigger", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/multi-button", "attr": "backgroundPlayback", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundRepeat", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundTileSize", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundPinned", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundOverlayColour", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundOverlayColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundOverlayGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundOverlayGradientHover", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundOverlayOpacity", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundOverlayBlend", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundOpacity", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundSvgLayer", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundSvgTextShadow", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundSvgParts", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundSvgPartsTrigger", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "backgroundPlayback", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "chromeLogoSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "chromeLogoLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/nav-drawer", "attr": "chromeLogoDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchRatio", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchMinWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchMaxWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchMinHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchMaxHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/option-picker", "attr": "swatchBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundRepeat", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundTileSize", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundPinned", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundOverlayGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundOverlayGradientHover", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundOverlayBlend", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundOpacity", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundSvgLayer", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundSvgTextShadow", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundSvgParts", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundSvgPartsTrigger", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/physics-canvas", "attr": "backgroundPlayback", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageMinWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageMaxWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageMinHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageMaxHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/post-grid", "attr": "imageBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageRatio", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageMinWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageMaxWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageMinHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageMaxHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageBoxShadow", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageBoxShadowColour", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageBoxShadowColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imagePadding", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "imageBackground", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "thumbFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "thumbShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "thumbRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "thumbBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "thumbBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "thumbBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "thumbBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "thumbBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "thumbBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "logoSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "logoLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "logoRatio", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "logoWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "logoHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "logoMinWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "logoMaxWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "logoMinHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/product-card", "attr": "logoMaxHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/responsive-logo", "attr": "logoSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/responsive-logo", "attr": "logoLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/responsive-logo", "attr": "logoAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/responsive-logo", "attr": "logoDarkSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/responsive-logo", "attr": "logoDarkLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundRepeat", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundTileSize", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundPinned", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundOverlayGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundOverlayGradientHover", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundOverlayBlend", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundOpacity", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundSvgLayer", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundSvgTextShadow", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundSvgParts", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundSvgPartsTrigger", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-footer", "attr": "backgroundPlayback", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundRepeat", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundTileSize", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundPinned", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundOverlayGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundOverlayGradientHover", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundOverlayBlend", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundOpacity", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundSvgLayer", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundSvgTextShadow", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundSvgParts", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundSvgPartsTrigger", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/site-header", "attr": "backgroundPlayback", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoMinWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoMaxWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoMinHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/team-member", "attr": "photoMaxHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "avatarSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "avatarLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "avatarAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "avatarFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "avatarFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "avatarShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "avatarRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "avatarBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "avatarBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "avatarBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "avatarBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "avatarBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "avatarBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "workSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "workLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "workAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "workDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "workFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "workFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "logoSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "logoLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "logoAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "logoDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/testimonial", "attr": "logoFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entrySource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryRatio", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryMinWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryMaxWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryMinHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryMaxHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/timeline", "attr": "entryBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeRatio", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeMinWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeMaxWidth", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeMinHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeMaxHeight", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeShape", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeRadius", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeBorderWidth", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeBorderStyle", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeBorderColour", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeBorderColourHover", "fields": {"role": "color"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeBorderColourGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeBorderColourHoverGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeColour", "fields": {"role": "layout", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "badgeGreyscale", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundSource", "fields": {"role": "content", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundLoading", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundAlt", "fields": {"role": "image-alt"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundDecorative", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundFit", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundRepeat", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundTileSize", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundFocal", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundPinned", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundOverlayGradient", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundOverlayGradientHover", "fields": {"role": "colour-gradient"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundOverlayBlend", "fields": {"role": "visual"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundOpacity", "fields": {"role": "visual", "tier_shape": "tier_object"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundSvgLayer", "fields": {"role": "layout"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundSvgTextShadow", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundSvgParts", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundSvgPartsTrigger", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"},
+		{"slug": "sgs/trust-bar", "attr": "backgroundPlayback", "fields": {"role": "behaviour"}, "_reason": "generated by scripts/generate-media-attributes.mjs from the media atom registry; change the atom setting and re-run, never this line"}
 	]
 }

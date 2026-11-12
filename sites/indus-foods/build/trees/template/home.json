@@ -49,25 +49,6 @@
               "positionBottom": {
                 "desktop": "-160px"
               },
-              "width": {
-                "desktop": "460px"
-              },
-              "height": {
-                "desktop": "460px"
-              },
-              "borderWidth": {
-                "right": "2px",
-                "bottom": "2px",
-                "left": "2px",
-                "top": "2px"
-              },
-              "borderColour": "#FFFFFF38",
-              "borderRadius": {
-                "topLeft": "50%",
-                "topRight": "50%",
-                "bottomRight": "50%",
-                "bottomLeft": "50%"
-              },
               "sgsMotion": {
                 "v": 1,
                 "elements": {
@@ -91,7 +72,28 @@
                   }
                 }
               },
-              "className": "cr-ref-blog-2"
+              "className": "cr-ref-blog-2",
+              "layerWidth": {
+                "desktop": "460px"
+              },
+              "layerHeight": {
+                "desktop": "460px"
+              },
+              "layerRadius": {
+                "desktop": {
+                  "topLeft": "50%",
+                  "topRight": "50%",
+                  "bottomRight": "50%",
+                  "bottomLeft": "50%"
+                }
+              },
+              "layerBorderWidth": {
+                "right": "2px",
+                "bottom": "2px",
+                "left": "2px",
+                "top": "2px"
+              },
+              "layerBorderColour": "#FFFFFF38"
             }
           },
           {
@@ -484,25 +486,6 @@
                         "tablet": "-90px",
                         "desktop": "-90px"
                       },
-                      "width": {
-                        "desktop": "340px"
-                      },
-                      "height": {
-                        "desktop": "340px"
-                      },
-                      "borderWidth": {
-                        "right": "2px",
-                        "bottom": "2px",
-                        "left": "2px",
-                        "top": "2px"
-                      },
-                      "borderColour": "#D8CA508C",
-                      "borderRadius": {
-                        "topLeft": "50%",
-                        "topRight": "50%",
-                        "bottomRight": "50%",
-                        "bottomLeft": "50%"
-                      },
                       "sgsMotion": {
                         "v": 1,
                         "elements": {
@@ -526,7 +509,28 @@
                           }
                         }
                       },
-                      "className": "cr-ref-blog-14"
+                      "className": "cr-ref-blog-14",
+                      "layerWidth": {
+                        "desktop": "340px"
+                      },
+                      "layerHeight": {
+                        "desktop": "340px"
+                      },
+                      "layerRadius": {
+                        "desktop": {
+                          "topLeft": "50%",
+                          "topRight": "50%",
+                          "bottomRight": "50%",
+                          "bottomLeft": "50%"
+                        }
+                      },
+                      "layerBorderWidth": {
+                        "right": "2px",
+                        "bottom": "2px",
+                        "left": "2px",
+                        "top": "2px"
+                      },
+                      "layerBorderColour": "#D8CA508C"
                     }
                   },
                   {
@@ -539,25 +543,6 @@
                         "mobile": "40px",
                         "tablet": "40px",
                         "desktop": "40px"
-                      },
-                      "width": {
-                        "desktop": "150px"
-                      },
-                      "height": {
-                        "desktop": "150px"
-                      },
-                      "borderWidth": {
-                        "right": "1.5px",
-                        "bottom": "1.5px",
-                        "left": "1.5px",
-                        "top": "1.5px"
-                      },
-                      "borderColour": "#FFFFFF33",
-                      "borderRadius": {
-                        "topLeft": "50%",
-                        "topRight": "50%",
-                        "bottomRight": "50%",
-                        "bottomLeft": "50%"
                       },
                       "sgsMotion": {
                         "v": 1,
@@ -582,7 +567,28 @@
                           }
                         }
                       },
-                      "className": "cr-ref-blog-15"
+                      "className": "cr-ref-blog-15",
+                      "layerWidth": {
+                        "desktop": "150px"
+                      },
+                      "layerHeight": {
+                        "desktop": "150px"
+                      },
+                      "layerRadius": {
+                        "desktop": {
+                          "topLeft": "50%",
+                          "topRight": "50%",
+                          "bottomRight": "50%",
+                          "bottomLeft": "50%"
+                        }
+                      },
+                      "layerBorderWidth": {
+                        "right": "1.5px",
+                        "bottom": "1.5px",
+                        "left": "1.5px",
+                        "top": "1.5px"
+                      },
+                      "layerBorderColour": "#FFFFFF33"
                     }
                   },
                   {

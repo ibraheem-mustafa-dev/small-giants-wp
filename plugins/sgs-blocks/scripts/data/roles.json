@@ -121,10 +121,6 @@
     "content-bearing",
     "Star/numeric rating value (e.g. sgs/testimonial.ratingStars) -- a content-bearing display value, not a styling property. Consumer: converter/resolvers/scalar_content.py:122,165 (is_rating: role == 'rating' and attr_type == 'number' -> star-count lift via aria-label/glyph count); converter/resolvers/array_content.py:168-169's _FLAT_SELF_ROLES also lets a flat array item self-extract a rating role (L1c)."
   ],
-  "scalar-media": [
-    "styling-behaviour",
-    "A composite's own built-in scalar media SLOT (e.g. sgs/hero.splitImage/splitImageMobile) -- distinct from image-object: it marks a composite-interior COLUMN that must be lifted as a scalar object attr rather than folded as bare InnerBlocks. Consumer: has_scalar_media_attrs()/scalar_media_attr_for() (converter/db/db_lookup.py:2842-2874, FR-31-19) gate _route_composite_interior's routing decision, joined via block_attributes.role='scalar-media' + the slots aliases -- no per-block slug literal. Classified styling-behaviour (excluded from the generic content walk) DELIBERATELY: it is routed by this dedicated composite-interior mechanism instead, and check_row_floor.py pins sgs/hero's splitImage/splitImageMobile rows as a VALUE_ASSERTION because this role flipped to 'image-object' once already, silently breaking art-directed (mobile/desktop) image cropping."
-  ],
   "select-from-enum": [
     "styling-behaviour",
     "A string CSS value chosen from a fixed enum (e.g. font-style: italic/normal). Consumer: _kind_for() (converter/db/db_lookup.py:1964-1965) resolves it to CSS kind 'string'; also grouped into the BEM-modifier probe at db_lookup.py:4889-4896 alongside enum-class-probe/behaviour.",

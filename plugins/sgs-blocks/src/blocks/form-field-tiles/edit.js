@@ -10,7 +10,9 @@ import {
 	Button,
 } from '@wordpress/components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import MediaPicker from '../../components/MediaPicker';
+import MediaElementPanel from '../../components/MediaElementPanel';
+import ItemSlotFields from '../../components/media/ItemSlotFields.js';
+import ItemSlotPicture from '../../components/media/ItemSlotPicture.js';
 import { IconPicker, IconPreview, SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	ShadowControl,
@@ -45,6 +47,9 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
 import AuthoredText from '../../components/AuthoredText';
 // Wrapper declarations that belong to the field root (the border and radius), not to
 // the tile grid element the shared wrapper lays out.
+/** The block's one media slot: each tile's picture (Spec 49 §10.4: Source, Fit, Width, Shape). */
+const TILE_SLOT = { prefix: 'tile', kinds: [ 'image' ], context: 'item' };
+
 const ROOT_BORDER_KEYS = [ 'borderWidth', 'borderStyle', 'borderColor', 'borderImage', ...RADIUS_STYLE_KEYS ];
 
 // A tile's description is one line of copy; the render cuts it at the same length.
@@ -694,13 +699,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									setAttributes( { tiles: newTiles } );
 								} }
 							/>
-							{ /* render.php prints tile.image as the tile's decorative <img>; the stored value is the image URL. */ }
-							<MediaPicker
-								value={ tile.image ? { url: tile.image, type: 'image', id: 0, alt: '', mime: 'image/jpeg' } : null }
-								allowedTypes={ [ 'image' ] }
-								onChange={ ( media ) => updateTile( index, 'image', media ? media.url : '' ) }
-								label={ __( 'Select image', 'sgs-blocks' ) }
-								instructionsImage={ __( 'Optional. Shown inside the tile.', 'sgs-blocks' ) }
+							{ /* The tile's picture: the shared media renderer prints it (Spec 49 §8.3); Fit is the tile's own, Width and Shape are the block's (Image panel). */ }
+							<ItemSlotFields
+								item={ tile }
+								prefix="tile"
+								slot={ TILE_SLOT }
+								label={ __( 'Image', 'sgs-blocks' ) }
+								onChange={ ( next ) => {
+									const newTiles = [ ...tiles ];
+									newTiles[ index ] = next;
+									setAttributes( { tiles: newTiles } );
+								} }
 							/>
 							<Button
 								isDestructive
@@ -742,6 +751,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 			</InspectorControls>
+			{ /* What every tile's picture shares (Spec 49 §10.4): Fit, Width and Shape. Each tile's own Source, Alt and Fit sit in its Tiles card. */ }
+			<MediaElementPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				prefix="tile"
+				blockSlug="sgs/form-field-tiles"
+				blockName="sgs/form-field-tiles"
+				atoms={ [ 'object-fit', 'sizing', 'shape' ] }
+				context="item"
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Tile surface', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
@@ -878,6 +897,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										/>
 									</span>
 								) }
+								{ /* The tile's own picture, between the icon and the label as render.php prints it. */ }
+								<ItemSlotPicture
+									attributes={ attributes }
+									item={ tile }
+									index={ index }
+									prefix={ TILE_SLOT.prefix }
+									kinds={ TILE_SLOT.kinds }
+									context={ TILE_SLOT.context }
+									uid={ `sgs-ft-${ clientId.slice( 0, 8 ) }` }
+								/>
 								<span className="sgs-form-tile__label" style={ tileLabelPaint }>{ tile.label || '' }</span>
 								{ tile.description && (
 									<span className="sgs-form-tile__description" style={ tileDescriptionPaint }>

@@ -8,10 +8,6 @@
  * why this is scoped to padding alone rather than reintroducing
  * border/radius, which `box-shape` already owns.
  *
- * `sgs_media_atom_media_padding_css()` must emit BYTE-IDENTICAL declarations
- * to the JS twin's `css()` for the same attribute set — enforced by
- * `scripts/tests/test-media-atom-parity.mjs`.
- *
  * @package SGS\Blocks
  */
 
@@ -93,42 +89,6 @@ if ( ! function_exists( 'sgs_media_atom_media_padding_requires' ) ) {
 			'state'        => 'shown',
 			'hiddenReason' => null,
 		);
-	}
-}
-
-if ( ! function_exists( 'sgs_media_atom_media_padding_css' ) ) {
-	/**
-	 * Custom-property declarations for this atom. Mirrors the JS twin's
-	 * `css()` exactly.
-	 *
-	 * @param array  $attributes Block attributes.
-	 * @param string $prefix     Surface prefix.
-	 * @param string $block_slug Block slug, for STORED_AS resolution.
-	 * @return string[] `--custom-property:value;` declarations, never bare rules.
-	 */
-	function sgs_media_atom_media_padding_css( array $attributes, $prefix, $block_slug ) {
-		$decls = array();
-
-		// [D-tier-object-render-fix 2026-09-07] Padding is ONE owned tier-object
-		// attribute {desktop,tablet,mobile}, matching the pattern already proven
-		// on accordion/button/container — not three separate flat attrs.
-		require_once dirname( __DIR__, 2 ) . '/helpers-responsive.php';
-		$key   = sgs_media_element_stored_attr( $block_slug, $prefix, 'Padding' );
-		$tiers = sgs_responsive_normalise_object( $attributes[ $key ] ?? null, true );
-
-		$suffixes = array(
-			'desktop' => '',
-			'tablet'  => '-tablet',
-			'mobile'  => '-mobile',
-		);
-
-		foreach ( $suffixes as $tier => $suffix ) {
-			foreach ( sgs_media_atom_media_padding_side_decls( $tiers[ $tier ] ?? null, $suffix ) as $decl ) {
-				$decls[] = $decl;
-			}
-		}
-
-		return $decls;
 	}
 }
 

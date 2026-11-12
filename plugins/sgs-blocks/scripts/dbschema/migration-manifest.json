@@ -244,7 +244,7 @@
     }
   ],
   "deleted_2026_08_02": {
-    "why": "Phase 1's actual bar (Bean): 'I want the vast majority of all migrations deleted and replaced'. These are deleted because their effects are now reproducible WITHOUT them: schema.sql carries every CREATE/ALTER, and the committed seed files (property-suffixes.json 154, slots.json 104, excluded-properties.json 10, roles.json 29, modifier-suffixes.json 19, atomic-tag-map.json 17, scalar-media-roles.json) were CAPTURED FROM LIVE — i.e. from the post-migration state — so every data effect is already baked into a committed artefact. bootstrap_rebuild() never replayed them anyway (replay is a proven dead end: slot_synonyms was retired, so May migrations cannot run against an August schema). Full history remains in git.",
+    "why": "Phase 1's actual bar (Bean): 'I want the vast majority of all migrations deleted and replaced'. These are deleted because their effects are now reproducible WITHOUT them: schema.sql carries every CREATE/ALTER, and the committed seed files (property-suffixes.json 154, slots.json 104, excluded-properties.json 10, roles.json 29, modifier-suffixes.json 19, atomic-tag-map.json 17) were CAPTURED FROM LIVE — i.e. from the post-migration state — so every data effect is already baked into a committed artefact. bootstrap_rebuild() never replayed them anyway (replay is a proven dead end: slot_synonyms was retired, so May migrations cannot run against an August schema). Full history remains in git.",
     "held_back": [
       "2026-06-13-testimonial-selector-fingerprint-override.py",
       "2026-06-26-testimonial-media-role-selector.py"

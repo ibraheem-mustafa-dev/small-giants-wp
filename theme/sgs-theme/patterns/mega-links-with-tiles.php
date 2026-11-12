@@ -41,7 +41,7 @@
 
 <!-- wp:sgs/container {"layout":"grid","tagName":"div","columns":{"desktop":2,"tablet":2,"mobile":2},"gap":{"desktop":"16px"}} -->
 <!-- wp:sgs/container {"layout":"stack","tagName":"div","gap":{"desktop":"12px"}} -->
-<!-- wp:sgs/media {"aspectRatio":"4 / 5"} /-->
+<!-- wp:sgs/media {"height":{"desktop":"auto"},"ratio":{"desktop":"4 / 5"}} /-->
 
 <!-- wp:sgs/text {"text":"Featured collection"} /-->
 
@@ -49,7 +49,7 @@
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"layout":"stack","tagName":"div","gap":{"desktop":"12px"}} -->
-<!-- wp:sgs/media {"aspectRatio":"4 / 5"} /-->
+<!-- wp:sgs/media {"height":{"desktop":"auto"},"ratio":{"desktop":"4 / 5"}} /-->
 
 <!-- wp:sgs/text {"text":"New this season"} /-->
 

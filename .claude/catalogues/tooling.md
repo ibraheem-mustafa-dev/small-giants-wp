@@ -19,8 +19,8 @@ Searching one directory and concluding a tool does not exist is a live failure m
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 1184 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 875 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 1195 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 892 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
 
@@ -28,7 +28,7 @@ Worktrees under `.claude/worktrees/` mirror this tree — never cite them as a s
 
 ### The prebuild gate chain — what actually blocks a build
 
-Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution order. ⛔ **These are TWO tiers, not one chain.** The five generators and the `fast` tier run on every build. The `full` tier — `check-dead-api-calls`, `check-render-undefined-vars`, `check-render-undefined-vars-selftest`, `inspector-scan-run`, `audit-block-file-consistency`, `wiring-fingerprint-tests`, `wiring-fingerprint-mutation-proof`, `survey-spacing-defaults`, `survey-spacing-defaults-selftest`, `run-motion-gates`, `migrate-core-blocks-tests`, `check-fx-off-switch-css`, `check-tap-area-fits-shape`, `block-identity-facts-check` — was measured at 76.1% of the old chain's time and now runs PRE-DEPLOY only, via `build-deploy.py`'s `step_gate_full()`. Every gate that blocked before still blocks; only the timing changed. Run `npm run gate:list` for each gate's tier and measured cost, and `npm run gate:wired` to prove the `full` tier is still reachable. This chain is what `npm run build` runs first, and what every `/handoff` and deploy relies on. Each entry's purpose is quoted from the script's own header.
+Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution order. ⛔ **These are TWO tiers, not one chain.** The five generators and the `fast` tier run on every build. The `full` tier — `check-dead-api-calls`, `check-render-undefined-vars`, `check-render-undefined-vars-selftest`, `inspector-scan-run`, `audit-block-file-consistency`, `wiring-fingerprint-tests`, `wiring-fingerprint-mutation-proof`, `survey-spacing-defaults`, `survey-spacing-defaults-selftest`, `run-motion-gates`, `migrate-core-blocks-tests`, `check-fx-off-switch-css`, `check-tap-area-fits-shape`, `block-identity-facts-check`, `test-media-adoption-selftest`, `assert-gate-wiring`, `test-media-base-css` — was measured at 76.1% of the old chain's time and now runs PRE-DEPLOY only, via `build-deploy.py`'s `step_gate_full()`. Every gate that blocked before still blocks; only the timing changed. Run `npm run gate:list` for each gate's tier and measured cost, and `npm run gate:wired` to prove the `full` tier is still reachable. This chain is what `npm run build` runs first, and what every `/handoff` and deploy relies on. Each entry's purpose is quoted from the script's own header.
 
 | # | Script | Purpose (from its own header) |
 |---|---|---|
@@ -36,194 +36,10 @@ Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution
 | 2 | `generate-icons.js` | Generates includes/lucide-icons.php from lucide-static SVG files, plus the SGS icon library (assets/icons/sgs-icons.json) merged into the same PHP map so… |
 | 3 | `generate-extension-attributes.js` | Single source of truth for the cross-block `sgs*` editor-extension attributes. |
 | 4 | `generate-svg-allowlist.js` | Single source of truth for the SVG sanitiser allowlist, PHP -> JS. |
-| 5 | `generate-media-attributes.mjs` | Single source of truth for the media attribute TYPE map, JS -> PHP. |
-| 6 | `generate-media-stylesheet.mjs` | Concatenate the media-atom CSS partials into the one enqueued stylesheet. |
-| 7 | `run-motion-fx-generators.js` | motion-fx generator chain (seed-motion-fx-registry.py, generate-fx-effects-php.py, generate-fx-qualifying-blocks.py, generate-motion-presets-json.py). |
-| 8 | `run-consistency-gates.py` | Single orchestrator for the SGS blocks consistency-gate suite. Runs a fixed |
-| 9 | `check-dead-controls.js` | STRUCTURAL GUARD (HC2, 2026-06-08) — stops the "dead control" class of bug from regressing. A dead control is an editor control a client can change that… |
-| 10 | `check-dead-pattern-attrs.py` | Find block attributes in theme patterns/parts that WordPress silently DISCARDS |
-| 11 | `check-shared-panel-schema.js` | STRUCTURAL GUARD — closes the gap in the "dead control" family that check-dead-controls.js (control exists, nothing renders it) and… |
-| 12 | `check-empty-inspector-containers.js` | STRUCTURAL GUARD — an inspector container rendered with NO children. |
-| 13 | `check-wrapper-capability-preconditions.js` | STRUCTURAL GUARD for the shared-wrapper capability declarations in each block's `supports.sgs` — Spec 35A §F.2.1 + §F.2.2 (D637, step 7 of the… |
-| 14 | `survey-background-colour-support.py` | Track A completion audit — native colour/gradient background support. |
-| 15 | `check-image-controls-support.py` | Standing defence for the `imageControls` "declared-but-unverified capability" |
-| 16 | `survey-control-parity.py` | do SGS inspector controls look like NATIVE WordPress? |
-| 17 | `check-hardcoded-render-defaults.js` | STRUCTURAL GUARD (Gate B) — stops the "hardcoded render default" class of bug (F3) from regressing. An F3 violation occurs when a block declares an… |
-| 18 | `check-control-ux.js` | STRUCTURAL GUARD (Step 7a, 2026-06-11) — prevents the two editor anti-patterns that produce a sub-standard inspector UX: |
-| 19 | `survey-experimental-imports.js` | ONE DETECTOR, THREE MODES (D542, Bean-locked): |
-| 20 | `check-product-search-guards.js` | STATIC PRE-FLIGHT GUARD for the product-search REST endpoint. |
-| 21 | `check_schema_drift.py` | Detect drift between the committed ``schema.sql`` and the live database's DDL. |
-| 22 | `check_value_identity.py` | Assert that named, load-bearing DB rows still hold the EXACT value they must. |
-| 23 | `capture_seed_data.py` | Capture the Phase-1 Group-5 seed tables from a LIVE database into data files. |
-| 24 | `run.py` | F6 DB-as-code consistency suite shared runner. |
-| 25 | `lint-responsive-controls.py` | FR-36-24 structural gate (FP-9 for responsive controls). |
-| 26 | `check-tier-storage-shape.py` | Find per-device attribute families that are HALF-MIGRATED between storage shapes. |
-| 27 | `check-inert-controls.py` | Find block attributes that are OVERWRITTEN in render.php before being used. |
-| 28 | `check-undeclared-attrs.py` | Find block attributes destructured in edit.js that WordPress silently DISCARDS. |
-| 29 | `check-undefined-refs.js` | THE GAP THIS CLOSES. On 2026-08-22 three blocks shipped broken editors: sgs/text, sgs/quote and sgs/testimonial referenced `borderColourHover` /… |
-| 30 | `check-raw-spacing-controls.py` | Detector: inspector spacing controls that still use a raw numeric/text input. |
-| 31 | `audit-inline-styling.js` | WIRED INTO `prebuild` AS A REAL GATE — `node scripts/audit-inline-styling.js --check` runs on every `npm run build` and sets `process.exitCode = 1` on any… |
-| 32 | `check-id-scoped-emits.js` | STRUCTURAL GUARD — ID-scoped CSS selector emissions. |
-| 33 | `check-text-gradient-companion.js` | THE TRAP THIS GATE CATCHES. `sgs_text_decls()` (`includes/helpers-colour- variants.php`) returns `color:` DECLARATIONS ONLY. When a text GRADIENT is in… |
-| 34 | `check-preset-token-naming.py` | STRUCTURAL GATE — Spec 32 FR-32-9 (Naming Convention) self-verifier. |
-| 35 | `check-palette-slug-refs.py` | every referenced colour slug must actually exist. |
-| 36 | `check-box-family-guard.py` | STRUCTURAL GUARD — box-object interface contract (2026-07-09 plan §6). |
-| 37 | `check-jsonld-flags.py` | guard the ONE json_encode flag combination that is unsafe. |
-| 38 | `remove-vacuous-style-engine-guard.py` | Delete the vacuous `function_exists( 'wp_style_engine_get_styles' )` guard. |
-| 39 | `check-no-core-blocks.py` | Prebuild gate: NO banned core blocks in theme pattern/part/template FILES. |
-| 40 | `check-no-inline.py` | Anti-regression GATE for the framework-wide inline-zero win (Spec 32 FR-32-1 / |
-| 41 | `check-stranded-guards.py` | Anti-regression GATE for STRANDED inline-style guards (Spec 32). |
-| 42 | `check-shared-css-state-rules.js` | STRUCTURAL GUARD — stops the "state-only shared-CSS size literal" class of bug from regressing. This is the class of defect that shipped LIVE on… |
-| 43 | `check-element-manifest-conformance.js` | Spec 35 Task 2 — the CLUSTER-COHERENCE rule, made computable. |
-| 44 | `audit-feature-parity.py` | Spec 35 UNIT A — feature-parity audit. |
-| 45 | `audit-declared-vs-seeded-roles.py` | Audit: which `sgs/%` attributes LACK A MECHANISM that reaches them — the D497 gate. |
-| 46 | `check-universal-fit.js` | WARN-ONLY STRUCTURAL REPORT — maps every universal editor extension |
-| 47 | `check-duplicate-controls.js` | STRUCTURAL GUARD (WARN-ONLY) — finds the "duplicate control" class of bug: the SAME setting exposed to the client through TWO different editor controls… |
-| 48 | `check-simple-surface-cap.js` | FR-37-27 (Spec 37, .claude/specs/37-HEADER-FOOTER-BUILDER.md) — the SIMPLE SURFACE CAP, made computable. The Simple surface (`sgs/site-header` and… |
-| 49 | `audit-block-uniformity.py` | SGS Block Uniformity Audit |
-| 50 | `check-editor-render-parity.js` | NEW STRUCTURAL GUARD (2026-08-13) — closes a class of bug no existing gate in this repo catches: "a control is set up correctly on ONE side (editor OR… |
-| 51 | `check-wiring-fingerprint.py` | : every attribute that paints must be wired end to |
-| 52 | `check-ksort-before-hash.py` | STOP-NO-KSORT gate — never reorder $attributes before it is hashed into a uid. |
-| 53 | `check-tier-object-cast.py` | Tier-object-cast gate — never coerce a whole object-typed attribute to a string. |
-| 54 | `check-single-instance-invariants.py` | Single-instance invariant register — four named prohibitions, one shared mechanism. |
-| 55 | `check-withdrawn-figures.py` | a figure withdrawn in one file stays withdrawn everywhere. |
-| 56 | `migrate-length-sanitiser.py` | Move every LENGTH-valued call site from the crude sanitiser to the hardened one. |
-| 57 | `run-gates.py` | the consolidated gate runner. |
-| 58 | `check-doc-citations.py` | a `file:line` citation in a doc must land on what it names. |
-| 59 | `migrate-tier-object.py` | collapse a flat per-device attribute trio into ONE tier object. |
-| 60 | `lint-patterns-for-personal-data.py` | Lint SGS pattern PHP files for hardcoded personal data. |
-| 61 | `font-source-audit.js` | Font source audit — static analysis for external CDN URLs in theme.json fontFace declarations. |
-| 62 | `migrate-render-closures.py` | Adopt the shared render helpers in place of per-file inline sanitiser closures. |
-| 63 | `migrate-theme-native-spacing.py` | Migrate hand-authored `style.spacing` to the block-OWNED padding/margin attrs. |
-| 64 | `migrate-shadow-mounts.js` | WHY. ShadowControl was parameterised by VALUES AND CALLBACKS: six props hand-wired at every mount, where GradientOverlayControl's callers pass one map.… |
-| 65 | `fanout-overlay-sibling-attrs.py` | D6 (hover + responsive-tier siblings) and |
-| 66 | `check-child-lift.py` | check-child-lift — every child-lift rule in the tree stays at ZERO specificity. |
-| 67 | `check-fx-registration.py` | every shipped fx module is registered everywhere it must be. |
-| 68 | `check-colour-preview-resolver.js` | check-colour-preview-resolver — the editor canvas must resolve a colour the same way the server does. |
-| 69 | `check-border-style-without-width.py` | the "no width = no border" detector. |
-| 70 | `check-control-helper-parity.py` | Which shared controls ship the standard helper pair, and which still don't. |
-| 71 | `survey-border-control-migration.py` | Classify every block's border UI against the SgsBorderControl target shape. |
-| 72 | `migrate-border-shape-b.js` | ⛔ THIS IS NOT A BRANCH OF migrate-border-control.js. That script's header declares a hard Shape-B exclusion, on the stated grounds that "there is no… |
-| 73 | `migrate-border-element.py` | Border-element census: HOW each block's PHP glues its border CSS together today. |
-| 74 | `check-state-classification.py` | Gate: a setting painted under a state selector MUST carry a `css_state` in the derived layer. |
-| 75 | `check-state-exhaustiveness.py` | Gate: every state-bearing selector in the framework's styles maps to a setting, a `states` row, or a recorded fixed behaviour. |
-| 76 | `check-text-stroke-routing.py` | Gate: every `*TextStroke*` (text outline) attribute must be routable by the cloning resolver. |
-| 77 | `verify-transform.mjs` | Verify the PRODUCTION transform maths against ground truth from the rig. |
-| 78 | `test-sanitise-svg.mjs` | Standing gate for the editor SVG sanitiser (src/utils/sanitise-svg.js). |
-| 79 | `test-media-attr-parity.mjs` | Standing gate: the L1 media-naming helpers must agree ACROSS LANGUAGES. |
-| 80 | `generate-media-slot-schema.mjs` | Writes `schemas/media-slot.schema.json` (Spec 49 FR-49-34): the one JSON Schema of a media slot that the cloner and `scripts/wp-build-page.js` write… |
-| 81 | `test-media-injection-parity.mjs` | Standing gate: the JS injection filter and the PHP registration filter must inject the SAME attribute set for the same supports.sgs.mediaElements… |
-| 82 | `check-media-breakpoints.js` | Gate: the media-element stylesheet's breakpoints must match the ONE source. |
-| 83 | `test-media-atom-parity.mjs` | Standing gate: for every media ATOM, the JS value-setter and the PHP value- setter must emit BYTE-IDENTICAL custom-property declarations for a fixed… |
-| 84 | `check-media-atom-purity.js` | Gate: a media atom's LOGIC module must be importable by plain Node. |
-| 85 | `check-media-disclosure-coverage.js` | Gate: every media atom's `disclosure()` is exercised against REAL fixtures derived from its own `requires` map in registry.js — not a static scan. |
-| 86 | `check-enum-control-shape.py` | the D812 enum control-shape GATE. |
-| 87 | `test-hover-state-guard.mjs` | Gate wrapper for the touch-safe hover emitter's PHP self-test. |
-| 88 | `audit-bindable-attrs.py` | C15-5/C15-12 detector: which SGS block attributes are SAFE Block Bindings targets? |
-| 89 | `wire-border-contrast.js` | (a WCAG 3:1 border-contrast warning, built and working on the component itself — see `src/components/SgsBorderControl.js`) into every block's `edit.js`… |
-| 90 | `check-colour-attr-css-property.py` | D962-adjacent gate: no colour attribute may reach the DB with a NULL/empty |
-| 91 | `check-render-tier-object-spacing.py` | GUARD gate (Step 8 shape 2 — 'compares a derived copy to its source; 0 |
-| 92 | `logical-props-lint.py` | RTL-readiness lint for the SGS nav blocks |
-| 93 | `classify-end-shape.js` | WHY THIS EXISTS (2026-09-06, colour-conformance). Adversarial-council pre-mortem (6/6 personas graded D) found survey.js's AUTOFIXABLE verdict is… |
-| 94 | `check-style-blob-sanitisation.py` | Gate: every render.php `<style>` blob echo must pass through wp_strip_all_tags(). |
-| 95 | `check-ungated-paint-rules.py` | STRUCTURAL GUARD (WARN-ONLY for this build) — Spec 41 FR-41-35 / gate §11 G20c. |
-| 96 | `audit-serverside-render-disabled.js` | Finds every `<ServerSideRender` JSX usage across `src/blocks/*\/edit.js` and flags any that is NOT wrapped in `<Disabled>` (from `@wordpress/components`)… |
-| 97 | `test-create-drawer-seed.mjs` | Standing gate for the inline drawer-creation rules |
-| 98 | `test-nonmodal-freeze-background.mjs` | The non-modal drawer's selective background freeze — pure-logic gate. |
-| 99 | `test-panel-bounds.mjs` | Standing gate for nav panel horizontal bounds |
-| 100 | `test-float-defaults.mjs` | Standing gate for the sgs/site-header float attribute defaults |
-| 101 | `check-fixture-fidelity.py` | compare the nav-drawer POC content plan to the harvest. |
-| 102 | `check-shadow-fallback-php.py` | Every PHP writer of a `box-shadow:` declaration must carry the forced-colours fallback. |
-| 103 | `run.js` | Forced-colours shadow fallback for static stylesheets: census, fix and gate in one script. |
-| 104 | `test-shadow-layers-js.mjs` | The JS shadow composer against the SAME table the PHP composer is tested against |
-| 105 | `test-shadow-model.mjs` | The layered shadow model (src/utils/shadow-model.js): stored text <-> layers, the elevation builder and its recogniser, against the shared composer. |
-| 106 | `migrate-shadow-presets.py` | Shadow preset migration (U-1 commit 4f-1 step 6): the four old theme shadows are replaced by |
-| 107 | `sync-snapshot-shadow-presets.py` | Every client theme snapshot carries the framework's shadow presets, shadow colour and hover map. |
-| 108 | `dedupe-shadow-colour-rows.py` | One writer for a shadow's colour: the ShadowControl. Any other colour row for the same attribute |
-| 109 | `check-shadow-sources.py` | the shadow-source detector (D4/D5 follow-on, survey stage). |
-| 110 | `fanout-surface-ground-attrs.py` | U-1 commit 4e fan-out of `surfaceBlur` / |
-| 111 | `run.js` | Shadow lift on hover for static stylesheets: census, fix and gate in one script, mirroring scripts/shadow-fallback/run.js's shape (design H4, stylesheet… |
-| 112 | `fanout-shadow-lift-attr.py` | adds the `shadowLiftOnHover` block-level switch (boolean, |
-| 113 | `check-scrim.py` | the viewport-scrim detector (Wave 3C U-2, family M-14). |
-| 114 | `check-no-src-requires.py` | Fail when plugin-level PHP loads a file from src/. |
-| 115 | `check-exit-guards.py` | Fail when a PHP file's direct-access guard names a constant WordPress never defines. |
-| 116 | `check-nested-global-settings.py` | reject nested-path wp_get_global_settings() reads. |
-| 117 | `check-text-on-primary.py` | text on a primary-coloured ground must use the palette's |
-| 118 | `check-raw-box-control.py` | every 4-side box editor in the inspector is SgsBoxControl. |
-| 119 | `check-custom-colour-survives.py` | a custom colour picked in the editor must reach the live page. |
-| 120 | `audit-ssr-http-method.js` | Every `<ServerSideRender>` preview under `src/` must come from the SGS drop-in `src/components/ServerSideRender.js`, which always POSTs. Fails when: |
-| 121 | `test-media-enum-vocabulary.mjs` | A block that HAND-DECLARES a media-atom attribute with an `enum` must allow every value the atom's registry vocabulary offers. |
-| 122 | `check-border-width-without-style.py` | the "a width paints solid" detector. |
-| 123 | `check-separators-through-helper.py` | lines between items go through the helper. |
-| 124 | `check-no-client-names.py` | : keep client names and reference-site names out of the framework. |
-| 125 | `check-rule-labels.py` | : the framework principles are cited as FP-<n>, never by an archived spec's number. |
-| 126 | `check-extension-roster.js` | Fails when src/blocks/extensions/extension-roster.json drifts from the code it describes. The roster feeds sgs-update-v2.py::_seed_extension_attr_rows, so… |
-| 127 | `check-border-preview-twin.js` | check-border-preview-twin — every block that mounts the shared border panel previews that border through the panel's twin. |
-| 128 | `check-border-width-defaults.py` | "the stylesheet never chooses a border width". |
-| 129 | `check-focus-system.js` | .claude/plans/archive/2026-10-17-unified-focus-system.md §3). One focus system file |
-| 130 | `migrate-box-longhands.py` | CR6: move padding, margin and corner-radius boxes off the shorthands that zero-fill unset sides. |
-| 131 | `check-import-shadowing.js` | Fails when an editor file destructures a block attribute whose name is also a module-level binding in the same file: an import, or a top-level function… |
-| 132 | `migrate-box-alignment.py` | physical `left\|right` to logical `start\|end` for five settings. |
-| 133 | `check-editor-css-imported.js` | Fails when a block ships `src/blocks/<block>/editor.css` but no JavaScript file in that block imports it. The build bundles a stylesheet only if an entry… |
-| 134 | `block_source_files.py` | Block source-file resolver shared by the gate scripts. |
-| 135 | `block-source-files.js` | Block source-file resolver shared by the gate scripts. |
-| 136 | `check-text-colour-defaults.py` | : no SGS text defaults to the brand colour. |
-| 137 | `check-partial-use-imports.py` | : a render partial imports every class it names that its parent imports. |
-| 138 | `audit-typography-attr-declarations.js` | bug introduced while rolling out the full TypographyControls control set |
-| 139 | `emit_shape.py` | emit_shape -- how does a block carry one content attribute? |
-| 140 | `check-snapshot-palette-roster.py` | : every client snapshot carries the whole framework palette roster |
-| 141 | `test-custom-css-scope-js.mjs` | The editor's custom-CSS scoper against the SAME table the PHP scoper is tested against |
-| 142 | `migrate-section-gutter-tokens.py` | Per-tier section padding and gutter tokens (Spec 32 FR-32-15), added to the framework theme.json and every |
-| 143 | `check-link-source-adoption.py` | every shared link field offers the link source choice. |
-| 144 | `check-motion-pause-control.py` | content that moves on its own carries the shared pause control. |
-| 145 | `check-motion-item-parts.py` | - a block that repeats items names its repeated-item motion parts "Each ..." and lists them first. |
-| 146 | `generate-motion-stagger-columns.py` | - writes the grid-columns attribute map the stagger helper reads (FR-38A-24). |
-| 147 | `check-retired-blocks.py` | - a block that has been removed leaves no trace in live sources or the framework DB. |
-| 148 | `check-motion-off-switch-coverage.py` | Detector: which motion effects honour the per-tier off switch (Spec 38A). |
-| 149 | `survey-rich-text-formats.js` | render that prints one sanitises it without inline style (Spec 02 FR-2-4, FR-2-5). |
-| 150 | `check-snapshot-inline-format-tokens.py` | : the gate for `settings.custom.highlight` and `settings.custom.inlinePhoto` (Spec 02 FR-2-4, FR-2-5). |
-| 151 | `survey-link-underline-family.js` | link-underline setting set, wires it into its inspector and its canvas preview, and is registered (Spec 32 FR-32-24). |
-| 152 | `survey-typography-opt-in-props.js` | in step: every place that passes `showTextWrap` to `<TypographyControls>` also states `showTextStroke` (hollow outlined lettering, Spec 32 FR-32-23). |
-| 153 | `check-motion-literals.py` | no hard-coded motion time or easing in block CSS (Spec 38A FR-38A-53). |
-| 154 | `sweep-easing-vocabulary.py` | Move stored easing names to the CSS-keyword vocabulary (Bean, 2026-10-18). |
-| 155 | `survey-length-control-scale.py` | Classify every <SgsLengthControl> mount by the scale its ROLE needs ("spacing" or "font-size"). |
-| 156 | `check-container-band-layers.py` | Container band layers: contentWidth, padding and margin on their one layer each. |
-| 157 | `check-setting-meanings.py` | Gate: every setting listed in effect-settings.json carries a complete sgs.meaning. |
-| 158 | `check-tap-floors.py` | "a tap area fits its own shape; 44px is only the default". |
-| 159 | `check-row-flex-wrap.py` | a row of items the block authors has a wrap control. |
-| 160 | `check-focus-rests-static.py` | a static stylesheet hover look keeps the resting look on keyboard focus when asked. |
-| 161 | `generate-motion-base-transitions.py` | the stylesheet transition entries a hover state would otherwise replace. |
-| 162 | `check-font-weight-allowlist.py` | Gate: every font-weight a PHP file prints is allowlisted, never stripped or only escaped. |
-| 163 | `check-length-unit-partners.py` | Gate: no single length setting stores a bare number beside a `<name>Unit` attribute. |
-| 164 | `check-item-field-roles.py` | - every repeater item field in a block.json declares a role from the role vocabulary. |
-| 165 | `block_identity_facts.py` | block_identity_facts -- each SGS block's identification facts, read from code, as `block_identity_facts` rows (Spec 48 |
-| 166 | `check-button-empty-custom-props.js` | `src/blocks/button/style.css` drops a preset's hover lift, scale or rotate by declaring the matching variable EMPTY |
-| 167 | `check-authored-text-rich.py` | : every text setting whose words the author types is rich text (Bean 2026-10-30). |
-| 168 | `check-unsanitised-length-emit.py` | Gate: a responsive length emitter is never fed raw tier values without a unit or a sanitiser. |
-| 169 | `check-no-fluid-typography.py` | "WordPress's fluid type engine stays off". |
-| 170 | `check-border-tiers-printed.py` | - every border caller prints the per-device widths. |
-| 171 | `check-breakpoint-literals.py` | device-tier breakpoints come from the shared source, never typed. |
-| 172 | `check-framework-db-resolver.py` | every script a reseed runs asks lib/framework_db for its database. |
-| 173 | `check-wp-package-exports.mjs` | The build maps @wordpress/* imports to WordPress's own script globals (wp.dom, wp.blockEditor, ...), and webpack does not check that the name exists… |
-| 174 | `detector6_native_support_and_style_emission.py` | Detector 6 -- "WP-core native support" + "value painted inside a <style> element". |
-| 175 | `check-json-duplicate-keys.py` | a committed JSON file the plugins or theme load never repeats an object key. |
-| 176 | `check-nested-panel-title-rule.py` | the nested-ToolsPanel title rule lives once, in assets/css/inspector-controls.css. |
-| 177 | `check-shadow-clip.py` | a block container that can hold shadowed children never clips their shadows. |
-| 178 | `check-gate-disposition.py` | Spec 49 gate-disposition completeness check. |
-| 179 | `check-media-contract.py` | Spec 49 media contract gate (AC-2 and AC-18), active from cutover. |
-| 180 | `test-media-emitter-parity.mjs` | Standing gate (Spec 49 C3, PS-7): for every case in `tests/fixtures/media/sizing-cases.json` and `matrix.json`, and for a set of cases that exercises… |
-| 181 | `cli.py` | Spec 49 §13 migration detector: survey, fix, check, self-test. |
-| 182 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 183 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 184 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 185 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
-| 186 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
-| 187 | `survey-spacing-defaults.py` | census of the Spacing control's untouched sides. |
-| 188 | `run-motion-gates.py` | run every motion gate and print one table (Spec 38A phase M1). |
-| 189 | `fx-off-switch-css.check.mjs` | Computed-style check for the per-device off switch in the fx-*.css stylesheets (Spec 38A FR-38A-23). |
-| 190 | `tap-area-fits-shape.check.mjs` | Computed-size check for ruling 11 (Bean, 2026-10-23): a block's own size setting overrules the 44px house tap floor, so the tap area fits the shape; with… |
+| 5 | `generate-media-attributes.mjs` | Writes the atoms' attributes into each adopting block's committed `block.json` (marked `"_generated": "media-atoms"`) and the matching entries of… |
+| 6 | `run-motion-fx-generators.js` | motion-fx generator chain (seed-motion-fx-registry.py, generate-fx-effects-php.py, generate-fx-qualifying-blocks.py, generate-motion-presets-json.py). |
 
-**190 gating scripts.** Regenerate this whole section with:
+**6 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -231,765 +47,15 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (190 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 0 resolved scripts) — 190 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (6 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 7 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
-
-**`plugins/sgs-blocks/scripts/audit-bindable-attrs.py`** (build)
-- Path constants: `ROOT` = pathlib.Path(__file__).resolve().parent.parent
-- Reads: `BINDINGS_SUPPORT_PHP`, `block_json_path`, `php_file`, `render_php`, `sibling`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--fix`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/audit-block-file-consistency.py`** (build)
-- Path constants: `SCRIPT_DIR` = Path(__file__).resolve().parent; `PLUGIN_DIR` = SCRIPT_DIR.parent; `REPO_ROOT` = PLUGIN_DIR.parent.parent
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: `BASELINE_FILE`
-- Non-zero exit sites found: 0, 1
-
-**`plugins/sgs-blocks/scripts/audit-block-uniformity.py`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: 2
-
-**`plugins/sgs-blocks/scripts/audit-declared-vs-seeded-roles.py`** (build)
-- Path constants: `SCRIPT_DIR` = Path(__file__).resolve().parent; `SRC_BLOCKS` = SCRIPT_DIR.parent / "src" / "blocks"
-- Reads: `OVERRIDES_PATH`, `sqlite3:f"file:{SGS_DB}?mode=ro"`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): block_attributes
-- CLI flags read: `--check`, `--self-test`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/audit-feature-parity.py`** (build)
-- Path constants: `HERE` = Path(__file__).parent
-- Reads: `EXCEPTIONS`, `ROSTER`, `sqlite3:str(DB_PATH`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): block_attributes, block_supports
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/audit-inline-styling.js`** (build)
-- Reads: `blockJsonPath`
-- Writes: `OUT_JSON`, `OUT_MD`
-- Non-zero exit sites found: exitCode=1
-
-**`plugins/sgs-blocks/scripts/audit-typography-attr-declarations.js`** (build)
-- Reads: `blockJsonFile`
-- Writes: `bjFile`
-- Non-zero exit sites found: exit(1)
-
-**`plugins/sgs-blocks/scripts/behavioural-analyser/check-state-exhaustiveness.py`** (build)
-- Path constants: `LIVE_SCANNER` = Path(__file__).resolve().parent / "state-cssom-scan.mjs"
-- Reads: `sqlite3:f"file:{SGS_DB}?mode=ro"`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): block_attributes, blocks
-- CLI flags read: `--baseline`, `--check`, `--live`, `--self-test`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-authored-text-rich.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parent.parent; `REPO` = PLUGIN.parent.parent; `REVIEW` = REPO / "scripts/computed-route/data/plain-text-review.json"
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: `ROLES`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-border-preview-twin.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: `full`
-- Non-zero exit sites found: exit(0), exit(1)
-
-**`plugins/sgs-blocks/scripts/check-border-style-without-width.py`** (build)
-- Path constants: `REPO` = Path(__file__).resolve().parents[3]; `PLUGIN` = REPO / "plugins" / "sgs-blocks"; `BASELINE` = Path(__file__).with_name("border-style-without-width-baseline.json")
-- Reads: `BASELINE`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-border-tiers-printed.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): plugins
-- CLI flags read: `--check`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-border-width-defaults.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
-- Reads: `sqlite3:f"file:{db_path.as_posix(`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): block_attributes, plugins
-- CLI flags read: `--check`, `--root`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-border-width-without-style.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): plugins
-- CLI flags read: `--check`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-box-family-guard.py`** (build)
-- Reads: `_BASELINE_PATH`
-- Writes: `_BASELINE_PATH`
-- CLI flags read: `--check`, `--report`, `--update-baseline`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-breakpoint-literals.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]; `REPO` = PLUGIN.parents[1]; `BASELINE` = Path(__file__).resolve().with_name("check-breakpoint-literals-baseline.json"); `ROOTS` = [PLUGIN, REPO / "theme" / "sgs-theme", REPO / "plugins" / "sgs-booking", REPO / "plugins" / "sgs-cli; `CSS_ALLOW` = Path(__file__).resolve().with_name("check-breakpoint-literals-css-allow.json"); `CSS_ROOTS` = [PLUGIN / "src", REPO / "theme" / "sgs-theme" / "assets" / "css"]
-- Reads: `BASELINE`, `BP_SOURCE`, `CSS_ALLOW`
-- Writes: `BASELINE`
-- DB tables (sgs-framework.db): plugins
-- CLI flags read: `--`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-button-empty-custom-props.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-child-lift.py`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-colour-attr-css-property.py`** (build)
-- Path constants: `ROOT` = pathlib.Path(__file__).resolve().parent; `MDN_PROPERTIES` = ROOT.parent / "node_modules" / "mdn-data" / "css" / "properties.json"
-- Reads: `GRADIENT_KEYS`, `MDN_PROPERTIES`, `sqlite3:f"file:{db}?mode=ro"`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): block_attributes
-- CLI flags read: `--check`, `--self-test`
-- Env vars read: `SGS_FRAMEWORK_DB`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-colour-preview-resolver.js`** (build)
-- Reads: `TOKENS`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(0), exit(1)
-
-**`plugins/sgs-blocks/scripts/check-container-band-layers.py`** (build)
-- Path constants: `ROOT` = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-- Reads: `sqlite3:'file:%s?mode=ro' % DB_PATH.replace('\\'`
-- Writes: `tmp`
-- DB tables (sgs-framework.db): block_attributes, block_composition
-- CLI flags read: `--apply`, `--check`, `--fix`, `--json`, `--out`, `--ratchet`, `--self-test`, `--survey`, `--write-baseline`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-control-helper-parity.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parent.parent; `BASELINE` = Path(__file__).resolve().parent / "control-helper-parity-baseline.json"
-- Reads: `BASELINE`, `php`
-- Writes: `BASELINE`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-control-ux.js`** (build)
-- Reads: `BASELINE_FILE`, `blockJsonPath`
-- Writes: `BASELINE_FILE`
-- Non-zero exit sites found: exit(0), exit(1)
-
-**`plugins/sgs-blocks/scripts/check-custom-colour-survives.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
-- Reads: `LIVE_PROBE`, `bj`, `sqlite3:f"file:{DB}?mode=ro"`
-- Writes: `json.dump->fh`
-- DB tables (sgs-framework.db): block_attributes
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-dead-api-calls.py`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: `fixture_php`
-- CLI flags read: `--check`, `--json`, `--php-binary`, `--report`, `--self-test`, `--update-baseline`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-dead-controls.js`** (build)
-- Reads: `BASELINE_FILE`, `blockJsonPath`, `fixturePath`
-- Writes: `fixturePath`
-- Non-zero exit sites found: exit(0), exit(1)
-
-**`plugins/sgs-blocks/scripts/check-dead-pattern-attrs.py`** (build)
-- Path constants: `REPO` = pathlib.Path(__file__).resolve().parents[3]; `BLOCKS_DIR` = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'; `THEME_DIR` = REPO / 'theme' / 'sgs-theme'
-- Reads: `bj`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-doc-citations.py`** (build)
-- Reads: `doc`, `src`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--self-test`, `--survey`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-duplicate-controls.js`** (build)
-- Reads: `BASELINE_FILE`, `editJsPath`
-- Writes: `BASELINE_FILE`
-- Non-zero exit sites found: exit(0)
-
-**`plugins/sgs-blocks/scripts/check-editor-css-imported.js`** (build)
-- Reads: `full`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-editor-render-parity.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(0), exit(1)
-
-**`plugins/sgs-blocks/scripts/check-element-manifest-conformance.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exitCode=0, exitCode=1
-
-**`plugins/sgs-blocks/scripts/check-empty-inspector-containers.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(0)
-
-**`plugins/sgs-blocks/scripts/check-enum-control-shape.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parent.parent; `BASELINE_PATH` = Path(__file__).resolve().parent / "check-enum-control-shape-baseline.json"
-- Reads: `BASELINE_PATH`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-exit-guards.py`** (build)
-- Path constants: `REPO` = Path(__file__).resolve().parents[3]; `ROOTS` = [REPO / 'theme' / 'sgs-theme', REPO / 'plugins' / 'sgs-blocks']
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-extension-roster.js`** (build)
-- Reads: `rosterFile`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(1)
-
-**`plugins/sgs-blocks/scripts/check-focus-rests-static.py`** (build)
-- Path constants: `ROOT` = Path(__file__).resolve().parent.parent
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--fix`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-focus-system.js`** (build)
-- Reads: `abs`
-- Writes: `tmp`
-- Non-zero exit sites found: exitCode=2
-
-**`plugins/sgs-blocks/scripts/check-font-weight-allowlist.py`** (build)
-- Path constants: `ROOT` = Path(__file__).resolve().parent.parent
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--fix`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-framework-db-resolver.py`** (build)
-- Path constants: `HERE` = Path(__file__).resolve().parent; `REPO_SCRIPTS` = HERE.parents[2] / "scripts"
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--self-test`, `--survey`, `--survey-all`
-- Env vars read: `SGS_FRAMEWORK_DB`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-fx-registration.py`** (build)
-- Reads: `schema_path`, `sqlite3:f"file:{db.as_posix(`, `target_path`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): fx_effects
-- Non-zero exit sites found: 1
-
-**`plugins/sgs-blocks/scripts/check-gate-disposition.py`** (build)
-- Path constants: `HERE` = os.path.dirname(os.path.abspath(__file__))
-- Reads: `DATA`, `os.path.join(PLUGIN`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): plugins
-- Env vars read: `GATE_DISPOSITION_FILE`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js`** (build)
-- Reads: `BASELINE_FILE`, `blockJsonPath`, `target`
-- Writes: `BASELINE_FILE`
-- Non-zero exit sites found: exit(1)
-
-**`plugins/sgs-blocks/scripts/check-id-scoped-emits.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(0)
-
-**`plugins/sgs-blocks/scripts/check-import-shadowing.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-inert-controls.py`** (build)
-- Path constants: `REPO` = pathlib.Path(__file__).resolve().parents[3]; `BLOCKS_DIR` = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'; `INCLUDES_DIR` = REPO / 'plugins' / 'sgs-blocks' / 'includes'; `COMPONENTS_JS` = REPO / 'plugins' / 'sgs-blocks' / 'scripts' / 'inspector-scan' / 'core' / 'components.js'
-- Reads: `SHARED_CONTROLS_JS`, `bj`, `facade_path`, `panel_file`, `render_php_path`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-item-field-roles.py`** (build)
-- Path constants: `ROOT` = Path(__file__).resolve().parent.parent
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--fix`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-json-duplicate-keys.py`** (build)
-- Path constants: `REPO` = Path(__file__).resolve().parents[3]
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): plugins
-- CLI flags read: `--check`, `--self-test`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-jsonld-flags.py`** (build)
-- Reads: `bad`
-- Writes: `bad`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-ksort-before-hash.py`** (build)
-- Path constants: `PLUGIN_ROOT` = Path(__file__).resolve().parent.parent
-- Reads: `fixture`
-- Writes: `tmp_path`
-- CLI flags read: `--check`, `--self-test`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-length-unit-partners.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parent.parent; `REPO` = PLUGIN.parent.parent
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: `planted`, `tmp`
-- CLI flags read: `--apply`, `--block`, `--check`, `--fix`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-link-source-adoption.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): plugins
-- CLI flags read: `--check`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-media-atom-purity.js`** (build)
-- Reads: `loader`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-media-breakpoints.js`** (build)
-- Reads: `CSS`, `JS_SRC`, `PHP_SRC`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-media-contract.py`** (build)
-- Path constants: `HERE` = os.path.dirname(os.path.abspath(__file__))
-- Reads: `EXEMPTIONS`, `FIXTURE`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): plugins
-- Non-zero exit sites found: 2
-
-**`plugins/sgs-blocks/scripts/check-media-disclosure-coverage.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(1)
-
-**`plugins/sgs-blocks/scripts/check-motion-item-parts.py`** (build)
-- Path constants: `ROOT` = Path(__file__).resolve().parent.parent
-- Reads: `php`, `sqlite3:f"file:{path}?mode=ro"`
-- Writes: `tmp`
-- DB tables (sgs-framework.db): array_item_schema
-- CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-motion-literals.py`** (build)
-- Path constants: `REPO` = Path(__file__).resolve().parents[3]
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--json`, `--root`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-motion-off-switch-coverage.py`** (build)
-- Path constants: `ROOT` = Path(__file__).resolve().parents[1]
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--json`, `--self-test`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-motion-pause-control.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
-- Reads: `meta_path`, `style_path`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): plugins
-- CLI flags read: `--check`, `--fix`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-nested-global-settings.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]; `REPO` = PLUGIN.parents[1]; `ROOTS` = [PLUGIN / "includes", PLUGIN / "src", REPO / "theme" / "sgs-theme"]
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-nested-panel-title-rule.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]; `REPO` = PLUGIN.parents[1]
-- Reads: `SHARED`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): plugins
-- CLI flags read: `--check`, `--self-test`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-no-core-blocks.py`** (build)
-- Path constants: `REPO` = pathlib.Path(__file__).resolve().parents[3]; `MIG` = REPO / 'plugins' / 'sgs-blocks' / 'scripts' / 'migrate-core-blocks'; `THEME` = REPO / 'theme' / 'sgs-theme'
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-no-fluid-typography.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]; `REPO` = PLUGIN.parents[1]
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): plugins
-- CLI flags read: `--check`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-no-src-requires.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-palette-slug-refs.py`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-partial-use-imports.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--self-test`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-preset-token-naming.py`** (build)
-- Reads: `snapshot_path`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--self-test`, `--survey`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-product-search-guards.js`** (build)
-- Reads: `TARGET`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(0), exit(1)
-
-**`plugins/sgs-blocks/scripts/check-raw-box-control.py`** (build)
-- Path constants: `ROOT` = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-raw-spacing-controls.py`** (build)
-- Path constants: `SRC` = Path(__file__).resolve().parent.parent / "src"
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-render-tier-object-spacing.py`** (build)
-- Path constants: `SCRIPT_DIR` = Path(__file__).resolve().parent; `PLUGIN_DIR` = SCRIPT_DIR.parent
-- Reads: `BASELINE_FILE`, `block_json_path`
-- Writes: `BASELINE_FILE`
-- Non-zero exit sites found: 0, 1
-
-**`plugins/sgs-blocks/scripts/check-render-undefined-vars.py`** (build)
-- Path constants: `PLUGIN_ROOT` = Path(__file__).resolve().parent.parent
-- Reads: `BASELINE`, `CONFIG`, `FIXTURE_FILE`, `part`, `php`, `render`
-- Writes: `dest`
-- CLI flags read: `--check`, `--self-test`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-retired-blocks.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parent.parent; `REPO` = PLUGIN.parent.parent
-- Reads: `sqlite3:f"file:{path}?mode=ro"`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): sqlite_master
-- CLI flags read: `--check`, `--self-test`, `--survey`, `--with-db`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-row-flex-wrap.py`** (build)
-- Path constants: `BLOCKS` = Path(__file__).resolve().parent.parent / "src" / "blocks"
-- Reads: `css_file`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--blocks-dir`, `--check`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-separators-through-helper.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]; `BASELINE` = Path(__file__).resolve().with_name("check-separators-through-helper-baseline.json")
-- Reads: `BASELINE`, `manifest`
-- Writes: `BASELINE`
-- DB tables (sgs-framework.db): plugins
-- CLI flags read: `--check`, `--self-test`, `--survey`, `--write-baseline`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-setting-meanings.py`** (build)
-- Path constants: `HERE` = Path(__file__).resolve().parent; `REPO` = HERE.parent.parent.parent; `DEFAULT_SETTINGS` = REPO / 'scripts' / 'computed-route' / 'data' / 'effect-settings.json'; `DEFAULT_BLOCKS` = HERE.parent / 'src' / 'blocks'
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--blocks-dir`, `--check`, `--report`, `--self-test`, `--settings`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-shadow-clip.py`** (build)
-- Path constants: `ROOT` = Path(__file__).resolve().parent.parent
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-shadow-fallback-php.py`** (build)
-- Path constants: `ROOT` = Path(__file__).resolve().parents[1]
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-shadow-sources.py`** (build)
-- Path constants: `HERE` = Path(__file__).resolve().parent               # plugins/sgs-blocks/scripts/; `PLUGIN` = HERE.parent                                  # plugins/sgs-blocks/; `ROOT` = PLUGIN.parents[1]                              # small-giants-wp/
-- Reads: `BASELINE_JSON`, `abspath`, `black_css`, `block_json`, `fix_a_path`, `missing_fc_css`, `pass_css`, `snap`, `theme_json`
-- Writes: `SURVEY_JSON`
-- CLI flags read: `--check`, `--fix`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-shared-css-state-rules.js`** (build)
-- Reads: `BASELINE_FILE`, `fullPath`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(0), exit(1), exitCode=0, exitCode=1
-
-**`plugins/sgs-blocks/scripts/check-shared-panel-schema.js`** (build)
-- Reads: `blockJsonPath`, `editPath`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(0)
-
-**`plugins/sgs-blocks/scripts/check-simple-surface-cap.js`** (build)
-- Reads: `target.file`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-single-instance-invariants.py`** (build)
-- Path constants: `PLUGIN_ROOT` = Path(__file__).resolve().parent.parent
-- Reads: `MEGA_PANEL_STYLE`, `SITE_HEADER_SCROLL_HELPER`, `VALUE_LADDER_HELPER`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--self-test`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-snapshot-inline-format-tokens.py`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--apply`, `--check`, `--client`, `--fix`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-snapshot-palette-roster.py`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-state-classification.py`** (build)
-- Path constants: `SCRIPTS` = Path(__file__).resolve().parent; `BLOCKS_DIR` = SCRIPTS.parent / "src" / "blocks"
-- Reads: `sqlite3:f"file:{SGS_DB}?mode=ro"`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): block_attributes, modifier_suffixes
-- CLI flags read: `--check`, `--self-test`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-style-blob-sanitisation.py`** (build)
-- Path constants: `ROOT` = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-tap-floors.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
-- Reads: `REGISTER`, `bj`, `sqlite3:db`, `sqlite3:f"file:{db_path.as_posix(`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): block_attributes, block_attributes (write), plugins
-- CLI flags read: `--check`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-text-colour-defaults.py`** (build)
-- Path constants: `PLUGIN_ROOT` = Path(__file__).resolve().parent.parent
-- Reads: `bj`, `sqlite3:f"file:{db.as_posix(`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): block_attributes
-- CLI flags read: `--check`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-text-gradient-companion.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(0)
-
-**`plugins/sgs-blocks/scripts/check-text-on-primary.py`** (build)
-- Path constants: `ROOT` = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-text-stroke-routing.py`** (build)
-- Path constants: `ROOT` = Path(__file__).resolve().parents[1]
-- Reads: `_bj`, `bj`, `sqlite3:f"file:{SGS_DB}?mode=ro"`
-- Writes: `tmp`
-- DB tables (sgs-framework.db): block_attributes
-- CLI flags read: `--apply`, `--check`, `--fix`, `--json`, `--self-test`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-tier-object-cast.py`** (build)
-- Path constants: `PLUGIN_ROOT` = Path(__file__).resolve().parent.parent
-- Reads: `block_json_path`, `fixture`, `render_path`
-- Writes: `tmp_render`
-- CLI flags read: `--check`, `--self-test`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-tier-storage-shape.py`** (build)
-- Path constants: `REPO` = pathlib.Path(__file__).resolve().parents[3]; `BLOCKS_DIR` = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'; `THEME_DIR` = REPO / 'theme' / 'sgs-theme'
-- Reads: `bj`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-undeclared-attrs.py`** (build)
-- Path constants: `REPO` = pathlib.Path(__file__).resolve().parents[3]; `BLOCKS_DIR` = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'; `COMPONENTS_JS` = REPO / 'plugins' / 'sgs-blocks' / 'scripts' / 'inspector-scan' / 'core' / 'components.js'
-- Reads: `bj`, `block_json`, `edit_file`, `ext_file`, `gallery_edit`, `own_file`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-undefined-refs.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(0), exit(1)
-
-**`plugins/sgs-blocks/scripts/check-ungated-paint-rules.py`** (build)
-- Reads: `bj`, `style_path`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--block`, `--check`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-universal-fit.js`** (build)
-- Reads: `BASELINE_FILE`, `ROSTER_FILE`, `blockJsonPath`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(0), exit(1)
-
-**`plugins/sgs-blocks/scripts/check-unsanitised-length-emit.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parent.parent
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-wiring-fingerprint.py`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-withdrawn-figures.py`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: `tmp`
-- CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
-- Env vars read: `SGS_REPO`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-wp-package-exports.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(2)
-
-**`plugins/sgs-blocks/scripts/check-wrapper-capability-preconditions.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(0)
-
-**`plugins/sgs-blocks/scripts/colour-codemod/classify-end-shape.js`** (build)
-- Reads: `blockJsonFile`, `childJsonPath`, `renderFile`, `viewFile`
-- Writes: `OUT_PATH`
-- Non-zero exit sites found: exitCode=1
-
-**`plugins/sgs-blocks/scripts/colour-codemod/migrate-shadow-mounts.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(1)
-
-**`plugins/sgs-blocks/scripts/colour-codemod/wire-border-contrast.js`** (build)
-- Reads: `editPath`, `plan.editPath`, `planned.editPath`
-- Writes: `tmp`
-- Non-zero exit sites found: exitCode=1
-
-**`plugins/sgs-blocks/scripts/consistency/audit-serverside-render-disabled.js`** (build)
-- Reads: `blockJsonPath`
-- Writes: `OUT_JSON`, `OUT_MD`
-- Non-zero exit sites found: exitCode=1
-
-**`plugins/sgs-blocks/scripts/consistency/audit-ssr-http-method.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(1)
 
 **`plugins/sgs-blocks/scripts/consistency/build-roster.py`** (build)
 - Path constants: `OUT` = Path(__file__).parent / "roster.json"; `BLOCKS_DIR` = Path(__file__).parent.parent.parent / "src" / "blocks"
 - Reads: `css_path`, `out_path`, `sqlite3:str(DB_PATH`
 - Writes: `OUT`, `tmp_out`
 - DB tables (sgs-framework.db): block_attributes, block_supports, blocks, sqlite_master
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/consistency/run-consistency-gates.py`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/content-role-detect/detector6_native_support_and_style_emission.py`** (build)
-- Path constants: `SCRIPT_DIR` = Path(__file__).resolve().parent; `PLUGIN_ROOT` = SCRIPT_DIR.parent.parent          # plugins/sgs-blocks
-- Reads: `sqlite3:f"file:{framework_db_path(`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): roles
-- CLI flags read: `--candidates`, `--self-test`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/db-consistency/run.py`** (build)
-- Reads: `sqlite3:str(_DB_PATH`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--report`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/dbschema/capture_seed_data.py`** (build)
-- Path constants: `HERE` = Path(__file__).resolve().parent; `DATA` = HERE.parent / "data"; `DEFAULT_DB` = Path(
-- Reads: `sqlite3:db`, `sqlite3:f"file:{db}?mode=ro"`, `target`
-- Writes: `target`
-- CLI flags read: `--check`, `--db`, `--self-test`, `--write`
-- Env vars read: `SGS_FRAMEWORK_DB`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/dbschema/check_schema_drift.py`** (build)
-- Path constants: `HERE` = Path(__file__).resolve().parent
-- Reads: `schema_sql`, `sqlite3:f"file:{live_db}?mode=ro"`, `sqlite3:f"file:{live_path}?mode=ro"`, `sqlite3:str(mutated_both`, `sqlite3:str(mutated_col`, `sqlite3:str(mutated_tbl`, `sqlite3:str(schema_tmp`, `sqlite3:str(target`, `sqlite3:str(tmp`
-- Writes: `schema_sql`
-- DB tables (sgs-framework.db): sqlite_master
-- CLI flags read: `--check`, `--live-db`, `--regenerate`, `--schema`, `--self-test`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/dbschema/check_value_identity.py`** (build)
-- Reads: `sqlite3:f"file:{db_path}?mode=ro"`, `sqlite3:f"file:{live_db}?mode=ro"`, `sqlite3:str(db_path`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--live-db`, `--self-test`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/dedupe-shadow-colour-rows.py`** (build)
-- Path constants: `ROOT` = Path(__file__).resolve().parents[3]
-- Reads: `block_json`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/fanout-overlay-sibling-attrs.py`** (build)
-- Path constants: `BLOCKS_DIR` = Path(__file__).resolve().parent.parent / 'src' / 'blocks'
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/fanout-shadow-lift-attr.py`** (build)
-- Path constants: `PLUGIN_ROOT` = Path(__file__).resolve().parent.parent
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/fanout-surface-ground-attrs.py`** (build)
-- Path constants: `REPO_ROOT` = Path(__file__).resolve().parent.parent.parent.parent; `PLUGIN_ROOT` = Path(__file__).resolve().parent.parent
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
 **`plugins/sgs-blocks/scripts/generate-extension-attributes.js`** (build)
@@ -1003,406 +69,22 @@ Every field below is extracted from the script's own executable code (regex over
 - Non-zero exit sites found: exit(0), exit(1)
 
 **`plugins/sgs-blocks/scripts/generate-media-attributes.mjs`** (build)
-- Reads: `OUT_FILE`, `OVERRIDES_FILE`
-- Writes: `OUT_FILE`, `OVERRIDES_FILE`
+- Reads: `OVERRIDES_FILE`
+- Writes: `OVERRIDES_FILE`
 - Non-zero exit sites found: exit(0), exit(1), exit(2)
-
-**`plugins/sgs-blocks/scripts/generate-media-slot-schema.mjs`** (build)
-- Reads: `OUT_FILE`, `SHAPES_FILE`
-- Writes: `OUT_FILE`
-- Non-zero exit sites found: exit(1)
-
-**`plugins/sgs-blocks/scripts/generate-media-stylesheet.mjs`** (build)
-- Reads: `OUT`, `basePath`
-- Writes: `OUT`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/generate-motion-base-transitions.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
-- Reads: `OUT`, `block_json_path`, `css_path`
-- Writes: `OUT`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/generate-motion-stagger-columns.py`** (build)
-- Path constants: `SCRIPTS_DIR` = Path(__file__).resolve().parent; `PLUGIN_DIR` = SCRIPTS_DIR.parent
-- Reads: `php`, `sqlite3:f"file:{path}?mode=ro"`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): block_attributes
-- CLI flags read: `--check`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
 
 **`plugins/sgs-blocks/scripts/generate-svg-allowlist.js`** (build)
 - Reads: `OUT_FILE`
 - Writes: `OUT_FILE`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
-**`plugins/sgs-blocks/scripts/generative-background/verify-transform.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(1)
-
-**`plugins/sgs-blocks/scripts/inspector-scan/run.js`** (build)
-- Reads: `RULES_JSON_PATH`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(0), exit(1)
-
-**`plugins/sgs-blocks/scripts/lib/block-source-files.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(2)
-
-**`plugins/sgs-blocks/scripts/lib/block_identity_facts.py`** (build)
-- Path constants: `HERE` = Path(__file__).resolve().parent
-- Reads: `sqlite3:f"file:{db.as_posix(`
-- Writes: **read-only** — no write call site found in source
-- DB tables (sgs-framework.db): sqlite_master
-- CLI flags read: `--block`, `--check`, `--db`, `--report`, `--self-test`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/lib/block_source_files.py`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: 2
-
-**`plugins/sgs-blocks/scripts/lib/emit_shape.py`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/lint-responsive-controls.py`** (build)
-- Path constants: `REPO_ROOT` = Path(__file__).resolve().parents[3]  # .../small-giants-wp
-- Reads: `COMPONENTS_INDEX`, `module_file`, `source_file`
-- Writes: `fixture_file`
-- DB tables (sgs-framework.db): block_attributes
-- CLI flags read: `--check`, `--db-context`, `--quiet`, `--self-test`
-- Non-zero exit sites found: 0
-
-**`plugins/sgs-blocks/scripts/migrate-border-element.py`** (build)
-- Path constants: `PLUGIN` = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); `CENSUS` = os.path.join(REPO, 'reports', 'migrations', 'border-element-census.json')
-- Reads: `block_json`
-- Writes: `CENSUS`, `json.dump->fh`
-- DB tables (sgs-framework.db): plugins
-- CLI flags read: `--check`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/migrate-border-shape-b.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: `bjPath`, `editPath`, `phpPath`
-- Non-zero exit sites found: exit(0)
-
-**`plugins/sgs-blocks/scripts/migrate-box-alignment.py`** (build)
-- Path constants: `ROOT` = next(p for p in Path(__file__).resolve().parents if (p / '.git').exists())
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: `tmp`
-- CLI flags read: `--apply`, `--check`, `--fix`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/migrate-box-longhands.py`** (build)
-- Path constants: `PLUGIN` = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); `CENSUS` = os.path.join(REPO, 'reports', 'migrations', 'box-longhands-census.json')
-- Reads: `BASELINE`
-- Writes: `BASELINE`, `CENSUS`, `tmp`
-- DB tables (sgs-framework.db): plugins
-- CLI flags read: `--apply`, `--check`, `--fix`, `--json`, `--only`, `--self-test`, `--survey`, `--write-baseline`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/migrate-length-sanitiser.py`** (build)
-- Path constants: `ROOT` = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/migrate-media-system/cli.py`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--active`, `--apply`, `--break`, `--content`, `--dry-run`, `--file`, `--json`, `--mirror`, `--out`, `--regenerate`, `--repo`, `--self-test`, `--target`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/migrate-motion/sweep-easing-vocabulary.py`** (build)
-- Path constants: `HERE` = Path(__file__).resolve().parent; `PLUGIN` = HERE.parent.parent; `REPO` = PLUGIN.parent.parent; `BACKUPS` = REPO / '.claude' / 'backups' / '2026-10-18-s7'
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--apply`, `--check`, `--fix`, `--json`, `--self-test`, `--survey`, `--target`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/migrate-render-closures.py`** (build)
-- Path constants: `ROOT` = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--apply`, `--check`, `--fix`, `--only`, `--self-test`, `--skip`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/migrate-section-gutter-tokens.py`** (build)
-- Reads: `encoding="utf-8"`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--apply`, `--check`, `--fix`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/migrate-shadow-presets.py`** (build)
-- Path constants: `ROOT` = Path(__file__).resolve().parents[3]
-- Reads: `DARK`, `tj`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/migrate-theme-native-spacing.py`** (build)
-- Path constants: `REPO` = Path(__file__).resolve().parents[3]; `THEME` = REPO / "theme" / "sgs-theme"; `BLOCKS` = REPO / "plugins" / "sgs-blocks" / "src" / "blocks"
-- Reads: `bj`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/migrate-tier-object.py`** (build)
-- Path constants: `REPO` = Path(__file__).resolve().parents[3]; `BLOCKS_DIR` = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'; `INCLUDES_DIR` = REPO / 'plugins' / 'sgs-blocks' / 'includes'
-- Reads: `_bare_bj`, `_bj`, `bj`, `ej`, `rp`, `sqlite3:f'file:{SGS_DB}?mode=ro'`
-- Writes: `bj`, `ej`
-- DB tables (sgs-framework.db): block_attributes
-- CLI flags read: `--all-properties`, `--apply`, `--check`, `--check-db-parity`, `--fix`, `--json`, `--property`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/nav-qa/check-fixture-fidelity.py`** (build)
-- Path constants: `HERE` = Path(__file__).resolve().parent; `REPO_ROOT` = HERE.parents[3]
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--json`, `--labels-dir`, `--plan`, `--self-test`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/nav-qa/logical-props-lint.py`** (build)
-- Path constants: `SCRIPT_DIR` = Path(__file__).resolve().parent; `SGS_BLOCKS_ROOT` = SCRIPT_DIR.parent.parent  # plugins/sgs-blocks/
-- Reads: `BASELINE_PATH`, `css`
-- Writes: `BASELINE_PATH`, `css`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/no-inline/check-no-inline.py`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--deep`, `--live`, `--live-default`, `--no-deep`, `--selftest`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/no-inline/check-stranded-guards.py`** (build)
-- Path constants: `BLOCKS_DIR` = Path(__file__).resolve().parent.parent.parent / "src" / "blocks"
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--selftest`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/remove-vacuous-style-engine-guard.py`** (build)
-- Path constants: `ROOT` = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-- Reads: `header`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--apply`, `--check`, `--fix`, `--only`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/run-gates.py`** (build)
-- Reads: `_BUILD_DEPLOY`, `_GATES_JSON`
-- Writes: `_GATES_JSON`, `tmp`, `tmp2`
-- CLI flags read: `--assert-wired`, `--jobs`, `--list`, `--no-write`, `--only`, `--only-failed`, `--self-test`, `--tier`, `--time`, `-v`
-- Non-zero exit sites found: 0, 1, SystemExit(non-zero on failure)
-
 **`plugins/sgs-blocks/scripts/run-motion-fx-generators.js`** (build)
 - Reads: UNVERIFIED (no recognised read call site found)
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
-**`plugins/sgs-blocks/scripts/run-motion-gates.py`** (build)
-- Path constants: `SCRIPTS` = Path(__file__).resolve().parent; `REPO` = SCRIPTS.parents[2]
-- Reads: `script`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/scrim/check-scrim.py`** (build)
-- Path constants: `HERE` = Path(__file__).resolve().parent           # plugins/sgs-blocks/scripts/scrim/; `PLUGIN` = HERE.parents[1]                          # plugins/sgs-blocks/
-- Reads: `inc`, `style`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/shadow-fallback/run.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(1), exit(2)
-
-**`plugins/sgs-blocks/scripts/shadow-lift/run.js`** (build)
-- Reads: `THEME_JSON`, `candidate`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(1), exit(2)
-
-**`plugins/sgs-blocks/scripts/survey-border-control-migration.py`** (build)
-- Path constants: `ROOT` = _find_repo_root(os.path.dirname(__file__))
-- Reads: `os.path.join(synthetic_dir`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/survey-length-control-scale.py`** (build)
-- Path constants: `ROOT` = _find_repo_root(os.path.dirname(__file__))
-- Reads: `bj`, `sqlite3:'file:%s?mode=ro' % DB_PATH`
-- Writes: `path + '.tmp'`
-- DB tables (sgs-framework.db): block_attributes
-- CLI flags read: `--apply`, `--check`, `--fix`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/survey-link-underline-family.js`** (build)
-- Reads: `abs`
-- Writes: `tmp`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/survey-rich-text-formats.js`** (build)
-- Reads: `FORMATS_MODULE + '.js'`, `ROLES_FILE`, `abs`, `target`
-- Writes: `tmp`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/survey-spacing-defaults.py`** (build)
-- Path constants: `PLUGIN` = Path(__file__).resolve().parent.parent; `REPO` = PLUGIN.parent.parent
-- Reads: `css_path`, `php_path`, `sqlite3:f'file:{DB_PATH}?mode=ro'`
-- Writes: `BASELINE`
-- DB tables (sgs-framework.db): block_attributes
-- CLI flags read: `--check`, `--out`, `--self-test`, `--strict`, `--survey`, `--write-baseline`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/survey-typography-opt-in-props.js`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: `f + '.tmp'`
-- Non-zero exit sites found: exit(1)
-
-**`plugins/sgs-blocks/scripts/surveys/check-image-controls-support.py`** (build)
-- Path constants: `REPO` = Path(__file__).resolve().parents[4]; `BLOCKS_DIR` = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
-- Reads: `bj_path`, `save_path`, `style_path`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites found: 0, 1
-
-**`plugins/sgs-blocks/scripts/surveys/survey-background-colour-support.py`** (build)
-- Path constants: `REPO` = Path(__file__).resolve().parents[4]; `BLOCKS_DIR` = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
-- Reads: `bj_path`
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites found: 0, 1
-
-**`plugins/sgs-blocks/scripts/surveys/survey-control-parity.py`** (build)
-- Path constants: `PLUGIN_ROOT` = Path(__file__).resolve().parents[2]
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--apply`, `--check`, `--exclude`, `--fix`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites found: 1
-
-**`plugins/sgs-blocks/scripts/surveys/survey-experimental-imports.js`** (build)
-- Reads: `barrel`
-- Writes: `full`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/sync-snapshot-shadow-presets.py`** (build)
-- Path constants: `ROOT` = Path(__file__).resolve().parents[3]
-- Reads: `FRAMEWORK`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/tests/test-create-drawer-seed.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(0), exit(1)
-
-**`plugins/sgs-blocks/scripts/tests/test-custom-css-scope-js.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(1)
-
-**`plugins/sgs-blocks/scripts/tests/test-float-defaults.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/tests/test-hover-state-guard.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(2)
-
-**`plugins/sgs-blocks/scripts/tests/test-media-atom-parity.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/tests/test-media-attr-parity.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/tests/test-media-emitter-parity.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: `tmp`
-- Non-zero exit sites found: exit(1)
-
-**`plugins/sgs-blocks/scripts/tests/test-media-enum-vocabulary.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(1)
-
-**`plugins/sgs-blocks/scripts/tests/test-media-injection-parity.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/tests/test-nonmodal-freeze-background.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: exit(1)
-
-**`plugins/sgs-blocks/scripts/tests/test-panel-bounds.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/tests/test-sanitise-svg.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/tests/test-shadow-layers-js.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/tests/test-shadow-model.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/wiring-fingerprint/tests/prove_rules_can_fail.py`** (build)
-- Path constants: `SRC` = Path(__file__).resolve().parent.parent
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/tests/playwright/fx-off-switch-css.check.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/tests/playwright/tap-area-fits-shape.check.mjs`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`scripts/check-no-client-names.py`** (build)
-- Path constants: `REPO` = Path(__file__).resolve().parent.parent
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: `decisions`
-- CLI flags read: `--check`, `--files`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`scripts/check-rule-labels.py`** (build)
-- Path constants: `REPO` = Path(__file__).resolve().parent.parent
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: `REPO / rel`
-- CLI flags read: `--check`, `--fix`, `--self-test`, `--survey`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`scripts/font-source-audit.js`** (build)
-- Reads: `filePath`
-- Writes: `args.report`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`scripts/lint-patterns-for-personal-data.py`** (build)
-- Reads: `file_path`
+**`scripts/check-stage-b-freeze.py`** (commit)
+- Reads: `bj`
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
@@ -1413,10 +95,11 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 ⚠ The naming is not consistent — the same idea appears as `census-*`, `survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`. Grep for the SUBJECT (colour, gradient, token, element, inline, parity), never for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 791 scripts
+#### `plugins/sgs-blocks/scripts/` — 808 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
+| `adopt-media-blocks.mjs` | manifest+script-call | Stage B adoption script (Spec 49 §8.3, §14.1, §14.4). |
 | `audit-bindable-attrs.py` | manifest+npm | C15-5/C15-12 detector: which SGS block attributes are SAFE Block Bindings targets? |
 | `audit-block-file-consistency.py` | manifest+script-call | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
 | `audit-block-uniformity.py` | manifest+script-call | SGS Block Uniformity Audit |
@@ -1441,8 +124,9 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `behavioural-analyser/state-cssom-scan.mjs` | script-call | Live CSSOM pass of the states exhaustiveness gate (check-state-exhaustiveness.py --live). |
 | `behavioural-analyser/state_exhaustiveness.py` | script-call | - find every state-bearing selector in the framework's styles and map it (states wave, Step 2). |
 | `behavioural-analyser/state_vocabulary.py` | script-call+test-import | - the framework state vocabulary for the classifier (Spec 48 FR-48-81, the states wave). |
-| `build-deploy.py` | manifest+script-call+skill+test-import | One-shot SGS build + tar + scp + remote extract + cleanup. |
+| `build-deploy.py` | manifest+script-call+skill+test-import | One-shot SGS build, gates, upload of only what the site lacks, checked remote apply, verify. |
 | `build-tier-fixture-page.py` | script-call | Build (and publish) ONE canary page carrying every block that has migrated |
+| `build-with-gates.mjs` | manifest+npm+script-call | The fast tier (scripts/gates.json, 245 s on 2026-11-11) used to run at the end of `prebuild`, before webpack (159 s) started. Nothing makes them… |
 | `business_info/__init__.py` | script-call | Business-details extraction and push for Spec 33 FR-33-14. |
 | `business_info/credentials.py` | script-call+test-import | REST credential resolution for the Site Info push (mirrors push-theme-snapshot.py). |
 | `business_info/extract.py` | manifest+script-call+skill+test-import | Extraction of high-confidence business-details fields from a draft's HTML. |
@@ -1455,6 +139,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `capture-tier-fixture.py` | script-call | Measure the tier-fixture page — one scoped measurement per block, three viewports. |
 | `census-colour-paint-route.py` | script-call | Census: how does each block's render.php route its COLOUR PAINT? |
 | `check-authored-text-rich.py` | manifest | : every text setting whose words the author types is rich text (Bean 2026-10-30). |
+| `check-background-part-effects.mjs` | — | (Spec 49 section 10.5). Open a page built from tests/fixtures/motion/background-part-effects.json at 1440 and 375 with a pointer, and check for every… |
 | `check-block-asset-targets.js` | npm+script-call | STRUCTURAL GUARD (post-D382 hardening) — stops the "block.json names a source filename that never gets compiled" class of bug from regressing. |
 | `check-blockjson-metadata-only.py` | script-call | visual-diff-gate helper. |
 | `check-border-preview-twin.js` | manifest | check-border-preview-twin — every block that mounts the shared border panel previews that border through the panel's twin. |
@@ -1505,14 +190,14 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-link-source-adoption.py` | manifest | every shared link field offers the link source choice. |
 | `check-markup-neutral.py` | script-call | visual-diff-gate helper. |
 | `check-media-atom-purity.js` | manifest+npm+script-call | Gate: a media atom's LOGIC module must be importable by plain Node. |
-| `check-media-breakpoints.js` | manifest+npm | Gate: the media-element stylesheet's breakpoints must match the ONE source. |
+| `check-media-breakpoints.js` | manifest+npm | Gate: the media stylesheets' breakpoints must match the ONE source. |
 | `check-media-contract.py` | manifest | Spec 49 media contract gate (AC-2 and AC-18), active from cutover. |
 | `check-media-disclosure-coverage.js` | manifest | Gate: every media atom's `disclosure()` is exercised against REAL fixtures derived from its own `requires` map in registry.js — not a static scan. |
 | `check-motion-atoms.py` | — | one control kit, one sanitiser per field type (Spec 38A FR-38A-54, FR-38A-56). |
 | `check-motion-bundle-budget.py` | npm+script-call | Spec 38 (Motion System) Tier G bundle-size budget gate. |
 | `check-motion-control-sets.py` | manifest+script-call | per-effect control sets and Intensity presets agree with Spec 38A section 5.4 |
 | `check-motion-db-rows.py` | manifest+script-call | every motion field and every declared part has a row in `motion_field_rows` (Spec 38A FR-38A-3). |
-| `check-motion-entrance-cascade.py` | — | a Spec 38A entrance owns its animation longhands in a real browser cascade. |
+| `check-motion-entrance-cascade.py` | script-call | a Spec 38A entrance owns its animation longhands in a real browser cascade. |
 | `check-motion-fx-list-match.py` | script-call | no reader of `data-sgs-fx` may match the whole value (Spec 38A FR-38A-23). |
 | `check-motion-item-parts.py` | manifest+npm+skill | - a block that repeats items names its repeated-item motion parts "Each ..." and lists them first. |
 | `check-motion-literals.py` | manifest+script-call | no hard-coded motion time or easing in block CSS (Spec 38A FR-38A-53). |
@@ -1635,13 +320,16 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `deploy-client-notes-quick.py` | — | a small, one-off deploy path for |
 | `deploy_cache.py` | manifest+script-call | build-deploy.py's memory of commits that already built and passed gate:full. |
 | `deploy_common.py` | script-call+test-import | Shared settings and helpers for build-deploy.py: the deploy targets, paths, run ID, |
+| `deploy_delta.py` | script-call | what a deploy ships, what the live site already holds, and a package of only the difference. |
 | `deploy_editor_check.py` | script-call | build-deploy.py's opt-in editor-crash check (`--editor-check local-<site>`). |
 | `deploy_guards.py` | script-call | build-deploy.py's checks before anything ships: the scoped dirty-file gate, the |
 | `deploy_litespeed_probe.py` | script-call | read-only post-deploy probe: LiteSpeed Cache's own lazy load and image optimisation |
+| `deploy_media_guard.py` | script-call | Spec 49 §13 deploy refusal: a post-cutover build never ships to a target whose saved content still holds old media attributes. |
+| `deploy_minify.py` | script-call | minify the hand-written CSS and JavaScript a deploy ships. |
 | `deploy_multi.py` | script-call | build-deploy.py's multi-site run: one build and gate:full, then every site at once. |
 | `deploy_qa_tier.py` | script-call | build-deploy.py's choice of live motion-QA tier: smoke, or the full set. |
 | `deploy_selftest.py` | script-call | build-deploy.py --self-test: each case proves a deploy guard rejects its unsafe case, |
-| `deploy_ship.py` | script-call | build-deploy.py's build and shipping steps: npm build, packaging, upload, the |
+| `deploy_ship.py` | script-call | build-deploy.py's build and shipping steps: npm build, collecting the payload, sending only what |
 | `deploy_timing.py` | script-call | wall-clock time of each deploy stage, a summary table and an append-only history. |
 | `deploy_verify.py` | script-call | build-deploy.py's checks after the files land: cache purge, the theme.json and |
 | `derive-dark-palette.py` | script-call+test-import | automatic dark palette derivation (U-12 §D). |
@@ -1688,7 +376,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `focus-system/classify-css.js` | manifest+script-call | The CSS classifier for check-focus-system.js. Parses CSS (postcss) or SCSS (postcss-scss), puts every focus-related rule in exactly one category, and… |
 | `focus-system/config.js` | script-call+skill+test-import | Configuration for check-focus-system.js (Spec 38A, unified focus system plan §3). |
 | `focus-system/corpus.js` | script-call | Corpus for check-focus-system.js: `git ls-files` filtered by config.INCLUDE and config.EXCLUDE, plus the dumb wide enumeration the corpus control… |
-| `focus-system/diff.js` | hook+manifest+script-call+skill | A line-based unified diff (Myers O(ND)) for check-focus-system.js --fix. The diff is the artefact the owner inspects, so it carries three lines of… |
+| `focus-system/diff.js` | hook+manifest+script-call+skill+test-import | A line-based unified diff (Myers O(ND)) for check-focus-system.js --fix. The diff is the artefact the owner inspects, so it carries three lines of… |
 | `focus-system/emitters.js` | manifest+script-call+test-import | PHP, JS and JSON scanning for check-focus-system.js. |
 | `focus-system/fixer.js` | script-call | The --fix transform for check-focus-system.js. Deletes `bespoke`, `suppress` and `radius-on-focus` declarations from CSS and SCSS, then drops any… |
 | `focus-system/json-io.js` | script-call | JSON file loading for check-focus-system.js. A missing or malformed file raises a FocusInputError whose message is one line naming the file and the… |
@@ -1698,20 +386,20 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `fx_registration_core.py` | script-call | the parsing core of check-fx-registration.py: the tree under test (`Tree`), the |
 | `generate-attr-role-map.py` | manifest+script-call | Spec 35 orphan-triage support. Dumps `block_attributes.role` for every |
 | `generate-block-reference.py` | script-call | SGS Blocks Reference Generator |
+| `generate-commerce-look-table.js` | script-call | The Cart and Checkout look table (includes/woocommerce/commerce-look/selectors.json: `columns` and each row's `columns`) defines settings by row… |
 | `generate-extension-attributes.js` | commit-gate+manifest+npm+script-call | Single source of truth for the cross-block `sgs*` editor-extension attributes. |
 | `generate-fx-effects-php.py` | script-call+skill | writes includes/generated-fx-effects.php from fx_effects. |
 | `generate-fx-qualifying-blocks.py` | manifest+script-call+skill | : derives the block -> offered-effects map for the Effects panel. |
 | `generate-helper-catalogue.py` | script-call | DERIVE the helper/component/atom catalogue in |
 | `generate-icons.js` | manifest+npm+script-call | Generates includes/lucide-icons.php from lucide-static SVG files, plus the SGS icon library (assets/icons/sgs-icons.json) merged into the same PHP… |
 | `generate-markup-examples.py` | script-call+skill | Generate markup examples for all 69 SGS blocks with block.json files. |
-| `generate-media-attributes.mjs` | manifest+npm+script-call | Single source of truth for the media attribute TYPE map, JS -> PHP. |
+| `generate-media-attributes.mjs` | manifest+npm+script-call | Writes the atoms' attributes into each adopting block's committed `block.json` (marked `"_generated": "media-atoms"`) and the matching entries of… |
 | `generate-media-slot-schema.mjs` | manifest+script-call | Writes `schemas/media-slot.schema.json` (Spec 49 FR-49-34): the one JSON Schema of a media slot that the cloner and `scripts/wp-build-page.js` write… |
-| `generate-media-stylesheet.mjs` | manifest+npm+script-call | Concatenate the media-atom CSS partials into the one enqueued stylesheet. |
 | `generate-motion-base-transitions.py` | manifest | the stylesheet transition entries a hover state would otherwise replace. |
 | `generate-motion-editor-defs.py` | script-call | - writes src/components/motion/generated-motion-defs.json. |
 | `generate-motion-presets-json.py` | script-call+skill | - writes src/components/motion/generated-motion-presets.json. |
 | `generate-motion-stagger-columns.py` | manifest+npm+skill | - writes the grid-columns attribute map the stagger helper reads (FR-38A-24). |
-| `generate-svg-allowlist.js` | manifest+npm+script-call | Single source of truth for the SVG sanitiser allowlist, PHP -> JS. |
+| `generate-svg-allowlist.js` | manifest+npm | Single source of truth for the SVG sanitiser allowlist, PHP -> JS. |
 | `generate-tooling-catalogue.py` | script-call | DERIVE the tooling catalogue in .claude/catalogues/tooling.md. |
 | `generative-background/capture-render.mjs` | script-call | Render the SHIPPING generative-background module and capture a PNG. |
 | `generative-background/extract-reference-matrices.mjs` | script-call | Extract GROUND-TRUTH transform matrices from the reference rig. |
@@ -1725,16 +413,17 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `hover-guard/check.js` | manifest+script-call | Build-failing checker. Three jobs (per the brief): |
 | `hover-guard/classify.js` | script-call | Declaration-level classification: is a hover rule "motion-only" (safe for the transform to guard automatically), or OUT OF SCOPE for this transform… |
 | `hover-guard/php-hover-scan.php` | manifest+script-call | Static PHP-side hover-guard coverage scan. |
-| `hover-guard/run-transform.js` | npm+script-call | CLI: run transform.js over every `build/blocks/*​/style.css` (or an explicit directory passed as argv[2]) and write the result back in place. |
+| `hover-guard/run-transform.js` | npm+script-call | CLI: run transform.js over every block's front-end stylesheets in `build/blocks/*​/` (or an explicit directory passed as argv[2]) and write the… |
 | `hover-guard/selector-split.js` | script-call | Selector-level classification for the hover guard. |
 | `hover-guard/transform.js` | manifest+script-call+skill+test-import | Build-time transform: guards motion-only `:hover` rules in compiled block CSS with the touch-class selector prefix (see… |
 | `image-sequence-prep.py` | — | turns a video into frames the sgs/image-sequence block can use. |
 | `inspector-scan/core/baseline.js` | manifest+script-call+skill+test-import | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md §4.7 source=spec evidence=hybrid baseline shape (keyed… |
 | `inspector-scan/core/block-files.js` | script-call | The per-block source context every rule shares. A block's behaviour is not only in edit.js and render.php: edit.js imports components from inside the… |
-| `inspector-scan/core/components.js` | manifest+script-call+skill+test-import | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md §4.5 source=file evidence=live-read… |
+| `inspector-scan/core/components.js` | manifest+script-call+skill | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md §4.5 source=file evidence=live-read… |
 | `inspector-scan/core/extensions.js` | manifest+script-call+test-import | GROUND-TRUTH: spec=task brief 2026-08-08 (extensionsDir plumbing) source=file evidence=live-read plugins/sgs-blocks/src/blocks/extensions/ on… |
 | `inspector-scan/core/finding.js` | manifest+script-call | GROUND-TRUTH: spec=none source=file evidence=live-read plugins/sgs-blocks/scripts/inspector-scan/core/roster.js (`BLOCKS_DIR =… |
 | `inspector-scan/core/golden.js` | manifest+script-call | core/golden.js — the shared GOLDEN-CONTROL engine (C4 step 1, 2026-08-19). |
+| `inspector-scan/core/media-facts.js` | script-call | The media system's attribute ownership, for the rules that ask "does a control reach this attribute?" and "does the render side read it?". |
 | `inspector-scan/core/report.js` | manifest+script-call+skill+test-import | Report is generated by iterating the rule REGISTRY (rules.json order), never a second hand-written order list — this is the direct mitigation for H7… |
 | `inspector-scan/core/roster.js` | manifest+script-call+skill | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=file evidence=live-read… |
 | `inspector-scan/core/selftest.js` | script-call+skill | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md §4.9 source=file evidence=live-read… |
@@ -1764,9 +453,6 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `inspector-scan/rules/34-declared-attr-unrendered.js` | manifest+script-call | GROUND-TRUTH: spec=.superpowers/sdd/task-2-brief.md ("make rule 34 consume the gate's verdicts, split by SURFACE") source=file evidence=live-read… |
 | `inspector-scan/rules/35-pinned-panel-position.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART O §"THE PLACEMENT ORDER CONVENTION" (added alongside… |
 | `inspector-scan/rules/36-box-control-presets-missing.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/scratch/2026-08-27-c16-spacing-presets-design.md (the C16 spacing-presets design) + src/components/SgsBoxControl.js's own… |
-| `inspector-scan/rules/37-media-no-handroll.js` | manifest | GROUND-TRUTH: spec=coordinator brief 2026-08-31 ("Write ONE new inspector-scan rule module: media-no-handroll") source=file evidence=live-read… |
-| `inspector-scan/rules/38-media-attr-parity.js` | manifest | GROUND-TRUTH: spec=.claude/plans/media-element-tingly-stallman.md ("Wave 6 — media-attr-parity: server-registered schema matches the JS keys")… |
-| `inspector-scan/rules/39-media-control-coverage.js` | manifest | GROUND-TRUTH: spec=coordinator brief 2026-09-01 ("Write a rule that checks OTHER blocks adopt the media-atom system correctly") source=file… |
 | `inspector-scan/rules/40-media-svg-sanitised.js` | manifest | GROUND-TRUTH: spec=coordinator brief 2026-09-01 ("Write ONE new inspector-scan rule module: media-svg-sanitised") source=file evidence=live-read… |
 | `inspector-scan/rules/41-co2-element-grouping-order.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §"THE PLACEMENT RULE" (D537, 2026-08-09) + Spec 35A CO-2 ("element-first… |
 | `inspector-scan/rules/42-no-op-reset-controls.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
@@ -1775,6 +461,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `inspector-scan/rules/45-typography-full-replacement.js` | manifest | GROUND-TRUTH: spec=plugins/sgs-blocks/CLAUDE.md "Block Customisation Standard" item 2 (Bean FP-13, 2026-06-11) +… |
 | `inspector-scan/rules/46-inspector-fill-crosses-tab.js` | manifest | An inspector fill nested inside a fill that belongs to a DIFFERENT inspector tab never renders. |
 | `inspector-scan/run.js` | manifest+npm+script-call+skill+test-import | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… ⚠ **header disputes this — it IS wired** |
+| `lib/block-json-edit.mjs` | script-call | Minimal text-level editing of a `block.json`, so an edit changes only the lines it names. |
 | `lib/block-source-files.js` | manifest+script-call | Block source-file resolver shared by the gate scripts. |
 | `lib/block_identity_facts.py` | manifest+script-call+test-import | block_identity_facts -- each SGS block's identification facts, read from code, as `block_identity_facts` rows (Spec 48 |
 | `lib/block_source_files.py` | manifest+script-call | Block source-file resolver shared by the gate scripts. |
@@ -1815,10 +502,11 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `lints/token-lint.py` | script-call | Token-discovery lint — Stage 0.5 of /sgs-clone (Spec 31, FR38). |
 | `make-outline-safe-fonts.py` | — | Write overlap-free static woff2 instances of a variable font, for text drawn with -webkit-text-stroke. |
 | `make-visual-diff-reports.py` | script-call | Emit visual-diff reports, each citing ITS OWN measurement. |
+| `mark-postbuild-done.js` | npm | The last step of npm's postbuild: writes build/.postbuild-done once every postbuild step has passed. |
 | `migrate-border-control.js` | script-call | an already block-private border UI (width + style + colour) in edit.js. |
 | `migrate-border-element.py` | manifest | Border-element census: HOW each block's PHP glues its border CSS together today. |
 | `migrate-border-shape-b.js` | manifest+npm | ⛔ THIS IS NOT A BRANCH OF migrate-border-control.js. That script's header declares a hard Shape-B exclusion, on the stated grounds that "there is no… |
-| `migrate-box-alignment.py` | manifest+npm | physical `left\|right` to logical `start\|end` for five settings. |
+| `migrate-box-alignment.py` | manifest+npm | physical `left\|right` to logical `start\|end` for four settings. |
 | `migrate-box-control-presets.py` | script-call | - roll the C16 spacing-preset dropdown out from its |
 | `migrate-box-longhands.py` | manifest+npm+script-call | CR6: move padding, margin and corner-radius boxes off the shorthands that zero-fill unset sides. |
 | `migrate-colour-picker-to-panel.py` | — | - migrate raw <DesignTokenPicker> colour mounts in a |
@@ -1869,12 +557,19 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `migrate-gallery-layout.php` | script-call | Live-content sweep for the sgs/gallery per-device layout (FW-E, FP-14). |
 | `migrate-hero-custom-fit.php` | — | Live-content sweep that retires the hero's `splitMediaObjectFit: "custom"` value (FP-14: the render carries no fallback, the saved content is… |
 | `migrate-length-sanitiser.py` | manifest+script-call | Move every LENGTH-valued call site from the crude sanitiser to the hardened one. |
+| `migrate-media-system/apply-content.php` | script-call | Writes rewritten block markup straight to the database (never `wp_update_post`: kses and revisions mangle markup). |
+| `migrate-media-system/apply_selftest.py` | script-call | Offline proof of `apply-content.php` with a fake `$wpdb` that logs every statement: it refuses a non-InnoDB table before |
 | `migrate-media-system/blocks.py` | manifest+script-call+skill+test-import | Block-level parts of the §13 transform: the background family, attributes outside the prefix grammar, item sets, |
 | `migrate-media-system/cli.py` | manifest+npm+script-call | Spec 49 §13 migration detector: survey, fix, check, self-test. |
 | `migrate-media-system/corpus.py` | script-call | The targets of the §13 detector: where saved blocks live, and a reader/rewriter for each carrier. |
+| `migrate-media-system/export-content.php` | script-call | Read-only: prints a JSON array of every saved block-markup record in this WordPress database. |
+| `migrate-media-system/export_selftest.py` | script-call | Offline proof of `export-content.php` with a fake `$wpdb`: plain post meta is exported, serialised or JSON-encoded post |
 | `migrate-media-system/mapping.py` | manifest+script-call | The Spec 49 §13 mapping rows as data. |
 | `migrate-media-system/markup.py` | manifest+script-call | Serialized block markup and JSON block trees: find every block and let a caller rewrite its attributes. |
+| `migrate-media-system/mirror.py` | script-call | Saved content on a local mirror: rewrite, back up, restore (Spec 49 §13). |
+| `migrate-media-system/mirror_selftest.py` | script-call | Proof of the saved-content tools on a scratch mirror: `cli.py self-test --mirror`. |
 | `migrate-media-system/selftest.py` | script-call | Self-test of the §13 detector: a fixture per mapping family (with its expected output written out), negative |
+| `migrate-media-system/sizes.py` | manifest+script-call | Image sizes for the §13 migration (FR-49-16: an image Source needs an attachment id, or its own width and height). |
 | `migrate-media-system/transform.py` | manifest+script-call+skill+test-import | The §13 transform: one block's old attributes to its new ones. A pure function of (block name, attributes). |
 | `migrate-media-system/values.py` | manifest+script-call+skill | Value converters for the §13 mapping: lengths, ratios, focal points, corners, device objects. All pure. |
 | `migrate-motion/consumers.py` | script-call | Consumer census for the M6.6 removal groups (Spec 38A section 13.2 step 4, unit M6.6C). |
@@ -1917,6 +612,8 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `migrations/2026-10-20-states-table.py` | manifest | - Spec 48 FR-48-81, the states wave (plan .claude/plans/archive/2026-10-20-states-wave.md). |
 | `migrations/2026-10-21-property-equivalents-intrinsic-ratio.py` | manifest | - Spec 48 FR-48-8 step 5, the `intrinsic-ratio` condition. |
 | `migrations/2026-10-30-block-identity-facts-table.py` | manifest+script-call | - Spec 48 F1 step A0/A1 (plan .claude/plans/2026-10-30-clone-recognition-fixes.md, |
+| `minify-css.mjs` | script-call | Minify hand-written CSS for the deploy payload (deploy_minify.py calls it). |
+| `minify-js.mjs` | script-call | Minify hand-written JavaScript for the deploy payload (deploy_minify.py calls it). |
 | `motion-qa/lib/form-states-judges.mjs` | script-call | Pure judges, self-test and argument parsing for `probe-motion-form-states.mjs`. |
 | `motion-qa/lib/form-states-readers.mjs` | script-call | Page actions and reads for `probe-motion-form-states.mjs`: animation tagging, the shake and slide readers. |
 | `motion-qa/lib/nav-drawer-judges.mjs` | script-call | Shared judges, self-test and argument parsing for `probe-motion-nav-drawer.mjs` (the nav bar probes import the judges through that probe, which… |
@@ -2084,7 +781,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `seed-48-sku-fixture-v2.php` | — | SGS 48-SKU Fixture — v2 ADDITIVE presentation-meta seeder (Spec 27 Phase 2). |
 | `seed-48-sku-fixture.php` | script-call | SGS 48-SKU WooCommerce Fixture — Developer Script |
 | `seed-component-adoption.py` | script-call+test-import | write the unification ADOPTION LEDGER to `components`. |
-| `seed-composition-roles.py` | script-call+skill | idempotent corrections to block_composition.composition_role. |
+| `seed-composition-roles.py` | script-call+skill+test-import | idempotent corrections to block_composition.composition_role. |
 | `seed-motion-fx-registry.py` | script-call+skill | idempotent editorial seeder for the Spec 38 motion system. |
 | `seed_motion_fx_data.py` | manifest+script-call+skill | the data seed-motion-fx-registry.py writes: FX_EFFECTS (one row per fx_effects effect) |
 | `sgs-update-v2.py` | manifest+script-call+skill+test-import | 14-stage holistic refresh of the SGS framework knowledge base. |
@@ -2094,6 +791,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `shadow-lift/run.js` | manifest+npm+script-call+skill+test-import | Shadow lift on hover for static stylesheets: census, fix and gate in one script, mirroring scripts/shadow-fallback/run.js's shape (design H4… |
 | `shadow-lift/transform.js` | manifest+script-call+skill+test-import | Shadow lift on hover for STATIC stylesheets (design H4, stylesheet part — `.claude/reports/2026-09-23-shadow-hover-lift-design.md`). |
 | `shared_utils.py` | script-call+skill | Shared, zero-dependency utilities for the SGS clone scripts. |
+| `ship.py` | script-call+test-import | one command from a committed tree to a deployed, published, pushed release. |
 | `site_info_intake.py` | script-call+test-import | : the confirmed Site Info proposal from intake as provision-site-info-from-draft.py entries. |
 | `snapshot_focus_tokens.py` | script-call+test-import | : the keyboard-focus tokens every client snapshot carries (focus plan section 2.3, owner decision Q1-B). |
 | `snapshot_inline_format_tokens.py` | script-call | : the highlight and inline-photo tokens every client snapshot carries (Spec 02 FR-2-4, FR-2-5). |
@@ -2110,10 +808,8 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `survey-rich-text-formats.js` | manifest | render that prints one sanitises it without inline style (Spec 02 FR-2-4, FR-2-5). |
 | `survey-spacing-defaults.py` | manifest | census of the Spacing control's untouched sides. |
 | `survey-typography-opt-in-props.js` | manifest | in step: every place that passes `showTextWrap` to `<TypographyControls>` also states `showTextStroke` (hollow outlined lettering, Spec 32 FR-32-23). |
-| `surveys/census-media-presentation.py` | manifest+npm | Census extension — the PRESENTATION half of the media-element manifest. |
 | `surveys/census-tier-siblings.sh` | — | Re-runnable census of per-device tier-sibling attribute instances |
 | `surveys/check-control-parity-live.js` | — | property, against a native control on the same page. |
-| `surveys/check-image-controls-support.py` | manifest+npm | Standing defence for the `imageControls` "declared-but-unverified capability" |
 | `surveys/compare-reach-depth.py` | manifest+script-call | Does resolution DEPTH change the answer? Measure, do not assume. |
 | `surveys/extract-native-contracts.py` | manifest | Extract the REQUIRED props (and the __next* opt-ins) from Gutenberg's own |
 | `surveys/fetch-native-control-contracts.sh` | script-call | Fetch the CANONICAL prop contract for each WordPress core control primitive straight from the Gutenberg source, so a golden describes the real… |
@@ -2188,6 +884,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `visual-report-sha.py` | script-call | Content hash binding a visual-diff report to the change it actually describes. |
 | `wiring-fingerprint/editor_facts.js` | script-call | Editor-side facts for the wiring-fingerprint gate (read-only). |
 | `wiring-fingerprint/editor_facts_resolve.js` | script-call | Module resolution for editor_facts.js: parsing (cached), each file's exports, relative import specifiers, barrel re-exports followed to the declaring… |
+| `wiring-fingerprint/media_system_facts.mjs` | script-call | The media system's wiring facts for check-wiring-fingerprint.py (Spec 49 §8, §9.3). |
 | `wiring-fingerprint/wf_acceptance.py` | — | Acceptance measurements for the wiring-fingerprint gate (Task 2 of |
 | `wiring-fingerprint/wf_baseline.py` | script-call | Ratchet baseline (Bean's decision D2, 2026-10-04): the gate blocks NEW gaps |
 | `wiring-fingerprint/wf_bugs.py` | script-call | Bug-class rules and the selector-shaped links. |
@@ -2200,6 +897,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `wiring-fingerprint/wf_inputs.py` | script-call | Gate inputs: the framework DB (read-only), block.json files, the extension |
 | `wiring-fingerprint/wf_links.py` | script-call | The wiring links one painting attribute must show (a finding is |
 | `wiring-fingerprint/wf_media.py` | manifest+script-call | Media-atom read sites (blind spot: media atoms build their attribute keys). |
+| `wiring-fingerprint/wf_media_system.py` | script-call | The shared media system as a source of wiring links (Spec 49 §8, §9.3). |
 | `wiring-fingerprint/wf_paint.py` | script-call | Population: does an attribute paint, and through which category? |
 | `wiring-fingerprint/wf_pass.py` | script-call | The front-end pass: for every block, the PHP texts its render reaches, the |
 | `wiring-fingerprint/wf_paths.py` | script-call | Path resolution for the wiring-fingerprint gate. |
@@ -2207,17 +905,20 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `wiring-fingerprint/wf_resolve.py` | manifest+script-call+test-import | Each attribute's final channel and paint category, as the scan uses them. |
 | `wiring-fingerprint/wf_returns.py` | script-call | Keyed call returns (used by wf_channel.ChannelAnalyser.flow). |
 | `wiring-fingerprint/wf_scan.py` | script-call | The scan: every SGS block attribute (DB `source='sgs'`) through the paint |
+| `wiring-fingerprint/wf_table.py` | script-call | The names the Cart and Checkout look table builds (`includes/woocommerce/commerce-look/selectors.json`). |
 | `wiring-fingerprint/wf_tokens.py` | manifest+script-call | Channel tokens: what one PHP statement emits. |
 
-#### `scripts/` — 638 scripts
+#### `scripts/` — 649 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
 | `check-first-paint.mjs` | manifest+script-call | First-paint gate against a LIVE site (plans/archive/2026-11-04-clean-first-paint.md, F-lite). |
 | `check-md-wrap.py` | commit-gate+script-call+skill | No hard-wrapped Markdown: every paragraph, list item and blockquote paragraph is one unbroken line. |
 | `check-no-client-names.py` | manifest+script-call+skill | : keep client names and reference-site names out of the framework. |
+| `check-page-weight.mjs` | manifest+script-call | Page-weight gate against a LIVE site (.claude/plans/archive/2026-11-03-page-weight-budget.md, "Gate"). |
 | `check-rule-labels.py` | manifest | : the framework principles are cited as FP-<n>, never by an archived spec's number. |
 | `check-spec-id-landing.py` | manifest | Prove every ID the Spec 32 and Spec 47 section ledgers carry lands in a live spec. |
+| `check-stage-b-freeze.py` | commit-gate+manifest | Spec 49 Stage B folder freeze: a pre-commit check on the staged files. |
 | `computed-route/answer-sheet.mjs` | script-call+skill | Answer-sheet scorer (Spec 48 route-accuracy R1). |
 | `computed-route/apply-options.mjs` | script-call | The applier's site-option step: values that live in site options, not block settings, read from the draft and written on the local mirror. Today: the… |
 | `computed-route/apply.mjs` | script-call+test-import | The applier: sets existing block settings on an already-built client site from the draft, on the local mirror. It reads each paired block's draft and… |
@@ -2413,7 +1114,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/fill-logic-state.mjs` | manifest+script-call | The draft's looks behind its `sc-if` logic states (Spec 48 FR-48-13, FR-48-81): an sc-if branch shows only while the component's logic state holds… |
 | `computed-route/lib/fill-logo-size.mjs` | script-call | A logo's size per device for Fill (FR-48-39/FR-48-8): a logo block holds one desktop width (`width`, a number for every width) and a per-device… |
 | `computed-route/lib/fill-map.mjs` | manifest+script-call | The map display for Fill (FR-48-39, the embed part): a draft Google Maps <iframe> becomes a `sgs/business-info` block with displayType "map"… |
-| `computed-route/lib/fill-media.mjs` | manifest+script-call | Images for Fill (FR-48-39, the image part): a draft <img> (or the <figure> / <picture> holding one) reaches the image settings of the block that… |
+| `computed-route/lib/fill-media.mjs` | manifest+script-call | Images for Fill (FR-48-39, the image part): the media a draft element draws (an <img>, a <picture>, a <video>, an <iframe> or an inline <svg>, read… |
 | `computed-route/lib/fill-motion-account.mjs` | manifest+script-call | The never-silent check of the motion writer (Spec 48 FR-48-78): every record of the animation inventory whose element is on the surface ends as a… |
 | `computed-route/lib/fill-motion-element.mjs` | manifest+script-call | The motion layers one draft element makes on one target (Spec 48 FR-48-78, FR-48-47; Spec 38A FR-38A-33), for lib/fill-motion.mjs::motionWrites: its… |
 | `computed-route/lib/fill-motion-settle.mjs` | manifest+script-call | The resting rows a motion part's hover state holds (Spec 48 FR-48-78). A draft element whose width eases on its parent's hover (a burger bar: `width… |
@@ -2426,7 +1127,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/fill-presence.mjs` | manifest+script-call | Presence and content for Fill (FR-47-4): which elements a block shows, and the draft's words and links, decided from calibration's `presence`, `text`… |
 | `computed-route/lib/fill-preset.mjs` | script-call | The route sets the preset (Spec 48 FR-48-51, the route half of Spec 32 FR-32-8): a draft button whose base and hover looks all equal one… |
 | `computed-route/lib/fill-prop.mjs` | manifest+script-call | One property of one element, from the draft's measured values to the setting writes (FR-47-4 step 2). Every write comes from lib/resolve.mjs::resolve… |
-| `computed-route/lib/fill-read-collect.mjs` | script-call | The in-page half of Fill's draft read (lib/fill-read.mjs::readDraft): collectMany runs inside the draft page through page.evaluate, so it holds… |
+| `computed-route/lib/fill-read-collect.mjs` | manifest+script-call | The in-page half of Fill's draft read (lib/fill-read.mjs::readDraft): collectMany runs inside the draft page through page.evaluate, so it holds… |
 | `computed-route/lib/fill-read.mjs` | manifest+script-call | Reading the draft for Fill (FR-47-4 step 1): the draft rendered in a real browser, every target's computed styles read through the walker's own… |
 | `computed-route/lib/fill-regap.mjs` | script-call | The shared pieces of the post-passes that act on a gap row Fill's generic resolver left (lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs): the… |
 | `computed-route/lib/fill-report.mjs` | script-call | Fill's report (FR-47-4 step 5): fill-report.md for a reader and fill-report.json for a tool. The UNMAPPED list is the framework work for the surface… |
@@ -2573,7 +1274,9 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/media/index.mjs` | manifest+script-call+skill+test-import | Spec 49 §11: the media route's pure core. One slot from the draft's reads at 375, 768 and 1440, written in the slot schema's shape… |
 | `computed-route/lib/media/kind-per-width.mjs` | script-call | Spec 49 §11: the media at 375, 768 and 1440, classified per width, written as per-device Source kinds (FR-49-16 width, height and mime; Decorative… |
 | `computed-route/lib/media/parity.mjs` | script-call | Spec 49 §11 parity: the cloned page's media compared with the draft's at 375, 768 and 1440, per width. The closing check is the rendered output… ⚠ **header disputes this — it IS wired** |
+| `computed-route/lib/media/slots.mjs` | manifest+script-call+skill | Spec 49 section 8.3 and 11: a block's media slots, read from `block.json::supports.sgs.mediaElements` (the slot declaration) and its attributes. A… |
 | `computed-route/lib/media/style-rows.mjs` | script-call | Spec 49 §11: the draft-pattern rows that turn one width's computed and declared styles into slot settings. Pure; not wired until Stage B. Rows are… |
+| `computed-route/lib/media/write.mjs` | manifest+script-call+skill | Spec 49 section 11, Stage B: the route's writer. The draft's visible media at 375, 768 and 1440 (lib/fill-read-collect.mjs `media`) becomes one… |
 | `computed-route/lib/media-stock.mjs` | script-call | Stock previews for the media upload (Spec 48 FR-48-58, FR-48-33): the stock-host images a draft paints are found in the draft's own source… |
 | `computed-route/lib/media-upload.mjs` | manifest+script-call+skill | Media upload to an ID map (Spec 48 FR-48-58): every image under the export's `assets/` and the client's own images under `sites/<client>/assets/`… |
 | `computed-route/lib/motion-behaviour-settings.mjs` | script-call | The settings behaviours (Spec 48 FR-48-77): a draft's script behaviours that SGS expresses as block settings rather than motion layers (the header's… |
@@ -2652,7 +1355,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/site-build-state.mjs` | manifest+script-call | What a site holds that the site build compares with the page map (Spec 48 FR-48-55), read in one `wp eval-file`: the posts the rows' ids name (a mega… |
 | `computed-route/lib/site-build-store-visible.mjs` | manifest+script-call | WooCommerce's coming-soon mode (Spec 48 FR-48-55 part 6): a new WooCommerce install sets `woocommerce_coming_soon` to `yes`, which serves every… |
 | `computed-route/lib/site-check-coming-soon.mjs` | manifest+script-call | WooCommerce's coming-soon mode as site-check.mjs meets it (Spec 48 §3.7): with `woocommerce_coming_soon` = `yes` every logged-out request gets… |
-| `computed-route/lib/site-check-commerce-look.mjs` | script-call | The drift probe for the Cart and Checkout look settings (Spec 27 FR-30-18). The settings paint WooCommerce's own markup through one selector table… |
+| `computed-route/lib/site-check-commerce-look.mjs` | manifest+script-call | The drift probe for the Cart and Checkout look settings (Spec 27 FR-30-18). The settings paint WooCommerce's own markup through one selector table… |
 | `computed-route/lib/site-check-nav.mjs` | manifest+script-call | The navigation checks of a site check (site-check.mjs): the header menu's links against the page map, each mega menu opening its panel and closing… |
 | `computed-route/lib/site-check-parts.mjs` | manifest+script-call | The part checks of a site check (site-check.mjs): finding the modals, choice flows and forms a page renders, then proving each works on the live… |
 | `computed-route/lib/site-check-report.mjs` | manifest+script-call | The result of a site check (site-check.mjs): the eight checks, each one's verdict from its items, the result.json shape and result.md. An item is {… |
@@ -2787,9 +1490,16 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `local-wp/read-block-attrs.py` | script-call | List the `cr-ref-` blocks of posts on a local WSL mirror, with their saved attributes (scripts/local-wp/read-block-attrs.php). |
 | `local-wp/refresh-from-remote.sh` | script-call | Refreshes a local WSL mirror's database and uploads from its Hostinger test site, so measurements run on the local copy see the same content… |
 | `local-wp/reset-login.mjs` | script-call | Sets a local mirror's WordPress login to the password its secrets file holds, after refresh-from-remote.sh has copied the test site's users over it… |
+| `local-wp/scratch-mirror.sh` | script-call | Served scratch copies of the local mirrors, for work that must not touch the four real mirrors (other sessions use them on main's code). A scratch… |
 | `local-wp/sync-build.sh` | script-call | Copies the repo's built plugins and theme into the local WSL mirror sites. |
 | `local-wp/test-patch-block-attrs.py` | — | Proves patch-block-attrs.php refuses a `set` of an attribute the block does not declare, in dry run too, and that its |
 | `md_wrap_blocks.py` | script-call | The block reader behind scripts/check-md-wrap.py: joins the lines of each paragraph and list item, copies the rest. |
+| `media-ac25/capture.mjs` | script-call | Records every media paint of each URL at 375, 768 and 1440 (Spec 49 AC-25 BEFORE/AFTER capture). |
+| `media-ac25/compare.mjs` | manifest+script-call+skill | Compares two capture folders (Spec 49 AC-25). Exit 1 when any unallowed difference exists. |
+| `media-ac25/lib.mjs` | script-call+skill+test-import | Playwright is installed under scripts/computed-route; resolve it from there. */ export function loadPlaywright() { const req =… |
+| `media-ac25/list-urls.php` | script-call | Prints the site-relative path of every published front-end URL, one per line (run with wp eval-file). |
+| `media-ac25/pages.sh` | manifest+script-call+skill | Lists every published front-end URL path of a local mirror, one per line (read only). |
+| `media-ac25/self-test.mjs` | script-call | Self-test with a negative control: serves synthetic pages from a temporary local server, captures BEFORE and AFTER, and checks compare flags the 3px… |
 | `parity/benchmark/cases.mjs` | script-call+test-import | The walker's catch-rate benchmark: six optician-client gaps the walker passed and Bean found by eye |
 | `parity/benchmark/score.mjs` | manifest+script-call+skill | Scores a catch-rate benchmark run from its recorded walker reports (<out>/<config>-control and <out>/case-<id>): benchmark.mjs calls it after the… |
 | `parity/benchmark.mjs` | script-call+skill | The walker's catch-rate benchmark. For each page config it runs the walker once as a control |

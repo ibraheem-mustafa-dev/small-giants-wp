@@ -119,3 +119,10 @@
 		display: none;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx-off-desktop~="morph"] + .sgs-fx-shape-visual,
+	[data-sgs-fx-off-desktop~="morph"] + .sgs-fx-shape-visual + .sgs-fx-shape-target,
+	.sgs-fx-shape-visual:has(> path[data-sgs-fx-off-desktop~="morph"]) {
+		display: none;
+	}
+}

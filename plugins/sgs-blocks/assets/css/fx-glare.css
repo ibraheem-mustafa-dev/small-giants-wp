@@ -55,3 +55,8 @@
 		display: none;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="glare"][data-sgs-fx-off-desktop~="glare"] > .sgs-motion-layer[data-sgs-layer="glare"] {
+		display: none;
+	}
+}

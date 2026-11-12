@@ -12,7 +12,7 @@ import { MEDIA_SHAPES } from '../../../utils/icon-shapes.js';
 import { DEVICES, add, nodes, own, resolved, rulesCss, scalar } from '../emit/core.js';
 import { RADIUS_OF, maskShapes, registerMaskShapes, shapeAt, shapeHasMask } from '../emit/mask.js';
 import { maskCss } from '../emit/mask-css.js';
-import { isNumeric, mediaColour, mediaPx } from '../emit/values.js';
+import { isNumeric, mediaColour, mediaGradient, mediaPx } from '../emit/values.js';
 
 const CORNERS = {
 	topLeft: 'border-top-left-radius',
@@ -43,13 +43,36 @@ function addBorder( rules, hover, attrs, slot, selector ) {
 	}
 	const style = scalar( attrs, slot, 'BorderStyle' );
 	add( rules, selector, 'desktop', 'border-style', BORDER_STYLES.includes( style ) ? style : 'solid' );
+	const background = mediaColour( scalar( attrs, slot, 'Background' ) );
+	const gradient = mediaGradient( scalar( attrs, slot, 'BorderColourGradient' ) );
+	const gradientHover = mediaGradient( scalar( attrs, slot, 'BorderColourHoverGradient' ) );
 	const colour = mediaColour( scalar( attrs, slot, 'BorderColour' ) );
-	if ( '' !== colour ) {
+	const colourHover = mediaColour( scalar( attrs, slot, 'BorderColourHover' ) );
+	// A gradient cannot be a border colour: it paints as the surface's background across the border box, the
+	// Background colour (if any) painted over it in the padding box, so corners and a circle or pill follow
+	// `border-radius`. The border itself is transparent.
+	const layers = ( paint ) => ( '' !== background ? `linear-gradient(${ background },${ background }),${ paint }` : paint );
+	if ( '' !== gradient || '' !== gradientHover ) {
+		add( rules, selector, 'desktop', 'background-origin', 'border-box' );
+		add( rules, selector, 'desktop', 'background-clip', '' !== background ? 'padding-box,border-box' : 'border-box' );
+	}
+	if ( '' !== gradient ) {
+		add( rules, selector, 'desktop', 'border-color', 'transparent' );
+		add( rules, selector, 'desktop', 'background-image', layers( gradient ) );
+	} else if ( '' !== colour ) {
 		add( rules, selector, 'desktop', 'border-color', colour );
 	}
-	const colourHover = mediaColour( scalar( attrs, slot, 'BorderColourHover' ) );
-	if ( '' !== colourHover ) {
-		hover.push( [ `${ selector }:hover`, selector, { 'border-color': colourHover } ] );
+	let decls = null;
+	if ( '' !== gradientHover ) {
+		decls = { 'background-image': layers( gradientHover ), 'border-color': 'transparent' };
+	} else if ( '' !== colourHover ) {
+		decls = { 'border-color': colourHover };
+		if ( '' !== gradient ) {
+			decls[ 'background-image' ] = '' !== background ? layers( 'linear-gradient(transparent,transparent)' ) : 'none';
+		}
+	}
+	if ( decls ) {
+		hover.push( [ `${ selector }:hover`, selector, decls ] );
 	}
 }
 
@@ -105,15 +128,6 @@ export function emit( slot, attrs, uid, helper ) {
 		addBorder( rules, hover, attrs, slot, n.surface );
 	}
 	return rulesCss( rules, hover );
-}
-
-/**
- * The atom contract's custom-property declarations: none, this atom prints real properties through emit().
- *
- * @return {string[]} Always empty.
- */
-export function css() {
-	return [];
 }
 
 /**

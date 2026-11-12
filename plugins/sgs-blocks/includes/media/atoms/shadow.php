@@ -86,60 +86,6 @@ if ( ! function_exists( 'sgs_media_atom_shadow_lift_on' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_media_atom_shadow_css' ) ) {
-	/**
-	 * Custom-property declarations for this atom. Mirrors the JS twin's
-	 * `css()` exactly.
-	 *
-	 * @param array  $attributes Block attributes.
-	 * @param string $prefix     Surface prefix.
-	 * @param string $block_slug Block slug, for STORED_AS resolution.
-	 * @return string[] `--custom-property:value;` declarations, never bare rules.
-	 */
-	function sgs_media_atom_shadow_css( array $attributes, $prefix, $block_slug ) {
-		$decls = array();
-
-		$keys = array(
-			'base'        => sgs_media_element_stored_attr( $block_slug, $prefix, 'BoxShadow' ),
-			'colour'      => sgs_media_element_stored_attr( $block_slug, $prefix, 'BoxShadowColour' ),
-			'hoverColour' => sgs_media_element_stored_attr( $block_slug, $prefix, 'BoxShadowColourHover' ),
-		);
-
-		$shape = $attributes[ $keys['base'] ] ?? null;
-		if ( empty( $shape ) ) {
-			return $decls;
-		}
-
-		$colour = $attributes[ $keys['colour'] ] ?? null;
-
-		$resting = sgs_media_atom_shadow_resolve( $shape, $colour );
-		if ( '' !== $resting ) {
-			$decls[] = '--sgs-media-box-shadow:' . $resting;
-		}
-
-		$hover_colour = $attributes[ $keys['hoverColour'] ] ?? null;
-		if ( ! empty( $hover_colour ) ) {
-			$hover = sgs_media_atom_shadow_resolve( $shape, $hover_colour );
-			if ( '' !== $hover ) {
-				$decls[] = '--sgs-media-box-shadow-hover:' . $hover;
-			}
-		} elseif ( sgs_media_atom_shadow_lift_on( $attributes, (string) $prefix, is_string( $block_slug ) ? $block_slug : '' ) ) {
-			// AUTOMATIC LIFT (design H4, task lift-2) — only when this instance has NO
-			// explicit hover colour set; the explicit branch above always wins outright.
-			// The shared stylesheet (assets/css/media-atoms/shadow.css) already reads
-			// `--sgs-media-box-shadow-hover` on `.sgs-media-el:hover,:focus-within`, so
-			// filling the SAME custom property is "make the lift use that same path" —
-			// no new CSS rule, no new selector, nothing to duplicate or drift.
-			$lift = sgs_shadow_hover_value( is_string( $shape ) ? $shape : '', is_string( $colour ) ? $colour : '' );
-			if ( '' !== $lift ) {
-				$decls[] = '--sgs-media-box-shadow-hover:' . $lift;
-			}
-		}
-
-		return $decls;
-	}
-}
-
 require_once dirname( __DIR__ ) . '/media-values.php';
 require_once __DIR__ . '/shape.php';
 require_once dirname( __DIR__, 2 ) . '/helpers-shadow-filter.php';

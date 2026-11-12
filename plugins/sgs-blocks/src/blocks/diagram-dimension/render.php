@@ -49,10 +49,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 $sgs_dd_context = ( $block instanceof WP_Block ) ? $block->context : array();
-list( $sgs_dd_w, $sgs_dd_h ) = sgs_measured_diagram_box(
-	$sgs_dd_context['sgs/measuredDiagramWidth'] ?? null,
-	$sgs_dd_context['sgs/measuredDiagramHeight'] ?? null
-);
+list( $sgs_dd_w, $sgs_dd_h ) = sgs_measured_diagram_box( ...sgs_measured_diagram_source_size( $sgs_dd_context['sgs/measuredDiagramSource'] ?? null ) );
 $sgs_dd_tick = $sgs_dd_context['sgs/measuredDiagramTickLength'] ?? null;
 
 // ── Enums (strict allow-lists) ──────────────────────────────────────────────

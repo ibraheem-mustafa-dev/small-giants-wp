@@ -33,6 +33,30 @@
 		},
 		"html": false,
 		"sgs": {
+			"mediaElements": [
+				{
+					"prefix": "logo",
+					"context": "content",
+					"kinds": [
+						"image",
+						"svg"
+					],
+					"atoms": [
+						"source",
+						"meaning"
+					]
+				},
+				{
+					"prefix": "logoDark",
+					"context": "content",
+					"kinds": [
+						"image"
+					],
+					"atoms": [
+						"source"
+					]
+				}
+			],
 			"motion": true,
 			"enabledExtensions": [
 				"childSizing",
@@ -87,7 +111,7 @@
 							}
 						}
 					},
-					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-responsive-logo — display:inline-block hardcoded, no attribute, so no `layer`/arrangement members). `width` is declared explicitly so the `image` element does not contend for it. Traced through render.php: `$sel = '.' . $uid . '.wp-block-sgs-responsive-logo'` (the WRAPPER selector) is the target of `width`, which emits `{$sel}{--logo-width:...}`, consumed by style.scss's `.sgs-responsive-logo{width:var(--logo-width,100%)}` on the wrapper class itself. `maxHeight` is NOT a wrapper property: it caps the <img> (see the `image` element) and, when any tier is set, render.php also emits `{$sel}{width:auto}` so the root shrinks to the image. (`width` is ALSO written as a literal HTML `width=\"...\"` sizing attribute on the <img> tag — an intrinsic-size hint, not a CSS property, so it does not compete for `css:width` ownership.) Empty-string prefix resolves the bare width/maxWidth attrs case-insensitively via the default {suffix} convention (Width/MaxWidth/MaxHeight). The background-colour pair `backgroundColour`/`backgroundColourGradient`/`backgroundColourHover`/`backgroundColourHoverGradient` mirrors sgs/brand-strip's root background pair exactly (`sgs_background_paint_decl()` gradient-wins-flat, scoped to `$sel`, hover via `sgs_hover_state_rules()` on `:focus-within`) so the block's own background tile can be set independently whether it sits in the site header or inside `sgs/nav-drawer`. No box-shadow/gap/aspect-ratio attribute or native support exists (no shadow supports declared on this block) — honest gaps. The <img>/<picture> itself has no crop-box scenario (width:100%/max-width:100%, natural aspect), so the block does not opt into supports.sgs.imageControls (universal image extension); the block's own per-device logoId*/logoUrl* art-direction tiers are its real media mechanism. logoId/logoIdTablet/logoIdMobile/logoSwitchMode are media-source/behaviour scalars with no cluster member — deliberately undeclared (no prefix claims them)."
+					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-responsive-logo — display:inline-block hardcoded, no attribute, so no `layer`/arrangement members). `width` is declared explicitly so the `image` element does not contend for it. Traced through render.php: `$sel = '.' . $uid . '.wp-block-sgs-responsive-logo'` (the WRAPPER selector) is the target of `width`, which emits `{$sel}{--logo-width:...}`, consumed by style.scss's `.sgs-responsive-logo{width:var(--logo-width,100%)}` on the wrapper class itself. `maxHeight` is NOT a wrapper property: it caps the <img> (see the `image` element) and, when any tier is set, render.php also emits `{$sel}{width:auto}` so the root shrinks to the image. (`width` is ALSO written as a literal HTML `width=\"...\"` sizing attribute on the <img> tag — an intrinsic-size hint, not a CSS property, so it does not compete for `css:width` ownership.) Empty-string prefix resolves the bare width/maxWidth attrs case-insensitively via the default {suffix} convention (Width/MaxWidth/MaxHeight). The background-colour pair `backgroundColour`/`backgroundColourGradient`/`backgroundColourHover`/`backgroundColourHoverGradient` mirrors sgs/brand-strip's root background pair exactly (`sgs_background_paint_decl()` gradient-wins-flat, scoped to `$sel`, hover via `sgs_hover_state_rules()` on `:focus-within`) so the block's own background tile can be set independently whether it sits in the site header or inside `sgs/nav-drawer`. No box-shadow/gap/aspect-ratio attribute or native support exists (no shadow supports declared on this block) — honest gaps. The <img>/<picture> itself has no crop-box scenario (width:100%/max-width:100%, natural aspect), so the block does not use the universal image extension; the block's own per-device logoId*/logoUrl* art-direction tiers are its real media mechanism. logoId/logoIdTablet/logoIdMobile/logoSwitchMode are media-source/behaviour scalars with no cluster member — deliberately undeclared (no prefix claims them)."
 				},
 				"image": {
 					"surface": true,
@@ -133,32 +157,6 @@
 			"default": "left",
 			"_comment": "FR-36-22 basics: left is the default placement (NN/g: 6x better home-return); the block emits no alignment margin, its parent places it. Plain string (no enum) mirrors WP core's auto-injected align attribute shape — matches the supports.align list above without a coercion risk (an out-of-enum stored value silently resets to default)."
 		},
-		"logoId": {
-			"type": "number",
-			"_comment": "Desktop/base logo — media library attachment ID. The base attr carries no tier suffix, matching the framework's universal responsive-tier convention (e.g. backgroundImage/backgroundImageTablet/backgroundImageMobile) rather than a desktop/tablet/mobile PREFIX scheme, which is structurally invisible to the DB's modifier_suffixes tier-detection (a suffix strip, not a prefix strip)."
-		},
-		"logoUrl": {
-			"type": "string",
-			"default": "",
-			"role": "content",
-			"_comment": "Media-library URL for this tier's logo, stored ALONGSIDE the attachment ID, as every other SGS image block declares an image (sgs/media imageUrl+imageId, sgs/decorative-image, sgs/product-card): the ID wins at render and the URL is the fallback (media/render.php). WHY IT MATTERS BEYOND TIDINESS: the `image-alt` role pairs an alt attr to a SIBLING image attr via block_attributes.alt_companion_attr, and walk.py only captures alt when that companion is attr_type='string'. With three bare attachment IDs (type=number) and no string image attr there is nothing to name as the companion; this attr is that companion."
-		},
-		"logoIdTablet": {
-			"type": "number"
-		},
-		"logoUrlTablet": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"logoIdMobile": {
-			"type": "number"
-		},
-		"logoUrlMobile": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
 		"logoSwitchMode": {
 			"type": "string",
 			"default": "mobile",
@@ -172,11 +170,6 @@
 		"logoSwitchCustomPx": {
 			"type": "number",
 			"default": 1024
-		},
-		"darkLogoId": {
-			"type": "number",
-			"default": 0,
-			"_comment": "U-13 §4.5 (was U-17 design §3.1). Media library attachment ID for a dark-mode logo variant. Shown wherever the logo sits on a dark ground: site dark mode (:root[data-theme=\"dark\"] / :root[data-theme=\"auto\"][data-prefers-dark=\"true\"]), a nearer static section tone (ancestor .sgs-on-dark, stamped by helpers-surface-tone.php), or a header's live scroll state (ancestor .sgs-site-header.is-header-on-dark). A nearer .sgs-on-light ancestor, or the header's own .is-header-on-light state, shows the normal logo even under site dark mode -- live header state outranks a static section class. Interacts with colourTreatment: when this dark variant is showing, colourTreatment 'auto' never applies its white filter to it (the dedicated dark logo always wins over the filter)."
 		},
 		"width": {
 			"type": "number",
@@ -360,11 +353,6 @@
 			"default": 1400,
 			"description": "Least time between two hover replays of the parts, in ms."
 		},
-		"alt": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
 		"logoDecorative": {
 			"type": "boolean",
 			"default": false,
@@ -436,7 +424,12 @@
 			"default": {
 				"desktop": {}
 			}
-		}
+		},
+		"logoSource": {"type":"object","_generated":"media-atoms"},
+		"logoLoading": {"type":"string","_generated":"media-atoms"},
+		"logoAlt": {"type":"string","_generated":"media-atoms"},
+		"logoDarkSource": {"type":"object","_generated":"media-atoms"},
+		"logoDarkLoading": {"type":"string","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

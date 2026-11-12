@@ -38,21 +38,9 @@ $gr_is_set = static function ( string $key, $fallback ) use ( $attributes, $gr_s
 };
 
 // -------------------------------------------------------------------------
-// Media-element atom layer (rule 37-media-no-handroll fix) — reviewer avatar
-// object-fit only. `class_exists()` guards a class the plugin loader always
-// registers; kept for the same "never fatal if load order changes" reason
-// `sgs/gallery` and `sgs/before-after` guard it. Classes are appended to
-// each avatar `<img>` below (the review loop) — `.sgs-media-el` is the
-// shared marker the generated assets/css/media-atoms/object-fit.css rule
-// targets, `$gr_media_scope` is the per-instance scope the atom's
-// custom-property value below is set on. One block-wide value applies to
-// every avatar (there is no per-review styling control on this block).
-$gr_media_scope   = '';
-$gr_media_classes = array();
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$gr_media_scope   = SGS_Media_Element::scope_class( $gr_uid, '' );
-	$gr_media_classes = SGS_Media_Element::element_classes( $gr_media_scope );
-}
+// Reviewer avatar <img> classes (the review loop, render-interior.php): the shared `sgs-media-el` marker. One block-wide
+// Fit applies to every avatar (there is no per-review styling control on this block).
+$gr_media_classes = array( 'sgs-media-el' );
 
 $gr_extra_classes = array(
 	'sgs-google-reviews',
@@ -92,20 +80,10 @@ $gr_extra_styles = '' !== $sgs_gr_star ? array( '--sgs-gr-star-colour:' . $sgs_g
 // that inlines).
 $gr_responsive_css = '';
 
-// Media-element atom layer — object-fit only (rule 37-media-no-handroll fix).
-// Emits `.{scope}{--sgs-media-object-fit:…}` which
-// assets/css/media-atoms/object-fit.css's `.sgs-media-el` rule consumes. No
-// value set -> no declaration -> that stylesheet's own `cover` fallback
-// applies, matching the removed style.css default exactly (style.css).
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$gr_responsive_css .= SGS_Media_Element::style(
-		$attributes,
-		'',
-		'sgs/google-reviews',
-		$gr_uid,
-		array( 'object-fit' )
-	);
-}
+// Avatar Fit (Spec 49 §10.4: a small fixed thumbnail keeps its own attributes), printed per device on the avatar
+// <img>. No value set -> no rule -> style.css's own `cover` applies.
+require_once dirname( __DIR__, 3 ) . '/includes/media/fixed-thumb-fit.php';
+$gr_responsive_css .= sgs_fixed_thumb_fit_css( $attributes, 'sgs/google-reviews', '.' . $gr_uid . ' .sgs-google-reviews__avatar img' );
 
 // Write-review button + slider arrow (button-shaped elements) — shared
 // helper reads the prefixed attrs and emits a fully guarded base + hover/

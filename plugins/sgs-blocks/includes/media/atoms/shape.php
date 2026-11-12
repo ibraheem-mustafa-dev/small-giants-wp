@@ -112,6 +112,26 @@ if ( ! function_exists( 'sgs_media_atom_shape_at' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_atom_shape_radius' ) ) {
+	/**
+	 * The corner radius a radius-drawn shape (circle, ellipse, pill) gives one device, or '' for a mask or no shape.
+	 *
+	 * @param array  $attrs  Attributes.
+	 * @param array  $slot   The slot.
+	 * @param string $device Device.
+	 * @return string
+	 */
+	function sgs_media_atom_shape_radius( array $attrs, array $slot, string $device ): string {
+		$shape = sgs_media_atom_shape_at( $attrs, $slot, $device );
+		$radii = array(
+			'circle'  => '50%',
+			'ellipse' => '50%',
+			'pill'    => '9999px',
+		);
+		return 'radius' === $shape['kind'] ? $radii[ $shape['slug'] ] : '';
+	}
+}
+
 if ( ! function_exists( 'sgs_media_shape_has_mask' ) ) {
 	/**
 	 * Whether any device of the slot has a mask shape (so the mask layer is printed).
@@ -181,11 +201,6 @@ if ( ! function_exists( 'sgs_media_atom_shape_emit' ) ) {
 			'bottomRight' => 'border-bottom-right-radius',
 			'bottomLeft'  => 'border-bottom-left-radius',
 		);
-		$radius_of = array(
-			'circle'  => '50%',
-			'ellipse' => '50%',
-			'pill'    => '9999px',
-		);
 		$rules     = array();
 		$hover     = array();
 		$prev      = '';
@@ -199,7 +214,7 @@ if ( ! function_exists( 'sgs_media_atom_shape_emit' ) ) {
 				}
 			}
 			$prev = $now;
-			$radius = 'radius' === $shape['kind'] ? $radius_of[ $shape['slug'] ] : '';
+			$radius = sgs_media_atom_shape_radius( $attrs, $slot, $device );
 			if ( '' !== $radius ) {
 				if ( $radius !== $prev_radius ) {
 					sgs_media_add( $rules, $nodes['surface'], $device, 'border-radius', $radius );
@@ -252,13 +267,42 @@ if ( ! function_exists( 'sgs_media_atom_shape_border' ) ) {
 		$style   = sgs_media_scalar( $attrs, $slot, 'BorderStyle' );
 		$allowed = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 		sgs_media_add( $rules, $selector, 'desktop', 'border-style', in_array( $style, $allowed, true ) ? $style : 'solid' );
-		$colour = sgs_media_colour( sgs_media_scalar( $attrs, $slot, 'BorderColour' ) );
-		if ( '' !== $colour ) {
+		$background    = sgs_media_colour( sgs_media_scalar( $attrs, $slot, 'Background' ) );
+		$gradient      = sgs_media_gradient( sgs_media_scalar( $attrs, $slot, 'BorderColourGradient' ) );
+		$gradient_over = sgs_media_gradient( sgs_media_scalar( $attrs, $slot, 'BorderColourHoverGradient' ) );
+		$colour        = sgs_media_colour( sgs_media_scalar( $attrs, $slot, 'BorderColour' ) );
+		$colour_hover  = sgs_media_colour( sgs_media_scalar( $attrs, $slot, 'BorderColourHover' ) );
+		// A gradient cannot be a border colour: it paints as the surface's background across the border box, the
+		// Background colour (if any) painted over it in the padding box, so corners and a circle or pill follow
+		// `border-radius`. The border itself is transparent.
+		$layers = static function ( string $paint ) use ( $background ): string {
+			return '' !== $background ? 'linear-gradient(' . $background . ',' . $background . '),' . $paint : $paint;
+		};
+		if ( '' !== $gradient || '' !== $gradient_over ) {
+			sgs_media_add( $rules, $selector, 'desktop', 'background-origin', 'border-box' );
+			sgs_media_add( $rules, $selector, 'desktop', 'background-clip', '' !== $background ? 'padding-box,border-box' : 'border-box' );
+		}
+		if ( '' !== $gradient ) {
+			sgs_media_add( $rules, $selector, 'desktop', 'border-color', 'transparent' );
+			sgs_media_add( $rules, $selector, 'desktop', 'background-image', $layers( $gradient ) );
+		} elseif ( '' !== $colour ) {
 			sgs_media_add( $rules, $selector, 'desktop', 'border-color', $colour );
 		}
-		$colour_hover = sgs_media_colour( sgs_media_scalar( $attrs, $slot, 'BorderColourHover' ) );
-		if ( '' !== $colour_hover ) {
-			$hover[] = array( $selector . ':hover', $selector, array( 'border-color' => $colour_hover ) );
+		$decls = array();
+		if ( '' !== $gradient_over ) {
+			$decls = array(
+				'background-image' => $layers( $gradient_over ),
+				'border-color'     => 'transparent',
+			);
+		} elseif ( '' !== $colour_hover ) {
+			$decls = array( 'border-color' => $colour_hover );
+			if ( '' !== $gradient ) {
+				$decls['background-image'] = '' !== $background ? $layers( 'linear-gradient(transparent,transparent)' ) : 'none';
+			}
+		}
+		if ( array() !== $decls ) {
+			ksort( $decls );
+			$hover[] = array( $selector . ':hover', $selector, $decls );
 		}
 	}
 }

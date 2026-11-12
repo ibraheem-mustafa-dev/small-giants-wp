@@ -15,7 +15,9 @@
  */
 import { __ } from '@wordpress/i18n';
 import { composeShadow } from '../../utils/shadow-layers';
-import MediaPicker from '../../components/MediaPicker';
+import ItemSlotFields from '../../components/media/ItemSlotFields.js';
+import ItemSlotPicture from '../../components/media/ItemSlotPicture.js';
+import { hasFile } from '../../components/media/mediaSlotWrites.js';
 import {
 	useBlockProps,
 	InspectorControls,
@@ -57,7 +59,7 @@ import {
 	tierBoxLonghands,
 	gapVar,
 } from '../../utils';
-import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import SubLabelPanel from './sub-label-panel';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -216,13 +218,15 @@ function swatchDotPreviewStyle( attributes ) {
 	if ( 'tile' === pillStyle ) {
 		return null;
 	}
-	if ( ! swatchShape && ! swatchSize && ! swatchRingWidth && ! swatchRingColour && ! swatchTickInside ) {
+	// The dot's shape is the swatch slot's Shape on desktop: circle rounds it, none squares it.
+	const shapeKind = swatchShape?.desktop?.shape || '';
+	if ( ! shapeKind && ! swatchSize && ! swatchRingWidth && ! swatchRingColour && ! swatchTickInside ) {
 		return null;
 	}
 	const dot = {};
-	if ( 'round' === swatchShape ) {
+	if ( 'circle' === shapeKind ) {
 		dot.borderRadius = '50%';
-	} else if ( 'square' === swatchShape ) {
+	} else if ( 'none' === shapeKind ) {
 		dot.borderRadius = 0;
 	}
 	if ( swatchSize ) {
@@ -239,9 +243,12 @@ function swatchDotPreviewStyle( attributes ) {
 	return dot;
 }
 
+/** The block's one media slot: each option's swatch picture (Spec 49 §10.4: Source, Fit, Width, Shape). */
+const SWATCH_SLOT = { prefix: 'swatch', kinds: [ 'image' ], context: 'item' };
+
 /* ── Component ──────────────────────────────────────────────────────────── */
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		label,
 		showLabel,
@@ -439,6 +446,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 		return optionItems.map( ( item, index ) => {
 			const isSelected = item.key === effectiveDefault;
+			// The option's own picture (render.php draws it ahead of the label, through the shared item renderer).
+			const itemHasPicture = [ 'desktop', 'tablet', 'mobile' ].some( ( device ) => hasFile( item.source?.[ device ] ) );
 			const pillClass = [
 				'sgs-option-picker__option',
 				isSelected ? 'sgs-option-picker__option--selected' : '',
@@ -449,7 +458,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			return (
 				<span key={ index } className={ pillClass }>
 					<span
-						className="sgs-option-picker__pill"
+						className={ `sgs-option-picker__pill${ itemHasPicture ? ' sgs-option-picker__pill--has-image' : '' }` }
 						style={ {
 							...typographyPreviewStyle(
 								attributes,
@@ -469,7 +478,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						   The sub-label itself lives on WooCommerce term-meta, so
 						   (like the swatch image/colour) it can't be previewed live
 						   in the editor -- see the Sub-label panel's help text. */ }
-						{ swatchDotStyle && (
+						{ itemHasPicture && (
+							<ItemSlotPicture
+								attributes={ attributes }
+								item={ item }
+								index={ index }
+								prefix={ SWATCH_SLOT.prefix }
+								kinds={ SWATCH_SLOT.kinds }
+								context={ SWATCH_SLOT.context }
+								uid={ `sgs-op-${ clientId.slice( 0, 8 ) }` }
+							/>
+						) }
+						{ ! itemHasPicture && swatchDotStyle && (
 							<span
 								className="sgs-option-picker__swatch sgs-option-picker__swatch--colour"
 								style={ swatchDotStyle }
@@ -757,15 +777,17 @@ export default function Edit( { attributes, setAttributes } ) {
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
-									{ /* render.php draws optionItems.image as the option's swatch <img> ahead of the term-meta swatch; the stored value is the image URL. */ }
-									<MediaPicker
-										value={ item.image ? { url: item.image, type: 'image', id: 0, alt: '', mime: 'image/jpeg' } : null }
-										allowedTypes={ [ 'image' ] }
-										onChange={ ( media ) =>
-											updateOption( index, 'image', media ? media.url : '' )
-										}
-										label={ __( 'Select image', 'sgs-blocks' ) }
-										instructionsImage={ __( 'Optional. Shown as this option’s swatch.', 'sgs-blocks' ) }
+									{ /* The option's own picture, drawn ahead of the term-meta swatch by the shared media renderer (Spec 49 §8.3). Fit is the option's own; Width and Shape are the picker's (Swatch images panel). */ }
+									<ItemSlotFields
+										item={ item }
+										prefix="swatch"
+										slot={ SWATCH_SLOT }
+										label={ __( 'Image', 'sgs-blocks' ) }
+										onChange={ ( next ) => {
+											const next_items = [ ...optionItems ];
+											next_items[ index ] = next;
+											setAttributes( { optionItems: next_items } );
+										} }
 									/>
 								</FlexBlock>
 								<FlexItem>
@@ -884,6 +906,16 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Inspector — Styles tab (appearance: label look, pill style,
 			   colours, width/spacing, border) ────────────────────────────── */ }
+			{ /* What every swatch picture shares (Spec 49 §10.4): Fit, Width and Shape. The Shape also rounds the colour dot. */ }
+			<MediaElementPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				prefix="swatch"
+				blockSlug="sgs/option-picker"
+				blockName="sgs/option-picker"
+				atoms={ [ 'object-fit', 'sizing', 'shape' ] }
+				context="item"
+			/>
 			<InspectorControls group="styles">
 				{ /* Label style — typography/margin/colour only surface when the
 				   label is actually shown (showLabel lives in the Settings tab). */ }
@@ -1135,32 +1167,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Colour dot', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {
-								swatchShape: '',
 								swatchSize: '',
 								swatchRingWidth: '',
 								swatchTickInside: false,
 							} )
 						}
 					>
-						<ToolsPanelItem
-							label={ __( 'Colour dot shape', 'sgs-blocks' ) }
-							hasValue={ () => !! attributes.swatchShape }
-							onDeselect={ () => setAttributes( { swatchShape: '' } ) }
-							isShownByDefault
-						>
-							<ToggleGroupControl
-								isBlock
-								isDeselectable
-								label={ __( 'Colour dot shape', 'sgs-blocks' ) }
-								value={ attributes.swatchShape || '' }
-								onChange={ ( val ) => setAttributes( { swatchShape: val || '' } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							>
-								<ToggleGroupControlOption value="round" label={ __( 'Round', 'sgs-blocks' ) } />
-								<ToggleGroupControlOption value="square" label={ __( 'Square', 'sgs-blocks' ) } />
-							</ToggleGroupControl>
-						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Colour dot size', 'sgs-blocks' ) }
 							hasValue={ () => !! attributes.swatchSize }
@@ -1415,29 +1427,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>
-				</PanelBody>
-
-				{ /* Swatch image — the image-swatch <img> (render.php §"Swatch
-				   rendering") is a fixed 2rem crop of a WooCommerce attribute
-				   term's image, not a picker this block's own attributes drive —
-				   but the fit MODE is still a legitimate client choice, so this
-				   panel is always available (which options actually carry an
-				   image swatch depends on WC term-meta, invisible to the editor
-				   ahead of render). */ }
-				<PanelBody
-					title={ __( 'Swatch image', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="swatch"
-						blockSlug="sgs/option-picker"
-						insertion="element"
-						atoms={ [ 'object-fit' ] }
-						mediaType="image"
-						scope="element"
-					/>
 				</PanelBody>
 
 				{ /* Width / spacing — hand-rolled (no shared wrapper, contract §B3

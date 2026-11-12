@@ -6,14 +6,14 @@
  * it fits, and scopes the layer to them through the layer's `off` tiers, which every effect runtime already honours.
  *
  * The filter is the registry's own: an effect whose schema row names `x-part-kinds` `svg` fits an SVG kind, one that
- * names `text` fits no media kind, and `effect-kinds.json` names the effects that need an image. An effect with no
+ * names `text` fits no media kind, and `fx_effects.media_kinds` (carried by `generated-fx-effect-meta.json`) names the kinds an effect needs. An effect with no
  * such row fits every kind.
  *
  * @package SGS\Blocks
  */
 import { __, sprintf } from '@wordpress/i18n';
 import defs from './motion-defs';
-import effectKinds from './effect-kinds.json';
+import effectMeta from '../../blocks/extensions/generated-fx-effect-meta.json';
 
 export const KIND_DEVICES = [ 'desktop', 'tablet', 'mobile' ];
 const DEVICE_LABELS = { desktop: 'Desktop', tablet: 'Tablet', mobile: 'Mobile' };
@@ -39,8 +39,8 @@ export function effectFitsKind( effect, kind ) {
 			return false;
 		}
 	}
-	const needs = effectKinds[ effect ];
-	return ! Array.isArray( needs ) || needs.includes( resolved );
+	const needs = effectMeta[ effect ]?.media_kinds;
+	return ! Array.isArray( needs ) || ! needs.length || needs.includes( resolved );
 }
 
 /**

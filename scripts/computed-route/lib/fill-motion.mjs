@@ -26,7 +26,6 @@ import { exactHome } from './fill-part-pairing.mjs';
 export { elementMotion, elementEffects, renderRefutes } from './fill-motion-element.mjs';
 
 export const COVERAGE_WRITES = [
-	'block-setting:css-gate:styling',
 	'construct:helmet-script',
 	'construct:keyframes',
 	'construct:transition',

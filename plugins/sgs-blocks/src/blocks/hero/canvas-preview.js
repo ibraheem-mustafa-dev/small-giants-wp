@@ -1,6 +1,6 @@
 /**
  * sgs/hero — the editor canvas's styles for the section, its content column and
- * its split-media column, at the device tier the editor is previewing. Each value
+ * its split-media grid cell, at the device tier the editor is previewing. Each value
  * is resolved the way render.php emits it (its base rule plus its
  * `@media (max-width:1023px)` / `(max-width:767px)` overrides), so the canvas
  * paints what the published page paints at that width.
@@ -15,114 +15,11 @@ import {
 	typographyPreviewStyle,
 	tierLengthPreview,
 	tierValueOf,
-	borderRadiusLonghands,
 	RADIUS_STYLE_KEYS,
 } from '../../utils';
-import { cssLengthValue } from '../../utils/css-length.js';
-import {
-	css as boxShapeCss,
-	normaliseRatio,
-	resolveSizingMode,
-	validateShape,
-} from '../../components/media/atoms/box-shape.js';
 
-const TIER_CHAIN = {
-	desktop: [ 'desktop' ],
-	tablet: [ 'tablet', 'desktop' ],
-	mobile: [ 'mobile', 'tablet', 'desktop' ],
-};
 const ALIGN_MAP = { top: 'flex-start', center: 'center', bottom: 'flex-end' };
 const TEXT_ALIGNS = [ 'left', 'center', 'right', 'start', 'end', 'justify' ];
-
-/**
- * One device's length string for a per-device object, as render.php prints it (`sgs_css_length_value`).
- * @param obj
- * @param tier
- */
-function deviceLength( obj, tier ) {
-	return cssLengthValue( tierValueOf( obj, tier ) );
-}
-
-/**
- * The value of one custom property in the box-shape atom's own declaration list.
- * @param decls
- * @param name
- */
-function atomDecl( decls, name ) {
-	const hit = decls.find( ( d ) => d.startsWith( `${ name }:` ) );
-	return hit ? hit.slice( name.length + 1 ) : undefined;
-}
-
-/**
- * The split column's media at a tier — the twin of render.php's
- * `$sgs_hero_resolve_split_type` plus `sgs_tier_media_render()`'s upward cascade:
- * a tier that resolves to nothing takes the next wider tier's media.
- *
- * @param {Object} attributes Block attributes.
- * @param {string} tier       Previewed tier.
- * @return {{type: string, image: ?Object, video: ?Object, svg: string}} The media to show.
- */
-export function splitMediaAtTier( attributes, tier ) {
-	const tiers = {
-		desktop: {
-			declared: attributes.splitMediaType || 'image',
-			imageUrl: attributes.splitMediaImageUrl,
-			alt: attributes.splitMediaImageAlt,
-			videoUrl: attributes.splitMediaVideoUrl,
-			svg: attributes.splitMediaSvgContent,
-		},
-		tablet: {
-			declared: attributes.splitMediaTypeTablet,
-			imageUrl: attributes.splitMediaImageUrlTablet,
-			alt: attributes.splitMediaImageAltTablet,
-			videoUrl: attributes.splitMediaVideoUrlTablet,
-			svg: attributes.splitMediaSvgContentTablet,
-		},
-		mobile: {
-			declared: attributes.splitMediaTypeMobile,
-			imageUrl: attributes.splitMediaImageUrlMobile,
-			alt: attributes.splitMediaImageAltMobile,
-			videoUrl: attributes.splitMediaVideoUrlMobile,
-			svg: attributes.splitMediaSvgContentMobile,
-		},
-	};
-	for ( const t of TIER_CHAIN[ tier ] || TIER_CHAIN.desktop ) {
-		const {
-			declared = '',
-			imageUrl = '',
-			alt = '',
-			videoUrl = '',
-			svg = '',
-		} = tiers[ t ];
-		const hasSvg = '' !== String( svg || '' ).trim();
-		let type = '';
-		if ( [ 'video', 'svg', 'image', 'lottie' ].includes( declared ) ) {
-			// A declared type is strict; the canvas never plays Lottie, so it shows nothing for it.
-			const has = {
-				video: !! videoUrl,
-				svg: hasSvg,
-				image: !! imageUrl,
-				lottie: false,
-			}[ declared ];
-			type = has ? declared : '';
-		} else if ( imageUrl ) {
-			type = 'image';
-		} else if ( videoUrl ) {
-			type = 'video';
-		} else if ( hasSvg ) {
-			type = 'svg';
-		}
-		if ( type ) {
-			return {
-				type,
-				image: imageUrl ? { url: imageUrl, alt: alt || '' } : null,
-				video: videoUrl ? { url: videoUrl } : null,
-				svg: svg || '',
-			};
-		}
-	}
-	return { type: '', image: null, video: null, svg: '' };
-}
 
 /**
  * @param {Object}  attributes   Block attributes.
@@ -130,8 +27,8 @@ export function splitMediaAtTier( attributes, tier ) {
  * @param {string}  opts.tier    Previewed tier from `usePreviewTier()`.
  * @param {Array}   opts.palette Theme colour palette.
  * @param {boolean} opts.isSplit The split variant.
- * @return {{ root: Object, content: Object, media: Object, image: Object, band: { hasBandProps: boolean, bandStyle: Object } }}
- *   Styles for the section, `.sgs-hero__content`, `.sgs-hero__media` and the split media element.
+ * @return {{ root: Object, content: Object, media: Object, band: { hasBandProps: boolean, bandStyle: Object } }}
+ *   Styles for the section, `.sgs-hero__content`, and `.sgs-hero__media` (the split media's grid cell).
  */
 export function heroCanvasPreview(
 	attributes,
@@ -249,85 +146,11 @@ export function heroCanvasPreview(
 		content.order = 2;
 		media.order = 1;
 	}
-	Object.assign(
-		media,
-		tierBoxLonghands( attributes.mediaPadding, tier, 'padding' )
-	);
-
-	// Split media element (`.sgs-hero__split-media`).
-	const image = {};
-	if ( isSplit ) {
-		const width = deviceLength( attributes.splitMediaWidth, tier );
-		if ( width ) {
-			image.width = width;
-		}
-		const height = deviceLength( attributes.splitMediaHeight, tier );
-		image.height = height || '100%';
-		Object.assign(
-			image,
-			tierBoxLonghands( attributes.splitMediaPadding, tier, 'padding' )
-		);
-		// Only the corners set at this tier or a wider one, as render.php prints them (sgs_corner_object_longhands).
-		Object.assign(
-			image,
-			borderRadiusLonghands(
-				{
-					desktop: attributes.splitMediaBorderRadius,
-					tablet: attributes.splitMediaBorderRadiusTablet,
-					mobile: attributes.splitMediaBorderRadiusMobile,
-				},
-				tier
-			)
-		);
-		// Sizing mode, ratio and shape through the box-shape atom's own twins, as render.php does.
-		const mode = resolveSizingMode(
-			attributes.splitMediaMediaSizing,
-			attributes.splitMediaObjectFit,
-			attributes,
-			'splitMedia',
-			'sgs/hero'
-		);
-		const ratio = normaliseRatio( attributes.splitMediaAspectRatio );
-		// An explicit desktop width and height win over the ratio, as render.php checks.
-		const isSet = ( v ) => Boolean( v ) && 'auto' !== v;
-		const hasBoth =
-			isSet( deviceLength( attributes.splitMediaWidth, 'desktop' ) ) &&
-			isSet( deviceLength( attributes.splitMediaHeight, 'desktop' ) );
-		if ( 'ratio' === mode && ratio && ! hasBoth ) {
-			image.aspectRatio = ratio;
-		}
-		if ( 'none' !== validateShape( attributes.splitMediaShape ) ) {
-			const clip = atomDecl(
-				boxShapeCss( {
-					attributes,
-					prefix: 'splitMedia',
-					blockSlug: 'sgs/hero',
-				} ),
-				'--sgs-media-clip-path'
-			);
-			if ( clip ) {
-				image.clipPath = clip;
-			}
-		}
-		const minH = tierLengthPreview( attributes.splitMediaMinHeight, tier );
-		if ( minH ) {
-			image.minHeight = minH;
-		}
-		const maxW = deviceLength( attributes.splitMediaMaxWidth, tier );
-		if ( maxW ) {
-			image.maxWidth = maxW;
-		}
-		const maxH = deviceLength( attributes.splitMediaMaxHeight, tier );
-		if ( maxH ) {
-			image.maxHeight = maxH;
-		}
-	}
 
 	return {
 		root,
 		content,
 		media,
-		image,
 		band: isSplit
 			? { hasBandProps: false, bandStyle: {} }
 			: {

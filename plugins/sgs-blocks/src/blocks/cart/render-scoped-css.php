@@ -409,23 +409,13 @@ if ( $has_panel ) {
 	}
 }
 
-// ── Media-element atom layer (rule 37-media-no-handroll fix) — item-thumbnail
-// object-fit only. The thumbnail <img> itself is added to the DOM later by
-// panel-render.js/item-row-template.js (Store API hydration), never by this
-// file — but the CSS custom property is set here, on the PHP-rendered wrapper
-// ($uid is already a class on it, see $wrapper_classes above), and inherits
-// down to the .sgs-media-el marker item-row-template.js appends regardless of
-// when that element is inserted. `class_exists()` guards a class the plugin
-// loader always registers; kept for the same "never fatal if load order
-// changes" reason sgs/gallery/sgs/hero guard it.
-if ( $has_panel && class_exists( 'SGS_Media_Element' ) ) {
-	$sgs_cart_media_css = SGS_Media_Element::style(
-		$attributes,
-		'',
-		'sgs/cart',
-		$uid,
-		array( 'object-fit' )
-	);
+// ── Item-thumbnail Fit (Spec 49 §10.4: a small fixed thumbnail keeps its own attributes). The thumbnail <img> is added
+// to the DOM later by panel-render.js/item-row-template.js (Store API hydration), never by this file, so the rule is
+// scoped to the PHP-rendered wrapper ($uid is already a class on it, see $wrapper_classes above) and matches the
+// thumbnail whenever it is inserted.
+require_once dirname( __DIR__, 3 ) . '/includes/media/fixed-thumb-fit.php';
+if ( $has_panel ) {
+	$sgs_cart_media_css = sgs_fixed_thumb_fit_css( $attributes, 'sgs/cart', '.' . $uid . ' .sgs-cart__item-thumb' );
 	if ( '' !== $sgs_cart_media_css ) {
 		$scoped_css[] = $sgs_cart_media_css;
 	}

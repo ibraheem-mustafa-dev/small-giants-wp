@@ -58,7 +58,7 @@
 // has a blind spot by construction, and `_KNOWN_CONTROLS` has exactly this bug),
 // the corpora are resolved from source: a block's control corpus is its own
 // edit.js PLUS the source of every shared component it actually renders
-// (resolved via core/components.js the same way rule 18 resolves MediaPicker),
+// (resolved via core/components.js the same way rule 18 resolves image-rendering components),
 // and its render corpus is its own render files PLUS only those shared includes
 // whose own functions it actually calls.
 
@@ -66,6 +66,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 const { resolveComponentFiles } = require( '../core/components' );
+const { mediaSystemOwns } = require( '../core/media-facts' );
 
 // Attribute keys that are documentation, not attributes. House convention,
 // mirrored from check-dead-controls.js:342-352 (WordPress would register these
@@ -1071,6 +1072,7 @@ module.exports = {
 		const findings = [];
 		for ( const attr of Object.keys( blockJson.data.attributes || {} ) ) {
 			if ( DOC_ATTR_RE.test( attr ) ) continue;
+			if ( mediaSystemOwns( ctx.blocksDir, blockJson.data.name, attr ) ) continue; // the shared media panels control it and the shared renderer reads it by a computed key
 			if ( extensionOwned.has( attr ) ) continue; // extension surface — structurally invisible here
 			if ( coreControlled.has( attr ) ) continue; // WordPress core surface — likewise invisible here
 			if ( helperControlled.has( attr ) ) continue; // resolved via a name-derivation helper call site

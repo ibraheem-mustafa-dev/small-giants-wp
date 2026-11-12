@@ -24,6 +24,8 @@ class Fake_Wpdb {
 	function esc_like( $s ) { return $s; }
 	function prepare( $q ) { return $q; }
 	function get_results( $q, $t = null ) {
+		if ( false !== strpos( $q, "post_type = 'attachment'" ) ) { return $this->data['attachment_posts']; }
+		if ( false !== strpos( $q, '_wp_attachment_metadata' ) ) { return $this->data['attachment_meta']; }
 		foreach ( array( 'postmeta', 'options', 'posts' ) as $k ) { if ( false !== strpos( $q, 'FROM wp_' . $k ) ) { return $this->data[ $k ]; } }
 		return array();
 	}
@@ -35,10 +37,16 @@ eval( file_get_contents( $argv[1] ) );
 """
 
 
+ATTACHMENT_META = 'a:5:{s:5:"width";i:1200;s:6:"height";i:800;s:4:"file";s:18:"2026/09/photo.jpeg";s:5:"sizes";a:1:{s:6:"medium";a:4:{s:4:"file";s:18:"photo-300x200.jpeg";s:5:"width";i:300;s:6:"height";i:200;s:9:"mime-type";s:10:"image/jpeg";}}s:10:"image_meta";a:0:{}}'
+
+
 def fixture() -> dict:
     meta = [(1, 'plain', PLAIN), (2, 'serial', SERIAL), (3, 'json', JSON_ENC), (4, 'other', SERIAL_OTHER)]
     return {"posts": [{"ID": 1, "post_type": "page", "post_name": "a", "post_status": "publish", "post_content": PLAIN}],
             "postmeta": [{"meta_id": i, "post_id": 9, "meta_key": k, "meta_value": v} for i, k, v in meta],
+            "attachment_posts": [{"ID": 41, "post_mime_type": "image/jpeg"}],
+            "attachment_meta": [{"post_id": 41, "meta_key": "_wp_attached_file", "meta_value": "2026/09/photo.jpeg"},
+                                {"post_id": 41, "meta_key": "_wp_attachment_metadata", "meta_value": ATTACHMENT_META}],
             "options": [{"option_name": "plain_opt", "option_value": PLAIN}, {"option_name": "json_opt", "option_value": JSON_ENC},
                         {"option_name": "serial_opt", "option_value": SERIAL}]}
 
@@ -71,4 +79,10 @@ def run(failures: list[str], script: Path | None = None) -> int:
             failures.append(f"export-content.php: {label}: {sorted(seen)}")
     if any(r["store"] == "postmeta" and r["ID"] in (2, 3, 4) for r in got) or any(r["ID"] == "postmeta:4:other" for r in got):
         failures.append("export-content.php: structured post meta was exported as raw markup, or one without wp:sgs/ was listed")
-    return len(wanted) + 1
+    maps = [r for r in got if r["store"] == "attachments"]
+    want_files = {"2026/09/photo.jpeg": [41, 1200, 800, "image/jpeg"], "2026/09/photo-300x200.jpeg": [41, 300, 200, "image/jpeg"]}
+    if len(maps) != 1 or maps[0].get("files") != want_files:
+        failures.append(f"export-content.php: the attachment map (upload, sized copy, id, size, mime) is wrong: {maps}")
+    if any(r["store"] == "attachments" for r in got if r.get("md5")):
+        failures.append("export-content.php: the attachment record carries a content hash, so it would be mistaken for saved content")
+    return len(wanted) + 3

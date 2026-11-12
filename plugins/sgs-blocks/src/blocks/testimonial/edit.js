@@ -11,13 +11,9 @@ import {
 	useBlockProps,
 	InspectorControls,
 	RichText,
-	MediaUpload,
-	MediaUploadCheck,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
-	PanelRow,
-	Button,
 	SelectControl,
 	RangeControl,
 	TextControl,
@@ -25,7 +21,6 @@ import {
 	BaseControl,
 } from '@wordpress/components';
 import {
-	ResponsiveControl,
 	ShadowControl,
 	SgsColourPanel,
 	DesignTokenPicker,
@@ -42,7 +37,9 @@ import {
 	SgsBoxControl,
 	LinkUnderlineControl,
 } from '../../components';
+import SlotPicture from '../../components/media/SlotPicture';
 import ReviewLineBorder from './ReviewLineBorder';
+import metadata from './block.json';
 import {
 	fontSizeVar,
 	resolveTextColourPreviewStyle,
@@ -69,6 +66,9 @@ import AuthoredText from '../../components/AuthoredText';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Variants whose stylesheet already paints a border: a chosen colour, style or
 // width overrides it part by part, as render.php emits each alone.
+/** The three media slots (Spec 49 §10.4), by prefix, with the label each panel title carries. */
+const MEDIA_SLOTS = metadata.supports.sgs.mediaElements.reduce( ( all, entry ) => ( { ...all, [ entry.prefix ]: entry } ), {} );
+
 const STYLESHEET_BORDER_VARIANTS = [
 	'classic-card',
 	'minimal-quote',
@@ -364,12 +364,6 @@ export default function Edit( {
 		reviewerName,
 		reviewerRole,
 		orgName,
-		avatarMedia,
-		orgLogo,
-		workMedia,
-		avatarDecorative,
-		orgLogoDecorative,
-		workMediaDecorative,
 		showRating,
 		ratingType,
 		ratingStars,
@@ -599,8 +593,34 @@ export default function Edit( {
 		effectiveVariant === 'review-card' ||
 		effectiveVariant === 'rating-led';
 
+	const slotUid = ( prefix ) => `sgs-testimonial-${ clientId.slice( 0, 8 ) }-${ prefix }`;
+	const slotProps = ( prefix ) => ( {
+		attributes,
+		setAttributes,
+		prefix,
+		kinds: MEDIA_SLOTS[ prefix ].kinds,
+		context: MEDIA_SLOTS[ prefix ].context,
+		uid: slotUid( prefix ),
+	} );
+	const slotPanel = ( prefix, label ) => (
+		<MediaElementPanel
+			attributes={ attributes }
+			setAttributes={ setAttributes }
+			blockName="sgs/testimonial"
+			blockSlug="sgs/testimonial"
+			prefix={ prefix }
+			atoms={ MEDIA_SLOTS[ prefix ].atoms }
+			kinds={ MEDIA_SLOTS[ prefix ].kinds }
+			context={ MEDIA_SLOTS[ prefix ].context }
+			label={ label }
+		/>
+	);
+
 	return (
 		<>
+			{ showAvatar && slotPanel( 'avatar', __( 'Author photo', 'sgs-blocks' ) ) }
+			{ showLogo && slotPanel( 'logo', __( 'Organisation logo', 'sgs-blocks' ) ) }
+			{ showWork && slotPanel( 'work', __( 'Work image', 'sgs-blocks' ) ) }
 			{ ( rootLinkPreviewCss || linkPreviewCss ) && (
 				<style>{ rootLinkPreviewCss + linkPreviewCss }</style>
 			) }
@@ -944,216 +964,6 @@ export default function Edit( {
 						</div>
 					</BaseControl>
 				</PanelBody>
-
-				{ /* ── Media (gated per variant) ── */ }
-				{ ( showAvatar || showLogo || showWork ) && (
-					<PanelBody
-						title={ __( 'Media', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						{ showAvatar && (
-							<MediaPanel
-								label={ __( 'Author photo', 'sgs-blocks' ) }
-								value={ avatarMedia }
-								allowedTypes={ [ 'image' ] }
-								onChange={ ( media ) =>
-									setAttributes( { avatarMedia: media } )
-								}
-							/>
-						) }
-						{ /* Item 18 (WCAG 1.1.1) — a person's headshot is normally
-						     informative (it identifies who gave the testimonial), so
-						     this stays OFF by default; only an operator who knows this
-						     particular photo carries no information (e.g. a stock/
-						     placeholder image) should switch it on. When on, the photo
-						     renders with an empty alt + aria-hidden instead of the
-						     media library's stored alt text. */ }
-						{ showAvatar && avatarMedia?.url && (
-							<ToggleControl
-								label={ __(
-									'Author photo is decorative',
-									'sgs-blocks'
-								) }
-								help={ __(
-									'Hides this photo from screen readers. Leave off unless the photo carries no information of its own.',
-									'sgs-blocks'
-								) }
-								checked={ !! avatarDecorative }
-								onChange={ ( val ) =>
-									setAttributes( { avatarDecorative: val } )
-								}
-								__nextHasNoMarginBottom
-							/>
-						) }
-						{ /* Art direction (2026-08-07). Same device-switched shape as
-						     sgs/media and sgs/hero. Gated on an author photo existing —
-						     a per-device override for a photo that is not there would
-						     be a dead control. */ }
-						{ showAvatar && avatarMedia?.url && (
-							<ResponsiveControl
-								label={ __(
-									'Author photo for this screen size',
-									'sgs-blocks'
-								) }
-							>
-								{ ( bp ) => {
-									if ( 'desktop' === bp ) {
-										return (
-											<p
-												style={ {
-													margin: 0,
-													fontStyle: 'italic',
-												} }
-											>
-												{ __(
-													'The photo above is used on desktop. Switch to tablet or mobile to set a different crop.',
-													'sgs-blocks'
-												) }
-											</p>
-										);
-									}
-									const key =
-										'tablet' === bp
-											? 'avatarMediaTablet'
-											: 'avatarMediaMobile';
-									return (
-										<MediaPanel
-											label={ __(
-												'Optional — leave empty to reuse the desktop photo here',
-												'sgs-blocks'
-											) }
-											value={ attributes[ key ] }
-											allowedTypes={ [ 'image' ] }
-											onChange={ ( media ) =>
-												setAttributes( {
-													[ key ]: media,
-												} )
-											}
-										/>
-									);
-								} }
-							</ResponsiveControl>
-						) }
-						{ /* 37-media-no-handroll remediation (2026-09-03) — the author
-						     photo's crop mode is a genuine per-instance client control
-						     now (style.css no longer hardcodes object-fit:cover; the
-						     shared media-atoms stylesheet paints the same default).
-						     Gated on an author photo existing, same as the art-direction
-						     control above — a crop control for a photo that is not
-						     there would be a dead control. */ }
-						{ showAvatar && avatarMedia?.url && (
-							<MediaElementPanel
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-								prefix="avatar"
-								blockSlug="sgs/testimonial"
-								insertion="element"
-								atoms={ [ 'object-fit' ] }
-								mediaType="image"
-								scope="element"
-							/>
-						) }
-						{ showLogo && (
-							<MediaPanel
-								label={ __(
-									'Organisation logo',
-									'sgs-blocks'
-								) }
-								value={ orgLogo }
-								allowedTypes={ [ 'image' ] }
-								onChange={ ( media ) =>
-									setAttributes( { orgLogo: media } )
-								}
-							/>
-						) }
-						{ /* Item 18 (WCAG 1.1.1) — a logo is normally informative (it
-						     identifies which company), so OFF by default. */ }
-						{ showLogo && orgLogo?.url && (
-							<ToggleControl
-								label={ __(
-									'Organisation logo is decorative',
-									'sgs-blocks'
-								) }
-								help={ __(
-									'Hides this logo from screen readers. Leave off unless the logo carries no information of its own.',
-									'sgs-blocks'
-								) }
-								checked={ !! orgLogoDecorative }
-								onChange={ ( val ) =>
-									setAttributes( { orgLogoDecorative: val } )
-								}
-								__nextHasNoMarginBottom
-							/>
-						) }
-						{ /* Organisation colour moved to the shared SgsColourPanel
-						     above (D622 is superseded). */ }
-						{ showWork && (
-							<MediaPanel
-								label={ __(
-									'Work image or video',
-									'sgs-blocks'
-								) }
-								value={ workMedia }
-								allowedTypes={ [ 'image', 'video' ] }
-								onChange={ ( media ) =>
-									setAttributes( { workMedia: media } )
-								}
-							/>
-						) }
-						{ /* Item 18 (WCAG 1.1.1) — case-study media is more plausibly
-						     decorative (a background/hero shot for the story) than the
-						     avatar/logo above, but still OFF by default: the operator
-						     makes the call per instance. */ }
-						{ showWork && workMedia?.url && (
-							<ToggleControl
-								label={ __(
-									'Work media is decorative',
-									'sgs-blocks'
-								) }
-								help={ __(
-									'Hides this image or video from screen readers. Leave off unless it carries no information of its own.',
-									'sgs-blocks'
-								) }
-								checked={ !! workMediaDecorative }
-								onChange={ ( val ) =>
-									setAttributes( {
-										workMediaDecorative: val,
-									} )
-								}
-								__nextHasNoMarginBottom
-							/>
-						) }
-						{ /* 37-media-no-handroll remediation (2026-09-03) — replaces the
-						     old block-level imageControls/imageControlsExplicit
-						     "Image Controls" panel (a single shared sgsObjectFit/
-						     sgsObjectPosition pair) with an independently-scoped
-						     object-fit + focal-point control for THIS slot only,
-						     matching sgs/before-after's Wave 5b precedent. Case-study
-						     photos/videos vary wildly in composition, so both the crop
-						     mode and crop focus are genuine per-instance needs here. */ }
-						{ showWork && workMedia?.url && (
-							<MediaElementPanel
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-								prefix="work"
-								blockSlug="sgs/testimonial"
-								insertion="element"
-								atoms={ [ 'object-fit', 'focal-point' ] }
-								mediaType={
-									workMedia?.type === 'video'
-										? 'video'
-										: 'image'
-								}
-								scope="element"
-								previewUrl={
-									workMedia?.type === 'video'
-										? ''
-										: workMedia?.url || ''
-								}
-							/>
-						) }
-					</PanelBody>
-				) }
 
 				{ effectiveVariant === 'review-card' && (
 					<ToolsPanel
@@ -2220,26 +2030,13 @@ export default function Edit( {
 			<div { ...blockProps }>
 				{ showWork && (
 					<figure className="sgs-testimonial__work">
-						<MediaUploadCheck>
-							<MediaUpload
-								onSelect={ ( media ) =>
-									setAttributes( {
-										workMedia: normalise( media ),
-									} )
-								}
-								allowedTypes={ [ 'image', 'video' ] }
-								value={ workMedia?.id }
-								render={ ( { open } ) =>
-									renderWorkMedia( workMedia, open )
-								}
-							/>
-						</MediaUploadCheck>
+						<SlotPicture { ...slotProps( 'work' ) } title={ __( 'Work image', 'sgs-blocks' ) } instructions={ __( 'Choose the case-study picture', 'sgs-blocks' ) } />
 					</figure>
 				) }
 
-				{ showLogo && orgLogo?.url && (
+				{ showLogo && (
 					<div className="sgs-testimonial__logo">
-						<img src={ orgLogo.url } alt={ orgLogo.alt || '' } />
+						<SlotPicture { ...slotProps( 'logo' ) } placeholder={ false } />
 					</div>
 				) }
 
@@ -2320,45 +2117,7 @@ export default function Edit( {
 				>
 					{ showAvatar && (
 						<div className="sgs-testimonial__avatar">
-							<MediaUploadCheck>
-								<MediaUpload
-									onSelect={ ( media ) =>
-										setAttributes( {
-											avatarMedia: normalise( media ),
-										} )
-									}
-									allowedTypes={ [ 'image' ] }
-									value={ avatarMedia?.id }
-									render={ ( { open } ) =>
-										avatarMedia?.url ? (
-											<img
-												src={ avatarMedia.url }
-												alt={
-													avatarDecorative
-														? ''
-														: avatarMedia.alt || ''
-												}
-												aria-hidden={
-													avatarDecorative
-														? 'true'
-														: undefined
-												}
-												onClick={ open }
-											/>
-										) : (
-											<Button
-												variant="secondary"
-												onClick={ open }
-											>
-												{ __(
-													'Add photo',
-													'sgs-blocks'
-												) }
-											</Button>
-										)
-									}
-								/>
-							</MediaUploadCheck>
+							<SlotPicture { ...slotProps( 'avatar' ) } title={ __( 'Author photo', 'sgs-blocks' ) } instructions={ __( 'Choose the reviewer photo', 'sgs-blocks' ) } />
 						</div>
 					) }
 					<div className="sgs-testimonial__meta">
@@ -2407,121 +2166,5 @@ export default function Edit( {
 				</footer>
 			</div>
 		</>
-	);
-}
-
-/**
- * Normalise a WP media-library object into the unified SGS media shape.
- *
- * @param {Object} media WordPress media item from MediaUpload onSelect.
- * @return {Object|null} SGS media object or null.
- */
-function normalise( media ) {
-	if ( ! media || ! media.url ) {
-		return null;
-	}
-	const mime = media.mime || media.mime_type || '';
-	const type = mime.indexOf( 'video/' ) === 0 ? 'video' : 'image';
-	return {
-		url: media.url,
-		type,
-		id: media.id || 0,
-		alt: media.alt || '',
-		mime,
-		width: media.width,
-		height: media.height,
-	};
-}
-
-/**
- * Canvas preview of the work media: a video, an image, or an add button.
- *
- * @param {Object|undefined} workMedia The selected media object.
- * @param {Function}         open      Opens the media library.
- * @return {JSX.Element} The preview element.
- */
-function renderWorkMedia( workMedia, open ) {
-	if ( ! workMedia?.url ) {
-		return (
-			<Button variant="secondary" onClick={ open }>
-				{ __( 'Add work media', 'sgs-blocks' ) }
-			</Button>
-		);
-	}
-	if ( workMedia.type === 'video' ) {
-		return (
-			// eslint-disable-next-line jsx-a11y/media-has-caption
-			<video src={ workMedia.url } onClick={ open } muted />
-		);
-	}
-	return (
-		<div
-			onClick={ open }
-			onKeyDown={ ( event ) => {
-				if ( event.key === 'Enter' || event.key === ' ' ) {
-					event.preventDefault();
-					open();
-				}
-			} }
-			role="button"
-			tabIndex={ 0 }
-		>
-			<img src={ workMedia.url } alt={ workMedia.alt || '' } />
-		</div>
-	);
-}
-
-/**
- * Small inspector media panel: pick or clear a single media object.
- *
- * @param {Object}   props              Component props.
- * @param {string}   props.label        Control label.
- * @param {Object}   props.value        Selected media object.
- * @param {string[]} props.allowedTypes Allowed media types.
- * @param {Function} props.onChange     Called with the new media object.
- */
-function MediaPanel( { label, value, allowedTypes, onChange } ) {
-	return (
-		<BaseControl
-			id={ `sgs-testimonial-media-${ String( label )
-				.toLowerCase()
-				.replace( /[^a-z0-9]+/g, '-' ) }` }
-			label={ label }
-			__nextHasNoMarginBottom
-		>
-			<PanelRow>
-				<MediaUploadCheck>
-					<MediaUpload
-						onSelect={ ( media ) => onChange( normalise( media ) ) }
-						allowedTypes={ allowedTypes }
-						value={ value?.id }
-						render={ ( { open } ) => (
-							<div
-								style={ {
-									display: 'flex',
-									gap: '8px',
-									flexWrap: 'wrap',
-								} }
-							>
-								<Button variant="secondary" onClick={ open }>
-									{ value?.url
-										? __( 'Replace', 'sgs-blocks' )
-										: __( 'Select', 'sgs-blocks' ) }
-								</Button>
-								{ value?.url && (
-									<Button
-										variant="tertiary"
-										isDestructive
-										onClick={ () => onChange( null ) }
-									>
-										{ __( 'Remove', 'sgs-blocks' ) }
-									</Button>
-								) }
-							</div>
-						) }
-					/>
-				</MediaUploadCheck>
-			</PanelRow>
-		</BaseControl>
 	);
 }

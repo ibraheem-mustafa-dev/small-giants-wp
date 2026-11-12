@@ -96,21 +96,21 @@
 		"why": "no text reading is claimed"
 	},
 	{
-		"file": "lib/fill-media.mjs",
-		"find": "\tif ( 1 !== slots.length ) {\n\t\treturn [];",
-		"replace": "\tif ( 0 === slots.length ) {\n\t\treturn [];",
-		"why": "a block with several image slots is claimed"
+		"file": "lib/media/slots.mjs",
+		"find": ".filter( ( s ) => 'item' !== s.context )",
+		"replace": ".filter( () => true )",
+		"why": "an item slot (written by the list writer) is claimed by the media writer"
 	},
 	{
-		"file": "lib/fill-media.mjs",
-		"find": "[ slot.url, idSetting( schema, slot.url ), slot.alt,",
-		"replace": "[ slot.url, slot.alt,",
-		"why": "the attachment id is not claimed"
+		"file": "lib/media/slots.mjs",
+		"find": "[ s.source, s.alt, s.decorative, s.caption ].filter( Boolean )",
+		"replace": "[ s.alt, s.decorative, s.caption ].filter( Boolean )",
+		"why": "the Source is not claimed"
 	},
 	{
-		"file": "lib/fill-media.mjs",
-		"find": "'string' === [].concat( schema?.caption?.type || [] )[ 0 ] ? 'caption' : null ].filter",
-		"replace": "null ].filter",
+		"file": "lib/media/slots.mjs",
+		"find": "[ s.source, s.alt, s.decorative, s.caption ].filter( Boolean )",
+		"replace": "[ s.source, s.alt, s.decorative ].filter( Boolean )",
 		"why": "the caption is not claimed or written"
 	},
 	{

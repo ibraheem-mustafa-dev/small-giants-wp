@@ -440,20 +440,31 @@
 /* ── Image swatch ────────────────────────────────────────────────── */
 
 .sgs-option-picker__swatch--image {
-	/* Constrain to a consistent square; the <img> fills it via the shared
-	   media-element atom layer's object-fit —
-	   the <img> carries `.sgs-media-el` (render.php), which resolves
-	   `object-fit: var(--sgs-media-object-fit, cover)` from
-	   assets/css/media-atoms/object-fit.css. block.json's "Swatch image"
-	   panel (prefix 'swatch') lets a client override the crop per
-	   instance. */
+	/* The box the shared media renderer prints for the swatch (its `.sgs-media-group`, Spec 49 §8.3): the block's Width
+	   and Shape size and clip it, and the picture inside fills it, cropped to the Fit the client chose (cover by
+	   default). `display: block` because the group is a span. */
+	display: block;
+	overflow: hidden;
 	width: 2rem;
-	height: 2rem;
 	border-radius: 4px;
 	/* F4 (visual-polish): 0.15 keyline matches the colour-chip keyline so a
 	   pale/off-white product photo (live-caught: coconut swatch) never
 	   disappears against a white pill. */
 	border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* The picture's own shape: a Ratio the client sets wins (specificity 0 here), 4:3 otherwise, as the tile and the full-bleed
+   photo always were. */
+:where( .sgs-option-picker__swatch--image ) .sgs-media-el {
+	display: block;
+	height: auto;
+	aspect-ratio: var( --sgs-op-swatch-ratio, 4 / 3 );
+}
+
+/* No width rule on the picture outside a tile: its printed width attribute (the file's width) sizes the pill, capped
+   to the row, as the bare swatch image always did. A tile's picture fills the tile. */
+.sgs-option-picker--tile .sgs-option-picker__swatch--image .sgs-media-el {
+	width: 100%;
 }
 
 /* Pills containing an image swatch need slightly less horizontal padding
@@ -501,7 +512,6 @@
 	grid-area: 1 / 1;
 	width: 100%;
 	height: auto;
-	aspect-ratio: var(--sgs-op-swatch-ratio, 4 / 3);
 	border: 0;
 	border-radius: 0;
 }
@@ -808,11 +818,15 @@
 .sgs-option-picker--tile .sgs-option-picker__swatch--colour {
 	width: 100%;
 	height: auto;
-	aspect-ratio: 4 / 3;
 	border-radius: 0;
 	border: 0;
 	box-shadow: none;
 	margin-bottom: 6px;
+}
+
+/* The colour block is 4:3; the picture sets its own ratio (4:3 unless the client chose one). */
+.sgs-option-picker--tile .sgs-option-picker__swatch--colour {
+	aspect-ratio: 4 / 3;
 }
 
 .sgs-option-picker--tile .sgs-option-picker__pill-text {

@@ -44,24 +44,3 @@ if ( ! function_exists( 'sgs_option_picker_resolve_sub_label' ) ) {
 		return sanitize_text_field( (string) $raw );
 	}
 }
-
-if ( ! function_exists( 'sgs_option_picker_tile_image_size' ) ) {
-	/**
-	 * The registered WP image size to request for a swatch image, based on
-	 * the resolved (allow-listed) pill style.
-	 *
-	 * The 'tile' style renders the swatch image far larger than the 2rem
-	 * round chip the other three styles use (style.css
-	 * `.sgs-option-picker__swatch--image`), so the existing 'thumbnail' crop
-	 * (commonly 150x150 on a stock WP install) would upscale and blur.
-	 * 'medium' is a WordPress-registered size on every install (no new image
-	 * regeneration needed on any client site) and gives a sharper source for
-	 * the larger tile box.
-	 *
-	 * @param string $pill_style_safe Already allow-listed pillStyle value.
-	 * @return string
-	 */
-	function sgs_option_picker_tile_image_size( $pill_style_safe ) {
-		return 'tile' === $pill_style_safe ? 'medium' : 'thumbnail';
-	}
-}

@@ -108,15 +108,6 @@
     "order": 12
   },
   {
-    "id": "surveys-check-image-controls-support",
-    "cmd": "python scripts/surveys/check-image-controls-support.py --check",
-    "tier": "fast",
-    "added_D": "D585",
-    "added_commit": "ceec53b3",
-    "budget_ms": 104,
-    "order": 13
-  },
-  {
     "id": "surveys-survey-control-parity",
     "cmd": "python scripts/surveys/survey-control-parity.py --check",
     "tier": "fast",
@@ -824,15 +815,6 @@
     "order": 255
   },
   {
-    "id": "test-media-injection-parity",
-    "cmd": "node scripts/tests/test-media-injection-parity.mjs",
-    "tier": "fast",
-    "added_D": null,
-    "added_commit": null,
-    "budget_ms": 464,
-    "order": 87
-  },
-  {
     "id": "check-media-breakpoints",
     "cmd": "node scripts/check-media-breakpoints.js",
     "tier": "fast",
@@ -840,33 +822,6 @@
     "added_commit": null,
     "budget_ms": 46,
     "order": 88
-  },
-  {
-    "id": "test-media-atom-parity",
-    "cmd": "node scripts/tests/test-media-atom-parity.mjs",
-    "tier": "fast",
-    "added_D": 909,
-    "added_commit": null,
-    "budget_ms": 1925,
-    "order": 89
-  },
-  {
-    "id": "generate-media-stylesheet",
-    "cmd": "node scripts/generate-media-stylesheet.mjs",
-    "tier": "generator",
-    "added_D": 909,
-    "added_commit": null,
-    "budget_ms": null,
-    "order": 8
-  },
-  {
-    "id": "check-media-stylesheet",
-    "cmd": "node scripts/generate-media-stylesheet.mjs --check",
-    "tier": "fast",
-    "added_D": 909,
-    "added_commit": null,
-    "budget_ms": 50,
-    "order": 90
   },
   {
     "id": "check-media-atom-purity",
@@ -2330,5 +2285,14 @@
     "added_commit": null,
     "budget_ms": 2000,
     "order": 262
+  },
+  {
+    "id": "test-media-base-css",
+    "cmd": "node scripts/tests/test-media-base-css.mjs --all",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 60000,
+    "order": 263
   }
 ]

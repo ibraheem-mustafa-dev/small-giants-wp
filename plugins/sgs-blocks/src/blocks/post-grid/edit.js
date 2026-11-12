@@ -18,6 +18,7 @@ import { useEntityRecords } from '@wordpress/core-data';
 import { Spinner } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import SgsColourPanel from '../../components/SgsColourPanel';
+import MediaElementPanel from '../../components/MediaElementPanel';
 import {
 	resolveResponsiveTier,
 	resolveShadowPreviewComposed,
@@ -49,6 +50,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	const {
+		showImage,
 		postType,
 		postsPerPage,
 		orderBy,
@@ -521,6 +523,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			{ /* The settings every card's featured image shares (Spec 49 §10.4: Fit, Ratio, Height, Radius, Shape):
+			   the adopted panels on the image slot, without a Source row, because each card shows its own post's image. */ }
+			{ showImage && (
+				<MediaElementPanel
+					attributes={ { ...attributes, imageSource: { desktop: { kind: 'image' } } } }
+					setAttributes={ setAttributes }
+					prefix="image"
+					blockSlug="sgs/post-grid"
+					blockName="sgs/post-grid"
+					atoms={ [ 'object-fit', 'sizing', 'shape' ] }
+					context="item"
+				/>
+			) }
+
 			<InspectorControls group="styles">
 				{ /* Typography — replaces the old WP-native supports.typography
 				    (fontSize/lineHeight only, targeted at .sgs-post-grid__title via
@@ -580,6 +596,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								attributes={ attributes }
 								palette={ colourPalette }
 								tier={ previewTier }
+								clientId={ clientId }
 							/>
 						) ) }
 					</div>

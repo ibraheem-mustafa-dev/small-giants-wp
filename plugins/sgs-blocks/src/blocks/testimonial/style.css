@@ -105,13 +105,12 @@
 .sgs-testimonial__avatar img {
 	width: 48px;
 	height: 48px;
-	border-radius: 50%;
-	/* object-fit removed 2026-09-03 (37-media-no-handroll remediation) — the
-	   shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}`
-	   atom stylesheet paints the identical `cover` default, and a client can
-	   now override it per instance via the `avatar` mediaElements entry
-	   (block.json supports.sgs.mediaElements — avatarObjectFit). */
 	display: block;
+}
+
+/* The round crop is the default outline; the photo's Shape and Radius settings print a rule of their own, which wins. */
+:where(.sgs-testimonial__avatar img) {
+	border-radius: 50%;
 }
 
 .sgs-testimonial__logo {
@@ -122,12 +121,12 @@
 	max-width: 140px;
 	height: auto;
 	max-height: 56px;
-	/* Intentionally fixed — a logo must never be cropped, so this is a
-	   component-owned constant, not a client-overridable control (2026-08-17
-	   design decision, reconfirmed 2026-09-03 during the 37-media-no-handroll
-	   remediation of the avatar/work slots above). */
-	object-fit: contain;
 	display: block;
+}
+
+/* A logo is shown whole by default; the logo's Fit setting prints a rule of its own, which wins. */
+:where(.sgs-testimonial__logo img) {
+	object-fit: contain;
 }
 
 .sgs-testimonial__work {
@@ -448,11 +447,6 @@
 	.sgs-testimonial--case-study-media .sgs-testimonial__work video {
 		border-radius: var(--wp--custom--border-radius--medium, 8px) 0 0 var(--wp--custom--border-radius--medium, 8px);
 		height: 100%;
-		/* object-fit removed 2026-09-03 (37-media-no-handroll remediation) — the
-		   shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}`
-		   atom stylesheet paints the identical `cover` default at this width, and
-		   a client can now override it per instance via the `work` mediaElements
-		   entry (block.json supports.sgs.mediaElements — workObjectFit). */
 	}
 }
 

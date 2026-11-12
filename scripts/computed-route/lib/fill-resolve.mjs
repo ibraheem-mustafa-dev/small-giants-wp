@@ -7,7 +7,8 @@ import { setAttr, refOf } from './tree.mjs';
 import { knownPaths, OWNED } from './fill-prop.mjs';
 import { presenceDecisions, textDecisions, linkDecisions } from './fill-presence.mjs';
 import { linkAttrDecisions, blockSupportsAnchor } from './fill-link-attrs.mjs';
-import { imageSlots, mediaDecisions, nestedImage, factImage, pictureSlotOf, pictureSettles } from './fill-media.mjs';
+import { mediaDecisions, mediaAt, captionOf, factImage, pictureSlotOf, pictureSettles } from './fill-media.mjs';
+import { blockMediaSlots } from './media/slots.mjs';
 import { mapDecisions } from './fill-map.mjs';
 import { iconDecisions } from './fill-icon.mjs';
 import { handoverEntry } from './fill-handover.mjs';
@@ -80,11 +81,12 @@ function fillContent( st, rec, ref, cal ) {
 	take( presenceDecisions( { calibration: cal, schema: blockSchema( rec.name ), attributes: node.attributes || {}, evidence } ) );
 	take( textDecisions( { calibration: cal, attributes: node.attributes || {}, slots: words, leaf: 0 === rec.children.length } ) );
 	take( linkDecisions( { calibration: cal, attributes: node.attributes || {}, slots: hrefs, origin: st.origin, pages: st.pages } ) );
-	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts, imageAlts: imageSlots( st.db, rec.name, blockSchema( rec.name ) ).map( ( s ) => s.alt ), pictureSlot: pictureSlotOf( atDesktop ) } ) );
+	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts, imageAlts: blockMediaSlots( rec.name ).filter( ( s ) => 'content' === s.context && s.alt ).map( ( s ) => s.alt ), pictureSlot: pictureSlotOf( atDesktop ) } ) );
 	// The fact record speaks for the element the image is drawn by: the target whose slot is the image's own (a nested image names its slot).
-	const image = nestedImage( atDesktop );
-	const imageTarget = rec.targets.find( ( t ) => t.slot === ( image?.slot ?? '' ) && t.finder?.tpl ) ?? rec.targets.find( ( t ) => t.finder?.tpl );
-	const media = mediaDecisions( { slots: imageSlots( st.db, rec.name, blockSchema( rec.name ) ), schema: blockSchema( rec.name ), attributes: node.attributes || {}, img: image, media: { ...st.media, origin: st.origin }, fact: factImage( st.facts, imageTarget?.finder.tpl, st.rootComponent ) } );
+	const reads = Object.fromEntries( CONTENT_WIDTHS.map( ( w ) => [ w, mediaAt( Object.fromEntries( rec.targets.map( ( t ) => [ t.slot, st.reads.widths[ w ]?.[ t.id ] ] ) ) ) ] ) );
+	const imageSlot = Object.entries( atDesktop ).find( ( [ , s ] ) => s && ! s.missing && s.img )?.[ 0 ] ?? '';
+	const imageTarget = rec.targets.find( ( t ) => t.slot === imageSlot && t.finder?.tpl ) ?? rec.targets.find( ( t ) => t.finder?.tpl );
+	const media = mediaDecisions( { slots: blockMediaSlots( rec.name ), attributes: node.attributes || {}, reads, caption: captionOf( atDesktop ), media: { ...st.media, origin: st.origin }, fact: factImage( st.facts, imageTarget?.finder.tpl, st.rootComponent ) } );
 	take( media );
 	take( iconDecisions( { svg: atDesktop[ '' ]?.svg ?? null, schema: blockSchema( rec.name ), attributes: node.attributes || {}, href: hrefs[ '' ] ?? '' } ) );
 	if ( 'map' === node.attributes?.displayType ) {

@@ -37,11 +37,9 @@ final class GalleryLinkedTileTest extends TestCase {
 		foreach ( array( 'a', 'b', 'c', 'd' ) as $i => $key ) {
 			$items[] = array_merge(
 				array(
-					'id'   => 0,
-					'url'  => "https://example.com/{$key}.png",
-					'alt'  => 'Image ' . strtoupper( $key ),
-					'type' => 'image',
-					'_key' => "k{$i}",
+					'source' => array( 'desktop' => array( 'kind' => 'image', 'url' => "https://example.com/{$key}.png", 'width' => 800, 'height' => 600 ) ),
+					'alt'    => 'Image ' . strtoupper( $key ),
+					'_key'   => "k{$i}",
 				),
 				$links[ $i ] ?? array()
 			);
@@ -79,7 +77,6 @@ final class GalleryLinkedTileTest extends TestCase {
 					'tileBorderRadius'         => array(),
 					'tileMinHeight'            => array(),
 					'tilePadding'              => array(),
-					'tileFitContain'           => false,
 				)
 			)
 		);
@@ -195,7 +192,6 @@ final class GalleryLinkedTileTest extends TestCase {
 							'left'   => '12px',
 						),
 					),
-					'tileFitContain'   => true,
 				)
 			)
 		);
@@ -207,8 +203,6 @@ final class GalleryLinkedTileTest extends TestCase {
 		$this->assertStringContainsString( $item . '{min-height:64px;--sgs-gallery-tap-min:0px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px;}', $css );
 		$this->assertStringContainsString( '@media(max-width:767px){', $css );
 		$this->assertStringContainsString( 'min-height:56px;', $css );
-		$this->assertStringContainsString( '.sgs-gallery__img-wrap img,', $css );
-		$this->assertStringContainsString( 'object-fit:contain;object-position:center;', $css );
 		$this->assertStringContainsString( 'sgs-gallery--tile', $out['html'] );
 		$this->assertStringNotContainsString( ' style="', $out['html'] );
 	}

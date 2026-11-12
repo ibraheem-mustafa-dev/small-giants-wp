@@ -58,8 +58,8 @@ function blockFilesByName( root ) {
 	return new Map( findBlockJsons( path.join( root, 'src', 'blocks' ) ).map( ( f ) => [ JSON.parse( fs.readFileSync( f, 'utf8' ) ).name, f ] ) );
 }
 
-/** Files the generator writes besides block.json files: its override list and the PHP type mirror. */
-const GENERATED_SHARED = [ path.join( 'scripts', 'attr-classification-overrides.json' ), path.join( 'includes', 'media-element-attributes.generated.php' ) ];
+/** Files the generator writes besides block.json files: its override list. */
+const GENERATED_SHARED = [ path.join( 'scripts', 'attr-classification-overrides.json' ) ];
 
 /**
  * Every file one adoption run may write, by absolute path, as its text now (a missing file is recorded as null).
@@ -435,7 +435,6 @@ function copyTree( root, dest ) {
 		path.join( 'scripts', 'data', 'media-adoption.json' ),
 		path.join( 'scripts', 'lib', 'media-block-json.mjs' ),
 		path.join( 'tests', 'fixtures', 'media' ),
-		path.join( 'includes', 'media-element-attributes.generated.php' ),
 	];
 	for ( const rel of take ) {
 		const from = path.join( root, rel );
@@ -458,6 +457,25 @@ function snapshot( root ) {
 	return out;
 }
 
+/**
+ * Put the listed blocks back to their pre-adoption block.json (and the classification overrides back to theirs) in a temp copy,
+ * so the self-test starts from a tree where every listed block is pending whatever the real tree has adopted. The snapshots are
+ * the files in tests/fixtures/media/pre-adoption, named <slug>.block.json.
+ *
+ * @param {string} root Temp copy of the plugin directory.
+ */
+function restorePreAdoption( root ) {
+	const dir = path.join( root, 'tests', 'fixtures', 'media', 'pre-adoption' );
+	const files = blockFilesByName( root );
+	for ( const name of files.keys() ) {
+		const snap = path.join( dir, `${ name.replace( /^sgs\//, '' ) }.block.json` );
+		if ( fs.existsSync( snap ) ) {
+			fs.copyFileSync( snap, files.get( name ) );
+		}
+	}
+	fs.copyFileSync( path.join( dir, 'attr-classification-overrides.json' ), path.join( root, GENERATED_SHARED[ 0 ] ) );
+}
+
 async function selfTest() {
 	const fails = [];
 	let ran = 0;
@@ -471,6 +489,7 @@ async function selfTest() {
 	const tmp = fs.mkdtempSync( path.join( base, 'adopt-selftest-' ) );
 	try {
 		copyTree( OWN_PLUGIN_DIR, tmp );
+		restorePreAdoption( tmp );
 		const data = loadData( tmp );
 		const vocab = await vocabulary( tmp );
 		const files = blockFilesByName( tmp );
@@ -536,7 +555,7 @@ async function selfTest() {
 		const cartFile = files.get( 'sgs/cart' );
 		const cartText = fs.readFileSync( cartFile, 'utf8' );
 		const cart = JSON.parse( cartText );
-		cart.supports.sgs.mediaElements[ 0 ].kinds = [ 'image' ];
+		cart.supports.sgs.mediaElements = [ { prefix: '', context: 'element', kinds: [ 'image' ] } ];
 		fs.writeFileSync( cartFile, JSON.stringify( cart, null, '\t' ), 'utf8' );
 		ck( 'negative control: an excluded or unlisted block declaring kinds fails the check', checkAdoption( tmp, data ).problems.some( ( p ) => p.includes( 'sgs/cart' ) ) );
 		fs.writeFileSync( cartFile, cartText, 'utf8' );

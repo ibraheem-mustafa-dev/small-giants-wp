@@ -1,8 +1,8 @@
 {
- "block": "sgs/hero (About hero: the inline SVG background layer, bgSvgContent = about-hero-desktop.svg; the tablet and mobile files carry the same ids)",
+ "block": "sgs/hero (About hero: the inline SVG background layer, the Background Source's inline SVG = about-hero-desktop.svg; the tablet and mobile files carry the same ids)",
  "attributes": {
-  "bgSvgPartsTrigger": "load",
-  "bgSvgParts": [
+  "backgroundSvgPartsTrigger": "load",
+  "backgroundSvgParts": [
    {
     "target": "sunrays_spin",
     "loopRotate": 360,

@@ -111,7 +111,7 @@ describe( 'panel definitions', () => {
 
 describe( 'the component map', () => {
 	it( 'maps every control.component name that exists today and lists the rest', () => {
-		expect( unmappedComponents( ALL_ATOMS, COMPONENT_MAP ) ).toEqual( [ 'MediaKindField', 'SizingField' ] );
+		expect( unmappedComponents( ALL_ATOMS, COMPONENT_MAP ) ).toEqual( [ 'SizingField' ] );
 	} );
 
 	it( 'maps to real components', () => {

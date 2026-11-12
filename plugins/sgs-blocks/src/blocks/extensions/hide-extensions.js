@@ -54,7 +54,7 @@ export function isExtensionEnabled( nameOrSettings, slug ) {
 /**
  * FLAG test — a capability a block declares as a single truthy
  * `supports.sgs.<flag>` rather than as a list member (roster rule_mode
- * "flag"; `imageControls` and `blockLinkAutoUrl` use it). A flag says
+ * "flag"; `blockLinkAutoUrl` uses it). A flag says
  * something about the block itself ("this block supplies its own link
  * destination"), so it reads as one property rather than an entry in a
  * shared opt-in list.

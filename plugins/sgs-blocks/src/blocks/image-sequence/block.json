@@ -26,9 +26,19 @@
 		"inserter": false,
 		"sgs": {
 			"motion": true,
-			"_comment_mediaElements": "Adopts the shared object-fit atom for its CSS DEFAULT ONLY — no editor control is mounted (edit.js deliberately does not import MediaElementPanel/ObjectFitField for this block). The 'thumbnail' element note below already documents WHY: fx-image-sequence.js's drawCover() always scales+crops every canvas frame as a centred cover-fit with zero configurability, so an operator-set fit that disagreed with the canvas would produce a guaranteed flash/mismatch the instant JS took over — worse than no control. Declaring `mediaElements` here (rather than leaving the object-fit hardcoded in style.css) closes detector rule 37-media-no-handroll by having the thumbnail <img> and canvas carry the shared `.sgs-media-el` marker and read the shared stylesheet's `object-fit: var(--sgs-media-object-fit, cover)` default — byte-identical resting behaviour to the old hardcode, just sourced from the shared layer instead of duplicated locally.",
 			"mediaElements": [
-				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
+				{
+					"prefix": "thumbnail",
+					"context": "content",
+					"kinds": [
+						"image"
+					],
+					"atoms": [
+						"source",
+						"meaning",
+						"object-fit"
+					]
+				}
 			],
 			"elements": {
 				"wrapper": {
@@ -52,11 +62,12 @@
 					"_note": "`.sgs-image-sequence__stage` (render.php:173) — the positioning box that holds the thumbnail and the canvas in the same rect. Every property on it (position/width/overflow/aspect-ratio fallback, style.css:23-31) is a structural default with no attribute behind it, so it exposes no client-facing style controls."
 				},
 				"thumbnail": {
+					"surface": true,
 					"label": "Thumbnail image",
 					"order": 3,
 					"clusters": [],
 					"prefix": "",
-					"_note": "`.sgs-image-sequence__thumbnail` (render.php:183) — the fail-open <img> shown with JS blocked or under reduced motion (FR-38-2). Its inset/size/object-fit are structural defaults (style.css:33-40); `thumbnail` and `thumbnailAlt` are media identity and alt TEXT, not style properties, so no cluster is declared. prefix: \"\" is an explicit opt-out of orphan scanning for that reason (thumbnailAlt is alt TEXT). ⛔ `supports.sgs.imageControls` was deliberately NOT declared here (design decision, 2026-08-17, correcting a DECLARED-BUT-DEAD finding from check-image-controls-support.py) — the JS canvas that takes over from this thumbnail (fx-image-sequence.js `drawCover()`) ALWAYS scales+crops every frame as a centred cover-fit with zero configurability (no object-position/object-fit param exists in the draw call). Exposing an imageControls panel on the thumbnail would let an operator set e.g. object-fit:contain or a custom focal point that the canvas can never honour — producing a guaranteed visual mismatch/flash the instant JS takes over, worse than a dead control. Removed rather than wired."
+					"_note": "`.sgs-image-sequence__thumbnail`: the fail-open image shown with JS blocked or under reduced motion (FR-38-2), printed by the shared media renderer for the `thumbnail` slot (Source, Alt, Decorative, Fit). The stage owns the aspect ratio (`thumbnailRatio`), and the canvas that takes over draws every frame as a centred cover crop. prefix: \"\" opts the manifest out of orphan scanning: the slot attributes are media settings, not style properties."
 				},
 				"canvas": {
 					"label": "Frame canvas",
@@ -69,18 +80,11 @@
 		}
 	},
 	"attributes": {
-		"thumbnail": {
-			"type": "object",
-			"default": null
-		},
 		"_comment_artDirection": "Art-direction tiers (2026-08-07) — the {base}/{base}Tablet/{base}Mobile shape sgs/media and sgs/hero use. Object-typed to MATCH `thumbnail` itself: a flat string here would be silently coerced to the default by WP's object-typed-attr handling, dropping the whole value. A tier left empty falls back to the desktop thumbnail at that width. Tiers apply to the fail-open <img> only — the canvas frame sequence is a separate per-tier pipeline (`tierDesktop`/`tierTablet`/`tierMobile`) that already art-directs itself.",
-		"thumbnailTablet": {
+		"thumbnailRatio": {
 			"type": "object",
-			"default": null
-		},
-		"thumbnailMobile": {
-			"type": "object",
-			"default": null
+			"default": { "desktop": "16 / 9" },
+			"description": "The stage's aspect ratio per device. The thumbnail and the frame canvas fill it."
 		},
 		"thumbnailAlt": {
 			"type": "string",
@@ -89,11 +93,6 @@
 		"thumbnailDecorative": {
 			"type": "boolean",
 			"default": false
-		},
-		"aspectRatio": {
-			"type": "string",
-			"default": "16 / 9",
-			"enum": [ "16 / 9", "21 / 9", "4 / 3", "1 / 1", "4 / 5", "3 / 4", "9 / 16" ]
 		},
 		"desktopFramesUrl": {
 			"type": "string",
@@ -163,7 +162,10 @@
 				"jpeg",
 				"png"
 			]
-		}
+		},
+		"thumbnailSource": {"type":"object","_generated":"media-atoms"},
+		"thumbnailLoading": {"type":"string","_generated":"media-atoms"},
+		"thumbnailFit": {"type":"object","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

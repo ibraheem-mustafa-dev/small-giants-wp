@@ -18,6 +18,20 @@
 	"supports": {
 		"html": false,
 		"sgs": {
+			"mediaElements": [
+				{
+					"prefix": "headerLogo",
+					"context": "content",
+					"kinds": [
+						"image",
+						"svg"
+					],
+					"atoms": [
+						"source",
+						"meaning"
+					]
+				}
+			],
 			"motion": {
 				"states": [
 					"step-changed"
@@ -315,11 +329,6 @@
 			"default": false,
 			"description": "Root polish: an optional header row above the progress bar — a logo, a 'Step N of M' eyebrow and a Close button (only shown when the flow is inside an sgs/modal)."
 		},
-		"headerLogo": {
-			"type": "object",
-			"default": {},
-			"description": "Root polish: the optional header's logo image, {id,url,alt}. Empty object = no logo shown."
-		},
 		"openerLabel": {
 			"type": "string",
 			"default": ""
@@ -452,7 +461,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "N38: when on, the footer's skip link adds the bare frame (the product and its chosen variation, no add-ons) to the bag, then closes the pop-up if the flow is in one. When off, the skip link routes to the 'no add-ons' option's ending as before."
-		}
+		},
+		"headerLogoSource": {"type":"object","_generated":"media-atoms"},
+		"headerLogoLoading": {"type":"string","_generated":"media-atoms"},
+		"headerLogoAlt": {"type":"string","_generated":"media-atoms"},
+		"headerLogoDecorative": {"type":"boolean","_generated":"media-atoms"}
 	},
 	"providesContext": {
 		"sgs/choice-flow/productId": "flowProductId",

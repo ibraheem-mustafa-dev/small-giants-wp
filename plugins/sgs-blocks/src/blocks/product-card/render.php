@@ -61,7 +61,6 @@ require_once __DIR__ . '/attribute-tag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-live-fill.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-per-product.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-price-display.php';
-require_once dirname( __DIR__, 3 ) . '/includes/product-card-image-size.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-card-parts.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-swatches.php';
 
@@ -94,7 +93,6 @@ foreach ( $sgs_pc_link_sources as $sgs_pc_link_key => $sgs_pc_link_source_key ) 
 $variant_style  = $attributes['variantStyle'] ?? 'standard';
 $source_mode    = $attributes['sourceMode'] ?? 'typed';
 $card_max_width = isset( $attributes['cardMaxWidth'] ) ? sanitize_text_field( $attributes['cardMaxWidth'] ) : '';
-$image_height   = isset( $attributes['imageHeight'] ) ? sanitize_text_field( $attributes['imageHeight'] ) : '';
 
 // C7 forward: per-instance styling for the in-card option-picker labels
 // (Size/Flavour legends). Forwarded into each render_block('sgs/option-picker')
@@ -160,11 +158,12 @@ if ( 'featured' === $variant_style ) {
 if ( isset( $attributes['showShadow'] ) && false === $attributes['showShadow'] ) {
 	$classes[] = 'product-card--flat';
 }
-if ( ! empty( $attributes['imageFill'] ) ) {
-	$classes[] = 'product-card--image-fill';
+// A Ratio or a Height on the photo slot sizes the photo itself: the card's fixed-height box steps aside (style.css).
+if ( sgs_pcm_sized( $attributes, 'image' ) ) {
+	$classes[] = 'product-card--image-sized';
 }
 
-/* ── Build inline styles for per-block CSS-var overrides (cardMaxWidth, imageHeight) ── */
+/* ── Build inline styles for per-block CSS-var overrides (cardMaxWidth) ── */
 
 // Sanitise: allow ONLY a single CSS length (digits+unit) OR a calc() of
 // digits/units/operators. Both ends anchored (^…$) so no trailing CSS can be
@@ -176,14 +175,6 @@ $sgs_css_length_re = '/^(?:[\d.]+(?:%|px|em|rem|vw|vh|ch|ex|fr|cm|mm|in|pt|pc)|c
 $inline_styles = array();
 if ( '' !== $card_max_width && preg_match( $sgs_css_length_re, $card_max_width ) ) {
 	$inline_styles[] = '--sgs-product-card-max-width:' . esc_attr( $card_max_width ) . ';';
-}
-if ( '' !== $image_height && preg_match( $sgs_css_length_re, $image_height ) ) {
-	$inline_styles[] = '--sgs-product-card-image-height:' . esc_attr( $image_height ) . ';';
-}
-$sgs_image_aspect = (string) ( $attributes['imageAspectRatio'] ?? '' );
-if ( in_array( $sgs_image_aspect, array( '16 / 9', '21 / 9', '4 / 3', '1 / 1', '4 / 5', '3 / 4', '9 / 16' ), true ) ) {
-	$inline_styles[] = '--sgs-product-card-image-aspect:' . $sgs_image_aspect . ';';
-	$classes[]       = 'product-card--image-ratio';
 }
 // CSS-length + CSS-keyword sanitisers for any free-text style value concatenated
 // into the scoped <style> below (border width/radius = length; border style =
@@ -199,6 +190,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-press.php';
 
 $sgs_card_uid          = 'sgs-pc-' . wp_unique_id();
+// Render-time key (not an attribute): the brand logo's scope class derives from it (includes/product-card-builtin-render.php).
+$attributes['_sgsCardUid'] = $sgs_card_uid;
 $sgs_title_colour      = sgs_colour_value( $attributes['titleColour'] ?? '' );
 $sgs_price_colour      = sgs_colour_value( $attributes['priceColour'] ?? '' );
 $sgs_desc_colour       = sgs_colour_value( $attributes['descColour'] ?? '' );
@@ -569,87 +562,17 @@ if ( is_array( $attributes['cardPaddingTier'] ?? null ) && array() !== $attribut
 	);
 }
 
-// Brand logo box (brandLogoHeight / -Width / -MaxHeight / -MaxWidth): each a
-// per-device length, emitted as one scoped rule on the logo. Unset properties
-// emit nothing, so style.css keeps 18px high, width auto. The selector's
-// weight (0,2,0) equals style.css's logo rule and this <style> comes later.
-$sgs_brand_logo_props = array(
-	array(
-		'value'        => is_array( $attributes['brandLogoHeight'] ?? null ) ? $attributes['brandLogoHeight'] : array(),
-		'css'          => 'height',
-		'unit_default' => 'px',
-	),
-	array(
-		'value'        => is_array( $attributes['brandLogoWidth'] ?? null ) ? $attributes['brandLogoWidth'] : array(),
-		'css'          => 'width',
-		'unit_default' => 'px',
-	),
-	array(
-		'value'        => is_array( $attributes['brandLogoMaxHeight'] ?? null ) ? $attributes['brandLogoMaxHeight'] : array(),
-		'css'          => 'max-height',
-		'unit_default' => 'px',
-	),
-	array(
-		'value'        => is_array( $attributes['brandLogoMaxWidth'] ?? null ) ? $attributes['brandLogoMaxWidth'] : array(),
-		'css'          => 'max-width',
-		'unit_default' => 'px',
-	),
-);
-$sgs_card_typo_css .= sgs_emit_responsive_css( '.' . $sgs_card_uid . ' .sgs-product-card__brand-logo', $sgs_brand_logo_props );
-
-// ── Media-element atom layer (rule 37-media-no-handroll) — replaces the
-// former sgs_media_position_css() hand-roll (which never had a declared
-// sgsObjectFit/sgsObjectPosition attribute pair or any editor control, so it
-// always emitted ''). Two independently-scoped elements, per block.json's
-// supports.sgs.mediaElements:
-//
-// - 'main' covers EVERY render branch's main product image (typed
-// .sgs-product-card__image, bound read-only/non-variable .product-card-img,
-// bound variable-configurator .product-card__media .product-card-img) —
-// deliberately ONE control (FP-9 / CG-9), since only one branch ever
-// renders per page load. Each render site carries the SAME
-// sgs_media_element_scope_class( $sgs_card_uid, 'main' ) marker class, so
-// this ONE scoped rule (keyed to that class) governs whichever branch is
-// live. Replaces style.css's hardcoded object-fit:cover / object-position:
-// center on the main image (both atoms default to those exact values via
-// assets/css/media-atoms/object-fit.css + focal-point.css, so an untouched
-// card renders byte-identical).
-// - 'thumb' covers the bound variable-configurator's thumbnail-rail image
-// (.product-card__thumb img) — a distinct role, never governed by 'main'.
-//
-// Computed once, before the typed/bound branch split, so it flows into every
-// branch's assembled $sgs_card_typo_css.
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$sgs_card_typo_css .= SGS_Media_Element::style(
-		$attributes,
-		'main',
-		'sgs/product-card',
-		$sgs_card_uid,
-		array( 'object-fit', 'focal-point' )
-	);
-	$sgs_card_typo_css .= SGS_Media_Element::style(
-		$attributes,
-		'thumb',
-		'sgs/product-card',
-		$sgs_card_uid,
-		array( 'object-fit' )
-	);
-}
-
-// Marker classes for every main-image render site + the thumbnail-rail site
-// (see the atom-layer block above). Built once, reused verbatim at each of
-// this file's <img> tags plus passed into product-card-builtin-render.php
-// for the typed element. class_exists()-guarded so a request that somehow
-// reaches this file before the class autoloads still renders with the plain
-// base class (mirrors buybox/gallery-col.php's own guard). Every bound <img>
-// also carries the motion part class `sgs-product-card__image` (the typed
-// image's class), so a motion layer on the `image` part reaches the photo on
-// every render path (Spec 38A section 6.2).
-$sgs_pc_main_img_class  = 'product-card-img sgs-product-card__image';
-$sgs_pc_thumb_img_class = '';
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$sgs_pc_main_img_class .= ' ' . implode( ' ', SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $sgs_card_uid, 'main' ) ) );
-	$sgs_pc_thumb_img_class = implode( ' ', SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $sgs_card_uid, 'thumb' ) ) );
+// The photo, thumbnail and brand logo are media slots (`image`, `thumb`, `logo`, block.json supports.sgs.mediaElements):
+// each prints through sgs_pcm_render() (includes/product-card-media.php) with its own scope class and rules, at the
+// place the picture goes. Every render path (typed, read-only, non-variable, variable) uses the same three slots, so
+// one set of controls governs the card whichever path renders (FP-9). The `sgs-product-card__image` part class sits on
+// each main picture so a motion layer on the `image` part reaches it on every path (Spec 38A section 6.2).
+$sgs_pc_main_class = 'product-card-img sgs-product-card__image';
+// A photo set to Fill ignores its own Ratio, so the photo box carries the Ratio and the filling picture follows it.
+$sgs_pc_box_ratio_css = sgs_pcm_fill_ratio_css( $attributes, 'image', '.' . $sgs_card_uid . ' .product-card__media,.' . $sgs_card_uid . ' .sgs-product-card__media-wrap' );
+if ( '' !== $sgs_pc_box_ratio_css ) {
+	$sgs_card_typo_css .= $sgs_pc_box_ratio_css;
+	$classes[]          = 'product-card--image-ratio';
 }
 
 // ── Block-private colour/border (R2c, B-3/B-8) → scoped, NOT inline ──────
@@ -896,38 +819,10 @@ if ( 'typed' === $source_mode ) {
 
 	$sgs_card_typo_tag = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 
-	/*
-	 * imageId resolution (2026-09-01 data-migration): imageId is a real
-	 * attachment post ID, added alongside the pre-existing `image` URL string.
-	 * `image` is the PERMANENT fallback — never removed, never made
-	 * conditional — for content authored/cloned before imageId existed, or
-	 * where the attachment has since been deleted. When imageId is set and
-	 * wp_get_attachment_image_src() proves it still resolves to a live
-	 * attachment, that URL wins (this is what unlocks real attachment
-	 * metadata for a future responsive-sizes pass); otherwise the raw `image`
-	 * string renders exactly as it did before this attribute existed. Mirrors
-	 * sgs/media's imageId-wins-else-imageUrl pattern (media/render.php
-	 * "Resolve final image URL: imageId wins; fall back to imageUrl.").
-	 * A COPY of $attributes is passed to sgs_product_card_builtin_render() so
-	 * that helper (includes/product-card-builtin-render.php) needs no change —
-	 * it already reads `image` as a plain string; this class of logic is fully
-	 * contained in render.php.
-	 */
-	$sgs_pcard_typed_image_id = isset( $attributes['imageId'] ) ? absint( $attributes['imageId'] ) : 0;
-	$sgs_pcard_typed_image    = isset( $attributes['image'] ) ? (string) $attributes['image'] : '';
-	if ( $sgs_pcard_typed_image_id ) {
-		$sgs_pcard_typed_src = wp_get_attachment_image_src( $sgs_pcard_typed_image_id, 'full' );
-		if ( $sgs_pcard_typed_src ) {
-			$sgs_pcard_typed_image = $sgs_pcard_typed_src[0];
-		}
-	}
-	$sgs_pcard_typed_attributes          = $attributes;
-	$sgs_pcard_typed_attributes['image'] = $sgs_pcard_typed_image;
-
 	// Built-in element render — the ONLY typed path (no InnerBlocks slot).
 	// Prepend the scoped typography + CTA <style>. Pass the uid so the trial tag
 	// carries it (the box rule above scopes to it).
-	$builtin_inner = $sgs_card_typo_tag . sgs_product_card_builtin_render( $sgs_pcard_typed_attributes, $sgs_card_uid );
+	$builtin_inner = $sgs_card_typo_tag . sgs_product_card_builtin_render( $attributes, $sgs_card_uid );
 	// Frame Card: attribute tag, post-processed onto the shared builtin
 	// render's returned HTML (attribute-tag.php docblock explains why;
 	// product_id is 0 here, typed mode has no live product to check against).
@@ -1024,8 +919,6 @@ $sgs_bound_htag             = in_array( $attributes['headingLevel'] ?? '', $sgs_
 
 // From-each-product mode: the badge, price note, button label and action come from the product's own meta. Off (typed) = no change.
 $attributes = sgs_product_card_per_product_fill( $attributes, (int) $product_id, (string) $source_mode );
-// imageSize: the chosen WordPress image size for the photo. Empty = WooCommerce's thumbnail, as before.
-$data = sgs_product_card_image_size_apply( $data, $attributes );
 
 // FP-H: resolve the CTA behaviour ONCE for all bound branches (context seed +
 // markup share this value so label and behaviour always agree).
@@ -1149,23 +1042,20 @@ $sgs_resolved_desc = ( isset( $attributes['showDescription'] ) && false === $att
 	? ''
 	: sgs_product_card_resolve_element( $attributes, 'description', $attributes['description'] ?? '', $data['short_desc'] );
 
-// Image: URL + alt resolve as a pair — when the typed image wins, the typed alt
-// accompanies it (a live alt under a typed image would mis-describe).
-$sgs_img_override = sgs_product_card_override_active( $attributes, 'image', $attributes['image'] ?? '' );
-// imageId resolution (2026-09-01): when the typed override wins, prefer the
-// resolved attachment URL over the raw `image` string, same rule + same
-// permanent fallback as the typed-mode branch above (imageId 0/unresolved ->
-// the raw image URL renders exactly as before this attribute existed).
-$sgs_pcard_bound_typed_image = (string) ( $attributes['image'] ?? '' );
-$sgs_pcard_bound_image_id    = isset( $attributes['imageId'] ) ? absint( $attributes['imageId'] ) : 0;
-if ( $sgs_pcard_bound_image_id ) {
-	$sgs_pcard_bound_src = wp_get_attachment_image_src( $sgs_pcard_bound_image_id, 'full' );
-	if ( $sgs_pcard_bound_src ) {
-		$sgs_pcard_bound_typed_image = $sgs_pcard_bound_src[0];
-	}
-}
-$sgs_resolved_img     = $sgs_img_override ? $sgs_pcard_bound_typed_image : (string) $data['image_url'];
+// Image: file + alt resolve as a pair. When the typed override wins, the block's own Source and Alt go together (a
+// live alt under a typed image would mis-describe it); otherwise the product's photo and its alt.
+$sgs_img_override = in_array( 'image', array_map( 'sanitize_key', (array) ( $attributes['overrideElements'] ?? array() ) ), true )
+	&& sgs_pcm_has_file( $attributes['imageSource'] ?? null );
+$sgs_live_image   = array(
+	'url'    => (string) $data['image_url'],
+	'width'  => 0,
+	'height' => 0,
+	'id'     => (int) ( $data['image_id'] ?? 0 ),
+	'alt'    => (string) $data['image_alt'],
+);
+// The picture's scope class and part class. Each bound path prints it through sgs_pcm_main_image below.
 $sgs_resolved_img_alt = $sgs_img_override ? (string) ( $attributes['imageAlt'] ?? '' ) : (string) $data['image_alt'];
+$sgs_resolved_img     = $sgs_img_override ? sgs_pcm_first_url( $attributes['imageSource'] ?? null ) : (string) $data['image_url'];
 
 // Badge: bound branches have no live badge — live value is '' (override OFF or
 // empty typed value = no badge, matching pre-override bound output).
@@ -1200,14 +1090,15 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 	$ro_opts      = array_merge( $base_opts, array( 'extra_classes' => $ro_classes ) );
 
 	$ro_permalink = $data['wc_id'] ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
+	$sgs_ro_main = sgs_pcm_main_image( 'image', $attributes, $sgs_card_uid . '-image', $sgs_live_image, $sgs_img_override, array( 'block' => 'sgs/product-card', 'class' => $sgs_pc_main_class ) );
 
 	ob_start();
 	?>
 	<?php // FP-H: live values resolved through the per-element override helper. ?>
-	<?php if ( '' !== $sgs_resolved_img ) : ?>
+	<?php if ( '' !== $sgs_ro_main['html'] ) : ?>
 		<?php // F7: media-wrap = positioning context for the featured overlay badge. ?>
 		<div class="sgs-product-card__media-wrap">
-			<img class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>" src="<?php echo esc_url( $sgs_resolved_img ); ?>" alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>"<?php echo sgs_image_size_attrs( (string) $sgs_resolved_img ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- numeric attributes. ?> <?php $sgs_pc_load_o = sgs_image_loading_attrs(); ?>loading="<?php echo esc_attr( $sgs_pc_load_o['loading'] ); ?>" fetchpriority="<?php echo esc_attr( $sgs_pc_load_o['fetchpriority'] ); ?>" decoding="<?php echo esc_attr( $sgs_pc_load_o['decoding'] ); ?>">
+			<?php echo $sgs_ro_main['html'] . sgs_pcm_style( $sgs_ro_main['css'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the renderer escapes. ?>
 			<?php
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 			echo sgs_product_card_brand_markup( $attributes );
@@ -1224,7 +1115,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 	<div class="product-card-body sgs-product-card__body">
 		<?php if ( '' !== $sgs_badge_inbody ) : ?>
 			<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo sgs_rich_text_kses( $sgs_badge_inbody, false ); ?></span>
-		<?php elseif ( '' !== $sgs_badge_overlay && '' === $sgs_resolved_img ) : ?>
+		<?php elseif ( '' !== $sgs_badge_overlay && '' === $sgs_ro_main['html'] ) : ?>
 			<?php // Image-less featured card — in-body fallback (overlay CSS is media-scoped, so this stays in flow). ?>
 			<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo sgs_rich_text_kses( $sgs_badge_overlay, false ); ?></span>
 		<?php endif; ?>
@@ -1324,7 +1215,6 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		}
 		$stock_text = $def['inStock'] ? '' : __( 'Out of stock', 'sgs-blocks' );
 		$image_src  = '' !== $def['imageUrl'] ? $def['imageUrl'] : $data['image_url'];
-		$image_src  = sgs_product_card_image_url_at_size( (string) $image_src, sgs_product_card_image_size( $attributes ) );
 
 		/*
 		 * FP-H (Bean FINAL-FORM ruling): an image override sets the card's
@@ -1339,6 +1229,20 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		if ( $sgs_img_override ) {
 			$image_src = $sgs_resolved_img;
 		}
+
+		// The default photo prints through the media renderer with the colour swap's bindings. The variation's own file
+		// (the manifest's thumbnail-size copy, with its size) is the default; else the product's photo.
+		$sgs_var_first = isset( $def['gallery'][0] ) && is_array( $def['gallery'][0] ) ? $def['gallery'][0] : array();
+		$sgs_var_live  = '' !== (string) $def['imageUrl']
+			? array(
+				'url'    => (string) $def['imageUrl'],
+				'width'  => (int) ( $sgs_var_first['w'] ?? 0 ),
+				'height' => (int) ( $sgs_var_first['h'] ?? 0 ),
+				'id'     => 0,
+				'alt'    => (string) $data['image_alt'],
+			)
+			: $sgs_live_image;
+		$sgs_var_main  = sgs_pcm_main_image( 'image', $attributes, $sgs_card_uid . '-image', $sgs_var_live, $sgs_img_override, array( 'block' => 'sgs/product-card', 'class' => $sgs_pc_main_class, 'bind' => true ) );
 
 		// B3: per-unit price note + cosmetic discount badge (FR-27-B3).
 		// SSR literals seeded into context so data-wp-text == initial span text
@@ -1414,6 +1318,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			'stockText'           => $stock_text,
 			'inStock'             => (bool) $def['inStock'],
 			'imageSrc'            => $image_src,
+			'imageSrcset'         => $sgs_var_main['srcset'],
 			'imageAlt'            => $sgs_img_override ? $sgs_resolved_img_alt : $data['image_alt'],
 			'pending'             => false,
 			// U7: wp_rest nonce for the SGS cart proxy (X-WP-Nonce header).
@@ -1607,7 +1512,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			$context['valueLadderHidden'] = ( count( $ladder ) < 2 );
 
 			$card_permalink     = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
-			$sgs_has_real_image = sgs_product_card_has_real_image( (string) $image_src );
+			$sgs_has_real_image = sgs_product_card_has_real_image( (string) $image_src ) && '' !== $sgs_var_main['html'];
 
 			// A4: resolve default image dimensions for the aspect-ratio box (CLS 0).
 			$def_img_w = ( ! empty( $def['gallery'][0]['w'] ) ) ? (int) $def['gallery'][0]['w'] : 0;
@@ -1622,21 +1527,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<?php if ( '' !== $card_permalink ) : ?>
 				<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
 				<?php endif; ?>
-				<?php // Only the page's likely LCP image loads eagerly at high priority (helpers-media.php). ?>
-				<?php $sgs_pc_load = sgs_image_loading_attrs(); ?>
-				<img
-					class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>"
-					src="<?php echo esc_url( $image_src ); ?>"
-					alt="<?php echo esc_attr( $sgs_img_override ? $sgs_resolved_img_alt : $data['image_alt'] ); ?>"
-					<?php echo $def_img_w > 0 ? 'width="' . esc_attr( (string) $def_img_w ) . '"' : ''; ?>
-					<?php echo $def_img_h > 0 ? 'height="' . esc_attr( (string) $def_img_h ) . '"' : ''; ?>
-					loading="<?php echo esc_attr( $sgs_pc_load['loading'] ); ?>"
-					fetchpriority="<?php echo esc_attr( $sgs_pc_load['fetchpriority'] ); ?>"
-					decoding="<?php echo esc_attr( $sgs_pc_load['decoding'] ); ?>"
-					<?php // FP-H FINAL-FORM: binds stay under an image override — the override is the DEFAULT image; variation photos still swap in. ?>
-					data-wp-bind--src="context.imageSrc"
-					data-wp-bind--alt="context.imageAlt"
-				>
+				<?php echo $sgs_var_main['html'] . sgs_pcm_style( $sgs_var_main['css'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the renderer escapes; its bindings are literals. ?>
 				<?php if ( '' !== $card_permalink ) : ?>
 				</a>
 				<?php endif; ?>
@@ -1678,16 +1569,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					aria-current="<?php echo 0 === $thumb_idx ? 'true' : 'false'; ?>"
 					aria-label="<?php echo $thumb_aria_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied above. ?>"
 				>
-					<?php $sgs_pc_thumb_load = sgs_image_loading_attrs( false ); ?>
-					<img
-						class="<?php echo esc_attr( $sgs_pc_thumb_img_class ); ?>"
-						src="<?php echo esc_url( $thumb['url'] ); ?>"
-						alt="<?php echo esc_attr( $thumb['alt'] ); ?>"
-						<?php echo $thumb['w'] > 0 ? 'width="' . esc_attr( (string) $thumb['w'] ) . '"' : ''; ?>
-						<?php echo $thumb['h'] > 0 ? 'height="' . esc_attr( (string) $thumb['h'] ) . '"' : ''; ?>
-						loading="<?php echo esc_attr( $sgs_pc_thumb_load['loading'] ); ?>"
-						decoding="<?php echo esc_attr( $sgs_pc_thumb_load['decoding'] ); ?>"
-					>
+					<?php echo sgs_pcm_thumb( 'thumb', $attributes, $sgs_card_uid . '-thumb', $thumb, 'sgs/product-card', 0 === $thumb_idx ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the renderer escapes. ?>
 				</button>
 				<?php endforeach; ?>
 			</div>
@@ -2005,11 +1887,15 @@ $add_to_cart_id = absint( $data['wc_id'] );
 // JS-defined getter resolves to empty server-side and WIPES the SSR value.
 // Binding to seeded context keeps SSR correct AND stays client-reactive
 // (view.js mutates these same context keys on pill selection).
+// The photo prints through the media renderer; a typed override image is static (no swap bindings).
+$sgs_nv_main = sgs_pcm_main_image( 'image', $attributes, $sgs_card_uid . '-image', $sgs_live_image, $sgs_img_override, array( 'block' => 'sgs/product-card', 'class' => $sgs_pc_main_class, 'bind' => ! $sgs_img_override ) );
+
 $context = array(
 	'productId'    => (string) $data['id'],
 	'selected'     => $first_key,
 	'addToCartId'  => $add_to_cart_id,
 	'imageSrc'     => $sgs_resolved_img,
+	'imageSrcset'  => $sgs_nv_main['srcset'],
 	'imageAlt'     => $sgs_resolved_img_alt,
 
 	/*
@@ -2047,7 +1933,7 @@ $nonvar_opts = array_merge(
 
 $card_permalink = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
 // FP-H: image resolved through the override helper (typed image wins when overridden).
-$sgs_has_real_image = sgs_product_card_has_real_image( (string) $sgs_resolved_img );
+$sgs_has_real_image = sgs_product_card_has_real_image( (string) $sgs_resolved_img ) && '' !== $sgs_nv_main['html'];
 
 ob_start();
 ?>
@@ -2057,20 +1943,7 @@ ob_start();
 	<?php if ( '' !== $card_permalink ) : ?>
 	<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
 	<?php endif; ?>
-	<?php // Only the page's likely LCP image loads eagerly at high priority (helpers-media.php). ?>
-	<?php $sgs_pc_load = sgs_image_loading_attrs(); ?>
-	<img
-		class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>"
-		src="<?php echo esc_url( $sgs_resolved_img ); ?>"
-		alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>"
-		loading="<?php echo esc_attr( $sgs_pc_load['loading'] ); ?>"
-		fetchpriority="<?php echo esc_attr( $sgs_pc_load['fetchpriority'] ); ?>"
-		decoding="<?php echo esc_attr( $sgs_pc_load['decoding'] ); ?>"
-		<?php if ( ! $sgs_img_override ) : // FP-H: a typed override image is STATIC — no reactive swap binds. ?>
-		data-wp-bind--src="context.imageSrc"
-		data-wp-bind--alt="context.imageAlt"
-		<?php endif; ?>
-	>
+	<?php echo $sgs_nv_main['html'] . sgs_pcm_style( $sgs_nv_main['css'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the renderer escapes; its bindings are literals. ?>
 	<?php if ( '' !== $card_permalink ) : ?>
 	</a>
 	<?php endif; ?>

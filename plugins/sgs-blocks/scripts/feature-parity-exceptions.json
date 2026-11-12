@@ -236,6 +236,10 @@
   },
   "sgs/gallery": {
     "core/gallery": {
+      "aspectRatio": {
+        "reason": "Named `itemRatio` here: the Spec 49 item slot Ratio (per device), applied to every image in the gallery.",
+        "wave": "over-report"
+      },
       "allowResize": {
         "reason": "Editor-only per-image manual-resize handle; internal editor UI, not a functional capability.",
         "wave": "native"
@@ -245,7 +249,7 @@
         "wave": "over-report"
       },
       "fixedHeight": {
-        "reason": "Achieved via `aspectRatio`, which locks uniform image dimensions across the grid.",
+        "reason": "Achieved via `itemRatio` (Spec 49 item slot Ratio), which locks uniform image dimensions across the grid.",
         "wave": "over-report"
       },
       "ids": {

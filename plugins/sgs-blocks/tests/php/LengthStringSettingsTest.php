@@ -1,7 +1,6 @@
 <?php
 /**
- * The container and feature-grid column minimums, the separator width and thickness, the responsive logo sizes and the
- * image-controls height each store one length string per device and print it: the desktop value in the base rule, a
+ * The container and feature-grid column minimums, the separator width and thickness, and the responsive logo sizes each store one length string per device and print it: the desktop value in the base rule, a
  * different mobile value in a media query, a keyword where the property takes one, and nothing for a hostile string.
  *
  * Run with: php vendor/phpunit/phpunit/phpunit --filter LengthStringSettingsTest
@@ -126,7 +125,7 @@ final class LengthStringSettingsTest extends TestCase {
 		$css = $this->css(
 			'sgs/responsive-logo',
 			array(
-				'logoUrl'     => 'https://example.test/logo.png',
+				'logoSource'  => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/logo.png', 'width' => 400, 'height' => 100 ) ),
 				'maxWidth'    => array( 'desktop' => '240px', 'mobile' => '50%' ),
 				'maxHeight'   => array( 'desktop' => '4rem', 'mobile' => '40px' ),
 				'shrinkWidth' => array( 'desktop' => '120px', 'mobile' => '80px' ),
@@ -141,40 +140,8 @@ final class LengthStringSettingsTest extends TestCase {
 	}
 
 	public function test_responsive_logo_refuses_hostile_lengths(): void {
-		$css = $this->css( 'sgs/responsive-logo', array( 'logoUrl' => 'https://example.test/logo.png', 'maxWidth' => array( 'desktop' => self::HOSTILE ), 'maxHeight' => array( 'desktop' => self::HOSTILE ), 'shrinkWidth' => array( 'desktop' => self::HOSTILE ) ) );
+		$css = $this->css( 'sgs/responsive-logo', array( 'logoSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/logo.png', 'width' => 400, 'height' => 100 ) ), 'maxWidth' => array( 'desktop' => self::HOSTILE ), 'maxHeight' => array( 'desktop' => self::HOSTILE ), 'shrinkWidth' => array( 'desktop' => self::HOSTILE ) ) );
 		$this->assertStringNotContainsString( 'body{', $css );
 		$this->assertStringNotContainsString( 'color:red', $css );
-	}
-
-	/**
-	 * Runs the image-controls render filter on an icon-block shell in a child process.
-	 *
-	 * @param array<string,mixed> $attrs Extension attributes.
-	 */
-	private function image_controls( array $attrs ): string {
-		$markup = '<figure class="wp-block-sgs-icon"><img src="a.jpg"></figure>';
-		$registry = 'if ( ! function_exists( "wp_rand" ) ) { function wp_rand( $a = 0, $b = 0 ) { return mt_rand( $a, $b ); } } class WP_Block_Type_Registry { public static function get_instance() { return new self(); } public function get_registered( $name ) { return (object) array( "supports" => array( "sgs" => array( "imageControls" => true ) ) ); } }';
-		return $this->run_php(
-			'require ' . var_export( dirname( __DIR__, 2 ) . '/includes/image-controls.php', true ) . ';'
-			. ' echo \SGS\Blocks\inject_image_controls( ' . var_export( $markup, true ) . ', array( "blockName" => "sgs/icon", "attrs" => json_decode( ' . var_export( json_encode( (object) $attrs ), true ) . ', true ) ) );',
-			$registry
-		);
-	}
-
-	public function test_image_controls_height_prints_a_custom_property_per_device(): void {
-		$out = $this->image_controls( array( 'sgsHeight' => array( 'desktop' => '320px', 'tablet' => '40vh', 'mobile' => 'auto' ) ) );
-		$this->assertStringContainsString( '--sgs-height-desktop:320px', $out );
-		$this->assertStringContainsString( '--sgs-height-tablet:40vh', $out );
-		$this->assertStringContainsString( '--sgs-height-mobile:auto', $out );
-		$this->assertStringContainsString( 'sgs-has-image-controls', $out );
-	}
-
-	public function test_image_controls_height_refuses_a_hostile_length_and_unset_adds_nothing(): void {
-		$bad = $this->image_controls( array( 'sgsHeight' => array( 'desktop' => self::HOSTILE ) ) );
-		$this->assertStringNotContainsString( 'body{', $bad );
-		$this->assertStringNotContainsString( '--sgs-height', $bad );
-
-		$none = $this->image_controls( array() );
-		$this->assertStringNotContainsString( 'sgs-has-image-controls', $none, 'no setting leaves the markup alone' );
 	}
 }

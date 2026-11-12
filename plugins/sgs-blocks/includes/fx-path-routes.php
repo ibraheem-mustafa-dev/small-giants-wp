@@ -333,7 +333,7 @@ function sgs_expand_fx_path_route( string $block_content ): string {
 	 * `sgs_scope_class_for_root()` (helpers-scoped-instance-vars.php) is the
 	 * existing reuse-or-mint mechanism: if another injector already gave
 	 * this root a `sgs-<slug>-<8hex>` uid class this render (hover-effects /
-	 * parallax / image-controls), it's reused rather than minting a second
+	 * parallax), it's reused rather than minting a second
 	 * one. The anchor name is derived from that class, so it is unique PER
 	 * BLOCK INSTANCE — two travelling blocks on the same page never collide.
 	 */

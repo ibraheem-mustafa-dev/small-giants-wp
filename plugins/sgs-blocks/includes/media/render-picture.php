@@ -33,7 +33,8 @@ if ( ! function_exists( 'sgs_media_img_tag' ) ) {
 	 * One `<img>`: attachment-backed through `wp_get_attachment_image`, otherwise built by hand.
 	 *
 	 * @param array|null $file    The file ( `id`, `url`, `width`, `height` ), or null for the blank GIF.
-	 * @param array      $attrs   Attributes ( `class`, `alt`, `loading`, `fetchpriority`, `sizes` ).
+	 * @param array      $attrs   Attributes ( `class`, `alt`, `loading`, `fetchpriority`, `sizes`, `cover_crop`: mark the
+	 *                            image `data-sgs-cover-crop` so core's later `auto` is taken out of its sizes ).
 	 * @return string
 	 */
 	function sgs_media_img_tag( ?array $file, array $attrs ): string {
@@ -49,6 +50,9 @@ if ( ! function_exists( 'sgs_media_img_tag' ) ) {
 		}
 		if ( ! empty( $attrs['sizes'] ) && null !== $file ) {
 			$base['sizes'] = (string) $attrs['sizes'];
+		}
+		if ( ! empty( $attrs['cover_crop'] ) && null !== $file ) {
+			$base['data-sgs-cover-crop'] = '';
 		}
 		if ( null !== $file && $file['id'] > 0 ) {
 			$tag = wp_get_attachment_image( $file['id'], 'full', false, $base );
@@ -98,6 +102,138 @@ if ( ! function_exists( 'sgs_media_source_tag' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_column_entry_pattern' ) ) {
+	/**
+	 * The pattern of one column-count `sizes` entry, `<min-width condition> <length>`, built from the condition
+	 * `SGS_Breakpoints::query_width()` prints (Sgs_Layout_Width::to_sizes writes the entries through it).
+	 *
+	 * @return string A regex capturing the start width in px and the length.
+	 */
+	function sgs_media_column_entry_pattern(): string {
+		static $pattern = null;
+		if ( null === $pattern ) {
+			$probe   = preg_quote( SGS_Breakpoints::query_width( 'min', 'SGSWIDTH' ), '/' );
+			$pattern = '/^' . str_replace( 'SGSWIDTH', '(\d+(?:\.\d+)?)px', $probe ) . '\s+(.+)$/';
+		}
+		return $pattern;
+	}
+}
+
+if ( ! function_exists( 'sgs_media_sizes_entries' ) ) {
+	/**
+	 * One device's `sizes` value as entries: a list of `(min-width: Npx) length` entries (a grid cell's column counts) splits
+	 * at its top-level commas, widest viewport first; any other value is one entry with no start.
+	 *
+	 * @param string $value A device's `sizes` value without the `auto, ` prefix.
+	 * @return array<int,array{0:?int,1:string}> Each `[start viewport px or null, length expression]`.
+	 */
+	function sgs_media_sizes_entries( string $value ): array {
+		if ( ! preg_match( sgs_media_column_entry_pattern(), $value ) && false === strpos( $value, ', ' ) ) {
+			return array( array( null, $value ) );
+		}
+		$parts = array();
+		$depth = 0;
+		$start = 0;
+		for ( $i = 0, $len = strlen( $value ); $i < $len; $i++ ) {
+			$c = $value[ $i ];
+			if ( '(' === $c ) {
+				++$depth;
+			} elseif ( ')' === $c ) {
+				--$depth;
+			} elseif ( ',' === $c && 0 === $depth ) {
+				$parts[] = trim( substr( $value, $start, $i - $start ) );
+				$start   = $i + 1;
+			}
+		}
+		$parts[] = trim( substr( $value, $start ) );
+		$out     = array();
+		foreach ( $parts as $part ) {
+			if ( preg_match( sgs_media_column_entry_pattern(), $part, $m ) ) {
+				$out[] = array( (int) $m[1], $m[2] );
+			} elseif ( 1 === count( $parts ) || count( $out ) === count( $parts ) - 1 ) {
+				$out[] = array( null, $part );
+			} else {
+				// Not a column-count list (a condition of another kind): keep the value whole.
+				return array( array( null, $value ) );
+			}
+		}
+		return $out;
+	}
+}
+
+if ( ! function_exists( 'sgs_media_combine_sizes' ) ) {
+	/**
+	 * One `sizes` value for an element that several devices share: each device's own value under its viewport range.
+	 *
+	 * An `<img>` or `<source>` serves every device that picks its file, so its `sizes` has to describe each of them;
+	 * printing only the desktop value made a phone size a grid cell as if it were the desktop's. Equal values print
+	 * once. A value in WordPress's `(max-width: Wpx) 100vw, Wpx` form is rewritten as `min(Wpx, 100vw)`, because a
+	 * condition cannot nest inside a condition. The `auto, ` prefix of a lazy image is kept once, in front.
+	 *
+	 * @param array<string,string> $by_device Device => `sizes` for each device the element serves, widest device first.
+	 * @return string
+	 */
+	function sgs_media_combine_sizes( array $by_device ): string {
+		$by_device = array_filter( array_map( 'strval', $by_device ), static fn( string $s ): bool => '' !== $s );
+		if ( count( array_unique( $by_device ) ) <= 1 ) {
+			return (string) reset( $by_device );
+		}
+		$auto  = true;
+		$parts = array();
+		foreach ( $by_device as $device => $value ) {
+			if ( 0 !== stripos( $value, 'auto,' ) ) {
+				$auto = false;
+			}
+			$value = trim( (string) preg_replace( '/^auto,\s*/i', '', $value ) );
+			if ( preg_match( '/^\(max-width:\s*([\d.]+px)\)\s*100vw,\s*([\d.]+px)$/', $value, $m ) && $m[1] === $m[2] ) {
+				$value = 'min(' . $m[1] . ', 100vw)';
+			}
+			$parts[ $device ] = $value;
+		}
+		$list   = array();
+		$widest = array_key_first( $parts );
+		$bounds = array(
+			'desktop' => array( SGS_Breakpoints::TABLET_MAX + 1, null ),
+			'tablet'  => array( SGS_Breakpoints::MOBILE_MAX + 1, SGS_Breakpoints::TABLET_MAX ),
+			'mobile'  => array( 0, SGS_Breakpoints::MOBILE_MAX ),
+		);
+		foreach ( array_reverse( array_keys( $parts ) ) as $device ) {
+			// Narrowest device first, so the widest served device ends the list with no condition.
+			list( $lower, $upper ) = $bounds[ $device ] ?? array( 0, null );
+			$entries               = array();
+			foreach ( sgs_media_sizes_entries( $parts[ $device ] ) as list( $from, $expr ) ) {
+				// A count that starts above the device's widest viewport never applies there; the first one that starts at
+				// or below its narrowest viewport applies to the whole of it, so nothing narrower is printed.
+				if ( null !== $from && null !== $upper && $from > $upper && $device !== $widest ) {
+					continue;
+				}
+				$covers    = null === $from || $from <= $lower;
+				$entries[] = array( $covers ? null : $from, $expr );
+				if ( $covers ) {
+					break;
+				}
+			}
+			foreach ( $entries as list( $from, $expr ) ) {
+				$conds  = array_filter( array( $device === $widest ? '' : sgs_media_device_query_upto( $device ), null === $from ? '' : SGS_Breakpoints::query_width( 'min', $from ) ) );
+				$list[] = ( $conds ? implode( ' and ', $conds ) . ' ' : '' ) . $expr;
+			}
+		}
+		return ( $auto ? 'auto, ' : '' ) . implode( ', ', $list );
+	}
+}
+
+if ( ! function_exists( 'sgs_media_device_query_upto' ) ) {
+	/**
+	 * The media condition that is true up to and including a device's widest viewport.
+	 *
+	 * @param string $device `tablet` or `mobile`.
+	 * @return string
+	 */
+	function sgs_media_device_query_upto( string $device ): string {
+		return SGS_Breakpoints::query_fractional( 'mobile' === $device ? 'mobile' : 'tablet' );
+	}
+}
+
 if ( ! function_exists( 'sgs_media_picture' ) ) {
 	/**
 	 * Images for every device that shows one: a plain `<img>` when all devices share a file, else one `<picture>`.
@@ -105,7 +241,8 @@ if ( ! function_exists( 'sgs_media_picture' ) ) {
 	 * @param array<string,array|null> $files   Device => file ( `id`, `url`, `width`, `height` ), null where the device
 	 *                                          shows another kind or nothing.
 	 * @param array                    $options `classes` (img), `picture_classes`, `alt`, `loading`, `fetchpriority`,
-	 *                                          `sizes` (device => string), `force_picture`.
+	 *                                          `sizes` (device => string), `queries` (device => media condition),
+	 *                                          `force_picture`, `cover_crop` (see sgs_media_img_tag).
 	 * @return string The markup, or '' when no device shows an image.
 	 */
 	function sgs_media_picture( array $files, array $options ): string {
@@ -127,19 +264,22 @@ if ( ! function_exists( 'sgs_media_picture' ) ) {
 				'alt'           => $options['alt'] ?? '',
 				'loading'       => $options['loading'] ?? 'lazy',
 				'fetchpriority' => $options['fetchpriority'] ?? '',
-				'sizes'         => $sizes['desktop'] ?? '',
+				'sizes'         => sgs_media_combine_sizes( array_intersect_key( $sizes, array_filter( $keys, static fn( $k ): bool => $k === $keys['desktop'] ) ) ),
+				'cover_crop'    => ! empty( $options['cover_crop'] ),
 			)
 		);
 		if ( 1 === count( array_unique( $keys ) ) && empty( $options['force_picture'] ) ) {
 			return $img;
 		}
+		// A block that places a device's file at its own width passes that condition in `queries`.
+		$queries = (array) ( $options['queries'] ?? array() );
 		$sources = '';
 		if ( $keys['mobile'] === $keys['tablet'] && $keys['tablet'] !== $keys['desktop'] ) {
-			$sources .= sgs_media_source_tag( $files['tablet'] ?? null, SGS_Breakpoints::query_fractional( 'tablet' ), (string) ( $sizes['tablet'] ?? '' ) );
+			$sources .= sgs_media_source_tag( $files['tablet'] ?? null, (string) ( $queries['tablet'] ?? SGS_Breakpoints::query_fractional( 'tablet' ) ), sgs_media_combine_sizes( array_intersect_key( $sizes, array( 'tablet' => 1, 'mobile' => 1 ) ) ) );
 		} else {
 			foreach ( array( 'tablet', 'mobile' ) as $device ) {
 				if ( $keys[ $device ] !== $keys['desktop'] ) {
-					$sources .= sgs_media_source_tag( $files[ $device ] ?? null, sgs_media_device_query( $device ), (string) ( $sizes[ $device ] ?? '' ) );
+					$sources .= sgs_media_source_tag( $files[ $device ] ?? null, (string) ( $queries[ $device ] ?? sgs_media_device_query( $device ) ), (string) ( $sizes[ $device ] ?? '' ) );
 				}
 			}
 		}

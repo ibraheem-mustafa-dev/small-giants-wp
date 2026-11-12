@@ -5,7 +5,7 @@
 	"version": "1.7.0",
 	"title": "SGS Media",
 	"category": "sgs-content",
-	"description": "Content media block — image or video. Use mediaType to choose image (with imageUrl) or video (with videoUrl for external embeds or videoId for WP-library uploads). Media sizing/shape/border (aspect ratio, height/width, max-width/height, named shape, border width/style/colour/radius) and overlay/video-behaviour are driven by the shared media-atom layer (box-shape/overlay/video-behaviour, Wave 5b 2026-09-01) — supports.filter.duotone (T3.5, D402 ADOPT) is a separate native WP support, rendered as a generated class + <style> tag, needing no render.php involvement.",
+	"description": "Content media block: one photo, video, embed or inline SVG, per device. Every media setting (source, alt, fit, focal point, size, ratio, shape, border, shadow, overlay, playback, caption and link) is the shared media system's, rendered by SGS_Media_Element::render().",
 	"keywords": [
 		"image",
 		"video",
@@ -22,34 +22,19 @@
 			"scalarStylingLift": true,
 			"scalarContentLift": true,
 			"_comment_scalarContentLift": "Added 2026-09-08. Without this capability, extraction.py's extract_content() (Case 4: delegates_content==0, no scalar-content-lift, no array-content-lift) emits a loud ContentGap for EVERY sgs/media instance recognised as an atomic leaf (an <img>/<video>/<svg> matched directly via atomic_tag_map, not as a composite-interior column) instead of ever attempting the imageUrl/imageId/videoUrl/thumbnail lift — role='image-object' attrs existed on this block's own schema the whole time with nothing wired to read them for this shape. See resolvers/scalar_content.py's 2026-09-08 fix comment for the companion self-match + flat-trio-explosion changes this capability now reaches.",
-			"_comment_mediaElements": "Wave 5b (2026-09-01). box-shape/video-behaviour/overlay are now wired, closing the Wave 5a gap list. `box-shape` REPLACES this block's old native `__experimentalBorder` (width/style/colour/radius) AND the old native `supports.dimensions.aspectRatio` — the atom's own borderRadius/borderRadiusTablet/borderRadiusMobile/borderWidth/borderStyle/borderColour/borderColourGradient/aspectRatio/height/width/maxWidth/maxHeight attrs are the sole mechanism now. `video-behaviour` renders its 6 boolean bases through the shared tiered BooleanResponsiveControl (promoted to src/components/), matching this block's existing Tablet/Mobile playback tiers. `overlay` paints via `.sgs-media-box::after`; render.php adds the `sgs-media-box` marker class to the figure wrapper whenever a box atom is declared and gates naked-mode off in that case, per `SGS_Media_Element::requires_box()`.",
 			"mediaElements": [
 				{
 					"prefix": "",
-					"context": "element",
-					"atoms": [
-						"media-type",
-						"source",
-						"meaning",
-						"svg-presentation",
-						"object-fit",
-						"focal-point",
-						"box-shape",
-						"video-behaviour",
-						"overlay",
-						"opacity",
-						"shadow",
-						"media-padding",
-						"caption",
-						"link"
+					"context": "content",
+					"kinds": [
+						"image",
+						"video",
+						"embed",
+						"svg"
 					]
 				}
 			],
 			"boxFamilies": {
-				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
-				],
 				"padding": [
 					"padding"
 				],
@@ -69,7 +54,8 @@
 					"prefix": "videoTime",
 					"attrMap": {
 						"css:-webkit-text-stroke-width": "videoTimeTextStrokeWidth",
-						"css:-webkit-text-stroke-color": "videoTimeTextStrokeColour"
+						"css:-webkit-text-stroke-color": "videoTimeTextStrokeColour",
+						"css:writing-mode": "videoTimeWritingMode"
 					},
 					"states": {
 						"hover": {
@@ -80,29 +66,38 @@
 					}
 				},
 				"media": {
+					"surface": true,
 					"label": "Media",
 					"order": 1,
 					"clusters": [
 						"fill",
 						"layout"
 					],
-					"isWrapper": true,
 					"motionSelector": ".sgs-media-el",
-					"_note_css_element_resolves_to_wrapper": "objectFit/objectPosition/opacity/boxShadow resolve css_element to wrapper in the DB, not media, despite this element being named media — CONFIRMED INTENTIONAL 2026-08-27. isWrapper:true routes them through check-element-manifest-conformance.js's native-fallback path (nativeSupportsPath, around line 225), which only ever resolves against the wrapper element. Do not change this to media.",
+					"svg": true,
+					"availableWhen": {
+						"slot": "",
+						"kinds": [
+							"image",
+							"video",
+							"embed",
+							"svg"
+						]
+					},
 					"attrMap": {
 						"css:opacity": "opacity",
 						"css:height": "height",
 						"css:max-width": "maxWidth",
 						"css:max-height": "maxHeight",
-						"css:aspect-ratio": "aspectRatio",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:border-color-gradient": "borderColourGradient",
-						"css:border-radius": "borderRadius",
-						"css:box-shadow": "boxShadow",
-						"css:object-fit": "objectFit",
-						"css:object-position": "objectPosition"
+						"css:border-radius": "radius",
+						"css:object-fit": "fit",
+						"css:object-position": "focal",
+						"css:aspect-ratio": "ratio",
+						"css:box-shadow": "boxShadow"
 					},
 					"states": {
 						"hover": {
@@ -114,6 +109,7 @@
 					}
 				},
 				"caption": {
+					"selector": ".sgs-media-caption",
 					"text": true,
 					"label": "Caption",
 					"order": 2,
@@ -125,7 +121,8 @@
 						"css:color": "captionColour",
 						"css:background-image": "captionColourGradient",
 						"css:-webkit-text-stroke-width": "captionTextStrokeWidth",
-						"css:-webkit-text-stroke-color": "captionTextStrokeColour"
+						"css:-webkit-text-stroke-color": "captionTextStrokeColour",
+						"css:writing-mode": "captionWritingMode"
 					},
 					"states": {
 						"hover": {
@@ -138,6 +135,10 @@
 					},
 					"_note": "captionColourGradient is the text-colour gradient sibling to captionColour, same background-clip:text mechanism as sgs/counter's labelColour/labelColourGradient (D636 gap-closure). css:color was previously undeclared here even though render.php (step 8, `.sgs-media__caption`) already emits it — this attrMap entry documents the existing flat-colour path as well as adding the new gradient one. captionColourHover/captionColourHoverGradient added 2026-09-07 (colour-conformance bg-layer batch): this element has NO real background paint of its own at any state (style.css:75-79 sets only margin/font-size/color, no background-color/-image) — the classifier's bg-layer flag on this row is a FALSE POSITIVE (it reads this element's own `css:background-image` member, which is captionColourGradient's own text-gradient sibling, not a genuine separate background paint), so this is a plain text-gradient hover row with no precondition swap."
 				}
+			},
+			"fx": {
+				"motionSurface": true,
+				"_comment_motionSurface": "The media part is the motion surface: hover zoom, entrance and effects target the media element, so the Effects panel is offered for this block (Spec 49 section 10.1)."
 			}
 		},
 		"anchor": true,
@@ -150,7 +151,7 @@
 	},
 	"selectors": {
 		"filter": {
-			"duotone": ".sgs-media__img, .sgs-media__video"
+			"duotone": ".sgs-media-el"
 		}
 	},
 	"attributes": {
@@ -158,294 +159,20 @@
 			"type": "boolean",
 			"default": true
 		},
-		"mediaType": {
-			"type": "string",
-			"default": "image",
-			"enum": [
-				"image",
-				"video",
-				"svg",
-				"lottie"
-			]
-		},
-		"svgContent": {
-			"type": "string",
-			"default": ""
-		},
-		"_comment_svgArtDirection": "Per-device SVG SOURCE (Spec 35 Part D5). Type MATCHES the base attr (string) — a mismatched type is silently coerced to the default and the whole value is dropped. There is no *Desktop sibling: the unsuffixed `svgContent` above IS the desktop tier. An empty tier falls back UP (mobile -> tablet -> desktop) per D3, so a blank tier means 'use the one above', never 'render nothing'. Inline SVG is markup with no extra fetch, so tiers render as SIBLINGS toggled by scoped @media CSS (the images pattern), NOT the video runtime swap.",
-		"svgContentTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"svgContentMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"videoUrl": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"videoSource": {
-			"type": "string",
-			"default": "external",
-			"enum": [
-				"external",
-				"internal"
-			]
-		},
-		"videoId": {
-			"type": "integer"
-		},
-		"videoMimeType": {
-			"type": "string",
-			"default": ""
-		},
-		"thumbnail": {
-			"type": "string",
-			"default": ""
-		},
-		"thumbnailId": {
-			"type": "integer"
-		},
-		"_comment_videoArtDirection": "Video-source art-direction tiers (2026-08-07, Bean-decided). Completes the VIDEO half: the image half already ships imageId/imageUrl tiers, and the playback-behaviour tiers (videoAutoplay* etc.) already exist. Unlike images, tiers here CANNOT be sibling elements toggled by CSS — three <video>s each begin fetching and three embeds each load a player — so the source is swapped by view.js, reusing sgs/hero's established data-src-desktop/tablet/mobile contract with the same upward fallback. The server still renders the DESKTOP source as real markup, so a no-JS visitor gets a working video. Bean chose to include YouTube/Vimeo (2026-08-07) with the trade-off stated: crossing a breakpoint mid-watch rebuilds the iframe and loses playback position. Each tier's embed URL is built from THAT tier's own playback flags, so a mobile tier that wants muted autoplay gets it.",
-		"videoUrlTablet": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"videoIdTablet": {
-			"type": "integer"
-		},
-		"videoUrlMobile": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"videoIdMobile": {
-			"type": "integer"
-		},
-		"thumbnailIdTablet": {
-			"type": "integer"
-		},
-		"thumbnailIdMobile": {
-			"type": "integer"
-		},
-		"videoAutoplay": {
-			"type": "boolean",
-			"default": false
-		},
-		"videoAutoplayTablet": {
-			"type": [
-				"boolean",
-				"null"
-			],
-			"default": null,
-			"_comment": "Per-device playback-behaviour tiers (D-pending). null = inherit the tier above (Tablet inherits Desktop, Mobile inherits Tablet) — the framework's null-means-inherit convention, same as maxWidthTablet etc. Desktop has no *Desktop sibling; the unsuffixed attr above IS the desktop value."
-		},
-		"videoAutoplayMobile": {
-			"type": [
-				"boolean",
-				"null"
-			],
-			"default": null
-		},
-		"videoLoop": {
-			"type": "boolean",
-			"default": false
-		},
-		"videoLoopTablet": {
-			"type": [
-				"boolean",
-				"null"
-			],
-			"default": null
-		},
-		"videoLoopMobile": {
-			"type": [
-				"boolean",
-				"null"
-			],
-			"default": null
-		},
-		"videoMuted": {
-			"type": "boolean",
-			"default": true
-		},
-		"videoMutedTablet": {
-			"type": [
-				"boolean",
-				"null"
-			],
-			"default": null
-		},
-		"videoMutedMobile": {
-			"type": [
-				"boolean",
-				"null"
-			],
-			"default": null
-		},
-		"videoControls": {
-			"type": "boolean",
-			"default": true
-		},
-		"videoControlsTablet": {
-			"type": [
-				"boolean",
-				"null"
-			],
-			"default": null
-		},
-		"videoControlsMobile": {
-			"type": [
-				"boolean",
-				"null"
-			],
-			"default": null
-		},
-		"videoPlaysInline": {
-			"type": "boolean",
-			"default": true
-		},
-		"videoPlaysInlineTablet": {
-			"type": [
-				"boolean",
-				"null"
-			],
-			"default": null
-		},
-		"videoPlaysInlineMobile": {
-			"type": [
-				"boolean",
-				"null"
-			],
-			"default": null
-		},
-		"videoLazyLoad": {
-			"type": "boolean",
-			"default": true
-		},
-		"videoLazyLoadTablet": {
-			"type": [
-				"boolean",
-				"null"
-			],
-			"default": null
-		},
-		"videoLazyLoadMobile": {
-			"type": [
-				"boolean",
-				"null"
-			],
-			"default": null
-		},
-		"imageId": {
-			"type": "integer"
-		},
-		"imageUrl": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"imageIdTablet": {
-			"type": "integer"
-		},
-		"imageUrlTablet": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"imageIdMobile": {
-			"type": "integer"
-		},
-		"imageUrlMobile": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"imageAlt": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"imageDecorative": {
-			"type": "boolean",
-			"default": false,
-			"_comment": "Spec 35 T3.4 / Part C 'A11y/SEO as controls' + E6 — WCAG 2.1 AA 1.1.1 (Non-text Content): a purely decorative image must be hidden from assistive tech (empty alt + aria-hidden) rather than forcing the operator to leave alt blank and hope. Narrow v1 scope: sgs/media + sgs/decorative-image only. Renamed from imageIsDecorative to the {element}Decorative convention (2026-09-02, uniformity sweep S8, matching sgs/timeline's milestoneMediaDecorative)."
-		},
-		"imageWidth": {
-			"type": "integer"
-		},
-		"imageHeight": {
-			"type": "integer"
-		},
 		"maxWidth": {
-			"type": "object",
-			"default": {}
+			"type": "object"
 		},
 		"maxHeight": {
-			"type": "object",
-			"default": {}
+			"type": "object"
 		},
 		"height": {
-			"type": "object",
-			"default": {}
-		},
-		"objectFit": {
-			"type": "string",
-			"default": "cover",
-			"enum": [
-				"cover",
-				"contain",
-				"fill",
-				"none",
-				"scale-down"
-			]
-		},
-		"objectPosition": {
-			"type": "string",
-			"default": "center center"
-		},
-		"_comment_mediaSizing": "C19 shared media-sizing panel (2026-08-27). Four-way mode picker (auto/height/ratio/fill — fill added 2026-09-29: the picture covers a frame the layout sizes, SGS_Media_Element::CLASS_BOX_FILL) that makes `height` (above) and `style.dimensions.aspectRatio` (native support) mutually exclusive instead of letting both be set at once. NO `default` key deliberately — a `\"default\": null` on a typed attribute 400s every SSR preview (memory `a-null-default-is-worse-than-no-default`); render.php + edit.js both derive an absent value the same way (ratio set -> ratio; else height set -> height; else auto), so existing/old content renders identically with no edit needed.",
-		"mediaSizing": {
-			"type": "string",
-			"enum": [
-				"auto",
-				"height",
-				"ratio",
-				"fill"
-			]
-		},
-		"aspectRatio": {
-			"type": "string",
-			"default": "",
-			"_comment": "box-shape atom's own flat AspectRatio base (Wave 5b) — replaces the retired native style.dimensions.aspectRatio. Spaced canonical form e.g. '16 / 9'."
-		},
-		"borderRadius": {
-			"type": "object",
-			"default": {},
-			"_comment": "box-shape atom's own desktop-tier corner-keyed radius ({topLeft,topRight,bottomLeft,bottomRight}) — replaces the retired native style.border.radius. borderRadiusTablet/Mobile below are the existing tier siblings, unchanged."
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
+			"type": "object"
 		},
 		"padding": {
-			"type": "object",
-			"default": {
-				"desktop": {}
-			},
-			"_comment": "media-padding atom's own tier-object attr (prefix '' -> key 'padding') -- BRAND NEW, this block never had a padding control before. See includes/media/atoms/media-padding.php."
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"type": "object"
 		},
 		"borderWidth": {
-			"type": "object",
-			"default": {},
-			"_comment": "box-shape atom's own 4-side box ({top,right,bottom,left}) — replaces the retired native __experimentalBorder width. Untiered — per-device border width is cancelled (CLAUDE.md 'Border controls')."
+			"type": "object"
 		},
 		"borderStyle": {
 			"type": "string",
@@ -461,8 +188,7 @@
 		},
 		"borderColourHover": {
 			"type": "string",
-			"default": "",
-			"_comment": "box-shape atom's hover colour, colour-only (2026-09-07) — no hover variant for width/style/radius, matching sgs/button's/sgs/container's own states.hover.attrMap convention."
+			"default": ""
 		},
 		"borderColourHoverGradient": {
 			"type": "string",
@@ -470,8 +196,7 @@
 		},
 		"overlayColour": {
 			"type": "string",
-			"default": "",
-			"_comment": "overlay atom's own attrs (Wave 5b) — paints via `.sgs-media-box::after`."
+			"default": ""
 		},
 		"overlayColourHover": {
 			"type": "string",
@@ -485,18 +210,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"overlayOpacity": {
-			"type": "number"
-		},
-		"overlayBlendMode": {
-			"type": "string",
-			"default": "normal"
-		},
-		"imageBlendMode": {
-			"type": "string",
-			"default": "",
-			"enum": ["","multiply","screen","overlay","darken","lighten","color-dodge","color-burn","soft-light","hard-light","difference","exclusion"]
-		},
 		"boxShadow": {
 			"type": "string",
 			"default": ""
@@ -508,27 +221,8 @@
 			"type": "string",
 			"default": ""
 		},
-		"opacity": {
-			"type": "number",
-			"default": 1
-		},
-		"alignment": {
-			"type": "string",
-			"default": "start",
-			"enum": [
-				"start",
-				"center",
-				"end"
-			]
-		},
 		"order": {
-			"type": "object",
-			"default": {}
-		},
-		"displayWidth": {
-			"type": "object",
-			"default": {},
-			"_comment": "Per-device {desktop,tablet,mobile} px width the image is DRAWN at (box width, or box height x image ratio when the cover crop is wider than the box). Read by helpers-media.php::sgs_media_cover_crop_plan to print a concrete `sizes` value; prints no CSS."
+			"type": "object"
 		},
 		"caption": {
 			"type": "string",
@@ -584,21 +278,6 @@
 			"type": "string",
 			"default": "",
 			"description": "Where the image link goes: '' (the typed linkUrl), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed linkUrl is the fallback."
-		},
-		"videoCaptionsId": {
-			"type": "integer"
-		},
-		"videoCaptionsUrl": {
-			"type": "string",
-			"default": ""
-		},
-		"videoCaptionsLabel": {
-			"type": "string",
-			"default": "English"
-		},
-		"videoCaptionsSrcLang": {
-			"type": "string",
-			"default": "en"
 		},
 		"captionFontFamily": {
 			"type": "string",
@@ -788,7 +467,32 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"source": {"type":"object","_generated":"media-atoms"},
+		"loading": {"type":"string","_generated":"media-atoms"},
+		"alt": {"type":"string","_generated":"media-atoms"},
+		"decorative": {"type":"boolean","_generated":"media-atoms"},
+		"fit": {"type":"object","_generated":"media-atoms"},
+		"focal": {"type":"object","_generated":"media-atoms"},
+		"background": {"type":"string","_generated":"media-atoms"},
+		"overlayOpacity": {"type":"object","_generated":"media-atoms"},
+		"overlayBlend": {"type":"string","_generated":"media-atoms"},
+		"opacity": {"type":"object","_generated":"media-atoms"},
+		"blend": {"type":"string","_generated":"media-atoms"},
+		"svgLayer": {"type":"string","_generated":"media-atoms"},
+		"svgTextShadow": {"type":"boolean","_generated":"media-atoms"},
+		"svgParts": {"type":"array","default":[],"_generated":"media-atoms"},
+		"svgPartsTrigger": {"type":"string","_generated":"media-atoms"},
+		"playback": {"type":"object","_generated":"media-atoms"},
+		"ratio": {"type":"object","_generated":"media-atoms"},
+		"width": {"type":"object","_generated":"media-atoms"},
+		"minWidth": {"type":"object","_generated":"media-atoms"},
+		"minHeight": {"type":"object","_generated":"media-atoms"},
+		"shape": {"type":"object","_generated":"media-atoms"},
+		"radius": {"type":"object","_generated":"media-atoms"},
+		"colour": {"type":"object","_generated":"media-atoms"},
+		"greyscale": {"type":"number","_generated":"media-atoms"},
+		"alignment": {"type":"object","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
@@ -797,13 +501,15 @@
 	"viewScriptModule": "file:./view.js",
 	"example": {
 		"attributes": {
-			"mediaType": "image",
-			"imageUrl": "https://via.placeholder.com/800x600",
-			"imageAlt": "Example image",
-			"imageWidth": 800,
-			"imageHeight": 600,
-			"objectFit": "cover",
-			"alignment": "center"
+			"source": {
+				"desktop": {
+					"kind": "image",
+					"url": "https://via.placeholder.com/800x600",
+					"width": 800,
+					"height": 600
+				}
+			},
+			"alt": "Example image"
 		}
 	}
 }

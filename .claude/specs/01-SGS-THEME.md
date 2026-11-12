@@ -42,7 +42,7 @@ Directory-level map of `theme/sgs-theme/` (the files themselves: `git ls-files t
 | `style.css` | Theme metadata header required by WordPress (`Requires at least`, `Requires PHP`, `Version:`) |
 | `theme.json` | Design tokens, settings, styles (the framework default; per-client values come from snapshots) |
 | `functions.php` | Minimal: enqueue assets, register patterns, theme support |
-| `inc/` | PHP includes (colour helpers, core block styles, font preloading, shop filter and toolbar settings) |
+| `inc/` | PHP includes (colour helpers, core block styles, size-matched font fallbacks and first-paint font preloads, shop filter and toolbar settings) |
 | `assets/css/` | Stylesheets: core-block overrides, critical-path subset, dark mode, `type-scale.css` (per-device font-size ladder), utilities, `woocommerce.css` (Spec 27 Part 3) |
 | `assets/js/` | Vanilla JS: dark-mode toggle, nav accessibility, smooth scroll, viewport width, overlay scrollbar (Spec 32 FR-32-26), shop filter scripts (Spec 27 Part 3) |
 | `assets/fonts/` | Self-hosted font files (WOFF2) |
@@ -228,14 +228,14 @@ The `sgs_typography_css_rule()` PHP helper (auto-loaded via `render-helpers.php`
 
 ### Images
 - **WebP/AVIF** via WordPress native image handling (6.1+)
-- **Lazy loading** via native `loading="lazy"` (WordPress adds this automatically)
+- **Loading and priority** per media slot from `includes/media/class-sgs-media-priority.php::resolve` (Spec 49 §7.7): images above the fold load eagerly, the page's lead image takes `fetchpriority="high"`, every other image is `loading="lazy"`
 - **Explicit width/height** on all images to prevent CLS
 - **SVG support** (BUILT, in the blocks plugin: `plugins/sgs-blocks/includes/svg-upload.php`) — uploads are rebuilt from an XML parse (`plugins/sgs-blocks/includes/helpers-svg-document.php::sgs_svg_sanitise_document`) that keeps an SVG's own animation (`animate`, `animateTransform`, `animateMotion`, `set`, `mpath`, `<style>` with `@keyframes`) and mesh gradients; it refuses, with its reason, everything the route's screen refuses (`scripts/computed-route/lib/svg-screen.mjs::svgProblem`: `javascript:`, `@import`, a DOCTYPE with entities, foreign elements, `on…` attributes, an animation rewriting a link, off-file links and CSS `url()`), refuses any parser error and any comment inside `<style>`, and strips `<script>`, comments and editor metadata; the shared `sgs_svg_kses_allowed_tags` list keeps only its original `<animate>`. Trust follows the uploader: an SVG a user with `unfiltered_html` uploads directly (never a sideload) keeps its scripts, exact duplicate scripts kept once, and carries a `_sgs_svg_trusted` mark (sha256 and uploader) that `plugins/sgs-blocks/includes/helpers-svg-trust.php::sgs_svg_attachment_is_trusted` re-verifies at every inline print (file unchanged, uploader still holds the capability); such an SVG prints inline as uploaded, keeping its ids. `.svgz` and gzipped files are refused for everyone, and every `.svg` in uploads is served with a CSP `sandbox` header (`plugins/sgs-blocks/includes/svg-htaccess-guard.php`), so a directly opened file never runs script. A button's custom icon (`sgs/button` `iconSvg`) is filtered through `plugins/sgs-blocks/includes/helpers-button-inner-kses.php::sgs_button_icon_svg_allowed`: a narrower tag set (shapes and a title) with each tag's attributes taken from `sgs_svg_kses_allowed_tags`, so an outline icon keeps `stroke-width`, `stroke-linecap` and `fill` on its shapes (`d976224be`; `plugins/sgs-blocks/tests/php/ButtonIconSvgAllowlistTest.php`).
 
 ### Fonts
 - **Two font files maximum** per site (heading + body)
 - **Variable fonts** where available (single file for all weights)
-- **Preload critical fonts** via `<link rel="preload">` in `functions.php`
+- **Preload critical fonts** via `<link rel="preload">`, printed on `wp_head` by `theme/sgs-theme/inc/font-fallback.php::preload_first_paint_fonts`
 - **font-display: swap** to prevent FOIT
 
 ---

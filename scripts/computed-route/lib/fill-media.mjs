@@ -1,18 +1,19 @@
-// Images for Fill (FR-48-39, the image part): a draft <img> (or the <figure> / <picture> holding one) reaches the
-// image settings of the block that copies it, through the media map `media-upload.mjs` wrote for the target site
-// (FR-48-58). The block's own image settings come from the framework DB, never a per-block table: a block's
-// `image-alt` row names its alt setting, and that row's `alt_companion_attr` names the setting holding the image's URL;
-// the attachment id setting is that URL setting with `Url` changed to `Id` (else `Id` appended), kept only when the
-// block.json declares it; a block with a `caption` string setting takes the figcaption's words.
-// The draft's own address is never written: an image the media map does not hold is a named gap row, and a block with
-// no image setting (or several, which Fill cannot choose between) is a gap too. A stock preview the draft paints from a
-// stock host (lib/media-stock.mjs::stockKey) is the map's `stock: true` entry for its address without the query.
-// Returns { writes: [{ attr, value, merge }], unmapped: [{ property, value, slot, reason }], notes }.
+// Images for Fill (FR-48-39, the image part): the media a draft element draws (an <img>, a <picture>, a <video>, an <iframe>
+// or an inline <svg>, read at 375, 768 and 1440 by lib/fill-read-collect.mjs) reaches the media slot of the block that copies
+// it (Spec 49 section 11, lib/media/): the slot is the one `supports.sgs.mediaElements` declares for the media's placement
+// (lib/media/slots.mjs), the Source is written per device with the kind the visible element is at each width, and the file is
+// the attachment the media map `media-upload.mjs` wrote for the target site (FR-48-58). A block with a `caption` string setting
+// on the slot takes the figcaption's words.
+// The draft's own address is never written: an image the media map does not hold is a named gap row, and a block with no
+// matching slot (or several, which Fill cannot choose between) is a gap too. A stock preview the draft paints from a stock
+// host (lib/media-stock.mjs::stockKey) is the map's `stock: true` entry for its address without the query.
+// Returns { writes: [{ attr, value, merge }], unmapped: [{ property, value, slot, reason }], notes, checks }.
 import fs from 'fs';
 import { paintedAsset } from './media-upload.mjs';
 import { stockKey } from './media-stock.mjs';
 import { templateKeyOf } from './fact-key.mjs';
 import { recordSite } from './cache.mjs';
+import { mediaWrites } from './media/write.mjs';
 
 // The clone-coverage IDs this module writes (lib/clone-coverage.mjs::declaredWrites holds each entry's write to it).
 export const COVERAGE_WRITES = [
@@ -23,40 +24,9 @@ export const COVERAGE_WRITES = [
 	'html:img',
 ];
 
-const empty = () => ( { writes: [], unmapped: [], notes: [], checks: [] } );
-const unset = ( v ) => undefined === v || null === v || '' === v || 0 === v;
-const escapeText = ( s ) => String( s ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' );
 
 // The client's media map, or null when media-upload has not written one.
 export const readMediaMap = ( file ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : null );
-
-// The image settings of one block from the DB: [{ alt, url }] for each `image-alt` row that names its URL setting. A
-// block whose DB rows name none (an image held as content, such as a split hero's picture) takes its block.json's
-// image trios instead: a string `<name>Url` with an integer `<name>Id` and a string `<name>Alt` beside it.
-export function imageSlots( db, block, schema = null ) {
-	const rows = db.prepare( "SELECT attr_name, alt_companion_attr FROM block_attributes WHERE block_slug = ? AND role = 'image-alt' AND alt_companion_attr IS NOT NULL ORDER BY attr_name" )
-		.all( block ).map( ( r ) => ( { alt: r.attr_name, url: r.alt_companion_attr } ) );
-	return rows.length || ! schema ? rows : schemaImageSlots( schema );
-}
-
-// The image trios of a block.json's attributes: [{ alt, url }] for each string `<name>Url` whose `<name>Id` is an integer
-// and whose `<name>Alt` is a string (`splitMediaImageUrl`, `splitMediaImageId`, `splitMediaImageAlt`).
-export function schemaImageSlots( schema ) {
-	const typeOf = ( name ) => [].concat( schema?.[ name ]?.type ?? [] )[ 0 ];
-	return Object.keys( schema || {} ).filter( ( k ) => /.Url$/.test( k ) && 'string' === typeOf( k ) ).map( ( url ) => url.replace( /Url$/, '' ) )
-		.filter( ( base ) => 'integer' === typeOf( `${ base }Id` ) && 'string' === typeOf( `${ base }Alt` ) ).sort().map( ( base ) => ( { alt: `${ base }Alt`, url: `${ base }Url` } ) );
-}
-
-// The settings mediaDecisions writes for a block, from its image slots (imageSlots) and block.json: [] unless the block has
-// exactly one image slot (with several, Fill cannot choose between them and names a gap instead). The slot's address, its
-// attachment id (idSetting), its alt and, when the block.json holds a string `caption`, the caption.
-export function mediaSettings( slots, schema ) {
-	if ( 1 !== slots.length ) {
-		return [];
-	}
-	const [ slot ] = slots;
-	return [ slot.url, idSetting( schema, slot.url ), slot.alt, 'string' === [].concat( schema?.caption?.type || [] )[ 0 ] ? 'caption' : null ].filter( Boolean );
-}
 
 // A draft image address as a path inside the draft: the query and fragment removed, the draft's own origin removed,
 // leading `/`, `./` and `../` removed. null for an address that is not a file of the draft (data:, blob:, another origin, empty).
@@ -99,12 +69,6 @@ export function stockEntries( map, site, key ) {
 	return ( map?.sites?.[ recordSite( site ) ]?.files || [] ).filter( ( e ) => e.stock && e.asset === key );
 }
 
-// The setting that holds the attachment id for a URL setting, or null when the block declares none.
-export function idSetting( schema, urlAttr ) {
-	const id = /Url$/.test( urlAttr ) ? urlAttr.replace( /Url$/, 'Id' ) : `${ urlAttr }Id`;
-	return schema && id in schema ? id : null;
-}
-
 // What the fact record states about the image a draft element is (lib/fact-record.mjs: `elements[key].assets` holds the
 // file's intrinsic ratio, `elements[key].alt` the placeholder an image-slot element carries as its alt): { alt, ratio,
 // asset } for the element's template key, each null when the record does not state it. A placeholder that is a `{{ }}`
@@ -119,15 +83,25 @@ export function factImage( facts, finderTpl, rootComponent = null ) {
 	return { alt, ratio: asset?.ratio ?? null, asset: asset?.path ?? null };
 }
 
-// The image a node holds: the node's own element when it is one, else the single image any one of its descendant
-// elements (a nested slot) reads. snaps: { slot: the element's desktop read }. null when none or when two slots each hold one.
-export function nestedImage( snaps ) {
-	const own = snaps[ '' ]?.img;
+// The figcaption words of the one figure a node holds: the node's own element's, else the single descendant slot's that has
+// one. snaps: { slot: the element's read }. null when none or when two slots each have one.
+export function captionOf( snaps ) {
+	const own = snaps[ '' ]?.img?.caption;
 	if ( own ) {
 		return own;
 	}
-	const inner = Object.entries( snaps ).filter( ( [ , s ] ) => s && ! s.missing && s.img ).map( ( [ slot, s ] ) => ( { ...s.img, slot } ) );
+	const inner = Object.values( snaps ).filter( ( s ) => s && ! s.missing && s.img?.caption ).map( ( s ) => s.img.caption );
 	return 1 === inner.length ? inner[ 0 ] : null;
+}
+
+// The media showing at one width across a node's elements: the node's own element's list when it is drawn and lists media
+// (it holds its descendants' media), else each descendant slot's. snaps: { slot: the element's read at that width }.
+export function mediaAt( snaps ) {
+	const own = snaps[ '' ];
+	if ( own && ! own.missing ) {
+		return own.media || [];
+	}
+	return Object.values( snaps ).flatMap( ( s ) => ( s && ! s.missing ? s.media || [] : [] ) );
 }
 
 // The slot of the one picture a node holds, the image its image settings describe: the node's own element when it is a
@@ -142,71 +116,33 @@ export function pictureSlotOf( snaps ) {
 	return 1 === inner.length ? inner[ 0 ] : null;
 }
 
-// img: the draft element's image read { tag, src, alt, caption } (null when the element holds no single image). A
-// <figure> or <picture> mapped to a block with no image setting is a wrapper, not a gap; a bare <img> there is one.
-// media: { map, site, origin } (map null when media-map.json is missing). attributes: what the node already holds
-// (a setting that holds a value is kept; a difference is a note).
-export function mediaDecisions( { slots, schema, attributes = {}, img, media = {}, fact = null } ) {
-	const out = empty();
-	if ( ! img ) {
-		return out;
-	}
-	const gap = ( reason ) => out.unmapped.push( { property: 'image', value: img.src, slot: '', reason } );
-	if ( ! slots.length && 'img' !== img.tag ) {
-		return out;
-	}
-	if ( 1 !== slots.length ) {
-		gap( slots.length ? `the block has ${ slots.length } image settings (${ slots.map( ( s ) => s.url ).join( ', ' ) }) and Fill cannot choose between them` : 'no image setting: the framework DB lists no image-alt setting for this block' );
-		return out;
-	}
-	const [ slot ] = slots;
-	const file = draftPath( img.src, media.origin );
-	const stock = null === file ? stockKey( img.src ) : null;
+// The uploaded attachment for a draft media address: { hit } or { reason } (a gap row's words). media: { map, site, origin }
+// (map null when media-map.json is missing).
+export function resolveMedia( src, media = {} ) {
+	const file = draftPath( src, media.origin );
+	const stock = null === file ? stockKey( src ) : null;
 	if ( null === file && null === stock ) {
-		gap( `the draft image "${ img.src }" is not a file of the draft, so it has no uploaded copy; add it to sites/<client>/assets and run media-upload` );
-		return out;
+		return { reason: `the draft image "${ src }" is not a file of the draft, so it has no uploaded copy; add it to sites/<client>/assets and run media-upload` };
 	}
 	const p = file ?? stock;
 	if ( ! media.map ) {
-		gap( `no media map: run media-upload.mjs for the site before Fill, so "${ p }" has an attachment` );
-		return out;
+		return { reason: `no media map: run media-upload.mjs for the site before Fill, so "${ p }" has an attachment` };
 	}
 	const hits = null === file ? stockEntries( media.map, media.site, stock ) : mapEntries( media.map, media.site, p );
 	if ( ! hits.length ) {
-		gap( `${ null === file ? 'the stock preview ' : '' }"${ p }" is not in the media map for ${ media.site }: run media-upload.mjs so it has an attachment` );
-		return out;
+		return { reason: `${ null === file ? 'the stock preview ' : '' }"${ p }" is not in the media map for ${ media.site }: run media-upload.mjs so it has an attachment` };
 	}
 	if ( new Set( hits.map( ( h ) => h.id ) ).size > 1 ) {
-		gap( `"${ p }" matches ${ hits.length } uploaded files (${ hits.map( ( h ) => h.asset ).join( ', ' ) }), different attachments` );
-		return out;
+		return { reason: `"${ p }" matches ${ hits.length } uploaded files (${ hits.map( ( h ) => h.asset ).join( ', ' ) }), different attachments` };
 	}
-	const [ hit ] = hits;
-	const put = ( attr, value ) => {
-		if ( unset( attributes[ attr ] ) ) {
-			out.writes.push( { attr, value, merge: 'replace' } );
-		} else if ( String( attributes[ attr ] ) !== String( value ) ) {
-			out.notes.push( `${ attr } holds "${ attributes[ attr ] }"; the draft image is "${ value }"` );
-		}
-	};
-	put( slot.url, hit.url );
-	const idAttr = idSetting( schema, slot.url );
-	idAttr && put( idAttr, hit.id );
-	const alt = 'string' === typeof img.alt && '' !== img.alt.trim() ? img.alt.trim() : fact?.alt ?? null;
-	if ( alt ) {
-		put( slot.alt, alt );
-	} else {
-		out.notes.push( `the draft image "${ p }" has ${ null === img.alt ? 'no alt' : 'an empty alt' }, so ${ slot.alt } is left as it is` );
-	}
-	// The live check's input: the attachment Fill wrote (or the setting already held) and the image's stated ratio.
-	out.checks.push( { slot: img.slot ?? '', attr: slot.url, idAttr, id: hit.id, url: hit.url, asset: hit.asset, ratio: fact?.ratio ?? null, alt: alt ?? null } );
-	if ( img.caption ) {
-		if ( mediaSettings( slots, schema ).includes( 'caption' ) ) {
-			put( 'caption', escapeText( img.caption ) );
-		} else {
-			out.unmapped.push( { property: 'image', value: img.caption, slot: '', reason: 'the draft figure has a figcaption and the block has no caption setting' } );
-		}
-	}
-	return out;
+	return { hit: hits[ 0 ] };
+}
+
+// slots: the block's media slots (lib/media/slots.mjs::blockMediaSlots). reads: { 1440, 768, 375: the media showing at that
+// width } (mediaAt per width). attributes: what the node already holds (a setting that holds a value is kept; a difference
+// is a note). media: { map, site, origin }. caption: captionOf's words.
+export function mediaDecisions( { slots, attributes = {}, reads, media = {}, fact = null, caption = null } ) {
+	return mediaWrites( { slots, attributes, reads, resolve: ( src ) => resolveMedia( src, media ), fact, caption } );
 }
 
 // Whether a skeleton handover is settled by the node's picture: the page editor's presence row on the node's own element

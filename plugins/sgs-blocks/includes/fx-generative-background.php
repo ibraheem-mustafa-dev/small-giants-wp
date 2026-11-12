@@ -68,12 +68,17 @@ function sgs_apply_fx_generative_background( string $block_content ): string {
 	$head   = \substr( $block_content, 0, $offset );
 	$rest   = \substr( $block_content, $offset );
 
+	// The host is the first tag that carries the effect: the block's root, or a part inside it (a background part
+	// `.sgs-bg-media`), so the colour settings, ground class and scoped rule land on the element the canvas is built in.
 	$processor = new \WP_HTML_Tag_Processor( $rest );
-	if ( ! $processor->next_tag() ) {
-		return $block_content;
+	$hosted    = false;
+	while ( $processor->next_tag() ) {
+		if ( sgs_fx_has_effect( $processor->get_attribute( 'data-sgs-fx' ), 'generative-background' ) ) {
+			$hosted = true;
+			break;
+		}
 	}
-
-	if ( ! sgs_fx_has_effect( $processor->get_attribute( 'data-sgs-fx' ), 'generative-background' ) ) {
+	if ( ! $hosted ) {
 		return $block_content;
 	}
 
@@ -99,18 +104,15 @@ function sgs_apply_fx_generative_background( string $block_content ): string {
 		$declarations[] = \sprintf( '--sgs-genbg-ground:%s', $ground_resolved );
 	}
 
+	// The ground modifier class lands on the host even when no colour custom properties are set, so the CSS fallback's
+	// ground-only rule still applies. The per-instance id scoping the colour rule is derived from the declarations, so
+	// two identically-configured instances share one rule.
+	$uid = empty( $declarations ) ? '' : 'sgs-genbg-' . \substr( \md5( \implode( ';', $declarations ) ), 0, 8 );
+	$processor->set_attribute(
+		'class',
+		\trim( (string) $processor->get_attribute( 'class' ) . ' sgs-generative-background--ground-' . $ground . ( '' !== $uid ? ' ' . $uid : '' ) )
+	);
 	$html = $processor->get_updated_html();
-
-	// Ground modifier class, emitted on the root BEFORE the early return
-	// below — it must land even when no colour custom properties are set, so
-	// the CSS fallback's ground-only rule still applies.
-	$gclass = 'sgs-generative-background--ground-' . $ground;
-	$gtag   = new \WP_HTML_Tag_Processor( $html );
-	if ( $gtag->next_tag() ) {
-		$gexisting = (string) $gtag->get_attribute( 'class' );
-		$gtag->set_attribute( 'class', \trim( $gexisting . ' ' . $gclass ) );
-		$html = $gtag->get_updated_html();
-	}
 
 	/*
 	 * THE SC 2.2.2 PAUSE CONTROL — the WebGL folded-ribbon layer animates
@@ -133,17 +135,6 @@ function sgs_apply_fx_generative_background( string $block_content ): string {
 
 	if ( empty( $declarations ) ) {
 		return $head . $html;
-	}
-
-	// A per-instance id scopes the rule to THIS block, derived from the
-	// declarations so two identically-configured instances share one rule.
-	$uid = 'sgs-genbg-' . \substr( \md5( \implode( ';', $declarations ) ), 0, 8 );
-
-	$scoped = new \WP_HTML_Tag_Processor( $html );
-	if ( $scoped->next_tag() ) {
-		$existing = (string) $scoped->get_attribute( 'class' );
-		$scoped->set_attribute( 'class', \trim( $existing . ' ' . $uid ) );
-		$html = $scoped->get_updated_html();
 	}
 
 	// `$head` is re-prepended on EVERY return path that rebuilds the markup —

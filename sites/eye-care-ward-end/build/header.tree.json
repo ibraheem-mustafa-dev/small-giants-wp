@@ -301,13 +301,18 @@
               {
                 "name": "sgs/responsive-logo",
                 "attributes": {
-                  "logoId": 198,
                   "width": 48,
                   "linkToHome": true,
                   "shrinkWidth": {
                     "desktop": "40px"
                   },
-                  "className": "cr-ref-header-6"
+                  "className": "cr-ref-header-6",
+                  "logoSource": {
+                    "desktop": {
+                      "kind": "image",
+                      "id": 198
+                    }
+                  }
                 }
               },
               {
@@ -328,13 +333,18 @@
                   {
                     "name": "sgs/responsive-logo",
                     "attributes": {
-                      "logoId": 1467,
                       "width": 110,
                       "linkToHome": false,
                       "shrinkWidth": {
                         "desktop": "91px"
                       },
-                      "className": "cr-ref-header-8"
+                      "className": "cr-ref-header-8",
+                      "logoSource": {
+                        "desktop": {
+                          "kind": "image",
+                          "id": 1467
+                        }
+                      }
                     },
                     "innerBlocks": []
                   }

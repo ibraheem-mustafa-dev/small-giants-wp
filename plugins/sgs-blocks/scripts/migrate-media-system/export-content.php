@@ -6,6 +6,9 @@
 // (`widget_block`, per widget), skipping transients. An option holding `wp:sgs/` markup in a shape this cannot rewrite
 // is listed as `unsupported`, so a check can refuse it. Post meta gets the same test: a serialised or JSON-encoded value
 // holding `wp:sgs/` markup is `unsupported` (rewriting it as plain text would corrupt its `s:N:` lengths or JSON escapes).
+// The last record is the site's attachment map (store `attachments`, not a saved-content record): every upload and each of
+// its sized copies by upload-relative path to [attachment id, width, height, mime], so the migration can give an image
+// stored as a bare URL its attachment id, whatever host the saved URL names.
 ini_set( 'display_errors', '0' );
 global $wpdb;
 $out  = array();
@@ -134,6 +137,44 @@ foreach ( $rows as $r ) {
 		);
 	}
 }
+
+$files = array();
+$mimes = array();
+$rows  = $wpdb->get_results( "SELECT ID, post_mime_type FROM {$wpdb->posts} WHERE post_type = 'attachment'", ARRAY_A );
+foreach ( $rows as $r ) {
+	$mimes[ (int) $r['ID'] ] = (string) $r['post_mime_type'];
+}
+$rows = $wpdb->get_results( "SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_key IN ( '_wp_attached_file', '_wp_attachment_metadata' ) ORDER BY post_id", ARRAY_A );
+$meta = array();
+foreach ( $rows as $r ) {
+	$meta[ (int) $r['post_id'] ][ $r['meta_key'] ] = $r['meta_value'];
+}
+foreach ( $meta as $att_id => $m ) {
+	$file = isset( $m['_wp_attached_file'] ) ? (string) $m['_wp_attached_file'] : '';
+	$data = isset( $m['_wp_attachment_metadata'] ) ? maybe_unserialize( $m['_wp_attachment_metadata'] ) : array();
+	$data = is_array( $data ) ? $data : array();
+	if ( '' === $file && isset( $data['file'] ) ) {
+		$file = (string) $data['file'];
+	}
+	if ( '' === $file ) {
+		continue;
+	}
+	$mime            = isset( $mimes[ $att_id ] ) ? $mimes[ $att_id ] : '';
+	$files[ $file ]  = array( $att_id, isset( $data['width'] ) ? (int) $data['width'] : 0, isset( $data['height'] ) ? (int) $data['height'] : 0, $mime );
+	$dir             = dirname( $file );
+	$dir             = '.' === $dir ? '' : $dir . '/';
+	$sizes           = isset( $data['sizes'] ) && is_array( $data['sizes'] ) ? $data['sizes'] : array();
+	foreach ( $sizes as $size ) {
+		if ( is_array( $size ) && ! empty( $size['file'] ) ) {
+			$files[ $dir . $size['file'] ] = array( $att_id, (int) ( $size['width'] ?? 0 ), (int) ( $size['height'] ?? 0 ), (string) ( $size['mime-type'] ?? $mime ) );
+		}
+	}
+}
+$out[] = array(
+	'store' => 'attachments',
+	'ID'    => 'attachments',
+	'files' => $files,
+);
 
 $json = wp_json_encode( $out, JSON_UNESCAPED_SLASHES );
 if ( false === $json ) {

@@ -1,4 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
+import BackgroundLayers from '../../components/media/BackgroundLayers';
 import { useEffect, useRef, useState } from 'react';
 import {
 	useBlockProps,
@@ -27,7 +28,7 @@ import {
 import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, ShadowControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl } from '../../components';
 import { NumberControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
-import { backgroundPaintPreview, backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, textPaintPreview, flattenPresetSetting, usePreviewTier } from '../../utils';
+import { backgroundPaintPreview, backgroundMediaPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, textPaintPreview, flattenPresetSetting, usePreviewTier } from '../../utils';
 import { siteHeaderWrapperPreview, siteHeaderRowsCss } from './preview-style';
 import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
 // Floating ("pill") mode — controls, canvas preview and reset live in their own
@@ -332,25 +333,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 	// The device tier the canvas previews (core/editor's device type).
 	const previewTier = usePreviewTier();
-	const bgPreview = backgroundPreview( {
-		backgroundImage: attributes.backgroundImage,
-		bgVideo: attributes.bgVideo,
-		backgroundSize: attributes.backgroundSize,
-		backgroundPosition: attributes.backgroundPosition,
-		backgroundRepeat: attributes.backgroundRepeat,
-		backgroundAttachment: attributes.backgroundAttachment,
-		backgroundOverlayColour: attributes.backgroundOverlayColour,
-		overlayGradient: attributes.overlayGradient,
-		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
-		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
-		backgroundColour: attributes.backgroundColour,
-		backgroundColourGradient: attributes.backgroundColourGradient,
-		surfaceBlur: attributes.surfaceBlur,
-		surfaceSaturate: attributes.surfaceSaturate,
-		surfaceTone: attributes.surfaceTone,
-		backgroundImageTablet: attributes.backgroundImageTablet,
-		backgroundImageMobile: attributes.backgroundImageMobile,
-	}, colourPalette, gradientPresets, previewTier );
+	const bgPreview = backgroundMediaPreview( attributes, colourPalette, gradientPresets, previewTier );
 
 	// Decorative SVG background layer — editor mirror. Deliberately
 	// NOT folded into backgroundPreview()'s return: that helper paints via
@@ -796,25 +779,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							margin: {},
 							zIndex: {},
 							rowsAlign: {},
-							backgroundImage: undefined,
-							backgroundImageTablet: undefined,
-							backgroundImageMobile: undefined,
 							backgroundOverlayColour: undefined,
-							backgroundAttachment: 'scroll',
-							backgroundPosition: 'center center',
 							backgroundRepeat: 'no-repeat',
-							backgroundSize: 'cover',
-							bgVideo: undefined,
-							bgVideoTablet: undefined,
-							bgVideoMobile: undefined,
 							bgSvgContent: '',
 							bgSvgPosition: 'background',
 							bgSvgOpacity: 100,
 							bgSvgMinHeight: '',
 							bgSvgTextShadow: false,
-							// overlayGradient is a string attr, so it resets to ''
-							// (WP silently discards a wrong-typed or undeclared value).
-							overlayGradient: '',
 						} );
 					} }
 				>
@@ -1369,6 +1340,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			     landmark (FR-37-13). */ }
 			<style>{ siteHeaderRowsCss( attributes, previewTier, `sgs-site-header-ed-${ clientId }` ) }</style>
 			<header ref={ refEl } { ...innerBlocksProps }>
+				<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
 				{ svgLayer }
 				{ innerBlocksProps.children }
 			</header>

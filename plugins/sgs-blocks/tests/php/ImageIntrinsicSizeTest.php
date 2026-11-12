@@ -4,7 +4,7 @@
  *
  * Covers the lookup order: an attachment's metadata (the file's own size, resized copies included), the file header
  * on disk for an image that is not an attachment, an SVG's viewBox, and no attributes at all for an SVG without a
- * viewBox or for a remote URL. Also covers sgs_render_media(), the printer brand-strip and card-grid share.
+ * viewBox or for a remote URL.
  *
  * Run with:
  *   vendor/bin/phpunit --filter ImageIntrinsicSizeTest
@@ -95,14 +95,5 @@ final class ImageIntrinsicSizeTest extends TestCase {
 	public function test_remote_url_and_path_escape_get_no_attributes(): void {
 		$this->assertSame( '', sgs_image_size_attrs( 'https://cdn.example.org/a.jpg' ) );
 		$this->assertSame( '', sgs_image_size_attrs( 'https://example.test/wp-content/../wp-config.php' ) );
-	}
-
-	public function test_render_media_prints_both_attributes_for_a_non_attachment_url(): void {
-		if ( ! class_exists( 'SGS_Breakpoints' ) ) {
-			require_once dirname( __DIR__, 2 ) . '/includes/class-sgs-breakpoints.php';
-		}
-		require_once dirname( __DIR__, 2 ) . '/includes/helpers-media.php';
-		$html = sgs_render_media( array( 'url' => 'https://example.test/wp-content/uploads/plain.png', 'alt' => 'x' ), 'sgs-brand-strip' );
-		$this->assertStringContainsString( ' width="40" height="20"', $html );
 	}
 }

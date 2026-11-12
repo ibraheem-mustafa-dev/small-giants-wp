@@ -102,6 +102,10 @@ require_once SGS_BLOCKS_PATH . 'includes/device-visibility.php';
 // Keyboard focus keeps the resting look (`sgsFocusRests`): the per-block render stack that `sgs_hover_state_rules()` reads.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-focus-rests.php';
 
+// Layout width: the render stack the media renderer reads to size `sizes` from the box a slot sits in (Spec 49 section 7.6).
+require_once SGS_BLOCKS_PATH . 'includes/media/layout-width.php';
+\Sgs_Layout_Width::register();
+
 // Media top tone (U-13 §4.3) — measures a new image upload's top-20% tone at
 // `wp_generate_attachment_metadata` time and stores `_sgs_top_tone` meta, so
 // helpers-surface-tone.php's image layer (loaded per-render via
@@ -116,8 +120,7 @@ require_once SGS_BLOCKS_PATH . 'includes/media/class-sgs-media-formats.php';
 require_once SGS_BLOCKS_PATH . 'includes/conditional-visibility.php';
 
 // Shared helper — scoped-<style> per-instance CSS var injection (Spec 32
-// no-inline contract). Required before block-link.php / image-controls.php,
-// which both depend on it.
+// no-inline contract). Required before block-link.php, which depends on it.
 require_once SGS_BLOCKS_PATH . 'includes/helpers-scoped-instance-vars.php';
 
 // Cross-block wrapper extensions (block link, child sizing in flex rows).
@@ -162,6 +165,7 @@ require_once SGS_BLOCKS_PATH . 'includes/product-choice-flow-link.php';
 // the `sgs_price_trim_zeros` filter; order records keep their pennies.
 require_once SGS_BLOCKS_PATH . 'includes/price-trim-zeros.php';
 require_once SGS_BLOCKS_PATH . 'includes/product-card-no-photo.php';
+require_once SGS_BLOCKS_PATH . 'includes/product-card-media.php';
 
 // Demand Analytics — privacy-safe aggregate counter for unbuyable combos
 // (Spec 27). REST endpoint POST /sgs/v1/demand/attempt +
@@ -334,7 +338,6 @@ Css_Output_Settings::register();
 // stops rejecting them with "Invalid parameter(s): attributes". Attribute list
 // is generated from the extension JS by scripts/generate-extension-attributes.js.
 require_once SGS_BLOCKS_PATH . 'includes/extension-attrs-rest-register.php';
-require_once SGS_BLOCKS_PATH . 'includes/media-element-attrs-register.php';
 
 // Floating layers anchored to the whole section: marked by sgs/decorative-image, lifted by sgs/hero.
 require_once SGS_BLOCKS_PATH . 'includes/section-anchored-layers.php';

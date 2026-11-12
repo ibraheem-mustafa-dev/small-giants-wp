@@ -29,7 +29,7 @@ WHY IDENTITY IS THE PART WORTH BLOCKING ON
 ------------------------------------------
 A count is structurally incapable of noticing a row whose value CHANGED from the
 right one to a wrong-but-plausible one — the count does not move. That is not
-hypothetical: when the ``scalar-media`` role was lost, the rows flipped to
+hypothetical: when a role was lost, the rows flipped to
 ``image-object``, non-null before and after, count unchanged. The floor built to
 catch it read green straight through. Measured 2026-08-02.
 
@@ -38,10 +38,9 @@ easily reclassified by an automated pass, and impossible to notice by eye. Asser
 every seeded value would make this a nuisance gate that gets switched off — which is
 exactly what happened to the floor.
 
-⚠ IMPORTS sqlite3 ONLY — it never calls a seeder. ``dbschema/seed_reference_data.py``
-re-asserts these roles when run, so a check that ran it first would repair the
-drift before it could be observed; a pytest regression test for this is VACUOUS, proven
-by negative control rather than assumed. This script observes the true stored state.
+⚠ IMPORTS sqlite3 ONLY — it never calls a seeder. a seeder run first would
+repair drift before it could be observed; a pytest regression test for this is VACUOUS,
+proven by negative control rather than assumed. This script observes the true stored state.
 Keep it that way: running a seeder here would blind the check completely.
 """
 
@@ -61,82 +60,11 @@ from pathlib import Path
 LIVE_DB_DEFAULT = framework_db_path()
 
 
+# Hand-curated rows that are load-bearing, easily reclassified by an automated pass and
+# impossible to notice by eye. Empty today: the only entries guarded the retired
+# scalar-media art-direction mechanism. Add an entry here (table, key, column, expected,
+# why) when a new row earns it; the self-test plants its own rows and does not need one.
 VALUE_ASSERTIONS: list[dict] = [
-    {
-        "table": "block_attributes",
-        "key": {"block_slug": "sgs/hero", "attr_name": "splitMediaType"},
-        "column": "role",
-        "expected": "scalar-media",
-        "why": "Opens run_mechanism_b branch A, the only path that reads an image's "
-               "--mobile/--tablet/--desktop modifier. Lost once already (against the "
-               "PRIOR anchor, splitImage): a hero clone put the MOBILE crop in the "
-               "DESKTOP attribute. Re-anchored here 2026-09-02 (Wave 7b) — splitImage/"
-               "splitImageMobile were deleted from block.json the same day, having been "
-               "dead on the render/editor side since the Wave 6 media-atom migration and "
-               "kept alive for one extra day purely as this assertion's target. "
-               "splitMediaType is genuinely read by render.php (it selects the media "
-               "family) and is the sole real (non-virtual) anchor row now — Mobile/Tablet "
-               "tiers do NOT get their own anchor row (see scalar_media_attr_for's "
-               "docstring: it never matches a 'Mobile'-suffixed row, and 'Tablet'-suffixed "
-               "real rows were deliberately never created, to avoid two rows both matching "
-               "the same canonical_slot with no tier-aware tiebreak). Source of truth: "
-               "scripts/data/scalar-media-roles.json.",
-    },
-    # ------------------------------------------------------------------
-    # THE ART-DIRECTION DEPENDENCY CHAIN (added 2026-08-02 after the QC council
-    # observed that 6 seeded columns had only a population floor — the exact
-    # blind spot that hid the scalar-media loss for two months).
-    #
-    # These are NOT arbitrary rows. Each is a link the D474 fix DEPENDS ON: if any
-    # one flips, art-directed image cloning breaks silently, exactly as before, and
-    # a population count would not move because every value stays non-null.
-    # Asserting the mechanism's dependencies is the principled scope.
-    {
-        "table": "blocks",
-        "key": {"slug": "sgs/hero"},
-        "column": "tier",
-        "expected": "class-section",
-        "why": "is_class_section_block() reads this. It gates run_mechanism_b branch A — "
-               "the only modifier-aware path — AND the seeder's own pre-condition guard. "
-               "If it flips to 'block', art direction dies AND the seeder refuses to "
-               "re-assert scalar-media, i.e. both the mechanism and its repair fail together.",
-    },
-    {
-        "table": "roles",
-        "key": {"role_name": "scalar-media"},
-        "column": "classification",
-        "expected": "styling-behaviour",
-        "why": "This is what keeps scalar-media OUT of the content-bearing allowlist, which "
-               "is how the attr is handed to branch A instead of being claimed by the "
-               "universal walk. Flip it to 'content-bearing' and the walk re-claims the "
-               "image with no modifier awareness — the original bug, restored.",
-    },
-    # ⚠ The `emit_shape='nested'` assertion that used to live here (removed
-    # 2026-09-02, Wave 6 — sgs/hero's media-atom migration) is now STALE, not
-    # a regression to fix. `_populate_emit_shape` (sgs-update-v2.py) only
-    # classifies attrs whose role is in the content-bearing allowlist —
-    # `roles.classification='content-bearing'` — and `splitImage`'s role
-    # ('scalar-media', asserted two rows above) is 'styling-behaviour', so it
-    # was NEVER eligible for that query in the first place; whatever value it
-    # held before was a leftover from an earlier classification pass, not a
-    # live invariant `_populate_emit_shape` re-asserts. The real protection
-    # against the double-render this assertion named ("'child' would emit a
-    # separate block") is the `role='scalar-media'` assertion above — that
-    # role is what excludes the attr from the content-bearing walk that
-    # decides nested vs child, independent of `emit_shape`'s own value.
-    # Confirmed structurally, not assumed: render.php no longer reads
-    # `splitImage` at all (its own composite shape retired in favour of
-    # splitImageId/Url/Alt — Bean-locked, FP-14, no legacy read-time
-    # fallback), and `run_mechanism_b`'s ScalarLift for `splitImage` is
-    # translated at write-time into those three new attrs instead
-    # of the composite object — so a clone still produces content the
-    # migrated block actually renders; `emit_shape` merely stopped being the
-    # column that proves it.
-    # ⛔ sgs/testimonial-slider.sideImage was asserted here on 2026-08-02 and REMOVED the
-    # same day: setting role='scalar-media' on it BROKE the block. Measured with the
-    # seeder disabled — 'image-object' lifts sideImage, 'scalar-media' lifts nothing,
-    # because branch A only fires for is_class_section_block blocks and that one is not.
-    # Its correct role is 'image-object'. Do not re-add it here.
 ]
 
 
@@ -198,9 +126,8 @@ def cmd_check(live_db: Path) -> int:
         print(
             "\nA named row's value is not what it must be. This is NOT a row-count problem "
             "-- the row is present and populated, it simply holds the wrong value, which is "
-            "why any count-based check reads clean. Re-assert it from its source of truth "
-            "(for scalar-media: run dbschema/seed_reference_data.py, which re-applies "
-            "scripts/data/scalar-media-roles.json), then find what reclassified it."
+            "why any count-based check reads clean. Re-assert it from its source of truth, "
+            "then find what reclassified it."
         )
         return 1
 
@@ -213,16 +140,26 @@ def cmd_check(live_db: Path) -> int:
 # stays green on the correct values. A gate never shown to fail is decoration.
 # --------------------------------------------------------------------------
 
+_SELF_TEST_ASSERTIONS: list[dict] = [
+    {"table": "toy_rows", "key": {"slug": "toy/a", "attr": "x"}, "column": "role",
+     "expected": "right-role", "why": "planted by the self-test."},
+    {"table": "toy_rows", "key": {"slug": "toy/a", "attr": "x"}, "column": "shape",
+     "expected": "right-shape", "why": "planted by the self-test (shares a row with the first)."},
+    {"table": "toy_tier", "key": {"slug": "toy/a"}, "column": "tier",
+     "expected": "right-tier", "why": "planted by the self-test."},
+]
+
+
 def _self_test() -> int:
     failures: list[str] = []
     tmp = Path(tempfile.mkdtemp(prefix="sgs-value-identity-selftest-"))
     db_path = tmp / "toy.db"
 
-    # Build the synthetic DB from VALUE_ASSERTIONS itself, so this adapts when the
+    # Build the synthetic DB from _SELF_TEST_ASSERTIONS itself, so this adapts when the
     # roster grows instead of asserting against a hand-frozen shape.
     con = sqlite3.connect(str(db_path))
     cols_by_table: dict[str, list[str]] = {}
-    for a in VALUE_ASSERTIONS:
+    for a in _SELF_TEST_ASSERTIONS:
         for c in list(a["key"]) + [a["column"]]:
             cols_by_table.setdefault(a["table"], [])
             if c not in cols_by_table[a["table"]]:
@@ -235,7 +172,7 @@ def _self_test() -> int:
     # `emit_shape`); inserting a row per assertion instead produced two half-populated
     # rows and made arm 1 fail against values that were in fact correct.
     merged: dict[tuple, dict] = {}
-    for a in VALUE_ASSERTIONS:
+    for a in _SELF_TEST_ASSERTIONS:
         key = (a["table"], tuple(sorted(a["key"].items())))
         row = merged.setdefault(key, dict(a["key"]))
         row[a["column"]] = a["expected"]
@@ -252,7 +189,7 @@ def _self_test() -> int:
     def findings_now() -> list[str]:
         c = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
         try:
-            return check_value_assertions(c)
+            return check_value_assertions(c, _SELF_TEST_ASSERTIONS)
         finally:
             c.close()
 
@@ -262,11 +199,11 @@ def _self_test() -> int:
         failures.append(f"correct values produced findings: {f}")
         print(f"  FAIL  {f}")
     else:
-        print(f"  PASS  0 findings across {len(VALUE_ASSERTIONS)} assertion(s)")
+        print(f"  PASS  0 findings across {len(_SELF_TEST_ASSERTIONS)} assertion(s)")
 
     print("\narm 2 (failing) -- reclassify one row to a wrong-but-plausible value, "
           "confirm it is CAUGHT:")
-    target = VALUE_ASSERTIONS[0]
+    target = _SELF_TEST_ASSERTIONS[0]
     where = " AND ".join(f'"{k}" = ?' for k in target["key"])
     con = sqlite3.connect(str(db_path))
     con.execute(

@@ -32,17 +32,3 @@ if ( ! function_exists( 'sgs_media_atom_link_requires' ) ) {
 		);
 	}
 }
-
-if ( ! function_exists( 'sgs_media_atom_link_css' ) ) {
-	/**
-	 * No CSS. The link is an anchor wrapper, never a stylesheet value.
-	 *
-	 * @param array  $attributes Block attributes.
-	 * @param string $prefix     Surface prefix.
-	 * @param string $block_slug Block slug.
-	 * @return array Always empty.
-	 */
-	function sgs_media_atom_link_css( array $attributes, $prefix, $block_slug ) {
-		return array();
-	}
-}

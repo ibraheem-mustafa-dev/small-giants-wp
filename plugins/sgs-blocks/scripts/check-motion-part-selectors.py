@@ -2,8 +2,8 @@
 """check-motion-part-selectors.py - every declared motion part reaches an element (Spec 38A section 6.2, FR-38A-16).
 
 THE RULE: `includes/motion/class-sgs-motion-targets.php::Sgs_Motion_Targets::resolve` turns a part of a motion block
-(`supports.sgs.motion` truthy, parts in `supports.sgs.elements`) into a selector. A part with a declared `selector`
-uses it; any other part uses `.sgs-<slug>__<part>`. A part with neither a selector nor an element carrying that class
+(`supports.sgs.motion` truthy, parts in `supports.sgs.elements`) into a selector. A part with a declared `motionSelector`
+(else `selector`) uses it; any other part uses `.sgs-<slug>__<part>`. A part with neither a selector nor an element carrying that class
 matches nothing, so a motion layer on it is silently lost.
 
 HOW A PART RESOLVES (a part keyed `root`, or with `isWrapper: true`, is the root and is skipped)
@@ -12,7 +12,7 @@ HOW A PART RESOLVES (a part keyed `root`, or with `isWrapper: true`, is the root
               JS, third-party markup, or markup printed outside the block root). Spec 38A section 6.2: it is not a
               target, and the renderer (Sgs_Motion_Targets::parts), seed_motion_fields.py, check-motion-db-rows.py and
               TargetPicker.js all leave it out
-  declared    the part has a `selector` key (one compound class, or classes joined by descendant spaces)
+  declared    the part has a `motionSelector` or `selector` key (one compound class, or classes joined by descendant spaces)
   bem         the class `sgs-<slug>__<part>` appears literally in the block's render source (render.php and the
               own-folder partials it requires, read through scripts/lib/block_source_files.py, then every other .php
               file in the block folder, which holds the require_once partials; a static block with no
@@ -113,16 +113,26 @@ LEGACY_ROOTS = {
     # items and its `sgs-form-tiles` layout wrapper: the item parts name those classes.
     "form": ("sgs-form-field",),
     "form-field-tiles": ("sgs-form-tile",),
-    # The six composites that print the container wrapper's background layers as their own `background` / `svg-bg` parts.
-    "site-header": ("sgs-container__image-bg", "sgs-container__svg-bg"),
-    "site-footer": ("sgs-container__image-bg", "sgs-container__svg-bg"),
-    "trust-bar": ("sgs-container__image-bg", "sgs-container__svg-bg"),
-    "physics-canvas": ("sgs-container__image-bg", "sgs-container__svg-bg"),
-    "multi-button": ("sgs-container__image-bg", "sgs-container__svg-bg"),
-    "hero": ("sgs-container__image-bg", "sgs-container__svg-bg"),
+    # The composites that print the container wrapper's background layers as their own `background` / `svg-bg` parts: the adopted ones print `.sgs-bg-media`, the hero keeps the legacy `<img>` until WP-9.
+    "container": ("sgs-bg-media",),
+    "nav-drawer": ("sgs-bg-media",),
+    "site-header": ("sgs-bg-media", "sgs-container__svg-bg"),
+    "site-footer": ("sgs-bg-media", "sgs-container__svg-bg"),
+    "trust-bar": ("sgs-bg-media", "sgs-container__svg-bg"),
+    "physics-canvas": ("sgs-bg-media", "sgs-container__svg-bg"),
+    "multi-button": ("sgs-bg-media", "sgs-container__svg-bg"),
+    "hero": ("sgs-bg-media", "sgs-container__svg-bg"),
+    # The adopted blocks print their pictures through the shared renderer, whose `<img>` is `.sgs-media-el`; the media block's caption is the renderer's `.sgs-media-caption`.
+    "brand-strip": ("sgs-media-el",),
+    "card-grid": ("sgs-media-el",),
+    "gallery": ("sgs-media-el",),
+    "media": ("sgs-media-caption",),
 }
 # Child blocks whose render source prints classes a parent's part names (the parent's rendered HTML contains them).
 CHILD_BLOCKS = {"accordion": ("accordion-item",)}
+# The element SGS_Media_Element::render prints for every adopted media slot. A part's motionSelector may end in it when
+# the part is the block's own (root-slot) media or an owned ancestor class scopes it to the part's slot.
+SHARED_MEDIA_CLASS = "sgs-media-el"
 SELECTOR_OK = re.compile(r"^\.[A-Za-z][A-Za-z0-9_-]*(?: \.[A-Za-z][A-Za-z0-9_-]*)*$")
 
 
@@ -224,8 +234,11 @@ def survey(blocks: Path, includes: Path) -> list[dict]:
                 row["motion"] = spec["motion"]
             if spec.get("motion") is False:
                 row["how"] = "excluded"
-            elif "selector" in spec:
-                row["how"], row["selector"] = "declared", spec["selector"]
+            elif "motionSelector" in spec or "selector" in spec:
+                # The motion runtime (Sgs_Motion_Targets::declared_selector) reads motionSelector first, then selector.
+                key = "motionSelector" if "motionSelector" in spec else "selector"
+                row["how"], row["selector"], row["key"] = "declared", spec[key], key
+                row["root_slot"] = ((spec.get("availableWhen") or {}).get("slot") == "")
             elif part in emitted or any(part in emitted_elements(t, slug) for t in shared_hit) or (
                     part == WRAPPER_PART and wrapper_band(text, slug, forced)):
                 row["how"] = "bem"
@@ -259,8 +272,12 @@ def declared_problems(rows: list[dict], blocks: Path, includes: Path) -> list[st
         if not isinstance(sel, str) or not SELECTOR_OK.match(sel):
             problems.append(f"{r['block']}:{r['part']} declared selector {sel!r} is not a class selector (classes joined by single spaces)")
             continue
-        last = sel.split(" ")[-1][1:]
-        if not owns_class(r["block"], last):
+        compounds = [c[1:] for c in sel.split(" ")]
+        last = compounds[-1]
+        if last == SHARED_MEDIA_CLASS and r.get("key") == "motionSelector" and (
+                r.get("root_slot") or any(owns_class(r["block"], c) for c in compounds[:-1])):
+            pass  # the shared media element, scoped to this part by an owned ancestor class or as the block's own media
+        elif not owns_class(r["block"], last):
             problems.append(f"{r['block']}:{r['part']} declared selector {sel!r}: its last compound {last!r} is not a class of the block (it must be sgs-{r['block']}, begin with sgs-{r['block']}__ or sit under one of its LEGACY_ROOTS), so the stamper would mark every element of that class in the block")
             continue
         text = source_text(blocks / r["block"])
@@ -399,6 +416,10 @@ def self_test() -> int:
         (empty_includes / "helper.php").write_text("<?php function sgs_helper_markup() { return '<i class=\"sgs-shared__thing\"></i>'; }", encoding="utf-8")
         _plant(tmp, "prefix", {"label": "Thing", "selector": ".sgs-prefix__pan"}, "<?php echo '<ul class=\"sgs-prefix__panel-items\"></ul>';")
         _plant(tmp, "foreign", {"label": "Thing", "selector": ".sgs-foreign__wrap .sgs-media"}, "<?php echo '<i class=\"sgs-foreign__wrap\"><b class=\"sgs-media\"></b></i>';")
+        (empty_includes / "media.php").write_text("<?php echo '<img class=\"sgs-media-el\">';", encoding="utf-8")
+        _plant(tmp, "rootmedia", {"label": "Thing", "motionSelector": ".sgs-media-el", "availableWhen": {"slot": ""}}, "<?php echo SGS_Media_Element::render( $a );")
+        _plant(tmp, "slotmedia", {"label": "Thing", "motionSelector": ".sgs-slotmedia__media .sgs-media-el", "availableWhen": {"slot": "split"}}, "<?php echo '<div class=\"sgs-slotmedia__media\">';")
+        _plant(tmp, "loosemedia", {"label": "Thing", "motionSelector": ".sgs-media-el", "availableWhen": {"slot": "split"}}, "<?php echo SGS_Media_Element::render( $a );")
         _plant(tmp, "cssonly", {"label": "Thing", "selector": ".sgs-cssonly__ghost"}, "<?php $css = '.' . $uid . ' .sgs-cssonly__ghost{color:red}'; echo '<i class=\"sgs-cssonly__other\"></i>';")
         (empty_includes / WRAPPER_FILE).write_text("<?php if ( Sgs_Motion_Targets::names_band( $attributes ) ) { $do_wrap = true; }", encoding="utf-8")
         band_dir = tmp / "bandpart"
@@ -427,7 +448,11 @@ def self_test() -> int:
             ("a declared selector a shared include prints passes", not any(p.startswith("shared:") for p in problems)),
             ("a declared class that is only a prefix of a printed class is caught", any(p.startswith("prefix:") for p in problems)),
             ("a declared selector whose last compound is not a class of the block is caught", any(p.startswith("foreign:") and "not a class of the block" in p for p in problems)),
-            ("a declared selector ending in the block's own class passes the ownership rule", not any("not a class of the block" in p for p in problems if not p.startswith(("foreign:", "shared:")))),
+            ("a declared selector ending in the block's own class passes the ownership rule", not any("not a class of the block" in p for p in problems if not p.startswith(("foreign:", "shared:", "loosemedia:")))),
+            ("a motionSelector is read before selector (as the motion runtime does)", rows["rootmedia"]["how"] == "declared"),
+            ("a root-slot part's motionSelector naming the shared media element passes", not any(p.startswith("rootmedia:") for p in problems)),
+            ("a motionSelector scoping the shared media element under an owned class passes", not any(p.startswith("slotmedia:") for p in problems)),
+            ("an unscoped shared media element on a non-root slot is caught", any(p.startswith("loosemedia:") and "not a class of the block" in p for p in problems)),
             ("a declared class printed only after a dot (a CSS selector) is caught", any(p.startswith("cssonly:") for p in problems)),
             ("a content-band part without the wrapper's motion band force is unresolved", unforced["bandpart"]["how"] == "unresolved"),
             ("a declared band selector without the wrapper's motion band force is caught", any(p.startswith("banded:") for p in unforced_problems)),

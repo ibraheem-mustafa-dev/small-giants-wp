@@ -85,3 +85,29 @@
 		--sgs-fx-plx-offset: 0px;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="parallax"][data-sgs-fx-off-desktop~="parallax"] {
+		--sgs-fx-plx-offset: 0px;
+	}
+}
+
+/* Overscan on the background part (Spec 49 10.2). The moving `.sgs-bg-media` is taller than its section by the most the
+   offset can reach, so no gap shows at the section's top or bottom. Per side, with H the section's height (the `100%` of
+   `inset-block`) and V `100lvh`, the driver's viewport height: view basis |r| x (H + V) / 2 (the travel is at most
+   (H + V) / 2); page basis |r| x H / 2 at the top, and the same at the bottom for r > 0 or |r| x H for r < 0. The ratio is
+   the per-device custom property, so each device gets its own overscan. The section clips what overhangs. */
+.sgs-bg-media[data-sgs-fx~="parallax"] {
+	--sgs-fx-plx-abs: max( var( --sgs-fx-parallax-ratio, 0 ), calc( -1 * var( --sgs-fx-parallax-ratio, 0 ) ) );
+	--sgs-fx-plx-over-top: calc( var( --sgs-fx-plx-abs ) * ( 100% + 100lvh ) / 2 );
+	--sgs-fx-plx-over-bottom: var( --sgs-fx-plx-over-top );
+	inset-block: calc( -1 * var( --sgs-fx-plx-over-top ) ) calc( -1 * var( --sgs-fx-plx-over-bottom ) );
+}
+
+.sgs-bg-media[data-sgs-fx~="parallax"][data-sgs-fx-parallax-basis="page"] {
+	--sgs-fx-plx-over-top: calc( var( --sgs-fx-plx-abs ) * 100% / 2 );
+	--sgs-fx-plx-over-bottom: calc( ( var( --sgs-fx-plx-abs ) + max( 0, -1 * var( --sgs-fx-parallax-ratio, 0 ) ) ) * 100% / 2 );
+}
+
+:where( .sgs-container ):has( > .sgs-bg-media[data-sgs-fx~="parallax"] ) {
+	overflow-y: clip;
+}

@@ -5,7 +5,7 @@ A deploy's build and gate:full depend only on the committed tree and the framewo
 once a commit has passed them they need not run again for another site or a repeat deploy.
 After gate:full passes, the run stores a pass record, its plugin build/ and every file the
 build left new or changed under the deploy roots (the prebuild generators write some, such
-as assets/css/media-element.css) in ~/.cache/sgs-deploy/<key>/. A later run with the same
+as includes/extension-attributes.generated.php) in ~/.cache/sgs-deploy/<key>/. A later run with the same
 key restores those files and skips both steps.
 
 The key is the commit's tree hash plus the framework DB's sha256: the full gates read the

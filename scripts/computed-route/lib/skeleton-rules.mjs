@@ -107,7 +107,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const R = facts.decisions.rules || {};
 	const panel = makePanelRules( { m, view, scope, R, facts, surface, declared } );
 	// A block holds its items in an attribute when one array attribute has a field that is content; an array whose fields are
-	// all behaviour or technical (a motion-parts list such as sgs/hero's bgSvgParts) holds no items, so the block still holds inner blocks.
+	// all behaviour or technical (a motion-parts list such as sgs/hero's backgroundSvgParts) holds no items, so the block still holds inner blocks.
 	const arrayBlocks = new Set( facts.q( "SELECT block_slug FROM array_item_schema GROUP BY block_slug, array_attr HAVING SUM( role IS NULL OR role NOT IN ( 'behaviour', 'technical' ) ) > 0" ).map( ( r ) => r.block_slug ) );
 	const drawsListed = Object.fromEntries( ( R.drawsChildren?.blocks || [] ).map( ( d ) => [ d.block, d.reason ] ) );
 

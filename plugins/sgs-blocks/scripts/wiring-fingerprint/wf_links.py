@@ -157,8 +157,9 @@ def _consumer_links(attr: str, state: bool, canvas: str | None, ch: Channel, be:
 
 
 def assess(row: dict, category: str, ch: Channel, dump_row: dict, be: BlockEditor, ctx_canvas: bool,
-           b2: set[str], env: LinkEnv, allowed: frozenset = frozenset()) -> dict:
-    """The missing links of one painting attribute, with the facts behind them."""
+           b2: set[str], env: LinkEnv, allowed: frozenset = frozenset(), shared: frozenset = frozenset()) -> dict:
+    """The missing links of one painting attribute, with the facts behind them. `shared` holds the links the
+    shared media system gives the attribute (wf_media_system): they are not missing."""
     attr = row["attr_name"]
     missing: list[str] = []
     details: dict[str, str] = {}
@@ -180,6 +181,7 @@ def assess(row: dict, category: str, ch: Channel, dump_row: dict, be: BlockEdito
     if attr in b2:
         missing.append("B2")
         details["B2"] = "the root ('') typography family is declared but has no control or no front-end emission"
+    missing = [m for m in missing if m not in shared]
     blocking = [m for m in missing if m not in ADVISORY]
     status = "full" if not missing else ("partial" if blocking else "advisory")
     return {"missing": missing, "details": details, "canvas": canvas, "channel": kinds, "unconsumed": unconsumed, "class": status}

@@ -1,6 +1,5 @@
 // Card grid inspector option lists and card style presets.
 import { __ } from '@wordpress/i18n';
-import { MEDIA_SIZING_RATIO_OPTIONS } from '../../../components';
 
 export const VARIANT_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -38,16 +37,6 @@ export const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'Heading 6', 'sgs-blocks' ), value: 'h6' },
 	{ label: __( 'Paragraph (not a heading)', 'sgs-blocks' ), value: 'p' },
 ];
-
-// C19 ratio-mode adoption (2026-08-27) — reuses MediaSizingPanel's shared
-// seven-value ratio list (spaced format, "16 / 9" etc.) rather than this
-// block's own hand-rolled set (which included a non-CSS "auto" value and
-// unspaced ratios not shared with any other block). render.php now
-// whitelists against this exact six-value set, falling back to this
-// block's own existing default ('16/10') for anything outside it — so an
-// existing '16/10'/'auto'/'3/2' stored value keeps rendering exactly as
-// before rather than breaking.
-export const ASPECT_RATIO_OPTIONS = MEDIA_SIZING_RATIO_OPTIONS;
 
 export const PRODUCT_COLLECTION_OPTIONS = [
 	{ label: __( 'Latest', 'sgs-blocks' ), value: 'latest' },

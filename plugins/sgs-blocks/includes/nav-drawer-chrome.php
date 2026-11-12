@@ -19,32 +19,27 @@ require_once __DIR__ . '/nav-drawer-chrome-css.php';
 require_once __DIR__ . '/nav-drawer-chrome-extras-css.php';
 require_once __DIR__ . '/nav-drawer-chrome-icons.php';
 require_once __DIR__ . '/helpers-link-source.php';
+require_once __DIR__ . '/helpers-logo-media.php';
 require_once __DIR__ . '/helpers-svg-inline-attachment.php';
 require_once __DIR__ . '/helpers-svg-instance-scope.php';
 require_once __DIR__ . '/helpers-svg-parts.php';
 
 if ( ! function_exists( 'sgs_nav_drawer_chrome_logo_urls' ) ) {
 	/**
-	 * The logo URL per tier, art-directed like `sgs/responsive-logo`: an
-	 * attachment ID wins over the stored URL, tablet falls back to desktop and
-	 * mobile to tablet.
+	 * The logo URL per tier, art-directed like `sgs/responsive-logo`: the attachment's current file wins over the
+	 * stored address, tablet falls back to desktop and mobile to tablet.
 	 *
 	 * @param array $attributes Block attributes.
 	 * @return array{desktop:string,tablet:string,mobile:string,id:int}
 	 */
 	function sgs_nav_drawer_chrome_logo_urls( array $attributes ): array {
-		$own = array();
-		$ids = array();
-		foreach ( array(
-			'desktop' => '',
-			'tablet'  => 'Tablet',
-			'mobile'  => 'Mobile',
-		) as $tier => $suffix ) {
-			$id           = absint( $attributes[ 'chromeLogoId' . $suffix ] ?? 0 );
-			$url          = $id > 0 ? (string) wp_get_attachment_url( $id ) : '';
-			$url          = '' !== $url ? $url : (string) ( $attributes[ 'chromeLogoUrl' . $suffix ] ?? '' );
-			$own[ $tier ] = esc_url_raw( $url );
-			$ids[ $tier ] = '' !== $own[ $tier ] ? $id : 0;
+		$source = $attributes['chromeLogoSource'] ?? null;
+		$own    = array();
+		$ids    = array();
+		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+			$entry        = sgs_logo_device_entry( $source, $tier );
+			$own[ $tier ] = esc_url_raw( sgs_logo_entry_url( $entry ) );
+			$ids[ $tier ] = '' !== $own[ $tier ] ? absint( $entry['id'] ?? 0 ) : 0;
 		}
 		$tablet = '' !== $own['tablet'] ? $own['tablet'] : $own['desktop'];
 		$mobile = '' !== $own['mobile'] ? $own['mobile'] : $tablet;
@@ -60,39 +55,32 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_logo_urls' ) ) {
 
 if ( ! function_exists( 'sgs_nav_drawer_chrome_logo_html' ) ) {
 	/**
-	 * The logo: a `<picture>` whose sources swap the image per device, linked
-	 * home unless the operator turned the link off.
+	 * The logo, printed through the shared media renderer for the `chromeLogo` slot (its picture swaps the file per
+	 * device), linked home unless the operator turned the link off. The drawer is a hidden surface until it opens, so the
+	 * logo never claims an early load.
 	 *
-	 * @param array $attributes Block attributes.
-	 * @param array $urls       From sgs_nav_drawer_chrome_logo_urls().
-	 * @return string Trusted markup, or '' when no tier has a logo.
+	 * @param array  $attributes Block attributes.
+	 * @param array  $urls       From sgs_nav_drawer_chrome_logo_urls().
+	 * @param string $scope      Scope class for the slot's rules.
+	 * @param array  $slot       The `chromeLogo` slot.
+	 * @return array{html:string,css:string} Trusted markup and its rules, both empty when no tier has a logo.
 	 */
-	function sgs_nav_drawer_chrome_logo_html( array $attributes, array $urls ): string {
-		$src = '' !== $urls['desktop'] ? $urls['desktop'] : ( '' !== $urls['tablet'] ? $urls['tablet'] : $urls['mobile'] );
+	function sgs_nav_drawer_chrome_logo_html( array $attributes, array $urls, string $scope = 'sgs-nd-logo', array $slot = array() ): array {
+		$none = array(
+			'html' => '',
+			'css'  => '',
+		);
+		$src  = '' !== $urls['desktop'] ? $urls['desktop'] : ( '' !== $urls['tablet'] ? $urls['tablet'] : $urls['mobile'] );
 		if ( '' === $src ) {
-			return '';
+			return $none;
 		}
 
-		$alt = trim( (string) ( $attributes['chromeLogoAlt'] ?? '' ) );
+		$decorative = ! empty( $attributes['chromeLogoDecorative'] );
+		$alt        = trim( (string) ( $attributes['chromeLogoAlt'] ?? '' ) );
 		if ( '' === $alt && $urls['id'] > 0 ) {
 			$alt = trim( (string) get_post_meta( $urls['id'], '_wp_attachment_image_alt', true ) );
 		}
-
-		$dims = '';
-		if ( $urls['id'] > 0 ) {
-			$meta = wp_get_attachment_image_src( $urls['id'], 'full' );
-			if ( is_array( $meta ) && ! empty( $meta[1] ) && ! empty( $meta[2] ) ) {
-				$dims = sprintf( ' width="%d" height="%d"', (int) $meta[1], (int) $meta[2] );
-			}
-		}
-
-		$sources = '';
-		if ( $urls['mobile'] !== $urls['tablet'] && '' !== $urls['mobile'] ) {
-			$sources .= sprintf( '<source media="(max-width: %dpx)" srcset="%s">', SGS_Breakpoints::MOBILE_MAX, esc_url( $urls['mobile'] ) );
-		}
-		if ( $urls['tablet'] !== $src && '' !== $urls['tablet'] ) {
-			$sources .= sprintf( '<source media="(max-width: %dpx)" srcset="%s">', SGS_Breakpoints::TABLET_MAX, esc_url( $urls['tablet'] ) );
-		}
+		$alt = $decorative ? '' : $alt;
 
 		$linked  = ! array_key_exists( 'chromeLogoLink', $attributes ) || ! empty( $attributes['chromeLogoLink'] );
 		$inline  = ! empty( $attributes['chromeLogoInlineSvg'] ) && $urls['id'] > 0
@@ -118,18 +106,41 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_logo_html' ) ) {
 			)
 			: '';
 		$parts   = '' !== $parts ? ' data-sgs-svg-parts="' . esc_attr( $parts ) . '"' : '';
-		$picture = '' !== $inline
-			? $inline // Rebuilt through sgs_svg_sanitise_document(); added attributes escaped by sgs_svg_inline_root_attributes().
-			: sprintf(
-			'<picture class="sgs-nav-drawer__chrome-logo-picture">%1$s<img class="sgs-nav-drawer__chrome-logo-image" src="%2$s" alt="%3$s"%4$s loading="lazy" decoding="async"></picture>',
-			$sources, // Built from esc_url() values above.
-			esc_url( $src ),
-			esc_attr( $alt ),
-			$dims
-		);
+		$css     = '';
+		$picture = $inline; // Rebuilt through sgs_svg_sanitise_document(); added attributes escaped by sgs_svg_inline_root_attributes().
+		if ( '' === $inline ) {
+			// A tier with no file of its own shows the wider tier's, as the renderer's device inheritance does.
+			$source = is_array( $attributes['chromeLogoSource'] ?? null ) ? $attributes['chromeLogoSource'] : array();
+			$entry  = sgs_logo_device_entry( $source, 'desktop' ) ?? sgs_logo_device_entry( $source, 'tablet' ) ?? sgs_logo_device_entry( $source, 'mobile' );
+			if ( null !== $entry ) {
+				$source['desktop'] = $entry;
+			}
+			$printed = sgs_logo_render(
+				$slot ? $slot : sgs_logo_media_slot( null, 'chromeLogo' ),
+				array(
+					'chromeLogoSource'     => $source,
+					'chromeLogoAlt'        => $alt,
+					'chromeLogoDecorative' => $decorative,
+				),
+				$scope,
+				'sgs/nav-drawer',
+				array(
+					'extra_class' => 'sgs-nav-drawer__chrome-logo-picture sgs-nav-drawer__chrome-logo-image',
+					'hidden'      => true,
+				)
+			);
+			if ( '' === $printed['html'] ) {
+				return $none;
+			}
+			$picture = $printed['html'];
+			$css     = $printed['css'];
+		}
 
 		if ( ! $linked ) {
-			return '<span class="sgs-nav-drawer__chrome-logo"' . $parts . '>' . $picture . '</span>';
+			return array(
+				'html' => '<span class="sgs-nav-drawer__chrome-logo"' . $parts . '>' . $picture . '</span>',
+				'css'  => $css,
+			);
 		}
 
 		// A linked logo needs a name: its alt text, else "<site name> home".
@@ -145,12 +156,15 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_logo_html' ) ) {
 				)
 			)
 			: '';
-		return sprintf(
-			'<a class="sgs-nav-drawer__chrome-logo" href="%1$s"%2$s%4$s>%3$s</a>',
-			esc_url( home_url( '/' ) ),
-			$label,
-			$picture,
-			$parts // Built from esc_attr() above.
+		return array(
+			'html' => sprintf(
+				'<a class="sgs-nav-drawer__chrome-logo" href="%1$s"%2$s%4$s>%3$s</a>',
+				esc_url( home_url( '/' ) ),
+				$label,
+				$picture,
+				$parts // Built from esc_attr() above.
+			),
+			'css'  => $css,
 		);
 	}
 }
@@ -310,11 +324,13 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome' ) ) {
 	 * @return string The row markup (trusted).
 	 */
 	function sgs_nav_drawer_chrome( array $attributes, string $root_sel, string $close_html, string &$css, string $icons_html = '' ): string {
-		$urls = sgs_nav_drawer_chrome_logo_urls( $attributes );
-		$logo = sgs_nav_drawer_chrome_logo_html( $attributes, $urls );
-		$slot   = '' !== $icons_html ? $icons_html : sgs_nav_drawer_chrome_slot_html( $attributes );
-		$rating = sgs_nav_drawer_chrome_rating_html( $attributes );
+		$urls     = sgs_nav_drawer_chrome_logo_urls( $attributes );
+		$logo_out = sgs_nav_drawer_chrome_logo_html( $attributes, $urls, 'sgs-nd-logo-' . substr( md5( $root_sel ), 0, 8 ) );
+		$logo     = $logo_out['html'];
+		$slot     = '' !== $icons_html ? $icons_html : sgs_nav_drawer_chrome_slot_html( $attributes );
+		$rating   = sgs_nav_drawer_chrome_rating_html( $attributes );
 
+		$css .= $logo_out['css'];
 		$css .= sgs_nav_drawer_chrome_css( $attributes, $root_sel, $urls, '' !== $logo, '' !== $slot, '' !== $rating );
 		$css .= sgs_nav_drawer_chrome_extras_css( $attributes, $root_sel, '' !== $logo );
 

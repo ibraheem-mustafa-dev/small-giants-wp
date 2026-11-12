@@ -195,7 +195,7 @@ final class SGS_Media_Priority {
 		if ( isset( $facts['armed'] ) ) {
 			return (bool) $facts['armed'];
 		}
-		return Sgs_Motion_Renderer::is_armed();
+		return class_exists( Sgs_Motion_Renderer::class ) && Sgs_Motion_Renderer::is_armed();
 	}
 
 	/**

@@ -548,7 +548,12 @@
 							{
 								"name": "sgs/responsive-logo",
 								"attributes": {
-									"logoId": 83
+									"logoSource": {
+										"desktop": {
+											"kind": "image",
+											"id": 83
+										}
+									}
 								},
 								"draftRef": {
 									"tpl": "Root/684#0"

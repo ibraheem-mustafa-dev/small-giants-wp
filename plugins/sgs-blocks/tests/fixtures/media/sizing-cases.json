@@ -444,8 +444,8 @@
 				320,
 				300
 			],
-			"source": "to-prove",
-			"note": "With a figure the layout box and the surface are different elements, so Width and Height land on different selectors (PS-7). WP-2b proves it."
+			"source": "measured",
+			"note": "With a figure the layout box and the surface are different elements, so Width and Height land on different selectors (PS-7). Measured 2026-11-12 in Chromium on the harness render (sgs/media with a caption, media-base.css): figure 320 wide, .sgs-media-box and the img 320 x 300; the emitter parity test proves both twins print these declarations."
 		}
 	],
 	"responsive": [

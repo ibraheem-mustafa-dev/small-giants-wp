@@ -129,7 +129,7 @@ function copyShape( svg, els, source ) {
  */
 function boot( root ) {
 	const cfg = readConfig( root );
-	const svg = root.querySelector( 'svg' );
+	const svg = 'svg' === root.localName ? root : root.querySelector( 'svg' );
 	if ( ! cfg || ! svg ) {
 		return;
 	}
@@ -343,7 +343,7 @@ function boot( root ) {
  */
 function settle( root ) {
 	const cfg = readConfig( root );
-	const svg = root.querySelector( 'svg' );
+	const svg = 'svg' === root.localName ? root : root.querySelector( 'svg' );
 	if ( ! cfg || ! svg ) {
 		return;
 	}

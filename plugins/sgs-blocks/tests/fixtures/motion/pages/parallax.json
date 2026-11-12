@@ -3,9 +3,6 @@
 		"name": "sgs/hero",
 		"attributes": {
 			"variant": "split",
-			"splitMediaType": "image",
-			"splitMediaImageUrl": "https://picsum.photos/id/1015/1200/800.jpg",
-			"splitMediaImageAlt": "A river valley seen from above",
 			"minHeight": {
 				"desktop": "520px",
 				"mobile": "420px"
@@ -27,7 +24,16 @@
 						]
 					}
 				}
-			}
+			},
+			"splitSource": {
+				"desktop": {
+					"kind": "image",
+					"url": "https://picsum.photos/id/1015/1200/800.jpg",
+					"width": 1200,
+					"height": 800
+				}
+			},
+			"splitAlt": "A river valley seen from above"
 		},
 		"innerBlocks": [
 			{
@@ -133,10 +139,6 @@
 			{
 				"name": "sgs/media",
 				"attributes": {
-					"mediaType": "image",
-					"imageUrl": "https://picsum.photos/id/1015/1200/800.jpg",
-					"imageAlt": "A river valley seen from above",
-					"imageHeight": 280,
 					"className": "m38-image-host",
 					"sgsMotion": {
 						"v": 1,
@@ -154,7 +156,16 @@
 								]
 							}
 						}
-					}
+					},
+					"source": {
+						"desktop": {
+							"kind": "image",
+							"url": "https://picsum.photos/id/1015/1200/800.jpg",
+							"height": 800,
+							"width": 1200
+						}
+					},
+					"alt": "A river valley seen from above"
 				}
 			}
 		]

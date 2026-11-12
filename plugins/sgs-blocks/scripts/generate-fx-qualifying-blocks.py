@@ -17,7 +17,7 @@ Requirement tokens (`_block_provisions` derives the set a block provides; an eff
 - `marquee-track`: `_marquee_track_blocks`, a `*.php` of the block prints `MARQUEE_SET_HOOK`.
 - `item-set`: `supports.sgs.fx.pairedFilter` is true.
 - `surface`: `supports.sgs.containerKind` is set to any value, or a `backgroundImage*` attribute exists.
-- `image`: `supports.sgs.imageControls` is true, or `_raster_image_blocks` finds a rendered raster image.
+- `image`: `_raster_image_blocks` finds a rendered raster image, or an adopted media slot lists image among its kinds.
 - `panel` is not a `requires` value. `supports.sgs.fx.motionSurface` true provides it, which makes the block a host without any specific requirement.
 
 Offer rules (`compute_map`)
@@ -218,15 +218,10 @@ def _raster_image_blocks() -> set[str]:
     Mirrors `_richtext_blocks()`: a structural fact read straight out of the
     block's own source rather than inferred from a declared capability.
 
-    WHY THIS EXISTS AT ALL, rather than trusting `supports.sgs.imageControls`.
-    Project CLAUDE.md mandates that flag on every block rendering an `<img>`,
-    so the declaration OUGHT to be sufficient. Measured 2026-08-21, it is not:
-    `sgs/media` and `sgs/decorative-image` both render an `<img>` in their
-    render.php and edit.js, and NEITHER declares `imageControls`. Deriving
-    eligibility from the declaration alone therefore excluded the framework's
-    two most obvious image blocks — a scope predicate computed from a field
-    that is itself inconsistently applied is self-fulfilling, and it excludes
-    exactly the blocks the capability is missing from.
+    WHY THIS EXISTS AT ALL, rather than trusting a declared capability flag.
+    A scope predicate computed from a field that is itself inconsistently
+    applied is self-fulfilling, and it excludes exactly the blocks the
+    capability is missing from.
 
     This is the same correction the 'svg' -> 'svg-subtree' split made (see the
     module docstring): the token widens to the STRUCTURAL fact, and the
@@ -603,18 +598,10 @@ def _block_provisions(
         provisions.add("surface")
 
     # 'image' — the surface-treatment effect's target (Tier W, D479/D555 build).
-    # This project MANDATES `supports.sgs.imageControls: true` on every block
-    # that renders an `<img>` (.claude/rules/block-authoring.md's image-controls rule),
-    # so that flag is the ground-truth signal for "this block has a real image
-    # to shade" — the SAME idiom as 'section' above (read a supports.sgs.*
-    # flag the block already carries), never a hardcoded block-name roster
-    # (FP-1). Verified live before writing this: 15 of 83 blocks declare
-    # `imageControls`, 7 with it set `true` (consistency/golden-controls.json
-    # note above) — before-after, card-grid, and others.
-    # UNION, not the declaration alone — see `_raster_image_blocks()` for why
-    # the declared flag is necessary but NOT sufficient here (sgs/media and
-    # sgs/decorative-image render an `<img>` and declare nothing).
-    if sgs_supports.get("imageControls") is True or block_slug in raster_image_blocks:
+    # The signal for "this block has a real image to shade" is the structural
+    # fact `_raster_image_blocks()` reads out of the block's own source, never
+    # a hardcoded block-name roster (FP-1).
+    if block_slug in raster_image_blocks:
         provisions.add("image")
 
     # An adopted media slot (Spec 49 §10.1): a `supports.sgs.mediaElements` entry that declares `kinds` is a paintable

@@ -152,6 +152,12 @@
 	flex-direction: column;
 }
 
+/* The background element and overlay sit below the drawer's content, above the dialog's own background colour. */
+.wp-block-sgs-nav-drawer > .sgs-bg-media,
+.wp-block-sgs-nav-drawer > .sgs-bg-overlay {
+	z-index: -1;
+}
+
 /* The editable content column. Flex so drawerGap (gap) + drawerAlign
    (align-items) apply. As a flex child of the open drawer it grows to fill
    whatever the chrome row leaves, so a short menu still reaches the bottom of
@@ -208,7 +214,16 @@
 
 /* Zero-specificity default size; chromeLogoWidth (scoped) sets the width and
    hands the height back to the image's own ratio. */
-:where(.sgs-nav-drawer__chrome-logo-image, .sgs-nav-drawer__chrome-logo > svg) {
+/* The renderer's image is the logo's `.sgs-media-el`, whether it prints bare or inside a responsive picture's group. */
+.sgs-nav-drawer__chrome-logo .sgs-media-el {
+	display: block;
+	width: auto;
+	height: var(--sgs-nd-chrome-logo-height, 32px);
+	max-width: 100%;
+	object-fit: contain;
+}
+
+:where(.sgs-nav-drawer__chrome-logo > svg) {
 	display: block;
 	width: auto;
 	height: 32px;

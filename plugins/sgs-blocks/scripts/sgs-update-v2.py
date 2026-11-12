@@ -374,13 +374,8 @@ def restore_wp_reference_archive(db_path: Path = None) -> None:
     print("[--rebuild] reference corpus restored\n")
 
 
-def reassert_reference_roles(db_path: Path = None) -> None:
-    """Re-apply the data-file reference rows that stage 1's classifier overwrites.
-
-    ``seed_reference_data.seed_all`` is idempotent; it restores ``role='scalar-media'`` on the
-    rostered attributes after a plain (non-``--rebuild``) run reclassified them, which would
-    otherwise fail ``dbschema/check_value_identity.py`` at the next deploy.
-    """
+def reseed_reference_tables(db_path: Path = None) -> None:
+    """Apply the data-file reference tables (``seed_reference_data.seed_all``: roles, suffixes, slots). Idempotent."""
     db_path = db_path or SGS_DB
     dbschema = Path(__file__).resolve().parent / "dbschema"
     if str(dbschema) not in sys.path:
@@ -392,8 +387,8 @@ def reassert_reference_roles(db_path: Path = None) -> None:
 def run_module_load_seeders(db_path: Path = None) -> None:
     """Seed the reference tables that /sgs-update's stages do not write.
 
-    ``roles``, ``modifier_suffixes``, ``property_suffixes``, ``slots`` and the
-    ``scalar-media`` role assignments have no stage writer: their rows live in
+    ``roles``, ``modifier_suffixes``, ``property_suffixes`` and ``slots``
+    have no stage writer: their rows live in
     ``data/*.json`` and ``dbschema/seed_reference_data.py::seed_all`` loads them
     idempotently. A rebuild from an empty database would otherwise leave them
     at zero rows, which does not error but breaks suffix, slot and role lookups.
@@ -403,7 +398,7 @@ def run_module_load_seeders(db_path: Path = None) -> None:
     dbschema = scripts / "dbschema"
     if str(dbschema) not in sys.path:
         sys.path.insert(0, str(dbschema))
-    print("[--rebuild] seeding reference tables (roles, suffixes, slots, scalar-media) ...")
+    print("[--rebuild] seeding reference tables (roles, suffixes, slots) ...")
     try:
         import seed_reference_data  # noqa: PLC0415
         seed_reference_data.seed_all(db_path)
@@ -6736,7 +6731,7 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
             #     and its file reduced to value-identity assertions.)
             value_identity_fixture = (
                 "VALUE-IDENTITY VIOLATION (2 finding(s)):\n"
-                "  - VALUE  roles.classification for (role_name='scalar-media') is 'content-bearing'\n"
+                "  - VALUE  roles.classification for (role_name='some-role') is 'content-bearing'\n"
             )
             rf_count = 0
             for line in value_identity_fixture.splitlines():
@@ -7660,14 +7655,12 @@ def main() -> None:
             _start_identity_derivation(conn)
         results[stage_num] = dispatch[stage_num]()
         stage_seconds[stage_num] = time.perf_counter() - stage_began
-        # Stage 1 reclassifies block_attributes.role from the auto-classifier, which overwrites the
-        # 'scalar-media' anchor rows. Re-assert them straight after it, before any later stage reads the
-        # DB: stage 12 runs check-element-manifest-conformance.js, which regenerates
-        # consistency/attr-role-map.json from the DB, so a re-assert after the loop left the map
-        # holding the classifier's 'select-from-enum' for sgs/hero::splitMediaType.
+        # The data-file reference tables (roles, suffixes, slots) have no stage writer: apply them after stage 1 on
+        # every run, so a role added to or removed from data/roles.json reaches the DB without --rebuild, and before
+        # stage 12 regenerates consistency/attr-role-map.json from it.
         if stage_num == 1 and not args.dry_run:
             conn.commit()
-            reassert_reference_roles(SGS_DB)
+            reseed_reference_tables(SGS_DB)
 
     conn.close()
 

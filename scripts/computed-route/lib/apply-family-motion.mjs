@@ -83,11 +83,11 @@ export const motion = {
 		const doc = structuredClone( saved.sgsMotion ?? { v: 1, elements: {} } );
 		doc.elements ??= {};
 		const before = JSON.stringify( doc );
-		// The hero's inline SVG part animation is the hero's own bgSvgParts setting (lib/apply-motion-rules.mjs), so the calls its SVG
+		// The hero's inline SVG part animation is the hero's own backgroundSvgParts setting (lib/apply-motion-rules.mjs), so the calls its SVG
 		// parts make (descendants of the hero's own template element) are not read as a media entrance or loop.
 		const rules = [ ...heroSvgParts( input ), ...changeAnimation( input ) ];
 		const svgTpls = new Set( svgRecordsOf( target, records, input.animate ).map( ( r ) => String( r.element.nearest_tpl_id ) ) );
-		const animate = rules.some( ( i ) => 'bgSvgParts' === i.prop ) ? Object.fromEntries( Object.entries( input.animate ).map( ( [ w, list ] ) => [ w, ( list || [] ).filter( ( c ) => c.key !== key || c.own || ! svgTpls.has( String( c.tpl ) ) ) ] ) ) : input.animate;
+		const animate = rules.some( ( i ) => 'backgroundSvgParts' === i.prop ) ? Object.fromEntries( Object.entries( input.animate ).map( ( [ w, list ] ) => [ w, ( list || [] ).filter( ( c ) => c.key !== key || c.own || ! svgTpls.has( String( c.tpl ) ) ) ] ) ) : input.animate;
 		const items = [ ...rules ];
 		const whys = [];
 		const ids = [];

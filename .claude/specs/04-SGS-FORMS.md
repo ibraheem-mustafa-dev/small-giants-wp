@@ -166,7 +166,7 @@ Example: Show "VAT Registration Number" field only when "Business Type" is not "
 The visual tile selector inspired by the Indus Foods V2 trade application mockup — used for product categories, cuisines, services, etc.
 
 **Additional attributes:**
-- `tiles` — array of { value, label, icon, image } objects
+- `tiles` — array of { value, label, description, icon, iconSource, source, alt, decorative, fit } objects: `source` is a Spec 49 Source object, printed through the `tile` item slot (`block.json::supports.sgs.mediaElements`)
 - `multiSelect` — boolean (select multiple tiles)
 - `columns` — 2 | 3 | 4 (desktop, always 2 on mobile)
 - `selectedStyle` — border | background | checkmark

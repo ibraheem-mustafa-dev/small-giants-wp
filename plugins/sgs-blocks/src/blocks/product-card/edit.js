@@ -2,7 +2,6 @@ import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
-	MediaUpload,
 	MediaUploadCheck,
 	MediaPlaceholder,
 	RichText,
@@ -16,7 +15,6 @@ import {
 	DesignTokenPicker,
 	SgsColourPanel,
 	SgsLengthControl,
-	ResponsiveLengthControl,
 	SgsBorderControl,
 	MediaElementPanel,
 	SsrPreviewGuard, ResponsiveOverride, SgsBoxControl, LinkUnderlineControl, ShadowControl } from '../../components';
@@ -42,6 +40,9 @@ import { useSelect } from '@wordpress/data';
 import { effectiveSourceMode, showsConnectedProduct } from './card-grid-context';
 import apiFetch from '@wordpress/api-fetch';
 import ServerSideRender from '../../components/ServerSideRender';
+import MediaSlotField, { LibraryButton } from '../../components/media/MediaSlotField.js';
+import SlotPicture from '../../components/media/SlotPicture.js';
+import { desktopOf, firstUrl, sourceFromMedia } from './media-source.js';
 import {
 	NumberControl,
 	ToggleGroupControl,
@@ -410,8 +411,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 						description: "",
 						trialTag: "",
 						featuredTag: "",
-						image: "",
-						imageId: 0,
+						imageSource: undefined,
 						imageAlt: "",
 						ctaText: "",
 						ctaUrl: "",
@@ -547,11 +547,10 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 											key={ img.id || i }
 											onClick={ () =>
 												setAttributes( {
-													image: img.src,
 													// img is a WooCommerce REST product image object
 													// ({id,src,name,alt}) — img.id is a real WP
 													// attachment ID, not a synthetic gallery index.
-													imageId: img.id || 0,
+													imageSource: sourceFromMedia( img ),
 													imageAlt: img.alt || "",
 												} )
 											}
@@ -568,7 +567,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 												overflow: "hidden",
 												borderRadius: 4,
 												border:
-													attributes.image === img.src
+													firstUrl( attributes.imageSource ) === img.src
 														? "2px solid var(--wp-admin-theme-color, #007cba)"
 														: "2px solid transparent",
 											} }
@@ -586,29 +585,13 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 									) ) }
 								</div>
 							) }
-							<MediaUploadCheck>
-								<MediaUpload
-									onSelect={ ( media ) =>
-										setAttributes( {
-											image: media.url,
-											imageId: media.id || 0,
-											imageAlt: media.alt || "",
-										} )
-									}
-									allowedTypes={ [ "image" ] }
-									render={ ( { open } ) => (
-										<Button
-											variant="secondary"
-											onClick={ open }
-										>
-											{ __(
-												"Choose another image",
-												"sgs-blocks"
-											) }
-										</Button>
-									) }
-								/>
-							</MediaUploadCheck>
+							<MediaSlotField
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="image"
+								slot={ { prefix: 'image', kinds: [ 'image' ], context: 'content' } }
+								label={ __( "Choose another image", "sgs-blocks" ) }
+							/>
 						</>
 					) }
 				</ToolsPanelItem>
@@ -667,19 +650,23 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 	);
 }
 
+/** The atoms each slot's panels carry (block.json supports.sgs.mediaElements). */
+const IMAGE_ATOMS = [ 'source', 'meaning', 'object-fit', 'focal-point', 'sizing', 'shape', 'shadow', 'media-padding' ];
+const THUMB_ATOMS = [ 'object-fit', 'shape' ];
+const LOGO_ATOMS = [ 'source', 'sizing' ];
+
 export default function Edit( { attributes, setAttributes, clientId, context, name } ) {
 	const {
 		variantStyle,
 		sourceMode: storedSourceMode,
 		cardMaxWidth,
-		imageHeight,
 		indexVariationUrl,
 		framingMode,
 		decoyEnabled,
 		// Typed built-in attrs.
 		productName,
 		description,
-		image,
+		imageSource,
 		imageAlt,
 		imageDecorative,
 		packSizes,
@@ -733,10 +720,6 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 		ratingColour,
 		showBrandOverlay,
 		brandUseLogo,
-		brandLogoHeight,
-		brandLogoWidth,
-		brandLogoMaxHeight,
-		brandLogoMaxWidth,
 		brandName,
 		brandColour,
 		showSavingBadge,
@@ -2201,38 +2184,6 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								}
 								__nextHasNoMarginBottom
 							/>
-							{ isBound && brandUseLogo !== false && (
-								<ResponsiveLengthControl
-									label={ __( 'Logo height', 'sgs-blocks' ) }
-									help={ __( 'Empty = 18px.', 'sgs-blocks' ) }
-									value={ brandLogoHeight }
-									onChange={ ( obj ) => setAttributes( { brandLogoHeight: obj } ) }
-								/>
-							) }
-							{ isBound && brandUseLogo !== false && (
-								<ResponsiveLengthControl
-									label={ __( 'Logo width', 'sgs-blocks' ) }
-									help={ __( 'Empty = automatic, keeping the logo’s shape.', 'sgs-blocks' ) }
-									value={ brandLogoWidth }
-									onChange={ ( obj ) => setAttributes( { brandLogoWidth: obj } ) }
-								/>
-							) }
-							{ isBound && brandUseLogo !== false && (
-								<ResponsiveLengthControl
-									label={ __( 'Logo maximum height', 'sgs-blocks' ) }
-									help={ __( 'Empty = no cap.', 'sgs-blocks' ) }
-									value={ brandLogoMaxHeight }
-									onChange={ ( obj ) => setAttributes( { brandLogoMaxHeight: obj } ) }
-								/>
-							) }
-							{ isBound && brandUseLogo !== false && (
-								<ResponsiveLengthControl
-									label={ __( 'Logo maximum width', 'sgs-blocks' ) }
-									help={ __( 'Empty = as wide as the card allows.', 'sgs-blocks' ) }
-									value={ brandLogoMaxWidth }
-									onChange={ ( obj ) => setAttributes( { brandLogoMaxWidth: obj } ) }
-								/>
-							) }
 							<TextControl
 								label={ __( 'Brand name', 'sgs-blocks' ) }
 								help={ __(
@@ -3321,50 +3272,38 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<TextControl
-						label={ __( 'Image height', 'sgs-blocks' ) }
-						help={ __(
-							'Height of the product image box (e.g. 180px, 16rem). Leave empty to use the theme default (220px).',
-							'sgs-blocks'
-						) }
-						value={ imageHeight }
-						onChange={ ( v ) =>
-							setAttributes( { imageHeight: v } )
-						}
-						placeholder="220px"
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ /* Media-element atom controls (rule 37-media-no-handroll).
-					     'main' governs every render branch's main product image
-					     (typed, bound read-only, bound variable-configurator —
-					     they never render simultaneously, so ONE control is
-					     correct per FP-9). 'thumb' governs only the bound
-					     variable-configurator's thumbnail-rail images, a
-					     distinct element with its own 48x48 box. Mirrors
-					     sgs/before-after's + sgs/buybox's independently-scoped
-					     per-element panels. */ }
+					{ /* The card's three media slots (Spec 49 10.4), the adopted panels: `image` is the photo on every render branch
+					     (typed, read-only, non-variable, variable: one control, per FP-9), `thumb` the variable card's thumbnail
+					     strip, `logo` the brand logo on the photo. */ }
 					<MediaElementPanel
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						prefix="main"
+						prefix="image"
 						blockSlug="sgs/product-card"
-						insertion="element"
-						atoms={ [ 'object-fit', 'focal-point' ] }
-						mediaType="image"
-						scope="element"
-						previewUrl={ image }
+						blockName="sgs/product-card"
+						context="content"
+						atoms={ IMAGE_ATOMS }
 					/>
 					<MediaElementPanel
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="thumb"
 						blockSlug="sgs/product-card"
-						insertion="element"
-						atoms={ [ 'object-fit' ] }
-						mediaType="image"
-						scope="element"
+						blockName="sgs/product-card"
+						context="item"
+						atoms={ THUMB_ATOMS }
 					/>
+					{ showBrandOverlay && brandUseLogo !== false && (
+						<MediaElementPanel
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix="logo"
+							blockSlug="sgs/product-card"
+							blockName="sgs/product-card"
+							context="content"
+							atoms={ LOGO_ATOMS }
+						/>
+					) }
 					{ /* Typed mode only — a bound/live product photo is genuine
 					     shopping content and must never be hidden from
 					     assistive tech; this control only exists here,
@@ -3565,20 +3504,17 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					{ ctaHoverCss && <style>{ ctaHoverCss }</style> }
 					{ descLinkPreviewCss && <style>{ descLinkPreviewCss }</style> }
 					{ /* Image */ }
-					{ image ? (
+					{ firstUrl( imageSource ) ? (
 						<div className="sgs-product-card__media-wrap" style={ { position: 'relative', ...typedParts.media } }>
-							<img
+							<SlotPicture
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="image"
+								uid={ `sgs-pc-${ clientId.slice( 0, 8 ) }-image` }
 								className="sgs-product-card__image"
-								src={ image }
-								alt={ imageAlt || '' }
-								style={ {
-									width: '100%',
-									height: typedParts.aspectOk ? '100%' : imageHeight || '220px',
-									objectFit: 'cover',
-									display: 'block',
-								} }
+								placeholder={ false }
 							/>
-							<TypedMediaOverlays attributes={ attributes } styles={ typedParts } />
+							<TypedMediaOverlays attributes={ attributes } setAttributes={ setAttributes } styles={ typedParts } uid={ `sgs-pc-${ clientId.slice( 0, 8 ) }` } />
 							{ /* D787 — a broken/mismatched image (exactly how a freshly
 							     cloned card lands) previously left only a destructive
 							     "Remove image" button here; a client had to DELETE the
@@ -3595,33 +3531,16 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 									gap: '4px',
 								} }
 							>
-								<MediaUploadCheck>
-									<MediaUpload
-										onSelect={ ( media ) =>
-											setAttributes( {
-												image: media.url,
-												imageId: media.id || 0,
-												imageAlt: media.alt || '',
-											} )
-										}
-										allowedTypes={ [ 'image' ] }
-										render={ ( { open } ) => (
-											<Button
-												variant="secondary"
-												onClick={ open }
-												style={ {
-													minHeight: '44px',
-													minWidth: '44px',
-												} }
-											>
-												{ __(
-													'Replace image',
-													'sgs-blocks'
-												) }
-											</Button>
-										) }
-									/>
-								</MediaUploadCheck>
+								<LibraryButton
+									types={ [ 'image' ] }
+									label={ __( 'Replace image', 'sgs-blocks' ) }
+									onSelect={ ( media ) =>
+										setAttributes( {
+											imageSource: sourceFromMedia( media ),
+											imageAlt: media.alt || '',
+										} )
+									}
+								/>
 								<Button
 									isDestructive
 									variant="secondary"
@@ -3631,8 +3550,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 									} }
 									onClick={ () =>
 										setAttributes( {
-											image: '',
-											imageId: 0,
+											imageSource: undefined,
 											imageAlt: '',
 										} )
 									}
@@ -3650,8 +3568,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								} }
 								onSelect={ ( media ) =>
 									setAttributes( {
-										image: media.url,
-										imageId: media.id || 0,
+										imageSource: sourceFromMedia( media ),
 										imageAlt: media.alt || '',
 									} )
 								}

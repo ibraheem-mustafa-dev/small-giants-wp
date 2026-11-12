@@ -16,6 +16,13 @@ SRC = Path(__file__).resolve().parent.parent
 
 MUTANTS = {
     "L2": ("wf_links.py", 'missing.append("L2")', "pass"),
+    # The shared media system (tests/test_media_system_credit.py).
+    "media-offered": ("wf_media_system.py", 'if not fact or not fact["offered"]:', "if not fact:"),
+    "media-panels-mounted": ("wf_media_system.py", "if any(f.startswith(PANEL_DIR) for f in editor_files):", "if True:"),
+    "media-renderer-read": ("wf_media_system.py", 'if fact["reads"]["php"] and self._calls_renderer(bdir):', "if self._calls_renderer(bdir):"),
+    "media-canvas-mounted": ("wf_media_system.py", 'if fact["reads"]["js"] and any(f in CANVAS_FILES for f in editor_files):', 'if fact["reads"]["js"]:'),
+    "media-no-css": ("wf_paint.py", 'return "not", "media-setting-no-css"', "pass"),
+    "destructure-fallback": ("editor_facts.js", "init.left : init;", "init : init;"),
     "L3": ("wf_links.py", 'link = "L3-state" if state else "L3-runtime" if runtime else "L3"', 'link = "L3-state"'),
     "L3-state": ("wf_links.py", 'link = "L3-state" if state else "L3-runtime" if runtime else "L3"', 'link = "L3"'),
     "L3-runtime": ("wf_links.py", 'link = "L3-state" if state else "L3-runtime" if runtime else "L3"', 'link = "L3-state" if state else "L3"'),

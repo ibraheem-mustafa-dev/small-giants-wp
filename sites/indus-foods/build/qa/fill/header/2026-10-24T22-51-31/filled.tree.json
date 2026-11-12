@@ -643,7 +643,6 @@
           {
             "name": "sgs/responsive-logo",
             "attributes": {
-              "logoId": 81,
               "className": "cr-ref-header-13",
               "maxHeight": {
                 "mobile": 54,
@@ -664,6 +663,12 @@
                 "desktop": "auto",
                 "tablet": "auto",
                 "mobile": "auto"
+              },
+              "logoSource": {
+                "desktop": {
+                  "kind": "image",
+                  "id": 81
+                }
               }
             },
             "innerBlocks": []

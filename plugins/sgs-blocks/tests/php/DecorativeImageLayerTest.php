@@ -18,8 +18,15 @@ final class DecorativeImageLayerTest extends TestCase {
 	private const CONTENT = '<p class=sgs-test-copy>Baked to order</p>';
 
 	private const IMAGE = array(
-		'imageUrl' => 'https://example.test/uploads/photo.jpg',
-		'imageId'  => 0,
+		'layerSource' => array(
+			'desktop' => array(
+				'kind'   => 'image',
+				'id'     => 0,
+				'url'    => 'https://example.test/uploads/photo.jpg',
+				'width'  => 600,
+				'height' => 400,
+			),
+		),
 	);
 
 	/**
@@ -61,7 +68,7 @@ final class DecorativeImageLayerTest extends TestCase {
 		$out = $this->render_layer(
 			array(
 				'rotation' => array( 'desktop' => 12 ),
-				'width'    => array( 'desktop' => 'max-content' ),
+				'layerWidth' => array( 'desktop' => 'max-content' ),
 			),
 			self::CONTENT
 		);
@@ -75,13 +82,13 @@ final class DecorativeImageLayerTest extends TestCase {
 	}
 
 	public function test_image_plus_content_marks_over_image_and_hides_only_the_img(): void {
-		$out = $this->render_layer( self::IMAGE + array( 'imageDecorative' => true ), self::CONTENT );
+		$out = $this->render_layer( self::IMAGE + array( 'layerDecorative' => true ), self::CONTENT );
 
 		$this->assertStringContainsString( 'sgs-decorative-image--layer', $out['html'] );
 		$this->assertStringContainsString( 'sgs-decorative-image--over-image', $out['html'] );
 		$this->assertSame( 1, substr_count( $out['html'], 'aria-hidden' ), 'only the <img> is hidden' );
 		$this->assertMatchesRegularExpression( '/<img [^>]*aria-hidden="true"/', $out['html'] );
-		$this->assertMatchesRegularExpression( '/<img [^>]*class="sgs-decorative-image__media sgs-media-el"/', $out['html'] );
+		$this->assertMatchesRegularExpression( '/<img [^>]*class="sgs-media-el sgs-media sgs-media--renderer sgs-di-[a-f0-9]{8}-m"/', $out['html'] );
 		$this->assertMatchesRegularExpression( '/<img [^>]*alt=""/', $out['html'] );
 		$this->assertStringContainsString( self::CONTENT, $out['html'] );
 		$this->assertLessThan(
@@ -94,8 +101,8 @@ final class DecorativeImageLayerTest extends TestCase {
 	public function test_a_meaningful_image_keeps_its_alt_and_stays_readable(): void {
 		$out = $this->render_layer(
 			self::IMAGE + array(
-				'imageDecorative' => false,
-				'imageAlt'        => 'A tray of cookies',
+				'layerDecorative' => false,
+				'layerAlt'        => 'A tray of cookies',
 			),
 			self::CONTENT
 		);
@@ -105,7 +112,7 @@ final class DecorativeImageLayerTest extends TestCase {
 	}
 
 	public function test_nothing_at_all_renders_nothing(): void {
-		$out = $this->render_layer( array( 'width' => array( 'desktop' => 'max-content' ) ) );
+		$out = $this->render_layer( array( 'layerWidth' => array( 'desktop' => 'max-content' ) ) );
 
 		$this->assertSame( '', trim( $out['html'] ) );
 	}
@@ -113,21 +120,32 @@ final class DecorativeImageLayerTest extends TestCase {
 	public function test_image_only_keeps_the_naked_img_root(): void {
 		$out = $this->render_layer( self::IMAGE );
 
-		$this->assertMatchesRegularExpression( '/<img [^>]*class="sgs-decorative-image sgs-media-el sgs-di-/', $out['html'] );
+		$this->assertMatchesRegularExpression( '/^<style>.*<\/style><img [^>]*class="sgs-media-el sgs-media sgs-media--renderer sgs-di-[a-f0-9]{8} sgs-decorative-image/s', $out['html'] );
 		$this->assertStringNotContainsString( 'sgs-decorative-image--layer', $out['html'] );
 		$this->assertStringNotContainsString( 'sgs-decorative-image__content', $out['html'] );
 		$this->assertStringContainsString( 'aria-hidden="true"', $out['html'] );
 	}
 
+	public function test_an_unset_fit_prints_nothing_and_the_base_rule_draws_cover(): void {
+		$out  = $this->render_layer( self::IMAGE );
+		$base = (string) file_get_contents( dirname( __DIR__, 2 ) . '/assets/css/media-base.css' );
+		$json = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/decorative-image/block.json' ), true );
+
+		$this->assertArrayNotHasKey( 'default', $json['attributes']['layerFit'], 'layerFit carries no default: the base rule draws cover' );
+		$this->assertStringNotContainsString( 'object-fit', $out['html'] );
+		$this->assertMatchesRegularExpression( '/class="sgs-media-el sgs-media sgs-media--renderer /', $out['html'] );
+		$this->assertMatchesRegularExpression( '/:where\(\.sgs-media--renderer\.sgs-media-el[^{]*\{\s*object-fit:\s*cover/', $base );
+	}
+
 	public function test_fit_the_content_is_max_content_capped_at_the_parent(): void {
-		$out = $this->render_layer( array( 'width' => array( 'desktop' => 'max-content' ) ), self::CONTENT );
+		$out = $this->render_layer( array( 'layerWidth' => array( 'desktop' => 'max-content' ) ), self::CONTENT );
 
 		$this->assertStringContainsString( 'width:max-content;max-width:100%', $out['css'] );
 		$this->assertStringNotContainsString( '@media(max-width:1023px){.sgs-di', $out['css'], 'nothing to change on narrower devices' );
 	}
 
 	public function test_fit_the_content_on_desktop_and_a_fixed_width_on_mobile_lifts_the_cap_there(): void {
-		$out = $this->render_layer( array( 'width' => array( 'desktop' => 'max-content', 'mobile' => '300px' ) ), self::CONTENT );
+		$out = $this->render_layer( array( 'layerWidth' => array( 'desktop' => 'max-content', 'mobile' => '300px' ) ), self::CONTENT );
 
 		$this->assertStringContainsString( 'width:max-content;max-width:100%', $out['css'] );
 		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{width:300px;max-width:none;/', $out['css'] );
@@ -136,7 +154,7 @@ final class DecorativeImageLayerTest extends TestCase {
 	public function test_a_length_width_takes_its_unit_at_every_device(): void {
 		$out = $this->render_layer(
 			array(
-				'width' => array(
+				'layerWidth' => array(
 					'desktop' => '60%',
 					'tablet'  => '40%',
 					'mobile'  => '18rem',
@@ -153,32 +171,45 @@ final class DecorativeImageLayerTest extends TestCase {
 
 	public function test_an_unset_width_is_the_200px_default_and_an_unsafe_one_falls_back_to_it(): void {
 		$this->assertStringContainsString( 'width:200px', $this->render_layer( array(), self::CONTENT )['css'] );
-		$bad = $this->render_layer( array( 'width' => array( 'desktop' => '1px;}body{color:red' ) ), self::CONTENT )['css'];
+		$bad = $this->render_layer( array( 'layerWidth' => array( 'desktop' => '1px;}body{color:red' ) ), self::CONTENT )['css'];
 		$this->assertStringNotContainsString( 'body{', $bad );
 		$this->assertStringContainsString( 'width:200px', $bad );
 	}
 
-	public function test_fixed_width_stays_in_pixels_with_no_cap_unless_a_max_width_is_set(): void {
+	public function test_a_picture_alone_hands_its_size_to_the_media_atoms(): void {
 		$capped = $this->render_layer(
 			self::IMAGE + array(
-				'width'    => array( 'desktop' => '240px' ),
-				'maxWidth' => array(
+				'layerWidth'    => array( 'desktop' => '240px' ),
+				'layerMaxWidth' => array(
 					'desktop' => '30%',
 					'mobile'  => '12rem',
 				),
 			)
 		);
-		$this->assertMatchesRegularExpression( '/\.sgs-decorative-image\{[^}]*width:240px;max-width:30%;/', $capped['css'] );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*max-width:12rem/', $capped['css'] );
+		$this->assertMatchesRegularExpression( '/\.sgs-di-[a-f0-9]{8}\{max-width:30%;width:240px;\}/', $capped['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\{max-width:12rem;\}\}/', $capped['css'] );
+		$this->assertDoesNotMatchRegularExpression( '/\.sgs-decorative-image\{[^}]*width:/', $capped['css'], 'the layer rule carries no size: the atoms own it' );
 
-		$free = $this->render_layer( self::IMAGE + array( 'width' => array( 'desktop' => '240px' ) ) );
+		$free = $this->render_layer( self::IMAGE + array( 'layerWidth' => array( 'desktop' => '240px' ) ) );
 		$this->assertStringContainsString( 'width:240px', $free['css'] );
-		$this->assertDoesNotMatchRegularExpression( '/[;{]max-width:/', $free['css'], 'no cap the client did not set' );
+		$this->assertMatchesRegularExpression( '/\.sgs-di-[a-f0-9]{8}\{max-width:none\}/', $free['css'], 'no cap the client did not set: the media base cap is lifted' );
+		$this->assertDoesNotMatchRegularExpression( '/max-width:(?!none)/', $free['css'] );
 	}
 
 	public function test_a_max_width_replaces_fit_the_contents_parent_cap(): void {
-		$out = $this->render_layer( array( 'width' => array( 'desktop' => 'max-content' ), 'maxWidth' => array( 'desktop' => '320px' ) ), self::CONTENT );
+		$out = $this->render_layer(
+			array(
+				'layerWidth'    => array( 'desktop' => 'max-content' ),
+				'layerMaxWidth' => array( 'desktop' => '320px' ),
+			),
+			self::CONTENT
+		);
 		$this->assertStringContainsString( 'width:max-content;max-width:320px', $out['css'] );
+	}
+
+	public function test_auto_width_on_a_layer_that_holds_blocks_fits_the_content(): void {
+		$out = $this->render_layer( array( 'layerWidth' => array( 'desktop' => 'auto' ) ), self::CONTENT );
+		$this->assertStringContainsString( 'width:max-content;max-width:100%', $out['css'] );
 	}
 
 	/**
@@ -189,17 +220,17 @@ final class DecorativeImageLayerTest extends TestCase {
 	 */
 	private function ring_attrs(): array {
 		return array(
-			'width'           => array( 'desktop' => '340px' ),
-			'height'          => array( 'desktop' => '340px' ),
-			'borderWidth'     => array(
+			'layerWidth'        => array( 'desktop' => '340px' ),
+			'layerHeight'       => array( 'desktop' => '340px' ),
+			'layerBorderWidth'  => array(
 				'top'    => '2px',
 				'right'  => '2px',
 				'bottom' => '2px',
 				'left'   => '2px',
 			),
-			'borderStyle'     => 'solid',
-			'borderColour'    => 'rgba(216,202,80,.55)',
-			'borderRadius'    => array(
+			'layerBorderStyle'  => 'solid',
+			'layerBorderColour' => 'rgba(216,202,80,.55)',
+			'layerRadius'       => array(
 				'desktop' => array(
 					'topLeft'     => '50%',
 					'topRight'    => '50%',
@@ -231,7 +262,7 @@ final class DecorativeImageLayerTest extends TestCase {
 
 	public function test_an_empty_layer_with_a_height_or_radius_alone_draws_nothing_so_renders_nothing(): void {
 		$attrs = $this->ring_attrs();
-		unset( $attrs['borderWidth'], $attrs['borderColour'] );
+		unset( $attrs['layerBorderWidth'], $attrs['layerBorderColour'] );
 		$out = $this->render_layer( $attrs );
 
 		$this->assertSame( '', trim( $out['html'] ) );
@@ -270,23 +301,31 @@ final class DecorativeImageLayerTest extends TestCase {
 		$this->assertStringContainsString( 'SGS_Breakpoints::max_for_tier', $source );
 
 		$out = $this->render_layer(
-			array_merge( $this->ring_attrs(), array( 'borderRadius' => array( 'tablet' => array( 'topLeft' => '8px' ), 'mobile' => array( 'topLeft' => '4px' ) ) ) )
+			array_merge(
+				$this->ring_attrs(),
+				array(
+					'layerRadius' => array(
+						'tablet' => array( 'topLeft' => '8px' ),
+						'mobile' => array( 'topLeft' => '4px' ),
+					),
+				)
+			)
 		);
 		$this->assertStringContainsString( '@media(max-width:' . SGS_Breakpoints::TABLET_MAX . 'px)', $out['css'] );
 		$this->assertStringContainsString( '@media(max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px)', $out['css'] );
 	}
 
 	public function test_an_unsafe_max_width_prints_nothing(): void {
-		$out = $this->render_layer( self::IMAGE + array( 'maxWidth' => array( 'desktop' => '1px;}body{color:red' ) ) );
+		$out = $this->render_layer( self::IMAGE + array( 'layerMaxWidth' => array( 'desktop' => '1px;}body{color:red' ) ) );
 		$this->assertStringNotContainsString( 'body{', $out['css'] );
-		$this->assertDoesNotMatchRegularExpression( '/[;{]max-width:/', $out['css'] );
+		$this->assertDoesNotMatchRegularExpression( '/max-width:(?!none)/', $out['css'] );
 	}
 
 	public function test_an_empty_layer_with_only_a_fill_or_a_shadow_renders(): void {
 		$fill = $this->render_layer(
 			array(
-				'height'           => array( 'desktop' => '80px' ),
-				'backgroundColour' => '#112233',
+				'layerHeight'     => array( 'desktop' => '80px' ),
+				'layerBackground' => '#112233',
 			)
 		);
 		$this->assertStringContainsString( 'sgs-decorative-image--shape', $fill['html'] );
@@ -295,66 +334,106 @@ final class DecorativeImageLayerTest extends TestCase {
 
 		$shadow = $this->render_layer(
 			array(
-				'boxShadow'       => '0 4px 12px',
-				'boxShadowColour' => '#000000',
+				'layerBoxShadow'       => '0 4px 12px',
+				'layerBoxShadowColour' => '#000000',
 			)
 		);
 		$this->assertStringContainsString( 'sgs-decorative-image--shape', $shadow['html'] );
 		$this->assertStringContainsString( 'box-shadow:', $shadow['css'] );
 	}
 
-	public function test_an_empty_shaped_layer_paints_its_fill_and_border_clipped_to_the_shape(): void {
+	public function test_a_radius_drawn_shape_becomes_the_corners_of_a_box_layer(): void {
 		$expected = array(
-			'circle'  => 'circle(50%)',
-			'rounded' => 'inset(0 round 12px)',
-			'square'  => 'inset(0)',
+			'circle'  => '50%',
+			'ellipse' => '50%',
+			'pill'    => '9999px',
 		);
-		foreach ( $expected as $shape => $clip ) {
-			$attrs          = $this->ring_attrs();
-			$attrs['shape'] = $shape;
-			$attrs['backgroundColour'] = '#112233';
-			$out            = $this->render_layer( $attrs );
+		foreach ( $expected as $shape => $radius ) {
+			$attrs                    = $this->ring_attrs();
+			$attrs['layerShape']      = array( 'desktop' => array( 'shape' => $shape ) );
+			$attrs['layerBackground'] = '#112233';
+			$out                      = $this->render_layer( $attrs );
 
 			$this->assertStringContainsString( 'sgs-decorative-image--shape', $out['html'], $shape . ': the empty layer still renders' );
 			$this->assertMatchesRegularExpression(
-				'/\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*clip-path:' . preg_quote( $clip, '/' ) . '[;}]/',
+				'/\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*border-radius:' . preg_quote( $radius, '/' ) . '[;}]/',
 				$out['css'],
-				$shape . ': the clip is on the layer root rule'
+				$shape . ': the corners are on the layer root rule'
 			);
 			$this->assertStringContainsString( 'background-color:#112233', $out['css'], $shape . ': the fill paints in the shape' );
 			$this->assertStringContainsString( 'border-style:solid', $out['css'], $shape . ': the border paints in the shape' );
-			$this->assertStringNotContainsString( '--sgs-media-', $out['css'], $shape . ': no second width or border writer from the media atom' );
+			$this->assertStringNotContainsString( 'clip-path', $out['css'], $shape . ': the clip-path presets are gone' );
 			$this->assertSame( 1, substr_count( $out['css'], 'width:340px' ), $shape . ': one width' );
 		}
 	}
 
-	public function test_no_shape_or_an_unknown_shape_prints_no_clip(): void {
+	public function test_no_shape_or_a_non_radius_shape_prints_no_corner_override(): void {
 		foreach ( array( null, 'none', 'hexagon', '' ) as $shape ) {
 			$attrs = $this->ring_attrs();
 			if ( null !== $shape ) {
-				$attrs['shape'] = $shape;
+				$attrs['layerShape'] = array( 'desktop' => array( 'shape' => $shape ) );
 			}
 			$out = $this->render_layer( $attrs );
 
-			$this->assertStringNotContainsString( 'clip-path', $out['css'], var_export( $shape, true ) . ' prints no clip' );
+			$this->assertDoesNotMatchRegularExpression( '/border-radius:/', $out['css'], var_export( $shape, true ) . ' prints no corner shorthand' );
+			$this->assertStringNotContainsString( 'clip-path', $out['css'] );
 		}
 	}
 
 	public function test_a_shape_alone_draws_nothing_so_an_empty_layer_renders_nothing(): void {
-		$out = $this->render_layer( array( 'shape' => 'circle', 'height' => array( 'desktop' => '80px' ) ) );
+		$out = $this->render_layer(
+			array(
+				'layerShape'  => array( 'desktop' => array( 'shape' => 'circle' ) ),
+				'layerHeight' => array( 'desktop' => '80px' ),
+			)
+		);
 
 		$this->assertSame( '', trim( $out['html'] ) );
 	}
 
-	public function test_a_shaped_layer_with_content_clips_its_root(): void {
-		$out = $this->render_layer( array( 'shape' => 'circle' ), self::CONTENT );
+	public function test_a_mask_shape_on_a_picture_prints_the_helper_around_it(): void {
+		$out = $this->render_layer( self::IMAGE + array( 'layerShape' => array( 'desktop' => array( 'shape' => 'hexagon' ) ) ) );
 
-		$this->assertMatchesRegularExpression( '/\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*clip-path:circle\(50%\)/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/<span class="sgs-media-box sgs-media sgs-media--renderer sgs-di-[a-f0-9]{8} sgs-decorative-image"/', $out['html'] );
+		$this->assertStringContainsString( 'sgs-media-box__mask', $out['html'] );
+		$this->assertStringContainsString( 'mask-image', $out['css'] );
+	}
+
+	public function test_a_layer_that_holds_blocks_paints_its_own_box_and_the_picture_inside_fills_it(): void {
+		$out = $this->render_layer(
+			self::IMAGE + array(
+				'layerWidth'       => array( 'desktop' => '300px' ),
+				'layerOpacity'     => array( 'desktop' => 40 ),
+				'layerBorderWidth' => array( 'top' => '1px' ),
+				'layerBackground'  => '#112233',
+			),
+			self::CONTENT
+		);
+
+		$this->assertMatchesRegularExpression( '/\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*width:300px[^}]*opacity:var\(--sgs-di-op, 0\.4\)[^}]*background-color:#112233/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/\.sgs-di-[a-f0-9]{8} \.sgs-media-el\{display:block;width:100%;height:auto\}/', $out['css'] );
+		$this->assertDoesNotMatchRegularExpression( '/\.sgs-di-[a-f0-9]{8}-m\{[^}]*(width|opacity|border|background-color)/', $out['css'], 'the picture paints none of the settings the layer root paints' );
+	}
+
+	public function test_a_fading_layer_reads_its_opacity_from_the_scroll_variable_and_is_marked(): void {
+		$out = $this->render_layer(
+			self::IMAGE + array(
+				'fadeOnScroll' => true,
+				'layerOpacity' => array( 'desktop' => 80 ),
+			)
+		);
+
+		$this->assertStringContainsString( 'opacity:var(--sgs-di-op, 0.8)', $out['css'] );
+		$this->assertStringContainsString( 'data-fade-on-scroll="true"', $out['html'] );
+
+		$still = $this->render_layer( self::IMAGE );
+		$this->assertStringNotContainsString( '--sgs-di-op', $still['css'], 'no fade, no variable' );
+		$this->assertStringNotContainsString( 'data-fade-on-scroll', $still['html'] );
 	}
 
 	public function test_box_tiers_print_inside_their_device_queries(): void {
 		$attrs                = $this->ring_attrs();
-		$attrs['height']      = array(
+		$attrs['layerHeight'] = array(
 			'desktop' => '340px',
 			'tablet'  => '240px',
 			'mobile'  => '120px',
@@ -365,37 +444,25 @@ final class DecorativeImageLayerTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*height:120px/', $out['css'] );
 	}
 
-	/**
-	 * Layers that set none of the new box attributes render exactly as before: the fixture holds the
-	 * markup and CSS the block produced before the box controls existed, one entry per render shape
-	 * (naked image, art-direction tiers, overlay wrapper, object fit, image with content, content
-	 * only, video).
-	 *
-	 * @return array<string, array{0: array<string, mixed>, 1: string, 2: string, 3: string}>
-	 */
-	public static function baseline_cases(): array {
-		$file  = __DIR__ . '/fixtures/decorative-image-baseline.json';
-		$cases = json_decode( (string) file_get_contents( $file ), true, 512, JSON_THROW_ON_ERROR );
-		$out   = array();
-		foreach ( $cases as $name => $case ) {
-			$out[ $name ] = array( $case['attrs'], $case['content'], $case['html'], $case['css'] );
+	public function test_the_legacy_attributes_and_the_video_branch_are_gone_from_the_render(): void {
+		$source = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/decorative-image/render.php' );
+
+		foreach ( array( 'decorMedia', 'imageUrl', 'imageId', 'imageDecorative', 'hideOnTablet', 'hideOnMobile', 'box_shape' ) as $needle ) {
+			$this->assertStringNotContainsString( $needle, $source, $needle );
 		}
-		return $out;
-	}
-
-	/**
-	 * @dataProvider baseline_cases
-	 *
-	 * @param array<string, mixed> $attrs   Attributes the fixture was rendered with.
-	 * @param string               $content Inner content it was rendered with.
-	 * @param string               $html    Expected markup.
-	 * @param string               $css     Expected scoped CSS.
-	 */
-	public function test_a_layer_without_box_settings_renders_byte_identical_to_before( array $attrs, string $content, string $html, string $css ): void {
-		$out = $this->render_layer( $attrs, $content );
-
-		$this->assertSame( $html, $out['html'] );
-		$this->assertSame( $css, $out['css'] );
+		$this->assertDoesNotMatchRegularExpression( '/sgs_(render_media|responsive_image|image_loading_attrs)/', $source, 'the legacy media helpers are gone' );
+		// An old-shape layer holds no media and no content, so it draws nothing: there is no legacy fallback.
+		$out = $this->render_layer(
+			array(
+				'imageUrl'   => 'https://example.test/uploads/photo.jpg',
+				'imageId'    => 0,
+				'decorMedia' => array(
+					'url'  => 'https://example.test/v.mp4',
+					'type' => 'video',
+				),
+			)
+		);
+		$this->assertSame( '', trim( $out['html'] ) );
 	}
 
 	public function test_edge_offsets_on_both_axes_replace_the_centre_model(): void {

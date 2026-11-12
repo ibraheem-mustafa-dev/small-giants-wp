@@ -80,15 +80,6 @@ export function validate( value ) {
 }
 
 /**
- * No CSS. The link is an anchor wrapper, never a stylesheet value.
- *
- * @return {Array} Always empty.
- */
-export function css() {
-	return [];
-}
-
-/**
  * C3 emitter: this atom prints no CSS of its own (see `includes/media/emit-none.php`).
  *
  * @return {string} Always ''.

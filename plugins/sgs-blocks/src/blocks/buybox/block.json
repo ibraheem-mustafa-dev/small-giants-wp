@@ -48,16 +48,42 @@
 			"mediaElements": [
 				{
 					"prefix": "main",
-					"context": "element",
+					"context": "item",
+					"kinds": [
+						"image"
+					],
 					"atoms": [
-						"object-fit"
+						"source",
+						"meaning",
+						"object-fit",
+						"focal-point",
+						"sizing",
+						"shape",
+						"shadow",
+						"media-padding"
 					]
 				},
 				{
 					"prefix": "thumb",
-					"context": "element",
+					"context": "item",
+					"kinds": [
+						"image"
+					],
 					"atoms": [
-						"object-fit"
+						"object-fit",
+						"shape"
+					]
+				},
+				{
+					"prefix": "preview",
+					"context": "content",
+					"kinds": [
+						"image"
+					],
+					"atoms": [
+						"source",
+						"object-fit",
+						"shape"
 					]
 				}
 			],
@@ -318,15 +344,15 @@
 						"css:grid-template-columns": "thumbsPerRow",
 						"css:gap": "thumbGap",
 						"css:margin-top": "thumbStripOffset",
-						"css:border-radius": "galleryThumbBorderRadius",
-						"css:border-width": "galleryThumbBorderWidth",
-						"css:border-style": "galleryThumbBorderStyle",
-						"css:border-color": "galleryThumbBorderColour"
+						"css:border-radius": "thumbRadius",
+						"css:border-width": "thumbBorderWidth",
+						"css:border-style": "thumbBorderStyle",
+						"css:border-color": "thumbBorderColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:border-color": "galleryThumbBorderColourHover"
+								"css:border-color": "thumbBorderColourHover"
 							}
 						},
 						"current": {
@@ -1701,46 +1727,10 @@
 			"default": "",
 			"description": "CSS length of the space between the main product image and the thumbnail strip (e.g. \"2px\"). Empty keeps the stylesheet's 0.75rem."
 		},
-		"galleryThumbBorderWidth": {
-			"type": "object",
-			"default": {},
-			"description": "Border width of every gallery thumbnail, a {top, right, bottom, left} box of CSS lengths (e.g. \"1px\" on each side). Empty keeps the stylesheet's 2px."
-		},
-		"galleryThumbBorderStyle": {
-			"type": "string",
-			"enum": [
-				"none",
-				"solid",
-				"dashed",
-				"dotted",
-				"double",
-				"groove",
-				"ridge",
-				"inset",
-				"outset"
-			],
-			"default": "solid",
-			"description": "Border style of every gallery thumbnail. Read only when a width is set."
-		},
-		"galleryThumbBorderColour": {
-			"type": "string",
-			"default": "",
-			"description": "Resting border colour of the gallery thumbnails (palette slug or colour). Empty keeps the stylesheet's transparent border."
-		},
-		"galleryThumbBorderColourHover": {
-			"type": "string",
-			"default": "",
-			"description": "Border colour of a gallery thumbnail on hover or keyboard focus (palette slug or colour). Empty leaves the border unchanged."
-		},
 		"galleryThumbBorderColourCurrent": {
 			"type": "string",
 			"default": "",
 			"description": "Border colour of the selected gallery thumbnail, the one carrying aria-current=true (palette slug or colour). Empty keeps the primary-token colour."
-		},
-		"galleryThumbBorderRadius": {
-			"type": "object",
-			"default": {},
-			"description": "Corner radius of every gallery thumbnail, a flat {topLeft, topRight, bottomRight, bottomLeft} corner object of CSS lengths (not a tier envelope), read by sgs_corner_object_longhands(). Empty keeps the stylesheet's inheritance of the main image's radius (--sgs-buybox-img-radius, 8px). The selected thumbnail's border follows it, being on the same element."
 		},
 		"thumbSelectedScale": {
 			"type": "number",
@@ -3251,11 +3241,6 @@
 			"default": "Your {pack}: {split}",
 			"description": "Pick a set only: the one-line summary under the preview. Tokens: {pack}, {pack_label}, {variation}, {split}, {picks}, {count}. Unknown tokens are removed."
 		},
-		"previewImageId": {
-			"type": "integer",
-			"default": 0,
-			"description": "Pick a set only: the media-library image the live preview draws on (for example a tray or a vest). 0 = a plain tinted shape."
-		},
 		"previewLayerAxis": {
 			"type": "string",
 			"default": "",
@@ -3545,16 +3530,6 @@
 			"default": "",
 			"description": "Pick a set only: border colour of the live preview box."
 		},
-		"previewBorderWidth": {
-			"type": "string",
-			"default": "",
-			"description": "Pick a set only: border width of the live preview box (CSS length)."
-		},
-		"previewRadius": {
-			"type": "string",
-			"default": "",
-			"description": "Pick a set only: corner radius of the live preview box (CSS length)."
-		},
 		"previewPadding": {
 			"type": "object",
 			"default": {},
@@ -3664,52 +3639,6 @@
 			"type": "string",
 			"default": "",
 			"description": "Pick a set only: text colour on a selected option in every group, including the pack tile's small lines. Empty picks black or white, whichever reads best on the selected fill (4.5:1) when a selected fill is set."
-		},
-		"mainPhotoBackgroundColour": {
-			"type": "string",
-			"default": "",
-			"description": "Ground colour behind the main product photo (palette slug or colour). Empty keeps the stylesheet's surface colour."
-		},
-		"mainPhotoBorderWidth": {
-			"type": "object",
-			"default": {},
-			"description": "Border width of the main photo box, a {top, right, bottom, left} box of CSS lengths, or per-device {desktop, tablet, mobile} boxes. Empty keeps the stylesheet's 1px."
-		},
-		"mainPhotoBorderStyle": {
-			"type": "string",
-			"enum": [
-				"none",
-				"solid",
-				"dashed",
-				"dotted",
-				"double",
-				"groove",
-				"ridge",
-				"inset",
-				"outset"
-			],
-			"default": "solid",
-			"description": "Border style of the main photo box. Read only when a width is set."
-		},
-		"mainPhotoBorderColour": {
-			"type": "string",
-			"default": "",
-			"description": "Border colour of the main photo box (palette slug or colour). Empty keeps the stylesheet's faint border."
-		},
-		"mainPhotoRadius": {
-			"type": "string",
-			"default": "",
-			"description": "Corner radius of the main photo box as a CSS length. Prints as --sgs-buybox-img-radius, so the gallery thumbnails follow it unless they set their own. Empty keeps 8px."
-		},
-		"mainPhotoShadow": {
-			"type": "string",
-			"default": "",
-			"description": "Box shadow of the main photo box (shadow preset or value)."
-		},
-		"mainPhotoShadowColour": {
-			"type": "string",
-			"default": "",
-			"description": "Colour of the main photo box shadow (palette slug or colour)."
 		},
 		"rrpPillRadius": {
 			"type": "string",
@@ -3927,7 +3856,48 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"mainLoading": {"type":"string","_generated":"media-atoms"},
+		"mainFit": {"type":"object","_generated":"media-atoms"},
+		"mainRatio": {"type":"object","_generated":"media-atoms"},
+		"mainWidth": {"type":"object","_generated":"media-atoms"},
+		"mainHeight": {"type":"object","_generated":"media-atoms"},
+		"mainMinWidth": {"type":"object","_generated":"media-atoms"},
+		"mainMaxWidth": {"type":"object","_generated":"media-atoms"},
+		"mainMinHeight": {"type":"object","_generated":"media-atoms"},
+		"mainMaxHeight": {"type":"object","_generated":"media-atoms"},
+		"mainShape": {"type":"object","_generated":"media-atoms"},
+		"mainRadius": {"type":"object","_generated":"media-atoms"},
+		"mainBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"mainBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"mainBorderColour": {"type":"string","_generated":"media-atoms"},
+		"mainBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"mainBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"mainBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
+		"mainBoxShadow": {"type":"string","_generated":"media-atoms"},
+		"mainBoxShadowColour": {"type":"string","_generated":"media-atoms"},
+		"mainBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
+		"mainPadding": {"type":"object","_generated":"media-atoms"},
+		"mainBackground": {"type":"string","_generated":"media-atoms"},
+		"thumbFit": {"type":"object","_generated":"media-atoms"},
+		"thumbShape": {"type":"object","_generated":"media-atoms"},
+		"thumbRadius": {"type":"object","_generated":"media-atoms"},
+		"thumbBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"thumbBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"thumbBorderColour": {"type":"string","_generated":"media-atoms"},
+		"thumbBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"thumbBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"thumbBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
+		"previewSource": {"type":"object","_generated":"media-atoms"},
+		"previewLoading": {"type":"string","_generated":"media-atoms"},
+		"previewFit": {"type":"object","_generated":"media-atoms"},
+		"previewShape": {"type":"object","_generated":"media-atoms"},
+		"previewRadius": {"type":"object","_generated":"media-atoms"},
+		"previewBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"previewBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"previewBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"previewBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"previewBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"}
 	},
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css",

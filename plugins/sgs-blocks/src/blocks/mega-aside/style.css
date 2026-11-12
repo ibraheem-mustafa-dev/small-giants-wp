@@ -25,7 +25,7 @@
 /* object-fit is deliberately NOT declared here. The child sgs/media block
    declares `supports.sgs.mediaElements` (object-fit atom) and its rendered
    media always carries the shared `.sgs-media-el` marker, which defaults to
-   `cover` (assets/css/media-atoms/object-fit.css). A declaration here
+   `cover` (assets/css/media-base.css). A declaration here
    (specificity 0,2,1 via two classes + a tag) would beat the shared atom
    rule's (0,1,0) and silently override any per-instance fit an operator sets
    on the child sgs/media block. */

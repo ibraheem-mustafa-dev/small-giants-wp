@@ -10,9 +10,9 @@ reading code by hand, or by checking a live page. Bean asked whether this is
 really impossible to catch statically. It is not; both instances were the SAME
 shape and it IS decidable from source + build files alone:
 
-  `assets/css/extensions.css` had `.sgs-has-image-controls[style*="--sgs-
-  object-fit"]` and `.sgs-has-hover[style*="--sgs-hover-bg"]`, but
-  `includes/image-controls.php` and a hover emitter emit those
+  `assets/css/extensions.css` once had an image-controls rule gated on
+  `[style*="--sgs-object-fit"]` and `.sgs-has-hover[style*="--sgs-hover-bg"]`, but
+  the image-controls injector and a hover emitter emitted those
   custom properties ONLY inside a scoped `<style>` tag (via
   `sgs_append_scoped_var_style()`, Spec 32 / FR-32-11) — never as a literal
   `style="…"` HTML attribute. The attribute-selector precondition
@@ -414,7 +414,7 @@ def _build_fixture_tree(base: Path) -> None:
     # prove comment-stripping works, exactly like the real historical files.
     _write(base, "includes/hover-emitter.php", """<?php
 // no-inline contract, FR-32-11 -- NEVER a style="" attribute. Same pattern
-// as image-controls.php.
+// as the hover emitter.
 function sgs_hover_render( $block_content ) {
     $css_vars = array();
     $css_vars[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_bg );

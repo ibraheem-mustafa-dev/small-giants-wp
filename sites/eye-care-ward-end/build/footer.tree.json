@@ -94,10 +94,15 @@
               {
                 "name": "sgs/responsive-logo",
                 "attributes": {
-                  "logoId": 1467,
                   "width": 111,
                   "linkToHome": true,
-                  "className": "cr-ref-footer-3"
+                  "className": "cr-ref-footer-3",
+                  "logoSource": {
+                    "desktop": {
+                      "kind": "image",
+                      "id": 1467
+                    }
+                  }
                 },
                 "innerBlocks": []
               },

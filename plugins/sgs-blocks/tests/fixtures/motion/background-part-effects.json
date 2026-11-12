@@ -1,0 +1,100 @@
+{
+ "_why": "Block attributes for a page with one container per background-hosted effect (Spec 49 section 10.5). Replace the example.test image with an uploaded one, put the three blocks on a page, then run: node plugins/sgs-blocks/scripts/check-background-part-effects.mjs --url <page URL>. Each effect must build its canvas inside the .sgs-bg-media element, which keeps its absolute position.",
+ "fixtures": [
+  {
+   "effect": "particles",
+   "attributes": {
+    "minHeight": {
+     "desktop": "300px"
+    },
+    "backgroundSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/bg.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    },
+    "sgsMotion": {
+     "v": 1,
+     "elements": {
+      "background": {
+       "effects": [
+        {
+         "id": "particles",
+         "effect": "particles",
+         "values": {}
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "effect": "grid-dots",
+   "attributes": {
+    "minHeight": {
+     "desktop": "300px"
+    },
+    "backgroundSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/bg.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    },
+    "sgsMotion": {
+     "v": 1,
+     "elements": {
+      "background": {
+       "effects": [
+        {
+         "id": "grid-dots",
+         "effect": "grid-dots",
+         "values": {}
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "effect": "generative-background",
+   "attributes": {
+    "minHeight": {
+     "desktop": "300px"
+    },
+    "backgroundSource": {
+     "desktop": {
+      "kind": "image",
+      "url": "https://example.test/bg.jpg",
+      "width": 1200,
+      "height": 800
+     }
+    },
+    "sgsMotion": {
+     "v": 1,
+     "elements": {
+      "background": {
+       "effects": [
+        {
+         "id": "generative-background",
+         "effect": "generative-background",
+         "values": {
+          "colour1": "primary",
+          "colour2": "accent",
+          "colour3": "primary",
+          "colour4": "accent"
+         }
+        }
+       ]
+      }
+     }
+    }
+   }
+  }
+ ]
+}

@@ -29,6 +29,9 @@ import {
 } from '../../utils';
 
 import AuthoredText from '../../components/AuthoredText';
+import SlotPicture from '../../components/media/SlotPicture.js';
+import ItemSlotPicture from '../../components/media/ItemSlotPicture.js';
+import { hasFile } from '../../components/media/mediaSlotWrites.js';
 import { QUERY_DESKTOP, QUERY_TABLET_UP } from '../../utils/breakpoints';
 import { composeShadow } from '../../utils/shadow-layers';
 import { galleryStickerPreviewCss, stickerCorner } from './gallery-sticker-preview';
@@ -42,6 +45,47 @@ const BADGE_POSITIONS = [
 const METER_STYLES = [ 'segments', 'bar', 'dots' ];
 
 /** Sample product the canvas draws: £30.00, RRP £40.00 (a £10.00 / 25% saving). */
+/**
+ * The sample photo the mock draws for the gallery's pictures: the editor has no product, so the main photo and the
+ * thumbnails stand in for the product's own. The pictures go through the shared slot path, so the `main` and `thumb`
+ * slots' Border, Radius, Shape, Fit, Width, Height and Ratio show as they do on the page.
+ */
+const SAMPLE_PICTURE = {
+	desktop: {
+		kind: 'image',
+		width: 600,
+		height: 600,
+		url:
+			'data:image/svg+xml;charset=utf-8,' +
+			encodeURIComponent(
+				'<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9d9d9"/><stop offset="1" stop-color="#9a9a9a"/></linearGradient></defs><rect width="600" height="600" fill="url(#g)"/><circle cx="300" cy="260" r="110" fill="#ffffff" fill-opacity="0.55"/></svg>'
+			),
+	},
+};
+
+/**
+ * The settings of a slot that paint the slot's box (the photo frame, the thumbnail button, the preview box) rather than
+ * the picture: the twin of `includes/product-card-media.php::sgs_pcm_chrome_bases`. The mock draws them on the box
+ * (`buyboxMockCss`), so the picture is given the slot without them, as render.php does.
+ */
+const CHROME_BASES = [ 'BorderWidth', 'BorderStyle', 'BorderColour', 'BorderColourHover', 'Radius', 'BoxShadow', 'BoxShadowColour', 'BoxShadowColourHover', 'Background' ];
+
+/**
+ * A slot's attributes without its box settings (`sgs_pcm_picture_attrs`).
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {string} prefix     Slot prefix.
+ * @return {Object} The attributes the picture reads.
+ */
+function pictureAttrs( attributes, prefix ) {
+	const out = { ...attributes };
+	CHROME_BASES.forEach( ( base ) => delete out[ `${ prefix }${ base }` ] );
+	return out;
+}
+
+/** Whether a Source (per device) names a file on any device. */
+const sourceHasFile = ( source ) => [ 'desktop', 'tablet', 'mobile' ].some( ( device ) => hasFile( source?.[ device ] ) );
+
 const SAMPLE = {
 	price: '£30.00',
 	rrp: '£40.00',
@@ -276,30 +320,37 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 			: '';
 		return resolved && ! /[;{}<>]/.test( resolved ) ? resolved : '';
 	};
+	// A Corners value ({desktop: {topLeft, ...}} or a flat corner object) at this device, as a flat corner object.
+	const cornersAt = ( value ) => {
+		const own = value && ( value[ tier ] || value.desktop || value );
+		return own && typeof own === 'object' ? own : {};
+	};
 	// Main photo frame, price row gap, chip radius and cart padding: the same settings render.php prints.
 	const photoDecls = [];
-	const photoGround = colourOf( attributes.mainPhotoBackgroundColour );
+	const photoGround = colourOf( attributes.mainBackground );
 	if ( photoGround ) {
 		photoDecls.push( `background:${ photoGround }` );
 	}
-	const photoBorderColour = colourOf( attributes.mainPhotoBorderColour );
+	const photoBorderColour = colourOf( attributes.mainBorderColour );
 	if ( photoBorderColour ) {
 		photoDecls.push( `border-color:${ photoBorderColour }` );
 	}
-	const photoWidth = attributes.mainPhotoBorderWidth || {};
+	const photoWidth = attributes.mainBorderWidth || {};
 	const photoBox = photoWidth.desktop || photoWidth;
 	const photoSides = [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => safeLength( photoBox[ side ] ) );
 	if ( photoSides.some( Boolean ) ) {
 		photoDecls.push(
-			`border-style:${ attributes.mainPhotoBorderStyle || 'solid' }`,
+			`border-style:${ attributes.mainBorderStyle || 'solid' }`,
 			`border-width:${ photoSides.map( ( side ) => side || '0' ).join( ' ' ) }`
 		);
 	}
-	if ( safeLength( attributes.mainPhotoRadius ) ) {
-		photoDecls.push( `border-radius:${ safeLength( attributes.mainPhotoRadius ) }` );
+	const photoCorners = cornersAt( attributes.mainRadius );
+	const photoRadii = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ].map( ( corner ) => safeLength( photoCorners[ corner ] ) );
+	if ( photoRadii.some( Boolean ) ) {
+		photoDecls.push( `border-radius:${ photoRadii.map( ( r ) => r || '0' ).join( ' ' ) }` );
 	}
-	const photoShadow = attributes.mainPhotoShadow
-		? composeShadow( attributes.mainPhotoShadow, attributes.mainPhotoShadowColour )
+	const photoShadow = attributes.mainBoxShadow
+		? composeShadow( attributes.mainBoxShadow, attributes.mainBoxShadowColour )
 		: '';
 	if ( photoShadow && ! /[;{}<>]/.test( photoShadow ) ) {
 		photoDecls.push( `box-shadow:${ photoShadow }` );
@@ -388,17 +439,17 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	// and corner radius, with the stylesheet's own 2px transparent border underneath.
 	const thumbBorder = sgsBorderPreview(
 		{
-			widthValues: attributes.galleryThumbBorderWidth,
-			styleValue: attributes.galleryThumbBorderStyle,
-			colourValue: attributes.galleryThumbBorderColour,
-			radiusValues: { base: attributes.galleryThumbBorderRadius },
+			widthValues: attributes.thumbBorderWidth,
+			styleValue: attributes.thumbBorderStyle,
+			colourValue: attributes.thumbBorderColour,
+			radiusValues: { base: cornersAt( attributes.thumbRadius ) },
 		},
 		tier,
 		palette,
 		{ defaultBorder: true }
 	);
-	const thumbColour = colourOf( attributes.galleryThumbBorderColour );
-	const thumbHover = colourOf( attributes.galleryThumbBorderColourHover );
+	const thumbColour = colourOf( attributes.thumbBorderColour );
+	const thumbHover = colourOf( attributes.thumbBorderColourHover );
 	const thumbSelected = colourOf(
 		attributes.galleryThumbBorderColourCurrent
 	);
@@ -454,11 +505,15 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		if ( attributes.previewBorderColour ) {
 			previewDecls.push( `border-color:${ resolve( attributes.previewBorderColour ) }` );
 		}
-		if ( attributes.previewBorderWidth ) {
-			previewDecls.push( `border-width:${ attributes.previewBorderWidth }` );
+		const previewWidth = attributes.previewBorderWidth || {};
+		const previewSides = [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => safeLength( previewWidth[ side ] ) );
+		if ( previewSides.some( Boolean ) ) {
+			previewDecls.push( `border-width:${ previewSides.map( ( side ) => side || '0' ).join( ' ' ) }` );
 		}
-		if ( attributes.previewRadius ) {
-			previewDecls.push( `border-radius:${ attributes.previewRadius }` );
+		const previewCorners = cornersAt( attributes.previewRadius );
+		const previewRadii = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ].map( ( corner ) => safeLength( previewCorners[ corner ] ) );
+		if ( previewRadii.some( Boolean ) ) {
+			previewDecls.push( `border-radius:${ previewRadii.map( ( r ) => r || '0' ).join( ' ' ) }` );
 		}
 		const previewPad = tierBoxLonghands( attributes.previewPadding, tier, 'padding' );
 		Object.entries( previewPad ).forEach( ( [ prop, val ] ) => {
@@ -780,7 +835,7 @@ function SampleOptionGroup( {
  * @param {Object} props.attributes Block attributes.
  * @return {Element} Sample markup.
  */
-function SamplePickSet( { attributes } ) {
+function SamplePickSet( { attributes, uid } ) {
 	const looks = attributes.groupStyles && 'object' === typeof attributes.groupStyles ? Object.values( attributes.groupStyles ) : [];
 	const style = [ 'filled', 'outlined', 'ghost', 'tile' ].includes( looks[ 0 ] ) ? looks[ 0 ] : 'outlined';
 	// The sample group is the last one, after three variation pickers, so an auto number reads 4.
@@ -813,7 +868,24 @@ function SamplePickSet( { attributes } ) {
 				</div>
 			</div>
 			<div className="sgs-buybox-pick__side">
-				{ true !== attributes.pickHidePreview && <div className="sgs-buybox-pick__preview-box sgs-buybox__pick-preview sgs-buybox-pick__preview-box--plain" aria-hidden="true" /> }
+				{ true !== attributes.pickHidePreview && (
+					<div
+						className={ `sgs-buybox-pick__preview-box sgs-buybox__pick-preview${ sourceHasFile( attributes.previewSource ) ? '' : ' sgs-buybox-pick__preview-box--plain' }` }
+						aria-hidden="true"
+					>
+						{ /* The box's own picture, when the author set one: decorative, as render.php prints it. */ }
+						<SlotPicture
+							attributes={ { ...pictureAttrs( attributes, 'preview' ), previewAlt: '', previewDecorative: true } }
+							setAttributes={ () => {} }
+							prefix="preview"
+							kinds={ [ 'image' ] }
+							context="content"
+							uid={ `${ uid }-preview` }
+							className="sgs-buybox-pick__preview-image"
+							placeholder={ false }
+						/>
+					</div>
+				) }
 				<p className="sgs-buybox-pick__caption sgs-buybox__pick-summary">{ ( attributes.summaryText || 'Your {pack}: {split}' ).replace( '{pack}', '20' ).replace( '{split}', '7 Vanilla · 7 Mango · 6 Mint' ).replace( /\{[a-z_]+\}/g, '' ) }</p>
 			</div>
 		</div>
@@ -987,7 +1059,7 @@ function SampleStickyBar( { attributes, palette, cartVariant } ) {
  * @param {*}      props.extras     The extras slot (InnerBlocks).
  * @return {JSX.Element} Gallery and configurator columns.
  */
-export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
+export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sgs-bb' } ) {
 	const isGuided = 'guided' === attributes.buyboxLayout;
 	const format =
 		'percentage' === attributes.rrpSavingFormat ? 'percentage' : 'amount';
@@ -1175,7 +1247,16 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 							'var(--wp--preset--color--surface-alt, #f0f0f0)',
 					} }
 				>
-					{ __( 'Product image', 'sgs-blocks' ) }
+					<SlotPicture
+						attributes={ { ...pictureAttrs( attributes, 'main' ), mainSource: sourceHasFile( attributes.mainSource ) ? attributes.mainSource : SAMPLE_PICTURE, mainAlt: '' } }
+						setAttributes={ () => {} }
+						prefix="main"
+						kinds={ [ 'image' ] }
+						context="item"
+						uid={ `${ uid }-main` }
+						className="sgs-buybox__main-image"
+						placeholder={ false }
+					/>
 					{ attributes.galleryStickerText && (
 						<span
 							className={ `sgs-buybox__gallery-sticker sgs-buybox__gallery-sticker--${ stickerCorner( attributes ) }` }
@@ -1203,7 +1284,16 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 								background:
 									'var(--wp--preset--color--surface-alt, #f0f0f0)',
 							} }
-						/>
+						>
+							<ItemSlotPicture
+								attributes={ pictureAttrs( attributes, 'thumb' ) }
+								item={ { source: SAMPLE_PICTURE, decorative: true } }
+								index={ n }
+								prefix="thumb"
+								context="item"
+								uid={ `${ uid }-thumb` }
+							/>
+						</span>
 					) ) }
 				</div>
 				{ attributes.gallerySavingBadge && (
@@ -1377,7 +1467,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 							linkStyle={ linkStyle }
 						/>
 						{ 'configurator' === attributes.buyboxLayout && (
-							<SamplePickSet attributes={ attributes } />
+							<SamplePickSet attributes={ attributes } uid={ uid } />
 						) }
 					</>
 				) }

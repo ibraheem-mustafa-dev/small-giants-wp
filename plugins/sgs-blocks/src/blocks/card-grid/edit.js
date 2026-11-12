@@ -8,7 +8,8 @@ import { useEffect, useMemo } from '@wordpress/element';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { createBlock } from '@wordpress/blocks';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { PanelBody, Button } from '@wordpress/components';
+import { PanelBody, Button, SelectControl } from '@wordpress/components';
+import MediaElementPanel from '../../components/MediaElementPanel';
 import CollectionPanel from './components/collection-panel';
 import ItemEditor from './components/ItemEditor';
 import ElementColourPanels from './components/ElementColourPanels';
@@ -41,6 +42,12 @@ import { showsManualCardPanels, templateBlocksFor } from './template-preview';
 /** A stable empty inner-block list (the store answers with none before the grid registers). */
 const NO_BLOCKS = [];
 
+const LOADING_OPTIONS = [
+	{ label: __( 'Automatic', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Load first', 'sgs-blocks' ), value: 'first' },
+	{ label: __( 'Load later', 'sgs-blocks' ), value: 'later' },
+];
+
 export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const {
 		variant,
@@ -48,7 +55,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		items: rawItems,
 		columns,
 		gap,
-		aspectRatio,
 		titleColour,
 		titleColourGradient,
 		subtitleColour,
@@ -58,7 +64,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		source,
 		overlayColour,
 		overlayGradient,
-		grayscaleHover,
 	} = attributes;
 
 	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
@@ -125,8 +130,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		'sgs-card-grid',
 		`sgs-card-grid--${ variant }`,
 		overlayColour || overlayGradient ? 'sgs-card-grid--has-image-overlay' : '',
-		// The grayscale hover, as render.php classes the grid (style.css paints it on the canvas too).
-		grayscaleHover ? 'sgs-has-grayscale' : '',
 	].filter( Boolean ).join( ' ' );
 
 	const previewTier = usePreviewTier();
@@ -165,12 +168,21 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		deps: [ source, columnsDesktop, columnsTabletTier, columnsMobileTier, gap, items.length ],
 	} );
 
+	// The image frame's ratio at the previewed device (16 / 9 when the grid sets none), as render.php's stylesheet prints it.
+	const ratioTier = String( resolveResponsiveTier( attributes.imageRatio || {}, previewTier )?.value || '' );
+	let previewRatio = '16 / 9';
+	if ( 'natural' === ratioTier ) {
+		previewRatio = 'auto';
+	} else if ( /\d/.test( ratioTier ) ) {
+		previewRatio = ratioTier;
+	}
+
 	const gridStyle = {
 		'--sgs-card-grid-columns': columnsDesktop,
 		'--sgs-card-grid-columns-tablet': columnsTabletTier,
 		'--sgs-card-grid-columns-mobile': columnsMobileTier,
 		'--sgs-card-grid-gap': spacingVar( gap ),
-		'--sgs-card-grid-aspect': aspectRatio,
+		'--sgs-card-grid-aspect': previewRatio,
 	};
 
 	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
@@ -194,7 +206,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			items: [
 				...items,
 				{
-					media: null,
 					title: '',
 					subtitle: '',
 					badge: '',
@@ -202,8 +213,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					link: '',
 					decorative: false,
 					_key: generateItemKey(),
-					objectFit: 'cover',
-					focalPoint: { x: 0.5, y: 0.5 },
 				},
 			],
 		} );
@@ -248,6 +257,15 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					<Button variant="secondary" onClick={ addItem }>
 						{ __( 'Add item', 'sgs-blocks' ) }
 					</Button>
+					<SelectControl
+						label={ __( 'Load priority', 'sgs-blocks' ) }
+						help={ __( 'Automatic loads the pictures above the fold first and the rest as they scroll into view.', 'sgs-blocks' ) }
+						value={ attributes.imageLoading || '' }
+						options={ LOADING_OPTIONS }
+						onChange={ ( val ) => setAttributes( { imageLoading: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				</PanelBody>
 				) }
 
@@ -266,6 +284,20 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				{ manualCards && <CardSpacingStylingPanel attributes={ attributes } setAttributes={ setAttributes } /> }
 				<LayoutBorderPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
+
+			{ /* The settings every card shares (Spec 49 §10.4: Fit, Ratio, Height, Radius, Shape): the adopted panels on the
+			   image slot, without the Source rows, which each card's own item holds. */ }
+			{ manualCards && (
+				<MediaElementPanel
+					attributes={ { ...attributes, imageSource: { desktop: { kind: 'image' } } } }
+					setAttributes={ setAttributes }
+					prefix="image"
+					blockSlug="sgs/card-grid"
+					blockName="sgs/card-grid"
+					atoms={ [ 'object-fit', 'sizing', 'shape' ] }
+					context="item"
+				/>
+			) }
 
 			<CardGridCanvas attributes={ attributes } clientId={ clientId } sep={ sep } isWcProductMode={ isWcProductMode } isCptCollectionMode={ isCptCollectionMode } blockProps={ blockProps } pageButtonPreviewCss={ pageButtonPreviewCss } wrapper={ wrapper } gridStyle={ gridStyle } items={ items } cardPreview={ cardPreview } titleStyle={ titleStyle } subtitleStyle={ subtitleStyle } HeadingTag={ HeadingTag } />
 		</>

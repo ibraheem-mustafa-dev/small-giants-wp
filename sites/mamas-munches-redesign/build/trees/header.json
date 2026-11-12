@@ -326,13 +326,18 @@
                         "attributes": {
                             "sgsHideOnMobile": true,
                             "sgsHideOnTablet": true,
-                            "logoId": 91,
-                            "logoUrl": "http://localhost:8084/wp-content/uploads/2026/10/logo-horizontal.png",
                             "maxHeight": {
                                 "desktop": "60px"
                             },
-                            "alt": "Mama's Munches",
-                            "align": "left"
+                            "align": "left",
+                            "logoAlt": "Mama's Munches",
+                            "logoSource": {
+                                "desktop": {
+                                    "kind": "image",
+                                    "id": 91,
+                                    "url": "http://localhost:8084/wp-content/uploads/2026/10/logo-horizontal.png"
+                                }
+                            }
                         }
                     },
                     {
@@ -424,14 +429,19 @@
                         "name": "sgs/responsive-logo",
                         "attributes": {
                             "sgsHideOnDesktop": true,
-                            "logoId": 91,
-                            "logoUrl": "http://localhost:8084/wp-content/uploads/2026/10/logo-horizontal.png",
                             "maxHeight": {
                                 "mobile": "48px",
                                 "tablet": "56px"
                             },
-                            "alt": "Mama's Munches",
-                            "align": "center"
+                            "align": "center",
+                            "logoAlt": "Mama's Munches",
+                            "logoSource": {
+                                "desktop": {
+                                    "kind": "image",
+                                    "id": 91,
+                                    "url": "http://localhost:8084/wp-content/uploads/2026/10/logo-horizontal.png"
+                                }
+                            }
                         }
                     },
                     {

@@ -60,7 +60,6 @@
 			},
 			"iconPicker": true,
 			"headerEssential": true,
-			"imageControls": false,
 			"scrim": {
 				"open": "[open]"
 			},
@@ -74,10 +73,6 @@
 					"reason": "The flyout/drawer panel surface is not a click target — its child close/view/checkout buttons carry their own separate colour attributes. No :hover CSS targets the panel background anywhere."
 				}
 			},
-			"_comment_mediaElements": "The mini-cart item thumbnail (WooCommerce product image, hydrated client-side by panel-render.js/item-row-template.js from the Store API) routes its object-fit through the shared media-element atom layer. render.php (always PHP-rendered, even before JS hydration) emits the atom's --sgs-media-object-fit custom property scoped to the block wrapper; item-row-template.js appends the shared .sgs-media-el marker class to the thumbnail <img> it builds at runtime — the custom property inherits down regardless of when that element is added to the DOM. style.css does not hardcode object-fit on .sgs-cart__item-thumb; it relies on assets/css/media-atoms/object-fit.css's cover fallback.",
-			"mediaElements": [
-				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
-			],
 			"boxFamilies": {
 				"margin": [
 					"margin"

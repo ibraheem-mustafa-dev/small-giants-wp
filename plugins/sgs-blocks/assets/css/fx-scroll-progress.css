@@ -49,3 +49,8 @@
 		--sgs-scroll-progress-value: 0;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="scroll-progress"][data-sgs-fx-off-desktop~="scroll-progress"] {
+		--sgs-scroll-progress-value: 0;
+	}
+}

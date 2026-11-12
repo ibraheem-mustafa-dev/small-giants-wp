@@ -2,16 +2,14 @@
  * Editor-canvas previews resolve at the device tier the editor previews, the
  * way each front-end emitter resolves it: per-side and whole-box tier boxes,
  * corner radii, the tiered background image, the shared wrapper mirror, the
- * button's tiered width/min-height/icon size and the hero's split media tier.
+ * button's tiered width/min-height/icon size.
  */
 
 import { tierBoxShorthand, BOX_CORNER_KEYS } from '../../src/utils/spacing-preview';
 import { backgroundPreview } from '../../src/utils/background-preview';
 import { containerWrapperPreview } from '../../src/utils/container-wrapper-preview';
 import { buttonPreviewStyle, labelCollapsedAt } from '../../src/blocks/button/preview-style';
-import { splitMediaAtTier } from '../../src/blocks/hero/canvas-preview';
 import { multiButtonFlexPreview } from '../../src/blocks/multi-button/preview-style';
-import { imageControlsCanvasVars } from '../../src/blocks/extensions/image-controls';
 
 describe( 'tierBoxShorthand', () => {
 	const padding = { desktop: { top: '10px', left: '20px' }, tablet: { top: '4px' } };
@@ -98,25 +96,8 @@ describe( 'buttonPreviewStyle', () => {
 	} );
 } );
 
-describe( 'splitMediaAtTier', () => {
-	it( 'cascades a tier with no media up to the wider tier', () => {
-		const attrs = { splitMediaType: 'image', splitMediaImageUrl: 'd.jpg', splitMediaTypeMobile: 'video', splitMediaVideoUrlMobile: 'm.mp4' };
-		expect( splitMediaAtTier( attrs, 'tablet' ).image.url ).toBe( 'd.jpg' );
-		expect( splitMediaAtTier( attrs, 'mobile' ).type ).toBe( 'video' );
-	} );
-} );
-
 describe( 'multiButtonFlexPreview', () => {
 	it( 'uses render.php mobile defaults when the mobile tier is unset', () => {
 		expect( multiButtonFlexPreview( { flexDirection: { desktop: 'row' } }, 'mobile' ) ).toMatchObject( { flexDirection: 'column', gap: '8px', alignItems: 'stretch' } );
-	} );
-} );
-
-describe( 'imageControlsCanvasVars', () => {
-	it( 'emits the same custom properties includes/image-controls.php injects', () => {
-		expect( imageControlsCanvasVars( { sgsObjectFit: 'contain', sgsHeight: { tablet: '300vh', mobile: '10;}body{' }, sgsObjectPosition: { x: 0.5, y: 0.5 } } ) ).toEqual( {
-			'--sgs-object-fit': 'contain',
-			'--sgs-height-tablet': '300vh',
-		} );
 	} );
 } );

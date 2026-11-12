@@ -9,9 +9,10 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { BaseControl, Button, PanelBody, TextControl, ToggleControl } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveLengthControl, SvgPartsControls } from '../../components';
+import { PanelBody, ToggleControl } from '@wordpress/components';
+import { MediaElementPanel, ResponsiveBoxControl, ResponsiveLengthControl, SvgPartsControls } from '../../components';
+import { hasLogoFile } from '../../utils/logo-source';
+import metadata from './block.json';
 import ChromeLogoBoxControls from './ChromeLogoBoxControls';
 import { TierShow } from './chrome-tier-controls';
 import ChromeSlotControls from './ChromeSlotControls';
@@ -19,12 +20,7 @@ import CloseBoxControls from './CloseBoxControls';
 import ChromeRowBorderControls from './ChromeRowBorderControls';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
-/** The three logo tiers: attribute suffix and label. */
-const LOGO_TIERS = [
-	{ suffix: '', label: __( 'Logo (desktop)', 'sgs-blocks' ) },
-	{ suffix: 'Tablet', label: __( 'Tablet logo (optional, else desktop)', 'sgs-blocks' ) },
-	{ suffix: 'Mobile', label: __( 'Mobile logo (optional, else tablet)', 'sgs-blocks' ) },
-];
+const LOGO_SLOT = metadata.supports.sgs.mediaElements.find( ( e ) => 'chromeLogo' === e.prefix );
 
 /**
  * @param {Object}   props               Props.
@@ -37,7 +33,6 @@ export default function ChromePanel( { name, attributes, setAttributes, clientId
 		chromeRowHeight,
 		chromeRowGap,
 		chromeRowPadding,
-		chromeLogoAlt,
 		chromeLogoLink,
 		chromeLogoWidth,
 		chromeLogoShow,
@@ -46,6 +41,17 @@ export default function ChromePanel( { name, attributes, setAttributes, clientId
 	} = attributes;
 
 	return (
+		<>
+		<MediaElementPanel
+			attributes={ attributes }
+			setAttributes={ setAttributes }
+			blockName="sgs/nav-drawer"
+			blockSlug="sgs/nav-drawer"
+			prefix="chromeLogo"
+			atoms={ LOGO_SLOT.atoms }
+			kinds={ LOGO_SLOT.kinds }
+			context={ LOGO_SLOT.context }
+		/>
 		<PanelBody title={ __( 'Top row (close, logo, slot)', 'sgs-blocks' ) } initialOpen={ false }>
 			<p className="components-base-control__help">
 				{ __(
@@ -54,59 +60,8 @@ export default function ChromePanel( { name, attributes, setAttributes, clientId
 				) }
 			</p>
 
-			{ LOGO_TIERS.map( ( { suffix, label } ) => {
-				const idKey = `chromeLogoId${ suffix }`;
-				const urlKey = `chromeLogoUrl${ suffix }`;
-				const url = attributes[ urlKey ];
-				return (
-					<BaseControl key={ idKey } label={ label } __nextHasNoMarginBottom>
-						<MediaUploadCheck>
-							<MediaUpload
-								onSelect={ ( media ) =>
-									setAttributes( { [ idKey ]: media?.id, [ urlKey ]: media?.url || '' } )
-								}
-								allowedTypes={ [ 'image' ] }
-								value={ attributes[ idKey ] }
-								render={ ( { open } ) => (
-									<div className="sgs-nav-drawer__logo-picker">
-										{ url && (
-											<img
-												className="sgs-nav-drawer__logo-picker-thumb"
-												src={ url }
-												alt=""
-											/>
-										) }
-										<Button variant="secondary" onClick={ open } __next40pxDefaultSize>
-											{ url ? __( 'Replace', 'sgs-blocks' ) : __( 'Choose image', 'sgs-blocks' ) }
-										</Button>
-										{ url && (
-											<Button
-												variant="tertiary"
-												isDestructive
-												onClick={ () => setAttributes( { [ idKey ]: undefined, [ urlKey ]: '' } ) }
-												__next40pxDefaultSize
-											>
-												{ __( 'Remove', 'sgs-blocks' ) }
-											</Button>
-										) }
-									</div>
-								) }
-							/>
-						</MediaUploadCheck>
-					</BaseControl>
-				);
-			} ) }
-
-			{ !! ( attributes.chromeLogoUrl || attributes.chromeLogoUrlTablet || attributes.chromeLogoUrlMobile ) && (
+			{ hasLogoFile( attributes.chromeLogoSource ) && (
 				<>
-					<TextControl
-						label={ __( 'Logo alt text', 'sgs-blocks' ) }
-						help={ __( 'Leave empty to use the image’s own alt text.', 'sgs-blocks' ) }
-						value={ chromeLogoAlt || '' }
-						onChange={ ( value ) => setAttributes( { chromeLogoAlt: value } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 					<ToggleControl
 						label={ __( 'Logo links to the home page', 'sgs-blocks' ) }
 						checked={ false !== chromeLogoLink }
@@ -194,5 +149,6 @@ export default function ChromePanel( { name, attributes, setAttributes, clientId
 
 			<CloseBoxControls attributes={ attributes } setAttributes={ setAttributes } />
 		</PanelBody>
+		</>
 	);
 }

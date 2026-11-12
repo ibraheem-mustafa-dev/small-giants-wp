@@ -68,7 +68,7 @@ const targetWrite = ( schema, attr ) => {
 // block.json attributes; anchor: whether supports.anchor is declared; attributes: what the node already holds; slots:
 // { path: { target, rel, id, ariaLabel, imageName } } (imageName: the aria-label of an element that is a picture,
 // lib/fill-read-collect.mjs::collectMany); imageAlts: the block's image-alt settings from the framework DB
-// (lib/fill-media.mjs::imageSlots); pictureSlot: the slot of the node's one picture (lib/fill-media.mjs::pictureSlotOf),
+// (lib/fill-resolve.mjs, the block's media slots with an `alt` setting from lib/media/slots.mjs::blockMediaSlots); pictureSlot: the slot of the node's one picture (lib/fill-media.mjs::pictureSlotOf),
 // the image those settings describe, or null.
 export function linkAttrDecisions( { calibration, schema = {}, anchor = false, attributes = {}, slots = {}, imageAlts = [], pictureSlot = null } ) {
 	const out = { writes: [], unmapped: [], notes: [] };

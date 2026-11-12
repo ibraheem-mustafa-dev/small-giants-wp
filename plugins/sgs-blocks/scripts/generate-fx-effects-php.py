@@ -101,17 +101,17 @@ def _load_rows() -> list[tuple]:
         )
         raise SystemExit(1)
 
-    if not {"owned_properties", "panels"} <= {r[1] for r in cur.execute("PRAGMA table_info(fx_effects)")}:
+    if not {"owned_properties", "panels", "media_kinds"} <= {r[1] for r in cur.execute("PRAGMA table_info(fx_effects)")}:
         con.close()
         print(
-            f"[generate-fx-effects-php] fx_effects in {DB_PATH} has no owned_properties/panels columns — "
+            f"[generate-fx-effects-php] fx_effects in {DB_PATH} has no owned_properties/panels/media_kinds columns — "
             "run plugins/sgs-blocks/scripts/seed-motion-fx-registry.py first.",
             file=sys.stderr,
         )
         raise SystemExit(1)
 
     rows = cur.execute(
-        "SELECT effect, plugin_set, owns_scroll_transform, pins, triggers, in_picker, owned_properties, panels "
+        "SELECT effect, plugin_set, owns_scroll_transform, pins, triggers, in_picker, owned_properties, panels, media_kinds "
         "FROM fx_effects ORDER BY effect"
     ).fetchall()
     con.close()
@@ -180,7 +180,7 @@ def _render(rows: list[tuple], levels: dict[str, list[str]]) -> tuple[str, str]:
         " *",
         " * Uses a static variable so the array is only built once per request.",
         " *",
-        " * @return array<string,array{plugin_set:string[],owns_scroll_transform:bool}>",
+        " * @return array<string,array{plugin_set:string[],owns_scroll_transform:bool,media_kinds:string[]}>",
         " */",
         "function sgs_get_motion_fx_effects() {",
         "\tstatic $effects = null;",
@@ -188,7 +188,7 @@ def _render(rows: list[tuple], levels: dict[str, list[str]]) -> tuple[str, str]:
         "\t\t$effects = array(",
     ]
 
-    for effect, plugin_set_json, owns_scroll_transform, pins, triggers, _in_picker, _owned, _panels in rows:
+    for effect, plugin_set_json, owns_scroll_transform, pins, triggers, _in_picker, _owned, _panels, _kinds in rows:
         plugin_set = json.loads(plugin_set_json)
         owns_bool = "true" if int(owns_scroll_transform) else "false"
         pins_bool = "true" if int(pins) else "false"
@@ -199,6 +199,10 @@ def _render(rows: list[tuple], levels: dict[str, list[str]]) -> tuple[str, str]:
         lines.append(
             f"\t\t\t\t'triggers'              => "
             f"{_php_array_of_strings([t for t in str(triggers).split(',') if t])},"
+        )
+        lines.append(
+            f"\t\t\t\t'media_kinds'           => "
+            f"{_php_array_of_strings([k for k in str(_kinds).split(',') if k])},"
         )
         lines.append("\t\t\t),")
 
@@ -253,9 +257,10 @@ def _render(rows: list[tuple], levels: dict[str, list[str]]) -> tuple[str, str]:
             "in_picker": bool(int(in_picker)),
             "owned_properties": json.loads(owned),
             "panels": json.loads(panels),
+            "media_kinds": [k for k in str(kinds).split(",") if k],
             "target_level": levels.get(effect, []),
         }
-        for effect, _plugin_set_json, owns, pins, triggers, in_picker, owned, panels in rows
+        for effect, _plugin_set_json, owns, pins, triggers, in_picker, owned, panels, kinds in rows
     }
     json_source = json.dumps(meta, indent="\t", sort_keys=True) + "\n"
 

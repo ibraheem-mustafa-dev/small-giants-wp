@@ -64,3 +64,8 @@
 		display: none;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="ripple"][data-sgs-fx-off-desktop~="ripple"][data-sgs-mc~="::after"]::after {
+		display: none;
+	}
+}

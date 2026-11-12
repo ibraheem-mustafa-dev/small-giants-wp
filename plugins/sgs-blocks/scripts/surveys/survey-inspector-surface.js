@@ -135,11 +135,10 @@ const RESPONSIVE_DOM_MULTIPLIER = {
 const EXTENSION_PANEL_META = {
 	'Block Link': { hideKey: 'blockLink', file: 'hover-effects.js' },
 	'Visibility conditions': { hideKey: null, file: 'conditional-visibility.js' },
-	'Image Controls': { hideKey: null, file: 'image-controls.js', gate: 'imageControls' },
 };
 
 const EXTENSION_FILES_WITH_PANELS = [
-	'hover-effects.js', 'conditional-visibility.js', 'image-controls.js',
+	'hover-effects.js', 'conditional-visibility.js',
 ];
 
 // Extension files that inject into InspectorAdvancedControls — folded into
@@ -743,7 +742,6 @@ function scanExtensions( ctx ) {
 
 function extensionBucketForBlock( block, extensionPanels ) {
 	const hideList = ( block.supports.sgs && Array.isArray( block.supports.sgs.hideExtensions ) ) ? block.supports.sgs.hideExtensions : [];
-	const imageControlsOn = !! ( block.supports.sgs && block.supports.sgs.imageControls === true );
 
 	const panels = [];
 	const rows = [];
@@ -757,10 +755,6 @@ function extensionBucketForBlock( block, extensionPanels ) {
 		}
 		if ( meta.hideKey && hideList.includes( meta.hideKey ) ) {
 			excluded.push( { title: panel.title, reason: `opted out via supports.sgs.hideExtensions: ["${ meta.hideKey }"]` } );
-			continue;
-		}
-		if ( meta.gate === 'imageControls' && ! imageControlsOn ) {
-			excluded.push( { title: panel.title, reason: 'supports.sgs.imageControls not true' } );
 			continue;
 		}
 		panels.push( { title: panel.title, source: panel.sourceFile } );

@@ -17,10 +17,12 @@
  *   it and the later value is reported through the `sgs_motion_layer_dropped` action.
  * - A layer's `off` tiers are written as per-tier token lists, `data-sgs-fx-off-tablet` / `-mobile`, naming the effect
  *   slugs whose own layer is off on that tier (joined across layers like `data-sgs-fx`), so each effect is switched
- *   off per device on its own. The element-wide `data-sgs-fx-disable-tablet` / `-mobile` are never written here.
- *   Both switches are read by `src/shared/effects/gsap/provider.js::isDisabledAtThisTier`, the boot gate of the Tier G
- *   effects; the vanilla runtimes (`src/shared/effects/fx-*.js`) and the stylesheet-only effects (`assets/css/fx-*.css`)
- *   read neither switch.
+ *   off per device on its own. A part on a media slot adds the devices where the slot's kind does not fit the effect
+ *   (`Sgs_Motion_Device_Scope`), and `data-sgs-fx-off-desktop` carries those that include Desktop, which a stored
+ *   layer cannot name. The element-wide `data-sgs-fx-disable-tablet` / `-mobile` are never written here.
+ *   The off lists are read by `src/shared/effects/gsap/provider.js::isDisabledAtThisTier`, the boot gate of the Tier G
+ *   effects, by `src/shared/effects/off-switch.js::isEffectOffAtThisTier` for the vanilla runtimes, and by the effect
+ *   stylesheets (`assets/css/fx-*.css`), which neutralise their painted result in a media query per device.
  * - A hover state with `followPointer` on in any tier adds `follow-pointer` to the element's `data-sgs-fx`.
  *
  * Every value is checked again through `Sgs_Motion_Field_Types::sanitise` against its own schema node before it is
@@ -55,29 +57,32 @@ final class Sgs_Motion_Fx_Emitter {
 	 * whose own layer is off on that tier, so a sibling effect on the same element keeps running.
 	 */
 	const OFF_ATTRS = array(
-		'tablet' => 'data-sgs-fx-off-tablet',
-		'mobile' => 'data-sgs-fx-off-mobile',
+		'desktop' => 'data-sgs-fx-off-desktop',
+		'tablet'  => 'data-sgs-fx-off-tablet',
+		'mobile'  => 'data-sgs-fx-off-mobile',
 	);
 
 	/** The attributes whose values are space-separated effect slugs, joined across an element's layers. */
-	const TOKEN_LISTS = array( 'data-sgs-fx', 'data-sgs-fx-off-tablet', 'data-sgs-fx-off-mobile' );
+	const TOKEN_LISTS = array( 'data-sgs-fx', 'data-sgs-fx-off-desktop', 'data-sgs-fx-off-tablet', 'data-sgs-fx-off-mobile' );
 
 	/**
 	 * The `data-sgs-fx*` attributes of one element's effect layers.
 	 *
 	 * @param array<string,mixed> $element A sgsMotion element.
 	 * @param string              $block   Block name, for drop reports.
-	 * @param string              $target  Target key, for drop reports.
+	 * @param string              $target  Target key, for drop reports and the part's media slot.
+	 * @param array<string,mixed> $block_attributes The block's saved attributes; with them a part on a media slot is scoped to the devices whose kind the effect fits.
 	 * @return array<string,string> Attribute name => value; empty when the element has no effect layer.
 	 */
-	public static function attrs( array $element, string $block = '', string $target = '' ): array {
+	public static function attrs( array $element, string $block = '', string $target = '', array $block_attributes = array() ): array {
 		$out = self::follows_pointer( $element ) ? array( 'data-sgs-fx' => self::FOLLOW_POINTER ) : array();
 		foreach ( self::LISTS as $list ) {
 			$parts = explode( '.', $list );
 			$node  = 2 === count( $parts ) ? ( $element[ $parts[0] ][ $parts[1] ] ?? array() ) : ( $element[ $list ] ?? array() );
 			foreach ( is_array( $node ) ? $node : array() as $layer ) {
 				if ( is_array( $layer ) && isset( $layer['effect'] ) && is_string( $layer['effect'] ) ) {
-					$out = self::merge( $out, self::layer_attrs( $layer, $block, $target ), $block, $target );
+					$scoped = array() === $block_attributes ? array() : Sgs_Motion_Device_Scope::off_devices( $block, $target, $layer['effect'], $block_attributes );
+					$out    = self::merge( $out, self::layer_attrs( $layer, $block, $target, $scoped ), $block, $target );
 				}
 			}
 		}
@@ -160,9 +165,10 @@ final class Sgs_Motion_Fx_Emitter {
 	 * @param array<string,mixed> $layer  An effect layer.
 	 * @param string              $block  Block name, for drop reports.
 	 * @param string              $target Target key, for drop reports.
+	 * @param string[]            $scoped Devices the media slot's kind makes this effect off, added to the layer's own `off`.
 	 * @return array<string,string>
 	 */
-	public static function layer_attrs( array $layer, string $block = '', string $target = '' ): array {
+	public static function layer_attrs( array $layer, string $block = '', string $target = '', array $scoped = array() ): array {
 		$effect = is_string( $layer['effect'] ?? null ) ? $layer['effect'] : '';
 		if ( ! isset( Sgs_Motion_Field_Types::schema()['x-sgs-effects'][ $effect ] ) ) {
 			return array();
@@ -173,7 +179,7 @@ final class Sgs_Motion_Fx_Emitter {
 			$out['data-sgs-fx-trigger'] = $trigger;
 		}
 		foreach ( self::OFF_ATTRS as $tier => $attr ) {
-			if ( is_array( $layer['off'] ?? null ) && in_array( $tier, $layer['off'], true ) ) {
+			if ( in_array( $tier, $scoped, true ) || ( is_array( $layer['off'] ?? null ) && in_array( $tier, $layer['off'], true ) ) ) {
 				$out[ $attr ] = $effect;
 			}
 		}

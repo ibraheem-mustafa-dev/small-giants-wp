@@ -139,133 +139,8 @@ class ResponsiveLogoChainTest extends TestCase {
 		$this->assertTrue( Sgs_Site_Info::set( 'logo', $id ), 'Setting the Site Info logo must succeed.' );
 	}
 
-	// ── Tier 1: the block's own image wins ───────────────────────────────────
-
-	/**
-	 * A block-level logoId beats both site-level tiers.
-	 */
-	public function test_block_image_wins_over_site_info_and_custom_logo(): void {
-		$this->set_site_info_logo( self::SITE_INFO_LOGO );
-		$GLOBALS['sgs_test_theme_mods']['custom_logo'] = self::CUSTOM_LOGO;
-
-		$html = render_responsive_logo( array( 'logoId' => self::BLOCK_LOGO ) );
-
-		$this->assertStringContainsString( $this->url_of( self::BLOCK_LOGO ), $html );
-		$this->assertStringNotContainsString( $this->url_of( self::SITE_INFO_LOGO ), $html );
-		$this->assertStringNotContainsString( $this->url_of( self::CUSTOM_LOGO ), $html );
-	}
-
-	/**
-	 * A block-level URL with no attachment ID is still tier 1 (a cloned block has
-	 * a URL and no library item).
-	 */
-	public function test_block_url_only_wins_over_site_info(): void {
-		$this->set_site_info_logo( self::SITE_INFO_LOGO );
-
-		$html = render_responsive_logo( array( 'logoUrl' => 'https://cdn.example.com/own-logo.svg' ) );
-
-		$this->assertStringContainsString( 'https://cdn.example.com/own-logo.svg', $html );
-		$this->assertStringNotContainsString( $this->url_of( self::SITE_INFO_LOGO ), $html );
-	}
-
-	// ── Tier 2: Site Info beats the WordPress site logo ──────────────────────
-
-	/**
-	 * With no block image, the Site Info logo beats custom_logo.
-	 */
-	public function test_site_info_wins_over_custom_logo(): void {
-		$this->set_site_info_logo( self::SITE_INFO_LOGO );
-		$GLOBALS['sgs_test_theme_mods']['custom_logo'] = self::CUSTOM_LOGO;
-
-		$html = render_responsive_logo( array() );
-
-		$this->assertStringContainsString( $this->url_of( self::SITE_INFO_LOGO ), $html );
-		$this->assertStringNotContainsString( $this->url_of( self::CUSTOM_LOGO ), $html );
-	}
-
-	// ── Tier 3: custom_logo when nothing else is set ─────────────────────────
-
-	/**
-	 * With no block image and no Site Info logo, custom_logo is used.
-	 */
-	public function test_custom_logo_used_when_neither_is_set(): void {
-		$GLOBALS['sgs_test_theme_mods']['custom_logo'] = self::CUSTOM_LOGO;
-
-		$html = render_responsive_logo( array() );
-
-		$this->assertStringContainsString( $this->url_of( self::CUSTOM_LOGO ), $html );
-	}
-
-	/**
-	 * Clearing the Site Info logo falls back to custom_logo again.
-	 */
-	public function test_clearing_site_info_logo_falls_back_to_custom_logo(): void {
-		$GLOBALS['sgs_test_theme_mods']['custom_logo'] = self::CUSTOM_LOGO;
-		$this->set_site_info_logo( self::SITE_INFO_LOGO );
-		$this->assertStringContainsString( $this->url_of( self::SITE_INFO_LOGO ), render_responsive_logo( array() ) );
-
-		$this->assertTrue( Sgs_Site_Info::set( 'logo', '' ) );
-		$html = render_responsive_logo( array() );
-
-		$this->assertStringContainsString( $this->url_of( self::CUSTOM_LOGO ), $html );
-		$this->assertStringNotContainsString( $this->url_of( self::SITE_INFO_LOGO ), $html );
-	}
-
-	// ── Tier 4: nothing ──────────────────────────────────────────────────────
-
-	/**
-	 * No tier resolves: the block renders nothing at all.
-	 */
-	public function test_no_logo_anywhere_renders_nothing(): void {
-		$this->assertSame( '', render_responsive_logo( array() ) );
-	}
-
-	// ── Negative controls: an invalid Site Info attachment falls through ─────
-
-	/**
-	 * A Site Info logo ID that is not an image attachment (deleted, or a
-	 * non-image) is skipped, so the chain reaches custom_logo. Written straight
-	 * to the store to bypass the sanitiser, as a since-deleted attachment would be.
-	 */
-	public function test_invalid_site_info_attachment_falls_through_to_custom_logo(): void {
-		$invalid = 999;
-		Sgs_Site_Info::set_internal( 'logo', self::SITE_INFO_LOGO );
-		update_option(
-			Sgs_Site_Info::OPTION_KEY,
-			array_merge( (array) get_option( Sgs_Site_Info::OPTION_KEY, array() ), array( 'logo' => $invalid ) )
-		);
-		$GLOBALS['sgs_test_theme_mods']['custom_logo'] = self::CUSTOM_LOGO;
-
-		$this->assertSame( $invalid, (int) Sgs_Site_Info::get( 'logo' ), 'Control: the invalid ID really is stored.' );
-		$this->assertSame( 0, Sgs_Site_Info_Logo::get_id() );
-
-		$html = render_responsive_logo( array() );
-
-		$this->assertStringContainsString( $this->url_of( self::CUSTOM_LOGO ), $html );
-		$this->assertStringNotContainsString( $this->url_of( $invalid ), $html );
-	}
-
-	/**
-	 * An invalid Site Info logo and no custom_logo: nothing renders.
-	 */
-	public function test_invalid_site_info_attachment_with_no_custom_logo_renders_nothing(): void {
-		update_option( Sgs_Site_Info::OPTION_KEY, array( 'logo' => 999 ) );
-
-		$this->assertSame( '', render_responsive_logo( array() ) );
-	}
-
-	/**
-	 * Positive control for the two tests above: the same chain does render the
-	 * Site Info logo once the ID is a valid image, so the fall-through is caused
-	 * by the invalid ID and not by an inert harness.
-	 */
-	public function test_control_valid_site_info_attachment_renders(): void {
-		update_option( Sgs_Site_Info::OPTION_KEY, array( 'logo' => self::SITE_INFO_LOGO ) );
-
-		$this->assertStringContainsString( $this->url_of( self::SITE_INFO_LOGO ), render_responsive_logo( array() ) );
-	}
-
-	// ── The `logo` key: sanitiser and accessors ──────────────────────────────
+	// The block's own file, the Site Info logo and the WordPress site logo are chosen in render.php, which runs through
+	// the QA harness in ResponsiveLogoMediaTest.php; the tier order of the site-level logo is tested here.
 
 	/**
 	 * `logo` is a well-known key, so the admin screen and REST endpoint accept it.
@@ -327,40 +202,6 @@ class ResponsiveLogoChainTest extends TestCase {
 		$this->assertSame( self::SITE_INFO_LOGO, Sgs_Site_Info_Logo::resolve_id() );
 	}
 
-	// ── Alt text ─────────────────────────────────────────────────────────────
-
-	/**
-	 * A site-level logo with no block alt uses the attachment's own alt text.
-	 */
-	public function test_site_logo_alt_falls_back_to_attachment_alt(): void {
-		$this->set_site_info_logo( self::SITE_INFO_LOGO );
-		$GLOBALS['sgs_test_postmeta'][ self::SITE_INFO_LOGO ]['_wp_attachment_image_alt'] = 'Acme Bakery';
-
-		$this->assertStringContainsString( 'alt="Acme Bakery"', render_responsive_logo( array() ) );
-	}
-
-	/**
-	 * With no attachment alt either, the site-name default is used.
-	 */
-	public function test_site_logo_alt_falls_back_to_site_name(): void {
-		$this->set_site_info_logo( self::SITE_INFO_LOGO );
-
-		$this->assertStringContainsString( 'alt="Test Site home"', render_responsive_logo( array() ) );
-	}
-
-	/**
-	 * The block's own alt attribute beats the attachment alt.
-	 */
-	public function test_block_alt_beats_attachment_alt(): void {
-		$this->set_site_info_logo( self::SITE_INFO_LOGO );
-		$GLOBALS['sgs_test_postmeta'][ self::SITE_INFO_LOGO ]['_wp_attachment_image_alt'] = 'Acme Bakery';
-
-		$html = render_responsive_logo( array( 'alt' => 'Acme home' ) );
-
-		$this->assertStringContainsString( 'alt="Acme home"', $html );
-		$this->assertStringNotContainsString( 'Acme Bakery', $html );
-	}
-
 	// ── Organization JSON-LD follows the same site-level chain ───────────────
 
 	/**
@@ -419,19 +260,6 @@ class ResponsiveLogoChainTest extends TestCase {
 	 */
 	private function schema_url_of( int $id ): string {
 		return esc_url_raw( (string) wp_get_attachment_image_url( $id, 'full' ) );
-	}
-
-	/**
-	 * A block-level logo keeps the existing alt resolution: the attachment alt
-	 * is only consulted for the site-level tiers.
-	 */
-	public function test_block_logo_alt_ignores_attachment_alt(): void {
-		$GLOBALS['sgs_test_postmeta'][ self::BLOCK_LOGO ]['_wp_attachment_image_alt'] = 'Ignored';
-
-		$html = render_responsive_logo( array( 'logoId' => self::BLOCK_LOGO ) );
-
-		$this->assertStringContainsString( 'alt="Test Site home"', $html );
-		$this->assertStringNotContainsString( 'Ignored', $html );
 	}
 
 	// ── Organization JSON-LD address: parsing and the WooCommerce fallback ───

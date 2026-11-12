@@ -45,18 +45,3 @@ if ( ! function_exists( 'sgs_media_atom_meaning_requires' ) ) {
 		return array( 'state' => 'shown' );
 	}
 }
-
-if ( ! function_exists( 'sgs_media_atom_meaning_css' ) ) {
-	/**
-	 * No CSS. Alt text and the decorative flag are HTML attributes, never
-	 * stylesheet values.
-	 *
-	 * @param array  $attributes Block attributes.
-	 * @param string $prefix     Surface prefix.
-	 * @param string $block_slug Block slug.
-	 * @return array Always empty.
-	 */
-	function sgs_media_atom_meaning_css( array $attributes, $prefix, $block_slug ) {
-		return array();
-	}
-}

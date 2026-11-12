@@ -46,6 +46,7 @@ jest.mock( '@wordpress/components', () => {
 		ToggleControl: Box( 'div' ),
 	};
 } );
+jest.mock( '../../src/components/SgsFreeTextField.js', () => ( { __esModule: true, default: () => null } ) );
 jest.mock( '../../src/components/SgsLengthControl.js', () => ( { __esModule: true, default: () => null } ) );
 jest.mock( '../../src/components/SgsBoxControl.js', () => ( { __esModule: true, default: () => null } ) );
 jest.mock( '../../src/components/GradientCapableColourControl.js', () => ( { __esModule: true, default: () => null } ) );
@@ -64,7 +65,7 @@ const { ADOPTED_ATOM_IDS } = require( '../../src/components/media/emit/adopted-s
 const { mediaAttrName } = require( '../../src/components/MediaElementControls' );
 
 const slot = fixture.supports.sgs.mediaElements[ 0 ];
-const ATOMS = [ ...ADOPTED_ATOM_IDS, 'box-shape', 'media-type', 'intrinsic' ];
+const ATOMS = [ ...ADOPTED_ATOM_IDS, 'box-shape' ];
 const DEVICES = [ 'Desktop', 'Tablet', 'Mobile' ];
 const key = ( base ) => mediaAttrName( slot.prefix, base );
 

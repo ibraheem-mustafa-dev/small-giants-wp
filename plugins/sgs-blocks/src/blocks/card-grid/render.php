@@ -36,6 +36,8 @@ require_once __DIR__ . '/glyph-fallback.php';
 // Block-wide image overlay helper (wave B round 2) — same reasoning, kept out
 // of this file.
 require_once __DIR__ . '/image-overlay.php';
+// Card media through the shared media renderer (Spec 49 section 8.3).
+require_once __DIR__ . '/render-item-media.php';
 
 // CSS length/unit sanitiser — for free-text length values (border width,
 // letter-spacing) concatenated into raw CSS declarations inside this block's
@@ -67,18 +69,6 @@ $columns_mobile = $columns_obj['mobile'] ?? 1;
 // the raw array (a string cast downstream would emit `gap:Array`).
 $gap_obj      = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
 $gap          = ( '' !== (string) ( $gap_obj['desktop'] ?? '' ) ) ? $gap_obj['desktop'] : '30';
-$aspect_ratio = $attributes['aspectRatio'] ?? '16/10';
-// Whitelist — mirrors image-sequence/render.php's seven-value ratio list (the
-// shared source of truth is MediaSizingPanel.js's RATIO_OPTIONS, JS-side;
-// this array is byte-identical to that list's values). Falls back to this
-// block's OWN existing default ('16/10', unspaced) rather than
-// image-sequence's '16 / 9', so a legacy stored value ('16/10', authored
-// before this validation existed) renders exactly as it did before.
-$allowed_ratios = array( '16 / 9', '21 / 9', '4 / 3', '1 / 1', '4 / 5', '3 / 4', '9 / 16' );
-if ( ! in_array( $aspect_ratio, $allowed_ratios, true ) ) {
-	$aspect_ratio = '16/10';
-}
-
 $title_colour             = $attributes['titleColour'] ?? '';
 $title_colour_gradient    = $attributes['titleColourGradient'] ?? '';
 $subtitle_colour          = $attributes['subtitleColour'] ?? '';
@@ -104,7 +94,6 @@ $card_border_width        = $attributes['cardBorderWidth'] ?? array();
 $card_radius              = $attributes['cardRadius'] ?? '';
 $card_shadow              = $attributes['cardShadow'] ?? '';
 $card_shadow_colour       = $attributes['cardShadowColour'] ?? '';
-$hover_grayscale          = ! empty( $attributes['grayscaleHover'] );
 $query_post_type          = sanitize_key( $attributes['queryPostType'] ?? 'post' );
 $query_per_page           = absint( $attributes['queryPostsPerPage'] ?? 6 );
 $query_category           = absint( $attributes['queryCategory'] ?? 0 );
@@ -142,24 +131,10 @@ $card_grid_overlay_active = '' !== $card_grid_overlay_decls;
 $uid      = 'sgs-cg-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-card-grid';
 
-// -------------------------------------------------------------------------
-// Media-element atom layer (rule 37-media-no-handroll fix) — card-image
-// object-fit only. `class_exists()` guards a class the plugin loader always
-// registers; kept for the same "never fatal if load order changes" reason
-// `sgs/gallery` and `sgs/before-after` guard it. Classes are appended to the
-// `<img>`/`<video>` markup `sgs_render_media()` already returns (see the
-// per-item loop below) — `.sgs-media-el` is the shared marker the generated
-// assets/css/media-atoms/object-fit.css rule targets, `$sgs_cg_media_scope`
-// is the per-instance scope the atom's custom-property value below is set
-// on. This is one shared block-wide value applied to every card (mirrors the
-// existing sgs_media_position_css() call below — items[] has no per-card
-// object-fit field).
-$sgs_cg_media_scope   = '';
-$sgs_cg_media_classes = array();
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$sgs_cg_media_scope   = SGS_Media_Element::scope_class( $uid, 'sgs' );
-	$sgs_cg_media_classes = SGS_Media_Element::element_classes( $sgs_cg_media_scope );
-}
+// Card media: the `image` slot, printed card by card through the shared renderer (render-item-media.php). The
+// renderer's scope class for the block-level rules is `{uid}-media`.
+$sgs_cg_media_slot  = sgs_media_item_slot_for( $block, 'image' );
+$sgs_cg_media_scope = $uid . '-media';
 
 // Native block-supports CSS (colour, shadow, typography) -> $card_grid_native_css.
 require __DIR__ . '/render-native-css.php';
@@ -184,18 +159,22 @@ if ( 'query' === $source ) {
 	$query_items = array();
 
 	foreach ( $grid_query->posts as $grid_post ) {
-		$thumb_id  = get_post_thumbnail_id( $grid_post->ID );
-		$thumb_url = $thumb_id ? wp_get_attachment_image_url( $thumb_id, 'large' ) : '';
+		// A card made from a post shows the post's featured image: its attachment id is the Source, and the renderer
+		// derives the sizes and the alt text from the attachment.
+		$thumb_id  = (int) get_post_thumbnail_id( $grid_post->ID );
 		$thumb_alt = $thumb_id ? (string) get_post_meta( $thumb_id, '_wp_attachment_image_alt', true ) : '';
 
 		$query_items[] = array(
 			'title'    => get_the_title( $grid_post ),
 			'subtitle' => wp_trim_words( get_the_excerpt( $grid_post ), 15, '…' ),
 			'link'     => get_permalink( $grid_post ),
-			'image'    => $thumb_url ? array(
-				'url' => $thumb_url,
-				'alt' => $thumb_alt,
+			'source'   => $thumb_id ? array(
+				'desktop' => array(
+					'kind' => 'image',
+					'id'   => $thumb_id,
+				),
 			) : null,
+			'alt'      => $thumb_alt,
 			'badge'    => '',
 		);
 	}
@@ -263,26 +242,8 @@ if ( is_array( $attributes['imagePadding'] ?? null ) && array() !== $attributes[
 		)
 	);
 }
-// A fixed image-area height per device (imageHeight) replaces the aspect ratio.
-if ( is_array( $attributes['imageHeight'] ?? null ) && array() !== $attributes['imageHeight'] ) {
-	$sgs_grid_typo_css .= sgs_emit_responsive_css(
-		'.' . $sgs_grid_uid . ' .sgs-card-grid__image-wrap',
-		array(
-			array(
-				'value'        => $attributes['imageHeight'],
-				'css'          => 'height',
-				'unit_default' => 'px',
-			),
-			array(
-				'value'     => $attributes['imageHeight'],
-				'css'       => 'aspect-ratio',
-				'transform' => static function () {
-					return 'auto';
-				},
-			),
-		)
-	);
-}
+// The image frame's ratio per device (imageRatio) and its fixed height per device (imageHeight), which replaces the ratio.
+$sgs_grid_typo_css .= sgs_card_grid_frame_css( $attributes, '.' . $sgs_grid_uid . ' .sgs-card-grid__image-wrap' );
 $sgs_grid_title_mb = sgs_css_length_value( (string) ( $attributes['titleMarginBottom'] ?? '' ) );
 if ( '' !== $sgs_grid_title_mb ) {
 	$sgs_grid_typo_css .= '.' . $sgs_grid_uid . ' .sgs-card-grid__title:not(:last-child){margin-bottom:' . $sgs_grid_title_mb . ';}';
@@ -328,9 +289,6 @@ if ( $hover_scale ) {
 if ( $hover_shadow ) {
 	$class_names[] = 'sgs-has-hover';
 }
-if ( $hover_grayscale ) {
-	$class_names[] = 'sgs-has-grayscale';
-}
 // A client-set image overlay replaces the overlay variant's built-in caption
 // gradient, so the two never stack.
 if ( $card_grid_overlay_active ) {
@@ -350,7 +308,6 @@ $grid_style_parts = array(
 	'--sgs-card-grid-columns-mobile: ' . max( 1, absint( $columns_mobile ) ),
 	'--sgs-card-grid-columns-tablet: ' . max( 1, absint( $columns_tablet ) ),
 	'--sgs-card-grid-gap: ' . $gap_value,
-	'--sgs-card-grid-aspect: ' . esc_attr( $aspect_ratio ),
 );
 
 if ( $hover_scale ) {
@@ -360,16 +317,8 @@ if ( $hover_shadow ) {
 	$grid_style_parts[] = '--sgs-hover-shadow: ' . sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour );
 }
 
-// Spec 35 Part 4 — per-item crop, keyed by the item's OWN stable `_key`
-// (src/utils/generateItemKey.js), never by array index/`:nth-child` (both
-// break the moment an operator reorders/adds/removes a card — the exact
-// anti-pattern the doctrine names and rejects). `sgs_media_position_css()`
-// already accepts an arbitrary attributes array + prefix; passed a per-item
-// shim here rather than the block's own $attributes. A pre-existing item
-// authored before this field existed has no `_key` yet (client-side
-// backfill lands on next editor save) and also has no non-default
-// objectFit/focalPoint to emit, so the index fallback below is never
-// load-bearing in practice — it only prevents an empty selector.
+// Each card's picture CSS (the renderer's per-card and block-level rules) collects here and prints in the scoped
+// <style> tag before the wrapper. Cards are matched to their rules by position, so a reorder reprints them.
 $card_grid_per_item_css = '';
 
 // Item-array stagger (Spec 38A FR-38A-26): the cards come from the `items` attribute, so the container's stored

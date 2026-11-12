@@ -137,88 +137,6 @@ def _load_extension_attrs() -> set:
         return set(EXT_EXACT)
     return set(_GENERATED_ATTR_RE.findall(text)) | set(EXT_EXACT)
 
-# The media-atom attrs (`supports.sgs.mediaElements`) are injected at registration
-# by includes/media-element-attrs-register.php::sgs_register_media_element_attrs(),
-# from this generated map — so, like the extension attrs above, a block.json-only
-# scan sees every one of them as "undeclared" (sgs/media's `minHeight` aborted a
-# deploy 2026-09-29). Read the same map the server reads.
-GENERATED_MEDIA_ATTRS = (
-    REPO / 'plugins' / 'sgs-blocks' / 'includes' / 'media-element-attributes.generated.php'
-)
-_PHP_SECTION_RE = re.compile(r"^\t'(\w+)'\s*=>\s*array\(\n(.*?)^\t\),?", re.M | re.S)
-_PHP_PAIR_RE = re.compile(r'"([^"]+)"\s*=>\s*"([^"]+)"')
-_PHP_STR_RE = re.compile(r'"([^"]+)"')
-_PHP_NESTED_RE = re.compile(r'"([^"]+)"\s*=>\s*array\((.*?)\)', re.S)
-# STORED_AS: the few bases a block stores under its own name, read from the same
-# helper the server uses (helpers-media-element.php::sgs_media_element_stored_attr).
-MEDIA_HELPER = REPO / 'plugins' / 'sgs-blocks' / 'includes' / 'helpers-media-element.php'
-_STORED_AS_BLOCK_RE = re.compile(r"\$stored_as\s*=\s*array\((.*?)\n\t\t\);", re.S)
-_STORED_AS_ENTRY_RE = re.compile(r"'(sgs/[\w-]+)'\s*=>\s*array\((.*?)\)", re.S)
-_PHP_SQ_PAIR_RE = re.compile(r"'([^']+)'\s*=>\s*'([^']+)'")
-
-
-def _load_stored_as() -> dict:
-    """{block slug: {generated or unprefixed name: stored name}}."""
-    try:
-        m = _STORED_AS_BLOCK_RE.search(MEDIA_HELPER.read_text(encoding='utf-8'))
-    except OSError:
-        return {}
-    if not m:
-        return {}
-    return {slug: dict(_PHP_SQ_PAIR_RE.findall(body)) for slug, body in _STORED_AS_ENTRY_RE.findall(m.group(1))}
-
-
-def _load_media_map() -> dict:
-    """{'bases': {base: type}, 'tiered': set, 'atoms': {atom: [bases]}}, or {} when absent."""
-    try:
-        text = GENERATED_MEDIA_ATTRS.read_text(encoding='utf-8')
-    except OSError:
-        return {}
-    sections = {name: body for name, body in _PHP_SECTION_RE.findall(text)}
-    return {
-        'bases': dict( _PHP_PAIR_RE.findall( sections.get('bases', '') ) ),
-        'tiered': set( _PHP_STR_RE.findall( sections.get('tiered', '') ) ),
-        'atoms': {k: _PHP_STR_RE.findall(v) for k, v in _PHP_NESTED_RE.findall( sections.get('atoms', '') )},
-        'stored_as': _load_stored_as(),
-    }
-
-
-def media_injected_attrs(block_json: dict, media_map: dict) -> dict:
-    """The attrs sgs_register_media_element_attrs() injects for this block.
-
-    Same rules as that function: each declared element's atoms (all atoms when none
-    are listed) give their bases; a tiered base also gets Tablet/Mobile; the name is
-    the base with the element prefix (lcfirst when unprefixed), renamed where the
-    block stores it under its own name (STORED_AS). Checked name-for-name against
-    the real PHP function for every mediaElements block (2026-09-29).
-    """
-    declared = ((block_json.get('supports') or {}).get('sgs') or {}).get('mediaElements')
-    if not isinstance(declared, list) or not media_map.get('bases'):
-        return {}
-    out = {}
-    for element in declared:
-        if not isinstance(element, dict):
-            continue
-        prefix = str(element.get('prefix') or '')
-        atoms = element.get('atoms') or list(media_map['atoms'])
-        bases = []
-        for atom in atoms:
-            for base in media_map['atoms'].get(atom, []):
-                if base not in bases:
-                    bases.append(base)
-        for base in bases:
-            for tier in ('', 'Tablet', 'Mobile'):
-                if tier and base not in media_map['tiered']:
-                    continue
-                full = base + tier
-                name = prefix + full if prefix else full[:1].lower() + full[1:]
-                overrides = media_map.get('stored_as', {}).get(block_json.get('name', ''), {})
-                name = overrides.get(full[:1].lower() + full[1:], overrides.get(name, name))
-                wp_type = media_map['bases'].get(base, 'string')
-                out[name] = {'type': ['boolean', 'null']} if tier and 'boolean' == wp_type else {'type': wp_type}
-    return out
-
-
 OPEN_RE = re.compile(r'<!--\s*wp:(sgs/[\w-]+)(\s+\{)?')
 
 
@@ -229,7 +147,7 @@ def motion_injected_attrs(block_json: dict) -> dict:
     """The attr includes/motion/support-registration.php injects at registration (Spec 38A FR-38A-1).
 
     sgs_motion_register_block_type_args() gives every block whose block.json declares a truthy
-    supports.sgs.motion the object attribute `sgsMotion`; like the media-element attrs it is
+    supports.sgs.motion the object attribute `sgsMotion`; it is
     absent from block.json, so a block.json-only reading would flag every stored motion value.
     """
     if ((block_json.get('supports') or {}).get('sgs') or {}).get('motion'):
@@ -245,7 +163,6 @@ def load_schemas():
     history note) and must not classify as InnerBlocks-rendered.
     """
     out = {}
-    media_map = _load_media_map()
     for bj in sorted(BLOCKS_DIR.glob('*/block.json')):
         try:
             d = json.loads(bj.read_text(encoding='utf-8'))
@@ -257,7 +174,7 @@ def load_schemas():
         save_code = JS_COMMENT_RE.sub('', save.read_text(encoding='utf-8')) if save.exists() else ''
         out[d['name']] = {
             # The block's own declarations win over injected ones, as on the server.
-            'attrs': {**media_injected_attrs(d, media_map), **motion_injected_attrs(d), **d.get('attributes', {})},
+            'attrs': {**motion_injected_attrs(d), **d.get('attributes', {})},
             'innerblocks_save': 'InnerBlocks.Content' in save_code,
             'render': render_source(bj.parent),
         }

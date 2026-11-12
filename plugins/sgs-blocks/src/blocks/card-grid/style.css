@@ -57,15 +57,21 @@
 .sgs-card-grid__image-wrap {
 	position: relative;
 	overflow: hidden;
-	aspect-ratio: var(--sgs-card-grid-aspect, 16/10);
+	aspect-ratio: var(--sgs-card-grid-aspect, 16 / 9);
 }
 
 /* Two elements fill the aspect-ratio box: `.sgs-card-grid__image` is the
    editor canvas's own hand-built <img>/<video>; the frontend element is the
-   shared `.sgs-media-el` from sgs_render_media(). Every image rule below names
-   both. object-fit on the frontend comes from the media atom
-   (--sgs-media-object-fit, default cover), so `cover` is set for the editor
-   class only. */
+   shared `.sgs-media-el` the media renderer prints inside a `.sgs-media-group`
+   per card. Every image rule below names both. Fit, focal point, radius and
+   shape come from the renderer's own rules (fit defaults to cover), so
+   `cover` is set for the editor class only. */
+.sgs-card-grid__image-wrap .sgs-media-group {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
 .sgs-card-grid__image,
 .sgs-card-grid__image-wrap .sgs-media-el {
 	width: 100%;
@@ -371,18 +377,6 @@
 	.sgs-card-grid.sgs-has-hover .sgs-card-grid__item:hover {
 		box-shadow: var(--sgs-hover-shadow, none);
 	}
-
-	/* Grayscale to colour (#130) */
-	.sgs-card-grid.sgs-has-grayscale .sgs-card-grid__image,
-	.sgs-card-grid.sgs-has-grayscale .sgs-card-grid__image-wrap .sgs-media-el {
-		filter: grayscale(100%);
-		transition: filter var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--ease-in-out, ease-in-out);
-	}
-
-	.sgs-card-grid.sgs-has-grayscale .sgs-card-grid__item:hover .sgs-card-grid__image,
-	.sgs-card-grid.sgs-has-grayscale .sgs-card-grid__item:hover .sgs-card-grid__image-wrap .sgs-media-el {
-		filter: grayscale(0%);
-	}
 }
 
 
@@ -418,11 +412,6 @@
 
 	.sgs-card-grid.sgs-has-hover-scale .sgs-card-grid__item:hover {
 		transform: none;
-	}
-
-	.sgs-card-grid.sgs-has-grayscale .sgs-card-grid__image,
-	.sgs-card-grid.sgs-has-grayscale .sgs-card-grid__image-wrap .sgs-media-el {
-		filter: none;
 	}
 }
 

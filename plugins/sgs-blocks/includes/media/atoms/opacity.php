@@ -8,10 +8,6 @@
  * with a single custom property, `--sgs-media-opacity`, applied on
  * `.sgs-media-el` (Wave 5c, 2026-09-01).
  *
- * `sgs_media_atom_opacity_css()` must emit BYTE-IDENTICAL declarations to the
- * JS twin's `css()` for the same attribute set — enforced by
- * `scripts/tests/test-media-atom-parity.mjs`.
- *
  * @package SGS\Blocks
  */
 
@@ -50,33 +46,6 @@ if ( ! function_exists( 'sgs_media_atom_opacity_requires' ) ) {
 			'state'        => 'shown',
 			'hiddenReason' => null,
 		);
-	}
-}
-
-if ( ! function_exists( 'sgs_media_atom_opacity_css' ) ) {
-	/**
-	 * Custom-property declaration for this atom. Mirrors the JS twin's `css()`
-	 * exactly.
-	 *
-	 * @param array  $attributes Block attributes.
-	 * @param string $prefix     Surface prefix.
-	 * @param string $block_slug Block slug, for STORED_AS resolution.
-	 * @return string[] `--custom-property:value;` declarations, never bare rules.
-	 */
-	function sgs_media_atom_opacity_css( array $attributes, $prefix, $block_slug ) {
-		$decls = array();
-
-		$key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Opacity' );
-		$raw = $attributes[ $key ] ?? null;
-
-		if ( is_numeric( $raw ) ) {
-			$clamped = sgs_media_atom_opacity_validate( $raw );
-			if ( 1.0 !== $clamped ) {
-				$decls[] = '--sgs-media-opacity:' . $clamped;
-			}
-		}
-
-		return $decls;
 	}
 }
 

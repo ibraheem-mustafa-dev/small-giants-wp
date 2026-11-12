@@ -173,7 +173,7 @@
 @property --sgs-pad-start-rest { syntax: '*'; inherits: false; }
 
 /* ── The base animation (§9 entrance rule): an element's own looping animation, written by whatever owns it (the media
-   atom's composed ken burns or svg presentation in media-element.css, the wave-gradient drift, the container ken
+   atom's composed ken burns or svg presentation in media-base.css, the wave-gradient drift, the container ken
    burns) as one comma list per longhand, every list the same length. A playing entrance puts these lists first and
    its own channels after them, so the loop keeps running under the entrance and after it, and the entrance wins any
    property both animate while it plays. Per element, never inherited, so a child entrance never replays its parent's

@@ -105,7 +105,6 @@ final class BorderElementParityTest extends TestCase {
 		array( 'theme-toggle', '' ),
 		array( 'mega-aside', 'aside' ),
 		array( 'filter-search', 'input' ),
-		array( 'hero', 'splitMedia' ),
 		array( 'cart', 'pill' ),
 		array( 'product-card', 'attributeTag' ),
 		array( 'google-reviews', 'card' ),
@@ -128,7 +127,7 @@ final class BorderElementParityTest extends TestCase {
 	 * attributes). Case => list of target names.
 	 */
 	private const TARGET_CASES = array(
-		'k2_radius_siblings'     => array( 'hero[splitMedia]' ),
+		'k2_radius_siblings'     => array(),
 		'm_colour_gradient_only' => array( 'tabs[panel]' ),
 	);
 
@@ -137,13 +136,6 @@ final class BorderElementParityTest extends TestCase {
 	 * Keyed by target name, falling back to the block folder name.
 	 */
 	private const BASES = array(
-		'hero[splitMedia]'          => array(
-			'attrs' => array(
-				'variant'            => 'split',
-				'splitMediaType'     => 'image',
-				'splitMediaImageUrl' => 'https://example.test/parity.jpg',
-			),
-		),
 		'cart[pill]'                => array(
 			'attrs'   => array(
 				'triggerStyle' => 'pill',
@@ -205,7 +197,7 @@ final class BorderElementParityTest extends TestCase {
 		),
 		'trustpilot-reviews'        => array( 'attrs' => array( 'dataSource' => 'placeholder' ) ),
 		'audio'                     => array( 'attrs' => array( 'audioUrl' => 'https://example.test/parity.mp3' ) ),
-		'responsive-logo'           => array( 'attrs' => array( 'logoUrl' => 'https://example.test/parity.png' ) ),
+		'responsive-logo'           => array( 'attrs' => array( 'logoSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/parity.png', 'width' => 400, 'height' => 100 ) ) ) ),
 		'store-selector'            => array(
 			'attrs' => array(
 				'stores' => array(
@@ -225,8 +217,8 @@ final class BorderElementParityTest extends TestCase {
 		'before-after'              => array(
 			'attrs' => array(
 				'height'     => array( 'desktop' => '400px' ),
-				'beforeImageUrl' => 'https://example.test/before.jpg',
-				'afterImageUrl'  => 'https://example.test/after.jpg',
+				'beforeSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/before.jpg', 'width' => 1200, 'height' => 800 ) ),
+				'afterSource' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/after.jpg', 'width' => 1200, 'height' => 800 ) ),
 			),
 		),
 		'theme-toggle'              => array(

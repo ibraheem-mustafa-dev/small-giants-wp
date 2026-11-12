@@ -22,7 +22,7 @@ final class GalleryHoverShadowTest extends TestCase {
 	use BlockHarnessRenderTrait;
 
 	private function gallery( array $extra ): array {
-		return $this->render_block( 'sgs/gallery', array_merge( array( 'mediaItems' => array( array( 'id' => 1, 'url' => 'https://example.test/a.jpg', 'alt' => 'A' ) ) ), $extra ) );
+		return $this->render_block( 'sgs/gallery', array_merge( array( 'mediaItems' => array( array( 'source' => array( 'desktop' => array( 'kind' => 'image', 'url' => 'https://example.test/a.jpg', 'width' => 800, 'height' => 600 ) ), 'alt' => 'A' ) ) ), $extra ) );
 	}
 
 	public function test_a_custom_shape_and_colour_compose_into_the_hover_shadow(): void {

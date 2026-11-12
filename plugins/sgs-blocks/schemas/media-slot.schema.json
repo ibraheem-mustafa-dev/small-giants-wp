@@ -21,8 +21,14 @@
 		"borderColour": {
 			"$ref": "#/$defs/BorderColour"
 		},
+		"borderColourGradient": {
+			"$ref": "#/$defs/BorderColourGradient"
+		},
 		"borderColourHover": {
 			"$ref": "#/$defs/BorderColourHover"
+		},
+		"borderColourHoverGradient": {
+			"$ref": "#/$defs/BorderColourHoverGradient"
 		},
 		"borderStyle": {
 			"$ref": "#/$defs/BorderStyle"
@@ -44,9 +50,6 @@
 		},
 		"captionTag": {
 			"$ref": "#/$defs/CaptionTag"
-		},
-		"captions": {
-			"$ref": "#/$defs/Captions"
 		},
 		"colour": {
 			"$ref": "#/$defs/Colour"
@@ -237,10 +240,22 @@
 			"x-sgs-role": "layout",
 			"x-sgs-responsive": false
 		},
+		"BorderColourGradient": {
+			"type": "string",
+			"x-sgs-base": "BorderColourGradient",
+			"x-sgs-role": "colour-gradient",
+			"x-sgs-responsive": false
+		},
 		"BorderColourHover": {
 			"type": "string",
 			"x-sgs-base": "BorderColourHover",
 			"x-sgs-role": "color",
+			"x-sgs-responsive": false
+		},
+		"BorderColourHoverGradient": {
+			"type": "string",
+			"x-sgs-base": "BorderColourHoverGradient",
+			"x-sgs-role": "colour-gradient",
 			"x-sgs-responsive": false
 		},
 		"BorderStyle": {
@@ -323,25 +338,6 @@
 			],
 			"x-sgs-base": "CaptionTag",
 			"x-sgs-role": "tag-identity",
-			"x-sgs-responsive": false
-		},
-		"Captions": {
-			"type": "object",
-			"additionalProperties": false,
-			"properties": {
-				"id": {
-					"type": "integer",
-					"minimum": 0
-				},
-				"label": {
-					"type": "string"
-				},
-				"lang": {
-					"type": "string"
-				}
-			},
-			"x-sgs-base": "Captions",
-			"x-sgs-role": "content",
 			"x-sgs-responsive": false
 		},
 		"Colour": {

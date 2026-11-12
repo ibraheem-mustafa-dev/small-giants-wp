@@ -234,7 +234,6 @@ function transitionMarker( row, def, t, prop ) {
 }
 
 // The markers for one setting: its plain markers, then its value-form probes (formMarkers) when it has a plain one.
-// `ctx.image` is a media object that exists on the calibration site.
 export function markersFor( row, schema, snapshot, current = {}, ctx = {} ) {
 	const plain = plainMarkers( row, schema, snapshot, current, ctx );
 	return plain.length ? [ ...plain, ...formMarkers( row, schema ) ] : plain;
@@ -319,10 +318,6 @@ function plainMarkers( row, schema, snapshot, current, ctx ) {
 	}
 	if ( isGradient && t.includes( 'string' ) ) {
 		return [ { label: 'gradient', attrs: set( MARKER_GRADIENT ), expect: null } ];
-	}
-	// A media object (a background image) gets an image that exists on the site.
-	if ( t.includes( 'object' ) && 'background-image' === prop ) {
-		return ctx.image ? [ { label: 'image', attrs: set( { ...ctx.image } ), expect: null } ] : [];
 	}
 	if ( ! Array.isArray( def.enum ) && KEYWORDS[ prop ] && t.includes( 'string' ) ) {
 		const pair = 'border-style' === prop ? companionWidth( row.attr_name, schema ) : null;

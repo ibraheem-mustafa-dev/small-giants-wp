@@ -105,3 +105,8 @@
 		display: none;
 	}
 }
+@media (min-width: 1024px) {
+	[data-sgs-fx~="curtain"][data-sgs-fx-off-desktop~="curtain"] > .sgs-motion-layer[data-sgs-layer="curtain"] {
+		display: none;
+	}
+}

@@ -3,7 +3,7 @@
  * Tests: sgs/buybox's main image claims `loading="eager"` and `fetchpriority="high"` only when it is the page's likely
  * LCP image (Spec 38A §9 LCP rule): inside the page's first top-level section, or as its own product page's buybox
  * (single-product.html prints it before the post content, where no first section is armed), and only while the
- * page-wide priority slot is free (`helpers-media.php::sgs_content_image_claims_priority`). A buybox below the first
+ * page-wide priority slot is free (`SGS_Media_Priority::resolve`). A buybox below the first
  * section of another page loads its photo lazily at auto priority, so it takes no priority from the image above it and
  * its entrance is not held at full opacity.
  *
@@ -95,7 +95,7 @@ final class BuyboxImagePriorityTest extends TestCase {
 	 *
 	 * @param bool $first_section Whether the buybox renders inside the page's first section.
 	 */
-	private function buybox_html( bool $first_section, ?array $queried = null ): string {
+	private function buybox_html( bool $first_section, ?array $queried = null, bool $armed = false ): string {
 		$harness = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
 		$files   = array();
 		$inputs  = array( 'attrs' => array( 'productId' => 52 ), 'product' => self::PRODUCT, 'manifest' => self::manifest(), 'context' => array( 'postId' => 52 ) );
@@ -114,7 +114,7 @@ final class BuyboxImagePriorityTest extends TestCase {
 				. ' --manifest-file ' . escapeshellarg( $files['manifest'] )
 				. ' --context-file ' . escapeshellarg( $files['context'] )
 				. ( isset( $files['queried'] ) ? ' --queried-file ' . escapeshellarg( $files['queried'] ) : '' )
-				. ( $first_section ? ' --first-section' : '' ) . ' 2>&1';
+				. ( $first_section ? ' --first-section' : ( $armed ? ' --armed' : '' ) ) . ' 2>&1';
 			$out = (string) shell_exec( $cmd );
 		} finally {
 			array_map( 'unlink', $files );
@@ -134,7 +134,6 @@ final class BuyboxImagePriorityTest extends TestCase {
 		$img = self::main_img( $this->buybox_html( false ) );
 		$this->assertNotSame( '', $img, 'the buybox prints its main photo on its main path' );
 		$this->assertStringContainsString( 'loading="lazy"', $img );
-		$this->assertStringContainsString( 'fetchpriority="auto"', $img );
 		$this->assertStringNotContainsString( 'fetchpriority="high"', $img );
 	}
 
@@ -146,15 +145,15 @@ final class BuyboxImagePriorityTest extends TestCase {
 	}
 
 	public function test_the_buybox_of_its_own_product_page_claims_the_priority_slot(): void {
-		// single-product.html prints the buybox template part before the post content, so no first section is armed
-		// there; the product page's own buybox is still the page's lead image.
-		$img = self::main_img( $this->buybox_html( false, array( 'id' => 52, 'post_type' => 'product' ) ) );
+		// single-product.html prints the buybox template part before the post content, outside any content section; the
+		// product page's own buybox is still the page's lead image, so its photo asks to load first on an armed page.
+		$img = self::main_img( $this->buybox_html( false, array( 'id' => 52, 'post_type' => 'product' ), true ) );
 		$this->assertStringContainsString( 'loading="eager"', $img );
 		$this->assertStringContainsString( 'fetchpriority="high"', $img );
 	}
 
 	public function test_a_buybox_for_another_product_on_a_product_page_does_not_claim_priority(): void {
-		$img = self::main_img( $this->buybox_html( false, array( 'id' => 99, 'post_type' => 'product' ) ) );
+		$img = self::main_img( $this->buybox_html( false, array( 'id' => 99, 'post_type' => 'product' ), true ) );
 		$this->assertStringContainsString( 'loading="lazy"', $img );
 		$this->assertStringNotContainsString( 'fetchpriority="high"', $img );
 	}
@@ -162,6 +161,6 @@ final class BuyboxImagePriorityTest extends TestCase {
 	public function test_no_buybox_partial_hardcodes_a_high_priority_image(): void {
 		$src = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/buybox/gallery-col.php' );
 		$this->assertSame( 0, preg_match( '/fetchpriority="high"/', $src ), 'the main photo decides its priority per render' );
-		$this->assertSame( 1, substr_count( $src, 'sgs_content_image_claims_priority(' ), 'the main photo asks the shared page-wide claim once' );
+		$this->assertSame( 1, substr_count( $src, 'sgs_pcm_main_image(' ), 'the main photo prints through the media renderer, which asks SGS_Media_Priority' );
 	}
 }

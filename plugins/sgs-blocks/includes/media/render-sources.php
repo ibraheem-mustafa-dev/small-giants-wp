@@ -87,9 +87,10 @@ if ( ! function_exists( 'sgs_media_normalise_source' ) ) {
 	 *
 	 * @param mixed    $raw   The device's Source object.
 	 * @param string[] $kinds The slot's allowed kinds; empty allows all.
+	 * @param bool     $unsized True for a background: an image with no attachment id may carry no width and height, because a background is a positioned layer that shifts nothing.
 	 * @return array|null `{kind,id,url,width,height,mime,alt,poster,captions,markup}`.
 	 */
-	function sgs_media_normalise_source( $raw, array $kinds ): ?array {
+	function sgs_media_normalise_source( $raw, array $kinds, bool $unsized = false ): ?array {
 		if ( ! is_array( $raw ) ) {
 			return null;
 		}
@@ -144,7 +145,7 @@ if ( ! function_exists( 'sgs_media_normalise_source' ) ) {
 			return null;
 		}
 		// FR-49-16: a file with no attachment id carries its own width and height, or nothing prints.
-		if ( 'image' === $kind && 0 === $id && ( $source['width'] <= 0 || $source['height'] <= 0 ) ) {
+		if ( ! $unsized && 'image' === $kind && 0 === $id && ( $source['width'] <= 0 || $source['height'] <= 0 ) ) {
 			return null;
 		}
 		return $source;
@@ -165,7 +166,7 @@ if ( ! function_exists( 'sgs_media_resolve_sources' ) ) {
 		$raw    = $attrs[ sgs_media_element_attr( $prefix, 'Source' ) ] ?? null;
 		$out    = array();
 		foreach ( sgs_media_device_values( $raw ) as $device => $source ) {
-			$out[ $device ] = sgs_media_normalise_source( $source, $kinds );
+			$out[ $device ] = sgs_media_normalise_source( $source, $kinds, 'background' === ( $slot['context'] ?? '' ) );
 		}
 		return $out;
 	}
@@ -221,29 +222,78 @@ if ( ! function_exists( 'sgs_media_sizes_px' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_width_model' ) ) {
+	/**
+	 * The width model of a slot's own box on one device: the box it sits in (`$avail`), divided by an item set's column
+	 * count, then held to the slot's own Width (a `vw` Width replaces it, a `%` Width takes that share) and px caps.
+	 *
+	 * An item set whose items have a fixed px width on this device (a swipe row's `scrollItemWidth`) passes it as
+	 * `$item_width`: the item is held to that width and the column division is skipped, because a fixed track does not
+	 * shrink with the column count (dividing would print a figure below the drawn box).
+	 *
+	 * @param mixed                          $width      The device's Width value (trimmed string or ''.).
+	 * @param int                            $columns    Column count of an item-set parent; 0 or 1 when not applicable.
+	 * @param mixed                          $max_width  The device's Max width value.
+	 * @param array{vw:float,off:float,cap:?float} $avail The device's layout model from `Sgs_Layout_Width::own()`.
+	 * @param mixed                          $item_width The item-set item's own px width on this device; null or '' for none.
+	 * @return array{vw:float,off:float,cap:?float}
+	 */
+	function sgs_media_width_model( $width, int $columns, $max_width, array $avail, $item_width = null ): array {
+		$width = is_string( $width ) || is_numeric( $width ) ? trim( (string) $width ) : '';
+		$model = $avail;
+		$fixed = is_string( $item_width ) || is_numeric( $item_width ) ? sgs_media_sizes_px( trim( (string) $item_width ) ) : null;
+		if ( null !== $fixed ) {
+			$model = Sgs_Layout_Width::capped( $model, $fixed );
+		} elseif ( $columns > 1 ) {
+			$model = Sgs_Layout_Width::divided( $model, $columns );
+		}
+		if ( preg_match( '/^(\d+(?:\.\d+)?)vw$/i', $width, $m ) ) {
+			$model = array(
+				'vw'  => (float) $m[1] / 100,
+				'off' => 0.0,
+				'cap' => null,
+			);
+		} elseif ( preg_match( '/^(\d+(?:\.\d+)?)%$/', $width, $m ) && (float) $m[1] > 0 && (float) $m[1] < 100 ) {
+			$model = Sgs_Layout_Width::scaled( $model, (float) $m[1] / 100 );
+		}
+		$model = Sgs_Layout_Width::capped( $model, sgs_media_sizes_px( $width ) );
+		return Sgs_Layout_Width::capped( $model, sgs_media_sizes_px( $max_width ) );
+	}
+}
+
 if ( ! function_exists( 'sgs_media_sizes_for_width' ) ) {
 	/**
 	 * The `sizes` value for one device's Width and Max width (Spec 49 §7.6).
 	 *
-	 * `px` prints WordPress's own form; `vw` is kept; `rem` and `em` are taken at 16px; anything else is `100vw`. A px
-	 * Max width caps the slot: the smaller of Width and Max width prints when both are lengths, and `min()` caps a `vw`
-	 * or column-divided width. An item in an item set divides the fallback by its column count. Lazy images get the
-	 * `auto, ` prefix.
+	 * With no `$avail` the slot's own Width and Max width are all that is known: `px` prints WordPress's own form; `vw`
+	 * is kept; `rem` and `em` are taken at 16px; anything else is `100vw`. A px Max width caps the slot, and an item in
+	 * an item set divides the fallback by its column count.
 	 *
-	 * @param mixed $width     The device's Width value.
-	 * @param bool  $lazy      True when the image loads lazily.
-	 * @param int   $columns   Column count of an item-set parent; 0 or 1 when not applicable.
-	 * @param mixed $max_width The device's Max width value; null or '' for none.
+	 * With `$avail`, the width model of the box the slot sits in (`Sgs_Layout_Width`: content width, padding, grid
+	 * columns), the slot's width is the smaller of its own px Width or Max width and that box: a `%` Width takes that
+	 * share of the box, and item-set columns divide the box. Lazy images get the `auto, ` prefix.
+	 *
+	 * @param mixed      $width     The device's Width value.
+	 * @param bool       $lazy      True when the image loads lazily.
+	 * @param int        $columns   Column count of an item-set parent; 0 or 1 when not applicable.
+	 * @param mixed      $max_width The device's Max width value; null or '' for none.
+	 * @param array|null $avail     The device's layout model `{vw,off,cap}` from `Sgs_Layout_Width::own()`; null when the layout is unknown.
+	 * @param mixed      $item_width The item-set item's fixed px width on this device (see `sgs_media_width_model()`); null for none.
 	 * @return string
 	 */
-	function sgs_media_sizes_for_width( $width, bool $lazy, int $columns = 0, $max_width = null ): string {
-		$width  = is_string( $width ) || is_numeric( $width ) ? trim( (string) $width ) : '';
-		$trim   = static function ( float $px ): string {
+	function sgs_media_sizes_for_width( $width, bool $lazy, int $columns = 0, $max_width = null, ?array $avail = null, $item_width = null ): string {
+		$width = is_string( $width ) || is_numeric( $width ) ? trim( (string) $width ) : '';
+		if ( null !== $avail && class_exists( 'Sgs_Layout_Width' ) ) {
+			$model = sgs_media_width_model( $width, $columns, $max_width, $avail, $item_width );
+			$sizes = Sgs_Layout_Width::to_sizes( $model );
+			return $lazy ? 'auto, ' . $sizes : $sizes;
+		}
+		$trim  = static function ( float $px ): string {
 			return rtrim( rtrim( number_format( $px, 2, '.', '' ), '0' ), '.' ) . 'px';
 		};
-		$px     = sgs_media_sizes_px( $width );
-		$cap    = sgs_media_sizes_px( $max_width );
-		$sizes  = '100vw';
+		$px    = sgs_media_sizes_px( $width );
+		$cap   = sgs_media_sizes_px( $max_width );
+		$sizes = '100vw';
 		if ( null !== $px ) {
 			$px    = null !== $cap ? min( $px, $cap ) : $px;
 			$sizes = sprintf( '(max-width: %1$s) 100vw, %1$s', $trim( $px ) );

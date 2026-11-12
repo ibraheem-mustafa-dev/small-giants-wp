@@ -81,7 +81,8 @@ if ( ! function_exists( 'sgs_product_card_parts_css' ) ) {
 			$css .= sgs_hover_state_rules( $root_sel, implode( ';', $shadow['hover'] ) . ';', ':focus-within' );
 		}
 
-		$media_bg = (string) ( $attributes['mediaBackgroundColour'] ?? '' );
+		// The photo slot's Background also fills the photo box and the no-photo box, so a contained photo or an empty card shows one ground.
+		$media_bg = (string) ( $attributes['imageBackground'] ?? '' );
 		if ( '' !== $media_bg ) {
 			$css .= $root_sel . ' .product-card__media,' . $root_sel . ' .sgs-product-card__media-wrap{background:' . sgs_colour_value( $media_bg ) . ';}';
 			// The no-photo box is the photo area too: the same fill, no rule under it.

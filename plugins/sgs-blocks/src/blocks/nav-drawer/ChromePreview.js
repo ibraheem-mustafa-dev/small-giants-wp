@@ -12,21 +12,8 @@ import ServerSideRender from '../../components/ServerSideRender';
 import { SsrPreviewGuard } from '../../components';
 import { resolveTier, tierLengthPreview } from '../../utils';
 import { resolveLinkSource } from '../../utils/link-source';
+import { logoUrlFor } from '../../utils/logo-source';
 import { chromeRowStyle, chromeSlotStyle, chromeLogoBoxStyle } from './chrome-preview-style';
-
-/**
- * The logo URL the given tier shows (tablet falls back to desktop, mobile to tablet).
- *
- * @param {Object} attributes Block attributes.
- * @param {string} tier       desktop | tablet | mobile.
- * @return {string} URL or ''.
- */
-function logoUrlFor( attributes, tier ) {
-	const desktop = attributes.chromeLogoUrl || '';
-	const tablet = attributes.chromeLogoUrlTablet || desktop;
-	const mobile = attributes.chromeLogoUrlMobile || tablet;
-	return { desktop, tablet, mobile }[ tier ] || '';
-}
 
 /**
  * The `sgs/google-rating-badge` attributes for the top-row rating; the same
@@ -63,7 +50,7 @@ function ratingBadgeAttributes( attributes ) {
  */
 export default function ChromePreview( { attributes, deviceTier, palette, children } ) {
 	const tier = deviceTier || 'desktop';
-	const logoUrl = logoUrlFor( attributes, tier );
+	const logoUrl = logoUrlFor( attributes.chromeLogoSource, tier );
 	const showLogo = !! logoUrl && false !== resolveTier( attributes.chromeLogoShow, tier, true ).value;
 	const type = attributes.chromeSlotType || '';
 	const text = ( attributes.chromeSlotText || '' ).trim();

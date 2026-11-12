@@ -53,7 +53,7 @@ final class BuyboxGallerySettingsTest extends TestCase {
 
 	public function test_a_sticker_prints_inside_the_photo_box_and_hides_from_assistive_technology(): void {
 		$r = $this->render( array( 'galleryStickerText' => 'baked with love' ) );
-		$this->assertMatchesRegularExpression( '/<div\s+class="product-card__media"[^>]*>.*<span class="sgs-buybox__gallery-sticker sgs-buybox__gallery-sticker--bottom-right" aria-hidden="true">baked with love<\/span>\s*<\/div>/s', $r['html'] );
+		$this->assertMatchesRegularExpression( '/<div\s+class="product-card__media[^"]*"[^>]*>.*<span class="sgs-buybox__gallery-sticker sgs-buybox__gallery-sticker--bottom-right" aria-hidden="true">baked with love<\/span>\s*<\/div>/s', $r['html'] );
 		$off = $this->render( array( 'galleryStickerText' => 'x', 'galleryStickerDecorative' => false ) );
 		$this->assertStringNotContainsString( 'sgs-buybox__gallery-sticker--bottom-right" aria-hidden', $off['html'] );
 	}

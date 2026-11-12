@@ -14,9 +14,8 @@ import { elementContext } from './fill-held.mjs';
 export { equivalentRows };
 
 const PX_TOL = 0.5;
-const RATIO_TOL = 0.02;
 // The conditions fillEquivalent evaluates.
-export const CONDITIONS = [ 'every-child-same', 'render-matches', 'intrinsic-ratio' ];
+export const CONDITIONS = [ 'every-child-same', 'render-matches' ];
 
 // The paths a block's calibration shows a resting setting for `prop` painting.
 const layoutSlots = ( cal, prop ) => Object.values( cal?.settings || {} ).filter( ( s ) => s.property === prop && ! s.state ).flatMap( ( s ) => s.slots || [ s.slot ] );
@@ -40,30 +39,8 @@ export function rendersAt( draft, rectOf, contentOf = () => null ) {
 	} );
 }
 
-// The ratio ("3741 / 848", "auto 3741 / 848", "1.5") a declared aspect-ratio states, as width over height, or null.
-export function ratioOf( raw ) {
-	const m = /(\d*\.?\d+)\s*(?:\/\s*(\d*\.?\d+))?\s*$/.exec( String( raw ?? '' ).trim() );
-	const n = m ? parseFloat( m[ 1 ] ) / ( m[ 2 ] ? parseFloat( m[ 2 ] ) : 1 ) : NaN;
-	return Number.isFinite( n ) && n > 0 ? n : null;
-}
-
-// intrinsic-ratio: the element is an image, an SVG or a logo holding one, with an intrinsic ratio (the page-read ratio of
-// its natural size, width and height attributes or viewBox, else its declared aspect-ratio), and its box keeps that ratio
-// at every width, so its width follows its height and a maximum height of the rendered height paints the same box.
-// snapOf( width ): the element's measured snapshot ({ rect, intrinsic: { ratio } }), declaredOf( width ): its declared
-// aspect-ratio. widths: the widths the draft names.
-export function intrinsicRatio( widths, snapOf, declaredOf ) {
-	return widths.length > 0 && widths.every( ( w ) => {
-		const snap = snapOf( w );
-		const ratio = snap?.intrinsic?.ratio ?? ratioOf( declaredOf( w ) );
-		// No ratio, or a box of no height, makes the quotient Infinity or NaN, which is never within the tolerance.
-		return !! snap?.rect && Math.abs( snap.rect.w / snap.rect.h / ratio - 1 ) <= RATIO_TOL;
-	} );
-}
-
 // Tries each row for one gap. h: { baselineFn( st, rec, cal, prop ), apply( st, rec, ref, target, prop, res, slot ),
-// resolve?, rendered? } from lib/fill-resolve.mjs (rendered: the rendered value per width before a used-value property
-// was cut to its plain declared widths). Returns the resolver's result ('written' or 'equal') with the row's condition,
+// resolve? } from lib/fill-resolve.mjs. Returns the resolver's result ('written' or 'equal') with the row's condition,
 // { status: 'held' } when a sibling already wrote the parent's setting, { status: 'gap', gap: 'unknown-condition' } when
 // only rows with a condition this module does not know matched, or null when no row applies.
 export function fillEquivalent( st, rec, target, prop, draft, h ) {
@@ -82,7 +59,6 @@ export function fillEquivalent( st, rec, target, prop, draft, h ) {
 			continue;
 		}
 		const key = `${ at.index }|${ row.setting_property }`;
-		let forRow = draft;
 		if ( 'every-child-same' === row.condition ) {
 			const styleOf = ( c, w ) => {
 				const s = st.reads.widths[ w ]?.[ `${ c }:` ];
@@ -100,23 +76,16 @@ export function fillEquivalent( st, rec, target, prop, draft, h ) {
 			if ( ! rendersAt( draft, ( w ) => st.reads.widths[ w ]?.[ target.id ]?.rect, ( w ) => contentExtent( { nodes: st.nodes, reads: st.reads }, rec, target, 'h', w ) ) ) {
 				continue;
 			}
-		} else if ( 'intrinsic-ratio' === row.condition ) {
-			forRow = h.rendered && Object.keys( h.rendered ).length ? h.rendered : draft;
-			if ( onParent || ! intrinsicRatio( Object.keys( forRow ).map( Number ), ( w ) => st.reads.widths[ w ]?.[ target.id ], ( w ) => st.reads.declared?.[ w ]?.[ target.id ]?.[ 'aspect-ratio' ] ) ) {
-				continue;
-			}
 		} else {
 			unknown.push( `${ row.draft_property } to ${ row.setting_property } (${ row.condition })` );
 			continue;
 		}
 		// The parent's setting paints the element that lays out its children (sgs/container's alignItems: its inner).
-		// An element of intrinsic ratio is drawn by the block's image: the setting may paint that image inside the block.
-		const ownSlots = 'intrinsic-ratio' === row.condition ? [ target.slot, ...layoutSlots( cal, row.setting_property ) ] : [ target.slot ];
-		const slots = onParent ? [ ...new Set( [ ...layoutSlots( cal, row.setting_property ), '' ] ) ] : [ ...new Set( ownSlots ) ];
+		const slots = onParent ? [ ...new Set( [ ...layoutSlots( cal, row.setting_property ), '' ] ) ] : [ target.slot ];
 		// Compared in the context of the element the setting paints: the element itself, or the parent's root.
 		const ctxTarget = onParent ? at.targets?.find( ( t ) => '' === t.slot ) : target;
 		const contextAt = ( w ) => ( ctxTarget ? elementContext( st, at, ctxTarget, w ) : {} );
-		const res = resolve( { node: st.flat[ at.index ], block: at.name, prop: row.setting_property, draft: forRow, baseline: h.baselineFn( st, at, cal, row.setting_property ), slots, calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx: {}, siblings: {}, contextAt } );
+		const res = resolve( { node: st.flat[ at.index ], block: at.name, prop: row.setting_property, draft, baseline: h.baselineFn( st, at, cal, row.setting_property ), slots, calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx: {}, siblings: {}, contextAt } );
 		if ( 'gap' === res.status ) {
 			continue;
 		}

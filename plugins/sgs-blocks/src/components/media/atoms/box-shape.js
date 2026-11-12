@@ -2,7 +2,7 @@
  * `box-shape` atom — L2b control + disclosure + validator + value-setter.
  *
  * Bean's ruling: box-shape is TWO axes, not one — the sizing MODE
- * (auto / fixed height / aspect ratio, `MediaSizingPanel`'s existing 3-way
+ * (auto / fixed height / aspect ratio, the old sizing panel's 3-way
  * model) plus a NAMED SHAPE (none / rounded / circle / square) that the
  * census's `presentation.gaps` flagged as the missing half. Height and
  * Aspect ratio stay mutually exclusive MODES (registry.js `requires`); Shape
@@ -13,16 +13,9 @@
  * ELEMENT itself (`.sgs-media-el`), NOT the block WRAPPER's border chrome —
  * `SgsBorderControl` (44 blocks) and native `__experimentalBorder`
  * (`sgs/media`) still own that outright (plugins/sgs-blocks/CLAUDE.md,
- * "Border controls"). The named-shape vocabulary is expressed ONLY through
- * `clip-path`, a different CSS property with no possible collision:
+ * "Border controls"). The named shapes themselves are the `shape` atom's.
  *
- *   none    -> no clip
- *   square  -> clip-path: inset(0)
- *   rounded -> clip-path: inset(0 round 12px) (this atom's OWN fixed
- *              decorative constant, unchanged)
- *   circle  -> clip-path: circle(50%)
- *
- * `clip-path` is the CLIP. The border's own PAINT — width/style/colour/
+ * The border's own PAINT — width/style/colour/
  * radius — is a SEPARATE, independent capability layered on top, wired
  * 2026-09-02 by feeding `SgsBorderControl` this atom's own attribute names
  * with ZERO custom logic (Bean's ruling: "take the original border helper
@@ -49,7 +42,7 @@
  * both on one node would have two radius writers on that node and needs a
  * design call before it ships, not an assumption either one wins.
  *
- * RATIO FORMAT DIVERGES — spaced `"16 / 9"` (`MediaSizingPanel`,
+ * RATIO FORMAT DIVERGES — spaced `"16 / 9"` (the old sizing panel,
  * `image-sequence/render.php` — the only server-side ratio allowlist) vs
  * unspaced `"16/10"` (`card-grid`/`gallery`/`post-grid`, free text). This
  * atom EMITS the spaced canonical form always, and READS both — see
@@ -66,7 +59,7 @@
  *
  * `css()` mirrors `includes/media/atoms/box-shape.php`'s
  * `sgs_media_atom_box_shape_css()` byte-for-byte — enforced by
- * `scripts/tests/test-media-atom-parity.mjs`.
+ * `scripts/tests/test-media-emitter-parity.mjs`.
  *
  * LOGIC HALF ONLY. Split from the JSX control per the purity contract
  * (`scripts/check-media-atom-purity.js`): this module must be importable by
@@ -83,12 +76,6 @@ import { MEDIA_ATOMS } from './registry.js';
 import { isLegacyCall, rulesFor, omitted, REASONS } from '../panels/disclosure-context.js';
 
 const ATOM_ID = 'box-shape';
-
-const CLIP_PATHS = {
-	square: 'inset(0)',
-	rounded: 'inset(0 round 12px)',
-	circle: 'circle(50%)',
-};
 
 /**
  * Border styles this atom accepts — the same allowlist `sgs/before-after`'s
@@ -277,8 +264,8 @@ function consumeAllowlistedLengthCalls( value ) {
 // next real comment-close (including this module's own `css`/`validate`/
 // `disclosure` exports, further down the file) is silently swallowed; the
 // gate then reports those exports as missing. Built via
-// `String.fromCharCode()` instead, same convention `test-media-atom-parity
-// .mjs` already uses for a bare backslash for the identical reason.
+// `String.fromCharCode()` instead (the same reason `BS` is built from char codes
+// elsewhere in the gate scripts).
 const COMMENT_OPEN = String.fromCharCode( 47, 42 );
 
 /**
@@ -560,140 +547,6 @@ function pushTierLengths( decls, name, tiers ) {
 			decls.push( `${ name }${ pair[ 1 ] }:${ val }` );
 		}
 	} );
-}
-
-/**
- * Custom-property declarations for this atom. Mirrors
- * `includes/media/atoms/box-shape.php`'s `sgs_media_atom_box_shape_css()`
- * exactly.
- *
- * @param {Object} props
- * @param {Object} props.attributes
- * @param {string} [props.prefix]
- * @param {string} [props.blockSlug]
- * @return {string[]} `--custom-property:value;` declarations, never bare rules.
- */
-export function css( { attributes, prefix = '', blockSlug = '' } ) {
-	const decls = [];
-
-	const sizingKey = mediaStoredAttrName( blockSlug, prefix, 'MediaSizing' );
-	const fitKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectFit' );
-	const mode = resolveSizingMode( attributes[ sizingKey ], attributes[ fitKey ], attributes, prefix, blockSlug );
-
-	let heightTiers = {};
-	if ( 'height' === mode ) {
-		const heightKey = mediaStoredAttrName( blockSlug, prefix, 'Height' );
-		heightTiers = resolveHeight( attributes[ heightKey ] );
-		pushTierLengths( decls, '--sgs-media-height', heightTiers );
-	}
-
-	if ( 'ratio' === mode ) {
-		const ratioKey = mediaStoredAttrName( blockSlug, prefix, 'AspectRatio' );
-		const ratio = normaliseRatio( attributes[ ratioKey ] );
-		if ( ratio ) {
-			decls.push( `--sgs-media-aspect-ratio:${ ratio }` );
-		}
-	}
-
-	const widthKey = mediaStoredAttrName( blockSlug, prefix, 'Width' );
-	const widthTiers = resolveWidth( attributes[ widthKey ] );
-	pushTierLengths( decls, '--sgs-media-width', widthTiers );
-	// A tier with a height and no width keeps the file's ratio width, not the width attribute.
-	[ [ 'desktop', '' ], [ 'tablet', '-tablet' ], [ 'mobile', '-mobile' ] ].forEach( ( pair ) => {
-		if ( cssLengthValue( heightTiers[ pair[ 0 ] ] ) && ! cssLengthValue( widthTiers[ pair[ 0 ] ] ) ) {
-			decls.push( `--sgs-media-width${ pair[ 1 ] }:auto` );
-		}
-	} );
-
-	const minHeightKey = mediaStoredAttrName( blockSlug, prefix, 'MinHeight' );
-	const minHeightRaw = attributes[ minHeightKey ];
-	const minHeightObj = minHeightRaw && 'object' === typeof minHeightRaw ? minHeightRaw : {};
-	[ [ 'desktop', '' ], [ 'tablet', '-tablet' ], [ 'mobile', '-mobile' ] ].forEach( ( pair ) => {
-		const tier = pair[ 0 ];
-		const suffix = pair[ 1 ];
-		const val = minHeightObj[ tier ];
-		if ( val ) {
-			decls.push( `--sgs-media-min-height${ suffix }:${ val }` );
-		}
-	} );
-
-	const maxWidthKey = mediaStoredAttrName( blockSlug, prefix, 'MaxWidth' );
-	pushTierLengths( decls, '--sgs-media-max-width', resolveTierStrings( attributes[ maxWidthKey ] ) );
-
-	const maxHeightKey = mediaStoredAttrName( blockSlug, prefix, 'MaxHeight' );
-	pushTierLengths( decls, '--sgs-media-max-height', resolveTierStrings( attributes[ maxHeightKey ] ) );
-
-	const shapeKey = mediaStoredAttrName( blockSlug, prefix, 'Shape' );
-	const shape = validateShape( attributes[ shapeKey ] );
-	if ( 'none' !== shape ) {
-		decls.push( `--sgs-media-clip-path:${ CLIP_PATHS[ shape ] }` );
-	}
-
-	// The border's own paint — width/style/colour/radius, ungated by `shape`
-	// (2026-09-02). Straightforward custom properties, same shape as every
-	// other decl in this atom: emitted when a real value is set, skipped
-	// entirely otherwise ("nothing for an empty attribute set").
-	const radiusKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadius' );
-	const radiusTabletKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusTablet' );
-	const radiusMobileKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusMobile' );
-	decls.push(
-		...cornerRadiusDecls( attributes[ radiusKey ], '' ),
-		...cornerRadiusDecls( attributes[ radiusTabletKey ], '-tablet' ),
-		...cornerRadiusDecls( attributes[ radiusMobileKey ], '-mobile' )
-	);
-
-	const borderWidthKey = mediaStoredAttrName( blockSlug, prefix, 'BorderWidth' );
-	const borderWidthShorthand = sidesToWidthShorthand( attributes[ borderWidthKey ] );
-	if ( borderWidthShorthand ) {
-		decls.push( `--sgs-media-border-width:${ borderWidthShorthand }` );
-	}
-
-	const borderStyleKey = mediaStoredAttrName( blockSlug, prefix, 'BorderStyle' );
-	// A width with no chosen style paints solid — the shared rule in
-	// `src/utils/border-style.js`; box-shape.css's fallback is `none`.
-	const borderStyle = validateBorderStyle( attributes[ borderStyleKey ] ) || ( borderWidthShorthand ? 'solid' : '' );
-	if ( borderStyle ) {
-		decls.push( `--sgs-media-border-style:${ borderStyle }` );
-	}
-
-	// Colour pair — gradient wins over flat colour, same rule as
-	// `overlay.js`'s `resolvePaint()`. A gradient rides `border-image`
-	// (`box-shape.css`'s `border-image-slice:1` companion) rather than
-	// `border-color`, since a single CSS custom property cannot carry the
-	// masked-::before-ring technique `sgs_border_gradient_css()` uses — that
-	// helper builds a full scoped CSS rule, and this atom's contract is
-	// custom-property VALUES only, never bare rules.
-	const borderColourKey = mediaStoredAttrName( blockSlug, prefix, 'BorderColour' );
-	const borderColourGradientKey = mediaStoredAttrName( blockSlug, prefix, 'BorderColourGradient' );
-	const borderGradient = validateBorderGradient( attributes[ borderColourGradientKey ] );
-	if ( borderGradient ) {
-		decls.push( `--sgs-media-border-image:${ borderGradient }` );
-	} else {
-		const borderColour = resolveBorderColour( attributes[ borderColourKey ] );
-		if ( borderColour ) {
-			decls.push( `--sgs-media-border-color:${ borderColour }` );
-		}
-	}
-
-	// Hover colour pair — same gradient-wins-over-flat rule, same shape as
-	// `overlay.js`'s `hoverPaint` (2026-09-07). Only ONE of the two hover
-	// custom properties is ever emitted (never both), matching the base
-	// pair above; `box-shape.css`'s `:hover`/`:focus-visible` rule falls
-	// back through `var(--x-hover, var(--x, default))` so an unset hover
-	// leaves the resting value untouched.
-	const borderColourHoverKey = mediaStoredAttrName( blockSlug, prefix, 'BorderColourHover' );
-	const borderColourHoverGradientKey = mediaStoredAttrName( blockSlug, prefix, 'BorderColourHoverGradient' );
-	const borderHoverGradient = validateBorderGradient( attributes[ borderColourHoverGradientKey ] );
-	if ( borderHoverGradient ) {
-		decls.push( `--sgs-media-border-image-hover:${ borderHoverGradient }` );
-	} else {
-		const borderHoverColour = resolveBorderColour( attributes[ borderColourHoverKey ] );
-		if ( borderHoverColour ) {
-			decls.push( `--sgs-media-border-color-hover:${ borderHoverColour }` );
-		}
-	}
-
-	return decls;
 }
 
 /**

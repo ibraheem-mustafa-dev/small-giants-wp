@@ -40,11 +40,14 @@
     ],
     "sgs/nav-bar-menu:triggerOpenLabel": [
       "includes/nav-menu-markup.php"
+    ],
+    "sgs/media:caption": [
+      "includes/media/render-slot.php"
     ]
   },
   "controlFiles": {
     "sgs/media:caption": [
-      "src/components/media/atoms/caption.control.js"
+      "src/components/media/MediaSlotCaptionText.js"
     ]
   },
   "unconvertible": {

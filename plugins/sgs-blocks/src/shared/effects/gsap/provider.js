@@ -218,7 +218,8 @@ function currentTier() {
 /**
  * Is this effect switched off on this element at the CURRENT device tier?
  *
- * Two switches are read, per tier (tablet, mobile):
+ * Two switches are read, per tier (tablet, mobile; Desktop reads only `data-sgs-fx-off-desktop`, which the server writes
+ * when the media slot behind the part shows a kind the effect does not fit there):
  *   · `data-sgs-fx-disable-<tier>`: written from the layer's per-device off
  *     setting. Present = every effect on the element is off at that tier.
  *   · `data-sgs-fx-off-<tier>`: a motion layer's `off` list (Spec 38A),
@@ -243,10 +244,10 @@ function currentTier() {
  */
 export function isDisabledAtThisTier( el, effect ) {
 	const tier = currentTier();
-	if ( tier !== 'mobile' && tier !== 'tablet' ) {
+	if ( ! tier ) {
 		return false;
 	}
-	if ( el.hasAttribute( `data-sgs-fx-disable-${ tier }` ) ) {
+	if ( tier !== 'desktop' && el.hasAttribute( `data-sgs-fx-disable-${ tier }` ) ) {
 		return true;
 	}
 	const off = el.getAttribute( `data-sgs-fx-off-${ tier }` ) || '';

@@ -20,6 +20,22 @@ import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
 /**
+ * An option's own picture fields (Spec 49 §8.3), kept when the options are rebuilt from the product's attribute terms.
+ *
+ * @param {Object} option The option being replaced.
+ * @return {Object} `{source, alt, decorative, fit, focal}`, only the ones it has.
+ */
+function pickMedia( option ) {
+	const out = {};
+	[ 'source', 'alt', 'decorative', 'fit', 'focal' ].forEach( ( key ) => {
+		if ( undefined !== option[ key ] ) {
+			out[ key ] = option[ key ];
+		}
+	} );
+	return out;
+}
+
+/**
  * Slug a WooCommerce term name into a stable value when the terms endpoint
  * doesn't resolve one — mirrors `edit.js`'s own `slugifyLabel()`.
  *
@@ -154,7 +170,7 @@ export default function ProductAttributePanel( { attributes, setAttributes, clie
 						value: slug,
 						nextStepId: existing.nextStepId || '',
 						tags: existing.tags || [],
-						image: existing.image || null,
+						...pickMedia( existing ),
 						helpText: existing.helpText || '',
 						addToBagNow: existing.addToBagNow || false,
 						isDefault: existing.isDefault || false,

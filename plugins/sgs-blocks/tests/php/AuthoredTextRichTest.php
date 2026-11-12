@@ -114,7 +114,7 @@ final class AuthoredTextRichTest extends TestCase {
 	}
 
 	public function test_media_caption_aria_name_for_a_video_is_plain_words(): void {
-		$html = $this->render_block( 'sgs/media', array( 'mediaType' => 'video', 'videoUrl' => 'https://example.test/v.mp4', 'caption' => 'A <strong>short</strong> film' ) )['html'];
+		$html = $this->render_block( 'sgs/media', array( 'source' => array( 'desktop' => array( 'kind' => 'video', 'url' => 'https://example.test/v.mp4' ) ), 'caption' => 'A <strong>short</strong> film' ) )['html'];
 		$this->assertStringContainsString( 'A <strong>short</strong> film', $html );
 		$this->assertStringNotContainsString( 'aria-label="A <', $html );
 	}

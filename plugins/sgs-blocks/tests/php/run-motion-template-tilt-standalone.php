@@ -1,7 +1,7 @@
 <?php
 /**
  * Standalone runner: a rest rotation list on an element that sits alone inside a repeated list item (Spec 27 FR-27-K6),
- * the product card's image size from the attachment, and the `%` entrance translate (Spec 38A).
+ * and the `%` entrance translate (Spec 38A).
  *
  *   php plugins/sgs-blocks/tests/php/run-motion-template-tilt-standalone.php
  *
@@ -9,7 +9,6 @@
  * - a root rest rotation list inside a query or product template prints `li:nth-child(Kn+i) > .scope` rules;
  * - the same list outside a template is refused to its first angle (no nth-child rule), and a non-root list keeps
  *   `:nth-child(Kn+i of .class)` byte-identical inside and outside a template;
- * - `sgs_product_card_image_url_at_size` takes the product's featured image by ID, so a `-300x300` URL prints the chosen size;
  * - the entrance and hover translate owners are registered `<length-percentage>` in the stylesheet and the schema.
  * Exits 1 on any failure.
  *
@@ -87,28 +86,7 @@ $check( preg_replace( '/sgs-m-[0-9a-f]{10}/', 'S', $outside ) === preg_replace( 
 // 4. The template depth returns to zero after the template.
 $check( false === Sgs_Motion_Loop_Delays::in_template_item(), 'depth is back to zero' );
 
-// 5. The product card's image size comes from the featured image by ID.
-if ( ! function_exists( 'get_post_thumbnail_id' ) ) {
-	function get_post_thumbnail_id( $post_id ) { return 77 === (int) $post_id ? 500 : 0; }
-}
-if ( ! function_exists( 'attachment_url_to_postid' ) ) {
-	function attachment_url_to_postid( $url ) { return 0; }
-}
-if ( ! function_exists( 'wp_get_attachment_image_url' ) ) {
-	function wp_get_attachment_image_url( $id, $size ) { return 500 === (int) $id ? 'https://x.test/p-' . $size . '.jpg' : false; }
-}
-if ( ! function_exists( 'esc_url' ) ) {
-	function esc_url( $u ) { return $u; }
-}
-require_once dirname( __DIR__, 2 ) . '/includes/product-card-image-size.php';
-$small = 'https://x.test/p-300x300.jpg';
-$check( 'https://x.test/p-large.jpg' === sgs_product_card_image_url_at_size( $small, 'large', 77 ), 'a 300px stored URL prints the large source via the product ID' );
-$check( $small === sgs_product_card_image_url_at_size( $small, 'large' ), 'negative control: without an ID the unresolvable URL is unchanged' );
-$check( $small === sgs_product_card_image_url_at_size( $small, '', 77 ), 'negative control: no size, no change' );
-$applied = sgs_product_card_image_size_apply( array( 'image_url' => $small, 'wc_id' => 77 ), array( 'imageSize' => 'large' ) );
-$check( 'https://x.test/p-large.jpg' === $applied['image_url'], 'imageSize large swaps the product data URL' );
-
-// 6. % translate owners.
+// 5. % translate owners.
 $css_file = file_get_contents( dirname( __DIR__, 2 ) . '/assets/css/motion.css' );
 $schema   = file_get_contents( dirname( __DIR__, 2 ) . '/schemas/motion.schema.json' );
 foreach ( array( '--sgs-me-tx', '--sgs-me-ty', '--sgs-mh-tx', '--sgs-mh-ty' ) as $prop ) {

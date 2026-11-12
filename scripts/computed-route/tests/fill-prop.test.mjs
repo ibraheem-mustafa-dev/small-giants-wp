@@ -128,3 +128,22 @@ for ( const [ group, block, attr, prop, value, baseline, slot ] of [
 		assert.equal( r.writes[ 0 ].attr, attr );
 	} );
 }
+
+// The block-setting roles whose settings the property route writes. The route picks settings by the DB's css_property
+// (lib/db.mjs::attrsFor), never by role, so a styling-mode setting of any role is written the same way (a repeater setting such as sgs/process-steps.steps is not: and a hover transform setting such as sgs/mega-panel.drawerLinkTextShiftHover cannot hold the measured matrix: both stay gaps): each role below is
+// a clone-coverage ID `block-setting:<role>:styling`, shown on a real setting of that role from the framework DB.
+for ( const [ role, block, attr, prop, value, baseline, state = null ] of [
+	[ 'colour-background', 'woocommerce/cart', 'sgsBarBackground', 'background-color', 'rgb(255, 0, 0)', 'rgba(0, 0, 0, 0)' ],
+	[ 'colour-text', 'woocommerce/cart', 'sgsBarColour', 'color', 'rgb(255, 0, 0)', 'rgb(0, 0, 0)' ],
+	[ 'enum-class-probe', 'sgs/label', 'markerIcon', 'mask-image', 'url("data:image/svg+xml,x")', 'none' ],
+] ) {
+	test( `block-setting:${ role }:styling is written by the property route: ${ prop } on ${ block } reaches ${ attr }`, () => {
+		const row = db.prepare( 'SELECT role, css_property, css_state FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );
+		assert.equal( row.role, role, `${ block }.${ attr } is a ${ role } setting in the DB` );
+		assert.equal( row.css_state, state );
+		assert.ok( row.css_property.split( ',' ).map( ( p ) => p.trim() ).includes( prop ), 'the DB lists the property the draft value is for' );
+		const r = call( { block, prop, state, draft: { 1440: value, 768: value, 375: value }, baseline: () => baseline, calibration: { elements: { '': {} }, settings: { [ attr ]: setting( row.css_property, { state } ) } } } );
+		assert.equal( r.status, 'written', `${ r.gap || '' } ${ r.detail || '' }` );
+		assert.equal( r.writes[ 0 ].attr, attr );
+	} );
+}

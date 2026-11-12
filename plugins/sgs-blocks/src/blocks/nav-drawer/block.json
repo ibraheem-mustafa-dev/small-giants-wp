@@ -19,6 +19,29 @@
 	"icon": "menu",
 	"supports": {
 		"sgs": {
+			"mediaElements": [
+				{
+					"prefix": "background",
+					"context": "background",
+					"kinds": [
+						"image",
+						"video",
+						"svg"
+					]
+				},
+				{
+					"prefix": "chromeLogo",
+					"context": "content",
+					"kinds": [
+						"image",
+						"svg"
+					],
+					"atoms": [
+						"source",
+						"meaning"
+					]
+				}
+			],
 			"motion": {
 				"opens": [
 					"root",
@@ -230,7 +253,7 @@
 						"css:box-shadow": "chromeLogoBoxShadow",
 						"css:box-shadow-color": "chromeLogoBoxShadowColour"
 					},
-					"_note": "The optional logo in the chrome row: a `<picture>` art-directed per device from chromeLogoId/chromeLogoUrl and their Tablet/Mobile siblings (the sgs/responsive-logo pattern). It opts out of the generic imageControls path on purpose, per Spec 36 FR-36-6: a logo is a different image per device, not one image with fit and focal controls. chromeLogoShow hides it per device; chromeLogoLink links it home."
+					"_note": "The optional logo in the chrome row: a `<picture>` art-directed per device from chromeLogoId/chromeLogoUrl and their Tablet/Mobile siblings (the sgs/responsive-logo pattern). It stays outside the generic image-controls path on purpose, per Spec 36 FR-36-6: a logo is a different image per device, not one image with fit and focal controls. chromeLogoShow hides it per device; chromeLogoLink links it home."
 				},
 				"chromeSlot": {
 					"selector": ".sgs-nav-drawer__chrome-slot",
@@ -295,16 +318,25 @@
 					},
 					"_note": "The free slot when chromeSlotType is `button`: a link styled by the shared built-in button emitter, sgs_button_element_style_css() with the `chromeButton` prefix (the sgs/modal and sgs/product-card precedent). Its words and typography are the chromeSlot set."
 				},
-				"decorative": {
-					"motion": false,
-					"label": "Decorative background",
-					"layer": "OUTER",
+				"background": {
+					"surface": true,
+					"prefix": "",
+					"selector": ".sgs-bg-media",
+					"label": "Background",
 					"order": 4,
 					"clusters": [],
-					"attrMap": {
-						"css:background-image": "backgroundImage"
-					},
-					"_note": "The `.{uid}::before` pseudo-element background-media layer. Declared to resolve a routing collision: `backgroundImage` and `drawerBgGradient` would BOTH resolve to css_property=background-image on css_element=wrapper, identical on every routing axis, so db-consistency would report AmbiguousLayerAttrError (cssprop:ambiguous:sgs/nav-drawer:background-image:OUTER:wrapper::) and the clone-time resolver would pick by rowid. They are NOT the same target: render.php states the image paints on `.{uid}::before` and NEVER on the dialog root, precisely because the root already carries drawerBg/drawerBgGradient and a background-image there would overwrite the gradient rather than layer with it. Mirrors sgs/container's media-LAYER pattern. Only backgroundImage is claimed here; the size/position/repeat/attachment companions keep their existing routing."
+					"availableWhen": {"slot": "background", "kinds": ["image"]},
+					"_note": "`.sgs-bg-media`, the first child of the dialog when the drawer has a background (picture, tile layer, video or SVG). A motion target so a Ken Burns layer moves the background alone, never the drawer's content; it declares no style clusters because its look is governed by the Background panel."
+				},
+				"background-video": {
+					"surface": true,
+					"prefix": "",
+					"selector": ".sgs-bg-media",
+					"label": "Background video",
+					"order": 5,
+					"clusters": [],
+					"availableWhen": {"slot": "background", "kinds": ["video"]},
+					"_note": "The same `.sgs-bg-media` element when a device shows a video: an effect that suits video reaches it through this part."
 				}
 			},
 			"spacingDefaults": {
@@ -515,34 +547,6 @@
 			"type": "string",
 			"default": "",
 			"description": "Top row gradient fill; non-empty wins over chromeRowBg."
-		},
-		"chromeLogoId": {
-			"type": "number",
-			"description": "Top row logo, desktop: media library attachment ID. Wins over chromeLogoUrl."
-		},
-		"chromeLogoUrl": {
-			"type": "string",
-			"default": "",
-			"role": "content",
-			"description": "Top row logo URL, desktop, stored alongside the ID."
-		},
-		"chromeLogoIdTablet": {
-			"type": "number",
-			"description": "Tablet logo attachment ID; unset uses the desktop logo."
-		},
-		"chromeLogoUrlTablet": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"chromeLogoIdMobile": {
-			"type": "number",
-			"description": "Mobile logo attachment ID; unset uses the tablet logo."
-		},
-		"chromeLogoUrlMobile": {
-			"type": "string",
-			"default": "",
-			"role": "content"
 		},
 		"chromeLogoAlt": {
 			"type": "string",
@@ -1004,46 +1008,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"backgroundImage": {
-			"type": "object",
-			"default": {}
-		},
-		"backgroundImageDecorative": {
-			"type": "boolean",
-			"default": true,
-			"_comment": "Spec 35 item 18 / {element}Decorative convention. render.php paints this image as a CSS background (::before layer), never a frontend <img> — the only literal <img> is the operator-only preview thumbnail in edit.js. Default true documents that. When explicitly set false with alt text on the picked image, render.php adds an aria-describedby hidden note to the dialog (the dialog's own aria-label is already claimed for the drawer's accessible name, so the image description is layered on rather than overwriting it)."
-		},
-		"backgroundSize": {
-			"type": "string",
-			"default": "cover",
-			"enum": [
-				"cover",
-				"contain",
-				"auto"
-			]
-		},
-		"backgroundPosition": {
-			"type": "string",
-			"default": "center center"
-		},
-		"backgroundRepeat": {
-			"type": "string",
-			"default": "no-repeat",
-			"enum": [
-				"no-repeat",
-				"repeat",
-				"repeat-x",
-				"repeat-y"
-			]
-		},
-		"backgroundAttachment": {
-			"type": "string",
-			"default": "scroll",
-			"enum": [
-				"scroll",
-				"fixed"
-			]
-		},
 		"drawerTextColour": {
 			"type": "string",
 			"default": ""
@@ -1222,7 +1186,31 @@
 				"italic"
 			],
 			"default": ""
-		}
+		},
+		"backgroundSource": {"type":"object","_generated":"media-atoms"},
+		"backgroundLoading": {"type":"string","_generated":"media-atoms"},
+		"backgroundAlt": {"type":"string","_generated":"media-atoms"},
+		"backgroundDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundFit": {"type":"object","_generated":"media-atoms"},
+		"backgroundRepeat": {"type":"object","_generated":"media-atoms"},
+		"backgroundTileSize": {"type":"object","_generated":"media-atoms"},
+		"backgroundFocal": {"type":"object","_generated":"media-atoms"},
+		"backgroundPinned": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundOverlayColour": {"type":"string","_generated":"media-atoms"},
+		"backgroundOverlayColourHover": {"type":"string","_generated":"media-atoms"},
+		"backgroundOverlayGradient": {"type":"string","_generated":"media-atoms"},
+		"backgroundOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
+		"backgroundOverlayOpacity": {"type":"object","_generated":"media-atoms"},
+		"backgroundOverlayBlend": {"type":"string","_generated":"media-atoms"},
+		"backgroundOpacity": {"type":"object","_generated":"media-atoms"},
+		"backgroundSvgLayer": {"type":"string","_generated":"media-atoms"},
+		"backgroundSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundSvgParts": {"type":"array","default":[],"_generated":"media-atoms"},
+		"backgroundSvgPartsTrigger": {"type":"string","_generated":"media-atoms"},
+		"backgroundPlayback": {"type":"object","_generated":"media-atoms"},
+		"chromeLogoSource": {"type":"object","_generated":"media-atoms"},
+		"chromeLogoLoading": {"type":"string","_generated":"media-atoms"},
+		"chromeLogoDecorative": {"type":"boolean","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

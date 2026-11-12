@@ -8,6 +8,7 @@ import re
 from typing import Any
 
 import mapping as M
+import sizes as S
 import transform as T
 import values as V
 from mapping import DEVICES, TIERS, TIER_DEVICE
@@ -44,10 +45,21 @@ def object_entry(value: Any):
     return entry, value.get("alt") if isinstance(value.get("alt"), str) else "", extra
 
 
+def _carry_object_alt(ctx: T.Ctx, target: str, alt: str) -> None:
+    """The old media object's `alt` is the slot's Alt (`headerLogoSource` -> `headerLogoAlt`), when the block declares that attribute
+    and nothing is stored there; a Source entry holds only a per-device alt that differs."""
+    name = target[: -len("Source")] + "Alt" if target.endswith("Source") else ""
+    declared = M.live_declared_attributes().get(ctx.block, set())
+    if alt and name in declared and not ctx.has(name):
+        ctx.put(name, alt)
+        ctx.events.append(("converted", target, name, "the old media object's alt"))
+
+
 def _source_from_objects(ctx: T.Ctx, names: dict, target: str, id_name: str | None = None, flat_id: str | None = None) -> bool:
     """names: {device: attribute holding an object or URL}. Writes the R Source; returns whether it was written."""
     source: dict = {}
     consumed = []
+    desktop_alt = ""
     for device in DEVICES:
         name = names.get(device)
         if not name or not ctx.has(name):
@@ -57,6 +69,10 @@ def _source_from_objects(ctx: T.Ctx, names: dict, target: str, id_name: str | No
             consumed.append(name)
             continue
         entry, alt, extra = got
+        if alt and device == "desktop":
+            desktop_alt = alt
+        elif alt:
+            entry["alt"] = alt
         if extra:
             ctx.keep(name, "refused", f"unexpected keys {extra} in a media object")
             return False
@@ -69,6 +85,7 @@ def _source_from_objects(ctx: T.Ctx, names: dict, target: str, id_name: str | No
     if source:
         existing = ctx.get(target) if isinstance(ctx.get(target), dict) else {}
         ctx.put(target, {**existing, **source})
+        _carry_object_alt(ctx, target, desktop_alt)
     for name in consumed + ([flat_id] if flat_id and ctx.has(flat_id) else []):
         ctx.drop(name, "converted", target)
     return bool(source)
@@ -76,15 +93,27 @@ def _source_from_objects(ctx: T.Ctx, names: dict, target: str, id_name: str | No
 
 # ---------------------------------------------------------------- background family
 
+NO_MIN_HEIGHT = {"sgs/multi-button": "keep", "sgs/nav-drawer": "delete"}
+SVG_LAYER_KEPT = ("bgSvgContent", "bgSvgPosition", "bgSvgOpacity", "bgSvgMinHeight", "bgSvgTextShadow")
+
+
+def _kept_svg_layer(ctx: T.Ctx, has_svg: bool, names: list[str]) -> bool:
+    """True when the block's SVG stays on its own SVG layer: kinds are exclusive per device, so an SVG saved beside an image or
+    video (old attributes still present, or an image or video already in `backgroundSource`) is never moved into the Source."""
+    if not has_svg:
+        return False
+    if any(object_entry(ctx.get(n)) for n in names):
+        return True
+    existing = ctx.get("backgroundSource")
+    return isinstance(existing, dict) and any(isinstance(e, dict) and e.get("kind") not in (None, "svg") for e in existing.values())
+
+
 def migrate_background(ctx: T.Ctx) -> None:
     image = {d: ("backgroundImage" + t) for t, d in ((t, TIER_DEVICE[t]) for t in TIERS) if ctx.has("backgroundImage" + t)}
     video = {d: ("bgVideo" + t) for t, d in ((t, TIER_DEVICE[t]) for t in TIERS) if ctx.has("bgVideo" + t)}
     svg = ctx.get("bgSvgContent")
     has_svg = isinstance(svg, str) and svg.strip() != ""
-    if has_svg and (image or video):
-        for name in ("bgSvgContent", *image.values(), *video.values()):
-            ctx.keep(name, "refused", "an SVG background combined with an image or video: kinds are exclusive per device")
-        return
+    keep_layer = _kept_svg_layer(ctx, has_svg, [*image.values(), *video.values()])
     source: dict = {}
     consumed: list[str] = []
     alt_text = ""
@@ -112,7 +141,7 @@ def migrate_background(ctx: T.Ctx) -> None:
             elif got:
                 ctx.keep(image[device], "refused", f"unexpected keys {got[2]} in a media object")
                 return
-    if has_svg:
+    if has_svg and not keep_layer:
         source["desktop"] = {"kind": "svg", "markup": svg}
         consumed.append("bgSvgContent")
     if source:
@@ -124,8 +153,17 @@ def migrate_background(ctx: T.Ctx) -> None:
         ctx.drop(name, "converted", "backgroundSource")
     # Background fit, focal point, pinned and repeat.
     if any(ctx.has(n) for n in ("backgroundSize", "backgroundRepeat", "backgroundAttachment", "backgroundPosition")):
+        _background_repeat_under_fill(ctx)
         T.migrate_background_fit(ctx)
-    # SVG presentation.
+    # SVG presentation. A kept SVG layer keeps its own settings (names in SVG_LAYER_KEPT); only its parts move.
+    if keep_layer:
+        for old in ("bgSvgParts", "bgSvgPartsTrigger"):
+            new = "background" + old[2:]
+            if ctx.has(old):
+                ctx.put(new, ctx.get(old))
+                ctx.drop(old, "converted", new)
+        _tail_overlay(ctx)
+        return
     layer = ctx.get("bgSvgPosition")
     if layer is not None:
         mapped = {"background": "behind", "foreground": "front"}.get(layer)
@@ -133,14 +171,20 @@ def migrate_background(ctx: T.Ctx) -> None:
             ctx.put("backgroundSvgLayer", mapped)
             ctx.drop("bgSvgPosition", "converted", "backgroundSvgLayer")
         else:
-            ctx.keep("bgSvgPosition", "refused", f"layer order {layer!r} not recognised")
+            ctx.put("backgroundSvgLayer", "behind")
+            ctx.drop("bgSvgPosition", "converted", "backgroundSvgLayer",
+                     f"layer order {layer!r} is not background or foreground: the old render fell back to background (behind)")
     opacity = V.to_number(ctx.get("bgSvgOpacity"))
     if ctx.has("bgSvgOpacity"):
         if opacity is not None and opacity != 100 and "desktop" in source and source["desktop"].get("kind") == "svg":
             ctx.put("backgroundOpacity", {"desktop": opacity})
         ctx.drop("bgSvgOpacity", "converted", "backgroundOpacity", "100 is the default")
     min_height = ctx.get("bgSvgMinHeight")
-    if ctx.has("bgSvgMinHeight"):
+    if ctx.has("bgSvgMinHeight") and ctx.block in NO_MIN_HEIGHT:
+        # These blocks declare no `minHeight` to receive it: multi-button keeps its own bgSvgMinHeight, nav-drawer never had one.
+        if NO_MIN_HEIGHT[ctx.block] == "delete":
+            ctx.drop("bgSvgMinHeight", "deleted", "", "nav-drawer declares neither bgSvgMinHeight nor minHeight")
+    elif ctx.has("bgSvgMinHeight"):
         text = V.length_string(min_height)
         if text:
             existing = V.device_values(ctx.get("minHeight")) if ctx.has("minHeight") else {}
@@ -156,6 +200,36 @@ def migrate_background(ctx: T.Ctx) -> None:
         if ctx.has(old):
             ctx.put(new, ctx.get(old))
             ctx.drop(old, "converted", new)
+    _tail_overlay(ctx)
+
+
+def _background_repeat_under_fill(ctx: T.Ctx) -> None:
+    """An old size of cover (the old default when none was saved) or contain stays Fit cover or contain: the old renderer only
+    honoured cover, contain and auto, so a tiled repeat beside cover or contain was never a tile. Only an old size of auto with a
+    repeat becomes Fit tile (T.migrate_background_fit). Contain with a repeat drew copies of the contained image; Fit contain
+    draws one, and the dropped repeat says so."""
+    size = ctx.get("backgroundSize") if isinstance(ctx.get("backgroundSize"), str) else None
+    repeat = ctx.get("backgroundRepeat")
+    if not (isinstance(repeat, str) and repeat in T.REPEATS) or size not in (None, "cover", "contain"):
+        return
+    note = ("repeat is inert under cover" if size in (None, "cover")
+            else "repeat beside contain drew copies of the contained image; Fit contain draws one")
+    ctx.drop("backgroundRepeat", "deleted", "", note)
+
+
+def _overlay_gradient_names(ctx: T.Ctx) -> None:
+    """overlayGradient and overlayGradientHover are the overlay family's gradients under their old names."""
+    for old, new in (("overlayGradient", "backgroundOverlayGradient"), ("overlayGradientHover", "backgroundOverlayGradientHover")):
+        if not ctx.has(old):
+            continue
+        if not ctx.has(new) and isinstance(ctx.get(old), str) and ctx.get(old).strip():
+            ctx.put(new, ctx.get(old))
+        ctx.drop(old, "converted", new)
+
+
+def _tail_overlay(ctx: T.Ctx) -> None:
+    """Overlay gradient and blend renames and the pinned overlay-strength default."""
+    _overlay_gradient_names(ctx)
     if ctx.has("backgroundOverlayBlendMode"):
         ctx.put("backgroundOverlayBlend", ctx.get("backgroundOverlayBlendMode"))
         ctx.drop("backgroundOverlayBlendMode", "converted", "backgroundOverlayBlend")
@@ -179,6 +253,16 @@ def migrate_extras(ctx: T.Ctx) -> None:
         if b != block or not ctx.has(old):
             continue
         value = ctx.get(old)
+        if (b, old) in M.CLAMPS:
+            number = V.to_number(value)
+            if number is None:
+                ctx.keep(old, "refused", f"{value!r} is not a number")
+                continue
+            low, high = M.CLAMPS[(b, old)]
+            value = max(low, min(high, int(abs(number))))
+            if value == M.CLAMP_DEFAULTS.get((b, old)):
+                ctx.drop(old, "deleted", "", f"{value} is the old default and the new block's own default")
+                continue
         if family == "delete":
             ctx.drop(old, "deleted", "", target)
         elif family == "rename":
@@ -191,7 +275,8 @@ def migrate_extras(ctx: T.Ctx) -> None:
                 ctx.put(target, True)
             ctx.drop(old, "converted", target)
         elif family == "report":
-            ctx.keep(old, "reported", target)
+            if (ctx.block, old) not in M.REPORT_EXEMPT:
+                ctx.keep(old, "reported", target)
         elif family == "fit":
             fit = value if isinstance(value, dict) else ({"desktop": value} if value in T.FIT_OK else {})
             if fit:
@@ -203,14 +288,51 @@ def migrate_extras(ctx: T.Ctx) -> None:
             _plain_shape(ctx, old, target, value)
         elif family == "radius":
             _plain_radius(ctx, old, target, value)
+        elif family == "sides":
+            _plain_sides(ctx, old, target, value)
         elif family == "opacity":
             _plain_opacity(ctx, old, target, value)
         elif family == "alt":
-            if isinstance(value, bool) or isinstance(value, str):
+            if value == "" and target != old:
+                ctx.drop(old, "deleted", "", "an empty alt is the default")
+            elif isinstance(value, bool) or isinstance(value, str):
                 _move(ctx, old, target, value)
         elif family == "source":
             pass  # handled by migrate_object_sources
+        elif family == "fold":
+            pass  # handled by migrate_before_after_playback
     migrate_object_sources(ctx)
+    migrate_before_after_playback(ctx)
+
+
+def migrate_before_after_playback(ctx: T.Ctx) -> None:
+    """`videoAutoplay` drove the autoplay of any video side of sgs/before-after (the old front end read it for both sides). Each side
+    whose migrated Source holds a video gets `{side}Playback` with autoplay, merged into a Playback the side already has. The
+    Tablet and Mobile values are dropped: Playback is not per device. With no video side the old values painted nothing."""
+    if ctx.block != "sgs/before-after":
+        return
+    names = [n for n in ("videoAutoplay", "videoAutoplayTablet", "videoAutoplayMobile") if ctx.has(n)]
+    if not names:
+        return
+    desktop = ctx.get("videoAutoplay")
+    sides = []
+    for side in ("before", "after"):
+        source = ctx.get(f"{side}Source")
+        if isinstance(source, dict) and any(isinstance(e, dict) and e.get("kind") == "video" for e in source.values()):
+            sides.append(side)
+    for side in sides:
+        playback = dict(ctx.get(f"{side}Playback")) if isinstance(ctx.get(f"{side}Playback"), dict) else {}
+        if isinstance(desktop, bool):
+            playback["autoplay"] = desktop
+        if playback:
+            ctx.put(f"{side}Playback", playback)
+    for name in names:
+        if not sides:
+            ctx.drop(name, "deleted", "", "inert: neither side shows a video")
+        elif name == "videoAutoplay":
+            ctx.drop(name, "converted", ", ".join(f"{s}Playback" for s in sides))
+        else:
+            ctx.drop(name, "deleted", "", "Playback is not per device: the desktop value is written")
 
 
 def _move(ctx: T.Ctx, old: str, target: str, value: Any) -> None:
@@ -281,11 +403,31 @@ def _plain_radius(ctx: T.Ctx, old: str, target: str, value: Any) -> None:
     _move(ctx, old, target, new)
 
 
+def _plain_sides(ctx: T.Ctx, old: str, target: str, value: Any) -> None:
+    """A border width stored as one length string becomes the Sides object (top, right, bottom, left; not per device)."""
+    if isinstance(value, str) and value.strip():
+        _move(ctx, old, target, {side: value.strip() for side in V.SIDES})
+    elif isinstance(value, str):
+        ctx.drop(old, "deleted", "", "empty string is the default")
+    elif isinstance(value, dict) and any(k in value for k in V.SIDES):
+        return
+    elif value not in (None, {}):
+        ctx.keep(old, "refused", "border width is not a length or a sides object")
+
+
 def _plain_shape(ctx: T.Ctx, old: str, target: str, value: Any) -> None:
     if not isinstance(value, str):
         return
     prefix = target[: -len("Shape")]
     radius, shape = M.attr_name(prefix, "Radius"), M.attr_name(prefix, "Shape")
+    drawn = M.OLD_SHAPE_DRAWN.get(ctx.block)
+    if drawn is not None:
+        if value in drawn:
+            ctx.drop(old, "converted", shape, f"{value!r} drew a {drawn[value]} dot")
+            ctx.put(shape, {"desktop": {"shape": drawn[value]}})
+        else:
+            ctx.drop(old, "deleted", "", f"the old render drew nothing for shape {value!r}")
+        return
     if value in ("", "none", "square"):
         if M.old_default(ctx.block, old) not in (None, "", "none", "square"):
             ctx.drop(old, "converted", shape, f"{value!r} written as an explicit none: the old default {M.old_default(ctx.block, old)!r} must not return")
@@ -367,6 +509,9 @@ ITEM_SETS = (
     ("sgs/card-grid", "items", "card"),
     ("sgs/form-field-tiles", "tiles", "tile"),
     ("sgs/option-picker", "optionItems", "option"),
+    ("sgs/timeline", "entries", "timeline"),
+    ("sgs/choice-flow-question", "options", "option"),
+    ("sgs/trust-bar", "items", "card"),
 )
 
 
@@ -378,9 +523,44 @@ def migrate_items(ctx: T.Ctx) -> None:
         out = []
         for item in items:
             out.append(_item(ctx, attr, item, shape))
+        if shape == "timeline":
+            out = _timeline_decorative(ctx, out)
         if out != items:
             ctx.put(attr, out)
             ctx.events.append(("converted", attr, attr, f"{len(items)} items"))
+
+
+def _timeline_entry(new: dict):
+    """A timeline entry's old `image` id (with its `imageUrl` companion), `video` object or `svg` as a Source entry.
+
+    The old keys are removed whether or not the entry had media (an `image` of 0 is no media). An SVG entry has no
+    Source kind on this slot (§10.4: image and video), so it is returned as None and the entry keeps its old keys.
+    """
+    kind = new.get("mediaType") or "image"
+    if kind == "svg" and isinstance(new.get("svg"), str) and new["svg"].strip():
+        return None
+    entry = None
+    if kind == "video":
+        got = object_entry(new.get("video"))
+        entry = got[0] if got else None
+    else:
+        ident = V.to_number(new.get("image"))
+        if ident:
+            entry = {"kind": "image", "id": int(ident)}
+            if isinstance(new.get("imageUrl"), str) and new["imageUrl"]:
+                entry["url"] = new["imageUrl"]
+    for key in ("image", "imageUrl", "mediaType", "video", "svg"):
+        new.pop(key, None)
+    return entry or {}
+
+
+def _timeline_decorative(ctx: T.Ctx, entries: list):
+    """`milestoneMediaDecorative` (one switch for every picture) becomes each entry's own `decorative`."""
+    if ctx.get("milestoneMediaDecorative") is True:
+        entries = [dict(e, decorative=True) if isinstance(e, dict) and "source" in e else e for e in entries]
+    if ctx.has("milestoneMediaDecorative"):
+        ctx.drop("milestoneMediaDecorative", "converted", "entries[].decorative", "folded into each entry")
+    return entries
 
 
 def _item(ctx: T.Ctx, attr: str, item: Any, shape: str):
@@ -400,6 +580,12 @@ def _item(ctx: T.Ctx, attr: str, item: Any, shape: str):
             entry = got[0] if got else None
             for key in ("id", "url", "mime", "width", "height"):
                 new.pop(key, None)
+    elif shape == "timeline":
+        entry = _timeline_entry(new)
+        if entry is None:
+            return item
+        if not entry:
+            return new
     else:
         key = {"card": "media", "tile": "image", "option": "image"}[shape]
         got = object_entry(new.pop(key, None))
@@ -440,8 +626,248 @@ def apply_pins(ctx: T.Ctx) -> None:
                 ctx.put("photoRatio", {"desktop": "1 / 1"})
 
 
+GRAYSCALE_STATE = {
+    "preset": "hover-grayscale-to-colour",
+    "values": {"duration": "token:duration.medium", "easing": "token:easing.emphasised", "grayscale": 0, "restGrayscale": 1},
+}
+
+
+def migrate_hover_grayscale(ctx: T.Ctx) -> None:
+    """Grey to colour is the image part's Hover state: the old switch becomes that state and the attribute goes.
+
+    A switch that is off is deleted. A part that already holds a Hover state keeps it and the switch is refused, so
+    nothing a client set is overwritten.
+    """
+    rule = M.HOVER_GRAYSCALE.get(ctx.block)
+    if not rule or not ctx.has(rule[0]):
+        return
+    name, on, part, source = rule
+    value = ctx.get(name)
+    if value != on:
+        if name == "imageEffect":
+            return  # sepia and none stay on the attribute
+        ctx.drop(name, "deleted", "", "off is the default")
+        return
+    motion = ctx.get("sgsMotion")
+    if motion is None:
+        motion = {"v": 1, "elements": {}}
+    if not isinstance(motion, dict) or not isinstance(motion.get("elements", {}), dict):
+        ctx.keep(name, "refused", "sgsMotion is not an object: the Hover state cannot be added")
+        return
+    elements = motion.setdefault("elements", {})
+    held = elements.get(part)
+    state = held["hover"].get("state") if isinstance(held, dict) and isinstance(held.get("hover"), dict) else None
+    if state:
+        # A zoom (or other values) already on the part joins the grey to colour values in the one state, when the same trigger drives both.
+        if state.get("preset") or state.get("source", "root") != source or not isinstance(state.get("values"), dict):
+            ctx.keep(name, "refused", f"the {part} part already holds a different Hover state")
+            return
+        state["values"] = {**state["values"], "grayscale": 0, "restGrayscale": 1}
+        state["source"] = source
+        ctx.put("sgsMotion", motion)
+        ctx.drop(name, "converted", f"sgsMotion.elements.{part}.hover.state")
+        return
+    elements[part] = {**(held if isinstance(held, dict) else {}), "hover": {**((held or {}).get("hover") or {}), "state": {"source": source, **copy.deepcopy(GRAYSCALE_STATE)}}}
+    ctx.put("sgsMotion", motion)
+    ctx.drop(name, "converted", f"sgsMotion.elements.{part}.hover.state")
+
+
+# ---------------------------------------------------------------- hover and effect settings that became motion layers
+
+def _motion_root(ctx: T.Ctx, name: str):
+    """The block's `sgsMotion` object ready to take a layer ({"v": 1, "elements": {}} when it has none), or None after refusing `name`."""
+    motion = ctx.get("sgsMotion")
+    if motion is None:
+        motion = {"v": 1, "elements": {}}
+    if not isinstance(motion, dict) or not isinstance(motion.setdefault("elements", {}), dict):
+        ctx.keep(name, "refused", "sgsMotion is not an object: the layer cannot be added")
+        return None
+    return motion
+
+
+def _part_ready(ctx: T.Ctx, name: str, part: str) -> bool:
+    if part in M.live_motion_parts().get(ctx.block, set()):
+        return True
+    ctx.keep(name, "refused", f"{ctx.block} declares no {part} part that takes motion: the layer cannot be added")
+    return False
+
+
+def add_hover_state(ctx: T.Ctx, name: str, part: str, source: str, values: dict) -> bool:
+    """Add `values` to the part's Hover state (`sgsMotion.elements.<part>.hover.state`). A part that already holds a state with the same
+    trigger and no preset takes the values it lacks; a different trigger, a preset or a different value for the same key refuses `name`
+    and leaves the saved state as it is, so nothing a client set is overwritten. True when written."""
+    if not _part_ready(ctx, name, part):
+        return False
+    motion = _motion_root(ctx, name)
+    if motion is None:
+        return False
+    elements = motion["elements"]
+    held = elements.get(part) if isinstance(elements.get(part), dict) else {}
+    hover = held.get("hover") if isinstance(held.get("hover"), dict) else {}
+    state = hover.get("state")
+    if state:
+        held_values = state.get("values") if isinstance(state, dict) else None
+        if (not isinstance(held_values, dict) or state.get("preset") or state.get("source", "root") != source
+                or any(k in held_values and held_values[k] != v for k, v in values.items())):
+            ctx.keep(name, "refused", f"the {part} part already holds a different Hover state")
+            return False
+        state["values"] = {**values, **held_values}
+        state["source"] = source
+    else:
+        elements[part] = {**held, "hover": {**hover, "state": {"source": source, "values": dict(values)}}}
+    ctx.put("sgsMotion", motion)
+    return True
+
+
+def add_effect_layer(ctx: T.Ctx, name: str, part: str, layer: dict) -> bool:
+    """Append an effect layer to `sgsMotion.elements.<part>.effects`; refuses `name` when the part already holds a layer of that effect."""
+    if not _part_ready(ctx, name, part):
+        return False
+    motion = _motion_root(ctx, name)
+    if motion is None:
+        return False
+    elements = motion["elements"]
+    held = elements.get(part) if isinstance(elements.get(part), dict) else {}
+    effects = held.get("effects") if isinstance(held.get("effects"), list) else []
+    if any(isinstance(e, dict) and e.get("effect") == layer["effect"] for e in effects):
+        ctx.keep(name, "refused", f"the {part} part already holds a {layer['effect']} layer")
+        return False
+    elements[part] = {**held, "effects": [*effects, layer]}
+    ctx.put("sgsMotion", motion)
+    return True
+
+
+def _tidy(number: float):
+    rounded = round(number, 4)
+    return int(rounded) if rounded == int(rounded) else rounded
+
+
+def _zoom_numbers(ctx: T.Ctx, scale: float, duration: int):
+    """The scale and duration `sgsHoverZoom` (percent above 100) and `sgsHoverZoomDuration` (ms above 0) saved over the block's own."""
+    percent, millis = V.to_number(ctx.get("sgsHoverZoom")), V.to_number(ctx.get("sgsHoverZoomDuration"))
+    if percent is not None and percent > 100:
+        scale = _tidy(percent / 100)
+    if millis is not None and millis > 0:
+        duration = int(millis)
+    return scale, duration
+
+
+ZOOM_READ_NOTE = "the old runtime read the zoom percent and duration only while the photo zoom was on"
+
+
+def migrate_image_zoom_hover(ctx: T.Ctx) -> None:
+    """`imageZoomHover` on: the image part's Hover state with the look the switch drew (`mapping.HOVER_IMAGE_ZOOM`), the saved
+    `sgsHoverZoom` and `sgsHoverZoomDuration` overriding scale and duration. Off: nothing to draw, so the attribute (and the percent
+    and duration that only applied while it was on) is deleted."""
+    rule = M.HOVER_IMAGE_ZOOM.get(ctx.block)
+    if not rule or not ctx.has("imageZoomHover"):
+        return
+    part, source, scale, duration, easing = rule
+    flag = ctx.get("imageZoomHover")
+    if flag in (False, None, ""):
+        ctx.drop("imageZoomHover", "deleted", "", "off: the photo did not zoom on hover")
+        for name in ("sgsHoverZoom", "sgsHoverZoomDuration"):
+            ctx.drop(name, "deleted", "", ZOOM_READ_NOTE)
+        return
+    if flag is not True:
+        ctx.keep("imageZoomHover", "refused", f"{flag!r} is not a boolean")
+        return
+    scale, duration = _zoom_numbers(ctx, scale, duration)
+    if add_hover_state(ctx, "imageZoomHover", part, source, {"scale": scale, "duration": duration, "easing": easing}):
+        target = f"sgsMotion.elements.{part}.hover.state"
+        for name in ("imageZoomHover", "sgsHoverZoom", "sgsHoverZoomDuration"):
+            ctx.drop(name, "converted", target)
+
+
+def migrate_extension_zoom_hover(ctx: T.Ctx) -> None:
+    """The universal Hover Effects extension's photo zoom (`sgsHoverImageZoom` with `sgsHoverZoom` and `sgsHoverZoomDuration`) on a block
+    with no switch of its own (`mapping.HOVER_EXTENSION_ZOOM`): on becomes the part's Hover state triggered by the whole block; off or
+    absent deletes the percent and duration, which the old runtime ignored then."""
+    rule = M.HOVER_EXTENSION_ZOOM.get(ctx.block)
+    names = ("sgsHoverImageZoom", "sgsHoverZoom", "sgsHoverZoomDuration")
+    if not rule or not any(ctx.has(n) for n in names):
+        return
+    part, scale, duration = rule
+    flag = ctx.get("sgsHoverImageZoom")
+    if flag is not True:
+        if flag not in (False, None, ""):
+            ctx.keep("sgsHoverImageZoom", "refused", f"{flag!r} is not a boolean")
+            return
+        for name in names:
+            ctx.drop(name, "deleted", "", "off: the photo did not zoom on hover" if name == "sgsHoverImageZoom" else ZOOM_READ_NOTE)
+        return
+    scale, duration = _zoom_numbers(ctx, scale, duration)
+    if add_hover_state(ctx, "sgsHoverImageZoom", part, "root", {"scale": scale, "duration": duration, "easing": "ease"}):
+        for name in names:
+            ctx.drop(name, "converted", f"sgsMotion.elements.{part}.hover.state")
+
+
+def migrate_scale_hover(ctx: T.Ctx) -> None:
+    """`sgs/icon`'s `scaleHover` (the scale factor the icon grew to on hover) becomes the shape part's Hover state; 1 grew nothing."""
+    rule = M.HOVER_SCALE.get(ctx.block)
+    if not rule or not ctx.has("scaleHover"):
+        return
+    part, source = rule
+    number = V.to_number(ctx.get("scaleHover"))
+    if number is None or not 0 < number <= 4:
+        ctx.keep("scaleHover", "refused", f"{ctx.get('scaleHover')!r} is not a scale from above 0 to 4")
+    elif number == 1:
+        ctx.drop("scaleHover", "deleted", "", "1 scales nothing")
+    elif add_hover_state(ctx, "scaleHover", part, source, {"scale": _tidy(number)}):
+        ctx.drop("scaleHover", "converted", f"sgsMotion.elements.{part}.hover.state")
+
+
+SPLIT_MOTION_PART = "split-media"
+SPLIT_KEN_BURNS = {"mode": "loop", "zoomStart": 100, "zoomEnd": 106, "easing": "ease-in-out"}
+SPLIT_PARALLAX_RATIO = 0.01
+
+
+def migrate_hero_split_motion(ctx: T.Ctx) -> None:
+    """The hero's split media Ken Burns and parallax (`splitMediaKenBurns`, `splitMediaAnimationDuration`, `splitMediaParallax`) become effect
+    layers on the `split-media` part, with the values the motion sweep (`includes/motion/migrate`, looping-media and parallax mappers) gives
+    the same attributes: a loop from 100 to 106 percent over the saved seconds (5 to 60, default 20), and a page-basis parallax at ratio
+    0.01. The old render ran the parallax instead of the Ken Burns when both were on, so a Ken Burns beside a parallax writes no layer."""
+    if ctx.block != "sgs/hero":
+        return
+    names = ("splitMediaKenBurns", "splitMediaAnimationDuration", "splitMediaParallax")
+    if not any(ctx.has(n) for n in names):
+        return
+    toggles = {n: ctx.get(n) for n in ("splitMediaKenBurns", "splitMediaParallax") if ctx.has(n)}
+    for name, value in toggles.items():
+        if not isinstance(value, bool):
+            ctx.keep(name, "refused", f"{value!r} is not a boolean")
+            return
+    seconds = 20
+    if ctx.has("splitMediaAnimationDuration"):
+        number = V.to_number(ctx.get("splitMediaAnimationDuration"))
+        if number is None:
+            ctx.keep("splitMediaAnimationDuration", "refused", f"{ctx.get('splitMediaAnimationDuration')!r} is not a number of seconds")
+            return
+        seconds = max(5, min(60, int(round(number))))
+    target = f"sgsMotion.elements.{SPLIT_MOTION_PART}.effects"
+    if toggles.get("splitMediaParallax") is True:
+        layer = {"id": "parallax", "effect": "parallax", "values": {"speedRatio": SPLIT_PARALLAX_RATIO, "basis": "page"}}
+        if not add_effect_layer(ctx, "splitMediaParallax", SPLIT_MOTION_PART, layer):
+            return
+        ctx.drop("splitMediaParallax", "converted", target)
+        ctx.drop("splitMediaKenBurns", "deleted", "", "the parallax on the same element won and the Ken Burns never ran")
+        ctx.drop("splitMediaAnimationDuration", "deleted", "", "it timed only the Ken Burns, which never ran")
+    elif toggles.get("splitMediaKenBurns") is True:
+        layer = {"id": "ken-burns", "effect": "ken-burns", "values": {**SPLIT_KEN_BURNS, "duration": seconds * 1000}}
+        if not add_effect_layer(ctx, "splitMediaKenBurns", SPLIT_MOTION_PART, layer):
+            return
+        ctx.drop("splitMediaKenBurns", "converted", target, "the old loop (scale 1 to 1.06 to 1.04 to 1 with a small drift) is a 100 to 106 alternating zoom")
+        ctx.drop("splitMediaAnimationDuration", "converted", target)
+        ctx.drop("splitMediaParallax", "deleted", "", "off")
+    else:
+        for name in names:
+            ctx.drop(name, "deleted", "", "off: nothing moved")
+
+
 def migrate_report_always(ctx: T.Ctx) -> None:
     for name in list(ctx.attrs):
+        if (ctx.block, name) in M.REPORT_EXEMPT:
+            continue
         if name in M.REPORT_ALWAYS:
             ctx.keep(name, "reported", M.REPORT_ALWAYS[name])
         elif any(p.match(name) for p in M.REPORT_PATTERNS):
@@ -454,7 +880,7 @@ UNLISTED_PREFIXES = ("splitMedia", "badgeImage")
 def migrate_unlisted(ctx: T.Ctx) -> None:
     """A saved attribute under a long, media-only slot prefix that no row maps is refused, never ignored."""
     rows = [r for r in M.rows() if r["block"] in (ctx.block, "*")]
-    known = {r["old"] for r in rows} | {r["target"] for r in rows}
+    known = {r["old"] for r in rows} | {r["target"] for r in rows} | set(M.STAYS.get(ctx.block, ()))
     for prefix in UNLISTED_PREFIXES:
         if prefix not in {o for s in M.merged_slots(ctx.block) for o in s["olds"]}:
             continue
@@ -486,26 +912,186 @@ def clear_memo() -> None:
 
 def migrate(name: str, attrs: dict):
     """(new attributes, events). Saved content repeats the same attribute set across revisions, so results are kept per input."""
-    key = (name, json.dumps(attrs, sort_keys=True, ensure_ascii=True))
+    key = (name, S.active(), json.dumps(attrs, sort_keys=True, ensure_ascii=True))
     if key not in _MEMO:
-        _MEMO[key] = _migrate(name, attrs)
+        _MEMO[key] = guard_declared(name, attrs, *_migrate(name, attrs))
     new, events = _MEMO[key]
     return copy.deepcopy(new), list(events)
 
 
+CORE_ATTRIBUTES = frozenset({"className", "anchor", "lock", "metadata", "style", "align", "fontSize", "fontFamily",
+                             "backgroundColor", "textColor", "gradient", "layout"})
+
+
+def guard_declared(name: str, original: dict, new: dict, events: list):
+    """WordPress silently drops an attribute the block's block.json does not declare, so a value the migration writes under such a
+    name would be lost with no event. Such a block is refused whole: nothing is written, and the event names the attribute and
+    the old one it came from. Applies to the blocks `fix` rewrites (`mapping.migration_scope`); an unadopted block's targets are
+    declared by the package that adopts it."""
+    if any(e[0] == "refused" for e in events):
+        return new, events
+    scope = M.migration_scope()
+    declared = M.live_declared_attributes().get(name)
+    if declared is None or (scope is not None and name not in scope):
+        return new, events
+    bad = sorted(k for k, v in new.items() if k not in declared and k not in CORE_ATTRIBUTES and (k not in original or original[k] != v))
+    if not bad:
+        return new, events
+    refusals = []
+    for attr in bad:
+        old = sorted({e[1] for e in events if len(e) > 2 and e[2] == attr and e[1] != attr})
+        origin = f"from {', '.join(old)}" if old else "written by the migration"
+        refusals.append(("refused", old[0] if old else attr, attr, f"{name} no longer declares {attr} ({origin}): "
+                         "WordPress would drop the value; resolve by hand or map the attribute"))
+    return copy.deepcopy(original), refusals
+
+
+RETIRED_HERO_SPLIT = re.compile(r"^splitImage")
+RETIRED_HERO_NOTE = ("the hero's own split image (splitImage, splitImageMobile and their settings) was retired before Spec 49: its render read "
+                     "only the splitMedia family, and the theme read splitImage's url for a preload only, so the value painted nothing")
+
+
+GALLERY_UNREAD = ("sgsHeight", "sgsHeightDesktop", "sgsHeightTablet", "sgsHeightMobile", "sgsMaxWidth")
+GALLERY_UNREAD_NOTE = ("the old gallery declared imageControlsExplicit, so the universal image-controls filter skipped it, and its own "
+                       "render.php never read this size setting: it painted nothing")
+
+
+def migrate_retired_hero_split(ctx: T.Ctx) -> None:
+    """Names the old render never read are deleted with a note: the hero's older split-image names (`splitImage*`) and the
+    gallery's universal image-controls size settings."""
+    if ctx.block == "sgs/gallery":
+        for name in GALLERY_UNREAD:
+            ctx.drop(name, "deleted", "", GALLERY_UNREAD_NOTE)
+    if ctx.block != "sgs/hero":
+        return
+    for name in list(ctx.attrs):
+        if RETIRED_HERO_SPLIT.match(name):
+            ctx.drop(name, "deleted", "", RETIRED_HERO_NOTE)
+
+
+def migrate_gallery_tile_fit(ctx: T.Ctx) -> None:
+    """`tileFitContain` made every tile image contain whatever each item said; the gallery's own Fit carries that now: itemFit
+    contain on every device it names (desktop always), and the items' own fits cleared so they cannot override it."""
+    if ctx.block != "sgs/gallery" or not ctx.has("tileFitContain"):
+        return
+    if ctx.get("tileFitContain") is True:
+        existing = ctx.get("itemFit") if isinstance(ctx.get("itemFit"), dict) else {}
+        fit = {device: "contain" for device in existing}
+        fit["desktop"] = "contain"
+        ctx.put("itemFit", fit)
+        items = ctx.get("mediaItems")
+        if isinstance(items, list):
+            ctx.put("mediaItems", [{k: v for k, v in item.items() if k != "fit"} if isinstance(item, dict) else item for item in items])
+    ctx.drop("tileFitContain", "converted", "itemFit", "contain on every tile image")
+
+
+BACKGROUND_ONLY_NOTE = ("the old front end gave a background-repeat / background-attachment custom property to the <img> or video, "
+                        "which has no background image, so the value painted nothing; the new block declares no such setting")
+OVERLAY_PAINTERS = ("overlayColour", "overlayColourHover", "overlayGradient", "overlayGradientHover")
+OVERLAY_SETTINGS = (*OVERLAY_PAINTERS, "overlayBlendMode", "overlayOpacity", "overlayOpacityTablet", "overlayOpacityMobile")
+OVERLAY_NOTE = ("sgs/decorative-image's layer has no Overlay (§10.4); none of the colour, gradient or hover colour or gradient was set, "
+                "so the overlay painted nothing")
+
+
+def migrate_inert_settings(ctx: T.Ctx) -> None:
+    """Old values that painted nothing on the old front end are deleted: Repeat and Attachment on an <img> or video (sgs/media,
+    sgs/decorative-image), and a decorative-image overlay with no colour or gradient. A decorative-image overlay that did paint
+    is left to `guard_declared`, which refuses the block so a person decides."""
+    if ctx.block in ("sgs/media", "sgs/decorative-image"):
+        for old in ("attachment", "repeat"):
+            ctx.drop(old, "deleted", "", BACKGROUND_ONLY_NOTE)
+    if ctx.block == "sgs/decorative-image":
+        painted = any(isinstance(ctx.get(n), str) and ctx.get(n).strip() for n in OVERLAY_PAINTERS)
+        if not painted:
+            for old in OVERLAY_SETTINGS:
+                ctx.drop(old, "deleted", "", OVERLAY_NOTE)
+
+
 def _migrate(name: str, attrs: dict):
     ctx = T.Ctx(name, attrs)
+    migrate_inert_settings(ctx)
+    migrate_retired_hero_split(ctx)
+    migrate_image_zoom_hover(ctx)
+    migrate_extension_zoom_hover(ctx)
+    migrate_scale_hover(ctx)
+    migrate_hero_split_motion(ctx)
+    migrate_hover_grayscale(ctx)
     for slot in M.merged_slots(name):
         T.migrate_slot(ctx, slot["olds"], slot["new"], slot["bases"])
     if name in M.BACKGROUND_BLOCKS:
         migrate_background(ctx)
     migrate_extras(ctx)
     migrate_items(ctx)
+    migrate_gallery_tile_fit(ctx)
     apply_pins(ctx)
+    rename_motion_parts(ctx)
     migrate_report_always(ctx)
     migrate_unlisted(ctx)
     migrate_unmapped(ctx)
+    return fill_sizes(ctx, attrs)
+
+
+def fill_sizes(ctx: T.Ctx, original: dict):
+    """FR-49-16: every image Source gets an attachment id or its own size. A block with an image whose size cannot be read
+    is refused whole: its old attributes stay as saved and the event names the attribute and the reason."""
+    missing: list = []
+    failed = S.fill(ctx.attrs, missing)
+    if failed:
+        return copy.deepcopy(original), [("refused", name, "", note) for name, note in failed]
+    if any(e[0] in ("converted", "deleted") for e in ctx.events):
+        # Only a block being converted now reports it: a block already in the new shape stays clean for `check`.
+        ctx.events.extend(("reported", name, "", note) for name, note in missing)
+    pin_naked_ratio_width(ctx)
+    pin_hero_split_width(ctx)
     return ctx.attrs, ctx.events
+
+
+def pin_naked_ratio_width(ctx: T.Ctx) -> None:
+    """A linkless, captionless image with a Ratio and no Width was drawn at its file's own width; the new default is 100%."""
+    if not getattr(ctx, "pin_width_px", False) or ctx.has("width"):
+        return
+    entry = ((ctx.get("source") or {}).get("desktop") or {}) if isinstance(ctx.get("source"), dict) else {}
+    width = S.intrinsic_width(entry) if entry.get("kind") == "image" else None
+    if width:
+        ctx.put("width", {"desktop": f"{width}px"})
+        ctx.events.append(("pinned", "mediaSizing", "width", f"old image with a ratio and no width was drawn at its file's own width: {width}px written explicitly"))
+
+
+def pin_hero_split_width(ctx: T.Ctx) -> None:
+    """The old hero printed its split image with the width of WordPress's `large` size (an upload) or the file's own width, and that
+    intrinsic width stretched the grid column; the new default, no Width, fills the grid cell. A hero whose old split image is
+    migrated here and has no Width of its own gets `splitWidth` in px at that printed width, so the page does not change. Only the
+    desktop file is pinned (the old render read the attachment size for the desktop tier only). A hero already in the new shape
+    (no old split name converted) is never pinned."""
+    if ctx.block != "sgs/hero" or ctx.has("splitWidth") or not isinstance(ctx.get("splitSource"), dict):
+        return
+    if not any(e[0] == "converted" and e[2] == "splitSource" for e in ctx.events):
+        return
+    entry = ctx.get("splitSource").get("desktop")
+    width = S.printed_width(entry) if isinstance(entry, dict) and entry.get("kind") == "image" else None
+    if not width:
+        return
+    ctx.put("splitWidth", {"desktop": f"{width}px"})
+    ctx.events.append(("pinned", "splitMediaWidth", "splitWidth", f"old split image was printed {width}px wide: written explicitly"))
+
+
+def rename_motion_parts(ctx: T.Ctx) -> None:
+    """Saved motion on a part the adopted block no longer declares matches nothing and is lost (a rest rotation, a hover). Each part
+    in `M.MOTION_PART_RENAMES` for the block moves to its new name when the new part holds no motion of its own (a block that
+    saves both is left as saved)."""
+    renames = M.MOTION_PART_RENAMES.get(ctx.block)
+    motion = ctx.get("sgsMotion")
+    elements = motion.get("elements") if isinstance(motion, dict) else None
+    if not renames or not isinstance(elements, dict):
+        return
+    todo = {old: new for old, new in renames.items() if old in elements and new not in elements}
+    if not todo:
+        return
+    moved = dict(motion)
+    moved["elements"] = {todo.get(k, k): v for k, v in elements.items()}
+    ctx.put("sgsMotion", moved)
+    for old, new in todo.items():
+        ctx.events.append(("converted", "sgsMotion", f"sgsMotion.elements.{new}", f"the saved motion part {old} is now {new}"))
 
 
 def needs_migration(name: str, attrs: dict):

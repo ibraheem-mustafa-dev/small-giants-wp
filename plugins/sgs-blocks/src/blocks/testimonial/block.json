@@ -32,24 +32,46 @@
 		},
 		"sgs": {
 			"motion": true,
-			"_comment_orgLogoNotAdopted": "orgLogo's object-fit:contain (style.css) is deliberately NOT a client control and NOT routed through the media-atom layer -- a logo must never be cropped, so there is no orgLogoObjectFit attribute to adopt in the first place. Disclosed here (in addition to the existing style.css comment) for consistency with the other _comment_*NotAdopted notes added during the 37-media-no-handroll remediation, per /qc-council 2026-09-03.",
 			"containerKind": "content",
 			"scalarContentLift": true,
-			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03). Replaces the old universal imageControls/imageControlsExplicit single sgsObjectFit/sgsObjectPosition pair (block-level, shared by whichever slot's render.php happened to call sgs_media_position_css()) with two independently-scoped media elements, one per slot, mirroring sgs/before-after's Wave 5b migration. `avatar` gets object-fit only (a fixed-crop circular headshot has no genuine focal-point need beyond the fit mode). `work` gets object-fit + focal-point, replacing the position control the old mechanism gave it 1:1 — case-study media varies in composition, so both crop mode and crop focus are genuine per-instance needs. The org logo is deliberately excluded — see elements.org-logo-image below.",
 			"mediaElements": [
 				{
 					"prefix": "avatar",
-					"context": "element",
+					"context": "content",
+					"kinds": [
+						"image"
+					],
 					"atoms": [
-						"object-fit"
+						"source",
+						"meaning",
+						"object-fit",
+						"focal-point",
+						"shape"
 					]
 				},
 				{
 					"prefix": "work",
-					"context": "element",
+					"context": "content",
+					"kinds": [
+						"image"
+					],
 					"atoms": [
+						"source",
+						"meaning",
 						"object-fit",
 						"focal-point"
+					]
+				},
+				{
+					"prefix": "logo",
+					"context": "content",
+					"kinds": [
+						"image"
+					],
+					"atoms": [
+						"source",
+						"meaning",
+						"object-fit"
 					]
 				}
 			],
@@ -223,7 +245,7 @@
 					"label": "Avatar image",
 					"order": 6,
 					"clusters": [],
-					"_note": "37-media-no-handroll remediation (2026-09-03) — REVERSES the 2026-08-17 note this used to carry. The circular cover-crop is still the component-owned DEFAULT (style.css's hardcoded object-fit:cover was removed; the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` atom stylesheet now paints the identical default), but it is no longer immovable — a client can override it per instance via the `avatar` mediaElements entry above (`avatarObjectFit`/`avatarObjectFitTablet`/`avatarObjectFitMobile`, auto-registered server-side from supports.sgs.mediaElements — see includes/media-element-attrs-register.php). Border-radius:50% stays a genuine fixed constant (a non-circular avatar is not a supported shape here). Rendered inside a plain `<div>` (render.php) — the marker classes are added explicitly via SGS_Media_Element::element_classes(), not via the generic render_block guessing injector, so the plain-`<div>` wrapper is no longer a reachability problem.",
+					"_note": "The reviewer photo: the `avatar` media slot (Spec 49 §10.4). Source, Alt, Decorative, Fit, Focal point, Shape and Radius are the shared media settings; the round crop is the default outline.",
 					"absentIn": [ "corporate-logo", "minimal-quote", "review-card" ],
 					"absentWhy": "The corporate-logo and minimal-quote variants print no avatar."
 				},
@@ -232,7 +254,7 @@
 					"label": "Organisation logo",
 					"order": 7,
 					"clusters": [],
-					"_note": "Deliberately NOT reachable by the universal image-controls mechanism (design decision, 2026-08-17): style.css:101-107 fixes object-fit:contain — a logo must never be cropped, so this is a component-owned constant, not a client-overridable style. Same 'plain `<div>` wrapper, never reached by the generic mechanism anyway' reasoning as avatar-image above.",
+					"_note": "The organisation logo: the `logo` media slot (Spec 49 §10.4). Source, Alt, Decorative and Fit are the shared media settings; a logo shows whole (contain) unless Fit says otherwise.",
 					"absentIn": [ "avatar-spotlight", "minimal-quote", "review-card" ],
 					"absentWhy": "The avatar-spotlight and minimal-quote variants print no organisation logo."
 				},
@@ -241,7 +263,7 @@
 					"label": "Work / case-study media",
 					"order": 8,
 					"clusters": [],
-					"_note": "37-media-no-handroll remediation (2026-09-03) — migrated off the old block-level imageControls/imageControlsExplicit + sgs_media_position_css() mechanism (design decision, 2026-08-17) onto the independently-scoped `work` mediaElements entry above (object-fit + focal-point), matching sgs/before-after's Wave 5b precedent 1:1. Still the one image slot with a genuine per-instance crop need — case-study photos vary in composition/aspect ratio, unlike the fixed-crop avatar/logo slots. SGS_Media_Element::element_classes()/style() target the same known `.sgs-testimonial__work img, .sgs-testimonial__work video` selector explicitly in render.php; the generic render_block guessing injector is still never relied on.",
+					"_note": "The case-study picture: the `work` media slot (Spec 49 §10.4). Source, Alt, Decorative, Fit and Focal point are the shared media settings.",
 					"absentIn": [ "avatar-spotlight", "classic-card", "corporate-logo", "minimal-quote", "pull-quote-editorial", "rating-led", "rating-scale", "review-card" ],
 					"absentWhy": "The work media prints only in the case-study-media variant."
 				},
@@ -315,16 +337,16 @@
 					"reviewFooterBorder"
 				],
 				"avatar-spotlight": [
-					"avatarMedia",
+					"avatarSource",
 					"avatarDecorative"
 				],
 				"corporate-logo": [
-					"orgLogo",
-					"orgLogoDecorative"
+					"logoSource",
+					"logoDecorative"
 				],
 				"case-study-media": [
-					"workMedia",
-					"workMediaDecorative"
+					"workSource",
+					"workDecorative"
 				],
 				"minimal-quote": []
 			},
@@ -434,41 +456,10 @@
 			"default": "",
 			"role": "content"
 		},
-		"avatarMedia": {
-			"type": "object",
-			"default": null
-		},
-		"_comment_artDirection": "Art-direction tiers (2026-08-07) — the {base}/{base}Tablet/{base}Mobile shape sgs/media and sgs/hero use, object-typed to MATCH avatarMedia (a flat value on an object-typed attr is silently coerced to the default, dropping the whole thing). A tier left empty falls back to the desktop avatar at that width. Deliberately NOT sgs_render_media()'s existing `mobile_url` <picture> path: that is mobile-only, has no tablet step, and is not the BEM tier modifier the cloning pipeline's draft vocabulary reads — one convention on both ends is what makes a clone round-trip.",
-		"avatarMediaTablet": {
-			"type": "object",
-			"default": null
-		},
-		"avatarMediaMobile": {
-			"type": "object",
-			"default": null
-		},
-		"orgLogo": {
-			"type": "object",
-			"default": null
-		},
-		"workMedia": {
-			"type": "object",
-			"default": null
-		},
 		"avatarDecorative": {
 			"type": "boolean",
 			"default": false,
 			"description": "Item 18 (WCAG 1.1.1) — the reviewer photo carries no information beyond decoration; hides it from assistive tech (empty alt + aria-hidden) instead of storing/announcing the media library's alt text."
-		},
-		"orgLogoDecorative": {
-			"type": "boolean",
-			"default": false,
-			"description": "Item 18 (WCAG 1.1.1) — the organisation logo is purely decorative for this instance; hides it from assistive tech (empty alt + aria-hidden) instead of storing/announcing the media library's alt text."
-		},
-		"workMediaDecorative": {
-			"type": "boolean",
-			"default": false,
-			"description": "Item 18 (WCAG 1.1.1) — the case-study work image/video is purely decorative for this instance; hides it from assistive tech (empty alt + aria-hidden) instead of storing/announcing the media library's alt text."
 		},
 		"showRating": {
 			"type": "boolean",
@@ -963,7 +954,31 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"avatarSource": {"type":"object","_generated":"media-atoms"},
+		"avatarLoading": {"type":"string","_generated":"media-atoms"},
+		"avatarAlt": {"type":"string","_generated":"media-atoms"},
+		"avatarFit": {"type":"object","_generated":"media-atoms"},
+		"avatarFocal": {"type":"object","_generated":"media-atoms"},
+		"avatarShape": {"type":"object","_generated":"media-atoms"},
+		"avatarRadius": {"type":"object","_generated":"media-atoms"},
+		"avatarBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"avatarBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"avatarBorderColour": {"type":"string","_generated":"media-atoms"},
+		"avatarBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"avatarBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"avatarBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
+		"workSource": {"type":"object","_generated":"media-atoms"},
+		"workLoading": {"type":"string","_generated":"media-atoms"},
+		"workAlt": {"type":"string","_generated":"media-atoms"},
+		"workDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"workFit": {"type":"object","_generated":"media-atoms"},
+		"workFocal": {"type":"object","_generated":"media-atoms"},
+		"logoSource": {"type":"object","_generated":"media-atoms"},
+		"logoLoading": {"type":"string","_generated":"media-atoms"},
+		"logoAlt": {"type":"string","_generated":"media-atoms"},
+		"logoDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"logoFit": {"type":"object","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

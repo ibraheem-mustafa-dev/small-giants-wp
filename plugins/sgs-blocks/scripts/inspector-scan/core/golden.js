@@ -156,7 +156,7 @@ function axisIsMeasurable( row, axis ) {
  * Load-bearing. Finalised goldens rows describe their canonical shape in two
  * different registers and both live under a `component` key:
  *
- *   "MediaPicker"                                  <- a real, resolvable component
+ *   "IconPicker"                                   <- a real, resolvable component
  *   "ResponsiveOverride + SelectControl (tier-…)"  <- a description of a PATTERN
  *   "trust-bar's per-item editor shape … NOT YET extracted to a shared component"
  *

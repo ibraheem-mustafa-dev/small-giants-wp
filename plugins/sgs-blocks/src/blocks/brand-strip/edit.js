@@ -27,9 +27,13 @@ import {
 	MediaGalleryPicker,
 	textRow,
 } from '../../components';
-import MediaPicker from '../../components/MediaPicker';
+import MediaSlotField from '../../components/media/MediaSlotField.js';
+import FitField from '../../components/media/FitField.js';
+import MediaElementPanel from '../../components/MediaElementPanel';
+import { LOGO_SLOT, applySlotPatch, emptyLogoItem, itemToSlotAttrs, itemUrl, resolveLogoItem } from './item-model';
+import metadata from './block.json';
 import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
-import { generateItemKey, withStableItemKeys } from '../../utils';
+import { withStableItemKeys } from '../../utils';
 import {
 	ToolsPanel,
 	ToolsPanelItem,
@@ -39,54 +43,12 @@ import {
 import { SourcePanel, BrandTextStylePanel } from './source-controls';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
-const LOGO_FIT_OPTIONS = [
-	{
-		label: __( 'Fit (whole logo, same proportions)', 'sgs-blocks' ),
-		value: 'contain',
-	},
-	{
-		label: __( 'Fill the tile (crops the edges)', 'sgs-blocks' ),
-		value: 'cover',
-	},
-	{
-		label: __( 'Stretch to the tile (may distort)', 'sgs-blocks' ),
-		value: 'fill',
-	},
-	{ label: __( 'Fit, never enlarge', 'sgs-blocks' ), value: 'scale-down' },
-	{ label: __( 'Natural size', 'sgs-blocks' ), value: 'none' },
-];
-
-const LOGO_FIT_HELP = {
-	contain: __(
-		'The whole logo is scaled to the tile along its longer side, keeping its proportions.',
-		'sgs-blocks'
-	),
-	cover: __(
-		'The logo fills the whole tile and any overflow is cropped.',
-		'sgs-blocks'
-	),
-	fill: __(
-		'The logo is stretched to the tile shape, so it can look squashed or stretched.',
-		'sgs-blocks'
-	),
-	'scale-down': __(
-		'Like Fit, but a small logo is never enlarged past its own size.',
-		'sgs-blocks'
-	),
-	none: __(
-		'The logo keeps its own size and is cropped if it is bigger than the tile.',
-		'sgs-blocks'
-	),
-};
-
-const LOGO_OBJECT_FIT_OPTIONS = [
-	{ label: __( 'Use the block setting', 'sgs-blocks' ), value: '' },
-	...LOGO_FIT_OPTIONS,
-];
+const LOGO_ENTRY = metadata.supports.sgs.mediaElements.find( ( e ) => 'logo' === e.prefix );
+// Source, Alt and Decorative are each logo's own; the rest are the strip's.
+const BLOCK_ATOMS = LOGO_ENTRY.atoms.filter( ( id ) => ! [ 'source', 'meaning' ].includes( id ) );
 
 const IMAGE_EFFECT_OPTIONS = [
 	{ label: __( 'None (full colour)', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Greyscale', 'sgs-blocks' ), value: 'grayscale' },
 	{ label: __( 'Sepia', 'sgs-blocks' ), value: 'sepia' },
 ];
 
@@ -94,6 +56,8 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 	const update = ( key, value ) => {
 		onChange( { ...logo, [ key ]: value } );
 	};
+	const slotAttrs = itemToSlotAttrs( logo );
+	const setSlot = ( patch ) => onChange( applySlotPatch( logo, patch ) );
 
 	return (
 		<div
@@ -108,64 +72,24 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 				{ logo.alt ? ` — ${ logo.alt }` : '' }
 			</p>
 
-			<MediaPicker
-				value={ logo.media || null }
-				onChange={ ( media ) => {
-					const next = { ...logo, media };
-					if ( ! logo.alt && media && media.alt ) {
-						next.alt = media.alt;
-					}
-					onChange( next );
-				} }
-				onRemove={ () => onChange( { ...logo, media: null } ) }
-				allowedTypes={ [ 'image' ] }
-				label={ __( 'Select logo', 'sgs-blocks' ) }
-				instructionsImage={ __( 'Choose a logo image', 'sgs-blocks' ) }
+			{ /* The item's picture, alt text, Decorative flag and own fit: the shared media fields, the item's settings
+			   shown to them as `logo*` attributes (item-model.js). A logo is never cropped by default: the strip's Fit
+			   is Show all and an item may override it. */ }
+			<MediaSlotField
+				attributes={ slotAttrs }
+				setAttributes={ setSlot }
+				prefix={ LOGO_SLOT.prefix }
+				slot={ LOGO_SLOT }
+				label={ __( 'Logo', 'sgs-blocks' ) }
 			/>
-
-			{ /* Per-item override of the block-wide `logoFit` default (Spec 35
-			   Part 4). Gated on media existing, mirroring the avatar/work
-			   disclosure pattern on sgs/testimonial. Object-fit only — no
-			   focal-point/crosshair control: logos are not photographs
-			   (Bean-locked convention, see sgs/testimonial's orgLogo field
-			   and this block's own pre-existing logoFit control). */ }
-			{ !! logo.media?.url && (
-				<SelectControl
-					label={ __( 'Image fit', 'sgs-blocks' ) }
-					help={ __(
-						'Overrides the block-wide "Logo fit" setting for this logo only.',
-						'sgs-blocks'
-					) }
-					value={ logo.objectFit || '' }
-					options={ LOGO_OBJECT_FIT_OPTIONS }
-					onChange={ ( val ) => update( 'objectFit', val ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
+			{ !! itemUrl( logo ) && (
+				<FitField
+					attributes={ slotAttrs }
+					setAttributes={ setSlot }
+					prefix={ LOGO_SLOT.prefix }
+					slot={ LOGO_SLOT }
 				/>
 			) }
-
-			<TextControl
-				label={ __( 'Alt text', 'sgs-blocks' ) }
-				value={ logo.alt || '' }
-				onChange={ ( val ) => update( 'alt', val ) }
-				disabled={ !! logo.decorative }
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
-			/>
-
-			<ToggleControl
-				label={ __(
-					'Decorative — hide from screen readers',
-					'sgs-blocks'
-				) }
-				help={ __(
-					'Turn on for a purely decorative logo — screen readers will skip it entirely instead of reading alt text.',
-					'sgs-blocks'
-				) }
-				checked={ !! logo.decorative }
-				onChange={ ( val ) => update( 'decorative', val ) }
-				__nextHasNoMarginBottom
-			/>
 
 			<TextControl
 				label={ __( 'Name / label (optional)', 'sgs-blocks' ) }
@@ -246,8 +170,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		logoGap,
 		tilePadding,
 		tileRadius,
-		tileShape,
-		logoFit,
 		tileBackgroundColour,
 		tileBackgroundColourGradient,
 		tileBorderWidth,
@@ -298,30 +220,6 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	// Bulk add: the library modal selects many images at once and each becomes one
 	// logo item, appended after the existing logos (multiple="add" never replaces them).
-	const resolveLogoItem = ( media ) => {
-		if ( ! media || ! media.url ) {
-			return null;
-		}
-		return {
-			media: {
-				url: media.url,
-				type: 'image',
-				id: media.id || 0,
-				alt: media.alt || '',
-				mime: media.mime || media.mime_type || '',
-				width: media.width,
-				height: media.height,
-			},
-			alt: media.alt || '',
-			name: '',
-			linkUrl: '',
-			linkTarget: '_self',
-			linkRel: '',
-			_key: generateItemKey(),
-			objectFit: '',
-		};
-	};
-
 	const addLogos = ( items ) => {
 		if ( items.length ) {
 			setAttributes( { logos: [ ...logos, ...items ] } );
@@ -329,21 +227,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	const addLogo = () => {
-		setAttributes( {
-			logos: [
-				...logos,
-				{
-					media: null,
-					alt: '',
-					name: '',
-					linkUrl: '',
-					linkTarget: '_self',
-					linkRel: '',
-					_key: generateItemKey(),
-					objectFit: '',
-				},
-			],
-		} );
+		setAttributes( { logos: [ ...logos, emptyLogoItem() ] } );
 	};
 
 	// Contrast check for border colour against the brand strip's own background.
@@ -822,13 +706,30 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
+			{ /* The settings every logo shares (Spec 49 §10.4: Fit, Shape, Radius, Colour): the adopted panels on the logo slot,
+			   without the Source and Alt rows, which each logo's own card holds. Shape is the tile's. A strip with no Fit
+			   of its own shows each whole logo (render.php), so the panel shows that. */ }
+			<MediaElementPanel
+				attributes={ {
+					...attributes,
+					logoSource: { desktop: { kind: 'image' } },
+					logoFit: attributes.logoFit ?? { desktop: 'contain' },
+				} }
+				setAttributes={ setAttributes }
+				prefix="logo"
+				blockSlug="sgs/brand-strip"
+				blockName="sgs/brand-strip"
+				atoms={ BLOCK_ATOMS }
+				kinds={ LOGO_ENTRY.kinds }
+				context={ LOGO_ENTRY.context }
+			/>
+
 			{ /* ── STYLES tab — appearance, grouped by block element ── */ }
 			<InspectorControls group="styles">
 				<ToolsPanel
 					label={ __( 'Tile', 'sgs-blocks' ) }
 					resetAll={ () =>
 						setAttributes( {
-							tileShape: 'square',
 							tilePadding: '0px',
 							tileRadius: 16,
 							tileShadow: '',
@@ -843,45 +744,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						} )
 					}
 				>
-					<ToolsPanelItem
-						label={ __( 'Tile shape', 'sgs-blocks' ) }
-						hasValue={ () =>
-							( tileShape || 'square' ) !== 'square'
-						}
-						onDeselect={ () =>
-							setAttributes( { tileShape: 'square' } )
-						}
-						isShownByDefault
-					>
-						<SelectControl
-							label={ __( 'Tile shape', 'sgs-blocks' ) }
-							help={ __(
-								'Square keeps the rounded card (use corner radius below); Circle makes each tile round; None removes the card so only the logo shows.',
-								'sgs-blocks'
-							) }
-							value={ tileShape || 'square' }
-							options={ [
-								{
-									label: __( 'Square', 'sgs-blocks' ),
-									value: 'square',
-								},
-								{
-									label: __( 'Circle', 'sgs-blocks' ),
-									value: 'circle',
-								},
-								{
-									label: __( 'None', 'sgs-blocks' ),
-									value: 'none',
-								},
-							] }
-							onChange={ ( val ) =>
-								setAttributes( { tileShape: val } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-
 					<ToolsPanelItem
 						label={ __( 'Tile padding', 'sgs-blocks' ) }
 						hasValue={ () => '0px' !== tilePadding }
@@ -997,26 +859,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					<SelectControl
 						label={ __( 'Image effect', 'sgs-blocks' ) }
 						help={ __(
-							'Apply greyscale or sepia to logos, full colour on hover.',
+							'Apply sepia to logos, full colour on hover. For grey to colour, use the Hover state of the logo in the Motion panel.',
 							'sgs-blocks'
 						) }
 						value={ imageEffect }
 						options={ IMAGE_EFFECT_OPTIONS }
 						onChange={ ( val ) =>
 							setAttributes( { imageEffect: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Logo fit', 'sgs-blocks' ) }
-						help={
-							LOGO_FIT_HELP[ logoFit ] || LOGO_FIT_HELP.contain
-						}
-						value={ logoFit }
-						options={ LOGO_FIT_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { logoFit: val } )
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize

@@ -5,7 +5,7 @@
  *
  * Sizing MODE (auto / height / ratio, mutually exclusive per registry.js
  * `requires`) plus an independent named SHAPE (none / rounded / circle /
- * square) expressed through `clip-path` — the block WRAPPER's `border-radius`
+ * square) that this atom only validates; the `shape` atom paints it (`shape.php`). The block WRAPPER's `border-radius`
  * still belongs to `SgsBorderControl` (44 blocks) / native
  * `__experimentalBorder` (`sgs/media`) outright. Since 2026-09-01 this atom
  * ALSO writes a genuine editable radius via a SEPARATE custom property
@@ -20,10 +20,6 @@
  * second cascade layer for zero capability loss. `sgs/decorative-image`
  * (which never adopted this atom) holds its own per-device `maxWidth` length.
  *
- * `sgs_media_atom_box_shape_css()` must emit BYTE-IDENTICAL declarations to
- * the JS twin's `css()` for the same attribute set — enforced by
- * `scripts/tests/test-media-atom-parity.mjs`.
- *
  * @package SGS\Blocks
  */
 
@@ -31,21 +27,6 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 2 ) . '/helpers-media-element.php';
 require_once dirname( __DIR__, 2 ) . '/helpers-tokens.php';
-
-if ( ! function_exists( 'sgs_media_atom_box_shape_clip_paths' ) ) {
-	/**
-	 * The shape -> clip-path map. Never `border-radius` — see module docblock.
-	 *
-	 * @return array<string,string>
-	 */
-	function sgs_media_atom_box_shape_clip_paths() {
-		return array(
-			'square'  => 'inset(0)',
-			'rounded' => 'inset(0 round 12px)',
-			'circle'  => 'circle(50%)',
-		);
-	}
-}
 
 if ( ! function_exists( 'sgs_media_atom_box_shape_normalise_ratio' ) ) {
 	/**
@@ -328,154 +309,5 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_requires' ) ) {
 			'heightState'  => 'height' === $mode ? 'visible' : 'hidden',
 			'ratioState'   => 'ratio' === $mode ? 'visible' : 'hidden',
 		);
-	}
-}
-
-if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
-	/**
-	 * Custom-property declarations for this atom. Mirrors the JS twin's
-	 * `css()` exactly.
-	 *
-	 * @param array  $attributes Block attributes.
-	 * @param string $prefix     Surface prefix.
-	 * @param string $block_slug Block slug, for STORED_AS resolution.
-	 * @return string[] `--custom-property:value;` declarations, never bare rules.
-	 */
-	function sgs_media_atom_box_shape_css( array $attributes, $prefix, $block_slug ) {
-		$decls        = array();
-		$height_tiers = array();
-
-		$sizing_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MediaSizing' );
-		$fit_key    = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectFit' );
-		$mode       = sgs_media_atom_box_shape_resolve_sizing_mode( $attributes[ $sizing_key ] ?? null, $attributes[ $fit_key ] ?? null, $attributes, $prefix, $block_slug );
-
-		if ( 'height' === $mode ) {
-			$height_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Height' );
-			$resolved   = sgs_media_atom_box_shape_resolve_tier_object( $attributes[ $height_key ] ?? null );
-			$height_tiers = $resolved;
-			array_push( $decls, ...sgs_media_atom_box_shape_tier_length_decls( '--sgs-media-height', $resolved ) );
-		}
-
-		if ( 'ratio' === $mode ) {
-			$ratio_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'AspectRatio' );
-			$ratio     = sgs_media_atom_box_shape_normalise_ratio( $attributes[ $ratio_key ] ?? null );
-			if ( '' !== $ratio ) {
-				$decls[] = '--sgs-media-aspect-ratio:' . $ratio;
-			}
-		}
-
-		$width_key      = sgs_media_element_stored_attr( $block_slug, $prefix, 'Width' );
-		$resolved_width = sgs_media_atom_box_shape_resolve_tier_object( $attributes[ $width_key ] ?? null );
-		array_push( $decls, ...sgs_media_atom_box_shape_tier_length_decls( '--sgs-media-width', $resolved_width ) );
-		// A tier with a height and no width keeps the file's ratio width, not the width attribute.
-		foreach ( array( 'desktop' => '', 'tablet' => '-tablet', 'mobile' => '-mobile' ) as $tier => $tier_suffix ) {
-			if ( '' !== sgs_css_length_value( $height_tiers[ $tier ] ?? '' ) && '' === sgs_css_length_value( $resolved_width[ $tier ] ?? '' ) ) {
-				$decls[] = '--sgs-media-width' . $tier_suffix . ':auto';
-			}
-		}
-
-		$min_height_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MinHeight' );
-		$min_height_raw = $attributes[ $min_height_key ] ?? null;
-		$min_height_obj = is_array( $min_height_raw ) ? $min_height_raw : array();
-		$mh_tiers       = array(
-			'desktop' => '',
-			'tablet'  => '-tablet',
-			'mobile'  => '-mobile',
-		);
-		foreach ( $mh_tiers as $tier => $suffix ) {
-			$val = $min_height_obj[ $tier ] ?? null;
-			if ( null !== $val && '' !== $val ) {
-				$decls[] = '--sgs-media-min-height' . $suffix . ':' . $val;
-			}
-		}
-
-		$max_width_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxWidth' );
-		$max_width_obj = sgs_media_atom_box_shape_resolve_tier_object( is_array( $attributes[ $max_width_key ] ?? null ) ? $attributes[ $max_width_key ] : null );
-		array_push( $decls, ...sgs_media_atom_box_shape_tier_length_decls( '--sgs-media-max-width', $max_width_obj ) );
-
-		$max_height_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxHeight' );
-		$max_height_obj = sgs_media_atom_box_shape_resolve_tier_object( is_array( $attributes[ $max_height_key ] ?? null ) ? $attributes[ $max_height_key ] : null );
-		array_push( $decls, ...sgs_media_atom_box_shape_tier_length_decls( '--sgs-media-max-height', $max_height_obj ) );
-
-		$shape_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Shape' );
-		$shape     = sgs_media_atom_box_shape_validate_shape( $attributes[ $shape_key ] ?? null );
-		if ( 'none' !== $shape ) {
-			$clip_paths = sgs_media_atom_box_shape_clip_paths();
-			$decls[]    = '--sgs-media-clip-path:' . $clip_paths[ $shape ];
-		}
-
-		// The border's own paint -- width/style/colour/radius, ungated by
-		// $shape (2026-09-02). Mirrors the JS twin's css() exactly: emitted
-		// when a real value is set, skipped entirely otherwise ("nothing for
-		// an empty attribute set").
-		$radius_key        = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderRadius' );
-		$radius_tablet_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderRadiusTablet' );
-		$radius_mobile_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderRadiusMobile' );
-		$radius_tiers = array(
-			$radius_key        => '',
-			$radius_tablet_key => '-tablet',
-			$radius_mobile_key => '-mobile',
-		);
-		foreach ( $radius_tiers as $attr_key => $suffix ) {
-			foreach ( sgs_media_atom_box_shape_corner_radius_decls( $attributes[ $attr_key ] ?? null, $suffix ) as $decl ) {
-				$decls[] = $decl;
-			}
-		}
-
-		$border_width_key       = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderWidth' );
-		$border_width_shorthand = sgs_media_atom_box_shape_sides_to_width_shorthand( $attributes[ $border_width_key ] ?? null );
-		if ( '' !== $border_width_shorthand ) {
-			$decls[] = '--sgs-media-border-width:' . $border_width_shorthand;
-		}
-
-		$border_style_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderStyle' );
-		$border_style      = sgs_media_atom_box_shape_validate_border_style( $attributes[ $border_style_key ] ?? null );
-		if ( '' === $border_style && '' !== $border_width_shorthand ) {
-			// A width with no chosen style paints solid — the shared rule in
-			// helpers-border-style.php; box-shape.css's fallback is `none`.
-			$border_style = 'solid';
-		}
-		if ( '' !== $border_style ) {
-			$decls[] = '--sgs-media-border-style:' . $border_style;
-		}
-
-		// Colour pair -- gradient wins over flat colour, same
-		// sgs_background_paint_value() primitive the `overlay` atom uses
-		// (helpers-tokens.php). A gradient rides border-image (box-shape.css's
-		// border-image-slice:1 companion) rather than border-color, since a
-		// single CSS custom property cannot carry the masked-::before-ring
-		// technique sgs_border_gradient_css() uses -- that helper builds a
-		// full scoped CSS rule, and this atom's contract is custom-property
-		// VALUES only, never bare rules.
-		$border_colour_key          = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderColour' );
-		$border_colour_gradient_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderColourGradient' );
-		$border_paint               = sgs_background_paint_value(
-			$attributes[ $border_colour_key ] ?? null,
-			$attributes[ $border_colour_gradient_key ] ?? null
-		);
-		if ( 'background-image' === $border_paint['property'] ) {
-			$decls[] = '--sgs-media-border-image:' . $border_paint['value'];
-		} elseif ( 'background-color' === $border_paint['property'] ) {
-			$decls[] = '--sgs-media-border-color:' . $border_paint['value'];
-		}
-
-		// Hover colour pair (2026-09-07) — same gradient-wins-over-flat rule,
-		// same shape as `sgs_media_atom_overlay_css()`'s hover pair. Only ONE
-		// of the two hover custom properties is ever emitted, mirroring the
-		// JS twin's `css()` byte-for-byte (enforced by
-		// test-media-atom-parity.mjs).
-		$border_colour_hover_key          = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderColourHover' );
-		$border_colour_hover_gradient_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderColourHoverGradient' );
-		$border_hover_paint               = sgs_background_paint_value(
-			$attributes[ $border_colour_hover_key ] ?? null,
-			$attributes[ $border_colour_hover_gradient_key ] ?? null
-		);
-		if ( 'background-image' === $border_hover_paint['property'] ) {
-			$decls[] = '--sgs-media-border-image-hover:' . $border_hover_paint['value'];
-		} elseif ( 'background-color' === $border_hover_paint['property'] ) {
-			$decls[] = '--sgs-media-border-color-hover:' . $border_hover_paint['value'];
-		}
-
-		return $decls;
 	}
 }

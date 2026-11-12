@@ -106,14 +106,15 @@ test( 'MUST FAIL: the fact record speaks for the target the image is drawn by, n
 	const tree = cleanTree( skeleton );
 	addRefs( tree, 'fx' );
 	const snap = ( over = {} ) => ( { styles: {}, pseudo: {}, rect: { x: 0, y: 0, w: 300, h: 40 }, inFlow: true, words: '', href: null, ...over } );
-	const widths = Object.fromEntries( [ 375, 768, 1024, 1440, 1920 ].map( ( w ) => [ w, { '0:': snap(), '0:.pic': snap( { img: { tag: 'img', src: 'assets/a.png', alt: null } } ) } ] ) );
+	const pic = { tag: 'img', src: 'assets/a.png', alt: null, natural: { w: 30, h: 20 }, poster: null, markup: null, own: false, element: { computed: { position: 'static' } } };
+	const widths = Object.fromEntries( [ 375, 768, 1024, 1440, 1920 ].map( ( w ) => [ w, { '0:': snap( { media: [ pic ] } ), '0:.pic': snap( { img: { tag: 'img', src: 'assets/a.png', alt: null }, media: [ pic ] } ) } ] ) );
 	const facts = { elements: { 'Page/5': { alt: { placeholder: 'Wrong element' }, assets: [] }, 'Page/7': { alt: { placeholder: 'Right element' }, assets: [] } } };
 	const cal = { block: 'sgs/media', elements: { '': {}, '.pic': {} }, settings: {}, discovered: {} };
 	const out = fillTree( {
 		tree, nodes: skeletonNodes( skeleton ), reads: { widths, declared: {}, sweep: {}, origin: 'http://127.0.0.1:1' }, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, calFor: () => cal, ledger: [], ledgerStates: [], rawSnapshot: null,
 		facts, rootComponent: 'Page', media: { map: { sites: { s: { files: [ { asset: 'sites/x/assets/a.png', id: 9, url: 'https://x.test/a.png' } ] } } }, site: 's' },
 	} );
-	assert.equal( tree[ 0 ].attributes.imageAlt, 'Right element', JSON.stringify( out.unmapped ) );
+	assert.equal( tree[ 0 ].attributes.alt, 'Right element', JSON.stringify( out.unmapped ) );
 } );
 
 test( 'MUST FAIL: the one-value-every-width gap keeps its code from the resolver to the UNMAPPED row Fill lists', () => {

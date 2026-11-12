@@ -13,17 +13,17 @@
 defined( 'ABSPATH' ) || exit;
 
 // The image band height is a plain per-device length and applies to any entry image.
-if ( ! empty( $attributes['mediaHeight'] ) && is_array( $attributes['mediaHeight'] ) ) {
+if ( ! empty( $attributes['entryHeight'] ) && is_array( $attributes['entryHeight'] ) ) {
 	$cd_media_height = sgs_emit_responsive_css(
 		$media_sel,
 		array(
 			array(
-				'value'        => $attributes['mediaHeight'],
+				'value'        => $attributes['entryHeight'],
 				'css'          => 'height',
 				'unit_default' => 'px',
 			),
 			array(
-				'value'     => $attributes['mediaHeight'],
+				'value'     => $attributes['entryHeight'],
 				'css'       => 'aspect-ratio',
 				'transform' => static function ( $raw ) {
 					return '' === trim( (string) $raw ) ? '' : 'auto';
@@ -33,7 +33,7 @@ if ( ! empty( $attributes['mediaHeight'] ) && is_array( $attributes['mediaHeight
 	);
 	if ( '' !== $cd_media_height ) {
 		$scoped_css[] = $cd_media_height;
-		$scoped_css[] = $media_sel . ' .sgs-timeline__media{height:100%;}';
+		$scoped_css[] = $media_sel . ' :is(.sgs-timeline__media,.sgs-media-group,.sgs-media-stack,img,video){height:100%;}';
 		$scoped_css[] = $media_sel . '{overflow:hidden;}';
 	}
 }

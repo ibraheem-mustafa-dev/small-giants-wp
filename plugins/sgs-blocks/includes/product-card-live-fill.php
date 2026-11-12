@@ -66,6 +66,7 @@ if ( ! function_exists( 'sgs_product_card_live_fill' ) ) {
 			// attachment's own alt text, which is frequently empty.
 			if ( '' !== $brand['url'] ) {
 				$attributes['_sgsBrandLogo'] = array(
+					'id'     => (int) ( $brand['id'] ?? 0 ),
 					'url'    => $brand['url'],
 					'name'   => '' !== $brand['name'] ? $brand['name'] : (string) ( $attributes['brandName'] ?? '' ),
 					'width'  => $brand['width'],

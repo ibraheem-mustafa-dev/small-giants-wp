@@ -282,8 +282,8 @@ if ( ! function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 }
 
-// NOTE: sgs_link_attributes() / sgs_render_media() are real SGS helpers
-// (plugins/sgs-blocks/includes/helpers-link.php, helpers-media.php),
+// NOTE: sgs_link_attributes() is a real SGS helper
+// (plugins/sgs-blocks/includes/helpers-link.php),
 // require_once'd by render.php itself — never stubbed here, or the stub
 // would collide with (or silently mask) the real implementation under test.
 
@@ -1123,7 +1123,8 @@ if ( ! function_exists( 'set_transient' ) ) {
 }
 if ( ! function_exists( 'wp_get_attachment_metadata' ) ) {
 	function wp_get_attachment_metadata( $id ) {
-		return false;
+		// --attachment-meta-file: attachment ID => {width, height}, what the media renderer reads for an image's size.
+		return $GLOBALS['sgs_qa_attachment_meta'][ (string) (int) $id ] ?? false;
 	}
 }
 if ( ! function_exists( 'wp_getimagesize' ) ) {

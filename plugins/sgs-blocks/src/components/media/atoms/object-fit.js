@@ -33,7 +33,7 @@
  *
  * `css()` mirrors `includes/media/atoms/object-fit.php`'s `sgs_media_atom_
  * object_fit_css()` byte-for-byte — enforced by
- * `scripts/tests/test-media-atom-parity.mjs`.
+ * `scripts/tests/test-media-emitter-parity.mjs`.
  *
  * @package SGS\Blocks
  */
@@ -94,47 +94,6 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
 		}
 		return c.boxCrops ? undefined : disabled( REASONS.noCrop );
 	} );
-}
-
-/**
- * Custom-property declarations for this atom. Mirrors
- * `includes/media/atoms/object-fit.php`'s `sgs_media_atom_object_fit_css()`
- * exactly.
- *
- * @param {Object} props
- * @param {Object} props.attributes  Block attributes.
- * @param {string} [props.prefix]    Surface prefix ('' | 'sgs' | 'split' | …).
- * @param {string} [props.blockSlug] Block slug, for `STORED_AS` resolution.
- * @return {string[]} `--custom-property:value;` declarations, never bare rules.
- */
-export function css( { attributes, prefix = '', blockSlug = '' } ) {
-	const decls = [];
-
-	// Element scope, tiered (MEDIA_TIERED_BASES carries `ObjectFit`).
-	const fitKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectFit' );
-	const fit = validate( attributes[ fitKey ], 'element' );
-	if ( fit ) {
-		decls.push( `--sgs-media-object-fit:${ fit }` );
-	}
-	const fitTabletKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectFitTablet' );
-	const fitTablet = validate( attributes[ fitTabletKey ], 'element' );
-	if ( fitTablet ) {
-		decls.push( `--sgs-media-object-fit-tablet:${ fitTablet }` );
-	}
-	const fitMobileKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectFitMobile' );
-	const fitMobile = validate( attributes[ fitMobileKey ], 'element' );
-	if ( fitMobile ) {
-		decls.push( `--sgs-media-object-fit-mobile:${ fitMobile }` );
-	}
-
-	// Backdrop scope. `Size` is NOT in MEDIA_TIERED_BASES — not tiered.
-	const sizeKey = mediaStoredAttrName( blockSlug, prefix, 'Size' );
-	const size = validate( attributes[ sizeKey ], 'backdrop' );
-	if ( size ) {
-		decls.push( `--sgs-media-background-size:${ size }` );
-	}
-
-	return decls;
 }
 
 const EMIT_FITS = [ 'cover', 'contain', 'fill', 'none', 'scale-down' ];

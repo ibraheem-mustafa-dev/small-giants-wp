@@ -22,7 +22,7 @@ const SHAPES_FILE = path.join( HERE, 'data', 'media-slot-properties.json' );
 
 async function adoptedSettings() {
 	const mod = await import( pathToFileURL( path.join( PLUGIN_DIR, 'src', 'components', 'media', 'emit', 'adopted-settings.js' ) ).href );
-	return Object.values( mod.ADOPTED_SETTINGS ).flat();
+	return Object.values( mod.ADOPTED_SETTINGS ).flat().filter( mod.storesAttribute );
 }
 
 async function render() {

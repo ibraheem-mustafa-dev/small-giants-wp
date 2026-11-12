@@ -818,17 +818,24 @@
 	position: relative;
 	aspect-ratio: 1 / 1;
 	overflow: hidden;
+}
+
+/* The frame's own look sits at specificity (0,1,0), so the `main` slot's border, corners, shadow and ground (the
+   renderer's emitters, printed on the frame under its scope class) replace it. */
+:where(.sgs-buybox) .product-card__media {
 	border-radius: var(--sgs-buybox-img-radius, var(--wp--preset--spacing--10, 8px));
 	border: 1px solid rgba(0, 0, 0, 0.08);
 	background: var(--wp--preset--color--surface-alt, #f9f4ef);
 }
 
-.sgs-buybox .product-card__media .product-card-img {
+/* A Ratio or Height on the `main` slot sizes the photo; the frame follows it. */
+.sgs-buybox .product-card__media.sgs-buybox__main-photo-frame--sized {
+	aspect-ratio: auto;
+}
+
+.sgs-buybox .product-card__media:not(.sgs-buybox__main-photo-frame--sized) .product-card-img {
 	width: 100%;
 	height: 100%;
-	/* object-fit: rule 37-media-no-handroll — owned by the 'main' media-atom
-	   layer (block.json supports.sgs.mediaElements + assets/css/media-atoms/
-	   object-fit.css's .sgs-media-el rule, cover fallback preserved there). */
 }
 
 /* Crossfade on variation swap (driven by data-wp-bind--src in the store). The second selector
@@ -903,8 +910,6 @@
 	min-width: 48px;
 	min-height: 48px;
 	padding: 0;
-	border: 2px solid transparent;
-	border-radius: var(--sgs-buybox-img-radius, 8px);
 	background: none;
 	cursor: pointer;
 	overflow: hidden;
@@ -916,11 +921,15 @@
 .sgs-buybox .product-card__thumb img {
 	width: 100%;
 	height: 100%;
-	/* object-fit: rule 37-media-no-handroll — owned by the 'thumb' media-atom
-	   layer (block.json supports.sgs.mediaElements + assets/css/media-atoms/
-	   object-fit.css's .sgs-media-el rule, cover fallback preserved there). */
+	/* object-fit: owned by the 'thumb' media slot (block.json supports.sgs.mediaElements; the shared renderer's
+	   Fit rule on .sgs-media-el, cover by default in assets/css/media-base.css). */
 	display: block;
 	pointer-events: none;
+}
+
+.sgs-buybox :where(.product-card__thumb) {
+	border: 2px solid transparent;
+	border-radius: var(--sgs-buybox-img-radius, 8px);
 }
 
 /* Selected state: accent border (≥3:1 UI component contrast) + subtle scale. */

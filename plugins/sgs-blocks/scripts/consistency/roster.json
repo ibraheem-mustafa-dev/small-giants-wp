@@ -111,7 +111,7 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": true,
+        "link": false,
         "media": true,
         "animation": false
       },
@@ -439,7 +439,7 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": true,
+        "link": false,
         "media": true,
         "animation": true
       },
@@ -787,7 +787,7 @@
         "styling": true,
         "colour": true,
         "link": false,
-        "media": true,
+        "media": false,
         "animation": false
       },
       "qualifies": {
@@ -906,7 +906,7 @@
         "styling": true,
         "colour": true,
         "link": true,
-        "media": true,
+        "media": false,
         "animation": false
       },
       "qualifies": {
@@ -1067,7 +1067,7 @@
         "styling": true,
         "colour": true,
         "link": true,
-        "media": true,
+        "media": false,
         "animation": false
       },
       "qualifies": {
@@ -1142,7 +1142,7 @@
       "surfaces": {
         "styling": false,
         "colour": true,
-        "link": true,
+        "link": false,
         "media": true,
         "animation": false
       },
@@ -1166,7 +1166,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 13,
+        "paintDeclarations": 14,
         "replacedCoreSupports": [
           "anchor",
           "border",
@@ -1471,7 +1471,7 @@
         "styling": true,
         "colour": true,
         "link": false,
-        "media": true,
+        "media": false,
         "animation": false
       },
       "qualifies": {
@@ -1513,7 +1513,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 51,
+        "paintDeclarations": 52,
         "replacedCoreSupports": []
       }
     },
@@ -1732,7 +1732,7 @@
         "styling": true,
         "colour": true,
         "link": true,
-        "media": true,
+        "media": false,
         "animation": false
       },
       "qualifies": {
@@ -2048,7 +2048,7 @@
         "styling": true,
         "colour": true,
         "link": true,
-        "media": true,
+        "media": false,
         "animation": false
       },
       "qualifies": {

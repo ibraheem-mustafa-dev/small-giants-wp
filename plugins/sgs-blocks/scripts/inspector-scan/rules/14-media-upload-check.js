@@ -30,7 +30,7 @@
 //     invisible to this rule exactly like the OLD script — it only sees a
 //     literal `<MediaUpload` / `<MediaUploadCheck` JSX tag in the block's
 //     OWN edit.js text, not inside an imported component's source. This is
-//     the same class of gap rule 18 found and fixed for <img>/MediaPicker;
+//     the same class of gap rule 18 resolves for <img> in shared components;
 //     it has NOT been re-derived here, deliberately, to preserve exact OLD
 //     behaviour for this port (a widening would need its own measured
 //     before/after, not a silent addition during a verbatim port).

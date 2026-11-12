@@ -33,8 +33,8 @@
 //     (via a block's own local components/ subfolder, or a shared
 //     src/components/*.js file that itself renders <ColorPalette> etc.)
 //     is invisible — this rule only looks at each block's own edit.js text,
-//     exactly like the OLD script. The same class of gap rule 18 found for
-//     <img> (MediaPicker.js) could exist here and has not been checked.
+//     exactly like the OLD script. The same class of gap rule 18 resolves for
+//     <img> in shared components could exist here and has not been checked.
 //   - `enableAlpha={false}` explicitly set still counts as "has the
 //     attribute" and is NOT flagged (same as OLD — presence, not value, is
 //     checked). A control that explicitly disables alpha is indistinguishable

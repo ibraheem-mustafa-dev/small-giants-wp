@@ -98,7 +98,9 @@ export function generatedAttributes( block, env, ownDefs, report ) {
 			seen.add( name );
 			out.push( {
 				name,
-				def: { type: setting.responsive ? 'object' : setting.type, _generated: GENERATED_MARK },
+				def: setting.responsive || 'array' !== setting.type
+					? { type: setting.responsive ? 'object' : setting.type, _generated: GENERATED_MARK }
+					: { type: 'array', default: [], _generated: GENERATED_MARK },
 				base: setting.base,
 				tier: '',
 				prefix,

@@ -149,9 +149,9 @@ export function itemRowHtml( item, totals, opts = {} ) {
 		? Number( item.parent_id )
 		: Number( item.id ) || 0;
 
-	// `sgs-media-el` (rule 37-media-no-handroll fix) is the shared media-element
+	// `sgs-media-el` is the shared media-element
 	// atom marker (includes/class-sgs-media-element.php /
-	// assets/css/media-atoms/object-fit.css) — this thumbnail is added to the
+	// assets/css/media-base.css) — this thumbnail is added to the
 	// DOM here, client-side, but the `--sgs-media-object-fit` custom property
 	// it reads is set server-side on the block's uid class (render.php), which
 	// the panel element itself carries, so the marker class is all this

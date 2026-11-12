@@ -285,13 +285,18 @@ def migrate_playback(slot: Slot) -> None:
 
 # ---------------------------------------------------------------- fit, focal, sizing, shape, opacity
 
+def _size_kept(ctx: Ctx, name: str) -> bool:
+    """An old `Size` attribute that is not a fit: a STAYS entry (the option-picker dot's length) or an EXTRA row (trust-bar's badge size)."""
+    return name in M.STAYS.get(ctx.block, ()) or (ctx.block, name) in M.EXTRA
+
+
 def migrate_fit(slot: Slot) -> None:
     ctx = slot.ctx
     fit: dict = {}
     for tier in TIERS:
         for base in ("ObjectFit", "Size"):
             name = slot.present(base, tier)
-            if not name:
+            if not name or (base == "Size" and _size_kept(ctx, name)):
                 continue
             raw = ctx.get(name)
             if raw in FIT_OK or (base == "Size" and raw in ("cover", "contain")):
@@ -303,7 +308,10 @@ def migrate_fit(slot: Slot) -> None:
     if fit:
         ctx.put(slot.target("Fit"), fit)
     for base in ("ObjectFit", "Size"):
-        slot.retire(base, "converted", slot.target("Fit"))
+        for tier in TIERS:
+            for name in slot.old_names(base, tier):
+                if not (base == "Size" and _size_kept(ctx, name)):
+                    ctx.drop(name, "converted", slot.target("Fit"))
 
 
 def _focal(slot: Slot, base: str, target: str) -> None:
@@ -323,6 +331,10 @@ def _focal(slot: Slot, base: str, target: str) -> None:
         merged.update(parsed)
     for name in bad_names:
         ctx.keep(name, "refused", "focal position is not readable as keywords or percentages")
+    for tier in TIERS:
+        name = slot.present(base, tier)
+        if name and name not in bad_names and all_inert(ctx.get(name)):
+            ctx.drop(name, "deleted", "", INERT_POSITION_NOTE)
     pruned = V.prune_inherited(merged, {"x": 0.5, "y": 0.5})
     if pruned:
         ctx.put(target, pruned)
@@ -330,6 +342,15 @@ def _focal(slot: Slot, base: str, target: str) -> None:
         name = slot.present(base, tier)
         if name and name not in bad_names:
             ctx.drop(name, "converted", target)
+
+
+INERT_POSITION_NOTE = "not a CSS position (a template placeholder or stray text): the browser ignored it, so the image kept its default focal point"
+
+
+def all_inert(value) -> bool:
+    """True when a stored focal value is non-empty and every device's part is a string that is no CSS position."""
+    items = list(V.device_values(value).values())
+    return bool(items) and all(V.inert_position(i) for i in items)
 
 
 def migrate_focal(slot: Slot) -> None:
@@ -372,7 +393,9 @@ def migrate_background_fit(ctx: Ctx) -> None:
     position = ctx.get("backgroundPosition")
     if isinstance(position, str):
         parsed, bad = V.focal_value(position)
-        if bad:
+        if V.inert_position(position):
+            ctx.drop("backgroundPosition", "deleted", "", INERT_POSITION_NOTE)
+        elif bad:
             ctx.keep("backgroundPosition", "refused", "background-position is not readable as keywords or percentages")
         else:
             pruned = V.prune_inherited(parsed, {"x": 0.5, "y": 0.5})
@@ -392,6 +415,67 @@ def _normalise_sizing_value(base: str, raw: Any, unit: str = "px") -> dict:
                 out[device] = norm
         return out or ({"desktop": ratio} if ratio else {})
     return V.length_device_object(raw, unit)
+
+
+def saved(slot: Slot, base: str, tier: str = ""):
+    """The value an old attribute was saved with, read from the input (the source step has already retired it from the working copy)."""
+    for name in slot.old_names(base, tier):
+        if name in slot.ctx.original:
+            return slot.ctx.original[name]
+    return None
+
+
+OLD_MEDIA_BASES = ("MediaType", "ImageUrl", "ImageId", "VideoUrl", "VideoId", "SvgContent", "MediaSizing")
+
+
+def old_media_kind(slot: Slot) -> str:
+    """What the old `sgs/media` drew on desktop: image, video, svg or embed (a YouTube or Vimeo address on an external video)."""
+    kind = saved(slot, "MediaType") or "image"
+    if kind == "video" and (saved(slot, "VideoSource") or "external") != "internal" and EMBED.search(str(saved(slot, "VideoUrl") or "")):
+        return "embed"
+    return kind
+
+
+def old_media_figure(slot: Slot, kind: str, mode: str) -> bool:
+    """True when the old `sgs/media` wrapped the media in a `<figure>` (its `img` then filled the figure's width);
+    a linkless, captionless image with no overlay, no per-device file and no Fill was the bare `<img>`, at its own width."""
+    ctx = slot.ctx
+    if kind != "image" or mode == "fill":
+        return True
+    original = ctx.original
+    if original.get("caption") or original.get("linkUrl") or original.get("overlayColour") or original.get("overlayGradient"):
+        return True
+    return any(_set(saved(slot, base, tier)) for base in ("ImageUrl", "ImageId") for tier in ("Tablet", "Mobile"))
+
+
+def pin_media_sizing(slot: Slot, mode: str, height: dict, width: dict) -> tuple[dict, dict]:
+    """§13's sizing pins for `sgs/media`, from what the old block drew (measured on the 2026-11 sandybrown mirror, main's code):
+    a figure's `img`, `video`, `svg` and `iframe` were 100% of the container wide, a bare `img` its file's own width;
+    the old CSS ignored a saved Height on a video and on an SVG. The new default is the file's own size, and a Height or
+    a Ratio alone is 100% wide, so the Width the old block drew is written only where it differs from that."""
+    ctx = slot.ctx
+    kind = old_media_kind(slot)
+    figure = old_media_figure(slot, kind, mode)
+    width = dict(width)
+    if (not any(saved(slot, base) is not None for base in OLD_MEDIA_BASES) or "desktop" in width
+            or kind not in ("image", "video", "svg")):
+        return height, width
+    if mode == "height" and kind in ("video", "svg"):
+        for tier in TIERS:
+            for name in slot.old_names("Height", tier):
+                ctx.drop(name, "deleted", "", f"a Height on {'an SVG' if kind == 'svg' else 'a video'} was ignored by the old block (it drew the file at the container's width and its own proportions)")
+        height = {}
+        width["desktop"] = "100%"
+        ctx.events.append(("pinned", "mediaSizing", slot.target("Width"), f"old {kind} in height mode was drawn 100% wide: Width 100% written explicitly"))
+    elif mode == "height" and kind == "image" and not figure:
+        width["desktop"] = "auto"
+        ctx.events.append(("pinned", "mediaSizing", slot.target("Width"), "old bare image with a height kept its proportions: Width auto written explicitly"))
+    elif mode == "ratio" and kind == "image" and not figure:
+        ctx.pin_width_px = True
+    elif mode == "auto" and figure:
+        width["desktop"] = "100%"
+        ctx.events.append(("pinned", "mediaSizing", slot.target("Width"), f"old {kind} in a figure was drawn 100% wide: Width 100% written explicitly"))
+    return height, width
 
 
 def migrate_sizing(slot: Slot) -> None:
@@ -415,11 +499,14 @@ def migrate_sizing(slot: Slot) -> None:
         new_height, new_ratio = {"desktop": "auto"}, ratio
     elif mode == "height":
         new_height, new_ratio = height, {}
-        for device in DEVICES:
-            if device in new_height and device not in width and new_height[device] not in ("auto", "fill"):
-                width[device] = "auto"
+        if ctx.block != "sgs/media":
+            for device in DEVICES:
+                if device in new_height and device not in width and new_height[device] not in ("auto", "fill"):
+                    width[device] = "auto"
     else:
         new_height, new_ratio = {}, {}
+    if ctx.block == "sgs/media":
+        new_height, width = pin_media_sizing(slot, mode, new_height, width)
     if new_height:
         ctx.put(slot.target("Height"), new_height)
     if new_ratio:
@@ -456,6 +543,14 @@ def migrate_shape(slot: Slot) -> None:
     if isinstance(raw, dict):
         return
     radius_target, shape_target = slot.target("Radius"), slot.target("Shape")
+    drawn = M.OLD_SHAPE_DRAWN.get(ctx.block)
+    if drawn is not None and isinstance(raw, str):
+        if raw in drawn:
+            ctx.drop(name, "converted", shape_target, f"{raw!r} drew a {drawn[raw]} dot")
+            ctx.put(shape_target, {"desktop": {"shape": drawn[raw]}})
+        else:
+            ctx.drop(name, "deleted", "", f"the old render drew nothing for shape {raw!r}")
+        return
     if raw in (None, "", "none", "square"):
         ctx.drop(name, "deleted", "", f"shape {raw!r} draws nothing")
     elif raw == "rounded":
@@ -484,6 +579,10 @@ def migrate_radius(slot: Slot) -> None:
             out[TIER_DEVICE[tier]] = {k: raw[k] for k in V.CORNERS if k in raw}
         elif isinstance(raw, dict) and V.is_device_object(raw):
             out.update({d: v for d, v in raw.items() if v})
+        elif isinstance(raw, dict) and _set(raw):
+            ctx.drop(name, "deleted", "", "an object with no corner key (topLeft, topRight, bottomLeft, bottomRight) and no device key: "
+                                          "the old render read no radius from it, so it painted a square corner")
+            continue
         elif _set(raw):
             ctx.keep(name, "refused", "border radius is not a corner or device object")
             continue
@@ -563,15 +662,65 @@ def migrate_renames(slot: Slot) -> None:
                 ctx.drop(name, "converted", new_name)
 
 
+# The SVG presentation animation words become Effects layers on the SVG part, with the durations and shapes the
+# old stylesheets drew (the Spec 38A migration mapper `Sgs_Motion_Map_Looping_Media` holds the same table).
+SVG_LOOP_MS = {"pulse": {"slow": 5000, "medium": 3000, "fast": 1500}, "wave": {"slow": 8000, "medium": 5000, "fast": 3000}}
+FLOAT_PERIOD_MS = {"slow": 3000, "medium": 2000, "fast": 1000}
+SVG_PARTS = {"": "media", "background": "svg-bg"}
+
+
+def migrate_svg_animation(slot: Slot) -> None:
+    """`svgAnimation` and `svgAnimationSpeed`: an SVG loop (pulse, wave) or ambient float layer on the slot's SVG part."""
+    ctx = slot.ctx
+    anim = slot.present("SvgAnimation")
+    speed = slot.present("SvgAnimationSpeed")
+    held = [n for n in (anim, speed) if n]
+    part = SVG_PARTS.get(slot.new)
+    if not held or part is None:
+        return
+    word = ctx.get(anim, "none") if anim else "none"
+    if word not in ("none", "pulse", "float", "wave"):
+        ctx.keep(anim, "reported", "SVG animation word outside none, pulse, float and wave: resolved by hand")
+        return
+    speed_word = ctx.get(speed, "medium") if speed else "medium"
+    speed_word = speed_word if speed_word in FLOAT_PERIOD_MS else "medium"
+    layer = None
+    if word == "float":
+        layer = {"id": "ambient-float", "effect": "ambient-float",
+                 "values": {"travel": -10, "axis": "y", "period": FLOAT_PERIOD_MS[speed_word], "easing": "ease-in-out", "direction": "alternate"}}
+    elif word in SVG_LOOP_MS:
+        layer = {"id": "svg-loop", "effect": "svg-loop",
+                 "values": {"motion": word, "duration": SVG_LOOP_MS[word][speed_word], "amplitude": 1}}
+    if layer is not None:
+        motion = ctx.get("sgsMotion")
+        if motion is None:
+            motion = {"v": 1, "elements": {}}
+        if not isinstance(motion, dict) or not isinstance(motion.get("elements", {}), dict):
+            for name in held:
+                ctx.keep(name, "refused", "sgsMotion is not an object: the SVG loop cannot be added")
+            return
+        layers = motion.setdefault("elements", {}).setdefault(part, {}).setdefault("effects", [])
+        if any(isinstance(l, dict) and l.get("effect") == layer["effect"] for l in layers):
+            for name in held:
+                ctx.keep(name, "refused", f"the {part} part already holds a {layer['effect']} layer")
+            return
+        layers.append(layer)
+        ctx.put("sgsMotion", motion)
+    for name in held:
+        ctx.drop(name, "converted" if layer is not None else "deleted", f"sgsMotion.elements.{part}" if layer is not None else "", "" if layer is not None else "animation none")
+
+
 def migrate_report(slot: Slot) -> None:
     for base, (family, reason) in M.BASE_FAMILY.items():
         if family == "report":
             for name in slot.all_old(base):
-                slot.ctx.keep(name, "reported", reason)
+                if name not in M.STAYS.get(slot.ctx.block, ()):  # a STAYS name is the block's own attribute: nothing to report
+                    slot.ctx.keep(name, "reported", reason)
 
 
 def migrate_slot(ctx: Ctx, olds: list[str], new: str, bases: list[str]) -> None:
     slot = Slot(ctx, olds, new, bases)
+    migrate_svg_animation(slot)
     migrate_report(slot)
     migrate_source(slot)
     migrate_alt(slot)

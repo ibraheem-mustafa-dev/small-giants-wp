@@ -5,28 +5,16 @@
 // 2026-08-03 — confirms the `export { default as Name } from './Name'` /
 // `export { Name } from './Name'` shapes this minimal parser targets.
 //
-// REVISED 2026-08-03 after coordinator review of rule 01 demanded the same
-// scrutiny be applied to rules 18/20. Cross-checking rule 18's population (12)
-// against an independent measurement confirmed the COUNT, but a further check
-// — "could this rule miss a block whose <img> lives in a shared component
-// rather than its own edit.js text?" — found a REAL gap: `MediaPicker.js`
-// (which genuinely renders `<img>`, confirmed at :125) is imported by 9
-// blocks via a DIRECT path import (`import MediaPicker from
-// '../../components/MediaPicker'`), NOT through the index.js barrel — so the
-// original discover(), which only parsed index.js, never saw it, and two of
-// those 9 blocks (brand-strip, team-member) have ZERO literal `<img>` of
-// their own and were invisible to rule 18 entirely.
-//
-// Fix: discover() now scans EVERY .js file directly in src/components/ (not
-// only the ones index.js re-exports), keyed by filename. `exported: true` is
-// still recorded for barrel-exported ones (useful metadata), but a
-// non-exported, directly-imported component like MediaPicker is now resolved
-// exactly the same way. This is still "resolve from source", just widened
-// to the whole components directory instead of only the barrel's re-export
-// list — the task's ban on import-path STRING MATCHING is respected: a
-// block is credited with using MediaPicker because its JSX contains
-// `<MediaPicker`, cross-referenced against a component whose OWN source was
-// read and found to render `<img>` — never because of the import path text.
+// A block can render an `<img>` or a control through a shared component it
+// imports by direct path (`import Name from '../../components/Name'`) rather
+// than through the index.js barrel, so discover() scans EVERY .js file
+// directly in src/components/, keyed by filename. `exported: true` is still
+// recorded for barrel-exported ones (useful metadata), but a non-exported,
+// directly-imported component is resolved exactly the same way. This is
+// "resolve from source": a block is credited with using a component because
+// its JSX contains `<Name`, cross-referenced against a component whose OWN
+// source was read and found to render the thing in question - never because
+// of the import path text.
 
 const fs = require( 'fs' );
 const path = require( 'path' );

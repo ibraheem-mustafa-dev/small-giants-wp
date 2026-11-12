@@ -1,0 +1,983 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/testimonial",
+	"version": "0.3.4",
+	"title": "SGS Testimonial",
+	"category": "sgs-content",
+	"description": "Single testimonial with 7 layout variants — quote, attribution, optional avatar, organisation logo, work media, and a fully optional rating.",
+	"keywords": [
+		"testimonial",
+		"review",
+		"quote",
+		"feedback",
+		"rating",
+		"case study"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "format-quote",
+	"supports": {
+		"align": false,
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": false,
+			"text": false,
+			"link": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		},
+		"shadow": {
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"motion": true,
+			"_comment_orgLogoNotAdopted": "orgLogo's object-fit:contain (style.css) is deliberately NOT a client control and NOT routed through the media-atom layer -- a logo must never be cropped, so there is no orgLogoObjectFit attribute to adopt in the first place. Disclosed here (in addition to the existing style.css comment) for consistency with the other _comment_*NotAdopted notes added during the 37-media-no-handroll remediation, per /qc-council 2026-09-03.",
+			"containerKind": "content",
+			"scalarContentLift": true,
+			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03). Replaces the old universal imageControls/imageControlsExplicit single sgsObjectFit/sgsObjectPosition pair (block-level, shared by whichever slot's render.php happened to call sgs_media_position_css()) with two independently-scoped media elements, one per slot, mirroring sgs/before-after's Wave 5b migration. `avatar` gets object-fit only (a fixed-crop circular headshot has no genuine focal-point need beyond the fit mode). `work` gets object-fit + focal-point, replacing the position control the old mechanism gave it 1:1 — case-study media varies in composition, so both crop mode and crop focus are genuine per-instance needs. The org logo is deliberately excluded — see elements.org-logo-image below.",
+			"mediaElements": [
+				{
+					"prefix": "avatar",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				},
+				{
+					"prefix": "work",
+					"context": "element",
+					"atoms": [
+						"object-fit",
+						"focal-point"
+					]
+				}
+			],
+			"elements": {
+				"quote-box": {
+					"restingShadow": true,
+					"label": "Quote box",
+					"order": 1,
+					"clusters": [
+						"fill",
+						"layout",
+						"animation"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "backgroundColour",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:max-width": "maxWidth",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
+						"css:text-decoration-link": "linkUnderline",
+						"css:text-decoration-thickness-link": "linkUnderlineThickness",
+						"css:text-decoration-color-link": "linkUnderlineColour",
+						"css:text-decoration-offset-link": "linkUnderlineOffset",
+						"css:border-color-gradient": "borderColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient",
+								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient",
+								"css:text-decoration-color-link": "linkUnderlineColourHover"
+							}
+						}
+					}
+				},
+				"quote-text": {
+					"text": true,
+					"selector": ".sgs-testimonial__quote",
+					"label": "Quote text",
+					"order": 2,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "quote",
+					"attrMap": {
+						"css:text-decoration-link": "quoteLinkUnderline",
+						"css:text-decoration-thickness-link": "quoteLinkUnderlineThickness",
+						"css:text-decoration-color-link": "quoteLinkUnderlineColour",
+						"css:text-decoration-offset-link": "quoteLinkUnderlineOffset",
+						"css:margin-bottom": "quoteMarginBottom",
+						"css:background-image": "quoteColourGradient",
+						"css:color-link": "quoteLinkColour",
+						"css:color-link-gradient": "quoteLinkColourGradient",
+						"css:-webkit-text-stroke-width": "quoteTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "quoteTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "quoteColourHover",
+								"css:color-link": "quoteLinkColourHover",
+								"css:color-link-gradient": "quoteLinkColourHoverGradient",
+								"css:text-decoration-color-link": "quoteLinkUnderlineColourHover",
+								"css:-webkit-text-stroke-color": "quoteTextStrokeColourHover"
+							}
+						}
+					},
+					"_note": "quoteMarginBottom (render.php:153,241, `'margin-bottom' => $quote_margin_bot`) resolves via the new css:margin-bottom layout member (Spec 35 vocabulary fix). quoteColourGradient (D636 Task 1b) is the text-colour gradient sibling to quoteColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member. quoteLinkColour/Hover/Gradient/HoverGradient (2026-09-07, colour-conformance TEXT closeout) route through sgs_link_colour_css(), scoped to `.sgs-testimonial__quote a` — same `css:color-link` convention as sgs/timeline's descriptionLinkColour."
+				},
+				"reviewer-name": {
+					"text": true,
+					"selector": ".sgs-testimonial__name",
+					"label": "Reviewer name",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"prefix": "name",
+					"attrMap": {
+						"css:color": "nameColour",
+						"css:font-size": "nameFontSize",
+						"css:background-image": "nameColourGradient",
+						"css:-webkit-text-stroke-width": "nameTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "nameTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "nameColourHover",
+								"css:-webkit-text-stroke-color": "nameTextStrokeColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
+				},
+				"review-footer": {
+					"selector": ".sgs-testimonial__footer--review",
+					"label": "Name and date line",
+					"order": 3.5,
+					"clusters": [],
+					"attrMap": {
+						"css:border-top-width": "reviewFooterBorder",
+						"css:border-top-style": "reviewFooterBorder",
+						"css:border-top-color": "reviewFooterBorder"
+					},
+					"absentIn": [ "avatar-spotlight", "classic-card", "corporate-logo", "minimal-quote", "pull-quote-editorial", "rating-led", "case-study-media", "rating-scale" ],
+					"absentWhy": "The name and date line prints only in the review-card layout."
+				},
+				"reviewer-role": {
+					"selector": ".sgs-testimonial__role",
+					"absentIn": [ "review-card" ],
+					"absentWhy": "The review-card variant prints only the name and date line, so it has no role.",
+					"label": "Reviewer role",
+					"order": 4,
+					"clusters": [
+						"text"
+					],
+					"prefix": "role",
+					"attrMap": {
+						"css:color": "roleColour",
+						"css:background-image": "roleColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "roleColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
+				},
+				"org-name": {
+					"text": true,
+					"selector": ".sgs-testimonial__org",
+					"absentIn": [ "review-card" ],
+					"absentWhy": "The review-card variant prints only the name and date line, so it has no organisation name.",
+					"label": "Organisation name",
+					"order": 5,
+					"clusters": [
+						"text"
+					],
+					"prefix": "org",
+					"attrMap": {
+						"css:color": "orgColour",
+						"css:background-image": "orgColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "orgColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
+				},
+				"avatar-image": {
+					"selector": ".sgs-testimonial__avatar",
+					"label": "Avatar image",
+					"order": 6,
+					"clusters": [],
+					"_note": "37-media-no-handroll remediation (2026-09-03) — REVERSES the 2026-08-17 note this used to carry. The circular cover-crop is still the component-owned DEFAULT (style.css's hardcoded object-fit:cover was removed; the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` atom stylesheet now paints the identical default), but it is no longer immovable — a client can override it per instance via the `avatar` mediaElements entry above (`avatarObjectFit`/`avatarObjectFitTablet`/`avatarObjectFitMobile`, auto-registered server-side from supports.sgs.mediaElements — see includes/media-element-attrs-register.php). Border-radius:50% stays a genuine fixed constant (a non-circular avatar is not a supported shape here). Rendered inside a plain `<div>` (render.php) — the marker classes are added explicitly via SGS_Media_Element::element_classes(), not via the generic render_block guessing injector, so the plain-`<div>` wrapper is no longer a reachability problem.",
+					"absentIn": [ "corporate-logo", "minimal-quote", "review-card" ],
+					"absentWhy": "The corporate-logo and minimal-quote variants print no avatar."
+				},
+				"org-logo-image": {
+					"selector": ".sgs-testimonial__logo",
+					"label": "Organisation logo",
+					"order": 7,
+					"clusters": [],
+					"_note": "Deliberately NOT reachable by the universal image-controls mechanism (design decision, 2026-08-17): style.css:101-107 fixes object-fit:contain — a logo must never be cropped, so this is a component-owned constant, not a client-overridable style. Same 'plain `<div>` wrapper, never reached by the generic mechanism anyway' reasoning as avatar-image above.",
+					"absentIn": [ "avatar-spotlight", "minimal-quote", "review-card" ],
+					"absentWhy": "The avatar-spotlight and minimal-quote variants print no organisation logo."
+				},
+				"work-media": {
+					"selector": ".sgs-testimonial__work",
+					"label": "Work / case-study media",
+					"order": 8,
+					"clusters": [],
+					"_note": "37-media-no-handroll remediation (2026-09-03) — migrated off the old block-level imageControls/imageControlsExplicit + sgs_media_position_css() mechanism (design decision, 2026-08-17) onto the independently-scoped `work` mediaElements entry above (object-fit + focal-point), matching sgs/before-after's Wave 5b precedent 1:1. Still the one image slot with a genuine per-instance crop need — case-study photos vary in composition/aspect ratio, unlike the fixed-crop avatar/logo slots. SGS_Media_Element::element_classes()/style() target the same known `.sgs-testimonial__work img, .sgs-testimonial__work video` selector explicitly in render.php; the generic render_block guessing injector is still never relied on.",
+					"absentIn": [ "avatar-spotlight", "classic-card", "corporate-logo", "minimal-quote", "pull-quote-editorial", "rating-led", "rating-scale", "review-card" ],
+					"absentWhy": "The work media prints only in the case-study-media variant."
+				},
+				"rating": {
+					"label": "Rating",
+					"order": 9,
+					"clusters": [
+						"text"
+					],
+					"prefix": "rating",
+					"attrMap": {
+						"css:font-size": "ratingSize",
+						"css:color": "ratingColour",
+						"css:background-image": "ratingColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "ratingColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful.",
+					"absentIn": [ "case-study-media", "minimal-quote" ],
+					"absentWhy": "The case-study-media and minimal-quote variants print no rating."
+				},
+				"summary": {
+					"text": true,
+					"label": "Summary phrase",
+					"order": 10,
+					"clusters": [
+						"text"
+					],
+					"prefix": "summary",
+					"attrMap": {
+						"css:color": "summaryColour",
+						"css:font-size": "summaryFontSize",
+						"css:background-image": "summaryColourGradient"
+					},
+					"_note": "The summary phrase — <p class=\"sgs-testimonial__summary\"> (render.php:699), styled at render.php:276-283 (color <- summaryColour, font-size <- summaryFontSize). A SEPARATE element from quote-text, which is the <blockquote class=\"sgs-testimonial__quote\"> (render.php:704, styled :288-309): two different DOM nodes, so one entry cannot cover both, and quote-text's prefix \"quote\" can never reach a summary* attribute. Before this element existed summaryColour had no manifest home, so css_property stayed NULL and survey.js/rule 31/the cloning pipeline were all blind to it.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "summaryColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful.",
+					"absentIn": [ "avatar-spotlight", "classic-card", "corporate-logo", "minimal-quote", "rating-led", "rating-scale" ],
+					"absentWhy": "The summary phrase prints only in the pull-quote-editorial and case-study-media variants."
+				}
+			},
+			"variantAttr": "variant",
+			"variants": {
+				"classic-card": [
+					"ratingStars"
+				],
+				"pull-quote-editorial": [
+					"summaryPhrase"
+				],
+				"rating-led": [
+					"ratingScale",
+					"verified",
+					"reviewDate",
+					"sourcePlatform"
+				],
+				"review-card": [
+					"ratingStars",
+					"summaryPhrase",
+					"reviewDate",
+					"reviewFooterBorder"
+				],
+				"avatar-spotlight": [
+					"avatarMedia",
+					"avatarDecorative"
+				],
+				"corporate-logo": [
+					"orgLogo",
+					"orgLogoDecorative"
+				],
+				"case-study-media": [
+					"workMedia",
+					"workMediaDecorative"
+				],
+				"minimal-quote": []
+			},
+			"scalarStylingLift": true,
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				],
+				"margin": [
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
+				]
+			}
+		}
+	},
+	"usesContext": [
+		"sgs/testimonialVariant"
+	],
+	"selectors": {
+		"root": ".sgs-testimonial"
+	},
+	"attributes": {
+		"quoteLinkUnderline": {
+			"type": "string",
+			"enum": [ "", "none", "always", "hover", "sweep" ],
+			"default": "",
+			"description": "How a link inside the text is underlined: '' the theme's underline, none, always, hover (an underline on hover and keyboard focus), or sweep (a line sweeps in on hover and keyboard focus). sgs_link_underline_css()."
+		},
+		"quoteLinkUnderlineThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the link underline for always, hover and sweep (a CSS length); empty uses the theme's link-sweep thickness or the browser's."
+		},
+		"quoteLinkUnderlineColour": {
+			"type": "string",
+			"default": "",
+			"description": "The link underline's colour for always, hover and sweep (a palette slug or any CSS colour); empty draws it in the link's own colour. sgs_link_underline_css()."
+		},
+		"quoteLinkUnderlineColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "The link underline's colour while the link is hovered or focused with the keyboard (a palette slug or any CSS colour); empty keeps the colour it has at rest. sgs_link_underline_css()."
+		},
+		"quoteLinkUnderlineOffset": {
+			"type": "string",
+			"default": "",
+			"description": "Gap between the link text and its underline for always and hover (a CSS length); empty uses the browser's. The sweep is a background line, so it ignores the gap. sgs_link_underline_css()."
+		},
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"variant": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"classic-card",
+				"pull-quote-editorial",
+				"rating-led",
+				"review-card",
+				"avatar-spotlight",
+				"corporate-logo",
+				"case-study-media",
+				"minimal-quote"
+			]
+		},
+		"quote": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"summaryPhrase": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"reviewerName": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"reviewerRole": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"orgName": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"avatarMedia": {
+			"type": "object",
+			"default": null
+		},
+		"_comment_artDirection": "Art-direction tiers (2026-08-07) — the {base}/{base}Tablet/{base}Mobile shape sgs/media and sgs/hero use, object-typed to MATCH avatarMedia (a flat value on an object-typed attr is silently coerced to the default, dropping the whole thing). A tier left empty falls back to the desktop avatar at that width. Deliberately NOT sgs_render_media()'s existing `mobile_url` <picture> path: that is mobile-only, has no tablet step, and is not the BEM tier modifier the cloning pipeline's draft vocabulary reads — one convention on both ends is what makes a clone round-trip.",
+		"avatarMediaTablet": {
+			"type": "object",
+			"default": null
+		},
+		"avatarMediaMobile": {
+			"type": "object",
+			"default": null
+		},
+		"orgLogo": {
+			"type": "object",
+			"default": null
+		},
+		"workMedia": {
+			"type": "object",
+			"default": null
+		},
+		"avatarDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Item 18 (WCAG 1.1.1) — the reviewer photo carries no information beyond decoration; hides it from assistive tech (empty alt + aria-hidden) instead of storing/announcing the media library's alt text."
+		},
+		"orgLogoDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Item 18 (WCAG 1.1.1) — the organisation logo is purely decorative for this instance; hides it from assistive tech (empty alt + aria-hidden) instead of storing/announcing the media library's alt text."
+		},
+		"workMediaDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Item 18 (WCAG 1.1.1) — the case-study work image/video is purely decorative for this instance; hides it from assistive tech (empty alt + aria-hidden) instead of storing/announcing the media library's alt text."
+		},
+		"showRating": {
+			"type": "boolean",
+			"default": false
+		},
+		"ratingType": {
+			"type": "string",
+			"default": "stars",
+			"enum": [
+				"stars",
+				"scale"
+			]
+		},
+		"ratingStars": {
+			"type": "number",
+			"default": 0
+		},
+		"ratingScale": {
+			"type": "number",
+			"default": 0
+		},
+		"ratingScaleMax": {
+			"type": "string",
+			"default": "10"
+		},
+		"reviewDate": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewFooterBorder": {
+			"type": "object",
+			"default": {},
+			"description": "Rule above the name and date line of the review-card layout, per device: {desktop|tablet|mobile: {width, style, colour}}. Width is a CSS length, style is none, solid, dashed or dotted, colour is a palette slug or any colour. A member a device leaves empty takes the device above's. Unset draws no rule."
+		},
+		"verified": {
+			"type": "boolean",
+			"default": false
+		},
+		"sourcePlatform": {
+			"type": "string",
+			"default": ""
+		},
+		"schemaEnabled": {
+			"type": "boolean",
+			"default": false
+		},
+		"quoteFontSize": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteColour": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteLinkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteLinkColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteLinkColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the quote link text via background-clip:text. Non-empty wins over quoteLinkColour."
+		},
+		"quoteLinkColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of quoteLinkColourHover. Non-empty wins over quoteLinkColourHover on :hover/:focus-visible."
+		},
+		"quoteFontStyle": {
+			"type": "string",
+			"default": "",
+			"description": "Font style for the quote text. 'italic' or empty for normal."
+		},
+		"quoteLineHeight": {
+			"type": "string",
+			"default": "",
+			"description": "Line height for the quote text. Raw CSS value (e.g. 1.6, 2em). Empty = default."
+		},
+		"quoteMarginBottom": {
+			"type": "string",
+			"default": "",
+			"description": "Space below the quote text. Raw CSS value (e.g. 16px, 1.5rem). Empty = theme default (spacing--30)."
+		},
+		"summaryFontSize": {
+			"type": "string",
+			"default": ""
+		},
+		"summaryColour": {
+			"type": "string",
+			"default": ""
+		},
+		"summaryColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"nameFontWeight": {
+			"type": "string",
+			"default": "700"
+		},
+		"nameFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Reviewer-name font size, per-device tier {desktop,tablet,mobile} (Spec 35 tier-object shape). Empty object = inherit the theme default (style.css var(--wp--preset--font-size--small)). Rendered via the shared sgs_typography_css_rule() helper, scoped to .sgs-testimonial__name."
+		},
+		"nameFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"nameColour": {
+			"type": "string",
+			"default": ""
+		},
+		"nameColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"roleColour": {
+			"type": "string",
+			"default": ""
+		},
+		"roleColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"orgColour": {
+			"type": "string",
+			"default": ""
+		},
+		"orgColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingSize": {
+			"type": "number",
+			"default": 16
+		},
+		"ratingColour": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"linkUnderline": {
+			"type": "string",
+			"enum": [ "", "none", "always", "hover", "sweep" ],
+			"default": "",
+			"description": "How every link in the card (quote and summary) is underlined: '' the theme's underline, none, always, hover (an underline on hover and keyboard focus), or sweep (a line sweeps in on hover and keyboard focus). The quote has its own setting that wins on the quote's links. sgs_link_underline_css()."
+		},
+		"linkUnderlineThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the block-wide link underline for always, hover and sweep (a CSS length); empty uses the theme's link-sweep thickness or the browser's."
+		},
+		"linkUnderlineColour": {
+			"type": "string",
+			"default": "",
+			"description": "The link underline's colour for always, hover and sweep (a palette slug or any CSS colour); empty draws it in the link's own colour. sgs_link_underline_css()."
+		},
+		"linkUnderlineColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "The link underline's colour while the link is hovered or focused with the keyboard (a palette slug or any CSS colour); empty keeps the colour it has at rest. sgs_link_underline_css()."
+		},
+		"linkUnderlineOffset": {
+			"type": "string",
+			"default": "",
+			"description": "Gap between the link text and its underline for always and hover (a CSS length); empty uses the browser's. The sweep is a background line, so it ignores the gap. sgs_link_underline_css()."
+		},
+		"linkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the hover-state border with a masked ::before ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColourHover on hover — this block has no resting-state border colour attribute of its own to override (native __experimentalBorder.color, unaffected)."
+		},
+		"transitionDuration": {
+			"type": "string",
+			"default": "300"
+		},
+		"transitionEasing": {
+			"type": "string",
+			"default": "ease-in-out"
+		},
+		"scaleHover": {
+			"type": "string",
+			"default": ""
+		},
+		"shadowHover": {
+			"type": "string",
+			"default": ""
+		},
+		"shadowColourHover": {
+			"type": "string"
+		},
+		"_comment_wrapperAttrs": "WS-4 container wrapper (CONTENT kind): width/spacing only — mirrored verbatim from sgs/container block.json.",
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"_comment_boxTiers": "No-inline migration contract §B: tablet/mobile tier overrides for the WP-native style.spacing.padding/margin base (paddingTablet/paddingMobile/marginTablet/marginMobile).",
+		"quoteColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"summaryColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"nameColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"roleColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"orgColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"quoteFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"quoteTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"quoteLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"quoteLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"quoteLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"quoteTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"quoteTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"quoteTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"quoteTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteTextColumns": {
+			"type": "number"
+		},
+		"quoteWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"nameFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"nameFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"nameTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"nameTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"nameLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"nameLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"nameLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"nameLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"nameTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"nameTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"nameTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"nameTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"nameTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"nameTextColumns": {
+			"type": "number"
+		},
+		"nameWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"example": {
+		"attributes": {
+			"variant": "classic-card",
+			"quote": "The quality and reliability of the service has been outstanding from start to finish.",
+			"reviewerName": "James Thornton",
+			"reviewerRole": "Operations Manager",
+			"orgName": "Acme Ltd",
+			"showRating": true,
+			"ratingStars": 5
+		}
+	}
+}

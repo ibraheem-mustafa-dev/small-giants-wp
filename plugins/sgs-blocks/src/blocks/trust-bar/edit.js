@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import BackgroundLayers from '../../components/media/BackgroundLayers';
 import { useBlockProps, InspectorControls, RichText, useSettings } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 import '../../../assets/css/fx-marquee.css';
@@ -15,14 +16,15 @@ import {
 } from '@wordpress/components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
-import MediaPicker from '../../components/MediaPicker';
+import MediaElementPanel from '../../components/MediaElementPanel';
+import ItemSlotFields from '../../components/media/ItemSlotFields.js';
 import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
 import { EditorIconBare, TrustBarIconPanel, TrustBarItemSpacingPanel } from './edit-panels';
 import {
 	colourVar,
 	resolveShadowPreviewComposed,
 	resolveResponsiveTier,
-	backgroundPreview,
+	backgroundMediaPreview,
 	backgroundPaintPreview,
 	textPaintPreview,
 	spacingPreview,
@@ -74,6 +76,9 @@ import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
  * @param {Object|null|undefined} gap Gap attribute value ({desktop,tablet,mobile}).
  * @returns {string|undefined}
  */
+/** The block's one item media slot: each image badge's picture (Spec 49 §10.4: Source, Fit, Radius, Shape, Colour). */
+const BADGE_SLOT = { prefix: 'badge', kinds: [ 'image' ], context: 'item' };
+
 function gapCssValue( gap ) {
 	const gapDesktop = resolveResponsiveTier( gap, 'desktop' )?.value;
 	if ( ! gapDesktop ) {
@@ -237,48 +242,14 @@ function GenericBadgeItemEditor( { item, index, badgeStyle, onChange, onRemove }
 
 			{ 'image-badge' === badgeStyle && (
 				<>
-					<MediaPicker
-						value={ item.media || null }
-						onChange={ ( media ) => {
-							const next = { ...item, media };
-							if ( next.image ) {
-								next.image = undefined;
-							}
-							onChange( next );
-						} }
-						onRemove={ () => onChange( { ...item, media: null, image: undefined } ) }
-						allowedTypes={ [ 'image' ] }
+					{ /* The badge's picture: the shared media renderer prints it (Spec 49 §8.3). Fit is the badge's own; Width, Radius, Shape and Colour are the bar's (Badge images panel). */ }
+					<ItemSlotFields
+						item={ item }
+						prefix="badge"
+						slot={ BADGE_SLOT }
 						label={ __( 'Badge image', 'sgs-blocks' ) }
-						instructionsImage={ __( 'Choose a certification badge or logo image', 'sgs-blocks' ) }
+						onChange={ onChange }
 					/>
-					<ToggleControl
-						label={ __( 'Decorative — hide from screen readers', 'sgs-blocks' ) }
-						help={ __(
-							'Turn on for a purely decorative badge image — screen readers will skip it entirely instead of reading its alt text.',
-							'sgs-blocks'
-						) }
-						checked={ !! item.decorative }
-						onChange={ ( val ) => update( 'decorative', val ) }
-						__nextHasNoMarginBottom
-					/>
-					{ /* Spec 35 Part 4 — per-item object-fit only (no focal-point/
-					   crosshair control: badges are logos/certification marks,
-					   not photographs — same convention as sgs/testimonial's
-					   orgLogo and sgs/brand-strip's logoFit). Gated on media
-					   existing, mirroring the disclosure pattern above. */ }
-					{ !! item.media?.url && (
-						<SelectControl
-							label={ __( 'Image fit', 'sgs-blocks' ) }
-							value={ item.objectFit || 'cover' }
-							options={ [
-								{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
-								{ label: __( 'Contain (fit within, no crop)', 'sgs-blocks' ), value: 'contain' },
-							] }
-							onChange={ ( val ) => update( 'objectFit', val ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
 				</>
 			) }
 
@@ -353,11 +324,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		iconCircleBorderColour,
 		iconCircleShadow,
 		iconCircleShadowColour,
-		badgeImageBorderRadius,
-		badgeImageSize,
 		badgeImageShadow,
 		badgeImageShadowColour,
-		badgeImageObjectFit,
+		badgeWidth,
+		badgeFit,
+		badgeShape,
 		textColour,
 		textColourGradient,
 		textColourHover,
@@ -447,22 +418,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		bgSvgTextShadow: attributes.bgSvgTextShadow,
 	} );
 
-	const bgPreview = backgroundPreview( {
-		backgroundImage: attributes.backgroundImage,
-		bgVideo: attributes.bgVideo,
-		backgroundSize: attributes.backgroundSize,
-		backgroundPosition: attributes.backgroundPosition,
-		backgroundRepeat: attributes.backgroundRepeat,
-		backgroundAttachment: attributes.backgroundAttachment,
-		backgroundOverlayColour: attributes.backgroundOverlayColour,
-		overlayGradient: attributes.overlayGradient,
-		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
-		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
-		backgroundColour: attributes.backgroundColour,
-		backgroundColourGradient: attributes.backgroundColourGradient,
-		surfaceBlur: attributes.surfaceBlur,
-		surfaceSaturate: attributes.surfaceSaturate,
-	}, colourPalette, gradientPresets );
+
 
 	// Active device tier for the padding/margin preview below — this block had
 	// no previewTier mechanism of its own, so this follows sgs/container's
@@ -473,6 +429,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
 		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
 	}, [] );
+
+	const bgPreview = backgroundMediaPreview( attributes, colourPalette, gradientPresets, previewTier );
 
 	// Padding/margin canvas preview. `padding`/`margin` are each ONE
 	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
@@ -654,7 +612,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		const newItem = isIconStyle
 			? { icon: 'check', label: '', _key: generateItemKey() }
 			: badgeStyle === 'image-badge'
-				? { label: '', url: '', _key: generateItemKey(), objectFit: 'cover' }
+				? { label: '', url: '', _key: generateItemKey() }
 				: { label: '', url: '', _key: generateItemKey() };
 		setAttributes( { items: [ ...items, newItem ] } );
 	};
@@ -722,8 +680,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							}
 
 							// image-badge
-							const mediaUrl = item.media?.url || item.image?.url || '';
-							const mediaAlt = item.media?.alt || item.label || '';
+							const mediaUrl = item.source?.desktop?.url || '';
+							const mediaAlt = item.decorative ? '' : item.alt || item.label || '';
+							const badgeBox = badgeWidth?.[ previewTier ] || badgeWidth?.desktop || '60px';
 							return (
 								<div key={ item._key || index } className="sgs-trust-bar__badge">
 									{ mediaUrl && (
@@ -732,10 +691,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 											alt={ mediaAlt }
 											className="sgs-trust-bar__badge-img"
 											style={ {
-												width: `${ badgeImageSize }px`,
-												height: `${ badgeImageSize }px`,
-												objectFit: item.objectFit || badgeImageObjectFit,
-												borderRadius: badgeImageBorderRadius || undefined,
+												width: badgeBox,
+												aspectRatio: '1 / 1',
+												objectFit: item.fit?.desktop || badgeFit?.desktop || 'contain',
+												borderRadius: 'circle' === badgeShape?.desktop?.shape ? '50%' : undefined,
 												boxShadow: resolveShadowPreviewComposed( badgeImageShadow, badgeImageShadowColour ),
 											} }
 										/>
@@ -1027,6 +986,19 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				</PanelBody>
 			</InspectorControls>
 
+			{ /* What every image badge shares (Spec 49 §10.4): Fit, Width, Radius, Shape and Colour. Each badge's own Source, Alt and Fit sit in its badge card. */ }
+			{ 'image-badge' === badgeStyle && (
+				<MediaElementPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix="badge"
+					blockSlug="sgs/trust-bar"
+					blockName="sgs/trust-bar"
+					atoms={ [ 'object-fit', 'sizing', 'shape', 'filter' ] }
+					context="item"
+				/>
+			) }
+
 			<InspectorControls group="styles">
 
 				{ /* Background (image/video/svg tabs + ken-burns/parallax) — root-level
@@ -1287,43 +1259,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				{ /* ── image-badge appearance controls ──────────────────────── */ }
 				{ badgeStyle === 'image-badge' && (
 					<PanelBody title={ __( 'Appearance', 'sgs-blocks' ) } initialOpen={ false }>
-						<RangeControl
-							label={ __( 'Badge image size (px)', 'sgs-blocks' ) }
-							value={ badgeImageSize }
-							onChange={ ( val ) => setAttributes( { badgeImageSize: val } ) }
-							min={ 24 }
-							max={ 160 }
-							step={ 4 }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-						<SelectControl
-							label={ __( 'Image fit', 'sgs-blocks' ) }
-							value={ badgeImageObjectFit }
-							options={ [
-								{ label: __( 'Contain (show whole logo)', 'sgs-blocks' ), value: 'contain' },
-								{ label: __( 'Cover (fill the box)', 'sgs-blocks' ), value: 'cover' },
-							] }
-							onChange={ ( val ) => setAttributes( { badgeImageObjectFit: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-						{ /* §14.3 raw-TextControl violation fixed (D561). Same units
-						     array as the icon circle above — '%' reaches the circle
-						     case the old help text advertised. */ }
-						<SgsLengthControl
-							presets={ false }
-							label={ __( 'Badge image border radius', 'sgs-blocks' ) }
-							value={ badgeImageBorderRadius }
-							onChange={ ( val ) => setAttributes( { badgeImageBorderRadius: val || '' } ) }
-							units={ [
-								{ value: 'px', label: 'px', default: 8 },
-								{ value: '%', label: '%', default: 50 },
-								{ value: 'rem', label: 'rem', default: 0.5 },
-								{ value: 'em', label: 'em', default: 0.5 },
-							] }
-							help={ __( 'Leave blank for square corners; 50% makes a circle.', 'sgs-blocks' ) }
-						/>
 						<ShadowControl
 							label={ __( 'Badge image shadow', 'sgs-blocks' ) }
 							attributes={ attributes }
@@ -1399,6 +1334,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			{ /* ── Editor canvas ───────────────────────────────────────────── */ }
 			<div { ...blockProps }>
 				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
+				<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
 				{ svgLayer }
 
 				{ /* Optional title (text-only + image-badge variants) */ }

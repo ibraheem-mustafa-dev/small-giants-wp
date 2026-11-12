@@ -11,6 +11,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { fillRow, textRow } from '../../components';
+import { hasLogoFile } from '../../utils/logo-source';
 
 /**
  * @param {Object}   props               Props.
@@ -20,7 +21,7 @@ import { fillRow, textRow } from '../../components';
  */
 export default function chromeColourRows( { attributes, setAttributes } ) {
 	const slotType = attributes.chromeSlotType || '';
-	const hasLogo = !! ( attributes.chromeLogoUrl || attributes.chromeLogoUrlTablet || attributes.chromeLogoUrlMobile );
+	const hasLogo = hasLogoFile( attributes.chromeLogoSource );
 	const isButton = 'button' === slotType;
 	const isTextSlot = '' !== slotType && ! isButton && 'icons' !== slotType;
 

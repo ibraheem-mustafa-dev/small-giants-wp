@@ -9,20 +9,21 @@ import { preconditionsFor, planInstances, slotFor, borderPartners, shadowPartner
 const SNAP = { palette: [ { slug: 'accent', colour: { r: 200, g: 40, b: 90, a: 1 } } ], spacing: [], fontSizes: [] };
 const row = ( o ) => ( { tier_shape: null, box_family: null, css_state: null, css_element: null, role: null, ...o } );
 const IMG = { id: 7, url: 'u' };
+const SRC = { desktop: { kind: 'image', id: 7, url: 'u' } };
 
 test( 'MUST FAIL (NEEDS_BG_IMAGE 7): a background-size / -attachment setting carries the site image it needs', () => {
-	const schema = { backgroundImage: { type: 'object' }, backgroundSize: { type: 'string' }, backgroundAttachment: { type: 'string' }, backgroundColour: { type: 'string' } };
+	const schema = { backgroundSource: { type: 'object' }, backgroundTileSize: { type: 'string' }, backgroundPinned: { type: 'boolean' }, backgroundColour: { type: 'string' } };
 	const ctx = { image: IMG };
 	const pre = ( attr, css, current = {}, c = ctx ) => preconditionsFor( row( { attr_name: attr, css_property: css } ), schema, current, c );
-	assert.deepEqual( pre( 'backgroundSize', 'background-size,object-fit' ), { backgroundImage: IMG } );
-	assert.deepEqual( pre( 'backgroundAttachment', 'background-attachment' ), { backgroundImage: IMG } );
+	assert.deepEqual( pre( 'backgroundTileSize', 'background-size,object-fit' ), { backgroundSource: SRC } );
+	assert.deepEqual( pre( 'backgroundPinned', 'background-attachment' ), { backgroundSource: SRC } );
 	// Not every background setting: a colour paints without an image, the image setting is its own marker.
 	assert.deepEqual( pre( 'backgroundColour', 'background-color' ), {} );
-	assert.deepEqual( pre( 'backgroundImage', 'background-image' ), {} );
+	assert.deepEqual( pre( 'backgroundSource', 'background-image' ), {} );
 	// Nothing to add when the variant already has an image, the block has no image setting, or the site has no image.
-	assert.deepEqual( pre( 'backgroundSize', 'background-size', { backgroundImage: IMG } ), {} );
-	assert.deepEqual( pre( 'backgroundSize', 'background-size', {}, {} ), {} );
-	assert.deepEqual( preconditionsFor( row( { attr_name: 'backgroundSize', css_property: 'background-size' } ), { backgroundSize: { type: 'string' } }, {}, ctx ), {} );
+	assert.deepEqual( pre( 'backgroundTileSize', 'background-size', { backgroundSource: SRC } ), {} );
+	assert.deepEqual( pre( 'backgroundTileSize', 'background-size', {}, {} ), {} );
+	assert.deepEqual( preconditionsFor( row( { attr_name: 'backgroundTileSize', css_property: 'background-size' } ), { backgroundTileSize: { type: 'string' } }, {}, ctx ), {} );
 } );
 
 test( 'MUST FAIL (14 hover rows read dead): a hover shadow colour needs a shadow shape (helpers-colour-variants.php::sgs_shadow_decls composes nothing from a colour alone)', () => {

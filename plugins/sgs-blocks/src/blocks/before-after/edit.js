@@ -14,18 +14,14 @@
  *
  * @package
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
-	MediaUpload,
-	MediaUploadCheck,
 } from '@wordpress/block-editor';
+import { getBlockType } from '@wordpress/blocks';
 import {
 	PanelBody,
-	Button,
-	TextControl,
-	TextareaControl,
 	ToggleControl,
 	RangeControl,
 	SelectControl,
@@ -40,7 +36,6 @@ import {
 	DesignTokenPicker,
 	ShadowControl,
 	TypographyControls,
-	ResponsiveControl,
 	ResponsiveOverride,
 	shadowAttrKeys,
 	SgsLengthControl,
@@ -49,7 +44,7 @@ import {
 	MediaElementPanel,
 	IconPicker,
 } from '../../components';
-import { BooleanResponsiveControl } from '../../components';
+import { hasFile } from '../../components/media/mediaSlotWrites.js';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -67,341 +62,6 @@ const WIDTH_UNITS = [
 	{ value: 'em', label: 'em' },
 	{ value: 'rem', label: 'rem' },
 ];
-
-/**
- * One before/after image picker row.
- *
- * @param {Object}   root0
- * @param {string}   root0.label
- * @param {string}   root0.url
- * @param {string}   root0.alt
- * @param {Function} root0.onSelect
- * @param {Function} root0.onAltChange
- * @param {Function} root0.onClear
- * @param {boolean}  [root0.showAlt] Render the alt-text field. Defaults to true.
- *                                   Passed false by the art-direction tier
- *                                   pickers: alt is NOT tiered (a different crop
- *                                   of the same subject describes the same
- *                                   thing), and rendering the field without an
- *                                   `alt`/`onAltChange` pair would put an
- *                                   uncontrolled, untypeable input on screen.
- * @param {boolean}  [root0.disabled] Disable the alt-text field. Passed true
- *                                    by MediaSlotPicker when this slot is
- *                                    marked decorative — render.php blanks the
- *                                    alt at render time either way, so the
- *                                    field is disabled rather than hidden to
- *                                    show the operator why it's inert.
- */
-function ImagePickerRow( {
-	label,
-	url,
-	alt,
-	onSelect,
-	onAltChange,
-	onClear,
-	showAlt = true,
-	disabled = false,
-} ) {
-	return (
-		<div style={ { marginBottom: '16px' } }>
-			<p style={ { marginBottom: '4px', fontWeight: 500 } }>{ label }</p>
-			<MediaUploadCheck>
-				<MediaUpload
-					onSelect={ onSelect }
-					allowedTypes={ [ 'image' ] }
-					value={ url }
-					render={ ( { open } ) => (
-						<Button
-							variant={ url ? 'secondary' : 'primary' }
-							onClick={ open }
-							style={ { marginBottom: '8px' } }
-						>
-							{ url
-								? __( 'Replace image', 'sgs-blocks' )
-								: __( 'Select image', 'sgs-blocks' ) }
-						</Button>
-					) }
-				/>
-			</MediaUploadCheck>
-			{ url && (
-				<>
-					<img
-						src={ url }
-						alt=""
-						style={ {
-							display: 'block',
-							width: '100%',
-							maxHeight: '120px',
-							objectFit: 'cover',
-							borderRadius: '4px',
-							marginBottom: '8px',
-						} }
-					/>
-					{ showAlt && (
-						<TextControl
-							label={ __( 'Alt text', 'sgs-blocks' ) }
-							help={
-								disabled
-									? __(
-											'Disabled — this image is marked decorative, so it renders with no alt text and is hidden from screen readers.',
-											'sgs-blocks'
-									  )
-									: __(
-											'Required — describes this image for screen-reader and no-JS visitors, who see both images without any comparison interaction.',
-											'sgs-blocks'
-									  )
-							}
-							value={ alt }
-							onChange={ onAltChange }
-							disabled={ disabled }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
-					<Button
-						variant="tertiary"
-						isDestructive
-						onClick={ onClear }
-						style={ { marginTop: '4px' } }
-					>
-						{ __( 'Remove', 'sgs-blocks' ) }
-					</Button>
-				</>
-			) }
-		</div>
-	);
-}
-
-/**
- * One before/after MEDIA slot — mirrors sgs/media's mediaType fork
- * (image/video/svg) applied to a single comparison side. `side` is 'before'
- * or 'after'; every attribute name below is that prefix + the shared suffix
- * (beforeMediaType/afterMediaType, beforeVideoUrl/afterVideoUrl, etc.) —
- * exactly the pattern render.php's media-render.php resolver reads.
- *
- * @param {Object}   root0
- * @param {string}   root0.side          'before' | 'after'.
- * @param {string}   root0.label         Panel-row label, e.g. "Before".
- * @param {Object}   root0.attributes    Full block attributes.
- * @param {Function} root0.setAttributes
- */
-function MediaSlotPicker( { side, label, attributes, setAttributes } ) {
-	const mediaTypeKey = `${ side }MediaType`;
-	const mediaType = attributes[ mediaTypeKey ] || 'image';
-
-	const imageUrlKey = `${ side }ImageUrl`;
-	const imageAltKey = `${ side }ImageAlt`;
-	const imageIdKey = `${ side }ImageId`;
-	const imageDecorativeKey = `${ side }ImageDecorative`;
-	const isImageDecorative = !! attributes[ imageDecorativeKey ];
-
-	const videoUrlKey = `${ side }VideoUrl`;
-	const videoAltKey = `${ side }VideoAlt`;
-	const videoIdKey = `${ side }VideoId`;
-
-	const svgContentKey = `${ side }SvgContent`;
-
-	return (
-		<div style={ { marginBottom: '20px' } }>
-			<SelectControl
-				label={ label }
-				value={ mediaType }
-				options={ [
-					{ value: 'image', label: __( 'Image', 'sgs-blocks' ) },
-					{ value: 'video', label: __( 'Video', 'sgs-blocks' ) },
-					{ value: 'svg', label: __( 'SVG', 'sgs-blocks' ) },
-				] }
-				onChange={ ( val ) =>
-					setAttributes( { [ mediaTypeKey ]: val } )
-				}
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
-			/>
-
-			{ 'image' === mediaType && (
-				<ImagePickerRow
-					label={ __( 'Image', 'sgs-blocks' ) }
-					url={ attributes[ imageUrlKey ] }
-					alt={ attributes[ imageAltKey ] }
-					onSelect={ ( media ) =>
-						setAttributes( {
-							[ imageIdKey ]: media.id,
-							[ imageUrlKey ]: media.url,
-							[ imageAltKey ]:
-								attributes[ imageAltKey ] || media.alt || '',
-						} )
-					}
-					onAltChange={ ( val ) =>
-						setAttributes( { [ imageAltKey ]: val } )
-					}
-					onClear={ () =>
-						setAttributes( {
-							[ imageIdKey ]: null,
-							[ imageUrlKey ]: '',
-							[ imageAltKey ]: '',
-						} )
-					}
-					disabled={ isImageDecorative }
-				/>
-			) }
-
-			{ 'image' === mediaType && (
-				<ToggleControl
-					label={ sprintf(
-						/* translators: %s: slot label, e.g. "Before" or "After". */
-						__( '%s image is decorative', 'sgs-blocks' ),
-						label
-					) }
-					checked={ isImageDecorative }
-					onChange={ ( val ) =>
-						setAttributes( { [ imageDecorativeKey ]: val } )
-					}
-					help={ __(
-						'Turn on when this picture is decoration rather than information — screen readers will skip it instead of reading the image description.',
-						'sgs-blocks'
-					) }
-					__nextHasNoMarginBottom
-				/>
-			) }
-
-			{ /* Art direction (2026-08-07) — the IMAGE pair, completing the half
-			     this block was missing (its video playback tiers landed earlier).
-			     Same device-switched shape as sgs/media and sgs/hero. Gated on a
-			     desktop image existing: a per-device override for an image that is
-			     not there would be a dead control. Alt text is deliberately not
-			     tiered — a different crop of the same subject describes the same
-			     thing. */ }
-			{ 'image' === mediaType && attributes[ imageUrlKey ] && (
-				<ResponsiveControl
-					label={ __( 'Image for this screen size', 'sgs-blocks' ) }
-				>
-					{ ( bp ) => {
-						if ( 'desktop' === bp ) {
-							return (
-								<p style={ { margin: 0, fontStyle: 'italic' } }>
-									{ __(
-										'The image above is used on desktop. Switch to tablet or mobile to set a different crop.',
-										'sgs-blocks'
-									) }
-								</p>
-							);
-						}
-						const tier = 'tablet' === bp ? 'Tablet' : 'Mobile';
-						const tierIdKey = `${ side }ImageId${ tier }`;
-						const tierUrlKey = `${ side }ImageUrl${ tier }`;
-						return (
-							<ImagePickerRow
-								label={ __(
-									'Optional — leave empty to reuse the desktop image here',
-									'sgs-blocks'
-								) }
-								url={ attributes[ tierUrlKey ] }
-								showAlt={ false }
-								onSelect={ ( media ) =>
-									setAttributes( {
-										[ tierIdKey ]: media.id,
-										[ tierUrlKey ]: media.url,
-									} )
-								}
-								onClear={ () =>
-									setAttributes( {
-										[ tierIdKey ]: null,
-										[ tierUrlKey ]: '',
-									} )
-								}
-							/>
-						);
-					} }
-				</ResponsiveControl>
-			) }
-
-			{ 'video' === mediaType && (
-				<div style={ { marginTop: '8px' } }>
-					<Notice status="info" isDismissible={ false }>
-						{ __(
-							'WP media-library upload or a direct MP4/WebM URL only. YouTube/Vimeo embeds are not supported here — they cannot be kept frame-synced with the other side of the comparison.',
-							'sgs-blocks'
-						) }
-					</Notice>
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ ( media ) =>
-								setAttributes( {
-									[ videoIdKey ]: media.id,
-									[ videoUrlKey ]: media.url,
-								} )
-							}
-							allowedTypes={ [ 'video' ] }
-							value={ attributes[ videoIdKey ] }
-							render={ ( { open } ) => (
-								<Button
-									variant={
-										attributes[ videoUrlKey ]
-											? 'secondary'
-											: 'primary'
-									}
-									onClick={ open }
-									style={ { margin: '8px 0' } }
-								>
-									{ attributes[ videoUrlKey ]
-										? __( 'Replace video', 'sgs-blocks' )
-										: __(
-												'Select video from library',
-												'sgs-blocks'
-										  ) }
-								</Button>
-							) }
-						/>
-					</MediaUploadCheck>
-					<TextControl
-						label={ __(
-							'Or paste a direct video URL',
-							'sgs-blocks'
-						) }
-						value={ attributes[ videoUrlKey ] || '' }
-						onChange={ ( val ) =>
-							setAttributes( {
-								[ videoUrlKey ]: val,
-								[ videoIdKey ]: null,
-							} )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<TextControl
-						label={ __( 'Alt / description', 'sgs-blocks' ) }
-						help={ __(
-							'Read by screen readers in place of visual playback.',
-							'sgs-blocks'
-						) }
-						value={ attributes[ videoAltKey ] || '' }
-						onChange={ ( val ) =>
-							setAttributes( { [ videoAltKey ]: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</div>
-			) }
-
-			{ 'svg' === mediaType && (
-				<TextareaControl
-					label={ __( 'SVG markup', 'sgs-blocks' ) }
-					help={ __(
-						'Pasted markup is sanitised on render — scripts and event handlers are stripped.',
-						'sgs-blocks'
-					) }
-					value={ attributes[ svgContentKey ] || '' }
-					onChange={ ( val ) =>
-						setAttributes( { [ svgContentKey ]: val } )
-					}
-					rows={ 6 }
-					__nextHasNoMarginBottom
-				/>
-			) }
-		</div>
-	);
-}
 
 /**
  * ServerSideRender serialises its `attributes` prop into REST query args via
@@ -439,24 +99,27 @@ function omitNullAttributes( attrs ) {
 }
 
 /**
- * Whether a comparison slot has enough configured to render — mirrors
- * media-render.php's `has_content` check per media type, so the editor
- * placeholder/preview toggle never disagrees with what render.php will
- * actually output.
+ * Whether a comparison side has a file on any device, mirroring the renderer's own test so the editor's placeholder
+ * and preview toggle never disagree with what render.php will print.
  *
  * @param {Object} attributes Full block attributes.
  * @param {string} side       'before' | 'after'.
- * @return {boolean} True when the slot has content.
+ * @return {boolean} True when the side has media.
  */
 function slotHasContent( attributes, side ) {
-	const mediaType = attributes[ `${ side }MediaType` ] || 'image';
-	if ( 'video' === mediaType ) {
-		return !! attributes[ `${ side }VideoUrl` ];
-	}
-	if ( 'svg' === mediaType ) {
-		return !! ( attributes[ `${ side }SvgContent` ] || '' ).trim();
-	}
-	return !! attributes[ `${ side }ImageUrl` ];
+	const stored = attributes[ `${ side }Source` ];
+	return [ 'desktop', 'tablet', 'mobile' ].some( ( device ) => hasFile( stored?.[ device ] ) );
+}
+
+/**
+ * One side's `supports.sgs.mediaElements` entry: its kinds and the atoms it narrows to.
+ *
+ * @param {string} side 'before' | 'after'.
+ * @return {{kinds: string[], atoms: string[], context: string}} The entry.
+ */
+function slotEntry( side ) {
+	const entries = getBlockType( 'sgs/before-after' )?.supports?.sgs?.mediaElements || [];
+	return entries.find( ( entry ) => entry.prefix === side ) || { kinds: [ 'image', 'video', 'svg' ], context: 'content' };
 }
 
 export default function Edit( { attributes, setAttributes } ) {
@@ -536,63 +199,24 @@ export default function Edit( { attributes, setAttributes } ) {
 					},
 				] }
 			/>
+			{ [ 'before', 'after' ].map( ( side ) => {
+				const entry = slotEntry( side );
+				return (
+					<MediaElementPanel
+						key={ side }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix={ side }
+						label={ 'before' === side ? __( 'Before', 'sgs-blocks' ) : __( 'After', 'sgs-blocks' ) }
+						blockName="sgs/before-after"
+						blockSlug="sgs/before-after"
+						atoms={ entry.atoms }
+						kinds={ entry.kinds }
+						context={ entry.context }
+					/>
+				);
+			} ) }
 			<InspectorControls group="settings">
-				<PanelBody title={ __( 'Media', 'sgs-blocks' ) } initialOpen>
-					<MediaSlotPicker
-						side="before"
-						label={ __( 'Before', 'sgs-blocks' ) }
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-					/>
-					{ /* Wave 5b — independently-scoped fit/focal-point per slot
-					     (the falsifying case the shared atom layer's `prefix`
-					     support exists for: two media elements on one block,
-					     each with its own object-fit/object-position rather
-					     than the old shared sgsObjectFit/sgsObjectPosition
-					     pair that set both slots identically). */ }
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="before"
-						blockSlug="sgs/before-after"
-						insertion="element"
-						atoms={ [ 'object-fit', 'focal-point' ] }
-						mediaType={ attributes.beforeMediaType || 'image' }
-						scope="element"
-					/>
-					<MediaSlotPicker
-						side="after"
-						label={ __( 'After', 'sgs-blocks' ) }
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-					/>
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="after"
-						blockSlug="sgs/before-after"
-						insertion="element"
-						atoms={ [ 'object-fit', 'focal-point' ] }
-						mediaType={ attributes.afterMediaType || 'image' }
-						scope="element"
-					/>
-					{ ( 'video' === attributes.beforeMediaType ||
-						'video' === attributes.afterMediaType ) && (
-						<BooleanResponsiveControl
-							label={ __( 'Autoplay videos', 'sgs-blocks' ) }
-							help={ __(
-								'Both videos start playing together on load. Always suppressed when the visitor has reduced motion enabled — the play/pause control stays available either way.',
-								'sgs-blocks'
-							) }
-							attrBase="videoAutoplay"
-							attrTablet="videoAutoplayTablet"
-							attrMobile="videoAutoplayMobile"
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-						/>
-					) }
-				</PanelBody>
-
 				<PanelBody
 					title={ __( 'Divider', 'sgs-blocks' ) }
 					initialOpen={ false }

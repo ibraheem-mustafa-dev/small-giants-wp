@@ -34,47 +34,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 require_once dirname( __DIR__, 3 ) . '/includes/class-grid-pagination.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-pause.php';
 
-// Decorative-image helper (item 18, WCAG 1.1.1) — rewrites the alt attribute
-// and adds aria-hidden on the ONE <img class="sgs-post-grid__img"> that
-// Post_Grid_REST::render_card() emits per card, without touching that shared
-// class (used by both this render path and the AJAX pagination REST
-// endpoint). Guarded with function_exists() per the no-top-level-function
-// -in-per-render-php gotcha — this file runs once per block instance on a
-// page, and a bare `function` declaration here would fatal on the second
-// instance.
-if ( ! function_exists( 'sgs_post_grid_make_card_image_decorative' ) ) {
-	/**
-	 * Blank the alt text and mark aria-hidden on a rendered card's featured
-	 * image, so it is skipped entirely by assistive tech.
-	 *
-	 * @param string $card_html Escaped card markup from Post_Grid_REST::render_card().
-	 * @return string Card markup with its <img class="sgs-post-grid__img"> alt emptied + aria-hidden added.
-	 */
-	function sgs_post_grid_make_card_image_decorative( string $card_html ): string {
-		if ( false === strpos( $card_html, 'sgs-post-grid__img' ) ) {
-			return $card_html;
-		}
-
-		return preg_replace_callback(
-			'/<img\b[^>]*\bclass="[^"]*\bsgs-post-grid__img\b[^"]*"[^>]*>/',
-			static function ( array $matches ): string {
-				$tag = $matches[0];
-
-				$tag = preg_match( '/\salt="[^"]*"/', $tag )
-					? preg_replace( '/\salt="[^"]*"/', ' alt=""', $tag, 1 )
-					: preg_replace( '/<img\b/', '<img alt=""', $tag, 1 );
-
-				if ( false === strpos( $tag, 'aria-hidden' ) ) {
-					$tag = preg_replace( '/<img\b/', '<img aria-hidden="true"', $tag, 1 );
-				}
-
-				return $tag;
-			},
-			$card_html
-		);
-	}
-}
-
 // CSS length/unit sanitiser — for free-text style-engine values concatenated
 // into raw CSS declarations inside this block's scoped <style> tag. Strips
 // everything except letters, digits, dot, and % so a Contributor-authored
@@ -101,18 +60,6 @@ $tags       = array_map( 'absint', (array) ( $attributes['tags'] ?? array() ) );
 
 $layout     = sanitize_key( $attributes['layout'] ?? 'grid' );
 $card_style = sanitize_key( $attributes['cardStyle'] ?? 'card' );
-
-// Whitelist — mirrors image-sequence/render.php's seven-value ratio list (the
-// shared source of truth is MediaSizingPanel.js's RATIO_OPTIONS, JS-side;
-// this array is byte-identical to that list's values). Falls back to this
-// block's OWN existing default ('16/10', unspaced) rather than
-// image-sequence's '16 / 9', so a legacy stored value ('16/10', authored
-// before this validation existed) renders exactly as it did before.
-$aspect_ratio         = sanitize_text_field( $attributes['aspectRatio'] ?? '16/10' );
-$aspect_ratio_allowed = array( '16 / 9', '21 / 9', '4 / 3', '1 / 1', '4 / 5', '3 / 4', '9 / 16' );
-if ( ! in_array( $aspect_ratio, $aspect_ratio_allowed, true ) ) {
-	$aspect_ratio = '16/10';
-}
 
 // `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
 // the normaliser, never the raw attribute (absint() on an unresolved array
@@ -166,19 +113,6 @@ if ( $hover_shadow ) {
 } elseif ( $shadow && sgs_shadow_lift_enabled( $attributes, ( $block instanceof \WP_Block ) ? (string) $block->name : '' ) ) {
 	$hover_shadow_value = sgs_shadow_hover_value( $shadow, $shadow_colour );
 }
-
-// Decorative-image toggle (item 18, WCAG 1.1.1). Block-level, not per-post —
-// the featured image is pulled per post from a dynamic WP_Query, so which
-// post occupies a card changes on every save/reorder/AJAX page; a per-item
-// toggle would have nothing stable to attach to. When true, every card's
-// featured image is hidden from assistive tech: alt is blanked and
-// aria-hidden is set on the <img> itself. This is BELT-AND-BRACES on top of
-// Post_Grid_REST::render_card()'s existing unconditional
-// `aria-hidden="true"` on the wrapping <a> (the image is already outside the
-// accessibility tree today) — the img-level treatment is what actually makes
-// the choice visible/auditable in the markup and keeps this correct if that
-// wrapper ever stops being unconditionally hidden.
-$image_decorative = (bool) ( $attributes['imageDecorative'] ?? false );
 
 // Hover colour shifts — resolved from token slug or raw CSS colour. Emitted
 // further down (once $root_sel exists) as real declarations via
@@ -272,8 +206,9 @@ $card_params = array(
 	'readMoreIcon'                       => sanitize_key( (string) ( $attributes['readMoreIcon'] ?? '' ) ),
 	'cardLink'                           => (bool) ( $attributes['cardLink'] ?? false ),
 	'excerptLength'                      => absint( $attributes['excerptLength'] ?? 20 ),
-	'imageSize'                          => sanitize_key( $attributes['imageSize'] ?? 'medium_large' ),
-	'aspectRatio'                        => $aspect_ratio,
+	// Spec 49: the image slot's settings (Post_Grid_Media::settings), which the card's featured image is rendered with.
+	// Load priority: 'first' or 'later'; anything else is automatic.
+	'imageMedia'                         => \SGS\Blocks\Post_Grid_Media::settings( array_merge( $attributes, array( 'imageLoading' => in_array( $attributes['imageLoading'] ?? '', array( 'first', 'later' ), true ) ? $attributes['imageLoading'] : '' ) ), array( 'desktop' => $columns, 'tablet' => $columns_tablet, 'mobile' => $columns_mobile ) ),
 	'titleColour'                        => $attributes['titleColour'] ?? '',
 	'excerptColour'                      => $attributes['excerptColour'] ?? 'text',
 	'metaColour'                         => $attributes['metaColour'] ?? 'text-muted',
@@ -283,8 +218,7 @@ $card_params = array(
 	'categoryBadgeBgColourHover'         => (string) ( $attributes['categoryBadgeBgColourHover'] ?? '' ),
 	'categoryBadgeBgColourHoverGradient' => (string) ( $attributes['categoryBadgeBgColourHoverGradient'] ?? '' ),
 	'readMoreColour'                     => $attributes['readMoreColour'] ?? '',
-	// 37-media-no-handroll: threaded through to render_card() so the
-	// featured-image <img> can carry the media-atom marker class — see the
+	// Threaded through to render_card() so the featured image carries the grid's media scope class — see the
 	// $sgs_pg_uid comment in class-post-grid-rest.php.
 	'uid'                                => $uid,
 );
@@ -336,7 +270,7 @@ $sgs_query_data     = wp_json_encode(
 			'excludePost'           => $exclude_id,
 			'layout'                => $layout,
 			'cardStyle'             => $card_style,
-			'imageSize'             => $card_params['imageSize'],
+			'imageMedia'            => $card_params['imageMedia'],
 			'showImage'             => $card_params['showImage'],
 			'showTitle'             => $card_params['showTitle'],
 			'showExcerpt'           => $card_params['showExcerpt'],
@@ -350,7 +284,6 @@ $sgs_query_data     = wp_json_encode(
 			'readMoreText'          => $card_params['readMoreText'],
 			'readMoreIcon'          => $card_params['readMoreIcon'],
 			'cardLink'              => $card_params['cardLink'],
-			'aspectRatio'           => $card_params['aspectRatio'],
 			'titleColour'           => $card_params['titleColour'],
 			'excerptColour'         => $card_params['excerptColour'],
 			'metaColour'            => $card_params['metaColour'],
@@ -368,10 +301,8 @@ $sgs_query_data     = wp_json_encode(
 			'carouselSpeed'         => $carousel_speed,
 			'carouselShowDots'      => $carousel_show_dots,
 			'carouselShowArrows'    => $carousel_show_arrows,
-			// 37-media-no-handroll: round-tripped so AJAX-paginated cards'
-			// featured images carry the same media-atom marker class as the
-			// initial render's — see the $sgs_pg_uid comment in
-			// class-post-grid-rest.php.
+			// Round-tripped so AJAX-paginated cards' featured images carry the grid's media scope class — see the
+			// $sgs_pg_uid comment in class-post-grid-rest.php.
 			'uid'                   => $uid,
 			'itemMotion'            => array() === $sgs_pg_item_motion ? null : $sgs_pg_item_motion,
 		),

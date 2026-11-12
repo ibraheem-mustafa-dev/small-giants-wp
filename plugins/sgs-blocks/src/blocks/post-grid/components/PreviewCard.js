@@ -7,6 +7,7 @@ import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, isCss
 import { tierValueOf } from '../../../utils/responsive';
 import { IconPreview } from '../../../components/IconPicker';
 import { cardGradientPreview } from '../preview-style';
+import ItemSlotPicture from '../../../components/media/ItemSlotPicture.js';
 
 import AuthoredText from '../../../components/AuthoredText';
 // -------------------------------------------------------------------------
@@ -48,7 +49,7 @@ function formatDate( dateString, phpFormat = '' ) {
  * @param {Object} props.post       WP post record from useEntityRecords.
  * @param {Object} props.attributes Block attributes.
  */
-export default function PreviewCard( { post, attributes, palette, tier } ) {
+export default function PreviewCard( { post, attributes, palette, tier, clientId = '' } ) {
 	const {
 		cardStyle,
 		showImage,
@@ -70,7 +71,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		readMoreText,
 		readMoreIcon,
 		readMorePin,
-		aspectRatio,
+		imageRatio,
 		imageHeight,
 		titleColour,
 		titleColourGradient,
@@ -89,13 +90,12 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		readMoreColourGradient,
 		cardBgColour,
 		imageDecorative,
-		imageSize,
 		excerptLength,
 	} = attributes;
 
 	const featuredImage = post?._embedded?.[ 'wp:featuredmedia' ]?.[ 0 ];
-	// The size render.php asks for, falling back to the original file as it does.
-	const imageUrl      = featuredImage?.media_details?.sizes?.[ imageSize || 'medium_large' ]?.source_url || featuredImage?.source_url;
+	// The preview shows a medium-large file; the page prints the renderer's own srcset.
+	const imageUrl      = featuredImage?.media_details?.sizes?.medium_large?.source_url || featuredImage?.source_url;
 	// wp_trim_words(): the first N words, with an ellipsis only when words were cut.
 	const excerptWords  = ( post?.excerpt?.rendered || '' ).replace( /(<([^>]+)>)/gi, '' ).trim().split( /\s+/ ).filter( Boolean );
 	const excerptMax    = excerptLength || 20;
@@ -157,6 +157,9 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		</span>
 	);
 
+	// The frame's ratio at the previewed device (16 / 9 when the grid sets none), and the picture's fit.
+	const ratioValue = String( tierValueOf( imageRatio, tier ) || '16 / 9' );
+	const frameRatio = 'natural' === ratioValue ? 'auto' : ratioValue;
 	const imageHeightPx = ( 'mobile' === tier ? imageHeight?.mobile || imageHeight?.tablet || imageHeight?.desktop : 'tablet' === tier ? imageHeight?.tablet || imageHeight?.desktop : imageHeight?.desktop ) || '';
 
 	return (
@@ -168,13 +171,19 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 				<div className="sgs-post-grid__image-link">
 					<div
 						className="sgs-post-grid__image"
-						style={ imageHeightPx ? { height: imageHeightPx, aspectRatio: 'auto' } : ( aspectRatio ? { aspectRatio } : {} ) }
+						style={ imageHeightPx ? { height: imageHeightPx, aspectRatio: 'auto' } : { aspectRatio: frameRatio } }
 					>
-						<img
-							src={ imageUrl }
-							alt={ imageDecorative ? '' : ( featuredImage.alt_text || '' ) }
+						<ItemSlotPicture
+							attributes={ attributes }
+							item={ {
+								source: { desktop: { kind: 'image', url: imageUrl } },
+								alt: featuredImage.alt_text || '',
+								decorative: !! imageDecorative,
+							} }
+							index={ post.id }
+							prefix="image"
+							uid={ `sgs-pg-${ clientId.slice( 0, 8 ) }` }
 							className="sgs-post-grid__img"
-							aria-hidden={ imageDecorative || undefined }
 						/>
 					</div>
 

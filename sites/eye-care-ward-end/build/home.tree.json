@@ -4,12 +4,6 @@
     "attributes": {
       "align": "full",
       "backgroundColour": "primary",
-      "backgroundImage": {
-        "id": 174,
-        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/hero.jpg",
-        "alt": "Designer sunglasses resting on a rail above the sea"
-      },
-      "overlayGradient": "linear-gradient(100deg,rgba(18,18,18,.86) 0%,rgba(18,18,18,.74) 30%,rgba(18,18,18,.4) 58%,rgba(18,18,18,.04) 82%,rgba(18,18,18,0) 100%)",
       "minHeight": {
         "desktop": "min(84vh, 820px)",
         "mobile": "82vh"
@@ -69,7 +63,17 @@
             ]
           }
         }
-      }
+      },
+      "backgroundSource": {
+        "desktop": {
+          "kind": "image",
+          "id": 174,
+          "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/hero.jpg"
+        }
+      },
+      "backgroundAlt": "Designer sunglasses resting on a rail above the sea",
+      "backgroundDecorative": false,
+      "backgroundOverlayGradient": "linear-gradient(100deg,rgba(18,18,18,.86) 0%,rgba(18,18,18,.74) 30%,rgba(18,18,18,.4) 58%,rgba(18,18,18,.04) 82%,rgba(18,18,18,0) 100%)"
     },
     "innerBlocks": [
       {
@@ -389,7 +393,7 @@
           "maxHeight": 22,
           "logoMaxWidth": 120,
           "logoOpacity": 75,
-          "logoFit": "contain",
+          "logoFit": {"desktop": "contain"},
           "className": "cr-ref-home-8",
           "sgsMotion": {
             "v": 1,
@@ -647,7 +651,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -688,7 +691,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -730,7 +732,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           },
           {
@@ -771,7 +777,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -812,7 +817,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -855,7 +859,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           },
           {
@@ -899,7 +907,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -937,7 +944,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -980,7 +986,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           },
           {
@@ -1021,7 +1031,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -1062,7 +1071,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -1105,7 +1113,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           },
           {
@@ -1146,7 +1158,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -1187,7 +1198,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -1230,7 +1240,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           },
           {
@@ -1271,7 +1285,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -1312,7 +1325,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -1355,7 +1367,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           },
           {
@@ -1396,7 +1412,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -1437,7 +1452,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -1480,7 +1494,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           },
           {
@@ -1524,7 +1542,6 @@
               "showWishlist": true,
               "rrpMetaKey": "_sgs_rrp",
               "swatchMaxVisible": 4,
-              "imageAspectRatio": "1 / 1",
               "showShadow": false,
               "borderRadius": {
                 "desktop": {
@@ -1562,7 +1579,6 @@
               "rrpColour": "text-label",
               "swatchSize": 17,
               "swatchHoverGrow": 125,
-              "mediaBackgroundColour": "surface-stage",
               "swatchBorderColour": "border-strong",
               "wishlistBorderColour": "#E0DAD1",
               "brandPadding": {
@@ -1613,7 +1629,11 @@
                     }
                   }
                 }
-              }
+              },
+              "imageRatio": {
+                "desktop": "1 / 1"
+              },
+              "imageBackground": "surface-stage"
             }
           }
         ]
@@ -2434,7 +2454,6 @@
             "tablet": "18px",
             "mobile": "10px"
           },
-          "aspectRatio": "4 / 5",
           "imageFallback": true,
           "imageFallbackColour": "#2B2721",
           "glyphSize": "72px",
@@ -2465,67 +2484,75 @@
             },
             {
               "title": "Wayfarer",
-              "media": {
-                "id": 175,
-                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/wayfarer.jpg",
-                "type": "image",
-                "alt": "Wayfarer-style sunglasses"
-              },
               "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=wayfarer&query_type_shape=or",
               "glyphImage": {
                 "id": 149,
                 "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/wayfarer.png",
                 "alt": ""
               },
-              "_key": "d7defaa8-cfc7-486a-9ecd-6c1721acde08"
+              "_key": "d7defaa8-cfc7-486a-9ecd-6c1721acde08",
+              "source": {
+                "desktop": {
+                  "kind": "image",
+                  "id": 175,
+                  "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/wayfarer.jpg"
+                }
+              },
+              "alt": "Wayfarer-style sunglasses"
             },
             {
               "title": "Round",
-              "media": {
-                "id": 177,
-                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/round.jpg",
-                "type": "image",
-                "alt": "Round sunglasses"
-              },
               "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=round&query_type_shape=or",
               "glyphImage": {
                 "id": 150,
                 "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/round.png",
                 "alt": ""
               },
-              "_key": "cb51666e-6e8d-45a4-b9b0-9cb440f39a50"
+              "_key": "cb51666e-6e8d-45a4-b9b0-9cb440f39a50",
+              "source": {
+                "desktop": {
+                  "kind": "image",
+                  "id": 177,
+                  "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/round.jpg"
+                }
+              },
+              "alt": "Round sunglasses"
             },
             {
               "title": "Cat-eye",
-              "media": {
-                "id": 178,
-                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/cateye.jpg",
-                "type": "image",
-                "alt": "Cat-eye sunglasses"
-              },
               "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=cat-eye&query_type_shape=or",
               "glyphImage": {
                 "id": 151,
                 "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/cat-eye.png",
                 "alt": ""
               },
-              "_key": "8a9fa055-6299-4475-a702-baf03c5bf734"
+              "_key": "8a9fa055-6299-4475-a702-baf03c5bf734",
+              "source": {
+                "desktop": {
+                  "kind": "image",
+                  "id": 178,
+                  "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/cateye.jpg"
+                }
+              },
+              "alt": "Cat-eye sunglasses"
             },
             {
               "title": "Square",
-              "media": {
-                "id": 181,
-                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/square.jpg",
-                "type": "image",
-                "alt": "Square sunglasses"
-              },
               "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=square&query_type_shape=or",
               "glyphImage": {
                 "id": 152,
                 "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/square.png",
                 "alt": ""
               },
-              "_key": "b8eb3414-77bb-4477-ad53-a3e3b3211eec"
+              "_key": "b8eb3414-77bb-4477-ad53-a3e3b3211eec",
+              "source": {
+                "desktop": {
+                  "kind": "image",
+                  "id": 181,
+                  "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/square.jpg"
+                }
+              },
+              "alt": "Square sunglasses"
             },
             {
               "title": "Oversized",
@@ -2616,6 +2643,9 @@
               "perRow": false,
               "cap": 490
             }
+          },
+          "imageRatio": {
+            "desktop": "4 / 5"
           }
         }
       }
@@ -3261,13 +3291,6 @@
       {
         "name": "sgs/media",
         "attributes": {
-          "mediaType": "image",
-          "imageId": 202,
-          "imageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg",
-          "imageAlt": "Person wearing sunglasses outdoors",
-          "objectFit": "cover",
-          "objectPosition": "50% 20%",
-          "mediaSizing": "fill",
           "minHeight": {
             "desktop": "430px"
           },
@@ -3303,6 +3326,26 @@
                 }
               }
             }
+          },
+          "source": {
+            "desktop": {
+              "kind": "image",
+              "id": 202,
+              "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg"
+            }
+          },
+          "alt": "Person wearing sunglasses outdoors",
+          "fit": {
+            "desktop": "cover"
+          },
+          "focal": {
+            "desktop": {
+              "x": 0.5,
+              "y": 0.2
+            }
+          },
+          "height": {
+            "desktop": "fill"
           }
         }
       },

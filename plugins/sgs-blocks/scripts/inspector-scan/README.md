@@ -25,8 +25,8 @@ It runs in **both** gate chains: `prebuild`, and `.githooks/sgs-gates.sh` on any
 |---|---|
 | `run.js` | Entry point. Builds the `ctx`, discovers the roster, runs each rule, prints the report. |
 | `rules.json` | **The registry.** Every rule's id, its file, and whether it is `gate` or `advisory`. |
-| `rules/*.js` | One file per rule — 22 of them. |
-| `core/` | Shared machinery used by every rule (9 modules, below). |
+| `rules/*.js` | One file per rule. |
+| `core/` | Shared machinery used by every rule (below). |
 | `baselines/` | Per-rule grandfathered findings. |
 | `fixtures/` | Self-test fixtures, including the must-flag cases. |
 | `placement-rule-surfaces.json` | Data for the D537 placement rule. |
@@ -38,6 +38,8 @@ It runs in **both** gate chains: `prebuild`, and `.githooks/sgs-gates.sh` on any
 | `sources.js` | `SourceCache` — one read + one AST parse per file per run. |
 | `components.js` | `resolveComponentFiles` (name → file) and `getSharedOwnerScan` (block → shared component, one hop). |
 | `golden.js` | `reachedComponents` and the golden-colour-control machinery. |
+| `block-files.js` | `blockSourceCtx`: the per-block source context, so a rule reads the code that moved out of `edit.js` and `render.php` into sibling files. |
+| `media-facts.js` | `mediaSystemOwns`: whether the shared media panels offer a control for an adopted block's media attribute and the shared renderer reads it, from `scripts/wiring-fingerprint/media_system_facts.mjs`. |
 | `roster.js` | Which blocks exist — reconciles `roster.json` against `src/blocks/`. |
 | `finding.js` | `makeFinding` — the shape every rule returns. |
 | `baseline.js` | `hasRealReason` — baseline matching. |
@@ -45,9 +47,9 @@ It runs in **both** gate chains: `prebuild`, and `.githooks/sgs-gates.sh` on any
 | `report.js` | Rendering. |
 | `selftest.js` | Runs each rule's `selfTest` against isolated fixtures. |
 
-### The registry: 24 entries, 22 files
+### The registry
 
-`rules.json` holds **24** entries but there are only **22** rule files. The two without a file (`roster-drift`, `parse-error`) are engine-level checks run by `run.js` itself, not rule modules. Split by mode: **7 gate, 17 advisory**.
+`rules.json` lists every rule, plus two entries with no rule file (`roster-drift`, `parse-error`): engine-level checks `run.js` runs itself. Count the split by mode with `python -c "import json,collections;print(collections.Counter(r['mode'] for r in json.load(open('plugins/sgs-blocks/scripts/inspector-scan/rules.json'))['rules']))"`.
 
 An advisory rule reports and never fails the build. Each carries an `advisoryReason` saying *why* it is not yet promotable — usually "this is a large real backlog", with a measured figure and a date.
 

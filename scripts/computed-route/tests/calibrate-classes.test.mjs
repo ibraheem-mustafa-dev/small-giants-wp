@@ -8,6 +8,7 @@ const SNAP = { palette: [ { slug: 'accent', colour: { r: 200, g: 40, b: 90, a: 1
 const row = ( o ) => ( { tier_shape: null, box_family: null, css_state: null, css_element: null, role: null, ...o } );
 const mk = ( r, schema = {}, ctx = {} ) => markersFor( row( r ), schema, SNAP, {}, ctx );
 
+const SRC = { desktop: { kind: 'image', id: 7, url: 'u' } };
 test( 'MUST FAIL (noMarker, extension): a setting absent from block.json is marked from its DB row', () => {
 	const [ m ] = mk( { attr_name: 'sgsHideOnDesktop', css_property: 'display', attr_type: 'boolean', default_value: 'false' } );
 	assert.deepEqual( m.attrs, { sgsHideOnDesktop: true } );
@@ -23,10 +24,10 @@ test( 'MUST FAIL (noMarker, keyword with no enum): flex keywords are marked, nev
 	assert.deepEqual( ms.map( ( m ) => m.attrs.alignItems ), [ 'flex-end' ] );
 } );
 
-test( 'MUST FAIL (noMarker, media object): a background image is marked with the site image, and skipped without one', () => {
-	const r = { attr_name: 'backgroundImage', css_property: 'background-image', tier_shape: 'flat_sibling', role: 'image-object' };
-	const schema = { backgroundImage: { type: 'object' } };
-	assert.deepEqual( mk( r, schema, { image: { id: 7, url: 'https://x/a.jpg' } } )[ 0 ].attrs, { backgroundImage: { id: 7, url: 'https://x/a.jpg' } } );
+test( 'MUST FAIL (noMarker, media object): an object setting painting background-image is no marker (a Source is a precondition, never probed)', () => {
+	const r = { attr_name: 'backgroundSource', css_property: 'background-image', tier_shape: 'tier_object', role: 'image-object' };
+	const schema = { backgroundSource: { type: 'object' } };
+	assert.deepEqual( mk( r, schema, { image: { id: 7, url: 'https://x/a.jpg' } } ), [] );
 	assert.deepEqual( mk( r, schema ), [] );
 } );
 
@@ -83,21 +84,20 @@ test( 'MUST FAIL (dead, needs variant / toggle / partner / image): preconditions
 	assert.deepEqual( preconditionsFor( row( { attr_name: 'badgeColour', css_property: 'color' } ), toggles ), { showBadge: true } );
 	const border = { cardBorderColour: { type: 'string' }, cardBorderStyle: { type: 'string' }, cardBorderWidth: { type: 'string' } };
 	assert.deepEqual( preconditionsFor( row( { attr_name: 'cardBorderColour', css_property: 'border-color' } ), border ), { cardBorderStyle: 'solid', cardBorderWidth: '3px' } );
-	const overlay = { backgroundImage: { type: 'object' }, overlayColour: { type: 'string' } };
-	assert.deepEqual( preconditionsFor( row( { attr_name: 'overlayColour', css_property: 'background-color' } ), overlay, {}, ctx ), { backgroundImage: { id: 7, url: 'u' } } );
+	const overlay = { backgroundSource: { type: 'object' }, overlayColour: { type: 'string' } };
+	assert.deepEqual( preconditionsFor( row( { attr_name: 'overlayColour', css_property: 'background-color' } ), overlay, {}, ctx ), { backgroundSource: SRC } );
 } );
 
 test( 'MUST FAIL ON REVERT (dead, variant media needs an image): a variant slot also fills that variant\'s base image slots', () => {
 	const ctx = { variantAttr: 'variant', image: { id: 7, url: 'u' }, variantSlots: [
-		{ variant_value: 'split', unique_slot: 'splitMediaImageUrl' }, { variant_value: 'split', unique_slot: 'splitMediaImageId' },
-		{ variant_value: 'split', unique_slot: 'splitMediaImageUrlMobile' }, { variant_value: 'split', unique_slot: 'splitMediaAspectRatio' },
-		{ variant_value: 'standard', unique_slot: 'backgroundImageUrl' } ] };
-	const schema = { splitMediaImageUrl: { type: 'string' }, splitMediaImageId: { type: 'number' }, splitMediaImageUrlMobile: { type: 'string' }, splitMediaAspectRatio: { type: 'string' }, backgroundImageUrl: { type: 'string' } };
-	assert.deepEqual( preconditionsFor( row( { attr_name: 'splitMediaAspectRatio', css_property: 'aspect-ratio' } ), schema, { variant: 'standard' }, ctx ),
-		{ variant: 'split', splitMediaImageUrl: 'u', splitMediaImageId: 7 } );
+		{ variant_value: 'split', unique_slot: 'splitSource' }, { variant_value: 'split', unique_slot: 'splitRatio' },
+		{ variant_value: 'standard', unique_slot: 'backgroundSource' } ] };
+	const schema = { splitSource: { type: 'object' }, splitRatio: { type: 'string' }, backgroundSource: { type: 'object' } };
+	assert.deepEqual( preconditionsFor( row( { attr_name: 'splitRatio', css_property: 'aspect-ratio' } ), schema, { variant: 'standard' }, ctx ),
+		{ variant: 'split', splitSource: SRC } );
 	// An image the instance already holds is kept, and no image is invented without a calibration image.
-	assert.deepEqual( preconditionsFor( row( { attr_name: 'splitMediaAspectRatio', css_property: 'aspect-ratio' } ), schema, { variant: 'standard', splitMediaImageUrl: 'x', splitMediaImageId: 3 }, ctx ), { variant: 'split' } );
-	assert.deepEqual( preconditionsFor( row( { attr_name: 'splitMediaAspectRatio', css_property: 'aspect-ratio' } ), schema, { variant: 'standard' }, { ...ctx, image: null } ), { variant: 'split' } );
+	assert.deepEqual( preconditionsFor( row( { attr_name: 'splitRatio', css_property: 'aspect-ratio' } ), schema, { variant: 'standard', splitSource: { desktop: { kind: 'image', id: 3, url: 'x' } } }, ctx ), { variant: 'split' } );
+	assert.deepEqual( preconditionsFor( row( { attr_name: 'splitRatio', css_property: 'aspect-ratio' } ), schema, { variant: 'standard' }, { ...ctx, image: null } ), { variant: 'split' } );
 } );
 
 test( 'MUST FAIL (dead, needs layout mode): a layout property is also marked under each other layout mode', () => {
@@ -141,7 +141,7 @@ test( 'MUST FAIL (oneWidth false positive): a container-query tier is not flagge
 
 test( 'MUST FAIL (multi-button overlay hover untested): an overlay hover gets a resting overlay colour, so the wrapper prints the overlay it paints', async () => {
 	const { MARKER_HEX } = await import( '../lib/calibrate-props.mjs' );
-	const schema = { backgroundOverlayColour: { type: 'string', default: '' }, backgroundImage: { type: 'object' } };
+	const schema = { backgroundOverlayColour: { type: 'string', default: '' }, backgroundSource: { type: 'object' } };
 	const ctx = { image: { id: 7, url: 'u' } };
 	const out = preconditionsFor( row( { attr_name: 'backgroundOverlayColourHover', css_property: 'background-color', css_state: 'hover' } ), schema, {}, ctx );
 	assert.ok( out.backgroundOverlayColour, 'a resting overlay colour is set' );

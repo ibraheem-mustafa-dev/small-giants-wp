@@ -7,16 +7,11 @@
  * scope: `background-position` / `background-repeat` / `background-
  * attachment` (the `Position` / `Repeat` / `Attachment` bases).
  *
- * Builds on the SHARED emitter in `helpers-media-position.php`
- * (`sgs_media_position_focal_to_css()`) for the `{x,y}` -> "X% Y%" maths —
- * does not re-derive it — and additionally accepts the already-CSS-string
+ * Converts the `{x,y}` -> "X% Y%" maths itself
+ * (`sgs_media_atom_focal_point_xy_to_css()`) and additionally accepts the already-CSS-string
  * shape `sgs/hero`'s `splitMediaObjectPosition` stores, sanitised with the
  * same charset `hero/render.php`'s own `$sgs_css_object_position` closure
  * uses (`preg_replace('/[^A-Za-z0-9%.\-\s]/', '', ...)`).
- *
- * `sgs_media_atom_focal_point_css()` must emit BYTE-IDENTICAL declarations to
- * the JS twin's `css()` for the same attribute set — enforced by
- * `scripts/tests/test-media-atom-parity.mjs`.
  *
  * @package SGS\Blocks
  */
@@ -24,7 +19,27 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 2 ) . '/helpers-media-element.php';
-require_once dirname( __DIR__, 2 ) . '/helpers-media-position.php';
+
+if ( ! function_exists( 'sgs_media_atom_focal_point_xy_to_css' ) ) {
+	/**
+	 * A focal point {x,y} (floats 0-1) as a CSS "X% Y%" position. Clamped 0-1, rounded to 2 places. Returns '' when
+	 * unset or at the CSS default (centre), so the element's own default wins.
+	 *
+	 * @param mixed $focal_point Raw attribute value, expected {x,y}.
+	 * @return string "X% Y%" or ''.
+	 */
+	function sgs_media_atom_focal_point_xy_to_css( $focal_point ) {
+		if ( ! is_array( $focal_point ) || ! isset( $focal_point['x'], $focal_point['y'] ) ) {
+			return '';
+		}
+		$x = max( 0.0, min( 1.0, (float) $focal_point['x'] ) );
+		$y = max( 0.0, min( 1.0, (float) $focal_point['y'] ) );
+		if ( 0.5 === $x && 0.5 === $y ) {
+			return '';
+		}
+		return round( $x * 100, 2 ) . '% ' . round( $y * 100, 2 ) . '%';
+	}
+}
 
 if ( ! function_exists( 'sgs_media_atom_focal_point_sanitise_string' ) ) {
 	/**
@@ -46,7 +61,7 @@ if ( ! function_exists( 'sgs_media_atom_focal_point_resolve_position' ) ) {
 	/**
 	 * Resolve a position value in EITHER stored shape to a CSS
 	 * `object-position`/`background-position` string. An `{x,y}` array
-	 * converts via the SHARED emitter (`sgs_media_position_focal_to_css()`);
+	 * converts through `sgs_media_atom_focal_point_xy_to_css()`;
 	 * a string is sanitised and passed through unchanged.
 	 *
 	 * @param mixed $raw Raw attribute value.
@@ -54,7 +69,7 @@ if ( ! function_exists( 'sgs_media_atom_focal_point_resolve_position' ) ) {
 	 */
 	function sgs_media_atom_focal_point_resolve_position( $raw ) {
 		if ( is_array( $raw ) && isset( $raw['x'], $raw['y'] ) ) {
-			return sgs_media_position_focal_to_css( $raw );
+			return sgs_media_atom_focal_point_xy_to_css( $raw );
 		}
 		return sgs_media_atom_focal_point_sanitise_string( $raw );
 	}
@@ -122,81 +137,6 @@ if ( ! function_exists( 'sgs_media_atom_focal_point_requires' ) ) {
 				'sgs-blocks'
 			),
 		);
-	}
-}
-
-if ( ! function_exists( 'sgs_media_atom_focal_point_css' ) ) {
-	/**
-	 * Custom-property declarations for this atom. Mirrors the JS twin's
-	 * `css()` exactly.
-	 *
-	 * @param array  $attributes Block attributes.
-	 * @param string $prefix     Surface prefix.
-	 * @param string $block_slug Block slug, for `STORED_AS` resolution.
-	 * @return string[] `--custom-property:value;` declarations, never bare rules.
-	 */
-	function sgs_media_atom_focal_point_css( array $attributes, $prefix, $block_slug ) {
-		require_once dirname( __DIR__, 2 ) . '/helpers-responsive.php';
-		$decls = array();
-
-		// Element scope, tiered (MEDIA_TIERED_BASES carries `ObjectPosition`).
-		// TWO storage shapes are real here (Priority 4, 2026-09-07): a MIGRATED
-		// caller (e.g. sgs/hero's `splitMediaObjectPosition`, folded via
-		// migrate-tier-object.py --fix) stores all three tiers under this ONE
-		// base key as a {desktop,tablet,mobile} object; an UNMIGRATED caller
-		// (before-after/card-grid/decorative-image/media/product-card/
-		// testimonial) still stores three separate flat keys (ObjectPosition/
-		// ObjectPositionTablet/ObjectPositionMobile). sgs_responsive_normalise_
-		// object() already degrades a plain scalar/string to
-		// {desktop:scalar,tablet:null,mobile:null}, so reading the base key
-		// through it and falling back to the sibling flat keys only when a
-		// tier comes back empty covers both shapes with no per-block branch.
-		$pos_key   = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectPosition' );
-		$pos_tiers = sgs_responsive_normalise_object( $attributes[ $pos_key ] ?? null );
-
-		$pos = sgs_media_atom_focal_point_validate( $pos_tiers['desktop'] ?? null, 'ObjectPosition' );
-		if ( '' !== $pos ) {
-			$decls[] = '--sgs-media-object-position:' . $pos;
-		}
-
-		$pos_tablet_raw = $pos_tiers['tablet'] ?? null;
-		if ( null === $pos_tablet_raw || '' === $pos_tablet_raw ) {
-			$pos_tablet_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectPositionTablet' );
-			$pos_tablet_raw = $attributes[ $pos_tablet_key ] ?? null;
-		}
-		$pos_tablet = sgs_media_atom_focal_point_validate( $pos_tablet_raw, 'ObjectPosition' );
-		if ( '' !== $pos_tablet ) {
-			$decls[] = '--sgs-media-object-position-tablet:' . $pos_tablet;
-		}
-
-		$pos_mobile_raw = $pos_tiers['mobile'] ?? null;
-		if ( null === $pos_mobile_raw || '' === $pos_mobile_raw ) {
-			$pos_mobile_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectPositionMobile' );
-			$pos_mobile_raw = $attributes[ $pos_mobile_key ] ?? null;
-		}
-		$pos_mobile = sgs_media_atom_focal_point_validate( $pos_mobile_raw, 'ObjectPosition' );
-		if ( '' !== $pos_mobile ) {
-			$decls[] = '--sgs-media-object-position-mobile:' . $pos_mobile;
-		}
-
-		// Backdrop scope. None of these three bases are in MEDIA_TIERED_BASES.
-		$bg_pos_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Position' );
-		$bg_pos     = sgs_media_atom_focal_point_validate( $attributes[ $bg_pos_key ] ?? null, 'Position' );
-		if ( '' !== $bg_pos ) {
-			$decls[] = '--sgs-media-background-position:' . $bg_pos;
-		}
-		$bg_repeat_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Repeat' );
-		$bg_repeat     = sgs_media_atom_focal_point_validate( $attributes[ $bg_repeat_key ] ?? null, 'Repeat' );
-		if ( '' !== $bg_repeat ) {
-			$decls[] = '--sgs-media-background-repeat:' . $bg_repeat;
-		}
-		$bg_attachment_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Attachment' );
-		$bg_attachment     = sgs_media_atom_focal_point_validate( $attributes[ $bg_attachment_key ] ?? null, 'Attachment' );
-		if ( '' !== $bg_attachment ) {
-			$decls[] = '--sgs-media-background-attachment:' . $bg_attachment;
-		}
-
-		return $decls;
 	}
 }
 

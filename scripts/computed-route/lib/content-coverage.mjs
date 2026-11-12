@@ -12,7 +12,7 @@
 //   list         lib/fill-list-content.mjs::listClaims( listTarget ): the block's one content array, or the content settings of
 //                the one child block it allows
 //   role-writer  a dedicated writer selects it by its own rule: the skeleton writer (lib/skeleton-write-content.mjs::
-//                skeletonSettings), the media writer (lib/fill-media.mjs::mediaSettings), the icon writer (lib/fill-icon.mjs::
+//                skeletonSettings), the media writer (lib/media/slots.mjs::mediaSettings), the icon writer (lib/fill-icon.mjs::
 //                iconSettings) and the form writer (lib/fill-form.mjs::formSettings)
 //   no-element   the DB's emit_shape says the page holds nothing to read the setting from (NO_ELEMENT_SHAPES)
 //   gap          a `content-setting:<block>.<setting>` row in data/clone-coverage.json naming the mechanism, owner and wave
@@ -22,7 +22,7 @@ import fs from 'node:fs';
 import { loadCalibration, slotMapFile } from './cache.mjs';
 import { textSettings, linkSettings, presenceSettings } from './fill-presence.mjs';
 import { listTarget, listClaims } from './fill-list-content.mjs';
-import { imageSlots, mediaSettings } from './fill-media.mjs';
+import { mediaSettings } from './media/slots.mjs';
 import { iconSettings } from './fill-icon.mjs';
 import { formSettings } from './fill-form.mjs';
 import { skeletonSettings } from './skeleton-write-content.mjs';
@@ -83,7 +83,7 @@ export function claimsOf( { db, cacheDir, schemaOf, facts, blocks } ) {
 		const schema = schemaOf( block );
 		const skeleton = skeletonSettings( facts, block );
 		[ skeleton.text, skeleton.link, ...skeleton.others ].filter( Boolean ).forEach( ( a ) => claim( block, a, 'role-writer', 'skeleton' ) );
-		mediaSettings( imageSlots( db, block, schema ), schema ).forEach( ( a ) => claim( block, a, 'role-writer', 'media' ) );
+		mediaSettings( block ).forEach( ( a ) => claim( block, a, 'role-writer', 'media' ) );
 		iconSettings( schema ).forEach( ( a ) => claim( block, a, 'role-writer', 'icon' ) );
 		formSettings( block ).forEach( ( a ) => claim( block, a, 'role-writer', 'form' ) );
 	}
@@ -104,7 +104,7 @@ function whyMissed( row, { cacheDir, db, schemaOf, facts } ) {
 	const target = listTarget( db, row.block, schemaOf );
 	why.push( target ? `the list writer fills ${ target.kind === 'attr' ? target.attr : `the items of ${ target.child }` }, not this setting` : 'the block keeps no list the list writer fills' );
 	const skeleton = skeletonSettings( facts, row.block );
-	why.push( `no dedicated writer selects it (skeleton: text ${ skeleton.text ?? 'none' }, link ${ skeleton.link ?? 'none' }; media: ${ mediaSettings( imageSlots( db, row.block, schemaOf( row.block ) ), schemaOf( row.block ) ).join( ', ' ) || 'none' })` );
+	why.push( `no dedicated writer selects it (skeleton: text ${ skeleton.text ?? 'none' }, link ${ skeleton.link ?? 'none' }; media: ${ mediaSettings( row.block ).join( ', ' ) || 'none' })` );
 	why.push( `emit_shape is ${ row.shape ?? 'unset' }, which names an element the draft draws` );
 	return why;
 }

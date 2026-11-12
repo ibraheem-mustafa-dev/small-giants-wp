@@ -173,24 +173,15 @@ if ( ! function_exists( 'sgs_buybox_configurator_look_css' ) ) {
 		$css     = array();
 		$preview = array();
 		$fill    = sgs_colour_value( (string) ( $attributes['previewBackgroundColour'] ?? '' ) );
-		$border  = sgs_colour_value( (string) ( $attributes['previewBorderColour'] ?? '' ) );
-		$width   = sgs_css_length_value( (string) ( $attributes['previewBorderWidth'] ?? '' ) );
-		$radius  = sgs_css_length_value( (string) ( $attributes['previewRadius'] ?? '' ) );
 		if ( '' !== $fill ) {
 			$preview[] = 'background:' . $fill;
-		}
-		if ( '' !== $border ) {
-			$preview[] = 'border-color:' . $border;
-		}
-		if ( '' !== $width ) {
-			$preview[] = 'border-width:' . $width;
-		}
-		if ( '' !== $radius ) {
-			$preview[] = 'border-radius:' . $radius;
 		}
 		if ( $preview ) {
 			$css[] = $root_sel . ' .sgs-buybox__pick-preview{' . implode( ';', $preview ) . ';}';
 		}
+		// The `preview` slot's border and corners print on the preview box (it also holds the colour dots and the clip), which
+		// carries `{uid}-preview`; the block's scope class is the first class of its scoped root selector.
+		$css[] = sgs_pcm_chrome_css( $attributes, 'preview', explode( '.', ltrim( $root_sel, '.' ) )[0] . '-preview' );
 		$css = array_merge( $css, sgs_buybox_configurator_tier_css( $attributes['previewPadding'] ?? null, $root_sel . ' .sgs-buybox__pick-preview' ) );
 
 		// Selected options: one pair of custom properties read by the pick-several pills and by every option picker.
@@ -447,12 +438,24 @@ if ( ! function_exists( 'sgs_buybox_configurator_close' ) ) {
 		}
 		$out .= '</div>'; // End .sgs-buybox-pick__groups.
 
-		$image_id = absint( $attributes['previewImageId'] ?? 0 );
-		$image    = $image_id > 0 ? wp_get_attachment_image( $image_id, 'large', false, array( 'class' => 'sgs-buybox-pick__preview-image', 'alt' => '', 'loading' => 'lazy' ) ) : '';
+		// The preview picture is the `preview` slot: decorative (the box's label is the live summary), without the box
+		// settings, which print on the box itself.
+		$preview = sgs_pcm_render(
+			'preview',
+			sgs_pcm_picture_attrs( $attributes, 'preview' ),
+			$uid . '-preview-image',
+			array(
+				'alt'        => '',
+				'decorative' => true,
+				'block'      => 'sgs/buybox',
+				'class'      => 'sgs-buybox-pick__preview-image',
+			)
+		);
+		$image    = $preview['html'] . sgs_pcm_style( $preview['css'] );
 		$out     .= '<div class="sgs-buybox-pick__side">';
 		$out     .= '<figure class="sgs-buybox-pick__preview">';
 		if ( empty( $attributes['pickHidePreview'] ) ) {
-			$out .= '<div class="sgs-buybox-pick__preview-box sgs-buybox__pick-preview' . ( '' === $image ? ' sgs-buybox-pick__preview-box--plain' : '' ) . '" role="img" aria-label="" data-sgs-preview>' . $image . '<span class="sgs-buybox-pick__dots" data-sgs-dots aria-hidden="true"></span></div>';
+			$out .= '<div class="sgs-buybox-pick__preview-box sgs-buybox__pick-preview ' . esc_attr( $uid ) . '-preview' . ( '' === $preview['html'] ? ' sgs-buybox-pick__preview-box--plain' : '' ) . '" role="img" aria-label="" data-sgs-preview>' . $image . '<span class="sgs-buybox-pick__dots" data-sgs-dots aria-hidden="true"></span></div>';
 		}
 		$out     .= '<figcaption class="sgs-buybox-pick__caption sgs-buybox__pick-summary" data-sgs-caption></figcaption>';
 		$out     .= '</figure>';

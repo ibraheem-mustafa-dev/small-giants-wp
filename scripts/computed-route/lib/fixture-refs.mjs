@@ -22,7 +22,7 @@ export const NOT_REFS = {
 // name contains id, ref or product in any case. WIDE_OK lists the keys it catches that hold no reference.
 export const WIDE_KEY = /id|ref|product/i;
 export const WIDE_OK = {
-	drawingImageWidth: 'the drawing\'s width in pixels',
+	width: 'a media Source entry\'s file width in pixels',
 	freeDeliveryThresholdOverride: 'a money amount',
 };
 

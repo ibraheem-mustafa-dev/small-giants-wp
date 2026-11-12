@@ -4,7 +4,7 @@
  * reads; `kinds-settings.js` holds the four new atoms' rows. This file holds the §8 rows of the older atoms as §6.2
  * extends them, and `ADOPTED_SETTINGS` joins all three by atom id.
  *
- * Folded atoms (`media-type`, `intrinsic`) and `box-shape` (split into `sizing` and `shape`) have no adopted row.
+ * `box-shape` (split into `sizing` and `shape`) has no adopted row.
  * Nothing an existing block reads changes: nothing reads these until a slot declares `kinds`.
  *
  * Every entry carries `adopted: true`. A responsive entry is stored as one `{desktop,tablet,mobile}` object under its
@@ -31,7 +31,12 @@ const OVERLAY = 'overlay-and-filters';
 
 const PIXELS = [ 'image', 'video', 'svg' ];
 const EVERYWHERE = slotsOf( ALL_KINDS, ALL_CONTEXTS );
+/** An item set keeps each item's source, alt, decorative flag and focal point inside the item (§8.3), so the block holds no attribute for them. */
+const NOT_ITEM = ALL_CONTEXTS.filter( ( context ) => 'item' !== context );
 const OFF_BACKGROUND = slotsOf( ALL_KINDS, NOT_BACKGROUND );
+/** Tile, tile size and Pinned are a painted background's settings (§8, §9.3): an element slot never offers them. */
+const BACKGROUND_IMAGE = slotsOf( [ 'image' ], [ 'background' ] );
+
 
 /**
  * One C1 entry in §8's vocabulary.
@@ -56,28 +61,38 @@ function row( o ) {
 		control: { component: o.component, label: o.label, panel: o.panel, order: o.order },
 		slots: o.slots || EVERYWHERE,
 		adopted: true,
+		// 'source': a control-only row. Its value lives inside `Source.<device>`, so no attribute, override entry or slot-schema shape exists for it.
+		stored: o.stored || 'attribute',
 	};
 }
 
+/**
+ * @param {Object} setting An adopted row.
+ * @return {boolean} True when the row is stored as its own block attribute (false for a control-only row such as Captions).
+ */
+export function storesAttribute( setting ) {
+	return 'attribute' === ( setting?.stored || 'attribute' );
+}
+
 const SOURCE_SETTINGS = [
-	row( { base: 'Source', type: 'object', responsive: true, role: 'content', component: 'MediaSlotField', label: 'Media', panel: MEDIA, order: 1 } ),
+	row( { base: 'Source', type: 'object', responsive: true, role: 'content', component: 'MediaSlotField', label: 'Media', panel: MEDIA, order: 1, slots: slotsOf( ALL_KINDS, NOT_ITEM ) } ),
 	row( { base: 'Loading', type: 'string', role: 'behaviour', component: 'SelectControl', label: 'Load priority', panel: MEDIA, order: 5 , slots: slotsOf( [ 'image', 'video' ], ALL_CONTEXTS ) } ),
 ];
 
 const MEANING_SETTINGS = [
-	row( { base: 'Alt', type: 'string', role: 'image-alt', component: 'MediaSlotField', label: 'Alt text', panel: MEDIA, order: 2 } ),
-	row( { base: 'Decorative', type: 'boolean', role: 'behaviour', component: 'MediaSlotField', label: 'Decorative', panel: MEDIA, order: 3 , slots: slotsOf( PIXELS, ALL_CONTEXTS ) } ),
+	row( { base: 'Alt', type: 'string', role: 'image-alt', component: 'MediaSlotField', label: 'Alt text', panel: MEDIA, order: 2, slots: slotsOf( ALL_KINDS, NOT_ITEM ) } ),
+	row( { base: 'Decorative', type: 'boolean', role: 'behaviour', component: 'MediaSlotField', label: 'Decorative', panel: MEDIA, order: 3 , slots: slotsOf( PIXELS, NOT_ITEM ) } ),
 ];
 
 const FIT_SETTINGS = [
 	row( { base: 'Fit', type: 'string', responsive: true, emitter: 'plain', property: 'object-fit', paintNode: 'media', role: 'visual', component: 'FitField', label: 'How it fills', panel: SIZES, order: 8 , slots: slotsOf( PIXELS, ALL_CONTEXTS ) } ),
-	row( { base: 'Repeat', type: 'string', responsive: true, emitter: 'plain', property: 'background-repeat', paintNode: 'media', role: 'visual', component: 'SelectControl', label: 'Tile', panel: SIZES, order: 10 , slots: slotsOf( [ 'image' ], ALL_CONTEXTS ) } ),
-	row( { base: 'TileSize', type: 'string', responsive: true, emitter: 'plain', property: 'background-size', paintNode: 'media', role: 'visual', component: 'LengthField', label: 'Tile size', panel: SIZES, order: 11 , slots: slotsOf( [ 'image' ], ALL_CONTEXTS ) } ),
+	row( { base: 'Repeat', type: 'string', responsive: true, emitter: 'plain', property: 'background-repeat', paintNode: 'media', role: 'visual', component: 'SelectControl', label: 'Tile', panel: SIZES, order: 10 , slots: BACKGROUND_IMAGE } ),
+	row( { base: 'TileSize', type: 'string', responsive: true, emitter: 'plain', property: 'background-size', paintNode: 'media', role: 'visual', component: 'LengthField', label: 'Tile size', panel: SIZES, order: 11 , slots: BACKGROUND_IMAGE } ),
 ];
 
 const FOCAL_SETTINGS = [
-	row( { base: 'Focal', type: 'object', responsive: true, emitter: 'focal', property: 'object-position', paintNode: 'media', role: 'visual', component: 'FocalField', label: 'Focal point', panel: SIZES, order: 9 , slots: slotsOf( [ 'image', 'video' ], ALL_CONTEXTS ) } ),
-	row( { base: 'Pinned', type: 'boolean', emitter: 'plain', property: 'background-attachment', paintNode: 'media', role: 'visual', component: 'ToggleControl', label: 'Keep the photo still while the page scrolls', panel: SIZES, order: 12 , slots: slotsOf( [ 'image' ], ALL_CONTEXTS ) } ),
+	row( { base: 'Focal', type: 'object', responsive: true, emitter: 'focal', property: 'object-position', paintNode: 'media', role: 'visual', component: 'FocalField', label: 'Focal point', panel: SIZES, order: 9 , slots: slotsOf( [ 'image', 'video' ], NOT_ITEM ) } ),
+	row( { base: 'Pinned', type: 'boolean', emitter: 'plain', property: 'background-attachment', paintNode: 'media', role: 'visual', component: 'ToggleControl', label: 'Keep the photo still while the page scrolls', panel: SIZES, order: 12 , slots: BACKGROUND_IMAGE } ),
 ];
 
 const PADDING_SETTINGS = [
@@ -114,11 +129,11 @@ const SVG_SETTINGS = [
 
 const PLAYBACK_SETTINGS = [
 	row( { base: 'Playback', type: 'object', role: 'behaviour', component: 'PlaybackField', label: 'Playback', panel: 'video', order: 1 , slots: slotsOf( [ 'video', 'embed' ], ALL_CONTEXTS ) } ),
-	row( { base: 'Captions', type: 'object', role: 'content', component: 'CaptionsField', label: 'Captions', panel: 'video', order: 2 , slots: slotsOf( [ 'video' ], ALL_CONTEXTS ) } ),
+	row( { base: 'Captions', type: 'object', role: 'content', component: 'CaptionsField', label: 'Captions', panel: 'video', order: 2, stored: 'source', slots: slotsOf( [ 'video' ], ALL_CONTEXTS ) } ),
 ];
 
 const CAPTION_SETTINGS = [
-	row( { base: 'Caption', type: 'string', role: 'content', component: 'TextControl', label: 'Caption', panel: 'caption-and-link', order: 1 , slots: slotsOf( [ 'image', 'video' ], NOT_BACKGROUND ) } ),
+	row( { base: 'Caption', type: 'string', role: 'content', component: 'RichTextField', label: 'Caption', panel: 'caption-and-link', order: 1 , slots: slotsOf( [ 'image', 'video' ], NOT_BACKGROUND ) } ),
 	row( { base: 'CaptionTag', type: 'string', role: 'tag-identity', component: 'SelectControl', label: 'Caption tag', panel: 'caption-and-link', order: 2 , slots: slotsOf( [ 'image', 'video' ], NOT_BACKGROUND ) } ),
 ];
 
@@ -145,6 +160,12 @@ const BORDER_HOVER = row( {
 	slots: OFF_BACKGROUND,
 } );
 
+/** The border's gradient forms (§8: "BorderColour, gradient forms"): panel companions of Border colour, painted by the shape emitter. */
+const BORDER_GRADIENTS = [
+	row( { base: 'BorderColourGradient', type: 'string', emitter: 'colour-states', property: 'background-image', paintNode: 'surface', role: 'colour-gradient', component: 'ColourField', label: 'Border gradient', panel: BORDER, order: 5.2, slots: OFF_BACKGROUND } ),
+	row( { base: 'BorderColourHoverGradient', type: 'string', emitter: 'colour-states', property: 'background-image', paintNode: 'surface', role: 'colour-gradient', component: 'ColourField', label: 'Border gradient on hover', panel: BORDER, order: 5.3, state: 'hover', slots: OFF_BACKGROUND } ),
+];
+
 /** A new atom's rows from `kinds-settings.js`, marked as adopted. */
 const adopt = ( list ) => list.map( ( setting ) => ( { ...setting, adopted: true } ) );
 
@@ -163,15 +184,13 @@ export const ADOPTED_SETTINGS = {
 	caption: CAPTION_SETTINGS,
 	link: LINK_SETTINGS,
 	sizing: adopt( SIZING_SETTINGS ),
-	shape: [ ...adopt( SHAPE_SETTINGS ), BORDER_HOVER ],
+	shape: [ ...adopt( SHAPE_SETTINGS ), BORDER_HOVER, ...BORDER_GRADIENTS ],
 	filter: adopt( FILTER_SETTINGS ),
 	layout: adopt( LAYOUT_SETTINGS ),
 };
 
 /** Older atoms an adopted slot may name that carry no row of their own, and the atoms each becomes. */
 export const ADOPTED_FOLDED = {
-	'media-type': [],
-	intrinsic: [],
 	'box-shape': [ 'sizing', 'shape' ],
 };
 
@@ -211,10 +230,10 @@ export function adoptedAtomsForElement( element ) {
 /**
  * @param {string[]} atomIds Adopted atom ids.
  * @param {Object}   [element] A `mediaElements` entry; when given, only the rows its `context` and `kinds` allow.
- * @return {Object[]} Their rows, in atom order.
+ * @return {Object[]} Their attribute-storing rows, in atom order.
  */
 export function adoptedSettingsForAtoms( atomIds, element ) {
-	const rows = atomIds.flatMap( ( id ) => ADOPTED_SETTINGS[ id ] || [] );
+	const rows = atomIds.flatMap( ( id ) => ADOPTED_SETTINGS[ id ] || [] ).filter( storesAttribute );
 	return element ? rows.filter( ( setting ) => settingAppliesToSlot( setting, element ) ) : rows;
 }
 

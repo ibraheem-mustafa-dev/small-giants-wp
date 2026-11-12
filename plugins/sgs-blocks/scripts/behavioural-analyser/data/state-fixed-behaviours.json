@@ -167,11 +167,6 @@
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/assets/css/fx-lottie.css",
-   "selector": ".sgs-lottie__pause[aria-pressed=\"true\"]::before",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
    "file": "plugins/sgs-blocks/assets/css/fx-ripple.css",
    "selector": "[data-sgs-fx~=\"ripple\"][data-sgs-mc~=\"::after\"][data-sgs-ripple=\"play\"]::after",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
@@ -548,7 +543,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
-   "selector": ".sgs-brand-strip--effect-grayscale .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip",
+   "selector": ".sgs-brand-strip--effect-grayscale .sgs-brand-strip__item:hover .sgs-media-el",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -558,7 +553,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
-   "selector": ".sgs-brand-strip--effect-sepia .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip",
+   "selector": ".sgs-brand-strip--effect-sepia .sgs-brand-strip__item:hover .sgs-media-el",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -573,7 +568,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
-   "selector": ".sgs-brand-strip--hover-scale .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip",
+   "selector": ".sgs-brand-strip--hover-scale .sgs-brand-strip__item:hover .sgs-media-el",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1228,12 +1223,12 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
-   "selector": ".sgs-gallery.sgs-has-grayscale .sgs-gallery__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-gallery__img",
+   "selector": ".sgs-gallery.sgs-has-grayscale .sgs-gallery__item:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-gallery__img-wrap .sgs-media-el",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
-   "selector": ".sgs-gallery.sgs-has-grayscale .sgs-gallery__item:hover .sgs-gallery__img",
+   "selector": ".sgs-gallery.sgs-has-grayscale .sgs-gallery__item:hover .sgs-gallery__img-wrap .sgs-media-el",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -2018,7 +2013,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/site-header/style.css",
-   "selector": "header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown] > .sgs-container__overlay",
+   "selector": "header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown] > .sgs-bg-overlay",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {

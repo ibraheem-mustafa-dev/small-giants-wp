@@ -35,20 +35,9 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-// ── Drawing (media-element atoms, prefix `drawing`) ─────────────────────────
-$sgs_md_image_url  = isset( $attributes['drawingImageUrl'] ) ? (string) $attributes['drawingImageUrl'] : '';
-$sgs_md_decorative = ! empty( $attributes['drawingImageDecorative'] );
-$sgs_md_image_id   = absint( $attributes['drawingImageId'] ?? 0 );
-$sgs_md_alt        = $sgs_md_decorative ? '' : (string) ( $attributes['drawingImageAlt'] ?? '' );
-// No alt typed for this instance: use the media library's own description of
-// the file, so a drawing bound per product still carries its text alternative.
-if ( ! $sgs_md_decorative && '' === trim( $sgs_md_alt ) && $sgs_md_image_id > 0 ) {
-	$sgs_md_alt = (string) get_post_meta( $sgs_md_image_id, '_wp_attachment_image_alt', true );
-}
-list( $sgs_md_w, $sgs_md_h ) = sgs_measured_diagram_box(
-	$attributes['drawingImageWidth'] ?? null,
-	$attributes['drawingImageHeight'] ?? null
-);
+// ── Drawing: one media slot (`drawing`, Spec 49 §7). Its source carries the file's own width and height, which are the
+// frame's aspect ratio and the line SVGs' viewBox: measurement data, never a display size. ─────────────────────────
+list( $sgs_md_w, $sgs_md_h ) = sgs_measured_diagram_box( ...sgs_measured_diagram_source_size( $attributes['drawingSource'] ?? null ) );
 
 $sgs_md_ext_style = isset( $attributes['extensionStyle'] ) && in_array( $attributes['extensionStyle'], array( 'solid', 'dashed', 'dotted' ), true )
 	? $attributes['extensionStyle']
@@ -178,32 +167,34 @@ $scoped_css[] = sgs_emit_responsive_css(
 	)
 );
 
-// ── Media-atom layer (intrinsic + meaning emit no CSS; called for parity) ───
-$sgs_md_atoms = array( 'intrinsic', 'meaning' );
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$scoped_css[] = SGS_Media_Element::style( $attributes, 'drawing', 'sgs/measured-diagram', $uid, $sgs_md_atoms );
-}
-
-// ── Markup ──────────────────────────────────────────────────────────────────
+// ── Drawing markup: the shared renderer prints it whole (the frame's stylesheet rule shows all of it). ──────────────
 $sgs_md_img = '';
-if ( '' !== $sgs_md_image_url ) {
-	$sgs_md_img_classes = array( 'sgs-measured-diagram__drawing' );
-	if ( class_exists( 'SGS_Media_Element' ) ) {
-		$sgs_md_img_classes = array_merge(
-			$sgs_md_img_classes,
-			SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $uid, 'drawing' ) )
-		);
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	// No alt typed for this instance: use the media library's own description of the file, so a drawing bound per product
+	// still carries its text alternative.
+	$sgs_md_attrs = $attributes;
+	$sgs_md_id    = absint( $attributes['drawingSource']['desktop']['id'] ?? 0 );
+	if ( empty( $attributes['drawingDecorative'] ) && '' === trim( (string) ( $attributes['drawingAlt'] ?? '' ) ) && $sgs_md_id > 0 ) {
+		$sgs_md_attrs['drawingAlt'] = (string) get_post_meta( $sgs_md_id, '_wp_attachment_image_alt', true );
 	}
-	$sgs_md_has_size = ! empty( $attributes['drawingImageWidth'] ) && ! empty( $attributes['drawingImageHeight'] );
-	$sgs_md_img      = sprintf(
-		'<img class="%1$s" src="%2$s" alt="%3$s"%4$s loading="lazy" decoding="async" />',
-		esc_attr( implode( ' ', $sgs_md_img_classes ) ),
-		esc_url( $sgs_md_image_url ),
-		esc_attr( $sgs_md_alt ),
-		$sgs_md_has_size
-			? ' width="' . esc_attr( (string) (int) round( $sgs_md_w ) ) . '" height="' . esc_attr( (string) (int) round( $sgs_md_h ) ) . '"'
-			: ''
+	$sgs_md_out = SGS_Media_Element::render(
+		array(
+			'prefix'  => 'drawing',
+			'kinds'   => array( 'image', 'svg' ),
+			'context' => 'content',
+		),
+		$sgs_md_attrs,
+		array(
+			'uid'         => $uid . '-drawing',
+			'block'       => 'sgs/measured-diagram',
+			'extra_class' => 'sgs-measured-diagram__drawing',
+			'in_editor'   => defined( 'REST_REQUEST' ) && REST_REQUEST,
+		)
 	);
+	if ( '' !== $sgs_md_out['css'] ) {
+		$scoped_css[] = $sgs_md_out['css'];
+	}
+	$sgs_md_img = (string) $sgs_md_out['html'];
 }
 
 $sgs_md_defs_svg = '';
@@ -237,7 +228,7 @@ if ( $scoped_css ) {
 printf(
 	'<figure %1$s><div class="sgs-measured-diagram__frame">%2$s%3$s</div>%4$s</figure>',
 	$sgs_md_wrapper, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes.
-	$sgs_md_img, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr()/esc_url() parts above.
+	$sgs_md_img, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by SGS_Media_Element::render() with per-attribute escaping.
 	$sgs_md_defs_svg, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- gradient defs built from esc_attr()'d stop fragments by sgs_svg_stroke_gradient().
 	$sgs_md_labels // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is the children's own escaped render output.
 );

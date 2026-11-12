@@ -63,17 +63,22 @@ final class ProductCardImagePriorityTest extends TestCase {
 		$harness = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
 		$attrs_f = tempnam( sys_get_temp_dir(), 'sgsat' );
 		$prod_f  = tempnam( sys_get_temp_dir(), 'sgspr' );
+		$meta_f  = tempnam( sys_get_temp_dir(), 'sgsmt' );
 		file_put_contents( $attrs_f, json_encode( array( 'sourceMode' => 'wc-product', 'productId' => 52 ), JSON_THROW_ON_ERROR ) );
 		file_put_contents( $prod_f, json_encode( $product, JSON_THROW_ON_ERROR ) );
+		// The product photo is attachment 7, 800 x 800: large enough to be the page's lead image.
+		file_put_contents( $meta_f, json_encode( array( '7' => array( 'width' => 800, 'height' => 800 ) ), JSON_THROW_ON_ERROR ) );
 		try {
 			$cmd = escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( $harness )
 				. ' --slug sgs/product-card --attrs-file ' . escapeshellarg( $attrs_f )
 				. ' --product-file ' . escapeshellarg( $prod_f )
+				. ' --attachment-meta-file ' . escapeshellarg( $meta_f )
 				. ( $first_section ? ' --first-section' : '' ) . ' 2>&1';
 			$out = (string) shell_exec( $cmd );
 		} finally {
 			@unlink( $attrs_f );
 			@unlink( $prod_f );
+			@unlink( $meta_f );
 		}
 		$decoded = json_decode( $out, true );
 		$this->assertIsArray( $decoded, 'harness did not return JSON: ' . $out );
@@ -104,7 +109,6 @@ final class ProductCardImagePriorityTest extends TestCase {
 		$img = self::main_img( $this->card_html( self::PRODUCT ) );
 		$this->assertNotSame( '', $img, 'the bound card prints its main image' );
 		$this->assertStringContainsString( 'loading="lazy"', $img );
-		$this->assertStringContainsString( 'fetchpriority="auto"', $img );
 		$this->assertStringNotContainsString( 'fetchpriority="high"', $img );
 	}
 
@@ -117,49 +121,29 @@ final class ProductCardImagePriorityTest extends TestCase {
 	public function test_no_card_branch_hardcodes_a_high_priority_image(): void {
 		$src = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/product-card/render.php' );
 		$this->assertSame( 0, preg_match( '/fetchpriority="high"/', $src ), 'the variable and simple card branches both decide the priority per render' );
-		$this->assertSame( 2, substr_count( $src, 'sgs_content_image_claims_priority()' ), 'both bound branches ask the shared page-wide claim' );
+		$this->assertSame( 3, substr_count( $src, 'sgs_pcm_main_image(' ), 'the read-only, variable and simple card branches print the photo through the media renderer, which asks SGS_Media_Priority' );
 	}
 
-	public function test_claim_needs_the_first_section_and_takes_the_slot_once(): void {
-		require_once dirname( __DIR__, 2 ) . '/includes/helpers-media.php';
-		$GLOBALS['sgs_test_in_loop'] = true;
-		Sgs_Motion_Renderer::arm_first_section( '<!-- wp:sgs/section /-->' );
-		$claims = array();
-		sgs_test_render_motion_block(
-			array( 'blockName' => 'sgs/card-grid', 'attrs' => array() ),
-			'<div class="wp-block-sgs-card-grid"></div>',
-			null,
-			static function () use ( &$claims ): void {
-				for ( $i = 0; $i < 3; $i++ ) {
-					sgs_test_render_motion_block(
-						array( 'blockName' => 'sgs/product-card', 'attrs' => array() ),
-						'<div class="wp-block-sgs-product-card"></div>',
-						null,
-						static function () use ( &$claims ): void {
-							$claims[] = sgs_content_image_claims_priority();
-						}
-					);
-				}
-			}
-		);
-		$this->assertSame( array( true, false, false ), $claims, 'only the first card of a first-section grid claims the slot' );
+	public function test_only_the_first_image_above_the_fold_takes_the_page_priority_slot(): void {
+		require_once dirname( __DIR__, 2 ) . '/includes/media/class-sgs-media-priority.php';
+		SGS_Media_Priority::reset();
+		$above = array( 'rest' => false, 'armed' => true, 'fold' => true );
+		$first = SGS_Media_Priority::resolve( array( 'role' => 'card', 'width' => 800, 'height' => 800 ), $above );
+		$next  = SGS_Media_Priority::resolve( array( 'role' => 'card', 'width' => 800, 'height' => 800 ), $above );
+		$this->assertSame( array( 'eager', 'high' ), array( $first['loading'], $first['fetchpriority'] ), 'the first card claims the slot' );
+		$this->assertSame( array( 'eager', 'auto' ), array( $next['loading'], $next['fetchpriority'] ), 'the next card loads eagerly but takes no priority' );
 
-		$later = array();
-		sgs_test_render_motion_block(
-			array( 'blockName' => 'sgs/product-card', 'attrs' => array() ),
-			'<div class="wp-block-sgs-product-card"></div>',
-			null,
-			static function () use ( &$later ): void {
-				$later[] = sgs_content_image_claims_priority();
-			}
-		);
-		$this->assertSame( array( false ), $later, 'a card below the first section claims nothing' );
-	}
+		$below = SGS_Media_Priority::resolve( array( 'role' => 'card', 'width' => 800, 'height' => 800 ), array( 'rest' => false, 'armed' => true, 'fold' => false ) );
+		$this->assertSame( array( 'lazy', 'auto' ), array( $below['loading'], $below['fetchpriority'] ), 'a card below the fold claims nothing' );
 
-	public function test_claim_outside_the_first_section_leaves_the_page_slot_untouched(): void {
-		require_once dirname( __DIR__, 2 ) . '/includes/helpers-media.php';
-		$this->assertFalse( sgs_content_image_claims_priority(), 'no first section (the editor block-renderer request)' );
-		$this->assertSame( 1, sgs_next_background_image_index(), 'the refused claim did not consume the page-wide slot' );
+		$editor = SGS_Media_Priority::resolve( array( 'role' => 'card', 'width' => 800, 'height' => 800 ), array( 'rest' => true, 'armed' => true, 'fold' => true ) );
+		$this->assertSame( 'lazy', $editor['loading'], 'the editor block-renderer request claims nothing' );
+
+		SGS_Media_Priority::reset();
+		$hidden = SGS_Media_Priority::resolve( array( 'role' => 'card', 'hidden' => true, 'width' => 800, 'height' => 800 ), $above );
+		$lead   = SGS_Media_Priority::resolve( array( 'role' => 'card', 'width' => 800, 'height' => 800 ), $above );
+		$this->assertSame( 'lazy', $hidden['loading'], 'a hidden surface claims nothing' );
+		$this->assertSame( 'high', $lead['fetchpriority'], 'a hidden image left the slot free' );
 	}
 
 	public function test_grid_cards_never_take_the_first_section_slot(): void {

@@ -12,9 +12,6 @@
             "flex-direction:column",
             "justify-content:center"
         ],
-        " || .sgs-hero-UID .sgs-hero__split-media": [
-            "height:100%"
-        ],
         "@media (max-width:767px) || .sgs-hero-UID": [
             "min-height:360px"
         ]
@@ -31,9 +28,6 @@
             "display:flex",
             "flex-direction:column",
             "justify-content:center"
-        ],
-        " || .sgs-hero-UID .sgs-hero__split-media": [
-            "height:100%"
         ],
         " || .sgs-hero-UID.wp-block-sgs-hero": [
             "border-color:var(--wp--preset--color--primary,currentColor)",
@@ -57,9 +51,6 @@
             "flex-direction:column",
             "justify-content:center"
         ],
-        " || .sgs-hero-UID .sgs-hero__split-media": [
-            "height:100%"
-        ],
         " || .sgs-hero-UID.wp-block-sgs-hero": [
             "border-color:#ff0000",
             "border-style:dashed",
@@ -82,9 +73,6 @@
             "flex-direction:column",
             "justify-content:center"
         ],
-        " || .sgs-hero-UID .sgs-hero__split-media": [
-            "height:100%"
-        ],
         " || .sgs-hero-UID.wp-block-sgs-hero": [
             "border-style:none",
             "border-width:0"
@@ -105,9 +93,6 @@
             "display:flex",
             "flex-direction:column",
             "justify-content:center"
-        ],
-        " || .sgs-hero-UID .sgs-hero__split-media": [
-            "height:100%"
         ],
         " || .sgs-hero-UID.wp-block-sgs-hero": [
             "border-style:solid",
@@ -130,9 +115,6 @@
             "flex-direction:column",
             "justify-content:center"
         ],
-        " || .sgs-hero-UID .sgs-hero__split-media": [
-            "height:100%"
-        ],
         " || .sgs-hero-UID.wp-block-sgs-hero": [
             "border-color:var(--wp--preset--color--primary,currentColor)"
         ],
@@ -152,9 +134,6 @@
             "display:flex",
             "flex-direction:column",
             "justify-content:center"
-        ],
-        " || .sgs-hero-UID .sgs-hero__split-media": [
-            "height:100%"
         ],
         " || .sgs-hero-UID.wp-block-sgs-hero": [
             "background-clip:padding-box",
@@ -193,9 +172,6 @@
             "flex-direction:column",
             "justify-content:center"
         ],
-        " || .sgs-hero-UID .sgs-hero__split-media": [
-            "height:100%"
-        ],
         " || .sgs-hero-UID.wp-block-sgs-hero": [
             "border-color:var(--wp--preset--color--primary,currentColor)",
             "border-style:solid",
@@ -223,9 +199,6 @@
             "display:flex",
             "flex-direction:column",
             "justify-content:center"
-        ],
-        " || .sgs-hero-UID .sgs-hero__split-media": [
-            "height:100%"
         ],
         " || .sgs-hero-UID.wp-block-sgs-hero": [
             "background-clip:padding-box",
@@ -276,9 +249,6 @@
             "flex-direction:column",
             "justify-content:center"
         ],
-        " || .sgs-hero-UID .sgs-hero__split-media": [
-            "height:100%"
-        ],
         " || .sgs-hero-UID.wp-block-sgs-hero": [
             "border-radius:8px"
         ],
@@ -298,9 +268,6 @@
             "display:flex",
             "flex-direction:column",
             "justify-content:center"
-        ],
-        " || .sgs-hero-UID .sgs-hero__split-media": [
-            "height:100%"
         ],
         " || .sgs-hero-UID.wp-block-sgs-hero": [
             "border-bottom-left-radius:4px",

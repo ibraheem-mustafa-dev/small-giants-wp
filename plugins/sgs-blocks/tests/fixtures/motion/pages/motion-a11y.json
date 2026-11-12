@@ -104,16 +104,26 @@
 					"className": "m310-reveal",
 					"mediaItems": [
 						{
-							"id": 3459,
-							"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
 							"alt": "A stack of cookies",
-							"caption": "First revealed caption"
+							"caption": "First revealed caption",
+							"source": {
+								"desktop": {
+									"kind": "image",
+									"id": 3459,
+									"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+								}
+							}
 						},
 						{
-							"id": 3459,
-							"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
 							"alt": "Another stack of cookies",
-							"caption": "Second revealed caption"
+							"caption": "Second revealed caption",
+							"source": {
+								"desktop": {
+									"kind": "image",
+									"id": 3459,
+									"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+								}
+							}
 						}
 					]
 				}

@@ -1,7 +1,7 @@
 /**
  * MUST FLAG — detection 2, every attribute tier-suffixed.
  *
- * Mirrors image-controls.js:237-281: three hand-written RangeControls plus a
+ * Mirrors a removed extension: three hand-written RangeControls plus a
  * separate unit SelectControl, no <ResponsiveControl> anywhere in the file. No
  * attribute carries the bare base name, so a matcher keyed on "a base plus its
  * siblings" would miss this shape entirely.

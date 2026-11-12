@@ -25,6 +25,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/media/hidden-render.php';
+require_once dirname( __DIR__, 3 ) . '/includes/media/class-sgs-media-priority.php';
+
 if ( ! function_exists( 'sgs_card_grid_glyph_html' ) ) {
 	/**
 	 * Sanitised SVG markup for a per-item glyph icon.
@@ -143,10 +146,15 @@ if ( ! function_exists( 'sgs_card_grid_glyph_image_html' ) ) {
 		}
 		$alt = isset( $glyph_image['alt'] ) ? (string) $glyph_image['alt'] : '';
 
-		$load = sgs_image_loading_attrs( false );
+		$load = SGS_Media_Priority::resolve(
+			array(
+				'role'   => 'layer',
+				'hidden' => sgs_in_hidden_render_context(),
+			)
+		);
 
 		return '<span class="sgs-card-grid__glyph sgs-card-grid__glyph--image" aria-hidden="true">'
-			. '<img src="' . $url . '" alt="' . esc_attr( $alt ) . '"' . sgs_image_size_attrs( $url ) . ' loading="' . esc_attr( $load['loading'] ) . '" decoding="' . esc_attr( $load['decoding'] ) . '">'
+			. '<img src="' . $url . '" alt="' . esc_attr( $alt ) . '"' . sgs_image_size_attrs( $url ) . ' loading="' . esc_attr( $load['loading'] ) . '" decoding="async">'
 			. '</span>';
 	}
 }

@@ -1,6 +1,6 @@
 /**
  * Lottie effect layer (Spec 38A FR-38A-52): `@sgs/fx-lottie` reads the trigger, loop, speed and pause control from the
- * layer's data attributes (and the legacy `sgs_render_lottie()` span's), plays and pauses the player, and puts a loop
+ * layer's data attributes, plays and pauses the player, and puts a loop
  * under the shared loop control. The player adapter is mocked; `@sgs/loop-control` (a webpack external) is mapped
  * virtually onto the real source, so the off-screen pause, the focus pause and the pause button are the real ones.
  */
@@ -483,26 +483,5 @@ describe( 'which elements are driven', () => {
 		boot();
 		await settle();
 		expect( global.fetch ).not.toHaveBeenCalled();
-	} );
-
-	test( 'a sgs_render_lottie() span is read from its own attributes and its server button is wired to the loop control', async () => {
-		const { el, root } = mount(
-			'class="sgs-lottie" data-trigger="load" data-loop="1" data-speed="1.5"',
-			{
-				extra: '<button type="button" class="sgs-lottie__pause" aria-pressed="false"></button>',
-			}
-		);
-		boot();
-		await settle();
-		expect( mockInits[ 0 ] ).toEqual(
-			expect.objectContaining( { loop: true, speed: 1.5 } )
-		);
-		expect( el.classList.contains( 'sgs-lottie-layer' ) ).toBe( false );
-		const button = root.querySelector( '.sgs-lottie__pause' );
-		button.click();
-		expect( lastPlayer().pause ).toHaveBeenCalled();
-		expect( button.getAttribute( 'aria-pressed' ) ).toBe( 'true' );
-		button.click();
-		expect( button.getAttribute( 'aria-pressed' ) ).toBe( 'false' );
 	} );
 } );

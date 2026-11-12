@@ -39,11 +39,7 @@ const BASE_TABLE = {
 	SvgContent: [ null, null, 'none', 'content', 'MediaSlotField', 'SVG', 'media' ],
 	Thumbnail: [ null, null, 'none', 'content', 'MediaSlotField', 'Cover image', 'media' ],
 	ThumbnailId: [ null, null, 'none', 'content', 'MediaSlotField', 'Cover image', 'media' ],
-	LottieId: [ null, null, 'none', 'content', 'MediaSlotField', 'Animation file', 'media' ],
 	// Media-type atom.
-	MediaType: [ null, null, 'none', 'behaviour', 'MediaKindField', 'Kind', 'media' ],
-	VideoSource: [ null, null, 'none', 'behaviour', 'MediaKindField', 'Video source', 'media' ],
-	VideoMimeType: [ null, null, 'none', 'technical', 'MediaKindField', 'Video type', 'media' ],
 	// Video-behaviour atom.
 	VideoAutoplay: [ null, null, 'none', 'behaviour', 'ToggleControl', 'Autoplay', 'video' ],
 	VideoLoop: [ null, null, 'none', 'behaviour', 'ToggleControl', 'Loop', 'video' ],
@@ -55,15 +51,10 @@ const BASE_TABLE = {
 	VideoCaptionsUrl: [ null, null, 'none', 'content', 'MediaSlotField', 'Captions file', 'video' ],
 	VideoCaptionsLabel: [ null, null, 'none', 'content', 'TextControl', 'Captions label', 'video' ],
 	VideoCaptionsSrcLang: [ null, null, 'none', 'content', 'TextControl', 'Captions language', 'video' ],
-	LottieTrigger: [ null, null, 'none', 'behaviour', 'SelectControl', 'Play when', 'video' ],
-	LottieSpeed: [ null, null, 'none', 'behaviour', 'RangeControl', 'Speed', 'video' ],
 	// Meaning atom.
 	ImageAlt: [ null, null, 'none', 'image-alt', 'AltField', 'Alt text', 'media' ],
 	VideoAlt: [ null, null, 'none', 'a11y-text', 'AltField', 'Video description', 'media' ],
 	ImageDecorative: [ null, null, 'none', 'behaviour', 'ToggleControl', 'Decorative', 'media' ],
-	// Intrinsic atom: written from the chosen file, never edited.
-	ImageWidth: [ null, null, 'none', 'technical', null, 'Width', 'media' ],
-	ImageHeight: [ null, null, 'none', 'technical', null, 'Height', 'media' ],
 	// SVG-presentation atom.
 	SvgAnimation: [ null, null, 'none', 'behaviour', 'SelectControl', 'Animation', 'svg' ],
 	SvgAnimationSpeed: [ null, null, 'none', 'behaviour', 'SelectControl', 'Animation speed', 'svg' ],
@@ -109,7 +100,7 @@ const BASE_TABLE = {
 	// Media-padding atom.
 	Padding: [ 'padding', 'surface', 'sides', 'layout', 'SidesField', 'Padding', 'border-and-shape' ],
 	// Caption atom.
-	Caption: [ null, null, 'none', 'content', 'TextControl', 'Caption', 'caption-and-link' ],
+	Caption: [ null, null, 'none', 'content', 'RichTextField', 'Caption', 'caption-and-link' ],
 	CaptionTag: [ null, null, 'none', 'tag-identity', 'SelectControl', 'Caption tag', 'caption-and-link' ],
 	// Link atom.
 	LinkUrl: [ null, null, 'none', 'link-href', 'LinkField', 'Link', 'caption-and-link' ],

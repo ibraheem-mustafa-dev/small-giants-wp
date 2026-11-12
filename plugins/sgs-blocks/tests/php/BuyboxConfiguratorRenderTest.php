@@ -150,12 +150,16 @@ final class BuyboxConfiguratorRenderTest extends TestCase {
 			array(
 				'previewBackgroundColour' => '#FFFAF0',
 				'previewBorderColour'     => '#3A2A22',
-				'previewBorderWidth'      => '2px',
-				'previewRadius'           => '28px',
+				'previewBorderWidth'      => array( 'top' => '2px', 'right' => '2px', 'bottom' => '2px', 'left' => '2px' ),
+				'previewRadius'           => array( 'desktop' => array( 'topLeft' => '28px', 'topRight' => '28px', 'bottomRight' => '28px', 'bottomLeft' => '28px' ) ),
 				'previewPadding'          => array( 'desktop' => array( 'top' => '28px', 'right' => '20px' ), 'mobile' => array( 'top' => '12px' ) ),
 			)
 		);
-		$this->assertMatchesRegularExpression( '/\.sgs-buybox__pick-preview\{background:#FFFAF0;border-color:#3A2A22;border-width:2px;border-radius:28px;\}/', $html );
+		$this->assertStringContainsString( '.sgs-buybox__pick-preview{background:#FFFAF0;}', $html );
+		// The `preview` slot's border and corners print on the preview box under its own scope class, whose rules come from the media renderer's shape emitter.
+		$this->assertMatchesRegularExpression( '/\.sgs-bb-[0-9a-f]+-preview\{[^}]*border-top-left-radius:28px;[^}]*\}/', $html );
+		$this->assertMatchesRegularExpression( '/\.sgs-bb-[0-9a-f]+-preview\{[^}]*border-color:#3A2A22;[^}]*border-top-width:2px;/', $html );
+		$this->assertMatchesRegularExpression( '/class="sgs-buybox-pick__preview-box sgs-buybox__pick-preview sgs-bb-[0-9a-f]+-preview/', $html );
 		$this->assertStringContainsString( '.sgs-buybox__pick-preview{padding-top:28px;padding-right:20px;}', $html );
 		$this->assertStringContainsString( '@media(max-width:767px){', $html );
 		$this->assertStringContainsString( 'padding-top:12px', $html );

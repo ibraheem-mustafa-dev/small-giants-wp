@@ -1,10 +1,10 @@
 export * from './tokens';
 export * from './responsive';
 export * from './icons';
-export * from './objectPosition';
 export * from './cssLength';
 export * from './presetSettings';
 export * from './background-preview';
+export { backgroundMediaPreview, backgroundMediaAt, backgroundOverlayAt } from './background-media-preview';
 export * from './surface-preview';
 export * from './svg-gradient-preview';
 export * from './spacing-preview';

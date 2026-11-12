@@ -52,8 +52,8 @@ defined( 'ABSPATH' ) || exit;
 // other block's render.php has had a chance to load it. Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
-$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
-$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
@@ -62,6 +62,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-effect.php';
 require_once __DIR__ . '/product-brands-source.php';
 require_once __DIR__ . '/brand-display-render.php';
+require_once __DIR__ . '/logo-media.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-logo-media.php';
 
 // ---------------------------------------------------------------------------
 // 1. Security sanitiser (contract §D) — CSS-length sanitiser for box/side
@@ -72,7 +74,7 @@ require_once __DIR__ . '/brand-display-render.php';
 // 2. Extract attributes with defaults.
 // ---------------------------------------------------------------------------
 
-$logos               = $attributes['logos'] ?? array();
+$logos = $attributes['logos'] ?? array();
 // Source: 'manual' (default, unchanged) or 'product-brands' — replaces the
 // hand-typed repeater with a live WooCommerce `product_brand` taxonomy
 // query. Empty array (WooCommerce off / taxonomy missing / no terms) simply
@@ -81,38 +83,36 @@ $brand_source = isset( $attributes['source'] ) ? sanitize_key( $attributes['sour
 if ( 'product-brands' === $brand_source ) {
 	$logos = sgs_brand_strip_get_product_brand_logos( $attributes );
 }
-$brand_display       = sgs_brand_strip_resolve_display( $attributes );
+$brand_display = sgs_brand_strip_resolve_display( $attributes );
 // A marquee effect layer on the root makes the strip one marquee row; without it the strip wraps.
 $is_marquee           = sgs_motion_root_has_effect( $attributes, 'marquee' );
-$image_effect        = $attributes['imageEffect'] ?? 'none';
-$max_height          = $attributes['maxHeight'] ?? 180;
-$columns_tiers       = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
-$columns_desktop     = isset( $columns_tiers['desktop'] ) ? max( 1, absint( $columns_tiers['desktop'] ) ) : 8;
-$columns_tablet      = isset( $columns_tiers['tablet'] ) ? max( 1, absint( $columns_tiers['tablet'] ) ) : 4;
-$columns_mobile      = isset( $columns_tiers['mobile'] ) ? max( 1, absint( $columns_tiers['mobile'] ) ) : 2;
-$show_names          = ! empty( $attributes['showNames'] );
+$image_effect         = $attributes['imageEffect'] ?? 'none';
+$max_height           = $attributes['maxHeight'] ?? 180;
+$columns_tiers        = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
+$columns_desktop      = isset( $columns_tiers['desktop'] ) ? max( 1, absint( $columns_tiers['desktop'] ) ) : 8;
+$columns_tablet       = isset( $columns_tiers['tablet'] ) ? max( 1, absint( $columns_tiers['tablet'] ) ) : 4;
+$columns_mobile       = isset( $columns_tiers['mobile'] ) ? max( 1, absint( $columns_tiers['mobile'] ) ) : 2;
+$show_names           = ! empty( $attributes['showNames'] );
 $name_colour          = $attributes['nameColour'] ?? '';
 $name_colour_gradient = $attributes['nameColourGradient'] ?? '';
 // logoGap and tilePadding are a spacing preset slug ("50") or a custom length ("12px"),
 // validated by sgs_css_length_value(); empty or unsafe falls back to the default.
-$logo_gap            = sgs_css_length_value( $attributes['logoGap'] ?? '' );
-$logo_gap            = '' !== $logo_gap ? $logo_gap : '10px';
-$tile_padding        = sgs_css_length_value( $attributes['tilePadding'] ?? '' );
-$tile_padding        = '' !== $tile_padding ? $tile_padding : '0px';
-$tile_radius         = isset( $attributes['tileRadius'] ) ? absint( $attributes['tileRadius'] ) : 16;
-$tile_shape_raw      = $attributes['tileShape'] ?? 'square';
-$tile_shape          = in_array( $tile_shape_raw, array( 'square', 'circle', 'none' ), true ) ? $tile_shape_raw : 'square';
-// logoFit (contain, cover, fill, scale-down or none; default contain) is no longer read here — it is
-// routed through the shared media-element atom layer (SGS_Media_Element::
-// style() below), bridged via STORED_AS so the pre-existing control keeps
-// its stored attribute name. See includes/media/atoms/object-fit.php.
-$tile_bg_colour      = $attributes['tileBackgroundColour'] ?? '';
-$tile_border_width   = isset( $attributes['tileBorderWidth'] ) ? absint( $attributes['tileBorderWidth'] ) : 0;
-$tile_border_colour  = $attributes['tileBorderColour'] ?? '';
+$logo_gap     = sgs_css_length_value( $attributes['logoGap'] ?? '' );
+$logo_gap     = '' !== $logo_gap ? $logo_gap : '10px';
+$tile_padding = sgs_css_length_value( $attributes['tilePadding'] ?? '' );
+$tile_padding = '' !== $tile_padding ? $tile_padding : '0px';
+$tile_radius  = isset( $attributes['tileRadius'] ) ? absint( $attributes['tileRadius'] ) : 16;
+// The tile's shape (circle, none or square) is the `logo` slot's Shape setting, per device; desktop's is the root class.
+$tile_shapes = sgs_brand_strip_tile_shapes( $attributes );
+$tile_shape  = $tile_shapes['desktop'] ?? 'square';
+// Fit (`logoFit`, an item may set its own) is the slot's, printed by the media renderer with each logo.
+$tile_bg_colour     = $attributes['tileBackgroundColour'] ?? '';
+$tile_border_width  = isset( $attributes['tileBorderWidth'] ) ? absint( $attributes['tileBorderWidth'] ) : 0;
+$tile_border_colour = $attributes['tileBorderColour'] ?? '';
 // D636 border-colour gradient siblings — non-empty wins over the flat colour
 // above at render time (helpers-tokens.php sgs_border_gradient_css()).
-$tile_border_gradient       = sgs_css_gradient_value( $attributes['tileBorderColourGradient'] ?? '' );
-$hover_border_gradient      = sgs_css_gradient_value( $attributes['itemBorderColourHoverGradient'] ?? '' );
+$tile_border_gradient  = sgs_css_gradient_value( $attributes['tileBorderColourGradient'] ?? '' );
+$hover_border_gradient = sgs_css_gradient_value( $attributes['itemBorderColourHoverGradient'] ?? '' );
 // Raw CSS box-shadow VALUE (or theme shadow-preset slug) from the shared
 // ShadowControl builder. A legacy string such as "small"/"medium" (neither a
 // raw shadow nor a real theme.json shadow preset slug — those are
@@ -125,7 +125,7 @@ $hover_border_gradient      = sgs_css_gradient_value( $attributes['itemBorderCol
 // tileShadowColourHover directly from $attributes; tileShadowHover added
 // 2026-09-07 so hover can lift/grow/soften, not just recolour (Bean's
 // full-symmetry ruling).
-$tile_shadow_decls = sgs_shadow_decls(
+$tile_shadow_decls   = sgs_shadow_decls(
 	$attributes,
 	array(
 		'base'         => 'tileShadow',
@@ -135,8 +135,8 @@ $tile_shadow_decls = sgs_shadow_decls(
 	),
 	$block->name ?? ''
 );
-$hover_bg_colour           = $attributes['itemBackgroundColourHover'] ?? '';
-$hover_border_colour       = $attributes['itemBorderColourHover'] ?? '';
+$hover_bg_colour     = $attributes['itemBackgroundColourHover'] ?? '';
+$hover_border_colour = $attributes['itemBorderColourHover'] ?? '';
 // Root-element colour + gradient + hover -- paints the block's OWN
 // root `<div>` (see $root_sel below), distinct from tileBackgroundColour (the
 // 'tile' element) and the item*Hover attrs above (the 'item' element, the
@@ -151,7 +151,7 @@ $root_text_colour_gradient = $attributes['textColourGradient'] ?? '';
 $root_text_hover_colour    = $attributes['textColourHover'] ?? '';
 $root_text_hover_gradient  = $attributes['textColourHoverGradient'] ?? '';
 // Sanitise values.
-$allowed_img_effects = array( 'none', 'grayscale', 'sepia' );
+$allowed_img_effects = array( 'none', 'sepia' );
 $safe_image_effect   = in_array( $image_effect, $allowed_img_effects, true ) ? $image_effect : 'none';
 // tileShadow sanitisation happens at emission time via sgs_shadow_value()
 // (helpers-tokens.php) — it either passes a raw CSS shadow through (normalising
@@ -187,10 +187,10 @@ if ( ! empty( $sgs_tor_margin_desktop ) ) {
 	}
 }
 
-$padding_tablet_obj       = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
-$padding_mobile_obj       = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
-$margin_tablet_obj        = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
-$margin_mobile_obj        = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 // ---------------------------------------------------------------------------
 // 4. Build wrapper classes. `has-background`/`has-{slug}-background-color`
@@ -200,7 +200,7 @@ $margin_mobile_obj        = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) 
 
 $has_background = ( '' !== $native_bg || '' !== $preset_bg_slug );
 
-$classes = array( 'sgs-brand-strip' );
+$classes   = array( 'sgs-brand-strip' );
 $classes[] = 'sgs-brand-strip--tile-' . esc_attr( $tile_shape );
 if ( 'text' === $brand_display ) {
 	// Text-only strip sizes by its text, not the logo tile (style.css).
@@ -307,19 +307,8 @@ if ( ! empty( $css_vars ) ) {
 	$scoped_css[] = $root_sel . '{' . implode( ';', $css_vars ) . '}';
 }
 
-// --- Media-element atom layer — object-fit for the logo <img>, routed
-// through the shared atom (supports.sgs.mediaElements in block.json) rather
-// than the block's own --sgs-logo-fit custom property. The pre-existing
-// `logoFit` control (contain, cover, fill, scale-down or none; default contain) stays the only UI —
-// STORED_AS in helpers-media-element.php bridges the atom onto it. The
-// marker classes the shared `.sgs-media-el` stylesheet rule reads are added
-// to each logo <img> below, in the logos-HTML build loop. ---
-if ( class_exists( 'SGS_Media_Element' ) ) {
-	$sgs_bs_media_css = SGS_Media_Element::style( $attributes, '', 'sgs/brand-strip', $uid, array( 'object-fit' ) );
-	if ( '' !== $sgs_bs_media_css ) {
-		$scoped_css[] = $sgs_bs_media_css;
-	}
-}
+// The tile shape on the tablet and mobile devices where it differs from desktop.
+$scoped_css[] = sgs_brand_strip_tile_shape_css( $tile_shapes, $root_sel );
 
 // --- Base spacing (padding/margin) + native border (width/style/colour/
 // radius) + native background colour — all skip-serialised WP supports,
@@ -620,53 +609,19 @@ $wrapper_attributes = get_block_wrapper_attributes(
 
 /*
  * Build logo items HTML (single set — JS handles cloning at runtime).
- * Each logo entry is migrated to the unified media-slot shape:
- *   { media: { url, type:'image', id, alt, mime, width, height }, alt, linkUrl }
- * Legacy entries ({ image: { url, ... }, url: linkUrl }) are read inline as a
- * safety net for posts that have not yet round-tripped through the editor.
+ * Each logo entry is `{ source, alt, decorative, fit, focal, name, linkUrl, ... }`; its picture prints through the shared
+ * media renderer (logo-media.php).
  */
-$logos_html = '';
+$logos_html  = '';
+$sgs_bs_slot = sgs_media_item_slot_for( $block, 'logo' );
 if ( ! empty( $logos ) ) {
-	$logo_index = 0;
+	$logo_index       = 0;
+	$sgs_bs_media_idx = 0;
 	foreach ( $logos as $bs_index => $logo ) {
-		// Spec 35 Part 4 — per-item object-fit override, keyed by the item's
-		// OWN stable `_key` (src/utils/generateItemKey.js), never by array
-		// index/`:nth-child` (both break the moment an operator reorders/
-		// adds/removes a logo). Object-fit only, no focal-point — logos are
-		// not photographs (Bean-locked convention; this block's own
-		// pre-existing `logoFit` attribute is already object-fit-only). Falls
-		// back to the block-wide `logoFit` default (emitted separately above
-		// via the SGS_Media_Element atom) whenever an item has no override.
+		// Each item's own settings (source, alt, fit, focal point) sit on the item, keyed by its stable `_key`
+		// (src/utils/generateItemKey.js), never by array index or `:nth-child`.
 		$bs_item_key = ! empty( $logo['_key'] ) ? (string) $logo['_key'] : 'idx-' . absint( $bs_index );
-		if ( ! empty( $logo['objectFit'] ) ) {
-			$bs_item_css = sgs_media_position_css(
-				array(
-					'objectPosition' => null,
-					'objectFit'      => $logo['objectFit'],
-				),
-				'',
-				$root_sel . ' [data-logo-key="' . esc_attr( $bs_item_key ) . '"] img'
-			);
-			if ( '' !== $bs_item_css ) {
-				$scoped_css[] = $bs_item_css;
-			}
-		}
-
-		$media = isset( $logo['media'] ) && is_array( $logo['media'] ) ? $logo['media'] : null;
-
-		// Backward-compat: lift legacy { image: {...} } shape to media.
-		if ( null === $media && isset( $logo['image'] ) && is_array( $logo['image'] ) ) {
-			$legacy = $logo['image'];
-			$media  = array(
-				'url'    => $legacy['url'] ?? '',
-				'type'   => 'image',
-				'id'     => isset( $legacy['id'] ) ? absint( $legacy['id'] ) : 0,
-				'alt'    => $logo['alt'] ?? ( $legacy['alt'] ?? '' ),
-				'mime'   => '',
-				'width'  => isset( $legacy['width'] ) ? absint( $legacy['width'] ) : 0,
-				'height' => isset( $legacy['height'] ) ? absint( $legacy['height'] ) : 0,
-			);
-		}
+		$media       = sgs_brand_strip_item_file( (array) $logo );
 
 		$logo_name = isset( $logo['name'] ) ? sanitize_text_field( (string) $logo['name'] ) : '';
 
@@ -695,44 +650,22 @@ if ( ! empty( $logos ) ) {
 		if ( $bs_text_mode ) {
 			$logo_html = '<span class="sgs-brand-strip__brand-text">' . esc_html( $logo_name ) . '</span>';
 		} else {
-			if ( $logo_decorative ) {
-				// Explicit editorial choice (WCAG 2.1 AA 1.1.1) — hide this logo
-				// from assistive tech entirely, regardless of caption or operator
-				// alt text.
-				$media['alt'] = '';
-			} elseif ( $has_caption ) {
-				// Caption is on-screen and carries the accessible name — the
-				// image becomes decorative so screen readers announce the name
-				// once, not twice.
-				$media['alt'] = '';
-			} elseif ( ! empty( $logo['alt'] ) ) {
-				// Operator alt text overrides media alt when set.
-				$media['alt'] = $logo['alt'];
-			}
-
-			$logo_html = sgs_render_media( $media, 'sgs/brand-strip' );
+			// A decorative logo (an editorial choice, WCAG 2.1 AA 1.1.1) or one named by an on-screen caption is hidden from
+			// assistive technology, so the name is announced once.
+			$logo_out  = sgs_brand_strip_render_logo( (array) $logo, $sgs_bs_media_idx, $attributes, $sgs_bs_slot, $uid, $logo_decorative || $has_caption, array( 'desktop' => $columns_desktop, 'tablet' => $columns_tablet, 'mobile' => $columns_mobile ), (int) $max_height );
+			$logo_html = $logo_out['html'];
 			if ( '' === $logo_html ) {
-				continue;
-			}
-			// Marker classes for the shared media-element atom layer (see the
-			// object-fit emission above) — every logo shares the SAME scope
-			// class (unprefixed, single element per block), so the atom's
-			// --sgs-media-object-fit value applies to each tile identically.
-			if ( class_exists( 'SGS_Media_Element' ) ) {
-				$sgs_bs_scope_class  = SGS_Media_Element::scope_class( $uid, '' );
-				$sgs_bs_marker_class = implode( ' ', SGS_Media_Element::element_classes( $sgs_bs_scope_class ) );
-				$logo_html           = preg_replace(
-					'/(<img\b[^>]*\bclass="[^"]*)"/',
-					'$1 sgs-brand-strip__logo ' . $sgs_bs_marker_class . '"',
-					$logo_html,
-					1
-				);
-			}
-			if ( $logo_decorative ) {
-				// Belt-and-braces alongside the empty alt above — aria-hidden
-				// stops assistive tech announcing the image at all, not just
-				// skipping its (already-empty) accessible name.
-				$logo_html = preg_replace( '/<img\b/', '<img aria-hidden="true"', $logo_html, 1 );
+				// The renderer refused the file (for example a URL with no attachment and no size, FR-49-16): in
+				// logo-else-text the brand name stands in, as it does for an item with no file at all.
+				if ( 'logo-else-text' !== $brand_display || '' === $logo_name ) {
+					continue;
+				}
+				$bs_text_mode = true;
+				$has_caption  = false;
+				$logo_html    = '<span class="sgs-brand-strip__brand-text">' . esc_html( $logo_name ) . '</span>';
+			} else {
+				$scoped_css[] = $logo_out['css'];
+				++$sgs_bs_media_idx;
 			}
 		}
 
@@ -811,6 +744,7 @@ if ( '' !== trim( wp_strip_all_tags( $bs_title_value ) ) ) {
 // marquee runtime clones it as needed for the loop.
 // ---------------------------------------------------------------------------
 
+$scoped_css = array_filter( $scoped_css, 'strlen' );
 if ( $scoped_css ) :
 	?>
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
@@ -820,6 +754,6 @@ endif;
 printf(
 	'<div %1$s>%3$s<div class="sgs-brand-strip__track"><div class="sgs-brand-strip__set" data-sgs-marquee-set>%2$s</div></div></div>',
 	$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	$logos_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from sgs_render_media(), which escapes its own output.
+	$logos_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from the media renderer, which escapes its own output.
 	$bs_title_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_kses_post() on the title text.
 );

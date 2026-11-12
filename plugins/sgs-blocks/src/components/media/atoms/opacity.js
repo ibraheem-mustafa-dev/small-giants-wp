@@ -9,7 +9,7 @@
  *
  * `css()` mirrors `includes/media/atoms/opacity.php`'s
  * `sgs_media_atom_opacity_css()` byte-for-byte — enforced by
- * `scripts/tests/test-media-atom-parity.mjs`.
+ * `scripts/tests/test-media-emitter-parity.mjs`.
  *
  * LOGIC HALF ONLY. Split from the JSX control per the purity contract
  * (`scripts/check-media-atom-purity.js`): this module must be importable by
@@ -79,45 +79,6 @@ export function validate( value ) {
 		return 1;
 	}
 	return Math.max( 0, Math.min( 1, n ) );
-}
-
-/**
- * Custom-property declaration for this atom. Mirrors
- * `includes/media/atoms/opacity.php`'s `sgs_media_atom_opacity_css()`
- * exactly. "Nothing for an empty attribute set" (registry.js's own contract)
- * — the fully-opaque default (1) is the stylesheet's own `var( …, 1 )`
- * fallback, so a client who never touched the control gets no declaration at
- * all, matching every other atom's convention.
- *
- * The gate accepts a numeric STRING as well as a `number` — matching the PHP
- * twin's `is_numeric()` (the atom-family convention: `box-shape.php`/
- * `overlay.php`/`svg-presentation.php` all gate on `is_numeric()`
- * too). A numeric string is a genuine value on the REST/import path (a stored
- * attribute round-tripped through JSON as `"0.5"` rather than `0.5`), and
- * rejecting it here while PHP accepts it was a JS/PHP parity gap — the same
- * stored value rendered a declaration on the frontend but not in the editor
- * canvas.
- *
- * @param {Object} props
- * @param {Object} props.attributes
- * @param {string} [props.prefix]
- * @param {string} [props.blockSlug]
- * @return {string[]} `--custom-property:value;` declarations, never bare rules.
- */
-export function css( { attributes, prefix = '', blockSlug = '' } ) {
-	const decls = [];
-	const keys = attrKeys( prefix, blockSlug );
-	const raw = attributes[ keys.opacity ];
-	const isNumeric =
-		( 'number' === typeof raw && Number.isFinite( raw ) ) ||
-		( 'string' === typeof raw && '' !== raw.trim() && Number.isFinite( Number( raw ) ) );
-	if ( isNumeric ) {
-		const clamped = validate( raw );
-		if ( 1 !== clamped ) {
-			decls.push( `--sgs-media-opacity:${ clamped }` );
-		}
-	}
-	return decls;
 }
 
 /**

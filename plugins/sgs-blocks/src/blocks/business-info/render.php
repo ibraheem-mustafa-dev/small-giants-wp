@@ -468,11 +468,11 @@ switch ( $display_type ) {
 		}
 		$map_url = ( '' !== $address_raw || '' !== $map_name ) ? sgs_business_info_map_url_with_zoom( sgs_business_info_map_url( $map_source, $address_raw, $map_name ), sgs_business_info_map_zoom( $attributes ) ) : '';
 		if ( '' !== $map_url ) {
-			// NO-INLINE: `border:0` lives in the .sgs-business-map iframe rule in
-			// style.css (frontend-only concern, not user-configurable) — the
-			// iframe carries no `style` attribute.
+			// NO-INLINE: `border:0`, the full width and the default 400px height (the per-device `mapHeight` rule
+			// overrides it) live in the .sgs-business-map iframe rules in style.css (Spec 49 FR-49-17) — the
+			// iframe carries no `style`, `width` or `height` attribute.
 			$html = sprintf(
-				'<div class="sgs-business-info sgs-business-map"><iframe src="%s" width="100%%" height="400" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="%s"></iframe></div>',
+				'<div class="sgs-business-info sgs-business-map"><iframe src="%s" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="%s"></iframe></div>',
 				esc_url( $map_url ),
 				esc_attr__( 'Business location map', 'sgs-blocks' )
 			);

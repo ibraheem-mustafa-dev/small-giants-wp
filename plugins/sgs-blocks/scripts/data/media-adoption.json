@@ -32,7 +32,17 @@
 								"svg"
 							],
 							"context": "element",
-							"from": ""
+							"from": "",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"sizing",
+								"opacity",
+								"shape",
+								"shadow"
+							]
 						}
 					},
 					"replace": []
@@ -45,7 +55,15 @@
 								"video"
 							],
 							"context": "item",
-							"from": "sgs"
+							"from": "sgs",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"sizing",
+								"shape"
+							]
 						}
 					},
 					"replace": []
@@ -215,7 +233,15 @@
 								"image"
 							],
 							"context": "item",
-							"from": "sgs"
+							"from": "sgs",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"sizing",
+								"shape"
+							]
 						}
 					},
 					"replace": []
@@ -227,7 +253,14 @@
 								"image"
 							],
 							"context": "item",
-							"from": ""
+							"from": "",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"sizing",
+								"shape"
+							]
 						}
 					},
 					"replace": []
@@ -238,22 +271,40 @@
 							"kinds": [
 								"image"
 							],
-							"context": "item",
-							"from": "main"
+							"context": "content",
+							"from": "main",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"sizing",
+								"shape",
+								"shadow",
+								"media-padding"
+							]
 						},
 						"thumb": {
 							"kinds": [
 								"image"
 							],
 							"context": "item",
-							"from": "thumb"
+							"from": "thumb",
+							"atoms": [
+								"object-fit",
+								"shape"
+							]
 						},
 						"logo": {
 							"kinds": [
 								"image"
 							],
-							"context": "item",
-							"add": true
+							"context": "content",
+							"add": true,
+							"atoms": [
+								"source",
+								"sizing"
+							]
 						}
 					},
 					"replace": [
@@ -267,21 +318,40 @@
 								"image"
 							],
 							"context": "item",
-							"from": "main"
+							"from": "main",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"sizing",
+								"shape",
+								"shadow",
+								"media-padding"
+							]
 						},
 						"thumb": {
 							"kinds": [
 								"image"
 							],
 							"context": "item",
-							"from": "thumb"
+							"from": "thumb",
+							"atoms": [
+								"object-fit",
+								"shape"
+							]
 						},
 						"preview": {
 							"kinds": [
 								"image"
 							],
-							"context": "item",
-							"add": true
+							"context": "content",
+							"add": true,
+							"atoms": [
+								"source",
+								"object-fit",
+								"shape"
+							]
 						}
 					},
 					"replace": [
@@ -318,7 +388,21 @@
 								"svg"
 							],
 							"context": "content",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning"
+							]
+						},
+						"logoDark": {
+							"kinds": [
+								"image"
+							],
+							"context": "content",
+							"add": true,
+							"atoms": [
+								"source"
+							]
 						}
 					},
 					"replace": []
@@ -331,7 +415,11 @@
 								"svg"
 							],
 							"context": "content",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning"
+							]
 						}
 					},
 					"replace": []
@@ -344,12 +432,14 @@
 								"svg"
 							],
 							"context": "content",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning"
+							]
 						}
 					},
-					"replace": [
-						"headerLogoHeight"
-					]
+					"replace": []
 				}
 			}
 		},
@@ -364,7 +454,15 @@
 								"image"
 							],
 							"context": "content",
-							"from": "sgs"
+							"from": "sgs",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"shape",
+								"sizing"
+							]
 						}
 					},
 					"replace": [
@@ -373,26 +471,44 @@
 				},
 				"sgs/testimonial": {
 					"slots": {
-						"photo": {
+						"avatar": {
 							"kinds": [
 								"image"
 							],
 							"context": "content",
-							"from": "avatar"
+							"from": "avatar",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"shape"
+							]
 						},
 						"logo": {
 							"kinds": [
 								"image"
 							],
 							"context": "content",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit"
+							]
 						},
 						"work": {
 							"kinds": [
 								"image"
 							],
 							"context": "content",
-							"from": "work"
+							"from": "work",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point"
+							]
 						}
 					},
 					"replace": []
@@ -406,7 +522,14 @@
 								"svg"
 							],
 							"context": "content",
-							"from": "before"
+							"from": "before",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"video-behaviour"
+							]
 						},
 						"after": {
 							"kinds": [
@@ -415,7 +538,14 @@
 								"svg"
 							],
 							"context": "content",
-							"from": "after"
+							"from": "after",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"video-behaviour"
+							]
 						}
 					},
 					"replace": []
@@ -428,7 +558,15 @@
 								"video"
 							],
 							"context": "content",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"sizing",
+								"shape"
+							]
 						}
 					},
 					"replace": []
@@ -440,7 +578,15 @@
 								"image"
 							],
 							"context": "item",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"focal-point",
+								"sizing",
+								"shape"
+							]
 						}
 					},
 					"replace": []
@@ -452,7 +598,14 @@
 								"image"
 							],
 							"context": "item",
-							"add": true
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"sizing",
+								"shape"
+							]
 						}
 					},
 					"replace": []
@@ -464,7 +617,14 @@
 								"image"
 							],
 							"context": "item",
-							"from": "swatch"
+							"from": "swatch",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"sizing",
+								"shape"
+							]
 						}
 					},
 					"replace": [
@@ -478,7 +638,12 @@
 								"image"
 							],
 							"context": "content",
-							"from": ""
+							"from": "",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit"
+							]
 						}
 					},
 					"replace": []
@@ -507,10 +672,22 @@
 								"image"
 							],
 							"context": "item",
-							"from": "badgeImage"
+							"from": "badgeImage",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"sizing",
+								"shape",
+								"filter"
+							]
 						}
 					},
-					"replace": []
+					"replace": [
+						"badgeImageBorderRadius",
+						"badgeImageSize",
+						"badgeImageObjectFit"
+					]
 				}
 			}
 		}

@@ -32,7 +32,7 @@ PAINT_ROLES = frozenset({
 CONTENT_ROLES = frozenset({
     "text-content", "content", "glyph", "image-object", "svg", "link-href", "identity", "image-alt", "a11y-text",
     "rating", "numeric-content", "link-content", "icon", "icon-wp-icon", "icon-emoji", "icon-lucide",
-    "icon-dashicon", "icon-slug", "url-href", "presence-boolean", "tag-identity", "scalar-media",
+    "icon-dashicon", "icon-slug", "url-href", "presence-boolean", "tag-identity",
     "technical", "enum-class-probe",
 })
 # Show/hide toggles. `enum-mode` is left out on measurement: a mode's gated declarations
@@ -102,6 +102,10 @@ class PaintClassifier:
             return "not", "data-source-enum"
         if role in PAINT_ROLES:
             return "css", "role:" + role
+        if signals.get("media_no_css"):
+            # A media-system setting with no CSS property and no emitter (Load priority) changes no appearance; a
+            # declaration near its read in the renderer is another setting's.
+            return "not", "media-setting-no-css"
         hit = self.suffix_hit(attr)
         if hit:
             # An explicit `behaviour` role is a deliberate verdict that the setting drives logic, not paint: a CSS-bearing

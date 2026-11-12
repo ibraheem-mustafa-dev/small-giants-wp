@@ -2,7 +2,9 @@
  * Decorative Image — frontend and editor styles.
  *
  * Absolute-positioned decorative images that float freely over sections.
- * Always aria-hidden and pointer-events: none since decorative.
+ * A picture-only layer is pointer-events: none and hidden from assistive technology since it is decoration; its
+ * size, opacity, corners, border and shadow come from the media atoms, the position and transform from the layer's
+ * own scoped rule (render.php).
  */
 
 .sgs-decorative-image {
@@ -22,12 +24,6 @@
 	user-select: auto;
 }
 
-.sgs-decorative-image--layer > .sgs-decorative-image__media {
-	display: block;
-	width: 100%;
-	height: auto;
-}
-
 .sgs-decorative-image--over-image > .sgs-decorative-image__content {
 	position: absolute;
 	inset: 0;
@@ -45,27 +41,6 @@
 .wp-block-sgs-container,
 .wp-block-group {
 	position: relative;
-}
-
-/* ─── Responsive Overrides (Tablet) ───
-   Device-tier breakpoint (contract §B2: max-width:1023px) — hideOnTablet is
-   the block's own named Tablet device-tier attr, not an arbitrary visual
-   breakpoint, so it uses the 768/1024 standard, not a custom value. */
-@media (max-width: 1023px) {
-	.sgs-decorative-image[data-hide-tablet="true"] {
-		display: none;
-	}
-
-	/* The tablet and mobile position, width and rotation tiers are scoped
-	   per-instance rules emitted by render.php. */
-}
-
-/* ─── Responsive Overrides (Mobile) ───
-   Device-tier breakpoint (contract §B2: max-width:767px). */
-@media (max-width: 767px) {
-	.sgs-decorative-image[data-hide-mobile="true"] {
-		display: none;
-	}
 }
 
 /* ─── Reduced Motion ─── */

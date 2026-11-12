@@ -146,56 +146,7 @@ if ( ! function_exists( 'sgs_gallery_tile_css' ) ) {
 			$css .= $item . '{box-sizing:border-box;}' . $box_css;
 		}
 
-		if ( ! empty( $attributes['tileFitContain'] ) ) {
-			$css .= $item . ' .sgs-gallery__img-wrap img,' . $item . ' .sgs-gallery__img-wrap video{object-fit:contain;object-position:center;}';
-		}
-
 		return $css;
-	}
-}
-
-if ( ! function_exists( 'sgs_gallery_media_html' ) ) {
-	/**
-	 * The item's image or video markup, shared by the linked, lightbox and plain branches.
-	 *
-	 * @param array  $img            The mediaItems entry.
-	 * @param int    $index          Position in the gallery (only the first can load eagerly).
-	 * @param string $image_size     Registered image size.
-	 * @param string $img_class      Class list for the attachment <img>.
-	 * @param bool   $decorative     Whether the image is hidden from assistive tech.
-	 * @param string $fallback_html  Pre-rendered markup for video items and images without an attachment.
-	 * @return string Markup from WordPress core and sgs_render_media(), already escaped.
-	 */
-	function sgs_gallery_media_html( array $img, int $index, string $image_size, string $img_class, bool $decorative, string $fallback_html ): string {
-		$img_id   = absint( $img['id'] ?? 0 );
-		$img_type = isset( $img['type'] ) ? sanitize_key( $img['type'] ) : 'image';
-		if ( 'image' !== $img_type || ! $img_id ) {
-			return $fallback_html;
-		}
-		// The gallery's first image loads eagerly when the gallery renders in the page's first section. It never takes
-		// the page's one high-priority slot (helpers-media.php::sgs_next_background_image_index): inner blocks render
-		// before their parent, so a gallery inside a hero or a background-image container would otherwise claim the
-		// slot ahead of that parent's own lead image. Every image carries an explicit fetchpriority="auto", which also
-		// stops core's first-images heuristic from prioritising a gallery inside a hidden header menu panel.
-		$eager = 0 === $index
-			&& class_exists( '\SGS\Blocks\Motion\Sgs_Motion_Renderer' )
-			&& \SGS\Blocks\Motion\Sgs_Motion_Renderer::in_first_section();
-		return (string) wp_get_attachment_image(
-			$img_id,
-			$image_size,
-			false,
-			array_merge(
-				array(
-					'class'         => $img_class,
-					'loading'       => $eager ? 'eager' : 'lazy',
-					'fetchpriority' => 'auto',
-				),
-				$decorative ? array(
-					'alt'         => '',
-					'aria-hidden' => 'true',
-				) : array()
-			)
-		);
 	}
 }
 
@@ -205,7 +156,7 @@ if ( ! function_exists( 'sgs_gallery_linked_item_html' ) ) {
 	 *
 	 * @param array  $link       The item's link from sgs_gallery_item_link() (url, new_tab, label).
 	 * @param string $item_key   The item's stable key.
-	 * @param string $media_html Escaped image markup.
+	 * @param string $media_html Media markup from the shared renderer.
 	 * @param string $img_alt    Escaped alt text, the link's name when it has no label.
 	 * @param string $caption    Escaped caption text, or ''.
 	 * @return string Markup; every dynamic part is escaped before it arrives or here.

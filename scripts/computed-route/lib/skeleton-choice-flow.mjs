@@ -316,7 +316,7 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 		Object.assign( A, { showHeader: true, closeStyle: own ? 'text' : 'icon' }, own ? { closeLabel: own } : {} );
 		const head = bar( pieces.close );
 		cover( head, 'the flow header (sgs/choice-flow showHeader, closeLabel)' );
-		[ head, ...t.desc( head ) ].some( ( k ) => 'img' === rec( k ).realTag ) && out.handovers.push( { owner: 'site-info', kind: 'presence', detail: 'the flow header shows a logo: choose it in the flow\'s header logo setting (headerLogo)' } );
+		[ head, ...t.desc( head ) ].some( ( k ) => 'img' === rec( k ).realTag ) && out.handovers.push( { owner: 'site-info', kind: 'presence', detail: 'the flow header shows a logo: choose it in the flow\'s header logo setting (headerLogoSource)' } );
 	}
 	if ( pieces.skip ) {
 		const holder = t.parent( pieces.skip );

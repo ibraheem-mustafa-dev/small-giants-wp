@@ -174,7 +174,27 @@ function loadAttrRoleMap() {
 // fix entirely. Track (b) separately and surface it as a regeneration prompt.
 const staleKeys = new Set();
 
+// MEDIA-SLOT SETTINGS (Spec 49 §8.3, §9). An adopted media slot's settings (`{prefix}{Base}`) are placed by the
+// shared media system: the panels write them, the shared renderer prints them on the slot's own nodes. They are not
+// members of the block's style clusters, so an element whose name prefixes them reports them as orphans by accident.
+// The list comes from the same facts the wiring gate credits them by (wiring-fingerprint/media_system_facts.mjs).
+let mediaSlotFacts = null;
+function mediaSlotSettings() {
+	if ( null === mediaSlotFacts ) {
+		try {
+			const out = execFileSync( 'node', [ path.join( __dirname, 'wiring-fingerprint', 'media_system_facts.mjs' ), path.join( __dirname, '..' ) ], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: [ 'ignore', 'pipe', 'ignore' ] } );
+			mediaSlotFacts = JSON.parse( out ).blocks || {};
+		} catch ( err ) {
+			throw new Error( `check-element-manifest-conformance: media_system_facts.mjs failed (${ err.message })` );
+		}
+	}
+	return mediaSlotFacts;
+}
+
 function classifyOrphan( roleMap, blockSlug, attrName ) {
+	if ( Object.prototype.hasOwnProperty.call( mediaSlotSettings()[ blockSlug ] || {}, attrName ) ) {
+		return 'by-design';
+	}
 	const key = `${ blockSlug }::${ attrName }`;
 	if ( ! Object.prototype.hasOwnProperty.call( roleMap, key ) ) {
 		// Not in the snapshot at all — the attribute post-dates the map.

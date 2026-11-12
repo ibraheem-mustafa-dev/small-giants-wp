@@ -159,7 +159,7 @@ CREATE TABLE fx_effects (
             reduced_motion          TEXT NOT NULL,
             editor_story            TEXT NOT NULL,
             created_at              TEXT DEFAULT (datetime('now'))
-        , scope TEXT NOT NULL DEFAULT 'block', requires TEXT NOT NULL DEFAULT 'none', pins INTEGER NOT NULL DEFAULT 0, triggers TEXT NOT NULL DEFAULT 'scroll', creates_panel INTEGER NOT NULL DEFAULT 1, in_picker INTEGER NOT NULL DEFAULT 0, "owned_properties" TEXT NOT NULL DEFAULT '{}', "panels" TEXT NOT NULL DEFAULT '[]');
+        , scope TEXT NOT NULL DEFAULT 'block', requires TEXT NOT NULL DEFAULT 'none', pins INTEGER NOT NULL DEFAULT 0, triggers TEXT NOT NULL DEFAULT 'scroll', creates_panel INTEGER NOT NULL DEFAULT 1, in_picker INTEGER NOT NULL DEFAULT 0, "owned_properties" TEXT NOT NULL DEFAULT '{}', "panels" TEXT NOT NULL DEFAULT '[]', media_kinds TEXT NOT NULL DEFAULT '');
 
 -- table: gotchas
 CREATE TABLE gotchas (

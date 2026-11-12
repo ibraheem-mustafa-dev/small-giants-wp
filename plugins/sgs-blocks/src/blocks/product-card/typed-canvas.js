@@ -11,6 +11,8 @@
  * @package SGS\Blocks
  */
 import { __, _n, sprintf } from '@wordpress/i18n';
+import SlotPicture from '../../components/media/SlotPicture.js';
+import { hasFile } from '../../components/media/mediaSlotWrites.js';
 import {
 	backgroundPaintPreview,
 	borderPaintPreview,
@@ -26,7 +28,8 @@ import {
 import { resolveColourToken } from '../../components';
 
 const CSS_LENGTH = /^(?:[\d.]+(?:%|px|em|rem|vw|vh|ch|ex|fr|cm|mm|in|pt|pc)|calc\([\d.\s+\-*/%a-z()]+\))$/i;
-const ASPECTS = [ '16 / 9', '21 / 9', '4 / 3', '1 / 1', '4 / 5', '3 / 4', '9 / 16' ];
+/** A Ratio value the photo slot stores: `width / height`, as the Ratio chips and a custom ratio write it. */
+const RATIO = /^\d+(\.\d+)? \/ \d+(\.\d+)?$/;
 
 // Stacked price group (render.php): the RRP under the price.
 const PRICE_GROUP_PREVIEW = { stacked: { flexDirection: 'column', alignItems: 'flex-start', gap: 0 } };
@@ -54,7 +57,10 @@ function textColour( flat, gradient ) {
  * @return {Object} Style objects and class names per canvas element.
  */
 export function typedCardPreview( attrs, tier ) {
-	const aspectOk = ASPECTS.includes( attrs.imageAspectRatio );
+	// The photo slot's Ratio at this device, e.g. '1 / 1'; empty or 'natural' means the card's fixed-height box.
+	const imageRatio = String( resolveTier( attrs.imageRatio, tier ).value || '' );
+	const aspectOk = RATIO.test( imageRatio );
+	const imageHeight = String( resolveTier( attrs.imageHeight, tier ).value || '' );
 	const maxWidth = resolveTier( attrs.maxWidth, tier ).value;
 	const rowSpace = String( attrs.priceRowSpaceAbove || '' ).trim();
 	const swatchSize = Math.min( 40, Math.abs( parseInt( attrs.swatchSize, 10 ) || 0 ) );
@@ -68,16 +74,17 @@ export function typedCardPreview( attrs, tier ) {
 			aspectOk ? 'product-card--image-ratio' : '',
 		].filter( Boolean ),
 		aspectOk,
+		imageHeight: CSS_LENGTH.test( imageHeight ) ? imageHeight : '',
 		root: {
 			...borderRadiusLonghands( attrs.borderRadius, tier ),
 			...( maxWidth ? { maxWidth } : {} ),
 			'--sgs-product-card-max-width': CSS_LENGTH.test( cardMaxWidth ) ? cardMaxWidth : undefined,
-			'--sgs-product-card-image-aspect': aspectOk ? attrs.imageAspectRatio : undefined,
+			'--sgs-product-card-image-aspect': aspectOk ? imageRatio : undefined,
 			'--sgs-pc-swatch-size': swatchSize > 0 ? `${ swatchSize }px` : undefined,
 			'--sgs-pc-swatch-hover-scale': swatchGrow > 100 ? ( swatchGrow / 100 ).toFixed( 2 ) : undefined,
 		},
 		body: paddingOf( resolveTier( { ...( attrs.cardPaddingTier || {} ), desktop: attrs.cardPadding }, tier ).value ),
-		media: attrs.mediaBackgroundColour ? { background: colour( attrs.mediaBackgroundColour ) } : {},
+		media: attrs.imageBackground ? { background: colour( attrs.imageBackground ) } : {},
 		title: { ...typographyPreviewStyle( attrs, 'title', tier ), ...textColour( attrs.titleColour, attrs.titleColourGradient ) },
 		desc: { ...typographyPreviewStyle( attrs, 'desc', tier ), ...textColour( attrs.descColour, attrs.descColourGradient ) },
 		price: { ...typographyPreviewStyle( attrs, 'price', tier ), ...textColour( attrs.priceColour, attrs.priceColourGradient ) },
@@ -147,23 +154,34 @@ export function typedCardPreview( attrs, tier ) {
 }
 
 /**
- * Brand wordmark and saving badge over the image (sgs_product_card_brand_markup,
- * _saving_badge_markup).
+ * Brand wordmark or logo and saving badge over the image (sgs_product_card_brand_markup, _saving_badge_markup).
  *
- * This canvas is typed mode only, and a brand LOGO is live product data: it is
- * resolved per render by includes/product-card-live-fill.php, so a typed card
- * has no logo to draw and always shows the typed brand name. `brandUseLogo`
- * therefore has nothing to mirror here by design - it is not a desynced
- * attribute.
+ * A typed card draws its own `logoSource` through the shared slot path, so the `logo` slot's Width, Height and Ratio
+ * show as on the page; a logo that comes from the product's brand term is live data a typed card does not have, so
+ * without a `logoSource` the typed brand name shows. `brandUseLogo` off always shows the name.
  */
-export function TypedMediaOverlays( { attributes: attrs, styles } ) {
+export function TypedMediaOverlays( { attributes: attrs, setAttributes, styles, uid = '' } ) {
 	const brand = attrs.showBrandOverlay ? String( attrs.brandName || '' ).trim() : '';
+	const logo = attrs.showBrandOverlay && false !== attrs.brandUseLogo && [ 'desktop', 'tablet', 'mobile' ].some( ( device ) => hasFile( attrs.logoSource?.[ device ] ) );
 	const saving = attrs.showSavingBadge ? String( attrs.savingLabel || '' ).trim() : '';
 	const positions = [ 'top-left', 'top-right', 'bottom-left', 'bottom-right' ];
 	const position = positions.includes( attrs.savingBadgePosition ) ? attrs.savingBadgePosition : 'bottom-left';
 	return (
 		<>
-			{ brand && <span className="sgs-product-card__brand" style={ styles.brand }>{ brand }</span> }
+			{ logo ? (
+				<span className="sgs-product-card__brand sgs-product-card__brand--logo">
+					<SlotPicture
+						attributes={ { ...attrs, logoAlt: brand || attrs.logoAlt || '' } }
+						setAttributes={ setAttributes }
+						prefix="logo"
+						uid={ `${ uid }-logo` }
+						className="sgs-product-card__brand-logo"
+						placeholder={ false }
+					/>
+				</span>
+			) : (
+				brand && <span className="sgs-product-card__brand" style={ styles.brand }>{ brand }</span>
+			) }
 			{ saving && (
 				<span
 					className={ `sgs-product-card__saving-badge sgs-product-card__saving-badge--${ position }` }

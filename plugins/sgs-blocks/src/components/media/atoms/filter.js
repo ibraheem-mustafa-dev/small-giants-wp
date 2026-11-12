@@ -36,15 +36,6 @@ export function emit( slot, attrs, uid, helper ) {
 }
 
 /**
- * The atom contract's custom-property declarations: none, this atom prints real properties through emit().
- *
- * @return {string[]} Always empty.
- */
-export function css() {
-	return [];
-}
-
-/**
  * @param {*} value Candidate treatment.
  * @return {string} `natural`, `greyscale` or `white`; `natural` for anything else.
  */

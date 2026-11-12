@@ -3,13 +3,13 @@
  * The tile fill lives in the block's colour panel (tile-preview.js::tileColourRow).
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody, ToggleControl } from '@wordpress/components';
+import { PanelBody } from '@wordpress/components';
 import { ResponsiveBoxControl, ResponsiveLengthControl } from '../../../components';
 import { patchTier } from '../../../utils';
 import GalleryBorderControl from './GalleryBorderControl';
 
 export default function GalleryTilePanel( { attributes, setAttributes } ) {
-	const { tileMinHeight, tilePadding, tileFitContain } = attributes;
+	const { tileMinHeight, tilePadding } = attributes;
 
 	return (
 		<PanelBody title={ __( 'Item tile', 'sgs-blocks' ) } initialOpen={ false }>
@@ -36,13 +36,6 @@ export default function GalleryTilePanel( { attributes, setAttributes } ) {
 				} }
 			/>
 			<GalleryBorderControl attributes={ attributes } setAttributes={ setAttributes } prefix="tile" />
-			<ToggleControl
-				label={ __( 'Fit images inside the tile', 'sgs-blocks' ) }
-				help={ __( 'Shows each whole image, centred, without cropping it (logos, badges).', 'sgs-blocks' ) }
-				checked={ !! tileFitContain }
-				onChange={ ( val ) => setAttributes( { tileFitContain: val } ) }
-				__nextHasNoMarginBottom
-			/>
 		</PanelBody>
 	);
 }

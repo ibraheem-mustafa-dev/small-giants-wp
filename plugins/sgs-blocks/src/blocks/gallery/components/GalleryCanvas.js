@@ -4,7 +4,7 @@
 import { __ } from '@wordpress/i18n';
 import MediaGalleryPicker from '../../../components/MediaGalleryPicker';
 import GalleryCanvasItem from './GalleryCanvasItem';
-import { resolveGalleryMedia } from '../resolve-gallery-media';
+import { resolveGalleryMedia } from '../item-model';
 
 export default function GalleryCanvas( {
 	attributes,
@@ -15,13 +15,13 @@ export default function GalleryCanvas( {
 	items,
 	captionStyle,
 	tileStyle,
-	tileFitContain,
 	gridStyle,
 	separatorsCanvas,
 	onSelectImages,
+	device = 'desktop',
+	itemMedia = null,
 } ) {
 	const {
-		imageSize,
 		layout,
 		carouselShowArrows,
 		carouselShowDots,
@@ -103,9 +103,8 @@ export default function GalleryCanvas( {
 								<MediaGalleryPicker
 									value={ [] }
 									onChange={ onSelectImages }
-									resolveItem={ ( media ) =>
-										resolveGalleryMedia( media, imageSize )
-									}
+									multiple="add"
+									resolveItem={ resolveGalleryMedia }
 									allowedTypes={ [ 'image', 'video' ] }
 									addLabel={ __( 'Add media', 'sgs-blocks' ) }
 									buttonVariant="primary"
@@ -120,14 +119,16 @@ export default function GalleryCanvas( {
 								className="sgs-gallery__grid"
 								style={ gridStyle }
 							>
+								{ itemMedia?.css && <style>{ itemMedia.css }</style> }
 								{ items.map( ( item, index ) => (
 									<GalleryCanvasItem
-										key={ item._key || item.id || index }
+										key={ item._key || index }
 										item={ item }
 										attributes={ attributes }
 										captionStyle={ captionStyle }
 										tileStyle={ tileStyle }
-								tileFitContain={ tileFitContain }
+										device={ device }
+										itemMedia={ itemMedia }
 									/>
 								) ) }
 							</div>
@@ -148,9 +149,8 @@ export default function GalleryCanvas( {
 						<MediaGalleryPicker
 							value={ [] }
 							onChange={ onSelectImages }
-							resolveItem={ ( media ) =>
-								resolveGalleryMedia( media, imageSize )
-							}
+									multiple="add"
+							resolveItem={ resolveGalleryMedia }
 							allowedTypes={ [ 'image', 'video' ] }
 							addLabel={ __( 'Add media', 'sgs-blocks' ) }
 							buttonVariant="primary"
@@ -165,14 +165,16 @@ export default function GalleryCanvas( {
 						className="sgs-gallery__grid"
 						style={ gridStyle }
 					>
+						{ itemMedia?.css && <style>{ itemMedia.css }</style> }
 						{ items.map( ( item, index ) => (
 							<GalleryCanvasItem
-								key={ item._key || item.id || index }
+								key={ item._key || index }
 								item={ item }
 								attributes={ attributes }
 								captionStyle={ captionStyle }
 								tileStyle={ tileStyle }
-								tileFitContain={ tileFitContain }
+								device={ device }
+								itemMedia={ itemMedia }
 								hiddenOnDevice={
 									hiddenFrom > 0 && index >= hiddenFrom
 								}

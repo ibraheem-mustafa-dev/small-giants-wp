@@ -24,8 +24,19 @@
 		"html": false,
 		"color": false,
 		"sgs": {
+			"mediaElements": [
+				{
+					"prefix": "background",
+					"context": "background",
+					"kinds": [
+						"image",
+						"video",
+						"svg"
+					]
+				}
+			],
 			"motion": true,
-			"_comment_overlayNotAdopted": "backgroundImage/Size/Position/Repeat/Attachment, backgroundOverlay*, bgVideo*/bgSvg* are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- settled 2026-09-03 (Bean-directed) after this exact question was investigated. A background panel applied to the whole block is a different feature from a client-configurable <img>/<video> element (which the media-atom system in supports.sgs.mediaElements DOES cover), so it is correctly out of scope for that system and is not a deferred migration. Detector rule 37-media-no-handroll (scripts/inspector-scan/rules/37-media-no-handroll.js) encodes this discriminator: a bare `background`/`bg`-prefixed attribute is panel-owned and never flagged; an element-prefixed attribute (e.g. splitMediaObjectFit) still is.",
+			"_comment_overlayNotAdopted": "The background is the media system's `background` slot (supports.sgs.mediaElements, Spec 49 section 7.8): the Background panel is the shared media panel, and SGS_Container_Wrapper (via SGS_Background_Media) prints the element and overlay. An SVG drawn over a photo or video is the block's own kept layer (bgSvg* attributes).",
 			"intrinsicColumns": true,
 			"separators": {
 				"separators": {
@@ -216,6 +227,7 @@
 					"_note": "Background image/video (backgroundImage*/bgVideo*), background SVG (bgSvg*), overlay gradient (overlayGradient*), parallax/Ken Burns, and shape dividers (shapeDivider*) are governed by dedicated controls outside the Text/Fill/Layout style clusters, so this element declares none."
 				},
 				"svg-bg": {
+					"availableWhen": {"slot": "background", "kinds": ["svg"]},
 					"svg": true,
 					"surface": true,
 					"prefix": "",
@@ -225,17 +237,34 @@
 					"_note": "`.sgs-container__svg-bg`, the wrapper SGS_Container_Wrapper prints around a background or foreground SVG (bgSvg*). A motion target so a `draw` effect layer reaches the SVG's paths, where the flat `fx: draw` drew; it declares no style clusters because its look is governed by the bgSvg* controls."
 				},
 				"background": {
-					"absentIn": [
-						"bg-css-layer"
-					],
-					"absentWhy": "A tiled, sized, parallax, fixed or per-device background image paints on the root's ::before layer (SGS_Container_Wrapper::render, $sgs_bg_img_is_simple false), so no element carries the image; a layer on the root reaches the section.",
 					"surface": true,
 					"prefix": "",
-					"selector": ".sgs-container__image-bg",
-					"label": "Background image",
+					"selector": ".sgs-bg-media",
+					"label": "Background",
 					"order": 7,
 					"clusters": [],
-					"_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
+					"_note": "`.sgs-bg-media`, the element SGS_Container_Wrapper prints for every background (picture, tile layer, video or SVG). A motion target so a Ken Burns or parallax layer moves the background alone, never the block's content; it declares no style clusters because its look is governed by the Background panel.",
+					"availableWhen": {
+						"slot": "background",
+						"kinds": [
+							"image"
+						]
+					}
+				},
+				"background-video": {
+					"surface": true,
+					"prefix": "",
+					"selector": ".sgs-bg-media",
+					"label": "Background video",
+					"order": 7,
+					"clusters": [],
+					"availableWhen": {
+						"slot": "background",
+						"kinds": [
+							"video"
+						]
+					},
+					"_note": "The same `.sgs-bg-media` element when a device shows a video: an effect that suits video (not Ken Burns) reaches it through this part."
 				}
 			},
 			"containerKind": "section"
@@ -313,15 +342,6 @@
 			"type": "object",
 			"default": {}
 		},
-		"backgroundImage": {
-			"type": "object"
-		},
-		"backgroundImageTablet": {
-			"type": "object"
-		},
-		"backgroundImageMobile": {
-			"type": "object"
-		},
 		"ground": {
 			"type": "string",
 			"enum": [
@@ -339,37 +359,6 @@
 			],
 			"default": "auto"
 		},
-		"backgroundSize": {
-			"type": "string",
-			"default": "cover",
-			"enum": [
-				"cover",
-				"contain",
-				"auto"
-			]
-		},
-		"backgroundPosition": {
-			"type": "string",
-			"default": "center center"
-		},
-		"backgroundRepeat": {
-			"type": "string",
-			"default": "no-repeat",
-			"enum": [
-				"no-repeat",
-				"repeat",
-				"repeat-x",
-				"repeat-y"
-			]
-		},
-		"backgroundAttachment": {
-			"type": "string",
-			"default": "scroll",
-			"enum": [
-				"scroll",
-				"fixed"
-			]
-		},
 		"backgroundOverlayColour": {
 			"type": "string"
 		},
@@ -378,10 +367,6 @@
 			"default": {
 				"desktop": 30
 			}
-		},
-		"overlayGradient": {
-			"type": "string",
-			"default": ""
 		},
 		"surfaceBlur": {
 			"type": "string",
@@ -395,37 +380,6 @@
 		"backgroundOverlayColourHover": {
 			"type": "string",
 			"default": ""
-		},
-		"overlayGradientHover": {
-			"type": "string",
-			"default": ""
-		},
-		"backgroundOverlayBlendMode": {
-			"type": "string",
-			"default": "normal",
-			"enum": [
-				"normal",
-				"multiply",
-				"screen",
-				"overlay",
-				"darken",
-				"lighten",
-				"color-dodge",
-				"color-burn",
-				"soft-light",
-				"hard-light",
-				"difference",
-				"exclusion"
-			]
-		},
-		"bgVideo": {
-			"type": "object"
-		},
-		"bgVideoTablet": {
-			"type": "object"
-		},
-		"bgVideoMobile": {
-			"type": "object"
 		},
 		"shadow": {
 			"type": "string"
@@ -941,7 +895,25 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"backgroundSource": {"type":"object","_generated":"media-atoms"},
+		"backgroundLoading": {"type":"string","_generated":"media-atoms"},
+		"backgroundAlt": {"type":"string","_generated":"media-atoms"},
+		"backgroundDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundFit": {"type":"object","_generated":"media-atoms"},
+		"backgroundRepeat": {"type":"object","_generated":"media-atoms"},
+		"backgroundTileSize": {"type":"object","_generated":"media-atoms"},
+		"backgroundFocal": {"type":"object","_generated":"media-atoms"},
+		"backgroundPinned": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundOverlayGradient": {"type":"string","_generated":"media-atoms"},
+		"backgroundOverlayGradientHover": {"type":"string","_generated":"media-atoms"},
+		"backgroundOverlayBlend": {"type":"string","_generated":"media-atoms"},
+		"backgroundOpacity": {"type":"object","_generated":"media-atoms"},
+		"backgroundSvgLayer": {"type":"string","_generated":"media-atoms"},
+		"backgroundSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
+		"backgroundSvgParts": {"type":"array","default":[],"_generated":"media-atoms"},
+		"backgroundSvgPartsTrigger": {"type":"string","_generated":"media-atoms"},
+		"backgroundPlayback": {"type":"object","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

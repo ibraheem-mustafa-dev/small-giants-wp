@@ -12,8 +12,7 @@ loop: for every block that declares `color.background: true`, check (1) does
 it also declare `gradients: true` (a gap, not a bug — WP simply won't offer
 the gradient half of the swatch popover without it), and (2) does the
 block's OWN render.php actually apply `style.color.background`/`gradient`
-into a scoped rule (a genuinely DEAD declaration — the `imageControls`
-defect class, doctrine Part 6).
+into a scoped rule (a genuinely DEAD declaration — doctrine Part 6).
 
 A block whose PHP delegates to `SGS_Container_Wrapper::render()` is exempt
 from the render.php self-application check — the wrapper applies colour on
@@ -333,9 +332,8 @@ def run_check():
         delegates to the shared wrapper nor calls the style engine with a
         'color' key anywhere in the file)
     This is the "declared capability, verified by effect" gate the
-    capability-routing doctrine's Part 6 asked for — the same defect class
-    as `imageControls` (declared on 15 blocks, reached 2), scoped here to
-    native colour/gradient support instead of a new render_block mechanism.
+    capability-routing doctrine's Part 6 asked for — the same defect class,
+    scoped here to native colour/gradient support.
     """
     findings = run_survey()
     violations = [f for f in findings if f['gradients_absent'] or f['dead_declaration']]

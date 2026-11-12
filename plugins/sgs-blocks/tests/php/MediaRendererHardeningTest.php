@@ -446,6 +446,60 @@ class MediaRendererHardeningTest extends TestCase {
 		$this->assertStringContainsString( 'width="2000" height="1000"', $out['html'] );
 	}
 
+	// R13.
+	public function test_r13_a_widening_crop_with_a_concrete_sizes_still_carries_the_marker_that_drops_auto(): void {
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/media/cover-crop.php';
+		$all = static fn( $v ): array => array( 'desktop' => $v, 'tablet' => $v, 'mobile' => $v );
+		$out = $this->render(
+			'',
+			array(
+				'source' => array( 'desktop' => array( 'kind' => 'image', 'id' => 77 ) ),
+				'ratio'  => $all( '1/1' ),
+				'width'  => $all( '300px' ),
+			)
+		);
+		// 2000x1000 in a square 300px box draws 600px wide; core would add `auto` to a lazy image and ignore this figure.
+		$this->assertStringContainsString( 'sizes="(max-width: 767px) 600px', $out['html'] );
+		$this->assertStringContainsString( 'data-sgs-cover-crop', $out['html'] );
+	}
+
+	// R14.
+	public function test_r14_a_px_height_with_no_width_caps_sizes_at_height_times_the_image_ratio(): void {
+		// Image 77 is 2000x1000: a 40px-high logo is 80px wide at most, whatever the container.
+		$out = $this->render(
+			'',
+			array(
+				'source' => array( 'desktop' => array( 'kind' => 'image', 'id' => 77 ) ),
+				'fit'    => array( 'desktop' => 'contain' ),
+				'height' => array( 'desktop' => '40px' ),
+			)
+		);
+		$this->assertStringContainsString( 'sizes="auto, (max-width: 80px) 100vw, 80px"', $out['html'] );
+		// A Max width below that figure still wins; an explicit Width ignores it.
+		$out = $this->render( '', array( 'source' => array( 'desktop' => array( 'kind' => 'image', 'id' => 77 ) ), 'fit' => array( 'desktop' => 'contain' ), 'height' => array( 'desktop' => '40px' ), 'maxWidth' => array( 'desktop' => '60px' ) ) );
+		$this->assertStringContainsString( 'sizes="auto, (max-width: 60px) 100vw, 60px"', $out['html'] );
+		$out = $this->render( '', array( 'source' => array( 'desktop' => array( 'kind' => 'image', 'id' => 77 ) ), 'fit' => array( 'desktop' => 'contain' ), 'height' => array( 'desktop' => '40px' ), 'width' => array( 'desktop' => '300px' ) ) );
+		$this->assertStringContainsString( 'sizes="auto, (max-width: 300px) 100vw, 300px"', $out['html'] );
+	}
+
+	// R15.
+	public function test_r15_an_item_cap_bounds_the_items_sizes(): void {
+		$src = array( 'itemSource' => array( 'desktop' => $this->img( 'd.jpg' ) ) );
+		// A brand strip's logo box is at most its Max height wide, whatever the column share: 150 caps the share (no layout around the slot here, so the share is of the viewport).
+		$out = $this->render( 'item', $src, array( 'item_set' => array( 'index' => 0, 'columns' => 4, 'item_cap' => 150 ) ) );
+		$this->assertStringContainsString( 'sizes="auto, min(calc(100vw / 4), 150px)"', $out['html'] );
+	}
+
+	// R16.
+	public function test_r16_an_unknown_crop_prints_no_sizes_so_the_attachment_hint_picks_a_wide_enough_file(): void {
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/media/cover-crop.php';
+		$all = static fn( $v ): array => array( 'desktop' => $v, 'tablet' => $v, 'mobile' => $v );
+		$out = $this->render( '', array( 'source' => array( 'desktop' => array( 'kind' => 'image', 'id' => 77 ) ), 'height' => $all( '100%' ) ) );
+		// 2000x1000 in a box of unknown shape: the box width alone (what `sizes` would hold) could be far below the file the crop needs.
+		$this->assertStringContainsString( 'data-sgs-cover-crop', $out['html'] );
+		$this->assertStringNotContainsString( 'sizes=', $out['html'] );
+	}
+
 	// R12.
 	public function test_r12_each_item_has_its_own_scope_and_the_block_rules_print_once(): void {
 		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/media/media-values.php';
@@ -505,6 +559,7 @@ class MediaRendererHardeningTest extends TestCase {
 			)
 		);
 		$this->assertStringContainsString( 'sizes="auto, calc(100vw / 4)"', $out['html'] );
-		$this->assertStringContainsString( 'sizes="auto, calc(100vw / 2)"', $out['html'] );
+		// The tablet file also serves the phone (the mobile device inherits it), so its sizes carry both ranges.
+		$this->assertStringContainsString( 'sizes="auto, (max-width:767.98px) 100vw, calc(100vw / 2)"', $out['html'] );
 	}
 }

@@ -1,65 +1,58 @@
 /**
  * One item of the gallery's live preview canvas: the figure, its image or video, and its caption.
  */
-import { focalPointToObjectPosition } from '../../../utils';
+import { focalToObjectPosition } from '../../../components/media/focalPosition.js';
+import { tierValueOf } from '../../../utils/responsive.js';
 import { isTileMode } from '../tile-preview';
+import { itemFile } from '../item-model';
 
 export default function GalleryCanvasItem( {
 	item,
 	attributes,
 	captionStyle,
 	tileStyle,
-	tileFitContain,
+	device = 'desktop',
 	hiddenOnDevice = false,
+	itemMedia = null,
 } ) {
-	const { aspectRatio, showCaptions } = attributes;
+	const { showCaptions } = attributes;
 	const tile = isTileMode( attributes );
-	const isVideo =
-		item.type === 'video' ||
-		( item.mime && item.mime.startsWith( 'video/' ) );
-	const itemFit = tileFitContain ? 'contain' : item.objectFit || 'cover';
+	const file = itemFile( item, device );
+	const isVideo = 'video' === file.kind;
+	const fit = tierValueOf( item.fit, device ) || tierValueOf( attributes.itemFit, device ) || 'cover';
+	const focal = tierValueOf( item.focal, device );
+	// Ratio, width, height, limits, corners, border and shape come from the shared emitters' CSS (`itemMedia`, scoped to
+	// the uid each picture carries); a tile fills its own box. Fit and focal stay inline because each item can override them.
 	const mediaStyle = {
-		// Tile mode sizes the tile itself (tileStyle.minHeight); the image then fills it.
-		...( aspectRatio && ! tile ? { aspectRatio } : {} ),
-		objectFit: itemFit,
-		objectPosition:
-			'cover' === itemFit
-				? focalPointToObjectPosition( item.focalPoint || { x: 0.5, y: 0.5 } )
-				: undefined,
-		width: '100%',
+		objectFit: fit,
+		objectPosition: 'cover' === fit ? focalToObjectPosition( focal || { x: 0.5, y: 0.5 } ) : undefined,
 		...( tile ? { height: '100%' } : {} ),
-		display: 'block',
 	};
+	const uid = itemMedia?.uid || '';
+	const withUid = ( classes ) => [ classes, itemMedia?.needsHelper ? '' : uid ].filter( Boolean ).join( ' ' );
+	const picture = isVideo && ! file.poster ? (
+		<video src={ file.url } className={ withUid( 'sgs-media-el' ) } muted loop playsInline style={ mediaStyle } />
+	) : (
+		<img
+			src={ isVideo ? file.poster : file.url }
+			alt={ item.alt || '' }
+			className={ withUid( 'sgs-media-el' ) }
+			loading="lazy"
+			style={ mediaStyle }
+		/>
+	);
 	return (
 		<figure
-			className={
-				hiddenOnDevice
-					? 'sgs-gallery__item sgs-gallery__item--hidden-on-device'
-					: 'sgs-gallery__item'
-			}
-			style={ {
-				...( aspectRatio ? { '--sgs-aspect-ratio': aspectRatio } : {} ),
-				...tileStyle,
-			} }
+			className={ hiddenOnDevice ? 'sgs-gallery__item sgs-gallery__item--hidden-on-device' : 'sgs-gallery__item' }
+			style={ { ...tileStyle } }
 		>
 			<div className="sgs-gallery__img-wrap">
-				{ isVideo ? (
-					<video
-						src={ item.url }
-						className="sgs-gallery__img"
-						muted
-						loop
-						playsInline
-						style={ mediaStyle }
-					/>
+				{ itemMedia?.needsHelper ? (
+					<span className={ `sgs-media-box ${ uid }` }>
+						<span className="sgs-media-box__mask">{ picture }</span>
+					</span>
 				) : (
-					<img
-						src={ item.url }
-						alt={ item.alt || '' }
-						className="sgs-gallery__img"
-						loading="lazy"
-						style={ mediaStyle }
-					/>
+					picture
 				) }
 			</div>
 			{ showCaptions && item.caption && (

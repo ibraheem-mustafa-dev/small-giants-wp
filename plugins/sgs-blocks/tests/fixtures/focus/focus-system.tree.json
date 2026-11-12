@@ -146,12 +146,22 @@
 			{
 				"name": "sgs/before-after",
 				"attributes": {
-					"beforeImageId": 3457,
-					"beforeImageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
-					"beforeImageAlt": "Before",
-					"afterImageId": 3457,
-					"afterImageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
-					"afterImageAlt": "After"
+					"beforeSource": {
+						"desktop": {
+							"kind": "image",
+							"id": 3457,
+							"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg"
+						}
+					},
+					"beforeAlt": "Before",
+					"afterSource": {
+						"desktop": {
+							"kind": "image",
+							"id": 3457,
+							"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg"
+						}
+					},
+					"afterAlt": "After"
 				}
 			},
 			{
@@ -667,13 +677,16 @@
 					"left": "16px"
 				}
 			},
-			"backgroundImage": {
-				"id": 3457,
-				"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg"
-			},
 			"backgroundOverlayColour": "#000000",
 			"backgroundOverlayOpacity": {
 				"desktop": 35
+			},
+			"backgroundSource": {
+				"desktop": {
+					"kind": "image",
+					"id": 3457,
+					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg"
+				}
 			}
 		},
 		"innerBlocks": [

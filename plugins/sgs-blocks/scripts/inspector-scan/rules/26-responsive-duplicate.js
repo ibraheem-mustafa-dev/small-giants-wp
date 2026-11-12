@@ -3,7 +3,7 @@
 // GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §12 (THE
 // RESPONSIVE WRAPPER FAMILY) source=file evidence=live-read
 // src/blocks/container/components/ContainerWrapperControls.js:276-307 + :351-399
-// and src/blocks/extensions/image-controls.js:224-281, both read 2026-08-10.
+// and the since-removed image-controls extension, both read 2026-08-10.
 //
 // WHY THIS RULE EXISTS — and why it is a NEW rule rather than a widening of an
 // existing one.
@@ -269,7 +269,7 @@ function collectSimultaneousBases( node, out, depth = 0 ) {
 	// version of this check included them. That version was measured and was
 	// too blunt: an attribute-DECLARATION block lists every tier in one object
 	// (`{ sgsHeightDesktop: { type: 'number' }, sgsHeightTablet: {...}, ... }`,
-	// image-controls.js:98-100), as does a destructure — and both are perfectly
+	// the removed image-controls extension), as does a destructure — and both are perfectly
 	// normal for a cascade. It suppressed BOTH true positives (minHeight and
 	// sgsHeight, this rule's own headline targets) alongside the two false ones.
 	// DECLARING tiers together is routine; EVALUATING them together is the
@@ -338,7 +338,7 @@ function corpusFiles( ctx ) {
 		}
 	}
 
-	// Root 2 — the extensions surface, e.g. src/blocks/extensions/image-controls.js
+	// Root 2 — the extensions surface, e.g. src/blocks/extensions/child-sizing.js
 	if ( ctx.extensionsDir && fs.existsSync( ctx.extensionsDir ) ) {
 		for ( const f of fs.readdirSync( ctx.extensionsDir ) ) {
 			if ( f.endsWith( '.js' ) ) files.push( path.join( ctx.extensionsDir, f ) );
