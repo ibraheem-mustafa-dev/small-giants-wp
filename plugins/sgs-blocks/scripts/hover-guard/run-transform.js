@@ -2,7 +2,7 @@
 'use strict';
 
 /**
- * CLI: run transform.js over every `build/blocks/*​/style.css` (or an
+ * CLI: run transform.js over every block's front-end stylesheets in `build/blocks/*​/` (or an
  * explicit directory passed as argv[2]) and write the result back in
  * place.
  *
@@ -23,6 +23,8 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const { transformCss } = require( './transform.js' );
 
+const FRONT_END_STYLESHEETS = [ 'style-index.css', 'style-index-rtl.css', 'style.css', 'style-rtl.css' ];
+
 function findStyleCssFiles( baseDir ) {
 	const found = [];
 	if ( ! fs.existsSync( baseDir ) ) {
@@ -31,12 +33,12 @@ function findStyleCssFiles( baseDir ) {
 	for ( const entry of fs.readdirSync( baseDir, { withFileTypes: true } ) ) {
 		const full = path.join( baseDir, entry.name );
 		if ( entry.isDirectory() ) {
-			const candidate = path.join( full, 'style.css' );
-			if ( fs.existsSync( candidate ) ) {
-				found.push( candidate );
-			}
+			// Every front-end stylesheet a block ships: block.json names `style-index.css` (webpack's output), and
+			// copy-built-styles.js also writes a `style.css` copy, each with an rtl twin. The transform is idempotent.
+			const candidates = FRONT_END_STYLESHEETS.map( ( name ) => path.join( full, name ) ).filter( ( f ) => fs.existsSync( f ) );
+			found.push( ...candidates );
 			// also recurse one extra level in case of a nested blocks/ shape
-			found.push( ...findStyleCssFiles( full ).filter( ( f ) => f !== candidate ) );
+			found.push( ...findStyleCssFiles( full ).filter( ( f ) => ! candidates.includes( f ) ) );
 		}
 	}
 	return found;
@@ -102,4 +104,8 @@ function main() {
 	process.exit( 0 );
 }
 
-main();
+if ( require.main === module ) {
+	main();
+}
+
+module.exports = { findStyleCssFiles };
