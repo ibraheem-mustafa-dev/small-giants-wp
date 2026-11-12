@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13087,
+    "row_count": 13093,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -10575,11 +10575,17 @@
     "sgs/team-member::photoDecorative": "boolean-visibility",
     "sgs/team-member::photoFit": "visual",
     "sgs/team-member::photoFocal": "visual",
+    "sgs/team-member::photoHeight": "layout",
     "sgs/team-member::photoLoading": "behaviour",
+    "sgs/team-member::photoMaxHeight": "layout",
+    "sgs/team-member::photoMaxWidth": "layout",
+    "sgs/team-member::photoMinHeight": "layout",
+    "sgs/team-member::photoMinWidth": "layout",
     "sgs/team-member::photoRadius": "layout",
     "sgs/team-member::photoRatio": "image-object",
     "sgs/team-member::photoShape": "layout",
     "sgs/team-member::photoSource": "content",
+    "sgs/team-member::photoWidth": "layout",
     "sgs/team-member::role": "text-content",
     "sgs/team-member::roleColour": "color",
     "sgs/team-member::roleColourGradient": "colour-gradient",
