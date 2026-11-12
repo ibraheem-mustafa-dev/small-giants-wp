@@ -9,42 +9,8 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__ ) . '/helpers-image-dimensions.php';
-
-if ( ! function_exists( 'sgs_media_cover_crop_hint_sizes' ) ) {
-	/**
-	 * A `sizes` value from a per-device `displayWidth` (px the image is drawn at); a device without its own value
-	 * inherits the wider device's.
-	 *
-	 * @param mixed $raw Stored `displayWidth` value ({desktop,tablet,mobile}).
-	 * @return string The sizes value, or '' when the desktop value is unset or SGS_Breakpoints is not loaded.
-	 */
-	function sgs_media_cover_crop_hint_sizes( $raw ): string {
-		if ( ! class_exists( 'SGS_Breakpoints' ) || ! function_exists( 'sgs_responsive_normalise_object' ) ) {
-			return '';
-		}
-		$tiers = sgs_responsive_normalise_object( $raw );
-		$out   = array();
-		$last  = 0;
-		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
-			$value = $tiers[ $tier ] ?? null;
-			if ( is_numeric( $value ) && (int) $value > 0 ) {
-				$last = (int) $value;
-			}
-			$out[ $tier ] = $last;
-		}
-		if ( $out['desktop'] <= 0 ) {
-			return '';
-		}
-		return sprintf(
-			'(max-width: %dpx) %dpx, (max-width: %dpx) %dpx, %dpx',
-			(int) SGS_Breakpoints::MOBILE_MAX,
-			$out['mobile'],
-			(int) SGS_Breakpoints::TABLET_MAX,
-			$out['tablet'],
-			$out['desktop']
-		);
-	}
-}
+require_once __DIR__ . '/media-values.php';
+require_once __DIR__ . '/render-sources.php';
 
 if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 	/**
@@ -54,26 +20,25 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 	 * the box width only. A cover-cropped image is drawn at box width x max( 1, image ratio / box ratio ), so a file
 	 * chosen by box width is too small when the crop is wider than the box and the photo looks soft.
 	 *
+	 * Every setting is read per device (`Fit`, `Ratio`, `Width`, `MaxWidth`, `Height`, each a {desktop,tablet,mobile}
+	 * object where a device without its own value takes the wider device's). An unset `Fit` is `cover`, which is what
+	 * assets/css/media-base.css draws. A device whose Fit is not cover never widens. The box width is the px `Width`,
+	 * else (when no `Width` is set) the px `MaxWidth`; the box shape is `Ratio` (`natural` follows the image), else px
+	 * width over px height.
+	 *
 	 * Outcomes:
-	 * - `widens` false: `auto` is right (contain or any other fit, a box that follows the image, or a crop that is
-	 *   not wider than the box).
+	 * - `widens` false: `auto` is right (no device crops wider than its box, or every box follows the image).
 	 * - `widens` true and `sizes` set: every device's drawn width is known, so `sizes` carries one concrete px value
 	 *   per device (breakpoints from SGS_Breakpoints).
-	 * - `widens` true and `sizes` empty: the drawn width cannot be known; the caller keeps the attachment's own
-	 *   hint with `auto` removed.
+	 * - `widens` true and `sizes` empty: the drawn width cannot be known (a fill box, or a width that is not px); the
+	 *   caller keeps the attachment's own hint with `auto` removed. A portrait image never widens, so it keeps `auto`.
 	 *
-	 * A `displayWidth` hint (px per device: the width the image is drawn at) is the author's measurement of the drawn
-	 * width and wins in every mode. Without it, a fill box, or a height box with no px width, has no size the server
-	 * can read, so the plan is `unknown` unless the image is no wider than the narrowest ratio the box could have
-	 * (it is portrait, so a crop never widens it).
-	 *
-	 * @param array  $attributes    Block attributes.
-	 * @param string $prefix        The media element's attribute prefix ('' for an unprefixed element).
-	 * @param string $block_slug    Block name, e.g. 'sgs/media'.
-	 * @param int    $attachment_id The image's attachment ID.
+	 * @param array $attributes    Block attributes.
+	 * @param array $slot          The media slot (`prefix`).
+	 * @param int   $attachment_id The image's attachment ID.
 	 * @return array{widens:bool,sizes:string}
 	 */
-	function sgs_media_cover_crop_plan( array $attributes, string $prefix, string $block_slug, int $attachment_id ): array {
+	function sgs_media_cover_crop_plan( array $attributes, array $slot, int $attachment_id ): array {
 		$keep_auto = array(
 			'widens' => false,
 			'sizes'  => '',
@@ -82,23 +47,15 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 			'widens' => true,
 			'sizes'  => '',
 		);
-		if ( ! function_exists( 'sgs_media_element_stored_attr' ) || ! function_exists( 'sgs_media_atom_box_shape_resolve_sizing_mode' ) ) {
-			return $keep_auto;
+		$get       = static function ( string $base ) use ( $attributes, $slot ): array {
+			return sgs_media_device_values( $attributes[ sgs_media_key( $slot, $base ) ] ?? null );
+		};
+		$fits      = $get( 'Fit' );
+		$covers    = array();
+		foreach ( sgs_media_devices() as $device ) {
+			$covers[ $device ] = null === $fits[ $device ] || 'cover' === $fits[ $device ];
 		}
-		$fit_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectFit' );
-		if ( 'cover' !== ( $attributes[ $fit_key ] ?? 'cover' ) ) {
-			return $keep_auto;
-		}
-		$hint = sgs_media_cover_crop_hint_sizes( $attributes[ sgs_media_element_stored_attr( $block_slug, $prefix, 'DisplayWidth' ) ] ?? null );
-		if ( '' !== $hint ) {
-			return array(
-				'widens' => true,
-				'sizes'  => $hint,
-			);
-		}
-		$sizing_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MediaSizing' );
-		$mode       = sgs_media_atom_box_shape_resolve_sizing_mode( $attributes[ $sizing_key ] ?? null, $attributes[ $fit_key ] ?? null, $attributes, $prefix, $block_slug );
-		if ( 'auto' === $mode ) {
+		if ( ! in_array( true, $covers, true ) ) {
 			return $keep_auto;
 		}
 		$meta   = $attachment_id > 0 ? wp_get_attachment_metadata( $attachment_id ) : array();
@@ -109,60 +66,46 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 		}
 		$image_ratio = $width / $height;
 
-		// Per-device px width and height; a device without its own value inherits the wider device's. A device whose
-		// value is set but is not px (for example `100%`) is null: its width is unknown and stops the inheritance.
-		$px      = static function ( $raw ): array {
-			$out = array();
-			foreach ( sgs_media_atom_box_shape_resolve_tier_object( $raw ) as $tier => $value ) {
-				$out[ $tier ] = preg_match( '/^\s*(\d+(?:\.\d+)?)\s*px\s*$/i', $value, $m ) ? (float) $m[1] : null;
-			}
-			return $out;
+		$px     = static function ( $value ): ?float {
+			return is_string( $value ) && preg_match( '/^\s*(\d+(?:\.\d+)?)\s*px\s*$/i', $value, $m ) ? (float) $m[1] : null;
 		};
-		$inherit = static function ( array $tiers ): array {
-			$out  = array();
-			$last = null;
-			foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
-				if ( isset( $tiers[ $tier ] ) ) {
-					$last = $tiers[ $tier ];
-				}
-				$out[ $tier ] = $last;
-			}
-			return $out;
-		};
-		$widths  = $inherit( $px( $attributes[ sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxWidth' ) ] ?? null ) );
-		$heights = 'height' === $mode ? $inherit( $px( $attributes[ sgs_media_element_stored_attr( $block_slug, $prefix, 'Height' ) ] ?? null ) ) : array();
-
-		$set_ratio = 0.0;
-		if ( 'ratio' === $mode ) {
-			$ratio_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'AspectRatio' );
-			$ratio     = sgs_media_atom_box_shape_normalise_ratio( $attributes[ $ratio_key ] ?? null );
-			if ( ! preg_match( '#^([\d.]+) / ([\d.]+)$#', $ratio, $m ) || (float) $m[2] <= 0.0 ) {
-				return $unknown;
-			}
-			$set_ratio = (float) $m[1] / (float) $m[2];
-		}
+		$widths = $get( 'Width' );
+		$maxes  = $get( 'MaxWidth' );
+		$heights = $get( 'Height' );
+		$ratios = $get( 'Ratio' );
 
 		$drawn = array();
-		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
-			$box_w = $widths[ $tier ] ?? null;
-			$box_h = $heights[ $tier ] ?? null;
-			if ( $set_ratio > 0.0 ) {
-				$box_ratio = $set_ratio;
+		foreach ( sgs_media_devices() as $device ) {
+			if ( ! $covers[ $device ] ) {
+				$drawn[ $device ] = null;
+				continue;
+			}
+			$box_w = $px( null !== $widths[ $device ] && '' !== $widths[ $device ] ? $widths[ $device ] : $maxes[ $device ] );
+			$box_h = $px( $heights[ $device ] );
+			$ratio = $ratios[ $device ];
+			if ( 'natural' === $ratio ) {
+				$drawn[ $device ] = null;
+				continue;
+			}
+			$box_ratio = 0.0;
+			if ( is_string( $ratio ) && preg_match( '#^\s*(\d+(?:\.\d+)?)\s*/\s*(\d+(?:\.\d+)?)\s*$#', $ratio, $m ) && (float) $m[2] > 0.0 ) {
+				$box_ratio = (float) $m[1] / (float) $m[2];
 			} elseif ( null !== $box_w && null !== $box_h && $box_h > 0.0 ) {
 				$box_ratio = $box_w / $box_h;
-			} else {
+			}
+			if ( $box_ratio <= 0.0 ) {
 				// The box shape is unknowable here: only a portrait image (or a square one) is certain not to widen.
 				if ( $image_ratio > 1.0 ) {
 					return $unknown;
 				}
-				$drawn[ $tier ] = null;
+				$drawn[ $device ] = null;
 				continue;
 			}
 			$factor = max( 1.0, $image_ratio / $box_ratio );
 			if ( $factor <= 1.01 ) {
-				$drawn[ $tier ] = null;
+				$drawn[ $device ] = null;
 			} elseif ( null !== $box_w ) {
-				$drawn[ $tier ] = (int) ceil( $box_w * $factor );
+				$drawn[ $device ] = (int) ceil( $box_w * $factor );
 			} else {
 				return $unknown;
 			}
@@ -175,48 +118,17 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 			// One sizes list cannot hold a concrete width for some devices and `auto` for others.
 			return $unknown;
 		}
-		$sizes = sprintf(
-			'(max-width: %dpx) %dpx, (max-width: %dpx) %dpx, %dpx',
-			(int) SGS_Breakpoints::MOBILE_MAX,
-			$drawn['mobile'],
-			(int) SGS_Breakpoints::TABLET_MAX,
-			$drawn['tablet'],
-			$drawn['desktop']
-		);
 		return array(
 			'widens' => true,
-			'sizes'  => $sizes,
+			'sizes'  => sprintf(
+				'(max-width: %dpx) %dpx, (max-width: %dpx) %dpx, %dpx',
+				(int) SGS_Breakpoints::MOBILE_MAX,
+				$drawn['mobile'],
+				(int) SGS_Breakpoints::TABLET_MAX,
+				$drawn['tablet'],
+				$drawn['desktop']
+			),
 		);
-	}
-}
-
-if ( ! function_exists( 'sgs_media_cover_crop_widens' ) ) {
-	/**
-	 * Whether a cover-cropped image needs core's `auto` taken out of its `sizes` (see sgs_media_cover_crop_plan).
-	 *
-	 * @param array  $attributes    Block attributes.
-	 * @param string $prefix        The media element's attribute prefix ('' for an unprefixed element).
-	 * @param string $block_slug    Block name, e.g. 'sgs/media'.
-	 * @param int    $attachment_id The image's attachment ID.
-	 * @return bool
-	 */
-	function sgs_media_cover_crop_widens( array $attributes, string $prefix, string $block_slug, int $attachment_id ): bool {
-		return sgs_media_cover_crop_plan( $attributes, $prefix, $block_slug, $attachment_id )['widens'];
-	}
-}
-
-if ( ! function_exists( 'sgs_media_cover_crop_sizes' ) ) {
-	/**
-	 * The concrete `sizes` value for a cover-cropped image whose drawn width is known on every device.
-	 *
-	 * @param array  $attributes    Block attributes.
-	 * @param string $prefix        The media element's attribute prefix ('' for an unprefixed element).
-	 * @param string $block_slug    Block name, e.g. 'sgs/media'.
-	 * @param int    $attachment_id The image's attachment ID.
-	 * @return string The sizes value, or '' to leave WordPress's own.
-	 */
-	function sgs_media_cover_crop_sizes( array $attributes, string $prefix, string $block_slug, int $attachment_id ): string {
-		return sgs_media_cover_crop_plan( $attributes, $prefix, $block_slug, $attachment_id )['sizes'];
 	}
 }
 

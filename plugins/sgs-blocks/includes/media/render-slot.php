@@ -185,8 +185,8 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 		$sizes[ $device ] = sgs_media_sizes_for_width( $widths[ $device ], 'lazy' === $loading, (int) $columns[ $device ], $max_widths[ $device ] );
 	}
 	$crop_id = $image_files ? (int) reset( $image_files )['id'] : 0;
-	if ( $crop_id > 0 && ! empty( $context['block'] ) && function_exists( 'sgs_media_cover_crop_plan' ) ) {
-		$plan = sgs_media_cover_crop_plan( $attrs, $prefix, (string) $context['block'], $crop_id );
+	if ( $crop_id > 0 && function_exists( 'sgs_media_cover_crop_plan' ) ) {
+		$plan = sgs_media_cover_crop_plan( $attrs, $slot, $crop_id );
 		if ( ! empty( $plan['sizes'] ) ) {
 			$sizes = array_fill_keys( sgs_media_devices(), (string) $plan['sizes'] );
 		}
