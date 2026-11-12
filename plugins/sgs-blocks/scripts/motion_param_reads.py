@@ -148,7 +148,7 @@ def reader_files(root: Path, slug: str) -> list[Path]:
     effects = root / "src" / "shared" / "effects"
     candidates = [effects / f"fx-{slug}.js", effects / f"{slug}.js",
                   effects / "gsap" / f"fx-{slug}.js", root / "assets" / "css" / f"fx-{slug}.css",
-                  root / "includes" / f"fx-{slug}.php"]
+                  root / "includes" / f"fx-{slug}.php", root / "includes" / f"{slug}-render.php"]
     # Helper modules split from the runtime (`fx-<slug>-*.js`, `<slug>-*.js`) are part of it.
     for folder in (effects, effects / "gsap"):
         for pattern in (f"fx-{slug}-*.js", f"{slug}-*.js"):
