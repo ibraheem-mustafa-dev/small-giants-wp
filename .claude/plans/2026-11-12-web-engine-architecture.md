@@ -32,7 +32,7 @@ governs: LEDGER Front E (web engine); the concept is `.claude/Proposal.md`
 | What a page is | An HTML and CSS document stored as data, with included parts, smart parts and versions |
 | Engine room | Small open-source parts we own: PostgreSQL, Drizzle, Better Auth, pg-boss, the official MCP kit, Hono |
 | Public pages | Plain static files written by our publisher, served by the nginx already on the VPS, cached by Cloudflare |
-| Editing app | A simple web app plus one small API |
+| Editing app | Next.js with React, Tailwind and shadcn/ui, kept behind a login wall, plus one small public service for forms and checkout |
 | Hosting | The existing Hostinger VPS, Docker Compose, builds in GitHub Actions |
 | Client domains | Through Cloudflare: a tunnel to the VPS, or Cloudflare's own static hosting, chosen by a test in step 2 |
 | Design intake | An importer that carries a draft's look in one-for-one, and a paste importer for any HTML, CSS or Tailwind block |
@@ -155,7 +155,7 @@ When the editor opens a document, the API composes a GrapesJS project from the s
 
 ## 5. The editor
 
-**5.1 GrapesJS core and what we add.** GrapesJS core 0.23.9 is BSD 3-clause, has 26.4k stars and ships a release every one to four weeks. `@grapesjs/react` (MIT) replaces its dated default screens with our own panels. Built in: the style panel, screen sizes, states, layers, an image manager, multiple pages, undo, storage hooks, per-element locks, and a mode that runs with no browser (`headless: true`, covered by its own test suite). Ours to build: the panels, the two modes, a tokens panel, the include and repeat node types, and a small PostCSS parser adapter (the published `grapesjs-parser-postcss` dates from 2023 and the default parser loses declarations).
+**5.1 GrapesJS core and what we add.** GrapesJS core 0.23.9 is BSD 3-clause, has 26.4k stars and ships a release every one to four weeks. `@grapesjs/react` (MIT) replaces its dated default screens with our own panels. Built in: the style panel, screen sizes, states, layers, an image manager, multiple pages, undo, storage hooks, per-element locks, and a mode that runs with no browser (`headless: true`, covered by its own test suite). Ours to build: the panels, the two modes, a tokens panel, the include and repeat node types, and a small PostCSS parser adapter (the published `grapesjs-parser-postcss` dates from 2023 and the default parser loses declarations). The editing app around it is a Next.js application built with React, Tailwind and shadcn/ui: the stack Anthropic's own interface tooling builds with, and the one Claude writes most reliably. GrapesJS loads in the browser only. The app sits behind a login wall, where its size does not matter.
 
 **5.2 Design mode: controls come from data.** GrapesJS ships about 90 hand-written property controls, and its defaults lack `grid-template-columns`, `gap`, `aspect-ratio`, `inset`, `translate`, `scroll-snap-*` and `clip-path`. The public CSS data set (`mdn-data`, CC0 licence) describes 497 standard properties with the values each accepts. The style panel's controls are generated from that data, one control per kind of value (colour, length with units and tokens, keyword list, four-sided box, shadow, gradient, and a text field as the fallback), so no property needs a control written for it. `componentFirst` is off, so edits land on the element's class and repeated elements change together. Each family of element opens a short panel of its own on top of this (5.8).
 
@@ -198,6 +198,8 @@ One `theme.config.json` per site, stored with the site, in the W3C Design Tokens
 
 **7.1 The reader (exists).** `scripts/computed-route/lib/read-logic.mjs`, with `read-logic-statics.mjs` and `read-logic-conditions.mjs`, runs a draft in a sandboxed browser page and resolves the value of every template element at each screen width and in each state, through the draft's own logic. Every rendered element carries the draft's template id (`data-dc-tpl`), shared by elements a loop repeats. None of this has WordPress code. `scripts/computed-route/lib/intake-breakpoints.mjs` finds a draft's width thresholds from its logic.
 
+**The draft format is documented, and it is current.** The instructions Anthropic ships with the Design canvas inside Claude (read through the artifacts tool on 2026-11-12, contract 0.2.47, files `format.md` and `design-system-components.md`) describe the same format as the three drafts in this repository. Each artboard is one `.dc.html` Design Component: HTML whose inline styles are what the canvas's own properties panel edits, `{{ }}` holes that look values up in `renderVals()`, a logic class in plain JavaScript with state and lifecycle methods on React 18, and shared pieces through `<dc-import>`. When a design system is installed, its real components are mounted by name with their props through `<x-import component-from-global-scope="…">`. There is no Next.js, no JSX file and no Tailwind in a draft. Anthropic's public help pages do not describe the file format.
+
 **7.2 The writer (new).** It turns the reader's output into documents.
 
 | In the draft | Becomes |
@@ -212,6 +214,7 @@ One `theme.config.json` per site, stored with the site, in the W3C Design Tokens
 | A condition on screen size | Both branches written with `u-only-*` classes and listed in the report for a decision |
 | A condition on the route or on being signed in | Page variants or look-only states, listed in the report |
 | A shared piece (`dc-import`) | An include and a part document; its props become attributes |
+| A design-system component mounted by name (`x-import`); none of the three existing drafts has one | The matching library block with its options, where the engine has that library's pack (7.4); otherwise the rendered markup with the library's styles |
 | Handlers, refs and timers | Removed from the markup; the surface is given a smart part (7.3) |
 | Scripted animation calls | A behaviour (reveal, stagger, pop) or a CSS animation |
 | The page's own `<style>` | The site style sheet |
@@ -244,6 +247,8 @@ The existing front-end modules in `plugins/sgs-blocks/src` (53 `view.js` files, 
 **7.4 The paste importer.** Any HTML, CSS or Tailwind snippet (an open-source block, or something Claude Code wrote) goes through the same filter (section 10) and becomes elements with classes. Tailwind and daisyUI classes are compiled at publish to only the rules used. React libraries (HeroUI, shadcn/ui, 21st.dev) are sources of look: their rendered markup and styles can be pasted, and their in-browser JavaScript is replaced by behaviours. Each source's licence is checked when it is copied.
 
 **Library packs.** Component libraries already carry the data that says which options an element has. daisyUI lists every component's classes by role (colour, style, size, modifier) for about 68 components. shadcn/ui and HeroUI declare variants as maps from a name to a list of classes, and HeroUI's styles also work on plain HTML. Web-component libraries (Shoelace and Web Awesome, both MIT) ship a manifest of each element's attributes, slots, CSS parts and CSS properties. A pack is that data in one file per library. When a pasted block uses a library the engine has a pack for, the element's panel offers its options as choices (a button's colour, style and size) beside the raw styles. A pack is written when the first block from its library is used.
+
+**The agency's own design system.** The tightest loop is one small set of React and Tailwind components (shadcn/ui as the base, which is also what the editing app uses) kept in the engine's repository, pushed into Claude Design with `/design-sync`, with its pack generated from the same source. A draft then mounts those components by name, and the importer maps each straight to the engine's block and options. It is built when the first design calls for shared components; the three existing drafts use none, so nothing in steps 1a to 1c depends on it.
 
 **7.5 Validation.**
 
@@ -349,7 +354,8 @@ The publisher runs the filter again on what it is about to write. GrapesJS's own
 | Background work | pg-boss (schedules, retries, dead letters) | MIT |
 | Media | Cloudflare R2; sizes made once at upload with sharp | Apache-2.0 (sharp) |
 | Agent tools | The official MCP TypeScript kit | MIT and Apache-2.0 |
-| API | Hono | MIT |
+| Editing app | Next.js 16.4 with React, Tailwind and shadcn/ui | MIT |
+| Public endpoints (forms, checkout, Stripe notifications) and the agent tools | Hono, as a small separate service | MIT |
 
 Three ideas are borrowed from Payload (MIT) without depending on it: collections defined in one config, a published-version pointer on every document, and access rules written as plain functions.
 
@@ -415,15 +421,15 @@ Three ideas are borrowed from Payload (MIT) without depending on it: collections
 
 | Origin | Serves |
 |---|---|
-| The studio hostname on the agency's domain | The editing app's static files |
-| The API hostname on the agency's domain | The API and the tool endpoint |
+| The studio hostname on the agency's domain | The editing app (Next.js), reachable only through Cloudflare Access |
+| The API hostname on the agency's domain | The small public service: forms, checkout, Stripe notifications and the tool endpoint |
 | One label under a separate preview domain per site | Unpublished previews and prospect previews, hidden from search engines |
 | Client domains | Published sites |
 | A media hostname on R2 | Media |
 
 - **Cloudflare:** DNS, firewall, rate limits on forms, checkout and sign-in, caching, client domains, and the tunnel.
-- **nginx on the VPS (already there):** serves each site's `current` release by hostname and the editing app's files; passes API calls on; keeps serving n8n and the invoice app.
-- **Docker Compose:** the API, PostgreSQL on an internal network only, and a worker. Each container has memory and processor limits; publishing and image work run at low priority with a concurrency of one or two.
+- **nginx on the VPS (already there):** serves each site's `current` release by hostname; passes the studio and API hostnames on to their services; keeps serving n8n and the invoice app.
+- **Docker Compose:** the editing app, the public service, PostgreSQL on an internal network only, and a worker. Only the public service faces the open internet, so a Next.js security advisory is patched on the normal schedule, not as an emergency. Each container has memory and processor limits; publishing and image work run at low priority with a concurrency of one or two.
 - **Off the server:** GitHub Actions builds the images and pushes them to the registry; R2 holds media and backups; an uptime monitor alerts a phone.
 
 **13.2 Client domains.** With no custom origin, Cloudflare for SaaS sends the client's hostname to the server as both the Host and the certificate name, and the server's certificate covers only the agency's own domain. So client hostnames reach the server through a Cloudflare Tunnel, which needs no certificate on the server and no open port. The client adds one DNS record; Cloudflare issues the certificate. A hostname becomes active only after ownership is proved, and its records are removed when a site is deleted. The first client domains are set up by hand. One throwaway hostname is put through this route in step 2 before any client domain is promised.
@@ -512,12 +518,12 @@ Until the step named, and not before:
 
 | Route | Verdict | Why |
 |---|---|---|
-| Typed components (Puck 0.24, MIT) with code per site and Payload behind it | Loses on principles two and three | Puck has no style panel, so every control would be ours to build; code per site cannot be imported for a SaaS customer; Payload would bring Next.js back and keeps sites apart in application code only |
+| Typed components (Puck 0.24, MIT) with code per site and Payload behind it | Loses on principles two and three | Puck has no style panel, so every control would be ours to build; code per site cannot be imported for a SaaS customer; Payload's main gift is generated admin screens, which this design needs few of, and it keeps sites apart in application code only |
 | WordPress with a CSS-native builder (Bricks 2.4, Etch 1.0) | The fastest to try; keeps what Bean is leaving | Full style panels and HTML paste exist, and Bricks 2.4 has experimental agent abilities; they are paid plugins; WordPress hosting, updates and page weight stay; it cannot become the agency's platform |
 | An AGPL editor (Webstudio, Silex, Plasmic) | Usable unmodified by the agency; blocks a closed product | A modified version must offer its source to its users; Webstudio does not recommend self-hosting its builder in production |
 | A hosted builder with agent access (Webflow's MCP server) | No build at all; lock-in | Conflicts with owning the platform |
 | No engine: a hand-coded static site per client with a light text editor | The fallback if step 1a fails | Fastest to a first site and as fast for visitors; no import, no style panel, no SaaS |
-| Next.js, as the concept proposed (edit in a Next.js app on the VPS, export static pages) | The shape is kept; the framework is dropped | Measured on 2026-11-12: a new, empty Next.js 16.4.6 project exported as static files loads 152 KB of JavaScript (Brotli; 176 KB gzip) in 7 files before any content, three times the page budget. The reason given for it, that it matches what Claude produces, does not hold for the drafts (HTML templates with inline styles, run by their own small runtime) and is not needed: Claude writes HTML and CSS through the tools as readily as React, and React output is imported by rendering it. 55 advisories in twelve months |
+| Next.js, as the concept proposed (edit in a Next.js app on the VPS, export static pages) | Kept for the editing app; not used for published pages | The editing app is where the match with Claude's own stack (React, Tailwind, shadcn/ui) pays off, and its size does not matter behind a login. For published pages, measured on 2026-11-12: a new, empty Next.js 16.4.6 project exported as static files loads 152 KB of JavaScript (Brotli; 176 KB gzip) in 7 files before any content, three times the page budget. The reason given for it, that it matches what Claude produces, does not hold for the drafts (HTML templates with inline styles, run by their own small runtime) and is not needed: Claude writes HTML and CSS through the tools as readily as React, and React output is imported by rendering it. 55 advisories in twelve months |
 | Coolify on the VPS | Rejected | A dashboard for a human operator; takes ports 80 and 443 from the existing nginx; 16 critical advisories in 2026 |
 | Craft.js | Rejected | No commits since February 2025 |
 
@@ -536,7 +542,7 @@ Until the step named, and not before:
 | A new shop mishandles real money | 2, 4 | L | H | Mitigated | Stripe hosts the checkout; the cases in 12.3; no live payment before a paid test order and the go-live checklist |
 | One server | Any | L | H | Accepted | Backups with stated targets, a rehearsed rebuild, cached pages at Cloudflare |
 | The client-domain route does not work as designed | 2 | M | M | Owned | Both routes in 13.2 tested with a throwaway hostname in step 2; domains set by hand until then. Build session |
-| Claude Design's export format changes after 14 December 2026 | Any | M | M | Mitigated | The importer refuses an unknown runtime; the paste importer is the second door; projects exported beforehand |
+| Claude Design's export format changes after 14 December 2026 | Any | L | M | Mitigated | The canvas inside Claude, which replaces the standalone site, uses the same `.dc.html` format (7.1); the importer refuses an unknown runtime; the paste importer is the second door; projects exported beforehand |
 | New client work lands before the engine is ready | 2, 3 | H | M | Mitigated | The new-client rule in section 14 |
 | The site-builder SaaS market is crowded | 6 | H | M | Accepted | The SaaS stays optional; the agency service is the business |
 
@@ -587,7 +593,7 @@ Paste this into a fresh session opened in the new repository folder.
 >
 > **Where things stand.** Nothing is built. This repository (`C:\Users\Bean\Projects\small-giants-engine`) is new and private. The draft to import is `C:\Users\Bean\Projects\small-giants-wp\sites\mamas-munches-redesign\handoff\` (read its `README.md` and `READING-DC-FILES.md`): only `Home.dc.html` and `Shop.dc.html`, with `SiteHeader.dc.html`, `SiteFooter.dc.html` and `ProductCard.dc.html`. The reader that resolves every draft value at each width and state already exists and is copied in, not rewritten: `C:\Users\Bean\Projects\small-giants-wp\scripts\computed-route\lib\read-logic.mjs`, `read-logic-statics.mjs`, `read-logic-conditions.mjs`, `intake-sandbox.mjs`, `intake-breakpoints.mjs` and `draft.mjs`, with the method in `C:\Users\Bean\Projects\small-giants-wp\.claude\claude-design-handoff\handoff-schema\METHOD.md`. The comparison tool is `C:\Users\Bean\Projects\small-giants-wp\scripts\parity\draft-live-walk.mjs`. Ruled out already, do not revisit: Puck, Payload, Next.js for public pages, Coolify, GrapesJS's paid Studio SDK, and GrapesJS "symbols" for shared parts.
 >
-> **What to build.** (1) The writer half of the importer (section 7.2), producing documents in the format of section 4. (2) A minimal editing app: GrapesJS core with its style panel listing the properties the two pages use, opening and saving those documents (the generated controls and family panels of sections 5.2 and 5.8 are step 2 work). (3) The publisher's first cut (section 8): static HTML and CSS for the two pages, header and footer included, the product grid repeated from product data seeded from the draft's `store.js`. (4) A test address one label under the agency's cloud domain, which the server's existing wildcard certificate already covers, with the editing app behind Cloudflare Access. Storage may be files on disk behind the same read and write functions; PostgreSQL arrives in step 2. No logins, no behaviours, no shop: nothing interactive works in this step.
+> **What to build.** (1) The writer half of the importer (section 7.2), producing documents in the format of section 4. (2) A minimal editing app: one Next.js page hosting GrapesJS core (loaded in the browser only) with its style panel listing the properties the two pages use, opening and saving those documents (the generated controls and family panels of sections 5.2 and 5.8 are step 2 work). (3) The publisher's first cut (section 8): static HTML and CSS for the two pages, header and footer included, the product grid repeated from product data seeded from the draft's `store.js`. (4) A test address one label under the agency's cloud domain, which the server's existing wildcard certificate already covers, with the editing app behind Cloudflare Access. Storage may be files on disk behind the same read and write functions; PostgreSQL arrives in step 2. No logins, no behaviours, no shop: nothing interactive works in this step.
 >
 > **Done looks like.** Every pass condition in the step 1a row of section 16. Report each with its evidence (the walk's pair report, the five Lighthouse runs, the round-trip diff), plus the build hours used and the import report (section 7.7). Stop and report instead of pushing on if any stop condition is met.
 >
@@ -630,6 +636,7 @@ Paste this into a fresh session opened in the new repository folder.
 - GrapesJS: https://github.com/GrapesJS/grapesjs/releases , https://grapesjs.com/docs/modules/Style-manager.html , https://grapesjs.com/docs/modules/Selectors.html , https://grapesjs.com/docs/api/device.html , https://grapesjs.com/docs/api/parser.html , https://grapesjs.com/docs/guides/Custom-CSS-parser.html , https://github.com/GrapesJS/parser-postcss , https://grapesjs.com/docs/modules/Components-js.html , https://grapesjs.com/docs/guides/Symbols.html , https://grapesjs.com/docs/modules/DataSources.html , https://grapesjs.com/docs/api/component.html , https://grapesjs.com/docs/modules/Pages.html , https://github.com/GrapesJS/react , https://app.grapesjs.com/docs-sdk/overview/licenses , https://nvd.nist.gov/vuln/detail/CVE-2022-21802
 - Other editors and routes: https://github.com/webstudio-is/webstudio , https://docs.webstudio.is/university/self-hosting.md , https://github.com/plasmicapp/plasmic/blob/master/LICENSE.platform.md , https://github.com/silexlabs/Silex , https://github.com/onlook-dev/onlook , https://github.com/givanz/VvvebJs , https://puckeditor.com/blog/puck-024 , https://puckeditor.com/pricing , https://academy.bricksbuilder.io/builder/features/ai-abilities-and-skills/ , https://bricksbuilder.io/pricing/ , https://etchwp.com/blog/etch-v1-0-the-official-release/ , https://webflow.com/updates/introducing-mcp-2-0 , https://www.gnu.org/licenses/agpl-3.0.txt
 - Engine room: https://www.better-auth.com/docs/plugins/organization , https://www.better-auth.com/docs/plugins/api-key , https://www.better-auth.com/docs/plugins/mcp , https://orm.drizzle.team/docs/rls , https://www.postgresql.org/docs/current/ddl-rowsecurity.html , https://github.com/modelcontextprotocol/typescript-sdk , https://github.com/timgit/pg-boss , https://hono.dev/docs/ , https://payloadcms.com/docs/plugins/multi-tenant , https://payloadcms.com/docs/database/postgres , https://docs.stripe.com/webhooks
+- The draft format: the Design canvas type's own instructions and its `artifact-type/reference/format.md` and `design-system-components.md`, read with the artifacts tool's `describe_type` on 2026-11-12 (type "Design", contract 0.2.47). Claude's interface stack: https://claude.com/blog/improving-frontend-design-through-skills (the web-artifacts-builder skill builds with React, Tailwind CSS and shadcn/ui).
 - Claude Design: https://code.claude.com/docs/en/commands , https://support.claude.com/en/articles/14604416-get-started-with-claude-design , https://support.claude.com/en/articles/17440474-migrate-from-standalone-claude-design-to-claude , https://claude.com/blog/claude-design-stays-on-brand-for-daily-work
 - Speed and frameworks: https://nextjs.org/blog/next-16-4 , https://lilting.ch/en/articles/nextjs-16-3-astro-nuxt-benchmark , https://alexbobes.com/programming/astro-vs-nextjs/
 - Tokens and libraries: https://www.w3.org/community/design-tokens/2025/10/28/design-tokens-specification-reaches-first-stable-version/ , https://daisyui.com/docs/v5/ , https://daisyui.com/llms.txt , https://heroui.com/docs/react/releases/v3-0-0 , https://heroui.com/llms.txt , https://ui.shadcn.com/docs/registry/registry-item-json , https://github.com/webcomponents/custom-elements-manifest , https://shoelace.style , https://webawesome.com
