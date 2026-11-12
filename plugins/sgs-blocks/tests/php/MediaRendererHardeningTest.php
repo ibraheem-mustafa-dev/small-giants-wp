@@ -505,6 +505,7 @@ class MediaRendererHardeningTest extends TestCase {
 			)
 		);
 		$this->assertStringContainsString( 'sizes="auto, calc(100vw / 4)"', $out['html'] );
-		$this->assertStringContainsString( 'sizes="auto, calc(100vw / 2)"', $out['html'] );
+		// The tablet file also serves the phone (the mobile device inherits it), so its sizes carry both ranges.
+		$this->assertStringContainsString( 'sizes="auto, (max-width:767.98px) 100vw, calc(100vw / 2)"', $out['html'] );
 	}
 }

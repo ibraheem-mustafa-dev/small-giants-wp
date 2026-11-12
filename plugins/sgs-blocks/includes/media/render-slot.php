@@ -180,9 +180,10 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	$columns    = sgs_media_device_values( $item_set['columns'] ?? 0 );
 	$widths     = sgs_media_device_values( $attr( 'Width' ) );
 	$max_widths = sgs_media_device_values( $attr( 'MaxWidth' ) );
+	$avail      = class_exists( 'Sgs_Layout_Width' ) ? Sgs_Layout_Width::own() : null;
 	$sizes      = array();
 	foreach ( sgs_media_devices() as $device ) {
-		$sizes[ $device ] = sgs_media_sizes_for_width( $widths[ $device ], 'lazy' === $loading, (int) $columns[ $device ], $max_widths[ $device ] );
+		$sizes[ $device ] = sgs_media_sizes_for_width( $widths[ $device ], 'lazy' === $loading, (int) $columns[ $device ], $max_widths[ $device ], $avail[ $device ] ?? null );
 	}
 	$crop_id    = $image_files ? (int) reset( $image_files )['id'] : 0;
 	$cover_crop = false;
