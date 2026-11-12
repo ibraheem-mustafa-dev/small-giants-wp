@@ -224,4 +224,17 @@ final class ContainerBackgroundMediaTest extends TestCase {
 
 		$this->assertStringNotContainsString( 'sgs-bg-media', $out['html'] );
 	}
+
+	public function test_an_effect_on_the_background_part_gets_an_empty_element_when_there_is_no_file(): void {
+		$motion = static fn( string $effect ): array => array( 'elements' => array( 'background' => array( 'effects' => array( array( 'effect' => $effect ) ) ) ) );
+
+		$particles = $this->render( array( 'sgsMotion' => $motion( 'particles' ) ) );
+		$this->assertStringContainsString( '<div class="sgs-bg-media" aria-hidden="true"></div>', $particles['html'] );
+
+		$lottie = $this->render( array( 'sgsMotion' => $motion( 'lottie' ) ) );
+		$this->assertStringContainsString( '<div class="sgs-bg-media sgs-container__lottie-bg" aria-hidden="true"></div>', $lottie['html'] );
+
+		$on_another_part = $this->render( array( 'sgsMotion' => array( 'elements' => array( 'root' => array( 'effects' => array( array( 'effect' => 'particles' ) ) ) ) ) ) );
+		$this->assertStringNotContainsString( 'sgs-bg-media', $on_another_part['html'], 'an effect on another part adds no background element' );
+	}
 }

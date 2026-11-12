@@ -199,7 +199,9 @@ if ( ! function_exists( 'sgs_bg_media_html' ) ) {
 	 *
 	 * @param array $slot    The background slot.
 	 * @param array $attrs   Block attributes.
-	 * @param array $context `in_editor`, `hidden` (inside a hidden surface), `extra_class`, `lottie` (a Lottie layer sits on the part).
+	 * @param array $context `in_editor`, `hidden` (inside a hidden surface), `extra_class`, `lottie` (a Lottie layer sits on the part),
+	 *                       `effects` (any effect layer sits on the `background` motion part; read from the attributes when
+	 *                       absent). Either prints an empty element when there is no file, so the layer has a host.
 	 * @return array{html:string,preload:string,lead:bool,plan:array,has_image:bool,has_video:bool,has_svg:bool,first_image:?array}
 	 */
 	function sgs_bg_media_html( array $slot, array $attrs, array $context = array() ): array {
@@ -214,10 +216,27 @@ if ( ! function_exists( 'sgs_bg_media_html' ) ) {
 			'has_svg'     => false,
 			'first_image' => null,
 		);
-		if ( ! array_filter( $plan['sources'] ) ) {
-			return $result;
+		$cap = sgs_bg_media_capability();
+		if ( ! isset( $context['effects'] ) ) {
+			$context['effects'] = ! empty( $attrs['sgsMotion']['elements']['background']['effects'] );
 		}
-		$cap       = sgs_bg_media_capability();
+		// An effect layer on the background part (Lottie, particles, grid dots, generative background) attaches to the
+		// background element, so the block prints an empty one when it has no file to show.
+		$host = static function () use ( &$result, $cap, $context ): array {
+			if ( empty( $context['lottie'] ) && empty( $context['effects'] ) ) {
+				return $result;
+			}
+			$class          = $cap['element_class'] . ( ! empty( $context['lottie'] ) ? ' sgs-container__lottie-bg' : '' );
+			$class         .= '' !== trim( (string) ( $context['extra_class'] ?? '' ) ) ? ' ' . trim( (string) $context['extra_class'] ) : '';
+			$result['html'] = '<div class="' . esc_attr( $class ) . '" aria-hidden="true"></div>';
+			if ( empty( $context['in_editor'] ) ) {
+				sgs_bg_media_enqueue_sheet();
+			}
+			return $result;
+		};
+		if ( ! array_filter( $plan['sources'] ) ) {
+			return $host();
+		}
 		$devices   = sgs_media_devices();
 		$playback  = sgs_media_playback( $slot, $attrs );
 		$alt       = (string) ( $attrs[ sgs_media_key( $slot, 'Alt' ) ] ?? '' );
@@ -349,7 +368,7 @@ if ( ! function_exists( 'sgs_bg_media_html' ) ) {
 		$result['has_video'] = (bool) $video_files;
 		$result['has_svg']   = '' !== $html && ! empty( $svgs ) && (bool) array_intersect( array( 'svg' ), array_values( $plan['paint'] ) );
 		if ( '' === $html && ! in_array( 'css', $plan['paint'], true ) ) {
-			return $result;
+			return $host();
 		}
 
 		$class  = $cap['element_class'] . ( $plan['pinned'] ? ' ' . $cap['element_class'] . '--pinned' : '' )
