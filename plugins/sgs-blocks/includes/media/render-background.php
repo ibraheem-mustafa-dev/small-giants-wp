@@ -90,9 +90,20 @@ if ( ! function_exists( 'sgs_bg_media_plan' ) ) {
 	 *
 	 * @param array $slot  The background slot.
 	 * @param array $attrs Block attributes.
+	 * One block render asks for the plan several times (element, CSS test, scoped CSS), so it is kept per slot and
+	 * attribute set for the request.
+	 *
 	 * @return array{sources:array,paint:array<string,string>,fit:array<string,string>,pinned:bool,decorative:bool,kinds:string[]}
 	 */
 	function sgs_bg_media_plan( array $slot, array $attrs ): array {
+		static $plans = array();
+		$key = md5( serialize( array( $slot, $attrs ) ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- a cache key only.
+		if ( isset( $plans[ $key ] ) ) {
+			return $plans[ $key ];
+		}
+		if ( count( $plans ) >= 64 ) {
+			$plans = array();
+		}
 		$sources = sgs_media_resolve_sources( $slot, $attrs );
 		$pinned  = true === sgs_media_scalar( $attrs, $slot, 'Pinned' );
 		$fit     = array();
@@ -114,7 +125,7 @@ if ( ! function_exists( 'sgs_bg_media_plan' ) ) {
 			}
 		}
 		$decorative = array_key_exists( sgs_media_key( $slot, 'Decorative' ), $attrs ) ? (bool) $attrs[ sgs_media_key( $slot, 'Decorative' ) ] : true;
-		return array(
+		$plans[ $key ] = array(
 			'sources'    => $sources,
 			'paint'      => $paint,
 			'fit'        => $fit,
@@ -122,6 +133,7 @@ if ( ! function_exists( 'sgs_bg_media_plan' ) ) {
 			'decorative' => $decorative,
 			'kinds'      => array_keys( $kinds ),
 		);
+		return $plans[ $key ];
 	}
 }
 
