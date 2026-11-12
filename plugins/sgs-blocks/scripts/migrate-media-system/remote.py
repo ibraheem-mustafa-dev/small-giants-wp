@@ -107,11 +107,19 @@ class Remote:
         self.exported = records
         return records
 
+    def db_env(self) -> str:
+        """Shell lines that set the site's database connection from its wp-config.php (`wp config get`), the password in
+        MYSQL_PWD so it never appears on a command line. `wp db export` and `wp db import` exit 255 with no message on the
+        Hostinger hosts (they shell out from PHP), so the backup and restore call mysqldump and mysql themselves."""
+        return (f'cd {self.wp} && export MYSQL_PWD="$(wp config get DB_PASSWORD)" && '
+                f'SGS_DB_HOST="$(wp config get DB_HOST)" && SGS_DB_USER="$(wp config get DB_USER)" && SGS_DB_NAME="$(wp config get DB_NAME)"')
+
     def make_backup(self) -> str:
-        """`wp db export` to a dated file outside public_html; refuses to go on unless the file is non-empty."""
+        """`mysqldump` to a dated file outside public_html; refuses to go on unless the file is non-empty."""
         stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         path = C.check_wp_path(f"{self.backups}/{self.target}-{stamp}.sql")
-        self.sh(f"mkdir -p {self.backups} && chmod 700 {self.backups} && wp --path={self.wp} db export {path} && test -s {path}",
+        self.sh(f"mkdir -p {self.backups} && chmod 700 {self.backups} && {self.db_env()} && "
+                f'mysqldump --single-transaction --no-tablespaces -h "${{SGS_DB_HOST%%:*}}" -u "$SGS_DB_USER" "$SGS_DB_NAME" > {path} && test -s {path}',
                 "database backup")
         size = self.sh(f"wc -c < {path}", "database backup size check").strip()
         if not size.isdigit() or int(size) <= 0:
@@ -150,7 +158,8 @@ class Remote:
         if not re.fullmatch(re.escape(self.backups) + r"/[A-Za-z0-9._-]+\.sql", backup):
             raise SystemExit(f"backup must be a .sql file directly inside {self.backups}/")
         self.sh(f"test -s {backup}", f"backup {backup} is missing or empty:")
-        self.sh(f"wp --path={self.wp} db import {backup} && wp --path={self.wp} cache flush", "restore")
+        self.sh(f'{self.db_env()} && mysql -h "${{SGS_DB_HOST%%:*}}" -u "$SGS_DB_USER" "$SGS_DB_NAME" < {backup} && wp --path={self.wp} cache flush',
+                "restore")
         print(f"restored {self.target} from {backup}")
 
 

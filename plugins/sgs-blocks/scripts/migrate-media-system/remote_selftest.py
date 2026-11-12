@@ -44,8 +44,8 @@ class FakeServer(R.Runner):
         if "eval \"$(echo " in script:
             out = json.dumps([record(i, c) for i, c in self.rows.items()] + [{"store": "attachments", "files": {}}])
             return 0, "Warning: noise [x]\n" + out, ""
-        if "db export" in script:
-            path = re.search(r"db export (\S+)", script).group(1)
+        if "mysqldump" in script:
+            path = re.search(r"> (\S+) && test -s", script).group(1)
             if self.backup_bytes == 0:
                 return 1, "", "empty dump"
             self.files[path] = self.backup_bytes
@@ -64,7 +64,7 @@ class FakeServer(R.Runner):
             for path in [p for p in self.files if p.startswith(script.split()[-1])]:
                 del self.files[path]
             return 0, "", ""
-        return 0, "", ""  # mkdir, test -s, db import, cache flush
+        return 0, "", ""  # mkdir, test -s, the mysql import, cache flush
 
     def put(self, path: str, data: bytes) -> None:
         self.log.append(f"PUT {path}")
@@ -105,8 +105,8 @@ def _run(failures: list[str]) -> int:
     backup = remote.apply_fix(plan)
     check(server.rows[1] == NEW and server.rows[2].count("headline") == 1, "apply did not write exactly the planted row")
     check(re.fullmatch(re.escape(remote.backups) + r"/t-\d{8}-\d{6}\.sql", backup) is not None, f"backup path {backup}")
-    order = [i for i, s in enumerate(server.log) if "db export" in s or "eval-file" in s]
-    check(len(order) == 2 and "db export" in server.log[order[0]], "the backup did not come before the write")
+    order = [i for i, s in enumerate(server.log) if "mysqldump" in s or "eval-file" in s]
+    check(len(order) == 2 and "mysqldump" in server.log[order[0]], "the backup did not come before the write")
     check(not any(p.startswith("/tmp/sgs-media-apply-") for p in server.files), "temp files were not deleted")
     check(any(s.startswith("PUT") and s.endswith("apply-content.php") for s in server.log), "apply-content.php was not uploaded")
 
@@ -149,7 +149,7 @@ def _run(failures: list[str]) -> int:
     server, remote = make({1: OLD})
     good = f"{remote.backups}/t-20260101-000000.sql"
     remote.restore(good)
-    check(any("db import " + good in s for s in server.log), "restore did not issue the import")
+    check(any("mysql " in s and "< " + good in s for s in server.log), "restore did not issue the import")
     for bad in ("/etc/passwd", f"{remote.backups}/../x.sql", f"{HOME}/other/t.sql", f"{remote.backups}/a;rm.sql"):
         before = len(server.log)
         try:
