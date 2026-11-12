@@ -129,3 +129,10 @@ Each names its evidence; the register stays the source of truth for fixes.
 `includes/class-product-manifest.php` writes the transient `sgs_manifest_v9_<id>_<tax-fingerprint>`, while `includes/class-cart-cache-purge.php::purge_by_product_id` and `seed-48-sku-fixture-v2.php` delete `sgs_manifest_<id>`. The purge key can never match the write key, so a product's manifest is never purged on change and expires only on TTL: an edited product can keep serving its old variations, swatches and availability. It is not the cause of the imageless Eye Care shop cards (those are 12 products carrying `photo-to-come.png`).
 
 Fix shape: make the purge delete the versioned key, which needs the tax fingerprint, or delete by prefix. Prove it first with a negative control: edit a variable product's variation, confirm the shop card is stale before the fix and fresh after it.
+
+## Related parked plans
+
+Parked plans the Eye Care fix register used to point to, each with its own resume point:
+- Shop "Load more" mode (filters carry-over check left): `plans/2026-11-02-shop-load-more.md`.
+- Mama's framework batch (B5 box-string rule still report-only): `plans/2026-11-03-mamas-framework-batch.md`.
+- Clean first paint (P5 shop filters and FAQ after paint; P6 not reproduced): `plans/2026-11-04-clean-first-paint.md`.
