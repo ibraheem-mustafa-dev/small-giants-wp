@@ -328,6 +328,9 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	if ( $has_figure ) {
 		$css .= sgs_media_caption_css( $uid, sgs_media_width_is_auto( $prefix, $attrs ) );
 	}
+	if ( $has_link ) {
+		$css .= sgs_media_link_tap_css( $uid, $slot, $attrs );
+	}
 	foreach ( sgs_media_atom_emitter_ids() as $id ) {
 		$emit = 'sgs_media_atom_' . $id . '_emit';
 		if ( ! function_exists( $emit ) ) {
