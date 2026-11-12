@@ -77,6 +77,11 @@ export function emit( slot, attrs, uid, helper ) {
 	const n = nodes( slot, uid, helper );
 	const rules = {};
 	let prev = {};
+	// A wrapped slot with no helper puts Width on the wrapper and the media element sits inside it; an SVG's own width
+	// attribute, or a small file's, would stop it filling the wrapper, so the element takes the wrapper's width wherever
+	// a Width resolves.
+	const inner = ! helper && n.media !== n.layout;
+	let innerWas = false;
 	for ( const device of DEVICES ) {
 		const r = resolveSizing( attrs, slot, device );
 		const fill = 'fill' === r.Height;
@@ -122,6 +127,13 @@ export function emit( slot, attrs, uid, helper ) {
 				add( rules, node, device, prop, cancel );
 			} else {
 				add( rules, node, device, prop, now );
+			}
+		}
+		if ( inner ) {
+			const fills = null !== width && ! [ 'auto', 'fit-content' ].includes( width );
+			if ( fills !== innerWas ) {
+				add( rules, n.media, device, 'width', fills ? '100%' : 'auto' );
+				innerWas = fills;
 			}
 		}
 		prev = cur;

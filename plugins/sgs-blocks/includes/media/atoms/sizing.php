@@ -98,6 +98,11 @@ if ( ! function_exists( 'sgs_media_atom_sizing_emit' ) ) {
 		$layout = array( 'width', 'min-width', 'max-width' );
 		$rules  = array();
 		$prev   = array();
+		// A wrapped slot with no helper (a group of per-device siblings, a figure, a link) puts Width on the wrapper and
+		// the media element sits inside it; an SVG's own width attribute, or a small file's, would stop it filling the
+		// wrapper, so the element takes the wrapper's width wherever a Width resolves.
+		$inner  = ! $helper && $nodes['media'] !== $nodes['layout'];
+		$inner_was = false;
 		foreach ( sgs_media_devices() as $device ) {
 			$r      = sgs_media_atom_sizing_resolve( $attrs, $slot, $device );
 			$fill   = 'fill' === $r['Height'];
@@ -145,6 +150,13 @@ if ( ! function_exists( 'sgs_media_atom_sizing_emit' ) ) {
 					sgs_media_add( $rules, $node, $device, $prop, $cancel );
 				} else {
 					sgs_media_add( $rules, $node, $device, $prop, $now );
+				}
+			}
+			if ( $inner ) {
+				$fills = null !== $width && ! in_array( $width, array( 'auto', 'fit-content' ), true );
+				if ( $fills !== $inner_was ) {
+					sgs_media_add( $rules, $nodes['media'], $device, 'width', $fills ? '100%' : 'auto' );
+					$inner_was = $fills;
 				}
 			}
 			$prev = $cur;

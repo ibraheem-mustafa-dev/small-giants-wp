@@ -126,6 +126,26 @@ final class MediaAtomEmittersTest extends TestCase {
 		$this->assertSame( count( array_filter( array_map( 'array_filter', $want ) ) ), count( $got ), "{$case['id']} selectors" );
 	}
 
+	/**
+	 * A wrapped slot with no helper puts Width on the wrapper, and the element inside takes the wrapper's width where a
+	 * Width resolves (an inline SVG's own width attribute would otherwise hold it at that size); nothing set leaves it alone.
+	 */
+	public function test_a_wrapped_slot_without_a_helper_makes_the_element_fill_the_widthed_wrapper(): void {
+		$slot = array(
+			'prefix'  => 'm',
+			'wrapper' => true,
+		);
+		$none = sgs_media_atom_sizing_emit( $slot, array(), 'u', false );
+		$this->assertSame( '', $none, 'nothing set prints nothing: the element keeps its intrinsic size' );
+
+		$set = self::parse( sgs_media_atom_sizing_emit( $slot, array( 'mWidth' => array( 'desktop' => '100%' ) ), 'u', false ) );
+		$this->assertSame( array( 'width' => '100%' ), $set['.u']['desktop'] );
+		$this->assertSame( array( 'width' => '100%' ), $set['.u .sgs-media-el']['desktop'] );
+
+		$mixed = self::parse( sgs_media_atom_sizing_emit( $slot, array( 'mWidth' => array( 'desktop' => '50%', 'mobile' => 'auto' ) ), 'u', false ) );
+		$this->assertSame( array( 'width' => 'auto' ), $mixed['.u .sgs-media-el']['mobile'] );
+	}
+
 	public function test_sizing_prints_nothing_when_nothing_is_set_and_sorts_properties(): void {
 		$this->assertSame( '', sgs_media_atom_sizing_emit( self::SLOT, array(), 'u', false ) );
 		$css = sgs_media_atom_sizing_emit(

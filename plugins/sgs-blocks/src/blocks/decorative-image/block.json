@@ -211,12 +211,7 @@
             ],
             "default": "solid"
         },
-        "layerFit": {
-            "type": "object",
-            "default": {
-                "desktop": "cover"
-            }
-        },
+        "layerFit": {"type":"object","_generated":"media-atoms"},
     	"layerSource": {"type":"object","_generated":"media-atoms"},
     	"layerLoading": {"type":"string","_generated":"media-atoms"},
     	"layerAlt": {"type":"string","_generated":"media-atoms"},

@@ -126,6 +126,17 @@ final class DecorativeImageLayerTest extends TestCase {
 		$this->assertStringContainsString( 'aria-hidden="true"', $out['html'] );
 	}
 
+	public function test_an_unset_fit_prints_nothing_and_the_base_rule_draws_cover(): void {
+		$out  = $this->render_layer( self::IMAGE );
+		$base = (string) file_get_contents( dirname( __DIR__, 2 ) . '/assets/css/media-base.css' );
+		$json = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/decorative-image/block.json' ), true );
+
+		$this->assertArrayNotHasKey( 'default', $json['attributes']['layerFit'], 'layerFit carries no default: the base rule draws cover' );
+		$this->assertStringNotContainsString( 'object-fit', $out['html'] );
+		$this->assertMatchesRegularExpression( '/class="sgs-media-el sgs-media sgs-media--renderer /', $out['html'] );
+		$this->assertMatchesRegularExpression( '/:where\(\.sgs-media--renderer\.sgs-media-el[^{]*\{\s*object-fit:\s*cover/', $base );
+	}
+
 	public function test_fit_the_content_is_max_content_capped_at_the_parent(): void {
 		$out = $this->render_layer( array( 'layerWidth' => array( 'desktop' => 'max-content' ) ), self::CONTENT );
 
