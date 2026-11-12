@@ -8,11 +8,11 @@
 				{
 					"id": "block-setting:a11y-text:string",
 					"label": "block settings, role a11y-text, string",
-					"count": 8,
+					"count": 9,
 					"examples": [
-						"sgs/before-after.afterVideoAlt",
-						"sgs/before-after.beforeVideoAlt",
+						"sgs/accordion.filterChipsLabel",
 						"sgs/button.ariaLabel",
+						"sgs/button.iconTitle",
 						"sgs/cart.ariaLabel",
 						"sgs/form.formName"
 					],
@@ -21,20 +21,20 @@
 				{
 					"id": "block-setting:behaviour:array",
 					"label": "block settings, role behaviour, array",
-					"count": 196,
+					"count": 217,
 					"examples": [
 						"sgs/accordion-item.sgsConditionDays",
 						"sgs/accordion-item.sgsConditionUserRole",
 						"sgs/accordion.sgsConditionDays",
 						"sgs/accordion.sgsConditionUserRole",
-						"sgs/account.sgsConditionDays"
+						"sgs/account.menuOrder"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:behaviour:boolean",
 					"label": "block settings, role behaviour, boolean",
-					"count": 134,
+					"count": 175,
 					"examples": [
 						"sgs/accordion-item.sgsFocusRests",
 						"sgs/accordion.allowMultiple",
@@ -56,13 +56,13 @@
 				{
 					"id": "block-setting:behaviour:mode",
 					"label": "block settings, role behaviour, mode",
-					"count": 232,
+					"count": 273,
 					"examples": [
 						"sgs/accordion-item.sgsConditionLoggedIn",
 						"sgs/accordion-item.sgsConditionProductReviews",
+						"sgs/accordion.accordionStyle",
 						"sgs/accordion.sgsConditionLoggedIn",
-						"sgs/accordion.sgsConditionProductReviews",
-						"sgs/account.sgsConditionLoggedIn"
+						"sgs/accordion.sgsConditionProductReviews"
 					],
 					"motion": false
 				},
@@ -82,7 +82,7 @@
 				{
 					"id": "block-setting:behaviour:number",
 					"label": "block settings, role behaviour, number",
-					"count": 118,
+					"count": 124,
 					"examples": [
 						"sgs/accordion-item.sgsConditionCollectionQueryId",
 						"sgs/accordion.defaultOpen",
@@ -95,60 +95,61 @@
 				{
 					"id": "block-setting:behaviour:object",
 					"label": "block settings, role behaviour, object",
-					"count": 14,
+					"count": 27,
 					"examples": [
-						"sgs/buybox.stickyBar",
-						"sgs/google-reviews.arrowStep",
-						"sgs/nav-bar-menu.triggerDetachAfter",
-						"sgs/nav-drawer-menu.itemOrnamentFramePlay",
-						"sgs/site-footer-row.rowHideOnScroll"
+						"sgs/before-after.afterPlayback",
+						"sgs/before-after.beforePlayback",
+						"sgs/container.backgroundPlayback",
+						"sgs/form.actionsSticky",
+						"sgs/google-reviews.arrowStep"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:behaviour:string",
 					"label": "block settings, role behaviour, string",
-					"count": 751,
+					"count": 1114,
 					"examples": [
 						"sgs/accordion-item.sgsCollapseVisibility",
 						"sgs/accordion-item.sgsConditionDateEnd",
 						"sgs/accordion-item.sgsConditionDateStart",
-						"sgs/accordion-item.sgsConditionReferrer",
-						"sgs/accordion-item.sgsConditionUrlParam"
+						"sgs/accordion-item.sgsConditionFormField",
+						"sgs/accordion-item.sgsConditionFormOperator"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:behaviour:styling",
 					"label": "block settings, role behaviour, styling",
-					"count": 6,
+					"count": 9,
 					"examples": [
+						"sgs/form.actionsBorderTopStyle",
 						"sgs/google-reviews.scrollbarStyle",
 						"sgs/google-reviews.textClampLines",
 						"sgs/hero.verticalAlignment",
-						"sgs/measured-diagram.extensionStyle",
-						"sgs/nav-drawer-menu.itemExpanderRotate"
+						"sgs/measured-diagram.extensionStyle"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:boolean-visibility:boolean",
 					"label": "block settings, role boolean-visibility, boolean",
-					"count": 289,
+					"count": 324,
 					"examples": [
 						"sgs/accordion-item.isOpen",
-						"sgs/accordion.scrollToOpened",
-						"sgs/account.showGuestLine",
-						"sgs/account.showMenuIcons",
-						"sgs/account.showOrderTracking"
+						"sgs/accordion-item.showCategoryEyebrow",
+						"sgs/accordion.filterChips",
+						"sgs/accordion.filterEnabled",
+						"sgs/accordion.filterSearch"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:boolean-visibility:object",
 					"label": "block settings, role boolean-visibility, object",
-					"count": 3,
+					"count": 4,
 					"examples": [
+						"sgs/cart.showZero",
 						"sgs/nav-drawer.chromeLogoShow",
 						"sgs/nav-drawer.chromeRatingShow",
 						"sgs/nav-drawer.chromeSlotShow"
@@ -158,7 +159,7 @@
 				{
 					"id": "block-setting:boolean-visibility:styling",
 					"label": "block settings, role boolean-visibility, styling",
-					"count": 291,
+					"count": 309,
 					"examples": [
 						"sgs/accordion-item.sgsHideOnDesktop",
 						"sgs/accordion-item.sgsHideOnMobile",
@@ -171,20 +172,20 @@
 				{
 					"id": "block-setting:color:string",
 					"label": "block settings, role color, string",
-					"count": 68,
+					"count": 123,
 					"examples": [
 						"sgs/accordion-item.backgroundColourHover",
+						"sgs/brand-strip.logoBorderColourHover",
 						"sgs/brand-strip.tileShadowColourHover",
 						"sgs/business-info.hoursTodayColour",
-						"sgs/business-info.openStatusClosedBackground",
-						"sgs/business-info.openStatusOpenBackground"
+						"sgs/business-info.openStatusClosedBackground"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:color:styling",
 					"label": "block settings, role color, styling",
-					"count": 1191,
+					"count": 1422,
 					"examples": [
 						"sgs/accordion-item.backgroundColour",
 						"sgs/accordion-item.borderColour",
@@ -195,22 +196,35 @@
 					"motion": false
 				},
 				{
+					"id": "block-setting:colour-background:styling",
+					"label": "block settings, role colour-background, styling",
+					"count": 20,
+					"examples": [
+						"woocommerce/cart.sgsBarBackground",
+						"woocommerce/cart.sgsFieldBackground",
+						"woocommerce/cart.sgsItemBackground",
+						"woocommerce/cart.sgsItemImageBackground",
+						"woocommerce/cart.sgsItemStepperBackground"
+					],
+					"motion": false
+				},
+				{
 					"id": "block-setting:colour-gradient:string",
 					"label": "block settings, role colour-gradient, string",
-					"count": 36,
+					"count": 82,
 					"examples": [
 						"sgs/accordion-item.backgroundColourHoverGradient",
-						"sgs/choice-flow.stageColourGradient",
-						"sgs/choice-flow.stageNoteHoverColourGradient",
-						"sgs/choice-flow.stageNoteIconColourGradient",
-						"sgs/collapsible-text.linkColourHoverGradient"
+						"sgs/brand-strip.logoBorderColourGradient",
+						"sgs/brand-strip.logoBorderColourHoverGradient",
+						"sgs/buybox.mainBorderColourGradient",
+						"sgs/buybox.mainBorderColourHoverGradient"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:colour-gradient:styling",
 					"label": "block settings, role colour-gradient, styling",
-					"count": 566,
+					"count": 572,
 					"examples": [
 						"sgs/accordion-item.backgroundColourGradient",
 						"sgs/accordion-item.borderColourGradient",
@@ -221,9 +235,22 @@
 					"motion": false
 				},
 				{
+					"id": "block-setting:colour-text:styling",
+					"label": "block settings, role colour-text, styling",
+					"count": 36,
+					"examples": [
+						"woocommerce/cart.sgsBarColour",
+						"woocommerce/cart.sgsCouponLabelColour",
+						"woocommerce/cart.sgsDeliveryDescriptionColour",
+						"woocommerce/cart.sgsDeliveryTitleColour",
+						"woocommerce/cart.sgsFieldColour"
+					],
+					"motion": false
+				},
+				{
 					"id": "block-setting:content:array",
 					"label": "block settings, role content, array",
-					"count": 20,
+					"count": 22,
 					"examples": [
 						"sgs/brand-strip.logos",
 						"sgs/card-grid.items",
@@ -249,81 +276,69 @@
 				{
 					"id": "block-setting:content:object",
 					"label": "block settings, role content, object",
-					"count": 1,
+					"count": 41,
 					"examples": [
-						"sgs/choice-flow.stageNoteLink"
+						"sgs/accordion.filterEmptyLink",
+						"sgs/before-after.afterCaptions",
+						"sgs/before-after.afterSource",
+						"sgs/before-after.beforeCaptions",
+						"sgs/before-after.beforeSource"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:content:string",
 					"label": "block settings, role content, string",
-					"count": 48,
+					"count": 27,
 					"examples": [
-						"sgs/audio.audioUrl",
-						"sgs/before-after.afterImageUrlMobile",
-						"sgs/before-after.afterImageUrlTablet",
-						"sgs/before-after.afterVideoUrl",
-						"sgs/before-after.beforeImageUrlMobile"
+						"sgs/account.ordersEmptyButtonUrl",
+						"sgs/account.signedOutRegisterUrl",
+						"sgs/account.signedOutSignInUrl",
+						"sgs/account.wishlistEmptyButtonUrl",
+						"sgs/audio.audioUrl"
 					],
 					"motion": false
 				},
 				{
-					"id": "block-setting:css-gate:styling",
-					"label": "block settings, role css-gate, styling",
-					"count": 4,
+					"id": "block-setting:content:styling",
+					"label": "block settings, role content, styling",
+					"count": 1,
 					"examples": [
-						"sgs/card-grid.grayscaleHover",
-						"sgs/gallery.grayscaleHover",
-						"sgs/info-box.grayscaleHover",
-						"sgs/team-member.grayscaleHover"
-					],
-					"motion": false
-				},
-				{
-					"id": "block-setting:css-modifier:mode",
-					"label": "block settings, role css-modifier, mode",
-					"count": 3,
-					"examples": [
-						"sgs/google-reviews.logoPosition",
-						"sgs/google-reviews.navPosition",
-						"sgs/testimonial.ratingType"
+						"sgs/process-steps.steps"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:enum-class-probe:integer",
 					"label": "block settings, role enum-class-probe, integer",
-					"count": 27,
+					"count": 3,
 					"examples": [
 						"sgs/audio.audioId",
-						"sgs/before-after.afterImageId",
-						"sgs/before-after.afterImageIdMobile",
-						"sgs/before-after.afterImageIdTablet",
-						"sgs/before-after.afterVideoId"
+						"sgs/buybox.buyboxProductId",
+						"sgs/choice-flow.flowProductId"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:enum-class-probe:mode",
 					"label": "block settings, role enum-class-probe, mode",
-					"count": 2,
+					"count": 6,
 					"examples": [
 						"sgs/audio.toggleIcon",
-						"sgs/choice-flow.stageNoteIcon"
+						"sgs/choice-flow.stageNoteIcon",
+						"sgs/form.stepCompletedIcon",
+						"sgs/mega-panel.drawerLinkTrailingIcon",
+						"sgs/post-grid.readMoreIcon"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:enum-class-probe:number",
 					"label": "block settings, role enum-class-probe, number",
-					"count": 10,
+					"count": 2,
 					"examples": [
-						"sgs/decorative-image.imageId",
-						"sgs/decorative-image.imageIdMobile",
-						"sgs/decorative-image.imageIdTablet",
 						"sgs/filter-search.attributeId",
-						"sgs/nav-drawer.chromeLogoId"
+						"sgs/product-card.productId"
 					],
 					"motion": false
 				},
@@ -343,62 +358,80 @@
 				{
 					"id": "block-setting:enum-class-probe:string",
 					"label": "block settings, role enum-class-probe, string",
-					"count": 17,
+					"count": 20,
 					"examples": [
 						"sgs/accordion.closeIcon",
+						"sgs/accordion.filterSearchIcon",
 						"sgs/accordion.openIcon",
 						"sgs/button.icon",
-						"sgs/button.linkId",
-						"sgs/buybox.addToCartModalId"
+						"sgs/button.linkId"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:enum-class-probe:styling",
+					"label": "block settings, role enum-class-probe, styling",
+					"count": 1,
+					"examples": [
+						"sgs/label.markerIcon"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:enum-mode:mode",
 					"label": "block settings, role enum-mode, mode",
-					"count": 109,
+					"count": 136,
 					"examples": [
+						"sgs/account.headerTitleTag",
+						"sgs/account.loginButtonScope",
+						"sgs/account.orderDetailChatUnderline",
 						"sgs/audio.audioPreload",
-						"sgs/audio.audioSource",
-						"sgs/before-after.orientation",
-						"sgs/brand-strip.brandDisplay",
-						"sgs/brand-strip.source"
-					],
-					"motion": false
-				},
-				{
-					"id": "block-setting:enum-mode:object",
-					"label": "block settings, role enum-mode, object",
-					"count": 2,
-					"examples": [
-						"sgs/nav-drawer.closeStyle",
-						"sgs/site-header.contrastSafe"
+						"sgs/audio.audioSource"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:enum-mode:string",
 					"label": "block settings, role enum-mode, string",
-					"count": 9,
+					"count": 8,
 					"examples": [
-						"sgs/before-after.handleIconSource",
 						"sgs/form.successRedirectSource",
 						"sgs/google-rating-badge.listingUrlSource",
 						"sgs/icon.linkUrlSource",
-						"sgs/media.linkUrlSource"
+						"sgs/media.linkUrlSource",
+						"sgs/mega-group.linkSource"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:enum-mode:styling",
 					"label": "block settings, role enum-mode, styling",
-					"count": 22,
+					"count": 30,
 					"examples": [
+						"sgs/accordion.filterChipsJustify",
+						"sgs/accordion.filterSearchAlign",
+						"sgs/account.loginLinkPlacement",
 						"sgs/business-info.hoursRowJustify",
-						"sgs/buybox.stackBelow",
-						"sgs/card-grid.headingLevel",
-						"sgs/decorative-image.shape",
-						"sgs/form-review.headingLevel"
+						"sgs/button.alignSelf"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:glyph:mode",
+					"label": "block settings, role glyph, mode",
+					"count": 1,
+					"examples": [
+						"sgs/breadcrumbs.separator"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:glyph:string",
+					"label": "block settings, role glyph, string",
+					"count": 2,
+					"examples": [
+						"sgs/language-switch.separator",
+						"sgs/local-time.separator"
 					],
 					"motion": false
 				},
@@ -425,8 +458,9 @@
 				{
 					"id": "block-setting:icon-lucide:string",
 					"label": "block settings, role icon-lucide, string",
-					"count": 2,
+					"count": 3,
 					"examples": [
+						"sgs/before-after.handleIconName",
 						"sgs/icon.iconName",
 						"sgs/separator.contentIconName"
 					],
@@ -445,8 +479,9 @@
 				{
 					"id": "block-setting:identity:mode",
 					"label": "block settings, role identity, mode",
-					"count": 1,
+					"count": 2,
 					"examples": [
+						"sgs/cart.iconSource",
 						"sgs/icon.iconSource"
 					],
 					"motion": false
@@ -454,8 +489,9 @@
 				{
 					"id": "block-setting:identity:object",
 					"label": "block settings, role identity, object",
-					"count": 1,
+					"count": 2,
 					"examples": [
+						"sgs/nav-drawer-menu.itemBadgeTones",
 						"sgs/nav-drawer-menu.itemTrailingIcons"
 					],
 					"motion": false
@@ -463,166 +499,136 @@
 				{
 					"id": "block-setting:identity:string",
 					"label": "block settings, role identity, string",
-					"count": 6,
+					"count": 5,
 					"examples": [
 						"sgs/cart.iconName",
 						"sgs/notice-banner.iconName",
 						"sgs/notice-banner.iconSource",
-						"sgs/product-card.productName",
-						"sgs/wishlist-link.iconName"
+						"sgs/wishlist-link.iconName",
+						"sgs/wishlist-link.iconSource"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:identity:styling",
 					"label": "block settings, role identity, styling",
-					"count": 2,
+					"count": 3,
 					"examples": [
-						"sgs/icon.iconRotate",
-						"sgs/nav-drawer-menu.itemOrnamentFrames"
+						"sgs/accordion.filterSearchIconOffset",
+						"sgs/icon.signedInDotRight",
+						"sgs/icon.signedInDotTop"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:image-alt:string",
 					"label": "block settings, role image-alt, string",
-					"count": 8,
+					"count": 23,
 					"examples": [
-						"sgs/before-after.afterImageAlt",
-						"sgs/before-after.beforeImageAlt",
-						"sgs/decorative-image.imageAlt",
-						"sgs/image-sequence.thumbnailAlt",
-						"sgs/measured-diagram.drawingImageAlt"
-					],
-					"motion": false
-				},
-				{
-					"id": "block-setting:image-object:number",
-					"label": "block settings, role image-object, number",
-					"count": 3,
-					"examples": [
-						"sgs/responsive-logo.logoId",
-						"sgs/responsive-logo.logoIdMobile",
-						"sgs/responsive-logo.logoIdTablet"
+						"sgs/before-after.afterAlt",
+						"sgs/before-after.beforeAlt",
+						"sgs/choice-flow.headerLogoAlt",
+						"sgs/container.backgroundAlt",
+						"sgs/decorative-image.layerAlt"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:image-object:object",
 					"label": "block settings, role image-object, object",
-					"count": 32,
+					"count": 1,
 					"examples": [
-						"sgs/container.bgVideo",
-						"sgs/container.bgVideoMobile",
-						"sgs/container.bgVideoTablet",
-						"sgs/hero.bgVideo",
-						"sgs/hero.bgVideoMobile"
+						"sgs/team-member.photoRatio"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:image-object:string",
 					"label": "block settings, role image-object, string",
-					"count": 7,
+					"count": 1,
 					"examples": [
-						"sgs/before-after.afterImageUrl",
-						"sgs/before-after.beforeImageUrl",
-						"sgs/decorative-image.imageUrl",
-						"sgs/media.imageUrl",
-						"sgs/media.thumbnail"
+						"sgs/product-card.badgeMetaKey"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:image-object:styling",
 					"label": "block settings, role image-object, styling",
-					"count": 22,
+					"count": 2,
 					"examples": [
-						"sgs/container.backgroundImage",
-						"sgs/container.backgroundImageMobile",
-						"sgs/container.backgroundImageTablet",
-						"sgs/hero.backgroundImage",
-						"sgs/hero.backgroundImageMobile"
+						"sgs/buybox.galleryStickerOffsetX",
+						"sgs/buybox.galleryStickerOffsetY"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:layout:boolean",
 					"label": "block settings, role layout, boolean",
-					"count": 3,
+					"count": 4,
 					"examples": [
 						"sgs/account.showLatestOrder",
 						"sgs/google-rating-badge.fullWidth",
-						"sgs/label.fullWidth"
-					],
-					"motion": false
-				},
-				{
-					"id": "block-setting:layout:integer",
-					"label": "block settings, role layout, integer",
-					"count": 2,
-					"examples": [
-						"sgs/media.imageHeight",
-						"sgs/media.imageWidth"
+						"sgs/label.fullWidth",
+						"sgs/post-grid.keepEmptyColumns"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:layout:mode",
 					"label": "block settings, role layout, mode",
-					"count": 40,
+					"count": 61,
 					"examples": [
 						"sgs/accordion.layout",
-						"sgs/brand-strip.brandOrder",
-						"sgs/business-info.hoursLayout",
-						"sgs/button.sgsChildSizing",
-						"sgs/buybox.buyboxLayout"
+						"sgs/account.authLayout",
+						"sgs/account.navLayout",
+						"sgs/account.wishlistLayout",
+						"sgs/brand-strip.brandOrder"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:layout:number",
 					"label": "block settings, role layout, number",
-					"count": 6,
+					"count": 8,
 					"examples": [
-						"sgs/measured-diagram.drawingImageHeight",
-						"sgs/measured-diagram.drawingImageWidth",
+						"sgs/brand-strip.logoGreyscale",
+						"sgs/hero.splitGreyscale",
+						"sgs/media.greyscale",
 						"sgs/nav-bar-menu.itemTextColumns",
-						"sgs/nav-bar-menu.submenuTextColumns",
-						"sgs/nav-drawer-menu.itemTextColumns"
+						"sgs/nav-bar-menu.submenuTextColumns"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:layout:object",
 					"label": "block settings, role layout, object",
-					"count": 29,
+					"count": 215,
 					"examples": [
-						"sgs/account.contentMaxWidth",
-						"sgs/account.gap",
-						"sgs/account.navLayout",
-						"sgs/account.navWidth",
-						"sgs/button.sgsChildWidth"
+						"sgs/account.accountFieldsetGap",
+						"sgs/account.accountFieldsetMargin",
+						"sgs/account.accountFieldsetPadding",
+						"sgs/account.accountLegendMargin",
+						"sgs/account.accountLegendPadding"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:layout:string",
 					"label": "block settings, role layout, string",
-					"count": 24,
+					"count": 49,
 					"examples": [
 						"sgs/accordion.scrollToOpenedGap",
-						"sgs/account.authLayout",
-						"sgs/form-field-address.width",
-						"sgs/form-field-checkbox.width",
-						"sgs/form-field-consent.width"
+						"sgs/brand-strip.logoBorderColour",
+						"sgs/brand-strip.logoBorderStyle",
+						"sgs/buybox.mainBorderColour",
+						"sgs/buybox.mainBorderStyle"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:layout:styling",
 					"label": "block settings, role layout, styling",
-					"count": 686,
+					"count": 1059,
 					"examples": [
 						"sgs/accordion-item.contentWidth",
 						"sgs/accordion-item.maxWidth",
@@ -654,8 +660,10 @@
 				{
 					"id": "block-setting:link-href:mode",
 					"label": "block settings, role link-href, mode",
-					"count": 1,
+					"count": 3,
 					"examples": [
+						"sgs/button.linkTarget",
+						"sgs/commerce-note.linkTarget",
 						"sgs/icon.linkTarget"
 					],
 					"motion": false
@@ -663,26 +671,35 @@
 				{
 					"id": "block-setting:link-href:string",
 					"label": "block settings, role link-href, string",
-					"count": 12,
+					"count": 15,
 					"examples": [
-						"sgs/button.linkTarget",
+						"sgs/account.orderDetailWhatsAppNumber",
 						"sgs/button.url",
 						"sgs/buybox.pickerLabelLinkAxis",
 						"sgs/cart.itemAddOptionsLabel",
-						"sgs/filter-search.taxonomy"
+						"sgs/commerce-note.linkUrl"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:link-href:styling",
+					"label": "block settings, role link-href, styling",
+					"count": 1,
+					"examples": [
+						"sgs/mega-panel.drawerLinkTextShiftHover"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:motion:motion",
 					"label": "block settings, role motion, motion",
-					"count": 49,
+					"count": 62,
 					"examples": [
+						"sgs/accordion.panelDuration",
+						"sgs/accordion.panelEasing",
 						"sgs/business-info.openStatusDotPulseDuration",
 						"sgs/cart.freeDeliveryFillDuration",
-						"sgs/cart.freeDeliveryFillEasing",
-						"sgs/cart.panelSlideDuration",
-						"sgs/cart.panelSlideEasing"
+						"sgs/cart.freeDeliveryFillEasing"
 					],
 					"motion": true
 				},
@@ -724,10 +741,20 @@
 					"motion": false
 				},
 				{
+					"id": "block-setting:numeric-content:string",
+					"label": "block settings, role numeric-content, string",
+					"count": 1,
+					"examples": [
+						"sgs/diagram-dimension.value"
+					],
+					"motion": false
+				},
+				{
 					"id": "block-setting:position:object",
 					"label": "block settings, role position, object",
-					"count": 2,
+					"count": 3,
 					"examples": [
+						"sgs/gallery.scrollInset",
 						"sgs/site-header.headerFloatInset",
 						"sgs/site-header.zIndex"
 					],
@@ -736,9 +763,10 @@
 				{
 					"id": "block-setting:position:styling",
 					"label": "block settings, role position, styling",
-					"count": 2,
+					"count": 3,
 					"examples": [
 						"sgs/decorative-image.zIndex",
+						"sgs/form-field-tiles.tileCheckInset",
 						"sgs/nav-bar-menu.triggerDetachZIndex"
 					],
 					"motion": false
@@ -776,24 +804,15 @@
 					"motion": false
 				},
 				{
-					"id": "block-setting:scalar-media:mode",
-					"label": "block settings, role scalar-media, mode",
-					"count": 1,
-					"examples": [
-						"sgs/hero.splitMediaType"
-					],
-					"motion": false
-				},
-				{
 					"id": "block-setting:select-from-enum:mode",
 					"label": "block settings, role select-from-enum, mode",
-					"count": 59,
+					"count": 73,
 					"examples": [
-						"sgs/before-after.afterMediaType",
-						"sgs/before-after.beforeMediaType",
+						"sgs/accordion.iconPosition",
+						"sgs/account.loginButtonPreset",
+						"sgs/brand-strip.imageEffect",
 						"sgs/brand-strip.logoLayout",
-						"sgs/business-info.displayType",
-						"sgs/business-info.mapFilterPreset"
+						"sgs/business-info.displayType"
 					],
 					"motion": false
 				},
@@ -812,48 +831,49 @@
 				{
 					"id": "block-setting:select-from-enum:object",
 					"label": "block settings, role select-from-enum, object",
-					"count": 16,
+					"count": 17,
 					"examples": [
+						"sgs/account.rememberCheckboxSize",
 						"sgs/button.iconShapeSize",
 						"sgs/button.iconSize",
 						"sgs/button.widthType",
-						"sgs/container.shapeDividerBottomScale",
-						"sgs/container.shapeDividerTopScale"
+						"sgs/buybox.galleryThumbSize"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:select-from-enum:string",
 					"label": "block settings, role select-from-enum, string",
-					"count": 22,
+					"count": 8,
 					"examples": [
-						"sgs/accordion.iconPosition",
 						"sgs/audio.audioMimeType",
-						"sgs/brand-strip.imageEffect",
-						"sgs/button.iconPosition",
-						"sgs/buybox.pickerBandScale"
+						"sgs/buybox.pickerBandScale",
+						"sgs/cart.freeDeliveryThresholdOverride",
+						"sgs/form-field-checkbox.boxSize",
+						"sgs/form-field-consent.boxSize"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:select-from-enum:styling",
 					"label": "block settings, role select-from-enum, styling",
-					"count": 175,
+					"count": 195,
 					"examples": [
+						"sgs/accordion.filterSearchIconSize",
+						"sgs/accordion.iconCircleSize",
 						"sgs/accordion.iconSize",
 						"sgs/accordion.writingMode",
-						"sgs/before-after.labelWritingMode",
-						"sgs/before-after.startPosition",
-						"sgs/brand-strip.nameWritingMode"
+						"sgs/account.labelPosition"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:spacing-token:styling",
 					"label": "block settings, role spacing-token, styling",
-					"count": 1,
+					"count": 2,
 					"examples": [
-						"sgs/mega-panel.drawerCardSpacing"
+						"sgs/mega-panel.drawerCardSpacing",
+						"sgs/timeline.panelRowSpacing"
 					],
 					"motion": false
 				},
@@ -867,6 +887,19 @@
 						"sgs/container.shapeDividerTopFlip",
 						"sgs/container.shapeDividerTopInvert",
 						"sgs/hero.shapeDividerBottomFlip"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:styling:mode",
+					"label": "block settings, role styling, mode",
+					"count": 9,
+					"examples": [
+						"sgs/container.shapeDividerBottom",
+						"sgs/container.shapeDividerTop",
+						"sgs/hero.shapeDividerBottom",
+						"sgs/hero.shapeDividerTop",
+						"sgs/nav-drawer.anchor"
 					],
 					"motion": false
 				},
@@ -893,7 +926,7 @@
 				{
 					"id": "block-setting:styling:string",
 					"label": "block settings, role styling, string",
-					"count": 105,
+					"count": 101,
 					"examples": [
 						"sgs/accordion-item.sgsCustomCss",
 						"sgs/accordion.sgsCustomCss",
@@ -906,38 +939,46 @@
 				{
 					"id": "block-setting:styling:styling",
 					"label": "block settings, role styling, styling",
-					"count": 54,
+					"count": 96,
 					"examples": [
+						"sgs/accordion.filterChipSelectedOffsetX",
+						"sgs/accordion.filterChipSelectedOffsetY",
+						"sgs/accordion.filterChipsWrap",
 						"sgs/accordion.headerFontWeightOpen",
-						"sgs/accordion.iconRotation",
-						"sgs/accordion.textIndent",
-						"sgs/brand-strip.logoFit",
-						"sgs/buybox.galleryColumnRatio"
+						"sgs/accordion.iconRotation"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:svg:string",
 					"label": "block settings, role svg, string",
-					"count": 12,
+					"count": 8,
 					"examples": [
-						"sgs/before-after.afterSvgContent",
-						"sgs/before-after.beforeSvgContent",
 						"sgs/button.iconSvg",
+						"sgs/cart.iconSvg",
 						"sgs/container.bgSvgContent",
-						"sgs/hero.bgSvgContent"
+						"sgs/hero.bgSvgContent",
+						"sgs/icon.iconSvg"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:tag-identity:mode",
 					"label": "block settings, role tag-identity, mode",
-					"count": 4,
+					"count": 3,
 					"examples": [
 						"sgs/heading.level",
 						"sgs/icon-list.headingLevel",
-						"sgs/media.mediaType",
 						"sgs/product-faq.headingLevel"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:tag-identity:string",
+					"label": "block settings, role tag-identity, string",
+					"count": 1,
+					"examples": [
+						"sgs/hero.splitCaptionTag"
 					],
 					"motion": false
 				},
@@ -953,7 +994,7 @@
 				{
 					"id": "block-setting:technical:array",
 					"label": "block settings, role technical, array",
-					"count": 9,
+					"count": 10,
 					"examples": [
 						"sgs/card-grid.handpickedIds",
 						"sgs/card-grid.productCategories",
@@ -986,6 +1027,16 @@
 					"motion": false
 				},
 				{
+					"id": "block-setting:technical:mode",
+					"label": "block settings, role technical, mode",
+					"count": 2,
+					"examples": [
+						"sgs/post-grid.filterTaxonomy",
+						"sgs/post-grid.orderBy"
+					],
+					"motion": false
+				},
+				{
 					"id": "block-setting:technical:number",
 					"label": "block settings, role technical, number",
 					"count": 19,
@@ -1010,22 +1061,21 @@
 				{
 					"id": "block-setting:technical:string",
 					"label": "block settings, role technical, string",
-					"count": 116,
+					"count": 134,
 					"examples": [
+						"sgs/accordion.filterCountSingular",
+						"sgs/accordion.filterCountTemplate",
+						"sgs/accordion.panelEasingCustom",
 						"sgs/button.anchor",
-						"sgs/button.className",
-						"sgs/button.rel",
-						"sgs/buybox.pickerBandAxis",
-						"sgs/buybox.pickerSubLabelMetaKey"
+						"sgs/button.className"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:text-content:number",
 					"label": "block settings, role text-content, number",
-					"count": 2,
+					"count": 1,
 					"examples": [
-						"sgs/label.endDepth",
 						"sgs/nav-drawer-menu.itemMagnetStrength"
 					],
 					"motion": false
@@ -1033,82 +1083,98 @@
 				{
 					"id": "block-setting:text-content:object",
 					"label": "block settings, role text-content, object",
-					"count": 3,
+					"count": 2,
 					"examples": [
-						"sgs/business-info.separators",
-						"sgs/cart.separators",
-						"sgs/pricing-table.featureSeparators"
+						"woocommerce/cart.sgsCheckoutStrings",
+						"woocommerce/checkout.sgsCheckoutStrings"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:text-content:string",
 					"label": "block settings, role text-content, string",
-					"count": 184,
+					"count": 226,
 					"examples": [
+						"sgs/accordion-item.category",
 						"sgs/accordion-item.title",
-						"sgs/account.guestLineText",
-						"sgs/account.noOrdersText",
-						"sgs/account.orderTrackingHeading",
-						"sgs/audio.title"
+						"sgs/accordion.filterAllLabel",
+						"sgs/accordion.filterEmptyMessage",
+						"sgs/accordion.filterSearchLabel"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:text-content:styling",
 					"label": "block settings, role text-content, styling",
-					"count": 1,
+					"count": 2,
 					"examples": [
-						"sgs/button.contentAlign"
+						"sgs/form.stepLabelFontWeightCompleted",
+						"sgs/icon-list.markerOffset"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:typography:mode",
 					"label": "block settings, role typography, mode",
-					"count": 15,
+					"count": 50,
 					"examples": [
-						"sgs/button.textDecorationHover",
-						"sgs/form-field-tiles.tileDescriptionFontStyle",
-						"sgs/form-field-tiles.tileDescriptionTextAlign",
-						"sgs/form-field-tiles.tileDescriptionTextDecoration",
-						"sgs/form-field-tiles.tileDescriptionTextTransform"
+						"sgs/account.accountSectionFontStyle",
+						"sgs/account.accountSectionTextDecoration",
+						"sgs/account.accountSectionTextTransform",
+						"sgs/account.addressEditLinkFontStyle",
+						"sgs/account.addressEditLinkTextDecoration"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:typography:number",
+					"label": "block settings, role typography, number",
+					"count": 70,
+					"examples": [
+						"sgs/account.menuLetterSpacing",
+						"sgs/account.menuLineHeight",
+						"woocommerce/cart.sgsCheckboxLabelFontSizeMobile",
+						"woocommerce/cart.sgsCheckboxLabelFontSizeTablet",
+						"woocommerce/cart.sgsCheckboxWrapLabelFontSizeMobile"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:typography:object",
 					"label": "block settings, role typography, object",
-					"count": 2,
+					"count": 37,
 					"examples": [
-						"sgs/form-field-tiles.tileDescriptionLetterSpacing",
-						"sgs/form-field-tiles.tileLabelLetterSpacing"
+						"sgs/account.accountSectionFontSize",
+						"sgs/account.accountSectionLetterSpacing",
+						"sgs/account.accountSectionLineHeight",
+						"sgs/account.addressEditLinkFontSize",
+						"sgs/account.addressEditLinkLetterSpacing"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:typography:string",
 					"label": "block settings, role typography, string",
-					"count": 519,
+					"count": 924,
 					"examples": [
 						"sgs/accordion.fontSizeUnit",
 						"sgs/accordion.letterSpacingUnit",
 						"sgs/accordion.lineHeightUnit",
-						"sgs/account.cardDescFontSizeUnit",
-						"sgs/account.cardDescLetterSpacingUnit"
+						"sgs/account.accountPasswordHelperTypeFontSizeUnit",
+						"sgs/account.accountPasswordHelperTypeLetterSpacingUnit"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:typography:styling",
 					"label": "block settings, role typography, styling",
-					"count": 1806,
+					"count": 2854,
 					"examples": [
-						"sgs/accordion.fontFamily",
-						"sgs/accordion.fontSize",
-						"sgs/accordion.fontStyle",
-						"sgs/accordion.fontWeight",
-						"sgs/accordion.headerFontWeight"
+						"sgs/accordion.filterChipFontFamily",
+						"sgs/accordion.filterChipFontSize",
+						"sgs/accordion.filterSearchFontFamily",
+						"sgs/accordion.filterSearchFontSize",
+						"sgs/accordion.fontFamily"
 					],
 					"motion": false
 				},
@@ -1128,19 +1194,20 @@
 				{
 					"id": "block-setting:unclassified:integer",
 					"label": "block settings, role unclassified, integer",
-					"count": 4,
+					"count": 8,
 					"examples": [
+						"sgs/choice-flow-question.answersMax",
+						"sgs/choice-flow-question.answersMin",
 						"sgs/choice-flow-result.rateLimit",
-						"sgs/google-rating-badge.compactBelow",
-						"sgs/google-rating-badge.hideBelow",
-						"sgs/google-rating-badge.reviewCount"
+						"sgs/gift-order.messageLimit",
+						"sgs/gift-order.recipientLimit"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:unclassified:number",
 					"label": "block settings, role unclassified, number",
-					"count": 30,
+					"count": 31,
 					"examples": [
 						"sgs/audio.reactiveSensitivity",
 						"sgs/brand-strip.brandMaxItems",
@@ -1153,94 +1220,95 @@
 				{
 					"id": "block-setting:unclassified:object",
 					"label": "block settings, role unclassified, object",
-					"count": 21,
+					"count": 28,
 					"examples": [
 						"sgs/account.cardDescriptions",
 						"sgs/account.navIcons",
 						"sgs/account.statusStepLabels",
-						"sgs/card-grid.separators",
-						"sgs/choice-flow.headerLogo"
+						"sgs/account.strings",
+						"sgs/buybox.groupStyles"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:unclassified:string",
 					"label": "block settings, role unclassified, string",
-					"count": 76,
+					"count": 121,
 					"examples": [
-						"sgs/account.greeting",
-						"sgs/account.latestOrderHeading",
-						"sgs/account.parcelTrackingLabel",
-						"sgs/account.shopLinkLabel",
-						"sgs/account.viewOrderLabel"
+						"sgs/account.addressAddLabel",
+						"sgs/account.addressCancelLabel",
+						"sgs/account.addressCityLabel",
+						"sgs/account.addressEditLabel",
+						"sgs/account.addressHideFields"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:visual:boolean",
 					"label": "block settings, role visual, boolean",
-					"count": 5,
+					"count": 14,
 					"examples": [
+						"sgs/container.backgroundPinned",
+						"sgs/hero.backgroundPinned",
+						"sgs/multi-button.backgroundPinned",
 						"sgs/multi-button.bgSvgTextShadow",
-						"sgs/physics-canvas.bgSvgTextShadow",
-						"sgs/product-card.showShadow",
-						"sgs/site-footer.bgSvgTextShadow",
-						"sgs/site-header.bgSvgTextShadow"
+						"sgs/nav-drawer.backgroundPinned"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:visual:mode",
 					"label": "block settings, role visual, mode",
-					"count": 5,
+					"count": 2,
 					"examples": [
-						"sgs/container.backgroundAttachment",
-						"sgs/hero.backgroundAttachment",
-						"sgs/multi-button.backgroundAttachment",
-						"sgs/nav-drawer.backgroundAttachment",
-						"sgs/physics-canvas.backgroundAttachment"
+						"woocommerce/cart.sgsFieldLabelPosition",
+						"woocommerce/checkout.sgsFieldLabelPosition"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:visual:number",
 					"label": "block settings, role visual, number",
-					"count": 18,
+					"count": 21,
 					"examples": [
-						"sgs/media.overlayOpacity",
-						"sgs/mega-panel.surfaceOpacity",
-						"sgs/multi-button.bgSvgOpacity",
-						"sgs/nav-bar-menu.submenuCaretOpacity",
-						"sgs/nav-bar-menu.submenuCaretOpacityHover"
+						"sgs/card-grid.overlayOpacity",
+						"sgs/container.bgSvgOpacity",
+						"sgs/hero.bgSvgOpacity",
+						"sgs/label.endDepth",
+						"sgs/mega-panel.surfaceOpacity"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:visual:object",
 					"label": "block settings, role visual, object",
-					"count": 7,
+					"count": 92,
 					"examples": [
-						"sgs/brand-strip.separators",
-						"sgs/container.separators",
-						"sgs/icon-list.separators",
-						"sgs/nav-bar-menu.separators",
-						"sgs/nav-bar-menu.submenuSeparators"
+						"sgs/account.accountFieldsetBorderWidth",
+						"sgs/account.authPairBorderWidth",
+						"sgs/account.authPairCellBorderWidth",
+						"sgs/account.authPairCellRadius",
+						"sgs/account.resetFormBorderWidth"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:visual:string",
 					"label": "block settings, role visual, string",
-					"count": 1,
+					"count": 38,
 					"examples": [
-						"sgs/google-rating-badge.shadow"
+						"sgs/buybox.addToCartShadowHover",
+						"sgs/buybox.mainBoxShadow",
+						"sgs/buybox.pickerPillBorderWidth",
+						"sgs/container.backgroundOverlayBlend",
+						"sgs/decorative-image.layerBlend"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:visual:styling",
 					"label": "block settings, role visual, styling",
-					"count": 419,
+					"count": 612,
 					"examples": [
 						"sgs/accordion-item.borderRadius",
 						"sgs/accordion-item.borderStyle",
@@ -2162,7 +2230,7 @@
 				{
 					"id": "sgs-support:boxFamilies",
 					"label": "supports.sgs.boxFamilies",
-					"count": 71,
+					"count": 74,
 					"examples": [
 						"sgs/accordion",
 						"sgs/accordion-item",
@@ -2188,13 +2256,13 @@
 				{
 					"id": "sgs-support:colourExemptions",
 					"label": "supports.sgs.colourExemptions",
-					"count": 17,
+					"count": 19,
 					"examples": [
 						"sgs/before-after",
 						"sgs/business-info",
 						"sgs/cart",
 						"sgs/filter-search",
-						"sgs/gallery"
+						"sgs/form"
 					],
 					"motion": false
 				},
@@ -2214,7 +2282,7 @@
 				{
 					"id": "sgs-support:elements",
 					"label": "supports.sgs.elements",
-					"count": 97,
+					"count": 101,
 					"examples": [
 						"sgs/accordion",
 						"sgs/accordion-item",
@@ -2227,20 +2295,20 @@
 				{
 					"id": "sgs-support:enabledExtensions",
 					"label": "supports.sgs.enabledExtensions",
-					"count": 18,
+					"count": 21,
 					"examples": [
+						"sgs/business-info",
 						"sgs/button",
 						"sgs/container",
 						"sgs/heading",
-						"sgs/hero",
-						"sgs/icon"
+						"sgs/hero"
 					],
 					"motion": false
 				},
 				{
 					"id": "sgs-support:fx",
 					"label": "supports.sgs.fx",
-					"count": 8,
+					"count": 9,
 					"examples": [
 						"sgs/before-after",
 						"sgs/buybox",
@@ -2266,37 +2334,13 @@
 				{
 					"id": "sgs-support:iconPicker",
 					"label": "supports.sgs.iconPicker",
-					"count": 14,
+					"count": 17,
 					"examples": [
 						"sgs/accordion",
 						"sgs/button",
 						"sgs/cart",
 						"sgs/counter",
-						"sgs/form-field-tiles"
-					],
-					"motion": false
-				},
-				{
-					"id": "sgs-support:imageControls",
-					"label": "supports.sgs.imageControls",
-					"count": 14,
-					"examples": [
-						"sgs/card-grid",
-						"sgs/cart",
-						"sgs/form-field-tiles",
-						"sgs/gallery",
-						"sgs/google-rating-badge"
-					],
-					"motion": false
-				},
-				{
-					"id": "sgs-support:imageControlsExplicit",
-					"label": "supports.sgs.imageControlsExplicit",
-					"count": 3,
-					"examples": [
-						"sgs/card-grid",
-						"sgs/gallery",
-						"sgs/team-member"
+						"sgs/form"
 					],
 					"motion": false
 				},
@@ -2324,20 +2368,20 @@
 				{
 					"id": "sgs-support:mediaElements",
 					"label": "supports.sgs.mediaElements",
-					"count": 20,
+					"count": 27,
 					"examples": [
 						"sgs/before-after",
 						"sgs/brand-strip",
 						"sgs/buybox",
 						"sgs/card-grid",
-						"sgs/cart"
+						"sgs/choice-flow"
 					],
 					"motion": false
 				},
 				{
 					"id": "sgs-support:motion",
 					"label": "supports.sgs.motion",
-					"count": 77,
+					"count": 78,
 					"examples": [
 						"sgs/accordion",
 						"sgs/account",
@@ -2359,7 +2403,7 @@
 				{
 					"id": "sgs-support:motionItems",
 					"label": "supports.sgs.motionItems",
-					"count": 8,
+					"count": 9,
 					"examples": [
 						"sgs/card-grid",
 						"sgs/choice-flow-question",
@@ -2485,22 +2529,26 @@
 				{
 					"id": "sgs-support:spacingDefaults",
 					"label": "supports.sgs.spacingDefaults",
-					"count": 15,
+					"count": 20,
 					"examples": [
+						"sgs/account",
+						"sgs/buybox",
 						"sgs/card-grid",
 						"sgs/cart",
-						"sgs/countdown-timer",
-						"sgs/counter",
-						"sgs/filter-search"
+						"sgs/countdown-timer"
 					],
 					"motion": false
 				},
 				{
 					"id": "sgs-support:specRef",
 					"label": "supports.sgs.specRef",
-					"count": 1,
+					"count": 5,
 					"examples": [
-						"sgs/account"
+						"sgs/account",
+						"sgs/commerce-note",
+						"sgs/free-delivery-bar",
+						"sgs/gift-order",
+						"sgs/pay-later-message"
 					],
 					"motion": false
 				},
@@ -2511,6 +2559,17 @@
 					"examples": [
 						"sgs/nav-bar-menu",
 						"sgs/nav-drawer-menu"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:timeTextWords",
+					"label": "supports.sgs.timeTextWords",
+					"count": 3,
+					"examples": [
+						"sgs/heading",
+						"sgs/label",
+						"sgs/text"
 					],
 					"motion": false
 				},
@@ -2569,6 +2628,15 @@
 					"motion": false
 				},
 				{
+					"id": "extension:cardMinWidth",
+					"label": "extension cardMinWidth (product-collection-card-min.js)",
+					"count": 1,
+					"examples": [
+						"sgsCardMinWidth"
+					],
+					"motion": false
+				},
+				{
 					"id": "extension:childSizing",
 					"label": "extension childSizing (child-sizing.js)",
 					"count": 2,
@@ -2588,15 +2656,28 @@
 					"motion": false
 				},
 				{
+					"id": "extension:commerceLook",
+					"label": "extension commerceLook (commerce-look/attributes.js)",
+					"count": 689,
+					"examples": [
+						"sgsActionsMargin",
+						"sgsAddressFormColumnGap",
+						"sgsAddressWrapperMargin",
+						"sgsBarBackground",
+						"sgsBarBorderColour"
+					],
+					"motion": false
+				},
+				{
 					"id": "extension:conditionalVisibility",
 					"label": "extension conditionalVisibility (conditional-visibility.js)",
-					"count": 9,
+					"count": 12,
 					"examples": [
 						"sgsConditionCollectionQueryId",
 						"sgsConditionDateEnd",
 						"sgsConditionDateStart",
 						"sgsConditionDays",
-						"sgsConditionLoggedIn"
+						"sgsConditionFormField"
 					],
 					"motion": false
 				},
@@ -2612,6 +2693,32 @@
 					"motion": false
 				},
 				{
+					"id": "extension:filterLook",
+					"label": "extension filterLook (product-filter-look.js)",
+					"count": 22,
+					"examples": [
+						"sgsChipAllCount",
+						"sgsChipAllLabel",
+						"sgsChipBorderWidth",
+						"sgsChipCountBackground",
+						"sgsChipCountColour"
+					],
+					"motion": false
+				},
+				{
+					"id": "extension:floatPosition",
+					"label": "extension floatPosition (float-position.js)",
+					"count": 5,
+					"examples": [
+						"sgsInsetBottom",
+						"sgsInsetLeft",
+						"sgsInsetRight",
+						"sgsInsetTop",
+						"sgsPosition"
+					],
+					"motion": false
+				},
+				{
 					"id": "extension:focusRests",
 					"label": "extension focusRests (focus-rests.js)",
 					"count": 1,
@@ -2621,15 +2728,22 @@
 					"motion": false
 				},
 				{
-					"id": "extension:imageControls",
-					"label": "extension imageControls (image-controls.js)",
-					"count": 5,
+					"id": "extension:postContentLists",
+					"label": "extension postContentLists (post-content-lists.js)",
+					"count": 3,
 					"examples": [
-						"sgsColourTreatment",
-						"sgsHeight",
-						"sgsMaxWidth",
-						"sgsObjectFit",
-						"sgsObjectPosition"
+						"sgsListFontSize",
+						"sgsListGap",
+						"sgsListTextColour"
+					],
+					"motion": false
+				},
+				{
+					"id": "extension:postTimeToReadShort",
+					"label": "extension postTimeToReadShort (post-time-to-read-short.js)",
+					"count": 1,
+					"examples": [
+						"sgsShortFormat"
 					],
 					"motion": false
 				},
@@ -2651,6 +2765,16 @@
 					"count": 1,
 					"examples": [
 						"sgsSameTermAs"
+					],
+					"motion": false
+				},
+				{
+					"id": "extension:timeText",
+					"label": "extension timeText (time-text.js)",
+					"count": 2,
+					"examples": [
+						"sgsTimeText",
+						"sgsTimeTextZone"
 					],
 					"motion": false
 				}
@@ -3439,6 +3563,20 @@
 					"motion": false
 				},
 				{
+					"id": "snapshot-key:settings.custom.colourRoles",
+					"label": "theme-snapshot settings.custom.colourRoles",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.defaultTokens",
+					"label": "theme-snapshot settings.custom.defaultTokens",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
 					"id": "snapshot-key:settings.custom.distance",
 					"label": "theme-snapshot settings.custom.distance",
 					"count": 1,
@@ -3537,6 +3675,13 @@
 					"motion": false
 				},
 				{
+					"id": "snapshot-key:settings.custom.presetTokens",
+					"label": "theme-snapshot settings.custom.presetTokens",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
 					"id": "snapshot-key:settings.custom.scrollbar",
 					"label": "theme-snapshot settings.custom.scrollbar",
 					"count": 1,
@@ -3546,6 +3691,13 @@
 				{
 					"id": "snapshot-key:settings.custom.section",
 					"label": "theme-snapshot settings.custom.section",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.selection",
+					"label": "theme-snapshot settings.custom.selection",
 					"count": 1,
 					"examples": [],
 					"motion": false
@@ -3574,6 +3726,13 @@
 				{
 					"id": "snapshot-key:settings.custom.transition",
 					"label": "theme-snapshot settings.custom.transition",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.typeRoles",
+					"label": "theme-snapshot settings.custom.typeRoles",
 					"count": 1,
 					"examples": [],
 					"motion": false
