@@ -10,7 +10,7 @@ status: active
 references:
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
   - .claude/rules/framework-principles.md
-  - .claude/plans/2026-10-02-eye-care-fix-register.md
+  - .claude/plans/archive/2026-10-02-eye-care-fix-register.md
   - scripts/parity/GAP-CHECKLIST.md
 absorbs: null
 absorbed_by: null
@@ -20,7 +20,7 @@ absorbed_by: null
 
 ## 0. Plain English
 
-**Problem.** The Eye Care fix register (`.claude/plans/2026-10-02-eye-care-fix-register.md`) typed every fix line after the first full comparison against the draft. Most were a layout-file change for a setting that already existed; the rest were framework repairs or new settings. Current counts: the register's Type column.
+**Problem.** The Eye Care fix register (`.claude/plans/archive/2026-10-02-eye-care-fix-register.md`) typed every fix line after the first full comparison against the draft. Most were a layout-file change for a setting that already existed; the rest were framework repairs or new settings. Current counts: the register's Type column.
 - The layout files were typed by agents copying selected numbers from the draft. Nothing measured the draft first.
 - The commonest miss is a value the draft never states. A plain heading in the draft has no margin and normal weight (browser defaults), while an SGS heading defaults to an 8px bottom margin and bold.
 - The draft is a script-rendered prototype: over 95% of its styling is inline, and some values are computed per screen width at run time, so only the rendered page holds the true values.
