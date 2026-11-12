@@ -274,9 +274,9 @@ class MediaLayoutSizesTest extends TestCase {
 		// 170px tracks with a 16px gap: n columns from an (n * 186 - 16)px row, which is the viewport width itself.
 		$this->assertSame( array( 1472, 1286, 1100, 914, 728, 542, 356, null ), array_column( $segs, 0 ) );
 		$sizes = $this->sizes( 'desktop' );
-		$this->assertStringStartsWith( '(min-width: 1472px) calc(12.5vw - 14px), ', $sizes );
-		$this->assertStringContainsString( '(min-width: 728px) calc(25vw - 12px), ', $sizes );
-		$this->assertStringEndsWith( '(min-width: 356px) calc(50vw - 8px), 100vw', $sizes );
+		$this->assertStringStartsWith( '(min-width:1472px) calc(12.5vw - 14px), ', $sizes );
+		$this->assertStringContainsString( '(min-width:728px) calc(25vw - 12px), ', $sizes );
+		$this->assertStringEndsWith( '(min-width:356px) calc(50vw - 8px), 100vw', $sizes );
 	}
 
 	public function test_an_auto_fill_cell_inside_a_padded_card_keeps_the_card_padding_after_the_division(): void {
@@ -287,14 +287,14 @@ class MediaLayoutSizesTest extends TestCase {
 			)
 		);
 		$this->open( $this->grid(), $card, $this->leaf() );
-		$this->assertStringContainsString( '(min-width: 356px) calc(50vw - 32px), calc(100vw - 24px)', $this->sizes( 'desktop' ) );
+		$this->assertStringContainsString( '(min-width:356px) calc(50vw - 32px), calc(100vw - 24px)', $this->sizes( 'desktop' ) );
 	}
 
 	public function test_a_capped_auto_fill_row_stops_at_the_columns_that_fit_under_the_cap(): void {
 		$this->open( $this->grid( array( 'maxWidth' => array( 'desktop' => '1056px' ) ) ), $this->leaf() );
 		$sizes = $this->sizes( 'desktop' );
 		// Five columns need a 914px row; six need 1100px, more than the cap: the widest entry is five columns.
-		$this->assertStringStartsWith( '(min-width: 914px) min(198.4px, calc(20vw - 12.8px)), ', $sizes );
+		$this->assertStringStartsWith( '(min-width:914px) min(198.4px, calc(20vw - 12.8px)), ', $sizes );
 	}
 
 	public function test_a_gap_of_unknown_size_keeps_the_cell_at_the_row(): void {
@@ -366,13 +366,13 @@ class MediaLayoutSizesTest extends TestCase {
 		}
 		$combined = sgs_media_combine_sizes( $by_device );
 		// Mobile, 140px tracks: four columns from 608px, six from 920px (past the mobile range, so not printed).
-		$this->assertStringContainsString( '(max-width:767.98px) and (min-width: 608px) calc(25vw - 12px), ', $combined );
-		$this->assertStringNotContainsString( '(min-width: 920px)', $combined );
+		$this->assertStringContainsString( '(max-width:767.98px) and (min-width:608px) calc(25vw - 12px), ', $combined );
+		$this->assertStringNotContainsString( '(min-width:920px)', $combined );
 		$this->assertStringContainsString( '(max-width:767.98px) 100vw, ', $combined );
 		// Tablet: five columns from 914px; four start under the tablet's 768px, so that count has no start.
-		$this->assertStringContainsString( '(max-width:1023.98px) and (min-width: 914px) calc(20vw - 12.8px), (max-width:1023.98px) calc(25vw - 12px), ', $combined );
+		$this->assertStringContainsString( '(max-width:1023.98px) and (min-width:914px) calc(20vw - 12.8px), (max-width:1023.98px) calc(25vw - 12px), ', $combined );
 		// Desktop ends the list with no device condition, and its five columns start under 1024px.
-		$this->assertStringEndsWith( ', (min-width: 1100px) calc(16.67vw - 13.33px), calc(20vw - 12.8px)', $combined );
+		$this->assertStringEndsWith( ', (min-width:1100px) calc(16.67vw - 13.33px), calc(20vw - 12.8px)', $combined );
 	}
 
 	public function test_a_product_list_takes_woocommerces_gap_off_each_cell(): void {

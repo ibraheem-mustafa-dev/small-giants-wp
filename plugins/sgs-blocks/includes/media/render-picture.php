@@ -102,6 +102,23 @@ if ( ! function_exists( 'sgs_media_source_tag' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_column_entry_pattern' ) ) {
+	/**
+	 * The pattern of one column-count `sizes` entry, `<min-width condition> <length>`, built from the condition
+	 * `SGS_Breakpoints::query_width()` prints (Sgs_Layout_Width::to_sizes writes the entries through it).
+	 *
+	 * @return string A regex capturing the start width in px and the length.
+	 */
+	function sgs_media_column_entry_pattern(): string {
+		static $pattern = null;
+		if ( null === $pattern ) {
+			$probe   = preg_quote( SGS_Breakpoints::query_width( 'min', 'SGSWIDTH' ), '/' );
+			$pattern = '/^' . str_replace( 'SGSWIDTH', '(\d+(?:\.\d+)?)px', $probe ) . '\s+(.+)$/';
+		}
+		return $pattern;
+	}
+}
+
 if ( ! function_exists( 'sgs_media_sizes_entries' ) ) {
 	/**
 	 * One device's `sizes` value as entries: a list of `(min-width: Npx) length` entries (a grid cell's column counts) splits
@@ -111,7 +128,7 @@ if ( ! function_exists( 'sgs_media_sizes_entries' ) ) {
 	 * @return array<int,array{0:?int,1:string}> Each `[start viewport px or null, length expression]`.
 	 */
 	function sgs_media_sizes_entries( string $value ): array {
-		if ( ! preg_match( '/^\(min-width: \d+px\) /', $value ) && false === strpos( $value, ', ' ) ) {
+		if ( ! preg_match( sgs_media_column_entry_pattern(), $value ) && false === strpos( $value, ', ' ) ) {
 			return array( array( null, $value ) );
 		}
 		$parts = array();
@@ -131,7 +148,7 @@ if ( ! function_exists( 'sgs_media_sizes_entries' ) ) {
 		$parts[] = trim( substr( $value, $start ) );
 		$out     = array();
 		foreach ( $parts as $part ) {
-			if ( preg_match( '/^\(min-width: (\d+)px\) (.+)$/', $part, $m ) ) {
+			if ( preg_match( sgs_media_column_entry_pattern(), $part, $m ) ) {
 				$out[] = array( (int) $m[1], $m[2] );
 			} elseif ( 1 === count( $parts ) || count( $out ) === count( $parts ) - 1 ) {
 				$out[] = array( null, $part );
@@ -197,7 +214,7 @@ if ( ! function_exists( 'sgs_media_combine_sizes' ) ) {
 				}
 			}
 			foreach ( $entries as list( $from, $expr ) ) {
-				$conds  = array_filter( array( $device === $widest ? '' : sgs_media_device_query_upto( $device ), null === $from ? '' : '(min-width: ' . $from . 'px)' ) );
+				$conds  = array_filter( array( $device === $widest ? '' : sgs_media_device_query_upto( $device ), null === $from ? '' : SGS_Breakpoints::query_width( 'min', $from ) ) );
 				$list[] = ( $conds ? implode( ' and ', $conds ) . ' ' : '' ) . $expr;
 			}
 		}

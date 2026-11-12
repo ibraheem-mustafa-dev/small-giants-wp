@@ -742,7 +742,7 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 				// One entry per column count, widest viewport first; the narrowest count has no condition.
 				$entries = array();
 				foreach ( self::grid_segments( $model ) as list( $from, $cell ) ) {
-					$entries[] = ( null === $from ? '' : '(min-width: ' . $from . 'px) ' ) . self::to_sizes( $cell, true );
+					$entries[] = ( null === $from ? '' : SGS_Breakpoints::query_width( 'min', $from ) . ' ' ) . self::to_sizes( $cell, true );
 				}
 				return implode( ', ', $entries );
 			}
