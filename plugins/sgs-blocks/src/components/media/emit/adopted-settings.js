@@ -61,7 +61,17 @@ function row( o ) {
 		control: { component: o.component, label: o.label, panel: o.panel, order: o.order },
 		slots: o.slots || EVERYWHERE,
 		adopted: true,
+		// 'source': a control-only row. Its value lives inside `Source.<device>`, so no attribute, override entry or slot-schema shape exists for it.
+		stored: o.stored || 'attribute',
 	};
+}
+
+/**
+ * @param {Object} setting An adopted row.
+ * @return {boolean} True when the row is stored as its own block attribute (false for a control-only row such as Captions).
+ */
+export function storesAttribute( setting ) {
+	return 'attribute' === ( setting?.stored || 'attribute' );
 }
 
 const SOURCE_SETTINGS = [
@@ -119,7 +129,7 @@ const SVG_SETTINGS = [
 
 const PLAYBACK_SETTINGS = [
 	row( { base: 'Playback', type: 'object', role: 'behaviour', component: 'PlaybackField', label: 'Playback', panel: 'video', order: 1 , slots: slotsOf( [ 'video', 'embed' ], ALL_CONTEXTS ) } ),
-	row( { base: 'Captions', type: 'object', role: 'content', component: 'CaptionsField', label: 'Captions', panel: 'video', order: 2 , slots: slotsOf( [ 'video' ], ALL_CONTEXTS ) } ),
+	row( { base: 'Captions', type: 'object', role: 'content', component: 'CaptionsField', label: 'Captions', panel: 'video', order: 2, stored: 'source', slots: slotsOf( [ 'video' ], ALL_CONTEXTS ) } ),
 ];
 
 const CAPTION_SETTINGS = [
@@ -220,10 +230,10 @@ export function adoptedAtomsForElement( element ) {
 /**
  * @param {string[]} atomIds Adopted atom ids.
  * @param {Object}   [element] A `mediaElements` entry; when given, only the rows its `context` and `kinds` allow.
- * @return {Object[]} Their rows, in atom order.
+ * @return {Object[]} Their attribute-storing rows, in atom order.
  */
 export function adoptedSettingsForAtoms( atomIds, element ) {
-	const rows = atomIds.flatMap( ( id ) => ADOPTED_SETTINGS[ id ] || [] );
+	const rows = atomIds.flatMap( ( id ) => ADOPTED_SETTINGS[ id ] || [] ).filter( storesAttribute );
 	return element ? rows.filter( ( setting ) => settingAppliesToSlot( setting, element ) ) : rows;
 }
 

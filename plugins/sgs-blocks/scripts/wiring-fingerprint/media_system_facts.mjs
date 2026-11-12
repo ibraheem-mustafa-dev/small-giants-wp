@@ -34,7 +34,7 @@ if ( ! fs.existsSync( path.join( plugin, 'src', 'components', 'media', 'emit', '
 	process.stdout.write( JSON.stringify( { blocks: {}, shared: { php: [], canvas: [] } } ) );
 	process.exit( 0 );
 }
-const { adoptedAtomsForElement, ADOPTED_SETTINGS, settingAppliesToSlot } = await import( url( 'src', 'components', 'media', 'emit', 'adopted-settings.js' ) );
+const { adoptedAtomsForElement, ADOPTED_SETTINGS, settingAppliesToSlot, storesAttribute } = await import( url( 'src', 'components', 'media', 'emit', 'adopted-settings.js' ) );
 const { mediaAttrName } = await import( url( 'src', 'components', 'MediaElementControls.js' ) );
 
 const walk = ( dir, test, out = [] ) => {
@@ -71,7 +71,7 @@ for ( const file of walk( blocksDir, ( n ) => n === 'block.json' ).sort() ) {
 	for ( const element of entries ) {
 		const prefix = element.prefix ? String( element.prefix ) : '';
 		for ( const id of adoptedAtomsForElement( element ) ) {
-			for ( const setting of ADOPTED_SETTINGS[ id ] || [] ) {
+			for ( const setting of ( ADOPTED_SETTINGS[ id ] || [] ).filter( storesAttribute ) ) {
 				const name = mediaAttrName( prefix, setting.base );
 				const offered = !! setting.control && settingAppliesToSlot( setting, element );
 				const prior = attrs[ name ];

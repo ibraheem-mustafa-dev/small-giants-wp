@@ -279,22 +279,6 @@
 			}
 		}
 	},
-	"Captions": {
-		"type": "object",
-		"additionalProperties": false,
-		"properties": {
-			"id": {
-				"type": "integer",
-				"minimum": 0
-			},
-			"label": {
-				"type": "string"
-			},
-			"lang": {
-				"type": "string"
-			}
-		}
-	},
 	"Caption": {
 		"type": "string"
 	},

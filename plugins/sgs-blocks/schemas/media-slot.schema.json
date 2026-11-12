@@ -51,9 +51,6 @@
 		"captionTag": {
 			"$ref": "#/$defs/CaptionTag"
 		},
-		"captions": {
-			"$ref": "#/$defs/Captions"
-		},
 		"colour": {
 			"$ref": "#/$defs/Colour"
 		},
@@ -341,25 +338,6 @@
 			],
 			"x-sgs-base": "CaptionTag",
 			"x-sgs-role": "tag-identity",
-			"x-sgs-responsive": false
-		},
-		"Captions": {
-			"type": "object",
-			"additionalProperties": false,
-			"properties": {
-				"id": {
-					"type": "integer",
-					"minimum": 0
-				},
-				"label": {
-					"type": "string"
-				},
-				"lang": {
-					"type": "string"
-				}
-			},
-			"x-sgs-base": "Captions",
-			"x-sgs-role": "content",
 			"x-sgs-responsive": false
 		},
 		"Colour": {

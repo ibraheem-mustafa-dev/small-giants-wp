@@ -484,7 +484,6 @@
 		"svgParts": {"type":"array","default":[],"_generated":"media-atoms"},
 		"svgPartsTrigger": {"type":"string","_generated":"media-atoms"},
 		"playback": {"type":"object","_generated":"media-atoms"},
-		"captions": {"type":"object","_generated":"media-atoms"},
 		"ratio": {"type":"object","_generated":"media-atoms"},
 		"width": {"type":"object","_generated":"media-atoms"},
 		"minWidth": {"type":"object","_generated":"media-atoms"},

@@ -2,42 +2,6 @@
   "accepted": [
     {
       "type": "orphan_attr",
-      "block": "sgs/before-after",
-      "attr": "afterCaptions",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/before-after",
-      "attr": "beforeCaptions",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/container",
-      "attr": "backgroundCaptions",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/hero",
-      "attr": "backgroundCaptions",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/hero",
-      "attr": "splitCaptions",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/multi-button",
-      "attr": "backgroundCaptions",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
       "block": "sgs/nav-bar-menu",
       "attr": "_note_nav_fill",
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
@@ -49,29 +13,11 @@
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
     },
     {
-      "type": "orphan_attr",
-      "block": "sgs/nav-drawer",
-      "attr": "backgroundCaptions",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/physics-canvas",
-      "attr": "backgroundCaptions",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
       "type": "undeclared_render_ref",
       "block": "sgs/product-card",
       "attr": "_sgsCardUid",
       "file": "render.php",
       "reason": "render.php reads '_sgsCardUid' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/site-footer",
-      "attr": "backgroundCaptions",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
     },
     {
       "type": "orphan_attr",
@@ -81,20 +27,8 @@
     },
     {
       "type": "orphan_attr",
-      "block": "sgs/site-header",
-      "attr": "backgroundCaptions",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
       "block": "sgs/site-header-row",
       "attr": "hidePromotedPlaceholder",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/trust-bar",
-      "attr": "backgroundCaptions",
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
     }
   ]

@@ -913,8 +913,7 @@
 		"backgroundSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
 		"backgroundSvgParts": {"type":"array","default":[],"_generated":"media-atoms"},
 		"backgroundSvgPartsTrigger": {"type":"string","_generated":"media-atoms"},
-		"backgroundPlayback": {"type":"object","_generated":"media-atoms"},
-		"backgroundCaptions": {"type":"object","_generated":"media-atoms"}
+		"backgroundPlayback": {"type":"object","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

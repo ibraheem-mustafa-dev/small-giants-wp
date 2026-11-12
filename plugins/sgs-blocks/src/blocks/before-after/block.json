@@ -505,15 +505,13 @@
 		"beforeFit": {"type":"object","_generated":"media-atoms"},
 		"beforeFocal": {"type":"object","_generated":"media-atoms"},
 		"beforePlayback": {"type":"object","_generated":"media-atoms"},
-		"beforeCaptions": {"type":"object","_generated":"media-atoms"},
 		"afterSource": {"type":"object","_generated":"media-atoms"},
 		"afterLoading": {"type":"string","_generated":"media-atoms"},
 		"afterAlt": {"type":"string","_generated":"media-atoms"},
 		"afterDecorative": {"type":"boolean","_generated":"media-atoms"},
 		"afterFit": {"type":"object","_generated":"media-atoms"},
 		"afterFocal": {"type":"object","_generated":"media-atoms"},
-		"afterPlayback": {"type":"object","_generated":"media-atoms"},
-		"afterCaptions": {"type":"object","_generated":"media-atoms"}
+		"afterPlayback": {"type":"object","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
