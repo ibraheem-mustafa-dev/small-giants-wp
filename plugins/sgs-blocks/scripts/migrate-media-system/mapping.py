@@ -73,6 +73,18 @@ def live_declared_attributes() -> dict:
     return out
 
 
+@lru_cache(maxsize=1)
+def live_motion_parts() -> dict:
+    """{block name: parts it declares in supports.sgs.elements that take motion} from every block.json on disk. A part marked
+    `"motion": false` takes none."""
+    out: dict[str, set[str]] = {}
+    for path in sorted(BLOCKS_DIR.glob("*/block.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        elements = ((data.get("supports") or {}).get("sgs") or {}).get("elements") or {}
+        out[data["name"]] = {k for k, v in elements.items() if not (isinstance(v, dict) and v.get("motion") is False)}
+    return out
+
+
 def any_block_adopted() -> bool:
     """True once any block declares `kinds` on a media slot: the cutover marker (§8.3)."""
     return any(e["kinds"] for entries in live_declared_slots().values() for e in entries)
@@ -278,8 +290,8 @@ EXTRA = {
     ("sgs/product-card", "brandLogoWidth"): ("sizing", "logoWidth"),
     ("sgs/product-card", "brandLogoMaxHeight"): ("sizing", "logoMaxHeight"),
     ("sgs/product-card", "brandLogoMaxWidth"): ("sizing", "logoMaxWidth"),
-    ("sgs/hero", "splitMediaBorderColourHover"): ("report", "Hover effect on the media part (WP-10a)"),
-    ("sgs/hero", "splitMediaBorderColourHoverGradient"): ("report", "Hover effect on the media part (WP-10a)"),
+    ("sgs/hero", "splitMediaBorderColourHover"): ("rename", "splitBorderColourHover"),
+    ("sgs/hero", "splitMediaBorderColourHoverGradient"): ("rename", "splitBorderColourHoverGradient"),
     ("sgs/brand-strip", "tileShape"): ("shape", "logoShape"),
     ("sgs/brand-strip", "logoFit"): ("fit", "logoFit"),
     ("sgs/trust-bar", "badgeImageObjectFit"): ("fit", "badgeFit"),
@@ -363,6 +375,9 @@ EXTRA = {
     ("sgs/buybox", "previewBorderWidth"): ("sides", "previewBorderWidth"),
     ("sgs/buybox", "previewRadius"): ("radius", "previewRadius"),
     ("sgs/buybox", "galleryThumbBorderColourHover"): ("rename", "thumbBorderColourHover"),
+    # The interim attribute (a49e09cb6) that painted the selected thumbnail's border; a3800aa67 replaced it with the shared border
+    # panel's Current state, which extras.php::sgs_buybox_extras_scoped_css paints on the same element with the same colour value.
+    ("sgs/buybox", "thumbSelectedBorderColour"): ("rename", "galleryThumbBorderColourCurrent"),
     ("sgs/product-card", "imageHeight"): ("sizing", "imageHeight"),
 }
 
@@ -462,7 +477,34 @@ MOTION_PART_RENAMES = {
 
 # Attributes the report skips: `sgs/button`'s `scaleHover` scales the whole button (the Hover state route does not replace it), and
 # `sgs/brand-strip`'s `imageEffect` keeps its sepia value (its grayscale value moves to the Hover state).
-REPORT_EXEMPT = {("sgs/button", "scaleHover"), ("sgs/brand-strip", "imageEffect")}
+REPORT_EXEMPT = {("sgs/button", "scaleHover"), ("sgs/brand-strip", "imageEffect"),
+                 # Still declared and rendered by their own render.php: the card (or box) scales on hover, not the image, so nothing moves.
+                 ("sgs/card-grid", "scaleHover"), ("sgs/gallery", "scaleHover"), ("sgs/info-box", "scaleHover"),
+                 ("sgs/post-grid", "scaleHover"), ("sgs/team-member", "scaleHover")}
+
+# `imageZoomHover` (the old per-block "zoom the photo on hover" switch) becomes the image part's Hover state: block -> (part, source
+# (one item or the whole block triggers it), scale, duration ms, easing), the look the switch drew on main before the motion model
+# (card-grid and team-member: `.sgs-has-img-zoom` scale(var(--sgs-hover-zoom, 1.1)) over `--sgs-hover-zoom-duration, 0.5s ease`;
+# gallery and post-grid: scale 1.05 over the block's transition duration, 300ms ease). A saved `sgsHoverZoom` (percent) and
+# `sgsHoverZoomDuration` (ms) on the same block override scale and duration, as the old `--sgs-hover-zoom*` custom properties did.
+# `false` is off: no state. The attribute is then deleted.
+HOVER_IMAGE_ZOOM = {
+    "sgs/card-grid": ("image", "item", 1.1, 500, "ease"),
+    "sgs/gallery": ("image", "item", 1.05, 300, "ease"),
+    "sgs/post-grid": ("image", "item", 1.05, 300, "ease"),
+    "sgs/team-member": ("image", "root", 1.1, 500, "ease"),
+}
+
+# The universal Hover Effects extension's photo zoom (`sgsHoverImageZoom` on, with `sgsHoverZoom` percent and `sgsHoverZoomDuration` ms)
+# on blocks that had no switch of their own: block -> (part, scale when no percent was saved, duration ms when none was saved). The
+# old runtime read the percent and duration only while the switch was on, so they are deleted when it is off or absent.
+HOVER_EXTENSION_ZOOM = {
+    "sgs/media": ("media", 1.1, 500),
+    "sgs/product-card": ("image", 1.1, 500),
+}
+
+# `sgs/icon`'s `scaleHover` (a scale factor, old default 1.1) becomes the `shape` part's Hover state; 1 scaled nothing and is deleted.
+HOVER_SCALE = {"sgs/icon": ("shape", "root")}
 
 # Grey to colour moves to the image part's Hover state (`hover-grayscale-to-colour`): block -> (attribute, value that
 # switches it on, part, whether one item or the whole block triggers it). The attribute is then deleted.

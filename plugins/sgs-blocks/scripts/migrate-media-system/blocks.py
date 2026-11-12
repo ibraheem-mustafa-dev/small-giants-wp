@@ -672,6 +672,198 @@ def migrate_hover_grayscale(ctx: T.Ctx) -> None:
     ctx.drop(name, "converted", f"sgsMotion.elements.{part}.hover.state")
 
 
+# ---------------------------------------------------------------- hover and effect settings that became motion layers
+
+def _motion_root(ctx: T.Ctx, name: str):
+    """The block's `sgsMotion` object ready to take a layer ({"v": 1, "elements": {}} when it has none), or None after refusing `name`."""
+    motion = ctx.get("sgsMotion")
+    if motion is None:
+        motion = {"v": 1, "elements": {}}
+    if not isinstance(motion, dict) or not isinstance(motion.setdefault("elements", {}), dict):
+        ctx.keep(name, "refused", "sgsMotion is not an object: the layer cannot be added")
+        return None
+    return motion
+
+
+def _part_ready(ctx: T.Ctx, name: str, part: str) -> bool:
+    if part in M.live_motion_parts().get(ctx.block, set()):
+        return True
+    ctx.keep(name, "refused", f"{ctx.block} declares no {part} part that takes motion: the layer cannot be added")
+    return False
+
+
+def add_hover_state(ctx: T.Ctx, name: str, part: str, source: str, values: dict) -> bool:
+    """Add `values` to the part's Hover state (`sgsMotion.elements.<part>.hover.state`). A part that already holds a state with the same
+    trigger and no preset takes the values it lacks; a different trigger, a preset or a different value for the same key refuses `name`
+    and leaves the saved state as it is, so nothing a client set is overwritten. True when written."""
+    if not _part_ready(ctx, name, part):
+        return False
+    motion = _motion_root(ctx, name)
+    if motion is None:
+        return False
+    elements = motion["elements"]
+    held = elements.get(part) if isinstance(elements.get(part), dict) else {}
+    hover = held.get("hover") if isinstance(held.get("hover"), dict) else {}
+    state = hover.get("state")
+    if state:
+        held_values = state.get("values") if isinstance(state, dict) else None
+        if (not isinstance(held_values, dict) or state.get("preset") or state.get("source", "root") != source
+                or any(k in held_values and held_values[k] != v for k, v in values.items())):
+            ctx.keep(name, "refused", f"the {part} part already holds a different Hover state")
+            return False
+        state["values"] = {**values, **held_values}
+        state["source"] = source
+    else:
+        elements[part] = {**held, "hover": {**hover, "state": {"source": source, "values": dict(values)}}}
+    ctx.put("sgsMotion", motion)
+    return True
+
+
+def add_effect_layer(ctx: T.Ctx, name: str, part: str, layer: dict) -> bool:
+    """Append an effect layer to `sgsMotion.elements.<part>.effects`; refuses `name` when the part already holds a layer of that effect."""
+    if not _part_ready(ctx, name, part):
+        return False
+    motion = _motion_root(ctx, name)
+    if motion is None:
+        return False
+    elements = motion["elements"]
+    held = elements.get(part) if isinstance(elements.get(part), dict) else {}
+    effects = held.get("effects") if isinstance(held.get("effects"), list) else []
+    if any(isinstance(e, dict) and e.get("effect") == layer["effect"] for e in effects):
+        ctx.keep(name, "refused", f"the {part} part already holds a {layer['effect']} layer")
+        return False
+    elements[part] = {**held, "effects": [*effects, layer]}
+    ctx.put("sgsMotion", motion)
+    return True
+
+
+def _tidy(number: float):
+    rounded = round(number, 4)
+    return int(rounded) if rounded == int(rounded) else rounded
+
+
+def _zoom_numbers(ctx: T.Ctx, scale: float, duration: int):
+    """The scale and duration `sgsHoverZoom` (percent above 100) and `sgsHoverZoomDuration` (ms above 0) saved over the block's own."""
+    percent, millis = V.to_number(ctx.get("sgsHoverZoom")), V.to_number(ctx.get("sgsHoverZoomDuration"))
+    if percent is not None and percent > 100:
+        scale = _tidy(percent / 100)
+    if millis is not None and millis > 0:
+        duration = int(millis)
+    return scale, duration
+
+
+ZOOM_READ_NOTE = "the old runtime read the zoom percent and duration only while the photo zoom was on"
+
+
+def migrate_image_zoom_hover(ctx: T.Ctx) -> None:
+    """`imageZoomHover` on: the image part's Hover state with the look the switch drew (`mapping.HOVER_IMAGE_ZOOM`), the saved
+    `sgsHoverZoom` and `sgsHoverZoomDuration` overriding scale and duration. Off: nothing to draw, so the attribute (and the percent
+    and duration that only applied while it was on) is deleted."""
+    rule = M.HOVER_IMAGE_ZOOM.get(ctx.block)
+    if not rule or not ctx.has("imageZoomHover"):
+        return
+    part, source, scale, duration, easing = rule
+    flag = ctx.get("imageZoomHover")
+    if flag in (False, None, ""):
+        ctx.drop("imageZoomHover", "deleted", "", "off: the photo did not zoom on hover")
+        for name in ("sgsHoverZoom", "sgsHoverZoomDuration"):
+            ctx.drop(name, "deleted", "", ZOOM_READ_NOTE)
+        return
+    if flag is not True:
+        ctx.keep("imageZoomHover", "refused", f"{flag!r} is not a boolean")
+        return
+    scale, duration = _zoom_numbers(ctx, scale, duration)
+    if add_hover_state(ctx, "imageZoomHover", part, source, {"scale": scale, "duration": duration, "easing": easing}):
+        target = f"sgsMotion.elements.{part}.hover.state"
+        for name in ("imageZoomHover", "sgsHoverZoom", "sgsHoverZoomDuration"):
+            ctx.drop(name, "converted", target)
+
+
+def migrate_extension_zoom_hover(ctx: T.Ctx) -> None:
+    """The universal Hover Effects extension's photo zoom (`sgsHoverImageZoom` with `sgsHoverZoom` and `sgsHoverZoomDuration`) on a block
+    with no switch of its own (`mapping.HOVER_EXTENSION_ZOOM`): on becomes the part's Hover state triggered by the whole block; off or
+    absent deletes the percent and duration, which the old runtime ignored then."""
+    rule = M.HOVER_EXTENSION_ZOOM.get(ctx.block)
+    names = ("sgsHoverImageZoom", "sgsHoverZoom", "sgsHoverZoomDuration")
+    if not rule or not any(ctx.has(n) for n in names):
+        return
+    part, scale, duration = rule
+    flag = ctx.get("sgsHoverImageZoom")
+    if flag is not True:
+        if flag not in (False, None, ""):
+            ctx.keep("sgsHoverImageZoom", "refused", f"{flag!r} is not a boolean")
+            return
+        for name in names:
+            ctx.drop(name, "deleted", "", "off: the photo did not zoom on hover" if name == "sgsHoverImageZoom" else ZOOM_READ_NOTE)
+        return
+    scale, duration = _zoom_numbers(ctx, scale, duration)
+    if add_hover_state(ctx, "sgsHoverImageZoom", part, "root", {"scale": scale, "duration": duration, "easing": "ease"}):
+        for name in names:
+            ctx.drop(name, "converted", f"sgsMotion.elements.{part}.hover.state")
+
+
+def migrate_scale_hover(ctx: T.Ctx) -> None:
+    """`sgs/icon`'s `scaleHover` (the scale factor the icon grew to on hover) becomes the shape part's Hover state; 1 grew nothing."""
+    rule = M.HOVER_SCALE.get(ctx.block)
+    if not rule or not ctx.has("scaleHover"):
+        return
+    part, source = rule
+    number = V.to_number(ctx.get("scaleHover"))
+    if number is None or not 0 < number <= 4:
+        ctx.keep("scaleHover", "refused", f"{ctx.get('scaleHover')!r} is not a scale from above 0 to 4")
+    elif number == 1:
+        ctx.drop("scaleHover", "deleted", "", "1 scales nothing")
+    elif add_hover_state(ctx, "scaleHover", part, source, {"scale": _tidy(number)}):
+        ctx.drop("scaleHover", "converted", f"sgsMotion.elements.{part}.hover.state")
+
+
+SPLIT_MOTION_PART = "split-media"
+SPLIT_KEN_BURNS = {"mode": "loop", "zoomStart": 100, "zoomEnd": 106, "easing": "ease-in-out"}
+SPLIT_PARALLAX_RATIO = 0.01
+
+
+def migrate_hero_split_motion(ctx: T.Ctx) -> None:
+    """The hero's split media Ken Burns and parallax (`splitMediaKenBurns`, `splitMediaAnimationDuration`, `splitMediaParallax`) become effect
+    layers on the `split-media` part, with the values the motion sweep (`includes/motion/migrate`, looping-media and parallax mappers) gives
+    the same attributes: a loop from 100 to 106 percent over the saved seconds (5 to 60, default 20), and a page-basis parallax at ratio
+    0.01. The old render ran the parallax instead of the Ken Burns when both were on, so a Ken Burns beside a parallax writes no layer."""
+    if ctx.block != "sgs/hero":
+        return
+    names = ("splitMediaKenBurns", "splitMediaAnimationDuration", "splitMediaParallax")
+    if not any(ctx.has(n) for n in names):
+        return
+    toggles = {n: ctx.get(n) for n in ("splitMediaKenBurns", "splitMediaParallax") if ctx.has(n)}
+    for name, value in toggles.items():
+        if not isinstance(value, bool):
+            ctx.keep(name, "refused", f"{value!r} is not a boolean")
+            return
+    seconds = 20
+    if ctx.has("splitMediaAnimationDuration"):
+        number = V.to_number(ctx.get("splitMediaAnimationDuration"))
+        if number is None:
+            ctx.keep("splitMediaAnimationDuration", "refused", f"{ctx.get('splitMediaAnimationDuration')!r} is not a number of seconds")
+            return
+        seconds = max(5, min(60, int(round(number))))
+    target = f"sgsMotion.elements.{SPLIT_MOTION_PART}.effects"
+    if toggles.get("splitMediaParallax") is True:
+        layer = {"id": "parallax", "effect": "parallax", "values": {"speedRatio": SPLIT_PARALLAX_RATIO, "basis": "page"}}
+        if not add_effect_layer(ctx, "splitMediaParallax", SPLIT_MOTION_PART, layer):
+            return
+        ctx.drop("splitMediaParallax", "converted", target)
+        ctx.drop("splitMediaKenBurns", "deleted", "", "the parallax on the same element won and the Ken Burns never ran")
+        ctx.drop("splitMediaAnimationDuration", "deleted", "", "it timed only the Ken Burns, which never ran")
+    elif toggles.get("splitMediaKenBurns") is True:
+        layer = {"id": "ken-burns", "effect": "ken-burns", "values": {**SPLIT_KEN_BURNS, "duration": seconds * 1000}}
+        if not add_effect_layer(ctx, "splitMediaKenBurns", SPLIT_MOTION_PART, layer):
+            return
+        ctx.drop("splitMediaKenBurns", "converted", target, "the old loop (scale 1 to 1.06 to 1.04 to 1 with a small drift) is a 100 to 106 alternating zoom")
+        ctx.drop("splitMediaAnimationDuration", "converted", target)
+        ctx.drop("splitMediaParallax", "deleted", "", "off")
+    else:
+        for name in names:
+            ctx.drop(name, "deleted", "", "off: nothing moved")
+
+
 def migrate_report_always(ctx: T.Ctx) -> None:
     for name in list(ctx.attrs):
         if (ctx.block, name) in M.REPORT_EXEMPT:
@@ -819,6 +1011,10 @@ def _migrate(name: str, attrs: dict):
     ctx = T.Ctx(name, attrs)
     migrate_inert_settings(ctx)
     migrate_retired_hero_split(ctx)
+    migrate_image_zoom_hover(ctx)
+    migrate_extension_zoom_hover(ctx)
+    migrate_scale_hover(ctx)
+    migrate_hero_split_motion(ctx)
     migrate_hover_grayscale(ctx)
     for slot in M.merged_slots(name):
         T.migrate_slot(ctx, slot["olds"], slot["new"], slot["bases"])

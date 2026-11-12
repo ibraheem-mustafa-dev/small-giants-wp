@@ -331,6 +331,10 @@ def _focal(slot: Slot, base: str, target: str) -> None:
         merged.update(parsed)
     for name in bad_names:
         ctx.keep(name, "refused", "focal position is not readable as keywords or percentages")
+    for tier in TIERS:
+        name = slot.present(base, tier)
+        if name and name not in bad_names and all_inert(ctx.get(name)):
+            ctx.drop(name, "deleted", "", INERT_POSITION_NOTE)
     pruned = V.prune_inherited(merged, {"x": 0.5, "y": 0.5})
     if pruned:
         ctx.put(target, pruned)
@@ -338,6 +342,15 @@ def _focal(slot: Slot, base: str, target: str) -> None:
         name = slot.present(base, tier)
         if name and name not in bad_names:
             ctx.drop(name, "converted", target)
+
+
+INERT_POSITION_NOTE = "not a CSS position (a template placeholder or stray text): the browser ignored it, so the image kept its default focal point"
+
+
+def all_inert(value) -> bool:
+    """True when a stored focal value is non-empty and every device's part is a string that is no CSS position."""
+    items = list(V.device_values(value).values())
+    return bool(items) and all(V.inert_position(i) for i in items)
 
 
 def migrate_focal(slot: Slot) -> None:
@@ -380,7 +393,9 @@ def migrate_background_fit(ctx: Ctx) -> None:
     position = ctx.get("backgroundPosition")
     if isinstance(position, str):
         parsed, bad = V.focal_value(position)
-        if bad:
+        if V.inert_position(position):
+            ctx.drop("backgroundPosition", "deleted", "", INERT_POSITION_NOTE)
+        elif bad:
             ctx.keep("backgroundPosition", "refused", "background-position is not readable as keywords or percentages")
         else:
             pruned = V.prune_inherited(parsed, {"x": 0.5, "y": 0.5})
