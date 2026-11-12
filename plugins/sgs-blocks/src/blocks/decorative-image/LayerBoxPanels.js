@@ -6,8 +6,8 @@
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
-import { Button, PanelBody } from '@wordpress/components';
-import { SgsColourPanel, fillRow, SgsGradientPicker } from '../../components';
+import { PanelBody } from '@wordpress/components';
+import { SgsColourPanel, fillRow, GradientCapableColourControl } from '../../components';
 
 /**
  * @param {Object}   props
@@ -39,19 +39,13 @@ export default function LayerBoxPanels( { attributes, setAttributes } ) {
 					<p className="components-base-control__help">
 						{ __( 'Draws the border as a gradient ring. Set a border width first. It paints on a layer that holds blocks or has no picture; on a picture alone, the Border colour applies.', 'sgs-blocks' ) }
 					</p>
-					<SgsGradientPicker
-						value={ ring || undefined }
-						onChange={ ( value ) => setAttributes( { layerBorderColourGradient: value || '' } ) }
+					<GradientCapableColourControl
+						label={ __( 'Border colour or gradient', 'sgs-blocks' ) }
+						value={ attributes.layerBorderColour || '' }
+						onChange={ ( value ) => setAttributes( { layerBorderColour: value ?? '' } ) }
+						gradientValue={ ring }
+						onGradientChange={ ( value ) => setAttributes( { layerBorderColourGradient: value ?? '' } ) }
 					/>
-					{ '' !== ring && (
-						<Button
-							variant="link"
-							isDestructive
-							onClick={ () => setAttributes( { layerBorderColourGradient: '' } ) }
-						>
-							{ __( 'Clear the gradient', 'sgs-blocks' ) }
-						</Button>
-					) }
 				</PanelBody>
 			</InspectorControls>
 		</>

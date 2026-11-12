@@ -79,6 +79,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const { execFileSync } = require( 'child_process' );
 const { makeFinding } = require( '../core/finding' );
+const { mediaSystemOwns } = require( '../core/media-facts' );
 
 // The blocking gate this rule now consumes. Resolved relative to this file so
 // it is correct regardless of cwd — one level up from rules/ (inspector-scan/),
@@ -291,7 +292,11 @@ module.exports = {
 		const blockJson = ctx.json( blockJsonFile );
 		if ( ! blockJson.ok ) return []; // malformed/absent block.json is roster-drift/parse-error territory
 
-		const attrNames = Object.keys( blockJson.data.attributes || {} );
+		// An attribute the shared media system controls and reads (its panels offer a control for the slot, its renderer
+		// reads the base by a computed key) is named by no block file; see core/media-facts.js.
+		const attrNames = Object.keys( blockJson.data.attributes || {} ).filter(
+			( name ) => ! mediaSystemOwns( ctx.blocksDir, blockJson.data.name, name )
+		);
 
 		let rows;
 		try {
