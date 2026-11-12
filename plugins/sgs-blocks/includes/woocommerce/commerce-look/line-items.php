@@ -148,6 +148,20 @@ function sgs_commerce_look_login_prefix_css( array $attrs, string $block, string
 add_filter( 'render_block', __NAMESPACE__ . '\sgs_commerce_look_summary_extras_inject', 13, 2 );
 
 /**
+ * Marks the response uncacheable: no page cache may keep a page that carries the viewer's email.
+ *
+ * @return void
+ */
+function sgs_commerce_look_mark_uncacheable(): void {
+	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+		define( 'DONOTCACHEPAGE', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- the cache plugins' own constant.
+	}
+	if ( function_exists( 'nocache_headers' ) ) {
+		nocache_headers();
+	}
+}
+
+/**
  * The checkout extras that are set: an Edit link (label and the bag's address) and the brand under each line's name in
  * the order summary, and the text before the Log in link (`sgsCheckoutStrings.loginPrefix`, kept with its trailing
  * space). All are Checkout-only; Cart has its own summary.
@@ -168,6 +182,9 @@ function sgs_commerce_look_summary_extras( array $attrs, string $bag ): array {
 	$line   = is_array( $attrs['sgsCheckoutStrings'] ?? null ) ? trim( sanitize_text_field( (string) ( $attrs['sgsCheckoutStrings']['signedInLine'] ?? '' ) ) ) : '';
 	if ( '' !== $line && function_exists( 'is_user_logged_in' ) && is_user_logged_in() ) {
 		$signed = str_replace( '%s', (string) wp_get_current_user()->user_email, $line );
+		// The config holds the signed-in customer's email in the page source, so no cache may keep this page. WooCommerce
+		// marks its own checkout page uncacheable, but a Checkout block can sit on any page, so say it here as well.
+		sgs_commerce_look_mark_uncacheable();
 	}
 	if ( '' === $label && ! $brand && '' === $prefix && '' === $signed ) {
 		return array();

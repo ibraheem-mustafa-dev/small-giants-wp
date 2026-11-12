@@ -10,7 +10,8 @@
  * words, `needs` for the probe), so a WooCommerce update that moves the markup is named by row and version.
  *
  * Row shape: `cart` / `checkout` (the selector list for that block, relative to the block root; a missing key means
- * the row does not apply to that block), `wc_version`, `state`, `needs`.
+ * the row does not apply to that block), `wc_version`, `state`, `needs`, and optionally `root_repeat` (how many times the scope
+ * class leads the row's table settings; 3 for a part whose WooCommerce rule carries three classes, so the setting wins on specificity).
  *
  * @package SGS\Blocks
  */

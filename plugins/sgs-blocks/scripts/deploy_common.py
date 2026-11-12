@@ -278,6 +278,25 @@ ROLLBACK_HINT = (
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+def posix_bash() -> str | None:
+    """A bash that sees Windows paths: Git Bash. On Windows the PATH `bash` can be the WSL launcher
+    (WindowsApps or System32), which cannot open C:/ or E:/ paths, so the simulated-server self-tests
+    would read an empty server. Falls back to the PATH bash off Windows."""
+    found = shutil.which("bash")
+    if os.name != "nt":
+        return found
+    wsl = ("/windows/system32/", "/windowsapps/")
+    if found and not any(w in found.lower().replace("\\", "/") for w in wsl):
+        return found
+    git = shutil.which("git")
+    cands = []
+    if git:
+        root = Path(git).resolve().parent.parent
+        cands += [root / "bin" / "bash.exe", root.parent / "bin" / "bash.exe"]
+    cands += [Path(os.environ.get(v, "")) / "Git" / "bin" / "bash.exe" for v in ("ProgramFiles", "ProgramFiles(x86)", "LOCALAPPDATA")]
+    return next((str(c) for c in cands if c.is_file()), None)
+
+
 def log(msg: str) -> None:
     print(msg, flush=True)
 

@@ -345,9 +345,13 @@ export const COMMERCE_LOOK_TABLE_ATTRIBUTES = {
 	sgsSummaryTitleTextTextAlign: { type: 'string' },
 	sgsSummaryTitleTextDeepMargin: { type: 'object' },
 	sgsSummaryItemNameMargin: { type: 'object' },
+	sgsSummaryItemNameFlexGrow: { type: 'object' },
+	sgsSummaryItemNameAlignSelf: { type: 'object' },
 	sgsSummaryItemMetadataMargin: { type: 'object' },
 	sgsTotalsWrapperPadding: { type: 'object' },
 	sgsAddressFormColumnGap: { type: 'object' },
 	sgsFieldInputPadding: { type: 'object' },
 	sgsFieldInputHeight: { type: 'object' },
+	sgsTotalsFooterItemAlignItems: { type: 'object' },
+	sgsTotalsFooterItemJustifyContent: { type: 'object' },
 };

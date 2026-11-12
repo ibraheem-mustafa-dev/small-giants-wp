@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Page-weight gate against a LIVE site (plans/2026-11-03-page-weight-budget.md, "Gate").
+// Page-weight gate against a LIVE site (.claude/plans/archive/2026-11-03-page-weight-budget.md, "Gate").
 //   node scripts/check-page-weight.mjs --site <target> [--check] [--update-baseline] [--json out]
 //        [--pages /,/shop/] [--runs 3] [--width 1440]
 //   node scripts/check-page-weight.mjs --selftest

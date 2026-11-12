@@ -29,11 +29,10 @@
 
 // Side-effect import — registers store('sgs/nav') so the full-screen-overlay
 // trigger's data-wp-on--click="actions.toggleDrawer" / data-wp-bind directives
-// resolve even on a page with no other nav block present. The Interactivity
-// runtime merges repeat `sgs/nav` registrations as a no-op (see the store's
-// own header comment) — bundling a second copy here is the documented and
-// safe pattern, not a duplicate utility.
-import '../../shared/nav-interactivity/store.js';
+// resolve even on a page with no other nav block present. `@sgs/nav-store` is
+// one script module shared with the other nav views, so the page loads it once.
+// eslint-disable-next-line import/no-unresolved -- a webpack external: the script module `@sgs/nav-store` (one copy per page).
+import '@sgs/nav-store';
 import { QUERY_MOBILE } from '../../utils/breakpoints';
 
 /**

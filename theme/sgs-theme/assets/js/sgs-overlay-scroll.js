@@ -11,8 +11,13 @@
  * moves over it, and fades after IDLE_MS. Coarse-pointer devices, whose platform already draws an overlay bar, are skipped
  * unless the attribute value is `force`. Vertical scrolling only.
  *
- * Elements that appear later (a drawer reparented, a panel rendered on demand) are picked up by one MutationObserver; elements
- * that leave the document are released. `window.sgsOverlayScroll.scan( root )` mounts an explicit subtree.
+ * Elements that appear later (a drawer reparented, a panel rendered on demand) are picked up by one MutationObserver, which
+ * scans only the added subtrees; elements that leave the document are released. `window.sgsOverlayScroll.scan( root )` mounts
+ * an explicit subtree.
+ *
+ * Layout cost: a scan reads every new scroller's computed position before it writes any thumb or class, and every scheduled
+ * repaint runs in one shared animation frame that measures all dirty scrollers before writing any thumb, so a page pays
+ * one style and layout pass per batch, not one per scroller.
  *
  * @package SGS\Theme
  */
@@ -68,14 +73,19 @@ export function dragScrollPos( startScroll, delta, g ) {
 
 const controllers = new Map();
 
-function mount( el ) {
-	if ( controllers.has( el ) ) {
-		return;
-	}
-	const force = 'force' === el.getAttribute( 'data-sgs-overlay-scroll' );
-	if ( ! force && window.matchMedia( '(hover: none) and (pointer: coarse)' ).matches ) {
-		return;
-	}
+// Scrollers waiting for a repaint, flushed together in one frame: every read first, then every write.
+const dirty = new Map();
+let flushFrame = 0;
+
+function flush() {
+	flushFrame = 0;
+	const batch = Array.from( dirty.values() );
+	dirty.clear();
+	const measured = batch.map( ( painter ) => painter.measure() );
+	batch.forEach( ( painter, i ) => painter.apply( measured[ i ] ) );
+}
+
+function mount( el, isStatic ) {
 	const reduced = window.matchMedia( '(prefers-reduced-motion: reduce)' );
 	const thumb = document.createElement( 'div' );
 	thumb.className = 'sgs-overlay-scroll__thumb';
@@ -83,12 +93,11 @@ function mount( el ) {
 	thumb.hidden = true;
 	el.appendChild( thumb );
 	el.classList.add( 'sgs-overlay-scroll' );
-	if ( 'static' === getComputedStyle( el ).position ) {
+	if ( isStatic ) {
 		el.classList.add( 'sgs-overlay-scroll--relative' );
 	}
 
 	let geo = thumbMetrics( { scrollPos: 0, scrollSize: 0, clientSize: 0 } );
-	let frame = 0;
 	let hideTimer = 0;
 	let dragging = false;
 	let overThumb = false;
@@ -107,20 +116,28 @@ function mount( el ) {
 		clearTimeout( hideTimer );
 		hideTimer = setTimeout( hide, IDLE_MS );
 	};
-	const paint = () => {
-		frame = 0;
-		geo = thumbMetrics( { scrollPos: el.scrollTop, scrollSize: el.scrollHeight, clientSize: el.clientHeight } );
+	const measure = () => {
+		const scrollPos = el.scrollTop;
+		return { scrollPos, g: thumbMetrics( { scrollPos, scrollSize: el.scrollHeight, clientSize: el.clientHeight } ) };
+	};
+	const apply = ( { scrollPos, g } ) => {
+		geo = g;
 		thumb.hidden = ! geo.visible;
 		if ( ! geo.visible ) {
 			thumb.classList.remove( 'is-visible' );
 			return;
 		}
 		thumb.style.setProperty( '--sgs-overlay-scroll-h', geo.thumbSize + 'px' );
-		thumb.style.setProperty( '--sgs-overlay-scroll-y', el.scrollTop + END_INSET + geo.thumbOffset + 'px' );
+		thumb.style.setProperty( '--sgs-overlay-scroll-y', scrollPos + END_INSET + geo.thumbOffset + 'px' );
+	};
+	const paint = () => {
+		dirty.delete( el );
+		apply( measure() );
 	};
 	const schedule = () => {
-		if ( ! frame ) {
-			frame = requestAnimationFrame( paint );
+		dirty.set( el, { measure, apply } );
+		if ( ! flushFrame ) {
+			flushFrame = requestAnimationFrame( flush );
 		}
 	};
 	const onScroll = () => {
@@ -205,6 +222,11 @@ function mount( el ) {
 	resize.observe( el );
 	Array.from( el.children ).forEach( ( c ) => c !== thumb && resize.observe( c ) );
 	const mutations = new MutationObserver( ( records ) => {
+		// A script that replaces the scroller's children (the cart panel renders its rows with innerHTML and replaceChildren) takes
+		// the thumb with them; put it back so the scroller keeps its bar.
+		if ( thumb.parentNode !== el ) {
+			el.appendChild( thumb );
+		}
 		if ( records.some( ( r ) => r.target !== thumb && ! thumb.contains( r.target ) ) ) {
 			schedule();
 		}
@@ -212,7 +234,7 @@ function mount( el ) {
 	mutations.observe( el, { childList: true, subtree: true, attributes: true, attributeFilter: [ 'open', 'hidden', 'class', 'aria-expanded' ] } );
 
 	controllers.set( el, () => {
-		cancelAnimationFrame( frame );
+		dirty.delete( el );
 		clearTimeout( hideTimer );
 		resize.disconnect();
 		mutations.disconnect();
@@ -231,10 +253,17 @@ function mount( el ) {
  * @param {ParentNode} root Subtree to scan.
  */
 export function scan( root = document ) {
+	const found = Array.from( root.querySelectorAll( OVERLAY_SELECTORS ) );
 	if ( 1 === root.nodeType && root.matches( OVERLAY_SELECTORS ) ) {
-		mount( root );
+		found.unshift( root );
 	}
-	root.querySelectorAll( OVERLAY_SELECTORS ).forEach( mount );
+	const coarse = window.matchMedia( '(hover: none) and (pointer: coarse)' ).matches;
+	const fresh = found.filter(
+		( el ) => ! controllers.has( el ) && ( ! coarse || 'force' === el.getAttribute( 'data-sgs-overlay-scroll' ) )
+	);
+	// Every read before any write: one style pass for the whole batch.
+	const statics = fresh.map( ( el ) => 'static' === getComputedStyle( el ).position );
+	fresh.forEach( ( el, i ) => mount( el, statics[ i ] ) );
 }
 
 function release() {
@@ -248,17 +277,48 @@ function release() {
 
 function start() {
 	scan( document );
+	// Added element roots and whether anything left, collected until the next frame.
+	const added = new Set();
+	let removed = false;
 	let queued = false;
-	new MutationObserver( () => {
-		if ( queued ) {
-			return;
-		}
-		queued = true;
-		requestAnimationFrame( () => {
-			queued = false;
+	const flushAdded = () => {
+		queued = false;
+		if ( removed ) {
+			removed = false;
 			release();
-			scan( document );
+		}
+		const roots = new Set( added );
+		added.clear();
+		// A root inside another collected root is covered by that root's scan (one walk up each root's ancestors).
+		const covered = ( node ) => {
+			for ( let up = node.parentElement; up; up = up.parentElement ) {
+				if ( roots.has( up ) ) {
+					return true;
+				}
+			}
+			return false;
+		};
+		roots.forEach( ( node ) => {
+			if ( node.isConnected && ! covered( node ) ) {
+				scan( node );
+			}
 		} );
+	};
+	new MutationObserver( ( records ) => {
+		records.forEach( ( record ) => {
+			record.addedNodes.forEach( ( node ) => {
+				if ( 1 === node.nodeType && ! node.classList.contains( 'sgs-overlay-scroll__thumb' ) ) {
+					added.add( node );
+				}
+			} );
+			if ( record.removedNodes.length ) {
+				removed = true;
+			}
+		} );
+		if ( ! queued && ( added.size || removed ) ) {
+			queued = true;
+			requestAnimationFrame( flushAdded );
+		}
 	} ).observe( document.body, { childList: true, subtree: true } );
 	window.sgsOverlayScroll = { scan };
 }

@@ -17,6 +17,7 @@ from pathlib import Path
 import deploy_cache
 
 import deploy_delta
+import deploy_minify
 import deploy_timing
 
 from deploy_common import BUILD_DIR, FULL_PACKAGE_NAME, ISOLATION_WORKTREE_PREFIX, PLUGIN_DIR, REMOTE_STAGING_DIR, REPO_ROOT, SSH_ALIAS, SSH_USER_HOST, TARBALL_MAX_MB, TARBALL_NAME, composer_dump_autoload, err, fmt_cmd, log, resolve_exe, run, ssh_base_cmd
@@ -66,6 +67,13 @@ def step_collect(dry_run: bool, theme: bool, blocks: bool,
         except (deploy_delta.PayloadError, OSError) as exc:
             err(f"payload: {exc}")
             return 2, None
+        try:
+            payload, css_before, css_after = deploy_minify.minify_payload(payload)
+        except (RuntimeError, OSError, UnicodeDecodeError) as exc:
+            err(f"payload: minifying the hand-written CSS and JS failed, nothing was shipped: {exc}")
+            return 2, None
+        if css_before:
+            log(f"[2/5] Hand-written CSS and JS minified: {css_before / 1024:.0f} KB -> {css_after / 1024:.0f} KB")
         leaks = deploy_delta.dev_autoload_leaks(payload)
         if leaks:
             err("the payload's Composer autoloader still names dev-only packages (PHPStan/PHPUnit), which are not "

@@ -1,5 +1,5 @@
 ---
-status: active
+status: done
 ---
 
 # Eye Care: fix register
@@ -713,6 +713,38 @@ The comparison tool missed several things you found. Each gap becomes a check, w
 - **Clicked and focused states**, not only hover (N6).
 - **Also built 2026-10-05:** pages are read once their animations finish (no row read mid-entrance), the draft's declared widths are read (Contact's 168px address), transition and animation timings are compared, and a list's spacing between its lines (Contact's hours).
 - **Shopping flows as scripted end-to-end tests**, not comparisons: two products in the bag, a second pair, choosing then clearing a filter (N11, N25).
+
+## Round 15 (the final walks' open rows and the Custom CSS conversion; live 2026-11-11 and 12)
+
+The open rows of the two final walks (`E:/sgs-tmp/ec-check/r14/V5/VERIFY.md` checkout, `V6/VERIFY.md` account) were fixed as settings, then the Custom CSS on post 1609 (checkout) and post 9 (account) was converted into settings with no visible change. Briefs, reports, probes and ops files are in `E:/sgs-tmp/ec-check/r15/`. Posts were backed up first under `sites/eye-care-ward-end/build/backups/2026-11-11-r15/` (local only). Live on eye-care-test at main `02da8798e` (deploys skipped the gate tiers at Bean's call; the build's postbuild ran on the last two).
+
+| Surface | What changed | Kind |
+|---|---|---|
+| Checkout | Wallet divider one 1px line, 248px each side; delivery cards 80px (title and description line heights); 12px from the cards to the address fields; floating-label fields keep 14px side padding when focused or filled; summary item stack (brand, name, meta offsets 1 / 17.5 / 40.5) and totals spacing (15 below the line, 12 to the Total line, Total row 45); the Total label at the top of its row and the product name no longer stretching (Bean chose a new stretch-and-align column, option A) | framework + settings |
+| Checkout framework | Ten hand-written commerce-look cells, then a row-by-column table of WooCommerce part settings (`includes/woocommerce/commerce-look/selectors.json`, `table.php`, `scripts/generate-commerce-look-table.js`; the wiring fingerprint reads the same table) with margin, padding, gap, border, radius, size, text, underline, shadow and stretch-and-align columns | framework |
+| Account | The reset form's mismatch line takes the block's wording; address editor labels and placeholders ("Address", "Flat, building (optional)", "Town or city"); the order page's WhatsApp glyph (19px); the forgotten-password and reset forms fade and rise 18px over 500ms (`lostForm` motion part); keyboard-focused tabs keep #6B655E (`sgsFocusRests`); the current tab keeps its inset line on focus; orders summary 14px; order page boxes' text | framework + settings |
+| Account framework | 83 spacing, size, border and underline settings and 14 type targets on `sgs/account` (`includes/account/helpers-account-cells-css.php`, `CellPanels.js`) | framework |
+| Custom CSS | Post 1609: 111 rules to 62 (57 after the sign-off fixes below); post 9: 133 rules to 82. What stays: colours (Bean's ruling), layout (display, flex, grid, position), keyframes and pseudo-element content, the wishlist cards (no Saved items page holds a wishlist block on eye-care-test), and one-offs, each with a comment. Proof of no visible change: checkout 108,208 computed values compared before and after in four states at 1440 and 375 (none changed except 132 border colours on 0px borders); account 32,716 values across nine views (none changed) | settings |
+| Notices | A classic WooCommerce notice list stacks and inline text flows (code-review item a) | framework |
+| Code-review items | (b) to (e) fixed: the canvas CSS ticket, line-items cleanups, the bfcache reconnection of the summary extras, the canvas CSS route is a POST and reports failures; (f) stays parked with the deploy tooling | framework |
+
+**Live readings (1440 and 375, against the draft):** every fixed row above reads equal; the summary meta line 40.5 and the Total label 9px below its row top at both widths.
+
+**Left by Bean's rulings:** the totals separator colour, the delivery card hover border, the orders summary text colour (#4A453E), the order progress bar colour (#9C8B78) and Sign out's resting colour: no existing colour setting reaches them. Live-only WooCommerce parts (password strength meter, billing and note checkboxes, terms line, Test Mode badge) are WooCommerce function.
+
+**Side effect accepted:** `sgsFocusRests` cannot be scoped to the menu, so the Sign in and Save changes buttons keep their resting fill on keyboard focus (their lift and focus ring are unchanged).
+
+**Found and fixed during the round:** the account, free-delivery-bar, wishlist-link and wishlist-panel blocks named `style.css`, which only npm's postbuild writes; a deploy that reused a webpack-only build shipped without it and the account pages lost their stylesheet for about an hour. Their block.json now names `style-index.css`, and `build-deploy.py --skip-build` refuses a build without postbuild's `.postbuild-done` marker or failing `check-block-asset-targets` (`04c9a9d9c`).
+
+**Code review of this round's framework code:** no security finding; fixed: a spacing preset picked in an account cell printed as px, a `calc()`/`var()` line width printed `border:0`, the desktop-only sidebar line accepted tablet and phone values, the current-tab line's negative offset for `calc()`, checkout pages printing a signed-in customer's email are marked uncacheable, Spec 27's route text. The account preset fix resolves slugs through `sgs_css_single_length_value`, which inherited framework row CR13 (the slug list was empty, so presets printed as px); CR13 is fixed after sign-off, below.
+
+**Bean's sign-off:** 2026-11-12, given on the round's state without new screenshots ("I was happy a while ago").
+
+**After sign-off (2026-11-12, Bean's test pass and the closing fixes; live at main `89e86a326`):**
+- **No emails arrived** (orders, new accounts, email confirmation, password reset): WordPress sent through the server's PHP mail From `admin@darkcyan-grouse-898606.hostingersite.com`, a Hostinger temporary domain with no SPF, DKIM or DMARC of its own under a parent whose SPF is `-all`, so receiving servers rejected or spam-filtered it while WooCommerce logged "sent". FluentSMTP was never set up there. Fixed with `provision-site-mail.py --target eye-care-test`: FluentSMTP over the SGS mailbox (smtp.hostinger.com:465), From "Eye Care Birmingham <admin@smallgiantsstudio.co.uk>", password in wp-config, email logging and the daily digest on; the test email logged `sent`. At launch, switch to Eye Care's own mailbox. MailPoet (installed by Bean while testing) is not involved.
+- **Checkout jumped while typing on a phone:** not reproduced in emulation (scroll steady, field moved at most 4px at 375 with CPU 6x and 400ms latency). Cause-agnostic mitigation: the page scrolls instantly while a form field has focus (`theme/sgs-theme/assets/css/core-blocks-critical.css`, `html:has(:is(input, textarea, select):focus)`). Open: if it still happens, a screen recording and the phone model.
+- **Touch:** the toast holds still until its last 15% so "View bag" takes one tap; the site's "Hover effects on touch screens" is "Desktop only" (`sgs_touch_hover`); the build's touch guard now rewrites `style-index.css` (it only rewrote the `style.css` copy WordPress never serves, so the setting had never reached block CSS on any site), and the button preset's lift is guarded. Read live at 375: the Add to bag transform is `none` after a tap.
+- **Framework:** CR13 fixed (spacing presets resolve; none of the 8 slug-equal saved values on the test sites renders differently); a block's Custom CSS now out-ranks every setting by construction (scope class repeated 4 times, settings at most 3; `CustomCssOutranksSettingsTest`); the commerce-look settings out-rank WooCommerce's rules, so post 1609's seven kept rules are now settings (62 to 57 rules); the round 12 review fixes (the trust bar's overflow test, parallax overscan from its clamp, the editor's length validator); the deploy self-test runs under Git Bash, not the WSL launcher.
 
 ## Round 14 (Bean's sign-off pass of 2026-11-10; live 2026-11-10)
 

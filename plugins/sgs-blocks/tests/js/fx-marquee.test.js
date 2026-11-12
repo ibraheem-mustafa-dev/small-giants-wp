@@ -154,6 +154,12 @@ function pointer( target, type, pointerType = 'mouse' ) {
 	target.dispatchEvent( event );
 }
 
+// A gap that exists only while the root carries no running mark (the static layout's gap).
+const restGapFor = ( element ) => {
+	const root = element?.closest?.( '[data-sgs-fx]' );
+	return layout.restGap && root && ! root.hasAttribute( 'data-sgs-marquee' ) ? layout.restGap : 0;
+};
+
 beforeEach( () => {
 	animations = [];
 	intersections = [];
@@ -172,8 +178,8 @@ beforeEach( () => {
 		paddingTop: element?.style?.paddingTop || '0px',
 		paddingBottom: element?.style?.paddingBottom || '0px',
 		getPropertyValue: ( name ) => props[ name ] || '',
-		columnGap: `${ layout.gap }px`,
-		rowGap: `${ layout.gap }px`,
+		columnGap: `${ layout.gap + restGapFor( element ) }px`,
+		rowGap: `${ layout.gap + restGapFor( element ) }px`,
 	} ) );
 	originalRect = Element.prototype.getBoundingClientRect;
 	Element.prototype.getBoundingClientRect = function () {
@@ -633,6 +639,18 @@ describe( 'marquee only when the items overflow', () => {
 		track.parentElement.style.paddingRight = '24px';
 		await boot();
 		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
+	} );
+
+	test( 'a root the head gate already marked still has its resting gaps measured: a wrapping bar runs', async () => {
+		layout.set = 500;
+		layout.root = 600;
+		layout.restGap = 120;
+		const { root, set } = mount( { attrs: ATTRS } );
+		root.setAttribute( 'data-sgs-marquee', 'on' );
+		set.parentElement.setAttribute( 'data-sgs-marquee-lane', 'on' );
+		await boot();
+		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
+		expect( live() ).toHaveLength( 3 );
 	} );
 
 	test( 'items wider than the block run, and widening the block stops them without looping on the copies', async () => {

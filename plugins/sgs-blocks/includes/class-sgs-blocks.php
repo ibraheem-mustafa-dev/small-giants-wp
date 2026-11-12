@@ -69,6 +69,10 @@ final class SGS_Blocks {
 		add_action( 'init', array( $this, 'register_inline_formats_style' ) );
 		add_filter( 'render_block', 'sgs_inline_formats_maybe_enqueue', 10, 2 );
 
+		// The shared `sgs/nav` store module that the header's view modules import (`@sgs/nav-store`).
+		require_once SGS_BLOCKS_PATH . 'includes/nav-store-module.php';
+		add_action( 'init', 'sgs_register_nav_store_module', 5 );
+
 		// A cover-cropped image drawn wider than its box drops core's sizes="auto" (media/cover-crop.php).
 		require_once SGS_BLOCKS_PATH . 'includes/media/cover-crop.php';
 		add_filter( 'wp_content_img_tag', 'sgs_media_drop_auto_sizes', 20 );

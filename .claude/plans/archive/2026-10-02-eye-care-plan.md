@@ -3,7 +3,7 @@ doc_type: plan
 plan_id: eye-care
 project: small-giants-wp
 spec_id: client build (Front F, D1149)
-status: active
+status: done
 ---
 
 # Eye Care Birmingham: the one plan

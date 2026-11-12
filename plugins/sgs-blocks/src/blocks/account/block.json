@@ -2884,7 +2884,7 @@
 			},
 			"menuSidebarBorderWidth": {
 				"type": "object",
-				"description": "Sidebar line width (desktop sidebar) per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+				"description": "Sidebar line width, desktop only (the sidebar exists from 1024px): {desktop}. Unset keeps the stylesheet."
 			},
 			"menuTabRowBorderWidth": {
 				"type": "object",

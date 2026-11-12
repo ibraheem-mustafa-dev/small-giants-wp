@@ -118,6 +118,18 @@ const DEBOUNCE_MS = 180;
 const ARM_MS = 2000;
 
 /**
+ * Flip state options: `simple` skips the rotation, scale and skew matrix maths.
+ *
+ * Without it each `getState()` walks every card's ancestors building a transform matrix, forcing a style and layout
+ * pass at each step, and the armed window calls it every frame. With it a card's state is its bounding box plus the page
+ * scroll. The cost: a card captured while scaled or rotated (mid hover-scale, inside a scaled container) flips from its
+ * box rather than its transformed shape; a re-filter is started from the filter controls, so cards are normally at rest.
+ *
+ * @type {{simple: boolean}}
+ */
+const FLIP_STATE = { simple: true };
+
+/**
  * The product LIST inside one Product Collection root, resolved once.
  *
  * Cached per root on first access via a WeakMap so repeated calls don't
@@ -164,7 +176,9 @@ function productList( el ) {
  */
 function productNodes( el ) {
 	const list = productList( el );
-	return list ? Array.from( list.children ).filter( ( node ) => node.matches( 'li' ) ) : [];
+	return list
+		? Array.from( list.children ).filter( ( node ) => node.matches( 'li' ) )
+		: [];
 }
 
 /**
@@ -198,7 +212,8 @@ function touchesProductNode( records, list ) {
 	if ( ! list ) {
 		return false;
 	}
-	const isLi = ( node ) => node.nodeType === Node.ELEMENT_NODE && node.matches( 'li' );
+	const isLi = ( node ) =>
+		node.nodeType === Node.ELEMENT_NODE && node.matches( 'li' );
 	return records.some(
 		( record ) =>
 			record.target === list &&
@@ -254,14 +269,14 @@ export function initFlip( el ) {
 		// every frame ONLY while armed AND no re-filter is currently captured
 		// or animating, so it's always the geometry from immediately before
 		// whatever mutation is about to be observed.
-		let lastFrameState = Flip.getState( productNodes( el ) );
+		let lastFrameState = Flip.getState( productNodes( el ), FLIP_STATE );
 
 		const tick = () => {
 			if ( performance.now() >= armUntil || capturedState || flipTween ) {
 				rafId = null;
 				return;
 			}
-			lastFrameState = Flip.getState( productNodes( el ) );
+			lastFrameState = Flip.getState( productNodes( el ), FLIP_STATE );
 			rafId = requestAnimationFrame( tick );
 		};
 
@@ -276,7 +291,10 @@ export function initFlip( el ) {
 		const arm = () => {
 			armUntil = performance.now() + ARM_MS;
 			if ( rafId === null ) {
-				lastFrameState = Flip.getState( productNodes( el ) );
+				lastFrameState = Flip.getState(
+					productNodes( el ),
+					FLIP_STATE
+				);
 				rafId = requestAnimationFrame( tick );
 			}
 		};
@@ -318,6 +336,7 @@ export function initFlip( el ) {
 				// duration so those overlaps don't fight the grid's own layout.
 				absolute: true,
 				nested: true,
+				...FLIP_STATE,
 				onComplete: () => {
 					flipTween = null;
 				},
@@ -346,7 +365,10 @@ export function initFlip( el ) {
 		// back/forward navigation with no preceding in-page event to arm on.
 		const armEvents = [ 'pointerdown', 'keydown', 'change', 'submit' ];
 		armEvents.forEach( ( type ) =>
-			document.addEventListener( type, arm, { capture: true, passive: true } )
+			document.addEventListener( type, arm, {
+				capture: true,
+				passive: true,
+			} )
 		);
 		window.addEventListener( 'popstate', arm );
 

@@ -21,4 +21,13 @@ describe( 'toast motion by variant', () => {
 		expect( keyframes ).not.toBeNull();
 		expect( keyframes[ 1 ] ).toMatch( /100%\s*\{\s*opacity:\s*1;/ );
 	} );
+
+	test( 'a success toast holds still (no sideways drift) until the 85% keyframe', () => {
+		const keyframes = css.match( /@keyframes sgs-toast-life\s*\{([\s\S]*?)\n\}/ );
+		expect( keyframes ).not.toBeNull();
+		const at85 = keyframes[ 1 ].match( /85%\s*\{([^}]*)\}/ );
+		expect( at85 ).not.toBeNull();
+		expect( at85[ 1 ] ).toMatch( /transform:\s*translate\(0,\s*0\)/ );
+		expect( keyframes[ 1 ] ).toMatch( /100%\s*\{[^}]*transform:\s*translate\(50%,\s*0\)/ );
+	} );
 } );

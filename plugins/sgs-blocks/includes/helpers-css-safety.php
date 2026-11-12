@@ -44,11 +44,21 @@ if ( ! function_exists( 'sgs_css_length_value_preset_slugs' ) ) {
 		if ( function_exists( 'wp_get_global_settings' ) ) {
 			$sizes = wp_get_global_settings( array( 'spacing', 'spacingSizes' ) );
 			if ( is_array( $sizes ) ) {
-				foreach ( $sizes as $size ) {
-					if ( isset( $size['slug'] ) ) {
-						$slugs[] = (string) $size['slug'];
+				// WordPress returns the presets grouped by origin (default, theme,
+				// custom), each a list of presets; a flat list of presets is also
+				// accepted. Flatten both and de-duplicate.
+				$lists = isset( $sizes['slug'] ) || ( isset( $sizes[0] ) && isset( $sizes[0]['slug'] ) ) ? array( $sizes ) : $sizes;
+				foreach ( $lists as $list ) {
+					if ( ! is_array( $list ) ) {
+						continue;
+					}
+					foreach ( $list as $size ) {
+						if ( is_array( $size ) && isset( $size['slug'] ) ) {
+							$slugs[] = (string) $size['slug'];
+						}
 					}
 				}
+				$slugs = array_values( array_unique( $slugs ) );
 			}
 		}
 

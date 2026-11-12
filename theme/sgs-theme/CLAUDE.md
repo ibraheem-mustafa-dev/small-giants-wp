@@ -31,6 +31,8 @@ Per client only: the theme snapshot (pushed with `push-theme-snapshot.py`), font
 ## Requirements
 
 - WordPress 6.7+ (theme.json v3), PHP 8.0+, no page builder dependency
+- `assets/css/` and `assets/js/` ship minified: the deploy strips comments and whitespace from them (`plugins/sgs-blocks/scripts/deploy_minify.py`), so comment freely; the root `style.css` ships as written.
+- `assets/js/sgs-overlay-scroll.js` (Spec 32 FR-32-26) reads every scroller before it writes and repaints all of them in one frame; keep that order when changing it, because a read after a write per scroller forced a full style pass each (28 on a shop page).
 - WooCommerce is **optional** (Spec 27 Part 3): the theme functions fully without it; when it is active the theme registers `add_theme_support('woocommerce')` and loads the `sgs-*` parts, `woocommerce.css` and `sgs-shop-filters.js`.
 
 ## Key Rules

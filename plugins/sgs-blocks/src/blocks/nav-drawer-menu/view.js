@@ -32,12 +32,8 @@
  * @package SGS\Blocks
  */
 
-import { initNavIndicator } from '../../shared/effects/nav-indicator';
-import { initLabelMagnet } from '../../shared/effects/label-magnet';
-import { initDrillDown } from '../../shared/effects/nav-drilldown';
 import { initSeparators } from '../../shared/separators';
-import { initAccordionScroll } from './accordion-scroll';
-import { initAccordionMotionState } from './accordion-motion-state';
+import { DRAWER_PHASE_EVENT } from '../../shared/nav-interactivity/drawer-lifecycle';
 
 /**
  * Normalise a path the same way render.php's items do: no trailing slash,
@@ -61,35 +57,37 @@ function markCurrentPage( root ) {
 	const current = normalisePath( window.location.pathname );
 	root.querySelectorAll(
 		'.sgs-nav-drawer-menu__link[data-sgs-nav-path], .sgs-nav-drawer-menu__sublink[data-sgs-nav-path]'
-	).forEach(
-		( link ) => {
-			const path = normalisePath( link.dataset.sgsNavPath || '' );
-			if ( path !== '' && path === current ) {
-				link.setAttribute( 'aria-current', 'page' );
-			} else {
-				link.removeAttribute( 'aria-current' );
-			}
+	).forEach( ( link ) => {
+		const path = normalisePath( link.dataset.sgsNavPath || '' );
+		if ( path !== '' && path === current ) {
+			link.setAttribute( 'aria-current', 'page' );
+		} else {
+			link.removeAttribute( 'aria-current' );
 		}
-	);
+	} );
 
 	// A mega item's panel links are container-block links without a
 	// `data-sgs-nav-path`. When one of them points at the current page, the
 	// item's accordion row takes `data-sgs-nav-has-current`, which the
 	// ancestor-current rule in includes/nav-menu-css.php reads.
-	root.querySelectorAll( '.sgs-nav-drawer-menu__mega-body' ).forEach( ( body ) => {
-		const row = body.closest( '.sgs-nav-drawer-menu__accordion-row' );
-		if ( ! row ) {
-			return;
-		}
-		const hasCurrent = Array.from( body.querySelectorAll( 'a[href]' ) ).some( ( anchor ) => {
-			if ( anchor.origin !== window.location.origin ) {
-				return false;
+	root.querySelectorAll( '.sgs-nav-drawer-menu__mega-body' ).forEach(
+		( body ) => {
+			const row = body.closest( '.sgs-nav-drawer-menu__accordion-row' );
+			if ( ! row ) {
+				return;
 			}
-			const path = normalisePath( anchor.pathname );
-			return path !== '' && path === current;
-		} );
-		row.toggleAttribute( 'data-sgs-nav-has-current', hasCurrent );
-	} );
+			const hasCurrent = Array.from(
+				body.querySelectorAll( 'a[href]' )
+			).some( ( anchor ) => {
+				if ( anchor.origin !== window.location.origin ) {
+					return false;
+				}
+				const path = normalisePath( anchor.pathname );
+				return path !== '' && path === current;
+			} );
+			row.toggleAttribute( 'data-sgs-nav-has-current', hasCurrent );
+		}
+	);
 }
 
 // Cleanup functions for every currently-active opt-in effect instance
@@ -97,74 +95,86 @@ function markCurrentPage( root ) {
 // the page — torn down and re-created wholesale on a bfcache restore.
 let activeCleanups = [];
 
+// The effects module, once loaded (bar-effects.js).
+let effects = null;
+
 /**
- * Wire the opt-in motion effects for one `.sgs-nav-drawer-menu__bar`, keyed on the
- * data-attribute flags render.php emits only when an operator has switched
- * the effect on.
+ * Load the effects module (once) and start the effects on every drawer menu on the page. A failed download re-arms
+ * the first-interaction trigger, so the next press tries again.
  *
- * @param {HTMLElement} root The `.wp-block-sgs-nav-drawer-menu` root.
+ * @return {Promise<void>} Resolves once the effects are running, or after a failure has been logged and re-armed.
  */
-function initBarEffects( root ) {
-	const bar = root.querySelector( '.sgs-nav-drawer-menu__bar' );
-	if ( ! bar ) {
-		return;
-	}
-
-	if ( bar.hasAttribute( 'data-sgs-nav-indicator' ) ) {
-		activeCleanups.push( initNavIndicator( bar, 'sgs-nav-drawer-menu' ) );
-	}
-
-	if ( bar.hasAttribute( 'data-magnet' ) ) {
-		// `itemMagnetStrength` — `data-magnet-strength` rides only when the
-		// operator set it (render.php). Absent: `initMagnet( el )` with no
-		// options, magnet.js's own factor 0.15 and 8px cap. Present: that
-		// factor with the cap lifted, since the pointer only engages while
-		// inside the label's own box. Touch input and reduced motion switch
-		// the effect off inside magnet.js itself.
-		const strengthAttr = bar.getAttribute( 'data-magnet-strength' );
-		const strength =
-			null !== strengthAttr ? parseFloat( strengthAttr ) : NaN;
-		const magnetOpts = Number.isFinite( strength )
-			? { factor: strength, maxPull: Infinity }
-			: {};
-
-		bar.querySelectorAll( '.sgs-nav-drawer-menu__magnet-target' ).forEach(
-			( label ) => {
-				const link =
-					label.closest( '.sgs-nav-drawer-menu__link' ) || label;
-				activeCleanups.push(
-					initLabelMagnet( link, {
-						...magnetOpts,
-						engage: 'over',
-						target: label,
-					} )
-				);
+function startEffects() {
+	return import(
+		/* webpackChunkName: "drawer-menu-effects" */ './bar-effects'
+	)
+		.then( ( module ) => {
+			if ( effects ) {
+				return;
 			}
+			effects = module;
+			document
+				.querySelectorAll( '.wp-block-sgs-nav-drawer-menu' )
+				.forEach( ( root ) => {
+					activeCleanups.push( ...effects.initBarEffects( root ) );
+				} );
+		} )
+		.catch( ( error ) => {
+			// eslint-disable-next-line no-console -- the one trace of effects that could not load.
+			console.warn(
+				'sgs/nav-drawer-menu: the menu effects could not load',
+				error
+			);
+			// Drill-down changes what a tap on a submenu row does, so a page with it loads the effects now; the rest are
+			// decoration inside a closed drawer and wait for the first interaction.
+			if (
+				document.querySelector(
+					'.sgs-nav-drawer-menu__bar[data-sgs-nav-submenu-model="drill-down"]'
+				)
+			) {
+				startEffects();
+			} else {
+				whenFirstNeeded( startEffects );
+			}
+		} );
+}
+
+/**
+ * Run `start` once, on the first pointer, touch or key press anywhere on the page, or when any drawer starts opening
+ * (a drawer opened by script, with no press first). The menu sits in a closed drawer until then, so its effects
+ * need not cost anything at page load; the press that opens the drawer starts the load before its click lands.
+ *
+ * @param {Function} start Called once.
+ */
+function whenFirstNeeded( start ) {
+	const types = [ 'pointerdown', 'touchstart', 'keydown' ];
+	const fire = () => {
+		types.forEach( ( type ) =>
+			document.removeEventListener( type, fire, true )
 		);
-	}
-
-	// Each accordion row is a nested motion state host: opening it plays the entrances inside it.
-	activeCleanups.push( initAccordionMotionState( bar ) );
-
-	// Drill-down (FR-36-6): only when the operator picked "Drill-down" over
-	// the default "Accordion" — an accordion drawer needs no JS at all
-	// beyond the native <details>.
-	if ( 'drill-down' === bar.dataset.sgsNavSubmenuModel ) {
-		activeCleanups.push( initDrillDown( bar ) );
-	} else if ( bar.hasAttribute( 'data-sgs-accordion-scroll' ) ) {
-		// accordionScrollIntoView: an opened row scrolls near the drawer's top.
-		activeCleanups.push( initAccordionScroll( bar ) );
-	}
+		document.removeEventListener( DRAWER_PHASE_EVENT, fire, true );
+		start();
+	};
+	types.forEach( ( type ) =>
+		document.addEventListener( type, fire, {
+			capture: true,
+			passive: true,
+		} )
+	);
+	// The phase event fires on the drawer itself and does not bubble; a capturing listener on the document still sees it.
+	document.addEventListener( DRAWER_PHASE_EVENT, fire, true );
 }
 
 /**
  * Initialise every sgs/nav-drawer-menu instance on the page.
  */
 function init() {
-	document.querySelectorAll( '.wp-block-sgs-nav-drawer-menu' ).forEach( ( root ) => {
-		markCurrentPage( root );
-		initBarEffects( root );
-	} );
+	document
+		.querySelectorAll( '.wp-block-sgs-nav-drawer-menu' )
+		.forEach( ( root ) => {
+			markCurrentPage( root );
+		} );
+	whenFirstNeeded( startEffects );
 	// A multi-column list with lines between its rows: the fallback overlay for
 	// browsers without CSS gap decorations (a no-op elsewhere).
 	initSeparators();
@@ -190,6 +200,13 @@ if ( document.readyState === 'loading' ) {
 window.addEventListener( 'pageshow', ( event ) => {
 	if ( event.persisted ) {
 		teardownEffects();
-		init();
+		document
+			.querySelectorAll( '.wp-block-sgs-nav-drawer-menu' )
+			.forEach( ( root ) => {
+				markCurrentPage( root );
+				if ( effects ) {
+					activeCleanups.push( ...effects.initBarEffects( root ) );
+				}
+			} );
 	}
 } );

@@ -139,7 +139,7 @@ if ( ! function_exists( 'sgs_account_cell_line' ) ) {
 		if ( '' === $width ) {
 			return '';
 		}
-		if ( $frame && 0.0 === (float) $width ) {
+		if ( $frame && 1 === preg_match( '/^0+(\.0+)?[a-z%]*$/i', $width ) ) {
 			return '0';
 		}
 		return $width . ' solid ' . $colour;

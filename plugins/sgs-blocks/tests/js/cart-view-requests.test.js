@@ -8,7 +8,7 @@
 
 'use strict';
 
-jest.mock( '../../src/shared/nav-interactivity/store', () => ( {} ) );
+jest.mock( '@sgs/nav-store', () => ( {} ) );
 jest.mock( '../../src/shared/wishlist-store', () => ( { addWishlistId: jest.fn() } ) );
 
 const flush = async () => {

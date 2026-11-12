@@ -41,7 +41,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from deploy_common import TAR_EXCLUDES
+from deploy_common import TAR_EXCLUDES, posix_bash
 
 # (folder in the repo, folder under wp-content on the site). Blocks first: the rotation order the deploy always had.
 ROOTS = {
@@ -491,7 +491,7 @@ def self_test() -> list[str]:
     The remote commands run in bash against a temporary "server" folder, the way the theme.json cases do.
     """
     failures: list[str] = []
-    bash = shutil.which("bash")
+    bash = posix_bash()
     if not bash:
         return ["deploy_delta self-test needs bash on PATH (Git Bash on Windows)"]
     roots = roots_for(theme=True, blocks=True)

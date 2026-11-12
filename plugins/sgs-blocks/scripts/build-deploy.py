@@ -41,6 +41,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -129,6 +130,23 @@ def build_and_gate(args: argparse.Namespace, deploy_blocks: bool) -> int:
             err(f"--skip-build but build dir missing: {BUILD_DIR}")
             print("[ABORTED] reason: build-dir-missing", flush=True)
             return 1
+        # A reused build may come from a partial build (webpack without npm's postbuild), which leaves out the
+        # style.css copies and the postbuild transforms. postbuild's last step writes build/.postbuild-done, and
+        # its asset check proves every file a built block.json names exists; both are checked before any upload.
+        if deploy_blocks and BUILD_DIR.exists():
+            if not (BUILD_DIR / ".postbuild-done").is_file():
+                err("--skip-build: the reused build/ has no .postbuild-done marker, so npm's postbuild did not finish "
+                    "on it (run `npm run build`, or `npm run postbuild` after a partial build)")
+                print("[ABORTED] reason: skip-build-incomplete", flush=True)
+                return 1
+            assets = subprocess.run([resolve_exe("node"), "scripts/check-block-asset-targets.js", "--check"],
+                                    cwd=str(BUILD_DIR.parent), capture_output=True, text=True)
+            if assets.returncode != 0:
+                err("--skip-build: the reused build/ fails check-block-asset-targets (was npm's postbuild run?):\n"
+                    + (assets.stdout + assets.stderr)[-2000:])
+                print("[ABORTED] reason: skip-build-incomplete", flush=True)
+                return 1
+            log("[1/5] reused build/ passes check-block-asset-targets")
     elif not deploy_blocks and (args.skip_gate_full or passed):
         log("[1/5] npm run build: SKIPPED (--theme-only, and gate:full needs no build)")
     elif passed and timed("build", deploy_cache.restore_build, key, REPO_ROOT, BUILD_DIR):

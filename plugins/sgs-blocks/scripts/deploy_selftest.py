@@ -15,7 +15,9 @@ import tempfile
 from pathlib import Path
 import deploy_cache
 import deploy_delta
+from deploy_common import posix_bash
 import deploy_media_guard
+import deploy_minify
 import deploy_multi
 import deploy_qa_tier
 import deploy_timing
@@ -35,7 +37,7 @@ def self_test_theme_json() -> list[str]:
     """
     import hashlib
     failures: list[str] = []
-    bash = shutil.which("bash")
+    bash = posix_bash()
     if not bash:
         return ["theme.json self-test needs bash on PATH (Git Bash on Windows)"]
     FRAMEWORK = b'{"version": 3, "settings": {"typography": {"fontFamilies": [{"slug": "heading", "fontFamily": "Inter"}]}}}\n'
@@ -595,7 +597,7 @@ def self_test_ship() -> list[str]:
     """
     import tarfile
     failures: list[str] = []
-    bash = shutil.which("bash")
+    bash = posix_bash()
     if not bash:
         return ["ship self-test needs bash on PATH (Git Bash on Windows)"]
     roots = deploy_delta.roots_for(theme=True, blocks=False)
@@ -918,6 +920,7 @@ def self_test() -> int:
     failures.extend(self_test_litespeed_probe())
     failures.extend(self_test_upload_resume())
     failures.extend(deploy_delta.self_test())
+    failures.extend(deploy_minify.self_test())
     failures.extend(self_test_ship())
     failures.extend(self_test_vendor_shell())
     failures.extend(deploy_qa_tier.self_test())
@@ -979,4 +982,7 @@ def self_test() -> int:
           "second apply, a changed and a deleted file land in one delta apply")
     print(" 27. the isolated worktree's vendor/ is a real folder: composer's writes stay in the worktree (no temp-worktree "
           "base path in the shared or shipped autoloader), packages are read from the shared checkout; red on a whole-folder link")
+    print(" 28. hand-written CSS and JS are minified in the payload (theme assets/ and plugin assets/ only; style.css, build/ and "
+          "*.min.* untouched; licence comments, strings, globals, function names and exports kept; modules and classic scripts "
+          "both parse); a script that does not parse, a failing minifier, a dropped file or an emptied file is refused")
     return 0

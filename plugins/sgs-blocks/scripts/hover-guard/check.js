@@ -33,7 +33,7 @@ const path = require( 'path' );
 const { execFileSync } = require( 'child_process' );
 const { auditCss } = require( './audit.js' );
 
-/** The block stylesheets the build ships: `style.css`, which postbuild copies from `style-index.css` and `run-transform.js` guards (`style-index.css` is the unguarded original; the RTL twin mirrors it). */
+/** The block stylesheets the build ships and `run-transform.js` guards: `style-index.css` (the file block.json names, so the one WordPress serves) and the `style.css` copy postbuild writes from it; their RTL twins mirror them. */
 function findStyleCssFiles( baseDir ) {
 	const found = [];
 	if ( ! fs.existsSync( baseDir ) ) {
@@ -43,7 +43,7 @@ function findStyleCssFiles( baseDir ) {
 		const full = path.join( baseDir, entry.name );
 		if ( entry.isDirectory() ) {
 			found.push( ...findStyleCssFiles( full ) );
-		} else if ( 'style.css' === entry.name ) {
+		} else if ( 'style.css' === entry.name || 'style-index.css' === entry.name ) {
 			found.push( full );
 		}
 	}

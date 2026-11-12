@@ -24,6 +24,10 @@ const RESOLVED = [
 ];
 
 const HOSTILE = [
+	// Refused by sgs_css_length_value on the front end: two terms side by side inside min(), max() or clamp().
+	'min(10px 20px)',
+	'clamp(1px 2px, 3px, 4px)',
+	'max(1rem 2rem)',
 	'var(--x);}body{color:red}',
 	'calc(1px) ; color:red',
 	'var(--x)<script>',

@@ -35,6 +35,7 @@ function wp_enqueue_script( $h ) { $GLOBALS['enqueued'][] = $h; }
 function wp_add_inline_script( $h, $js, $pos = 'after' ) { $GLOBALS['inline'][] = array( $h, $js ); return true; }
 function is_user_logged_in() { return ! empty( $GLOBALS['user_email'] ); }
 function wp_get_current_user() { return (object) array( 'user_email' => $GLOBALS['user_email'] ?? '' ); }
+function nocache_headers() { $GLOBALS['nocache'] = ( $GLOBALS['nocache'] ?? 0 ) + 1; }
 function wc_get_cart_url() { return 'https://example.test/bag/'; }
 function woocommerce_register_additional_checkout_field( $args ) { $GLOBALS['fields'][] = $args; }
 function do_action_sim( $tag, ...$args ) { foreach ( $GLOBALS['filters'][ $tag ] ?? array() as $cb ) { $cb( ...$args ); } }
@@ -208,8 +209,11 @@ if ( function_exists( 'SGS\Blocks\sgs_commerce_look_summary_extras' ) ) {
 	$GLOBALS['user_email'] = 'bean@example.test';
 	$c = SGS\Blocks\sgs_commerce_look_summary_extras( $sl, 'https://example.test/bag/' );
 	ok( 'Signed in as bean@example.test. This order will be saved to your account.' === ( $c['signedInLine'] ?? null ), 'signedInLine puts the signed-in customer email where %s stands' );
+	ok( 1 === ( $GLOBALS['nocache'] ?? 0 ), 'building the signed-in line (customer email in the page source) marks the response uncacheable' );
 	$GLOBALS['user_email'] = '';
+	$before = $GLOBALS['nocache'];
 	ok( array() === SGS\Blocks\sgs_commerce_look_summary_extras( $sl, 'https://example.test/bag/' ), 'a guest gets no signed-in line and no extras config' );
+	ok( $before === $GLOBALS['nocache'], 'a guest response is not marked uncacheable by the config' );
 	ok( array() === SGS\Blocks\sgs_checkout_strings_map( $sl['sgsCheckoutStrings'] ), 'signedInLine is not a gettext key' );
 	$GLOBALS['user_email'] = 'bean@example.test';
 	ok( '' === ( SGS\Blocks\sgs_commerce_look_summary_extras( array( 'sgsItemShowBrand' => true ), 'https://example.test/bag/' )['signedInLine'] ?? 'x' ), 'no signedInLine when it is not set' );

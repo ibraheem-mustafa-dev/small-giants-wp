@@ -1,5 +1,5 @@
 {
-	"_comment": "The one table of WooCommerce selectors the Cart and Checkout look settings paint. Read by includes/woocommerce/commerce-look/selectors.php (the writer) and scripts/computed-route/lib/site-check-commerce-look.mjs (the drift probe). Selectors are read from the DOM WooCommerce renders on wc_version, never guessed. cart / checkout: selector list relative to the block root (a missing key means the row does not apply to that block; no comma inside a functional pseudo-class). state: prose. needs: machine-readable state for the probe (basket filled; viewport any|wide|narrow; action none|open-coupon-on-cart|tick-order-note|optional). columns: the property kinds a row can take (attribute suffixes, CSS property, inspector control kind); a row's `columns` list names the extra settings it carries, its attribute names are the row prefix plus the column suffix (`prefix` overrides the row id), generated into src/blocks/extensions/commerce-look/attributes-table.generated.js and the extension roster by scripts/generate-commerce-look-table.js, printed by includes/woocommerce/commerce-look/table.php and drawn by src/blocks/extensions/commerce-look/table-panels.js. `label` names the row in the inspector; `probe: false` leaves a row out of the selector-drift probe.",
+	"_comment": "The one table of WooCommerce selectors the Cart and Checkout look settings paint. Read by includes/woocommerce/commerce-look/selectors.php (the writer) and scripts/computed-route/lib/site-check-commerce-look.mjs (the drift probe). Selectors are read from the DOM WooCommerce renders on wc_version, never guessed. cart / checkout: selector list relative to the block root (a missing key means the row does not apply to that block; no comma inside a functional pseudo-class). state: prose. needs: machine-readable state for the probe (basket filled; viewport any|wide|narrow; action none|open-coupon-on-cart|tick-order-note|optional). columns: the property kinds a row can take (attribute suffixes, CSS property, inspector control kind); a row's `columns` list names the extra settings it carries, its attribute names are the row prefix plus the column suffix (`prefix` overrides the row id), generated into src/blocks/extensions/commerce-look/attributes-table.generated.js and the extension roster by scripts/generate-commerce-look-table.js, printed by includes/woocommerce/commerce-look/table.php and drawn by src/blocks/extensions/commerce-look/table-panels.js. `label` names the row in the inspector; `probe: false` leaves a row out of the selector-drift probe. `root_repeat`: how many times the scope class leads the row's selectors when its settings print (default 1); a row whose WooCommerce rule carries three classes or more sets 3 so the setting wins on specificity at every width and state, not on stylesheet order.",
 	"columns": {
 		"margin": {
 			"kind": "box",
@@ -248,6 +248,126 @@
 				]
 			],
 			"label": "Underline"
+		},
+		"align_items": {
+			"kind": "keyword",
+			"css": "align-items",
+			"role": "layout",
+			"attrs": [
+				[
+					"AlignItems",
+					"object"
+				]
+			],
+			"label": "Align items",
+			"options": [
+				[
+					"flex-start",
+					"Start"
+				],
+				[
+					"center",
+					"Centre"
+				],
+				[
+					"flex-end",
+					"End"
+				],
+				[
+					"stretch",
+					"Stretch"
+				],
+				[
+					"baseline",
+					"Baseline"
+				]
+			]
+		},
+		"align_self": {
+			"kind": "keyword",
+			"css": "align-self",
+			"role": "layout",
+			"attrs": [
+				[
+					"AlignSelf",
+					"object"
+				]
+			],
+			"label": "Align this part",
+			"options": [
+				[
+					"flex-start",
+					"Start"
+				],
+				[
+					"center",
+					"Centre"
+				],
+				[
+					"flex-end",
+					"End"
+				],
+				[
+					"stretch",
+					"Stretch"
+				],
+				[
+					"baseline",
+					"Baseline"
+				]
+			]
+		},
+		"justify_content": {
+			"kind": "keyword",
+			"css": "justify-content",
+			"role": "layout",
+			"attrs": [
+				[
+					"JustifyContent",
+					"object"
+				]
+			],
+			"label": "Justify content",
+			"options": [
+				[
+					"flex-start",
+					"Start"
+				],
+				[
+					"center",
+					"Centre"
+				],
+				[
+					"flex-end",
+					"End"
+				],
+				[
+					"stretch",
+					"Stretch"
+				]
+			]
+		},
+		"flex_grow": {
+			"kind": "keyword",
+			"css": "flex-grow",
+			"role": "layout",
+			"attrs": [
+				[
+					"FlexGrow",
+					"object"
+				]
+			],
+			"label": "Fill spare space",
+			"options": [
+				[
+					"0",
+					"Keep its size"
+				],
+				[
+					"1",
+					"Fill spare space"
+				]
+			]
 		}
 	},
 	"rows": {
@@ -1230,6 +1350,7 @@
 				"margin",
 				"text"
 			],
+			"root_repeat": 3,
 			"wc_version": "11.2.1",
 			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
 			"needs": {
@@ -1415,6 +1536,7 @@
 			"columns": [
 				"text"
 			],
+			"root_repeat": 3,
 			"wc_version": "11.2.1",
 			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
 			"needs": {
@@ -1459,6 +1581,7 @@
 			"columns": [
 				"padding"
 			],
+			"root_repeat": 3,
 			"wc_version": "11.2.1",
 			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
 			"needs": {
@@ -1499,6 +1622,7 @@
 				"margin",
 				"text"
 			],
+			"root_repeat": 3,
 			"wc_version": "11.2.1",
 			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
 			"needs": {
@@ -1523,7 +1647,9 @@
 			"checkout": ".wc-block-components-order-summary-item .wc-block-components-product-name",
 			"label": "Summary item name box",
 			"columns": [
-				"margin"
+				"margin",
+				"flex_grow",
+				"align_self"
 			],
 			"wc_version": "11.2.1",
 			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
@@ -1579,12 +1705,27 @@
 				"padding",
 				"height"
 			],
+			"root_repeat": 3,
 			"wc_version": "11.2.1",
 			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
 			"needs": {
 				"basket": "filled",
 				"action": "optional"
 			}
+		},
+		"totals_footer_item": {
+			"cart": ".wc-block-components-totals-footer-item",
+			"checkout": ".wc-block-components-totals-footer-item",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width (WooCommerce centres the label and value in the row with `align-items:center` on `.wc-block-components-totals-item`)",
+			"needs": {
+				"basket": "filled"
+			},
+			"columns": [
+				"align_items",
+				"justify_content"
+			],
+			"label": "Total row"
 		}
 	}
 }

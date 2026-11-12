@@ -30,58 +30,51 @@
   "baseline": {
     "sandybrown": {
       "/": {
-        "css": 130662,
-        "js": 82432,
-        "date": "2026-11-11",
-        "raised": "JS raised on purpose 2026-11-11: order attribution (sourcebuster-js 4.9 KB + wc-order-attribution 1.4 KB) loads on every page again so each order records where the visitor landed (Bean 2026-11-03)."
+        "css": 75563,
+        "js": 95438,
+        "date": "2026-11-12"
       },
       "/blog/": {
-        "css": 113462,
-        "js": 91750,
-        "date": "2026-11-11",
-        "raised": "JS raised on purpose 2026-11-11: order attribution (sourcebuster-js 4.9 KB + wc-order-attribution 1.4 KB) loads on every page again so each order records where the visitor landed (Bean 2026-11-03)."
+        "css": 55347,
+        "js": 82902,
+        "date": "2026-11-12"
       },
       "/shop/": {
-        "css": 197939,
-        "js": 195482,
-        "date": "2026-11-11",
-        "raised": "CSS raised on purpose 2026-11-11: the theme notices work (f7bb4fc62, 084c3463f, 18a82b250, 7b16c3135) styles WooCommerce notices from sgs/notice-banner tokens, adding woocommerce-notices.css (1.6 KB) on product pages and 1.1 KB to theme woocommerce.css."
+        "css": 104873,
+        "js": 173051,
+        "date": "2026-11-12"
       },
       "/product/qa-simple-toast-fixture/": {
-        "css": 209510,
-        "js": 186061,
-        "date": "2026-11-11",
-        "raised": "CSS raised on purpose 2026-11-11: the theme notices work (f7bb4fc62, 084c3463f, 18a82b250, 7b16c3135) styles WooCommerce notices from sgs/notice-banner tokens, adding woocommerce-notices.css (1.6 KB) on product pages and 1.1 KB to theme woocommerce.css."
+        "css": 116825,
+        "js": 177161,
+        "date": "2026-11-12"
       },
       "/product/classic-lactation-cookies/": {
-        "css": 221184,
-        "js": 126215,
-        "date": "2026-11-11",
-        "raised": "CSS raised on purpose 2026-11-11: the theme notices work (f7bb4fc62, 084c3463f, 18a82b250, 7b16c3135) styles WooCommerce notices from sgs/notice-banner tokens, adding woocommerce-notices.css (1.6 KB) on product pages and 1.1 KB to theme woocommerce.css."
+        "css": 126542,
+        "js": 117318,
+        "date": "2026-11-12"
       }
     },
     "eye-care-test": {
       "/": {
-        "css": 154522,
-        "js": 113562,
-        "date": "2026-11-11",
-        "raised": "JS raised on purpose 2026-11-11: order attribution (sourcebuster-js 4.9 KB + wc-order-attribution 1.4 KB) loads on every page again so each order records where the visitor landed (Bean 2026-11-03)."
+        "css": 96360,
+        "js": 102313,
+        "date": "2026-11-12"
       },
       "/shop/": {
-        "css": 215757,
-        "js": 152781,
-        "date": "2026-11-11"
+        "css": 124944,
+        "js": 131382,
+        "date": "2026-11-12"
       },
       "/product/gucci-oversized-cat-eye/": {
-        "css": 252006,
-        "js": 390758,
-        "date": "2026-11-11"
+        "css": 159691,
+        "js": 379458,
+        "date": "2026-11-12"
       },
       "/about/": {
-        "css": 126874,
-        "js": 93082,
-        "date": "2026-11-11",
-        "raised": "JS raised on purpose 2026-11-11: order attribution (sourcebuster-js 4.9 KB + wc-order-attribution 1.4 KB) loads on every page again so each order records where the visitor landed (Bean 2026-11-03)."
+        "css": 70714,
+        "js": 81776,
+        "date": "2026-11-12"
       }
     }
   }

@@ -1,6 +1,6 @@
 # Eye Care: differences Bean has already decided (NOT findings)
 
-The one list every Eye Care review, walk triage and round proposal reads before reporting a difference. Sources: `.claude/plans/2026-10-02-eye-care-fix-register.md` (decisions, accepted and dropped lists, closed rows as expected live values) and `build/qa/divergences.json` (the walker's machine copy). If live differs from the draft in one of these ways, it is correct: do not report it. Each round's new decisions are added here in the same commit as the register.
+The one list every Eye Care review, walk triage and round proposal reads before reporting a difference. Sources: `.claude/plans/archive/2026-10-02-eye-care-fix-register.md` (decisions, accepted and dropped lists, closed rows as expected live values) and `build/qa/divergences.json` (the walker's machine copy). If live differs from the draft in one of these ways, it is correct: do not report it. Each round's new decisions are added here in the same commit as the register.
 
 Site-wide
 - Header: a Google rating badge (G, 4.7, stars) as a pill beside the menu (R7-11, replacing D7's position); compact (one star) below 1400px, hidden below 1290px.
