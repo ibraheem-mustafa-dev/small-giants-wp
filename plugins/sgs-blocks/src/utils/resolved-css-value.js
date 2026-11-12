@@ -6,8 +6,13 @@
  * A value carrying `;`, `{`, `}`, `<`, `>`, `=`, a backslash, a comment opener, `url(`, `expression(` or `@import`,
  * unbalanced parentheses or quotes, or text outside the single call, is refused.
  *
+ * Beyond those checks the value goes through `cssLengthValue` (twin of `sgs_css_length_value`), so the editor never
+ * previews a value the front end drops, such as `min(10px 20px)` (two terms side by side).
+ *
  * @package
  */
+
+import { cssLengthValue } from './css-length';
 
 /** Matches the start of a value that is written as a CSS function call. */
 export const CSS_FUNCTION_START = /^\s*(?:var|calc|min|max|clamp)\(/i;
@@ -52,5 +57,5 @@ export function resolvedCssValue( value ) {
 			}
 		}
 	}
-	return 0 === depth ? text.replace( /\s+/g, ' ' ) : '';
+	return 0 === depth ? cssLengthValue( text ) : '';
 }
