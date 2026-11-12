@@ -394,7 +394,6 @@ SLOT_EXTRA_BASES = {
 # Old attributes §13 leaves on the block, each with its reason: (block, reason) -> attributes. A block's media attribute
 # that is neither a mapping row nor listed here is reported as "unmapped legacy attribute" by `fix`, `survey` and `check`.
 _STAYS_GROUPS = (
-    ("sgs/measured-diagram", "measurement data, not a display setting (§13)", ("drawingImageWidth", "drawingImageHeight")),
     ("sgs/container", "layout, not media: the box ratio stays (§13)", ("boxAspectRatio",)),
     ("sgs/responsive-logo", "logo switching and sizing are the block's own layout (Appendix A)",
      ("logoSwitchCustomPx", "logoSwitchMode", "width", "maxWidth", "maxHeight", "shrinkWidth")),

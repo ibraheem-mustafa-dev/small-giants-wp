@@ -465,7 +465,29 @@ OBJECT_SOURCES = {
 }
 
 
+def _leftover_pair_sizes(ctx: T.Ctx) -> None:
+    """A block already converted (its Source written) that still holds the pair's saved width and height: they go into
+    the desktop Source where it has no size of its own."""
+    sizes = PAIR_SIZES.get(ctx.block)
+    target = next((spec[3] for spec in PAIR_SPECS if spec[0] == ctx.block), None)
+    if not sizes or not target or not any(ctx.has(n) for n in sizes) or not isinstance(ctx.get(target), dict):
+        return
+    source = dict(ctx.get(target))
+    desktop = dict(source.get("desktop") or {})
+    if not desktop:
+        return
+    for name, key in zip(sizes, ("width", "height")):
+        value = V.to_number(ctx.get(name))
+        if value and not desktop.get(key):
+            desktop[key] = int(value)
+        if ctx.has(name):
+            ctx.drop(name, "converted", f"{target}.{key}")
+    source["desktop"] = desktop
+    ctx.put(target, source)
+
+
 def migrate_object_sources(ctx: T.Ctx) -> None:
+    _leftover_pair_sizes(ctx)
     for target, names, flat_id in OBJECT_SOURCES.get(ctx.block, []):
         if any(ctx.has(n) for n in names.values()) or (flat_id and ctx.has(flat_id)):
             _source_from_objects(ctx, names, target, flat_id=flat_id)
@@ -476,6 +498,15 @@ def migrate_object_sources(ctx: T.Ctx) -> None:
             entry["id"] = int(ident)
         if isinstance(url, str) and url:
             entry["url"] = url
+        sizes = PAIR_SIZES.get(ctx.block)
+        if sizes and device == "desktop" and len(entry) > 1:
+            # The generic Source step may already have retired these names: read the saved values.
+            for name, key in zip(sizes, ("width", "height")):
+                value = V.to_number(ctx.original.get(name))
+                if value:
+                    entry[key] = int(value)
+                if ctx.has(name):
+                    ctx.drop(name, "converted", f"{target}.{key}")
         if len(entry) > 1:
             source = dict(ctx.get(target)) if isinstance(ctx.get(target), dict) else {}
             source[device] = entry
@@ -489,6 +520,11 @@ PAIR_SPECS = (
     ("sgs/nav-drawer", "chromeLogoId", "chromeLogoUrl", "chromeLogoSource"),
     ("sgs/measured-diagram", "drawingImageId", "drawingImageUrl", "drawingSource"),
 )
+
+
+# A pair's saved width and height, written into the desktop Source: the measured diagram's drawing size is its measurement
+# scale, which the adopted block reads from the Source (an SVG attachment often has no stored size of its own).
+PAIR_SIZES = {"sgs/measured-diagram": ("drawingImageWidth", "drawingImageHeight")}
 
 
 def _pairs(ctx: T.Ctx):

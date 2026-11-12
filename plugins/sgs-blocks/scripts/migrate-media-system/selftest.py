@@ -338,9 +338,12 @@ case("responsive-logo: id and url pairs per device, dark id", "sgs/responsive-lo
      {"logoId": 7, "logoUrl": U, "logoUrlMobile": "http://x/m.svg", "darkLogoId": 9, "width": 140},
      {"logoSource": {"desktop": {"kind": "image", "id": 7, "url": U}, "mobile": {"kind": "image", "url": "http://x/m.svg"}},
       "logoDarkSource": {"desktop": {"kind": "image", "id": 9}}, "width": 140})
-case("measured-diagram: source and alt move, its width and height stay as measurements", "sgs/measured-diagram",
+case("measured-diagram: source and alt move; the width and height (its measurement scale) go into the Source", "sgs/measured-diagram",
      {"drawingImageId": 3, "drawingImageUrl": U, "drawingImageAlt": "D", "drawingImageWidth": 800, "drawingImageHeight": 600},
-     {"drawingSource": {"desktop": {"kind": "image", "id": 3, "url": U}}, "drawingAlt": "D", "drawingImageWidth": 800, "drawingImageHeight": 600})
+     {"drawingSource": {"desktop": {"kind": "image", "id": 3, "url": U, "width": 800, "height": 600}}, "drawingAlt": "D"})
+case("measured-diagram: an already-converted drawing's leftover width and height go into its Source", "sgs/measured-diagram",
+     {"drawingSource": {"desktop": {"kind": "image", "id": 3, "url": U}}, "drawingImageWidth": 800, "drawingImageHeight": 600},
+     {"drawingSource": {"desktop": {"kind": "image", "id": 3, "url": U, "width": 800, "height": 600}}})
 case("gallery: items fold into source, alt, fit, focal", "sgs/gallery",
      {"mediaItems": [{"id": 1, "url": U, "alt": "g", "caption": "c", "objectFit": "contain", "focalPoint": {"x": 0.3, "y": 0.6}, "_key": "k"}], "aspectRatio": "1 / 1"},
      {"mediaItems": [{"caption": "c", "_key": "k", "source": {"desktop": {"kind": "image", "id": 1, "url": U}}, "alt": "g",
