@@ -66,6 +66,7 @@
 					}
 				},
 				"media": {
+					"surface": true,
 					"label": "Media",
 					"order": 1,
 					"clusters": [

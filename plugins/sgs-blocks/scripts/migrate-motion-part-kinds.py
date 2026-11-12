@@ -66,18 +66,25 @@ HELPER_BACK = 900
 # Media parts whose markup the structural rules cannot follow (the class is added by a regex over returned HTML, or
 # passed through a helper that prints several media types). Each was read in the block's render source; the patterns
 # must still match that source, or the part loses its evidence and --check fails: `block:part` -> (patterns, reason).
-CONFIRMED = {
-    'hero:split-media': ((r"sgs_tier_media_render\(\s*\$split_tiers,\s*'sgs-hero__split-media'",),
-                         'base class on every element sgs_tier_media_render prints (img, video, inline SVG, Lottie)'),
-    'hero:split-image': ((r"'image'\s*=>\s*\$sgs_hero_split_image_class", r"'sgs-hero__split-image'"),
-                         'extra class on the <img> tier only (sgs_tier_media_render $extra[image])'),
-    'card-grid:image': ((r"preg_replace\(\s*'/\(<\(\?:img\|video\)", r"array\(\s*'sgs-card-grid__media'\s*\)"),
-                        'class added to the first <img>/<video> the media renderer returned'),
-    'gallery:image': ((r"array\(\s*'sgs-gallery__img'\s*\)", r"wp_get_attachment_image\("),
-                      'class on the <img> wp_get_attachment_image prints'),
-    'hero:background': ((r"'sgs-hero__bg-img sgs-hero__background'", r"'bg_img_class'\s*=>\s*'sgs-hero__background'"),
-                        "the background <img> (the standard variant's own, and the wrapper's on the split variant through its "
-                        'bg_img_class option) and the Lottie holder that replaces it'),
+# Empty since every media part prints through the shared renderer (SHARED_RENDERER_CLASSES below).
+CONFIRMED = {}
+# Classes the shared media renderer (`includes/media/`) prints, which the structural rules cannot follow (it builds the
+# element from an option array, or one class string covers img, video, svg and iframe). Each is pinned by patterns in
+# the renderer file that must still match, or every part carrying the class fails --check as stale:
+# class -> (file under includes/, patterns, kinds, reason).
+SHARED_RENDERER_CLASSES = {
+    'sgs-media-el': ('media/render-slot.php', (r"'classes'\s*=>\s*'sgs-media-el sgs-media-cover'", r"'sgs-media-el sgs-media-svg sgs-media-sib"),
+                     ('surface',), 'the renderer prints the slot own media element (img, video, iframe or inline svg) with this class'),
+    'sgs-bg-media': ('media/render-background.php', (r"'element_class'\s*=>\s*'sgs-bg-media'",),
+                     ('surface',), 'the background layer the renderer prints as the first child of the section (picture, tile, video or svg)'),
+    'sgs-media-caption': ('media/render-slot.php', (r'class="sgs-media-caption"', r"array\(\s*'figcaption',\s*'div'\s*\)"),
+                          ('text',), 'the renderer prints the caption in a figcaption or div'),
+}
+# Parts whose class is the renderer's but whose kinds the class table cannot name: `block:part` -> (file under includes/,
+# patterns, kinds, reason), pinned the same way.
+SHARED_RENDERER_PARTS = {
+    'media:media': ('media/render-slot.php', (r"'sgs-media-el sgs-media-svg sgs-media-sib",),
+                    ('surface', 'svg'), 'the sgs/media slot takes an svg file, which the renderer prints as an inline <svg> with this class'),
 }
 # Text parts the DB gives no evidence for, each read by hand and pinned by patterns that must still match the block's
 # render source, or --check fails: `block:part` -> (patterns, reason).
@@ -166,6 +173,19 @@ def helper_call_tag(text, pos, helpers):
     return 'img' if uses and all(direct_call_tag(text, pos + u, helpers) for u in uses) else None
 
 
+RENDERER_CLASS_ARG = re.compile(r"""'extra_class'\s*=>\s*'[^']*$""")
+RENDERER_CALLS = ('sgs_media_item_renderer',)
+
+
+def renderer_class_tag(text, pos):
+    """'img' when the class at `pos` is passed to the shared media renderer: inside an `'extra_class' => '...'` option, or
+    as an argument of `sgs_media_item_renderer(`. The renderer puts it on the slot own media element."""
+    window = text[max(0, pos - HELPER_BACK):pos]
+    if RENDERER_CLASS_ARG.search(window[window.rfind('\n') + 1:]):
+        return 'img'
+    return 'img' if direct_call_tag(text, pos, frozenset(RENDERER_CALLS)) else None
+
+
 def tags_of(texts, cls, helpers=frozenset()):
     """The tag of every element that carries `cls` in `texts`; 'unknown' where the class is not inside an opening tag."""
     tags = set()
@@ -182,7 +202,7 @@ def tags_of(texts, cls, helpers=frozenset()):
                 name = re.match(r'<([a-zA-Z][a-zA-Z0-9]*)', seg)
                 if name and '>' not in seg:
                     tag = name.group(1).lower()
-            tags.add(tag or helper_call_tag(text, m.start(), helpers) or 'unknown')
+            tags.add(tag or renderer_class_tag(text, m.start()) or helper_call_tag(text, m.start(), helpers) or 'unknown')
     return found, tags
 
 
@@ -271,6 +291,15 @@ def analyse(blocks_dir, includes_dir, texts):
             if confirmed_text:
                 if all(re.search(pat, own) for pat in confirmed_text[0]):
                     kinds['text'] = confirmed_text[1]
+                else:
+                    stale = True
+            shared_pin = SHARED_RENDERER_PARTS.get(f'{slug}:{part}') or SHARED_RENDERER_CLASSES.get(cls)
+            if shared_pin:
+                pin_file = os.path.join(includes_dir, *shared_pin[0].split('/'))
+                pin_text = strip_comments(read_text(pin_file)) if os.path.isfile(pin_file) else ''
+                if all(re.search(pat, pin_text) for pat in shared_pin[1]):
+                    for kind in shared_pin[2]:
+                        kinds[kind] = shared_pin[3]
                 else:
                     stale = True
             refuted = REFUTED_TEXT.get(f'{slug}:{part}')

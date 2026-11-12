@@ -62,6 +62,7 @@
 					"_note": "`.sgs-image-sequence__stage` (render.php:173) — the positioning box that holds the thumbnail and the canvas in the same rect. Every property on it (position/width/overflow/aspect-ratio fallback, style.css:23-31) is a structural default with no attribute behind it, so it exposes no client-facing style controls."
 				},
 				"thumbnail": {
+					"surface": true,
 					"label": "Thumbnail image",
 					"order": 3,
 					"clusters": [],
