@@ -1,13 +1,13 @@
 ---
 doc_type: spec
 spec_id: 49
-spec_version: "0.9"
+spec_version: "1.0"
 title: SGS Media System
 project: small-giants-wp
 status: approved
 authors: Bean, Claude
 session_date: 2026-11-09
-last_verified: 2026-11-11
+last_verified: 2026-11-12
 status_history:
   - 2026-11-09: v0.1, first full draft
   - 2026-11-09: v0.2, rewritten after five independent reviews and live proofs
@@ -19,6 +19,7 @@ status_history:
   - 2026-11-10: v0.7, the proofs' results applied (PS-1, PS-2, PS-5, PS-7, PS-10)
   - 2026-11-10: v0.8, Stage B setup's findings applied: narrowed atoms on two slots, the decorative image's context, three slot prefixes, saved content and the hand-resolved items in §13
   - 2026-11-11: v0.9, Stage B built on the integration branch (every block in `scripts/data/media-adoption.json` adopted, saved content migrated, the gradient border, the Fit default and the helper's Ratio crop, device-kind scoping of effects): the corrections the packages reported are applied, each FR carries its built status, the appendices state the end state, and Bean's 2026-11-11 regression-scope ruling is recorded
+  - 2026-11-12: v1.0, Stage B released: merged to `main` (`c5f3b36cd`), the framework DB published, the integration branch deleted, saved content migrated on sandybrown, mamas-test, indus-test, eye-care-test and the four local mirrors, all four sites deployed; AC-25's before and after comparison drove three fixes (the fill floor from a parent's min-height, §7.2; the hero's phone crop and desktop split width pins, §13)
 references:
   - .claude/plans/archive/2026-11-09-media-controls-redesign.md
   - .claude/reports/2026-11-09-media-controls/
@@ -762,7 +763,7 @@ Tool: `plugins/sgs-blocks/scripts/migrate-media-system/` (survey, fix, check, se
 | `inlineSvg`, `svgParts*`, `chromeLogoSvgParts*`, `bgSvgParts*` | Inline SVG Source; `SvgParts`, `SvgPartsTrigger` |
 | `bgSvgOpacity`, `bgSvgMinHeight` | Opacity; the block's min height |
 | Before-after `beforeImage*`, `afterImage*`, `*MediaType`, tiers | `beforeSource`, `afterSource`, Alt, Decorative |
-| Measured diagram `drawingImageId`, `Url`, `Alt`, `Decorative` | `drawingSource`, Alt, Decorative; its width and height stay as measurements |
+| Measured diagram `drawingImageId`, `Url`, `Alt`, `Decorative`, `drawingImageWidth`, `drawingImageHeight` | `drawingSource` (the width and height, the drawing's measurement scale, become the desktop Source's `width` and `height`), Alt, Decorative |
 | Team `photo`, tiers; testimonial `avatarMedia`, `orgLogo`, `workMedia` | Each slot's Source |
 | Buybox `mainPhoto*`, `galleryThumb*`, `previewImageId` | Radius, Border, Shadow, Source by slot |
 | `optionMediaSize`, brand strip `logos[].media`, `tileShape` | `optionMediaSize` stays (a percentage of the picture band, not of the option); the logo's Source; `tileShape` becomes `logoShape` (none stays none, circle stays circle) |

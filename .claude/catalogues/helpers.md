@@ -429,7 +429,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|---|
 | `sgs_render_info_toggle` | `function sgs_render_info_toggle( string $panel_text, string $aria_label = '', string $extra_class = '' )…` | Render an info-toggle button + its (initially hidden) panel. | tags button, div; aria aria-controls, aria-expanded, aria-label |
 
-#### `includes/helpers-inline-formats.php` — 8 function(s)
+#### `includes/helpers-inline-formats.php` — 9 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
@@ -441,6 +441,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_basket_count_enqueue` | `function sgs_basket_count_enqueue(): void` | Load the basket-count view module, once per request; called only for markup holding a `sgs-basket-count` span. | no markup |
 | `sgs_basket_count_print` | `function sgs_basket_count_print( string $html ): string` | Empty each basket-count span, or fill it with the basket's item count on cart and checkout. | no markup |
 | `sgs_inline_formats_maybe_enqueue` | `function sgs_inline_formats_maybe_enqueue( $block_content, $block = array() )` | `render_block` filter: load the inline-format assets the block's markup needs. A highlight or a photo loads the stylesheet; a basket count… | no markup |
+| `sgs_inline_photo_img_tag` | `function sgs_inline_photo_img_tag( $filtered_image )` | `wp_content_img_tag` filter: an inline photo (the `sgs-inline-photo` format, sized in `em` beside the words) loads lazily with… | tags img |
 
 #### `includes/helpers-instance-scope-hash.php` — 1 function(s)
 
@@ -1000,7 +1001,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). | calls wc_price |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). | tags li, span, ul; aria aria-current, aria-label |
 
-**101 files, 480 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**101 files, 481 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 

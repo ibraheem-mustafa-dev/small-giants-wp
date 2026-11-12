@@ -9,7 +9,7 @@ last_updated: 2026-11-12
 ## Summary for Bean
 
 - **Mama's (Front H):** the one client stream now. Indus (signed off 2026-11-08) and Eye Care (signed off 2026-11-12) are finished; Mama's is finished by hand from `plans/2026-11-02-clone-finishing-streams.md` section "Mama's (now)", the one Mama's plan (open list included).
-- **Media system (Spec 49, Front P):** Stage B on its branch, every block adopted; removal, cloner and release next.
+- **Media system (Spec 49, Front P):** released 2026-11-12: every SGS image, video, embed, SVG and background control runs on the new media system on all four test sites.
 - **Nav / header / footer (Front N):** Waves 1 to 3C are live; Gate 3C's last mile is deferred by you; Waves 4 and 5 have not started.
 - **Need you:** the rulings under Parked, the Spec 36 and Spec 38 choices under Front N.
 
@@ -40,16 +40,14 @@ Signed off by Bean (2026-11-12). eye-care-test (`https://darkcyan-grouse-898606.
 
 **Open:**
 - **If checkout jumps again on a phone** (not reproduced; mitigation `5d38b580a`): Bean sends a screen recording and the phone model. **At launch:** switch eye-care-test's email to Eye Care's own mailbox (`dev-setup.md` §Site email).
-- **Custom CSS until Spec 49:** the hero focal points (post 208) and the lens tag and outline (post 463).
+- **Custom CSS that the media controls can now replace:** the hero focal points (post 208) and the lens tag and outline (post 463).
 - **Lint-js (R3-25):** about 6,500 errors, mostly formatting; needs a quiet window.
 
 ### Front P: Media system (Spec 49)
 
-**State:** branch `feature/media-stage-b` (pushed; not merged): all 29 blocks adopted, repo content migrated, Spec 49 v0.9 written on the branch. While the branch exists, main commits touching those block folders are refused (`scripts/check-stage-b-freeze.py`). Finishing: old-code removal, motion hover routes, cloner switch-over; then gates, merge, release. Status and resume point: `plans/2026-11-10-spec49-stage-b.md` Progress.
+**State:** released 2026-11-12. Spec 49 v1.0: Stages A and B are on `main` (merge `c5f3b36cd`, last fix `419b4cb6a`); saved content is migrated on sandybrown, mamas-test, indus-test, eye-care-test and the four local mirrors (server backups in `~/sgs-media-backups/<target>/`, restore with `plugins/sgs-blocks/scripts/migrate-media-system/cli.py restore --remote <target> --backup <file>`); all four sites run the release. The plan is archived: `plans/archive/2026-11-10-spec49-stage-b.md`.
 
-**Motion findings:** Spec 38A (FR-38A-27, 34, 44, 45, §17); effects runs `reports/2026-11-09-media-controls/T10-effects-run.md`, `T12-effects-run-A.md`, `-B.md`.
-
-**Open:** Eye Care's Custom CSS controls and Mama's media work wait for the release. Never build or seed from the branch without `SGS_FRAMEWORK_DB` set (it wrote the shared DB once on 2026-11-11; fixed).
+**Open:** Stage C (native parallax driver, uploaded mask shapes) is not scheduled (Spec 49 §14.1). Eye Care's Custom CSS (hero focal points on post 208, lens tag and outline on post 463) can now move to the media controls.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
@@ -75,8 +73,8 @@ Signed off by Bean (2026-11-12). eye-care-test (`https://darkcyan-grouse-898606.
 
 ## Live state
 
-- **Branch:** `main`; many sessions share this tree. **What each site runs:** `ssh hd "cat ~/.sgs-deploy-marker-<target>.json"`; deploy targets are `TARGETS` in `plugins/sgs-blocks/scripts/deploy_common.py` (`sandybrown`, `indus-test`, `eye-care-test`, `eye-care-clone-test`, `mamas-test`); indus-test runs `f579fdb33`, sandybrown `f5d0e9810`, mamas-test `e2c227b79`, eye-care-test `97028e38e` (2026-11-11), eye-care-clone-test `c7b9372ff` (markers read 2026-11-09).
-- **sandybrown (canary, default target):** WordPress 7.1.3; homepage page **2742**, posts page **2741**; motion-QA fixtures 2103, 2109, 2113, 2603, 2740, 3037, 5223, 5226 and 5229 are never deleted. Draft 5498 carries four baselined stored-shape findings (`plugins/sgs-blocks/scripts/oldshape-audit-baseline.json`); delete them when it is trashed or re-saved. Deploy scp runs about 250 KB/s (a plain scp, 6 MB/s); six sandybrown resets 2026-11-10, the sixth with gates cached and the machine idle, not gate overlap; retry at the Spec 49 Stage B release (Bean).
+- **Branch:** `main`; many sessions share this tree. **What each site runs:** `ssh hd "cat ~/.sgs-deploy-marker-<target>.json"`; deploy targets are `TARGETS` in `plugins/sgs-blocks/scripts/deploy_common.py` (`sandybrown`, `indus-test`, `eye-care-test`, `eye-care-clone-test`, `mamas-test`); sandybrown, mamas-test, indus-test and eye-care-test run `419b4cb6a` (2026-11-12), eye-care-clone-test `c7b9372ff` (markers read 2026-11-09).
+- **sandybrown (canary, default target):** WordPress 7.1.3; homepage page **2742**, posts page **2741**; motion-QA fixtures 2103, 2109, 2113, 2603, 2740, 3037, 5223, 5226 and 5229 are never deleted. Draft 5498 carries four baselined stored-shape findings (`plugins/sgs-blocks/scripts/oldshape-audit-baseline.json`); delete them when it is trashed or re-saved. Deploy scp runs about 250 KB/s (a plain scp, 6 MB/s); six sandybrown resets 2026-11-10, the sixth with gates cached and the machine idle, not gate overlap; the 2026-11-12 release deployed it in one run.
 - **Client test sites** (named explicitly to deploy, WordPress 7.1.3): eye-care-test, indus-test (the Indus clone, brief `sites/indus-foods/CLAUDE.md`) and mamas-test (brief `sites/mamas-munches-redesign/CLAUDE.md`; its active header and footer are `sgs_header` 178 and `sgs_footer` 176). Each holds Spec 48's private calibration page (§3.2, `scripts/computed-route/calibration-targets.json`).
 
 ## Known failing tests
@@ -85,6 +83,5 @@ Signed off by Bean (2026-11-12). eye-care-test (`https://darkcyan-grouse-898606.
 - Reloading with the page scrolled shifts content on shop (46px at 1440) and product (about 20px), measured by the Eye Care session (`E:/sgs-tmp/ec-check/reload-recheck.cjs`); it is on that session's round 13 list.
 - `icon-brand`/`icon-custom` roles: Bean's call, only if Spec 48 cloning must place them (`plans/archive/2026-11-05-icon-source-detector.md`).
 - `plugins/sgs-blocks/scripts/db-consistency/tests/test_f6_consistency.py::TestCheck5VariantReseed` (4 tests): the fixtures predate the `slot_value` column (2026-09-05) and one assert expects 2-tuples where the code returns 3-tuples. Small fix in the tests.
-- `tests/php/DecorativeImageLayerTest.php` and `ProductCardImagePriorityTest` (plugin `sgs-blocks`): red on `main`, green on `feature/media-stage-b`; they turn green on `main` at the Spec 49 Stage B merge (Front P).
 - A fresh worktree needs its own `npm ci` in `scripts/computed-route` and `plugins/sgs-blocks` and a copy of `cache/`, or route tests fail for that reason alone (`dev-setup.md`).
 - `node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json`: divergences D-72 to D-91 (except D-87) cite no register decision, and the README does not list the new `lib/motion-validate.mjs`, `lib/motion-refusals.mjs` and their tests.

@@ -19,8 +19,8 @@ Searching one directory and concluding a tool does not exist is a live failure m
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 1195 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 892 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 1194 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 894 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
 
@@ -47,7 +47,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (6 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 7 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (6 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 0 resolved scripts) — 6 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -83,11 +83,6 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
-**`scripts/check-stage-b-freeze.py`** (commit)
-- Reads: `bj`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
 
 ### The full library — grep this BEFORE building or hand-doing anything
 
@@ -95,7 +90,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 ⚠ The naming is not consistent — the same idea appears as `census-*`, `survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`. Grep for the SUBJECT (colour, gradient, token, element, inline, parity), never for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 808 scripts
+#### `plugins/sgs-blocks/scripts/` — 810 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -568,6 +563,8 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `migrate-media-system/markup.py` | manifest+script-call | Serialized block markup and JSON block trees: find every block and let a caller rewrite its attributes. |
 | `migrate-media-system/mirror.py` | script-call | Saved content on a local mirror: rewrite, back up, restore (Spec 49 §13). |
 | `migrate-media-system/mirror_selftest.py` | script-call | Proof of the saved-content tools on a scratch mirror: `cli.py self-test --mirror`. |
+| `migrate-media-system/remote.py` | script-call | Saved content on a live test site over SSH: rewrite, back up, restore (Spec 49 §13, the per-site deploy-and-migrate step). |
+| `migrate-media-system/remote_selftest.py` | script-call | Offline proof of `remote.py` with a fake server behind the `Runner` seam (no SSH, no network). |
 | `migrate-media-system/selftest.py` | script-call | Self-test of the §13 detector: a fixture per mapping family (with its expected output written out), negative |
 | `migrate-media-system/sizes.py` | manifest+script-call | Image sizes for the §13 migration (FR-49-16: an image Source needs an attachment id, or its own width and height). |
 | `migrate-media-system/transform.py` | manifest+script-call+skill+test-import | The §13 transform: one block's old attributes to its new ones. A pure function of (block name, attributes). |
@@ -908,7 +905,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `wiring-fingerprint/wf_table.py` | script-call | The names the Cart and Checkout look table builds (`includes/woocommerce/commerce-look/selectors.json`). |
 | `wiring-fingerprint/wf_tokens.py` | manifest+script-call | Channel tokens: what one PHP statement emits. |
 
-#### `scripts/` — 649 scripts
+#### `scripts/` — 648 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -918,7 +915,6 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-page-weight.mjs` | manifest+script-call | Page-weight gate against a LIVE site (.claude/plans/archive/2026-11-03-page-weight-budget.md, "Gate"). |
 | `check-rule-labels.py` | manifest | : the framework principles are cited as FP-<n>, never by an archived spec's number. |
 | `check-spec-id-landing.py` | manifest | Prove every ID the Spec 32 and Spec 47 section ledgers carry lands in a live spec. |
-| `check-stage-b-freeze.py` | commit-gate+manifest | Spec 49 Stage B folder freeze: a pre-commit check on the staged files. |
 | `computed-route/answer-sheet.mjs` | script-call+skill | Answer-sheet scorer (Spec 48 route-accuracy R1). |
 | `computed-route/apply-options.mjs` | script-call | The applier's site-option step: values that live in site options, not block settings, read from the draft and written on the local mirror. Today: the… |
 | `computed-route/apply.mjs` | script-call+test-import | The applier: sets existing block settings on an already-built client site from the draft, on the local mirror. It reads each paired block's draft and… |

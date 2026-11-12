@@ -103,7 +103,7 @@ async function jsBlocked( ctx ) {
 	}
 }
 
-/** Load entrances: the first section keeps from-opacity 1 and is never below full opacity; a later one fades. */
+/** Load entrances: a first-section fade starts at the 0.01 floor and never reaches 0 (FR-38A-18, `e74a4aef8`); a later one fades from 0. */
 export async function loadChecks( ctx ) {
 	const { rep, markers } = ctx;
 	if ( ! markers[ '.m29-load-first' ] ) return missing( rep, [ 'lcp-first-section-opacity', 'load-later-fades' ], 'no hover-entrance page given' );
@@ -122,10 +122,10 @@ export async function loadChecks( ctx ) {
 	try {
 		await page.waitForTimeout( 1700 );
 		const r = await page.evaluate( () => ( { min: window.__m29min, first: getComputedStyle( document.querySelector( '.m29-load-first' ) ).getPropertyValue( '--sgs-me-from-op' ).trim(), later: getComputedStyle( document.querySelector( '.m29-load-later' ) ).getPropertyValue( '--sgs-me-from-op' ).trim() } ) );
-		rep.check( 'lcp-first-section-opacity', { selector: '.m29-load-first', property: 'opacity (min over first 1.5 s) and --sgs-me-from-op', measured: { min: r.min[ '.m29-load-first' ], fromOp: r.first }, expected: 'min opacity 1, from-opacity 1 (movement only)', pass: r.min[ '.m29-load-first' ] === 1 && r.first === '1' } );
+		rep.check( 'lcp-first-section-opacity', { selector: '.m29-load-first', property: 'opacity (min over first 1.5 s) and --sgs-me-from-op', measured: { min: r.min[ '.m29-load-first' ], fromOp: r.first }, expected: 'min opacity above 0, from-opacity 0.01 (the above-the-fold floor, never 0)', pass: r.min[ '.m29-load-first' ] > 0 && parseFloat( r.first ) === 0.01 } );
 		rep.control( 'lcp-first-section-opacity', { selector: '.m29-load-later', property: 'opacity (min) and --sgs-me-from-op', measured: { min: r.min[ '.m29-load-later' ], fromOp: r.later }, expected: 'the same reading on a non-first load entrance is below 1 (the check can see a fade)', red: r.min[ '.m29-load-later' ] < 1 && r.later === '0' } );
 		rep.check( 'load-later-fades', { selector: '.m29-load-later', property: '--sgs-me-from-op', measured: r.later, expected: '0 (the LCP rule exempts only the first section)', pass: r.later === '0' } );
-		rep.control( 'load-later-fades', { selector: '.m29-load-first', property: '--sgs-me-from-op', measured: r.first, expected: 'the first-section entrance reads 1, so the from-opacity-0 judge rejects it', red: r.first !== '0' && r.first !== '' } );
+		rep.control( 'load-later-fades', { selector: '.m29-load-first', property: '--sgs-me-from-op', measured: r.first, expected: 'the first-section entrance reads the 0.01 floor, so the from-opacity-0 judge rejects it', red: r.first !== '0' && r.first !== '' } );
 	} finally {
 		await close();
 	}
