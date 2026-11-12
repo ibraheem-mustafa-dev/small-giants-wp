@@ -38,7 +38,9 @@ copy_tree() {
     stage="$(mktemp -d /tmp/sgs-sync.XXXXXX)"
     tarl="$(dirname "$src")/.sgs-sync-$$-$(basename "$src").tar"
     tarw="$(wslpath -w "$tarl")"
-    if (cd "$src" && "$WINTAR" -cf "$tarw" "${tx[@]}" .) && tar -xf "$tarl" -C "$stage"; then
+    # -h follows links: the deploy's isolated worktree links vendor/ packages from the shared checkout, and an unfollowed
+    # link would arrive as nothing (the mirror then fatals on the autoloader's missing files).
+    if (cd "$src" && "$WINTAR" -chf "$tarw" "${tx[@]}" .) && tar -xf "$tarl" -C "$stage"; then
       rm -f "$tarl"
       rsync -a --delete "${rs[@]}" "$stage/" "$dest/"
       rm -rf "$stage"
