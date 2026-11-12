@@ -93,12 +93,6 @@
     },
     {
       "type": "orphan_attr",
-      "block": "sgs/team-member",
-      "attr": "photoRatio",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
       "block": "sgs/trust-bar",
       "attr": "backgroundCaptions",
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"

@@ -460,7 +460,8 @@
 								"meaning",
 								"object-fit",
 								"focal-point",
-								"shape"
+								"shape",
+								"sizing"
 							]
 						}
 					},
