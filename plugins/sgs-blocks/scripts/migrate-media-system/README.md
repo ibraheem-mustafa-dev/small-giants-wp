@@ -41,6 +41,24 @@ Declared-target guard (`blocks.py::guard_declared`): WordPress silently drops an
 
 `fix` leaves a refused block as saved and `check --active on` then reports it, so list the refusals before a release with `survey --mirror NAME` (status `refused`) as well as the dry run.
 
+## Live test sites over SSH (the per-site deploy-and-migrate step)
+
+`remote.py` runs the mirror steps on a deploy target's server through the deploy's own SSH helpers (`deploy_common.TARGETS`, `ssh_base_cmd`, alias `hd` with the key-and-port fallback). `TARGET` is a `TARGETS` key (`indus-test`, `sandybrown`, ...).
+
+```
+cli.py survey  --remote TARGET [--out FILE --json]   read-only: export over SSH, old attributes per block
+cli.py fix     --remote TARGET --dry-run             read-only: export and diff; prints rows and blocks that would change
+cli.py fix     --remote TARGET --apply               backup, rewrite, read-back; prints the backup path and the restore command
+cli.py check   --remote TARGET --active on           exit 1 while any old attribute remains (the deploy's media-guard form)
+cli.py restore --remote TARGET --backup PATH         imports a backup `fix --remote` made
+```
+
+`fix --remote --apply` order, the same as a mirror: export with `corpus.export_command` (read-only); plan with `mirror.plan_rewrites`, and `fix` and `check` refuse unsupported records as on a mirror; `wp db export` to `~/sgs-media-backups/<target>/<target>-<timestamp>.sql` on the server (outside public_html, mode 700; a failed dump, a missing file or a zero-byte file stops the run before anything is written, and the backup's path and the restore command are printed first); upload `apply-content.php` and the payload to `/tmp/sgs-media-apply-<backup>/` over `ssh ... cat >`; `wp eval-file` (the same transaction that re-checks each row's MD5 and rolls back with no write if a row changed since the export); delete the temp folder; re-export and require every written row to read back byte-identical. `restore` accepts only a `.sql` file directly inside that backups folder, imports it and flushes the object cache. `--apply` writes one target at a time.
+
+Image sizes: the export's `attachments` record gives an upload's id and size; any other image is read over HTTP (a remote target has no uploads folder to read). The WordPress folder is the target's `wp_content` parent, resolved against the server's `$HOME`. `corpus.check_wp_path` accepts that home-relative form (the deploy's media-guard passes it), and the tool refuses unsafe characters and `..`.
+
+`remote_selftest.py` (run by `cli.py self-test`) proves it against a fake server behind the `Runner` seam: planted rows are written and read back, a row changed since the export rolls back with no write, a failed dump and a zero-byte backup stop the run before any write, restore issues the import and refuses a path outside the backups folder, and an unreadable export fails closed.
+
 ## Self-test
 
 `cli.py self-test` runs the fixtures, negative controls and idempotence proofs, and (when PHP is on the PATH) `export-content.php` and `apply-content.php` against a fake `$wpdb` (`export_selftest.py`, `apply_selftest.py`) (no WSL needed; the gate form is `cli.py check --self-test`). `cli.py self-test --mirror` additionally builds `/var/www/local-mediatest` from `local-sandybrown` (files without uploads, database as `wp_mediatest`), then proves: dry run writes nothing, `fix --apply` rewrites and `check --active on` is clean, a second fix does nothing, `restore` returns every table checksum (under the mirror's own table prefix, read with `wp db prefix`) and every row to the original bytes, a deliberately broken mapping makes `check` fail, `restore` refuses a file outside the backups folder, and the source mirror is unchanged. It deletes the scratch mirror, its database and its backups afterwards.

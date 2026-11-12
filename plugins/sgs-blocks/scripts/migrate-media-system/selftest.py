@@ -15,6 +15,7 @@ import corpus as C
 import markup
 import apply_selftest
 import export_selftest
+import remote_selftest
 import mapping as M
 import sizes as S
 
@@ -1012,7 +1013,7 @@ def _run(break_mapping: bool = False) -> int:
         M.rows.cache_clear()
         M.STAYS["sgs/post-grid"] = ()
     failures: list[str] = []
-    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_declared_guard(failures) + run_scope(failures) + run_sizes(failures) + run_http_retry(failures) + run_missing_files(failures) + run_retired_names(failures) + run_inplace_json(failures) + export_selftest.run(failures) + apply_selftest.run(failures)
+    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_declared_guard(failures) + run_scope(failures) + run_sizes(failures) + run_http_retry(failures) + run_missing_files(failures) + run_retired_names(failures) + run_inplace_json(failures) + export_selftest.run(failures) + apply_selftest.run(failures) + remote_selftest.run(failures)
     for line in failures:
         print(line)
     print(f"migrate-media-system self-test: {total - len(failures)} of {total} checks passed"

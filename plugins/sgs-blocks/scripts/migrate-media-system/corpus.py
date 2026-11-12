@@ -194,9 +194,10 @@ UNSAFE_PATH = re.compile(r"[^A-Za-z0-9_./-]")
 
 
 def check_wp_path(wp_path: str) -> str:
-    """A WordPress folder as an absolute path of plain characters (it goes into a shell command unquoted)."""
-    if not wp_path.startswith("/") or UNSAFE_PATH.search(wp_path) or ".." in wp_path:
-        raise SystemExit(f"WordPress path {wp_path!r} must be absolute and use only letters, digits and _ . / -")
+    """A WordPress folder of plain characters (it goes into a shell command unquoted). Absolute, or relative to the SSH
+    login folder (the deploy's `TARGETS[...]['wp_content']` form, `domains/<host>/public_html`)."""
+    if not wp_path or UNSAFE_PATH.search(wp_path) or ".." in wp_path or wp_path.startswith("-"):
+        raise SystemExit(f"WordPress path {wp_path!r} must use only letters, digits and _ . / - and no `..`")
     return wp_path
 
 
