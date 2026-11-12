@@ -26,7 +26,20 @@ write_secrets() {
   local name="$1" src="$2" from="$3" to="$4" secrets
   secrets="$(secrets_dir)" || { echo "scratch-mirror: no .claude/secrets folder found; $name has no login file" >&2; return 1; }
   [ -f "$secrets/$src.env" ] || { echo "scratch-mirror: $secrets/$src.env is missing; $name has no login file" >&2; return 1; }
-  sed "s#$from#$to#g" "$secrets/$src.env" > "$secrets/$name.env"
+  # Keys carry the site name in capitals, hyphens dropped or turned to underscores depending on the reader
+  # (WP_URL_LOCALINDUS, WP_URL_LOCAL_INDUS): each key is written in both forms of the copy's name.
+  local key_a key_b
+  key_a="$(echo "$name" | tr -d '-' | tr 'a-z' 'A-Z')"
+  key_b="$(echo "$name" | tr 'a-z-' 'A-Z_')"
+  sed "s#$from#$to#g" "$secrets/$src.env" | awk -v a="$key_a" -v b="$key_b" -v s1="$(echo "$src" | tr -d '-' | tr 'a-z' 'A-Z')" -v s2="$(echo "$src" | tr 'a-z-' 'A-Z_')" '
+    match($0, /^[A-Za-z_][A-Za-z0-9_]*=/) {
+      k = substr($0, 1, RLENGTH - 1); v = substr($0, RLENGTH + 1)
+      base = ""
+      if (length(k) > length(s1) + 1 && substr(k, length(k) - length(s1)) == "_" s1) base = substr(k, 1, length(k) - length(s1) - 1)
+      else if (length(k) > length(s2) + 1 && substr(k, length(k) - length(s2)) == "_" s2) base = substr(k, 1, length(k) - length(s2) - 1)
+      if (base != "") { print base "_" a "=" v; if (b != a) print base "_" b "=" v; next }
+    }
+    { print }' > "$secrets/$name.env"
 }
 
 secrets_dir() {
