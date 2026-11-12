@@ -47,9 +47,12 @@ if ( ! function_exists( 'sgs_button_preset_css' ) ) {
 				. 'color:var(' . $v . 'hover-text,var(' . $v . 'text));'
 				. 'border-color:var(' . $v . 'hover-border,var(' . $v . 'border,transparent));'
 			: '';
-		$css .= $hover . '{' . $hover_colours
-			. 'transform:var(' . $v . 'hover-lift,translateY(-3px));'
-			. 'scale:var(' . $v . 'hover-scale,none);rotate:var(' . $v . 'hover-rotate,none);}';
+		if ( '' !== $hover_colours ) {
+			$css .= $hover . '{' . $hover_colours . '}';
+		}
+		// The lift is motion: the touch guard keeps it off touch screens when the site chose "Desktop only".
+		$lift = 'transform:var(' . $v . 'hover-lift,translateY(-3px));scale:var(' . $v . 'hover-scale,none);rotate:var(' . $v . 'hover-rotate,none);';
+		$css .= function_exists( 'sgs_hover_guarded_rule' ) ? sgs_hover_guarded_rule( $hover, $lift ) : $hover . '{' . $lift . '}';
 		$css .= '@media (prefers-reduced-motion: reduce){' . $selector . '{transition:none;}' . $hover . '{transform:none;scale:none;rotate:none;}}';
 		return $css;
 	}
