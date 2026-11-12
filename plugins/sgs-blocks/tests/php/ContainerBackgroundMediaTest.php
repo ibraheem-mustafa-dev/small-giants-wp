@@ -225,6 +225,22 @@ final class ContainerBackgroundMediaTest extends TestCase {
 		$this->assertStringNotContainsString( 'sgs-bg-media', $out['html'] );
 	}
 
+	public function test_a_tiled_device_whose_url_cannot_be_painted_stops_the_wider_devices_tile(): void {
+		$out = $this->render(
+			array(
+				'backgroundSource' => array(
+					'desktop' => $this->photo( 'tile.png' ),
+					// A URL the CSS sanitiser refuses (a quote) passes the Source normaliser but paints nothing.
+					'tablet'  => array( 'kind' => 'image', 'url' => "https://example.test/wp-content/uploads/it's.png", 'width' => 100, 'height' => 100 ),
+				),
+				'backgroundFit'    => array( 'desktop' => 'tile' ),
+			)
+		);
+
+		$this->assertStringContainsString( 'background-image:url(https://example.test/wp-content/uploads/tile.png)', $out['css'] );
+		$this->assertStringContainsString( 'background-image:none', $out['css'], 'the tablet rule resets the desktop tile' );
+	}
+
 	public function test_an_effect_on_the_background_part_gets_an_empty_element_when_there_is_no_file(): void {
 		$motion = static fn( string $effect ): array => array( 'elements' => array( 'background' => array( 'effects' => array( array( 'effect' => $effect ) ) ) ) );
 

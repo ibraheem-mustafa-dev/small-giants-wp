@@ -79,15 +79,16 @@ if ( ! function_exists( 'sgs_bg_media_css' ) ) {
 		$rules   = array();
 		$before  = array();
 		foreach ( sgs_media_devices() as $device ) {
-			if ( 'css' === $plan['paint'][ $device ] ) {
-				$decls = sgs_bg_media_painted_decls( $plan, $slot, $attrs, $device );
-				if ( $decls && $decls !== $before ) {
+			$decls = 'css' === $plan['paint'][ $device ] ? sgs_bg_media_painted_decls( $plan, $slot, $attrs, $device ) : array();
+			if ( $decls ) {
+				if ( $decls !== $before ) {
 					foreach ( $decls as $prop => $value ) {
 						sgs_media_add( $rules, $element, $device, $prop, $value );
 					}
 				}
 				$before = $decls;
 			} elseif ( $before ) {
+				// The device paints nothing (another kind, none, or a painted file whose URL is gone): stop the wider layer.
 				sgs_media_add( $rules, $element, $device, 'background-image', 'none' );
 				$before = array();
 			}
