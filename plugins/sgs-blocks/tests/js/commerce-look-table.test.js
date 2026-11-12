@@ -45,3 +45,14 @@ describe( 'commerce-look table', () => {
 		}
 	} );
 } );
+
+describe( 'commerce-look table: stretch and align', () => {
+	const names = tableAttributes().map( ( a ) => a.name );
+
+	it( 'lists the alignment settings of the two Eye Care rows as per-device objects', () => {
+		for ( const name of [ 'sgsSummaryItemNameFlexGrow', 'sgsTotalsFooterItemAlignItems' ] ) {
+			expect( names ).toContain( name );
+			expect( COMMERCE_LOOK_ATTRIBUTES[ name ] ).toEqual( { type: 'object' } );
+		}
+	} );
+} );

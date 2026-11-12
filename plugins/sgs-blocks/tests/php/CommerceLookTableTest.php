@@ -131,6 +131,37 @@ require ABSPATH . 'includes/render-helpers.php';
 		$this->assertStringContainsString( '.sgs-x{padding-top:0px;}', $css );
 	}
 
+	public function test_stretch_and_align_print_per_device_on_a_selector_that_beats_woocommerce(): void {
+		$css = $this->css(
+			array(
+				'sgsSummaryItemNameFlexGrow'        => array( 'desktop' => '0' ),
+				'sgsSummaryItemNameAlignSelf'       => array( 'desktop' => 'flex-start' ),
+				'sgsTotalsFooterItemAlignItems'     => array(
+					'desktop' => 'flex-start',
+					'mobile'  => 'center',
+				),
+				'sgsTotalsFooterItemJustifyContent' => array( 'desktop' => 'flex-end' ),
+			)
+		);
+		// WooCommerce: `.wc-block-checkout__sidebar .wc-block-components-product-name` (2 classes) and `.wc-block-components-totals-item` (1 class).
+		$this->assertStringContainsString( '.sgs-x .wc-block-components-order-summary-item .wc-block-components-product-name{flex-grow:0;}', $css );
+		$this->assertStringContainsString( '.sgs-x .wc-block-components-order-summary-item .wc-block-components-product-name{align-self:flex-start;}', $css );
+		$this->assertStringContainsString( '.sgs-x .wc-block-components-totals-footer-item{align-items:flex-start;}', $css );
+		$this->assertStringContainsString( '.sgs-x .wc-block-components-totals-footer-item{justify-content:flex-end;}', $css );
+		$this->assertMatchesRegularExpression( '/@media[^{]*\{\.sgs-x \.wc-block-components-totals-footer-item\{align-items:center;\}/', $css, 'the phone value' );
+	}
+
+	public function test_an_alignment_value_outside_the_allowed_keywords_prints_nothing(): void {
+		$css = $this->css(
+			array(
+				'sgsTotalsFooterItemAlignItems' => array( 'desktop' => 'center;}body{display:none' ),
+				'sgsSummaryItemNameFlexGrow'    => array( 'desktop' => '7' ),
+			)
+		);
+		$this->assertStringNotContainsString( 'display:none', $css );
+		$this->assertStringNotContainsString( 'flex-grow', $css );
+	}
+
 	public function test_a_new_underline_prints_with_the_row_text_style(): void {
 		$css = $this->css( array( 'sgsItemNameTextDecoration' => 'underline' ) );
 		$this->assertMatchesRegularExpression( '/\.sgs-x [^{]*product-name[^{]*\{[^}]*text-decoration:underline/', $css );

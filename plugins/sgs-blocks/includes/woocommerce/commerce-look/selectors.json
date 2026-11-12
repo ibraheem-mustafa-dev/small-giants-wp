@@ -248,6 +248,126 @@
 				]
 			],
 			"label": "Underline"
+		},
+		"align_items": {
+			"kind": "keyword",
+			"css": "align-items",
+			"role": "layout",
+			"attrs": [
+				[
+					"AlignItems",
+					"object"
+				]
+			],
+			"label": "Align items",
+			"options": [
+				[
+					"flex-start",
+					"Start"
+				],
+				[
+					"center",
+					"Centre"
+				],
+				[
+					"flex-end",
+					"End"
+				],
+				[
+					"stretch",
+					"Stretch"
+				],
+				[
+					"baseline",
+					"Baseline"
+				]
+			]
+		},
+		"align_self": {
+			"kind": "keyword",
+			"css": "align-self",
+			"role": "layout",
+			"attrs": [
+				[
+					"AlignSelf",
+					"object"
+				]
+			],
+			"label": "Align this part",
+			"options": [
+				[
+					"flex-start",
+					"Start"
+				],
+				[
+					"center",
+					"Centre"
+				],
+				[
+					"flex-end",
+					"End"
+				],
+				[
+					"stretch",
+					"Stretch"
+				],
+				[
+					"baseline",
+					"Baseline"
+				]
+			]
+		},
+		"justify_content": {
+			"kind": "keyword",
+			"css": "justify-content",
+			"role": "layout",
+			"attrs": [
+				[
+					"JustifyContent",
+					"object"
+				]
+			],
+			"label": "Justify content",
+			"options": [
+				[
+					"flex-start",
+					"Start"
+				],
+				[
+					"center",
+					"Centre"
+				],
+				[
+					"flex-end",
+					"End"
+				],
+				[
+					"stretch",
+					"Stretch"
+				]
+			]
+		},
+		"flex_grow": {
+			"kind": "keyword",
+			"css": "flex-grow",
+			"role": "layout",
+			"attrs": [
+				[
+					"FlexGrow",
+					"object"
+				]
+			],
+			"label": "Fill spare space",
+			"options": [
+				[
+					"0",
+					"Keep its size"
+				],
+				[
+					"1",
+					"Fill spare space"
+				]
+			]
 		}
 	},
 	"rows": {
@@ -1523,7 +1643,9 @@
 			"checkout": ".wc-block-components-order-summary-item .wc-block-components-product-name",
 			"label": "Summary item name box",
 			"columns": [
-				"margin"
+				"margin",
+				"flex_grow",
+				"align_self"
 			],
 			"wc_version": "11.2.1",
 			"state": "basket filled; checkout page; the part may show only in some states (the guest or signed-in form, the address open, an option chosen), so a missing match is reported as not showing, not as drift",
@@ -1585,6 +1707,20 @@
 				"basket": "filled",
 				"action": "optional"
 			}
+		},
+		"totals_footer_item": {
+			"cart": ".wc-block-components-totals-footer-item",
+			"checkout": ".wc-block-components-totals-footer-item",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width (WooCommerce centres the label and value in the row with `align-items:center` on `.wc-block-components-totals-item`)",
+			"needs": {
+				"basket": "filled"
+			},
+			"columns": [
+				"align_items",
+				"justify_content"
+			],
+			"label": "Total row"
 		}
 	}
 }
