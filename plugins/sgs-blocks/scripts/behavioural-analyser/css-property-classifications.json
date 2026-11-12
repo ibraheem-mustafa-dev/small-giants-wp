@@ -37060,6 +37060,64 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "mainPhotoBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "main-photo-frame"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "mainPhotoBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "main-photo-frame"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "mainPhotoBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "main-photo-frame"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "mainPhotoBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "main-photo-frame"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "mainPhotoRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "main-photo-frame"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "mainPhotoShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "main-photo-frame"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "mainPhotoShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "main-photo-frame"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "meterFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
@@ -42065,6 +42123,14 @@
       }
     },
     {
+      "slug": "sgs/image-sequence",
+      "attr": "aspectRatio",
+      "fields": {
+        "css_property": "aspect-ratio",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/info-box",
       "attr": "borderColour",
       "fields": {
@@ -46738,6 +46804,38 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "brandLogoHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "brandLogo"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandLogoMaxHeight",
+      "fields": {
+        "css_property": "max-height",
+        "css_element": "brandLogo"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandLogoMaxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_element": "brandLogo"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandLogoWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "brandLogo"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "cardShadowHover",
       "fields": {
         "css_property": "box-shadow",
@@ -46832,9 +46930,26 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "imageAspectRatio",
+      "fields": {
+        "css_property": "aspect-ratio",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "imageHeight",
       "fields": {
         "css_property": "height",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "mediaBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
         "css_element": "image"
       }
     },
