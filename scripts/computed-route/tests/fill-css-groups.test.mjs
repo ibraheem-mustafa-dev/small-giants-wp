@@ -24,7 +24,9 @@ const COVERAGE = JSON.parse( fs.readFileSync( path.join( HERE, '..', 'data', 'cl
 
 // [ group id, property, draft value, the block's value without it, another valid render the code does not declare ]
 const GROUPS = [
-	[ 'css-group:backgrounds-and-borders', 'background-repeat', 'no-repeat', 'repeat', 'repeat-x' ],
+	// background-repeat, -size and -position are a media background's own settings since Spec 49 (the media writer, not
+	// this route); background-color is the group's property block settings paint.
+	[ 'css-group:backgrounds-and-borders', 'background-color', 'rgb(255, 0, 0)', 'rgba(0, 0, 0, 0)', 'rgb(0, 0, 255)' ],
 	[ 'css-group:box-sizing', 'max-width', '1200px', 'none', '900px' ],
 	[ 'css-group:display', 'order', '2', '0', '5' ],
 	[ 'css-group:filter-effects', 'backdrop-filter', 'blur(8px)', 'none', 'blur(2px)' ],
