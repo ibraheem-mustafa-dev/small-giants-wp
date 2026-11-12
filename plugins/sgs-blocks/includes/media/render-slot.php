@@ -184,11 +184,18 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	foreach ( sgs_media_devices() as $device ) {
 		$sizes[ $device ] = sgs_media_sizes_for_width( $widths[ $device ], 'lazy' === $loading, (int) $columns[ $device ], $max_widths[ $device ] );
 	}
-	$crop_id = $image_files ? (int) reset( $image_files )['id'] : 0;
+	$crop_id    = $image_files ? (int) reset( $image_files )['id'] : 0;
+	$cover_crop = false;
 	if ( $crop_id > 0 && function_exists( 'sgs_media_cover_crop_plan' ) ) {
 		$plan = sgs_media_cover_crop_plan( $attrs, $slot, $crop_id );
 		if ( ! empty( $plan['sizes'] ) ) {
 			$sizes = array_fill_keys( sgs_media_devices(), (string) $plan['sizes'] );
+		} elseif ( ! empty( $plan['widens'] ) ) {
+			// The crop draws the file wider than its box and the drawn width is unknown: no `auto`, so the browser reads
+			// the width hint and picks a file wide enough. The marker lets sgs_media_drop_auto_sizes take out the `auto`
+			// core adds to lazy images later in the_content.
+			$cover_crop = true;
+			$sizes      = array_map( static fn( $s ): string => (string) preg_replace( '/^auto,\s*/i', '', (string) $s ), $sizes );
 		}
 	}
 
@@ -212,6 +219,7 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 				'fetchpriority'   => $fetch,
 				'sizes'           => $sizes,
 				'queries'         => (array) ( $context['device_queries'] ?? array() ),
+				'cover_crop'      => $cover_crop,
 			)
 		);
 		$siblings['sgs-media-sib--image'] = array_keys( $image_files );

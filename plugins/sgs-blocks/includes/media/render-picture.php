@@ -33,7 +33,8 @@ if ( ! function_exists( 'sgs_media_img_tag' ) ) {
 	 * One `<img>`: attachment-backed through `wp_get_attachment_image`, otherwise built by hand.
 	 *
 	 * @param array|null $file    The file ( `id`, `url`, `width`, `height` ), or null for the blank GIF.
-	 * @param array      $attrs   Attributes ( `class`, `alt`, `loading`, `fetchpriority`, `sizes` ).
+	 * @param array      $attrs   Attributes ( `class`, `alt`, `loading`, `fetchpriority`, `sizes`, `cover_crop`: mark the
+	 *                            image `data-sgs-cover-crop` so core's later `auto` is taken out of its sizes ).
 	 * @return string
 	 */
 	function sgs_media_img_tag( ?array $file, array $attrs ): string {
@@ -49,6 +50,9 @@ if ( ! function_exists( 'sgs_media_img_tag' ) ) {
 		}
 		if ( ! empty( $attrs['sizes'] ) && null !== $file ) {
 			$base['sizes'] = (string) $attrs['sizes'];
+		}
+		if ( ! empty( $attrs['cover_crop'] ) && null !== $file ) {
+			$base['data-sgs-cover-crop'] = '';
 		}
 		if ( null !== $file && $file['id'] > 0 ) {
 			$tag = wp_get_attachment_image( $file['id'], 'full', false, $base );
@@ -106,7 +110,7 @@ if ( ! function_exists( 'sgs_media_picture' ) ) {
 	 *                                          shows another kind or nothing.
 	 * @param array                    $options `classes` (img), `picture_classes`, `alt`, `loading`, `fetchpriority`,
 	 *                                          `sizes` (device => string), `queries` (device => media condition),
-	 *                                          `force_picture`.
+	 *                                          `force_picture`, `cover_crop` (see sgs_media_img_tag).
 	 * @return string The markup, or '' when no device shows an image.
 	 */
 	function sgs_media_picture( array $files, array $options ): string {
@@ -129,6 +133,7 @@ if ( ! function_exists( 'sgs_media_picture' ) ) {
 				'loading'       => $options['loading'] ?? 'lazy',
 				'fetchpriority' => $options['fetchpriority'] ?? '',
 				'sizes'         => $sizes['desktop'] ?? '',
+				'cover_crop'    => ! empty( $options['cover_crop'] ),
 			)
 		);
 		if ( 1 === count( array_unique( $keys ) ) && empty( $options['force_picture'] ) ) {

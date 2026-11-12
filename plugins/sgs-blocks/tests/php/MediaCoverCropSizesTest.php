@@ -78,6 +78,17 @@ class MediaCoverCropSizesTest extends TestCase {
 		$this->assertSame( $plain, sgs_media_drop_auto_sizes( $plain ) );
 	}
 
+	public function test_the_renderer_marks_a_widening_crop_with_an_unknown_width_and_drops_its_own_auto(): void {
+		// render-slot.php passes cover_crop when the plan widens with no concrete sizes (a fill box, a landscape file).
+		$img = sgs_media_img_tag(
+			array( 'id' => 0, 'url' => 'https://example.test/a.jpg', 'width' => 1600, 'height' => 1067 ),
+			array( 'sizes' => '100vw', 'cover_crop' => true )
+		);
+		$this->assertStringContainsString( 'data-sgs-cover-crop', $img );
+		$this->assertStringContainsString( 'sizes="100vw"', sgs_media_drop_auto_sizes( str_replace( 'sizes="100vw"', 'sizes="auto, 100vw"', $img ) ) );
+		$this->assertStringNotContainsString( 'data-sgs-cover-crop', sgs_media_img_tag( array( 'id' => 0, 'url' => 'https://example.test/a.jpg', 'width' => 1, 'height' => 1 ), array( 'sizes' => '100vw' ) ) );
+	}
+
 	public function test_a_known_ratio_and_width_give_a_concrete_sizes_per_device(): void {
 		$attrs             = $this->ratio_attrs( '1/1' );
 		$attrs['maxWidth'] = array( 'desktop' => '400px', 'tablet' => '300px', 'mobile' => '200px' );
