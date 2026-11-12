@@ -34,8 +34,9 @@ governs: LEDGER Front E (web engine); the concept is `.claude/Proposal.md`
 | Public pages | Plain static files written by our publisher, served by the nginx already on the VPS, cached by Cloudflare |
 | Editing app | A simple web app plus one small API |
 | Hosting | The existing Hostinger VPS, Docker Compose, builds in GitHub Actions |
-| Client domains | Cloudflare for SaaS through a Cloudflare Tunnel |
+| Client domains | Through Cloudflare: a tunnel to the VPS, or Cloudflare's own static hosting, chosen by a test in step 2 |
 | Design intake | An importer that carries a draft's look in one-for-one, and a paste importer for any HTML, CSS or Tailwind block |
+| Editor controls | Generated from public CSS data, grouped into a short panel per family of element |
 
 **Decisions Bean made (2026-11-12).**
 
@@ -138,7 +139,7 @@ When the editor opens a document, the API composes a GrapesJS project from the s
 - In the editor the template is shown once, filled with the first item.
 - Lists that filter or sort in the browser use the same markup plus a published index file (`/data/<collection>.json`) read by the filter behaviour.
 
-**4.7 Smart parts.** Behaviour is attached in one of two ways: a custom tag (`<sgs-drawer>`, `<sgs-carousel>`, `<sgs-form>`) or, where a behaviour decorates existing elements, an attribute (`data-sgs="reveal"`). Settings travel as attributes or one `data-settings` JSON value. Each smart part has exactly one behaviour file (`behaviours/<name>.js`: a plain browser module with no dependencies unless its card lists one), loaded only on pages that contain it and never in the editing canvas, and a one-page card (section 7.3).
+**4.7 Smart parts.** Behaviour is attached in one of two ways: a custom tag (`<sgs-drawer>`, `<sgs-carousel>`, `<sgs-form>`) or, where a behaviour decorates existing elements, an attribute (`data-sgs="reveal"`). Settings travel as attributes or one `data-settings` JSON value. Each smart part has exactly one behaviour file (`behaviours/<name>.js`: a plain browser module with no dependencies unless its card lists one), loaded only on pages that contain it and never in the editing canvas, a one-page card (section 7.3), and a manifest in the Custom Elements Manifest format (its attributes, slots and CSS properties) from which its settings panel is generated.
 
 **4.8 Page details.** `title`, `description`, `path`, `canonical` (optional), `socialImage` (optional), `noindex` (optional), `navKey` (which navigation entry is current).
 
@@ -156,7 +157,7 @@ When the editor opens a document, the API composes a GrapesJS project from the s
 
 **5.1 GrapesJS core and what we add.** GrapesJS core 0.23.9 is BSD 3-clause, has 26.4k stars and ships a release every one to four weeks. `@grapesjs/react` (MIT) replaces its dated default screens with our own panels. Built in: the style panel, screen sizes, states, layers, an image manager, multiple pages, undo, storage hooks, per-element locks, and a mode that runs with no browser (`headless: true`, covered by its own test suite). Ours to build: the panels, the two modes, a tokens panel, the include and repeat node types, and a small PostCSS parser adapter (the published `grapesjs-parser-postcss` dates from 2023 and the default parser loses declarations).
 
-**5.2 Design mode.** The style panel is configured with the properties drafts actually use. `grid-template-columns`, `gap`, `aspect-ratio`, `inset`, `translate`, `scroll-snap-*` and `clip-path` are missing from its default sectors and are added by listing them (an unlisted property name becomes a text field). One free "any property" row covers whatever is not listed. `componentFirst` is off, so edits land on the element's class and repeated elements change together.
+**5.2 Design mode: controls come from data.** GrapesJS ships about 90 hand-written property controls, and its defaults lack `grid-template-columns`, `gap`, `aspect-ratio`, `inset`, `translate`, `scroll-snap-*` and `clip-path`. The public CSS data set (`mdn-data`, CC0 licence) describes 497 standard properties with the values each accepts. The style panel's controls are generated from that data, one control per kind of value (colour, length with units and tokens, keyword list, four-sided box, shadow, gradient, and a text field as the fallback), so no property needs a control written for it. `componentFirst` is off, so edits land on the element's class and repeated elements change together. Each family of element opens a short panel of its own on top of this (5.8).
 
 **5.3 Content mode and roles.** Content mode is decided by element type, not by hand: text, images, links, the items of a repeat and collection fields are editable; structure, classes and rules are locked through GrapesJS's own flags (`editable`, `stylable`, `draggable`, `removable`, `locked`). The server applies the same limits to every save and tool write, comparing the incoming tree with the stored one, so a crafted request cannot do what the mode forbids. Roles: owner (agency), designer (design mode), editor (content mode), viewer.
 
@@ -165,6 +166,23 @@ When the editor opens a document, the API composes a GrapesJS project from the s
 **5.5 Screens in version 1.** Three working screens: the editor (pages, parts, layers, style panel, tokens), media, and an inbox for form entries and orders. One owner-only settings page holds the actions that are deliberately not tools (9.3): people and roles, domains, mail and payment credentials, script permission and deleting a site. Everything else (sites, redirects, collections, settings) is done through Claude until a client needs a screen.
 
 **5.6 Known weak spots and the exit path.** Absolutely positioned elements, drag and drop on touch and Safari, and a basic text editor are weak in GrapesJS, and it has one main maintainer whose newer features (collections, a global styles panel, an AI assistant) go into a paid SDK that this design does not use. Its telemetry option is set to `false`, and the editing app's security policy blocks requests to unlisted hosts. The licence allows a fork. Every document exports to plain HTML and CSS with the include and repeat markers intact, so the editor can be replaced without losing a site. Editor speed on a 250-element page is measured in step 1a.
+
+**5.8 Control families.** Each family of element opens a short panel of the controls that matter for it, the way the WordPress framework's shared controls do, with the full panel one click away. This is a table, not code per element: GrapesJS lets each element type list its own properties (`stylable`), show a property only when another is set (`requires`), and declare its own settings (`traits`), and `@grapesjs/react` lets our own panels draw them.
+
+| Family | Panel, in order |
+|---|---|
+| Text and headings | Typography, colour, spacing |
+| Buttons and links | Typography, fill, border, spacing, states |
+| Images and media | Fit and position, ratio, radius, shadow |
+| Sections and containers | Layout, spacing, fill, border |
+| Cards and repeated items | Layout, fill, border, shadow, states |
+| Form fields | Typography, fill, border, states |
+| Navigation items | Typography, colour, states |
+
+- **The grouping rules are Spec 35's:** element first, then property family (text, fill, layout, position, motion); every control complete (units, four sides, alpha, reset); colour always visible; values per screen size. The spec is worded for WordPress, but these rules are general.
+- **The starting list for each group is what the framework actually needed.** Its 13,081 settings reduce to 156 distinct CSS properties (`block_attributes.css_property` in the framework database); typography alone is 18 properties behind 3,944 settings.
+- **Fewer controls to write.** The framework has 76 shared control components because every block needed its own wiring to them. Here a control is written once per kind of value (5.2), and the editor's own screen-size and state switches apply to all of them, so no per-device wrapper controls exist.
+- **Smart parts and library blocks get their options the same way:** from a manifest (4.7) or a library pack (7.4), not from hand-built panels.
 
 ## 6. Theme tokens
 
@@ -221,7 +239,11 @@ Mama's draft, counted across its 11 pages and 3 shared pieces: 1,230 `style` att
 
 The existing front-end modules in `plugins/sgs-blocks/src` (53 `view.js` files, 46 of which import no WordPress package) and the motion effects in `plugins/sgs-blocks/src/shared/effects` are the starting material. Motion keeps Spec 38's order: CSS first, a small behaviour second, GSAP loaded on demand only on pages that earn it.
 
+**Bespoke logic: a trial in step 1c.** Generic interactions (drawer, accordion, carousel) are library behaviours, each with its own keyboard and focus work. A state machine that belongs to one design, such as the cookie builder with its fourteen pieces of state, has two routes: rebuild it as a configurator behaviour, or carry the draft's own logic class across as a site script that drives the same editable markup through the data nodes in 4.6, on a small runtime. The draft's logic is plain state, lifecycle methods and one `renderVals()` method, so the second route may be close to mechanical and would carry behaviour one-for-one as well as look. It is unproved. Step 1c tries it first on the cookie builder, with a limit of half a build day and 10 KB of script; past either limit, the builder is rebuilt as a behaviour. Carried logic counts as free-text script (section 10), so it is for the agency's own imports only.
+
 **7.4 The paste importer.** Any HTML, CSS or Tailwind snippet (an open-source block, or something Claude Code wrote) goes through the same filter (section 10) and becomes elements with classes. Tailwind and daisyUI classes are compiled at publish to only the rules used. React libraries (HeroUI, shadcn/ui, 21st.dev) are sources of look: their rendered markup and styles can be pasted, and their in-browser JavaScript is replaced by behaviours. Each source's licence is checked when it is copied.
+
+**Library packs.** Component libraries already carry the data that says which options an element has. daisyUI lists every component's classes by role (colour, style, size, modifier) for about 68 components. shadcn/ui and HeroUI declare variants as maps from a name to a list of classes, and HeroUI's styles also work on plain HTML. Web-component libraries (Shoelace and Web Awesome, both MIT) ship a manifest of each element's attributes, slots, CSS parts and CSS properties. A pack is that data in one file per library. When a pasted block uses a library the engine has a pack for, the element's panel offers its options as choices (a button's colour, style and size) beside the raw styles. A pack is written when the first block from its library is used.
 
 **7.5 Validation.**
 
@@ -258,6 +280,8 @@ The existing front-end modules in `plugins/sgs-blocks/src` (53 `view.js` files, 
 **Speed budget, enforced at publish.** 50 KB JavaScript and 50 KB CSS per page as transferred, a sized and preloaded hero image, subset fonts. The gate is a median mobile Lighthouse score of 95 over five runs on the published address; the target is 99. For reference, the agency's own Next.js homepage ships 190 KB of JavaScript, and Mama's shop page on WordPress ships 173 KB.
 
 **One publish at a time per site.** Every write carries the version it was based on, and a stale one is refused.
+
+**Delivery.** The publisher's last step is a delivery adapter. The first one delivers to the VPS's own folder. Because a release is plain files, a second adapter can deliver the same release to static hosting elsewhere (13.2), which is the arrangement the concept described: edit on the VPS, feed static content to domains set up elsewhere.
 
 ## 9. Agent tools
 
@@ -404,6 +428,8 @@ Three ideas are borrowed from Payload (MIT) without depending on it: collections
 
 **13.2 Client domains.** With no custom origin, Cloudflare for SaaS sends the client's hostname to the server as both the Host and the certificate name, and the server's certificate covers only the agency's own domain. So client hostnames reach the server through a Cloudflare Tunnel, which needs no certificate on the server and no open port. The client adds one DNS record; Cloudflare issues the certificate. A hostname becomes active only after ownership is proved, and its records are removed when a site is deleted. The first client domains are set up by hand. One throwaway hostname is put through this route in step 2 before any client domain is promised.
 
+**A second route, tested beside it in step 2.** Deliver the release to Cloudflare's own static hosting (Workers static assets or Pages: 20,000 files a site on the free plan, with requests for static files free), where the client's domain attaches directly. Published pages then never pass through the VPS: an outage there leaves every site fully up, no tunnel or certificate question arises for public pages, and each release gets its own preview address. Forms and checkout still call the API on the agency's domain. Whichever route passes its test with less to maintain becomes the default. Hostinger shared hosting is not a candidate: this repository's own deploy notes record uploads to it at about 250 KB a second on a link that resets every minute or two.
+
 **13.3 Deploying the engine itself.** Images are built in CI, never on the server. The server pulls the new image, starts it beside the old one, checks its health, switches nginx to it, and rolls back automatically if the check fails: the stages already in the `/vps-deploy` skill. Migrations run first, as the owner role, after a database dump.
 
 **13.4 Backups and restore.** Hourly encrypted database dumps and versioned media in R2, a second copy in another provider, and an alert when a backup fails to arrive. Targets: lose at most one hour of data, and be serving again within three hours of losing the server. A scripted restore drill runs monthly, from the backups alone.
@@ -451,8 +477,8 @@ Three ideas are borrowed from Payload (MIT) without depending on it: collections
 | 0 | This document filed. Bean exports any Claude Design project still needed before the standalone site closes on 14 December 2026 | 2026-11-12 | Filed | n/a |
 | 1a | **Look only.** Mama's Home and Shop with header, footer and product card: imported, editable, published on a VPS test address | 10 build hours | No parity failures at four widths on both pages at rest. Bean changes a heading and a padding, publishes, and sees it live within 60 seconds. One brand colour changed once updates every use. The product grid is one card repeated from data. Median of five mobile Lighthouse runs is 95 or better, inside the weight budget. The round trip (4.11) holds. The editor stays usable on the homepage | 24 build hours; or more than 10 parity failures a page that importer rules cannot close; or the round trip fails |
 | 1b | **A brochure site works.** Home, Contact and Help: menu drawer, accordion, carousels, marquee, reveals, contact form delivered. Indus's draft run through the importer as a second look test | 2 build days | The state walk passes on those pages. A submitted form arrives. Bean's list is 20 items or fewer and closes in two rounds | 5 build days; or more than 40 items; or a third round |
-| 1c | **A shop front works.** Shop filter and sort, Product with the cookie builder, Gifts, basket drawer and Basket page, in the browser, no payment. Sign in, My account, Checkout and Confirmation as look only | 3 build days | An item built on Product appears in the basket with the right variant and price at four widths. Bean's list as in 1b | 8 build days for 1b and 1c together |
-| 2 | **Version 1.** Logins and roles, media, publish snapshots and rollback, page basics and redirects, the security model in force, tools with their tiers, backups, monitoring, one client domain through the tunnel, the first-client checklist, and the shop's payment path in Stripe's test mode | 2 to 3 weeks, in parallel tracks | A demo site live on its own domain. The restore drill inside its three-hour target. The cross-site test passes. Every payment case in 12.3 passes. Lighthouse 95 or better on every page | 6 weeks: cut scope again, and new clients stay on WordPress meanwhile |
+| 1c | **A shop front works.** Shop filter and sort, Product with the cookie builder, Gifts, basket drawer and Basket page, in the browser, no payment. Sign in, My account, Checkout and Confirmation as look only. The cookie builder is where the carried-logic trial in 7.3 runs | 3 build days | An item built on Product appears in the basket with the right variant and price at four widths. Bean's list as in 1b | 8 build days for 1b and 1c together |
+| 2 | **Version 1.** Logins and roles, media, publish snapshots and rollback, page basics and redirects, the security model in force, tools with their tiers, generated controls and family panels, backups, monitoring, one client domain by each route in 13.2, the first-client checklist, and the shop's payment path in Stripe's test mode | 2 to 3 weeks, in parallel tracks | A demo site live on its own domain. The restore drill inside its three-hour target. The cross-site test passes. Every payment case in 12.3 passes. Lighthouse 95 or better on every page | 6 weeks: cut scope again, and new clients stay on WordPress meanwhile |
 | 3 | **First paying client on the engine.** The clock runs from the handoff folder passing its check to the client's sign-off | Under 1 week | Signed off inside a week, against 28 to 32 days on WordPress | If the second engine site takes more than 2 weeks, new clients return to WordPress until the cause is fixed |
 | 4 | **Mama's live.** Accounts, subscriptions, the gift card and the designed checkout | When Mama's is ready | A real order paid; the go-live checklist passed | n/a |
 | 5 | **Optional moves** of Indus or Eye Care, under the rule in section 14 | Per site | That site's own sign-off | n/a |
@@ -491,7 +517,7 @@ Until the step named, and not before:
 | An AGPL editor (Webstudio, Silex, Plasmic) | Usable unmodified by the agency; blocks a closed product | A modified version must offer its source to its users; Webstudio does not recommend self-hosting its builder in production |
 | A hosted builder with agent access (Webflow's MCP server) | No build at all; lock-in | Conflicts with owning the platform |
 | No engine: a hand-coded static site per client with a light text editor | The fallback if step 1a fails | Fastest to a first site and as fast for visitors; no import, no style panel, no SaaS |
-| Next.js for public pages | Rejected | A static Next.js page ships 85 to 170 KB of framework JavaScript; 55 advisories in twelve months |
+| Next.js, as the concept proposed (edit in a Next.js app on the VPS, export static pages) | The shape is kept; the framework is dropped | Measured on 2026-11-12: a new, empty Next.js 16.4.6 project exported as static files loads 152 KB of JavaScript (Brotli; 176 KB gzip) in 7 files before any content, three times the page budget. The reason given for it, that it matches what Claude produces, does not hold for the drafts (HTML templates with inline styles, run by their own small runtime) and is not needed: Claude writes HTML and CSS through the tools as readily as React, and React output is imported by rendering it. 55 advisories in twelve months |
 | Coolify on the VPS | Rejected | A dashboard for a human operator; takes ports 80 and 443 from the existing nginx; 16 critical advisories in 2026 |
 | Craft.js | Rejected | No commits since February 2025 |
 
@@ -509,7 +535,7 @@ Until the step named, and not before:
 | The engine room sprawls as the WordPress framework did | 2 on | M | H | Owned | The budget, the fence, the gates and the rules in section 16. Bean and the build session at each gate |
 | A new shop mishandles real money | 2, 4 | L | H | Mitigated | Stripe hosts the checkout; the cases in 12.3; no live payment before a paid test order and the go-live checklist |
 | One server | Any | L | H | Accepted | Backups with stated targets, a rehearsed rebuild, cached pages at Cloudflare |
-| The client-domain route does not work as designed | 2 | M | M | Owned | One throwaway hostname through the tunnel in step 2; domains set by hand until then. Build session |
+| The client-domain route does not work as designed | 2 | M | M | Owned | Both routes in 13.2 tested with a throwaway hostname in step 2; domains set by hand until then. Build session |
 | Claude Design's export format changes after 14 December 2026 | Any | M | M | Mitigated | The importer refuses an unknown runtime; the paste importer is the second door; projects exported beforehand |
 | New client work lands before the engine is ready | 2, 3 | H | M | Mitigated | The new-client rule in section 14 |
 | The site-builder SaaS market is crowded | 6 | H | M | Accepted | The SaaS stays optional; the agency service is the business |
@@ -524,9 +550,11 @@ Until the step named, and not before:
 | Editing | Document format | Specified (version 0, confirmed by step 1a) | 4 |
 | Editing | Content and design modes, roles | Specified | 5.3 |
 | Editing | Theme tokens | Decided | 6 |
+| Editing | Controls generated from CSS data; control families | Specified | 5.2, 5.8 |
 | Editing | Behaviour library | Specified (list and card format) | 7.3 |
+| Editing | Bespoke logic carried from the draft | Trial in step 1c, with a fallback | 7.3 |
 | Intake | Draft importer | Specified | 7.1, 7.2 |
-| Intake | Paste importer | Sketched | 7.4 |
+| Intake | Paste importer and library packs | Sketched | 7.4 |
 | Intake | Validation | Decided | 7.5 |
 | Intake | Re-import without losing client edits | Specified (rule); tooling in step 2 | 4.13 |
 | Publishing | Publisher, caching and purge | Specified | 8 |
@@ -542,7 +570,7 @@ Until the step named, and not before:
 | Data | Secrets and personal data | Specified | 11.4, 11.5 |
 | Agents | Tools, tiers, audit | Specified | 9 |
 | Hosting | What runs where; publishing; operations | Decided | 13.1, 8, 13.4, 13.5 |
-| Hosting | Client domains through the tunnel | Decided (approach), unproved | 13.2 |
+| Hosting | Client domains, and delivering published files off the VPS | Two routes, chosen by a test in step 2 | 8, 13.2 |
 | Hosting | Security model | Specified | 10 |
 | Hosting | Environments and tests | Sketched | 13.8 |
 | Business | WordPress freeze, new-client rule, optional moves | Decided | 1, 14 |
@@ -559,7 +587,7 @@ Paste this into a fresh session opened in the new repository folder.
 >
 > **Where things stand.** Nothing is built. This repository (`C:\Users\Bean\Projects\small-giants-engine`) is new and private. The draft to import is `C:\Users\Bean\Projects\small-giants-wp\sites\mamas-munches-redesign\handoff\` (read its `README.md` and `READING-DC-FILES.md`): only `Home.dc.html` and `Shop.dc.html`, with `SiteHeader.dc.html`, `SiteFooter.dc.html` and `ProductCard.dc.html`. The reader that resolves every draft value at each width and state already exists and is copied in, not rewritten: `C:\Users\Bean\Projects\small-giants-wp\scripts\computed-route\lib\read-logic.mjs`, `read-logic-statics.mjs`, `read-logic-conditions.mjs`, `intake-sandbox.mjs`, `intake-breakpoints.mjs` and `draft.mjs`, with the method in `C:\Users\Bean\Projects\small-giants-wp\.claude\claude-design-handoff\handoff-schema\METHOD.md`. The comparison tool is `C:\Users\Bean\Projects\small-giants-wp\scripts\parity\draft-live-walk.mjs`. Ruled out already, do not revisit: Puck, Payload, Next.js for public pages, Coolify, GrapesJS's paid Studio SDK, and GrapesJS "symbols" for shared parts.
 >
-> **What to build.** (1) The writer half of the importer (section 7.2), producing documents in the format of section 4. (2) A minimal editing app: GrapesJS core with its style panel configured as in section 5.2, opening and saving those documents. (3) The publisher's first cut (section 8): static HTML and CSS for the two pages, header and footer included, the product grid repeated from product data seeded from the draft's `store.js`. (4) A test address one label under the agency's cloud domain, which the server's existing wildcard certificate already covers, with the editing app behind Cloudflare Access. Storage may be files on disk behind the same read and write functions; PostgreSQL arrives in step 2. No logins, no behaviours, no shop: nothing interactive works in this step.
+> **What to build.** (1) The writer half of the importer (section 7.2), producing documents in the format of section 4. (2) A minimal editing app: GrapesJS core with its style panel listing the properties the two pages use, opening and saving those documents (the generated controls and family panels of sections 5.2 and 5.8 are step 2 work). (3) The publisher's first cut (section 8): static HTML and CSS for the two pages, header and footer included, the product grid repeated from product data seeded from the draft's `store.js`. (4) A test address one label under the agency's cloud domain, which the server's existing wildcard certificate already covers, with the editing app behind Cloudflare Access. Storage may be files on disk behind the same read and write functions; PostgreSQL arrives in step 2. No logins, no behaviours, no shop: nothing interactive works in this step.
 >
 > **Done looks like.** Every pass condition in the step 1a row of section 16. Report each with its evidence (the walk's pair report, the five Lighthouse runs, the round-trip diff), plus the build hours used and the import report (section 7.7). Stop and report instead of pushing on if any stop condition is met.
 >
@@ -580,6 +608,10 @@ Paste this into a fresh session opened in the new repository folder.
 - This repository: 101 `block.json` files; 92,919 non-test lines in `scripts/computed-route` and 9,778 in `scripts/parity`; 53 `view.js` files, 6 importing `@wordpress/interactivity`; the three handoff folders first committed on 2026-10-11.
 - Mama's on WordPress (`scripts/data/page-weight.json`, the canary): home 95 KB JavaScript and 76 KB CSS; shop 173 KB and 105 KB; product 117 KB and 127 KB.
 - Mama's draft: the counts in section 7.2, by `grep` over `sites/mamas-munches-redesign/handoff/*.dc.html` and a count of `animations.json` by mechanism; every page uses the thresholds 768 and 1024.
+- A Next.js static export: `npx create-next-app@latest` (16.4.6, defaults, no Tailwind), `output: "export"`, `npm run build`; the scripts `out/index.html` loads total 572 KB raw, 176 KB gzip and 152 KB Brotli across 7 files, with CSS at 1.9 KB. The scratch project was deleted afterwards.
+- CSS data against built-in controls: `css/properties.json` in `mdn-data` lists 671 properties, 497 of them standard, each with its value syntax; GrapesJS's `PropertyFactory.ts` names about 90.
+- The framework database, read-only: `SELECT COUNT(DISTINCT css_property) FROM block_attributes` gives 156; 7,297 of the 13,081 settings carry a CSS property; the `typography` role has 3,944 settings over 18 properties; the `roles` table has 46 roles; `plugins/sgs-blocks/src/components` holds 76 shared control components.
+- daisyUI's `llms.txt` (80 KB) lists about 68 components, each with its classes under role labels; the button entry has component, colour, style, behaviour, size and modifier.
 
 **Checked by the council's fact-checkers.**
 
@@ -589,8 +621,9 @@ Paste this into a fresh session opened in the new repository folder.
 - Stripe: notifications are verified on the raw body and de-duplicated by event id.
 - Better Auth's MCP plugin never opens client registration by itself, and refresh-token reuse defaults to 30 seconds.
 - Claude Design's standalone site closes on 14 December 2026.
+- Second opinion of 2026-11-12 on controls and on Next.js: shadcn/ui's registry and variant maps; HeroUI's `tailwind-variants`, `llms.txt` and plain-HTML styles; daisyUI's role-labelled classes; the Custom Elements Manifest shipped by Shoelace 2.20 and Web Awesome 3.14 (both MIT); `mdn-data` (CC0) and `@webref/css` (MIT); GrapesJS's `stylable` arrays, `requires` and per-type `traits`, and the providers in `@grapesjs/react`; Spec 35's rules being general under WordPress wording; Onlook (Apache-2.0) holding per-property controls that may be reused, Webstudio's (AGPL) not; Cloudflare's static hosting limits; Preact at 3 KB. Next.js's static-export guide does not state what JavaScript an exported page loads, which is why it was measured above.
 
-**Not verified.** Whether GrapesJS's style panel can edit a rule whose selector is not a plain class (the reason states are classes in 4.4); Etch's price and licence; PayPal inside Stripe's hosted checkout for UK merchants; every time estimate, which is why each step has a stop limit.
+**Not verified.** Whether the draft's logic class runs on a small runtime outside its own (the trial in 7.3); whether GrapesJS's style panel can edit a rule whose selector is not a plain class (the reason states are classes in 4.4); Etch's price and licence; PayPal inside Stripe's hosted checkout for UK merchants; every time estimate, which is why each step has a stop limit.
 
 **Links.**
 
@@ -599,5 +632,6 @@ Paste this into a fresh session opened in the new repository folder.
 - Engine room: https://www.better-auth.com/docs/plugins/organization , https://www.better-auth.com/docs/plugins/api-key , https://www.better-auth.com/docs/plugins/mcp , https://orm.drizzle.team/docs/rls , https://www.postgresql.org/docs/current/ddl-rowsecurity.html , https://github.com/modelcontextprotocol/typescript-sdk , https://github.com/timgit/pg-boss , https://hono.dev/docs/ , https://payloadcms.com/docs/plugins/multi-tenant , https://payloadcms.com/docs/database/postgres , https://docs.stripe.com/webhooks
 - Claude Design: https://code.claude.com/docs/en/commands , https://support.claude.com/en/articles/14604416-get-started-with-claude-design , https://support.claude.com/en/articles/17440474-migrate-from-standalone-claude-design-to-claude , https://claude.com/blog/claude-design-stays-on-brand-for-daily-work
 - Speed and frameworks: https://nextjs.org/blog/next-16-4 , https://lilting.ch/en/articles/nextjs-16-3-astro-nuxt-benchmark , https://alexbobes.com/programming/astro-vs-nextjs/
-- Tokens and libraries: https://www.w3.org/community/design-tokens/2025/10/28/design-tokens-specification-reaches-first-stable-version/ , https://daisyui.com/docs/v5/ , https://heroui.com/docs/react/releases/v3-0-0
+- Tokens and libraries: https://www.w3.org/community/design-tokens/2025/10/28/design-tokens-specification-reaches-first-stable-version/ , https://daisyui.com/docs/v5/ , https://daisyui.com/llms.txt , https://heroui.com/docs/react/releases/v3-0-0 , https://heroui.com/llms.txt , https://ui.shadcn.com/docs/registry/registry-item-json , https://github.com/webcomponents/custom-elements-manifest , https://shoelace.style , https://webawesome.com
+- Control data and panels: https://github.com/mdn/data , https://github.com/w3c/webref , https://grapesjs.com/docs/modules/Traits.html , https://preactjs.com , https://nextjs.org/docs/app/guides/static-exports , https://developers.cloudflare.com/pages/platform/limits/ , https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/
 - Cloudflare and hosting: https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/plans/ , https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/start/advanced-settings/custom-origin/ , https://developers.cloudflare.com/reference-architecture/design-guides/extending-cloudflares-benefits-to-saas-providers-end-customers/ , https://developers.cloudflare.com/changelog/post/2025-04-01-purge-for-all/ , https://r2-calculator.cloudflare.com/ , https://bex.co/blog/2026/08/16/coolify-v4-stable-what-production-ready-means , https://www.vpsbenchmarks.com/hosters/hostinger/plans/kvm-2
