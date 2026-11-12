@@ -1,9 +1,10 @@
 ---
 doc_type: plan
-status: parked
+status: done
 archive-after: the Eye Care sign-off (an Eye Care doc links here; it moves to plans/archive/ with the links repointed then)
 ---
 
+Superseded 2026-11-12: its open work is listed in `plans/2026-10-30-clone-recognition-fixes.md` section "Parked: resume after the hand-built sites" (the one parked plan for the cloning tool); this plan holds the detail.
 # The cloning tool: handoff readers, the writers that use them, and the Indus proof
 
 **This is the approved plan for everything in it (Bean, 2026-10-21 and 2026-10-22).** An orchestrator working a wave proceeds without a separate plan-mode approval. It stops for Bean only for a decision this plan does not record, or a shared-mechanism change (the wrapper, the walker, Solve) this plan does not name; Bean's Rulings below approve the shared-mechanism changes they list.

@@ -1,7 +1,7 @@
 ---
 doc_type: verify
 project: small-giants-wp
-plan: plans/2026-10-01-header-nav-thread-plan.md
+plan: plans/archive/2026-10-01-header-nav-thread-plan.md (history only; live work is in Spec 37 FR-37-55, FR-37-56, FR-37-23 and Spec 18 FR-18-1)
 ---
 
 # Verification criteria — merged Spec 36+37 track
@@ -66,7 +66,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 - W3B-4 evidence: `reports/reference-requirements/FAMILIES-MASTER.md` (46 families, 11 covered, 21 partial, 8 gap, 6 conflict), `families-master.json`, and the independent review `FAMILIES-REVIEW.md` (23 findings, applied); 33 coverage checks re-run against the code.
 
 ## Wave 3C — Header and nav architecture harmonised
-- STATUS: under way (`plans/2026-10-01-header-nav-thread-plan.md` §2; unit history in `plans/archive/2026-09-21-wave-3c-implementation-plan.md`). U-1, U-2, all of lane A (U-9+U-11, U-5, U-3+U-8, U-6+U-7, U-4, U-10+U-14, with its batched QA pass), all of lane C (U-12, U-15, U-17), U-13 and U-16 are closed. Gate 3C items 1, 2, 3 and 5 pass: M-08's one open cell, lamalama's card pinned to the top-right corner, is accepted as DEC-18 (Bean, 2026-09-27; G8 stopped at NO GO, rebuild parked in `plans/2026-10-01-header-nav-thread-plan.md` section 7). Item 4 is in its final pass: every gap the parity walker found is built as a real control, and the 2026-10-01 walk (`reports/visual-diff/gate3c-copies-walk-2026-10-01.md`) classifies every open row: Indus 10 violations and 3 jitter rows, lamalama 7 violations and 1 foundational gap (G8, parked), the rest accepted (walker blind spots or same paint). No new foundational gap. Dated accepts, the jitter decision, the final walk and Bean's eye are deferred (Bean, 2026-10-01): `plans/2026-10-01-header-nav-thread-plan.md` §2.3-2.4.
+- STATUS: under way (the open list is "Gate 3C last mile (not done)" below; the archived plan `plans/archive/2026-10-01-header-nav-thread-plan.md` holds history only; unit history in `plans/archive/2026-09-21-wave-3c-implementation-plan.md`). U-1, U-2, all of lane A (U-9+U-11, U-5, U-3+U-8, U-6+U-7, U-4, U-10+U-14, with its batched QA pass), all of lane C (U-12, U-15, U-17), U-13 and U-16 are closed. Gate 3C items 1, 2, 3 and 5 pass: M-08's one open cell, lamalama's card pinned to the top-right corner, is accepted as DEC-18 (Bean, 2026-09-27; G8 stopped at NO GO, rebuild is Spec 18 FR-18-1, not built). Item 4 is in its final pass: every gap the parity walker found is built as a real control, and the 2026-10-01 walk (`reports/visual-diff/gate3c-copies-walk-2026-10-01.md`) classifies every open row: Indus 10 violations and 3 jitter rows, lamalama 7 violations and 1 foundational gap (G8, parked), the rest accepted (walker blind spots or same paint). No new foundational gap. Dated accepts, the jitter decision, the final walk and Bean's eye are deferred (Bean, 2026-10-01): listed under "Gate 3C last mile (not done)" below.
 - U-16 exit criteria (live report `reports/visual-diff/entrance-2026-09-26.md`, verdict PASS; sandybrown 2026-09-26, fixture `qa-item-markup-fixture.php entrance` on `/qa-entrance/`, restored to `two-bar`): the header's `fade-in` extra-slow rises from 0 to 1 over 713 to 761ms with no flash at 375/768/1440; shrink (16px to 4px) and hide-on-scroll (slides away and back, pins) keep working; a dropdown opened mid-entrance lands where it settles; footer rows travel 50px to 0 about 100ms apart; a footer row with the stagger toggle gives way and its card keeps its entrance; the card's own hover reaches its end in ~218ms (pre-U-16: ~403ms); reduced motion, JavaScript off and a blocked observer show everything. Commands: `node plugins/sgs-blocks/scripts/nav-qa/u16-entrance-probe.mjs <url>/qa-entrance/` (PASS twice; 15 failures on the pre-U-16 build) and `node plugins/sgs-blocks/scripts/nav-qa/u16-editor-check.mjs` (18 PASS at Desktop and Tablet; 7 failures on the pre-U-16 build). Divergence: the preloader-gated start (lamalama, studionamma). Bean waived the eye check (2026-09-26): the goal is a visual copy of the references, not the motion's feel.
 - Lane C evidence (live on sandybrown 2026-09-26, headed Chrome; fixture pages 4070 `/qa-furniture/`, 4072 `/qa-notice/`, 4074 `/qa-wishlist/`, 4087 `/qa-lottie/`): six clocks in their zones with correct offsets and no `aria-live`; language links with `lang`/`hreflang`; the store disclosure closes on Escape and returns focus; the up button 54x54 at 1440 and 45x45 at 375 and back-to-top lands focus on `main`; the theme toggle flips the palette and syncs both styles; hearts update the header count across bundles and merge nothing twice; Save for later moves a WooCommerce basket row into the wishlist; the rotating banner changes bar colour per message, pauses (holds for 6 s, `aria-live` polite) and steps by arrow; the sound toggle plays, pauses and mutes other media; both Lottie surfaces animate, the player (46,496 bytes gzip) loads only after its trigger and never under reduced motion; hostile Lottie uploads are refused. axe: 0 on `/qa-notice/`; the colour-contrast and link-name findings on the other two were fixed in f39e66310. Existing backgrounds byte-identical before and after the wrapper change (23 of 23 elements).
 - D (0f8b97287): a Transparent tier falling back to a narrower non-Transparent tier keeps the header's own resting fill via `sgs_merge_tri_state_declarations()`'s per-behaviour `fallback` map. Live on a navy header: transparent at 1440, `rgb(26,26,46)` at 375.
@@ -116,7 +116,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 
 **Lane A batched QA pass, done** (`reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass"; fixes d954c83f8, 6962dd0e6). It clears the "batched" items listed under U-5, U-9 + U-11, U-3 + U-8, U-6 + U-7 and U-10 + U-14: axe 0 on the drawer from the burger (1440, 375), from the chip, in the side and header-content placements and on the keyboard-opened dropdown; keyboard order past the chip; reduced motion (0 moving animations with the drawer open); every new control's editor round-trip. Still owed from those units: Bean's eye on the screenshots and shapes, and the three starter patterns once they have imagery.
 
-Gate 3C passes when (the one definition; the same words are in `plans/2026-10-01-header-nav-thread-plan.md` §2.1):
+Gate 3C passes when (the one definition; the same words were in the archived plan `plans/archive/2026-10-01-header-nav-thread-plan.md` §2.1):
 
 1. Every family in the signed list is covered: its exit cells reachable and at least one reproduced live. Twelve families (M-01, M-02, M-05, M-06, M-12, M-23, M-26, M-29, M-41, M-42, M-50, M-51) are already covered, are in no unit, and close the gate as covered. No family closes the gate as parked.
 2. Each unit row cites its live report with `verdict: PASS`.
@@ -124,8 +124,28 @@ Gate 3C passes when (the one definition; the same words are in `plans/2026-10-01
 4. Two composed headers are 100% visual copies of their references, at 375, 768 and 1440: a copy of lamalama's floating pill and a copy of the Indus Foods Mega Menu draft. Every panel's position and width match the reference's measured cells (the Indus draft centres each panel on the page: mega 1080px, About and Trade 620px, More 300px; Bean 2026-09-26), and the header's left and right gaps are equal at 1440px. The structural fixtures 3733 and 3734 are test rigs on Mama's content, not these copies. Bean's eye is co-authoritative (FP-13).
 5. Spec 36, Spec 37, this verify doc and LEDGER state the model.
 
+### Gate 3C last mile (not done)
+
+Item 4 of the definition above is the only open part of Gate 3C; it blocks Wave 4 (Spec 37 FR-37-56) and nothing else. Framework gaps the copies found are Spec 37 FR-37-55, not listed here. The row-by-row walk record is `reports/visual-diff/gate3c-copies-walk-2026-10-01.md`; trees are `plugins/sgs-blocks/scripts/nav-qa/gate3c/*.tree.json`, applied only with `scripts/wp-build-page.js`.
+
+1. Write the dated accepts into `plugins/sgs-blocks/scripts/nav-qa/gate3c/parity-indus.mjs` (holds `accept: []`) and `parity-lamalama.mjs` (holds one, dated 2026-09-28) for every walk row marked accepted (Indus: 18 walker blind spots and 81 same-paint; lamalama: 28 and 53).
+2. Show Bean the three jitter rows (the About, Sectors and Brands panels' opacity 30ms into opening moves between runs: 0.27/0.15/0.27 then 0.39/0.28/0.28, against the draft's 1). Bean decides accept or fix; never accepted silently.
+3. Close the walk's 17 violations with a tree setting or a real control, then rebuild the trees. Indus: Sectors CTA cards lift on hover (`sgs/container::shadowLiftOnHover`; check `sgs/mega-panel::panelCardLift` for a pixel lift), the logo's hover opacity 0.75 (draft has none), the About tag 5px low, drawer accordion rows 16px gap against 14px, the LinkedIn disc 4px down and 6px across (check the painted disc against the 44px hit box first). lamalama: the pill logo is a still PNG where the reference animates a canvas "L" (an animated asset, or same paint if the canvas proves static), drawer rows paint no hover ground (`sgs/nav-drawer-menu::itemBgHover` set but not showing; check `itemBorderColourHover` and the 650ms motion), Pitch Deck CTA hover text ends dark where the reference ends cream (`sgs/button::colourTextHover` #f9f4eb), CTAs show no hover ground or inner scale (`colourBackgroundHover` and the `sgsMotion` Hover panel, target `face`). Re-check each against current code first: this walk predates the November button and drawer changes.
+4. Walker blind spots worth closing: `draft-live-walk.mjs` reads `transform` but not the independent `translate` and `scale` properties (so `sgs/button`'s hover lift reads as missing) and cannot read script-driven motion.
+5. The final walk without `--no-review` (every state-by-width screenshot carries a review note), then Bean's eye (FP-13). Done when `scripts/parity/draft-live-walk.mjs` exits 0 for both copies.
+6. Bean's hPanel action: allow-list or switch off the canary's "Checking your browser" page for the test site, so walker states and console errors reflect the copies only.
+7. Close Gate 3C here and in `LEDGER.md`.
+
+### Owed from Waves 1 to 3 (not done)
+
+- Bean's eye on the mega motion (Wave 1) and on the U-1, U-2, U-5, U-9+U-11 and U-3+U-8 screenshots (dark-surface shadow and ring strength, scrims, shapes, gallery arrows, the three starter patterns with imagery).
+- The Wave 1 cart and search screenshot set (numeric probes only so far).
+- FR-37-42 column-shape picker live and eye verification (Spec 37 FR-37-42 Status).
+- `labels-<site>.json` for ButcherBox and rabbit.tech and a re-read of Away's (Spec 37 FR-37-56 precondition).
+- FR-37-26 blind-tester arm: Bean's screen-recorded non-coder session (Spec 37 FR-37-26).
+
 ## Wave 4 — Proof gate (clones)
-- STATUS: not started
+- STATUS: not started (the requirement is Spec 37 FR-37-56)
 - All 13 roster references measured in the requirements table (W3B-3 owes the Away, ButcherBox and rabbit.tech captures; 8 of 11 third-party references have drawer data only today; the two Claude Design drafts are captured in W3B-3a); the header and nav architecture (Wave 3C) is complete; clone roster = 13 (12 if the W3B-3 teardown finds a resn effect that no Spec 38 tier can express) — Gate 5 counts the roster.
 - Substitution policy (fonts/imagery) signed by Bean BEFORE the first clone (W4-a2).
 - studionamma: DP5 per-property homes table reviewed; DP7-clean evidence pack (computed-parity + open-state captures + labels fidelity PASS); **Bean's eye acceptance recorded** BEFORE any other clone starts.
@@ -133,7 +153,7 @@ Gate 3C passes when (the one definition; the same words are in `plans/2026-10-01
 - Presets extracted per accepted clone; contrast pass on all 8 client palettes; starter set narrowed to `scratch` + 3 search variants.
 
 ## Wave 5 — Clone walker
-- STATUS: not started
+- STATUS: not started (Spec 37 FR-37-22 and FR-37-23)
 - FR-37-22 walker clones a reference header/footer end-to-end through the pipeline (run artefacts).
 - The roster clones green as regression fixtures.
 - FR-37-23: live FRs + never-overflow on every live site + no inline styling + Bean's eye = track CLOSED.

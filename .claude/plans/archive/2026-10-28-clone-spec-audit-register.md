@@ -1,9 +1,10 @@
 ---
 doc_type: plan
-status: parked
+status: done
 archive-after: the Eye Care sign-off (an Eye Care doc links here; it moves to plans/archive/ with the links repointed then)
 ---
 
+Superseded 2026-11-12: its open work is listed in `plans/2026-10-30-clone-recognition-fixes.md` section "Parked: resume after the hand-built sites" (the one parked plan for the cloning tool); this plan holds the detail.
 # Cloning tool spec audit: the verified gap register (2026-10-28)
 
 **What this is:** the single list the next cloning fix pass works from, instead of fixes guessed one at a time. Bean asked for it after the second full re-clone (2026-10-28) kept surfacing gaps that the specs already plan. An adversarial council of 10 Sonnet raters, one per surface family or layer, audited `scripts/computed-route/`, `scripts/parity/`, `scripts/local-wp/` and the plugin pieces they place, against Spec 48, Spec 48A, `.claude/claude-design-handoff/` (CLAUDE.md, PROMPT.txt, handoff-schema: METHOD.md, READING-DC-FILES.example.md, README.template.md, the three schemas) and each surface type's own spec (01, 02, 04, 27, 36, 37, 38A, 42, 43). A row counted only with a quoted spec line proving the behaviour is planned and code or artefact proof that it is missing. Four independent Sonnet verifiers then re-ran both halves of every row, and the main thread re-ran one piece of evidence for each of 12 top rows (all 12 reproduced). Rejected, unproven and out-of-scope rows are not listed.

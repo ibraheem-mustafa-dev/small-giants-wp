@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// First-paint gate against a LIVE site (plans/2026-11-04-clean-first-paint.md, F-lite).
+// First-paint gate against a LIVE site (plans/archive/2026-11-04-clean-first-paint.md, F-lite).
 //   node scripts/check-first-paint.mjs --site <target> [--check] [--update-baseline] [--json out]
 //        [--only cls,css,look,name] [--pages /,/shop/] [--runs 3]
 // Checks: CLS (largest session window), late CSS in the delivered HTML, JS-off look (report-only),

@@ -1,11 +1,12 @@
 ---
 doc_type: plan
 title: Mama's framework batch: string-in-box detector, four small fixes, an accordion filter and per-product card content
-status: parked
-archive-after: the Eye Care sign-off (an Eye Care doc links here; it moves to plans/archive/ with the links repointed then)
+status: done
 created: 2026-11-03
 governs: sites/mamas-munches-redesign/build/qa/vision-audit/2026-11-03-phase0.md section B (B4, B5, B10, B11) plus the small fixes below; B8 moved to plans/archive/2026-11-03-buybox-configurator.md
 ---
+
+**Archived 2026-11-12, finished: every item is built. The B5 refusing switch was dropped (Bean, 2026-11-12).**
 
 # Mama's framework batch
 

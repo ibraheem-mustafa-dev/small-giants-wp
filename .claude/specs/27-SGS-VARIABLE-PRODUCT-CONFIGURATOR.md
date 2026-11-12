@@ -803,6 +803,13 @@ The shop archive can show its products as a "Load more" button instead of number
 
 **Done when:** the nine cases of `scripts/computed-route/shop-load-more-check.mjs --target eye-care-test --case all` pass (they all passed on eye-care-test on 2026-11-03).
 
+**Not built, later (parked 2026-11-12 from the finished shop Load more round):**
+- **Post grid reuses the load-more core.** `plugins/sgs-blocks/src/blocks/post-grid/view-fetch.js::announce` and the `history.replaceState('?pg=')` code in `view-pagination.js::initStandardPagination` are replaced with `@sgs/load-more-core` helpers, and `initLoadMore` gains the same Back-restore (batches in the URL plus an anchor). Checked 2026-11-12: post-grid imports nothing from the core and still calls `history.replaceState` itself. Done when the post grid's Load more restores its batches on Back exactly as the shop does and the grid has one announce path.
+- **Per-device first load on the server** (cookie or client hints), built only if Bean's eye judges the client-side top-up flash after the first load poor.
+- **"Show previous"** for a visitor who lands on `paged` greater than 1: a control above the grid that loads the batches before the landing page, with the same announcement and Back behaviour.
+
+History: `.claude/plans/archive/2026-11-02-shop-load-more.md`.
+
 #### FR-30-4 -- Cart / checkout / Mini-Cart styling -- built
 
 Brand-style core Cart, Checkout and the Mini-Cart slide-out drawer (header placement; drawer width exposed as a Site-Editor global style / CSS custom property, not hard-coded). Gateway compatibility is FR-30-0(c)'s gate, not discovered here. Core controls the drawer markup, so styling targets the most stable selectors available and is re-verified per WC band.
@@ -988,6 +995,30 @@ WooCommerce lists a paid rate and the free-shipping rate side by side once free 
 Status: built and live on mamas-test 2026-11-05 (main `a29d4e466`), checked by site-check and QC (Mama's UK zone set as in the Done-when).
 
 **Done when:** in Mama's UK zone (Royal Mail Tracked 48 £3.95, Tracked 24 £5.45, free shipping at £35 hiding Tracked 48), a £20 basket offers Tracked 48 at £3.95 and Tracked 24 at £5.45, and a £40 basket offers free Tracked 48 and Tracked 24 at £5.45; a zone without the setting lists every rate as before (negative control).
+
+#### FR-30-28 -- The shop grid reaches one column on a phone -- not built
+
+The Customizer setting "Product grid on narrow screens" (`sgs_shop_narrow_layout`, `theme/sgs-theme/inc/shop-filters-layout-settings.php`) offers Rows (image beside text, one card a row) or Grid. Grid never reaches one column: its rule in `theme/sgs-theme/assets/css/woocommerce.css` (`.sgs-shop-narrow-grid .sgs-shop-layout .wc-block-product-template`) floors each column at `calc(50% - gap / 2)`, so a 375px phone always shows two cards a row and the draft's single-column phone shop cannot be reached from Grid. (Eye Care register rows 65A and 65C, which 65B also fixes.) The grid gains a switch point: below a width the shop owner sets (default 400px, a container query on `sgs-shop-grid`, like the 495px Rows query) the grid is one column of upright cards, and the card-width floor no longer holds it at two. Added as a third choice on `sgs_shop_narrow_layout` or as a width setting beside it; unset, every site renders as it does today.
+
+Status: not built.
+
+**Done when:** on a test site with Grid chosen, the shop at 375 shows one full-width upright card a row and at 768 and 1440 the column count is unchanged from today (negative control: with the setting unset, computed `grid-template-columns` at 375 matches the pre-change value); no horizontal overflow; the Customizer control saves and prints the choice.
+
+#### FR-30-29 -- The product field binding's fallback has an editor surface -- not built
+
+The `sgs-product/field` binding takes `fallback` and `fallback_link` arguments (the "Ask us" cell on a frame with no lens height) in `plugins/sgs-blocks/includes/class-product-bindings.php`; they exist only in the Single Product template's markup. Core Block Bindings has no UI for source arguments and products use the classic edit screen, so the template is the only editor surface, and `plugins/sgs-blocks/src/bindings/product-field.js::getValues` returns '' so the canvas never shows the fallback.
+
+Status: not built (the binding behaviour is built, `77c9746c1`). Build: an inspector control on the bound block that edits the two arguments (text, and a link choice of the business's WhatsApp, phone or email), and `getValues` returning the fallback text for an empty value so the canvas shows it.
+
+**Done when:** a client sets the fallback text and link on a bound cell in the block editor with no code, and the canvas and the front end both show "Ask us" for a product with no value.
+
+#### FR-30-30 -- A product edit purges that product's manifest transient -- not built
+
+`plugins/sgs-blocks/includes/class-product-manifest.php` writes the transient `sgs_manifest_v9_<id>_<tax-fingerprint>`, while `plugins/sgs-blocks/includes/class-cart-cache-purge.php::purge_by_product_id` deletes `sgs_manifest_<id>`, so the purge key never matches and an edited product can keep serving old variations, swatches and availability until the TTL ends.
+
+Status: not built. Build: the purge deletes the versioned key (it needs the tax fingerprint) or deletes by prefix; remove the stale `sgs_manifest_<id>` key from `seed-48-sku-fixture-v2.php` the same way.
+
+**Done when:** negative control: edit a variable product's variation, the shop card is stale before the fix and fresh after it.
 
 ### Open questions
 

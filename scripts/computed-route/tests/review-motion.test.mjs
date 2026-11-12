@@ -1,4 +1,4 @@
-// The wave review of the motion lane (Spec 48 FR-48-77, FR-48-78; plan 2026-10-21-handoff-readers "The closing standard"):
+// The wave review of the motion lane (Spec 48 FR-48-77, FR-48-78; plan plans/archive/2026-10-21-handoff-readers "The closing standard"):
 // the recognisers read the formula shapes of intake's re-derived inventory (`intake.json` `inventory.animations.records`,
 // where a value can sit only in `formula` or `source.code`), no record of a surface ends silent, a close is a close only by
 // its own wording, a control is validated on its own, a "Same as" chain resolves whole, the settings a behaviour writes are

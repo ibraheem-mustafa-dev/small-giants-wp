@@ -1,5 +1,5 @@
 /**
- * Load more core helpers (plan 2026-11-02-shop-load-more, D6).
+ * Load more core helpers (plan plans/archive/2026-11-02-shop-load-more, D6).
  */
 
 import {

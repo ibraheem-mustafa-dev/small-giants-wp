@@ -2,13 +2,15 @@
 title: "Framework parked backlog: the open feature, control and setting rows Eye Care found"
 project: small-giants-wp
 created: 2026-11-12
-status: parked
+status: done
 progress: Eye Care is signed off (2026-11-12); these rows are no longer an Eye Care task; each waits for the first client or session that needs it
 governs: framework work parked after Eye Care's sign-off
 references:
   - .claude/plans/archive/2026-10-02-eye-care-fix-register.md
   - .claude/plans/archive/2026-10-05-eye-care-functionality-backlog.md
 ---
+
+**Archived 2026-11-12, every row checked against the code and `git log`.** Done: N5.5 (`e89779dbf`, `2dda500ff`), N5 (`c71ed6a81`, as the full-width mega placement), 53 (`1da86bffa`), 135 (`c1956a5b3`), 154, 149, 150, 148 (`148ab451b`), 156 (`6e169faba`, `942e81f59`), 157 (`8a4c65433`), 155 (`6f62a31c8`), CR13 (`2f259a4d2`), 71 and 67 (`c1956a5b3`), 77 (`a9e956daf`), 49 (`7391218a2`), 9 (`189e509f7`), 152 (`76ea52ab9`). Still open, now not-built requirements: 65B is Spec 27 FR-30-28; Q10 is FR-30-29; the manifest transient purge is FR-30-30; the measured diagram deferrals are Spec 02 FR-2-21; GBP sync is Spec 02 FR-2-22; the size pop-up rows 117, 123, 69, 81 and N29 are Spec 02 FR-2-23; hero maxWidth, the tier background, hero gridTemplateColumns and the C2 spacing rows are Spec 02 FR-2-24; P0-5 border controls, the box-alignment separator read and P0-8 are Spec 02 FR-2-25; IconPicker id, P0-4 and P0-7 are Spec 35A FR-35A-1 to FR-35A-3. Rows 94, the card-grid zoom and CR10 belong to Spec 49 (hover zoom FR-49-31 and its sizing fields) and are not tracked here.
 
 # Framework parked backlog
 
@@ -85,7 +87,7 @@ The block is built and live (plan `plans/archive/2026-10-07-measured-diagram-blo
 
 | Ref | The dead control | Where |
 |---|---|---|
-| **CR13** | **Fixed 2026-11-12 (`42eae087a`).** `includes/helpers-css-safety.php::sgs_css_length_value_preset_slugs` now flattens the origin groups `wp_get_global_settings( array( 'spacing', 'spacingSizes' ) )` returns (`default`, `theme`, `custom`) and still accepts a flat list, so a bare-number spacing value equal to a preset slug ("30") prints `var(--wp--preset--spacing--30)`. Test: `tests/php/run-css-preset-slugs-standalone.php`. Saved content measured on every test site (2026-11-12): 8 slug-equal values (eye-care-test 1, indus-test 7), all cast to px before the helper, so none renders differently | Done |
+| **CR13** | **Fixed 2026-11-12 (`2f259a4d2`).** `includes/helpers-css-safety.php::sgs_css_length_value_preset_slugs` now flattens the origin groups `wp_get_global_settings( array( 'spacing', 'spacingSizes' ) )` returns (`default`, `theme`, `custom`) and still accepts a flat list, so a bare-number spacing value equal to a preset slug ("30") prints `var(--wp--preset--spacing--30)`. Test: `tests/php/run-css-preset-slugs-standalone.php`. Saved content measured on every test site (2026-11-12): 8 slug-equal values (eye-care-test 1, indus-test 7), all cast to px before the helper, so none renders differently | Done |
 | **71** | The product block does not pass text styling through to the colour and size options, so swatch names cannot be sized or weighted | Control plumbing |
 | **CR10** | `sgs/media`'s `aspectRatio` has no `css_property` in the framework DB, so it can never be resolved or written | Small, DB-side |
 
@@ -129,10 +131,3 @@ Each names its evidence; the register stays the source of truth for fixes.
 `includes/class-product-manifest.php` writes the transient `sgs_manifest_v9_<id>_<tax-fingerprint>`, while `includes/class-cart-cache-purge.php::purge_by_product_id` and `seed-48-sku-fixture-v2.php` delete `sgs_manifest_<id>`. The purge key can never match the write key, so a product's manifest is never purged on change and expires only on TTL: an edited product can keep serving its old variations, swatches and availability. It is not the cause of the imageless Eye Care shop cards (those are 12 products carrying `photo-to-come.png`).
 
 Fix shape: make the purge delete the versioned key, which needs the tax fingerprint, or delete by prefix. Prove it first with a negative control: edit a variable product's variation, confirm the shop card is stale before the fix and fresh after it.
-
-## Related parked plans
-
-Parked plans the Eye Care fix register used to point to, each with its own resume point:
-- Shop "Load more" mode (filters carry-over check left): `plans/2026-11-02-shop-load-more.md`.
-- Mama's framework batch (B5 box-string rule still report-only): `plans/2026-11-03-mamas-framework-batch.md`.
-- Clean first paint (P5 shop filters and FAQ after paint; P6 not reproduced): `plans/2026-11-04-clean-first-paint.md`.

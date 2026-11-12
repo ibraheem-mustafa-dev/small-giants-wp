@@ -1,10 +1,12 @@
 ---
 doc_type: plan
 title: Mama's merged round (B9 gaps 1 to 7, commerce COM-1 to COM-6, Spec 32/35 follow-ups)
-status: active
+status: done
 ---
 
 # Mama's merged round, 2026-11-05
+
+Superseded 2026-11-12: rounds 1, 2 and the QC round are done; its open list moved to `plans/2026-11-02-clone-finishing-streams.md` section "Mama's (now)", the one plan for Mama's.
 
 Status: rounds 1 and 2 done, the QC round open (below). Round 1 on main `0c6503f12` (framework DB sha 6c82dfc73037), round 2 on main `74ee0c69b` (sha 81e543c0d538), both gated green for sandybrown, mamas-test and indus-test and deployed to mamas-test; every value set on local-mamas from the drafts (content audit 0 HIGH, editor check clean, including `sgs_form` 157) and pushed to mamas-test 2026-11-05 16:00 UTC (earlier remote DB on the server at `~/backups/push-to-remote/lightsalmon-tarsier-683012.hostingersite.com-20261105-160024.sql`); site-check on mamas-test 0 failed without a basket and with one (woocommerce 57 pass, `sites/mamas-munches-redesign/build/qa/site-check/2026-11-05T16-08-45/result.md`). QC found the next round (Open).
 
@@ -56,4 +58,4 @@ Deferred (Bean, 2026-11-05): Subscribe and One-off purchase cards (subscriptions
 4. Hover and selected-state pairs for every item (the content pass captured resting crops only).
 5. Product pinned gallery top: 140px on mamas-test at 1024 and 1440 against the draft's 108px (the mirror measured 109px, so the live header-height value differs from the mirror's); prove which `--sgs-header-height` each side resolves before changing `stickyOffset`.
 6. QC rule for every round: measure at 768 as well as 375 and 1440. The buybox gallery `top` rule shipped under tablet-up while the column is sticky only from desktop, which pushed Eye Care's tablet gallery over the info column (fixed by the Eye Care session in `abe9231d9`, verified on mamas-test at 768, 1024 and 1440).
-7. B5 box-string rule: flip `BOX_STRING_ENFORCED` from report-only to refusing once every site's live sweep is done (local-mamas swept and pushed; local-indus patched by the Indus session; eye-care-test surveyed in its Round 5). Check with `python plugins/sgs-blocks/scripts/find-scalar-tier-attrs.py --check`. History: `plans/2026-11-03-mamas-framework-batch.md`.
+7. B5 box-string rule: flip `BOX_STRING_ENFORCED` from report-only to refusing once every site's live sweep is done (local-mamas swept and pushed; local-indus patched by the Indus session; eye-care-test surveyed in its Round 5). Check with `python plugins/sgs-blocks/scripts/find-scalar-tier-attrs.py --check`. History: `plans/archive/2026-11-03-mamas-framework-batch.md`.

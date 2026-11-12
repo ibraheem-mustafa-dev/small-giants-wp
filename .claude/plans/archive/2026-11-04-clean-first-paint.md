@@ -1,8 +1,9 @@
 ---
 doc_type: plan
-status: parked
-archive-after: the Eye Care sign-off (an Eye Care doc links here; it moves to plans/archive/ with the links repointed then)
+status: done
 ---
+
+**Archived 2026-11-12, finished: all seven fixes are built and live. P6 was never reproduced and is dropped; Bean's eye check is no longer tracked.**
 
 # Clean first paint: no page jumps or unstyled parts while a page loads
 

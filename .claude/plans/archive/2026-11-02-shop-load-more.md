@@ -1,8 +1,9 @@
 ---
 doc_type: plan
-status: parked
-archive-after: the Eye Care sign-off (an Eye Care doc links here; it moves to plans/archive/ with the links repointed then)
+status: done
 ---
+
+**Archived 2026-11-12, finished: FR-30-3b is built (Spec 27); its three later tasks are a not-built block under FR-30-3b.**
 
 # Shop "Load more" mode (FR-30-3b)
 

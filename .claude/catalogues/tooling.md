@@ -912,7 +912,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
-| `check-first-paint.mjs` | manifest+script-call | First-paint gate against a LIVE site (plans/2026-11-04-clean-first-paint.md, F-lite). |
+| `check-first-paint.mjs` | manifest+script-call | First-paint gate against a LIVE site (plans/archive/2026-11-04-clean-first-paint.md, F-lite). |
 | `check-md-wrap.py` | commit-gate+script-call+skill | No hard-wrapped Markdown: every paragraph, list item and blockquote paragraph is one unbroken line. |
 | `check-no-client-names.py` | manifest+script-call+skill | : keep client names and reference-site names out of the framework. |
 | `check-page-weight.mjs` | manifest+script-call | Page-weight gate against a LIVE site (.claude/plans/archive/2026-11-03-page-weight-budget.md, "Gate"). |
@@ -1445,7 +1445,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/refresh-pairs.mjs` | script-call | Refreshes a surface's block-to-draft pairs from the saved post and the draft's inventory, with no clone route and no write to the site… |
 | `computed-route/register-sweep.mjs` | script-call | Register <-> sweep command (A4). |
 | `computed-route/shop-fixtures.mjs` | skill | Spec 48 section 16, "Minimum fixture products": creates a simple and a variable WooCommerce product (price, stock, image) on a test site for the shop… |
-| `computed-route/shop-load-more-check.mjs` | — | Live proof for the shop "Load more" mode (FR-30-3b, plan .claude/plans/2026-11-02-shop-load-more.md Batch 2). |
+| `computed-route/shop-load-more-check.mjs` | — | Live proof for the shop "Load more" mode (FR-30-3b, plan .claude/plans/archive/2026-11-02-shop-load-more.md Batch 2). |
 | `computed-route/shop-parts.mjs` | manifest+script-call+skill | Spec 48 FR-48-60, FR-48-61, FR-48-62: maps a client's draft shop surfaces (buy box, filter, basket drawer) to their framework homes and prints the… |
 | `computed-route/site-build.mjs` | manifest+script-call+skill | The site build (Spec 48 FR-48-55): every row of the confirmed sites/<client>/build/page-map.json made on one site once, with its menus, front and… |
 | `computed-route/site-check.mjs` | script-call+skill | The functional check of one client's clone (Spec 48 §3.7): does it WORK, where the walker only compares styles. |

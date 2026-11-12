@@ -55,7 +55,7 @@ None. No timeline difference falls under 0.2.
 # Lamalama (88 rows)
 
 ## Foundational gaps
-- L26 `showreel`: the draft has a bottom-centre "THIS IS US" toggle that is hidden at rest and fades in while the menu is open. It is a block pinned to a screen position, shown only in a state. The live copy has nothing and no setting can make it. This is G8 ("pin an authored block to a screen corner"), parked by Bean on 2026-09-27 in `.claude/plans/2026-10-01-header-nav-thread-plan.md` section 7.
+- L26 `showreel`: the draft has a bottom-centre "THIS IS US" toggle that is hidden at rest and fades in while the menu is open. It is a block pinned to a screen position, shown only in a state. The live copy has nothing and no setting can make it. This is G8 ("pin an authored block to a screen corner"), parked by Bean on 2026-09-27 in `.claude/plans/archive/2026-10-01-header-nav-thread-plan.md` section 7.
 
 ## Violations
 - L2, L22 logo canvas. Draft draws the pill logo on a `<canvas>`, an animated pixel "L". Live uses `lamalama-logo-still.png`. Setting: sgs/responsive-logo animationStyle, lottieId, lottieLoop, lottieTrigger or svgAnimationSource, which needs an animated asset exported from the draft. It may be same paint if the canvas turns out to be static, which is why it is not accepted. L22 is the same canvas seen inside the draft's pill in the open state.
