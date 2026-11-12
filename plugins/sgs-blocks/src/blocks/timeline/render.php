@@ -307,7 +307,7 @@ if ( 'solid' !== $connector_line_style ) {
 	$rail_axis = 'vertical' === $orientation ? 'vertical' : 'horizontal';
 	$rail_sel  = $root_sel . '.sgs-timeline--line-' . $connector_line_style . '::before';
 	$scoped_css[] = $rail_sel . '{' . implode( ';', sgs_connector_line_decls( $connector_line_style, $rail_axis, 'var(--sgs-connector-colour)', '', 'var(--sgs-connector-width)' ) ) . ';}';
-	$scoped_css[] = $root_sel . '.sgs-timeline--line-' . $connector_line_style . ':hover::before,' . $root_sel . '.sgs-timeline--line-' . $connector_line_style . ':focus-visible::before{border-color:var(--sgs-connector-colour-hover,var(--sgs-connector-colour));}';
+	$scoped_css[] = sgs_hover_state_rules( $root_sel . '.sgs-timeline--line-' . $connector_line_style, 'border-color:var(--sgs-connector-colour-hover,var(--sgs-connector-colour));', ':focus-visible', '::before' );
 }
 
 // --- Background layer (Task 1, 2026-09-07) — ::after layer frees the root for
