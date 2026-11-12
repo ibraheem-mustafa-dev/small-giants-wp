@@ -13,7 +13,10 @@ import { initialOf } from './css-families.mjs';
 export const COVERAGE_WRITES = [
 	'block-setting:behaviour:styling',
 	'block-setting:color:styling',
+	'block-setting:colour-background:styling',
 	'block-setting:colour-gradient:styling',
+	'block-setting:colour-text:styling',
+	'block-setting:enum-class-probe:styling',
 	'block-setting:enum-mode:styling',
 	'block-setting:layout:styling',
 	'block-setting:number-css-px:styling',

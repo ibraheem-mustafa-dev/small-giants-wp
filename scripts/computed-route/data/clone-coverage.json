@@ -1352,6 +1352,13 @@
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
 			"note": "CSS styling: Fill reads the computed value per width, resolves it to a token or literal through calibration, triage checks the live page"
 		},
+		"block-setting:colour-background:styling": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-prop.test.mjs",
+			"note": "CSS styling: Fill reads the computed value per width, resolves it to a token or literal through calibration, triage checks the live page"
+		},
 		"block-setting:colour-gradient:string": {
 			"recognise": null,
 			"write": null,
@@ -1363,6 +1370,13 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "CSS styling: Fill reads the computed value per width, resolves it to a token or literal through calibration, triage checks the live page"
+		},
+		"block-setting:colour-text:styling": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-prop.test.mjs",
 			"note": "CSS styling: Fill reads the computed value per width, resolves it to a token or literal through calibration, triage checks the live page"
 		},
 		"block-setting:content:array": {
@@ -1393,18 +1407,12 @@
 			"wave": "content, media and icons",
 			"note": "content values Fill does not read yet (media URLs and IDs, alt text, icons, ratings, structured content)"
 		},
-		"block-setting:css-gate:styling": {
-			"recognise": "scripts/computed-route/lib/motion-layers.mjs#hoverLayer",
-			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/parity/lib/state-passes.mjs#hoverPass",
-			"note": "grayscale hover: written as hover.state grayscale with restGrayscale (the hover-grayscale-to-colour preset), the motion model's form of the blocks' grayscaleHover toggle, which the writer never sets; the walker's hover pass compares the hovered filter where the pair is marked for hover"
-		},
-		"block-setting:css-modifier:mode": {
+		"block-setting:content:styling": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "modes, variants, units and values with no CSS property: no writer (FR-48-42)"
+			"wave": "content, media and icons",
+			"note": "a content-role setting with a CSS property (sgs/process-steps steps, a repeater whose connector paints left and right): the property route cannot write a repeater, and no writer fills content values from a draft yet"
 		},
 		"block-setting:enum-class-probe:integer": {
 			"recognise": null,
@@ -1441,14 +1449,14 @@
 			"wave": "content, media and icons",
 			"note": "content values Fill does not read yet (media URLs and IDs, alt text, icons, ratings, structured content)"
 		},
-		"block-setting:enum-mode:mode": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "modes, variants, units and values with no CSS property: no writer (FR-48-42)"
+		"block-setting:enum-class-probe:styling": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-prop.test.mjs",
+			"note": "CSS styling: Fill reads the computed value per width, resolves it to a token or literal through calibration, triage checks the live page"
 		},
-		"block-setting:enum-mode:object": {
+		"block-setting:enum-mode:mode": {
 			"recognise": null,
 			"write": null,
 			"check": null,
@@ -1467,6 +1475,20 @@
 			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
 			"note": "CSS styling: Fill reads the computed value per width, resolves it to a token or literal through calibration, triage checks the live page"
+		},
+		"block-setting:glyph:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "modes, variants, units and values with no CSS property: no writer (FR-48-42)"
+		},
+		"block-setting:glyph:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "content values Fill does not read yet (media URLs and IDs, alt text, icons, ratings, structured content)"
 		},
 		"block-setting:icon-dashicon:string": {
 			"recognise": null,
@@ -1531,13 +1553,6 @@
 			"wave": "content, media and icons",
 			"note": "content values Fill does not read yet (media URLs and IDs, alt text, icons, ratings, structured content)"
 		},
-		"block-setting:image-object:number": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "media and logo library IDs (sgs/responsive-logo logoId per device): Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
-		},
 		"block-setting:image-object:object": {
 			"recognise": null,
 			"write": null,
@@ -1560,13 +1575,6 @@
 			"note": "background images and video: Fill's media writer (lib/fill-media.mjs over lib/media/, Spec 49 section 11) writes it as a per-device Source in the slot the block declares; lib/media-upload.mjs uploads images only, so a video file missing from the media map is a gap row; this ID's recognise, write and check references are not recorded yet (FR-48-39)"
 		},
 		"block-setting:layout:boolean": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "modes, variants, units and values with no CSS property: no writer (FR-48-42)"
-		},
-		"block-setting:layout:integer": {
 			"recognise": null,
 			"write": null,
 			"check": null,
@@ -1635,6 +1643,13 @@
 			"test": "scripts/computed-route/tests/fill-link-attrs.test.mjs",
 			"note": "link URLs: Fill reads and writes hrefs; a draft hash route (#/apply) is written as the permalink of the page map's page for that route (lib/fill-route.mjs::hashRoutePermalink), a route with no page and a bare # stay no route; link targets are not handled separately"
 		},
+		"block-setting:link-href:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "a link-role setting with a CSS property (sgs/mega-panel drawerLinkTextShiftHover, a hover transform shift): the property route cannot hold the measured transform matrix, so no writer fills it"
+		},
 		"block-setting:motion:motion": {
 			"recognise": "scripts/computed-route/lib/fill-timing.mjs#timingFacts",
 			"write": "scripts/computed-route/lib/fill-timing.mjs#timingWrites",
@@ -1655,6 +1670,13 @@
 			"note": "CSS styling: Fill reads the computed value per width, resolves it to a token or literal through calibration, triage checks the live page"
 		},
 		"block-setting:numeric-content:number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "content values Fill does not read yet (media URLs and IDs, alt text, icons, ratings, structured content)"
+		},
+		"block-setting:numeric-content:string": {
 			"recognise": null,
 			"write": null,
 			"check": null,
@@ -1688,13 +1710,6 @@
 			"note": "content values Fill does not read yet (media URLs and IDs, alt text, icons, ratings, structured content)"
 		},
 		"block-setting:rating:string": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "content values Fill does not read yet (media URLs and IDs, alt text, icons, ratings, structured content)"
-		},
-		"block-setting:scalar-media:mode": {
 			"recognise": null,
 			"write": null,
 			"check": null,
@@ -1748,6 +1763,13 @@
 			"wave": "modes and values with no CSS property",
 			"note": "modes, variants, units and values with no CSS property: no writer (FR-48-42)"
 		},
+		"block-setting:styling:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "modes, variants, units and values with no CSS property: no writer (FR-48-42)"
+		},
 		"block-setting:styling:number": {
 			"recognise": null,
 			"write": null,
@@ -1789,6 +1811,13 @@
 			"wave": "modes and values with no CSS property",
 			"note": "modes, variants, units and values with no CSS property: no writer (FR-48-42)"
 		},
+		"block-setting:tag-identity:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "modes, variants, units and values with no CSS property: no writer (FR-48-42)"
+		},
 		"block-setting:tag-identity:styling": {
 			"recognise": null,
 			"write": null,
@@ -1811,6 +1840,13 @@
 			"note": "query and data settings (product IDs, categories, counts, schema): no writer"
 		},
 		"block-setting:technical:integer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "shop, forms and data",
+			"note": "query and data settings (product IDs, categories, counts, schema): no writer"
+		},
+		"block-setting:technical:mode": {
 			"recognise": null,
 			"write": null,
 			"check": null,
@@ -1865,6 +1901,13 @@
 			"note": "CSS styling: Fill reads the computed value per width, resolves it to a token or literal through calibration, triage checks the live page"
 		},
 		"block-setting:typography:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "modes, variants, units and values with no CSS property: no writer (FR-48-42)"
+		},
+		"block-setting:typography:number": {
 			"recognise": null,
 			"write": null,
 			"check": null,
@@ -9960,6 +10003,13 @@
 			"wave": "behaviour recognisers",
 			"note": "extension settings: behaviour recognisers"
 		},
+		"extension:cardMinWidth": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "shop, forms and data",
+			"note": "extension settings: shop, forms and data"
+		},
 		"extension:childSizing": {
 			"recognise": null,
 			"write": null,
@@ -9973,6 +10023,13 @@
 			"check": null,
 			"wave": "modes and values with no CSS property",
 			"note": "extension settings: modes and values with no CSS property"
+		},
+		"extension:commerceLook": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "shop, forms and data",
+			"note": "extension settings: shop, forms and data (a warn-only drift probe, lib/site-check-commerce-look.mjs, reads the selector table; no writer)"
 		},
 		"extension:conditionalVisibility": {
 			"excluded": {
@@ -9988,6 +10045,20 @@
 			"wave": "modes and values with no CSS property",
 			"note": "extension settings: modes and values with no CSS property"
 		},
+		"extension:filterLook": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "shop, forms and data",
+			"note": "extension settings: shop, forms and data"
+		},
+		"extension:floatPosition": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "extension settings: modes and values with no CSS property"
+		},
 		"extension:focusRests": {
 			"recognise": null,
 			"write": null,
@@ -9995,12 +10066,19 @@
 			"wave": "unassigned",
 			"note": "seeded 2026-10-26, not yet triaged"
 		},
-		"extension:imageControls": {
+		"extension:postContentLists": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "extension settings: content, media and icons"
+			"wave": "shop, forms and data",
+			"note": "extension settings: shop, forms and data"
+		},
+		"extension:postTimeToReadShort": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "extension settings: modes and values with no CSS property"
 		},
 		"extension:responsiveVisibility": {
 			"recognise": null,
@@ -10015,6 +10093,13 @@
 			"check": null,
 			"wave": "shop, forms and data",
 			"note": "extension settings: shop, forms and data"
+		},
+		"extension:timeText": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "extension settings: modes and values with no CSS property"
 		},
 		"fx:ambient-float": {
 			"recognise": "scripts/computed-route/lib/motion-loops.mjs#loopEffect",
@@ -16046,20 +16131,6 @@
 				"date": "2026-10-17"
 			}
 		},
-		"sgs-support:imageControls": {
-			"excluded": {
-				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
-		},
-		"sgs-support:imageControlsExplicit": {
-			"excluded": {
-				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
-		},
 		"sgs-support:intrinsicColumns": {
 			"excluded": {
 				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
@@ -16193,6 +16264,13 @@
 				"date": "2026-10-17"
 			}
 		},
+		"sgs-support:timeTextWords": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "block.json supports metadata, the family Bean excluded on 2026-10-17 (every other sgs-support key is excluded, signed by Bean): not signed for this key; the Integrator asks Bean to sign it or keep it a gap"
+		},
 		"sgs-support:variantAttr": {
 			"excluded": {
 				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
@@ -16305,6 +16383,20 @@
 			"wave": "site and surfaces",
 			"note": "site tokens: intake proposes the palette and Site Info; no snapshot writer or site-level check in this route (FR-48-48)"
 		},
+		"snapshot-key:settings.custom.colourRoles": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "site and surfaces",
+			"note": "site tokens: intake proposes the palette and Site Info; no snapshot writer or site-level check in this route (FR-48-48)"
+		},
+		"snapshot-key:settings.custom.defaultTokens": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "site and surfaces",
+			"note": "site tokens: intake proposes the palette and Site Info; no snapshot writer or site-level check in this route (FR-48-48)"
+		},
 		"snapshot-key:settings.custom.distance": {
 			"recognise": null,
 			"write": null,
@@ -16403,6 +16495,13 @@
 			"wave": "site and surfaces",
 			"note": "site tokens: intake proposes the palette and Site Info; no snapshot writer or site-level check in this route (FR-48-48)"
 		},
+		"snapshot-key:settings.custom.presetTokens": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "site and surfaces",
+			"note": "site tokens: intake proposes the palette and Site Info; no snapshot writer or site-level check in this route (FR-48-48)"
+		},
 		"snapshot-key:settings.custom.scrollbar": {
 			"recognise": null,
 			"write": null,
@@ -16411,6 +16510,13 @@
 			"note": "seeded 2026-10-26, not yet triaged"
 		},
 		"snapshot-key:settings.custom.section": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "site and surfaces",
+			"note": "site tokens: intake proposes the palette and Site Info; no snapshot writer or site-level check in this route (FR-48-48)"
+		},
+		"snapshot-key:settings.custom.selection": {
 			"recognise": null,
 			"write": null,
 			"check": null,
@@ -16439,6 +16545,13 @@
 			"note": "site tokens: intake proposes the palette and Site Info; no snapshot writer or site-level check in this route (FR-48-48)"
 		},
 		"snapshot-key:settings.custom.transition": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "site and surfaces",
+			"note": "site tokens: intake proposes the palette and Site Info; no snapshot writer or site-level check in this route (FR-48-48)"
+		},
+		"snapshot-key:settings.custom.typeRoles": {
 			"recognise": null,
 			"write": null,
 			"check": null,
