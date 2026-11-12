@@ -20,7 +20,7 @@ status_history:
   - 2026-11-10: v0.8, Stage B setup's findings applied: narrowed atoms on two slots, the decorative image's context, three slot prefixes, saved content and the hand-resolved items in §13
   - 2026-11-11: v0.9, Stage B built on the integration branch (every block in `scripts/data/media-adoption.json` adopted, saved content migrated, the gradient border, the Fit default and the helper's Ratio crop, device-kind scoping of effects): the corrections the packages reported are applied, each FR carries its built status, the appendices state the end state, and Bean's 2026-11-11 regression-scope ruling is recorded
 references:
-  - .claude/plans/2026-11-09-media-controls-redesign.md
+  - .claude/plans/archive/2026-11-09-media-controls-redesign.md
   - .claude/reports/2026-11-09-media-controls/
   - .claude/specs/02-SGS-BLOCKS.md
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md

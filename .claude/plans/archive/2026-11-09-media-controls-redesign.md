@@ -1,7 +1,6 @@
 ---
 doc_type: plan
-status: parked
-archive-after: the Eye Care sign-off (an Eye Care doc links here; it moves to plans/archive/ with the links repointed then)
+status: done
 ---
 
 # Media controls redesign: Bean's issue register

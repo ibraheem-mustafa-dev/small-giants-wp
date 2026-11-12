@@ -64,7 +64,7 @@ Rules:
   5. Product pinned gallery top: 140px on mamas-test at 1024 and 1440 against the draft's 108px (the mirror measured 109px, so the live header-height value differs from the mirror's); prove which `--sgs-header-height` each side resolves before changing `stickyOffset`.
   6. QC rule for every round: measure at 768 as well as 375 and 1440. The buybox gallery `top` rule shipped under tablet-up while the column is sticky only from desktop, which pushed Eye Care's tablet gallery over the info column (fixed by the Eye Care session in `abe9231d9`, verified on mamas-test at 768, 1024 and 1440).
   7. B5 box-string rule: flip `BOX_STRING_ENFORCED` from report-only to refusing once every site's live sweep is done (local-mamas swept and pushed; local-indus patched by the Indus session; eye-care-test surveyed in its Round 5). Check with `python plugins/sgs-blocks/scripts/find-scalar-tier-attrs.py --check`. History: `plans/archive/2026-11-03-mamas-framework-batch.md`.
-- **Waiting on Spec 49:** Mama's media work (images, backgrounds, effects on them) waits for the media system's cutover (`specs/49-SGS-MEDIA-SYSTEM.md`; plan register `plans/2026-11-09-media-controls-redesign.md`), so it is built once on the new controls.
+- **Spec 49 is live (2026-11-12):** Mama's media work (images, backgrounds, effects on them) builds on the new media controls (`specs/49-SGS-MEDIA-SYSTEM.md`); every item of the old media issue register (`plans/archive/2026-11-09-media-controls-redesign.md`) is built.
 
 ## Eye Care (signed off 2026-11-12)
 
