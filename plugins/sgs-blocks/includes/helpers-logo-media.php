@@ -9,6 +9,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/media/render-item-slot.php';
+
 if ( ! function_exists( 'sgs_logo_media_slot' ) ) {
 	/**
 	 * A logo slot: its `supports.sgs.mediaElements` entry, or the entry's defaults.
@@ -18,21 +20,7 @@ if ( ! function_exists( 'sgs_logo_media_slot' ) ) {
 	 * @return array{prefix:string,kinds:string[],context:string}
 	 */
 	function sgs_logo_media_slot( $block, string $prefix ): array {
-		$entries = $block instanceof \WP_Block ? (array) ( $block->block_type->supports['sgs']['mediaElements'] ?? array() ) : array();
-		foreach ( $entries as $entry ) {
-			if ( is_array( $entry ) && ( $entry['prefix'] ?? '' ) === $prefix && ! empty( $entry['kinds'] ) ) {
-				return array(
-					'prefix'  => $prefix,
-					'kinds'   => array_map( 'strval', (array) $entry['kinds'] ),
-					'context' => (string) ( $entry['context'] ?? 'content' ),
-				);
-			}
-		}
-		return array(
-			'prefix'  => $prefix,
-			'kinds'   => array( 'image', 'svg' ),
-			'context' => 'content',
-		);
+		return sgs_media_item_slot_for( $block, $prefix, array( 'image', 'svg' ), 'content' );
 	}
 }
 

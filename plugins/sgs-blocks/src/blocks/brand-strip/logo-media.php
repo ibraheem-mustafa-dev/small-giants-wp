@@ -12,52 +12,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! function_exists( 'sgs_brand_strip_logo_slot' ) ) {
-	/**
-	 * The `logo` slot: its `supports.sgs.mediaElements` entry, or the entry's defaults.
-	 *
-	 * @param \WP_Block|null $block The block instance.
-	 * @return array{prefix:string,kinds:string[],context:string}
-	 */
-	function sgs_brand_strip_logo_slot( $block ): array {
-		$entries = $block instanceof \WP_Block ? (array) ( $block->block_type->supports['sgs']['mediaElements'] ?? array() ) : array();
-		foreach ( $entries as $entry ) {
-			if ( is_array( $entry ) && 'logo' === ( $entry['prefix'] ?? '' ) && ! empty( $entry['kinds'] ) ) {
-				return array(
-					'prefix'  => 'logo',
-					'kinds'   => array_map( 'strval', (array) $entry['kinds'] ),
-					'context' => (string) ( $entry['context'] ?? 'item' ),
-				);
-			}
-		}
-		return array(
-			'prefix'  => 'logo',
-			'kinds'   => array( 'image' ),
-			'context' => 'item',
-		);
-	}
-}
-
-if ( ! function_exists( 'sgs_brand_strip_device_tiers' ) ) {
-	/**
-	 * A responsive value's own `{desktop,tablet,mobile}` entries, empty ones left out; a plain value is the desktop one.
-	 *
-	 * @param mixed $raw Stored value.
-	 * @return array<string,mixed>
-	 */
-	function sgs_brand_strip_device_tiers( $raw ): array {
-		if ( ! is_array( $raw ) ) {
-			return null === $raw || '' === $raw ? array() : array( 'desktop' => $raw );
-		}
-		$out = array();
-		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $device ) {
-			if ( isset( $raw[ $device ] ) && '' !== $raw[ $device ] && array() !== $raw[ $device ] ) {
-				$out[ $device ] = $raw[ $device ];
-			}
-		}
-		return $out;
-	}
-}
+require_once dirname( __DIR__, 3 ) . '/includes/media/render-item-slot.php';
 
 if ( ! function_exists( 'sgs_brand_strip_item_file' ) ) {
 	/**
@@ -80,8 +35,7 @@ if ( ! function_exists( 'sgs_brand_strip_item_file' ) ) {
 if ( ! function_exists( 'sgs_brand_strip_item_attrs' ) ) {
 	/**
 	 * The attributes the renderer reads for one item: the block's, with the item's own source, alt, decorative flag, focal
-	 * point and fit laid over them. A device the item sets no fit for takes the strip's, and a strip with none contains
-	 * the logo (a logo is never cropped). The block's Shape is the tile's, so it stays out.
+	 * point and fit laid over them (`sgs_media_item_fit()`; a logo with no fit anywhere is contained, never cropped). The block's Shape is the tile's, so it stays out.
 	 *
 	 * @param array $item       One `logos` entry.
 	 * @param array $attributes Block attributes.
@@ -89,18 +43,8 @@ if ( ! function_exists( 'sgs_brand_strip_item_attrs' ) ) {
 	 * @return array
 	 */
 	function sgs_brand_strip_item_attrs( array $item, array $attributes, bool $decorative ): array {
-		$attrs                   = $attributes;
-		$attrs['logoSource']     = $item['source'] ?? null;
-		$attrs['logoAlt']        = is_string( $item['alt'] ?? null ) ? $item['alt'] : '';
+		$attrs                   = sgs_media_item_slot_attrs( 'logo', $item, $attributes, 'contain' );
 		$attrs['logoDecorative'] = $decorative;
-		$attrs['logoFocal']      = $item['focal'] ?? null;
-		$attrs['logoLoading']    = is_string( $attributes['logoLoading'] ?? null ) ? $attributes['logoLoading'] : '';
-		$fit                     = array_merge(
-			array( 'desktop' => 'contain' ),
-			sgs_brand_strip_device_tiers( $attributes['logoFit'] ?? null ),
-			sgs_brand_strip_device_tiers( $item['fit'] ?? null )
-		);
-		$attrs['logoFit']        = $fit;
 		unset( $attrs['logoShape'] );
 		return $attrs;
 	}

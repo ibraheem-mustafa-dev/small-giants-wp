@@ -613,7 +613,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
  * media renderer (logo-media.php).
  */
 $logos_html  = '';
-$sgs_bs_slot = sgs_brand_strip_logo_slot( $block );
+$sgs_bs_slot = sgs_media_item_slot_for( $block, 'logo' );
 if ( ! empty( $logos ) ) {
 	$logo_index       = 0;
 	$sgs_bs_media_idx = 0;

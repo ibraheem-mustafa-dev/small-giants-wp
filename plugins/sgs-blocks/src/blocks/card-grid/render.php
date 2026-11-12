@@ -133,7 +133,7 @@ $root_sel = '.' . $uid . '.wp-block-sgs-card-grid';
 
 // Card media: the `image` slot, printed card by card through the shared renderer (render-item-media.php). The
 // renderer's scope class for the block-level rules is `{uid}-media`.
-$sgs_cg_media_slot  = sgs_card_grid_media_slot( $block );
+$sgs_cg_media_slot  = sgs_media_item_slot_for( $block, 'image' );
 $sgs_cg_media_scope = $uid . '-media';
 
 // Native block-supports CSS (colour, shadow, typography) -> $card_grid_native_css.

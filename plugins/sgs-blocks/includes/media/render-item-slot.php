@@ -41,38 +41,69 @@ if ( ! function_exists( 'sgs_media_item_slot_for' ) ) {
 	 * @param \WP_Block|null $block    The block instance.
 	 * @param string         $prefix   Slot prefix.
 	 * @param string[]       $fallback Kinds to use when the entry is missing.
+	 * @param string         $context  Context to use when the entry names none or is missing.
 	 * @return array{prefix:string,kinds:string[],context:string}
 	 */
-	function sgs_media_item_slot_for( $block, string $prefix, array $fallback = array( 'image' ) ): array {
+	function sgs_media_item_slot_for( $block, string $prefix, array $fallback = array( 'image' ), string $context = 'item' ): array {
 		$entries = $block instanceof \WP_Block ? (array) ( $block->block_type->supports['sgs']['mediaElements'] ?? array() ) : array();
 		foreach ( $entries as $entry ) {
 			if ( is_array( $entry ) && '' !== $prefix && ( $entry['prefix'] ?? '' ) === $prefix && ! empty( $entry['kinds'] ) ) {
 				return array(
 					'prefix'  => $prefix,
 					'kinds'   => array_map( 'strval', (array) $entry['kinds'] ),
-					'context' => (string) ( $entry['context'] ?? 'item' ),
+					'context' => (string) ( $entry['context'] ?? $context ),
 				);
 			}
 		}
 		return array(
 			'prefix'  => $prefix,
 			'kinds'   => $fallback,
-			'context' => 'item',
+			'context' => $context,
 		);
+	}
+}
+
+if ( ! function_exists( 'sgs_media_item_fit' ) ) {
+	/**
+	 * An item's Fit per device (Spec 49 §8.3: items inherit the block-level Fit). The item's own Fit wins at every device
+	 * its own cascade reaches: a device it sets, and the narrower devices that inherit from it. Where the item's cascade
+	 * has no value the block's cascade answers, then the block's default. Only the devices where the value changes from
+	 * the wider device are written, so the renderer's own cascade restores the rest.
+	 *
+	 * @param mixed $block_fit    The block-level Fit (`{prefix}Fit`).
+	 * @param mixed $item_fit     The item's own `fit`.
+	 * @param mixed $default_fit  The block's default Fit when neither sets one (a plain value or a responsive value).
+	 * @return array<string,string>
+	 */
+	function sgs_media_item_fit( $block_fit, $item_fit, $default_fit = null ): array {
+		$item    = sgs_media_device_values( $item_fit );
+		$block   = sgs_media_device_values( $block_fit );
+		$default = sgs_media_device_values( $default_fit );
+		$out     = array();
+		$prev    = null;
+		foreach ( sgs_media_devices() as $device ) {
+			$value = $item[ $device ] ?? $block[ $device ] ?? $default[ $device ];
+			if ( null !== $value && $value !== $prev ) {
+				$out[ $device ] = $value;
+			}
+			$prev = $value ?? $prev;
+		}
+		return $out;
 	}
 }
 
 if ( ! function_exists( 'sgs_media_item_slot_attrs' ) ) {
 	/**
 	 * The attributes the renderer reads for one item: the block's, with the item's own source, alt, decorative flag, focal
-	 * point and fit laid over them. A device the item sets no fit for takes the block's.
+	 * point and fit laid over them. The fit follows `sgs_media_item_fit()`.
 	 *
-	 * @param string $prefix     Slot prefix.
-	 * @param array  $item       One item.
-	 * @param array  $attributes Block attributes.
+	 * @param string $prefix      Slot prefix.
+	 * @param array  $item        One item.
+	 * @param array  $attributes  Block attributes.
+	 * @param mixed  $default_fit The block's Fit when neither the block nor the item sets one.
 	 * @return array
 	 */
-	function sgs_media_item_slot_attrs( string $prefix, array $item, array $attributes ): array {
+	function sgs_media_item_slot_attrs( string $prefix, array $item, array $attributes, $default_fit = null ): array {
 		$attrs                           = $attributes;
 		$attrs[ $prefix . 'Source' ]     = $item['source'] ?? null;
 		$attrs[ $prefix . 'Alt' ]        = is_string( $item['alt'] ?? null ) ? $item['alt'] : '';
@@ -80,7 +111,7 @@ if ( ! function_exists( 'sgs_media_item_slot_attrs' ) ) {
 		if ( isset( $item['focal'] ) ) {
 			$attrs[ $prefix . 'Focal' ] = $item['focal'];
 		}
-		$fit = array_merge( sgs_media_item_device_tiers( $attributes[ $prefix . 'Fit' ] ?? null ), sgs_media_item_device_tiers( $item['fit'] ?? null ) );
+		$fit = sgs_media_item_fit( $attributes[ $prefix . 'Fit' ] ?? null, $item['fit'] ?? null, $default_fit );
 		if ( array() !== $fit ) {
 			$attrs[ $prefix . 'Fit' ] = $fit;
 		}
