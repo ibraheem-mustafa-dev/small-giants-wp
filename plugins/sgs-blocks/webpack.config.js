@@ -309,8 +309,7 @@ if ( moduleConfig ) {
 				process.cwd(),
 				'src',
 				'shared',
-				'nav-interactivity',
-				'store.js'
+				'nav-store.js'
 			),
 			'shared/effects/motion-state': path.resolve(
 				process.cwd(),
