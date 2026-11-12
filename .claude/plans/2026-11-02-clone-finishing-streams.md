@@ -83,7 +83,7 @@ History: `plans/archive/2026-11-02-footer-framework-batch.md`.
 
 ## After the three sites are signed off
 
-- Group the fix catalogues by cause into the clone pipeline's fix list (`plans/archive/2026-10-30-clone-recognition-fixes.md`, "Rewind").
+- Group the fix catalogues by cause into the clone pipeline's fix list (`plans/2026-10-30-clone-recognition-fixes.md`, "Rewind").
 - Parked tooling, picked up only if it serves a future list item:
   - the animation-record live reader (`scripts/computed-route/record-live.mjs`, uncommitted);
   - the per-example checker (`E:/sgs-tmp/indus-r8/check117/checker/`, outside the repo; its rulings D-29, D-36 and D-41 and its contact tile and timeline finders are built);

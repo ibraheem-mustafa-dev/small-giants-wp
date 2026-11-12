@@ -1,5 +1,5 @@
 """identity_pinned -- the markup that code outside the repo prints, read from pinned source (plan
-`.claude/plans/archive/2026-10-30-clone-recognition-fixes.md` F1, the extractor fix track).
+`.claude/plans/2026-10-30-clone-recognition-fixes.md` F1, the extractor fix track).
 
 Two outside sources reach SGS block output and are read here instead of being left `unknown`:
 

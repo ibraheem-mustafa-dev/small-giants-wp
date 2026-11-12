@@ -1,5 +1,5 @@
 """identity_markup -- the tags, ARIA roles and ARIA attributes each SGS block can print, followed through every source
-(the reading half of `block_identity_facts.py`, plan `.claude/plans/archive/2026-10-30-clone-recognition-fixes.md` F1 step A1).
+(the reading half of `block_identity_facts.py`, plan `.claude/plans/2026-10-30-clone-recognition-fixes.md` F1 step A1).
 
 Where a block's output comes from (every source is read; `identity_sources.py` traces them):
   - its render.php and partials, and every repo function, method or callback they reach (helpers, SGS_Container_Wrapper,

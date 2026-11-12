@@ -1,4 +1,4 @@
-// The wave review of Fill's writers (plan plans/archive/2026-10-21-handoff-readers "The closing standard"): the form read-back reaches the
+// The wave review of Fill's writers (plan plans/2026-10-21-handoff-readers "The closing standard"): the form read-back reaches the
 // report, a preset restores several writes to one attribute to the first value, a form field is rewritten when the node holds
 // another value, the state-defect looks guard a missing read, the width gate takes only the collapse setting the skeleton rules
 // name, the fact record speaks for the target the image is drawn by, the logo's per-width gap is matched by its code, the

@@ -8,7 +8,7 @@ Unrelated to Spec 27 (`.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md`), 
 
 A premium WordPress plugin that adds 3D product configuration with AR to any SGS website. Sold as a paid add-on (annual licence). First client: Snooza Chair by Ophir Solutions. This is a long-term competitive investment for SGS, not a one-off project.
 
-Config schema and v1 scope: `.claude/plans/archive/2026-08-03-snooza-configurator-build-plan.md`, Appendix A.
+Config schema and v1 scope: `.claude/plans/2026-08-03-snooza-configurator-build-plan.md`, Appendix A.
 
 ## Architecture
 

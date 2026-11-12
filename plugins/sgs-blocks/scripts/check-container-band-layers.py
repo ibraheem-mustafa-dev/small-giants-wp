@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Container band layers: contentWidth, padding and margin on their one layer each.
 
-Governing plan: .claude/plans/archive/2026-10-21-handoff-readers.md, Status, Container band layers (Bean's decisions,
+Governing plan: .claude/plans/2026-10-21-handoff-readers.md, Status, Container band layers (Bean's decisions,
 2026-10-22): every container-type block records `contentWidth` as `max-width` on its
 content band, `padding` paints the content band (`contentBandPadding` is folded
 into `padding` and removed) and `margin` paints the block's outer element
@@ -424,7 +424,7 @@ def build_census():
         w['paths'].sort()
     return {
         'rule': 'contentWidth is max-width on the content band; padding paints the content band; margin paints the outer element; no contentBandPadding or contentBandMargin',
-        'plan': '.claude/plans/archive/2026-10-21-handoff-readers.md (Status, Container band layers)',
+        'plan': '.claude/plans/2026-10-21-handoff-readers.md (Status, Container band layers)',
         'wrapper_code_path': WRAPPER_CODE_PATH,
         'totals': {
             'blocks_with_contentWidth': len(blocks),

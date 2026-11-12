@@ -2,11 +2,9 @@
 doc_type: plan
 plan_id: form-choiceflow-pipeline-analytics
 spec: 42-SGS-FORM-CPT-AND-PRICING.md, 43-SGS-CHOICE-FLOW.md
-status: done
+status: parked
 date: 2026-09-26
 ---
-
-**Archived 2026-11-12, parked: the open items are Status lines of Spec 42 FR-42-10 and FR-42-13 and Spec 43 FR-43-14.**
 
 # Forms and choice flows: cloning-pipeline creation and analytics (parked)
 

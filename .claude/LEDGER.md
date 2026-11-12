@@ -71,6 +71,7 @@ Signed off by Bean (2026-11-12). eye-care-test (`https://darkcyan-grouse-898606.
 - **Unwired scripts (your ruling):** nav-qa `u1-owed-probe.mjs` with `qa-u1-owed-fixture.php`, and the `motion-qa` probes whose target pages no doc registers (`plugins/sgs-blocks/scripts/audit-live-script-closure.py` lists them).
 - **Product-card value ladder:** 24 editor-canvas controls wait for a bound-mode canvas preview (parked by you; baseline `plugins/sgs-blocks/scripts/wiring-fingerprint-baseline.json`).
 - Optional editor-check speed-ups (`plans/patches/`): `plans/archive/2026-11-11-deploy-speed.md`.
+- **Parked plans, each with its resume point:** Snooza Chair configurator build (`plans/2026-08-03-snooza-configurator-build-plan.md`); form and choice-flow pipeline and analytics (`plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md`); header and nav thread (`plans/2026-10-01-header-nav-thread-plan.md`); clone handoff readers, spec audit register and recognition fixes (`plans/2026-10-21-handoff-readers.md`, `plans/2026-10-28-clone-spec-audit-register.md`, `plans/2026-10-30-clone-recognition-fixes.md`).
 
 ## Live state
 
