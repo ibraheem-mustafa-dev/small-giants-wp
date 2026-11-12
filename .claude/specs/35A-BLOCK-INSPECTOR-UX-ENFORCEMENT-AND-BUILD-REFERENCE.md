@@ -156,7 +156,7 @@ Numeric+unit → `UnitControl` · bounded numeric → `RangeControl` (+input+res
 | 3 | Shared `ShadowControl` (real X/Y/blur/spread/colour+alpha) replacing None/Small/Medium selects | BUILT |
 | 4 | `templateLock:"contentOnly"` in client patterns | PER-CLIENT OPT-IN ONLY (Part G) — not a framework rollout |
 | 5 | `MediaGalleryPicker` (bulk multi-upload) → `brand-strip` logos + any repeater-media block | `MediaGalleryPicker` BUILT, and `brand-strip/edit.js` adds logos in bulk through it (a single logo is replaced through `MediaSlotField`) |
-| 6 | Media controls for every image block: Fit, Focal `{x,y}` and the sizing settings come from each declared slot's panel (`plugins/sgs-blocks/src/components/MediaElementPanel.js`, fields `FitField`, `FocalField`, `SizingFields`; Spec 49); the image-size dropdown is NOT forcible at extension level (no universal attachment ID) | BUILT |
+| 6 | Media controls for every image block: Fit, Focal `{x,y}` and the sizing settings come from each declared slot's panel (`plugins/sgs-blocks/src/components/MediaElementPanel.js`, fields `FitField`, `FocalField`, `SizingFields`; Spec 49); no image-size dropdown is offered, because delivery sizes are derived | BUILT |
 | 7 | Whole-card clickable-link pattern for card-grid/team/product/testimonial | BUILT (stretched-link overlay) |
 | 8 | `ToolsPanel` progressive disclosure on control-dense panels | BUILT |
 | 9 | Every animation `prefers-reduced-motion`-gated (WCAG) | BUILT (framework-wide gate) |
@@ -198,7 +198,7 @@ The Part K structural gate is `plugins/sgs-blocks/scripts/inspector-scan/run.js`
 - [x] **animation `prefers-reduced-motion`-gated** — rule 17 `gate`; JS checks in the motion extensions **plus** an unconditional framework-wide CSS gate
 - [x] **control-dense panels use ToolsPanel** — rule `03-dense-panel-candidate` (advisory)
 - [x] **State capability via `SgsColourPanel`'s tab-toggle mechanism** — blocks pass `states:` to the colour control (`DesignTokenPicker.js`). There is no separate state-toggle component (Part I)
-- [x] **decorative-image + ARIA-label where needed** — rule `18-decorative-image-aria` (advisory). `sgs/nav-drawer` carries real toggles + ARIA wiring; `sgs/media` and `sgs/decorative-image` both declare `imageDecorative`
+- [x] **decorative-image + ARIA-label where needed** — rule `18-decorative-image-aria` (advisory). `sgs/nav-drawer` carries real toggles + ARIA wiring; `sgs/media` and `sgs/decorative-image` both declare a generated Decorative setting (`decorative`, `layerDecorative`)
 - [x] **help text linked via `aria-describedby`** (Part F) — rule `44-help-text-not-described` (advisory, whole-tree scope — its candidates are shared `src/components/*.js` files, not one block's edit.js). Scoped to a raw `<BaseControl help={...}>` mount wrapping a non-self-wiring child with no `aria-describedby` in its subtree, because WordPress self-wires it for its own native `useBaseControlProps` controls. Single-trigger components (`LinkPopoverControl`, `DateTimePickerField`) pass `id` to `BaseControl` and wire that id's `${id}__help` onto the trigger `Button`'s `aria-describedby`; a multi-swatch mount (`DesignTokenPicker.js`'s `ColorPalette`) wraps in `role="group"` + `aria-describedby`
 - [x] **element-first panels** — a static rule checks this (`41-co2-element-grouping-order.js`, advisory; spans TIER-1 element grouping, DOM-order-vs-declared-order and root Colour-before-Typography sequencing). It does NOT check CO-28's cross-block canonical panel order (a separate, larger question — Bean has not picked the canonical order)
 
@@ -428,7 +428,7 @@ CO-28 promotes an existing competitor-research finding (Cross-cutting A's panel-
 Any panel with ~6+ controls uses `ToolsPanel`/`ToolsPanelItem` progressive disclosure (1–3 `isShownByDefault`, `resetAll`). **Enforced by** `inspector-scan/rules/03-dense-panel-candidate.js`, ADVISORY. ⚠ A remediation count is a backlog, not a rule — this obligation is what the backlog is a backlog *of*.
 
 #### CO-9. Full image controls
-Image-rendering blocks expose the size dropdown (attachment `sizes`) + aspect-ratio + object-fit + focal point through their media slots (`MediaElementPanel`, fields `FitField`, `FocalField`, `SizingFields`). **Enforced by** `audit-feature-parity.py` (vs `core/image`) and `check-media-contract.py`. Binds with §7 MEDIA; `FocalField` is the one home of the core focal picker.
+Image-rendering blocks expose aspect ratio, width and height limits, fit and focal point (delivery sizes are derived, with no size dropdown) through their media slots (`MediaElementPanel`, fields `FitField`, `FocalField`, `SizingFields`). **Enforced by** `audit-feature-parity.py` (vs `core/image`) and `check-media-contract.py`. Binds with §7 MEDIA; `FocalField` is the one home of the core focal picker.
 
 #### CO-10. Multi-item data is array-shaped
 Any repeated/multi-item media or content uses an array attr with `gallery`/`multiple="add"` (`MediaGalleryPicker`) or a repeater — never a scalar attr added one at a time. **Enforced by** `audit-feature-parity.py`. ⚠ **Control question:** the control for an array attr is the REPEATER UI, never the per-item control inside it — a rule reading `inspector_control_type` for an array attr is asking the wrong question.
