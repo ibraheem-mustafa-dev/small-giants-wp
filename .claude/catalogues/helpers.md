@@ -499,11 +499,22 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_list_marker_render` | `function sgs_list_marker_render( $marker_type, $icon_html )` | Build the per-item marker markup for one `<li>`. | tags span; aria aria-hidden |
 | `sgs_icon_list_flatten_menu_blocks` | `function sgs_icon_list_flatten_menu_blocks( array $blocks )` | Flatten resolved nav blocks (from SGS_Nav_Menu_Source::blocks_from_ref()) into `{ text, url }` pairs shaped like an `sgs/icon-list` typed… | no markup |
 
-#### `includes/helpers-measured-diagram.php` — 10 function(s)
+#### `includes/helpers-logo-media.php` — 5 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_logo_media_slot` | `function sgs_logo_media_slot( $block, string $prefix ): array` | A logo slot: its `supports.sgs.mediaElements` entry, or the entry's defaults. | no markup |
+| `sgs_logo_device_entry` | `function sgs_logo_device_entry( $source, string $device ): ?array` | One device's stored Source entry when it names a file (an attachment id or an address). | no markup |
+| `sgs_logo_entry_url` | `function sgs_logo_entry_url( ?array $entry ): string` | The address of a stored Source entry: the attachment's current file when it has an id, else the stored address. | no markup |
+| `sgs_logo_switched_source` | `function sgs_logo_switched_source( $source, string $mode, int $custom_px ): array` | The Source the renderer prints for a logo with a compact alternative, and the media conditions that place it. | no markup |
+| `sgs_logo_render` | `function sgs_logo_render( array $slot, array $attrs, string $uid, string $block, array $context = array() )…` | Print one logo slot through the shared media renderer. | tags a, button, div, figure, foreignObject, iframe, img, link, picture, source, span, style, svg, track, video; roles img; aria aria-hidden, aria-label… |
+
+#### `includes/helpers-measured-diagram.php` — 11 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_measured_diagram_box` | `function sgs_measured_diagram_box( $width, $height ): array` | The drawing's own width and height, used as the line SVGs' viewBox and the frame's aspect ratio. Before a drawing is chosen (or when the… | no markup |
+| `sgs_measured_diagram_source_size` | `function sgs_measured_diagram_source_size( $source ): array` | The width and height of a drawing's source: the first device whose file reports both (a library file reports its own through its… | no markup |
 | `sgs_measured_diagram_pct` | `function sgs_measured_diagram_pct( $value, float $fallback ): float` | A position as a % of the drawing box, cast and clamped to 0–100. | no markup |
 | `sgs_measured_diagram_pct_tiers` | `function sgs_measured_diagram_pct_tiers( $raw, float $desktop_fallback ): array` | A `{desktop,tablet,mobile}` % position, every present tier clamped to 0–100. An unset desktop takes $desktop_fallback (the line's midpoint… | no markup |
 | `sgs_measured_diagram_dot_radius` | `function sgs_measured_diagram_dot_radius( $tick_length, float $width ): string` | Radius of a dot end, in viewBox units: half the tick length. The tick length is a % of the drawing width with the same 0–20 clamp and 1.76… | no markup |
@@ -514,44 +525,14 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_diagram_dimension_text_kses` | `function sgs_diagram_dimension_text_kses(): array` | The markup a label's caption or value may carry: simple inline emphasis, plus the bound-value span the `sgs-product/field` binding wraps a… | no markup |
 | `sgs_diagram_dimension_empty_marker` | `function sgs_diagram_dimension_empty_marker( array $attributes, $block ): string` | The empty bound-value container a size change can fill later. | tags span |
 
-#### `includes/helpers-media-element.php` — 6 function(s)
+#### `includes/helpers-media-element.php` — 4 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_media_element_attr` | `function sgs_media_element_attr( $prefix, $base )` | Build a prefixed media attribute name. | no markup |
 | `sgs_media_element_stored_attr` | `function sgs_media_element_stored_attr( $block_slug, $prefix, $base )` | Resolve the attribute name a SURFACE actually stores. | no markup |
 | `sgs_media_element_value` | `function sgs_media_element_value( array $attributes, $name, $want = 'raw' )` | Read a media attribute's value, tolerating every storage SHAPE. | no markup |
-| `sgs_media_element_scope_class` | `function sgs_media_element_scope_class( $uid, $prefix )` | The per-ELEMENT scope class for one media element on a block. | no markup |
 | `sgs_media_hover_zoom_clips` | `function sgs_media_hover_zoom_clips( array $attributes, string $block_slug ): bool` | Whether a sgs/media frame must clip: its image part (`sgsMotion.elements.media`) has a hover scale above 1 on any device, and a scaled… | no markup |
-| `sgs_media_element_style` | `function sgs_media_element_style( array $attributes, $prefix, $block_slug, $scope_class, array $atoms )` | Every declared atom's custom-property VALUES for one media element, as one scoped CSS rule. | no markup |
-
-#### `includes/helpers-media-position.php` — 2 function(s)
-
-| Function | Signature | Purpose | Prints |
-|---|---|---|---|
-| `sgs_media_position_focal_to_css` | `function sgs_media_position_focal_to_css( $focal_point )` | FocalPointPicker {x,y} (floats 0-1) -> CSS "X% Y%" object-position value. Clamped 0-1, rounded 2dp. Returns '' when unset or at the CSS… | no markup |
-| `sgs_media_position_css` | `function sgs_media_position_css( array $attributes, $prefix, $selector )` | Build a scoped object-fit/object-position CSS rule for one media element. The caller passes its OWN, already-safe selector — this function… | no markup |
-
-#### `includes/helpers-media.php` — 16 function(s)
-
-| Function | Signature | Purpose | Prints |
-|---|---|---|---|
-| `sgs_responsive_image` | `function sgs_responsive_image( int $id, string $url, string $alt = '', string $size = 'large', array $attrs =…` | Output a responsive image tag with srcset when a valid attachment ID is available. | tags img; calls wp_get_attachment_image |
-| `sgs_hidden_render_depth` | `function sgs_hidden_render_depth( int $delta = 0 ): int` | Open (+1), close (-1) or read (0) the hidden-render depth for this request. | no markup |
-| `sgs_in_hidden_render_context` | `function sgs_in_hidden_render_context(): bool` | Whether markup is being rendered for a surface that is not visible on load (a header's mega panel, the nav drawer, a modal, the wishlist… | no markup |
-| `sgs_hidden_render_blocks` | `function sgs_hidden_render_blocks(): array` | Block names whose rendered content is hidden until the visitor opens it. | no markup |
-| `sgs_hidden_render_enter` | `function sgs_hidden_render_enter( $pre_render, array $parsed_block )` | `pre_render_block` callback: entering a hidden-surface block opens the hidden context. Runs last, and a block another filter has… | no markup |
-| `sgs_hidden_render_leave` | `function sgs_hidden_render_leave( $block_content, array $parsed_block )` | `render_block` callback: leaving a hidden-surface block closes the hidden context. | no markup |
-| `sgs_image_loading_attrs` | `function sgs_image_loading_attrs( bool $can_lead = true ): array` | Loading hints for an image that may sit above the fold: the first few visible images on the page load eagerly and exactly one of them… | no markup |
-| `sgs_next_background_image_index` | `function sgs_next_background_image_index(): int` | Return the next 1-based index in the PAGE-WIDE background-image render order. | no markup |
-| `sgs_content_image_claims_priority` | `function sgs_content_image_claims_priority( bool $leads_page = false ): bool` | Whether the content image about to print is the page's likely LCP image, so it takes `loading="eager"` and `fetchpriority="high"`; every… | no markup |
-| `sgs_render_stars` | `function sgs_render_stars( float $rating, int $best_rating = 5, int $size = 20, string $colour_css =…` | Render inline SVG star icons for a given rating value. | tags defs, linearGradient, polygon, span, stop, svg; aria aria-hidden |
-| `sgs_render_media` | `function sgs_render_media( $attrs, $context = '' )` | Render an image or video from a unified SGS media-slot attribute. | tags img, picture, source, video; aria aria-label |
-| `sgs_media_cover_crop_hint_sizes` | `function sgs_media_cover_crop_hint_sizes( $raw ): string` | A `sizes` value from a per-device `displayWidth` (px the image is drawn at); a device without its own value inherits the wider device's. | no markup |
-| `sgs_media_cover_crop_plan` | `function sgs_media_cover_crop_plan( array $attributes, string $prefix, string $block_slug, int $attachment_id…` | Work out how a cover-cropped image is drawn relative to its box, and the `sizes` value that describes it. | no markup |
-| `sgs_media_cover_crop_widens` | `function sgs_media_cover_crop_widens( array $attributes, string $prefix, string $block_slug, int…` | Whether a cover-cropped image needs core's `auto` taken out of its `sizes` (see sgs_media_cover_crop_plan). | no markup |
-| `sgs_media_cover_crop_sizes` | `function sgs_media_cover_crop_sizes( array $attributes, string $prefix, string $block_slug, int…` | The concrete `sizes` value for a cover-cropped image whose drawn width is known on every device. | no markup |
-| `sgs_media_drop_auto_sizes` | `function sgs_media_drop_auto_sizes( $filtered_image )` | `wp_content_img_tag` filter: take core's `auto` out of `sizes` on an image marked `data-sgs-cover-crop`. | no markup |
 
 #### `includes/helpers-mega-render.php` — 3 function(s)
 
@@ -806,6 +787,12 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_slider_nav_enqueue_style` | `function sgs_slider_nav_enqueue_style(): void` | Enqueue the shared stylesheet. Called by a slider block's render when its navigation renders. | no markup |
 | `sgs_slider_nav_editor_assets` | `function sgs_slider_nav_editor_assets(): void` | Editor: the canvas preview is a server render, which never runs the page's enqueue, so the stylesheet is always loaded into the editor… | no markup |
 
+#### `includes/helpers-stars.php` — 1 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_render_stars` | `function sgs_render_stars( float $rating, int $best_rating = 5, int $size = 20, string $colour_css =…` | Render inline SVG star icons for a given rating value. | tags defs, linearGradient, polygon, span, stop, svg; aria aria-hidden |
+
 #### `includes/helpers-state-motion-model.php` — 6 function(s)
 
 | Function | Signature | Purpose | Prints |
@@ -883,11 +870,12 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_svg_scope_verify` | `function sgs_svg_scope_verify( string $css, string $root ): bool` | Read scoped CSS again and confirm every top-level item is a clean rule whose every selector starts with the root scope, a @keyframes named… | no markup |
 | `sgs_svg_scope_css` | `function sgs_svg_scope_css( string $css, string $root, array $ids, array $frames ): string` | Scope a <style> element's CSS to the instance root, or return '' when the scoped result cannot be confirmed. | no markup |
 
-#### `includes/helpers-svg-kses.php` — 1 function(s)
+#### `includes/helpers-svg-kses.php` — 2 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_svg_kses_allowed_tags` | `function sgs_svg_kses_allowed_tags(): array` | Returns the wp_kses allowed-tags array for sanitising inline SVG markup. | aria aria-hidden, aria-label |
+| `sgs_allowed_svg_tags` | `function sgs_allowed_svg_tags(): array` | The SGS inline-SVG allow-list for `wp_kses()`. | aria aria-hidden, aria-label |
 
 #### `includes/helpers-svg-parts.php` — 3 function(s)
 
@@ -923,15 +911,6 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|---|
 | `sgs_text_shadow_value` | `function sgs_text_shadow_value( ?string $shape, ?string $colour ): string` | Compose a stored text shadow (shape text + colour text) into a CSS `text-shadow` value. | no markup |
 | `sgs_font_variant_numeric_value` | `function sgs_font_variant_numeric_value( $raw ): string` | Validate a stored number style against the allowlist the editor offers. | no markup |
-
-#### `includes/helpers-tier-media.php` — 4 function(s)
-
-| Function | Signature | Purpose | Prints |
-|---|---|---|---|
-| `sgs_allowed_svg_tags` | `function sgs_allowed_svg_tags(): array` | The SGS inline-SVG allow-list for `wp_kses()`. | aria aria-hidden, aria-label |
-| `sgs_tier_media_render` | `function sgs_tier_media_render( array $tiers, string $base_class, string $uid, $alt = '', array $extra =…` | Render up to three device tiers of media, each with its own TYPE. | tags button, img, source, span, video; roles img; aria aria-hidden, aria-label, aria-pressed; calls wp_get_attachment_image |
-| `sgs_tier_media_has_source` | `function sgs_tier_media_has_source( array $spec ): bool` | Does a tier spec resolve to something renderable? | no markup |
-| `sgs_tier_media_toggle_css` | `function sgs_tier_media_toggle_css( array $present, string $base_class, string $uid ): string` | Breakpoint rules that show exactly one tier at any width. | no markup |
 
 #### `includes/helpers-tier-queries.php` — 2 function(s)
 
@@ -1021,7 +1000,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). | calls wc_price |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). | tags li, span, ul; aria aria-current, aria-label |
 
-**102 files, 496 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**101 files, 480 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -1040,7 +1019,6 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `DrawerPreviewToggle.js` | `useDrawerPreviewToggle (default)` | Editor-only "Preview drawer open" state shared by the blocks that own a drawer |
 | `FieldLabelLayoutPanel.js` | `FieldLabelLayoutPanel (default)` | "Label and headings" panel for SGS form fields: whether the field's label shows or is read only by screen readers, and (for boxes… |
 | `FlexWrapControl.js` | `FlexWrapControl (default)` | FlexWrapControl - the "Wrap" choice for a block's row of items (`flexWrap`: '' \| 'nowrap' \| 'wrap'). |
-| `FocalPositionField.js` | `FocalPositionField (default)` | FocalPositionField — the SGS wrapper around WP-native `FocalPointPicker` |
 | `form-field-preview.js` | `fieldLabelClasses`, `fieldDefaultValue`, `FieldCounterPreview` | Shared editor-canvas preview bits for the SGS form field blocks (Spec 04 FR-4-4, 4-5, 4-8). |
 | `FormFieldAdvancedPanel.js` | `FormFieldAdvancedPanel (default)`, `AUTOCOMPLETE_TOKENS`, `INPUTMODE_OPTIONS` | "Advanced field settings" inspector panel shared by the SGS form field blocks (Spec 04 FR-4-3 to FR-4-8). |
 | `GradientCapableColourControl.js` | `GradientCapableColourControl (default)`, `isGradientValue` | GradientCapableColourControl — the text-colour gradient rollout's shared control (D636 Task 1b, "text" builder). |
@@ -1053,10 +1031,8 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `LinkUnderlineControl.js` | `LinkUnderlineControl (default)` | LinkUnderlineControl — how the links inside a block's text are underlined. |
 | `LogicalAlignControl.js` | `LogicalAlignControl (default)`, `LogicalAlignToolbar` | LogicalAlignControl — the one inspector control for a box's horizontal alignment, stored as the logical values `start \| center… |
 | `MediaElementControls.js` | `mediaAttrName`, `mediaAttrType`, `mediaAttrKeys`, `mediaStoredAttrName`, `MEDIA_BASES`… | L1 — media attribute NAMING. The contract every later wave inherits. |
-| `MediaElementPanel.js` | `MediaElementPanel (default)`, `declaredKinds` | L3 — the media element's DISPATCH layer. |
+| `MediaElementPanel.js` | `MediaElementPanel (default)`, `declaredKinds` | The media element's panel mount (Spec 49 §9.4). |
 | `MediaGalleryPicker.js` | `MediaGalleryPicker (default)` | MediaGalleryPicker — shared bulk multi-select media component for SGS blocks. |
-| `MediaPicker.js` | `MediaPicker (default)` | MediaPicker — shared media-slot component for SGS blocks. |
-| `MediaSizingPanel.js` | `MediaSizingPanel (default)`, `RATIO_OPTIONS` | MediaSizingPanel — the shared "media size & crop" panel (C19, 2026-08-27). |
 | `MotionPausePreview.js` | `MotionPausePreview (default)` | Editor-canvas twin of the shared pause / play button (includes/helpers-motion-pause.php). |
 | `ResponsiveBoxControl.js` | `ResponsiveBoxControl (default)`, `ResponsiveBorderRadiusControl`, `BOX_UNITS`… | ResponsiveBoxControl / ResponsiveBorderRadiusControl — shared responsive box-family editor controls (Box-object interface… |
 | `ResponsiveBoxControls.js` | `ResponsiveBoxControls (default)` | ResponsiveBoxControls — Spec 37 FR-37-16 per-device spacing + width panel. |
@@ -1095,7 +1071,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 | `TypographyNumberShadowRows.js` | `textShadowIsEditable`, `parseTextShadowShape`, `composeTextShadowShape`… | Number style and text shadow rows for TypographyControls (opt-in: `showNumberStyle`, `showTextShadow`). |
 
-**65 files.**
+**62 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 
@@ -1103,42 +1079,25 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 
 | File | Exports | Purpose |
 |---|---|---|
-| `box-shape.control.js` | `control` | `box-shape` atom — CONTROL half (JSX). |
 | `box-shape.js` | `normaliseRatio`, `resolveSizingMode`, `validateShape`, `resolveHeight`, `resolveWidth`… | `box-shape` atom — L2b control + disclosure + validator + value-setter. |
-| `caption.control.js` | `control` | `caption` atom — CONTROL half (JSX). |
-| `caption.js` | `attrKeys`, `validateTag`, `disclosure`, `validate`, `css`, `emit` | `caption` atom — L2b control + disclosure + validator + value-setter. |
-| `filter.js` | `emit`, `css`, `validate`, `disclosure` | `filter` atom: the colour treatment (Natural, Black and white with a strength, White), logic half. PHP twin… |
-| `focal-point.control.js` | `control` | `focal-point` atom — CONTROL half (JSX). |
-| `focal-point.js` | `resolvePosition`, `validate`, `disclosure`, `css`, `emit` | `focal-point` atom — LOGIC half (L2b value-setter + validator + disclosure). |
-| `intrinsic.control.js` | `control` | Atom: INTRINSIC (control half). |
-| `intrinsic.js` | `disclosure`, `validate`, `css`, `emit` | Atom: INTRINSIC (logic half) — the chosen media's own pixel dimensions. |
-| `layout.js` | `emit`, `css`, `validate`, `disclosure` | `layout` atom: Alignment and Order on the layout box, logic half. PHP twin: `includes/media/atoms/layout.php`. |
-| `link.control.js` | `control` | `link` atom — CONTROL half (JSX). |
-| `link.js` | `attrKeys`, `disclosure`, `validate`, `css`, `emit` | `link` atom — L2b control + disclosure + validator + value-setter. |
-| `meaning.control.js` | `control` | Atom: MEANING (control half) — the editor UI. |
-| `meaning.js` | `altBaseFor`, `resolveMediaType`, `disclosure`, `validate`, `css`, `emit`… | Atom: MEANING (logic half) — accessibility text for the media. |
-| `media-padding.control.js` | `control` | `media-padding` atom — CONTROL half (JSX). |
-| `media-padding.js` | `attrKey`, `sidesToShorthand`, `sideDecls`, `disclosure`, `validate`, `css`, `emit` | `media-padding` atom — L2b control + disclosure + validator + value-setter. |
-| `media-type.control.js` | `control` | `media-type` atom — CONTROL half (JSX-equivalent `control()`, via `createElement()`). |
-| `media-type.js` | `validate`, `disclosure`, `css`, `emit`, `CANONICAL_ENUM`, `TIER_ENUM` | `media-type` atom — LOGIC half (pure: css/validate/disclosure). |
-| `object-fit.control.js` | `control` | `object-fit` atom — CONTROL half (JSX). |
-| `object-fit.js` | `validate`, `disclosure`, `css`, `emit` | `object-fit` atom — LOGIC half (L2b value-setter + validator + disclosure). |
-| `opacity.control.js` | `control` | `opacity` atom — CONTROL half (JSX). |
-| `opacity.js` | `attrKeys`, `disclosure`, `validate`, `css`, `emit` | `opacity` atom — L2b control + disclosure + validator + value-setter. |
-| `overlay.control.js` | `control` | `overlay` atom — CONTROL half (JSX). |
+| `caption.js` | `attrKeys`, `validateTag`, `disclosure`, `validate`, `emit` | `caption` atom — L2b control + disclosure + validator + value-setter. |
+| `filter.js` | `emit`, `validate`, `disclosure` | `filter` atom: the colour treatment (Natural, Black and white with a strength, White), logic half. PHP twin… |
+| `focal-point.js` | `resolvePosition`, `validate`, `disclosure`, `emit` | `focal-point` atom — LOGIC half (L2b value-setter + validator + disclosure). |
+| `layout.js` | `emit`, `validate`, `disclosure` | `layout` atom: Alignment and Order on the layout box, logic half. PHP twin: `includes/media/atoms/layout.php`. |
+| `link.js` | `attrKeys`, `disclosure`, `validate`, `emit` | `link` atom — L2b control + disclosure + validator + value-setter. |
+| `meaning.js` | `altBaseFor`, `resolveMediaType`, `disclosure`, `validate`, `emit`, `TYPE_VOCABULARY` | Atom: MEANING (logic half) — accessibility text for the media. |
+| `media-padding.js` | `attrKey`, `sidesToShorthand`, `sideDecls`, `disclosure`, `validate`, `emit` | `media-padding` atom — L2b control + disclosure + validator + value-setter. |
+| `object-fit.js` | `validate`, `disclosure`, `emit` | `object-fit` atom — LOGIC half (L2b value-setter + validator + disclosure). |
+| `opacity.js` | `attrKeys`, `disclosure`, `validate`, `emit` | `opacity` atom — L2b control + disclosure + validator + value-setter. |
 | `overlay.js` | `validateGradient`, `resolveColour`, `resolvePaint`, `attrKeys`, `disclosure`… | `overlay` atom — L2b control + disclosure + validator + value-setter. |
 | `registry.js` | `basesForAtoms`, `atomsForElement`, `MEDIA_ATOMS`, `MEDIA_KINDS_ATOMS`, `KINDS_ATOM_IDS`… | L2b — the ATOM registry. The middle level between names and panels. |
-| `shadow.control.js` | `control` | `shadow` atom — CONTROL half (JSX). |
-| `shadow.js` | `attrKeys`, `resolveShadow`, `disclosure`, `validate`, `liftAttrName`, `liftOn`, `css`… | `shadow` atom: L2b control + disclosure + validator + value-setter. |
-| `shape.js` | `emit`, `css`, `validate`, `disclosure`, `shapeAt`, `shapeHasMask` | `shape` atom: Shape, Corners and Border (Spec 49 §7.5), logic half. PHP twin: `includes/media/atoms/shape.php`. |
-| `sizing.js` | `emit`, `css`, `validate`, `disclosure` | `sizing` atom: Ratio, Width, Height and the four limits (Spec 49 §7.2), logic half. PHP twin: `includes/media/atoms/sizing.php`. |
-| `source.control.js` | `pairPickerRow`, `control` | Atom: SOURCE (control half) — the editor UI. |
-| `source.js` | `resolveMediaType`, `disclosure`, `validate`, `css`, `emit`, `TYPE_VOCABULARY` | Atom: SOURCE (logic half) — which media is showing. |
-| `svg-presentation.control.js` | `control` | `svg-presentation` atom — CONTROL half (JSX). |
+| `shadow.js` | `attrKeys`, `resolveShadow`, `disclosure`, `validate`, `liftAttrName`, `liftOn`, `emit` | `shadow` atom: L2b control + disclosure + validator + value-setter. |
+| `shape.js` | `emit`, `validate`, `disclosure`, `shapeAt`, `shapeHasMask` | `shape` atom: Shape, Corners and Border (Spec 49 §7.5), logic half. PHP twin: `includes/media/atoms/shape.php`. |
+| `sizing.js` | `emit`, `validate`, `disclosure` | `sizing` atom: Ratio, Width, Height and the four limits (Spec 49 §7.2), logic half. PHP twin: `includes/media/atoms/sizing.php`. |
+| `source.js` | `resolveMediaType`, `disclosure`, `validate`, `emit`, `TYPE_VOCABULARY` | Atom: SOURCE (logic half) — which media is showing. |
 | `svg-presentation.js` | `validatePosition`, `validateAnimation`, `validateSpeed`, `attrKeys`, `disclosure`… | `svg-presentation` atom — L2b control + disclosure + validator + value-setter. |
-| `video-behaviour.control.js` | `control` | `video-behaviour` atom — CONTROL half (JSX-equivalent `control()`, via `createElement()`). |
-| `video-behaviour.js` | `validate`, `disclosure`, `css`, `emit` | `video-behaviour` atom — LOGIC half (pure: css/validate/disclosure). |
+| `video-behaviour.js` | `validate`, `disclosure`, `emit` | `video-behaviour` atom — LOGIC half (pure: css/validate/disclosure). |
 
-**35 files.**
+**18 files.**
 
 <!-- HELPER-CATALOGUE:END -->

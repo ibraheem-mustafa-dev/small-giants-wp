@@ -921,9 +921,8 @@
 .sgs-buybox .product-card__thumb img {
 	width: 100%;
 	height: 100%;
-	/* object-fit: owned by the 'thumb' media-atom
-	   layer (block.json supports.sgs.mediaElements + assets/css/media-atoms/
-	   object-fit.css's .sgs-media-el rule, cover fallback preserved there). */
+	/* object-fit: owned by the 'thumb' media slot (block.json supports.sgs.mediaElements; the shared renderer's
+	   Fit rule on .sgs-media-el, cover by default in assets/css/media-base.css). */
 	display: block;
 	pointer-events: none;
 }

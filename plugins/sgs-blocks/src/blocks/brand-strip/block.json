@@ -307,7 +307,7 @@
 				"desktop": {}
 			}
 		},
-		"_comment_logos_media": "Migrated 2026-05-05 — each logo entry uses the unified media-slot shape { url, type: 'image', id, alt, mime } via shared MediaPicker (image-only). Legacy { image: {...} } shape is NOT migrated — all deprecations were deleted plugin-wide at D271; there is no deprecated.js. New instances write the unified shape. allowedTypes={ [ 'image' ] } enforces no video on logos. alt/linkUrl/linkTarget/name are per-item JS runtime keys, declared here for schema clarity (array-item sub-properties are not subject to the D338 top-level attr-discard rule).",
+		"_comment_logos_media": "Each logo entry holds its picture as a per-device media Source (source), with alt, decorative, fit, focal, name and the link keys beside it (Spec 49 section 8.3); the logo prints through the shared item renderer and the item picker accepts images only. Array-item sub-properties are declared here for schema clarity (they are not subject to the D338 top-level attribute discard rule).",
 		"logos": {
 			"type": "array",
 			"default": [],
