@@ -578,7 +578,7 @@ Row counts drift — query `/sgs-db` (or the column meanings above) rather than 
 - **`blocks.tier`** — TEXT column, CHECK constraint `IN ('block', 'class-section', 'pattern')`. Populated by `/sgs-update` Stage 1 from each block's `supports.sgs.is_section_root` flag in `block.json`. Operator-set per block, not algorithmically inferred.
 - **`block_composition`** — the container roster has `wraps_block` + `container_kind` populated (values `section|layout|content`).
 - **`slots`** — composite PK on `(slot_name, scope)`; element-scope and section-scope rows. Role is derived from `property_suffixes`, not stored on the slot row.
-- **`roles`** — base roles plus `scalar-media`. `INSERT OR REPLACE` from `_ROLE_CLASSIFICATION_MAP`.
+- **`roles`** — the base roles. `INSERT OR REPLACE` from `_ROLE_CLASSIFICATION_MAP`.
 - **`html_tag_to_core_block`** — seeded by `dbschema/seed_reference_data.py` from `plugins/sgs-blocks/scripts/data/atomic-tag-map.json`; the source of the atomic-tag map (no hardcoded dict).
 
 ### canonical_slot assignment

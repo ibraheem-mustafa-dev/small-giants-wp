@@ -32,7 +32,7 @@ PAINT_ROLES = frozenset({
 CONTENT_ROLES = frozenset({
     "text-content", "content", "glyph", "image-object", "svg", "link-href", "identity", "image-alt", "a11y-text",
     "rating", "numeric-content", "link-content", "icon", "icon-wp-icon", "icon-emoji", "icon-lucide",
-    "icon-dashicon", "icon-slug", "url-href", "presence-boolean", "tag-identity", "scalar-media",
+    "icon-dashicon", "icon-slug", "url-href", "presence-boolean", "tag-identity",
     "technical", "enum-class-probe",
 })
 # Show/hide toggles. `enum-mode` is left out on measurement: a mode's gated declarations

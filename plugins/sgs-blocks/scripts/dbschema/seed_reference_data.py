@@ -9,8 +9,6 @@ the source of truth; the DB tables are the runtime query target, FP-1):
   property_suffixes      <- property-suffixes.json   (row order is load-bearing), then
                             ``kind_override`` back-filled for rows that have none
   slots                  <- slots.json
-  block_attributes.role  <- scalar-media-roles.json  (re-asserts role='scalar-media' on the
-                            rostered attrs; only a column, never a whole table)
   html_tag_to_core_block <- atomic-tag-map.json      (bare HTML tag -> SGS block slug; the file
                             is the single source of the key set, so keys it lacks are deleted)
   property_equivalents   <- property-equivalents.json (rows the file drops are deleted)
@@ -52,8 +50,6 @@ _PLUGIN_DIR = _SCRIPTS_DIR.parent
 
 _ROLES_FILE = _DATA_DIR / "roles.json"
 _MODIFIER_SUFFIXES_FILE = _DATA_DIR / "modifier-suffixes.json"
-_SCALAR_MEDIA_ROLES_FILE = _DATA_DIR / "scalar-media-roles.json"
-_SCALAR_MEDIA_ROLE = "scalar-media"
 _ATOMIC_TAG_MAP_FILE = _DATA_DIR / "atomic-tag-map.json"
 _PROPERTY_EQUIVALENTS_FILE = _DATA_DIR / "property-equivalents.json"
 _PROPERTY_EQUIVALENTS_COLUMNS = ("draft_property", "setting_property", "hop", "condition", "note")
@@ -293,85 +289,6 @@ def _seed_property_suffixes_kind_override(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
-# --- scalar-media role re-assertion ---
-
-def _load_scalar_media_roles() -> list[tuple[str, str]]:
-    """The ``[(block_slug, attr_name)]`` roster to re-assert; ``[]`` when the file is unreadable.
-
-    Entries marked ``"virtual": true`` in their 4th (options) field are skipped: they name
-    composite attrs that have no ``block_attributes`` row.
-    """
-    try:
-        raw = json.loads(_SCALAR_MEDIA_ROLES_FILE.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return []
-    out: list[tuple[str, str]] = []
-    for entry in raw.get("attrs", []):
-        if not (isinstance(entry, list) and len(entry) >= 2):
-            continue
-        opts = entry[3] if len(entry) >= 4 else None
-        if isinstance(opts, dict) and opts.get("virtual"):
-            continue
-        out.append((entry[0], entry[1]))
-    return out
-
-
-def _class_section_blocks(conn: sqlite3.Connection) -> set[str]:
-    """Slugs of every block with ``blocks.tier = 'class-section'``."""
-    try:
-        return {r[0] for r in conn.execute("SELECT slug FROM blocks WHERE tier = 'class-section'")}
-    except sqlite3.OperationalError:
-        return set()
-
-
-def _seed_scalar_media_roles(conn: sqlite3.Connection) -> None:
-    """Re-assert ``role='scalar-media'`` on the rostered attrs. Idempotent.
-
-    Writes only when a row does not already hold the role, and says so on stderr: a silent run
-    means nothing drifted. A rostered attr whose block is not a class-section block is refused,
-    because the role removes the attr from the universal walk and only a class-section block has
-    another route for it. Removing an entry from the roster does not revert the row; the
-    classifier owns the column again.
-    """
-    roster = _load_scalar_media_roles()
-    if not roster:
-        return
-    class_section = _class_section_blocks(conn)
-    changed: list[tuple[str, str, str]] = []
-    for block_slug, attr_name in roster:
-        row = conn.execute(
-            "SELECT role FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
-            (block_slug, attr_name),
-        ).fetchone()
-        if row is None:
-            _warn(
-                f"scalar-media roster names {block_slug}.{attr_name}, which has no "
-                f"block_attributes row - check the block's block.json."
-            )
-            continue
-        if row[0] == _SCALAR_MEDIA_ROLE:
-            continue
-        if block_slug not in class_section:
-            _warn(
-                f"REFUSING to set role='{_SCALAR_MEDIA_ROLE}' on {block_slug}.{attr_name}: "
-                f"{block_slug} is not a class-section block, so this role would strand the attr "
-                f"with no route at all. Remove it from scripts/data/scalar-media-roles.json."
-            )
-            continue
-        conn.execute(
-            "UPDATE block_attributes SET role = ? WHERE block_slug = ? AND attr_name = ?",
-            (_SCALAR_MEDIA_ROLE, block_slug, attr_name),
-        )
-        changed.append((block_slug, attr_name, row[0]))
-    if changed:
-        conn.commit()
-        for block_slug, attr_name, was in changed:
-            _warn(
-                f"RE-ASSERTED role='{_SCALAR_MEDIA_ROLE}' on {block_slug}.{attr_name} "
-                f"(found {was!r}). Something reclassified it."
-            )
-
-
 # --- html_tag_to_core_block ---
 
 def _load_atomic_tag_seed() -> dict[str, tuple[str, str]]:
@@ -460,8 +377,7 @@ def _seed_states(conn: sqlite3.Connection) -> None:
 def seed_all(db_path: Path | str | None = None) -> None:
     """Run every seeder against ``db_path`` (default: ``default_db_path()``) over its own connection.
 
-    Order matters: ``property_suffixes`` is seeded before its ``kind_override`` back-fill, and the
-    scalar-media re-assertion runs last. Each seeder is independent: one that hits a missing table,
+    Order matters: ``property_suffixes`` is seeded before its ``kind_override`` back-fill. Each seeder is independent: one that hits a missing table,
     a locked or read-only database is reported on stderr and the rest still run.
     """
     path = Path(db_path) if db_path else default_db_path()
@@ -475,7 +391,6 @@ def seed_all(db_path: Path | str | None = None) -> None:
             ("property_suffixes", lambda c: _seed_table_ordered(c, "property_suffixes")),
             ("slots", lambda c: _seed_table_ordered(c, "slots")),
             ("property_suffixes.kind_override", _seed_property_suffixes_kind_override),
-            ("scalar-media roles", _seed_scalar_media_roles),
             ("html_tag_to_core_block", _seed_html_tag_to_core_block),
             ("property_equivalents", _seed_property_equivalents),
             ("states", _seed_states),
