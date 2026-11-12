@@ -655,10 +655,18 @@ if ( ! empty( $logos ) ) {
 			$logo_out  = sgs_brand_strip_render_logo( (array) $logo, $sgs_bs_media_idx, $attributes, $sgs_bs_slot, $uid, $logo_decorative || $has_caption );
 			$logo_html = $logo_out['html'];
 			if ( '' === $logo_html ) {
-				continue;
+				// The renderer refused the file (for example a URL with no attachment and no size, FR-49-16): in
+				// logo-else-text the brand name stands in, as it does for an item with no file at all.
+				if ( 'logo-else-text' !== $brand_display || '' === $logo_name ) {
+					continue;
+				}
+				$bs_text_mode = true;
+				$has_caption  = false;
+				$logo_html    = '<span class="sgs-brand-strip__brand-text">' . esc_html( $logo_name ) . '</span>';
+			} else {
+				$scoped_css[] = $logo_out['css'];
+				++$sgs_bs_media_idx;
 			}
-			$scoped_css[] = $logo_out['css'];
-			++$sgs_bs_media_idx;
 		}
 
 		$name_id = $has_caption ? $uid . '-name-' . $logo_index : '';
