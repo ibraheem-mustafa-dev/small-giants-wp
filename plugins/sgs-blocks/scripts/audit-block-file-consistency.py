@@ -101,6 +101,8 @@ the run continues over the rest of the roster.
 
 import json
 import re
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -976,7 +978,31 @@ class BlockFiles:
 # ---------------------------------------------------------------------------
 
 
-def check_orphan_attrs(block, shared_php_corpus, shared_js_corpus, extension_attrs, pattern_corpus_by_slug):
+def load_media_owned_attrs():
+    """{block slug: set of attributes the shared media system owns end to end}.
+
+    An adopted block's media attributes (`{prefix}{Base}`) are written by the shared panels and read by the shared renderer,
+    each building the name at run time, so no block file names them. scripts/wiring-fingerprint/media_system_facts.mjs
+    answers from the registry those panels and the renderer read: `offered` (a shared panel has a control for the slot) and
+    `reads` (the renderer or the canvas reads the base). A setting the slot never offers, or nothing reads, gets no credit.
+    """
+    node = shutil.which('node')
+    script = SCRIPT_DIR / 'wiring-fingerprint' / 'media_system_facts.mjs'
+    if not node or not script.exists():
+        return {}
+    done = subprocess.run([node, str(script), str(PLUGIN_DIR)], capture_output=True, text=True, encoding='utf-8', timeout=300)
+    if done.returncode != 0:
+        raise RuntimeError('media_system_facts.mjs failed: ' + done.stderr.strip()[-300:])
+    owned = {}
+    for name, attrs in json.loads(done.stdout).get('blocks', {}).items():
+        owned[name.split('/', 1)[-1]] = {
+            attr for attr, fact in attrs.items()
+            if fact.get('offered') is True and (fact.get('reads', {}).get('php') or fact.get('reads', {}).get('js'))
+        }
+    return owned
+
+
+def check_orphan_attrs(block, shared_php_corpus, shared_js_corpus, extension_attrs, pattern_corpus_by_slug, media_owned=frozenset()):
     findings = []
     controlled = collect_controlled_attrs(block.edit_js)
     read_in_edit = collect_read_attrs(block.edit_js)
@@ -999,6 +1025,8 @@ def check_orphan_attrs(block, shared_php_corpus, shared_js_corpus, extension_att
             continue
         if attr in context_values:
             continue
+        if attr in media_owned:
+            continue  # the shared media panels control it and the shared renderer reads it by a computed key
         if attr in prefixed_consumed:
             continue
         if attr_in_pattern_corpus(attr, pattern_corpus):
@@ -1258,8 +1286,23 @@ def self_test():
 
     failures = 0
     print('[audit-block-file-consistency] --self-test\n')
-    for label, block, expected_attrs in cases:
-        findings = check_orphan_attrs(block, '', '', set(), {})
+    # A media slot's attribute is named by no block file (the shared panels and renderer build `{prefix}{Base}` at run
+    # time). Without the media system's ownership it is an orphan; with it, it is not.
+    media_block = _FakeBlock(slug='sgs/self-test-media', attrs={'photoSource'}, edit_js='export default function Edit() { return null; }')
+    cases.append((
+        'a media slot attribute no file names, media system does not own it -> FAIL (negative control)',
+        media_block,
+        {'photoSource'},
+    ))
+    cases.append((
+        'the same attribute owned by the media system (panel offers it, renderer reads it) -> pass',
+        media_block,
+        set(),
+        {'photoSource'},
+    ))
+    for case in cases:
+        label, block, expected_attrs = case[:3]
+        findings = check_orphan_attrs(block, '', '', set(), {}, case[3] if len(case) > 3 else frozenset())
         got_attrs = {f['attr'] for f in findings if f['type'] == 'orphan_attr'}
         ok = got_attrs == expected_attrs
         failures += 0 if ok else 1
@@ -1335,6 +1378,7 @@ def main():
         shared_js_corpus += '\n' + strip_comments(load_dir_corpus(block_dir, '.js'))
 
     pattern_corpus_by_slug = load_pattern_attr_corpus_by_slug()
+    media_owned_by_slug = load_media_owned_attrs()
 
     per_block_findings = {}
     all_findings = []
@@ -1361,7 +1405,8 @@ def main():
         findings = []
         try:
             findings += check_orphan_attrs(
-                block, shared_php_corpus, shared_js_corpus, extension_attrs, pattern_corpus_by_slug
+                block, shared_php_corpus, shared_js_corpus, extension_attrs, pattern_corpus_by_slug,
+                media_owned_by_slug.get(slug.split('/', 1)[-1], frozenset()),
             )
             findings += check_undeclared_render_refs(block, extension_attrs)
             findings += check_undeclared_controls(block, extension_attrs)

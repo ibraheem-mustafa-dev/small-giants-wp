@@ -779,25 +779,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							margin: {},
 							zIndex: {},
 							rowsAlign: {},
-							backgroundImage: undefined,
-							backgroundImageTablet: undefined,
-							backgroundImageMobile: undefined,
 							backgroundOverlayColour: undefined,
-							backgroundAttachment: 'scroll',
-							backgroundPosition: 'center center',
 							backgroundRepeat: 'no-repeat',
-							backgroundSize: 'cover',
-							bgVideo: undefined,
-							bgVideoTablet: undefined,
-							bgVideoMobile: undefined,
 							bgSvgContent: '',
 							bgSvgPosition: 'background',
 							bgSvgOpacity: 100,
 							bgSvgMinHeight: '',
 							bgSvgTextShadow: false,
-							// overlayGradient is a string attr, so it resets to ''
-							// (WP silently discards a wrong-typed or undeclared value).
-							overlayGradient: '',
 						} );
 					} }
 				>
