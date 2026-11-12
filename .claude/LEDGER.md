@@ -8,7 +8,7 @@ last_updated: 2026-11-12
 
 ## Summary for Bean
 
-- **Mama's (Front H):** the one client stream now. Indus (signed off 2026-11-08) and Eye Care (signed off 2026-11-12) are finished; Mama's is finished by hand from `plans/2026-11-02-clone-finishing-streams.md`, with the open round in `plans/2026-11-05-mamas-merged-round.md`.
+- **Mama's (Front H):** the one client stream now. Indus (signed off 2026-11-08) and Eye Care (signed off 2026-11-12) are finished; Mama's is finished by hand from `plans/2026-11-02-clone-finishing-streams.md` section "Mama's (now)", the one Mama's plan (open list included).
 - **Media system (Spec 49, Front P):** Stage B on its branch, every block adopted; removal, cloner and release next.
 - **Nav / header / footer (Front N):** Waves 1 to 3C are live; Gate 3C's last mile is deferred by you; Waves 4 and 5 have not started.
 - **Need you:** the rulings under Parked, the Spec 36 and Spec 38 choices under Front N.
