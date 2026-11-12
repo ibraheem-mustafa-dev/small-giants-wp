@@ -27,7 +27,7 @@ All files are in `plugins/sgs-blocks/scripts/`. One job per file; the command fi
 | `deploy_multi.py` | `--target a,b` or `all`: one build and gate, then every site at once. |
 | `deploy_timing.py` | Per-stage seconds, the summary table, the history file. |
 | `deploy_qa_tier.py` | Chooses the motion QA tier (smoke or full) and keeps the last-full-pass record. |
-| `deploy_selftest.py` | `build-deploy.py --self-test`: numbered cases, each proven red on a planted fault. |
+| `deploy_selftest.py` | `build-deploy.py --self-test`: numbered cases, each proven red on a planted fault. Run it from Git Bash or PowerShell with Git's `bash` first (`deploy_common.py::posix_bash`): the WSL launcher that `bash` can resolve to cannot see `E:/`. |
 | `run-gates.py`, `gates.json` | The gate runner and its roster (see Gate tiers). |
 | `run-motion-gates.py` | Runs every motion gate it finds by filename glob (see the glob warning below). |
 | `motion-qa/run-live-probes.mjs`, `probe-scheduler.mjs`, `full-tier-paths.json` | The live motion QA runner, its scheduler and the list of paths that force the full set. |
@@ -79,7 +79,7 @@ All files are in `plugins/sgs-blocks/scripts/`. One job per file; the command fi
 
 **Stage timings.** Each stage prints `[time] <name> <seconds>s`; a slowest-first table with percentages precedes `[DONE]`; each real deploy appends one JSON line (`when`, `commit`, `target`, `scope`, `total_s`, `stages`, `dry_run`) to `~/.sgs-deploy-timings.jsonl` (override with `SGS_DEPLOY_TIMINGS_FILE`). The fast gate tier is inside `build`. A multi-site run writes one line from the parent and one per child. The live probe runner prints each probe's seconds and a closing table.
 
-**Guards.** The scoped dirty-file gate (refuses uncommitted deploy-relevant files unless declared with `--payload`), the ownership check, the `theme.json` guard, the old-shape audit, the 55 MB payload size guard (the log's last line then says only `payload-failed (exit 2)`), the dev-autoloader refusal, the staged-tree check and `verify-tree`, and the post-deploy verify. Each has a case in `--self-test`.
+**Guards.** The scoped dirty-file gate (refuses uncommitted deploy-relevant files unless declared with `--payload`), the ownership check, the `theme.json` guard, the old-shape audit, the 55 MB payload size guard (the log's last line then says only `payload-failed (exit 2)`), the dev-autoloader refusal, the `--skip-build` refusal (a `build/` without npm postbuild's `build/.postbuild-done` marker, or one failing `check-block-asset-targets`, is not reused, because a webpack-only build lacks the `style.css` copies and transforms), the staged-tree check and `verify-tree`, and the post-deploy verify. Each has a case in `--self-test`.
 
 ## How to add to it
 

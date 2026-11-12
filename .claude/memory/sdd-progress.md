@@ -3,3 +3,5 @@ Task 1 (wiring-fingerprint gate plan): complete (commits 8e9660a18..32823002e, r
 S2 gap-closure Task 4 (motion defs handle): complete (commit 790a300b7, review clean; Minor: motion-defs-script.php returns silently when build/motion-defs is missing, so dependent editor scripts would not load; WP_NO_EXTERNALS unusable by design)
 
 S2 gap-closure Task 1+1b (part selectors, M2.1b): complete (commits 4e9eca9fe, cb172c818, 258260d5e, 971d56f7f, review fixes 18f8544a3, c868185a6; review + re-review clean; Minors carried to M3.12/M3.1 in the gap-closure plan)
+
+Eye Care round 15 closing session (final walks as settings, Custom CSS on posts 1609 and 9 converted, round 12 review and 375 tap-through, email through FluentSMTP, hover-guard fix, Custom CSS out-ranks settings, sign-off chores): complete (commits 4aca15e08..5c9fbb21d, reviews done in session; the late-commit code review runs in the main session)
