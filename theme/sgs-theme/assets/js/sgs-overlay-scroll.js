@@ -222,6 +222,11 @@ function mount( el, isStatic ) {
 	resize.observe( el );
 	Array.from( el.children ).forEach( ( c ) => c !== thumb && resize.observe( c ) );
 	const mutations = new MutationObserver( ( records ) => {
+		// A script that replaces the scroller's children (the cart panel renders its rows with innerHTML and replaceChildren) takes
+		// the thumb with them; put it back so the scroller keeps its bar.
+		if ( thumb.parentNode !== el ) {
+			el.appendChild( thumb );
+		}
 		if ( records.some( ( r ) => r.target !== thumb && ! thumb.contains( r.target ) ) ) {
 			schedule();
 		}
