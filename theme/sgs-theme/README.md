@@ -168,11 +168,9 @@ Six pre-built mega menu panels are included for common navigation categories: Br
 
 ## Style variations
 
-Style variations let the same SGS Theme serve different clients with completely different visual identities.
+Style variations let the same SGS Theme serve different clients with completely different visual identities. The theme ships none of its own (`theme/sgs-theme/styles/` is empty): each client's colours, fonts and spacing live in `sites/<client>/theme-snapshot.json` and are deployed to that client's site with `plugins/sgs-blocks/scripts/push-theme-snapshot.py`.
 
-The **Indus Foods** variation is included. When active, it overrides the colour palette, typography (Montserrat headings + Source Sans 3 body text), and adds decorative ingredient image effects.
-
-**To switch style variation:**
+**To switch style variation** (once a site has more than one):
 
 1. Go to **Appearance > Editor**.
 2. Click the **Styles** icon (the circle/brush icon in the top-right toolbar).

@@ -94,14 +94,14 @@ It also prints a summary in the terminal telling you the frame count and average
 ## Step 5 — configure the block
 
 1. In the WordPress block editor, add an **SGS Image Sequence** block.
-2. Under **Poster frame**, upload a still image to show visitors before the sequence loads (your video's first frame is a good choice — it is also what people without JavaScript, or with "reduce motion" turned on, will always see).
+2. In the block's **Thumbnail image** slot (on the editor canvas), add a still image to show visitors before the sequence loads (your video's first frame is a good choice — it is also what people without JavaScript, or with "reduce motion" turned on, will always see).
 3. Under **Frame source**, paste in:
    - **Frames folder URL** — the address from Step 4.
    - **Frame count** — the number shown in the terminal summary (or in `frames-manifest.json`).
    - **File type** — whatever you chose in `--format` (default `webp`).
    - **Zero-padding** — leave at `4` unless you changed it.
 4. Repeat for **Tablet** and **Mobile** under "Responsive frame sources" if you exported those tiers too. If you leave them blank, phones and tablets will simply reuse the desktop frames.
-5. Save and preview the page — scroll through the block on the live site (this effect does not play inside the editor; the editor always shows your poster image).
+5. Save and preview the page — scroll through the block on the live site (this effect does not play inside the editor; the editor always shows your thumbnail image).
 
 ## A note on file weight
 
