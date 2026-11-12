@@ -30,34 +30,30 @@
   "baseline": {
     "sandybrown": {
       "/": {
-        "css": 130662,
-        "js": 82432,
-        "date": "2026-11-11",
-        "raised": "JS raised on purpose 2026-11-11: order attribution (sourcebuster-js 4.9 KB + wc-order-attribution 1.4 KB) loads on every page again so each order records where the visitor landed (Bean 2026-11-03)."
+        "css": 75563,
+        "js": 98541,
+        "date": "2026-11-12",
+        "raised": "JS set by hand 2026-11-12 from 82432 to the measured 98541. The 82432 recorded 2026-11-11 22:43 is not reproducible from the code that was live: no front-end JS or PHP script loading changed between 4a050dfbc (live then) and be851a86f, and an in-browser A/B on 2026-11-12 (be851a86f's build swapped in for this deploy's, both scored as gzip -9 bodies) measured home JS at 95.9 KB before and 89.0 KB after this session's changes (shared @sgs/nav-store, lazy cart panel and drawer-menu effects): a 6.9 KB cut, not a rise. Order attribution stays on every page (Bean 2026-11-03)."
       },
       "/blog/": {
-        "css": 113462,
-        "js": 91750,
-        "date": "2026-11-11",
-        "raised": "JS raised on purpose 2026-11-11: order attribution (sourcebuster-js 4.9 KB + wc-order-attribution 1.4 KB) loads on every page again so each order records where the visitor landed (Bean 2026-11-03)."
+        "css": 55347,
+        "js": 86012,
+        "date": "2026-11-12"
       },
       "/shop/": {
-        "css": 197939,
-        "js": 195482,
-        "date": "2026-11-11",
-        "raised": "CSS raised on purpose 2026-11-11: the theme notices work (f7bb4fc62, 084c3463f, 18a82b250, 7b16c3135) styles WooCommerce notices from sgs/notice-banner tokens, adding woocommerce-notices.css (1.6 KB) on product pages and 1.1 KB to theme woocommerce.css."
+        "css": 104873,
+        "js": 186270,
+        "date": "2026-11-12"
       },
       "/product/qa-simple-toast-fixture/": {
-        "css": 209510,
-        "js": 186061,
-        "date": "2026-11-11",
-        "raised": "CSS raised on purpose 2026-11-11: the theme notices work (f7bb4fc62, 084c3463f, 18a82b250, 7b16c3135) styles WooCommerce notices from sgs/notice-banner tokens, adding woocommerce-notices.css (1.6 KB) on product pages and 1.1 KB to theme woocommerce.css."
+        "css": 116825,
+        "js": 180293,
+        "date": "2026-11-12"
       },
       "/product/classic-lactation-cookies/": {
-        "css": 221184,
-        "js": 126215,
-        "date": "2026-11-11",
-        "raised": "CSS raised on purpose 2026-11-11: the theme notices work (f7bb4fc62, 084c3463f, 18a82b250, 7b16c3135) styles WooCommerce notices from sgs/notice-banner tokens, adding woocommerce-notices.css (1.6 KB) on product pages and 1.1 KB to theme woocommerce.css."
+        "css": 126542,
+        "js": 120442,
+        "date": "2026-11-12"
       }
     },
     "eye-care-test": {
