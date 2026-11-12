@@ -85,6 +85,13 @@ html {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+/* While a form field has focus the page scrolls instantly: a phone keyboard re-scrolls the focused field into view as
+ * the visible area and the page height change (WooCommerce's checkout re-renders its delivery and payment parts while
+ * a postcode is typed), and animated scrolls overlapping those re-scrolls make the page jump up and down. */
+html:has(:is(input, textarea, select):focus) {
+	scroll-behavior: auto;
+}
+
 /* ─── REMOVE INTER-SECTION GAPS ─── */
 
 /*
