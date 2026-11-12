@@ -44,12 +44,14 @@ Directory-level map of `theme/sgs-theme/` (the files themselves: `git ls-files t
 | `functions.php` | Minimal: enqueue assets, register patterns, theme support |
 | `inc/` | PHP includes (colour helpers, core block styles, font preloading, shop filter and toolbar settings) |
 | `assets/css/` | Stylesheets: core-block overrides, critical-path subset, dark mode, `type-scale.css` (per-device font-size ladder), utilities, `woocommerce.css` (Spec 27 Part 3) |
-| `assets/js/` | Vanilla JS: dark-mode toggle, nav accessibility, smooth scroll, viewport width, shop filter scripts (Spec 27 Part 3) |
+| `assets/js/` | Vanilla JS: dark-mode toggle, nav accessibility, smooth scroll, viewport width, overlay scrollbar (Spec 32 FR-32-26), shop filter scripts (Spec 27 Part 3) |
 | `assets/fonts/` | Self-hosted font files (WOFF2) |
 | `templates/` | Block templates (index, front-page, home, page, single, archive, 404, search, and the WooCommerce templates of Spec 27 Part 3) |
 | `parts/` | Template parts: `header.html` (a one-line `wp:pattern` reference to `framework-header-default`, search-free; hosts `sgs/site-header` and `sgs/nav-bar-menu`), `footer.html` (hosts `sgs/site-footer`), and the WooCommerce parts of Spec 27 Part 3 |
 | `patterns/` | Block patterns by category: content, footers, headers (`sgs-headers`), drawers, mega panels. List: `git ls-files theme/sgs-theme/patterns` or the framework DB |
 | `styles/` | Empty by design: per-client snapshots live at `sites/<client>/theme-snapshot.json` (see §Per-site theme.json Model) |
+
+The files in `assets/css/` and `assets/js/` keep their comments in git; the deploy ships them minified (`plugins/sgs-blocks/scripts/deploy_minify.py`: csso for CSS, terser removing only comments and whitespace for JS), so a live file differs from its source in layout only. The root `style.css` ships as written, because WordPress reads the theme header from it.
 
 `templates/home.html` (the blog posts index, the page assigned as `page_for_posts`) carries a LITERAL "Blogs" `sgs/heading` as its h1, not `core/query-title`: `query-title type="archive"` returns empty on a posts index, because core gates it on `is_archive()` and a posts page is `is_home()`. Header and footer content is specified in §Header/Footer/Nav Block System below; Spec 37 owns the block FRs. Spacing on an `sgs/` block in a template or part is saved in the block's tier-of-boxes shape (`"padding":{"desktop":{"top":…}}`); a flat `{top,bottom}` box emits no rule, and `plugins/sgs-blocks/scripts/check-tier-storage-shape.py --check` fails on one.
 

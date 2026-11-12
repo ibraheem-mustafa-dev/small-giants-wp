@@ -48,7 +48,7 @@ Identify the target from the user's argument; the default is `sandybrown`. Targe
 
 **Security:** nonces on all forms; capability checks on admin actions; `WP_DEBUG` false; no hardcoded credentials; SSL valid + HTTPS enforced; `.htaccess` configured.
 
-**Performance:** images optimised (WebP); CSS/JS minified; caching configured; no render-blocking above-the-fold resources.
+**Performance:** images optimised (WebP); caching configured; no render-blocking above-the-fold resources. CSS and JS need no hand step: webpack minifies `build/`, and `build-deploy.py` minifies the hand-written theme and plugin `assets/` CSS and JS in the payload (`deploy_minify.py`, the `[2/5] Hand-written CSS and JS minified` log line). Run with `--page-weight` to check the live CSS and JS budgets after the upload.
 
 **SEO + Accessibility:** meta titles + descriptions on key pages; XML sitemap + robots.txt + canonical URLs; schema markup; WCAG 2.1 AA plus 2.2's cheap wins (visible focus, 44px targets; full 2.2 AA per public-sector/EU client) — alt text, 44px touch targets, 4.5:1 contrast, keyboard nav, skip-to-content.
 
