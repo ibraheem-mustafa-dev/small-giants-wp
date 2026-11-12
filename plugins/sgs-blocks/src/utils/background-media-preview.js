@@ -80,13 +80,11 @@ export function backgroundMediaAt( attrs, device = 'desktop' ) {
 	if ( 'tile' === fit || pinned ) {
 		const repeat = valueAt( attrs.backgroundRepeat, device );
 		const size = 'tile' === fit ? valueAt( attrs.backgroundTileSize, device ) : undefined;
-		let bgSize = 'cover';
+		// The same map as includes/media/background-css.php::sgs_bg_media_painted_decls.
+		const PAINTED_SIZE = { cover: 'cover', contain: 'contain', 'scale-down': 'contain', none: 'auto', fill: '100% 100%' };
+		let bgSize = PAINTED_SIZE[ fit ] || 'cover';
 		if ( 'tile' === fit ) {
 			bgSize = isEmpty( size ) ? 'auto' : String( size );
-		} else if ( 'contain' === fit ) {
-			bgSize = 'contain';
-		} else if ( 'none' === fit ) {
-			bgSize = 'auto';
 		}
 		return {
 			type: 'tile',

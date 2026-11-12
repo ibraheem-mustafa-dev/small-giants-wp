@@ -37,6 +37,11 @@ describe( 'backgroundMediaAt', () => {
 		expect( backgroundMediaAt( attrs, 'desktop' ) ).toMatchObject( { type: 'tile', pinned: true, size: 'cover', repeat: 'no-repeat' } );
 	} );
 
+	it( 'maps a Pinned Fit to the background size the page paints (sgs_bg_media_painted_decls)', () => {
+		const sizeFor = ( fit ) => backgroundMediaAt( photo( { backgroundPinned: true, backgroundFit: { desktop: fit } } ), 'desktop' ).size;
+		expect( [ 'cover', 'contain', 'scale-down', 'none', 'fill' ].map( sizeFor ) ).toEqual( [ 'cover', 'contain', 'contain', 'auto', '100% 100%' ] );
+	} );
+
 	it( 'shows a video cover image, an SVG, a missing file, and nothing for kind none', () => {
 		expect( backgroundMediaAt( { backgroundSource: { desktop: { kind: 'video', url: 'v.mp4', poster: { url: 'p.jpg' } } } }, 'desktop' ) ).toMatchObject( { type: 'video', poster: 'p.jpg' } );
 		expect( backgroundMediaAt( { backgroundSource: { desktop: { kind: 'svg', markup: SVG } } }, 'desktop' ).type ).toBe( 'svg' );
