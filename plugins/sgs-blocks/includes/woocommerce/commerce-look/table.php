@@ -92,7 +92,9 @@ function sgs_commerce_look_table_css( array $attrs, string $block, string $root 
 			continue;
 		}
 		// `&` names the block root itself (the scope class), not a part inside it.
-		$selector = '&' === ( $row[ $block ] ?? '' ) ? $root : sgs_commerce_look_selector( (string) $row_id, $block, $root );
+		// A row whose WooCommerce rule carries several classes repeats the scope class (`root_repeat`) so its settings out-rank it.
+		$lead     = str_repeat( $root, max( 1, (int) ( $row['root_repeat'] ?? 1 ) ) );
+		$selector = '&' === ( $row[ $block ] ?? '' ) ? $root : sgs_commerce_look_selector( (string) $row_id, $block, $lead );
 		if ( '' === $selector ) {
 			continue;
 		}

@@ -311,10 +311,11 @@ require ABSPATH . 'includes/render-helpers.php';
 		$fixture = json_decode( (string) file_get_contents( __DIR__ . '/fixtures/commerce-look-checkout-table.json' ), true );
 		$rules   = $this->rules( $this->css( $fixture['settings'] ) );
 		$strip   = static function ( string $s ): string {
-			if ( '.sgs-x' === $s ) {
+			if ( 1 === preg_match( '/^(?:\.sgs-x)+$/', $s ) ) {
 				return '&';
 			}
-			return 0 === strpos( $s, '.sgs-x ' ) ? substr( $s, 7 ) : $s;
+			// A row may repeat the scope class to out-rank WooCommerce (selectors.json `root_repeat`).
+			return (string) preg_replace( '/^(?:\.sgs-x)+ /', '', $s );
 		};
 		$missing = array();
 		foreach ( $fixture['expect'] as $e ) {
@@ -342,5 +343,116 @@ require ABSPATH . 'includes/render-helpers.php';
 			}
 		}
 		$this->assertSame( array(), $missing, count( $missing ) . ' replaced declarations are not printed' );
+	}
+
+	/**
+	 * The five parts WooCommerce's own rules used to beat (the Eye Care checkout kept seven Custom CSS rules for them): the
+	 * emitted selector must out-rank every WooCommerce selector that sets the same property on the same element, at the
+	 * widths and states where WooCommerce's rule applies. Each selector below is copied from WooCommerce 11.2.2's served
+	 * stylesheets (`assets/client/blocks/checkout.css` = checkout, `assets/client/blocks/packages-style.css` = packages).
+	 * The scope class is repeated so the rule wins on specificity, not on stylesheet order.
+	 *
+	 * @return array<string, array{0: string, 1: string[], 2: string[]}> Part selector, declarations, WooCommerce selectors.
+	 */
+	public static function woocommerce_competitors(): array {
+		return array(
+			'text input top and bottom padding'      => array(
+				'.wc-block-components-text-input input[type]',
+				array( 'padding-top:18px', 'padding-bottom:6px' ),
+				array(
+					'.wc-block-components-form .wc-block-components-text-input input[type="email"]', // packages-style.css, resting field.
+					'.wc-block-components-form .wc-block-components-text-input.is-active input[type="email"]', // packages-style.css, field with text.
+				),
+			),
+			'order summary padding'                  => array(
+				'.wc-block-components-order-summary',
+				array( 'padding-top:0', 'padding-left:0' ),
+				array(
+					'.wp-block-woocommerce-checkout-order-summary-block.checkout-order-summary-block-fill-wrapper .wc-block-components-order-summary', // checkout.css, narrow layout.
+					'.wc-block-components-order-summary', // checkout.css, min-width 920px.
+				),
+			),
+			'order summary content padding'          => array(
+				'.wc-block-components-order-summary__content',
+				array( 'padding-top:0', 'padding-left:0' ),
+				array(),
+			),
+			'summary title text line height'         => array(
+				'.wc-block-components-checkout-order-summary__title-text',
+				array( 'line-height:19px' ),
+				array(
+					'.wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title .wc-block-components-checkout-order-summary__title-text', // checkout.css.
+				),
+			),
+			'summary title text line height (narrow)' => array(
+				'.checkout-order-summary-block-fill-wrapper .wc-block-components-title',
+				array( 'line-height:19px' ),
+				array(
+					'.wc-block-components-title.wc-block-components-title', // packages-style.css.
+				),
+			),
+			'totals line padding'                    => array(
+				'.wc-block-components-totals-item',
+				array( 'padding-top:0', 'padding-left:0', 'padding-right:0' ),
+				array(
+					'.wp-block-woocommerce-checkout-order-summary-block .checkout-order-summary-block-fill .wc-block-components-totals-item', // checkout.css.
+					'.wc-block-components-sidebar .wc-block-components-totals-item', // checkout.css, min-width 920px.
+					'.wc-block-components-sidebar .wc-block-components-panel .wc-block-components-totals-item', // checkout.css, min-width 920px.
+				),
+			),
+			'option description text (group)'        => array(
+				'.wc-block-components-radio-control__description-group',
+				array( 'font-size:13.5px', 'line-height:18px' ),
+				array(
+					'.wc-block-checkout__pickup-options .wc-block-components-local-pickup-rates-control .wc-block-components-radio-control__description-group', // checkout.css, Collect.
+					'.wp-block-woocommerce-checkout-pickup-options-block .wc-block-components-local-pickup-rates-control .wc-block-components-radio-control__description-group', // checkout.css, Collect.
+				),
+			),
+			'option description text (secondary)'    => array(
+				'.wc-block-components-radio-control__secondary-description',
+				array( 'font-size:13.5px', 'line-height:18px' ),
+				array(
+					'.wc-block-components-shipping-rates-control__package .wc-block-components-radio-control__secondary-description', // checkout.css, Post it to me.
+					'.wc-block-checkout__pickup-options .wc-block-components-local-pickup-rates-control .wc-block-components-radio-control__secondary-description', // checkout.css, Collect.
+					'.wp-block-woocommerce-checkout-pickup-options-block .wc-block-components-local-pickup-rates-control .wc-block-components-radio-control__secondary-description', // checkout.css, Collect.
+				),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider woocommerce_competitors
+	 *
+	 * @param string   $part  Part selector relative to the scope.
+	 * @param string[] $decls Declarations the planned values print on it.
+	 * @param string[] $wc    WooCommerce selectors that set the same properties on the same element.
+	 */
+	public function test_a_setting_out_ranks_the_woocommerce_rule_for_its_part( string $part, array $decls, array $wc ): void {
+		static $rules = null;
+		if ( null === $rules ) {
+			$fixture = json_decode( (string) file_get_contents( __DIR__ . '/fixtures/commerce-look-checkout-table.json' ), true );
+			$rules   = $this->rules( $this->css( $fixture['settings'] ) );
+		}
+		$top = 0;
+		foreach ( $wc as $theirs ) {
+			$top = max( $top, $this->specificity( $theirs ) );
+		}
+		foreach ( $decls as $decl ) {
+			$want  = $this->norm( $decl );
+			$found = false;
+			foreach ( $rules as $rule ) {
+				if ( ! in_array( $want, $rule['decls'], true ) ) {
+					continue;
+				}
+				foreach ( $rule['sels'] as $sel ) {
+					if ( (string) preg_replace( '/^(?:\.sgs-x)+ /', '', $sel ) !== $part ) {
+						continue;
+					}
+					$found = true;
+					$this->assertGreaterThan( $top, $this->specificity( $sel ), "$decl on $part prints at $sel, which does not out-rank WooCommerce's (" . implode( ' | ', $wc ) . ')' );
+				}
+			}
+			$this->assertTrue( $found, "$decl is not printed on $part" );
+		}
 	}
 }
