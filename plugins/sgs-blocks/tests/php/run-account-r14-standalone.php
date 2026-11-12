@@ -120,6 +120,11 @@ ok( false !== strpos( $line, '@media (forced-colors:active){.x nav.woocommerce-M
 ok( false !== strpos( $line, 'is-active > a::after{content:none;}' ), 'the bar is not drawn in line style' );
 ok( false === strpos( sgs_account_menu_look_css( array( 'menuActiveIndicatorWidth' => array( 'desktop' => '2px' ) ), '.x' ), 'box-shadow:inset' ), 'without the line style no box-shadow line prints' );
 
+$calcline = sgs_account_menu_look_css( array( 'menuActiveIndicatorStyle' => 'line', 'menuActiveIndicatorWidth' => array( 'desktop' => 'calc(1px + 1px)' ) ), '.x' );
+ok( false !== strpos( $calcline, 'box-shadow:inset 0 calc(-1 * calc(1px + 1px)) 0 0 currentColor' ), 'a calc() width gets a valid negative offset on the tab row line' );
+$junkline = sgs_account_menu_look_css( array( 'menuActiveIndicatorStyle' => 'line', 'menuActiveIndicatorWidth' => array( 'desktop' => 'url(x)' ) ), '.x' );
+ok( false !== strpos( $junkline, 'box-shadow:inset 0 -3px 0 0 currentColor' ) && false !== strpos( $junkline, 'inset 3px 0 0 0' ), 'an unusable width falls back to 3px' );
+
 // 3c) Motion parts carry the block's own classes.
 $marked = sgs_account_edit_account_markup( '<div class="woocommerce-MyAccount-content"></div><div class="u-columns col2-set" id="customer_login"></div>', array() );
 ok( false !== strpos( $marked, 'woocommerce-MyAccount-content sgs-account__tab-content"' ) && false !== strpos( $marked, 'u-columns col2-set sgs-account__auth-grid" id="customer_login"' ), 'the tab content and the sign-in pair carry classes of the block' );

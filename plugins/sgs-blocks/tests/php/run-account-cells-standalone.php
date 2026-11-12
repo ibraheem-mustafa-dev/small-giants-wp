@@ -14,6 +14,7 @@ $base = rtrim( $argv[1] ?? dirname( __DIR__, 2 ), '/\\' );
 define( 'ABSPATH', $base . '/' );
 define( 'SGS_BLOCKS_PATH', ABSPATH );
 
+$GLOBALS['sgs_qa_global_settings'] = array( 'spacing' => array( 'spacingSizes' => array( array( 'slug' => '20' ), array( 'slug' => '30' ), array( 'slug' => '40' ) ) ) );
 require $base . '/scripts/qa/lib/wp-stubs.php';
 require $base . '/includes/render-helpers.php';
 foreach ( array( 'account/helpers-account-look-css.php', 'account/helpers-account-header.php', 'account/helpers-account-cells-css.php' ) as $f ) {
@@ -182,6 +183,25 @@ ok( 0 === strpos( $side, '@media(min-width:1024px){' ) && false === strpos( $sid
 ok( '' === sgs_account_cells_css( array( 'menuItemMinHeight' => array( 'desktop' => 'url(x)' ) ), $root ), 'a non-length is refused' );
 ok( '' === sgs_account_cells_css( array( 'ordersRowTextDecoration' => 'blink' ), $root ), 'an unknown text-decoration is refused' );
 ok( '' === sgs_account_cells_css( array( 'resetHideIntro' => false ), $root ), 'an off toggle prints nothing' );
+
+// 6) A length picked from the spacing scale is stored as its bare slug and prints the preset variable; a typed length keeps its unit; a bare typed number is pixels.
+$gap = static function ( $v ) use ( $root ) { return sgs_account_cells_css( array( 'menuItemGap' => array( 'desktop' => $v ) ), $root ); };
+ok( false !== strpos( $gap( '30' ), 'gap:var(--wp--preset--spacing--30);' ), 'a spacing preset slug prints the preset variable' );
+ok( false !== strpos( $gap( '25px' ), 'gap:25px;' ), 'a typed length keeps its unit' );
+ok( false !== strpos( $gap( 25 ), 'gap:25px;' ) && false !== strpos( $gap( '12.5' ), 'gap:12.5px;' ), 'a bare typed number is pixels' );
+$rule = sgs_account_cells_css( array( 'addressEditRuleWidth' => array( 'desktop' => '30' ) ), $root );
+ok( false !== strpos( $rule, 'border-bottom:var(--wp--preset--spacing--30) solid currentColor;' ), 'a line width picked from the scale prints the preset variable' );
+
+// 7) Only a literal zero length drops a four-side border; a computed width keeps its border.
+$frame = static function ( $v ) use ( $root ) { return sgs_account_cells_css( array( 'authPairBorderWidth' => array( 'desktop' => $v ) ), $root ); };
+ok( false !== strpos( $frame( '0px' ), 'border:0;' ) && false !== strpos( $frame( '0' ), 'border:0;' ) && false !== strpos( $frame( '0rem' ), 'border:0;' ), 'a literal zero width prints border:0' );
+foreach ( array( 'calc(1px + 1px)', 'clamp(1px, 2vw, 4px)', 'var(--x)', 'min(2px, 1vw)' ) as $w ) {
+	ok( false !== strpos( $frame( $w ), 'border:' . $w . ' solid var(--wp--preset--color--border);' ), $w . ' keeps its border' );
+}
+
+// 8) The sidebar line is a desktop-only control, so the editor cannot store tablet or mobile values that print nothing.
+$panels = (string) file_get_contents( $base . '/src/blocks/account/CellPanels.js' );
+ok( 1 === preg_match( "/'menuSidebarBorderWidth',\s*'desktop'/", $panels ), 'the sidebar line width row is a desktop-only control' );
 
 echo $failures ? "\n$failures FAILED\n" : "\nALL PASSED\n";
 exit( $failures ? 1 : 0 );

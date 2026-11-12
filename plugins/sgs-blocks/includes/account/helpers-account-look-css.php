@@ -58,12 +58,17 @@ if ( ! function_exists( 'sgs_account_box_shape_css' ) ) {
 
 if ( ! function_exists( 'sgs_account_length_transform' ) ) {
 	/**
-	 * Responsive-emitter transform for a single CSS length (a bare number is pixels).
+	 * Responsive-emitter transform for a single CSS length. SgsLengthControl stores a spacing preset as its bare slug
+	 * ("30") and a typed length with its unit, so a digits-only string goes through sgs_css_single_length_value()
+	 * (preset variable for a theme slug, pixels otherwise); a stored number or decimal is pixels.
 	 *
 	 * @param mixed $raw Stored value.
 	 * @return string
 	 */
 	function sgs_account_length_transform( $raw ): string {
+		if ( is_string( $raw ) && 1 === preg_match( '/^\d+$/', $raw ) ) {
+			return sgs_css_single_length_value( $raw );
+		}
 		return is_numeric( $raw ) ? (string) (float) $raw . 'px' : sgs_css_single_length_value( $raw );
 	}
 }
@@ -97,10 +102,13 @@ if ( ! function_exists( 'sgs_account_menu_look_css' ) ) {
 			$colour = sgs_colour_value( (string) ( $attributes['menuActiveIndicatorColour'] ?? '' ) );
 			$colour = '' !== $colour ? $colour : 'currentColor';
 			$width  = is_array( $attributes['menuActiveIndicatorWidth'] ?? null ) ? (string) ( $attributes['menuActiveIndicatorWidth']['desktop'] ?? '' ) : '';
-			$width  = '' !== $width ? sgs_account_length_transform( $width ) : '3px';
+			$width  = '' !== $width ? sgs_account_length_transform( $width ) : '';
+			$width  = '' !== $width ? $width : '3px';
 			// The focus ring replaces box-shadow, so the line is also handed to it as --sgs-focus-under.
 			$side   = 'inset ' . $width . ' 0 0 0 ' . $colour;
-			$under  = 'inset 0 -' . $width . ' 0 0 ' . $colour;
+			// A plain length takes a minus sign; calc(), var() and the like need calc(-1 * W).
+			$negated = 1 === preg_match( '/^\d+(\.\d+)?[a-z%]+$/i', $width ) ? '-' . $width : 'calc(-1 * ' . $width . ')';
+			$under  = 'inset 0 ' . $negated . ' 0 0 ' . $colour;
 			$css[]  = SGS_Breakpoints::media( 'desktop' ) . '{' . $link . '{box-shadow:' . $side . ';--sgs-focus-under:' . $side . ';}}';
 			$css[]  = SGS_Breakpoints::media( 'tablet' ) . '{' . $link . '{background:transparent;box-shadow:' . $under . ';--sgs-focus-under:' . $under . ';}}';
 			// Forced colours drop box-shadow, so the current item keeps a system-colour line there.

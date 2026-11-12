@@ -2,7 +2,8 @@
  * sgs/account — spacing, size, border and underline settings that replace hand-written Custom CSS. Each row is
  * [ attribute, kind, label ]; the kind picks the control and matches the kind the PHP side prints
  * (includes/account/helpers-account-cells-css.php): len and edge and frame and rule take a length per device, num a
- * unitless number per device, box four sides per device, sel an underline choice and tog an on/off switch.
+ * unitless number per device, box four sides per device, sel an underline choice and tog an on/off switch. The `desktop` kind is a length stored for the desktop device only,
+ * for a rule that exists only from 1024px (the sidebar line), so the editor cannot store tablet or mobile values that do nothing.
  * Every attribute is absent until set, so an untouched block keeps the stylesheet's look.
  */
 import { __ } from '@wordpress/i18n';
@@ -11,7 +12,7 @@ import { ResponsiveOverride, SgsLengthControl } from '../../components';
 import { Choice, TierBox, Toggle } from './extraControls';
 
 const ROWS_MENU = [
-	[ 'menuSidebarBorderWidth', 'edge', __( 'Sidebar line width (desktop sidebar)', 'sgs-blocks' ) ],
+	[ 'menuSidebarBorderWidth', 'desktop', __( 'Sidebar line width (desktop sidebar)', 'sgs-blocks' ) ],
 	[ 'menuTabRowBorderWidth', 'edge', __( 'Tab row line width', 'sgs-blocks' ) ],
 	[ 'menuTabRowMarginBottom', 'len', __( 'Space under the tab row', 'sgs-blocks' ) ],
 	[ 'menuItemMinHeight', 'len', __( 'Menu item minimum height', 'sgs-blocks' ) ],
@@ -158,6 +159,25 @@ function TierLength( { name, label, attributes, setAttributes } ) {
  * @param {string}   p.label         Control label.
  * @param {Object}   p.attributes    Block attributes.
  * @param {Function} p.setAttributes Attribute setter.
+ * @return {JSX.Element} One length, stored as the desktop value.
+ */
+function DesktopLength( { name, label, attributes, setAttributes } ) {
+	return (
+		<SgsLengthControl
+			presets
+			label={ label }
+			value={ attributes[ name ]?.desktop ?? '' }
+			onChange={ ( val ) => setAttributes( { [ name ]: val ? { desktop: val } : undefined } ) }
+		/>
+	);
+}
+
+/**
+ * @param {Object}   p
+ * @param {string}   p.name          Tier-object attribute name.
+ * @param {string}   p.label         Control label.
+ * @param {Object}   p.attributes    Block attributes.
+ * @param {Function} p.setAttributes Attribute setter.
  * @return {JSX.Element} A unitless number per device.
  */
 function TierNumber( { name, label, attributes, setAttributes } ) {
@@ -201,6 +221,9 @@ function CellRows( { title, rows, attributes, setAttributes } ) {
 			{ rows.map( ( [ name, kind, label ] ) => {
 				if ( 'box' === kind ) {
 					return <TierBox key={ name } { ...p } name={ name } label={ label } />;
+				}
+				if ( 'desktop' === kind ) {
+					return <DesktopLength key={ name } { ...p } name={ name } label={ label } />;
 				}
 				if ( 'num' === kind ) {
 					return <TierNumber key={ name } { ...p } name={ name } label={ label } />;
