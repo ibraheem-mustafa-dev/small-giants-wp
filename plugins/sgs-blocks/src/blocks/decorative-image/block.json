@@ -211,10 +211,10 @@
             ],
             "default": "solid"
         },
-        "layerFit": {"type":"object","_generated":"media-atoms"},
     	"layerSource": {"type":"object","_generated":"media-atoms"},
     	"layerLoading": {"type":"string","_generated":"media-atoms"},
     	"layerAlt": {"type":"string","_generated":"media-atoms"},
+    	"layerFit": {"type":"object","_generated":"media-atoms"},
     	"layerFocal": {"type":"object","_generated":"media-atoms"},
     	"layerRatio": {"type":"object","_generated":"media-atoms"},
     	"layerHeight": {"type":"object","_generated":"media-atoms"},
