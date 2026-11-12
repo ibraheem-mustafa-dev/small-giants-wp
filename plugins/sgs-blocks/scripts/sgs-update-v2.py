@@ -374,6 +374,16 @@ def restore_wp_reference_archive(db_path: Path = None) -> None:
     print("[--rebuild] reference corpus restored\n")
 
 
+def reseed_reference_tables(db_path: Path = None) -> None:
+    """Apply the data-file reference tables (``seed_reference_data.seed_all``: roles, suffixes, slots). Idempotent."""
+    db_path = db_path or SGS_DB
+    dbschema = Path(__file__).resolve().parent / "dbschema"
+    if str(dbschema) not in sys.path:
+        sys.path.insert(0, str(dbschema))
+    import seed_reference_data  # noqa: PLC0415
+    seed_reference_data.seed_all(db_path)
+
+
 def run_module_load_seeders(db_path: Path = None) -> None:
     """Seed the reference tables that /sgs-update's stages do not write.
 
@@ -7645,6 +7655,12 @@ def main() -> None:
             _start_identity_derivation(conn)
         results[stage_num] = dispatch[stage_num]()
         stage_seconds[stage_num] = time.perf_counter() - stage_began
+        # The data-file reference tables (roles, suffixes, slots) have no stage writer: apply them after stage 1 on
+        # every run, so a role added to or removed from data/roles.json reaches the DB without --rebuild, and before
+        # stage 12 regenerates consistency/attr-role-map.json from it.
+        if stage_num == 1 and not args.dry_run:
+            conn.commit()
+            reseed_reference_tables(SGS_DB)
 
     conn.close()
 
