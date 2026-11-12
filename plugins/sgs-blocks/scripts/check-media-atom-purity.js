@@ -13,10 +13,9 @@
  *   2. `@wordpress/components` and friends are webpack EXTERNALS. They are not
  *      in node_modules at all, so even transformed JSX would fail to resolve.
  *
- * The consequence was worse than a red gate. `test-media-atom-parity.mjs`
- * crashed on the first atom in registry order and verified NOTHING — while its
- * ratchet sat at 7, asserting seven atoms had proven JS/PHP parity. A number
- * claiming verification that no run could have produced.
+ * The consequence is worse than a red gate: `test-media-emitter-parity.mjs`
+ * imports the atom modules, so one that plain Node cannot load crashes the
+ * test on that atom and verifies nothing after it.
  *
  * ⛔ SO THE SPLIT IS A CONTRACT, NOT A TIDY-UP:
  *

@@ -152,10 +152,6 @@ function setup(): void {
 add_action( 'after_setup_theme', __NAMESPACE__ . '\setup' );
 
 /**
- * Preload critical font files to prevent FOUT.
- * Outputs <link rel="preload"> tags in <head> before stylesheets load.
- */
-/**
  * Inline critical dark mode script to prevent flash of wrong theme.
  * Runs before any CSS paints.
  */

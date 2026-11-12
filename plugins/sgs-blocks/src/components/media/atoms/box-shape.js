@@ -59,7 +59,7 @@
  *
  * `css()` mirrors `includes/media/atoms/box-shape.php`'s
  * `sgs_media_atom_box_shape_css()` byte-for-byte — enforced by
- * `scripts/tests/test-media-atom-parity.mjs`.
+ * `scripts/tests/test-media-emitter-parity.mjs`.
  *
  * LOGIC HALF ONLY. Split from the JSX control per the purity contract
  * (`scripts/check-media-atom-purity.js`): this module must be importable by
@@ -264,8 +264,8 @@ function consumeAllowlistedLengthCalls( value ) {
 // next real comment-close (including this module's own `css`/`validate`/
 // `disclosure` exports, further down the file) is silently swallowed; the
 // gate then reports those exports as missing. Built via
-// `String.fromCharCode()` instead, same convention `test-media-atom-parity
-// .mjs` already uses for a bare backslash for the identical reason.
+// `String.fromCharCode()` instead (the same reason `BS` is built from char codes
+// elsewhere in the gate scripts).
 const COMMENT_OPEN = String.fromCharCode( 47, 42 );
 
 /**

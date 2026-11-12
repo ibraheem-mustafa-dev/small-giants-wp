@@ -34,7 +34,7 @@
  *
  * `css()` mirrors `includes/media/atoms/focal-point.php`'s
  * `sgs_media_atom_focal_point_css()` byte-for-byte — enforced by
- * `scripts/tests/test-media-atom-parity.mjs`.
+ * `scripts/tests/test-media-emitter-parity.mjs`.
  *
  * @package SGS\Blocks
  */

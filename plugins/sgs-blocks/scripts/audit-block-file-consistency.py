@@ -1055,7 +1055,7 @@ def check_orphan_attrs(block, shared_php_corpus, shared_js_corpus, extension_att
         # gate flagged 13 sgs/media attrs (mediaSizing/videoMuted*/overlay*/
         # border*) as orphaned the moment their controls moved from literal
         # JSX in edit.js into the atom dispatch layer — verified NOT dead via
-        # the dedicated atom-parity gates (test-media-atom-parity,
+        # the dedicated atom-parity gates (test-media-emitter-parity,
         # check-media-attributes-parity, all
         # green) before concluding this was a detector gap, not a real one.
         pascal_base = attr[:1].upper() + attr[1:]

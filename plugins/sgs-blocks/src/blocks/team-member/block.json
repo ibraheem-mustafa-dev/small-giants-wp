@@ -104,7 +104,7 @@
 					"label": "Photo",
 					"order": 2,
 					"clusters": [],
-					"_note": "Renamed from 'photo' 2026-08-15 (element-manifest drift fix). The real rendered class is `.sgs-team-member__photo` (render.php:295) — the label stays 'Photo' (client-facing, unchanged) even though the manifest KEY is now 'image', matching the sibling-block vocabulary. Governed by the universal image-controls extension (supports.sgs.imageControls) plus photoShape/overlayHover behaviour toggles — none are Text/Fill/Layout style-cluster members."
+					"_note": "Renamed from 'photo' 2026-08-15 (element-manifest drift fix). The real rendered class is `.sgs-team-member__photo` (render.php:295) — the label stays 'Photo' (client-facing, unchanged) even though the manifest KEY is now 'image', matching the sibling-block vocabulary. Governed by the `photo` media slot declared in `supports.sgs.mediaElements` (the `photo`-prefixed source, fit, focal, shape, radius, border and size settings) plus the overlayHover behaviour toggle — none are Text/Fill/Layout style-cluster members."
 				},
 				"name": {
 					"text": true,

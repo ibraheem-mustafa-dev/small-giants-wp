@@ -16,7 +16,7 @@
  * ⛔ THIS FILE DECLARES DATA ONLY. An atom's control UI, CSS emitter, validator
  * and disclosure rule live in its own module beside this one and are added per
  * atom. Nothing here is a placeholder: every field below is fully populated and
- * consumed today by the two injection filters.
+ * consumed today by the attribute generator (`scripts/generate-media-attributes.mjs`), the panel and the gates.
  *
  * @package
  */
@@ -105,7 +105,7 @@ export const MEDIA_ATOMS = {
 			// keeps reading them as a legacy fallback for stored content that
 			// predates the ThumbnailId/Thumbnail object pair this atom now
 			// injects. Documented here (rather than migrated) because the block
-			// ALREADY declares them — the injection filter's "the block's own
+			// ALREADY declares them — the attribute generator's "the block's own
 			// declaration always wins" rule means the atom-shaped Thumbnail
 			// object is never what these three names actually resolve to.
 			'sgs/media': {
@@ -246,7 +246,7 @@ export const MEDIA_ATOMS = {
 
 	'box-shape': {
 		id: 'box-shape',
-		// Spec 49 §6.2: split into the `sizing` and `shape` atoms (`MEDIA_KINDS_ATOMS`). The legacy bases stay until the cutover.
+		// Spec 49 §6.2: split into the `sizing` and `shape` atoms (`MEDIA_KINDS_ATOMS`). The atom keeps its own bases, which the attribute generator still writes.
 		splitInto: [ 'sizing', 'shape' ],
 		bases: MEDIA_BASES.shape,
 		settings: settingsForBases( MEDIA_BASES.shape ),
@@ -391,8 +391,8 @@ export const MEDIA_ATOMS = {
 };
 
 /**
- * The atoms Spec 49 adds. They live apart from `MEDIA_ATOMS` so nothing that walks the legacy table (the injection
- * filters, the attribute generator, the panel, the gates) sees them: they own no legacy base, add no control and add no
+ * The atoms Spec 49 adds. They live apart from `MEDIA_ATOMS` so nothing that walks the legacy table (the attribute
+ * generator, the panel, the gates) sees them: they own no legacy base, add no control and add no
  * attribute to an existing block. A slot whose `supports.sgs.mediaElements` entry declares `kinds` uses them through
  * `ALL_MEDIA_ATOMS`; their emitters are `sgs_media_atom_<id>_emit()` in PHP and `emit()` in each module. `paints` lists
  * the C3 nodes an atom prints on (`layout`, `surface`, `media`, `mask`), where the legacy atoms say `attachesTo`.

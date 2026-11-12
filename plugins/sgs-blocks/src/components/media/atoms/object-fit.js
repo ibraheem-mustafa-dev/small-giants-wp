@@ -33,7 +33,7 @@
  *
  * `css()` mirrors `includes/media/atoms/object-fit.php`'s `sgs_media_atom_
  * object_fit_css()` byte-for-byte — enforced by
- * `scripts/tests/test-media-atom-parity.mjs`.
+ * `scripts/tests/test-media-emitter-parity.mjs`.
  *
  * @package SGS\Blocks
  */

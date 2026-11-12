@@ -5,21 +5,14 @@
 // the tree checks a decorative-image toggle or an ARIA-label control. Genuinely
 // NEW detector.
 //
-// REVISED 2026-08-03 — cross-checked per the coordinator's "apply the same
-// scrutiny to 18 and 20" instruction. An independent re-implementation
-// confirmed the raw COUNT (12) was right for the literal-<img>-in-edit.js
-// condition, but a further check ("could an <img> live in a shared component
-// this rule can't see, the same class of bug as rule 01?") found a REAL gap:
-// `MediaPicker.js` genuinely renders `<img>` (confirmed :125) and is used by
-// 9 blocks via a direct path import, not the index.js barrel. Two of those —
-// brand-strip, team-member — have ZERO literal `<img>` of their own and were
-// completely invisible to the original version of this rule. Fixed by
-// resolving image-rendering shared components from core/components.js
-// (widened 2026-08-03 to scan the whole components/ directory, not only
-// barrel exports) the same way rule 01 resolves panel-wrapping components —
-// never by import-path string matching (the block is credited with using
-// MediaPicker because its JSX contains `<MediaPicker`, cross-referenced
-// against a component whose OWN source was read and found to render <img>).
+// A block can render an `<img>` through a shared component it imports by
+// direct path, not the index.js barrel, so a rule that reads only a block's
+// own edit.js text misses it. This rule resolves image-rendering shared
+// components from core/components.js (which scans the whole components/
+// directory) the same way rule 01 resolves panel-wrapping components, never
+// by import-path string matching: the block is credited with using a
+// component because its JSX contains `<Name`, cross-referenced against a
+// component whose OWN source was read and found to render <img>.
 
 const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
@@ -32,10 +25,9 @@ const DECORATIVE_ATTR_RE = /decorative|arialabel|alttext/i;
 // reading render.php in hero/trust-bar/container/site-header/
 // site-footer: it is applied ONLY to the section root, gated on
 // `tag === 'nav' || 'aside'`, never to any <img>. It coincidentally matched
-// the /arialabel/i branch of DECORATIVE_ATTR_RE, false-clearing 3 blocks that
+// the /arialabel/i branch of DECORATIVE_ATTR_RE, false-clearing blocks that
 // genuinely render an <img> with no real decorative/alt mechanism of their
-// own (hero, trust-bar — each confirmed via a literal `<img` or
-// `<MediaPicker` in edit.js). `container` also carries this exact attr but
+// own. `container` also carries this exact attr but
 // renders no <img> in edit.js at all, so excluding it here is a no-op for
 // container specifically (moot, not a 4th real case). A DIFFERENTLY-NAMED
 // attribute (e.g. `imageAriaLabel`) still satisfies the rule as before —

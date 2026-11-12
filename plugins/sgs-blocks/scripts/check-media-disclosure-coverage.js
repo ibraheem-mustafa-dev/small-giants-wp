@@ -11,7 +11,7 @@
  * IMPORT each atom's logic module and CALL `disclosure()` with attributes
  * that satisfy, then violate, each entry in that atom's own `requires` map,
  * and assert on the REAL return value. Sibling to `check-media-atom-purity.js`
- * (import-cleanliness, static) and `scripts/tests/test-media-atom-parity.mjs`
+ * (import-cleanliness, static) and `scripts/tests/test-media-emitter-parity.mjs`
  * (JS/PHP value-setter parity, also a live-import harness) — this gate is the
  * third leg: does `disclosure()` itself honour the closed vocabulary
  * (`shown | disabled | omitted`, `hiddenReason` a non-empty string whenever
@@ -56,8 +56,7 @@
  *     length > 1, every item a bare identifier) rather than naming
  *     "video-behaviour" anywhere in the derivation logic.
  *
- * TWO RETURN SHAPES (same detection as `test-media-atom-parity.mjs`, reused
- * verbatim): `typeof state.state === 'string' ? [state] : Object.values(
+ * TWO RETURN SHAPES: `typeof state.state === 'string' ? [state] : Object.values(
  * state || {})`. A MAP-shaped atom's governed entries are looked up by their
  * PascalCase base name (`result['VideoMuted']`), matching how the atoms
  * themselves build that map.
@@ -84,8 +83,7 @@
  *     overlay(2) + shadow(1) = 8 violated cases.
  *   TOTAL: 23 cases (15 + 8).
  * If the live count ever differs from 23, the run says so loudly rather than
- * silently trusting either number — `zeroIsAClaim` applies here exactly as
- * it does in `test-media-atom-parity.mjs`.
+ * silently trusting either number — `zeroIsAClaim` applies here.
  *
  * Run:
  *   node scripts/check-media-disclosure-coverage.js             (report only, exits 0)
@@ -278,8 +276,7 @@ function checkViolated( govBase, driverGoverned, result ) {
 }
 
 /**
- * Every entry a `disclosure()` result flattens to (via the SAME technique
- * `test-media-atom-parity.mjs` uses) conforms to the closed vocabulary: a
+ * Every entry a `disclosure()` result flattens to conforms to the closed vocabulary: a
  * real `state` member, and `hiddenReason` a non-empty string whenever
  * `state !== 'shown'`.
  *

@@ -1,8 +1,8 @@
 // Spec 49 §11: the media route's pure core. One slot from the draft's reads at 375, 768 and 1440, written in the slot
 // schema's shape (`plugins/sgs-blocks/schemas/media-slot.schema.json`), tiers only where a device differs from what it would
-// inherit. Nothing in the live route calls this until Stage B's switch-over, which replaces
-// `lib/fill-media.mjs::mediaDecisions`' use of `imageSlots` with one call:
-//   `import { slotFromReads } from './media/index.mjs';` then `slotFromReads( { reads, wrapper, schema } )` per media element.
+// inherit. The live route's media writer is `lib/fill-media.mjs::mediaDecisions`, over `lib/media/slots.mjs` and
+// `lib/media/write.mjs`, which calls this per media element:
+//   `import { slotFromReads } from './media/index.mjs';` then `slotFromReads( { reads, wrapper, schema } )`.
 //
 // `reads`: { 375: { visible, element }, 768: ..., 1440: ... } where `visible` is kind-per-width.mjs's visible read and `element`
 // is style-rows.mjs's element read for that width. `wrapper` (optional): absorb.mjs's wrapper read; a wrapper that does not

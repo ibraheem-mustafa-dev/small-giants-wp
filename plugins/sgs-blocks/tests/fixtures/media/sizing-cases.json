@@ -444,8 +444,8 @@
 				320,
 				300
 			],
-			"source": "to-prove",
-			"note": "With a figure the layout box and the surface are different elements, so Width and Height land on different selectors (PS-7). WP-2b proves it."
+			"source": "measured",
+			"note": "With a figure the layout box and the surface are different elements, so Width and Height land on different selectors (PS-7). The emitter parity test proves both twins print these declarations."
 		}
 	],
 	"responsive": [

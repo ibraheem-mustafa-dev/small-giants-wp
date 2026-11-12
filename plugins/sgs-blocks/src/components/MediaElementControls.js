@@ -196,8 +196,9 @@ export const MEDIA_BASES = {
  *
  * ⛔ Declaring a tier for a base nothing varies per device creates attributes no
  * renderer reads - the dead-control class `check-dead-controls.js` gates. This
- * list is the single source for BOTH injection filters; neither derives the
- * tiered set from group membership any more.
+ * list is the single source for the tiered set: the attribute generator and the atom
+ * settings (`atom-settings.js::settingsForBases`) both read it; neither derives
+ * the tiered set from group membership.
  */
 export const MEDIA_TIERED_BASES = [
 	...[ 'ImageId', 'ImageUrl', 'VideoId', 'VideoUrl',
@@ -274,7 +275,7 @@ export const MEDIA_ATTR_TYPES = {
 	//
 	// ⛔ ONE BASE CARRIES A TYPE CONFLICT ACROSS SURFACES, and the type declared
 	// here is what a FRESH adoption gets - never a retrofit of an existing one.
-	// A block's own declaration always wins at injection, so the divergent
+	// A block's own declaration always wins when the attribute generator writes it, so the divergent
 	// surfaces keep their shape and the atom READS it (see the atom registry's
 	// `reads` field):
 	//
@@ -357,7 +358,7 @@ export function mediaAttrType( base, tier ) {
  * distinct cases. Three are `sgs/before-after`'s shared autoplay - ONE toggle governing BOTH
  * video slots per its sync contract, so it is deliberately block-level rather
  * than per-prefix. `decorMedia` is listed for `sgs/decorative-image` because it
- * is a legacy composite object with no prefix/base decomposition at all.
+ * is a composite object with no prefix/base decomposition at all.
  *
  * An entry here is a name the shared layer must READ AS-IS. It is never a
  * licence to rename the stored attribute.

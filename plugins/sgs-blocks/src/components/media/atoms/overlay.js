@@ -43,8 +43,7 @@
  * against `class-sgs-container-wrapper.php`'s `backgroundOverlayOpacityTablet`/
  * `Mobile`) ─────────────────────────────────────────────────────────────────
  * `OverlayOpacity` has been in `MEDIA_TIERED_BASES` (`MediaElementControls.js`)
- * for some time already, so the L1 injection layer
- * (the generated block.json attributes) already registers `overlayOpacityTablet`/`overlayOpacityMobile`
+ * for some time already, so the generated block.json attributes already register `overlayOpacityTablet`/`overlayOpacityMobile`
  * (and their prefixed siblings) on every current adopter of this atom — this
  * atom's OWN `attrKeys()`/`css()` were simply not reading them yet. Only
  * OPACITY is tiered, matching the wrapper's own doc comment
@@ -57,7 +56,7 @@
  *
  * `css()` mirrors `includes/media/atoms/overlay.php`'s
  * `sgs_media_atom_overlay_css()` byte-for-byte — enforced by
- * `scripts/tests/test-media-atom-parity.mjs`.
+ * `scripts/tests/test-media-emitter-parity.mjs`.
  *
  * LOGIC HALF ONLY. Split from the JSX control per the purity contract
  * (`scripts/check-media-atom-purity.js`): this module must be importable by

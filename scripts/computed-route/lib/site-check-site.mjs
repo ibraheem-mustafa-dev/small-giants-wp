@@ -79,7 +79,7 @@ export function readRows( repo, client, target, targets = {} ) {
 }
 
 // The client whose functional flows live in scripts/parity/flows: the `sites/<client>` folder their own results go to
-// (lib/flow.mjs::flowsOutRoot), so the flows' owner is read from the flows, never named here.
+// (scripts/parity/flows/lib/flow.mjs::flowsOutRoot), so the flows' owner is read from the flows, never named here.
 export function flowsClient( outRoot = flowsOutRoot( {} ) ) {
 	const parts = path.normalize( outRoot ).split( path.sep );
 	const at = parts.lastIndexOf( 'sites' );

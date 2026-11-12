@@ -5,7 +5,7 @@
  *
  * Sizing MODE (auto / height / ratio, mutually exclusive per registry.js
  * `requires`) plus an independent named SHAPE (none / rounded / circle /
- * square) expressed through `clip-path` — the block WRAPPER's `border-radius`
+ * square) that this atom only validates; the `shape` atom paints it (`shape.php`). The block WRAPPER's `border-radius`
  * still belongs to `SgsBorderControl` (44 blocks) / native
  * `__experimentalBorder` (`sgs/media`) outright. Since 2026-09-01 this atom
  * ALSO writes a genuine editable radius via a SEPARATE custom property

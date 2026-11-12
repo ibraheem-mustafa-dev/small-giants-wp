@@ -58,7 +58,7 @@
 // has a blind spot by construction, and `_KNOWN_CONTROLS` has exactly this bug),
 // the corpora are resolved from source: a block's control corpus is its own
 // edit.js PLUS the source of every shared component it actually renders
-// (resolved via core/components.js the same way rule 18 resolves MediaPicker),
+// (resolved via core/components.js the same way rule 18 resolves image-rendering components),
 // and its render corpus is its own render files PLUS only those shared includes
 // whose own functions it actually calls.
 
