@@ -344,15 +344,15 @@
 						"css:grid-template-columns": "thumbsPerRow",
 						"css:gap": "thumbGap",
 						"css:margin-top": "thumbStripOffset",
-						"css:border-radius": "galleryThumbBorderRadius",
-						"css:border-width": "galleryThumbBorderWidth",
-						"css:border-style": "galleryThumbBorderStyle",
-						"css:border-color": "galleryThumbBorderColour"
+						"css:border-radius": "thumbRadius",
+						"css:border-width": "thumbBorderWidth",
+						"css:border-style": "thumbBorderStyle",
+						"css:border-color": "thumbBorderColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:border-color": "galleryThumbBorderColourHover"
+								"css:border-color": "thumbBorderColourHover"
 							}
 						},
 						"current": {

@@ -54,7 +54,6 @@ ITEM_ARRAY_CALL = re.compile(r"Sgs_Motion_Loop_Delays::item_array\(\s*'(sgs/[a-z
 # Corpus blocks with no motion part for one item. Each reason is a fact read from the block's own parts.
 GAPS: dict[str, str] = {
     "sgs/form-field-select": "its options are <option> elements inside the native select, which draws them itself; no part per option",
-    "sgs/hero": "its array rows (bgSvgParts) are animation settings for parts of the inline background SVG, not rendered repeated items; nothing to reveal per row",
     "sgs/nav-drawer": "its array rows (chromeLogoSvgParts) are animation settings for parts of an inline SVG logo, not rendered repeated items; nothing to reveal per row",
     "sgs/responsive-logo": "its array rows (svgParts) are animation settings for parts of the inline SVG logo, not rendered repeated items; nothing to reveal per row",
     "sgs/team-member": "its social links have one part for the whole row (social), none per link",
