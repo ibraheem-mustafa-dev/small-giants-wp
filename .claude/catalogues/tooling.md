@@ -1916,7 +1916,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `migrations/2026-10-20-property-equivalents-table.py` | manifest+script-call | - Spec 48 FR-48-8 step 5 (Bean, 2026-10-19). |
 | `migrations/2026-10-20-states-table.py` | manifest | - Spec 48 FR-48-81, the states wave (plan .claude/plans/archive/2026-10-20-states-wave.md). |
 | `migrations/2026-10-21-property-equivalents-intrinsic-ratio.py` | manifest | - Spec 48 FR-48-8 step 5, the `intrinsic-ratio` condition. |
-| `migrations/2026-10-30-block-identity-facts-table.py` | manifest+script-call | - Spec 48 F1 step A0/A1 (plan .claude/plans/2026-10-30-clone-recognition-fixes.md, |
+| `migrations/2026-10-30-block-identity-facts-table.py` | manifest+script-call | - Spec 48 F1 step A0/A1 (plan .claude/plans/archive/2026-10-30-clone-recognition-fixes.md, |
 | `motion-qa/lib/form-states-judges.mjs` | script-call | Pure judges, self-test and argument parsing for `probe-motion-form-states.mjs`. |
 | `motion-qa/lib/form-states-readers.mjs` | script-call | Page actions and reads for `probe-motion-form-states.mjs`: animation tagging, the shake and slide readers. |
 | `motion-qa/lib/nav-drawer-judges.mjs` | script-call | Shared judges, self-test and argument parsing for `probe-motion-nav-drawer.mjs` (the nav bar probes import the judges through that probe, which… |
@@ -2213,7 +2213,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
-| `check-first-paint.mjs` | manifest+script-call | First-paint gate against a LIVE site (plans/2026-11-04-clean-first-paint.md, F-lite). |
+| `check-first-paint.mjs` | manifest+script-call | First-paint gate against a LIVE site (plans/archive/2026-11-04-clean-first-paint.md, F-lite). |
 | `check-md-wrap.py` | commit-gate+script-call+skill | No hard-wrapped Markdown: every paragraph, list item and blockquote paragraph is one unbroken line. |
 | `check-no-client-names.py` | manifest+script-call+skill | : keep client names and reference-site names out of the framework. |
 | `check-rule-labels.py` | manifest | : the framework principles are cited as FP-<n>, never by an archived spec's number. |
@@ -2742,7 +2742,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/refresh-pairs.mjs` | script-call | Refreshes a surface's block-to-draft pairs from the saved post and the draft's inventory, with no clone route and no write to the site… |
 | `computed-route/register-sweep.mjs` | script-call | Register <-> sweep command (A4). |
 | `computed-route/shop-fixtures.mjs` | skill | Spec 48 section 16, "Minimum fixture products": creates a simple and a variable WooCommerce product (price, stock, image) on a test site for the shop… |
-| `computed-route/shop-load-more-check.mjs` | — | Live proof for the shop "Load more" mode (FR-30-3b, plan .claude/plans/2026-11-02-shop-load-more.md Batch 2). |
+| `computed-route/shop-load-more-check.mjs` | — | Live proof for the shop "Load more" mode (FR-30-3b, plan .claude/plans/archive/2026-11-02-shop-load-more.md Batch 2). |
 | `computed-route/shop-parts.mjs` | manifest+script-call+skill | Spec 48 FR-48-60, FR-48-61, FR-48-62: maps a client's draft shop surfaces (buy box, filter, basket drawer) to their framework homes and prints the… |
 | `computed-route/site-build.mjs` | manifest+script-call+skill | The site build (Spec 48 FR-48-55): every row of the confirmed sites/<client>/build/page-map.json made on one site once, with its menus, front and… |
 | `computed-route/site-check.mjs` | script-call+skill | The functional check of one client's clone (Spec 48 §3.7): does it WORK, where the walker only compares styles. |

@@ -1,8 +1,9 @@
 ---
 doc_type: plan
-status: parked
-archive-after: the Eye Care sign-off (an Eye Care doc links here; it moves to plans/archive/ with the links repointed then)
+status: done
 ---
+
+**Archived 2026-11-12, parked: the open items are Spec 48 FR-48-107 (handoff readers Stage S, as acceptance for the tool) and the Spec 48 section 16.1 requirements. This file is history only.**
 
 # The cloning tool: handoff readers, the writers that use them, and the Indus proof
 

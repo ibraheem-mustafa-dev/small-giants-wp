@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Live proof for the shop "Load more" mode (FR-30-3b, plan .claude/plans/2026-11-02-shop-load-more.md Batch 2).
+ * Live proof for the shop "Load more" mode (FR-30-3b, plan .claude/plans/archive/2026-11-02-shop-load-more.md Batch 2).
  *
  *   node scripts/computed-route/shop-load-more-check.mjs --target eye-care-test --case <name|all> [--headed] [--no-mods]
  *

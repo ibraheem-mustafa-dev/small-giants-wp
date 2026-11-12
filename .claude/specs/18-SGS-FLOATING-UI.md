@@ -42,6 +42,24 @@ No official Google percentage exists for "small fraction of the screen"; any thr
 
 **Status:** deferred; needs a design gate before any build. The open item is tracked in `.claude/LEDGER.md`.
 
+### 1.2 FR-18-1 — Pin an authored block to a screen corner
+
+A client can author a card or button in the block editor and pin it to a screen corner at chosen widths (a "Get in touch" card at the top right, a "This is us" button at the bottom centre), shown or hidden per device. The pinned content is authored for the floating layer: it is not an in-page `sgs/container` lifted out of the tree.
+
+**Status:** `NOT-BUILT`. Parked by Bean on 2026-09-27 after two design reviewers returned NO GO on the first attempt (verdicts and what a rebuild needs: `.claude/reports/2026-09-27-u18-g6-g8-design.md` §3, §8, §9). Nothing exists in code: `plugins/sgs-blocks/includes/class-sgs-floating-ui-renderer.php::Sgs_Floating_UI_Renderer::render` prints only back-to-top and reading progress.
+
+**Reopen when** the lamalama copy is rebuilt through the computed route and its corner card or "This is us" button must be reproduced, or a client build needs a card pinned to a screen corner. Until then lamalama's "GET IN TOUCH" card is an accepted difference (DEC-18 in `.claude/reports/reference-requirements/families-master.json::decisions`; Gate 3C family M-08 counts as covered).
+
+**What a build must answer** (run it as a fresh design gate: research first, exit-cell table, `/second-opinion`, Bean's go, then one implementer per disjoint file set):
+1. Design from `Sgs_Floating_UI_Renderer`, which already prints floating UI at `wp_footer`. Its container is `aria-hidden`, so a card with a real link cannot sit inside it unchanged, and FR-36-8's priority-plus-More text contradicts reusing it as is (the U-14 cautions).
+2. Every `<style>` tag the card prints reaches the CSS collector.
+3. The editor shows the card without covering the canvas.
+4. Behaviour inside `sgs/nav-drawer` and `sgs/modal` is defined.
+5. The card has its own z-index token, clear of `sgs/whatsapp-cta` (200) and `sgs/notice-banner` (1000).
+6. A portal-conformance detector covers the six `wp_footer` adopters.
+
+**Done when:** lamalama's card measures 160x326 at top 16 / right 16 at 1440 and is absent at 375 and 768, read by `plugins/sgs-blocks/scripts/nav-qa/u18-copy-probe.mjs` (its `card` cell) and the parity walker; DEC-18 is then closed as built and M-08's note says so.
+
 ## 2. Admin surface
 
 Accessible at: *Appearance → Customise → SGS Floating UI*

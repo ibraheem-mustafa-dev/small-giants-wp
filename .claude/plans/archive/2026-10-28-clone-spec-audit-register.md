@@ -1,8 +1,9 @@
 ---
 doc_type: plan
-status: parked
-archive-after: the Eye Care sign-off (an Eye Care doc links here; it moves to plans/archive/ with the links repointed then)
+status: done
 ---
+
+**Archived 2026-11-12, parked: the gaps it lists are Spec 48 FR-48-95 to FR-48-103. This file is history only.**
 
 # Cloning tool spec audit: the verified gap register (2026-10-28)
 

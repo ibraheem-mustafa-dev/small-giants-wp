@@ -239,6 +239,11 @@ The Part K structural gate is `plugins/sgs-blocks/scripts/inspector-scan/run.js`
 2. **Block Bindings coverage** — built (Part I "Dynamic content"); the residual is confirming the `$supported_block_attributes` scope.
 3. **Part J step 5 (brand-strip logos on `MediaGalleryPicker`)** — BUILT. **Step 10's Section Styles** — deliberately not adopted (Part J).
 
+**Open build items (Status: not built):**
+- **FR-35A-1 — `IconPicker` takes an `id` prop.** `plugins/sgs-blocks/src/components/IconPicker/IconPicker.js` has the props `value`, `onChange`, `label`, `sources` and `brands` only, so its label cannot be tied to the control. Add `id`, wire the label's `htmlFor` to it (a `useInstanceId` default) and pass it from each caller. Prove it: each rendered picker's label and control share an id in the editor DOM.
+- **FR-35A-2 — The wiring gate's L5 tracer follows a normalising variable into a ternary.** `sgs/google-reviews::scrollbarStyle` is still listed as `sgs/google-reviews::scrollbarStyle::L5` in `plugins/sgs-blocks/scripts/wiring-fingerprint-baseline.json` because the tracer loses a value that passes through a normalising variable and then a ternary. Extend the tracer, then delete that baseline entry; the gate must stay green with the entry gone.
+- **FR-35A-3 — One gradient regex, in a leaf module.** The gradient test is written out in `plugins/sgs-blocks/src/utils/tokens.js` (three places) and `plugins/sgs-blocks/src/utils/surface-tone.js` (two), because `surface-tone.js` cannot import `tokens.js` without a cycle with background-preview. Move it to a leaf module both import; prove it with a grep that finds the pattern once.
+
 **Measurement & enablement layer (makes Part L enforceable):**
 - **Element-manifest conformance linter** (`plugins/sgs-blocks/scripts/check-element-manifest-conformance.js`): per-block OK/GAP/ORPHAN + a states axis. GAP is a queryable catalogue, not a backlog.
 - **Code-derived control classification** (`extract-signatures.py`): each attribute carries which CSS property it drives (`css_property`), on which **element / state / tier** — all derived from code, never names. Two-layer override architecture (`attr-classification-overrides.json` applied after the derived layer).

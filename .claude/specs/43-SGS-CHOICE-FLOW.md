@@ -156,7 +156,7 @@ It sits beside the steps on wide containers (`summaryPosition` start or end) and
 
 ## 7a. Known cross-cutting gap -- shared with Spec 42, not resolved here
 
-**FR-43-14.** Same gap as Spec 42 FR-42-10: Spec 48's site-build script (FR-48-55, built 2026-10-20) creates the saved `sgs_choice_flow` (or `sgs_form`) post for each flow or form row of the confirmed page map (Spec 48 §12, R-47-11), holding a placeholder; stage 3 builds the flow into it and links the page to it (Spec 48 FR-48-19). Until then a cloned flow or form is built into the page that shows it. One change fixes both CPTs. Tracked in `.claude/plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md` section 1.
+**FR-43-14.** Same gap as Spec 42 FR-42-10: Spec 48's site-build script (FR-48-55, built 2026-10-20) creates the saved `sgs_choice_flow` (or `sgs_form`) post for each flow or form row of the confirmed page map (Spec 48 §12, R-47-11), holding a placeholder; stage 3 builds the flow into it and links the page to it (Spec 48 FR-48-19). Not built for flows: the route writes no linked flow (`flowIsLinked` has no writer in `scripts/computed-route/lib`), so until stage 3 builds the flow into the saved post a cloned flow is built into the page that shows it (forms are done, Spec 42 FR-42-10). One change fixes both CPTs. Open owner-policy question for Bean: whether the saved-post mandate applies to cloned flows as it does to forms (Spec 42 §9, decided 2026-09-26 for forms), and how cloned flows and forms are named. History: `.claude/plans/archive/2026-09-26-form-choiceflow-pipeline-and-analytics.md`.
 
 ## 8. Recommendation matching, and what is deferred
 
@@ -176,7 +176,7 @@ It sits beside the steps on wide containers (`summaryPosition` start or end) and
 | Phase 4 | FR-43-6, FR-43-7, FR-43-22 (modal delivery and the Mama's Munches acceptance journeys) | built |
 | Follow-ups | FR-43-23 to FR-43-26 (guided buybox, showcase layout, saved-flow architecture, inline next step) | built |
 | Phase 5 | Spec 42 FR-42-7b, FR-42-9: a choice flow still embedded on a page or linked from a product cannot be trashed or deleted, by the same guard and reference finder as forms (`Sgs_Cpt_Delete_Guard`, `Sgs_Cpt_References`) | built |
-| Parked | FR-43-14 and Spec 42 FR-42-10 (saved-post creation by the computed route); Spec 42 FR-42-13 (analytics) | tracked in `.claude/plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md` |
+| Parked | FR-43-14 and Spec 42 FR-42-10 (saved-post creation by the computed route); Spec 42 FR-42-13 (analytics) | not built; each Status line in this spec and Spec 42 says what remains |
 
 ## 10. Requirement index
 
@@ -198,7 +198,7 @@ It sits beside the steps on wide containers (`summaryPosition` start or end) and
 | FR-43-11 | built | Distinct plain-English inserter descriptions vs `sgs/form` |
 | FR-43-12 | built | Recommendation matching: tag overlap, no formula engine |
 | FR-43-13 | deferred | Preset starter flows, same status as Spec 42 FR-42-12 |
-| FR-43-14 | parked | The computed route does not yet create a saved flow post (shared gap with Spec 42 FR-42-10) |
+| FR-43-14 | not built | The route creates the saved flow post but links and fills nothing (forms are done); the owner-policy question (mandate for cloned flows, naming) is open for Bean (shared with Spec 42 FR-42-10) |
 | FR-43-15 | built | Per-option image (universal) |
 | FR-43-16 | built | Per-option help-text `?` toggle (universal) |
 | FR-43-17 | built | Add-on price list: a second priced-step source (site-wide groups of `{key, label, price}`, one settings page) |

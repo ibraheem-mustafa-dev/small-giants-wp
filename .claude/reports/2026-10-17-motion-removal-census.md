@@ -550,7 +550,7 @@ The build trees are partly tracked: 182 file(s) are tracked and were searched wi
 - `.claude/dev-setup.md`: 1 hit(s) at line 156, needles: `fx.js`
 - `.claude/gap-analysis/reports/2026-10-12-motion-system-research.md`: 13 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `animation-stagger.php`, `sgsHoverDuration`, `sgsHoverEasing`, `sgsHoverShadow`, `shadowLiftOnHover`
 - `.claude/gap-analysis/reports/2026-10-12-spec38a-motion-build-plan.md`: 8 hit(s), needles: `animation-entrance-timing.js`, `animation.js`, `fx.js`, `sgsAnimation`, `sgsAnimationStart`
-- `.claude/plans/2026-10-01-header-nav-thread-plan.md`: 1 hit(s) at line 60, needles: `scaleHover`
+- `.claude/plans/archive/2026-10-01-header-nav-thread-plan.md`: 1 hit(s) at line 60, needles: `scaleHover`
 - `.claude/plans/2026-10-02-eye-care-fix-register.md`: 9 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurnsMode`, `bgParallax`, `bgZoomStart`, `includes/hover-effects`, `photoEntrance`, `staggerInsideGroups`, `transitionDuration`
 - `.claude/plans/2026-10-02-eye-care-plan.md`: 2 hit(s) at lines 36, 104, needles: `staggerInsideGroups`, `transitionDuration`
 - `.claude/plans/2026-10-05-eye-care-functionality-backlog.md`: 2 hit(s) at lines 100, 100, needles: `imageZoomHover`, `scaleHover`

@@ -494,6 +494,8 @@ Every control in both containers satisfies Spec 35A Part L (the per-block defini
 
 **Done when:** both containers pass `check-element-manifest-conformance.js` with zero GAPs. Roster membership is met; zero GAPs is not.
 
+**Not built, what remains:** the gap counts are raw upper bounds, so triage them first (a gap whose control lives in Advanced or a shared panel is not a gap), then build the real ones. Proof: the script's `--json` output with zero `status: "gap"` findings for the four blocks.
+
 #### FR-37-19 — Accessibility feedback is informational only
 Contrast/a11y feedback from operator choices is a **passive notice** in the editor and admin — never a save/publish gate, never auto-enforced, never agent-wired (P1 DP2a). The framework's own default output still meets WCAG 2.1 AA.
 
@@ -526,7 +528,7 @@ The header nav is `sgs/nav-bar-menu` (horizontal bar + burger + dropdown/mega), 
 #### FR-37-22 — Emittable by construction
 Every capability above is a block attribute, so Spec 48's route can set it; no capability lives outside the attribute layer (P1 DP6).
 
-**Status:** `PARTIAL` — the attribute layer is the contract and holds; Spec 48 owns the route's header, footer and drawer surfaces.
+**Status:** `PARTIAL` — the attribute layer is the contract and holds; Spec 48 owns the route's header, footer and drawer surfaces. **Not built (Wave 5, W5-a):** the computed route (`scripts/computed-route`) clones a header, footer and drawer end to end as Spec 48 surfaces, and the Wave 4 roster clones (FR-37-56) become its regression fixtures. Open design question to settle first: the reference-capture method (`scripts/parity/draft-live-walk.mjs` with its header mode) may serve as the clone walker, so every future copy is captured the same way. Reopen when Wave 4 (FR-37-56) has its first accepted clone.
 
 **Done when:** a header, footer or drawer for a draft is written through block attributes only, verified on the real homepage (FP-11); the acceptance proof is FR-37-23.
 
@@ -582,6 +584,8 @@ The Simple surface ships **≤3 controls by default**. Operator pin/unpin exists
 
 **Done when:** both containers show exactly the Simple controls in the table above by default; the lint REPORTS a block as over the default — advisory, never a build blocker.
 
+**Not built, canvas-click selection (the Simplicity test's finding 2):** clicking an element on the editor canvas (the logo, the phone number, the burger) does not select the control group that edits it, so a non-coder looks for the setting in the sidebar. Where: the header and footer `edit.js` files. Proof: before and after inspector screenshots of the same click on the canvas. Reopen when the blind-tester arm of FR-37-26 runs, or the simple surface is next reworked.
+
 > **≤3 is a design DEFAULT the lint surfaces, not a cap a build dies on** (P2 §5). `check-simple-surface-cap.js` is warn-only with an opt-in `--strict`, matching `check-element-manifest-conformance.js`. A block reporting OVER is a NUDGE toward the P2 §5 roster, **not a defect and not a blocker**. Do not "fix" it by hiding controls a client relies on: a ceiling a client cannot influence is worse than a surface that is slightly busy.
 
 #### FR-37-28 — Preset controls are permitted
@@ -610,9 +614,41 @@ No `header-sticky` / `header-transparent` / `header-shrink` template-part regist
 #### FR-37-23 — Acceptance
 This spec closes only when: FR-37-1/2/3/5 are live on the canary; §3 audits (FR-37-9/10) are recorded per clause; the never-overflow gate (FR-37-12) passes on every live site **across the full sweep per §3.6** (not three fixed widths); no inline `style=""` on either container; and **Bean's eye** signs off (FP-13 — measurement and eye are co-authoritative, neither closes alone). The acceptance proof is cloning real references through Spec 48 as SGS-native output (header, drawer and footer together). Anything a reference needs that SGS cannot express is a defect in the framework, never a reason to trim the reference.
 
-**Status:** `NOT-BUILT`.
+**Status:** `NOT-BUILT`. It closes the track (Wave 5, W5-b) and follows FR-37-22's route work and FR-37-56's Gate 5. Two further Wave 5 items ride with it: W5-c, the branded Indus header cutover through the computed route (its draft's inline-style source has no SGS-BEM classes, so it enters as a Spec 48 surface; Spec 36 FR-36-18 notes the same wait) with one client feedback round, then Spec 36 FR-36-25 (structured data emitted once across all placements) and FR-36-26a (discoverability) re-verified on that header. Not blocking W5-b.
 
 **Done when:** all of the above, each with evidence recorded, not asserted.
+
+#### FR-37-55 — Header and drawer framework gaps found by the Gate 3C copies
+
+Four framework gaps the lamalama and Indus copies exposed; each is a real control for every client, never a per-site hardcode (verify each against current code before building).
+
+1. **Label width inside a stretching flex column.** `sgs/label` with `fullWidth: false` still stretches in a flex column (`plugins/sgs-blocks/src/blocks/label/render.php` sets display only; no `align-self`). `sgs/button::widthType: fit` is built (`665364658`). Proof: a label set to fit inside a column container measures its text width at 1440.
+2. **`sgs/mega-aside` horizontal alignment.** `src/blocks/mega-aside/block.json::attributes.asideJustify` sets vertical alignment only; the aside is a flex column (`style.css`) with no cross-axis control, so copies used flex-row wrappers. Add a per-device horizontal alignment tier object. Proof: an aside with a short child aligned start, centre and end at 1440, computed `align-items`.
+3. **A flat white Google G.** No block or icon source draws it (`assets/icons/sgs-icons.json` and the Lucide set carry no Google mark; `social-icons` only brand-colours it), so the Indus drawer's fourth social is Twitter. Add the mark to the social-icons platform set with a single-colour mode. Proof: the Indus drawer's fourth disc paints the white G.
+4. **lamalama's drawer top-row hairline.** `sgs/nav-drawer-menu` has per-row borders but no hairline under the pill's top row (the plain-item trailing glyph is built: `itemTrailingIcons`, `6f58e7f90`). Confirm against the lamalama copy first; if it is a gap, add a drawer header-row divider control. Proof: computed `border-bottom` under the top row at 375.
+5. **Header rows align.** `includes/sgs-header-rows-align-css.php::sgs_header_rows_align_css` shares register N46's latent content-band collapse: its own comment says there is no content band, so it does not fire today. Fix when a header row first gains a content band; proof: a row with a content band keeps its alignment at all three widths.
+
+**Status:** `NOT-BUILT` (items 1 to 5). Reopen when the lamalama or Indus copy is next walked, or a client build hits one.
+
+#### FR-37-56 — Reference clone roster (Wave 4, the proof gate)
+
+The framework is proved by cloning a roster of real references as SGS-native headers, drawers and footers. Roster (Gate 5 counts against it): 12 clones, studionamma first, then buck, dogstudio, fantasy, lamalama, lusion, wearecollins, Away (UK storefront, copy not cloned verbatim, DEC-03), ButcherBox, rabbit.tech, and Bean's two Claude Design drafts (Halcyon Mega Menu, `sites/Mega-menu design/Mega Menu.dc.html`; Indus Foods Mega Menu, `sites/Indus Foods Mega Menu Design/Indus Foods Mega Menu.dc.html`). resn (WebGL) is a 13th unless its teardown finds an effect no Spec 38 tier can express. Requirements data: `.claude/reports/reference-requirements/<ref>.json` and `families-master.json`.
+
+**Preconditions, all closed before the first clone:**
+- Gate 3C item 4 passed (`.claude/verify/merged-spec36-37-track.md`, "Gate 3C last mile").
+- The `labels-<site>.json` set exists for ButcherBox and rabbit.tech, and Away's is re-read (`.claude/reports/2026-07-28-drawer-code-extraction/labels-away.json`), after Step 0c (W2-i).
+- Bean signs the substitution policy (W4-a2): a licensed font maps to a named nearest match recorded in the DP5 homes table; copyrighted imagery becomes a same-crop placeholder; neither is a capability gap.
+- Step 0c, the headed capture pass: re-capture ButcherBox and rabbit.tech at 768, rabbit's open dropdown and both footers, and re-read Away on the UK storefront (DEC-03, DEC-04), replacing rows in the three `reference-requirements` JSON files. Optional Step 0e: a 1000px tablet capture of the two drafts. resn re-judged at family level from the headed capture.
+- The three accepted divergences (DEC-01, DEC-02, DEC-07) are in the clone report template: one line each under a "Recorded divergences" heading in the clone's `reports/visual-diff/<clone>` report.
+- The Bean session is booked with the evidence pack pre-built and an external ping.
+
+**Units:** W4-b studionamma 100% clone (header, drawer, footer; content, imagery, colours, type, motion, positioning, mobile) with a per-property DP5 homes table, DP7-clean harness evidence and Bean's eye (FP-13), expecting one loop-back. Gate 4 (studionamma accepted) is the go/no-go. W4-c the remaining clones, only after W4-b is accepted. Every capability gap is a defect filed against Waves 1 to 3, never a trimmed reference; an effect a Spec 38 tier can express is built with Spec 38 effects; an effect no tier can express comes back to Bean as a trim or exclude decision, never a silent loop-back. W4-d preset extraction (a header preset, a footer preset and a drawer starter per accepted clone; invented fills: Utility commerce, Overlay hero-contrast, Directory footer). W4-e starter-set narrowing (drop `centred`, `minimal`, `full`; keep `scratch` plus 3 search variants).
+
+**Gate 5 (track acceptance):** FR-37-23 in full, every roster clone accepted, presets extracted, starter set narrowed, walker regression fixtures green. Readiness is computed at the time, never pre-asserted. Stop-loss: a gate scoring under 50 surfaces park-or-pivot with two ranked paths.
+
+**Status:** `NOT-BUILT`. Reopen when Gate 3C item 4 passes or Bean asks to start Wave 4.
+
+**Done when:** the evidence pack per clone is parity-walker output, DP7 captures, the homes table and the labels fidelity output, judged by Bean on the pack and the live URL; presets restyle under each client's theme-snapshot tokens; a DP7 harness mismatch fails the build.
 
 ---
 
@@ -696,7 +732,7 @@ A row set to **Columns** exposes, alongside its column **count**, a set of **col
 
 **⚠ Do NOT add shapes from taste.** The shape list comes from reference teardowns; any shape added later needs a measured reference behind it, and any further `auto` member needs the same justification.
 
-**Status:** `PARTIAL` — `src/components/ColumnShapePicker.js` is mounted in `site-footer-row/edit.js`, `site-header-row/edit.js` and `container/edit.js` (via `container/components/LayoutPanel.js`); its `SHAPES` catalogue includes `fit-centre` (`weights: [1,'auto',1]`), and `weightsToTrack()` emits the bare keyword `auto` so the picker can produce `1fr auto 1fr` (the split-nav-either-side-of-a-centred-logo layout). Live-site verification and Bean's eye check are owed.
+**Status:** `PARTIAL` — `src/components/ColumnShapePicker.js` is mounted in `site-footer-row/edit.js`, `site-header-row/edit.js` and `container/edit.js` (via `container/components/LayoutPanel.js`); its `SHAPES` catalogue includes `fit-centre` (`weights: [1,'auto',1]`), and `weightsToTrack()` emits the bare keyword `auto` so the picker can produce `1fr auto 1fr` (the split-nav-either-side-of-a-centred-logo layout). **Not built, what remains:** live-site verification (a site-header row set to `1fr auto 1fr` through the picker, read on a live page at 375, 768 and 1440 with the computed `grid-template-columns`) and Bean's eye check (FP-13). Computed-grid evidence that the picker writes `1fr auto 1fr` and renders centred-logo exists (`.claude/verify/merged-spec36-37-track.md`, Wave 2).
 
 **Built to the gold standard, not to taste** (`.claude/reports/2026-08-26-column-shape-picker-gold-standard.md`):
 - Core's own column picker is **insert-time only** (`columns/edit.js` swaps the Placeholder once the block has children; its variations are `scope:['block']` with no `isActive`, so `BlockVariationTransforms` renders null). An after-insert shape control is a genuine gap in core.

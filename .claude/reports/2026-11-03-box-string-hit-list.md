@@ -2,7 +2,7 @@
 doc_type: report
 title: Box-string hit list (B5 step 2), repo trees
 created: 2026-11-03
-governs: .claude/plans/2026-11-03-mamas-framework-batch.md B5
+governs: .claude/plans/archive/2026-11-03-mamas-framework-batch.md B5
 ---
 
 # Box-string hit list

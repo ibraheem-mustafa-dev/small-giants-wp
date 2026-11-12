@@ -1,10 +1,12 @@
 ---
 doc_type: plan
 title: Cloning rewind, standing rulings and the parked cloning tool
-status: parked
+status: done
 created: 2026-10-30
 governs: Spec 48 (cloning system); LEDGER Front H
 ---
+
+**Archived 2026-11-12, parked: the open work is Spec 48 section 16.1 (FR-48-95 to FR-48-107) and Bean's standing rulings are Spec 48 section 16.2 (FR-48-108 to FR-48-112). This file is history only.**
 
 # Cloning: the route rewound to 2026-10-28, the rulings that stand, and what is open
 
@@ -60,7 +62,7 @@ Each is a requirement whatever code meets it; Spec 48 as rewound does not yet ca
 
 Bean, 2026-11-10: the automatic cloning tool resumes once Eye Care and Mama's are signed off by hand. Everything still open from the four plans folded in here is listed below; each line names the archived plan whose section holds the full detail, so a cold session can resume from it.
 
-1. **The fix pass from the spec audit register.** The verified gap register of 2026-10-28 is the single list the next cloning fix pass works from: sections A (working pieces in the right place), B (content carried over), C (the look carried over), D (measurement and census) and S (spec gaps Bean rules on), with its own suggested order. Every fix lands with a MUST FAIL test, a negative control and a mutation list. Detail: `plans/2026-10-28-clone-spec-audit-register.md`.
+1. **The fix pass from the spec audit register.** The verified gap register of 2026-10-28 is the single list the next cloning fix pass works from: sections A (working pieces in the right place), B (content carried over), C (the look carried over), D (measurement and census) and S (spec gaps Bean rules on), with its own suggested order. Every fix lands with a MUST FAIL test, a negative control and a mutation list. Detail: `plans/archive/2026-10-28-clone-spec-audit-register.md`.
 2. **Cloning tool Phases 2 to 4.** Phase 2 steps 1 to 4 are done (the second re-clone, 2026-10-28). Next: the register's fix pass (item 1), then the third re-clone with the vision audits; Phase 3 runs each census class to its mechanism with a design council and wide fix waves (every variant its class names); Phase 4 repeats until rulings D and E hold on every surface of the three clients, then pairs for every surface and Bean's eye. Detail: `plans/archive/2026-10-23-cloning-tool-completion.md` (Phases 2 to 4, Status).
-3. **Handoff readers, the two open items.** Track T's closing three-rater review (now `/council`), then Stage S steps 1 to 7 (refresh loop and intake delta, the header surface proof, the header G0 to G7 with pairs at every breakpoint, the surface builds after a `mysqldump` backup, forms and email, U17 and U18 sign-off, Eye Care as the second answer sheet); then Close. Indus itself was finished by hand and signed off (2026-11-08), so Stage S is re-scoped to the tool, not the site, when it resumes. Detail: `plans/2026-10-21-handoff-readers.md` (Stage S, Close).
+3. **Handoff readers, the two open items.** Track T's closing three-rater review (now `/council`), then Stage S steps 1 to 7 (refresh loop and intake delta, the header surface proof, the header G0 to G7 with pairs at every breakpoint, the surface builds after a `mysqldump` backup, forms and email, U17 and U18 sign-off, Eye Care as the second answer sheet); then Close. Indus itself was finished by hand and signed off (2026-11-08), so Stage S is re-scoped to the tool, not the site, when it resumes. Detail: `plans/archive/2026-10-21-handoff-readers.md` (Stage S, Close).
 4. **Mama's clone-based delivery.** The route still writes none of the controls Mama's draft taught (label end shapes, the buybox sticky bar and others), Mama's recalibration on its mirror (Spec 48 Appendix A step 13, FR-48-8), the shop parts of the site build (`scripts/computed-route/lib/site-build-map.mjs::SHOP_TYPES` stops the run; the four `woocommerce_*_page_id` options), and the account and cart calibrations. Mama's site itself is being finished by hand (`plans/2026-11-02-clone-finishing-streams.md`), so this becomes the tool's shop proof when it resumes. Detail: `plans/archive/2026-10-22-mamas-delivery.md`.

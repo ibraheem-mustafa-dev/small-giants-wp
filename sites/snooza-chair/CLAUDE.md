@@ -9,7 +9,7 @@
 
 ## The Proposal
 
-Bean is proposing an SGS WordPress site with the SGS Configurator Pro plugin as the centrepiece. The 3D configurator is the differentiator: no other agency pitching will have a working demo of the chair spinning in 3D with AR on a phone. The pitch is to walk in with a phone showing the Snooza Chair in AR on the meeting room floor. Build plan: `.claude/plans/2026-08-03-snooza-configurator-build-plan.md`.
+Bean is proposing an SGS WordPress site with the SGS Configurator Pro plugin as the centrepiece. The 3D configurator is the differentiator: no other agency pitching will have a working demo of the chair spinning in 3D with AR on a phone. The pitch is to walk in with a phone showing the Snooza Chair in AR on the meeting room floor. Build plan: `.claude/plans/archive/2026-08-03-snooza-configurator-build-plan.md`.
 
 ## Product: the Snooza Chair
 
@@ -43,3 +43,26 @@ Medical/rehabilitation seating for children and adults with epilepsy, autism, ce
 ## Model accuracy (Bean, 2026-08-03)
 
 The reference photos are not ideal and the 3D model does not need to be dimensionally exact for the pitch demo. It needs to read convincingly as the Snooza Chair on a phone screen in AR. Fidelity is a Track-2 concern, not a blocker for the meeting.
+
+## Build status: not started
+
+No part of the Snooza site or its configurator is built. The plan is archived at `.claude/plans/archive/2026-08-03-snooza-configurator-build-plan.md` (Appendix A holds the Configurator Pro config schema and the v1 scope); read it before starting. This section is the live record of what remains.
+
+### Phases (plan section 12)
+
+| Phase | Name | Timebox | Deliverable | Gate |
+|---|---|---|---|---|
+| 0 | Pitch-demo track (parallel, independent) | 2-3 days | One `.glb` and `.usdz` pair, one static AR-enabled HTML page, tested on the actual demo phone | Bean opens the link on his phone, taps AR, sees the chair on the floor |
+| 1 | 3D model spec and generation | about 1 week | Approved single-geometry, material-variant, toggleable-mesh `.glb` (spec: plan section 7) | Bean's visual sign-off; all 6 material variants and the accessory meshes toggle correctly in a viewer |
+| 2 | `sgs/product-viewer` block and variant wiring | weeks 2-3 | The block renders the model; colour and size selection swaps material and geometry live; accessibility defaults in place (plan section 8) | axe-core 0 on the block; keyboard-only walkthrough passes; no autoplay verified live |
+| 3 | Accessory add-on mechanism | weeks 3-4 (the largest new item, plan section 6) | Accessory toggle UI and the extended multi-item cart proxy (`class-cart-proxy.php`) with full adversarial-fixture parity | Multi-item add-to-cart security fixtures pass; running total correct |
+| 4 | Ecommerce integration and checkout | weeks 3-4 | Chair and accessories flow through the existing WooCommerce checkout unchanged | A real test order with 2 accessories completes checkout |
+| 5 | Polish, mobile QA, byte budget, content | week 5 | Configurator-page byte budget confirmed against the new exception; mobile, keyboard and reduced motion re-verified | Design review and performance audit pass; WCAG 2.2 AA re-confirmed on the finished product page |
+| 6 | Launch | week 6 | Live site | Bean's sign-off |
+
+### Open questions for Bean (plan section 13)
+
+1. **Accessories: extended cart proxy or a paid WooCommerce extension?** Option A extends the existing cart proxy and has no paid dependency; Option B uses WooCommerce Bundles or Composite Products. The plan recommends A because Bean already promised the client no monthly fees. Bean decides.
+2. **Where do the reference product images live?** The plan could not find the files its earlier client notes named. `sites/snooza-chair/assets/` now holds the scraped images; confirm that is the source before phase 1 starts.
+3. **Configurator-page byte budget ceiling.** Needs a build-session measurement of the real `model-viewer` plus the existing buybox JavaScript, not the plan's estimate (plan section 10).
+4. **When does the Configurator Pro licence extraction (the £299 a year plugin) happen?** The plan recommends after Snooza's own launch; Bean may want it earlier if a second prospect is waiting.
