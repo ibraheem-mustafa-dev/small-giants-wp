@@ -140,6 +140,12 @@ class MediaCoverCropSizesTest extends TestCase {
 		$this->assertSame( array( 'widens' => true, 'sizes' => '' ), $this->plan( $attrs, 10 ) );
 	}
 
+	public function test_a_landscape_image_with_an_automatic_height_never_widens(): void {
+		// No Ratio and no Height, or a px Height with no Width: the box takes the image's own shape, so `auto` stays.
+		$this->assertSame( array( 'widens' => false, 'sizes' => '' ), $this->plan( array( 'fit' => $this->all( 'cover' ) ), 10 ) );
+		$this->assertSame( array( 'widens' => false, 'sizes' => '' ), $this->plan( array( 'height' => $this->all( '48px' ) ), 10 ) );
+	}
+
 	public function test_a_width_and_height_box_derives_its_ratio(): void {
 		$attrs = array(
 			'maxWidth' => array( 'desktop' => '200px' ),

@@ -94,7 +94,15 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 				$box_ratio = $box_w / $box_h;
 			}
 			if ( $box_ratio <= 0.0 ) {
-				// The box shape is unknowable here: only a portrait image (or a square one) is certain not to widen.
+				// No Ratio and no fixed box: with no Height, or a px Height and an automatic width, the box takes the
+				// image's own shape, so nothing is cropped and the browser's own measurement (`auto`) stays right.
+				$h = $heights[ $device ];
+				if ( null === $h || '' === $h || ( null !== $box_h && null === $box_w ) ) {
+					$drawn[ $device ] = null;
+					continue;
+				}
+				// A fill or relative Height: the box shape is unknowable here, so only a portrait image (or a square one)
+				// is certain not to widen.
 				if ( $image_ratio > 1.0 ) {
 					return $unknown;
 				}
