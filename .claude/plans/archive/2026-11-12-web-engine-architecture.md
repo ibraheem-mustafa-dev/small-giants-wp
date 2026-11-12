@@ -1,12 +1,14 @@
 ---
 doc_type: plan
 title: "Web engine to replace WordPress: architecture proposal and roadmap"
-status: active
+status: done
 created: 2026-11-12
 governs: LEDGER Front E (web engine); the concept is `.claude/Proposal.md`
 ---
 
 # Web engine to replace WordPress: architecture proposal and roadmap
+
+**Record as approved.** This is the plan as Bean approved it on 2026-11-12. The engine's repository (`C:\Users\Bean\Projects\small-giants-engine`) was set up the same day and holds the living copy at `.claude/plans/architecture.md`: read and change that one. Section 21 below is the brief written before that repository existed; its current form is section 21 of the living copy.
 
 **What this is.** The architecture for Small Giants Studio's own website engine and the gated steps to build it. Bean approved it on 2026-11-12 after a research round and a full council (four independent reviews, every finding checked by a separate fact-checker). Nothing is built yet: section 21 is the brief that starts step 1a in a new repository. The research behind it is in `C:\Users\Bean\.claude\memory\research\2026-11-12-web-engine-replace-wordpress.md`.
 
@@ -589,7 +591,7 @@ Until the step named, and not before:
 
 Paste this into a fresh session opened in the new repository folder.
 
-> **Goal and why.** Build step 1a of Small Giants Studio's own website engine: a proof that a Claude Design draft's look can be imported one-for-one into an editable document and published as fast static pages. Bean (the owner, not a coder) is replacing a WordPress framework in which each client design took about a month to convert. If this step passes, the engine is built on it; if it fails, it stops cheaply. The full design is `C:\Users\Bean\Projects\small-giants-wp\.claude\plans\2026-11-12-web-engine-architecture.md`: read sections 1, 4, 5, 7, 8 and 16 before anything else.
+> **Goal and why.** Build step 1a of Small Giants Studio's own website engine: a proof that a Claude Design draft's look can be imported one-for-one into an editable document and published as fast static pages. Bean (the owner, not a coder) is replacing a WordPress framework in which each client design took about a month to convert. If this step passes, the engine is built on it; if it fails, it stops cheaply. The full design is `C:\Users\Bean\Projects\small-giants-engine\.claude\plans\architecture.md`: read sections 1, 4, 5, 7, 8 and 16 before anything else.
 >
 > **Where things stand.** Nothing is built. This repository (`C:\Users\Bean\Projects\small-giants-engine`) is new and private. The draft to import is `C:\Users\Bean\Projects\small-giants-wp\sites\mamas-munches-redesign\handoff\` (read its `README.md` and `READING-DC-FILES.md`): only `Home.dc.html` and `Shop.dc.html`, with `SiteHeader.dc.html`, `SiteFooter.dc.html` and `ProductCard.dc.html`. The reader that resolves every draft value at each width and state already exists and is copied in, not rewritten: `C:\Users\Bean\Projects\small-giants-wp\scripts\computed-route\lib\read-logic.mjs`, `read-logic-statics.mjs`, `read-logic-conditions.mjs`, `intake-sandbox.mjs`, `intake-breakpoints.mjs` and `draft.mjs`, with the method in `C:\Users\Bean\Projects\small-giants-wp\.claude\claude-design-handoff\handoff-schema\METHOD.md`. The comparison tool is `C:\Users\Bean\Projects\small-giants-wp\scripts\parity\draft-live-walk.mjs`. Ruled out already, do not revisit: Puck, Payload, Next.js for public pages, Coolify, GrapesJS's paid Studio SDK, and GrapesJS "symbols" for shared parts.
 >

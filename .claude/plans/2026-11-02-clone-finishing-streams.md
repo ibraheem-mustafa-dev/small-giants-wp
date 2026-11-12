@@ -8,7 +8,7 @@ governs: Spec 48 (cloning system) evidence; Front H and Front F
 
 # Finishing the three client sites (Indus, then Eye Care, then Mama's)
 
-**Parked on 2026-11-12 (Bean).** Indus and Eye Care are signed off. Mama's hand-finishing stopped with the seven items below open, because Mama's is now the proof site for the web engine (`plans/2026-11-12-web-engine-architecture.md`) and the WordPress framework is frozen to security updates and client fixes. This plan stays as the record of how an item is worked and of what Mama's still lacked on WordPress; it resumes only if the engine's step 1a stops and Bean chooses to finish Mama's here.
+**Parked on 2026-11-12 (Bean).** Indus and Eye Care are signed off. Mama's hand-finishing stopped with the seven items below open, because Mama's is now the proof site for the web engine (built in `C:\Users\Bean\Projects\small-giants-engine`; the plan as approved is `plans/archive/2026-11-12-web-engine-architecture.md`) and the WordPress framework is frozen to security updates and client fixes. This plan stays as the record of how an item is worked and of what Mama's still lacked on WordPress; it resumes only if the engine's step 1a stops and Bean chooses to finish Mama's here.
 
 **Goal (Bean):** three sites good enough to present to prospective clients and sell, each matching its Claude Design draft at 375, 768 and 1440. Indus is finished and signed off first, then Eye Care, then Mama's (Bean 2026-11-08).
 
