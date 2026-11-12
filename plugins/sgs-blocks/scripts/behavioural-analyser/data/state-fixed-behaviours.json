@@ -2283,6 +2283,11 @@
   },
   {
    "file": "theme/sgs-theme/assets/css/core-blocks-critical.css",
+   "selector": "html:has(:is(input, textarea, select):focus)",
+   "reason": "behaviour, not a paint (2026-11-12): instant scrolling while a form field has focus, so a phone keyboard's re-scroll and an animated scroll do not fight; nothing a client styles"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks-critical.css",
    "selector": ".wp-block-button__link:active",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
