@@ -1,7 +1,7 @@
 // Ken burns and parallax are model effect layers that compose channels (--sgs-kb-s, --sgs-plx-x/y), not animation
 // lists, so they cannot clobber an entrance's animation longhands and have no case here.
 // Real-browser cascade check: a Spec 38A entrance owns every animation longhand while it plays, whatever else the
-// element carries, and an element's own looping animation (the media atom's svg presentation, the
+// element carries, and an element's own looping animation (the
 // wave-gradient drift) keeps running underneath it and after it.
 //
 // jsdom has no cascade and no Web Animations, so this drives real Chromium against static pages that load the real
@@ -51,7 +51,6 @@ const MOTION = ['assets/css/motion.css', 'assets/css/motion-triggers.css'];
 const OTHERS = ['assets/css/fx-wave-gradient.css', 'src/blocks/container/style.css', 'src/blocks/nav-drawer-menu/style.css'];
 const ORDERS = { 'motion first': [...MOTION, ...OTHERS], 'motion last': [...OTHERS, ...MOTION] };
 const PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-const KB = '--sgs-media-svg-animation-name:sgs-media-svg-float;--sgs-media-svg-animation-duration:12s';
 const ENTRANCE = 'sgs-me-translate, none, none, none, sgs-me-opacity, none, none';
 const E7 = (v) => Array(7).fill(v).join(', ');
 
@@ -63,36 +62,36 @@ const CASES = [
 		want: { 'animation-name': `none, ${ENTRANCE}`, 'animation-duration': `0s, ${E7('0.5s')}`, 'animation-iteration-count': `1, ${E7('1')}`, 'animation-direction': `normal, ${E7('normal')}`, 'animation-fill-mode': `none, ${E7('backwards')}` },
 	},
 	{
-		id: 'negative control: media atom only keeps its own composed animation',
-		html: `<img id="t" class="sgs-media-el" src="${PIXEL}" alt="" style="${KB}">`,
-		want: { 'animation-name': 'sgs-media-svg-float, none', 'animation-duration': '12s, 20s', 'animation-iteration-count': 'infinite, infinite', 'animation-direction': 'alternate, alternate', 'animation-fill-mode': 'none, none' },
+		id: 'negative control: wave-gradient host only keeps its own composed animation',
+		html: `<div id="t" class="sgs-wave-gradient--pastel" data-sgs-fx="wave-gradient" style=""></div>`,
+		want: { 'animation-name': 'sgs-wave-pastel-base', 'animation-duration': '26s', 'animation-iteration-count': 'infinite', 'animation-direction': 'normal', 'animation-fill-mode': 'none' },
 	},
 	{
-		id: 'media atom + scroll entrance before reveal: the media loop alone, untouched',
-		html: `<img id="t" class="sgs-media-el" data-sgs-me="scroll translate opacity" src="${PIXEL}" alt="" style="${KB};--sgs-me-dur:500ms;--sgs-me-from-ty:24px;--sgs-me-from-op:0">`,
-		want: { 'animation-name': 'sgs-media-svg-float, none', 'animation-duration': '12s, 20s', 'animation-iteration-count': 'infinite, infinite', 'animation-direction': 'alternate, alternate' },
+		id: 'wave-gradient + scroll entrance before reveal: the drift loop alone, untouched',
+		html: `<div id="t" class="sgs-wave-gradient--pastel" data-sgs-fx="wave-gradient" data-sgs-me="scroll translate opacity" style="--sgs-me-dur:500ms;--sgs-me-from-ty:24px;--sgs-me-from-op:0"></div>`,
+		want: { 'animation-name': 'sgs-wave-pastel-base', 'animation-duration': '26s', 'animation-iteration-count': 'infinite', 'animation-direction': 'normal' },
 	},
 	{
-		id: 'media atom + scroll entrance playing: entrance owns its positions, the loop keeps its own',
-		html: `<img id="t" class="sgs-media-el" data-sgs-me="scroll translate opacity" data-sgs-in src="${PIXEL}" alt="" style="${KB};--sgs-me-dur:500ms;--sgs-me-from-ty:24px;--sgs-me-from-op:0">`,
-		want: { 'animation-name': `sgs-media-svg-float, none, ${ENTRANCE}`, 'animation-duration': `12s, 20s, ${E7('0.5s')}`, 'animation-iteration-count': `infinite, infinite, ${E7('1')}`, 'animation-direction': `alternate, alternate, ${E7('normal')}`, 'animation-fill-mode': `none, none, ${E7('backwards')}`, 'animation-timeline': `auto, auto, ${E7('auto')}` },
+		id: 'wave-gradient + scroll entrance playing: entrance owns its positions, the loop keeps its own',
+		html: `<div id="t" class="sgs-wave-gradient--pastel" data-sgs-fx="wave-gradient" data-sgs-me="scroll translate opacity" data-sgs-in style="--sgs-me-dur:500ms;--sgs-me-from-ty:24px;--sgs-me-from-op:0"></div>`,
+		want: { 'animation-name': `sgs-wave-pastel-base, ${ENTRANCE}`, 'animation-duration': `26s, ${E7('0.5s')}`, 'animation-iteration-count': `infinite, ${E7('1')}`, 'animation-direction': `normal, ${E7('normal')}`, 'animation-fill-mode': `none, ${E7('backwards')}`, 'animation-timeline': `auto, ${E7('auto')}` },
 		live: true,
 	},
 	{
-		id: 'open entrance on a media atom: the open duration default, fill both, one run',
-		html: `<div data-sgs-motion-state="open"><img id="t" class="sgs-media-el" data-sgs-me="open opacity" src="${PIXEL}" alt="" style="${KB};--sgs-me-from-op:0"></div>`,
-		want: { 'animation-name': 'sgs-media-svg-float, none, none, none, none, none, sgs-me-opacity, none, none', 'animation-duration': `12s, 20s, ${E7('0.45s')}`, 'animation-iteration-count': `infinite, infinite, ${E7('1')}`, 'animation-direction': `alternate, alternate, ${E7('normal')}`, 'animation-fill-mode': `none, none, ${E7('both')}` },
+		id: 'open entrance on a wave-gradient host: the open duration default, fill both, one run',
+		html: `<div data-sgs-motion-state="open"><div id="t" class="sgs-wave-gradient--pastel" data-sgs-fx="wave-gradient" data-sgs-me="open opacity" style="--sgs-me-from-op:0"></div</div>`,
+		want: { 'animation-name': 'sgs-wave-pastel-base, none, none, none, none, sgs-me-opacity, none, none', 'animation-duration': `26s, ${E7('0.45s')}`, 'animation-iteration-count': `infinite, ${E7('1')}`, 'animation-direction': `normal, ${E7('normal')}`, 'animation-fill-mode': `none, ${E7('both')}` },
 	},
 	{
-		id: 'close entrance on a media atom: the close timing, one run',
-		html: `<div data-sgs-motion-state="close"><img id="t" class="sgs-media-el" data-sgs-me="open opacity" src="${PIXEL}" alt="" style="${KB};--sgs-me-from-op:0;--sgs-me-close-dur:300ms;--sgs-me-close-delay:40ms"></div>`,
-		want: { 'animation-name': 'sgs-media-svg-float, none, none, none, none, none, sgs-me-close-opacity, none, none', 'animation-duration': `12s, 20s, ${E7('0.3s')}`, 'animation-delay': `0s, 0s, ${E7('0.04s')}`, 'animation-iteration-count': `infinite, infinite, ${E7('1')}` },
+		id: 'close entrance on a wave-gradient host: the close timing, one run',
+		html: `<div data-sgs-motion-state="close"><div id="t" class="sgs-wave-gradient--pastel" data-sgs-fx="wave-gradient" data-sgs-me="open opacity" style="--sgs-me-from-op:0;--sgs-me-close-dur:300ms;--sgs-me-close-delay:40ms"></div</div>`,
+		want: { 'animation-name': 'sgs-wave-pastel-base, none, none, none, none, sgs-me-close-opacity, none, none', 'animation-duration': `26s, ${E7('0.3s')}`, 'animation-delay': `0s, ${E7('0.04s')}`, 'animation-iteration-count': `infinite, ${E7('1')}` },
 	},
 	{
-		id: 'state entrance on a media atom (per-instance name rule): one run at its own duration',
+		id: 'state entrance on a wave-gradient host (per-instance name rule): one run at its own duration',
 		extraCss: '#host #t:is([data-sgs-motion-state~="on"],[data-sgs-motion-state~="on"] *){--sgs-mt-on:1;animation-name:var(--sgs-mt-in,none)}',
-		html: `<div id="host" data-sgs-motion-state="on"><img id="t" class="sgs-media-el" data-sgs-me="state opacity" src="${PIXEL}" alt="" style="${KB};--sgs-me-dur:500ms;--sgs-me-from-op:0"></div>`,
-		want: { 'animation-name': 'sgs-media-svg-float, none, none, none, none, none, sgs-me-opacity, none, none', 'animation-duration': `12s, 20s, ${E7('0.5s')}`, 'animation-iteration-count': `infinite, infinite, ${E7('1')}`, 'animation-fill-mode': `none, none, ${E7('both')}` },
+		html: `<div id="host" data-sgs-motion-state="on"><div id="t" class="sgs-wave-gradient--pastel" data-sgs-fx="wave-gradient" data-sgs-me="state opacity" style="--sgs-me-dur:500ms;--sgs-me-from-op:0"></div</div>`,
+		want: { 'animation-name': 'sgs-wave-pastel-base, none, none, none, none, sgs-me-opacity, none, none', 'animation-duration': `26s, ${E7('0.5s')}`, 'animation-iteration-count': `infinite, ${E7('1')}`, 'animation-fill-mode': `none, ${E7('both')}` },
 	},
 	{
 		id: 'wave-gradient (pastel) host + entrance playing: the drift keeps its own timing',
@@ -135,13 +134,13 @@ for (const [order, files] of Object.entries(ORDERS)) {
 		}
 		if (c.live) {
 			// Behaviour, not only computed values: the fade animates (never a one-frame snap), runs once, and the
-			// media loop is the same running animation before, during and after the entrance.
+			// wave-gradient drift loop is the same running animation before, during and after the entrance.
 			const live = await page.evaluate(async () => {
 				const el = document.getElementById('t');
 				const byName = (n) => el.getAnimations().find((a) => a.animationName === n);
 				el.removeAttribute('data-sgs-in');
 				await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-				const loopBefore = byName('sgs-media-svg-float');
+				const loopBefore = byName('sgs-wave-pastel-base');
 				el.setAttribute('data-sgs-in', '');
 				await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 				const fade = byName('sgs-me-opacity');
@@ -160,7 +159,7 @@ for (const [order, files] of Object.entries(ORDERS)) {
 					}
 				}
 				await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-				const loopAfter = byName('sgs-media-svg-float');
+				const loopAfter = byName('sgs-wave-pastel-base');
 				return {
 					duration: timing ? timing.duration : null,
 					iterations: timing ? timing.iterations : null,
@@ -174,7 +173,7 @@ for (const [order, files] of Object.entries(ORDERS)) {
 			const rising = live.samples.length === 4 && live.samples.every((v, i, a) => i === 0 || v > a[i - 1]) && live.samples[1] > 0 && live.samples[3] < 1;
 			report(live.duration === 500 && live.iterations === 1, `[${order}] ${c.id}: the fade runs once for 500ms (duration ${live.duration}, iterations ${live.iterations})`);
 			report(rising, `[${order}] ${c.id}: opacity rises through the fade, no snap (samples at 0/125/250/375ms: ${live.samples.map((v) => v.toFixed(3)).join(', ')})`);
-			report(live.sameLoop && live.loopRunning === 'running', `[${order}] ${c.id}: the media loop is the same running animation before and after the entrance (same ${live.sameLoop}, ${live.loopRunning})`);
+			report(live.sameLoop && live.loopRunning === 'running', `[${order}] ${c.id}: the drift loop is the same running animation before and after the entrance (same ${live.sameLoop}, ${live.loopRunning})`);
 			report(live.fadeGone && live.opacityAfter === 1, `[${order}] ${c.id}: after the fade the element rests at full opacity (${live.opacityAfter})`);
 		}
 		await page.close();
