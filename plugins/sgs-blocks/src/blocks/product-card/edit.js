@@ -41,6 +41,7 @@ import { effectiveSourceMode, showsConnectedProduct } from './card-grid-context'
 import apiFetch from '@wordpress/api-fetch';
 import ServerSideRender from '../../components/ServerSideRender';
 import MediaSlotField, { LibraryButton } from '../../components/media/MediaSlotField.js';
+import SlotPicture from '../../components/media/SlotPicture.js';
 import { desktopOf, firstUrl, sourceFromMedia } from './media-source.js';
 import {
 	NumberControl,
@@ -3505,18 +3506,15 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					{ /* Image */ }
 					{ firstUrl( imageSource ) ? (
 						<div className="sgs-product-card__media-wrap" style={ { position: 'relative', ...typedParts.media } }>
-							<img
+							<SlotPicture
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="image"
+								uid={ `sgs-pc-${ clientId.slice( 0, 8 ) }-image` }
 								className="sgs-product-card__image"
-								src={ firstUrl( imageSource ) }
-								alt={ imageAlt || '' }
-								style={ {
-									width: '100%',
-									height: typedParts.aspectOk ? '100%' : typedParts.imageHeight || '220px',
-									objectFit: desktopOf( attributes.imageFit ) || 'cover',
-									display: 'block',
-								} }
+								placeholder={ false }
 							/>
-							<TypedMediaOverlays attributes={ attributes } styles={ typedParts } />
+							<TypedMediaOverlays attributes={ attributes } setAttributes={ setAttributes } styles={ typedParts } uid={ `sgs-pc-${ clientId.slice( 0, 8 ) }` } />
 							{ /* D787 — a broken/mismatched image (exactly how a freshly
 							     cloned card lands) previously left only a destructive
 							     "Remove image" button here; a client had to DELETE the

@@ -11,32 +11,35 @@ import {
 	BandWrap,
 	usePreviewTier,
 } from '../../../utils';
-import { focalToObjectPosition } from '../../../components/media/focalPosition.js';
+import ItemSlotPicture from '../../../components/media/ItemSlotPicture.js';
 import { glyphSizePx } from '../../../utils/font-size-preset';
-import { tierValueOf } from '../../../utils/responsive.js';
 import { itemFile } from '../item-model';
 import ProductTemplateCanvas from './ProductTemplateCanvas';
 
 import AuthoredText from '../../../components/AuthoredText';
 /**
- * A card's image, video or empty placeholder for the canvas.
+ * A card's picture or empty placeholder for the canvas. The picture goes through the shared item-set canvas path, so
+ * every setting of the `image` slot (Border, Radius, Shape, Width, Height, Fit, Focal point) shows as on the page.
  *
- * @param {Object} item           Card item.
- * @param {Object} itemMediaStyle Style object for the media element.
- * @param {string} device         The previewed device.
+ * @param {Object} attributes Block attributes (the slot's shared settings).
+ * @param {Object} item       Card item.
+ * @param {number} index      The card's position.
+ * @param {string} uid        Scope class base for this block instance.
+ * @param {string} device     The previewed device.
  * @return {JSX.Element} The media element.
  */
-function renderMedia( item, itemMediaStyle, device ) {
-	const { url } = itemFile( item, device );
-	if ( ! url ) {
+function renderMedia( attributes, item, index, uid, device ) {
+	if ( ! itemFile( item, device ).url ) {
 		return <span className="sgs-card-grid__image-placeholder" />;
 	}
 	return (
-		<img
-			src={ url }
-			alt={ item.decorative ? '' : item.alt || '' }
+		<ItemSlotPicture
+			attributes={ attributes }
+			item={ item }
+			index={ index }
+			prefix="image"
+			uid={ uid }
 			className="sgs-card-grid__image sgs-card-grid__media"
-			style={ itemMediaStyle }
 		/>
 	);
 }
@@ -164,16 +167,7 @@ export default function CardGridCanvas( {
 								) }
 							</p>
 						) }
-						{ items.map( ( item ) => {
-							const itemFit = tierValueOf( item.fit, device ) || tierValueOf( attributes.imageFit, device ) || 'cover';
-							const itemFocal = tierValueOf( item.focal, device );
-							const itemMediaStyle = {
-								objectFit: itemFit,
-								objectPosition:
-									'cover' === itemFit
-										? focalToObjectPosition( itemFocal || { x: 0.5, y: 0.5 } )
-										: undefined,
-							};
+						{ items.map( ( item, itemIndex ) => {
 							// Glyph + image-fallback tile preview — mirrors render.php's
 							// item_use_fallback/item_glyph_slug logic so the canvas
 							// matches the frontend.
@@ -287,8 +281,10 @@ export default function CardGridCanvas( {
 											} }
 										>
 											{ renderMedia(
+												attributes,
 												item,
-												itemMediaStyle,
+												itemIndex,
+												`sgs-cg-${ clientId.slice( 0, 8 ) }`,
 												device
 											) }
 											{ overlayStyle && (

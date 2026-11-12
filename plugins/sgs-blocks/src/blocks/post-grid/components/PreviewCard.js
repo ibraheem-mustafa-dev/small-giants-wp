@@ -7,6 +7,7 @@ import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, isCss
 import { tierValueOf } from '../../../utils/responsive';
 import { IconPreview } from '../../../components/IconPicker';
 import { cardGradientPreview } from '../preview-style';
+import ItemSlotPicture from '../../../components/media/ItemSlotPicture.js';
 
 import AuthoredText from '../../../components/AuthoredText';
 // -------------------------------------------------------------------------
@@ -48,7 +49,7 @@ function formatDate( dateString, phpFormat = '' ) {
  * @param {Object} props.post       WP post record from useEntityRecords.
  * @param {Object} props.attributes Block attributes.
  */
-export default function PreviewCard( { post, attributes, palette, tier } ) {
+export default function PreviewCard( { post, attributes, palette, tier, clientId = '' } ) {
 	const {
 		cardStyle,
 		showImage,
@@ -72,7 +73,6 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		readMorePin,
 		imageRatio,
 		imageHeight,
-		imageFit,
 		titleColour,
 		titleColourGradient,
 		excerptColour,
@@ -160,10 +160,6 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 	// The frame's ratio at the previewed device (16 / 9 when the grid sets none), and the picture's fit.
 	const ratioValue = String( tierValueOf( imageRatio, tier ) || '16 / 9' );
 	const frameRatio = 'natural' === ratioValue ? 'auto' : ratioValue;
-	const fitValue   = tierValueOf( imageFit, tier ) || 'cover';
-	const imageStyle = {
-		objectFit: fitValue,
-	};
 	const imageHeightPx = ( 'mobile' === tier ? imageHeight?.mobile || imageHeight?.tablet || imageHeight?.desktop : 'tablet' === tier ? imageHeight?.tablet || imageHeight?.desktop : imageHeight?.desktop ) || '';
 
 	return (
@@ -177,12 +173,17 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 						className="sgs-post-grid__image"
 						style={ imageHeightPx ? { height: imageHeightPx, aspectRatio: 'auto' } : { aspectRatio: frameRatio } }
 					>
-						<img
-							src={ imageUrl }
-							alt={ imageDecorative ? '' : ( featuredImage.alt_text || '' ) }
+						<ItemSlotPicture
+							attributes={ attributes }
+							item={ {
+								source: { desktop: { kind: 'image', url: imageUrl } },
+								alt: featuredImage.alt_text || '',
+								decorative: !! imageDecorative,
+							} }
+							index={ post.id }
+							prefix="image"
+							uid={ `sgs-pg-${ clientId.slice( 0, 8 ) }` }
 							className="sgs-post-grid__img"
-							style={ imageStyle }
-							aria-hidden={ imageDecorative || undefined }
 						/>
 					</div>
 

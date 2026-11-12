@@ -459,6 +459,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					attributes={ attributes }
 					tier={ previewTier }
 					palette={ palette }
+					uid={ `sgs-bb-${ clientId.slice( 0, 8 ) }` }
 					extras={ <div { ...extrasInnerBlocksProps } /> }
 				/>
 			</div>

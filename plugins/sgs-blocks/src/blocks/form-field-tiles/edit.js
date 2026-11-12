@@ -12,6 +12,7 @@ import {
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import ItemSlotFields from '../../components/media/ItemSlotFields.js';
+import ItemSlotPicture from '../../components/media/ItemSlotPicture.js';
 import { IconPicker, IconPreview, SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	ShadowControl,
@@ -896,6 +897,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										/>
 									</span>
 								) }
+								{ /* The tile's own picture, between the icon and the label as render.php prints it. */ }
+								<ItemSlotPicture
+									attributes={ attributes }
+									item={ tile }
+									index={ index }
+									prefix={ TILE_SLOT.prefix }
+									kinds={ TILE_SLOT.kinds }
+									context={ TILE_SLOT.context }
+									uid={ `sgs-ft-${ clientId.slice( 0, 8 ) }` }
+								/>
 								<span className="sgs-form-tile__label" style={ tileLabelPaint }>{ tile.label || '' }</span>
 								{ tile.description && (
 									<span className="sgs-form-tile__description" style={ tileDescriptionPaint }>

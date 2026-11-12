@@ -16,6 +16,9 @@ import { hasFile, pickPatch } from './mediaSlotWrites.js';
 import mediaPreview from './mediaPreview.js';
 
 /**
+ * The picture carries the renderer's own classes (`sgs-media sgs-media--renderer`), so `assets/css/media-base.css` gives
+ * it the page's defaults, such as Fit cover where no Fit is set.
+ *
  * @param {Object}   props
  * @param {Object}   props.attributes     Block attributes.
  * @param {Function} props.setAttributes  Block `setAttributes`.
@@ -72,7 +75,7 @@ export default function SlotPicture( {
 	const src = shown.url || 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent( shown.markup );
 	const image = (
 		<img
-			className={ `sgs-media-el ${ needsHelper ? '' : uid } ${ className }`.replace( /\s+/g, ' ' ).trim() }
+			className={ `sgs-media-el sgs-media sgs-media--renderer ${ needsHelper ? '' : uid } ${ className }`.replace( /\s+/g, ' ' ).trim() }
 			src={ src }
 			width={ shown.width || undefined }
 			height={ shown.height || undefined }

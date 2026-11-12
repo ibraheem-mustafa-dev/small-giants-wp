@@ -16,6 +16,8 @@
 import { __ } from '@wordpress/i18n';
 import { composeShadow } from '../../utils/shadow-layers';
 import ItemSlotFields from '../../components/media/ItemSlotFields.js';
+import ItemSlotPicture from '../../components/media/ItemSlotPicture.js';
+import { hasFile } from '../../components/media/mediaSlotWrites.js';
 import {
 	useBlockProps,
 	InspectorControls,
@@ -246,7 +248,7 @@ const SWATCH_SLOT = { prefix: 'swatch', kinds: [ 'image' ], context: 'item' };
 
 /* ── Component ──────────────────────────────────────────────────────────── */
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		label,
 		showLabel,
@@ -444,6 +446,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 		return optionItems.map( ( item, index ) => {
 			const isSelected = item.key === effectiveDefault;
+			// The option's own picture (render.php draws it ahead of the label, through the shared item renderer).
+			const itemHasPicture = [ 'desktop', 'tablet', 'mobile' ].some( ( device ) => hasFile( item.source?.[ device ] ) );
 			const pillClass = [
 				'sgs-option-picker__option',
 				isSelected ? 'sgs-option-picker__option--selected' : '',
@@ -454,7 +458,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			return (
 				<span key={ index } className={ pillClass }>
 					<span
-						className="sgs-option-picker__pill"
+						className={ `sgs-option-picker__pill${ itemHasPicture ? ' sgs-option-picker__pill--has-image' : '' }` }
 						style={ {
 							...typographyPreviewStyle(
 								attributes,
@@ -474,7 +478,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						   The sub-label itself lives on WooCommerce term-meta, so
 						   (like the swatch image/colour) it can't be previewed live
 						   in the editor -- see the Sub-label panel's help text. */ }
-						{ swatchDotStyle && (
+						{ itemHasPicture && (
+							<ItemSlotPicture
+								attributes={ attributes }
+								item={ item }
+								index={ index }
+								prefix={ SWATCH_SLOT.prefix }
+								kinds={ SWATCH_SLOT.kinds }
+								context={ SWATCH_SLOT.context }
+								uid={ `sgs-op-${ clientId.slice( 0, 8 ) }` }
+							/>
+						) }
+						{ ! itemHasPicture && swatchDotStyle && (
 							<span
 								className="sgs-option-picker__swatch sgs-option-picker__swatch--colour"
 								style={ swatchDotStyle }

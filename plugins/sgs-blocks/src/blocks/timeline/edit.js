@@ -33,6 +33,7 @@ import FocalField from '../../components/media/FocalField.js';
 import { resolveTierSource } from '../../components/media/deviceValues.js';
 import { hasFile } from '../../components/media/mediaSlotWrites.js';
 import { ENTRY_SLOT, entryToSlotAttrs, applySlotPatch } from './entry-model.js';
+import ItemSlotPicture from '../../components/media/ItemSlotPicture.js';
 import {
 	colourVar,
 	linkColourPreviewCss,
@@ -127,9 +128,12 @@ function entryHasMedia( entry, device = 'desktop' ) {
  * @param {Object} props        Component props.
  * @param {Object} props.entry  The entry to preview.
  * @param {string} props.device The previewed device.
+ * @param {Object} props.attributes Block attributes (the entry slot's shared settings).
+ * @param {number} props.index  The entry's position.
+ * @param {string} props.uid    Scope class base for this block instance.
  * @return {JSX.Element|null} The preview element.
  */
-function MediaPreview( { entry, device } ) {
+function MediaPreview( { entry, device, attributes, index, uid } ) {
 	const file = entryFile( entry, device );
 	if ( 'video' === file.kind ) {
 		return (
@@ -142,7 +146,18 @@ function MediaPreview( { entry, device } ) {
 			/>
 		);
 	}
-	return <img className="sgs-timeline__media sgs-timeline__media--image" src={ file.url } alt="" />;
+	return (
+		<ItemSlotPicture
+			attributes={ attributes }
+			item={ entry }
+			index={ index }
+			prefix={ ENTRY_SLOT.prefix }
+			kinds={ ENTRY_SLOT.kinds }
+			context={ ENTRY_SLOT.context }
+			uid={ uid }
+			className="sgs-timeline__media sgs-timeline__media--image"
+		/>
+	);
 }
 
 // Step 4b — curated scroll-effect picker, reusing the SAME GSAP fx slugs the
@@ -1750,7 +1765,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								   to catch, and it caught this one. */
 								aria-hidden={ entry.decorative || undefined }
 							>
-								<MediaPreview entry={ entry } device={ previewTier } />
+								<MediaPreview entry={ entry } device={ previewTier } attributes={ attributes } index={ index } uid={ `sgs-tl-${ clientId.slice( 0, 8 ) }` } />
 							</div>
 						) }
 						<div

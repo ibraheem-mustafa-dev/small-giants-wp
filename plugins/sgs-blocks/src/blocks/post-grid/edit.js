@@ -596,6 +596,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								attributes={ attributes }
 								palette={ colourPalette }
 								tier={ previewTier }
+								clientId={ clientId }
 							/>
 						) ) }
 					</div>

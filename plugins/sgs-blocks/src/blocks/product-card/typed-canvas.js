@@ -11,6 +11,8 @@
  * @package SGS\Blocks
  */
 import { __, _n, sprintf } from '@wordpress/i18n';
+import SlotPicture from '../../components/media/SlotPicture.js';
+import { hasFile } from '../../components/media/mediaSlotWrites.js';
 import {
 	backgroundPaintPreview,
 	borderPaintPreview,
@@ -152,23 +154,34 @@ export function typedCardPreview( attrs, tier ) {
 }
 
 /**
- * Brand wordmark and saving badge over the image (sgs_product_card_brand_markup,
- * _saving_badge_markup).
+ * Brand wordmark or logo and saving badge over the image (sgs_product_card_brand_markup, _saving_badge_markup).
  *
- * This canvas is typed mode only, and a brand LOGO is live product data: it is
- * resolved per render by includes/product-card-live-fill.php, so a typed card
- * has no logo to draw and always shows the typed brand name. `brandUseLogo`
- * therefore has nothing to mirror here by design - it is not a desynced
- * attribute.
+ * A typed card draws its own `logoSource` through the shared slot path, so the `logo` slot's Width, Height and Ratio
+ * show as on the page; a logo that comes from the product's brand term is live data a typed card does not have, so
+ * without a `logoSource` the typed brand name shows. `brandUseLogo` off always shows the name.
  */
-export function TypedMediaOverlays( { attributes: attrs, styles } ) {
+export function TypedMediaOverlays( { attributes: attrs, setAttributes, styles, uid = '' } ) {
 	const brand = attrs.showBrandOverlay ? String( attrs.brandName || '' ).trim() : '';
+	const logo = attrs.showBrandOverlay && false !== attrs.brandUseLogo && [ 'desktop', 'tablet', 'mobile' ].some( ( device ) => hasFile( attrs.logoSource?.[ device ] ) );
 	const saving = attrs.showSavingBadge ? String( attrs.savingLabel || '' ).trim() : '';
 	const positions = [ 'top-left', 'top-right', 'bottom-left', 'bottom-right' ];
 	const position = positions.includes( attrs.savingBadgePosition ) ? attrs.savingBadgePosition : 'bottom-left';
 	return (
 		<>
-			{ brand && <span className="sgs-product-card__brand" style={ styles.brand }>{ brand }</span> }
+			{ logo ? (
+				<span className="sgs-product-card__brand sgs-product-card__brand--logo">
+					<SlotPicture
+						attributes={ { ...attrs, logoAlt: brand || attrs.logoAlt || '' } }
+						setAttributes={ setAttributes }
+						prefix="logo"
+						uid={ `${ uid }-logo` }
+						className="sgs-product-card__brand-logo"
+						placeholder={ false }
+					/>
+				</span>
+			) : (
+				brand && <span className="sgs-product-card__brand" style={ styles.brand }>{ brand }</span>
+			) }
 			{ saving && (
 				<span
 					className={ `sgs-product-card__saving-badge sgs-product-card__saving-badge--${ position }` }

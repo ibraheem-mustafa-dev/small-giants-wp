@@ -13,6 +13,8 @@ import {
 import { VStack } from '../../components/primitives';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import ItemSlotFields from '../../components/media/ItemSlotFields.js';
+import ItemSlotPicture from '../../components/media/ItemSlotPicture.js';
+import { hasFile } from '../../components/media/mediaSlotWrites.js';
 import AddonPricingPanel from './AddonPricingPanel';
 import AnswersPanel from './AnswersPanel';
 import OptionCardsPanel from '../choice-flow/OptionCardsPanel';
@@ -365,6 +367,20 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				>
 					{ options.map( ( option, index ) => (
 						<li key={ index } className="sgs-choice-flow-question__option-preview">
+							{ /* The option's own picture, ahead of the label as render.php prints it. */ }
+							{ [ 'desktop', 'tablet', 'mobile' ].some( ( device ) => hasFile( option.source?.[ device ] ) ) && (
+								<span className="sgs-choice-flow-question__option-media">
+									<ItemSlotPicture
+										attributes={ attributes }
+										item={ option }
+										index={ index }
+										prefix={ OPTION_SLOT.prefix }
+										kinds={ OPTION_SLOT.kinds }
+										context={ OPTION_SLOT.context }
+										uid={ `sgs-cfq-${ clientId.slice( 0, 8 ) }` }
+									/>
+								</span>
+							) }
 							{ option.label || __( '(empty option)', 'sgs-blocks' ) }
 							<OptionDescriptionPreview
 								description={ option.description }
