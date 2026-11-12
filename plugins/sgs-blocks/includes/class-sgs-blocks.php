@@ -68,6 +68,8 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/helpers-inline-formats.php';
 		add_action( 'init', array( $this, 'register_inline_formats_style' ) );
 		add_filter( 'render_block', 'sgs_inline_formats_maybe_enqueue', 10, 2 );
+		// An inline photo is a small decoration in a line of text: lazy, with sizes=auto (helpers-inline-formats.php).
+		add_filter( 'wp_content_img_tag', 'sgs_inline_photo_img_tag', 25 );
 
 		// The shared `sgs/nav` store module that the header's view modules import (`@sgs/nav-store`).
 		require_once SGS_BLOCKS_PATH . 'includes/nav-store-module.php';

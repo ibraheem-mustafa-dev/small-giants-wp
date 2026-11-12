@@ -239,3 +239,31 @@ if ( ! function_exists( 'sgs_inline_formats_maybe_enqueue' ) ) {
 		return $block_content;
 	}
 }
+
+if ( ! function_exists( 'sgs_inline_photo_img_tag' ) ) {
+	/**
+	 * `wp_content_img_tag` filter: an inline photo (the `sgs-inline-photo` format, sized in `em` beside the words) loads
+	 * lazily with `sizes="auto, …"`, so the browser picks the file from its drawn size, and never takes the page's high
+	 * fetch priority: it is a small decoration in a line of text, never the main image.
+	 *
+	 * Parameters stay untyped: a hook callback typed `string` fatals on an unexpected value.
+	 *
+	 * @param mixed $filtered_image The image tag.
+	 * @return mixed The tag.
+	 */
+	function sgs_inline_photo_img_tag( $filtered_image ) {
+		if ( ! is_string( $filtered_image ) || ! preg_match( '/\bclass="[^"]*\bsgs-inline-photo\b/', $filtered_image ) ) {
+			return $filtered_image;
+		}
+		$tag = (string) preg_replace( '/\s(?:fetchpriority|loading)="[^"]*"/', '', $filtered_image );
+		$tag = (string) preg_replace( '/^<img\b/', '<img loading="lazy"', $tag, 1 );
+		if ( preg_match( '/\ssizes="([^"]*)"/', $tag, $m ) ) {
+			if ( 0 !== stripos( ltrim( $m[1] ), 'auto' ) ) {
+				$tag = str_replace( $m[0], ' sizes="auto, ' . $m[1] . '"', $tag );
+			}
+		} else {
+			$tag = (string) preg_replace( '/^<img\b/', '<img sizes="auto"', $tag, 1 );
+		}
+		return $tag;
+	}
+}
