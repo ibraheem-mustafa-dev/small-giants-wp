@@ -102,6 +102,48 @@ if ( ! function_exists( 'sgs_media_source_tag' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_sizes_entries' ) ) {
+	/**
+	 * One device's `sizes` value as entries: a list of `(min-width: Npx) length` entries (a grid cell's column counts) splits
+	 * at its top-level commas, widest viewport first; any other value is one entry with no start.
+	 *
+	 * @param string $value A device's `sizes` value without the `auto, ` prefix.
+	 * @return array<int,array{0:?int,1:string}> Each `[start viewport px or null, length expression]`.
+	 */
+	function sgs_media_sizes_entries( string $value ): array {
+		if ( ! preg_match( '/^\(min-width: \d+px\) /', $value ) && false === strpos( $value, ', ' ) ) {
+			return array( array( null, $value ) );
+		}
+		$parts = array();
+		$depth = 0;
+		$start = 0;
+		for ( $i = 0, $len = strlen( $value ); $i < $len; $i++ ) {
+			$c = $value[ $i ];
+			if ( '(' === $c ) {
+				++$depth;
+			} elseif ( ')' === $c ) {
+				--$depth;
+			} elseif ( ',' === $c && 0 === $depth ) {
+				$parts[] = trim( substr( $value, $start, $i - $start ) );
+				$start   = $i + 1;
+			}
+		}
+		$parts[] = trim( substr( $value, $start ) );
+		$out     = array();
+		foreach ( $parts as $part ) {
+			if ( preg_match( '/^\(min-width: (\d+)px\) (.+)$/', $part, $m ) ) {
+				$out[] = array( (int) $m[1], $m[2] );
+			} elseif ( 1 === count( $parts ) || count( $out ) === count( $parts ) - 1 ) {
+				$out[] = array( null, $part );
+			} else {
+				// Not a column-count list (a condition of another kind): keep the value whole.
+				return array( array( null, $value ) );
+			}
+		}
+		return $out;
+	}
+}
+
 if ( ! function_exists( 'sgs_media_combine_sizes' ) ) {
 	/**
 	 * One `sizes` value for an element that several devices share: each device's own value under its viewport range.
@@ -131,11 +173,33 @@ if ( ! function_exists( 'sgs_media_combine_sizes' ) ) {
 			}
 			$parts[ $device ] = $value;
 		}
-		$list = array();
+		$list   = array();
 		$widest = array_key_first( $parts );
+		$bounds = array(
+			'desktop' => array( SGS_Breakpoints::TABLET_MAX + 1, null ),
+			'tablet'  => array( SGS_Breakpoints::MOBILE_MAX + 1, SGS_Breakpoints::TABLET_MAX ),
+			'mobile'  => array( 0, SGS_Breakpoints::MOBILE_MAX ),
+		);
 		foreach ( array_reverse( array_keys( $parts ) ) as $device ) {
 			// Narrowest device first, so the widest served device ends the list with no condition.
-			$list[] = $device === $widest ? $parts[ $device ] : sgs_media_device_query_upto( $device ) . ' ' . $parts[ $device ];
+			list( $lower, $upper ) = $bounds[ $device ] ?? array( 0, null );
+			$entries               = array();
+			foreach ( sgs_media_sizes_entries( $parts[ $device ] ) as list( $from, $expr ) ) {
+				// A count that starts above the device's widest viewport never applies there; the first one that starts at
+				// or below its narrowest viewport applies to the whole of it, so nothing narrower is printed.
+				if ( null !== $from && null !== $upper && $from > $upper && $device !== $widest ) {
+					continue;
+				}
+				$covers    = null === $from || $from <= $lower;
+				$entries[] = array( $covers ? null : $from, $expr );
+				if ( $covers ) {
+					break;
+				}
+			}
+			foreach ( $entries as list( $from, $expr ) ) {
+				$conds  = array_filter( array( $device === $widest ? '' : sgs_media_device_query_upto( $device ), null === $from ? '' : '(min-width: ' . $from . 'px)' ) );
+				$list[] = ( $conds ? implode( ' and ', $conds ) . ' ' : '' ) . $expr;
+			}
 		}
 		return ( $auto ? 'auto, ' : '' ) . implode( ', ', $list );
 	}

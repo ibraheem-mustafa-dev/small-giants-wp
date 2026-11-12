@@ -225,7 +225,7 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 				$boxes[ $device ] = sgs_media_width_model( $widths[ $device ], (int) $columns[ $device ], $max_widths[ $device ], $avail[ $device ], $item_widths[ $device ] ?? null );
 			}
 		}
-		$plan = sgs_media_cover_crop_plan( $attrs, $slot, $crop_id, $boxes );
+		$plan = sgs_media_cover_crop_plan( $attrs, $slot, $crop_id, $boxes, class_exists( 'Sgs_Layout_Width' ) ? Sgs_Layout_Width::box() : null );
 		if ( ! empty( $plan['widens'] ) ) {
 			// The crop draws the file wider than its box, so `auto` (the box width) would pick a file too small: the marker
 			// lets sgs_media_drop_auto_sizes take out the `auto` core adds to lazy images later in the_content.

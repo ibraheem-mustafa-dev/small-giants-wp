@@ -216,4 +216,31 @@ class MediaCoverCropSizesTest extends TestCase {
 		// With no layout model the width is unknown: the attachment's own hint, with `auto` removed.
 		$this->assertSame( array( 'widens' => true, 'sizes' => '' ), $this->plan( $attrs, 10 ) );
 	}
+
+	public function test_a_fill_box_in_a_ratio_parent_takes_the_parents_shape_and_the_fill_floor(): void {
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/media/layout-width.php';
+		$attrs  = array( 'fit' => $this->all( 'cover' ), 'height' => $this->all( 'fill' ) );
+		$box    = array( 'vw' => 1.0, 'off' => 0.0, 'cap' => 500.0 );
+		$parent = array( 'ratio' => 1.25, 'roomy' => true );
+		// Image 10 is 1600x1067 (1.4995); a 1.25 box crops it to 1.1996 x the box width. The fill helper is 12rem (192px) tall
+		// at least, so the crop is at least 192 x 1.4995 = 288px wide.
+		$plan = sgs_media_cover_crop_plan( $attrs, array( 'prefix' => '' ), 10, $this->boxes( $box ), $parent );
+		$this->assertTrue( $plan['widens'] );
+		$this->assertSame( 'max(288px, min(599.81px, 119.96vw))', $plan['by_device']['desktop'] );
+		// No parent box: the box shape stays unknown and the attachment hint stays.
+		$this->assertSame( array( 'widens' => true, 'sizes' => '' ), sgs_media_cover_crop_plan( $attrs, array( 'prefix' => '' ), 10, $this->boxes( $box ) ) );
+		// A portrait parent with a border or padding could make the box taller than the ratio says: unknown.
+		$portrait = array( 'ratio' => 0.8, 'roomy' => false );
+		$this->assertSame( array( 'widens' => true, 'sizes' => '' ), sgs_media_cover_crop_plan( $attrs, array( 'prefix' => '' ), 10, $this->boxes( $box ), $portrait ) );
+	}
+
+	public function test_a_parent_of_known_width_holds_the_fill_box_to_it(): void {
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/media/layout-width.php';
+		$attrs  = array( 'fit' => $this->all( 'cover' ), 'height' => $this->all( 'fill' ) );
+		$box    = array( 'vw' => 0.25, 'off' => -20.0, 'cap' => 300.0 );
+		$parent = array( 'ratio' => 1.0, 'roomy' => true, 'width' => array( 'desktop' => 130.0, 'tablet' => 130.0, 'mobile' => 140.0 ) );
+		$plan   = sgs_media_cover_crop_plan( $attrs, array( 'prefix' => '' ), 10, $this->boxes( $box ), $parent );
+		// 130px x 1.4995 = 194.9 wide; the 12rem floor is 288px, the larger.
+		$this->assertSame( 'max(288px, min(194.94px, calc(37.49vw - 29.99px)))', $plan['by_device']['desktop'] );
+	}
 }

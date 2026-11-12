@@ -38,13 +38,22 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 	 *   layout model); the caller keeps the attachment's own hint with `auto` removed. A portrait image never widens,
 	 *   so it keeps `auto`.
 	 *
+	 * A fill-height box (`Height: fill`) takes its shape from its parent when the parent is a container with a
+	 * `boxAspectRatio` and the box is its only child (`$parent_box`, from `Sgs_Layout_Width::box()`): the box ratio is the
+	 * parent's. The fill helper is never shorter than 12rem (assets/css/media-base.css `.sgs-media-box--fill::before`),
+	 * so a box narrower than 12rem x ratio is still 12rem tall and the crop is `12rem x image ratio` wide: that figure
+	 * joins the printed width as a floor. A parent's px `minHeight` bounds the height from below only, so on its own it
+	 * gives no upper bound on the crop; with a ratio, a stack that does not stretch its children and no width of its own,
+	 * the parent is `minHeight x ratio` wide (`$parent_box['width']`), which bounds the box's width.
+	 *
 	 * @param array $attributes    Block attributes.
 	 * @param array $slot          The media slot (`prefix`).
 	 * @param int   $attachment_id The image's attachment ID.
 	 * @param array $boxes         Device => layout model `{vw,off,cap}` of the slot's own box (`sgs_media_width_model()`); empty when the layout is unknown.
+	 * @param array|null $parent_box The box shape the parent container gives the slot (`Sgs_Layout_Width::box()`: `ratio`, `roomy`, `width` per device); null for none.
 	 * @return array{widens:bool,sizes:string,by_device?:array<string,string>}
 	 */
-	function sgs_media_cover_crop_plan( array $attributes, array $slot, int $attachment_id, array $boxes = array() ): array {
+	function sgs_media_cover_crop_plan( array $attributes, array $slot, int $attachment_id, array $boxes = array(), ?array $parent_box = null ): array {
 		$keep_auto = array(
 			'widens' => false,
 			'sizes'  => '',
@@ -83,6 +92,7 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 		$drawn      = array();
 		$factors    = array();
 		$heights_px = array();
+		$floors     = array();
 		foreach ( sgs_media_devices() as $device ) {
 			if ( ! $covers[ $device ] ) {
 				$drawn[ $device ] = null;
@@ -96,6 +106,17 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 				continue;
 			}
 			$box_ratio = 0.0;
+			if ( null === $box_w && 'fill' === $heights[ $device ] && null !== $parent_box && isset( $boxes[ $device ] ) && is_array( $boxes[ $device ] )
+				&& ( $parent_box['ratio'] ?? 0.0 ) > 0.0 && ( ! empty( $parent_box['roomy'] ) || $parent_box['ratio'] >= 1.0 ) ) {
+				// A fill box in a shaped parent: the parent's ratio, and the 12rem floor of the fill helper. A parent whose own
+				// width is known (`width`) holds the box to it.
+				if ( isset( $parent_box['width'][ $device ] ) && class_exists( 'Sgs_Layout_Width' ) ) {
+					$boxes[ $device ] = Sgs_Layout_Width::capped( $boxes[ $device ], (float) $parent_box['width'][ $device ] );
+				}
+				$factors[ $device ] = max( 1.0, $image_ratio / $parent_box['ratio'] );
+				$floors[ $device ]  = (int) ceil( $image_ratio * 192 );
+				continue;
+			}
 			if ( is_string( $ratio ) && preg_match( '#^\s*(\d+(?:\.\d+)?)\s*/\s*(\d+(?:\.\d+)?)\s*$#', $ratio, $m ) && (float) $m[2] > 0.0 ) {
 				$box_ratio = (float) $m[1] / (float) $m[2];
 			} elseif ( null !== $box_w && null !== $box_h && $box_h > 0.0 ) {
@@ -155,6 +176,8 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 					$by_device[ $device ] = $drawn[ $device ] . 'px';
 				} elseif ( isset( $heights_px[ $device ] ) && class_exists( 'Sgs_Layout_Width' ) ) {
 					$by_device[ $device ] = 'max(' . $heights_px[ $device ] . 'px, ' . Sgs_Layout_Width::to_sizes( $boxes[ $device ], true ) . ')';
+				} elseif ( isset( $floors[ $device ], $boxes[ $device ] ) && is_array( $boxes[ $device ] ) && class_exists( 'Sgs_Layout_Width' ) ) {
+					$by_device[ $device ] = 'max(' . $floors[ $device ] . 'px, ' . Sgs_Layout_Width::to_sizes( Sgs_Layout_Width::scaled( $boxes[ $device ], $factors[ $device ] ?? 1.0 ), true ) . ')';
 				} elseif ( isset( $boxes[ $device ] ) && is_array( $boxes[ $device ] ) && class_exists( 'Sgs_Layout_Width' ) ) {
 					$by_device[ $device ] = Sgs_Layout_Width::to_sizes( Sgs_Layout_Width::scaled( $boxes[ $device ], $factors[ $device ] ?? 1.0 ) );
 				} else {
