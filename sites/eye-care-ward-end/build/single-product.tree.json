@@ -1701,15 +1701,15 @@
                                   },
                                   "captionLetterSpacingUnit": "em",
                                   "captionTextTransform": "uppercase",
-                                  "drawingImageWidth": 680,
-                                  "drawingImageHeight": 300,
                                   "tickLength": 1.765,
                                   "className": "cr-ref-product-121",
                                   "drawingSource": {
                                     "desktop": {
                                       "kind": "image",
                                       "id": 1293,
-                                      "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/eye-care-sizing-frame-front.svg"
+                                      "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/eye-care-sizing-frame-front.svg",
+                                      "width": 680,
+                                      "height": 300
                                     }
                                   },
                                   "drawingAlt": "Front view of the frame"
@@ -1897,15 +1897,15 @@
                                   },
                                   "captionLetterSpacingUnit": "em",
                                   "captionTextTransform": "uppercase",
-                                  "drawingImageWidth": 680,
-                                  "drawingImageHeight": 230,
                                   "tickLength": 1.765,
                                   "className": "cr-ref-product-127",
                                   "drawingSource": {
                                     "desktop": {
                                       "kind": "image",
                                       "id": 1294,
-                                      "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/eye-care-sizing-frame-side.svg"
+                                      "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/eye-care-sizing-frame-side.svg",
+                                      "width": 680,
+                                      "height": 230
                                     }
                                   },
                                   "drawingAlt": "Side view of the frame"
