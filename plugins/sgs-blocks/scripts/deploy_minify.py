@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """deploy_minify.py - minify the hand-written CSS a deploy ships.
 
-The theme's ``assets/css`` and the plugin's ``assets/`` stylesheets are served as written, and most of their weight is
-comments: on 2026-11-11 the theme's ``woocommerce.css`` was 43 KB over the wire, 32 KB of it comments, and the 67
-hand-written stylesheets carried about 153 KB of compressed comment weight between them. webpack already minifies
-``build/``. This step replaces each such file's bytes in the payload with ``minify-css.mjs``'s output (csso, no
+The theme's ``assets/css`` and the plugin's ``assets/`` stylesheets are written with long comments, which would
+otherwise reach every visitor; webpack already minifies ``build/``. This step replaces each such file's bytes in the payload with ``minify-css.mjs``'s output (csso, no
 restructuring, so the cascade is unchanged) before the payload is hashed against the live tree; the source in git keeps
 its comments. The theme's root ``style.css`` is never touched: WordPress reads the theme's name from its header comment.
 

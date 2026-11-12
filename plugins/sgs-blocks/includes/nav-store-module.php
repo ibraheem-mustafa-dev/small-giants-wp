@@ -23,6 +23,8 @@ if ( ! function_exists( 'sgs_register_nav_store_module' ) ) {
 	function sgs_register_nav_store_module(): void {
 		$asset = SGS_BLOCKS_PATH . 'build/shared/nav-store.asset.php';
 		if ( ! file_exists( SGS_BLOCKS_PATH . 'build/shared/nav-store.js' ) || ! file_exists( $asset ) ) {
+			// The nav views import @sgs/nav-store, so without it every header script fails to load: say so in the log.
+			error_log( 'SGS Blocks: build/shared/nav-store.js is missing; the header scripts that import @sgs/nav-store cannot load. Rebuild and redeploy the plugin.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a broken deploy must leave a trace.
 			return;
 		}
 		$meta = require $asset;

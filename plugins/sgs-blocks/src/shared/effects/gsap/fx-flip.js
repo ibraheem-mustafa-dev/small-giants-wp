@@ -120,9 +120,10 @@ const ARM_MS = 2000;
 /**
  * Flip state options: `simple` skips the rotation, scale and skew matrix maths.
  *
- * Product cards are never rotated or skewed, and without it each `getState()` walks every card's ancestors building a
- * transform matrix, forcing a layout at each step: 7 cards on the canary shop took about 1,500 ms at 4x CPU against 1 ms
- * with `simple` (measured 2026-11-11). That ran at boot and on every frame of the armed window after any click.
+ * Without it each `getState()` walks every card's ancestors building a transform matrix, forcing a style and layout
+ * pass at each step, and the armed window calls it every frame. With it a card's state is its bounding box plus the page
+ * scroll. The cost: a card captured while scaled or rotated (mid hover-scale, inside a scaled container) flips from its
+ * box rather than its transformed shape; a re-filter is started from the filter controls, so cards are normally at rest.
  *
  * @type {{simple: boolean}}
  */
@@ -175,7 +176,9 @@ function productList( el ) {
  */
 function productNodes( el ) {
 	const list = productList( el );
-	return list ? Array.from( list.children ).filter( ( node ) => node.matches( 'li' ) ) : [];
+	return list
+		? Array.from( list.children ).filter( ( node ) => node.matches( 'li' ) )
+		: [];
 }
 
 /**
@@ -209,7 +212,8 @@ function touchesProductNode( records, list ) {
 	if ( ! list ) {
 		return false;
 	}
-	const isLi = ( node ) => node.nodeType === Node.ELEMENT_NODE && node.matches( 'li' );
+	const isLi = ( node ) =>
+		node.nodeType === Node.ELEMENT_NODE && node.matches( 'li' );
 	return records.some(
 		( record ) =>
 			record.target === list &&
@@ -361,7 +365,10 @@ export function initFlip( el ) {
 		// back/forward navigation with no preceding in-page event to arm on.
 		const armEvents = [ 'pointerdown', 'keydown', 'change', 'submit' ];
 		armEvents.forEach( ( type ) =>
-			document.addEventListener( type, arm, { capture: true, passive: true } )
+			document.addEventListener( type, arm, {
+				capture: true,
+				passive: true,
+			} )
 		);
 		window.addEventListener( 'popstate', arm );
 

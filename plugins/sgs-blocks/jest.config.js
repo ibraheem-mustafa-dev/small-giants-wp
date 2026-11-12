@@ -86,6 +86,9 @@ module.exports = {
 		'^@sgs/motion-defs$':
 			'<rootDir>/src/components/motion/generated-motion-defs.json',
 
+		// The shared sgs/nav store: the script module @sgs/nav-store in the build, its source entry in tests.
+		'^@sgs/nav-store$': '<rootDir>/src/shared/nav-store.js',
+
 		// lucide-react and lucide-static are not installed as node_modules.
 		'^lucide-react$': `${ MOCKS_DIR }/lucide-react.js`,
 		'^lucide-static$': `${ MOCKS_DIR }/lucide-react.js`,

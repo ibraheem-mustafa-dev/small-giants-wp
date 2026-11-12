@@ -1,9 +1,9 @@
 /**
  * The drawer menu's opt-in motion and navigation effects (sliding indicator, label magnet, accordion motion state,
  * drill-down, accordion scroll). view.js loads this file on the visitor's first pointer or key press, or when a drawer
- * opens, never at page load: the menu sits in a closed drawer until then.
+ * opens, since the menu sits in a closed drawer until then; a page whose drawer menu uses drill-down loads it at once.
  *
- * @package SGS\Blocks
+ * @package
  */
 
 import { initNavIndicator } from '../../shared/effects/nav-indicator';

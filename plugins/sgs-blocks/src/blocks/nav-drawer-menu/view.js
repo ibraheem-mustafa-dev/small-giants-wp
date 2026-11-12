@@ -99,24 +99,44 @@ let activeCleanups = [];
 let effects = null;
 
 /**
- * Load the effects module (once) and start the effects on every drawer menu on the page.
+ * Load the effects module (once) and start the effects on every drawer menu on the page. A failed download re-arms
+ * the first-interaction trigger, so the next press tries again.
  *
- * @return {Promise<void>} Resolves once the effects are running.
+ * @return {Promise<void>} Resolves once the effects are running, or after a failure has been logged and re-armed.
  */
 function startEffects() {
 	return import(
 		/* webpackChunkName: "drawer-menu-effects" */ './bar-effects'
-	).then( ( module ) => {
-		if ( effects ) {
-			return;
-		}
-		effects = module;
-		document
-			.querySelectorAll( '.wp-block-sgs-nav-drawer-menu' )
-			.forEach( ( root ) => {
-				activeCleanups.push( ...effects.initBarEffects( root ) );
-			} );
-	} );
+	)
+		.then( ( module ) => {
+			if ( effects ) {
+				return;
+			}
+			effects = module;
+			document
+				.querySelectorAll( '.wp-block-sgs-nav-drawer-menu' )
+				.forEach( ( root ) => {
+					activeCleanups.push( ...effects.initBarEffects( root ) );
+				} );
+		} )
+		.catch( ( error ) => {
+			// eslint-disable-next-line no-console -- the one trace of effects that could not load.
+			console.warn(
+				'sgs/nav-drawer-menu: the menu effects could not load',
+				error
+			);
+			// Drill-down changes what a tap on a submenu row does, so a page with it loads the effects now; the rest are
+			// decoration inside a closed drawer and wait for the first interaction.
+			if (
+				document.querySelector(
+					'.sgs-nav-drawer-menu__bar[data-sgs-nav-submenu-model="drill-down"]'
+				)
+			) {
+				startEffects();
+			} else {
+				whenFirstNeeded( startEffects );
+			}
+		} );
 }
 
 /**

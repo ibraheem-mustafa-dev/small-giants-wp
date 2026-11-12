@@ -56,7 +56,7 @@ import { maybeAnimateCountPop } from './count-pop';
  * The panel renderer (`panel-render.js`, with its item rows, free-delivery bar and extras), loaded the first time a
  * panel is about to be needed rather than at page load: the badge needs only the cart reader, and the panel is hidden
  * until opened. Loading starts on the first pointer or key press on the trigger, so it is usually ready before the
- * click that opens the panel lands; `refresh()` waits for it either way.
+ * click that opens the panel lands; `refresh()` waits for it either way. A failed load is retried on the next open.
  *
  * @param {HTMLElement} panelRoot The `[data-sgs-cart-panel]` element.
  * @param {Object}      options   `initPanel` options.
@@ -68,11 +68,26 @@ function lazyPanel( panelRoot, options ) {
 		if ( ! ready ) {
 			ready = import(
 				/* webpackChunkName: "cart-panel" */ './panel-render'
-			).then( ( module ) => module.initPanel( panelRoot, options ) );
+			)
+				.then( ( module ) => module.initPanel( panelRoot, options ) )
+				.catch( ( error ) => {
+					// A failed download (a dropped connection, a chunk replaced by a deploy) is retried on the next
+					// open instead of leaving the panel on its loading skeleton for the life of the page.
+					ready = null;
+					throw error;
+				} );
 		}
 		return ready;
 	};
-	return { refresh: () => warm().then( ( panel ) => panel.refresh() ), warm };
+	const quietly = ( promise ) =>
+		promise.catch( ( error ) => {
+			// eslint-disable-next-line no-console -- the one trace of a panel that could not load.
+			console.warn( 'sgs/cart: the basket panel could not load', error );
+		} );
+	return {
+		refresh: () => quietly( warm().then( ( panel ) => panel.refresh() ) ),
+		warm: () => quietly( warm() ),
+	};
 }
 
 /**

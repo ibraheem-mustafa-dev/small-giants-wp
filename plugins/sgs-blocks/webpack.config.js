@@ -303,8 +303,8 @@ if ( moduleConfig ) {
 				'cart-live',
 				'basket-count.js'
 			),
-			// The shared `sgs/nav` Interactivity store, built once: the cart, nav bar menu, nav drawer and product
-			// search views import it as `@sgs/nav-store` (NAV_STORE_MODULE below records it in their asset files).
+			// The shared `sgs/nav` Interactivity store, built once: the cart, nav bar menu and product search views
+			// import it as `@sgs/nav-store` (NAV_STORE_MODULE below records it in their asset files).
 			'shared/nav-store': path.resolve(
 				process.cwd(),
 				'src',
@@ -405,11 +405,11 @@ if ( moduleConfig ) {
 		return { ...entries, ...vendorEntries };
 	};
 
-	// The shared nav store (`build/shared/nav-store.js`, registered by includes/class-sgs-nav-store-module.php). Unlike
+	// The shared nav store (`build/shared/nav-store.js`, registered by includes/nav-store-module.php). Unlike
 	// the GSAP ids, block view modules import it, and WordPress registers a block's view module with only the
 	// dependencies its asset file lists. So the module config's dependency-extraction plugin externalises it: the
 	// import survives as a bare `@sgs/nav-store` and each importer's view.asset.php lists it, which puts it in the
-	// import map. Before this every importer bundled its own copy of the 57 KB source (three copies on a header page).
+	// import map, so the page loads one copy however many nav blocks import it.
 	const NAV_STORE_MODULE = '@sgs/nav-store';
 	const moduleExtractionIndex = moduleConfig.plugins.findIndex(
 		( plugin ) =>

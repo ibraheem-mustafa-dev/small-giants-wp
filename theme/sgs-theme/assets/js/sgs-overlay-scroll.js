@@ -16,8 +16,8 @@
  * an explicit subtree.
  *
  * Layout cost: a scan reads every new scroller's computed position before it writes any thumb or class, and every scheduled
- * repaint runs in one shared animation frame that measures all dirty scrollers before writing any thumb. Interleaving a read
- * and a write per scroller forced one style and layout pass each (1.8 s at 4x CPU for 14 scrollers on a shop page).
+ * repaint runs in one shared animation frame that measures all dirty scrollers before writing any thumb, so a page pays
+ * one style and layout pass per batch, not one per scroller.
  *
  * @package SGS\Theme
  */
@@ -287,12 +287,22 @@ function start() {
 			removed = false;
 			release();
 		}
-		const roots = Array.from( added );
+		const roots = new Set( added );
 		added.clear();
-		// A root inside another collected root is covered by that root's scan.
-		roots
-			.filter( ( node ) => node.isConnected && ! roots.some( ( other ) => other !== node && other.contains( node ) ) )
-			.forEach( ( node ) => scan( node ) );
+		// A root inside another collected root is covered by that root's scan (one walk up each root's ancestors).
+		const covered = ( node ) => {
+			for ( let up = node.parentElement; up; up = up.parentElement ) {
+				if ( roots.has( up ) ) {
+					return true;
+				}
+			}
+			return false;
+		};
+		roots.forEach( ( node ) => {
+			if ( node.isConnected && ! covered( node ) ) {
+				scan( node );
+			}
+		} );
 	};
 	new MutationObserver( ( records ) => {
 		records.forEach( ( record ) => {
