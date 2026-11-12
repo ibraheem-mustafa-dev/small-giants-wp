@@ -70,10 +70,10 @@ def step_collect(dry_run: bool, theme: bool, blocks: bool,
         try:
             payload, css_before, css_after = deploy_minify.minify_payload(payload)
         except (RuntimeError, OSError, UnicodeDecodeError) as exc:
-            err(f"payload: minifying the hand-written CSS failed, nothing was shipped: {exc}")
+            err(f"payload: minifying the hand-written CSS and JS failed, nothing was shipped: {exc}")
             return 2, None
         if css_before:
-            log(f"[2/5] Hand-written CSS minified: {css_before / 1024:.0f} KB -> {css_after / 1024:.0f} KB")
+            log(f"[2/5] Hand-written CSS and JS minified: {css_before / 1024:.0f} KB -> {css_after / 1024:.0f} KB")
         leaks = deploy_delta.dev_autoload_leaks(payload)
         if leaks:
             err("the payload's Composer autoloader still names dev-only packages (PHPStan/PHPUnit), which are not "

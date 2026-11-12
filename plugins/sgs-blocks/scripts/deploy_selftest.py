@@ -981,6 +981,7 @@ def self_test() -> int:
           "second apply, a changed and a deleted file land in one delta apply")
     print(" 27. the isolated worktree's vendor/ is a real folder: composer's writes stay in the worktree (no temp-worktree "
           "base path in the shared or shipped autoloader), packages are read from the shared checkout; red on a whole-folder link")
-    print(" 28. hand-written CSS is minified in the payload (theme assets/ and plugin assets/ only; style.css, build/ and JS "
-          "untouched; licence comments and strings kept); a failing minifier, a dropped file or an emptied file is refused")
+    print(" 28. hand-written CSS and JS are minified in the payload (theme assets/ and plugin assets/ only; style.css, build/ and "
+          "*.min.* untouched; licence comments, strings, globals, function names and exports kept; modules and classic scripts "
+          "both parse); a script that does not parse, a failing minifier, a dropped file or an emptied file is refused")
     return 0
