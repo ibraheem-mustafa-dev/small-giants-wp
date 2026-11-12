@@ -906,7 +906,7 @@
         "styling": true,
         "colour": true,
         "link": true,
-        "media": true,
+        "media": false,
         "animation": false
       },
       "qualifies": {
@@ -1067,7 +1067,7 @@
         "styling": true,
         "colour": true,
         "link": true,
-        "media": true,
+        "media": false,
         "animation": false
       },
       "qualifies": {
@@ -1471,7 +1471,7 @@
         "styling": true,
         "colour": true,
         "link": false,
-        "media": true,
+        "media": false,
         "animation": false
       },
       "qualifies": {
@@ -1732,7 +1732,7 @@
         "styling": true,
         "colour": true,
         "link": true,
-        "media": true,
+        "media": false,
         "animation": false
       },
       "qualifies": {
@@ -2048,7 +2048,7 @@
         "styling": true,
         "colour": true,
         "link": true,
-        "media": true,
+        "media": false,
         "animation": false
       },
       "qualifies": {

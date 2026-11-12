@@ -1,8 +1,8 @@
-# Stage 3 Style Variation Sync — 2026-11-05 21:47:50 UTC
+# Stage 3 Style Variation Sync — 2026-11-11 23:56:06 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 9 | Missing: 4 | Inserted: 0 | Skipped: 278 | Conflicts: 213
+Snapshots found: 9 | Missing: 4 | Inserted: 0 | Skipped: 285 | Conflicts: 213
 
 ## Per-client results
 
@@ -65,7 +65,7 @@ Inserted: 0 | Skipped: 19 | Conflicts: 23
 
 ### indus-foods
 
-Inserted: 0 | Skipped: 29 | Conflicts: 19
+Inserted: 0 | Skipped: 36 | Conflicts: 19
 
 - CONFLICT: color-ink (framework='#141414', client='#1E2A3C') → inserted as indus-foods-color-ink
 - CONFLICT: font-size-small (framework='14px', client='12px') → inserted as indus-foods-font-size-small
