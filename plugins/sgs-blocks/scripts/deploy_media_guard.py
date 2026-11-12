@@ -35,9 +35,18 @@ def export_command_for(wp_root: str) -> str:
     return out.stdout.strip()
 
 
-def run_detector(content_file: Path) -> subprocess.CompletedProcess:
-    return subprocess.run([sys.executable, str(DETECTOR_DIR / "cli.py"), "check", "--content", str(content_file), "--active", "on"],
-                          capture_output=True, text=True, encoding="utf-8")
+def site_base(wp_root: str) -> str | None:
+    """The site's own address (`https://host`) from a Hostinger path `.../domains/<host>/public_html`, or None."""
+    parts = wp_root.split("/")
+    return f"https://{parts[parts.index('domains') + 1]}" if "domains" in parts[:-1] else None
+
+
+def run_detector(content_file: Path, base: str | None = None) -> subprocess.CompletedProcess:
+    """`check --active on` over the export; `base` lets a site-relative image path be read from the site itself."""
+    cmd = [sys.executable, str(DETECTOR_DIR / "cli.py"), "check", "--content", str(content_file), "--active", "on"]
+    if base:
+        cmd += ["--content-base", base]
+    return subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
 
 
 def parse_export(raw: str) -> list:
@@ -92,7 +101,7 @@ def step_media_guard(dry_run: bool, use_alias: bool, target_key: str, wp_content
     with tempfile.TemporaryDirectory() as td:
         path = Path(td) / f"{target_key}.json"
         path.write_text(json.dumps(posts), encoding="utf-8")
-        res = run_detector(path)
+        res = run_detector(path, site_base(wp_root))
     clean, summary = verdict(res.returncode, res.stdout, res.stderr)
     if clean:
         log(f"[media-guard] PASS: {target_key} saved content ({len(posts)} item(s)) holds no old media attributes")
@@ -126,4 +135,8 @@ def self_test() -> list[str]:
         failures.append("media guard NEGATIVE CONTROL: an unsupported record was not refused")
     if step_media_guard(False, False, "t", "/x/wp-content", fetch=lambda _t: "not json", post_cutover=True) != 1:
         failures.append("media guard: an unreadable export did not fail closed")
+    if site_base("domains/a.example/public_html") != "https://a.example":
+        failures.append("media guard: the site address was not read from a Hostinger path, so a site-relative image reads as refused")
+    if site_base("/var/www/local-x") is not None:
+        failures.append("media guard NEGATIVE CONTROL: a path with no domains/<host> gave a site address")
     return failures

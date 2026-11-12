@@ -177,6 +177,12 @@
               "id": 71,
               "url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/whatsapp-white.svg"
             }
+          },
+          "splitFocal": {
+            "mobile": {
+              "x": 0.5,
+              "y": 0.2
+            }
           }
         },
         "innerBlocks": [

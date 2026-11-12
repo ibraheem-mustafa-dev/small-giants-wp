@@ -647,8 +647,31 @@ def _item(ctx: T.Ctx, attr: str, item: Any, shape: str):
 
 # ---------------------------------------------------------------- pinned defaults
 
+def pin_hero_mobile_crop(ctx: T.Ctx) -> None:
+    """The old hero cropped its split image on phones at its default position (`splitMediaObjectPosition` default
+    `{mobile: 'center 20%'}`, applied wherever no phone position was saved, under the default cover fit). Spec 49 drops
+    that baked default, so a split image or video converted from the old attributes with no phone position of its own gets
+    the old crop written explicitly. A hero already in the new shape is left alone: no phone focal point there is a choice."""
+    if ctx.block != "sgs/hero" or not ctx.has("splitSource") or not any(k.startswith(("splitMedia", "splitImage")) for k in ctx.original):
+        return
+    default = M.old_default(ctx.block, "splitMediaObjectPosition")
+    mobile_default = default.get("mobile") if isinstance(default, dict) else None
+    saved = ctx.original.get("splitMediaObjectPosition")
+    saved_mobile = saved.get("mobile") if isinstance(saved, dict) else None
+    fit = ctx.original.get("splitMediaObjectFit", M.old_default(ctx.block, "splitMediaObjectFit"))
+    focal = ctx.get("splitFocal")
+    focal = dict(focal) if isinstance(focal, dict) else {}
+    point = V.parse_position(mobile_default) if mobile_default else None
+    if saved_mobile is not None or "mobile" in focal or fit not in (None, "cover") or not point:
+        return
+    focal["mobile"] = point
+    ctx.put("splitFocal", focal)
+    ctx.events.append(("pinned", "splitMediaObjectPosition", "splitFocal", "old phone crop default (center 20%) written explicitly"))
+
+
 def apply_pins(ctx: T.Ctx) -> None:
     original = ctx.original
+    pin_hero_mobile_crop(ctx)
     if ctx.block == "sgs/decorative-image" and "imageDecorative" not in original and "layerDecorative" not in original:
         default = M.old_default(ctx.block, "imageDecorative")
         if default is True and (ctx.has("layerSource") or ctx.has("decorMedia") or ctx.has("imageUrl") or ctx.has("imageId")):
@@ -1096,10 +1119,12 @@ def pin_naked_ratio_width(ctx: T.Ctx) -> None:
 def pin_hero_split_width(ctx: T.Ctx) -> None:
     """The old hero printed its split image with the width of WordPress's `large` size (an upload) or the file's own width, and that
     intrinsic width stretched the grid column; the new default, no Width, fills the grid cell. A hero whose old split image is
-    migrated here and has no Width of its own gets `splitWidth` in px at that printed width, so the page does not change. Only the
-    desktop file is pinned (the old render read the attachment size for the desktop tier only). A hero already in the new shape
-    (no old split name converted) is never pinned."""
-    if ctx.block != "sgs/hero" or ctx.has("splitWidth") or not isinstance(ctx.get("splitSource"), dict):
+    migrated here and has no desktop Width of its own gets `splitWidth.desktop` in px at that printed width, so the page does not
+    change; a saved tablet or phone Width is kept beside it (the old image still printed its own width on desktop). Only the desktop
+    file is pinned (the old render read the attachment size for the desktop tier only). A hero already in the new shape (no old
+    split name converted) is never pinned."""
+    widths = ctx.get("splitWidth") if isinstance(ctx.get("splitWidth"), dict) else {}
+    if ctx.block != "sgs/hero" or widths.get("desktop") or not isinstance(ctx.get("splitSource"), dict):
         return
     if not any(e[0] == "converted" and e[2] == "splitSource" for e in ctx.events):
         return
@@ -1107,7 +1132,7 @@ def pin_hero_split_width(ctx: T.Ctx) -> None:
     width = S.printed_width(entry) if isinstance(entry, dict) and entry.get("kind") == "image" else None
     if not width:
         return
-    ctx.put("splitWidth", {"desktop": f"{width}px"})
+    ctx.put("splitWidth", {"desktop": f"{width}px", **{k: v for k, v in widths.items() if k != "desktop"}})
     ctx.events.append(("pinned", "splitMediaWidth", "splitWidth", f"old split image was printed {width}px wide: written explicitly"))
 
 

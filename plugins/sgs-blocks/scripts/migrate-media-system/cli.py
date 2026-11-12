@@ -64,7 +64,7 @@ def records(args) -> list[tuple[str, str, dict]]:
     for name in getattr(args, "remote", None) or []:
         out += [(f"remote:{name}:{label}", n, a) for label, n, a in C.content_blocks(REM.remote_export(name))]
     for file in args.content or []:
-        out += [(f"content:{Path(file).stem}:{label}", n, a) for label, n, a in C.content_blocks(C.load_content(Path(file)))]
+        out += [(f"content:{Path(file).stem}:{label}", n, a) for label, n, a in C.content_blocks(C.load_content(Path(file), getattr(args, "content_base", None)))]
     return out
 
 
@@ -205,7 +205,7 @@ def refuse_unsupported_saved(args) -> None:
     for name in getattr(args, "remote", None) or []:
         MIR.refuse_unsupported(REM.remote_export(name), f"remote {name}")
     for file in args.content or []:
-        MIR.refuse_unsupported(C.load_content(Path(file)), f"content {Path(file).name}")
+        MIR.refuse_unsupported(C.load_content(Path(file), getattr(args, "content_base", None)), f"content {Path(file).name}")
 
 
 def cmd_fix(args) -> int:
@@ -238,7 +238,7 @@ def cmd_fix(args) -> int:
         else:
             sys.stdout.write(unified(label, before, after))
     for file in args.content or []:
-        posts = C.load_content(Path(file))
+        posts = C.load_content(Path(file), getattr(args, "content_base", None))
         S.activate(f"content:{Path(file).stem}")
         for post in posts:
             after, count = C.rewrite_post(post, fn_for)
@@ -332,6 +332,7 @@ def main(argv=None) -> int:
         p = sub.add_parser(name)
         p.add_argument("--target", action="append", help="repo target kind: " + ", ".join(C.repo_targets()))
         p.add_argument("--content", action="append", help="a wp-cli `post list --format=json` export file")
+        p.add_argument("--content-base", help="the exported site's own address (https://host): a site-relative image path in --content is read against it")
         if name == "survey":
             p.add_argument("--json", action="store_true")
             p.add_argument("--out")

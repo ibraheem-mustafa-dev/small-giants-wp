@@ -255,12 +255,13 @@ def mirror_export(name: str, fresh: bool = False) -> list[dict]:
     return _EXPORTS[name]
 
 
-def load_content(path: Path) -> list[dict]:
+def load_content(path: Path, base: str | None = None) -> list[dict]:
+    """A saved-content export file's posts; `base` is the site's own address (`https://host`), which a site-relative image path is read against."""
     records = json.loads(read_text(path))
     if not isinstance(records, list):
         raise SystemExit(f"{path}: expected a wp-cli post list (JSON array)")
     posts, files = sizes.split_export(records)
-    sizes.register(f"content:{path.stem}", files)
+    sizes.register(f"content:{path.stem}", files, base=base)
     return posts
 
 

@@ -97,7 +97,10 @@ case("size: a size saved on the block is kept, not read again", "sgs/media", {"i
 G1, G2 = "linear-gradient(90deg,#000,#fff)", "linear-gradient(0deg,#111,#222)"
 VIDEO = "http://x/v.mp4"
 case("hero split width: an old image with no width is pinned to its file's own width (the old image forced it on the grid column)", "sgs/hero",
-     {"splitMediaImageUrl": U}, {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitWidth": {"desktop": "640px"}})
+     {"splitMediaImageUrl": U}, {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitFocal": {"mobile": {"x": 0.5, "y": 0.2}}, "splitWidth": {"desktop": "640px"}})
+case("hero split width: a tablet and phone Width without a desktop one still pins desktop at the file's width (the old image printed it there)", "sgs/hero",
+     {"splitMediaImageUrl": U, "splitMediaWidth": {"tablet": 100, "mobile": 100}, "splitMediaWidthUnit": "%"},
+     {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitFocal": {"mobile": {"x": 0.5, "y": 0.2}}, "splitWidth": {"desktop": "640px", "tablet": "100%", "mobile": "100%"}})
 case("hero motion: the saved split-image part moves to split-media (the renderer's part name)", "sgs/hero",
      {"sgsMotion": {"v": 1, "elements": {"split-image": {"hover": {"state": {"values": {"restRotate": -8}}}}}}},
      {"sgsMotion": {"v": 1, "elements": {"split-media": {"hover": {"state": {"values": {"restRotate": -8}}}}}}})
@@ -107,8 +110,8 @@ case("negative: a part no rename names is left as saved", "sgs/hero",
      {"sgsMotion": {"v": 1, "elements": {"headline": {"hover": {"state": {"values": {"scale": 1.05}}}}}}}, None)
 case("negative: a hero already in the new shape is not pinned", "sgs/hero",
      {"splitSource": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}}}, None)
-case("hero split width: a video is not pinned", "sgs/hero", {"splitMediaType": "video", "splitMediaVideoUrl": "http://x/v.mp4"},
-     {"splitSource": {"desktop": {"kind": "video", "url": "http://x/v.mp4"}}})
+case("hero split width: a video is not pinned (its phone crop is: the old crop applied to video too)", "sgs/hero", {"splitMediaType": "video", "splitMediaVideoUrl": "http://x/v.mp4"},
+     {"splitSource": {"desktop": {"kind": "video", "url": "http://x/v.mp4"}}, "splitFocal": {"mobile": {"x": 0.5, "y": 0.2}}})
 case("hero overlay: the gradient and its hover take the overlay family's names, the old strength 30 is pinned", "sgs/hero",
      {"overlayGradient": G1, "overlayGradientHover": G2},
      {"backgroundOverlayGradient": G1, "backgroundOverlayGradientHover": G2, "backgroundOverlayOpacity": {"desktop": 30}})
@@ -159,7 +162,7 @@ case("choice-flow: a header logo with no alt gets no headerLogoAlt", "sgs/choice
 case("size: a per-device image gets its own size", "sgs/media", {"imageUrl": U, "imageUrlMobile": "http://x/m.jpg"},
      {"source": {"desktop": {"kind": "image", "url": U, "width": 640, "height": 480}, "mobile": {"kind": "image", "url": "http://x/m.jpg", "width": 160, "height": 120}}, "width": {"desktop": "100%"}})
 case("size: a hero split image gets its size", "sgs/hero", {"splitMediaImageUrl": "http://x/m.svg"},
-     {"splitSource": {"desktop": {"kind": "image", "url": "http://x/m.svg", "width": 100, "height": 100}}, "splitWidth": {"desktop": "100px"}})
+     {"splitSource": {"desktop": {"kind": "image", "url": "http://x/m.svg", "width": 100, "height": 100}}, "splitFocal": {"mobile": {"x": 0.5, "y": 0.2}}, "splitWidth": {"desktop": "100px"}})
 case("size: an unreadable image is refused and the block stays as saved", "sgs/media", {"imageUrl": "http://x/unreadable.png", "imageAlt": "A"}, None)
 case("size: an unreadable image in a migrated block is refused", "sgs/media", {"source": {"desktop": {"kind": "image", "url": "http://x/unreadable.png"}}}, None)
 case("size: a video's url is not an image and needs no size", "sgs/media", {"mediaType": "video", "videoUrl": "http://x/v.mp4", "mediaSizing": "height", "height": {"desktop": "200px"}},
@@ -200,8 +203,14 @@ case("media: fit and keyword focal", "sgs/media", {"objectFit": "contain", "obje
 case("hero split: focal strings per device, redundant centre dropped, percentage read", "sgs/hero",
      {"splitMediaImageUrl": U, "splitMediaObjectPosition": {"desktop": "66% 94%", "tablet": "center center", "mobile": "center center"}},
      {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitFocal": {"desktop": {"x": 0.66, "y": 0.94}, "tablet": {"x": 0.5, "y": 0.5}}, "splitWidth": {"desktop": "640px"}})
-case("hero split: the baked mobile focal default is not pinned (Appendix A)", "sgs/hero", {"splitMediaImageUrl": U},
-     {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitWidth": {"desktop": "640px"}})
+case("hero split: the old phone crop default (center 20%) is pinned where no phone position was saved (AC-25: phones kept the old crop)", "sgs/hero", {"splitMediaImageUrl": U},
+     {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitFocal": {"mobile": {"x": 0.5, "y": 0.2}}, "splitWidth": {"desktop": "640px"}})
+case("hero split: a saved phone position is kept, not replaced by the old default", "sgs/hero",
+     {"splitMediaImageUrl": U, "splitMediaObjectPosition": {"mobile": "30% 40%"}},
+     {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitFocal": {"mobile": {"x": 0.3, "y": 0.4}}, "splitWidth": {"desktop": "640px"}})
+case("hero split: a contain fit draws the whole image, so the phone crop default is not pinned", "sgs/hero",
+     {"splitMediaImageUrl": U, "splitMediaObjectFit": "contain"},
+     {"splitSource": {"desktop": {"kind": "image", "url": U}}, "splitFit": {"desktop": "contain"}, "splitWidth": {"desktop": "640px"}})
 case("hero split: out-of-vocabulary fit 'custom' renders as unset and is deleted", "sgs/hero", {"splitMediaObjectFit": "custom"}, {})
 case("hero split: width number with its retired unit partner", "sgs/hero", {"splitMediaWidth": {"desktop": 40}, "splitMediaWidthUnit": "%"},
      {"splitWidth": {"desktop": "40%"}})
@@ -209,7 +218,7 @@ case("hero split: per-tier type, files, alt and a zero id", "sgs/hero",
      {"splitMediaType": "image", "splitMediaImageUrl": U, "splitMediaImageIdMobile": 0, "splitMediaImageUrlMobile": "http://x/m.jpg",
       "splitMediaImageAlt": "A", "splitMediaImageAltMobile": "M"},
      {"splitSource": {"desktop": {"kind": "image", "url": U}, "mobile": {"kind": "image", "url": "http://x/m.jpg", "alt": "M"}}, "splitAlt": "A",
-      "splitWidth": {"desktop": "640px"}})
+      "splitFocal": {"mobile": {"x": 0.5, "y": 0.2}}, "splitWidth": {"desktop": "640px"}})
 # ---- shape, radius, opacity, overlay
 case("media: rounded becomes Corners 12px", "sgs/media", {"shape": "rounded"}, {"radius": {"desktop": {"topLeft": "12px", "topRight": "12px", "bottomRight": "12px", "bottomLeft": "12px"}}})
 case("media: circle becomes Shape circle", "sgs/media", {"shape": "circle"}, {"shape": {"desktop": {"shape": "circle"}}})

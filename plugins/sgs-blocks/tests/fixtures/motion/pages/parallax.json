@@ -33,7 +33,13 @@
 					"height": 800
 				}
 			},
-			"splitAlt": "A river valley seen from above"
+			"splitAlt": "A river valley seen from above",
+			"splitFocal": {
+				"mobile": {
+					"x": 0.5,
+					"y": 0.2
+				}
+			}
 		},
 		"innerBlocks": [
 			{
