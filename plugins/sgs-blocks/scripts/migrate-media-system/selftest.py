@@ -388,8 +388,56 @@ case("negative: hero mediaPadding and splitMediaPadding both set is refused", "s
 case("inline SVG logo parts are the block's own attributes and stay untouched", "sgs/responsive-logo", {"inlineSvg": True, "svgParts": []}, None)
 case("negative: an out-of-vocabulary shape is refused and stays", "sgs/media", {"shape": "star"}, None)
 
+# ---- Stage B release: live-site refusals and the hover and effect settings that became motion layers
+case("media: a template placeholder focal position was ignored by the browser and is deleted", "sgs/media", {"objectPosition": "{{ heroPos }}"}, {})
+case("media: negative control, a readable focal position still converts", "sgs/media", {"objectPosition": "center 30%"}, {"focal": {"desktop": {"x": 0.5, "y": 0.3}}})
+case("negative: refused a pixel focal position stays", "sgs/media", {"objectPosition": "10px 20px"}, None)
+case("buybox: the interim selected-thumbnail border colour is the Current state colour", "sgs/buybox",
+     {"thumbSelectedBorderColour": "text"}, {"galleryThumbBorderColourCurrent": "text"})
+case("negative: refused buybox selected colour beside a different Current colour stays", "sgs/buybox",
+     {"thumbSelectedBorderColour": "text", "galleryThumbBorderColourCurrent": "primary"}, None)
+case("hero: the split media border hover colour and gradient are the split slot's own", "sgs/hero",
+     {"splitMediaBorderColourHover": "#13579b", "splitMediaBorderColourHoverGradient": "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"},
+     {"splitBorderColourHover": "#13579b", "splitBorderColourHoverGradient": "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"})
+case("hero: split media Ken Burns becomes a loop layer on the split-media part, duration in ms", "sgs/hero",
+     {"splitMediaKenBurns": True, "splitMediaAnimationDuration": 30},
+     {"sgsMotion": {"v": 1, "elements": {"split-media": {"effects": [{"id": "ken-burns", "effect": "ken-burns", "values": {"mode": "loop", "zoomStart": 100, "zoomEnd": 106, "easing": "ease-in-out", "duration": 30000}}]}}}})
+case("hero: split media parallax beside a Ken Burns wins, as the old render ran it", "sgs/hero",
+     {"splitMediaKenBurns": True, "splitMediaParallax": True},
+     {"sgsMotion": {"v": 1, "elements": {"split-media": {"effects": [{"id": "parallax", "effect": "parallax", "values": {"speedRatio": 0.01, "basis": "page"}}]}}}})
+case("hero: split media motion switched off writes nothing", "sgs/hero", {"splitMediaKenBurns": False, "splitMediaParallax": False, "splitMediaAnimationDuration": 20}, {})
+case("negative: refused hero Ken Burns over an existing Ken Burns layer stays", "sgs/hero",
+     {"splitMediaKenBurns": True, "sgsMotion": {"v": 1, "elements": {"split-media": {"effects": [{"id": "ken-burns", "effect": "ken-burns", "values": {"mode": "loop"}}]}}}}, None)
+case("card-grid: imageZoomHover on becomes the image part's item zoom, the saved percent and ms overriding", "sgs/card-grid",
+     {"imageZoomHover": True, "sgsHoverZoom": 105, "sgsHoverZoomDuration": 900},
+     {"sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"source": "item", "values": {"scale": 1.05, "duration": 900, "easing": "ease"}}}}}}})
+case("card-grid: imageZoomHover on with no saved percent takes the old default look (1.1 over 500ms)", "sgs/card-grid", {"imageZoomHover": True},
+     {"sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"source": "item", "values": {"scale": 1.1, "duration": 500, "easing": "ease"}}}}}}})
+case("gallery: imageZoomHover off is deleted with no state", "sgs/gallery", {"imageZoomHover": False}, {})
+case("team-member: imageZoomHover on is triggered by the whole card", "sgs/team-member", {"imageZoomHover": True},
+     {"photoShape": {"desktop": {"shape": "circle"}}, "photoRatio": {"desktop": "1 / 1"}, "sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"source": "root", "values": {"scale": 1.1, "duration": 500, "easing": "ease"}}}}}}})
+case("gallery: zoom and grey to colour share the one item state", "sgs/gallery", {"imageZoomHover": True, "grayscaleHover": True},
+     {"sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"source": "item", "values": {"scale": 1.05, "duration": 300, "easing": "ease", "grayscale": 0, "restGrayscale": 1}}}}}}})
+case("negative: refused imageZoomHover over a different saved Hover state stays", "sgs/card-grid",
+     {"imageZoomHover": True, "sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"source": "item", "values": {"scale": 1.3}}}}}}}, None)
+case("negative: refused imageZoomHover that is not a boolean stays", "sgs/card-grid", {"imageZoomHover": "yes"}, None)
+case("media: the photo zoom extension on becomes the media part's root zoom", "sgs/media",
+     {"sgsHoverImageZoom": True, "sgsHoverZoom": 105, "sgsHoverZoomDuration": 1400},
+     {"sgsMotion": {"v": 1, "elements": {"media": {"hover": {"state": {"source": "root", "values": {"scale": 1.05, "duration": 1400, "easing": "ease"}}}}}}})
+case("product-card: the photo zoom extension on becomes the image part's root zoom", "sgs/product-card",
+     {"sgsHoverImageZoom": True, "sgsHoverZoom": 106, "sgsHoverZoomDuration": 900},
+     {"sgsMotion": {"v": 1, "elements": {"image": {"hover": {"state": {"source": "root", "values": {"scale": 1.06, "duration": 900, "easing": "ease"}}}}}}})
+case("product-card: a zoom percent with the switch off was never read and is deleted", "sgs/product-card",
+     {"sgsHoverImageZoom": False, "sgsHoverZoom": 106, "sgsHoverZoomDuration": 900}, {})
+case("icon: scaleHover 1 scaled nothing and is deleted", "sgs/icon", {"scaleHover": 1}, {})
+case("icon: scaleHover above 1 becomes the shape part's Hover scale", "sgs/icon", {"scaleHover": 1.2},
+     {"sgsMotion": {"v": 1, "elements": {"shape": {"hover": {"state": {"source": "root", "values": {"scale": 1.2}}}}}}})
+case("negative: refused icon scaleHover that is no scale stays", "sgs/icon", {"scaleHover": "big"}, None)
+case("negative: card-grid scaleHover is still declared by the block and stays unreported", "sgs/card-grid", {"scaleHover": "1.05"}, None)
+
 REFUSED_STAYS = ("negative: an unreadable photo object", "size: an unreadable image", "negative: an unreadable focal", "negative: Lottie", "negative: an out-of-vocabulary shape",
-                 "negative: hero mediaPadding", "negative: grayscaleHover over")
+                 "negative: hero mediaPadding", "negative: grayscaleHover over", "negative: refused")
+
 
 
 def _fail(label: str, detail: str, failures: list[str]) -> None:
@@ -738,7 +786,59 @@ def run_frozen(failures: list[str]) -> int:
 LEGACY_UNDECLARED = {
     ("sgs/hero", "splitMediaWidthUnit"), ("sgs/hero", "splitMediaHeightUnit"), ("sgs/hero", "splitMediaMaxWidthUnit"),
     ("sgs/hero", "splitMediaMaxHeightUnit"), ("sgs/hero", "splitMediaBackground"), ("sgs/card-grid", "imageSize"),
+    ("sgs/buybox", "thumbSelectedBorderColour"),  # the interim attribute of a49e09cb6, replaced before the database's seed
 }
+
+
+def run_hover_tables(failures: list[str]) -> int:
+    """The hover tables name real parts, and only attributes the block no longer declares are converted (a declared one stays):
+    every REPORT_EXEMPT pair is declared by its block.json (so the exemption cannot outlive the attribute), every converted hover
+    attribute is declared by no block that converts it, and every part a table writes is a declared motion part of its block."""
+    checks = 0
+    declared = {}
+    for path in sorted(M.BLOCKS_DIR.glob("*/block.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        declared[data["name"]] = set(data.get("attributes") or {})
+    for block, attr in sorted(M.REPORT_EXEMPT - {("sgs/button", "scaleHover"), ("sgs/brand-strip", "imageEffect")}):  # those two are exempt for other reasons
+        checks += 1
+        if attr not in declared.get(block, set()):
+            _fail("hover tables: exempt", f"{block} no longer declares {attr}: it is not exempt, it is lost", failures)
+    parts = M.live_motion_parts()
+    for block, rule in M.HOVER_IMAGE_ZOOM.items():
+        checks += 2
+        if "imageZoomHover" in declared.get(block, set()):
+            _fail("hover tables: image zoom", f"{block} still declares imageZoomHover, so converting it deletes a live setting", failures)
+        if rule[0] not in parts.get(block, set()):
+            _fail("hover tables: image zoom", f"{block} has no motion part {rule[0]}", failures)
+    for block, rule in M.HOVER_EXTENSION_ZOOM.items():
+        checks += 1
+        if rule[0] not in parts.get(block, set()):
+            _fail("hover tables: extension zoom", f"{block} has no motion part {rule[0]}", failures)
+    for block, rule in M.HOVER_SCALE.items():
+        checks += 2
+        if "scaleHover" in declared.get(block, set()):
+            _fail("hover tables: scale", f"{block} still declares scaleHover", failures)
+        if rule[0] not in parts.get(block, set()):
+            _fail("hover tables: scale", f"{block} has no motion part {rule[0]}", failures)
+    checks += 1
+    if "split-media" not in parts.get("sgs/hero", set()):
+        _fail("hover tables: hero split motion", "sgs/hero has no split-media motion part", failures)
+    try:
+        import jsonschema
+    except ImportError:
+        return checks  # the schema proof needs the jsonschema package; the table checks above stand without it
+    validator = jsonschema.Draft202012Validator(json.loads((M.PLUGIN / "schemas" / "motion.schema.json").read_text(encoding="utf-8")))
+    for label, _block, _attrs, expected in CASES:
+        if isinstance(expected, dict) and "sgsMotion" in expected and "sgsMotion" not in _attrs:
+            checks += 1
+            errors = [e.message for e in validator.iter_errors(expected["sgsMotion"])]
+            if errors:
+                _fail("hover tables: schema", f"{label}: the motion object the migration writes breaks motion.schema.json: {errors[0][:160]}", failures)
+    checks += 1
+    if not list(validator.iter_errors({"v": 1, "elements": {"image": {"hover": {"state": {"source": "item", "values": {"scale": "big"}}}}}})):
+        _fail("hover tables: schema negative control", "a Hover state with a non-numeric scale passed the schema", failures)
+    return checks
+
 
 
 def run_inplace_json(failures: list[str]) -> int:
@@ -768,17 +868,21 @@ def run_inplace_json(failures: list[str]) -> int:
 
 def run_remote_paths(failures: list[str]) -> int:
     """On a remote site (no mirror): a bare token names no file, so it is MISSING without a read; a site-relative path is
-    read over HTTP against the site's address; a page-relative file path is not guessed (None: the block is refused)."""
+    read over HTTP against the site's address; a page-relative path is read against the site root like a mirror does (an unsafe path is not guessed: None, the block is refused)."""
     import sizes as S
     seen: list[str] = []
     real_http = S._http
-    S._http = lambda url: (seen.append(url), (10, 20))[1]
+    S._http = lambda url, own_host=None: (seen.append((url, own_host)), (10, 20))[1]
     try:
         site = {"files": {}, "mirror": None, "base": "https://example.test"}
         checks = [
             ("remote paths: a bare token is missing", S._read("crzq7marker", site) == S.MISSING),
-            ("remote paths: a site-relative path is read against the site", S._read("/wp-content/a.jpg", site) == (10, 20) and seen == ["https://example.test/wp-content/a.jpg"]),
-            ("remote paths: negative control, a page-relative file path is not guessed", S._read("img/a.jpg", site) is None),
+            ("remote paths: a site-relative path is read against the site", S._read("/wp-content/a.jpg", site) == (10, 20) and seen == [("https://example.test/wp-content/a.jpg", "example.test")]),
+            ("remote paths: a page-relative path is read against the site root, '../' clamped there", (seen.clear(), S._read("../../research/a.jpeg", site))[1] == (10, 20) and seen == [("https://example.test/research/a.jpeg", "example.test")]),
+            ("remote paths: a page-relative path with no slash is read at the root", (seen.clear(), S._read("assets/brands/a.jpg", site))[1] == (10, 20) and seen == [("https://example.test/assets/brands/a.jpg", "example.test")]),
+            ("remote paths: an absolute URL on the site's own host is read as the site's own file", (seen.clear(), S._read("https://example.test/wp-includes/a.png", site))[1] == (10, 20) and seen == [("https://example.test/wp-includes/a.png", "example.test")]),
+            ("remote paths: negative control, another host is not given the site's own-host exemption", (seen.clear(), S._read("https://other.test/a.png", site))[1] == (10, 20) and seen == [("https://other.test/a.png", "example.test")]),
+            ("remote paths: negative control, a page-relative path with unsafe characters is not guessed", S._read("img/a b$.jpg", site) is None),
             ("remote paths: negative control, no base leaves a site-relative path unread", S._read("/a.jpg", {"files": {}, "mirror": None}) is None),
         ]
     finally:
@@ -864,6 +968,21 @@ def run_http_retry(failures: list[str]) -> int:
             checks += 1
             if got != want or calls["n"] != want_calls:
                 failures.append(f"FAIL http retry: {label}: got {got} after {calls['n']} call(s), want {want} after {want_calls}")
+
+        def verifying(request, timeout=0, context=None):
+            calls["n"] += 1
+            if context is None or context.verify_mode != S.ssl.CERT_NONE:
+                raise urllib.error.URLError(S.ssl.SSLCertVerificationError(1, "unable to get local issuer certificate"))
+            return Resp(png)
+
+        urllib.request.urlopen = verifying
+        for url, own, want, label in (("https://site.test/products/a.png", "site.test", (640, 480), "the site's own file is read without the certificate check"),
+                                      ("https://other.test/a.png", "site.test", S.MISSING, "negative: another host is still certificate-checked"),
+                                      ("https://site.test/products/a.png", None, S.MISSING, "negative: no own host, still certificate-checked")):
+            checks += 1
+            got = S._http(url, own_host=own)
+            if got != want:
+                failures.append(f"FAIL http own host: {label}: got {got}, want {want}")
     finally:
         urllib.request.urlopen, S.time.sleep = real_open, real_sleep
     return checks
@@ -1036,7 +1155,7 @@ def _run(break_mapping: bool = False) -> int:
         M.rows.cache_clear()
         M.STAYS["sgs/post-grid"] = ()
     failures: list[str] = []
-    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_declared_guard(failures) + run_scope(failures) + run_sizes(failures) + run_http_retry(failures) + run_remote_paths(failures) + run_missing_files(failures) + run_retired_names(failures) + run_inplace_json(failures) + export_selftest.run(failures) + apply_selftest.run(failures) + remote_selftest.run(failures)
+    total = run_cases(failures) + run_svg_keep(failures) + run_background_rules(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_declared_guard(failures) + run_scope(failures) + run_sizes(failures) + run_http_retry(failures) + run_remote_paths(failures) + run_hover_tables(failures) + run_missing_files(failures) + run_retired_names(failures) + run_inplace_json(failures) + export_selftest.run(failures) + apply_selftest.run(failures) + remote_selftest.run(failures)
     for line in failures:
         print(line)
     print(f"migrate-media-system self-test: {total - len(failures)} of {total} checks passed"

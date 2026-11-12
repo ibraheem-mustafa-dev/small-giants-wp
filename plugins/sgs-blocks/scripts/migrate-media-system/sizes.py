@@ -24,6 +24,7 @@ import ssl
 import struct
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from typing import Callable
 
@@ -172,18 +173,28 @@ def _dns_missing(exc: BaseException) -> bool:
 DNS_NOT_FOUND = tuple(code for code in (getattr(socket, "EAI_NONAME", None), getattr(socket, "EAI_NODATA", None), 11001) if code is not None)
 
 
-def _http(url: str) -> "Size | str | None":
+def _unverified() -> ssl.SSLContext:
+    context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    return context
+
+
+def _http(url: str, own_host: "str | None" = None) -> "Size | str | None":
     """The file's size from its first bytes over HTTP, MISSING when the file is definitively not there (404, 410, or a host
     name that does not resolve on any attempt), else None. A network failure (a dropped or slow connection) is retried
     up to HTTP_ATTEMPTS times with a short pause, so one pass reads what a second pass would; bytes that arrive but
-    hold no readable size are not retried."""
+    hold no readable size are not retried. `own_host` is the site being migrated: its own files are read without checking the
+    certificate (a read of public image bytes), because a chain this machine cannot verify says nothing about whether the
+    site's file exists."""
     if not url.startswith(("http://", "https://")):
         return None
+    context = _unverified() if own_host and urllib.parse.urlsplit(url).hostname == own_host else None
     request = urllib.request.Request(url, headers={"User-Agent": "sgs-media-migrate/1", "Range": f"bytes=0-{HEAD_LIMIT - 1}"})
     dns_failures = 0
     for attempt in range(HTTP_ATTEMPTS):
         try:
-            with urllib.request.urlopen(request, timeout=12) as response:
+            with (urllib.request.urlopen(request, timeout=12, context=context) if context else urllib.request.urlopen(request, timeout=12)) as response:
                 data = b""
                 while len(data) < HEAD_LIMIT:
                     chunk = response.read(65536)
@@ -244,10 +255,20 @@ def _read(url: str, site: dict) -> "Size | str | None":
             return _relative_missing(site["mirror"], url)
         if "/" not in url and "." not in url:
             return MISSING  # a bare token (a test marker, a stray word) names no file: the old page drew a broken image
-        if url.startswith("/") and site.get("base"):
-            return _http(site["base"].rstrip("/") + url)
+        if site.get("base"):
+            # The same rule as a mirror: a page-relative path is read against the site root (a browser clamps "../" at the root).
+            path = url.split("?", 1)[0].split("#", 1)[0]
+            if url.startswith("/") and ".." not in url:
+                target = url
+            elif SAFE_REL.match(path):
+                target = posixpath.normpath("/" + path.lstrip("/"))
+            else:
+                return None
+            return _http(site["base"].rstrip("/") + target, own_host=urllib.parse.urlsplit(site["base"]).hostname)
         return None
-    return _http("https:" + url if url.startswith("//") else url)
+    full = "https:" + url if url.startswith("//") else url
+    own = urllib.parse.urlsplit(site["base"]).hostname if site.get("base") else None
+    return _http(full, own_host=own)
 
 
 READER: Callable[[str, dict], "Size | str | None"] = _read
