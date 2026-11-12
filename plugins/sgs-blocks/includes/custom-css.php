@@ -24,6 +24,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/class-custom-css-scoper.php';
 
+/**
+ * How many times Custom CSS repeats the scope class (`.uid.uid.uid.uid`), and how many times any settings emitter may.
+ *
+ * Custom CSS must out-rank every setting the framework prints for the same part, so its scope is always one class longer
+ * than the longest scope any emitter prints (the commerce-look table's `root_repeat` is the largest). The editor canvas
+ * holds the same numbers (src/utils/custom-css-scope.js), and tests/php/CustomCssOutranksSettingsTest.php fails when an
+ * emitter reaches Custom CSS's count.
+ */
+const SGS_SETTINGS_SCOPE_REPEAT_MAX = 3;
+const SGS_CUSTOM_CSS_SCOPE_REPEAT   = 4;
+
 /** The block attributes that make up the Additional-CSS channel. */
 const SGS_CUSTOM_CSS_ATTRS = array( 'sgsCustomCss', 'sgsCustomCssId', 'sgsCustomCssNote' );
 
@@ -65,10 +76,10 @@ function render_custom_css( string $block_content, array $block ): string {
 
 	$uid = sgs_custom_css_uid( $block );
 
-	// The scope class is DOUBLED (`.uid.uid`, 0,2,0), matching the block's own class-level
-	// per-instance rules (Spec 32 §6.1(b), never `#uid`), so the residual wins by source order
-	// alone: it is appended after the block. Never an ID or `!important` (Spec 32 FR-32-13).
-	$result = Custom_Css_Scoper::scope( $custom_css, '.' . $uid . '.' . $uid );
+	// The scope class is repeated SGS_CUSTOM_CSS_SCOPE_REPEAT times (`.uid.uid.uid.uid`), one more than any settings emitter
+	// repeats it, so the residual out-ranks every setting for the same part on specificity and not on source order (it is
+	// also appended after the block). Never an ID or `!important` (Spec 32 FR-32-13).
+	$result = Custom_Css_Scoper::scope( $custom_css, str_repeat( '.' . $uid, SGS_CUSTOM_CSS_SCOPE_REPEAT ) );
 	if ( '' === $result['css'] ) {
 		return $block_content;
 	}

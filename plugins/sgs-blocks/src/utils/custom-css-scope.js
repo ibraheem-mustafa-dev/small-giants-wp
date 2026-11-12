@@ -13,6 +13,13 @@
  * identically. Change the two together.
  */
 
+/**
+ * How many times Custom CSS repeats the scope class, and how many times a settings emitter may: Custom CSS is always one
+ * class longer. Twin of SGS_CUSTOM_CSS_SCOPE_REPEAT and SGS_SETTINGS_SCOPE_REPEAT_MAX in includes/custom-css.php.
+ */
+export const SETTINGS_SCOPE_REPEAT_MAX = 3;
+export const CUSTOM_CSS_SCOPE_REPEAT = 4;
+
 const NESTING_AT_RULES = [ 'media', 'supports', 'container', 'layer' ];
 const UNSAFE_BODY =
 	/expression\s*\(|javascript\s*:|vbscript\s*:|behavior\s*:|-moz-binding/i;

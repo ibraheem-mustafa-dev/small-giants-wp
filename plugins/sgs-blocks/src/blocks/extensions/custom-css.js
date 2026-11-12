@@ -36,7 +36,10 @@ import { Notice, TextareaControl } from '@wordpress/components';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { scopeCustomCss } from '../../utils/custom-css-scope';
+import {
+	CUSTOM_CSS_SCOPE_REPEAT,
+	scopeCustomCss,
+} from '../../utils/custom-css-scope';
 
 /** Instance key -> the clientId that holds it, so a duplicated block's copied key is detected. */
 const keyOwners = new Map();
@@ -173,7 +176,7 @@ const withCustomCssCanvas = createHigherOrderComponent( ( BlockListBlock ) => {
 		const scope = `sgs-c-ed-${ props.clientId }`;
 		const { css } = scopeCustomCss(
 			attributes.sgsCustomCss,
-			`.${ scope }.${ scope }`
+			`.${ scope }`.repeat( CUSTOM_CSS_SCOPE_REPEAT )
 		);
 		if ( ! css ) {
 			return <BlockListBlock { ...props } />;
