@@ -12,7 +12,7 @@
  * @package
  */
 
-import { cssLengthValue } from './css-length';
+import { cssLengthValue } from './css-length.js';
 
 /** Matches the start of a value that is written as a CSS function call. */
 export const CSS_FUNCTION_START = /^\s*(?:var|calc|min|max|clamp)\(/i;
