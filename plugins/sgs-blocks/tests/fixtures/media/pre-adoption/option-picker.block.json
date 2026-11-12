@@ -1,0 +1,797 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/option-picker",
+	"version": "0.1.10",
+	"title": "SGS Option Picker",
+	"category": "sgs-interactive",
+	"description": "Exclusive single-select pill chooser for pack sizes, flavours, colours, plan tiers, or any option set. Emits a custom DOM event on selection — fully decoupled from any parent block.",
+	"keywords": [
+		"option",
+		"picker",
+		"pill",
+		"selector",
+		"size",
+		"variant",
+		"radio",
+		"choice"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "admin-generic",
+	"render": "file:./render.php",
+	"supports": {
+		"align": false,
+		"html": false,
+		"anchor": true,
+		"className": true,
+		"color": {
+			"background": false,
+			"text": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"motion": true,
+			"scalarStylingLift": true,
+			"arrayContentLift": true,
+			"scalarContentLift": true,
+			"_comment_mediaElements": "The image-swatch <img> (style.css .sgs-option-picker__swatch--image) is a fixed 2rem square crop of a WooCommerce attribute term's `_sgs_swatch_image_id` image — no per-instance media picker, but the crop MODE (cover|contain) is a legitimate client choice (e.g. a white-background product photo may want 'contain'). Wired via the shared object-fit atom, prefix 'swatch'.",
+			"mediaElements": [
+				{
+					"prefix": "swatch",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
+			"elements": {
+				"options": {
+					"selector": ".sgs-option-picker__options",
+					"motion": false,
+					"label": "Options row",
+					"order": 5,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "The options row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"root": {
+					"label": "Picker (fieldset)",
+					"order": 1,
+					"clusters": [
+						"layout",
+						"fill",
+						"text"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:max-width": "maxWidth",
+						"css:width": "width",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:background-color": "native:color.background",
+						"css:color": "native:color.text",
+						"css:border-color-gradient": "borderColourGradient"
+					},
+					"_note": "Content-KIND, no wrapper — the <fieldset> IS the block root (no SGS_Container_Wrapper call). Border radius stays WP-native; width/style/colour are SGS custom object/string attrs (borderWidth/borderStyle/borderColour) — mapped explicitly since no prefix covers bare root attrs. Root has no independent typography (fontSize/weight/etc belong to legend/pill) — those text-cluster members are honest gaps."
+				},
+				"label": {
+					"label": "Group label (legend)",
+					"order": 2,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "label",
+					"attrMap": {
+						"css:color-gradient": "labelColourGradient",
+						"css:-webkit-text-stroke-width": "labelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "labelTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "labelColourHover",
+								"css:color-gradient": "labelColourHoverGradient",
+								"css:-webkit-text-stroke-color": "labelTextStrokeColourHover"
+							}
+						}
+					},
+					"_note": "labelFontSize/labelColour/labelFontWeight/labelFontStyle/labelMarginBottom resolve via the default {prefix}{suffix} convention (labelMarginBottom -> css:margin-bottom, Spec 35 vocabulary; legend `margin-bottom:...`). line-height/letter-spacing/text-transform/text-decoration/text-align/font-family have no labelX equivalent — honest gaps. labelColourGradient is the text-colour gradient sibling to labelColour (background-clip:text mechanism, same recipe as sgs/quote's attributionColour/attributionColourGradient) — needs an explicit attrMap entry since the default prefix convention only covers css:color, not the gradient sibling.",
+					"absentIn": [ "hidden-label" ],
+					"absentWhy": "With showLabel off the legend is screen-reader only (sgs-sr-only), not the visible label."
+				},
+				"pill": {
+					"label": "Each option (chip, label and sub-label)",
+					"order": 1,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "pill",
+					"attrMap": {
+						"css:background-color": "pillBgColour",
+						"css:background-image": "pillBgColourGradient",
+						"css:border-color-gradient": "pillBorderColourGradient",
+						"css:color-gradient": "pillTextColourGradient",
+						"css:gap": "tileGap",
+						"css:box-shadow": "pillShadow",
+						"css:box-shadow-color": "pillShadowColour",
+						"css:-webkit-text-stroke-width": "pillTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "pillTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "pillBgColourHover",
+								"css:background-image": "pillBgColourHoverGradient",
+								"css:color": "pillTextColourHover",
+								"css:-webkit-text-stroke-color": "pillTextStrokeColourHover",
+								"css:translate": "pillHoverOffsetX",
+								"css:translate-y": "pillHoverOffsetY"
+							},
+							"noBaseByDesign": [
+								"css:translate",
+								"css:translate-y"
+							],
+							"_noBaseByDesignNote": "An option's resting shift is none by definition; the hover shift is the hover look itself. Not a suppression hatch."
+						},
+						"current": {
+							"attrMap": {
+								"css:background-color": "pillSelectedBgColour",
+								"css:color": "pillSelectedTextColour",
+								"css:border-color": "pillSelectedBorderColour",
+								"css:border-radius": "pillSelectedBorderRadius",
+								"css:box-shadow": "pillSelectedShadow",
+								"css:translate": "pillSelectedOffsetX",
+								"css:translate-y": "pillSelectedOffsetY",
+								"css:box-shadow-color": "pillSelectedShadowColour",
+								"css:border-color-gradient": "pillSelectedBorderColourGradient"
+							}
+						}
+					},
+					"_note": "FR-35-5 — 'selected' (NOT :hover/:active) is the correct state name for the pillSelected* family: style.css:200/246/277 key the selected look off `input[type=radio]:checked ~ .pill`, which is the [aria-current]/is-active family the states vocabulary calls 'selected'. The `:hover` visual is backed by real attributes `pillBgColourHover`/`pillTextColourHover`, declared as this element's 'hover' state below, mirroring sgs/nav-bar-menu's item-bg/item-text normal+hover row pattern. css:background-color needs explicit attrMap (pillBgColour doesn't match the default Background/Bg/BackgroundColour suffixes); css:border-color (pillBorderColour) and css:border-radius (pillBorderRadius) and css:padding (pillPadding) and css:font-size (pillFontSize) all resolve via the default convention. css:font-weight is an honest gap — no pillFontWeight attr exists. pillBgColour/pillBgColourHover carry pillBgColourGradient/pillBgColourHoverGradient siblings via `sgs_custom_property_gradient_decls()` (helpers-tokens.php) — the same shape used on brand-strip/post-grid/social-icons/form/gallery/before-after. style.css declares `background-image:var(--sgs-op-bg[-hover]-gradient,none)` next to each existing `background-color:var(...)` line, so the two properties coexist unconditionally and the gradient only paints when the resolved custom property is set; no conditional property-switching needed. pillTextColourGradient uses the text builder (`sgs_resolve_text_colour_or_gradient()`/`sgs_text_colour_decl()`/`sgs_text_colour_gradient_fallback_rule()`), same recipe as labelColourGradient; css:color-gradient needs the explicit attrMap entry above since the default prefix convention only covers css:color, not the gradient sibling. tileGap (Wave B) needs an explicit css:gap attrMap entry — the default {prefix}{suffix} convention would look for pillGap, not tileGap; tile-style-only (outlined/filled/ghost ignore it), CSS-length string, sgs_css_length_value()-sanitised, emitted as --sgs-option-picker-tile-gap on the root (render.php §6), consumed by style.css's .sgs-option-picker--tile .sgs-option-picker__options gap rule."
+				},
+				"sub-label": {
+					"label": "Option sub-label",
+					"order": 4,
+					"clusters": [],
+					"_note": "Wave B — the second caption line under an option's label (e.g. a frame size's eye/bridge/temple measurement), sourced from subLabelMetaKey (a WooCommerce term-meta key selector, not a colour/size value — its control lives in the block's Settings panel, not Styles, per THE PLACEMENT RULE C3). Paints via the pill's own resolved text colour at reduced opacity by design (style.css .sgs-option-picker__sub-label), so there is no dedicated sub-label colour/size attribute and this element carries no attrMap. Declared here for manifest completeness / orphan-scan visibility (Spec 35 Part O) — mirrors sgs/button's icon element, which also declares clusters: [] for the same reason."
+				},
+				"swatch-dot": {
+					"label": "Colour dot",
+					"selector": ".sgs-option-picker__swatch--colour",
+					"motion": false,
+					"order": 5,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:border-radius": "swatchShape",
+						"css:width": "swatchSize",
+						"css:border-width": "swatchRingWidth",
+						"css:border-color": "swatchRingColour"
+					},
+					"states": {
+						"current": {
+							"attrMap": {
+								"css:color": "swatchTickColour"
+							},
+							"noBaseByDesign": [
+								"css:color"
+							],
+							"_noBaseByDesignNote": "The tick inside the colour dot exists only while its option is selected (transparent otherwise), so it has no resting colour to style. Not a suppression hatch."
+						}
+					},
+					"_note": "The colour dot in an outlined, filled or ghost option (a tile keeps its full-width colour block). The shape, size and ring print as one scoped rule; swatchTickInside moves the selected tick into the dot, drawn in swatchTickColour."
+				}
+			},
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				],
+				"margin": [
+					"margin"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
+				],
+				"pillPadding": [
+					"pillPadding"
+				]
+			}
+		}
+	},
+	"selectors": {
+		"root": ".sgs-option-picker",
+		"typography": ".sgs-option-picker__pill"
+	},
+	"attributes": {
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the option pills (tile mode lays the options on a grid, so this applies to the pill layout only) wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"label": {
+			"type": "string",
+			"default": "Choose an option"
+		},
+		"showLabel": {
+			"type": "boolean",
+			"default": true
+		},
+		"labelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"labelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"labelFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColour": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the label legend's text via background-clip:text (text builder). Non-empty wins over labelColour."
+		},
+		"labelColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of labelColourHover. Non-empty wins over labelColourHover on :hover/:focus-visible."
+		},
+		"labelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"labelMarginBottom": {
+			"type": "string",
+			"default": ""
+		},
+		"optionItems": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"key": {
+						"type": "string",
+						"role": "technical"
+					},
+					"label": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"image": {
+						"type": "string",
+						"description": "Optional per-item image URL, forwarded by a caller that resolves its own image per option (e.g. sgs/buybox's pickerVariationSwatch — a per-PRODUCT variation photo, which this block's own _sgs_swatch_image_id term meta cannot carry since term meta is shared by every product using that term). Wins over the term-meta swatch lookup for that item when set; empty (default, every existing caller) leaves the term-meta path unchanged.",
+						"role": "image-object"
+					},
+					"subLabel": {
+						"type": "string",
+						"description": "Optional per-item second caption line, forwarded by a caller that resolves its own text per option (for example sgs/buybox's pack-tile price line, taken from the variation price). Shown in place of the term-meta sub-label for that item; empty (every existing caller) leaves the term-meta path unchanged.",
+						"role": "text-content"
+					}
+				}
+			}
+		},
+		"defaultSelected": {
+			"type": "string",
+			"default": ""
+		},
+		"subLabelMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "Optional term-meta key (on the picker's resolved WooCommerce attribute taxonomy term) shown as a second caption line under each option's label, e.g. a frame size's eye/bridge/temple measurement. '' (default) = off, no second line, byte-identical to the current markup."
+		},
+		"requireChoice": {
+			"type": "boolean",
+			"default": false
+		},
+		"showTermDetails": {
+			"type": "boolean",
+			"default": true,
+			"description": "WC-bound pickers only (typeKey resolves to a pa_* taxonomy): show each term's badge (a small pill, `_sgs_term_badge`) and short description (a line under the label, `_sgs_term_description`) when the term has them set (Spec 43 FR-43-25). Off = neither renders, byte-identical to the current markup."
+		},
+		"contentImpact": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "string"
+			}
+		},
+		"typeKey": {
+			"type": "string",
+			"default": ""
+		},
+		"pillStyle": {
+			"type": "string",
+			"default": "outlined",
+			"enum": [
+				"outlined",
+				"filled",
+				"ghost",
+				"tile"
+			],
+			"description": "'tile' is an image-forward vertical card (optional image/colour block above a caption) for option sets like a frame size or lens tile, instead of the horizontal pill row."
+		},
+		"tileGap": {
+			"type": "string",
+			"default": "",
+			"description": "Gap between tiles, tile pill style only (CSS length, e.g. \"12px\"). Empty = the framework default (8px)."
+		},
+		"pillSize": {
+			"type": "string",
+			"default": "medium",
+			"enum": [
+				"small",
+				"medium",
+				"large"
+			]
+		},
+		"colourPreset": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"soft",
+				"solid"
+			]
+		},
+		"showSelectedTick": {
+			"type": "boolean",
+			"default": false
+		},
+		"pillHoverOffsetX": {
+			"type": "string",
+			"default": "",
+			"description": "Horizontal shift of an option while the pointer is over it (CSS length, for example -2px). Empty = no shift."
+		},
+		"pillHoverOffsetY": {
+			"type": "string",
+			"default": "",
+			"description": "Vertical shift of an option while the pointer is over it (CSS length, for example -2px). Empty = no shift."
+		},
+		"pillHoverStill": {
+			"type": "boolean",
+			"default": false,
+			"description": "Keep an option's fill and text colour unchanged on hover (no brightening); only the hover shift moves it. Off by default."
+		},
+		"swatchShape": {
+			"type": "string",
+			"enum": [
+				"",
+				"round",
+				"square"
+			],
+			"default": "",
+			"description": "Shape of the colour dot in an outlined, filled or ghost option. Empty keeps the stylesheet's own shape."
+		},
+		"swatchSize": {
+			"type": "string",
+			"default": "",
+			"description": "Width and height of the colour dot (CSS length, for example 20px). Empty keeps the stylesheet's own size."
+		},
+		"swatchRingWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Width of the ring around the colour dot (CSS length, for example 2px). Empty keeps the stylesheet's own ring."
+		},
+		"swatchRingColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the ring around the colour dot (palette slug or colour)."
+		},
+		"swatchTickInside": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show the selected tick inside the colour dot instead of the separate tick before the label."
+		},
+		"swatchTickColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the tick inside the colour dot (palette slug or colour). Empty = white."
+		},
+		"pillBgColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBgColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting pill background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over pillBgColour."
+		},
+		"pillTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting pill text via background-clip:text (text builder). Non-empty wins over pillTextColour."
+		},
+		"pillBgColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBgColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the hover pill background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over pillBgColourHover."
+		},
+		"pillTextColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting pill border with a masked ring instead of a flat colour. Non-empty wins over pillBorderColour."
+		},
+		"pillSelectedBgColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillSelectedTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillSelectedBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillSelectedBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the selected pill border with a masked ring instead of a flat colour. Non-empty wins over pillSelectedBorderColour."
+		},
+		"pillFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"pillFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pillFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBorderWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Border width of every option pill and tile (CSS length, e.g. \"1px\"). Empty = the framework default (2px)."
+		},
+		"pillBorderRadius": {
+			"type": "string",
+			"default": ""
+		},
+		"pillSelectedBorderRadius": {
+			"type": "string",
+			"default": ""
+		},
+		"pillShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Shadow shape of every option while resting (the shared layered shadow control). Empty = no shadow."
+		},
+		"pillShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the resting option's shadow."
+		},
+		"pillSelectedShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Shadow shape of the selected pill (the shared layered shadow control). Empty = no shadow."
+		},
+		"pillSelectedShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the selected pill's shadow."
+		},
+		"pillSelectedOffsetX": {
+			"type": "string",
+			"default": "",
+			"description": "Horizontal offset of the selected pill (CSS length, e.g. \"-2px\"). Empty = no shift."
+		},
+		"pillSelectedOffsetY": {
+			"type": "string",
+			"default": "",
+			"description": "Vertical offset of the selected pill (CSS length, e.g. \"-2px\"). Empty = no shift."
+		},
+		"pillPadding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"default": "solid",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			]
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the root fieldset border with a masked ring instead of a flat colour. Non-empty wins over borderColour."
+		},
+		"width": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"labelTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"labelTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"labelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"labelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"labelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"labelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"labelTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"labelTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"labelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"labelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"labelTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"labelTextColumns": {
+			"type": "number"
+		},
+		"labelWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"pillFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"pillFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"pillTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"pillTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"pillLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"pillLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"pillLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"pillLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"pillTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"pillTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"pillTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"pillTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pillTextColumns": {
+			"type": "number"
+		},
+		"pillWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"label": "Pack size",
+			"showLabel": true,
+			"pillStyle": "outlined",
+			"pillSize": "medium",
+			"optionItems": [
+				{
+					"key": "250g",
+					"label": "250g"
+				},
+				{
+					"key": "500g",
+					"label": "500g"
+				},
+				{
+					"key": "1kg",
+					"label": "1kg"
+				}
+			],
+			"defaultSelected": "500g",
+			"typeKey": "pack-size"
+		}
+	}
+}

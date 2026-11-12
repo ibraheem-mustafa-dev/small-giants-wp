@@ -1,0 +1,661 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/site-header",
+	"version": "0.1.0",
+	"title": "SGS Site Header",
+	"category": "sgs-layout",
+	"icon": "menu",
+	"description": "The site header shell — three optional rows (top / middle / bottom) of header elements. Each row is an intrinsic never-overflow cluster, so the header never overflows the viewport at any width. Lives inside the header template part.",
+	"keywords": [
+		"site header",
+		"header",
+		"masthead",
+		"navigation"
+	],
+	"textdomain": "sgs-blocks",
+	"supports": {
+		"anchor": true,
+		"customClassName": true,
+		"html": false,
+		"reusable": false,
+		"align": [
+			"full"
+		],
+		"color": {
+			"background": false,
+			"text": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"motion": true,
+			"_comment_overlayNotAdopted": "backgroundOverlayColour/Opacity/OpacityTablet/OpacityMobile/ColourHover/BlendMode are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- same reasoning as sgs/container (see its block.json for the full note). Detector rule 37-media-no-handroll's bare `background`/`bg`-prefix discriminator excludes this whole family from supports.sgs.mediaElements by design.",
+			"containerKind": "section",
+			"enabledExtensions": [
+				"width",
+				"background"
+			],
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				],
+				"headerFloatInset": [
+					"headerFloatInset"
+				],
+				"margin": [
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
+				]
+			},
+			"colourExemptions": {
+				"text": {
+					"rule": "gradient",
+					"reason": "A text gradient needs background-clip:text, which hijacks the element's own background box. On the header WRAPPER that would destroy the header background this same block paints. The mechanism is only valid on a leaf text element; this row colours the whole bar."
+				}
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Section wrapper",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [
+						"text",
+						"fill",
+						"layout",
+						"animation"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:max-width": "maxWidth",
+						"css:min-height": "minHeight",
+						"css:box-shadow": "shadow",
+						"css:box-shadow-color": "shadowColour",
+						"css:background-attachment": "backgroundAttachment",
+						"css:background-position": "backgroundPosition",
+						"css:background-repeat": "backgroundRepeat",
+						"css:background-size": "backgroundSize",
+						"css:border-color-gradient": "borderColourGradient"
+					},
+					"states": {
+						"scrolled": {
+							"attrMap": {
+								"css:color": "textColourScrolled",
+								"css:background-color": "backgroundColourScrolled",
+								"css:background-color-gradient": "backgroundColourScrolledGradient",
+								"css:box-shadow": "shadowScrolled",
+								"css:box-shadow-color": "shadowScrolledColour"
+							}
+						}
+					},
+					"_note": "The rendered <header>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite wrapper rule FP-9). Colour, spacing and border are SGS-owned attributes (see attrMap), each emitted into this block's own scoped <style> rather than inline (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. The animation cluster (anim:*) has no member here: motion is the sgsMotion model (Spec 38A), not attributes."
+				},
+				"inner": {
+					"selector": ".sgs-site-header__content-band",
+					"label": "Inner (grid / flex layout)",
+					"layer": "GRID",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:grid-template-columns": "columns",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:align-items": "alignItems",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "Arrangement members map explicitly because this element declares no `prefix`. css:grid-template-columns maps to the `columns` COUNT attribute (SGS_Container_Wrapper expands it to repeat(N,1fr)) — this block has no explicit gridTemplateColumns ratio attribute, unlike sgs/container. css:align-items maps to `alignItems` (class-sgs-container-wrapper.php reads alignItems||alignItems). display / justify-items / order / overflow / grid-template-rows / grid-auto-rows have no attribute on this block and remain honest GAPs."
+				},
+				"content-band": {
+					"label": "Content band",
+					"layer": "CONTENT",
+					"order": 3,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "contentBand",
+					"attrMap": {
+						"css:max-width": "contentWidth",
+						"css:padding": "padding"
+					}
+				},
+				"decorative": {
+					"motion": false,
+					"label": "Decorative background",
+					"order": 4,
+					"clusters": [],
+					"_note": "Background image/video (backgroundImage*/bgVideo*), background SVG (bgSvg*), overlay gradient (overlayGradient*/backgroundOverlay*), Ken Burns, and shape dividers (shapeDivider*) are governed by dedicated controls outside the Text/Fill/Layout style clusters, so this element declares none. Mirrors sgs/container's `decorative` element."
+				},
+				"background": {
+					"absentIn": ["bg-css-layer"],
+					"absentWhy": "A tiled, sized, parallax, fixed or per-device background image paints on the root's ::before layer (SGS_Container_Wrapper::render, $sgs_bg_img_is_simple false), so no element carries the image; a layer on the root reaches the section.",
+					"surface": true,
+					"prefix": "",
+					"selector": ".sgs-container__image-bg",
+					"label": "Background image",
+					"order": 5,
+					"clusters": [],
+					"_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
+				},
+				"svg-bg": {
+					"svg": true,
+					"surface": true,
+					"prefix": "",
+					"selector": ".sgs-container__svg-bg",
+					"label": "Background SVG",
+					"order": 6,
+					"clusters": [],
+					"_note": "`.sgs-container__svg-bg`, the wrapper SGS_Container_Wrapper prints around a background or foreground SVG (bgSvg*). A motion target so an SVG loop or `draw` effect layer reaches the SVG alone; it declares no style clusters because its look is governed by the bgSvg* controls."
+				}
+			}
+		}
+	},
+	"allowedBlocks": [
+		"sgs/site-header-row"
+	],
+	"attributes": {
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"maxWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"contentWidth": {
+			"type": "object",
+			"default": {
+				"desktop": "full"
+			}
+		},
+		"headerSticky": {
+			"type": "object",
+			"default": {},
+			"sgs": {
+				"meaning": {
+					"what": "Keeps the header fixed to the top of the viewport while the page scrolls, at each device tier where it is on.",
+					"trigger": "always, while scrolling, at the tiers where it is on",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} (desktop: on or off; tablet and mobile: inherit, on or off)"
+						}
+					}
+				}
+			}
+		},
+		"headerTransparent": {
+			"type": "object",
+			"default": {}
+		},
+		"headerShrink": {
+			"type": "object",
+			"default": {}
+		},
+		"headerHideOnScroll": {
+			"type": "object",
+			"default": {},
+			"sgs": {
+				"meaning": {
+					"what": "Slides the header out of view when the visitor scrolls down and back in when they scroll up, at each tier where it is on.",
+					"trigger": "scrolling down past 100px of scroll (fixed, independent of the scrolled offset), which adds is-header-scrolling-down; scrolling up removes it",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} (desktop: on or off; tablet and mobile: inherit, on or off)"
+						}
+					}
+				}
+			}
+		},
+		"headerPassThrough": {
+			"type": "object",
+			"default": {},
+			"description": "Float over the page, per device tier (tri-state on/off/inherit): the header is position:fixed (takes no space, pinned under the admin bar), and only its structure lets clicks through to the page; every block in it keeps its clicks. Wave 3C U-14, family M-52."
+		},
+		"contrastSafe": {
+			"type": "object",
+			"default": {}
+		},
+		"headerFloat": {
+			"type": "object",
+			"default": {},
+			"description": "Floating \"pill\" mode per device tier — the same tri-state {desktop,tablet,mobile} of on/off/inherit as headerSticky. Float ON for a tier implies the sticky declaration for that tier (precedence Float > Sticky > Transparent for position/top/z-index). Empty = off everywhere, and nothing is emitted."
+		},
+		"headerFloatInset": {
+			"type": "object",
+			"default": {
+				"desktop": {
+					"top": "1rem",
+					"right": "1rem",
+					"left": "1rem"
+				}
+			},
+			"description": "TIER-of-BOX gap between the pill and the viewport edges: {desktop:{top,right,left}, tablet:{…}, mobile:{…}}. Relative units, not px — a bare px inset fails WCAG 1.4.4 at 200% zoom. `bottom` is unused and is not offered in the UI. Each side is resolved as max(authored, env(safe-area-inset-*))."
+		},
+		"headerFloatCollapse": {
+			"type": "object",
+			"default": {
+				"enabled": false,
+				"breakpoint": 768
+			},
+			"description": "The single opt-out from the pill: below `breakpoint` the header goes full width, radius 0, inset 0. OFF by default — the pill persists at mobile. Deliberately one toggle plus one number, never three per-tier switches."
+		},
+		"surfaceBlur": {
+			"type": "string",
+			"default": "",
+			"description": "Backdrop blur: a single CSS length (for example 24px) that blurs whatever sits behind the header. Emitted by SGS_Container_Wrapper via includes/helpers-surface-ground.php; empty emits nothing."
+		},
+		"surfaceSaturate": {
+			"type": "number",
+			"description": "Backdrop saturation as a whole-number percentage (for example 150), paired with surfaceBlur. Unset emits nothing; 0 is a legal value."
+		},
+		"surfaceOpacity": {
+			"type": "number",
+			"description": "Fill translucency, 0 to 1: how much of the header's own colour shows. Applies to a plain colour fill only (a gradient fill is left as it is). Unset or 1 emits nothing."
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"surfaceTone": {
+			"type": "string",
+			"enum": [ "auto", "light", "dark" ],
+			"default": "auto"
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourScrolled": {
+			"type": "string",
+			"default": "",
+			"sgs": {
+				"meaning": {
+					"what": "Changes the header background colour once the page has scrolled.",
+					"trigger": "scroll past the scrolled offset",
+					"parameters": {
+						"value": {
+							"unit": "CSS colour or theme colour token slug"
+						}
+					}
+				}
+			}
+		},
+		"backgroundColourScrolledGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourScrolled": {
+			"type": "string",
+			"default": "",
+			"sgs": {
+				"meaning": {
+					"what": "Changes the header text colour once the page has scrolled.",
+					"trigger": "scroll past the scrolled offset",
+					"parameters": {
+						"value": {
+							"unit": "CSS colour or theme colour token slug"
+						}
+					}
+				}
+			}
+		},
+		"headerTransparentDirection": {
+			"type": "string",
+			"default": "transparent-first",
+			"enum": [
+				"transparent-first",
+				"solid-first"
+			]
+		},
+		"scrolledTrigger": {
+			"type": "string",
+			"default": "position",
+			"enum": [
+				"position",
+				"direction"
+			],
+			"description": "Wave 3C U-13 M-03. position (default): is-header-scrolled/is-header-shrunk toggle once scrollY passes scrolledOffset, same as before this attribute existed. direction: is-header-scrolled toggles on while scrollY is past scrolledOffset AND the last movement was downward, and clears on an upward movement of 8px or more (deadzone) or at/below the offset — so a solid-first transparent header restyles going down and restyles back the moment the visitor scrolls up, at any offset.",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses whether the header's scrolled state is set by scroll position alone or also by scroll direction.",
+					"trigger": "scrolling the page",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"position",
+								"direction"
+							]
+						}
+					}
+				}
+			}
+		},
+		"scrolledOffset": {
+			"type": "number",
+			"default": 50,
+			"description": "The scrollY threshold (px) past which is-header-scrolled/is-header-shrunk apply, in both trigger modes. Sanitised server-side via absint, clamped 0-2000.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets how far the page must scroll before the header takes its scrolled (and shrunk) state.",
+					"trigger": "scroll past this many px",
+					"parameters": {
+						"value": {
+							"unit": "px of scroll distance (0 to 2000)"
+						}
+					}
+				}
+			}
+		},
+		"sectionInk": {
+			"type": "object",
+			"default": {},
+			"description": "Wave 3C U-13 — per-tier: off (default) | adapt | blend. adapt: the header's ink (and, where a tone fill is set, its fill) follows the section behind it, read live by header-behaviours/view.js and toggled as is-header-on-dark/is-header-on-light. blend: mix-blend-mode:difference on the header's rows, no JS. Emitted by includes/sgs-header-ink-css.php, gated to where the header is see-through or a tone fill is set — an opaque header with no tone fill keeps reading against its own fill."
+		},
+		"inkOnLight": {
+			"type": "string",
+			"default": "",
+			"description": "Ink colour when the section behind the header is light. Empty resolves to var(--wp--preset--color--text)."
+		},
+		"inkOnDark": {
+			"type": "string",
+			"default": "",
+			"description": "Ink colour when the section behind the header is dark. Empty resolves to var(--wp--preset--color--text-inverse)."
+		},
+		"fillOnLight": {
+			"type": "string",
+			"default": "",
+			"description": "Header fill over a light section. Empty means the fill is unchanged (ink-only adaptation)."
+		},
+		"fillOnDark": {
+			"type": "string",
+			"default": "",
+			"description": "Header fill over a dark section. Empty means the fill is unchanged (ink-only adaptation)."
+		},
+		"fillOnLightGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient sibling of fillOnLight; non-empty wins over the flat colour."
+		},
+		"fillOnDarkGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient sibling of fillOnDark; non-empty wins over the flat colour."
+		},
+		"inkDuration": {
+			"type": "number",
+			"default": 400,
+			"description": "Ink/fill transition duration in ms. 0 = instant. Reduced motion always forces instant."
+		},
+		"inkEasing": {
+			"type": "string",
+			"default": "ease",
+			"enum": [
+				"ease",
+				"ease-out",
+				"ease-in-out",
+				"default",
+				"emphasised",
+				"quart-out",
+				"standard",
+				"drafts",
+				"ease-in",
+				"spring",
+				"linear",
+				"custom"
+			],
+			"description": "Speed curve for the ink/fill transition, from the shared motion easing list (includes/helpers-motion-easing.php::sgs_motion_easing_values(), same vocabulary as U-5)."
+		},
+		"inkEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "A cubic-bezier() curve, read only when inkEasing is custom. Validated; an invalid curve falls back to ease."
+		},
+		"backgroundAttachment": {
+			"type": "string",
+			"default": "scroll",
+			"enum": [
+				"scroll",
+				"fixed"
+			]
+		},
+		"backgroundImage": {
+			"type": "object"
+		},
+		"backgroundImageMobile": {
+			"type": "object"
+		},
+		"backgroundImageTablet": {
+			"type": "object"
+		},
+		"backgroundOverlayColour": {
+			"type": "string"
+		},
+		"backgroundOverlayOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 30
+			}
+		},
+		"backgroundPosition": {
+			"type": "string",
+			"default": "center center"
+		},
+		"backgroundRepeat": {
+			"type": "string",
+			"default": "no-repeat",
+			"enum": [
+				"no-repeat",
+				"repeat",
+				"repeat-x",
+				"repeat-y"
+			]
+		},
+		"backgroundSize": {
+			"type": "string",
+			"default": "cover",
+			"enum": [
+				"cover",
+				"contain",
+				"auto"
+			]
+		},
+		"bgSvgContent": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgMinHeight": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgOpacity": {
+			"type": "number",
+			"default": 100
+		},
+		"bgSvgPosition": {
+			"type": "string",
+			"default": "background",
+			"enum": [
+				"background",
+				"foreground"
+			]
+		},
+		"bgSvgTextShadow": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgVideo": {
+			"type": "object"
+		},
+		"bgVideoTablet": {
+			"type": "object"
+		},
+		"bgVideoMobile": {
+			"type": "object"
+		},
+		"zIndex": {
+			"type": "object",
+			"default": {},
+			"description": "Stacking order per tier: {desktop, tablet, mobile}, each a whole number from 0 to 99998, or empty to inherit the wider tier (the framework default is 100). The drawer and its scrim are kept just below the header, which needs a value of 4 or more. Written only by includes/sgs-header-z-index.php."
+		},
+		"minHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"rowsAlign": {
+			"type": "object",
+			"default": {},
+			"description": "D-1: where the header's rows sit vertically when the header is taller than their own combined height (e.g. a Min height set above the tallest row) — tri-state-shaped per-device object {desktop,tablet,mobile}, each 'start'|'center'|'end'|'stretch'|'inherit'. Empty/inherited resolves to 'center' at every tier (the framework default: what a flex/grid layout tool defaults to), so a header with this untouched already paints centred rows. 'stretch' grows the rows themselves to fill the extra height instead of leaving a gap. Emitted by render.php directly (display:flex;flex-direction:column + justify-content, plus a child flex rule for stretch) — the header has no content band in the common case, so this does not route through SGS_Container_Wrapper's own min-height-flex-fill mechanism."
+		},
+		"fluidScale": {
+			"type": "object",
+			"default": {
+				"enabled": false,
+				"breakpoint": 1440
+			},
+			"description": "G-1: 'scale with the viewport above a width' — off by default. {enabled, breakpoint}, same one-toggle-plus-one-number shape as headerFloatCollapse. When on, render.php publishes a unitless factor as --sgs-header-fluid-scale on :root (max(1, tan(atan2(100vw, breakpoint px)))), reads it back as this header's own `zoom` (scales every rem/px size inside — padding, radius, font sizes, content band padding), and re-scales the floating pill's inset custom properties by the same factor. A sibling sgs/nav-drawer anchored to the header box reads the same custom property to stay in proportion. See includes/sgs-header-fluid-scale.php."
+		},
+		"overlayGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayBlendMode": {
+			"type": "string",
+			"default": "normal",
+			"enum": [
+				"normal",
+				"multiply",
+				"screen",
+				"overlay",
+				"darken",
+				"lighten",
+				"color-dodge",
+				"color-burn",
+				"soft-light",
+				"hard-light",
+				"difference",
+				"exclusion"
+			]
+		},
+		"shadow": {
+			"type": "string"
+		},
+		"shadowColour": {
+			"type": "string"
+		},
+		"shadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"shadowScrolled": {
+			"type": "string",
+			"default": "",
+			"description": "Box-shadow SHAPE (or theme shadow preset slug) the header takes once the page has scrolled. Same value vocabulary as `shadow`. Empty = no scrolled shadow, nothing emitted.",
+			"sgs": {
+				"meaning": {
+					"what": "Gives the header a box-shadow once the page has scrolled.",
+					"trigger": "scroll past the scrolled offset",
+					"parameters": {
+						"value": {
+							"unit": "CSS box-shadow value or theme shadow preset slug"
+						}
+					}
+				}
+			}
+		},
+		"shadowScrolledColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour composed into the scrolled shadow SHAPE (a token slug or raw colour). Ignored when shadowScrolled is a preset slug.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the colour of the scrolled-state header shadow.",
+					"trigger": "scroll past the scrolled offset",
+					"parameters": {
+						"value": {
+							"unit": "CSS colour or theme colour token slug"
+						}
+					}
+				}
+			}
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour. Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

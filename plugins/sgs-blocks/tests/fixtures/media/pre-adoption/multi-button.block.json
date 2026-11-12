@@ -1,0 +1,481 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/multi-button",
+  "version": "1.4.0",
+  "title": "SGS Button Group",
+  "category": "sgs-content",
+  "description": "A flexible container for one or more SGS Buttons. Provides per-breakpoint layout, gap, alignment, and wrap controls.",
+  "keywords": [
+    "button group",
+    "cta",
+    "buttons",
+    "multi button"
+  ],
+  "icon": "button",
+  "textdomain": "sgs-blocks",
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "editorStyle": "file:./index.css",
+  "render": "file:./render.php",
+  "allowedBlocks": [
+    "sgs/button"
+  ],
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false,
+    "color": {
+      "background": false,
+      "gradients": false,
+      "text": false,
+      "__experimentalSkipSerialization": true
+    },
+    "sgs": {
+      "motion": true,
+      "separators": {
+        "separators": {
+          "axes": [
+            "row",
+            "column"
+          ],
+          "edges": false,
+          "hover": false,
+          "sweep": false
+        }
+      },
+      "_comment_overlayNotAdopted": "backgroundOverlayColour/Opacity/OpacityTablet/OpacityMobile/ColourHover/BlendMode are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- same settled reasoning as sgs/container (see its block.json for the full note, 2026-09-03, Bean-directed). Detector rule 37-media-no-handroll's bare `background`/`bg`-prefix discriminator excludes this whole family from supports.sgs.mediaElements by design.",
+      "colourExemptions": {
+        "child-btn-text-colour": {
+          "rule": "gradient",
+          "reason": "Single var() fallback chain into an independently-rendered child sgs/button instance — cannot express a gradient/background-clip:text switch without breaking the working group-defaults mechanism (D640 §5). The fallback chain is the group-defaults-with-child-override architecture; redesigning it to support gradient text risked breaking existing inherit/override behaviour. An architectural limit, not merely undecided."
+        }
+      },
+      "containerKind": "layout",
+      "boxFamilies": {
+        "padding": [
+          "padding"
+        ],
+        "margin": [
+          "margin"
+        ],
+        "borderRadius": [
+          "borderRadius"
+        ],
+        "borderWidth": [
+          "borderWidth"
+        ],
+        "childBtnBorderWidth": [
+          "childBtnBorderWidth"
+        ],
+        "childBtnBorderRadius": [ "childBtnBorderRadius" ]
+      },
+      "elements": {
+        "group": {
+          "label": "Button group",
+          "layer": "OUTER",
+          "order": 1,
+          "clusters": [
+            "text",
+            "fill",
+            "layout"
+          ],
+          "isWrapper": true,
+          "attrMap": {
+            "css:color": "textColour",
+            "css:background-color": "backgroundColour",
+            "css:border-width": "borderWidth",
+            "css:border-style": "borderStyle",
+            "css:border-color": "borderColour",
+            "css:border-radius": "borderRadius",
+            "css:background-image": "backgroundImage",
+            "css:max-width": "maxWidth",
+            "css:gap": "gap",
+            "css:flex-direction": "flexDirection",
+            "css:flex-wrap": "flexWrap",
+            "css:justify-content": "justifyContent",
+            "css:align-items": "alignItems",
+            "css:border-color-gradient": "borderColourGradient"
+          },
+          "_note": "The root IS the flex arranger (own scoped CSS in render.php, not the shared wrapper's grid layer) — layer OUTER is correct per the MF-3 guard, same reasoning as sgs/card-grid's `grid` element. `spacing.margin`/`spacing.padding` are declared (2026-08-13/2026-08-16). `typography` remains an honest gap. `display` is hardcoded to flex in render.php — not attribute-controlled, an honest gap. Background media (image/video/SVG) + overlay colour/gradient render through the shared SGS_Container_Wrapper (D6, universal regardless of kind) — mapped by convention, not every bg sub-attr individually. Attribute names diverge from the default suffix convention (`direction`/`wrap`, not `flexDirection`/`flexWrap`) — every arrangement member is explicitly mapped per ROLLOUT REQUIREMENT 1."
+        },
+        "button": {
+          "motion": false,
+          "label": "Button",
+          "order": 2,
+          "clusters": [],
+          "attrMap": {
+            "css:border-color": "childBtnBorderColour",
+            "css:border-width": "childBtnBorderWidth",
+            "css:border-style": "childBtnBorderStyle",
+            "css:border-radius": "childBtnBorderRadius"
+          },
+          "_note": "Buttons are native InnerBlocks children (`sgs/button`, the only entry in allowedBlocks), each with its own full text/fill/layout controls. The group sets their default border through the childBtn* attributes, which render.php prints as --sgs-mb-btn-* custom properties that button/style.css reads; a button's own border attributes override them."
+        },
+        "background": {
+          "absentIn": ["bg-css-layer"],
+          "absentWhy": "A tiled, sized, parallax, fixed or per-device background image paints on the root's ::before layer (SGS_Container_Wrapper::render, $sgs_bg_img_is_simple false), so no element carries the image; a layer on the root reaches the section.",
+          "surface": true,
+          "prefix": "",
+          "selector": ".sgs-container__image-bg",
+          "label": "Background image",
+          "order": 3,
+          "clusters": [],
+          "_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
+        },
+        "svg-bg": {
+          "svg": true,
+          "surface": true,
+          "prefix": "",
+          "selector": ".sgs-container__svg-bg",
+          "label": "Background SVG",
+          "order": 4,
+          "clusters": [],
+          "_note": "`.sgs-container__svg-bg`, the wrapper SGS_Container_Wrapper prints around a background or foreground SVG (bgSvg*). A motion target so an SVG loop or `draw` effect layer reaches the SVG alone; it declares no style clusters because its look is governed by the bgSvg* controls."
+        },
+        "content-band": {
+        	"label": "Content band",
+        	"layer": "CONTENT",
+        	"order": 5,
+        	"clusters": [
+        		"layout"
+        	],
+        	"prefix": "contentBand",
+        	"attrMap": {
+        		"css:max-width": "contentWidth",
+        		"css:padding": "padding"
+        	}
+        }
+      }
+    }
+  },
+  "providesContext": {
+    "sgs/childBtnBorderWidth": "childBtnBorderWidth",
+    "sgs/childBtnBorderStyle": "childBtnBorderStyle"
+  },
+  "attributes": {
+    "separators": {
+      "type": "object",
+      "default": {},
+      "description": "The lines drawn between the items of a grid or flex layout (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour }, column: { same } }. `row` is the line between rows, `column` between columns; an axis with no width draws nothing. Drawn centred in the gap by CSS gap decorations (column-rule / row-rule) where the browser has them, and by a small script painting the same lines elsewhere. Spacing only when empty."
+    },
+    "padding": {
+      "type": "object",
+      "default": {
+        "desktop": {}
+      }
+    },
+    "margin": {
+      "type": "object",
+      "default": {
+        "desktop": {}
+      }
+    },
+    "backgroundColour": {
+      "type": "string",
+      "default": ""
+    },
+    "backgroundColourGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "backgroundColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "backgroundColourHoverGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "textColour": {
+      "type": "string",
+      "default": ""
+    },
+    "textColourGradient": {
+      "type": "string",
+      "default": "",
+      "description": "CSS gradient string painting the text instead of a flat colour (background-clip:text). Non-empty wins over textColour at render time (colour-conformance FILL closeout 2026-09-07)."
+    },
+    "textColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "textColourHoverGradient": {
+      "type": "string",
+      "default": "",
+      "description": "Hover-state sibling of textColourGradient. Non-empty wins over textColourHover on :hover/:focus-visible."
+    },
+    "backgroundImage": {
+      "type": "object",
+      "default": null
+    },
+    "backgroundImageTablet": {
+      "type": "object"
+    },
+    "backgroundImageMobile": {
+      "type": "object"
+    },
+    "surfaceTone": {
+      "type": "string",
+      "enum": [ "auto", "light", "dark" ],
+      "default": "auto"
+    },
+    "backgroundSize": {
+      "type": "string",
+      "default": "cover",
+      "enum": [
+        "cover",
+        "contain",
+        "auto"
+      ]
+    },
+    "backgroundPosition": {
+      "type": "string",
+      "default": "center center"
+    },
+    "backgroundRepeat": {
+      "type": "string",
+      "default": "no-repeat",
+      "enum": [
+        "no-repeat",
+        "repeat",
+        "repeat-x",
+        "repeat-y"
+      ]
+    },
+    "backgroundAttachment": {
+      "type": "string",
+      "default": "scroll",
+      "enum": [
+        "scroll",
+        "fixed"
+      ]
+    },
+    "backgroundOverlayColour": {
+      "type": "string"
+    },
+    "backgroundOverlayOpacity": {
+      "type": "object",
+      "default": {
+        "desktop": 30
+      }
+    },
+    "overlayGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "surfaceBlur": {
+      "type": "string",
+      "default": "",
+      "description": "Backdrop blur: a single CSS length (for example 24px) that blurs whatever sits behind this block. Emitted by SGS_Container_Wrapper via includes/helpers-surface-ground.php; empty emits nothing."
+    },
+    "surfaceSaturate": {
+      "type": "number",
+      "description": "Backdrop saturation as a whole-number percentage (for example 150), paired with surfaceBlur. Unset emits nothing; 0 is a legal value."
+    },
+    "backgroundOverlayColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "overlayGradientHover": {
+      "type": "string",
+      "default": ""
+    },
+    "backgroundOverlayBlendMode": {
+      "type": "string",
+      "default": "normal",
+      "enum": [
+        "normal",
+        "multiply",
+        "screen",
+        "overlay",
+        "darken",
+        "lighten",
+        "color-dodge",
+        "color-burn",
+        "soft-light",
+        "hard-light",
+        "difference",
+        "exclusion"
+      ]
+    },
+    "bgVideo": {
+      "type": "object"
+    },
+    "bgVideoTablet": {
+      "type": "object"
+    },
+    "bgVideoMobile": {
+      "type": "object"
+    },
+    "bgSvgContent": {
+      "type": "string",
+      "default": ""
+    },
+    "bgSvgPosition": {
+      "type": "string",
+      "default": "background",
+      "enum": [
+        "background",
+        "foreground"
+      ]
+    },
+    "bgSvgOpacity": {
+      "type": "number",
+      "default": 100
+    },
+    "bgSvgMinHeight": {
+      "type": "string",
+      "default": ""
+    },
+    "bgSvgTextShadow": {
+      "type": "boolean",
+      "default": false
+    },
+    "childBtnBackground": {
+      "type": "string",
+      "default": "",
+      "_comment": "A2 (D638 SS4/5) -- CSS custom-property GROUP DEFAULT for child sgs/button instances. Emitted as --sgs-mb-btn-bg-default on this block's own wrapper; button/style.css reads it as the second fallback tier of --sgs-btn-bg. Empty = no group default; buttons behave exactly as before."
+    },
+    "childBtnBackgroundGradient": {
+      "type": "string",
+      "default": "",
+      "description": "CSS gradient GROUP DEFAULT for child sgs/button instances (colour-conformance FILL closeout 2026-09-06). Emitted as --sgs-mb-btn-bg-image-default; button/style.css reads it as the fallback tier of --sgs-btn-bg-image, right before button/style.css's own 'transparent'/'none' floor. Empty = no group default."
+    },
+    "childBtnBackgroundHover": {
+      "type": "string",
+      "default": "",
+      "description": "Hover background colour GROUP DEFAULT for child sgs/button instances. Emitted as --sgs-mb-btn-bg-hover-default; button/style.css's own :hover chain previously had no group-default rung at all -- a hover colour set here only ever fell through to the RESTING group default, never a distinct hover one."
+    },
+    "childBtnBackgroundHoverGradient": {
+      "type": "string",
+      "default": "",
+      "description": "CSS gradient hover GROUP DEFAULT for child sgs/button instances. Emitted as --sgs-mb-btn-bg-hover-image-default."
+    },
+    "childBtnTextColour": {
+      "type": "string",
+      "default": ""
+    },
+    "childBtnBorderColour": {
+      "type": "string",
+      "default": ""
+    },
+    "childBtnBorderWidth": {
+      "type": "object",
+      "default": {},
+      "_comment": "2026-08-30 owner decision -- added alongside childBtnBorderStyle so SgsBorderControl can mount for this group-default row (D338: mounting the composite with a missing sibling attr crashes/discards edits). Box-object shape MATCHES every other SgsBorderControl widthValues attr (e.g. sgs/button's own borderWidth) so the shared control needs no special-casing. Reduced to a single CSS-length shorthand string via sgs_box_object_shorthand() at render time and consumed by a :where(.sgs-multi-button) .sgs-button rule in button/style.css -- zero-specificity ancestor scoping, so it never outranks a preset and never matches a standalone button (see that file's comment for why the base .sgs-button rule itself could not be reused, unlike radius/font-weight)."
+    },
+    "childBtnBorderStyle": {
+      "type": "string",
+      "default": "",
+      "_comment": "2026-08-30 owner decision. Default '' (not 'solid', unlike a per-instance borderStyle attr) matches this block's own childBtn* GROUP-DEFAULT convention: empty means no override, so an unconfigured multi-button changes nothing."
+    },
+    "childBtnBorderRadius": {
+      "type": "object",
+      "default": {
+        "desktop": {}
+      }
+    },
+    "childBtnFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "childBtnFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "flexDirection": {
+      "type": "object",
+      "default": {
+        "desktop": "row",
+        "mobile": "column"
+      }
+    },
+    "gap": {
+      "type": "object",
+      "default": {
+        "desktop": "12px",
+        "mobile": "8px"
+      }
+    },
+    "justifyContent": {
+      "type": "object",
+      "default": {
+        "desktop": "flex-start"
+      }
+    },
+    "flexWrap": {
+      "type": "object",
+      "default": {
+        "desktop": "nowrap",
+        "mobile": "nowrap"
+      }
+    },
+    "alignItems": {
+      "type": "object",
+      "default": {
+        "desktop": "center",
+        "mobile": "stretch"
+      }
+    },
+    "contentWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "maxWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "layout": {
+      "type": "string",
+      "enum": [
+        "",
+        "flex",
+        "stack",
+        "grid"
+      ],
+      "default": ""
+    },
+    "borderWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "borderStyle": {
+      "type": "string",
+      "enum": [
+        "none",
+        "solid",
+        "dashed",
+        "dotted",
+        "double",
+        "groove",
+        "ridge",
+        "inset",
+        "outset"
+      ],
+      "default": "solid"
+    },
+    "borderColour": {
+      "type": "string",
+      "default": ""
+    },
+    "borderColourGradient": {
+      "type": "string",
+      "default": "",
+      "description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+    },
+    "borderRadius": {
+      "type": "object",
+      "default": {
+        "desktop": {}
+      }
+    }
+  },
+  "example": {
+    "attributes": {
+      "direction": "row",
+      "gap": "12px",
+      "justifyContent": "flex-start"
+    }
+  }
+}

@@ -1,0 +1,845 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/form-field-tiles",
+	"version": "0.2.0",
+	"title": "SGS Tiles Field",
+	"category": "sgs-forms",
+	"description": "Visual tile selection with icons.",
+	"keywords": [
+		"tiles",
+		"choice",
+		"visual",
+		"icon"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "grid-view",
+	"parent": [
+		"sgs/form",
+		"sgs/form-step"
+	],
+	"supports": {
+		"sgs": {
+			"motionItems": "tile",
+			"motion": true,
+			"iconPicker": true,
+			"imageControls": false,
+			"elements": {
+				"tile": {
+					"label": "Each tile",
+					"layer": "CONTENT",
+					"order": 1,
+					"selector": ".sgs-form-tile",
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "tile",
+					"attrMap": {
+						"css:background-color": "tileBackgroundColour",
+						"css:border-width": "tileBorderWidth",
+						"css:border-style": "tileBorderStyle",
+						"css:border-color": "tileBorderColour",
+						"css:border-radius": "tileRadius",
+						"css:padding": "tilePadding",
+						"css:gap": "tileInnerGap",
+						"css:align-items": "tileAlign"
+					},
+					"_note": "Each tile's own surface, painted by render.php into the field's scoped style. The selected state (checked or --selected) keeps its own border colour and width: the tile border rule excludes it, and the hover colour stays the stylesheet's."
+				},
+				"tile-hover": {
+					"label": "Hovered tile",
+					"layer": "CONTENT",
+					"order": 2,
+					"selector": ".sgs-form-tile:hover, .sgs-form-tile:has(input:focus-visible)",
+					"clusters": [
+						"layout"
+					],
+					"prefix": "tileHover",
+					"attrMap": {
+						"css:box-shadow": "tileHoverShadow",
+						"css:box-shadow-color": "tileHoverShadowColour"
+					},
+					"_note": "The tile while the pointer is over it or its input has keyboard focus (render.php, scoped to the field's uid class through the touch-guarded hover pair). The hover lift and the shadow's timing belong to the tile's motion hover state; an empty shadow prints nothing.",
+					"motion": false
+				},
+				"tile-selected": {
+					"label": "Selected tile",
+					"layer": "CONTENT",
+					"order": 2,
+					"selector": ".sgs-form-tile--selected, .sgs-form-tile:has(input:checked)",
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "tileSelected",
+					"attrMap": {
+						"css:background-color": "tileSelectedBackgroundColour",
+						"css:border-color": "tileSelectedBorderColour",
+						"css:border-width": "tileSelectedBorderWidth",
+						"css:color": "tileSelectedLabelColour",
+						"css:transform": "tileSelectedOffset",
+						"css:box-shadow": "tileSelectedShadow",
+						"css:box-shadow-color": "tileSelectedShadowColour"
+					},
+					"_note": "The chosen tile (render.php, scoped to the field's uid class, after the stylesheet's selectedStyle rules so it outranks them on the same specificity). Empty keeps the selectedStyle look.",
+					"motion": false
+				},
+				"tile-check": {
+					"label": "Chosen tile tick",
+					"layer": "CONTENT",
+					"order": 2,
+					"selector": ".sgs-form-tile__check",
+					"clusters": [
+						"text",
+						"fill",
+						"layout",
+						"position"
+					],
+					"attrMap": {
+						"css:color": "tileCheckColour",
+						"css:background-color": "tileCheckBackgroundColour",
+						"css:width": "tileCheckSize",
+						"css:height": "tileCheckSize",
+						"css:top": "tileCheckInset"
+					},
+					"motion": false,
+					"_note": "The tick of the chosen tile (render.php scoped rule on the check element; form/style.css draws the tick from the element's colour and size). selectedCheckPosition (no CSS member of its own) adds a sgs-form-field--tiles-check-{position} class to the field, which shows the tick on the chosen tile independent of selectedStyle; inline-start lays the tile out in a row with the tick first."
+				},
+				"tile-label": {
+					"selector": ".sgs-form-tile__label",
+					"label": "Tile label",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"prefix": "tileLabel",
+					"attrMap": {
+						"css:font-size": "tileLabelFontSize",
+						"css:font-weight": "tileLabelFontWeight",
+						"css:line-height": "tileLabelLineHeight",
+						"css:color": "tileLabelColour",
+						"css:-webkit-text-stroke-width": "tileLabelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "tileLabelTextStrokeColour"
+					},
+					"_note": "Each tile's label text (render.php); typography and colour from the Tile text panel and the tileLabelColour row.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "tileLabelTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"tile-description": {
+					"selector": ".sgs-form-tile__description",
+					"label": "Tile description",
+					"order": 4,
+					"clusters": [
+						"text"
+					],
+					"prefix": "tileDescription",
+					"attrMap": {
+						"css:font-size": "tileDescriptionFontSize",
+						"css:font-weight": "tileDescriptionFontWeight",
+						"css:line-height": "tileDescriptionLineHeight",
+						"css:color": "tileDescriptionColour",
+						"css:-webkit-text-stroke-width": "tileDescriptionTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "tileDescriptionTextStrokeColour"
+					},
+					"_note": "The optional line under a tile's label (render.php, printed only when the tile has a description).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "tileDescriptionTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"wrapper": {
+					"label": "Wrapper",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:max-width": "maxWidth",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-image": "textColourGradient",
+						"css:color-gradient": "textColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					},
+					"_note": "block.json declares no typography/spacing support on this block — the wrapper's font/padding/margin members are honest gaps. color+border are skip-serialised and emitted into a scoped style keyed to the field's uid class (render.php:59-114), mirroring sgs/container. textColourHover/textColourHoverGradient (2026-09-07, colour-conformance): textColour and backgroundColour share this SAME element, so render.php conditionally moves the background onto its own ::after layer via sgs_block_background_layer_css() whenever the resolved hover text value is a gradient (CLAUDE.md's text+background-on-one-selector precondition)."
+				},
+				"inner": {
+					"selector": ".sgs-form-tiles",
+					"label": "Inner (grid / flex layout)",
+					"layer": "GRID",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:align-items": "alignItems",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "WS-4: the tile grid delegates to SGS_Container_Wrapper (kind='layout', render.php:231-242) so it mirrors sgs/container's grid/flex capabilities. Maps explicitly — no `prefix` declared, so the default convention cannot resolve bare camelCase attrs (ROLLOUT REQUIREMENT 1). display/order/overflow/align-items remain honest gaps (no attribute on this block)."
+				},
+				"content-band": {
+					"label": "Content band",
+					"layer": "CONTENT",
+					"order": 5,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "contentBand",
+					"motion": false,
+					"_note": "The wrapper prints its band inside the field's fieldset, so the band is the root's grandchild, not its direct child; a motion layer cannot resolve it (the tiles container is the motion part `inner`).",
+					"attrMap": {
+						"css:max-width": "contentWidth"
+					}
+				}
+			},
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadius",
+					"tileRadius"
+				],
+				"borderWidth": [
+					"borderWidth",
+					"tileBorderWidth"
+				],
+				"padding": [
+					"tilePadding"
+				]
+			}
+		},
+		"html": false,
+		"anchor": false,
+		"color": {
+			"background": false,
+			"gradients": false,
+			"text": false,
+			"__experimentalSkipSerialization": true
+		}
+	},
+	"attributes": {
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
+		"label": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"helpText": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"optionalTag": {
+			"type": "boolean",
+			"default": false,
+			"role": "behaviour",
+			"description": "Shows the form's Optional tag after the label when the field is not required. The form sets the tag's text and look."
+		},
+		"width": {
+			"type": "string",
+			"default": "full"
+		},
+		"tiles": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"label": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"value": {
+						"type": "string",
+						"role": "technical"
+					},
+					"icon": {
+						"type": "string",
+						"role": "icon"
+					},
+					"iconSource": {
+						"type": "string",
+						"role": "enum-mode"
+					},
+					"image": {
+						"type": "string",
+						"role": "image-object"
+					},
+					"description": {
+						"type": "string",
+						"default": "",
+						"role": "text-content"
+					}
+				}
+			}
+		},
+		"multiSelect": {
+			"type": "boolean",
+			"default": false
+		},
+		"columns": {
+			"type": "object",
+			"default": {
+				"desktop": 3,
+				"tablet": 2,
+				"mobile": 1
+			}
+		},
+		"conditionalField": {
+			"type": "string",
+			"default": ""
+		},
+		"conditionalOperator": {
+			"type": "string",
+			"default": "equals"
+		},
+		"conditionalValue": {
+			"type": "string",
+			"default": ""
+		},
+		"selectedStyle": {
+			"type": "string",
+			"default": "checkmark"
+		},
+		"contentWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"maxWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"layout": {
+			"type": "string",
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
+			"default": ""
+		},
+		"alignItems": {
+			"type": "object",
+			"default": {}
+		},
+		"gap": {
+			"type": "object",
+			"default": {}
+		},
+		"gridTemplateColumns": {
+			"type": "object",
+			"default": {}
+		},
+		"gridTemplateRows": {
+			"type": "object",
+			"default": {}
+		},
+		"gridAutoRows": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyItems": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end"
+			]
+		},
+		"alignContent": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end",
+				"space-between",
+				"space-around",
+				"space-evenly"
+			]
+		},
+		"flexDirection": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"row",
+				"column"
+			]
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": "wrap",
+			"enum": [
+				"wrap",
+				"nowrap"
+			]
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"flex-start",
+				"center",
+				"flex-end",
+				"space-between",
+				"space-around"
+			]
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of textColourHover. Non-empty wins over textColourHover on :hover/:focus-visible."
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"tileLabelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"tileLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"tileLabelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"tileLabelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"tileLabelFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"tileLabelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"tileLabelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tileLabelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"tileLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tileLabelTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"tileLabelTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"tileLabelTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"tileLabelTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"tileLabelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"tileLabelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileLabelTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"tileDescriptionFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"tileDescriptionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"tileDescriptionFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"tileDescriptionFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"tileDescriptionFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"tileDescriptionLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"tileDescriptionLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tileDescriptionLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"tileDescriptionLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tileDescriptionTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"tileDescriptionTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"tileDescriptionTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"tileDescriptionTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"tileDescriptionTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"tileDescriptionTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileDescriptionTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"tileSelectedBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileSelectedBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileSelectedBorderWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Border width of the chosen tile (a length). Empty = the stylesheet's 3px of the checkmark and border styles."
+		},
+		"tileSelectedOffset": {
+			"type": "object",
+			"default": {},
+			"description": "How far the chosen tile moves, as {x,y} lengths that may be negative (-2px up and to the left). Empty = it stays put."
+		},
+		"tileSelectedShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"tileSelectedShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileHoverShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Shadow of a tile while the pointer is over it or it has keyboard focus (a shadow shape, e.g. 0 18px 30px -20px). Empty = no hover shadow."
+		},
+		"tileHoverShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the tile hover shadow. Empty = the shadow's own colour."
+		},
+		"tileSelectedLabelColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of the chosen tile (its label, description and icon). Empty = the tile's own text colours."
+		},
+		"selectedCheckPosition": {
+			"type": "string",
+			"enum": [
+				"",
+				"inline-start",
+				"corner"
+			],
+			"default": "",
+			"description": "Where the chosen tile's tick sits: inline-start (before the text, the tile lays out in a row) or corner (top-end badge). Either shows the tick whatever the Selected tile style is. Empty = the corner badge of the checkmark style only."
+		},
+		"tileCheckColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the tick mark. Empty = white on the corner badge, the tile's text colour inline."
+		},
+		"tileCheckBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Fill of the circle behind the tick. Empty = the accent-text colour on the corner badge, no circle inline."
+		},
+		"tileCheckSize": {
+			"type": "string",
+			"default": "",
+			"description": "Width and height of the tick circle (a length); the tick scales with it. Empty = 20px on the corner badge, 14px inline."
+		},
+		"tileCheckInset": {
+			"type": "string",
+			"default": "",
+			"description": "How far the corner badge sits from the tile's top and end edges (a length). Empty = 0.5rem."
+		},
+		"defaultValue": {
+			"type": "string",
+			"default": ""
+		},
+		"tileLabelColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileDescriptionColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Background of each tile (slug or CSS colour). Empty = transparent. A selected tile keeps the selected-style background."
+		},
+		"tileBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width of each tile as a {top,right,bottom,left} box or a {desktop,tablet,mobile} object of boxes. Empty = the stylesheet's 2px. A chosen tile takes its width from tileSelectedBorderWidth."
+		},
+		"tileBorderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"tileBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Resting border colour of each tile (slug or CSS colour). Empty = the stylesheet's border colour. The hover and selected colours still apply."
+		},
+		"tileRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			},
+			"description": "Corner radius of each tile as {desktop,tablet,mobile} corner objects {topLeft,topRight,bottomRight,bottomLeft}. Empty = the stylesheet's radius."
+		},
+		"tilePadding": {
+			"type": "object",
+			"default": {},
+			"description": "Padding inside each tile as a per-device box {desktop,tablet,mobile}, each a {top,right,bottom,left} box. Empty = the stylesheet's 1rem."
+		},
+		"tileInnerGap": {
+			"type": "object",
+			"default": {},
+			"description": "Gap between a tile's icon, label and description as a {desktop,tablet,mobile} object of lengths or spacing preset slugs. Empty = the stylesheet's 0.5rem."
+		},
+		"tileAlign": {
+			"type": "object",
+			"default": {},
+			"description": "Cross-axis alignment of a tile's contents as a {desktop,tablet,mobile} object of start, center, end or stretch. Empty = centre."
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"example": {
+		"attributes": {
+			"label": "What type of business are you?",
+			"tiles": [
+				{
+					"label": "Restaurant",
+					"icon": "utensils",
+					"iconSource": "lucide"
+				},
+				{
+					"label": "Hotel",
+					"icon": "building",
+					"iconSource": "lucide"
+				},
+				{
+					"label": "Retailer",
+					"icon": "shopping-bag",
+					"iconSource": "lucide"
+				},
+				{
+					"label": "Caterer",
+					"icon": "chef-hat",
+					"iconSource": "lucide"
+				}
+			]
+		}
+	}
+}

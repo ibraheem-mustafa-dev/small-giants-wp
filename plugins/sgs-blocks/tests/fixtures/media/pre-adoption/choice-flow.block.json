@@ -1,0 +1,473 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/choice-flow",
+	"version": "0.1.0",
+	"title": "SGS Choice Flow",
+	"category": "sgs-forms",
+	"description": "A step-by-step quiz that branches to different questions based on the answer given, and ends in a result — not a single flexible form.",
+	"keywords": [
+		"quiz",
+		"wizard",
+		"branching",
+		"flow",
+		"recommendation"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "randomize",
+	"supports": {
+		"html": false,
+		"sgs": {
+			"motion": {
+				"states": [
+					"step-changed"
+				]
+			},
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				]
+			},
+			"elements": {
+				"footer-actions": {
+					"selector": ".sgs-choice-flow__footer-actions",
+					"motion": false,
+					"label": "Footer buttons row",
+					"order": 5,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "The footer buttons row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"wrapper": {
+					"label": "Wrapper",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:padding": "padding",
+						"css:max-width": "maxWidth"
+					},
+					"_note": "Visual-QA pass (2026-09-15, design-reviewer gap #1) added maxWidth + padding only — a DELIBERATELY MINIMAL box+width shape (content-block composition_role, not wrapper-shell-kind — see seed-composition-roles.py comment for this block). No colour/typography attrs; do not extend this element toward the full SGS_Container_Wrapper capability set without a design-gate (CLAUDE.md rule 7)."
+				},
+				"info-toggle": {
+					"motion": false,
+					"label": "Info toggle",
+					"layer": "CONTENT",
+					"order": 3,
+					"clusters": [ "text", "layout" ],
+					"prefix": "infoToggle",
+					"attrMap": {
+						"css:color": "infoToggleColour",
+						"css:border-color": "infoToggleBorderColour"
+					},
+					"_note": "The round ? button beside a showcase option (.sgs-info-toggle); its colours are painted by includes/choice-flow-colour.php::sgs_choice_flow_colour_rules_css."
+				},
+				"back": {
+					"selector": ".sgs-choice-flow__nav-back",
+					"label": "Back button",
+					"layer": "CONTENT",
+					"order": 2,
+					"clusters": [
+						"fill",
+						"text",
+						"layout"
+					],
+					"prefix": "back",
+					"attrMap": {
+						"css:background-color": "backColourBackground",
+						"css:color": "backColourText",
+						"css:border-color": "backColourBorder",
+						"css:border-width": "backBorderWidth",
+						"css:border-style": "backBorderStyle",
+						"css:border-radius": "backBorderRadius"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backColourBackgroundHover",
+								"css:color": "backColourTextHover",
+								"css:border-color": "backColourBorderHover"
+							}
+						}
+					},
+					"_note": "Rendered via the shared sgs_button_element_style_css() helper (includes/helpers-button-style.php), the same mechanism sgs/product-card's built-in CTA uses. Colour defaults deliberately do NOT match the theme's 'primary' button preset: the Back/Close controls use a NEUTRAL ink/paper pair (background:none, border light, hover border darkens to near-black), and the brand accent colour is reserved for progress-fill/price/badge highlights only, never the nav buttons. Defaults here mirror that: transparent background, `text`/`border` at rest, border darkens to `text` on hover, matching this codebase's own theme tokens for the same roles (2026-09-15)."
+				},
+				"progress-fill": {
+					"selector": ".sgs-choice-flow__progress-fill",
+					"label": "Progress bar fill",
+					"layer": "CONTENT",
+					"order": 4,
+					"clusters": [ "fill" ],
+					"attrMap": {
+						"css:background-color": "progressColour",
+						"css:background-image": "progressColourGradient"
+					}
+				},
+				"summary-photo": {
+					"absentIn": ["compact"],
+					"absentWhy": "The summary pane (its photo and its total) renders only in the showcase layout; the compact layout prints neither.",
+					"surface": true,
+					"selector": ".sgs-choice-flow__summary-image",
+					"label": "Summary photo",
+					"layer": "CONTENT",
+					"order": 5,
+					"clusters": [],
+					"_note": "A motion-only part: the photo's finish transition (the dim, deepen, soften and brighten effects of a lens-style option) reads this part's motion duration, falling back to the site's slow duration."
+				},
+				"summary-total": {
+					"absentIn": ["compact"],
+					"absentWhy": "The summary pane (its photo and its total) renders only in the showcase layout; the compact layout prints neither.",
+					"selector": ".sgs-choice-flow__summary-total-value",
+					"label": "Summary total",
+					"layer": "CONTENT",
+					"order": 6,
+					"clusters": [],
+					"_note": "A motion-only part: the total's pop when its value changes reads this part's motion duration, falling back to the site's medium duration."
+				},
+				"summary-pane-total": {
+					"absentIn": ["compact"],
+					"absentWhy": "The summary pane (its photo and its total) renders only in the showcase layout; the compact layout prints neither.",
+					"selector": ".sgs-choice-flow__summary-summary-total-value",
+					"label": "Summary total (narrow screens)",
+					"layer": "CONTENT",
+					"order": 7,
+					"clusters": [],
+					"_note": "A motion-only part: the pop of the total in the summary that sits after the options on narrow screens reads this part's motion duration, falling back to the site's medium duration."
+				}
+			}
+		}
+	},
+	"attributes": {
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the footer buttons (Continue, Add to basket, Buy now) wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"title": {
+			"type": "string",
+			"default": ""
+		},
+		"flowId": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-6: the slug of a sgs_choice_flow post (Choice Flows admin screen) this block renders in place of its own steps. Same by-slug reference as sgs/form's formId (Spec 42 §2)."
+		},
+		"flowIsLinked": {
+			"type": "boolean",
+			"default": false,
+			"description": "True only when flowId was set by the Linked flow picker: the discriminator between 'not linked' (renders its own steps) and 'linked, but the flow post is gone' (renders the fallback). The flow post's own sgs/choice-flow never carries it, which is what stops a linked flow rendering itself."
+		},
+		"flowLayout": {
+			"type": "string",
+			"enum": [ "compact", "showcase" ],
+			"default": "compact",
+			"description": "FR-43-24 (v1.8.0): 'compact' (default) is the single column for a flow inline on a page. 'showcase' spends a full screen: a header bar, a full-width progress line, a sticky stage (the finished product, running lines, a big total) beside large image-led option cards. Set on the saved flow, never per placement (FR-43-25)."
+		},
+		"fitToScreen": {
+			"type": "boolean",
+			"default": true,
+			"description": "Showcase layout: on, a full-screen step shares the screen height between the stage photo and the option pictures (they shrink before anything scrolls). Off, option cards keep their 16:9 pictures and the stage photo its square. Class sgs-choice-flow--fit-screen."
+		},
+		"optionColumnsWide": {
+			"type": "number",
+			"default": 2,
+			"description": "Showcase layout: how many columns (2 to 4) the pictured option cards use once the flow is 2200px wide or more."
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": "800px"
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"backColourBackground": {
+			"type": "string",
+			"default": "",
+			"description": "User-reported gap (2026-09-15): the Back button previously carried no operator-facing colour/border attrs at all — plain hardcoded CSS. Rendered via the shared sgs_button_element_style_css() helper, the same mechanism sgs/product-card's built-in CTA uses. Defaults deliberately NEUTRAL (transparent), grounded in the real lens-configurator source — see the 'back' element's own _note for the full evidence."
+		},
+		"backColourText": {
+			"type": "string",
+			"default": "text"
+		},
+		"backColourBorder": {
+			"type": "string",
+			"default": "border"
+		},
+		"backColourBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backColourTextHover": {
+			"type": "string",
+			"default": "text"
+		},
+		"backColourBorderHover": {
+			"type": "string",
+			"default": "text"
+		},
+		"backBorderStyle": {
+			"type": "string",
+			"enum": [ "solid", "dashed", "dotted", "none" ],
+			"default": "solid"
+		},
+		"backBorderWidth": {
+			"type": "object",
+			"default": { "top": "2px", "right": "2px", "bottom": "2px", "left": "2px" }
+		},
+		"backBorderRadius": {
+			"type": "object",
+			"default": { "topLeft": "8px", "topRight": "8px", "bottomRight": "8px", "bottomLeft": "8px" }
+		},
+		"progressStyle": {
+			"type": "string",
+			"enum": [ "bar", "circles", "badge" ],
+			"default": "bar",
+			"description": "User-directed (2026-09-15): operator choice across the 3 real reference patterns found live — 'bar' (the client's own real lens-configurator: a plain thin fill bar, step name as separate text above), 'circles' (a reference site: numbered circle stepper with connecting lines, above a separate plain bar), 'badge' (a reference site: a step-count pill riding directly on the fill track, styled like a slider thumb)."
+		},
+		"showPricePanel": {
+			"type": "boolean",
+			"default": false,
+			"description": "FR-43-19 (v1.4.0): shows a running-total panel beside the steps (two columns from 1024px, stacked below on narrower screens) — the product's current price, one row per chosen priced add-on, then the total. Display only; the server-side add-on price list (FR-43-18) is the sole price authority for what actually gets charged."
+		},
+		"pricePanelTitle": {
+			"type": "string",
+			"default": "Your order",
+			"description": "FR-43-19 (v1.4.0): heading shown above the price panel. Default 'Your order'."
+		},
+		"flowProductId": {
+			"type": "integer",
+			"default": 0,
+			"description": "FR-43-20 (v1.4.0): the product this flow adds to the bag when it is NOT embedded on that product's own page (where the page's own product/variation is used instead — see render.php). 0 = none set; a flow with priced add-on steps and no product set here, opened off a product page, cannot resolve a base price."
+		},
+		"summaryShowImage": {
+			"type": "boolean",
+			"default": true,
+			"description": "D4 (v1.8.0): shows the summary panel's product photo — the resolved variation's image once one resolves, else the product's own featured image. showPricePanel still gates the whole panel."
+		},
+		"summaryPosition": {
+			"type": "string",
+			"enum": [ "start", "end" ],
+			"default": "start",
+			"description": "D4 (v1.8.0): which side of the steps the summary panel sits on at desktop widths (1024px+) — 'start' (left, default) or 'end' (right). Below that width it's a collapsible 'Your box' row above the steps either way."
+		},
+		"summaryBaseLabel": {
+			"type": "string",
+			"default": "Base price",
+			"description": "The summary panel's running-lines base row label — default 'Base price'. showPricePanel still gates the whole panel."
+		},
+		"stageNote": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-24 (v1.8.0): an optional help note shown in the summary panel/showcase stage, e.g. 'Not sure which to pick? Message me'. Empty = no note shown."
+		},
+		"stageNoteLink": {
+			"type": "object",
+			"default": {},
+			"description": "FR-43-24 (v1.8.0): the note's optional link, {url,text,source}. `source` is url (default, the typed url), phone, email or whatsapp (read live from Site Info, falling back to the typed url). Shown only when stageNote is also set and the link resolves to a non-empty url."
+		},
+		"progressColour": {
+			"type": "string",
+			"default": "",
+			"description": "The progress bar fill's colour, a palette slug or hex. Empty = the existing default (the 'primary' token, unchanged from before this control existed)."
+		},
+		"progressColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "The progress bar fill's gradient, a CSS gradient value. Wins over progressColour when set. Empty = the flat colour."
+		},
+		"stepperColour": {
+			"type": "string",
+			"default": "",
+			"description": "The numbered-circles progress style: the colour of a step's number and name before it is reached. Empty = the muted text colour."
+		},
+		"stepperActiveColour": {
+			"type": "string",
+			"default": "",
+			"description": "The numbered-circles progress style: the colour of the current and completed steps' number, ring and name. Empty = the primary colour."
+		},
+		"progressBadgeColour": {
+			"type": "string",
+			"default": "",
+			"description": "The step-count badge progress style: the colour of the badge's text. Empty = the dark primary colour."
+		},
+		"summaryNoteColour": {
+			"type": "string",
+			"default": "",
+			"description": "The text colour of the summary panel's help note, in both layouts. Empty = the muted text colour in the compact layout and the text colour in the showcase layout."
+		},
+		"showHeader": {
+			"type": "boolean",
+			"default": false,
+			"description": "Root polish: an optional header row above the progress bar — a logo, a 'Step N of M' eyebrow and a Close button (only shown when the flow is inside an sgs/modal)."
+		},
+		"headerLogo": {
+			"type": "object",
+			"default": {},
+			"description": "Root polish: the optional header's logo image, {id,url,alt}. Empty object = no logo shown."
+		},
+		"openerLabel": {
+			"type": "string",
+			"default": ""
+		},
+		"closeLabel": {
+			"type": "string",
+			"default": "Close",
+			"description": "Root polish: the header's Close button label, shown as visible text (with a decorative × alongside it, hidden from assistive tech)."
+		},
+		"closeStyle": {
+			"type": "string",
+			"enum": [ "icon", "text" ],
+			"default": "icon",
+			"description": "'icon' (default, unchanged) is the round 44px Close button. 'text' is a bordered rectangular button (label then a decorative ×, hover brightens the border)."
+		},
+		"stickyFooter": {
+			"type": "boolean",
+			"default": false,
+			"description": "Root polish: pins the existing footer (Back button plus the terminal's primary action) to the bottom of the viewport while a step is in view."
+		},
+		"advanceMode": {
+			"type": "string",
+			"enum": [ "continue", "tap", "pick" ],
+			"default": "continue",
+			"description": "D1 (Bean's 2026-09-26 review): 'continue' (default) — picking an option selects it and records the answer but does not advance; the footer's Continue button moves on. 'tap' keeps the original advance-on-click behaviour, for quick quizzes (Continue is hidden). 'pick' (N37) advances as soon as a single-choice option is picked, except into a result step or from an inline-next question, and shows Continue only on a question that already holds an answer, so Back can return and move on without re-picking."
+		},
+		"continueLabel": {
+			"type": "string",
+			"default": "Continue",
+			"description": "D1/D2: the footer's primary button label on a question step, in 'continue' advanceMode. Muted (aria-disabled) until the current step has a selection."
+		},
+		"progressCounts": {
+			"type": "string",
+			"enum": [ "finished", "current" ],
+			"default": "finished",
+			"description": "FR-43-24: what the progress line counts. 'finished' (D8): questions already answered, empty on question 1. 'current': the question being shown, so question 1 of 4 fills a quarter."
+		},
+		"stepCountLabel": {
+			"type": "string",
+			"default": "Step",
+			"description": "FR-43-24: the word before the question position, e.g. 'Question' gives 'Question 1 of 3'. A question with its own eyebrow shows that instead and is left out of the count."
+		},
+		"headerLogoHeight": {
+			"type": "number",
+			"default": 32,
+			"description": "The header logo's height in px (its width follows the image's own proportions)."
+		},
+		"stageColour": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-24: the showcase stage's background and the chosen option card's fill. Empty uses the theme's raised background (surface-alt)."
+		},
+		"stageColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "The showcase stage's and chosen option card's gradient fill. Wins over stageColour when set. Empty = the flat colour."
+		},
+		"summaryPendingLabel": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-19: a placeholder line shown on the stage until the first priced choice, e.g. 'Lenses'. Empty shows none."
+		},
+		"summaryPendingText": {
+			"type": "string",
+			"default": "not chosen yet",
+			"description": "FR-43-19: the placeholder line's right-hand text."
+		},
+		"stageNoteIcon": {
+			"type": "string",
+			"enum": [ "none", "whatsapp", "phone", "email", "chat" ],
+			"default": "none",
+			"description": "FR-43-24: an icon in a round badge beside the stage help note; with a link the whole note becomes the link."
+		},
+		"stageNoteIconColour": {
+			"type": "string",
+			"default": "",
+			"description": "The help note icon badge's fill. Empty uses the accent colour."
+		},
+		"stageNoteIconColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "The help note icon badge's gradient fill. Wins over stageNoteIconColour when set. Empty = the flat colour."
+		},
+		"stageNoteBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "The help note's border colour. Empty uses the border colour."
+		},
+		"stageNoteHoverColour": {
+			"type": "string",
+			"default": "",
+			"description": "The help note's background on hover. Empty keeps the background unchanged."
+		},
+		"stageNoteHoverColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "The help note's gradient background on hover. Wins over stageNoteHoverColour when set. Empty = the flat colour."
+		},
+		"headerEyebrowColour": {
+			"type": "string",
+			"default": "",
+			"description": "The header's step name colour (showcase). Empty uses the muted text colour."
+		},
+		"infoToggleColour": {
+			"type": "string",
+			"default": "",
+			"description": "The option cards' '?' toggle glyph colour (showcase). Empty uses the text colour."
+		},
+		"infoToggleBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "The option cards' '?' toggle border colour (showcase). Empty mixes the border colour 94% with the text colour."
+		},
+		"optionMediaSize": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device size of each option's own picture as a percentage of its picture band's width ({desktop, tablet, mobile}; 100 = fills the band, the default). Centred on the band, which shows the stage colour around a smaller picture; a larger one is cropped by the band. A lens-finish card's frame photo is not scaled."
+		},
+		"skipPrompt": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-24: text before the footer's skip link on the first question, e.g. 'Frame only?'."
+		},
+		"skipLabel": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-24: the footer's skip link on the first question, e.g. 'Skip the lenses'. It takes the same route as the flow's 'no add-ons' option. Empty shows no link."
+		},
+		"skipAddsToBag": {
+			"type": "boolean",
+			"default": false,
+			"description": "N38: when on, the footer's skip link adds the bare frame (the product and its chosen variation, no add-ons) to the bag, then closes the pop-up if the flow is in one. When off, the skip link routes to the 'no add-ons' option's ending as before."
+		}
+	},
+	"providesContext": {
+		"sgs/choice-flow/productId": "flowProductId",
+		"sgs/choiceFlowId": "flowId"
+	},
+	"allowedBlocks": [
+		"sgs/form-step"
+	],
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"title": "Which service suits you?"
+		}
+	}
+}

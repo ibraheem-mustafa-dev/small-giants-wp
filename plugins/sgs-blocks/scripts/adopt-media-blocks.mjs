@@ -457,6 +457,25 @@ function snapshot( root ) {
 	return out;
 }
 
+/**
+ * Put the listed blocks back to their pre-adoption block.json (and the classification overrides back to theirs) in a temp copy,
+ * so the self-test starts from a tree where every listed block is pending whatever the real tree has adopted. The snapshots are
+ * the files in tests/fixtures/media/pre-adoption, named <slug>.block.json.
+ *
+ * @param {string} root Temp copy of the plugin directory.
+ */
+function restorePreAdoption( root ) {
+	const dir = path.join( root, 'tests', 'fixtures', 'media', 'pre-adoption' );
+	const files = blockFilesByName( root );
+	for ( const name of files.keys() ) {
+		const snap = path.join( dir, `${ name.replace( /^sgs\//, '' ) }.block.json` );
+		if ( fs.existsSync( snap ) ) {
+			fs.copyFileSync( snap, files.get( name ) );
+		}
+	}
+	fs.copyFileSync( path.join( dir, 'attr-classification-overrides.json' ), path.join( root, GENERATED_SHARED[ 0 ] ) );
+}
+
 async function selfTest() {
 	const fails = [];
 	let ran = 0;
@@ -470,6 +489,7 @@ async function selfTest() {
 	const tmp = fs.mkdtempSync( path.join( base, 'adopt-selftest-' ) );
 	try {
 		copyTree( OWN_PLUGIN_DIR, tmp );
+		restorePreAdoption( tmp );
 		const data = loadData( tmp );
 		const vocab = await vocabulary( tmp );
 		const files = blockFilesByName( tmp );

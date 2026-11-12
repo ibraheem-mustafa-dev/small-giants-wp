@@ -1,0 +1,177 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/image-sequence",
+	"version": "0.1.0",
+	"title": "SGS Image Sequence",
+	"category": "sgs-content",
+	"description": "AGENCY-ONLY — hidden from the block inserter. Scroll-scrubbed canvas frame sequence (Apple-style product reveal). Setting one up requires running a Python command-line tool (scripts/image-sequence-prep.py) that needs ffmpeg installed — not something a client should be asked to do. If a client build genuinely needs this effect, Small Giants Studio sets it up. See scripts/IMAGE-SEQUENCE-PREP-README.md for the full agency-side process.",
+	"keywords": [
+		"scroll",
+		"canvas",
+		"sequence",
+		"scrub",
+		"gsap",
+		"video"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "images-alt2",
+	"supports": {
+		"anchor": false,
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		],
+		"inserter": false,
+		"sgs": {
+			"motion": true,
+			"_comment_mediaElements": "Adopts the shared object-fit atom for its CSS DEFAULT ONLY — no editor control is mounted (edit.js deliberately does not import MediaElementPanel/ObjectFitField for this block). The 'thumbnail' element note below already documents WHY: fx-image-sequence.js's drawCover() always scales+crops every canvas frame as a centred cover-fit with zero configurability, so an operator-set fit that disagreed with the canvas would produce a guaranteed flash/mismatch the instant JS took over — worse than no control. Declaring `mediaElements` here (rather than leaving the object-fit hardcoded in style.css) closes detector rule 37-media-no-handroll by having the thumbnail <img> and canvas carry the shared `.sgs-media-el` marker and read the shared stylesheet's `object-fit: var(--sgs-media-object-fit, cover)` default — byte-identical resting behaviour to the old hardcode, just sourced from the shared layer instead of duplicated locally.",
+			"mediaElements": [
+				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
+			],
+			"elements": {
+				"wrapper": {
+					"label": "Block wrapper",
+					"order": 1,
+					"clusters": [
+						"layout"
+					],
+					"isWrapper": true,
+					"prefix": "",
+					"attrMap": {
+						"css:aspect-ratio": "aspectRatio"
+					},
+					"_note": "The block root `.sgs-image-sequence` (render.php:172-176). `aspectRatio` is the ONLY per-instance style value and is emitted into the block's own scoped <style> (render.php:131), never inline. No `layer` is declared because the root arranges no children (the stage owns the layering), so the arrangement members are correctly never asked about. This block declares no colour/spacing/border/typography supports at all, so every other layout member is an honest GAP. `prefix: \"\"` is an explicit opt-out of orphan scanning: the remaining attributes are frame-source config, not style properties."
+				},
+				"stage": {
+					"label": "Stage",
+					"order": 2,
+					"clusters": [],
+					"prefix": "",
+					"_note": "`.sgs-image-sequence__stage` (render.php:173) — the positioning box that holds the thumbnail and the canvas in the same rect. Every property on it (position/width/overflow/aspect-ratio fallback, style.css:23-31) is a structural default with no attribute behind it, so it exposes no client-facing style controls."
+				},
+				"thumbnail": {
+					"label": "Thumbnail image",
+					"order": 3,
+					"clusters": [],
+					"prefix": "",
+					"_note": "`.sgs-image-sequence__thumbnail` (render.php:183) — the fail-open <img> shown with JS blocked or under reduced motion (FR-38-2). Its inset/size/object-fit are structural defaults (style.css:33-40); `thumbnail` and `thumbnailAlt` are media identity and alt TEXT, not style properties, so no cluster is declared. prefix: \"\" is an explicit opt-out of orphan scanning for that reason (thumbnailAlt is alt TEXT). ⛔ `supports.sgs.imageControls` was deliberately NOT declared here (design decision, 2026-08-17, correcting a DECLARED-BUT-DEAD finding from check-image-controls-support.py) — the JS canvas that takes over from this thumbnail (fx-image-sequence.js `drawCover()`) ALWAYS scales+crops every frame as a centred cover-fit with zero configurability (no object-position/object-fit param exists in the draw call). Exposing an imageControls panel on the thumbnail would let an operator set e.g. object-fit:contain or a custom focal point that the canvas can never honour — producing a guaranteed visual mismatch/flash the instant JS takes over, worse than a dead control. Removed rather than wired."
+				},
+				"canvas": {
+					"label": "Frame canvas",
+					"order": 4,
+					"clusters": [],
+					"prefix": "",
+					"_note": "`.sgs-image-sequence__canvas` (render.php:187) — the Tier G scrub surface. Its opacity/transition are the reveal contract (style.css:42-53), not client controls; no client control writes it. `prefix: \"\"` opts out of orphan scanning for that reason."
+				}
+			}
+		}
+	},
+	"attributes": {
+		"thumbnail": {
+			"type": "object",
+			"default": null
+		},
+		"_comment_artDirection": "Art-direction tiers (2026-08-07) — the {base}/{base}Tablet/{base}Mobile shape sgs/media and sgs/hero use. Object-typed to MATCH `thumbnail` itself: a flat string here would be silently coerced to the default by WP's object-typed-attr handling, dropping the whole value. A tier left empty falls back to the desktop thumbnail at that width. Tiers apply to the fail-open <img> only — the canvas frame sequence is a separate per-tier pipeline (`tierDesktop`/`tierTablet`/`tierMobile`) that already art-directs itself.",
+		"thumbnailTablet": {
+			"type": "object",
+			"default": null
+		},
+		"thumbnailMobile": {
+			"type": "object",
+			"default": null
+		},
+		"thumbnailAlt": {
+			"type": "string",
+			"default": ""
+		},
+		"thumbnailDecorative": {
+			"type": "boolean",
+			"default": false
+		},
+		"aspectRatio": {
+			"type": "string",
+			"default": "16 / 9",
+			"enum": [ "16 / 9", "21 / 9", "4 / 3", "1 / 1", "4 / 5", "3 / 4", "9 / 16" ]
+		},
+		"desktopFramesUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"desktopFrameCount": {
+			"type": "number",
+			"default": 0
+		},
+		"desktopFramePad": {
+			"type": "number",
+			"default": 4
+		},
+		"desktopFrameExt": {
+			"type": "string",
+			"default": "webp",
+			"enum": [
+				"webp",
+				"avif",
+				"jpg",
+				"jpeg",
+				"png"
+			]
+		},
+		"tabletFramesUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"tabletFrameCount": {
+			"type": "number",
+			"default": 0
+		},
+		"tabletFramePad": {
+			"type": "number",
+			"default": 4
+		},
+		"tabletFrameExt": {
+			"type": "string",
+			"default": "webp",
+			"enum": [
+				"webp",
+				"avif",
+				"jpg",
+				"jpeg",
+				"png"
+			]
+		},
+		"mobileFramesUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"mobileFrameCount": {
+			"type": "number",
+			"default": 0
+		},
+		"mobileFramePad": {
+			"type": "number",
+			"default": 4
+		},
+		"mobileFrameExt": {
+			"type": "string",
+			"default": "webp",
+			"enum": [
+				"webp",
+				"avif",
+				"jpg",
+				"jpeg",
+				"png"
+			]
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"example": {
+		"attributes": {
+			"aspectRatio": "16 / 9"
+		}
+	}
+}

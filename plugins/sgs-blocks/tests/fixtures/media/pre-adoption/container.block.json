@@ -1,0 +1,958 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/container",
+	"version": "0.3.0",
+	"title": "SGS Container",
+	"category": "sgs-layout",
+	"description": "Flexible layout wrapper — the fundamental building block for all page sections. Breakout via WP-native align (wide/full toolbar); outer cap via maxWidth literal; inner band via contentWidth token (normal/wide/full) or literal.",
+	"keywords": [
+		"container",
+		"section",
+		"wrapper",
+		"layout",
+		"grid",
+		"flex"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "layout",
+	"supports": {
+		"interactivity": {
+			"clientNavigation": true
+		},
+		"anchor": true,
+		"html": false,
+		"color": false,
+		"sgs": {
+			"motion": true,
+			"_comment_overlayNotAdopted": "backgroundImage/Size/Position/Repeat/Attachment, backgroundOverlay*, bgVideo*/bgSvg* are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- settled 2026-09-03 (Bean-directed) after this exact question was investigated. A background panel applied to the whole block is a different feature from a client-configurable <img>/<video> element (which the media-atom system in supports.sgs.mediaElements DOES cover), so it is correctly out of scope for that system and is not a deferred migration. Detector rule 37-media-no-handroll (scripts/inspector-scan/rules/37-media-no-handroll.js) encodes this discriminator: a bare `background`/`bg`-prefixed attribute is panel-owned and never flagged; an element-prefixed attribute (e.g. splitMediaObjectFit) still is.",
+			"intrinsicColumns": true,
+			"separators": {
+				"separators": {
+					"axes": [
+						"row",
+						"column"
+					],
+					"edges": false,
+					"hover": false,
+					"sweep": false
+				}
+			},
+			"enabledExtensions": [
+				"width",
+				"layout",
+				"background",
+				"shapeDividers",
+				"gridItems",
+				"blockLink",
+				"childSizing"
+			],
+			"sectionPadding": true,
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				],
+				"margin": [
+					"margin"
+				],
+				"gridItemPadding": [
+					"gridItemPadding"
+				],
+				"gridItemBorderRadius": [
+					"gridItemBorderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
+				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [
+						"text",
+						"fill",
+						"layout",
+						"animation"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:line-height": "lineHeight",
+						"css:font-style": "fontStyle",
+						"css:text-align": "textAlign",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:border-radius": "borderRadius",
+						"css:overflow": "overflow",
+						"css:overflow-x": "scrollSideways",
+						"css:position": "pinEdge",
+						"css:max-width": "maxWidth",
+						"css:min-height": "minHeight",
+						"css:order": "order",
+						"css:aspect-ratio": "boxAspectRatio",
+						"css:box-shadow": "shadow",
+						"css:box-shadow-color": "shadowColour",
+						"css:color-gradient": "textColourGradient",
+						"css:-webkit-text-stroke-width": "textStrokeWidth",
+						"css:-webkit-text-stroke-color": "textStrokeColour"
+					},
+					"_note_border": "R2c pattern (mirrors sgs/product-card, D-pending 2026-08-25): root border colour/width/style are block-private attrs (borderColour/borderColourGradient/borderWidth/borderStyle), not the native __experimentalBorder path — a single owner instead of the native Styles-tab colour panel and an SGS panel both writing style.border. Native __experimentalBorder is reduced to radius only (a corner-shape control, not a paint decision) and stays skip-serialised, emitted scoped via the style engine exactly as before. borderWidth has NO default (unset = no border, matching the padding attribute's no-default discipline right below) and is a base-only box object (no Tablet/Mobile siblings, matching product-card's own borderWidth).",
+					"_note_animation": "The animation cluster (anim:*) has no member on this block: its motion is the sgsMotion model (Spec 38A), not attributes.",
+					"_note_typography": "Typography migrated off the old WP-native supports.typography (fontSize/lineHeight/textAlign/letterSpacing/textTransform/fontWeight/fontStyle) onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972 full-replacement track), root prefix '' (fontSize/fontSizeUnit/fontWeight/fontStyle/lineHeight/lineHeightUnit) — mirrors sgs/accordion. css:letter-spacing and css:text-transform are now honest gaps (no letterSpacing/textTransform control is offered); css:text-align keeps mapping to the block's own pre-existing textAlign attribute, unrelated to this migration.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient",
+								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient",
+								"css:-webkit-text-stroke-color": "textStrokeColourHover",
+								"css:box-shadow": "shadowHover"
+							}
+						}
+					}
+				},
+				"inner": {
+					"label": "Inner (grid / flex layout)",
+					"layer": "GRID",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-columns:count": "columns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:align-items": "alignItems",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "Grid/arrangement members map explicitly because this element declares no `prefix` — the default {prefix}{Suffix} convention cannot resolve a bare camelCase attribute. These are layout-cluster members: role=layout on a GRID element means arranging children, which the ELEMENT axis disambiguates from box-sizing on a tile element. Members with no attribute on this block (display, order, overflow, align-items) remain honest GAPs."
+				},
+				"content-band": {
+					"label": "Content band",
+					"layer": "CONTENT",
+					"order": 3,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "contentBand",
+					"attrMap": {
+						"css:max-width": "contentWidth",
+						"css:padding": "padding"
+					}
+				},
+				"grid-item": {
+					"selector": ".sgs-container__inner > *",
+					"motion": false,
+					"label": "Grid item",
+					"layer": "GRID_AREA",
+					"order": 4,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "gridItem",
+					"attrMap": {
+						"css:background-color": "gridItemBackground",
+						"css:padding": "gridItemPadding",
+						"css:border-radius": "gridItemBorderRadius",
+						"css:border-width": "gridItemBorder",
+						"css:border-style": "gridItemBorder",
+						"css:border-color": "gridItemBorder",
+						"css:border-color-gradient": "gridItemBorderGradient",
+						"css:box-shadow": "gridItemShadow",
+						"css:color": "gridItemTextColour",
+						"css:background-image": "gridItemBackgroundGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color-gradient": "gridItemBorderGradientHover",
+								"css:background-image": "gridItemBackgroundHoverGradient",
+								"css:color-gradient": "gridItemTextColourHoverGradient"
+							}
+						}
+					}
+				},
+				"headings": {
+					"selector": ":where(h1,h2,h3,h4,h5,h6)",
+					"motion": false,
+					"label": "Headings",
+					"layer": "CONTENT",
+					"order": 8,
+					"clusters": [
+						"text"
+					],
+					"prefix": "heading",
+					"attrMap": {
+						"css:color": "headingColour",
+						"css:color-gradient": "headingColourGradient"
+					}
+				},
+				"decorative": {
+					"motion": false,
+					"label": "Decorative background",
+					"order": 5,
+					"clusters": [],
+					"_note": "Background image/video (backgroundImage*/bgVideo*), background SVG (bgSvg*), overlay gradient (overlayGradient*), parallax/Ken Burns, and shape dividers (shapeDivider*) are governed by dedicated controls outside the Text/Fill/Layout style clusters, so this element declares none."
+				},
+				"svg-bg": {
+					"svg": true,
+					"surface": true,
+					"prefix": "",
+					"label": "Background SVG",
+					"order": 6,
+					"clusters": [],
+					"_note": "`.sgs-container__svg-bg`, the wrapper SGS_Container_Wrapper prints around a background or foreground SVG (bgSvg*). A motion target so a `draw` effect layer reaches the SVG's paths, where the flat `fx: draw` drew; it declares no style clusters because its look is governed by the bgSvg* controls."
+				},
+				"background": {
+					"absentIn": [
+						"bg-css-layer"
+					],
+					"absentWhy": "A tiled, sized, parallax, fixed or per-device background image paints on the root's ::before layer (SGS_Container_Wrapper::render, $sgs_bg_img_is_simple false), so no element carries the image; a layer on the root reaches the section.",
+					"surface": true,
+					"prefix": "",
+					"selector": ".sgs-container__image-bg",
+					"label": "Background image",
+					"order": 7,
+					"clusters": [],
+					"_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
+				}
+			},
+			"containerKind": "section"
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-container"
+	},
+	"attributes": {
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"templateLock": {
+			"type": "string",
+			"enum": [
+				"",
+				"all",
+				"contentOnly",
+				"insert"
+			],
+			"default": ""
+		},
+		"layout": {
+			"type": "string",
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
+			"default": ""
+		},
+		"tagName": {
+			"type": "string",
+			"enum": [
+				"div",
+				"section",
+				"article",
+				"aside",
+				"nav",
+				"header",
+				"footer",
+				"figure",
+				"main"
+			],
+			"default": "section"
+		},
+		"ariaLabel": {
+			"type": "string",
+			"default": ""
+		},
+		"columns": {
+			"type": "object",
+			"default": {
+				"desktop": 2,
+				"tablet": 2,
+				"mobile": 1
+			}
+		},
+		"gridTemplateColumns": {
+			"type": "object",
+			"default": {}
+		},
+		"gap": {
+			"type": "object",
+			"default": {}
+		},
+		"separators": {
+			"type": "object",
+			"default": {},
+			"description": "The lines drawn between the items of a grid or flex layout (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour }, column: { same } }. `row` is the line between rows, `column` between columns; an axis with no width draws nothing. Drawn centred in the gap by CSS gap decorations (column-rule / row-rule) where the browser has them, and by a small script painting the same lines elsewhere. Spacing only when empty."
+		},
+		"minColumnWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"backgroundImage": {
+			"type": "object"
+		},
+		"backgroundImageTablet": {
+			"type": "object"
+		},
+		"backgroundImageMobile": {
+			"type": "object"
+		},
+		"ground": {
+			"type": "string",
+			"enum": [
+				"",
+				"section"
+			],
+			"default": ""
+		},
+		"surfaceTone": {
+			"type": "string",
+			"enum": [
+				"auto",
+				"light",
+				"dark"
+			],
+			"default": "auto"
+		},
+		"backgroundSize": {
+			"type": "string",
+			"default": "cover",
+			"enum": [
+				"cover",
+				"contain",
+				"auto"
+			]
+		},
+		"backgroundPosition": {
+			"type": "string",
+			"default": "center center"
+		},
+		"backgroundRepeat": {
+			"type": "string",
+			"default": "no-repeat",
+			"enum": [
+				"no-repeat",
+				"repeat",
+				"repeat-x",
+				"repeat-y"
+			]
+		},
+		"backgroundAttachment": {
+			"type": "string",
+			"default": "scroll",
+			"enum": [
+				"scroll",
+				"fixed"
+			]
+		},
+		"backgroundOverlayColour": {
+			"type": "string"
+		},
+		"backgroundOverlayOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 30
+			}
+		},
+		"overlayGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"surfaceBlur": {
+			"type": "string",
+			"default": "",
+			"description": "Backdrop blur: a single CSS length (for example 24px) that blurs whatever sits behind this block. Emitted by SGS_Container_Wrapper via includes/helpers-surface-ground.php; empty emits nothing."
+		},
+		"surfaceSaturate": {
+			"type": "number",
+			"description": "Backdrop saturation as a whole-number percentage (for example 150), paired with surfaceBlur. Unset emits nothing; 0 is a legal value."
+		},
+		"backgroundOverlayColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayBlendMode": {
+			"type": "string",
+			"default": "normal",
+			"enum": [
+				"normal",
+				"multiply",
+				"screen",
+				"overlay",
+				"darken",
+				"lighten",
+				"color-dodge",
+				"color-burn",
+				"soft-light",
+				"hard-light",
+				"difference",
+				"exclusion"
+			]
+		},
+		"bgVideo": {
+			"type": "object"
+		},
+		"bgVideoTablet": {
+			"type": "object"
+		},
+		"bgVideoMobile": {
+			"type": "object"
+		},
+		"shadow": {
+			"type": "string"
+		},
+		"shadowColour": {
+			"type": "string"
+		},
+		"shadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"shadowHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state box-shadow SHAPE (a preset slug or a layered shape), painted on :hover and :focus-within in place of the resting shape; colour comes from shadowColourHover, else shadowColour. Unset: the resting shape (with the automatic lift) applies."
+		},
+		"overflow": {
+			"type": "string",
+			"enum": [
+				"visible",
+				"hidden",
+				"clip"
+			],
+			"default": "visible",
+			"description": "Root overflow. 'clip' crops content that sticks out without making the container a scroll container, so position:sticky inside still works; 'hidden' crops and does make it one; 'visible' (default) prints nothing, leaving the shape-divider and SVG-background modes their own hidden. The sideways-scroll row (scrollSideways) paints on the items' row, not the root."
+		},
+		"maxWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"minHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"order": {
+			"type": "object",
+			"default": {},
+			"description": "Position among the parent's grid or flex items, per device. Lower numbers come first; empty keeps the source order. Tablet inherits desktop until it sets its own."
+		},
+		"boxAspectRatio": {
+			"type": "string",
+			"default": "",
+			"description": "The block's shape as width / height (e.g. \"4 / 5\"); empty = sized by its content. Height then follows the width, never shorter than its content or Min height."
+		},
+		"alignItems": {
+			"type": "object",
+			"default": {}
+		},
+		"shapeDividerTop": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerTopColour": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerTopColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerTopScale": {
+			"type": "object",
+			"default": {
+				"x": 100,
+				"y": 100
+			}
+		},
+		"shapeDividerTopFlip": {
+			"type": "boolean",
+			"default": false
+		},
+		"shapeDividerTopInvert": {
+			"type": "boolean",
+			"default": false
+		},
+		"shapeDividerBottom": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerBottomColour": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerBottomColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerBottomScale": {
+			"type": "object",
+			"default": {
+				"x": 100,
+				"y": 100
+			}
+		},
+		"shapeDividerBottomFlip": {
+			"type": "boolean",
+			"default": false
+		},
+		"shapeDividerBottomInvert": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgSvgContent": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgPosition": {
+			"type": "string",
+			"default": "background",
+			"enum": [
+				"background",
+				"foreground"
+			]
+		},
+		"bgSvgOpacity": {
+			"type": "number",
+			"default": 100
+		},
+		"bgSvgMinHeight": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgTextShadow": {
+			"type": "boolean",
+			"default": false
+		},
+		"gridItemPadding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"gridItemBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBackgroundHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBorderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"gridItemBorder": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBorderGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the grid item's resting border with a masked ring instead of a flat colour (D636 border-gradient rollout, residual scope). Non-empty wins over gridItemBorder's colour component; width/style still come from gridItemBorder."
+		},
+		"gridItemBorderGradientHover": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the grid item's hover-state border (D636 border-gradient rollout, residual scope). Non-empty wins on :hover/:focus-within; empty means no hover change."
+		},
+		"gridItemShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemTextColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemTextColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemTextColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRows": {
+			"type": "object",
+			"default": {}
+		},
+		"gridAutoRows": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyItems": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end"
+			]
+		},
+		"alignContent": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end",
+				"space-between",
+				"space-around",
+				"space-evenly"
+			]
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"flex-start",
+				"center",
+				"flex-end",
+				"space-between",
+				"space-around",
+				"space-evenly"
+			]
+		},
+		"flexDirection": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"row",
+				"row-reverse",
+				"column",
+				"column-reverse"
+			]
+		},
+		"flexWrap": {
+			"type": [
+				"string",
+				"object"
+			],
+			"default": "wrap",
+			"description": "Flex wrap. A plain 'wrap' or 'nowrap' string, or a per-device tier object {desktop,tablet,mobile} of the same two values (a chip row that scrolls sideways on phones and wraps on desktop)."
+		},
+		"scrollSideways": {
+			"type": "object",
+			"default": {},
+			"description": "Scroll sideways, per device tier (on/off/inherit): the container's items sit in one native row that scrolls sideways and snaps into place. No GSAP, no pin (includes/container-scroll-row-css.php)."
+		},
+		"scrollRegionLabel": {
+			"type": "string",
+			"default": "",
+			"description": "The accessible name of the sideways-scrolling row, read out when a keyboard or screen-reader user reaches it. Empty: the nearest heading before the row, then 'Scrolling row'."
+		},
+		"scrollItemWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Per tier CSS length: the width of each item in a sideways-scrolling row. Unset: 80%."
+		},
+		"hoverAsCard": {
+			"type": "boolean",
+			"default": false,
+			"description": "Hover as one card: the container becomes a hover group without a link (data-sgs-hover-group on its root), so children whose hover settings follow the container play from one hover or focus anywhere on it. Off emits nothing."
+		},
+		"pinEdge": {
+			"type": "object",
+			"default": {},
+			"description": "Pin to edge, per device tier: 'top' or 'bottom' keeps the container stuck to that edge of its nearest scrolling ancestor (a drawer, a panel or the page) with the safe-area inset added to its padding on that edge; 'none' or unset is not pinned (includes/container-pin-edge-css.php). Unset everywhere emits nothing."
+		},
+		"pinBelowHeader": {
+			"type": "object",
+			"default": {},
+			"description": "Stop below the site header, per device tier ('on' or 'off', inheriting from the larger tier): at a tier where the pin resolves to 'top', the container sticks at the sticky header's height plus pinGap instead of sliding under it. Ignored inside drawers and pop-ups (includes/container-pin-edge-css.php).",
+			"sgs": {
+				"meaning": {
+					"what": "Makes a pinned container stick just below the sticky site header instead of sliding under it.",
+					"trigger": "scrolling, while the container is pinned at the top",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} (desktop: on or off; tablet and mobile: inherit, on or off)"
+						}
+					}
+				}
+			}
+		},
+		"pinGap": {
+			"type": "object",
+			"default": {},
+			"description": "Gap below the header, per device tier: a CSS length or spacing preset slug, added to the header height when pinBelowHeader is on. Unset: the shop filter's spacing (var(--wp--preset--spacing--40, 1.5rem))."
+		},
+		"contentWidth": {
+			"type": "object",
+			"default": {
+				"desktop": "normal"
+			}
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			},
+			"description": "TIER-of-BOXES: {desktop,tablet,mobile}, each tier a {top,right,bottom,left} box (Phase 2 tier-object migration, 2026-09-06 — matches the shape already shipped on sgs/site-header-row/sgs/site-footer-row/sgs/gallery). Owned outright (no supports.spacing — D555 box-object migration). NO DESKTOP DEFAULT: the horizontal gutter is supplied by WordPress core's own .has-global-padding, which the shared wrapper applies whenever the container renders a content band (class-sgs-container-wrapper.php, search has-global-padding). A 24px default lived here from f9f4368b until 2026-08-21 and was REVERTED: a per-instance default has no nesting reset, so it compounded to 72px on a 3-deep nest and left a 48px-wide footer container with zero content. Core's mechanism carries the nesting reset; a hand-rolled copy cannot. Do NOT reintroduce a default here."
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			},
+			"description": "TIER-of-BOXES: {desktop,tablet,mobile}, each tier a {top,right,bottom,left} box (Phase 2 tier-object migration, 2026-09-06)."
+		},
+		"borderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Wrapper root border colour (R2c pattern — block-private, replaces the native __experimentalBorder.color path). Empty = no border colour; the colour only emits when some side has a border width and borderStyle is not 'none'."
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the wrapper's border with a masked ring instead of a flat colour. Non-empty wins over borderColour, matching sgs/product-card."
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Wrapper root border width {top,right,bottom,left}, base-only (no Tablet/Mobile siblings — matches sgs/product-card's own borderWidth). NO DEFAULT (unset = no border), same no-hardcoded-default discipline as the padding attribute above."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"borderStyle": {
+			"type": "string",
+			"default": "solid",
+			"enum": [
+				"",
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"description": "Wrapper root border style. Empty = solid once any side has a width (sgs_border_box_decls); 'none' = no border rendered regardless of colour/width."
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": "",
+			"description": "Resting root text colour, bound to the wrapper element's css:color. A section-KIND block can parent arbitrary content, so this is a root-scoped INHERITABLE cascade default for whatever the client nests inside — not a duplicate of a child's own control (HC2 carve-out, Bean-ruled 2026-08-21)."
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting root text colour (background-clip: text) instead of a flat colour. Non-empty wins over textColour at render time, mirroring sgs/hero."
+		},
+		"headingColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of every h1..h6 inside the section, printed as a (0,1,0) `:where()` rule that beats the theme's heading colour and the automatic on-dark heading colour; a heading block's own colour still wins."
+		},
+		"headingColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient for the headings inside this section, painted through background-clip:text with a flat-colour fallback. Empty = the flat Heading colour."
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover/focus root text colour. Sibling of textColour; declared so the state is reachable (a state without a base is an asymmetric control surface)."
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient for the hover root text colour. Non-empty wins over textColourHover."
+		},
+		"textAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Root wrapper typography (D971/D972 full-replacement track, mirrors sgs/accordion) — replaces the retired WP-native supports.typography.fontSize. Consumed by sgs_typography_css_rule() via the shared TypographyControls component, prefix ''."
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"fontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"textTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"textDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"letterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"letterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"textWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"textStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"textStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColumns": {
+			"type": "number"
+		},
+		"textIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"writingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"layout": "grid",
+			"columns": 2,
+			"gap": "40"
+		}
+	}
+}

@@ -1,0 +1,893 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/brand-strip",
+	"version": "0.2.0",
+	"title": "SGS Brand Strip",
+	"category": "sgs-content",
+	"description": "Horizontal logo strip with infinite marquee scroll, fade edges, direction control, and greyscale/sepia image effects.",
+	"keywords": [
+		"brand",
+		"logo",
+		"partner",
+		"client",
+		"strip",
+		"carousel",
+		"marquee"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "images-alt2",
+	"supports": {
+		"sgs": {
+			"motion": true,
+			"separators": {
+				"separators": {
+					"axes": [
+						"row",
+						"column"
+					],
+					"edges": false,
+					"hover": false,
+					"sweep": false
+				}
+			},
+			"collection": true,
+			"arrayContentLift": true,
+			"_comment_mediaElements": "Bridges the pre-existing `logoFit` control (contain, cover, fill, scale-down or none; default contain) onto the shared object-fit atom via STORED_AS in MediaElementControls.js/helpers-media-element.php — no new attribute, no new UI, the logo-fit dropdown stays the only control.",
+			"mediaElements": [
+				{
+					"prefix": "",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
+			"elements": {
+				"root": {
+					"label": "Block root",
+					"order": 1,
+					"layer": "OUTER",
+					"_layer_note": "Root IS the block-private `.wp-block-sgs-brand-strip` element (render.php $root_sel, no SGS_Container_Wrapper -- this block is block-private per D294, not a section/layout composite). Mirrors sgs/testimonial-slider's 'slider' root.",
+					"clusters": [
+						"fill",
+						"text"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient",
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
+						"css:min-height": "maxHeight"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-image": "backgroundColourHoverGradient",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					},
+					"_note": "New ROOT colour panel (2026-08-20) -- background+text colour/gradient with hover, mirroring sgs/testimonial-slider's root attrMap shape (css:background-color/css:background-image/css:color) extended with the D636 css:color-gradient text-clip mechanism (sgs/heading precedent). Paints the block's own root <div>, distinct from tileBackgroundColour (the 'tile' element below) and the item*Hover attrs (the 'item' element, the nested hover surface)."
+				},
+				"tile": {
+					"label": "Each tile, logo and name (when names are shown)",
+					"order": 2,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "tile",
+					"attrMap": {
+						"css:background-color": "tileBackgroundColour",
+						"css:background-image": "tileBackgroundColourGradient",
+						"css:border-width": "tileBorderWidth",
+						"css:border-color": "tileBorderColour",
+						"css:border-color-gradient": "tileBorderColourGradient",
+						"css:border-radius": "tileRadius",
+						"css:box-shadow": "tileShadow",
+						"css:padding": "tilePadding",
+						"css:gap": "logoGap",
+						"css:opacity": "logoOpacity"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:box-shadow": "tileShadowHover"
+							}
+						}
+					},
+					"_note_shadow_hover": "tileShadowHover added 2026-09-07 (hover SHAPE capability, Bean's shape+colour-per-state ruling) — sibling of the pre-existing tileShadowColourHover. Composed together by sgs_shadow_decls() in render.php (map key 'hover'), mirroring sgs/button's boxShadow/boxShadowHover pair.",
+					"absentIn": [ "logos", "text" ],
+					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none."
+				},
+				"logo": {
+					"label": "Logo image only",
+					"order": 4,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:object-fit": "logoFit",
+						"css:max-width": "logoMaxWidth"
+					},
+					"_note": "Governed by its own logoFit/imageEffect selects (supports.sgs.imageControls removed 2026-08-11, Spec 35 capability-routing doctrine — it was fully redundant dead weight on top of this bespoke mechanism, never a real control surface) — outside the Text/Fill/Layout style clusters, so it declares no clusters. logoFit's attrMap entry added 2026-09-03 to close a db-consistency 'undeclared-subelement' finding (the classifier had no manifest signal to trace logoFit's element/selector to).",
+					"absentIn": [ "text" ],
+					"absentWhy": "Text mode prints each brand as text, with no logo image."
+				},
+				"caption": {
+					"selector": ".sgs-brand-strip__name",
+					"label": "Caption text only",
+					"order": 5,
+					"clusters": [
+						"text"
+					],
+					"prefix": "name",
+					"attrMap": {
+						"css:font-size": "nameFontSize",
+						"css:font-weight": "nameFontWeight",
+						"css:color": "nameColour",
+						"css:color-gradient": "nameColourGradient",
+						"css:-webkit-text-stroke-width": "nameTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "nameTextStrokeColour"
+					},
+					"absentIn": [ "logos", "text" ],
+					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "nameTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"name": {
+					"label": "Caption text-align",
+					"order": 4,
+					"clusters": [],
+					"prefix": "",
+					"_note": "CORRECTION 2026-08-15: an earlier pass in this same fix RENAMED 'caption' to 'name', which was WRONG - the DB tags 8 attrs (nameFontSize/nameFontWeight/nameColour/nameFontStyle/nameLineHeight/nameLetterSpacing/nameTextTransform/nameTextDecoration) css_element='caption' (matching the ORIGINAL key) and only 1 attr (nameTextAlign) css_element='name'. Renaming would have cleared 1 orphan while creating 8 new ones. 'caption' is restored above; this bare 'name' element exists purely so the audit script's exact-key-match sees 'name' declared too. nameTextAlign already resolves fine functionally under 'caption' (prefix 'name' + suffix TextAlign, default convention) regardless of this element's own (empty) clusters - this entry exists only to satisfy the drift audit's separate, independent key-existence check. Found live 2026-08-15: DB tagged 1 attr css_element='name', undeclared until now.",
+					"attrMap": {},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "nameColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Was previously a bare `color:` in the root $root_hover_decls bucket, colliding with textColourHover's own `color:` in the same rule and never reaching this element (which sets its own explicit resting colour). render.php now emits an ancestor-hover rule on this element's selector, so the declaration is truthful.",
+					"absentIn": [ "logos", "text" ],
+					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none."
+				},
+				"item": {
+					"label": "Each logo tile (the whole tile when names are off)",
+					"order": 3,
+					"clusters": [],
+					"prefix": "",
+					"_note": "The inner node the hover colour shifts actually target (.sgs-brand-strip__item, render.php line 510/514) - nested INSIDE .sgs-brand-strip__tile (border/shadow); the item owns the tile padding and the strip root owns the gap, a genuinely different DOM node. itemBackgroundColourHover/itemBorderColourHover/itemBorderColourHoverGradient carry the 'item' prefix (renamed 2026-08-20 from the former bare backgroundColourHover/textColourHover/borderColourHover/borderColourHoverGradient) so the plain unprefixed names are freed for a future root-level colour panel. Found live 2026-08-15: DB tagged 3 attrs css_element='item', undeclared until now. ⚠ PREFIX HELD AT \"\" PENDING BEAN'S SIGN-OFF (2026-08-20). The /sgs-update reseed HAS taught attr-role-map.json the item* names, so the earlier ORPHAN:UNCLASSIFIED blocker is gone and prefix:\"item\" now resolves cleanly. What stops it is different: with the prefix set, these are scanned and classified as ORPHAN:STYLE-DEFECT, pushing that count up. element-manifest-baseline.json states raising a baseline is STOP-THE-LINE and needs Bean's sign-off. Flip to \"item\" together with either that sign-off or, better, declaring the colour cluster member on this element so these are CLAIMED rather than orphaned. (itemTextColourHover, formerly a fourth member of this group, was removed 2026-09-07 as a dead control — .sgs-brand-strip__item never contains a text node.)"
+				},
+				"title": {
+					"selector": ".sgs-brand-strip__title",
+					"text": true,
+					"label": "Title (above the strip)",
+					"order": 8,
+					"clusters": [
+						"text"
+					],
+					"prefix": "title",
+					"attrMap": {
+						"css:color": "titleColour",
+						"css:color-gradient": "titleColourGradient",
+						"css:-webkit-text-stroke-width": "titleTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "titleTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "titleColourHover",
+								"css:color-gradient": "titleColourHoverGradient",
+								"css:-webkit-text-stroke-color": "titleTextStrokeColourHover"
+							}
+						}
+					},
+					"_note": "The optional title printed before the track, inside the root and outside the marquee lane (.sgs-brand-strip__track), so the shared marquee never clones it. Same attribute set as sgs/trust-bar's title."
+				},
+				"brand-text": {
+				"label": "Brand text (no-logo fallback)",
+				"order": 4,
+				"clusters": [
+					"text",
+					"layout"
+				],
+				"prefix": "brandText",
+				"_note": "Text fallback shown when Display is 'Text only', or on a per-item basis under 'Logo, else text' when that item's source has no image (chiefly the Product-brands source, where a WooCommerce brand term commonly has no thumbnail set). A DIFFERENT element from 'caption' above — caption is an optional label UNDER a logo image; this IS the visible content when there is no image, rendered on .sgs-brand-strip__brand-text (render.php + brand-display-render.php).",
+				"attrMap": {
+					"css:min-width": "brandTextMinWidth",
+					"css:font-size": "brandTextFontSize",
+					"css:font-family": "brandTextFontFamily",
+					"css:font-weight": "brandTextFontWeight",
+					"css:letter-spacing": "brandTextLetterSpacing",
+					"css:text-transform": "brandTextTextTransform",
+					"css:color": "brandTextColour",
+					"css:color-gradient": "brandTextColourGradient"
+				},
+				"states": {
+					"hover": {
+						"attrMap": {
+							"css:color": "brandTextColourHover"
+						}
+					}
+				},
+					"absentIn": [ "logos", "logos-captioned" ],
+					"absentWhy": "The brand text prints only in text mode (brandDisplay text, or logo-else-text for an item without a logo)."
+				},
+			"track": {
+					"label": "Marquee track",
+					"order": 6,
+					"clusters": [],
+					"prefix": "",
+					"_note": "The marquee track (.sgs-brand-strip__track). The shared runtime (src/shared/effects/fx-marquee.js) runs the track from the marquee effect layer on the root; the track is declared as the real container."
+				},
+				"strip-spacing": {
+					"label": "Strip spacing",
+					"order": 5,
+					"clusters": [
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "borderColourGradient"
+					}
+				}
+			},
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				],
+				"margin": [
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
+				]
+			}
+		},
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": false,
+			"gradients": false,
+			"text": false,
+			"__experimentalSkipSerialization": true
+		}
+	},
+	"attributes": {
+		"separators": {
+			"type": "object",
+			"default": {},
+			"description": "The lines between the brands of a static strip (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour }, column: { same } }. `column` is the vertical line between brands side by side, `row` the horizontal line between wrapped rows. Drawn centred in the gap by CSS gap decorations where the browser has them and by a small script elsewhere. A marquee strip is one row, so only `column` applies and the line is drawn after every brand by the items themselves. No thickness (the default) draws nothing."
+		},
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"_comment_logos_media": "Migrated 2026-05-05 — each logo entry uses the unified media-slot shape { url, type: 'image', id, alt, mime } via shared MediaPicker (image-only). Legacy { image: {...} } shape is NOT migrated — all deprecations were deleted plugin-wide at D271; there is no deprecated.js. New instances write the unified shape. allowedTypes={ [ 'image' ] } enforces no video on logos. alt/linkUrl/linkTarget/name are per-item JS runtime keys, declared here for schema clarity (array-item sub-properties are not subject to the D338 top-level attr-discard rule).",
+		"logos": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"media": {
+						"anyOf": [
+							{ "type": "string" },
+							{ "type": "null" },
+							{
+								"type": "object",
+								"properties": {
+									"url": { "type": "string" },
+									"type": { "type": "string" },
+									"id": { "type": "number" },
+									"alt": { "type": "string" },
+									"mime": { "type": "string" },
+									"width": { "type": "number" },
+									"height": { "type": "number" }
+								}
+							}
+						],
+						"role": "image-object",
+						"_note": "D1031 (2026-09-11) — TWO real shapes are accepted and both render (a THIRD, null, is the empty state): the object form { url, type, id, alt, mime, width, height } written by MediaPicker, and a bare URL STRING (for back-compat with starter patterns, though brand-strip doesn't currently use any such patterns). null is the empty state from addLogo()/Remove in edit.js -- it renders nothing, but must still validate so it doesn't wipe the rest of the array. Before this fix `media` was declared bare {\"type\":\"object\"} — WordPress's own WP_Block_Type::prepare_attributes_for_render() validates the WHOLE `logos` array against this schema on every server render (rest_validate_array_value_from_schema loops each item and returns the FIRST WP_Error it finds, wiping the array back to its `[]` default), so ANY item whose media was the actual object shape (every item added through the editor picker) silently blanked the ENTIRE logos array, not just that item, on the frontend. This is a sibling fix to D1027 (sgs/card-grid, same mechanism). Do not narrow this back to a single `type` -- object/null/string must all keep validating, or the array-wipe regresses. The object branch declares real `properties` (not a bare `{\"type\":\"object\"}`) so this stays scoped to the SGS media shape rather than accepting arbitrary object junk."
+					},
+					"alt": {
+						"type": "string",
+						"role": "image-alt"
+					},
+					"decorative": {
+						"type": "boolean",
+						"default": false,
+						"role": "boolean-visibility"
+					},
+					"linkUrl": {
+						"type": "string",
+						"role": "url-href"
+					},
+					"linkUrlSource": {
+						"type": "string",
+						"description": "Where the logo link goes: '' (the typed linkUrl), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed link is the fallback.",
+						"role": "enum-mode"
+					},
+					"linkTarget": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"linkRel": {
+						"type": "string",
+						"role": "technical"
+					},
+					"name": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"_key": {
+						"type": "string",
+						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit CSS so a fit value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed.",
+						"role": "technical"
+					},
+					"objectFit": {
+						"type": "string",
+						"enum": [
+							"",
+							"contain",
+							"cover",
+							"fill",
+							"scale-down",
+							"none"
+						],
+						"default": "",
+						"description": "Per-item object-fit override. Logos are not photographs — object-fit only, no focal-point/crosshair (Bean-locked convention: see sgs/testimonial orgLogo + this block's own block-wide logoFit). Falls back to the block-wide logoFit default when unset.",
+						"role": "visual"
+					}
+				}
+			}
+		},
+		"source": {
+			"type": "string",
+			"default": "manual",
+			"enum": [
+				"manual",
+				"product-brands"
+			],
+			"description": "Where the brand list comes from. 'manual' is the existing hand-typed logos[] repeater (unchanged default — existing sites render identically). 'product-brands' queries WooCommerce's core `product_brand` taxonomy live and ignores logos[]. Naming follows the block.json 'source' convention already used by sgs/card-grid and sgs/icon-list (never 'sourceMode', which is a distinct semantic reserved for sgs/product-card's live-configurator modes)."
+		},
+		"brandOrder": {
+			"type": "string",
+			"default": "name",
+			"enum": [
+				"name",
+				"count",
+				"term_order"
+			],
+			"description": "Product-brands source only. Order the queried terms by name (A–Z), count (most products first) or the taxonomy's own term order."
+		},
+		"brandHideEmpty": {
+			"type": "boolean",
+			"default": true,
+			"description": "Product-brands source only. Hide a brand with zero published products."
+		},
+		"brandMaxItems": {
+			"type": "number",
+			"default": 20,
+			"description": "Product-brands source only. Maximum number of brand terms to query (1–100)."
+		},
+		"brandLinkToShop": {
+			"type": "boolean",
+			"default": true,
+			"description": "Product-brands source only. Link each brand tile to its WooCommerce term archive (shop-by-brand page)."
+		},
+		"brandDisplay": {
+			"type": "string",
+			"default": "logos",
+			"enum": [
+				"logos",
+				"text",
+				"logo-else-text"
+			],
+			"description": "How each brand tile renders. 'logos' (default, unchanged behaviour) shows only items with an image and skips the rest. 'text' always renders the brand name as text. 'logo-else-text' shows the image when one exists and falls back to the name as text otherwise — the common case for the Product-brands source, where a WooCommerce brand term often has no thumbnail set."
+		},
+		"brandTextMinWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Text-only display: minimum width of each brand item (CSS length). Empty sizes to the text."
+		},
+		"brandTextFontSize": {
+			"type": "number",
+			"default": 15
+		},
+		"brandTextFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"brandTextFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"brandTextFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"brandTextLetterSpacing": {
+			"type": "number",
+			"default": 0
+		},
+		"brandTextLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"brandTextTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"brandTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"brandTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painted through the brand-text fallback via background-clip:text. Non-empty wins over brandTextColour at render time (D636)."
+		},
+		"brandTextColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"imageEffect": {
+			"type": "string",
+			"default": "none"
+		},
+		"maxHeight": {
+			"type": "number",
+			"default": 180
+		},
+		"columns": {
+			"type": "object",
+			"default": {
+				"desktop": 8,
+				"tablet": 4,
+				"mobile": 2
+			}
+		},
+		"showNames": {
+			"type": "boolean",
+			"default": false
+		},
+		"nameFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"nameFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"nameFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"nameFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"nameLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"nameLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"nameLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"nameLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"nameTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"nameTextDecoration": {
+			"type": "string",
+			"default": ""
+		},
+		"nameTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"nameColour": {
+			"type": "string",
+			"default": ""
+		},
+		"nameColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painted through the caption text via background-clip:text. Non-empty wins over nameColour at render time (D636)."
+		},
+		"logoGap": {
+			"type": "string",
+			"default": "10px",
+			"description": "Gap between logos: a spacing preset slug (\"50\") or a custom length (\"12px\"), validated by sgs_css_length_value()."
+		},
+		"tilePadding": {
+			"type": "string",
+			"default": "0px",
+			"description": "Space between a logo and its tile edge: a spacing preset slug (\"30\") or a custom length (\"10px\"), validated by sgs_css_length_value()."
+		},
+		"tileRadius": {
+			"type": "number",
+			"default": 16
+		},
+		"tileShape": {
+			"type": "string",
+			"enum": [
+				"square",
+				"circle",
+				"none"
+			],
+			"default": "square"
+		},
+		"logoLayout": {
+			"type": "string",
+			"enum": [
+				"tiles",
+				"row"
+			],
+			"default": "tiles",
+			"description": "How logos sit on the strip. tiles: square tiles that grow with the strip up to maxHeight. row: every brand (logo or name) in the same slot as a text brand (brandTextMinWidth, tilePadding, the brandTextSeparator divider), the logo at most maxHeight tall and logoMaxWidth wide."
+		},
+		"logoMaxWidth": {
+			"type": "number",
+			"default": 0,
+			"description": "Row layout: the widest a logo may be, in px. 0 = no cap beyond its slot."
+		},
+		"logoOpacity": {
+			"type": "number",
+			"default": 100,
+			"description": "Row layout: each brand's resting opacity in %, rising to full on hover or keyboard focus."
+		},
+		"logoFit": {
+			"type": "string",
+			"enum": [
+				"contain",
+				"cover",
+				"fill",
+				"scale-down",
+				"none"
+			],
+			"default": "contain",
+			"description": "How each logo sits in its tile: contain = whole logo scaled to the tile's longer axis keeping proportions; cover = fills the tile and crops; fill = stretches to the tile (may distort); scale-down = contain, never enlarged past natural size; none = natural size."
+		},
+		"tileBorderWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"tileBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBackgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the tile border instead of a flat colour. Non-empty wins over tileBorderColour at render time (D636)."
+		},
+		"tileShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"tileShadowColour": {
+			"type": "string"
+		},
+		"tileShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"tileShadowHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state shadow SHAPE sibling of tileShadow. Composed with tileShadowColourHover (falls back to tileShadowColour) at render time via sgs_shadow_decls()."
+		},
+		"itemBackgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBorderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBorderColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of tileBorderColourGradient. Non-empty wins over itemBorderColourHover on :hover/:focus-within."
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the block ROOT background instead of a flat colour. Non-empty wins over backgroundColour at render time (D636)."
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of backgroundColourGradient. Non-empty wins over backgroundColourHover on :hover/:focus-within."
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painted through the block ROOT text via background-clip:text. Non-empty wins over textColour at render time (D636)."
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of textColourGradient. Non-empty wins over textColourHover on :hover/:focus-within."
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"nameColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"nameFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"nameTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"nameTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"nameTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"nameTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"nameTextColumns": {
+			"type": "number"
+		},
+		"nameWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"title": {
+		"type": "string",
+		"default": "",
+		"role": "content"
+	},
+		"titleColour": {
+		"type": "string",
+		"default": "text-muted"
+	},
+		"titleColourGradient": {
+		"type": "string",
+		"default": ""
+	},
+		"titleColourHover": {
+		"type": "string",
+		"default": ""
+	},
+		"titleColourHoverGradient": {
+		"type": "string",
+		"default": "",
+		"description": "Hover-state gradient sibling of titleColourHover. Non-empty wins over titleColourHover on :hover/:focus-visible."
+	},
+		"titleFontSize": {
+		"type": "object",
+		"default": {}
+	},
+		"titleFontSizeUnit": {
+		"type": "string",
+		"default": "px"
+	},
+		"titleFontWeight": {
+		"type": "string",
+		"default": ""
+	},
+		"titleFontStyle": {
+		"type": "string",
+		"default": ""
+	},
+		"titleLineHeight": {
+		"type": "number"
+	},
+		"titleLineHeightUnit": {
+		"type": "string",
+		"default": ""
+	},
+		"titleFontFamily": {
+		"type": "string",
+		"default": ""
+	},
+		"titleTextTransform": {
+		"type": "string",
+		"enum": [
+			"",
+			"none",
+			"uppercase",
+			"lowercase",
+			"capitalize"
+		],
+		"default": ""
+	},
+		"titleTextDecoration": {
+		"type": "string",
+		"enum": [
+			"",
+			"none",
+			"underline",
+			"line-through"
+		],
+		"default": ""
+	},
+		"titleLetterSpacing": {
+		"type": "object",
+		"default": {}
+	},
+		"titleLetterSpacingUnit": {
+		"type": "string",
+		"default": "em"
+	},
+		"titleTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"titleTextWrap": {
+		"type": "string",
+		"enum": [
+			"",
+			"wrap",
+			"nowrap",
+			"balance",
+			"pretty",
+			"stable"
+		],
+		"default": ""
+	},
+		"titleTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"titleTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextColumns": {
+		"type": "number"
+	},
+		"titleWritingMode": {
+		"type": "string",
+		"enum": [
+			"",
+			"horizontal-tb",
+			"vertical-rl",
+			"vertical-lr"
+		],
+		"default": ""
+	}
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"imageEffect": "none",
+			"maxHeight": 80
+		}
+	}
+}

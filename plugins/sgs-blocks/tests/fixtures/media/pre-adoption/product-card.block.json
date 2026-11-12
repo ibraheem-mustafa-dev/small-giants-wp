@@ -1,0 +1,3363 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/product-card",
+	"version": "1.16.13",
+	"title": "Product Card",
+	"category": "sgs-content",
+	"description": "Product card with pack-size variant pills, price and CTA. Typed mode = built-in elements authored directly from block attributes (no InnerBlocks). Live product data mode = render a live WooCommerce or SGS product (price, image, stock, add-to-cart) through the SGS design.",
+	"keywords": [
+		"product",
+		"card",
+		"ecommerce",
+		"shop",
+		"variant",
+		"pack",
+		"pricing"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "products",
+	"supports": {
+		"sgs": {
+			"motion": true,
+			"scalarStylingLift": true,
+			"enabledExtensions": [ "blockLink" ],
+			"blockLinkAlways": true,
+		"_comment_imageControls": "Deliberate imageControls OPT-OUT. This card renders several <img> elements (product photo, gallery thumbs, colour-swatch photos and the brand logo), but none of them is an operator-chosen image: every one is resolved from the WooCommerce product or its brand term at render time. The generic image panel's controls (media picker, alt text, sizing) would therefore either do nothing or let an operator override a value that must track the product. Each image instead has its own purpose-built controls - the media area settings for the photo, showGalleryThumbs for the thumbs, and brandUseLogo for the brand logo, whose alt text is fixed to the brand name for accessibility and is intentionally not operator-editable.",
+			"blockLinkAutoHelp": "The whole card always links to the product it is showing, and this cannot be switched off. The wishlist heart, the colour swatches and the Add to basket button all keep working. The product title stays the card's link, so a keyboard or screen-reader user reaches the product once, by the product's own name.",
+			"_comment_blockLink": "S10 shared stretched link, PERMANENT on this block (supports.sgs.blockLinkAlways, Bean 2026-10-06: the full-card link must not be switchable off). render.php resolves the product permalink and hands it to the blockLink extension through includes/helpers-stretched-link.php::sgs_stretched_link_apply - called directly, not via sgs_stretched_link_handover, because that helper gates on the sgsBlockLinkAuto toggle this block no longer has. The panel therefore renders no toggle, only the help line, so there is no dead control; the URL field stays because a TYPED card resolves no permalink of its own and that field is its only way to have a destination. On a live card sgs_stretched_link_apply overwrites whatever is typed, so the field is inert there rather than conflicting. The TITLE link remains the card's single tab stop meaning 'go to this product': the extension finds it in the rendered output (the first non-inert anchor to the same URL), lends it the stretched surface, and demotes any further link to the same product - a learn-more CTA - to tabindex=\"-1\" aria-hidden=\"true\" so it stays visible and mouse-clickable without being a second stop. The injected overlay is inert and supplies the hit-area geometry only. A card in typed mode has no product permalink, so sgs_stretched_link_apply no-ops there rather than emitting a dead overlay.",
+			"_comment_mediaElements": "Two independently-scoped media elements (rule 37-media-no-handroll). 'main' covers EVERY render branch's main product image — typed .sgs-product-card__image (product-card-builtin-render.php), bound read-only/non-variable .product-card-img (render.php WC-below-floor + non-variable-live branches), and bound variable-configurator .product-card__media .product-card-img — deliberately ONE control, per FP-9, since only one of these three ever renders on a given page load. 'thumb' is the bound variable-configurator's OWN thumbnail-rail image (.product-card__thumb img) — a distinct role with its own 48x48 box, never governed by 'main'. Mirrors sgs/buybox's already-migrated main/thumb split (its gallery-col.php composes a SEPARATE render instance of the same markup, so that migration does not cover this block's own render.php paths). CORRECTED 2026-09-03 via /qc-council: imageControls/imageControlsExplicit REMOVED (were dead weight even before this migration — render.php's own comment three lines below confirms the legacy sgs_media_position_css() call \"never had a declared sgsObjectFit/sgsObjectPosition attribute pair... so it always emitted ''\"), because leaving the flags in place still made the universal image-controls extension (src/blocks/extensions/image-controls.js) mount its own dead 'Object fit' dropdown alongside the two live MediaElementPanel controls below — three controls in the sidebar for what is really one property.",
+			"mediaElements": [
+				{
+					"prefix": "main",
+					"context": "element",
+					"atoms": [
+						"object-fit",
+						"focal-point"
+					]
+				},
+				{
+					"prefix": "thumb",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
+			"arrayContentLift": true,
+			"boxFamilies": {
+				"ctaPadding": [
+					"ctaPadding"
+				],
+				"cardPadding": [
+					"cardPadding"
+				],
+				"ctaBorderWidth": [
+					"ctaBorderWidth"
+				],
+				"ctaBorderRadius": [
+					"ctaBorderRadius"
+				],
+				"tagPadding": [
+					"tagPadding"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
+				],
+				"savingBadgePadding": [
+					"savingBadgePadding"
+				],
+				"brandPadding": [
+					"brandPadding"
+				]
+			},
+			"variantAttr": "variantStyle",
+			"variants": {
+				"standard": [],
+				"trial": [
+					"trialTag"
+				],
+				"featured": [
+					"featuredTag"
+				]
+			},
+			"elements": {
+				"thumbs": {
+					"selector": ".product-card__thumbs",
+					"motion": false,
+					"label": "Thumbnail strip",
+					"order": 25,
+					"clusters": [
+						"layout"
+					],
+					"layer": "OUTER",
+					"attrMap": {
+						"css:flex-wrap": "thumbsFlexWrap"
+					},
+					"_note": "The thumbnail strip: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"swatches": {
+					"selector": ".sgs-product-card__swatches",
+					"motion": false,
+					"label": "Colour swatch dots",
+					"order": 26,
+					"clusters": [
+						"layout"
+					],
+					"layer": "OUTER",
+					"attrMap": {
+						"css:flex-wrap": "swatchesFlexWrap"
+					},
+					"_note": "The colour swatch dots: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"cta-row": {
+					"selector": ".sgs-product-card__cta-row",
+					"motion": false,
+					"label": "Buttons row",
+					"order": 27,
+					"clusters": [
+						"layout"
+					],
+					"layer": "OUTER",
+					"attrMap": {
+						"css:flex-wrap": "ctaRowFlexWrap"
+					},
+					"_note": "The buttons row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"price-row": {
+					"selector": ".sgs-product-card__price-row",
+					"motion": false,
+					"label": "Price row",
+					"order": 28,
+					"clusters": [
+						"layout"
+					],
+					"layer": "OUTER",
+					"attrMap": {
+						"css:flex-wrap": "priceRowFlexWrap"
+					},
+					"_note": "The price row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"price-group": {
+					"selector": ".sgs-product-card__price-group",
+					"motion": false,
+					"label": "Price group",
+					"order": 29,
+					"clusters": [
+						"layout"
+					],
+					"layer": "OUTER",
+					"attrMap": {
+						"css:flex-direction": "priceGroupLayout"
+					},
+					"_note": "The price and the struck RRP: inline keeps them on one line when they fit, stacked puts the RRP under the price (flex-direction column, align-items flex-start, gap 0), per device."
+				},
+				"box": {
+					"restingShadow": true,
+					"label": "Card",
+					"order": 1,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "backgroundColour",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:border-radius": "borderRadius",
+						"css:max-width": "cardMaxWidth"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient",
+								"css:border-color": "borderColourHover",
+								"css:box-shadow": "cardShadowHover"
+							},
+							"noBaseByDesign": [
+								"css:box-shadow"
+							],
+							"_noBaseByDesignNote": "css:box-shadow (cardShadowHover) is the card's hover shadow; the resting shadow is the stylesheet default (the Show shadow switch), so a resting-shadow attribute would duplicate it."
+						}
+					},
+					"_note": "R2c (B-3/B-8, 2026-08-22): root box colour/border moved OFF WordPress's native style path onto block-private attrs (backgroundColour/textColour/borderColour + Gradient/Hover siblings, borderWidth, borderStyle) so the box has a SINGLE owner instead of the native Styles-tab gradient panel and the SGS panel both writing into the same style.color object. Native __experimentalBorder is reduced to radius only (a corner-shape control, not a colour/paint decision — stays on the native path). Content-KIND composite (D294, box+width only) — wraps sgs/container via SGS_Container_Wrapper. spacing.padding is FALSE in block.json supports (padding is custom-var driven, not native), so css:max-width resolves via attrMap not native fallback. `css:padding` was RE-KEYED off this element 2026-07-24 (Spec 32 section 6.1 consistency fix) — the image (`.sgs-product-card__media-wrap`) is full-bleed OUTSIDE the body, so card padding never belonged on the root; it now lives on the `body` element below, matching where render.php actually paints it."
+				},
+				"body": {
+					"label": "Card body",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"isWrapper": false,
+					"attrMap": {
+						"css:padding": "cardPadding"
+					},
+					"_note": "Content-body wrapper (`.sgs-product-card__body` / `.product-card-body`) — image fills the card full-bleed, content is padded (Bean-approved product-card design). Re-keyed 2026-07-24 (Spec 32 section 6.1 consistency fix) from the `box` (root) element: cardPadding was previously mapped on the ROOT but render.php has always painted it on this body element, so the LANDED computed-parity probe (which measures the root) never found it. Keying attrMap to the element the value ACTUALLY targets fixes the mismatch at its source, per FP-11 (verify rendered output, not internal metrics)."
+				},
+				"image": {
+					"absentIn": ["live-wc-no-photo"],
+					"absentWhy": "A product with no photo prints the no-photo box (the noImageLabel part) in place of the image.",
+					"label": "Product image",
+					"order": 12,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:height": "imageHeight",
+						"css:aspect-ratio": "imageAspectRatio",
+						"css:background-color": "mediaBackgroundColour"
+					},
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls). imageHeight resolves via css:height (render.php:129-130 `--sgs-product-card-image-height`, consumed as `height: var(--sgs-product-card-image-height, 220px)` in style.css:53/665/704/938 — Spec 35 vocabulary fix). Full-bleed direct child of the card root, OUTSIDE the padded body — never wrapped in card padding."
+				},
+				"title": {
+					"text": true,
+					"label": "Title",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"prefix": "title",
+					"attrMap": {
+						"tag": "headingLevel",
+						"css:-webkit-text-stroke-width": "titleTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "titleTextStrokeColour"
+					},
+					"_note": "`attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:454-456 bound branch, render.php:1022-1435 typed branch, `.sgs-product-card__title`) but doesn't match the `title` prefix convention on its own. This is what lets check-hardcoded-render-defaults.js's E12 gate resolve `headingLevel` to THIS element and correctly NOT resolve `ctaFontWeight` here (it resolves to the separate `cta` element below via that element's own `cta` prefix).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "titleTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"price": {
+					"text": true,
+					"label": "Price",
+					"order": 4,
+					"clusters": [
+						"text"
+					],
+					"prefix": "price"
+				},
+				"wishlist": {
+					"absentIn": ["typed"],
+					"absentWhy": "The wishlist heart saves a bound product (sgs_product_card_wishlist_markup needs a live product ID); a typed card has none.",
+					"label": "Wishlist heart",
+					"order": 18,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "wishlist",
+					"attrMap": {
+						"css:border-color": "wishlistBorderColour"
+					},
+					"_note": "The round wishlist button on the photo's top-right corner (showWishlist, .sgs-product-card__wishlist). Its fill is the card fill (surface-alt) in style.css; the ring colour is wishlistBorderColour, emitted by includes/product-card-card-parts.php::sgs_product_card_parts_css."
+				},
+				"rrp": {
+					"absentIn": ["typed", "live-cpt"],
+					"absentWhy": "The RRP is read from a WooCommerce product meta value (rrpMetaKey, sgs_product_card_live_fill); a typed card and an sgs_product card have no WooCommerce product.",
+					"label": "RRP",
+					"order": 5,
+					"clusters": [
+						"text"
+					],
+					"prefix": "rrp",
+					"attrMap": {
+						"css:color": "rrpColour",
+						"css:font-size": "rrpFontSize",
+						"css:font-weight": "rrpFontWeight",
+						"css:font-style": "rrpFontStyle",
+						"css:font-family": "rrpFontFamily",
+						"css:text-transform": "rrpTextTransform",
+						"css:text-decoration": "rrpTextDecoration",
+						"css:line-height": "rrpLineHeight",
+						"css:letter-spacing": "rrpLetterSpacing",
+						"css:text-wrap": "rrpTextWrap",
+						"css:-webkit-text-stroke-width": "rrpTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "rrpTextStrokeColour",
+						"css:column-count": "rrpTextColumns",
+						"css:writing-mode": "rrpWritingMode"
+					},
+					"_note": "The struck-through RRP beside a live card's price (rrpMetaKey): `.sgs-product-card__rrp`, markup from includes/product-card-live-fill.php::sgs_product_card_rrp_markup. rrpColour is emitted by includes/product-card-card-parts.php.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "rrpTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"desc": {
+					"selector": ".sgs-product-card__description",
+					"label": "Description",
+					"order": 6,
+					"clusters": [
+						"text"
+					],
+					"prefix": "desc",
+					"attrMap": {
+						"css:text-decoration-link": "descLinkUnderline",
+						"css:text-decoration-thickness-link": "descLinkUnderlineThickness",
+						"css:text-decoration-color-link": "descLinkUnderlineColour",
+						"css:text-decoration-offset-link": "descLinkUnderlineOffset",
+						"css:color-link-gradient": "descLinkColourGradient",
+						"css:-webkit-text-stroke-width": "descTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "descTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color-link-gradient": "descLinkColourHoverGradient",
+								"css:text-decoration-color-link": "descLinkUnderlineColourHover",
+								"css:-webkit-text-stroke-color": "descTextStrokeColourHover"
+							}
+						}
+					},
+					"_note": "descLinkColour/descLinkColourHover resolve via default convention (prefix 'desc' + suffix, same as descColour above); their Gradient/HoverGradient siblings (2026-09-07, colour-conformance TEXT closeout) do not fit that convention's suffix vocabulary and need this explicit css:color-link-gradient mapping, same key used by sgs/timeline's descriptionLinkColourGradient."
+				},
+				"description": {
+					"label": "Description colour",
+					"order": 6,
+					"clusters": [],
+					"prefix": "",
+					"_note": "CORRECTION 2026-08-15: an earlier pass in this same fix RENAMED 'desc' to 'description', which was WRONG - the DB tags descFontSize/descLineHeight css_element='desc' (matching the ORIGINAL key) and only descColour css_element='description'. Renaming would have cleared 1 orphan while creating 2 new ones. 'desc' is restored above; this bare 'description' element exists purely so the audit script's exact-key-match sees 'description' declared too. descColour already resolves fine functionally under 'desc' (prefix 'desc' + suffix Colour, default convention, text cluster) regardless of this element's own (empty) clusters. Found live 2026-08-15: DB tagged 1 attr css_element='description', undeclared until now."
+				},
+				"priceNote": {
+					"absentIn": ["live-wc-simple", "live-wc-no-photo", "readonly-variable"],
+					"absentWhy": "A WooCommerce card prints WooCommerce price HTML, which has no separate note; the typed card, an sgs_product card and the configurator card per-unit line print the note.",
+					"text": true,
+					"selector": ".sgs-product-card__price-note",
+					"label": "Price note",
+					"order": 7,
+					"clusters": [
+						"text"
+					],
+					"prefix": "priceNote"
+				},
+				"price-note": {
+					"absentIn": ["live-wc-simple", "live-wc-no-photo", "readonly-variable"],
+					"absentWhy": "A WooCommerce card prints WooCommerce price HTML, which has no separate note; the typed card, an sgs_product card and the configurator card per-unit line print the note.",
+					"text": true,
+					"label": "Price note colour",
+					"order": 7,
+					"clusters": [],
+					"prefix": "",
+					"_note": "CORRECTION 2026-08-15: same pattern as 'description' above - the DB tags priceNoteFontSize css_element='priceNote' (matching the ORIGINAL key) and only priceNoteColour css_element='price-note'. 'priceNote' is restored above; this bare 'price-note' element exists purely to satisfy the audit script's exact-key-match. priceNoteColour already resolves fine functionally under 'priceNote' (prefix 'priceNote' + suffix Colour, default convention). Found live 2026-08-15: DB tagged 1 attr css_element='price-note', undeclared until now."
+				},
+				"priceFromLabel": {
+					"absentIn": ["typed", "live-wc-simple", "live-wc-no-photo", "live-cpt", "interactive-variable"],
+					"absentWhy": "The From label prefixes the lowest price of a variable product whose variations differ in price (the read-only card, and the live card when no configurator manifest builds); a typed, simple or sgs_product price is one amount, and the configurator card shows the selected variation price.",
+					"selector": ".sgs-product-card__price-from-label",
+					"label": "\"From\" label",
+					"order": 8,
+					"clusters": [
+						"text"
+					],
+					"prefix": "priceFromLabel",
+					"attrMap": {
+						"css:font-size": "priceFromLabelFontSize",
+						"css:font-weight": "priceFromLabelFontWeight",
+						"css:font-style": "priceFromLabelFontStyle",
+						"css:font-family": "priceFromLabelFontFamily",
+						"css:text-transform": "priceFromLabelTextTransform",
+						"css:text-decoration": "priceFromLabelTextDecoration",
+						"css:line-height": "priceFromLabelLineHeight",
+						"css:letter-spacing": "priceFromLabelLetterSpacing",
+						"css:text-align": "priceFromLabelTextAlign",
+						"css:text-wrap": "priceFromLabelTextWrap",
+						"css:-webkit-text-stroke-width": "priceFromLabelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "priceFromLabelTextStrokeColour",
+						"css:column-count": "priceFromLabelTextColumns",
+						"css:writing-mode": "priceFromLabelWritingMode"
+					},
+					"_note": "The \"From\" label owns a full typography surface (priceFromLabel*), painted on .price-from-label by sgs_typography_css_rule( $attributes, 'priceFromLabel', … ). No colour attribute exists for this element (priceFromLabelColour) — an honest gap; the label inherits price-note colour visually.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "priceFromLabelTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"tag": {
+					"restingShadow": true,
+					"label": "Tag (trial/featured badge)",
+					"order": 9,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "tag",
+					"attrMap": {
+						"css:background-color": "tagBackgroundColour",
+						"css:width": "tagFullWidth",
+						"css:background-image": "tagBackgroundColourGradient",
+						"css:color-gradient": "tagTextColourGradient",
+						"css:-webkit-text-stroke-width": "tagTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "tagTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "tagBackgroundColourHover",
+								"css:background-image": "tagBackgroundColourHoverGradient",
+								"css:-webkit-text-stroke-color": "tagTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"pill": {
+					"motion": false,
+					"label": "Option-picker pill",
+					"order": 10,
+					"clusters": [
+						"text"
+					],
+					"prefix": "pill",
+					"_note": "Targets the real sgs/option-picker pill rendered inside the card (both typed and bound modes) — see render.php sgs_typography_css_rule( $attributes, 'pill', … )."
+				},
+				"rating": {
+					"label": "Rating & reviews",
+					"order": 13,
+					"clusters": [
+						"text"
+					],
+					"prefix": "rating",
+					"attrMap": {
+						"css:color": "ratingColour",
+						"css:font-size": "ratingFontSize",
+						"css:font-weight": "ratingFontWeight",
+						"css:font-style": "ratingFontStyle",
+						"css:font-family": "ratingFontFamily",
+						"css:text-transform": "ratingTextTransform",
+						"css:text-decoration": "ratingTextDecoration",
+						"css:line-height": "ratingLineHeight",
+						"css:letter-spacing": "ratingLetterSpacing",
+						"css:text-align": "ratingTextAlign",
+						"css:text-wrap": "ratingTextWrap",
+						"css:-webkit-text-stroke-width": "ratingTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "ratingTextStrokeColour",
+						"css:column-count": "ratingTextColumns",
+						"css:writing-mode": "ratingWritingMode"
+					},
+					"_note": "Star row + review-count text (Frame Card component). Resolves css:color -> ratingColour via the default {prefix}Colour convention — no explicit attrMap needed (mirrors priceNote's own prefix-only declaration). Rendered by sgs_product_card_rating_markup() (product-card-builtin-render.php), called from every render branch (typed + all 3 bound branches) per FP-9 — one control governs the element everywhere it can appear. No dedicated font-size attr exists for the review-count text — an honest gap, matching priceFromLabel's own precedent.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "ratingTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"brand": {
+					"label": "Brand overlay",
+					"order": 14,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "brand",
+					"attrMap": {
+						"css:font-size": "brandFontSize",
+						"css:font-weight": "brandFontWeight",
+						"css:font-style": "brandFontStyle",
+						"css:font-family": "brandFontFamily",
+						"css:text-transform": "brandTextTransform",
+						"css:text-decoration": "brandTextDecoration",
+						"css:line-height": "brandLineHeight",
+						"css:letter-spacing": "brandLetterSpacing",
+						"css:text-wrap": "brandTextWrap",
+						"css:-webkit-text-stroke-width": "brandTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "brandTextStrokeColour",
+						"css:column-count": "brandTextColumns",
+						"css:writing-mode": "brandWritingMode",
+						"css:padding": "brandPadding"
+					},
+					"_note": "The brand overlaid top-left on the product image (Frame Card component) - the brand's LOGO when it has one and brandUseLogo is on, else the brand name as a wordmark. The typography and colour settings here style the wordmark form; the logo form is sized by .sgs-product-card__brand-logo in style.css. brandColour resolves via the default {prefix}Colour convention; brandFontSize/Unit via the shared TypographyControls prefix. Rendered by sgs_product_card_brand_markup() (product-card-builtin-render.php), called from every render branch's media area per FP-9.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "brandTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"brandLogo": {
+					"motion": false,
+					"selector": ".sgs-product-card__brand-logo",
+					"label": "Brand logo",
+					"order": 14,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "brandLogo",
+					"attrMap": {
+						"css:height": "brandLogoHeight",
+						"css:width": "brandLogoWidth",
+						"css:max-height": "brandLogoMaxHeight",
+						"css:max-width": "brandLogoMaxWidth"
+					},
+					"_note": "The brand LOGO image (brandUseLogo on), a per-device length each. Unset height keeps the stylesheet 18px, width auto, max-height none, max-width 100%. Emitted by src/blocks/product-card/render.php."
+				},
+				"savingBadge": {
+					"selector": ".sgs-product-card__saving-badge",
+					"label": "Saving badge",
+					"order": 15,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "savingBadge",
+					"attrMap": {
+						"css:font-size": "savingBadgeFontSize",
+						"css:font-weight": "savingBadgeFontWeight",
+						"css:font-style": "savingBadgeFontStyle",
+						"css:font-family": "savingBadgeFontFamily",
+						"css:text-transform": "savingBadgeTextTransform",
+						"css:text-decoration": "savingBadgeTextDecoration",
+						"css:line-height": "savingBadgeLineHeight",
+						"css:letter-spacing": "savingBadgeLetterSpacing",
+						"css:text-wrap": "savingBadgeTextWrap",
+						"css:-webkit-text-stroke-width": "savingBadgeTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "savingBadgeTextStrokeColour",
+						"css:column-count": "savingBadgeTextColumns",
+						"css:writing-mode": "savingBadgeWritingMode",
+						"css:background-color": "savingBadgeBackgroundColour",
+						"css:padding": "savingBadgePadding"
+					},
+					"_note": "Standalone saving/discount badge overlaid on the media area (Frame Card component) — DISTINCT from the existing 'tag' element (trial/featured, keyed to variantStyle): this badge is independent of variant and can appear alongside either. Mirrors 'tag''s own attrMap shape exactly (css:background-color + css:padding explicit; css:color resolves via the default {prefix}TextColour convention, same as tagTextColour). Rendered via the shared sgs_label_box_css_rule() helper (mirrors sgs/label + the existing trial-tag box), called from every render branch per FP-9. Ground-truth position is bottom-left per the real Frame Card.dc.html markup (`bottom:12px;left:12px`) — the README's 'top-right' claim is stale prose, not the design source; savingBadgePosition defaults to 'bottom-left' and is operator-choosable.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "savingBadgeTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"swatch": {
+					"label": "Each colour swatch",
+					"order": 1,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "swatch",
+					"attrMap": {
+						"css:width": "swatchSize",
+						"css:border-color": "swatchBorderColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:transform": "swatchHoverGrow"
+							}
+						}
+					},
+					"_note": "Colour-dot row (Frame Card component): each dot's hue is DATA (colourSwatches[].colour or the variation's colour term), not an operator styling property, mirroring sgs/option-picker's swatch chip. The operator sets the dot size (swatchSize, width and height via --sgs-pc-swatch-size) and how far a dot grows when pointed at (swatchHoverGrow, a transform via --sgs-pc-swatch-hover-scale), both emitted by includes/product-card-card-parts.php::sgs_product_card_parts_css. Rendered via sgs_product_card_swatches_markup() (includes/product-card-swatches.php), which emits a real <button> for any dot that knows its own attribute term and a decorative <span> for one an operator typed."
+				},
+				"attributeTag": {
+					"selector": ".sgs-product-card__attribute-tag",
+					"label": "Attribute tag",
+					"order": 17,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "attributeTag",
+					"attrMap": {
+						"css:font-size": "attributeTagFontSize",
+						"css:font-weight": "attributeTagFontWeight",
+						"css:font-style": "attributeTagFontStyle",
+						"css:font-family": "attributeTagFontFamily",
+						"css:text-transform": "attributeTagTextTransform",
+						"css:text-decoration": "attributeTagTextDecoration",
+						"css:line-height": "attributeTagLineHeight",
+						"css:letter-spacing": "attributeTagLetterSpacing",
+						"css:text-align": "attributeTagTextAlign",
+						"css:text-wrap": "attributeTagTextWrap",
+						"css:-webkit-text-stroke-width": "attributeTagTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "attributeTagTextStrokeColour",
+						"css:column-count": "attributeTagTextColumns",
+						"css:writing-mode": "attributeTagWritingMode",
+						"css:color": "attributeTagTextColour",
+						"css:background-color": "attributeTagBackgroundColour",
+						"css:border-color": "attributeTagBorderColour",
+						"css:border-width": "attributeTagBorderWidth",
+						"css:border-radius": "attributeTagBorderRadius",
+						"css:padding": "attributeTagPadding"
+					},
+					"_note": "Frame Card component: generic tag next to the product title shown when the resolved product carries a chosen WooCommerce product-attribute term or product tag (attributeTagSource/attributeTagTaxonomy/attributeTagTerm) — never hardcoded to one client's vocabulary (e.g. an optician site's 'Polarised' lens attribute). Distinct from the existing 'tag' element (trial/featured, keyed to variantStyle) and 'savingBadge' (media-overlay, independent of variant): this one sits inline beside the title, matching Frame Card.dc.html's title-row markup. css:color needed an EXPLICIT attrMap entry (2026-09-24 compliance fix) — the default `{prefix}Colour` convention would look for `attributeTagColour`, which does not exist; the real attribute is `attributeTagTextColour`, so the prior note claiming the convention resolved it was wrong and the colour reached the DB with no css_property (check-colour-attr-css-property finding). `attributeTagBorderWidth` (2026-09-24, Spec 35 C1 compliance fix) is new — border colour now lives in `SgsBorderControl` alongside width/radius rather than as a sibling `SgsColourPanel` row (radius stays the block's existing scalar `SgsLengthControl`, outside the border-control pair, per Spec 32 §6.1's pill/tag/badge scalar-radius carve-out — `onRadiusChange` is deliberately not wired to `SgsBorderControl`). Rendered via sgs_product_card_attribute_tag_markup()/sgs_product_card_wrap_title_with_attribute_tag() (src/blocks/product-card/attribute-tag.php — a block-directory-private file, NOT includes/product-card-builtin-render.php, because the typed-mode title element is owned by that shared file and this task's touch-only-this-block-directory scope could not edit it; the typed branch is instead wired by post-processing the shared render's returned HTML — see that file's own docblock).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "attributeTagTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"ratingStars": {
+					"selector": ".sgs-product-card__rating-stars",
+					"label": "Rating stars",
+					"order": 22,
+					"clusters": [
+						"text"
+					],
+					"prefix": "ratingStars",
+					"attrMap": {
+						"css:font-size": "ratingStarsFontSize",
+						"css:font-weight": "ratingStarsFontWeight",
+						"css:font-style": "ratingStarsFontStyle",
+						"css:font-family": "ratingStarsFontFamily",
+						"css:text-transform": "ratingStarsTextTransform",
+						"css:text-decoration": "ratingStarsTextDecoration",
+						"css:line-height": "ratingStarsLineHeight",
+						"css:letter-spacing": "ratingStarsLetterSpacing",
+						"css:text-align": "ratingStarsTextAlign",
+						"css:text-wrap": "ratingStarsTextWrap",
+						"css:-webkit-text-stroke-width": "ratingStarsTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "ratingStarsTextStrokeColour",
+						"css:column-count": "ratingStarsTextColumns",
+						"css:writing-mode": "ratingStarsWritingMode"
+					},
+					"_note": "The star glyphs inside the rating row (.sgs-product-card__rating-stars): its own surface so the letter spacing between stars is a control. Colour is the rating element's ratingColour.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "ratingStarsTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"swatchMore": {
+					"selector": ".sgs-product-card__swatch-more",
+					"label": "Colour swatch overflow count",
+					"order": 23,
+					"clusters": [
+						"text"
+					],
+					"prefix": "swatchMore",
+					"attrMap": {
+						"css:font-size": "swatchMoreFontSize",
+						"css:font-weight": "swatchMoreFontWeight",
+						"css:font-style": "swatchMoreFontStyle",
+						"css:font-family": "swatchMoreFontFamily",
+						"css:text-transform": "swatchMoreTextTransform",
+						"css:text-decoration": "swatchMoreTextDecoration",
+						"css:line-height": "swatchMoreLineHeight",
+						"css:letter-spacing": "swatchMoreLetterSpacing",
+						"css:text-wrap": "swatchMoreTextWrap",
+						"css:-webkit-text-stroke-width": "swatchMoreTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "swatchMoreTextStrokeColour",
+						"css:column-count": "swatchMoreTextColumns",
+						"css:writing-mode": "swatchMoreWritingMode"
+					},
+					"_note": "The \"+N\" count after the colour dots (.sgs-product-card__swatch-more), emitted by includes/product-card-swatches.php::sgs_product_card_swatches_markup and mirrored in typed-canvas.js::TypedSwatches. A count, not a control: it owns a typography surface only.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "swatchMoreTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"swatchMoreRing": {
+					"selector": ".sgs-product-card__swatch-more",
+					"motion": false,
+					"label": "Colour swatch overflow count ring",
+					"order": 24,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:border-color": "swatchMoreBorderColour"
+					},
+					"_note": "The ring around the \"+N\" count; an unset colour keeps the stylesheet's faint dark ring."
+				},
+				"cta2": {
+					"absentIn": ["live-cpt", "readonly-variable"],
+					"absentWhy": "An sgs_product card has no WooCommerce product, so it prints no button row; the read-only card prints one View product link and no secondary button.",
+					"selector": ".sgs-product-card__cta--secondary",
+					"label": "Secondary call to action",
+					"order": 24,
+					"clusters": [
+						"text"
+					],
+					"prefix": "cta2",
+					"attrMap": {
+						"css:text-align": "cta2TextAlign"
+					},
+					"_note": "The secondary learn-more link (.sgs-product-card__cta--secondary typed, .product-card__cta-secondary bound). cta2TextAlign is emitted by render.php through sgs_button_element_text_align()."
+				},
+				"noImageLabel": {
+					"absentIn": ["typed", "live-wc-simple", "live-cpt", "readonly-variable", "interactive-variable"],
+					"absentWhy": "The label sits in the no-photo box, which the live card prints in place of the image only for a product with no photo (live-wc-no-photo); a typed card without an image and the read-only card print no media box at all.",
+					"selector": ".product-card__no-image-label",
+					"label": "No-photo label",
+					"order": 18,
+					"clusters": [
+						"text"
+					],
+					"prefix": "noImageLabel",
+					"_note": "The text in the no-photo box (noImageLabel, e.g. 'Photo to come') shown on a product whose image is empty, WooCommerce's placeholder or the site's chosen placeholder image (includes/product-card-no-photo.php). Colour resolves by the default {prefix}Colour convention (noImageLabelColour)."
+				},
+				"valueLadder": {
+					"absentIn": ["typed", "live-wc-simple", "live-wc-no-photo", "live-cpt", "readonly-variable"],
+					"absentWhy": "The value ladder is the configurator card per-pack price list (the interactive-variable path only).",
+					"selector": ".product-card__value-ladder",
+					"label": "Value ladder",
+					"order": 20,
+					"clusters": [
+						"text"
+					],
+					"prefix": "valueLadder",
+					"_note": "The comparative per-pack price ladder wrapper (.product-card__value-ladder); its font settings cascade to the pack and per-unit text. No colour attribute exists for this element - an honest gap. Emitted by render.php sgs_typography_css_rule( $attributes, 'valueLadder', '.' . $sgs_card_uid . ' .product-card__value-ladder' ).",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "valueLadderTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "valueLadderTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "valueLadderTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"valueLadderSaving": {
+					"absentIn": ["typed", "live-wc-simple", "live-wc-no-photo", "live-cpt", "readonly-variable"],
+					"absentWhy": "The saving is a row of the value ladder, which only the configurator card prints (the interactive-variable path).",
+					"selector": ".product-card__value-ladder__saving",
+					"label": "Value ladder saving",
+					"order": 21,
+					"clusters": [
+						"text"
+					],
+					"prefix": "valueLadderSaving",
+					"_note": "The per-row \"save X%\" text (.value-ladder__saving). style.css sizes it absolutely, so the wrapper setting cannot reach it - it has its own prefix. No colour attribute exists for this element - an honest gap.",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "valueLadderSavingTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "valueLadderSavingTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "valueLadderSavingTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"priceRow": {
+					"selector": ".sgs-product-card__price-row",
+					"label": "Price row",
+					"order": 19,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:padding-top": "priceRowSpaceAbove"
+					},
+					"_note": "priceRowSpaceAbove: extra space above the price row (padding, so a shop layout's margin-top:auto still levels prices), over the card body's own gap between rows (includes/product-card-no-photo.php::sgs_product_card_no_photo_css)."
+				},
+				"cta": {
+					"selector": ".sgs-product-card__cta--primary",
+					"absentIn": ["live-cpt"],
+					"absentWhy": "An sgs_product card has no WooCommerce product to add or link to, so the bound card prints no button row (render.php prints it only when the WooCommerce product ID is above 0).",
+					"label": "Call to action",
+					"order": 11,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "cta",
+					"attrMap": {
+						"css:line-height": "ctaLineHeight",
+						"css:text-align": "ctaTextAlign",
+						"css:background-color": "ctaColourBackground",
+						"css:background-image": "ctaColourBackgroundGradient",
+						"css:color": "ctaColourText",
+						"css:color-gradient": "ctaColourTextGradient",
+						"css:border-color": "ctaColourBorder",
+						"css:padding": "ctaPadding",
+						"css:border-color-gradient": "ctaColourBorderGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "ctaColourBackgroundHover",
+								"css:background-image": "ctaColourBackgroundHoverGradient",
+								"css:color": "ctaColourTextHover",
+								"css:color-gradient": "ctaColourTextHoverGradient",
+								"css:border-color": "ctaColourBorderHover",
+								"css:border-color-gradient": "ctaColourBorderHoverGradient"
+							}
+						}
+					},
+					"_note": "css:padding maps to the single ctaPadding box-object attr {top,right,bottom,left} — migrated from the ctaPaddingX/ctaPaddingY axis-pair scalars to the universal box-object standard (mirrors sgs/button's padding box family + the tagPadding attr already on this block). Resolves the prior converter AmbiguousLayerAttrError collision and the elementless-ctaPaddingX misroute onto the card root. ctaColourTextGradient/ctaColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) — keyed css:color-gradient since ctaColourBackground already claims css:background-color; sgs_button_element_style_css() only paints the text gradient per-state when that state's own background attr is unset. ctaColourBackgroundGradient/ctaColourBackgroundHoverGradient added 2026-09-06 (colour-conformance FILL surface, Case E) — sgs_button_element_style_css() already read these keys via its generic ColourBackground(Hover)Gradient closure (mirrors sgs/button's own colourBackgroundGradient), they were simply never declared as attributes here; keyed css:background-image to match sgs/button's own DB row (sgs_background_paint_decl() emits background-image for a gradient, never background-color)."
+				}
+			},
+			"spacingDefaults": {
+				"attributeTagPadding": {
+					"top": "var(--wp--preset--spacing--10)",
+					"right": "7px",
+					"bottom": "var(--wp--preset--spacing--10)",
+					"left": "7px"
+				},
+				"brandPadding": {
+					"top": "10px",
+					"right": "12px",
+					"bottom": "10px",
+					"left": "12px"
+				},
+				"savingBadgePadding": {
+					"top": "6px",
+					"right": "10px",
+					"bottom": "6px",
+					"left": "10px"
+				}
+			}
+		},
+		"html": false,
+		"align": false,
+		"interactivity": true,
+		"color": {
+			"background": false,
+			"gradients": false,
+			"text": false,
+			"__experimentalSkipSerialization": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": false,
+			"__experimentalSkipSerialization": true
+		}
+	},
+	"attributes": {
+		"thumbsFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the thumbnails under the card photo wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"swatchesFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the colour swatch dots wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"ctaRowFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the card buttons wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"priceGroupLayout": {
+			"type": "object",
+			"default": {},
+			"description": "Per device, how the price and the struck RRP sit: inline (beside each other while they fit; the stylesheet's own behaviour) or stacked (the RRP under the price). Unset = inline."
+		},
+		"priceRowFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the price, RRP and swatches wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"descLinkUnderline": {
+			"type": "string",
+			"enum": [ "", "none", "always", "hover", "sweep" ],
+			"default": "",
+			"description": "How a link inside the text is underlined: '' the theme's underline, none, always, hover (an underline on hover and keyboard focus), or sweep (a line sweeps in on hover and keyboard focus). sgs_link_underline_css()."
+		},
+		"descLinkUnderlineThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the link underline for always, hover and sweep (a CSS length); empty uses the theme's link-sweep thickness or the browser's."
+		},
+		"descLinkUnderlineColour": {
+			"type": "string",
+			"default": "",
+			"description": "The link underline's colour for always, hover and sweep (a palette slug or any CSS colour); empty draws it in the link's own colour. sgs_link_underline_css()."
+		},
+		"descLinkUnderlineColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "The link underline's colour while the link is hovered or focused with the keyboard (a palette slug or any CSS colour); empty keeps the colour it has at rest. sgs_link_underline_css()."
+		},
+		"descLinkUnderlineOffset": {
+			"type": "string",
+			"default": "",
+			"description": "Gap between the link text and its underline for always and hover (a CSS length); empty uses the browser's. The sweep is a background line, so it ignores the gap. sgs_link_underline_css()."
+		},
+		"sourceMode": {
+			"type": "string",
+			"default": "typed",
+			"enum": [
+				"typed",
+				"wc-product",
+				"sgs-cpt"
+			]
+		},
+		"productId": {
+			"type": "number",
+			"default": 0
+		},
+		"taxDisplayMode": {
+			"type": "string",
+			"default": "auto",
+			"enum": [
+				"auto",
+				"inc-suffix",
+				"ex-plus-vat"
+			]
+		},
+		"image": {
+			"type": "string",
+			"default": "",
+			"description": "Permanent URL fallback for the card's main product image. NEVER removed, NEVER made conditional — kept forever alongside imageId so content stored before the imageId migration (2026-09-01) keeps rendering identically. When imageId resolves to a live attachment, imageId wins; image is the read-time fallback."
+		},
+		"imageId": {
+			"type": "number",
+			"default": 0,
+			"description": "Attachment post ID for the card's main product image, added 2026-09-01 alongside the pre-existing image URL string (which stays as the permanent fallback — see its own description). Forward-only: edit.js's 4 image-picker write sites store media.id here from now on; existing content authored before this attribute existed has imageId 0/unset and keeps rendering off image until it is re-saved with the picker. When set and it resolves to a live attachment (wp_get_attachment_image_src()), it wins over image at render time — unlocking real srcset/sizes. render.php falls back to the raw image URL whenever imageId is 0 or the attachment no longer exists."
+		},
+		"imageAlt": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"imageDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Typed mode only. When true, the product image is purely decorative (visual/promotional tile rather than a real product photo the shopper needs) and is hidden from assistive tech — alt text is blanked and aria-hidden is set. Never applies in bound/live-product mode (sourceMode='wc-product'/'sgs-cpt'), where the photo is genuine shopping content."
+		},
+		"productName": {
+			"type": "string",
+			"default": ""
+		},
+		"description": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"variantStyle": {
+			"type": "string",
+			"default": "standard",
+			"enum": [
+				"standard",
+				"trial",
+				"featured"
+			]
+		},
+		"trialTag": {
+			"type": "string",
+			"default": ""
+		},
+		"featuredTag": {
+			"type": "string",
+			"default": "",
+			"description": "Tag text for featured variant (e.g. Most popular, Best selling, Flagship product). Mirror of trialTag for the featured variant. Rendered as a coloured strip above the card content when variantStyle='featured'."
+		},
+		"packSizes": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"label": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"selected": {
+						"type": "boolean",
+						"role": "state-modifier-boolean"
+					}
+				}
+			}
+		},
+		"priceLarge": {
+			"type": "string",
+			"default": ""
+		},
+		"priceNote": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaText": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaUrlSource": {
+			"type": "string",
+			"default": "",
+			"description": "Where the primary button goes: '' (the typed ctaUrl), post:<id> (a page or post, followed by ID) or a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok). Resolved once at the top of render.php by includes/helpers-link-source.php; the typed ctaUrl is the fallback."
+		},
+		"ctaColourBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Built-in CTA background colour override. EMPTY (default) = inherit the shared button-preset channel via the sgs-button--{style} class (so a --secondary/--outline CTA gets its transparent background, a --primary gets the solid fill — mirroring a standalone sgs/button). Set a token slug or raw colour only to override."
+		},
+		"ctaColourBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA's resting background with a gradient instead of a flat colour (mirrors sgs/button's colourBackgroundGradient). Non-empty wins over ctaColourBackground via sgs_button_element_style_css()."
+		},
+		"ctaColourText": {
+			"type": "string",
+			"default": "",
+			"description": "Built-in CTA text colour override. EMPTY (default) = inherit the shared button-preset colour channel via the sgs-button--{style} class (composite wrapper, WCAG-correct per client — a light-primary palette gets dark CTA text automatically). Set a theme token slug or raw CSS colour only to override. (Was 'text-inverse', which force-painted near-white and failed WCAG on light palettes — D-pending.)"
+		},
+		"ctaColourTextGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA's resting text with a background-clip:text mechanism instead of a flat colour (D636 text-colour gradient rollout). Non-empty wins over ctaColourText, and only paints when ctaColourBackground/ctaColourBackgroundGradient are unset (helpers-button-style.php D942/D956 gate — a gradient here would otherwise clip an operator-set CTA background)."
+		},
+		"ctaColourBorder": {
+			"type": "string",
+			"default": "",
+			"description": "Built-in CTA border colour override. EMPTY (default) = inherit the shared button-preset channel via the sgs-button--{style} class. Set only to override."
+		},
+		"ctaColourBorderGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA's resting border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over ctaColourBorder."
+		},
+		"ctaColourBackgroundHover": {
+			"type": "string",
+			"default": "",
+			"description": "Built-in CTA hover background colour override. EMPTY (default) = inherit the shared button-preset hover channel via the sgs-button--{style} class. Set only to override."
+		},
+		"ctaColourBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA's hover background with a gradient instead of a flat colour (mirrors sgs/button's colourBackgroundHoverGradient). Non-empty wins over ctaColourBackgroundHover via sgs_button_element_style_css()."
+		},
+		"ctaColourTextHover": {
+			"type": "string",
+			"default": "",
+			"description": "Built-in CTA hover text colour override. EMPTY (default) = inherit the shared button-preset hover colour channel via the sgs-button--{style} class. Set only to override. (Was 'text-inverse' — WCAG footgun on light palettes.)"
+		},
+		"ctaColourTextHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA's hover text with a background-clip:text mechanism instead of a flat colour (D636 text-colour gradient rollout). Non-empty wins over ctaColourTextHover, and only paints when ctaColourBackgroundHover is unset (same D942/D956 gate as the resting state)."
+		},
+		"ctaColourBorderHover": {
+			"type": "string",
+			"default": "",
+			"description": "Built-in CTA hover border colour override. EMPTY (default) = inherit the shared button-preset hover channel via the sgs-button--{style} class. Set only to override."
+		},
+		"ctaColourBorderHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA's hover-state border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over ctaColourBorderHover on :hover/:focus-visible."
+		},
+		"ctaBorderStyle": {
+			"type": "string",
+			"default": "solid",
+			"enum": [
+				"solid",
+				"dashed",
+				"dotted",
+				"none"
+			]
+		},
+		"ctaBorderWidth": {
+			"type": "object",
+			"default": {
+				"top": "2px",
+				"right": "2px",
+				"bottom": "2px",
+				"left": "2px"
+			}
+		},
+		"ctaBorderRadius": {
+			"type": "object",
+			"default": {
+				"topLeft": "10px",
+				"topRight": "10px",
+				"bottomLeft": "10px",
+				"bottomRight": "10px"
+			}
+		},
+		"ctaFontWeight": {
+			"type": "string",
+			"default": "600"
+		},
+		"ctaFontSize": {
+			"type": "number"
+		},
+		"ctaPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the built-in CTA button { top, right, bottom, left }. Migrated from the ctaPaddingX/ctaPaddingY axis-pair scalars to the universal box-object standard (Spec 32 section 6.1) — mirrors sgs/button's padding box family and this block's own tagPadding attr. Rendered scoped via sgs_button_element_style_css()."
+		},
+		"ctaWidthType": {
+			"type": "string",
+			"default": "fit",
+			"enum": [
+				"fit",
+				"full"
+			],
+			"description": "'full' stretches the built-in CTA (.product-card__view / .product-card__add-to-cart) to 100% width."
+		},
+		"cardMaxWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Override the card max-width (e.g. 320px, 100%). Empty = use theme default (380px). Sets --sgs-product-card-max-width inline."
+		},
+		"imageHeight": {
+			"type": "string",
+			"default": "",
+			"description": "Override the product image box height (e.g. 180px, 16rem). Empty = use theme default (220px). Sets --sgs-product-card-image-height inline."
+		},
+		"cardPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the card's content BODY { top, right, bottom, left } — the product image is full-bleed and sits outside the padded body. Migrated 2026-07-24 (Spec 32 section 6.1) from the single-value innerPadding scalar to the universal box-object standard — mirrors ctaPadding/tagPadding. Rendered scoped (never inline) via sgs_box_object_shorthand() on the card's own uid selector, targeting .product-card-body/.sgs-product-card__body. Empty = theme default (20px, style.css)."
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Card root background colour override. R2c (B-3/B-8): block-private, replaces the native style.color.background path so the root box has a single owner."
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card root background. Non-empty wins over backgroundColour."
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Card root background colour on hover/focus-within."
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card root background on hover/focus-within. Non-empty wins over backgroundColourHover."
+		},
+		"textColour": {
+			"type": "string",
+			"default": "",
+			"description": "Card root inherited text colour override. R2c (B-3/B-8): block-private, replaces the native style.color.text path."
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card root text via background-clip:text. Non-empty wins over textColour."
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Card root inherited text colour on hover/focus-within."
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card root text on hover/focus-within. Non-empty wins over textColourHover."
+		},
+		"borderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Card root border colour. R2c (B-3/B-8): block-private, replaces the native __experimentalBorder.color path (no hover pair — the root border has none)."
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card root border with a masked ring instead of a flat colour. Non-empty wins over borderColour."
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Card root border width { top, right, bottom, left }. R2c (B-3/B-8): block-private, replaces the native __experimentalBorder.width path."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			},
+			"description": "Card root border radius { topLeft, topRight, bottomLeft, bottomRight }. Block-private (2026-08-30 radius target-shape correction), replaces the native __experimentalBorder.radius path."
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid",
+			"description": "Card root border style. R2c (B-3/B-8): block-private, replaces the native __experimentalBorder.style path."
+		},
+		"maxWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"indexVariationUrl": {
+			"type": "number",
+			"default": 0,
+			"description": "FR-27-E2 escape-hatch: set to a variation ID to override the page canonical URL to that variation's URL, enabling it to be indexed. 0 = default (WP core canonical, recommended)."
+		},
+		"framingMode": {
+			"type": "string",
+			"enum": [
+				"savings",
+				"loss-aversion",
+				"neutral"
+			],
+			"default": "loss-aversion",
+			"description": "Spec 27 Part 2 P1 (FR-28-8): how the comparative value-ladder frames the per-unit saving. loss-aversion = 'save Xp each vs …'; savings = 'save X%'; neutral = no saving text. Placement-level (a card block renders many products)."
+		},
+		"decoyEnabled": {
+			"type": "boolean",
+			"default": false,
+			"description": "Spec 27 Part 2 P1 (FR-28-9a): when true, the 'Best value' badge targets the 2nd-largest pack (decoy) instead of the largest. In live-data mode the per-product meta _sgs_decoy_enabled overrides this."
+		},
+		"headingLevel": {
+			"type": "string",
+			"default": "h3",
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"p"
+			],
+			"description": "HTML heading level for the product title in typed built-in mode (h2, h3, or h4)."
+		},
+		"ctaBehaviour": {
+			"type": "string",
+			"default": "learn-more",
+			"enum": [
+				"learn-more",
+				"add-to-basket",
+				"buy-now"
+			],
+			"description": "Primary CTA behaviour in bound mode. 'learn-more' = plain link. 'add-to-basket' = SGS cart proxy add. 'buy-now' = add then redirect to WC checkout. Typed mode always renders plain links regardless of this setting."
+		},
+		"ctaStyle": {
+			"type": "string",
+			"default": "primary",
+			"enum": [
+				"primary",
+				"secondary",
+				"outline"
+			],
+			"description": "Primary CTA visual style (primary/secondary/outline) — maps to the sgs-button--{ctaStyle} modifier class, mirroring a standalone sgs/button's inheritStyle. The cloning converter lifts the draft CTA's --modifier here (Spec 31 §13.5). Picking a style in the editor also seeds the ctaColour*/ctaBorder*/ctaFontWeight fields; leaving those empty makes the CTA inherit the shared button-preset colour channel (composite wrapper, WCAG-correct per client)."
+		},
+		"cta2Text": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Secondary CTA label. Empty string = no secondary button rendered."
+		},
+		"cta2Url": {
+			"type": "string",
+			"default": ""
+		},
+		"cta2UrlSource": {
+			"type": "string",
+			"default": "",
+			"description": "Where the secondary button goes: '' (the typed cta2Url), post:<id> (a page or post, followed by ID) or a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok). Resolved once at the top of render.php by includes/helpers-link-source.php; the typed cta2Url is the fallback."
+		},
+		"cta2Style": {
+			"type": "string",
+			"default": "secondary",
+			"description": "Secondary CTA visual style — maps to btn-{cta2Style} class."
+		},
+		"visibleAxes": {
+			"type": "array",
+			"default": [],
+			"description": "Bound mode only: taxonomy slugs of attribute axes to show in the option picker. Empty array = show all axes. Display filter only — never alters the seeded context or manifest."
+		},
+		"overrideElements": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "string",
+				"enum": [
+					"name",
+					"description",
+					"badge",
+					"image",
+					"cta"
+				]
+			},
+			"description": "Connected (bound) mode only: which card elements render the operator's typed value instead of the live product value. Members: 'name','description','badge','image','cta'. An element's typed value is preserved when its override is off; an empty typed value never blanks the card (live value renders). PRICE IS NEVER OVERRIDABLE (page-schema-feed parity) - deliberately not an enum member."
+		},
+		"showLadder": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the comparative per-pack price ladder. The grid block sets this false on its cards by default - browsing context shows just price + per-item note."
+		},
+		"valueLadderFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"valueLadderFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"valueLadderFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"valueLadderTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"valueLadderLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"valueLadderLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"valueLadderTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"valueLadderTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderTextColumns": {
+			"type": "number"
+		},
+		"valueLadderWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"valueLadderSavingFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"valueLadderSavingFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderSavingFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"valueLadderSavingFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderSavingTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"valueLadderSavingTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"valueLadderSavingLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"valueLadderSavingLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"valueLadderSavingTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"valueLadderSavingTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderSavingTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderSavingTextColumns": {
+			"type": "number"
+		},
+		"valueLadderSavingWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"pickerLabelFontSize": {
+			"type": "string",
+			"default": "",
+			"description": "Bound/configurator mode only: font-size for the in-card option-picker labels (Size/Flavour legends). Raw CSS size (e.g. 18px, 1.2rem). Empty = default. Forwarded to each sgs/option-picker as labelFontSize."
+		},
+		"pickerLabelColour": {
+			"type": "string",
+			"default": "",
+			"description": "Bound/configurator mode only: colour for the in-card option-picker labels (Size/Flavour legends). Theme colour token slug (e.g. primary) or raw hex. Empty = default. Forwarded to each sgs/option-picker as labelColour."
+		},
+		"pickerLabelColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as labelColourGradient — sgs/option-picker already carries the full gradient sibling for its label colour (2026-09-05); this attribute was the missing forward. Non-empty wins over pickerLabelColour."
+		},
+		"pickerColourPreset": {
+			"type": "string",
+			"default": "solid",
+			"enum": [
+				"",
+				"soft",
+				"solid"
+			],
+			"description": "Colour preset forwarded to each in-card sgs/option-picker as colourPreset. Default 'solid' preserves the pre-2026-07-10 bound-configurator look (primary border resting, solid-primary fill selected) now that the card no longer hardcodes the picker's border colour (R5 — see product-card/style.css)."
+		},
+		"pickerShowSelectedTick": {
+			"type": "boolean",
+			"default": false,
+			"description": "Forwarded to each in-card sgs/option-picker as showSelectedTick. Off by default, matching sgs/buybox and sgs/option-picker: a selected option is already carried by its border, background and text colour, its photo and its price."
+		},
+		"pickerPillBgColour": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillBgColour (resting pill background)."
+		},
+		"pickerPillBgColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillBgColourGradient — sgs/option-picker already carries the full gradient sibling for its pill background (2026-09-05); this attribute was the missing forward. Non-empty wins over pickerPillBgColour."
+		},
+		"pickerPillTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillTextColour (resting pill text)."
+		},
+		"pickerPillTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillTextColourGradient — sgs/option-picker already carries the full gradient sibling for its pill text colour (2026-09-05); this attribute was the missing forward. Non-empty wins over pickerPillTextColour."
+		},
+		"pickerPillBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillBorderColour (resting pill border)."
+		},
+		"pickerPillBorderRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillBorderRadius. CSS length string (e.g. 6px); empty = the option-picker's own default."
+		},
+		"pickerPillSelectedBgColour": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillSelectedBgColour."
+		},
+		"pickerPillSelectedTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillSelectedTextColour."
+		},
+		"pickerPillSelectedBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillSelectedBorderColour (R2 decoupled selected border)."
+		},
+		"pickerPillSelectedBorderRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillSelectedBorderRadius. CSS length string (e.g. 6px); empty = match the resting pill radius."
+		},
+		"titleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"titleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"titleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Font family for the product title heading, sourced from theme.json's typography.fontFamilies preset list via the shared TypographyControls font-family picker. Empty = inherit the theme's heading preset, matching every other heading-tagged block."
+		},
+		"titleLineHeight": {
+			"type": "number"
+		},
+		"titleLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"titleColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour for the product title heading. Theme token slug or raw hex. Empty = theme default."
+		},
+		"titleColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the product title heading's text with a background-clip:text mechanism instead of a flat colour (mirrors the tagTextColour/tagTextColourGradient D636 rollout). Non-empty wins over titleColour."
+		},
+		"priceFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"priceFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"priceFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"priceColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour for the price element. Theme token slug or raw hex. Empty = theme default."
+		},
+		"priceColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the price element's text with a background-clip:text mechanism instead of a flat colour (mirrors the tagTextColour/tagTextColourGradient D636 rollout). Non-empty wins over priceColour."
+		},
+		"priceFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Font family for the price element, sourced from theme.json's typography.fontFamilies preset list via the shared TypographyControls font-family picker. Empty = inherit the theme's default (body) font."
+		},
+		"priceLineHeight": {
+			"type": "number"
+		},
+		"priceLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the struck-through RRP beside a live card's price. Theme token slug or raw hex. Empty = the theme's muted text colour."
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Card border colour while the card is hovered or focused (touch-guarded). Theme token slug or raw hex. Empty = the border keeps its resting colour."
+		},
+		"swatchSize": {
+			"type": "number",
+			"default": 0,
+			"description": "Diameter of a card's colour dots in px. 0 = the card style's default (16px, 17px on Frame Card)."
+		},
+		"swatchHoverGrow": {
+			"type": "number",
+			"default": 0,
+			"description": "How far a colour dot grows when pointed at, in % (125 = a quarter larger). 0 = no growth."
+		},
+		"swatchMoreBorderColour": {
+			"type": "string",
+			"description": "Ring colour of the \"+N\" colour-count chip. Theme token slug or raw hex. Empty = a faint dark ring."
+		},
+		"cardShadowHover": {
+			"type": "string",
+			"description": "Shadow shape of the card on hover or keyboard focus within it, such as \"0 18px 44px\". Empty = no hover shadow."
+		},
+		"cardShadowColourHover": {
+			"type": "string",
+			"description": "Colour of the hover shadow: a theme token with a percentage (\"primary 10%\") or a hex."
+		},
+		"swatchBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Ring colour of a card's colour dots. Theme token slug or raw hex. Empty = a faint dark ring."
+		},
+		"mediaBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Fill behind the product photo (shows around a cut-out photo and on the placeholder). Theme token slug or raw hex. Empty = the card style's default."
+		},
+		"brandPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the brand overlay on the photo { top, right, bottom, left }. Rendered via the shared sgs_label_box_css_rule() helper, mirroring savingBadgePadding. Empty = theme default (style.css)."
+		},
+		"wishlistBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Ring colour of the wishlist heart button. Theme token slug or raw hex. Empty = the palette's border colour."
+		},
+		"descFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"descFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"descLineHeight": {
+			"type": "number"
+		},
+		"descLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"descColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour for the product description text. Theme token slug or raw hex. Empty = theme default."
+		},
+		"descColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the product description text with a background-clip:text mechanism instead of a flat colour (mirrors the tagTextColour/tagTextColourGradient D636 rollout). Non-empty wins over descColour."
+		},
+		"descLinkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"descLinkColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string for the product description link colour, read by sgs_link_colour_css(). Non-empty wins over descLinkColour."
+		},
+		"descLinkColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"descLinkColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string for the product description link hover colour, read by sgs_link_colour_css(). Non-empty wins over descLinkColourHover."
+		},
+		"descFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Font family for the product description text, sourced from theme.json's typography.fontFamilies preset list via the shared TypographyControls font-family picker. Empty = inherit the theme's default (body) font."
+		},
+		"pillFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"pillFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pillFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Font weight for the pack-size pill label. render.php already forwards this to sgs_typography_css_rule()'s 'pill' call (2026-09-08) -- the attribute was simply never declared, so the pill could never take a weight override and always fell through to sgs/option-picker's own generic default."
+		},
+		"pillFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"priceNoteFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"priceNoteFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"priceNoteColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour for the price-note text. Theme token slug or raw hex. Empty = theme default (muted)."
+		},
+		"priceNoteColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the price-note text with a background-clip:text mechanism instead of a flat colour (mirrors the tagTextColour/tagTextColourGradient D636 rollout). Non-empty wins over priceNoteColour."
+		},
+		"priceNoteFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Font family for the price-note text, sourced from theme.json's typography.fontFamilies preset list via the shared TypographyControls font-family picker. Empty = inherit the theme's default (body) font."
+		},
+		"priceFromLabelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"priceFromLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"priceFromLabelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"priceFromLabelFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"priceFromLabelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"priceFromLabelTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"priceFromLabelTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"priceFromLabelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"priceFromLabelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"priceFromLabelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"priceFromLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"priceFromLabelTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"priceFromLabelTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"priceFromLabelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"priceFromLabelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"priceFromLabelTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"priceFromLabelTextColumns": {
+			"type": "number"
+		},
+		"priceFromLabelWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"ratingFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"ratingFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"ratingTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"ratingLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"ratingLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"ratingTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"ratingTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingTextColumns": {
+			"type": "number"
+		},
+		"ratingWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"ratingStarsFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingStarsFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"ratingStarsFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingStarsFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingStarsFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingStarsTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"ratingStarsTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"ratingStarsLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingStarsLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"ratingStarsLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingStarsLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"ratingStarsTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingStarsTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"ratingStarsTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingStarsTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingStarsTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingStarsTextColumns": {
+			"type": "number"
+		},
+		"ratingStarsWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"rrpFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"rrpFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"rrpTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"rrpLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"rrpLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"rrpTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"rrpTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpTextColumns": {
+			"type": "number"
+		},
+		"rrpWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"savingBadgeFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"savingBadgeFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"savingBadgeTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"savingBadgeLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"savingBadgeLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"savingBadgeTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"savingBadgeTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeTextColumns": {
+			"type": "number"
+		},
+		"savingBadgeWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"swatchMoreFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"swatchMoreFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"swatchMoreFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"swatchMoreFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"swatchMoreFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"swatchMoreTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"swatchMoreTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"swatchMoreLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"swatchMoreLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"swatchMoreLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"swatchMoreLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"swatchMoreTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"swatchMoreTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"swatchMoreTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"swatchMoreTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"swatchMoreTextColumns": {
+			"type": "number"
+		},
+		"swatchMoreWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"brandFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"brandTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"brandTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"brandLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"brandLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"brandTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"brandTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"brandTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"brandTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"brandTextColumns": {
+			"type": "number"
+		},
+		"brandWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"attributeTagFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"attributeTagFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"attributeTagTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"attributeTagTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"attributeTagLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"attributeTagLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"attributeTagTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"attributeTagTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"attributeTagTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"attributeTagTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"attributeTagTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"attributeTagTextColumns": {
+			"type": "number"
+		},
+		"attributeTagWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"ctaLineHeight": {
+			"type": "string",
+			"default": "1.4"
+		},
+		"ctaTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"cta2TextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"tagFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"tagFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"tagPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the in-body trial tag { top, right, bottom, left }. Rendered scoped via the shared sgs_label_box_css_rule() helper (mirrors sgs/label). The cloning converter lifts the draft .sgs-product-card__tag--trial padding here."
+		},
+		"tagBackgroundColour": {
+			"type": "string",
+			"default": "accent",
+			"description": "Background colour for the in-body trial tag. Theme token slug or raw CSS colour. Matches the retired style.css class default (accent tint) so an untouched card renders unchanged. Cloning converter lifts the draft trial-tag background-color here."
+		},
+		"tagBackgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the trial tag's resting background with a gradient instead of a flat colour. Non-empty wins over tagBackgroundColour."
+		},
+		"tagBackgroundColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Background colour for the in-body trial tag on hover/focus-visible. Theme token slug or raw CSS colour."
+		},
+		"tagBackgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the trial tag's hover background with a gradient instead of a flat colour. Non-empty wins over tagBackgroundColourHover."
+		},
+		"tagTextColour": {
+			"type": "string",
+			"default": "text",
+			"description": "Text colour for the in-body trial tag. Theme token slug or raw CSS colour. Matches the retired style.css class default so an untouched card renders unchanged. Cloning converter lifts the draft trial-tag color here."
+		},
+		"tagTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the in-body trial tag's text with a background-clip:text mechanism instead of a flat colour (D636 text-colour gradient rollout). Non-empty wins over tagTextColour."
+		},
+		"tagBorderRadius": {
+			"type": [
+				"string",
+				"number"
+			],
+			"default": "",
+			"description": "Border radius for the in-body trial tag as a CSS length (e.g. '16px', '1.5rem'). Empty = the style.css default. A bare number is treated as px for pre-2026-08-13 instances. Cloning converter lifts the draft trial-tag border-radius here."
+		},
+		"tagFullWidth": {
+			"type": "boolean",
+			"default": true,
+			"description": "When true the in-body trial tag stretches to full width (block, 100%) instead of hugging its text. Defaults TRUE because the trial tag is a full-width child of the flex-column card body by design (draft canon) — a card-design constant, not a converter-detected value (the parent-flex fullWidth heuristic was dropped per council). Toggle off to make the trial tag hug its text."
+		},
+		"showPickers": {
+			"type": "boolean",
+			"default": true,
+			"description": "Bound/live-data mode only: when false, suppresses all option-picker renders (both variable-axis and non-variable pill paths) and falls through to the static From-price card appearance. Use on collection grids where picker UI is unwanted. Default true (existing behaviour unchanged)."
+		},
+		"titleTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"titleTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"titleLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"titleTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"titleTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"titleTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"titleTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextColumns": {
+			"type": "number"
+		},
+		"titleWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"descFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"descFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"descTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"descTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"descLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"descLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"descTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"descTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"descTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"descTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"descTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"descTextColumns": {
+			"type": "number"
+		},
+		"descTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"descWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"tagFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"tagFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"tagFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"tagTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"tagTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"tagLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"tagLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tagLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"tagLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tagTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"tagTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"tagTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"tagTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tagTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"tagTextColumns": {
+			"type": "number"
+		},
+		"tagWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"showRating": {
+			"type": "boolean",
+			"default": false,
+			"description": "Frame Card component: show the star rating + review-count row (or a 'No reviews yet' line when reviewCount is 0). Operator-authored — not derived from a live WooCommerce rating meta. Applies to every render branch (typed + all 3 bound branches) per FP-9."
+		},
+		"ratingValue": {
+			"type": "number",
+			"default": 0,
+			"role": "content",
+			"description": "Star rating, 0-5 (decimals allowed, e.g. 4.7). Displayed as a numeric label alongside a fixed 5-glyph star row (visual approximation, no partial-fill clipping)."
+		},
+		"reviewCount": {
+			"type": "number",
+			"default": 0,
+			"role": "content",
+			"description": "Review count shown next to the rating. 0 renders the 'No reviews yet' line instead of a star row, matching the Frame Card design's zero-review state."
+		},
+		"ratingColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour for the filled star glyphs + the rating/review text. Theme token slug or raw CSS colour. Empty = theme default."
+		},
+		"showBrandOverlay": {
+			"type": "boolean",
+			"default": false,
+			"description": "Frame Card component: overlay a brand wordmark on the top-left corner of the product image. Requires a non-empty brandName and a rendered image (typed mode) / real image (bound modes)."
+		},
+		"brandUseLogo": {
+			"type": "boolean",
+			"default": true,
+			"description": "Print the brand's LOGO on the product image when the brand has one, falling back to the brand name as text. The logo's text alternative is the brand name (never the attachment's own alt text, which is often empty), and the logo replaces the name rather than joining it, so the brand is announced once. Resolved by includes/helpers-brand-logo.php via the shared `sgs_product_card_brand_taxonomy` filter; rendered by sgs_product_card_brand_markup(). Switch off to force the typed/resolved name even where a logo exists — a logo too detailed to read at overlay size is a design call."
+		},
+		"brandLogoHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Brand logo height per device, a CSS length. Unset keeps the stylesheet 18px."
+		},
+		"brandLogoWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Brand logo width per device, a CSS length. Unset keeps auto (the logo's own shape)."
+		},
+		"brandLogoMaxHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Brand logo maximum height per device, a CSS length. Unset = no cap."
+		},
+		"brandLogoMaxWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Brand logo maximum width per device, a CSS length. Unset = the logo may fill its box (100%), never wider."
+		},
+		"brandName": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Brand wordmark text overlaid on the product image when showBrandOverlay is true."
+		},
+		"brandColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour for the brand overlay text. Theme token slug or raw CSS colour. Empty = theme default."
+		},
+		"brandFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"brandFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"brandFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Brand overlay font family (a theme font preset or a CSS font-family string). Empty = the card's body font."
+		},
+		"brandFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"brandLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"brandLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"showSavingBadge": {
+			"type": "boolean",
+			"default": false,
+			"description": "Frame Card component: show an independent saving/discount badge (e.g. 'Save £12') on the media area. Distinct from the existing trial/featured tag — this badge is not tied to variantStyle and may appear alongside either."
+		},
+		"savingLabel": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Saving badge text (e.g. 'Save £12', '20% off'). Renders only when showSavingBadge is true and this is non-empty."
+		},
+		"savingBadgePosition": {
+			"type": "string",
+			"enum": [
+				"top-left",
+				"top-right",
+				"bottom-left",
+				"bottom-right"
+			],
+			"default": "bottom-left",
+			"description": "Corner of the media area the saving badge overlays. Defaults to bottom-left — the real Frame Card.dc.html markup position (`position:absolute;bottom:12px;left:12px`); the design README's prose says top-right, which is stale and does not match the design source."
+		},
+		"savingBadgeBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Saving badge background colour. Theme token slug or raw CSS colour. Empty = theme default (ink)."
+		},
+		"savingBadgeTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Saving badge text colour. Theme token slug or raw CSS colour. Empty = theme default (cream)."
+		},
+		"savingBadgePadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the saving badge { top, right, bottom, left }. Rendered via the shared sgs_label_box_css_rule() helper, mirroring tagPadding. Empty = theme default (style.css)."
+		},
+		"savingBadgeBorderRadius": {
+			"type": [
+				"string",
+				"number"
+			],
+			"default": "",
+			"description": "Border radius for the saving badge as a CSS length (e.g. '4px'). Empty = the style.css default. Mirrors tagBorderRadius's shape."
+		},
+		"colourSwatches": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"key": {
+						"type": "string",
+						"role": "technical"
+					},
+					"label": {
+						"type": "string",
+						"role": "a11y-text"
+					},
+					"colour": {
+						"type": "string",
+						"role": "colour-background"
+					}
+				}
+			},
+			"description": "Frame Card component: the colour-swatch row (mirrors sgs/option-picker's optionItems shape — key + label — with a colour value added). Each swatch's colour is DATA, not a styling property. Empty array = no swatches rendered (matches the packSizes convention — no separate show toggle). Left empty on a variable product in live mode, includes/product-card-live-fill.php fills it from the swatchAttribute taxonomy's terms, and each dot then renders as a real button that swaps that card's photo and opens the product on that colour; a hand-typed swatch has no term behind it and stays decorative."
+		},
+		"swatchMaxVisible": {
+			"type": "number",
+			"default": 4,
+			"role": "content",
+			"description": "Maximum number of colour swatches shown before collapsing the remainder into a '+N' pill. Matches the Frame Card design's 'four swatches maximum, then a +N pill'."
+		},
+		"showAttributeTag": {
+			"type": "boolean",
+			"default": false,
+			"description": "Frame Card component: show a small tag beside the product title when the product has a chosen product attribute term, or a chosen product tag. Generic — the operator picks which attribute/term or tag triggers it (e.g. an optician site's 'Polarised' lens attribute); nothing about it is hardcoded to a specific client's vocabulary."
+		},
+		"attributeTagSource": {
+			"type": "string",
+			"default": "attribute",
+			"enum": [
+				"attribute",
+				"tag"
+			],
+			"description": "What showAttributeTag checks against the resolved live product (bound modes only): a WooCommerce product ATTRIBUTE taxonomy + term, or a plain WooCommerce product TAG."
+		},
+		"attributeTagTaxonomy": {
+			"type": "string",
+			"default": "",
+			"description": "WooCommerce product attribute taxonomy slug to check (e.g. pa_lens-type — find it under Products > Attributes). Only read when attributeTagSource is 'attribute'; ignored for 'tag'."
+		},
+		"attributeTagTerm": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Term slug within attributeTagTaxonomy (attribute mode) or the product_tag slug (tag mode) that triggers the tag. Bound modes: the tag shows only when the resolved live product actually carries this term. Typed mode has no live product to check against, so the tag shows whenever this is non-empty and showAttributeTag is on."
+		},
+		"attributeTagText": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Tag text. Empty (default) = use the matched term's own name (e.g. 'Polarised') where it can be resolved, else the term slug title-cased."
+		},
+		"attributeTagTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text + border colour for the attribute tag. Theme token slug or raw CSS colour. Empty = theme default (muted), matching the Frame Card design's bordered-only chip."
+		},
+		"attributeTagBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour for the attribute tag. Theme token slug or raw CSS colour. Empty = theme default."
+		},
+		"attributeTagBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width for the attribute tag { top, right, bottom, left }, set alongside its colour in the border control. Empty = no border (width 0, the framework border default); set 1px for an outlined chip."
+		},
+		"attributeTagBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Background colour for the attribute tag. Empty (default) = transparent, matching the Frame Card design's bordered-only chip (no fill)."
+		},
+		"attributeTagPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the attribute tag { top, right, bottom, left }. Rendered scoped via the shared sgs_label_box_css_rule() helper (mirrors tagPadding/savingBadgePadding). Empty = theme default (style.css)."
+		},
+		"attributeTagBorderRadius": {
+			"type": [
+				"string",
+				"number"
+			],
+			"default": "",
+			"description": "Border radius for the attribute tag as a CSS length (e.g. '4px'). Empty = the style.css default (square corners, matching the Frame Card design source). Mirrors tagBorderRadius/savingBadgeBorderRadius."
+		},
+		"attributeTagFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"attributeTagFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"attributeTagFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"attributeTagLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"attributeTagLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"noImageLabel": {
+			"type": "string",
+			"default": "",
+			"description": "Text shown in the no-photo box on a product with no real photo (e.g. 'Photo to come'). Empty = a picture icon."
+		},
+		"noImageLabelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"noImageLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"noImageLabelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"noImageLabelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"noImageLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"noImageLabelTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"noImageLabelColour": {
+			"type": "string",
+			"default": "",
+			"description": "No-photo label colour. Theme token slug or raw hex. Empty = the no-photo box's muted text colour."
+		},
+		"valueLadderSavingColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the saving text on each value-ladder row (bound mode). Theme token slug or raw hex. Empty = the theme's text colour."
+		},
+		"priceRowSpaceAbove": {
+			"type": "string",
+			"default": "",
+			"description": "Extra space above the price row as a CSS length (e.g. '6px'), added to the card body's gap between rows. Empty = none."
+		},
+		"noReviewsText": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Frame Card component: editable text shown where the star row would be when reviewCount is 0 and showRating is on. Empty (default) = show nothing at all — an untouched card with zero reviews renders no rating row. Non-empty renders that text (e.g. 'No reviews yet') in its place. Rendered by sgs_product_card_rating_markup() (includes/product-card-builtin-render.php), which every render branch calls."
+		},
+		"rrpMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "Live-data mode: post-meta key holding the product's recommended retail price (a plain number, e.g. \"171\"). When set and the RRP is above the price, the RRP shows struck through beside the price and an empty savingLabel is filled with the saving (\"Save £32\"). Empty = off. Same setting as sgs/buybox; read by includes/product-rrp.php::sgs_product_rrp_saving."
+		},
+		"rrpSavingFormat": {
+			"type": "string",
+			"default": "amount",
+			"enum": [
+				"amount",
+				"percentage"
+			],
+			"description": "How the saving badge filled from the RRP is worded: a money amount (\"Save £32\") or a percentage (\"Save 19%\")."
+		},
+		"cardContentSource": {
+			"type": "string",
+			"default": "typed",
+			"enum": [
+				"typed",
+				"product"
+			],
+			"description": "Where the badge, price note and button label of a connected (wc-product) card come from. typed = the values typed on this card (today's output, unchanged). product = each product's own values from its Card tab on the product edit screen, read from product meta by includes/product-card-per-product.php::sgs_product_card_per_product_fill; the typed values stay stored and return when this is switched back."
+		},
+		"badgeMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "From-each-product mode: the post-meta key holding the badge text on the image. Empty = the standard key _sgs_card_badge, written by the product edit screen's Card tab. Same contract as rrpMetaKey. Read only while cardContentSource is product."
+		},
+		"priceNoteMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "From-each-product mode: the post-meta key holding the small note beside the price. Empty = the standard key _sgs_card_price_note. Same contract as rrpMetaKey. Read only while cardContentSource is product."
+		},
+		"ctaLabelMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "From-each-product mode: the post-meta key holding the button label. Empty = the standard key _sgs_card_cta_label. Same contract as rrpMetaKey. Read only while cardContentSource is product."
+		},
+		"ctaActionMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "From-each-product mode: the post-meta key holding what the button does (add or page). Empty = the standard key _sgs_card_cta_action. Same contract as rrpMetaKey. Read only while cardContentSource is product."
+		},
+		"ctaChoicesToPage": {
+			"type": "boolean",
+			"default": false,
+			"description": "From-each-product mode: a product that needs choices (variable, grouped or not purchasable) gets a button linking to its page instead of an add-to-basket form, unless the product's own button action says otherwise. Read only while cardContentSource is product."
+		},
+		"priceFromLowest": {
+			"type": "boolean",
+			"default": false,
+			"description": "From-each-product mode: a variable product whose variations differ prints 'From' and its lowest price (Product_Bindings price_from_html) instead of the default variation's price. Read only while cardContentSource is product. The 'From' wording is styled by the priceFromLabel* typography."
+		},
+		"imageSize": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"thumbnail",
+				"medium",
+				"medium_large",
+				"large",
+				"full"
+			],
+			"description": "Which WordPress image size a connected card loads for the product photo. Empty = WooCommerce's own thumbnail size (today's output). A larger size stops a small thumbnail being stretched across a wide card. includes/product-card-image-size.php::sgs_product_card_image_size_apply."
+		},
+		"imageFill": {
+			"type": "boolean",
+			"default": false,
+			"description": "The product photo fills the card's image box (no strip of empty box under a photo that is shorter than the box). Adds the product-card--image-fill modifier; style.css owns the rule."
+		},
+		"showCtaIcon": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the basket icon inside the card's add-to-basket button. Off hides it with a scoped rule (render.php)."
+		},
+		"showCtaShadow": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the button's shadow (at rest and on hover). Off emits box-shadow:none on the card's primary button (render.php)."
+		},
+		"showSwatches": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the colour dots on the card. Off prints no dots at all, typed or from the product (includes/product-card-swatches.php::sgs_product_card_swatches_markup)."
+		},
+		"showDescriptionTier": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device show or hide of the short description: {desktop, tablet, mobile} each 'on' or 'off'; an empty tier inherits the tier above (sgs_resolve_tier). Empty = the description shows as showDescription says. Rendered by sgs_emit_tier_rules_map in render.php."
+		},
+		"cardPaddingTier": {
+			"type": "object",
+			"default": {},
+			"description": "Card body padding on tablet and mobile: {tablet, mobile} each a box {top, right, bottom, left}; an empty tier inherits the tier above. The desktop padding stays cardPadding. Rendered by sgs_emit_responsive_css in render.php."
+		},
+		"swatchAttribute": {
+			"type": "string",
+			"default": "",
+			"description": "Live-data mode: the variation attribute (e.g. pa_colour) whose terms fill the colour dots when colourSwatches is empty. Each term's colour is its _sgs_swatch_color term meta. Empty = the first variation attribute whose terms carry a colour."
+		},
+		"showDescription": {
+			"type": "boolean",
+			"default": true,
+			"description": "Live-data mode: show the product's short description under the title. Off for listing grids."
+		},
+		"showCta": {
+			"type": "boolean",
+			"default": true,
+			"description": "Live-data mode: show the card's button (View product / Add to cart / Buy now). Off for listing grids where the whole card links to the product."
+		},
+		"showWishlist": {
+			"type": "boolean",
+			"default": false,
+			"description": "Live-data mode: a heart button on the image (top-right) that saves the product to the visitor's wishlist, kept in their browser. aria-pressed carries the saved state."
+		},
+		"showGalleryThumbs": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show a strip of thumbnail images above the product title, allowing visitors to select alternate product images."
+		},
+		"imageAspectRatio": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"16 / 9",
+				"21 / 9",
+				"4 / 3",
+				"1 / 1",
+				"4 / 5",
+				"3 / 4",
+				"9 / 16"
+			],
+			"description": "Image box shape. Empty = the fixed image height (imageHeight). A ratio makes the box follow the card's width at that shape."
+		},
+		"showShadow": {
+			"type": "boolean",
+			"default": true,
+			"description": "The card's resting drop shadow. Off = border only; the hover lift keeps its shadow."
+		}
+	},
+	"styles": [
+		{
+			"name": "classic",
+			"label": "Classic",
+			"isDefault": true
+		},
+		{
+			"name": "frame-card",
+			"label": "Frame Card"
+		}
+	],
+	"usesContext": [ "postId", "sgs/cardGridSourceMode" ],
+	"editorScript": "file:./index.js",
+	"style": [ "sgs-button-style", "file:./style-index.css" ],
+	"editorStyle": "file:./index.css",
+	"viewScriptModule": "file:./view.js",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"productName": "Sample Product",
+			"description": "A short product description goes here.",
+			"variantStyle": "standard",
+			"packSizes": [
+				{
+					"label": "8-pack",
+					"selected": true
+				},
+				{
+					"label": "12-pack",
+					"selected": false
+				},
+				{
+					"label": "20-pack",
+					"selected": false
+				},
+				{
+					"label": "40-pack",
+					"selected": false
+				}
+			],
+			"priceLarge": "£10.00",
+			"priceNote": "8-pack · Free delivery over £35",
+			"ctaText": "Add to Cart — £10",
+			"ctaUrl": "#"
+		}
+	}
+}
