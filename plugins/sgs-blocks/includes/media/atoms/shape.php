@@ -112,6 +112,26 @@ if ( ! function_exists( 'sgs_media_atom_shape_at' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_atom_shape_radius' ) ) {
+	/**
+	 * The corner radius a radius-drawn shape (circle, ellipse, pill) gives one device, or '' for a mask or no shape.
+	 *
+	 * @param array  $attrs  Attributes.
+	 * @param array  $slot   The slot.
+	 * @param string $device Device.
+	 * @return string
+	 */
+	function sgs_media_atom_shape_radius( array $attrs, array $slot, string $device ): string {
+		$shape = sgs_media_atom_shape_at( $attrs, $slot, $device );
+		$radii = array(
+			'circle'  => '50%',
+			'ellipse' => '50%',
+			'pill'    => '9999px',
+		);
+		return 'radius' === $shape['kind'] ? $radii[ $shape['slug'] ] : '';
+	}
+}
+
 if ( ! function_exists( 'sgs_media_shape_has_mask' ) ) {
 	/**
 	 * Whether any device of the slot has a mask shape (so the mask layer is printed).
@@ -181,11 +201,6 @@ if ( ! function_exists( 'sgs_media_atom_shape_emit' ) ) {
 			'bottomRight' => 'border-bottom-right-radius',
 			'bottomLeft'  => 'border-bottom-left-radius',
 		);
-		$radius_of = array(
-			'circle'  => '50%',
-			'ellipse' => '50%',
-			'pill'    => '9999px',
-		);
 		$rules     = array();
 		$hover     = array();
 		$prev      = '';
@@ -199,7 +214,7 @@ if ( ! function_exists( 'sgs_media_atom_shape_emit' ) ) {
 				}
 			}
 			$prev = $now;
-			$radius = 'radius' === $shape['kind'] ? $radius_of[ $shape['slug'] ] : '';
+			$radius = sgs_media_atom_shape_radius( $attrs, $slot, $device );
 			if ( '' !== $radius ) {
 				if ( $radius !== $prev_radius ) {
 					sgs_media_add( $rules, $nodes['surface'], $device, 'border-radius', $radius );

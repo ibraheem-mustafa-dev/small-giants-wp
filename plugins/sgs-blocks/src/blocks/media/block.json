@@ -54,7 +54,8 @@
 					"prefix": "videoTime",
 					"attrMap": {
 						"css:-webkit-text-stroke-width": "videoTimeTextStrokeWidth",
-						"css:-webkit-text-stroke-color": "videoTimeTextStrokeColour"
+						"css:-webkit-text-stroke-color": "videoTimeTextStrokeColour",
+						"css:writing-mode": "videoTimeWritingMode"
 					},
 					"states": {
 						"hover": {
@@ -119,7 +120,8 @@
 						"css:color": "captionColour",
 						"css:background-image": "captionColourGradient",
 						"css:-webkit-text-stroke-width": "captionTextStrokeWidth",
-						"css:-webkit-text-stroke-color": "captionTextStrokeColour"
+						"css:-webkit-text-stroke-color": "captionTextStrokeColour",
+						"css:writing-mode": "captionWritingMode"
 					},
 					"states": {
 						"hover": {

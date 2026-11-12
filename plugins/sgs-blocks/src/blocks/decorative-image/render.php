@@ -122,27 +122,6 @@ if ( $sgs_di_as_box ) {
 }
 $has_media = '' !== $media['html'];
 
-// The shape a layer root takes when it is a box: a radius-drawn shape becomes border-radius on the root, a mask shape clips the picture.
-$sgs_di_shape_radius = array(
-	'circle'  => '50%',
-	'ellipse' => '50%',
-	'pill'    => '9999px',
-);
-$sgs_di_shape_at     = static function ( string $tier ) use ( $attributes ): string {
-	$shape = sgs_responsive_normalise_object( $attributes['layerShape'] ?? null );
-	$order = array( 'desktop', 'tablet', 'mobile' );
-	$seen  = '';
-	foreach ( array_slice( $order, 0, array_search( $tier, $order, true ) + 1 ) as $step ) {
-		$value = $shape[ $step ] ?? null;
-		if ( is_array( $value ) ) {
-			$value = $value['shape'] ?? '';
-		}
-		if ( is_string( $value ) && '' !== $value ) {
-			$seen = $value;
-		}
-	}
-	return $seen;
-};
 
 $sgs_di_border = array(
 	'base'   => array(),
@@ -293,7 +272,8 @@ $sgs_di_shape_decl = array();
 if ( $sgs_di_as_box ) {
 	$sgs_di_shape_was = '';
 	foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_di_tier ) {
-		$sgs_di_radius = $sgs_di_shape_radius[ $sgs_di_shape_at( $sgs_di_tier ) ] ?? '';
+		// A radius-drawn shape becomes border-radius on the box root (a mask shape clips the picture instead).
+		$sgs_di_radius = sgs_media_atom_shape_radius( $attributes, array( 'prefix' => 'layer' ), $sgs_di_tier );
 		if ( $sgs_di_radius !== $sgs_di_shape_was && ( '' !== $sgs_di_radius || '' !== $sgs_di_shape_was ) ) {
 			$sgs_di_shape_decl[ $sgs_di_tier ] = 'border-radius:' . ( '' !== $sgs_di_radius ? $sgs_di_radius : '0' );
 		}
