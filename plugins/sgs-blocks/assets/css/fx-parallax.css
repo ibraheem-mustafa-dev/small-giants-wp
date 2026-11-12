@@ -21,6 +21,10 @@
  * offset to 0px here as well as in the driver, so a switch takes effect at once.
  * An element with no `data-sgs-fx-parallax-basis` uses the view basis (the
  * driver's rule for an unknown basis).
+ *
+ * A background parallax on a real <img> also sets `--sgs-plx-over-y` / `--sgs-plx-over-x`, how far motion.css overscans
+ * that image on the moving axis so the offset (never more than the clamp) cannot show an edge; with no clamp the
+ * y overscan stays at the 9% floor and x has none.
  */
 
 :where( [data-sgs-fx~="parallax"] ) {
@@ -54,10 +58,12 @@
 
 :where( [data-sgs-fx~="parallax"][data-sgs-fx-parallax-background="true"]:not( [data-sgs-fx-parallax-axis="x"] ) ) {
 	--sgs-plx-bg-y: var( --sgs-fx-plx-offset );
+	--sgs-plx-over-y: max( 9%, var( --sgs-fx-parallax-clamp, 0px ) );
 }
 
 :where( [data-sgs-fx~="parallax"][data-sgs-fx-parallax-background="true"][data-sgs-fx-parallax-axis="x"] ) {
 	--sgs-plx-bg-x: var( --sgs-fx-plx-offset );
+	--sgs-plx-over-x: max( 0px, var( --sgs-fx-parallax-clamp, 0px ) );
 }
 
 @media ( prefers-reduced-motion: reduce ) {

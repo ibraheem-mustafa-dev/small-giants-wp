@@ -220,11 +220,13 @@
 	background-position: calc(50% + var(--sgs-plx-bg-x)) calc(50% + var(--sgs-plx-bg-y));
 }
 /* A real <img> background (the hero's and a container's image layer) has no background-position to move, so the same
-   offset moves the image through `translate`, and the image is overscanned 9% top and bottom so the travel never
-   shows an edge. Where the element also holds the translate channel, the offset adds to that channel's formula. */
+   offset moves the image through `translate`, and the image is overscanned so the travel never shows an edge: 9% top and bottom at rest, and
+   as far as the parallax clamp when that is larger, on the axis the effect moves (fx-parallax.css sets
+   --sgs-plx-over-y and --sgs-plx-over-x with the offset). The frame clips the overscan. Where the element also holds the translate channel, the offset adds to that channel's formula. */
 img[data-sgs-mc~="background-position"] {
-	inset: -9% 0;
-	height: 118%;
+	inset: calc(-1 * var(--sgs-plx-over-y, 9%)) calc(-1 * var(--sgs-plx-over-x, 0px));
+	width: calc(100% + 2 * var(--sgs-plx-over-x, 0px));
+	height: calc(100% + 2 * var(--sgs-plx-over-y, 9%));
 	translate: var(--sgs-plx-bg-x) var(--sgs-plx-bg-y);
 }
 img[data-sgs-mc~="background-position"][data-sgs-mc~="translate"] {
