@@ -3774,7 +3774,7 @@
     "sgs/decorative-image::layerBoxShadowColour": "color",
     "sgs/decorative-image::layerBoxShadowColourHover": "color",
     "sgs/decorative-image::layerDecorative": "boolean-visibility",
-    "sgs/decorative-image::layerFit": null,
+    "sgs/decorative-image::layerFit": "visual",
     "sgs/decorative-image::layerFocal": "visual",
     "sgs/decorative-image::layerHeight": "layout",
     "sgs/decorative-image::layerLoading": "behaviour",
