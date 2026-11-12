@@ -48,8 +48,8 @@ require_once __DIR__ . '/media-render.php';
 
 $uid = 'sgs-before-after-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 
-$before_media = sgs_before_after_render_side( $attributes, 'before', $uid, sgs_before_after_slot( $block ?? null, 'before' ) );
-$after_media  = sgs_before_after_render_side( $attributes, 'after', $uid, sgs_before_after_slot( $block ?? null, 'after' ) );
+$before_media = sgs_before_after_render_side( $attributes, 'before', $uid, sgs_before_after_slot( $block, 'before' ) );
+$after_media  = sgs_before_after_render_side( $attributes, 'after', $uid, sgs_before_after_slot( $block, 'after' ) );
 
 if ( ! $before_media['has_content'] || ! $after_media['has_content'] ) {
 	return;

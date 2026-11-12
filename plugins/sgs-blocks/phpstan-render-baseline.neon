@@ -33,12 +33,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Variable \$sgs_slot_tiers in empty\(\) always exists and is always falsy\.$#'
-			identifier: empty.variable
-			count: 1
-			path: src/blocks/before-after/render.php
-
-		-
 			message: '#^Variable \$css_vars in empty\(\) always exists and is not falsy\.$#'
 			identifier: empty.variable
 			count: 1

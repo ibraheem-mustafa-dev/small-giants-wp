@@ -866,7 +866,7 @@ foreach ( array( 'tablet', 'mobile' ) as $sgs_tl_device ) {
 }
 
 // Each entry's media prints through the shared renderer before the stylesheet is printed, so the renderer's rules reach it.
-$sgs_tl_media_slot  = sgs_timeline_media_slot( $block ?? null );
+$sgs_tl_media_slot  = sgs_timeline_media_slot( $block );
 $sgs_tl_block_rules = true;
 $sgs_tl_entry_media = array();
 foreach ( $entries as $sgs_tl_index => $sgs_tl_entry ) {

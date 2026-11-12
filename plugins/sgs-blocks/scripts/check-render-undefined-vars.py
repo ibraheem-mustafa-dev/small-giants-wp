@@ -52,14 +52,8 @@ PHPSTAN = PLUGIN_ROOT / "vendor" / "bin" / "phpstan"
 # A synthetic snippet would prove PHPStan works; this proves THIS GATE, with THIS
 # config and THIS baseline, catches the exact bug that motivated it.
 FIXTURE_FILE = PLUGIN_ROOT / "src" / "blocks" / "hero" / "render.php"
-FIXTURE_FIXED = (
-    "$overlay_decls = sgs_overlay_decls( $overlay_colour_raw, "
-    "$overlay_gradient_value, $overlay_opacity, $overlay_blend_mode );"
-)
-FIXTURE_BROKEN = (
-    "$overlay_decls = sgs_overlay_decls( $overlay_colour_raw, "
-    "$overlay_gradient, $overlay_opacity, $overlay_blend_mode );"
-)
+FIXTURE_FIXED = "'' !== $overlay_colour_raw || $overlay_gradient_value\n"
+FIXTURE_BROKEN = "'' !== $overlay_colour_raw || $overlay_gradient\n"
 FIXTURE_EXPECTED = "Variable $overlay_gradient might not be defined."
 
 INSTALL_HINT = (
