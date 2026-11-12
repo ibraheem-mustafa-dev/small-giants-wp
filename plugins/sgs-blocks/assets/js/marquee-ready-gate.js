@@ -46,6 +46,11 @@
 	};
 	const wouldRun = ( root ) => {
 		const range = root.getAttribute( PREFIX + 'below-breakpoint' );
+		if ( 'overflow' === range ) {
+			// Whether the items overflow is known only after measuring, so the module decides; marking now would show
+			// a running layout that snaps back when the items fit, or hide a resting wrap the module has to measure.
+			return false;
+		}
 		if ( below[ range ] && ! matches( below[ range ] ) ) {
 			return false;
 		}

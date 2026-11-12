@@ -315,8 +315,19 @@ export function createMarquee( root ) {
 		}
 		const vertical = VERTICAL.includes( settings.direction );
 		// Read while the static layout still applies: the running layout has its own gap.
-		if ( 0 === loops.length && ! root.hasAttribute( 'data-sgs-marquee' ) ) {
+		// The head gate may already have marked the root, so the marks come off while measuring and go back after.
+		if ( 0 === loops.length ) {
+			const rootMark = root.getAttribute( 'data-sgs-marquee' );
+			const laneMark = lane.getAttribute( 'data-sgs-marquee-lane' );
+			root.removeAttribute( 'data-sgs-marquee' );
+			lane.removeAttribute( 'data-sgs-marquee-lane' );
 			resting = { gaps: restingGaps( vertical ), padding: restingPadding( vertical ) };
+			if ( null !== rootMark ) {
+				root.setAttribute( 'data-sgs-marquee', rootMark );
+			}
+			if ( null !== laneMark ) {
+				lane.setAttribute( 'data-sgs-marquee-lane', laneMark );
+			}
 		}
 		// The set is measured in the running layout: a block can keep the set out of its static layout until the
 		// marquee runs (the trust bar's track is `display: contents` until then), so the marks go on first.
