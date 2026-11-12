@@ -1,12 +1,14 @@
 ---
 doc_type: plan
 title: Finishing the three client sites to sellable quality (Indus, then Eye Care, then Mama's)
-status: active
+status: parked
 created: 2026-11-02
 governs: Spec 48 (cloning system) evidence; Front H and Front F
 ---
 
 # Finishing the three client sites (Indus, then Eye Care, then Mama's)
+
+**Parked on 2026-11-12 (Bean).** Indus and Eye Care are signed off. Mama's hand-finishing stopped with the seven items below open, because Mama's is now the proof site for the web engine (`plans/2026-11-12-web-engine-architecture.md`) and the WordPress framework is frozen to security updates and client fixes. This plan stays as the record of how an item is worked and of what Mama's still lacked on WordPress; it resumes only if the engine's step 1a stops and Bean chooses to finish Mama's here.
 
 **Goal (Bean):** three sites good enough to present to prospective clients and sell, each matching its Claude Design draft at 375, 768 and 1440. Indus is finished and signed off first, then Eye Care, then Mama's (Bean 2026-11-08).
 
@@ -52,7 +54,7 @@ Rules:
   - The drawer sectors card hover shadow (ND16) uses the desktop card's value: alpha .40 against .45. Not visible; Bean dropped a per-device shadow redesign for it.
   - The trade-account button hides at 1199px and below.
 
-## Mama's (now)
+## Mama's (stopped 2026-11-12, seven items open)
 
 - **Live:** mamas-test, framework code `f579fdb33` (marker `e2c227b79`); it does not have Eye Care round 12's framework commits (`f791e433b` to `24095ea4f`). Its content was pushed on 2026-11-05 (site-check 0 failed). Rounds P0 and R4 to R6 and the merged round are done (fix catalogue; `plans/archive/2026-11-05-mamas-merged-round.md`).
 - **Next:** work each surface from a checklist written from the draft's code, structure first, every element, state and width (the Eye Care round 14 method, auto memory "match-a-surface-by-reading-both-codebases-element-by-element"); Bean's look and issues list are the cross-check, not the scope. Everyday properties go in settings, never Custom CSS. The merged round plan's "Open" list holds what earlier rounds left.

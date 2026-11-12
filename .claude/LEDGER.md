@@ -8,10 +8,11 @@ last_updated: 2026-11-12
 
 ## Summary for Bean
 
-- **Mama's (Front H):** the one client stream now. Indus (signed off 2026-11-08) and Eye Care (signed off 2026-11-12) are finished; Mama's is finished by hand from `plans/2026-11-02-clone-finishing-streams.md` section "Mama's (now)", the one Mama's plan (open list included).
-- **Media system (Spec 49, Front P):** released 2026-11-12: every SGS image, video, embed, SVG and background control runs on the new media system on all four test sites.
-- **Nav / header / footer (Front N):** Waves 1 to 3C are live; Gate 3C's last mile is deferred by you; Waves 4 and 5 have not started.
-- **Need you:** the rulings under Parked, the Spec 36 and Spec 38 choices under Front N.
+- **Web engine (Front E):** approved by you on 2026-11-12. The agency's own website engine replaces WordPress in gated steps; the design, roadmap and stop limits are `plans/2026-11-12-web-engine-architecture.md`. Next is step 1a (Mama's Home and Shop, look only, about 10 build hours), started from that plan's kickoff brief in a new repository on your "go".
+- **WordPress framework: frozen on 2026-11-12 (your decision).** Security updates and client fixes only: no new framework features, specs or checks. Indus (signed off 2026-11-08) and Eye Care (signed off 2026-11-12) launch on WordPress when their clients are ready. A new client is built on WordPress until the engine passes steps 1b and 2.
+- **Mama's (Front H):** hand-finishing on WordPress stopped on 2026-11-12; Mama's is the engine's proof site. Its open list stays recorded in `plans/2026-11-02-clone-finishing-streams.md`.
+- **Media system (Spec 49, Front P):** released 2026-11-12 on all four test sites.
+- **Need you:** export any Claude Design project you still need before its standalone site closes on 14 December 2026. The rulings under Parked and Front N wait until a client fix needs one.
 
 ## Blockers
 
@@ -19,15 +20,25 @@ last_updated: 2026-11-12
 
 ## Fronts
 
+Every WordPress front below (M, H, F, P, N) is frozen as of 2026-11-12: its open items are worked only when a client fix or a security update needs them.
+
+### Front E: Web engine
+
+**State:** design approved 2026-11-12 after a research round and a full council; nothing is built. Plan: `plans/2026-11-12-web-engine-architecture.md` (document format in its section 4, tool list in 9, roadmap with pass and stop conditions in 16, kickoff brief for step 1a in 21). Research: `C:\Users\Bean\.claude\memory\research\2026-11-12-web-engine-replace-wordpress.md`. The concept it answers is `.claude/Proposal.md`.
+
+**Resume from:** the kickoff brief, in a new repository (`C:\Users\Bean\Projects\small-giants-engine`). Nothing in this repository changes for it; the draft reader (`scripts/computed-route/lib/read-logic.mjs` and its helpers), the parity walker and the handoff folders under `sites/` are copied or read from here.
+
+**Rules that reach this repository:** a new client is built here until the engine passes steps 1b and 2; the three WordPress sites get one capped update-and-test session a month; a signed-off site moves to the engine only if a change it needs costs more here than a move.
+
 ### Front M: Motion model (Spec 38A) and clone coverage
 
 Built and closed (2026-10-18; Bean signed Gate 9). Open: FR-38A-33's `hover.effects` and `effects` layers for effects a draft builds in its own script (they wait for FR-48-77's recognisers), and FR-38A-57 (slant, custom axis angle, typing cursor), which you sequenced after the three test sites are cloned. Deploys run no live motion probes unless asked: `--motion-qa-tier full` before any release that touches motion, shared effects or the theme tokens. Clone coverage gate: `node scripts/computed-route/capabilities.mjs --gate`; gap list by wave: `--gaps`.
 
 ### Front H: Cloning system (Spec 48) and the Claude Design handover
 
-**State:** the route (`scripts/computed-route`, `scripts/parity`) and `sites/<client>/build` were rewound on 2026-11-02 to the 2026-10-28 version (`0ea1a6cb2`); the three sites are finished by hand from your issues lists. The automatic cloning tool resumes once Mama's is signed off; its open requirements are Spec 48 §16.1 (FR-48-95 to FR-48-107) and your standing rulings are §16.2 (FR-48-108 to FR-48-112). Spec 48 holds the route's status; `node scripts/computed-route/check-approved.mjs indus-foods` must exit 0.
+**State:** the route (`scripts/computed-route`, `scripts/parity`) and `sites/<client>/build` were rewound on 2026-11-02 to the 2026-10-28 version (`0ea1a6cb2`); Indus and Eye Care were finished by hand from your issues lists and signed off. The automatic cloning tool does not resume: it is frozen with the framework (2026-11-12), and its draft reader and parity walker carry over to the web engine (Front E). Its unbuilt requirements stay in Spec 48 §16.1 (FR-48-95 to FR-48-107) with your standing rulings in §16.2 (FR-48-108 to FR-48-112). Spec 48 holds the route's status; `node scripts/computed-route/check-approved.mjs indus-foods` must exit 0.
 
-**Resume from:** `plans/2026-11-02-clone-finishing-streams.md` (Mama's).
+**Mama's:** hand-finishing stopped on 2026-11-12 with seven items open; mamas-test is kept as it stands. The record is `plans/2026-11-02-clone-finishing-streams.md`, section "Mama's".
 
 **Handover standard:** Spec 48A v1.0 (`handoff-check.mjs`). Open: edit the Eye Care draft to mirror the live site (Spec 48A FR-48A-11).
 
@@ -69,7 +80,7 @@ Signed off by Bean (2026-11-12). eye-care-test (`https://darkcyan-grouse-898606.
 - **Unwired scripts (your ruling):** nav-qa `u1-owed-probe.mjs` with `qa-u1-owed-fixture.php`, and the `motion-qa` probes whose target pages no doc registers (`plugins/sgs-blocks/scripts/audit-live-script-closure.py` lists them).
 - **Product-card value ladder:** 24 editor-canvas controls wait for a bound-mode canvas preview (parked by you; baseline `plugins/sgs-blocks/scripts/wiring-fingerprint-baseline.json`).
 - Optional editor-check speed-ups (`plans/patches/`): `plans/archive/2026-11-11-deploy-speed.md`.
-- **Parked plans, each with its resume point:** Snooza Chair configurator build (`plans/2026-08-03-snooza-configurator-build-plan.md`); form and choice-flow pipeline and analytics (`plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md`); the automatic cloning tool, resumed after Mama's, with the handoff readers, the spec audit register's fix pass and the header and nav Waves 4 and 5 folded in (`plans/2026-10-30-clone-recognition-fixes.md`, "Parked: resume after the hand-built sites").
+- **Parked plans, frozen with the framework on 2026-11-12:** Snooza Chair configurator build (`plans/2026-08-03-snooza-configurator-build-plan.md`); form and choice-flow pipeline and analytics (`plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md`); the automatic cloning tool, with the handoff readers, the spec audit register's fix pass and the header and nav Waves 4 and 5 folded in (`plans/2026-10-30-clone-recognition-fixes.md`); the three sites' finishing plan, which now holds Mama's open list as a record (`plans/2026-11-02-clone-finishing-streams.md`).
 
 ## Live state
 
