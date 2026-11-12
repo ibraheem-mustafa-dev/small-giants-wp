@@ -53,7 +53,7 @@ Signed off by Bean (2026-11-12). eye-care-test (`https://darkcyan-grouse-898606.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
-**State:** Waves 1 to 3C are built and live on sandybrown; Gate 3C items 1, 2, 3 and 5 pass; item 4's last mile is deferred by you (list: `verify/merged-spec36-37-track.md`, "Gate 3C last mile"). Waves 4 and 5 are Spec 37 FR-37-56 and FR-37-23; nothing is in progress.
+**State:** Waves 1 to 3C are built and live on sandybrown; Gate 3C items 1, 2, 3 and 5 pass; item 4's last mile is deferred by you (list: `verify/merged-spec36-37-track.md`, "Gate 3C last mile"). Waves 4 and 5 are Spec 37 FR-37-56 and FR-37-23; nothing is in progress. Resume point: item 5 of `plans/2026-10-30-clone-recognition-fixes.md`, "Parked: resume after the hand-built sites".
 
 **Header behaviour change (2026-11-09, `89b3531b5` to `91d955343`):** the header's shrink no longer restyles the page; `plugins/sgs-blocks/src/header-behaviours/live-header-height.js`. Live on sandybrown, mamas-test, indus-test, eye-care-test.
 
@@ -71,7 +71,7 @@ Signed off by Bean (2026-11-12). eye-care-test (`https://darkcyan-grouse-898606.
 - **Unwired scripts (your ruling):** nav-qa `u1-owed-probe.mjs` with `qa-u1-owed-fixture.php`, and the `motion-qa` probes whose target pages no doc registers (`plugins/sgs-blocks/scripts/audit-live-script-closure.py` lists them).
 - **Product-card value ladder:** 24 editor-canvas controls wait for a bound-mode canvas preview (parked by you; baseline `plugins/sgs-blocks/scripts/wiring-fingerprint-baseline.json`).
 - Optional editor-check speed-ups (`plans/patches/`): `plans/archive/2026-11-11-deploy-speed.md`.
-- **Parked plans, each with its resume point:** Snooza Chair configurator build (`plans/2026-08-03-snooza-configurator-build-plan.md`); form and choice-flow pipeline and analytics (`plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md`); header and nav thread (`plans/2026-10-01-header-nav-thread-plan.md`); clone handoff readers, spec audit register and recognition fixes (`plans/2026-10-21-handoff-readers.md`, `plans/2026-10-28-clone-spec-audit-register.md`, `plans/2026-10-30-clone-recognition-fixes.md`).
+- **Parked plans, each with its resume point:** Snooza Chair configurator build (`plans/2026-08-03-snooza-configurator-build-plan.md`); form and choice-flow pipeline and analytics (`plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md`); the automatic cloning tool, resumed after Mama's, with the handoff readers, the spec audit register's fix pass and the header and nav Waves 4 and 5 folded in (`plans/2026-10-30-clone-recognition-fixes.md`, "Parked: resume after the hand-built sites").
 
 ## Live state
 

@@ -1,6 +1,6 @@
 {
   "rule": "contentWidth is max-width on the content band; padding paints the content band; no contentBandPadding",
-  "plan": ".claude/plans/2026-10-21-handoff-readers.md (Status, Container band layers)",
+  "plan": ".claude/plans/archive/2026-10-21-handoff-readers.md (Status, Container band layers)",
   "wrapper_code_path": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper::render: on a block that declares contentWidth, `padding` paints the content band (.sgs-container__inner, via $obj_band_props and the native-padding rule), the outer element keeps no padding. The band renders ($do_wrap) whenever contentWidth or any band prop (padding included) is set.",
   "totals": {
     "blocks_with_contentWidth": 24,
@@ -846,7 +846,7 @@
       "reason": "documentation"
     },
     {
-      "path": ".claude/plans/2026-10-21-handoff-readers.md",
+      "path": ".claude/plans/archive/2026-10-21-handoff-readers.md",
       "mentions": 4,
       "status": "exempt",
       "mechanism": null,

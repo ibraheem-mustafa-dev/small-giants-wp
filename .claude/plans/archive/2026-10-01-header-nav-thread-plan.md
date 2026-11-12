@@ -2,10 +2,11 @@
 doc_type: implementation-plan
 project: small-giants-wp
 spec_id: 36+37 (merged navigation, header and footer track); 18 (floating UI, for G8)
-status: parked
+status: done
 supersedes: plans/archive/2026-07-29-merged-spec36-37-track-strategic-plan.md, plans/archive/2026-09-21-wave-3c-implementation-plan.md, plans/archive/2026-09-27-reference-capture-method-plan.md, plans/archive/2026-09-27-g8-screen-corner-pin-plan.md
 ---
 
+Superseded 2026-11-12: its open work is listed in `plans/2026-10-30-clone-recognition-fixes.md` section "Parked: resume after the hand-built sites" (the one parked plan for the cloning tool); this plan holds the detail.
 # The header and nav thread: everything still open
 
 The one plan for the Spec 36-37 thread: the nav bar menu, the drawer menu, the drawer, mega panels, the site header and footer, and the clone waves that prove them. The three earlier plans are archived; their build history (every unit's design, residue and live report) stays readable there.
