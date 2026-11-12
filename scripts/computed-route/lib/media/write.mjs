@@ -81,7 +81,8 @@ export function mediaWrites( { slots, attributes = {}, reads, resolve, fact = nu
 			} else {
 				const r = resolve( entry.url );
 				if ( ! r.hit ) {
-					gap( entry.url, r.reason );
+					// A narrower device left out inherits the wider device's file (the Source cascade), so the gap says so.
+					gap( entry.url, 'desktop' === tier ? r.reason : `${ r.reason }; until it is uploaded, ${ tier } shows the wider device's file` );
 					continue;
 				}
 				source[ tier ] = { ...entry, id: r.hit.id, url: r.hit.url };
