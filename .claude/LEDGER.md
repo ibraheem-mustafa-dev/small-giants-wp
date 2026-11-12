@@ -57,7 +57,7 @@ last_updated: 2026-11-10
 **Open:**
 - **Remaining chores (running now):** `/qc-council` on round 12's framework code, and the 375 touch-hover tap-through.
 - **Custom CSS until Spec 49:** the hero focal points (post 208) and the lens tag and outline (post 463).
-- **Page weight (R3-23):** WooCommerce, jQuery and GSAP cuts live (2026-11-11); still over budget; next: the shop's own scripts; `plans/2026-11-03-page-weight-budget.md`.
+- **Page weight (R3-23):** closed 2026-11-12, pages fast (desktop 94-100); parked items under Not pursued in `plans/archive/2026-11-03-page-weight-budget.md`.
 - **Lint-js (R3-25):** about 6,500 errors, mostly formatting; needs a quiet window.
 
 The archived Eye Care plan: `plans/archive/2026-10-02-eye-care-plan.md`.

@@ -69,7 +69,7 @@ Rules:
 - **Waiting on Spec 49:** the hero focal points (post 208) and the lens tag and outline (post 463) stay in Custom CSS until the media system gives them controls (`specs/49-SGS-MEDIA-SYSTEM.md`).
 - Back up each post before editing it, under `sites/eye-care-ward-end/build/backups/<date>/` (local only).
 - **Carried from round 12, still open:** `/qc-council` on round 12's framework code (`f791e433b` to `24095ea4f`); a tap-through of the header, shop cards, bag and size guide at 375 for the touch-hover change; `plugins/sgs-blocks/tests/php/run-header-ink-standalone.php` fails 2 of 29 (identical on unmodified code, found 2026-11-09). Done in round 13 (fix register "Round 13"): the reload offset trace, the six unmeasured entrance rows and the 768 side-by-side. Stripe is proven by test order #1744; the wallet row is decided (Stripe's own).
-- **Noticed, not on Bean's list:** every page is over the weight budget (`plans/2026-11-03-page-weight-budget.md`); about 6,500 lint-js formatting errors (R3-25); eye-care-clone-test holds 213 blocks in the old single-value shape (migrate with `plugins/sgs-blocks/scripts/find-scalar-tier-attrs.py` before its next deploy); `local-eye-care` mirrors eye-care-clone-test, not eye-care-test (eye-care-test has no mirror).
+- **Noticed, not on Bean's list:** pages over the weight budget were cut and the plan closed on speed (`plans/archive/2026-11-03-page-weight-budget.md`); about 6,500 lint-js formatting errors (R3-25); eye-care-clone-test holds 213 blocks in the old single-value shape (migrate with `plugins/sgs-blocks/scripts/find-scalar-tier-attrs.py` before its next deploy); `local-eye-care` mirrors eye-care-clone-test, not eye-care-test (eye-care-test has no mirror).
 
 ## FW-F rollout to every site (open)
 

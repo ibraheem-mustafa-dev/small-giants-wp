@@ -60,7 +60,7 @@ It runs after the upload as a post-deploy verify stage (`build-deploy.py --first
 - A scope class is never reused: two blocks with the same first-injector rules share one hashed class, so code that reuses whatever `sgs-*-8hex` class is already on the root would cross a second injector's rules over (council fix `bad9c40fb` to `4c5f06ed2`). The fx path and shape routes are the per-instance exception: they pass `per_instance` and take a counted suffix.
 - Superseded collected files stay on disk for the page-cache lifetime, so cached HTML never points at a missing file. A deploy that changes rules changes the name once, as expected.
 - Before shipping, grep the snapshots, fixtures and motion-QA pages for any selector naming the old `sgs-child-sizing-<hex>` pattern.
-- Afterwards, re-measure the page-weight plan's "possible second collected file on /shop/" (`plans/2026-11-03-page-weight-budget.md`, cause 4).
+- Afterwards, re-measure the page-weight plan's "possible second collected file on /shop/" (`plans/archive/2026-11-03-page-weight-budget.md`, cause 4).
 
 **B. Reserved image boxes (P3).**
 - Built: `sgs_image_size_attrs` (`includes/helpers-image-dimensions.php`) reads a real size from attachment metadata, the file header or an SVG viewBox, cached by URL, and `sgs_render_media` plus 11 other printers now print `width` and `height`; the responsive logo prints a ratio-true `height`. `sgs_render_media` never printed dimensions on its URL path (the plan's premise that it did was wrong).
@@ -99,4 +99,4 @@ P6 is not part of Done; it is parked until Bean names the route.
 - **Treat the "huge logo" as a class mismatch between cached HTML and the collected file.** Disproven: the logo class is identical across requests and present in the stylesheet each page names, and the HTML is not edge-cached.
 - **Ship a duplicated marquee track in the server HTML.** It conflicts with `fx-marquee.js::makeClone`, which builds the copies from the measured width. Reserving the final row in CSS gets the same first paint without doubling the loop.
 - **Drop the JS-off comparison as gold-plating.** Kept, because it is the only check that catches the shop filters' style change at 1440, which CLS barely registers. It starts report-only.
-- **Inline per-page CSS or critical CSS, and shrink the 315 KB collected file.** That is page weight, `plans/2026-11-03-page-weight-budget.md`. A and G here make the first frame correct; that plan makes it smaller.
+- **Inline per-page CSS or critical CSS, and shrink the 315 KB collected file.** That was page weight's to do; the page-weight plan closed with it not pursued (`plans/archive/2026-11-03-page-weight-budget.md`, Not pursued item 5). A and G here make the first frame correct.
