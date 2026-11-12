@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from wf_media_system import CANVAS_FILES, PANEL_DIR, MediaSystem
+from wf_media_system import CANVAS_FILES, PANEL_DIR, RATIO_FIELD_FILE, RENDERER_WRAPPER_FILES, MediaSystem
 from wf_paths import MEDIA_FACTS_MJS, PLUGIN
 
 
@@ -65,6 +65,9 @@ def system(tmp_path: Path, attr_facts: dict, editor: bool = True) -> tuple[Media
     for f in CANVAS_FILES:
         (plugin / f).parent.mkdir(parents=True, exist_ok=True)
         (plugin / f).write_text("", encoding="utf-8")
+    for rel in RENDERER_WRAPPER_FILES:
+        (plugin / rel).parent.mkdir(parents=True, exist_ok=True)
+        (plugin / rel).write_text("<?php function sgs_pcm_render( $prefix ) { return SGS_Media_Element::render( $prefix ); }", encoding="utf-8")
     bdir = plugin / "src" / "blocks" / "probe"
     bdir.mkdir(parents=True)
     (bdir / "render.php").write_text("<?php SGS_Media_Element::render( $slot, $attributes );", encoding="utf-8")
@@ -145,3 +148,42 @@ def test_must_fail_a_destructure_with_an_empty_object_fallback_reads_the_attribu
     (blk / "block.json").write_text(json.dumps({"name": "sgs/probe", "attributes": {"surfaceBlur": {"type": "string"}}}), encoding="utf-8")
     out = subprocess.run(["node", str(COLLECTOR_JS), str(tmp_path), str(PLUGIN / "node_modules")], capture_output=True, text=True, check=True)
     assert "surfaceBlur" in json.loads(out.stdout)["files"]["src/blocks/probe/edit.js"]["canvasReads"]
+
+
+def test_a_block_that_prints_through_the_shared_wrapper_include_gets_the_front_end_links(tmp_path):
+    ms, bdir = system(tmp_path, {"layerFit": FACT})
+    (bdir / "render.php").write_text("<?php echo sgs_pcm_render( 'layer' );", encoding="utf-8")
+    assert {"L4", "L5"} <= ms.credits("sgs/probe", "layerFit", FILES, bdir)
+
+
+def test_must_fail_a_block_that_only_names_the_wrapper_function_in_text_gets_no_front_end_link(tmp_path):
+    ms, bdir = system(tmp_path, {"layerFit": FACT})
+    # A method call, a longer name and a bare mention are not calls to the wrapper function.
+    (bdir / "render.php").write_text("<?php $x->sgs_pcm_render( 1 ); sgs_pcm_render_other( 2 ); // sgs_pcm_render", encoding="utf-8")
+    assert not ms.credits("sgs/probe", "layerFit", FILES, bdir) & {"L4", "L5"}
+
+
+def test_must_fail_a_wrapper_include_that_does_not_call_the_renderer_fails_loudly(tmp_path):
+    ms, bdir = system(tmp_path, {"layerFit": FACT})
+    plugin = bdir.parents[2]
+    (plugin / RENDERER_WRAPPER_FILES[0]).write_text("<?php function sgs_pcm_render() { return ''; }", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="must exist and call the renderer"):
+        MediaSystem({"blocks": {"sgs/probe": {"layerFit": FACT}}}, plugin)
+
+
+RATIO_EDIT = "<AspectRatioField attributes={ attributes } setAttributes={ setAttributes } prefix=\"thumbnail\" />"
+
+
+def test_a_ratio_the_block_mounts_the_shared_field_for_has_a_control(tmp_path):
+    ms, bdir = system(tmp_path, {})
+    (bdir / "edit.js").write_text(RATIO_EDIT, encoding="utf-8")
+    assert ms.credits("sgs/probe", "thumbnailRatio", [RATIO_FIELD_FILE], bdir) == {"L2"}
+
+
+def test_must_fail_a_ratio_of_another_prefix_or_without_the_field_file_has_no_control(tmp_path):
+    ms, bdir = system(tmp_path, {})
+    (bdir / "edit.js").write_text(RATIO_EDIT, encoding="utf-8")
+    assert ms.credits("sgs/probe", "heroRatio", [RATIO_FIELD_FILE], bdir) == frozenset()
+    assert ms.credits("sgs/probe", "thumbnailRatio", [PANEL_DIR + "MediaPanels.js"], bdir) == frozenset()
+    (bdir / "edit.js").write_text("<div />", encoding="utf-8")
+    assert ms.credits("sgs/probe", "thumbnailRatio", [RATIO_FIELD_FILE], bdir) == frozenset()
