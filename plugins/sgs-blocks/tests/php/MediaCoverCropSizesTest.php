@@ -243,4 +243,19 @@ class MediaCoverCropSizesTest extends TestCase {
 		// 130px x 1.4995 = 194.9 wide; the 12rem floor is 288px, the larger.
 		$this->assertSame( 'max(288px, min(194.94px, calc(37.49vw - 29.99px)))', $plan['by_device']['desktop'] );
 	}
+
+	public function test_a_parent_min_height_sets_the_fill_floor_in_place_of_12rem(): void {
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/media/layout-width.php';
+		$attrs  = array( 'fit' => $this->all( 'cover' ), 'height' => $this->all( 'fill' ) );
+		$box    = array( 'vw' => 0.25, 'off' => -20.0, 'cap' => 300.0 );
+		$parent = array(
+			'ratio' => 1.0,
+			'roomy' => true,
+			'width' => array( 'desktop' => 130.0, 'tablet' => 130.0, 'mobile' => 140.0 ),
+			'floor' => array( 'desktop' => 130.0, 'tablet' => 130.0, 'mobile' => 140.0 ),
+		);
+		$plan   = sgs_media_cover_crop_plan( $attrs, array( 'prefix' => '' ), 10, $this->boxes( $box ), $parent );
+		// The floor is 130px tall, not 192: 130 x 1.4995 = 194.9, so the crop floor is 195px.
+		$this->assertSame( 'max(195px, min(194.94px, calc(37.49vw - 29.99px)))', $plan['by_device']['desktop'] );
+	}
 }

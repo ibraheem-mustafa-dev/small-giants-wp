@@ -40,9 +40,10 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 	 *
 	 * A fill-height box (`Height: fill`) takes its shape from its parent when the parent is a container with a
 	 * `boxAspectRatio` and the box is its only child (`$parent_box`, from `Sgs_Layout_Width::box()`): the box ratio is the
-	 * parent's. The fill helper is never shorter than 12rem (assets/css/media-base.css `.sgs-media-box--fill::before`),
-	 * so a box narrower than 12rem x ratio is still 12rem tall and the crop is `12rem x image ratio` wide: that figure
-	 * joins the printed width as a floor. A parent's px `minHeight` bounds the height from below only, so on its own it
+	 * parent's. The fill helper is never shorter than its floor (assets/css/media-base.css `.sgs-media-box--fill::before`:
+	 * the parent's content height when its px min-height sets one, `$parent_box['floor']`, else 12rem), so a box narrower
+	 * than floor x ratio is still floor tall and the crop is `floor x image ratio` wide: that figure joins the printed width
+	 * as a floor. A parent's px `minHeight` bounds the height from below only, so on its own it
 	 * gives no upper bound on the crop; with a ratio, a stack that does not stretch its children and no width of its own,
 	 * the parent is `minHeight x ratio` wide (`$parent_box['width']`), which bounds the box's width.
 	 *
@@ -108,13 +109,13 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 			$box_ratio = 0.0;
 			if ( null === $box_w && 'fill' === $heights[ $device ] && null !== $parent_box && isset( $boxes[ $device ] ) && is_array( $boxes[ $device ] )
 				&& ( $parent_box['ratio'] ?? 0.0 ) > 0.0 && ( ! empty( $parent_box['roomy'] ) || $parent_box['ratio'] >= 1.0 ) ) {
-				// A fill box in a shaped parent: the parent's ratio, and the 12rem floor of the fill helper. A parent whose own
-				// width is known (`width`) holds the box to it.
+				// A fill box in a shaped parent: the parent's ratio, and the fill helper's floor (the parent's content height
+				// when its px min-height sets one, else 12rem). A parent whose own width is known (`width`) holds the box to it.
 				if ( isset( $parent_box['width'][ $device ] ) && class_exists( 'Sgs_Layout_Width' ) ) {
 					$boxes[ $device ] = Sgs_Layout_Width::capped( $boxes[ $device ], (float) $parent_box['width'][ $device ] );
 				}
 				$factors[ $device ] = max( 1.0, $image_ratio / $parent_box['ratio'] );
-				$floors[ $device ]  = (int) ceil( $image_ratio * 192 );
+				$floors[ $device ]  = (int) ceil( $image_ratio * (float) ( $parent_box['floor'][ $device ] ?? 192.0 ) );
 				continue;
 			}
 			if ( is_string( $ratio ) && preg_match( '#^\s*(\d+(?:\.\d+)?)\s*/\s*(\d+(?:\.\d+)?)\s*$#', $ratio, $m ) && (float) $m[2] > 0.0 ) {

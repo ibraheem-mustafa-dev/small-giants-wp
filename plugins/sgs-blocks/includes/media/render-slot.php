@@ -374,6 +374,14 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	if ( $has_link ) {
 		$css .= sgs_media_link_tap_css( $uid, $slot, $attrs );
 	}
+	if ( $fill && class_exists( 'Sgs_Layout_Width' ) ) {
+		// A fill slot in a container with a px min-height fills that height rather than the 12rem default floor.
+		$floor_rules = array();
+		foreach ( Sgs_Layout_Width::fill_floor() as $device => $px ) {
+			sgs_media_add( $floor_rules, '.' . $uid, $device, '--sgs-media-fill-floor', sgs_media_num( $px ) . 'px' );
+		}
+		$css .= sgs_media_rules_css( $floor_rules );
+	}
 	foreach ( sgs_media_atom_emitter_ids() as $id ) {
 		$emit = 'sgs_media_atom_' . $id . '_emit';
 		if ( ! function_exists( $emit ) ) {

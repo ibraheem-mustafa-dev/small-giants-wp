@@ -67,7 +67,8 @@
 	border: 0;
 }
 
-/* Fill ("Match its space"): the height the surrounding layout gives, 12rem when nothing supplies one. */
+/* Fill ("Match its space"): the height the surrounding layout gives, at least the parent container's min-height
+   (--sgs-media-fill-floor, printed by the renderer) or 12rem when nothing sets one. */
 .sgs-media-box--fill {
 	display: block;
 	height: auto;
@@ -80,7 +81,7 @@
 .sgs-media-box--fill::before {
 	content: "";
 	display: block;
-	height: 12rem;
+	height: var(--sgs-media-fill-floor, 12rem);
 }
 
 .sgs-media-box--fill > .sgs-media-el,

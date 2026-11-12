@@ -86,13 +86,21 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 		}
 
 		/**
+		 * The fill floor of the block now rendering: the content height its parent container's px min-height leaves per device,
+		 * when the block is that container's only inner block (empty otherwise). A fill slot is at least that tall; with no floor
+		 * it takes media-base.css's 12rem.
+		 *
+		 * @return array<string,float> Device => px.
+		 */
+		public static function fill_floor(): array {
+			return array() === self::$stack ? array() : ( self::$stack[ count( self::$stack ) - 1 ]['floor'] ?? array() );
+		}
+
+		/**
 		 * The box shape the parent container gives the block now rendering (`{ratio,roomy}`), or null when it gives none.
+		 * `floor` is the block's fill floor per device (fill_floor()).
 		 *
-		 * `ratio` is the parent's `boxAspectRatio` as width over height; it is set only when the block is the parent's
-		 * one child, because a second in-flow child can make the parent taller than its ratio says. `roomy` is true
-		 * when the parent has no border and no padding, so the ratio is also the ratio of the content box.
-		 *
-		 * @return array{ratio:float,roomy:bool,width:array<string,float>}|null
+		 * @return array{ratio:float,roomy:bool,width:array<string,float>,floor?:array<string,float>}|null
 		 */
 		public static function box(): ?array {
 			return array() === self::$stack ? null : ( self::$stack[ count( self::$stack ) - 1 ]['box'] ?? null );
@@ -203,6 +211,36 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 			$classes            = is_string( $attrs['className'] ?? null ) ? $attrs['className'] : '';
 			$frame['own_gap']   = ! empty( $parent['own_gap'] ) || (bool) preg_match( '/(?:^|\s)sgs-(?:shop-layout|product-rail)(?:\s|$)/', $classes ) || isset( $attrs['style']['spacing']['blockGap'] );
 			$frame['box']     = null !== $parent ? ( $parent['child_box'] ?? null ) : null;
+			// A container's content height per device for its only child: its px min-height (a narrower device inherits the wider
+			// one's) less its top and bottom padding and border, taken at their largest so the figure never overgrows the box. The
+			// child's fill floor is its parent's figure: a fill slot is that tall at least, not the 12rem it takes when nothing sets
+			// a height. A container with more than one inner block gives none (a sibling shares the height).
+			$frame['min_height'] = array();
+			$only_child          = 1 === count( array_filter( $inner, static fn( $b ): bool => is_array( $b ) && is_string( $b['blockName'] ?? null ) ) );
+			if ( 'sgs/container' === $name && $only_child ) {
+				$heights = sgs_media_device_values( $attrs['minHeight'] ?? null );
+				$padding = sgs_media_device_values( $attrs['padding'] ?? null );
+				$borders = (array) ( $attrs['borderWidth'] ?? array() );
+				foreach ( sgs_media_devices() as $device ) {
+					$px = sgs_media_sizes_px( $heights[ $device ] );
+					if ( null === $px ) {
+						continue;
+					}
+					$box   = is_array( $padding[ $device ] ?? null ) ? $padding[ $device ] : array();
+					$inset = 0.0;
+					foreach ( array( $box['top'] ?? null, $box['bottom'] ?? null, $borders['top'] ?? null, $borders['bottom'] ?? null ) as $side ) {
+						$bounds = self::length_bounds( $side );
+						$inset += $bounds[1] ?? $bounds[0];
+					}
+					if ( $px - $inset > 0 ) {
+						$frame['min_height'][ $device ] = $px - $inset;
+					}
+				}
+			}
+			$frame['floor'] = null !== $parent ? ( $parent['min_height'] ?? array() ) : array();
+			if ( is_array( $frame['box'] ) ) {
+				$frame['box']['floor'] = $frame['floor'];
+			}
 			return $frame;
 		}
 

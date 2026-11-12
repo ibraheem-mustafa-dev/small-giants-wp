@@ -434,4 +434,29 @@ class MediaLayoutSizesTest extends TestCase {
 		$this->assertSame( '(max-width: 150px) 100vw, 150px', $this->sizes( 'tablet' ) );
 		$this->assertSame( '100vw', $this->sizes( 'mobile' ), 'none removes the cap at that device' );
 	}
+
+	public function test_an_only_child_fill_floor_is_the_containers_content_height(): void {
+		$circle = $this->container(
+			array(
+				'boxAspectRatio' => '1 / 1',
+				'minHeight'      => array( 'mobile' => '150px', 'desktop' => '140px' ),
+				'borderWidth'    => array( 'left' => '5px', 'right' => '5px', 'top' => '5px', 'bottom' => '5px' ),
+				'padding'        => array( 'desktop' => array( 'top' => '6px', 'bottom' => '4px' ) ),
+			)
+		);
+		Sgs_Layout_Width::open_frame( $circle + array( 'innerBlocks' => array( $this->leaf() ) ) );
+		Sgs_Layout_Width::open_frame( $this->leaf() );
+		$this->assertSame( array( 'desktop' => 120.0, 'tablet' => 120.0, 'mobile' => 130.0 ), Sgs_Layout_Width::fill_floor(), 'min-height less padding and border, per device' );
+	}
+
+	public function test_negative_control_no_fill_floor_beside_a_sibling_or_without_a_min_height(): void {
+		$box = $this->container( array( 'minHeight' => array( 'desktop' => '300px' ) ) );
+		Sgs_Layout_Width::open_frame( $box + array( 'innerBlocks' => array( $this->leaf(), $this->leaf( array(), 'sgs/heading' ) ) ) );
+		Sgs_Layout_Width::open_frame( $this->leaf() );
+		$this->assertSame( array(), Sgs_Layout_Width::fill_floor(), 'a sibling shares the height' );
+		Sgs_Layout_Width::reset();
+		Sgs_Layout_Width::open_frame( $this->container( array() ) + array( 'innerBlocks' => array( $this->leaf() ) ) );
+		Sgs_Layout_Width::open_frame( $this->leaf() );
+		$this->assertSame( array(), Sgs_Layout_Width::fill_floor(), 'no min-height: the 12rem default applies' );
+	}
 }
