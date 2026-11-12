@@ -16265,11 +16265,11 @@
 			}
 		},
 		"sgs-support:timeTextWords": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "block.json supports metadata, the family Bean excluded on 2026-10-17 (every other sgs-support key is excluded, signed by Bean): not signed for this key; the Integrator asks Bean to sign it or keep it a gap"
+			"excluded": {
+				"reason": "block.json metadata naming which of the block's own settings holds the words the Text by time of day extension swaps (Spec 02 FR-2-14), not a value a draft holds; the words and hours themselves are extension:timeText",
+				"signedBy": "Bean",
+				"date": "2026-11-12"
+			}
 		},
 		"sgs-support:variantAttr": {
 			"excluded": {
