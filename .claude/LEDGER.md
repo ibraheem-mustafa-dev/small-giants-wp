@@ -86,7 +86,7 @@ The archived Eye Care plan: `plans/archive/2026-10-02-eye-care-plan.md`.
 
 ## Parked
 
-- **Framework rows from Eye Care's backlog** (CR13, 71, CR10, the Tier 2 to 4 rows and the open items): `plans/2026-11-12-framework-parked-backlog.md`.
+- **Framework rows from Eye Care's backlog** (71, CR10, the Tier 2 to 4 rows and the open items): `plans/2026-11-12-framework-parked-backlog.md`.
 - **CR12, parked by you:** the dark-mode toggle renders nothing because no client sets dark tokens; three design options sit on its register row.
 - **CR23:** about 72 Eye Care differences no setting can reach (a 2026-10-07 snapshot); the Track 2 session recounts them and carries the rest as missing-feature rows.
 - **WW-SH-04 (your ruling):** the Solve answer sheet labels a shop write wrong on "assumed" evidence (Spec 48 §5.4 Res 34).
