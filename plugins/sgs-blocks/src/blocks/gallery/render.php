@@ -443,6 +443,13 @@ ob_start();
 				'tablet'  => $columns_tablet,
 				'mobile'  => $columns_mobile,
 			);
+			// A swipe row's cards are `scrollItemWidth` wide (not 1 / columns): the renderer holds each card to it.
+			$sgs_gal_card_widths = sgs_media_device_values( $attributes['scrollItemWidth'] ?? null );
+			foreach ( $sgs_gal_card_widths as $sgs_gal_card_device => $sgs_gal_card_width ) {
+				if ( 'scroll' !== ( $sgs_gal_tiers[ $sgs_gal_card_device ] ?? '' ) ) {
+					$sgs_gal_card_widths[ $sgs_gal_card_device ] = null;
+				}
+			}
 			// The block-level media rules print once, with the first item that has a picture.
 			$sgs_gal_block_rules = true;
 			foreach ( $images as $index => $img ) :
@@ -452,7 +459,7 @@ ob_start();
 				$img_alt        = $img_decorative ? '' : esc_attr( wp_strip_all_tags( $img['alt'] ?? '' ) );
 				$img_caption    = $show_captions ? esc_html( wp_strip_all_tags( $img['caption'] ?? '' ) ) : '';
 
-				$item_media = sgs_gallery_render_item_media( $img, (int) $index, $attributes, $sgs_gal_media_slot, $sgs_gal_media_scope, $sgs_gal_media_cols, $sgs_gal_block_rules );
+				$item_media = sgs_gallery_render_item_media( $img, (int) $index, $attributes, $sgs_gal_media_slot, $sgs_gal_media_scope, $sgs_gal_media_cols, $sgs_gal_block_rules, $sgs_gal_card_widths );
 				if ( '' !== $item_media['html'] ) {
 					$sgs_gal_block_rules     = false;
 					$gallery_responsive_css .= $item_media['css'];

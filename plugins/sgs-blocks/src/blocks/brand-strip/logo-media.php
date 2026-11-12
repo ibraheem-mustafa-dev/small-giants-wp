@@ -62,7 +62,7 @@ if ( ! function_exists( 'sgs_brand_strip_render_logo' ) ) {
 	 * @param bool   $decorative  Whether the picture is hidden from assistive technology.
 	 * @return array{html:string,css:string}
 	 */
-	function sgs_brand_strip_render_logo( array $item, int $index, array $attributes, array $slot, string $uid, bool $decorative ): array {
+	function sgs_brand_strip_render_logo( array $item, int $index, array $attributes, array $slot, string $uid, bool $decorative, array $columns = array(), int $max_height = 0 ): array {
 		if ( ! class_exists( 'SGS_Media_Element' ) ) {
 			return array(
 				'html' => '',
@@ -79,7 +79,8 @@ if ( ! function_exists( 'sgs_brand_strip_render_logo' ) ) {
 				'in_editor' => defined( 'REST_REQUEST' ) && REST_REQUEST,
 				'item_set'  => array(
 					'index'       => $index,
-					'columns'     => 0,
+					'columns'     => array() === $columns ? 0 : $columns,
+					'item_cap'    => $max_height,
 					'block_rules' => 0 === $index,
 				),
 			)

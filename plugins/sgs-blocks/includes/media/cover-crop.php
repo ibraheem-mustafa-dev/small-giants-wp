@@ -30,15 +30,21 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 	 * - `widens` false: `auto` is right (no device crops wider than its box, or every box follows the image).
 	 * - `widens` true and `sizes` set: every device's drawn width is known, so `sizes` carries one concrete px value
 	 *   per device (breakpoints from SGS_Breakpoints).
-	 * - `widens` true and `sizes` empty: the drawn width cannot be known (a fill box, or a width that is not px); the
-	 *   caller keeps the attachment's own hint with `auto` removed. A portrait image never widens, so it keeps `auto`.
+	 * - `widens` true and `by_device` set: a device's box width is not a px setting, but the layout model knows the
+	 *   width of the box the slot sits in (`$boxes`, from `sgs_media_width_model()`), an upper bound. That device draws
+	 *   the box model times the crop factor (a `min()`/`calc()` over the layout term); a device that does not widen
+	 *   prints its box model. The caller prints `by_device` through `sgs_media_combine_sizes()`.
+	 * - `widens` true and `sizes` empty: the drawn width cannot be known (a fill box, or a width that is not px and no
+	 *   layout model); the caller keeps the attachment's own hint with `auto` removed. A portrait image never widens,
+	 *   so it keeps `auto`.
 	 *
 	 * @param array $attributes    Block attributes.
 	 * @param array $slot          The media slot (`prefix`).
 	 * @param int   $attachment_id The image's attachment ID.
-	 * @return array{widens:bool,sizes:string}
+	 * @param array $boxes         Device => layout model `{vw,off,cap}` of the slot's own box (`sgs_media_width_model()`); empty when the layout is unknown.
+	 * @return array{widens:bool,sizes:string,by_device?:array<string,string>}
 	 */
-	function sgs_media_cover_crop_plan( array $attributes, array $slot, int $attachment_id ): array {
+	function sgs_media_cover_crop_plan( array $attributes, array $slot, int $attachment_id, array $boxes = array() ): array {
 		$keep_auto = array(
 			'widens' => false,
 			'sizes'  => '',
@@ -74,7 +80,9 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 		$heights = $get( 'Height' );
 		$ratios = $get( 'Ratio' );
 
-		$drawn = array();
+		$drawn      = array();
+		$factors    = array();
+		$heights_px = array();
 		foreach ( sgs_media_devices() as $device ) {
 			if ( ! $covers[ $device ] ) {
 				$drawn[ $device ] = null;
@@ -94,11 +102,25 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 				$box_ratio = $box_w / $box_h;
 			}
 			if ( $box_ratio <= 0.0 ) {
-				// No Ratio and no fixed box: with no Height, or a px Height and an automatic width, the box takes the
-				// image's own shape, so nothing is cropped and the browser's own measurement (`auto`) stays right.
+				// No Ratio and no fixed box. With no Height the box takes the image's own shape, so nothing is cropped and
+				// the browser's own measurement (`auto`) stays right.
 				$h = $heights[ $device ];
-				if ( null === $h || '' === $h || ( null !== $box_h && null === $box_w ) ) {
+				if ( null === $h || '' === $h ) {
 					$drawn[ $device ] = null;
+					continue;
+				}
+				// A px Height with an automatic width (no Width, or `auto`): the width follows the image (`height x ratio`)
+				// but the box is held to its container, and a container narrower than that crops the sides (cover). Either
+				// way the file must be `height x image ratio` wide, which is the figure to print.
+				if ( null !== $box_h && null === $box_w && ( null === $widths[ $device ] || '' === $widths[ $device ] ) ) {
+					$drawn[ $device ] = (int) ceil( $box_h * $image_ratio );
+					continue;
+				}
+				// An explicit `auto` Width sits in a helper box that takes the container's width (the file's own width at
+				// most), so the file is as wide as the larger of `height x image ratio` and the container: both are printed.
+				if ( null !== $box_h && null === $box_w && 'auto' === $widths[ $device ] && isset( $boxes[ $device ] ) && is_array( $boxes[ $device ] ) ) {
+					$drawn[ $device ]   = null;
+					$heights_px[ $device ] = (int) ceil( $box_h * $image_ratio );
 					continue;
 				}
 				// A fill or relative Height: the box shape is unknowable here, so only a portrait image (or a square one)
@@ -114,13 +136,36 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 				$drawn[ $device ] = null;
 			} elseif ( null !== $box_w ) {
 				$drawn[ $device ] = (int) ceil( $box_w * $factor );
+			} elseif ( isset( $boxes[ $device ] ) && is_array( $boxes[ $device ] ) ) {
+				$drawn[ $device ]   = null;
+				$factors[ $device ] = $factor;
 			} else {
 				return $unknown;
 			}
 		}
 		$known = array_filter( $drawn, 'is_int' );
-		if ( array() === $known ) {
+		if ( array() === $known && array() === $factors && array() === $heights_px ) {
 			return $keep_auto;
+		}
+		if ( array() !== $factors || array() !== $heights_px ) {
+			// At least one device draws a model-sized box: print every device from its box model (or its px figure).
+			$by_device = array();
+			foreach ( sgs_media_devices() as $device ) {
+				if ( isset( $drawn[ $device ] ) && is_int( $drawn[ $device ] ) ) {
+					$by_device[ $device ] = $drawn[ $device ] . 'px';
+				} elseif ( isset( $heights_px[ $device ] ) && class_exists( 'Sgs_Layout_Width' ) ) {
+					$by_device[ $device ] = 'max(' . $heights_px[ $device ] . 'px, ' . Sgs_Layout_Width::to_sizes( $boxes[ $device ], true ) . ')';
+				} elseif ( isset( $boxes[ $device ] ) && is_array( $boxes[ $device ] ) && class_exists( 'Sgs_Layout_Width' ) ) {
+					$by_device[ $device ] = Sgs_Layout_Width::to_sizes( Sgs_Layout_Width::scaled( $boxes[ $device ], $factors[ $device ] ?? 1.0 ) );
+				} else {
+					return $unknown;
+				}
+			}
+			return array(
+				'widens'    => true,
+				'sizes'     => '',
+				'by_device' => $by_device,
+			);
 		}
 		if ( count( $known ) < 3 || ! class_exists( 'SGS_Breakpoints' ) ) {
 			// One sizes list cannot hold a concrete width for some devices and `auto` for others.

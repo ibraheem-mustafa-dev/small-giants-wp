@@ -129,9 +129,10 @@ if ( ! function_exists( 'sgs_gallery_render_item_media' ) ) {
 	 * @param string $scope_uid   Scope class the renderer's block-level rules use.
 	 * @param array  $columns     Columns per device, for `sizes`.
 	 * @param bool   $block_rules Whether this item prints the block-level rules.
+	 * @param array  $item_widths Device => the swipe row's card width (`scrollItemWidth`) where that device scrolls, else null.
 	 * @return array{html:string,css:string}
 	 */
-	function sgs_gallery_render_item_media( array $item, int $index, array $attributes, array $slot, string $scope_uid, array $columns, bool $block_rules ): array {
+	function sgs_gallery_render_item_media( array $item, int $index, array $attributes, array $slot, string $scope_uid, array $columns, bool $block_rules, array $item_widths = array() ): array {
 		if ( ! class_exists( 'SGS_Media_Element' ) ) {
 			return array(
 				'html' => '',
@@ -148,6 +149,7 @@ if ( ! function_exists( 'sgs_gallery_render_item_media' ) ) {
 				'item_set'  => array(
 					'index'       => $index,
 					'columns'     => $columns,
+					'item_width'  => $item_widths,
 					'block_rules' => $block_rules,
 				),
 			)

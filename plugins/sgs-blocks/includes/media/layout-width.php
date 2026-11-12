@@ -138,6 +138,15 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 					'row'  => $own,
 					'cell' => $own,
 				);
+				// A layer block (`sgs/decorative-image`) with a px `layerWidth` is that wide at most, so is everything inside it.
+				$layer = sgs_media_device_values( $attrs['layerWidth'] ?? null );
+				foreach ( sgs_media_devices() as $device ) {
+					$px = sgs_media_sizes_px( $layer[ $device ] );
+					if ( null !== $px ) {
+						$frame['row'][ $device ]  = self::capped( $frame['row'][ $device ], $px );
+						$frame['cell'][ $device ] = self::capped( $frame['cell'][ $device ], $px );
+					}
+				}
 				// A product list's items fill a grid whose column count the collection holds (`displayLayout.columns`). Its
 				// CSS drops columns on narrow screens, which makes a cell wider than 1 / columns, so only the desktop divides.
 				if ( 'woocommerce/product-template' === $name && $display > 1 ) {
@@ -172,6 +181,7 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 			$is_grid = 'grid' === ( $attrs['layout'] ?? '' );
 			$tracks  = sgs_media_device_values( $attrs['gridTemplateColumns'] ?? null );
 			$min_col = sgs_media_device_values( $attrs['minColumnWidth'] ?? null );
+			$scrolls = function_exists( 'sgs_resolve_on_tiers' ) ? sgs_resolve_on_tiers( $attrs['scrollSideways'] ?? array(), 'on', 'off' ) : array();
 			$row     = array();
 			$cell    = array();
 			foreach ( sgs_media_devices() as $device ) {
@@ -191,6 +201,19 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 
 				$row[ $device ]  = $model;
 				$cell[ $device ] = $model;
+				if ( in_array( $device, $scrolls, true ) ) {
+					// A sideways-scroll row (includes/container-scroll-row-css.php): each item is one flex-basis wide, the px
+					// `scrollItemWidth`, a `%` of the row, or 80% of it when none is set. Any other unit leaves the item at the row.
+					$item  = function_exists( 'sgs_resolve_tier' ) ? sgs_resolve_tier( $attrs['scrollItemWidth'] ?? array(), $device, '' )['value'] : '';
+					$item  = is_string( $item ) ? trim( $item ) : '';
+					$fixed = sgs_media_sizes_px( $item );
+					if ( null !== $fixed ) {
+						$cell[ $device ] = self::capped( $model, $fixed );
+					} elseif ( '' === $item || preg_match( '/^(\d+(?:\.\d+)?)%$/', $item, $m ) ) {
+						$cell[ $device ] = self::scaled( $model, '' === $item ? 0.8 : min( 1.0, (float) $m[1] / 100 ) );
+					}
+					continue;
+				}
 				if ( ! $is_grid || ( is_string( $min_col[ $device ] ) && '' !== $min_col[ $device ] ) ) {
 					continue;
 				}
@@ -198,10 +221,16 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 				$g = is_array( $g ) ? ( $g['column'] ?? $g['x'] ?? null ) : $g;
 				$g = (float) sgs_media_sizes_px( $g );
 				if ( is_string( $tracks[ $device ] ) && '' !== $tracks[ $device ] ) {
-					// Hand-set tracks: the widest track bounds any cell. Tracks that are not all `fr` leave the cell at the row.
+					// Hand-set tracks: the widest track bounds any cell. All-`fr` tracks share the row, all-px tracks cap at the
+					// widest; a mix leaves the cell at the row.
 					$frs = self::fr_tracks( $tracks[ $device ] );
 					if ( $frs ) {
 						$cell[ $device ] = self::scaled( self::shifted( $model, -( count( $frs ) - 1 ) * $g ), max( $frs ) / array_sum( $frs ) );
+					} else {
+						$widest = self::px_tracks( $tracks[ $device ] );
+						if ( null !== $widest ) {
+							$cell[ $device ] = self::capped( $model, $widest );
+						}
 					}
 					continue;
 				}
@@ -242,6 +271,35 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 				}
 			}
 			return array_sum( $weights ) > 0 ? $weights : array();
+		}
+
+		/**
+		 * The widest track of a grid template made only of px tracks.
+		 *
+		 * A `minmax(a, Npx)` track counts as N (its ceiling). Any track that is not px (`fr`, `auto`, `%`, `min-content`)
+		 * or any px `minmax` whose ceiling is not a px length gives null, so the cell stays at the row.
+		 *
+		 * @param string $template A `grid-template-columns` value.
+		 * @return float|null The widest px track; null when any track is not px.
+		 */
+		public static function px_tracks( string $template ): ?float {
+			$expanded = (string) preg_replace_callback(
+				'/repeat\(\s*(\d+)\s*,\s*(minmax\([^)]*\)|[^\s)]+)\s*\)/i',
+				static fn( array $m ): string => implode( ' ', array_fill( 0, min( 24, max( 1, (int) $m[1] ) ), $m[2] ) ),
+				trim( $template )
+			);
+			if ( ! preg_match_all( '/minmax\([^)]*\)|\S+/i', $expanded, $found ) ) {
+				return null;
+			}
+			$widest = 0.0;
+			foreach ( $found[0] as $token ) {
+				if ( preg_match( '/^minmax\(\s*[^,]+,\s*(\d+(?:\.\d+)?)px\s*\)$/i', $token, $m ) || preg_match( '/^(\d+(?:\.\d+)?)px$/i', $token, $m ) ) {
+					$widest = max( $widest, (float) $m[1] );
+				} else {
+					return null;
+				}
+			}
+			return $widest > 0 ? $widest : null;
 		}
 
 		/**
@@ -336,10 +394,12 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 		/**
 		 * A model as a `sizes` source size.
 		 *
-		 * @param array $model Model.
+		 * @param array $model    Model.
+		 * @param bool  $nestable True for one CSS length expression that can sit inside `max()` (a flat capped box is
+		 *                        `min(Npx, 100vw)` rather than WordPress's `(max-width: Npx) 100vw, Npx`).
 		 * @return string e.g. `100vw`, `(max-width: 1200px) 100vw, 1200px`, `min(588px, calc(50vw - 16px))`.
 		 */
-		public static function to_sizes( array $model ): string {
+		public static function to_sizes( array $model, bool $nestable = false ): string {
 			$px   = static function ( float $v ): string {
 				return rtrim( rtrim( number_format( $v, 2, '.', '' ), '0' ), '.' ) . 'px';
 			};
@@ -358,7 +418,7 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 			if ( null === $model['cap'] ) {
 				return $expr;
 			}
-			return $flat
+			return $flat && ! $nestable
 				? sprintf( '(max-width: %1$s) 100vw, %1$s', $px( $model['cap'] ) )
 				: 'min(' . $px( $model['cap'] ) . ', ' . $expr . ')';
 		}

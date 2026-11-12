@@ -180,23 +180,66 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	$columns    = sgs_media_device_values( $item_set['columns'] ?? 0 );
 	$widths     = sgs_media_device_values( $attr( 'Width' ) );
 	$max_widths = sgs_media_device_values( $attr( 'MaxWidth' ) );
-	$avail      = class_exists( 'Sgs_Layout_Width' ) ? Sgs_Layout_Width::own() : null;
-	$sizes      = array();
+	// `item_width`: a fixed px width per device where the items are not sized by the column count (a swipe row's tracks).
+	$item_widths = (array) ( $item_set['item_width'] ?? array() );
+	// `item_cap`: a px width every item stays within on every device (a brand strip's logo box is at most its Max height).
+	$item_cap = sgs_media_sizes_px( $item_set['item_cap'] ?? null );
+	if ( null === $item_cap && isset( $item_set['item_cap'] ) && is_numeric( $item_set['item_cap'] ) && (float) $item_set['item_cap'] > 0 ) {
+		$item_cap = (float) $item_set['item_cap'];
+	}
+	if ( null !== $item_cap ) {
+		foreach ( sgs_media_devices() as $device ) {
+			$m_px = sgs_media_sizes_px( $max_widths[ $device ] );
+			if ( null === $m_px || $item_cap < $m_px ) {
+				$max_widths[ $device ] = $item_cap . 'px';
+			}
+		}
+	}
+	// A px Height with no Width leaves the width automatic: the image's own shape (Height x ratio), or less where the
+	// container clamps it (a logo sized by height). That figure joins Max width as a cap on the slot's width.
+	$heights = sgs_media_device_values( $attr( 'Height' ) );
 	foreach ( sgs_media_devices() as $device ) {
-		$sizes[ $device ] = sgs_media_sizes_for_width( $widths[ $device ], 'lazy' === $loading, (int) $columns[ $device ], $max_widths[ $device ], $avail[ $device ] ?? null );
+		$file  = $images[ $device ] ?? null;
+		$h_px  = sgs_media_sizes_px( $heights[ $device ] );
+		$w_set = null !== $widths[ $device ] && '' !== $widths[ $device ];
+		if ( $w_set || null === $h_px || ! is_array( $file ) || (int) ( $file['width'] ?? 0 ) <= 0 || (int) ( $file['height'] ?? 0 ) <= 0 ) {
+			continue;
+		}
+		$h_cap = (int) ceil( $h_px * (int) $file['width'] / (int) $file['height'] );
+		$m_px  = sgs_media_sizes_px( $max_widths[ $device ] );
+		if ( null === $m_px || $h_cap < $m_px ) {
+			$max_widths[ $device ] = $h_cap . 'px';
+		}
+	}
+	$avail       = class_exists( 'Sgs_Layout_Width' ) ? Sgs_Layout_Width::own() : null;
+	$sizes       = array();
+	foreach ( sgs_media_devices() as $device ) {
+		$sizes[ $device ] = sgs_media_sizes_for_width( $widths[ $device ], 'lazy' === $loading, (int) $columns[ $device ], $max_widths[ $device ], $avail[ $device ] ?? null, $item_widths[ $device ] ?? null );
 	}
 	$crop_id    = $image_files ? (int) reset( $image_files )['id'] : 0;
 	$cover_crop = false;
 	if ( $crop_id > 0 && function_exists( 'sgs_media_cover_crop_plan' ) ) {
-		$plan = sgs_media_cover_crop_plan( $attrs, $slot, $crop_id );
-		if ( ! empty( $plan['sizes'] ) ) {
+		$boxes = array();
+		foreach ( null !== $avail ? sgs_media_devices() : array() as $device ) {
+			if ( isset( $avail[ $device ] ) ) {
+				$boxes[ $device ] = sgs_media_width_model( $widths[ $device ], (int) $columns[ $device ], $max_widths[ $device ], $avail[ $device ], $item_widths[ $device ] ?? null );
+			}
+		}
+		$plan = sgs_media_cover_crop_plan( $attrs, $slot, $crop_id, $boxes );
+		if ( ! empty( $plan['widens'] ) ) {
+			// The crop draws the file wider than its box, so `auto` (the box width) would pick a file too small: the marker
+			// lets sgs_media_drop_auto_sizes take out the `auto` core adds to lazy images later in the_content.
+			$cover_crop = true;
+		}
+		if ( ! empty( $plan['by_device'] ) ) {
+			$sizes = (array) $plan['by_device'];
+		} elseif ( ! empty( $plan['sizes'] ) ) {
 			$sizes = array_fill_keys( sgs_media_devices(), (string) $plan['sizes'] );
 		} elseif ( ! empty( $plan['widens'] ) ) {
-			// The crop draws the file wider than its box and the drawn width is unknown: no `auto`, so the browser reads
-			// the width hint and picks a file wide enough. The marker lets sgs_media_drop_auto_sizes take out the `auto`
-			// core adds to lazy images later in the_content.
-			$cover_crop = true;
-			$sizes      = array_map( static fn( $s ): string => (string) preg_replace( '/^auto,\s*/i', '', (string) $s ), $sizes );
+			// The drawn width is unknown (a fill box of a landscape image: the box shape, so the crop, cannot be read), and the
+			// box width alone would pick a file that is too small. Printing no `sizes` leaves WordPress's own hint for the
+			// attachment, which is as wide as the file, so the browser picks a file wide enough.
+			$sizes = array_fill_keys( sgs_media_devices(), '' );
 		}
 	}
 

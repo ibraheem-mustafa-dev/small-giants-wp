@@ -141,9 +141,16 @@ class MediaCoverCropSizesTest extends TestCase {
 	}
 
 	public function test_a_landscape_image_with_an_automatic_height_never_widens(): void {
-		// No Ratio and no Height, or a px Height with no Width: the box takes the image's own shape, so `auto` stays.
+		// No Ratio and no Height: the box takes the image's own shape, so `auto` stays.
 		$this->assertSame( array( 'widens' => false, 'sizes' => '' ), $this->plan( array( 'fit' => $this->all( 'cover' ) ), 10 ) );
-		$this->assertSame( array( 'widens' => false, 'sizes' => '' ), $this->plan( array( 'height' => $this->all( '48px' ) ), 10 ) );
+	}
+
+	public function test_a_px_height_with_an_automatic_width_needs_height_times_the_image_ratio(): void {
+		// Image 10 is 1600x1067: a 48px-high box needs 72px of file whether the width follows the image or a narrow
+		// container crops its sides (a 159x187 card showing a 1.74:1 photo needs the photo at 187px high, not 159 wide).
+		$expected = '(max-width: 767px) 72px, (max-width: 1023px) 72px, 72px';
+		$this->assertSame( $expected, $this->plan( array( 'height' => $this->all( '48px' ) ), 10 )['sizes'] );
+		$this->assertSame( array( 'widens' => true, 'sizes' => '' ), $this->plan( array( 'height' => $this->all( '48px' ), 'width' => $this->all( '100%' ) ), 10 ), 'a fill width leaves the box shape unknown' );
 	}
 
 	public function test_a_width_and_height_box_derives_its_ratio(): void {
@@ -162,6 +169,51 @@ class MediaCoverCropSizesTest extends TestCase {
 		$attrs             = $this->ratio_attrs( '1/1' );
 		$attrs['maxWidth'] = array( 'desktop' => '400px', 'mobile' => '100%' );
 		// Image 10 is 3:2 so the crop widens; the phone's drawn width is unknown, so no concrete sizes list is printed.
+		$this->assertSame( array( 'widens' => true, 'sizes' => '' ), $this->plan( $attrs, 10 ) );
+	}
+
+	private function boxes( array $model ): array {
+		return $this->all( $model );
+	}
+
+	public function test_a_box_with_no_px_width_uses_the_layout_model_times_the_crop_factor(): void {
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/media/layout-width.php';
+		$plan = sgs_media_cover_crop_plan(
+			$this->ratio_attrs( '1/1' ),
+			array( 'prefix' => '' ),
+			10,
+			$this->boxes( array( 'vw' => 1.0, 'off' => -40.0, 'cap' => 1200.0 ) )
+		);
+		// Image 10 is 3:2 in a square box: factor 1.4995 (1600 / 1067), so the drawn width is 1.4995 x min(1200, 100vw - 40).
+		$this->assertTrue( $plan['widens'] );
+		$this->assertSame( '', $plan['sizes'] );
+		$this->assertSame( 'min(1799.44px, calc(149.95vw - 59.98px))', $plan['by_device']['desktop'] );
+	}
+
+	public function test_a_device_that_does_not_widen_prints_its_box_model_beside_a_widening_one(): void {
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/media/layout-width.php';
+		$attrs          = $this->ratio_attrs( '1/1' );
+		$attrs['ratio'] = array( 'desktop' => '3/2', 'tablet' => '3/2', 'mobile' => '1/1' );
+		$plan           = sgs_media_cover_crop_plan( $attrs, array( 'prefix' => '' ), 10, $this->boxes( array( 'vw' => 0.5, 'off' => 0.0, 'cap' => null ) ) );
+		$this->assertSame( '50vw', $plan['by_device']['desktop'] );
+		$this->assertSame( '74.98vw', $plan['by_device']['mobile'] );
+	}
+
+	public function test_a_fill_box_stays_unknown_even_with_a_layout_model(): void {
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/media/layout-width.php';
+		$attrs           = array( 'fit' => $this->all( 'cover' ), 'height' => $this->all( '100%' ) );
+		$plan            = sgs_media_cover_crop_plan( $attrs, array( 'prefix' => '' ), 10, $this->boxes( array( 'vw' => 1.0, 'off' => 0.0, 'cap' => null ) ) );
+		$this->assertSame( array( 'widens' => true, 'sizes' => '' ), $plan );
+	}
+
+	public function test_an_explicit_auto_width_with_a_px_height_prints_the_larger_of_the_image_figure_and_the_container(): void {
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/media/layout-width.php';
+		$attrs = array( 'height' => $this->all( '262px' ), 'width' => $this->all( 'auto' ) );
+		$box   = array( 'vw' => 1.0, 'off' => 0.0, 'cap' => 244.0 );
+		$plan  = sgs_media_cover_crop_plan( $attrs, array( 'prefix' => '' ), 10, $this->boxes( $box ) );
+		// Image 10 is 1600x1067: 262px high is 393px wide; the container (244px at most) is narrower, so 393 is the larger.
+		$this->assertSame( 'max(393px, min(244px, 100vw))', $plan['by_device']['desktop'] );
+		// With no layout model the width is unknown: the attachment's own hint, with `auto` removed.
 		$this->assertSame( array( 'widens' => true, 'sizes' => '' ), $this->plan( $attrs, 10 ) );
 	}
 }

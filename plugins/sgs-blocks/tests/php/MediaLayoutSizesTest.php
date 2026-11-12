@@ -198,4 +198,58 @@ class MediaLayoutSizesTest extends TestCase {
 		Sgs_Layout_Width::close_frame( '', $outer );
 		$this->assertNull( Sgs_Layout_Width::own() );
 	}
+
+	public function test_px_tracks_bound_a_cell_by_the_widest_track(): void {
+		$this->open(
+			$this->container(
+				array(
+					'layout'              => 'grid',
+					'gridTemplateColumns' => array( 'desktop' => '574px 522px', 'mobile' => 'minmax(0, 1fr)' ),
+					'contentWidth'        => array( 'desktop' => 'full' ),
+				)
+			),
+			$this->leaf()
+		);
+		$this->assertSame( '(max-width: 574px) 100vw, 574px', $this->sizes( 'desktop' ) );
+		$this->assertSame( 574.0, Sgs_Layout_Width::px_tracks( 'repeat(1, minmax(0, 341px)) 574px' ) );
+		$this->assertSame( 341.0, Sgs_Layout_Width::px_tracks( 'minmax(0, 341px) minmax(0, 324px)' ) );
+		$this->assertNull( Sgs_Layout_Width::px_tracks( '200px 1fr' ) );
+		$this->assertNull( Sgs_Layout_Width::px_tracks( 'repeat(auto-fit, minmax(240px, 300px))' ) );
+	}
+
+	public function test_a_sideways_scroll_row_sizes_its_items_by_the_item_width(): void {
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/helpers-responsive.php';
+		$attrs = array(
+			'scrollSideways'  => array( 'mobile' => 'on' ),
+			'scrollItemWidth' => array( 'mobile' => '147px' ),
+			'contentWidth'    => array( 'desktop' => 'full' ),
+		);
+		$this->open( $this->container( $attrs ), $this->leaf() );
+		$this->assertSame( '(max-width: 147px) 100vw, 147px', $this->sizes( 'mobile' ) );
+		$this->assertSame( '100vw', $this->sizes( 'desktop' ), 'a device that does not scroll keeps the row' );
+		Sgs_Layout_Width::reset();
+		unset( $attrs['scrollItemWidth'] );
+		$this->open( $this->container( $attrs ), $this->leaf() );
+		$this->assertSame( '80vw', $this->sizes( 'mobile' ), 'no item width: 80% of the row' );
+	}
+
+	public function test_a_fixed_item_width_replaces_the_column_division(): void {
+		$this->open( $this->container( array( 'contentWidth' => array( 'desktop' => 'full' ) ) ), $this->leaf() );
+		$own = Sgs_Layout_Width::own();
+		// Six columns would divide the row to ~16.7vw, below a 300px card: the fixed width is the figure.
+		$this->assertSame( '(max-width: 300px) 100vw, 300px', sgs_media_sizes_for_width( null, false, 6, null, $own['mobile'], '300px' ) );
+		$this->assertSame( '16.67vw', sgs_media_sizes_for_width( null, false, 6, null, $own['mobile'], null ) );
+		$this->assertSame( '16.67vw', sgs_media_sizes_for_width( null, false, 6, null, $own['mobile'], '50%' ), 'a non-px card width is ignored' );
+	}
+
+	public function test_a_layer_with_a_px_width_holds_everything_inside_it(): void {
+		$this->open(
+			$this->container( array( 'contentWidth' => array( 'desktop' => 'full' ) ) ),
+			$this->leaf( array( 'layerWidth' => array( 'desktop' => '303px', 'tablet' => '188px', 'mobile' => 'max-content' ) ), 'sgs/decorative-image' ),
+			$this->leaf()
+		);
+		$this->assertSame( '(max-width: 303px) 100vw, 303px', $this->sizes( 'desktop' ) );
+		$this->assertSame( '(max-width: 188px) 100vw, 188px', $this->sizes( 'tablet' ) );
+		$this->assertSame( '100vw', $this->sizes( 'mobile' ), 'a width that is not px leaves the box at the row' );
+	}
 }
