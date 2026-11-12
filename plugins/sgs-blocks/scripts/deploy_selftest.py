@@ -15,6 +15,7 @@ import tempfile
 from pathlib import Path
 import deploy_cache
 import deploy_delta
+from deploy_common import posix_bash
 import deploy_media_guard
 import deploy_minify
 import deploy_multi
@@ -36,7 +37,7 @@ def self_test_theme_json() -> list[str]:
     """
     import hashlib
     failures: list[str] = []
-    bash = shutil.which("bash")
+    bash = posix_bash()
     if not bash:
         return ["theme.json self-test needs bash on PATH (Git Bash on Windows)"]
     FRAMEWORK = b'{"version": 3, "settings": {"typography": {"fontFamilies": [{"slug": "heading", "fontFamily": "Inter"}]}}}\n'
@@ -596,7 +597,7 @@ def self_test_ship() -> list[str]:
     """
     import tarfile
     failures: list[str] = []
-    bash = shutil.which("bash")
+    bash = posix_bash()
     if not bash:
         return ["ship self-test needs bash on PATH (Git Bash on Windows)"]
     roots = deploy_delta.roots_for(theme=True, blocks=False)
