@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-11-12
+last_updated: 2026-11-15
 ---
 
 # small-giants-wp: LEDGER (the one living status)
@@ -9,8 +9,8 @@ last_updated: 2026-11-12
 ## Summary for Bean
 
 - **Web engine (Front E):** the engine has its own repository, `C:\Users\Bean\Projects\small-giants-engine` (private on GitHub). You rejected its first plan on 2026-11-12. The design that replaces it is written there as a register of solutions, six specs and a build plan: existing open-source pieces for almost everything (Payload CMS, the Puck editor, shadcn/ui, Astro, Stripe), a back office on the VPS and each client's site as plain files on the business hosting. You are reviewing it piece by piece (piece 1 is settled; pieces 2 to 10 remain), in sessions that run in the engine's own folder; nothing is built until that review ends and you say go.
-- **WordPress framework: frozen on 2026-11-12 (your decision).** Security updates and client fixes only: no new framework features, specs or checks. Indus (signed off 2026-11-08) and Eye Care (signed off 2026-11-12) launch on WordPress when their clients are ready. A new client is built on WordPress until the engine passes its platform gate (the engine's Spec 01 section 13).
-- **Mama's (Front H):** hand-finishing on WordPress stopped on 2026-11-12; Mama's is the engine's proof site. Its open list stays recorded in `plans/2026-11-02-clone-finishing-streams.md`.
+- **WordPress framework: frozen on 2026-11-12 (your decision), except the cloning pipeline, which you unfroze on 2026-11-15.** Outside the pipeline: security updates and client fixes only, no new framework features, specs or checks. Indus (signed off 2026-11-08) and Eye Care (signed off 2026-11-12) launch on WordPress when their clients are ready. A new client is built on WordPress until the engine passes its platform gate (the engine's Spec 01 section 13).
+- **Mama's (Front H): the WordPress clone is the goal again (your ruling, 2026-11-15); the engine is a side project.** Mama's is re-cloned by the pipeline on a local mirror, not hand-finished, for the client and for the MIC event on 2026-11-28. mamas-test stays untouched as the fallback until you have seen a re-clone that is better.
 - **Media system (Spec 49, Front P):** released 2026-11-12 on all four test sites.
 - **Need you:** the rest of the engine's design review, in the engine's own folder; its LEDGER lists what is open. The rulings under Parked and Front N wait until a client fix needs one.
 
@@ -20,7 +20,7 @@ last_updated: 2026-11-12
 
 ## Fronts
 
-Every WordPress front below (M, H, F, P, N) is frozen as of 2026-11-12: its open items are worked only when a client fix or a security update needs them.
+The WordPress fronts M, F, P and N are frozen as of 2026-11-12: their open items are worked only when a client fix or a security update needs them. Front H (the cloning pipeline) is live again from 2026-11-15, and framework work it needs to clone a surface is in scope.
 
 ### Front E: Web engine
 
@@ -36,9 +36,11 @@ Built and closed (2026-10-18; Bean signed Gate 9). Open: FR-38A-33's `hover.effe
 
 ### Front H: Cloning system (Spec 48) and the Claude Design handover
 
-**State:** the route (`scripts/computed-route`, `scripts/parity`) and `sites/<client>/build` were rewound on 2026-11-02 to the 2026-10-28 version (`0ea1a6cb2`); Indus and Eye Care were finished by hand from your issues lists and signed off. The automatic cloning tool does not resume: it is frozen with the framework (2026-11-12), and its draft reader and parity walker carry over to the web engine (Front E). Its unbuilt requirements stay in Spec 48 §16.1 (FR-48-95 to FR-48-107) with your standing rulings in §16.2 (FR-48-108 to FR-48-112). Spec 48 holds the route's status; `node scripts/computed-route/check-approved.mjs indus-foods` must exit 0.
+**State:** the route (`scripts/computed-route`, `scripts/parity`) and `sites/<client>/build` were rewound on 2026-11-02 to the 2026-10-28 version (`0ea1a6cb2`); Indus and Eye Care were finished by hand from your issues lists and signed off; the route never runs on them again. The pipeline resumed on 2026-11-15 (your ruling): its goal is to clone every class of surface (regular pages, CPTs such as header, footer, drawer, form and modal, and template pages such as the shop's), with Mama's as the proof. Its unbuilt requirements are in Spec 48 §16.1 (FR-48-95 to FR-48-107) with your standing rulings in §16.2 (FR-48-108 to FR-48-112). Spec 48 holds the route's status; `node scripts/computed-route/check-approved.mjs indus-foods` must exit 0.
 
-**Mama's:** hand-finishing stopped on 2026-11-12 with seven items open; mamas-test is kept as it stands. The record is `plans/2026-11-02-clone-finishing-streams.md`, section "Mama's".
+**Your rulings of 2026-11-15 for cloning:** where no setting matches a draft value the route writes Custom CSS and lists each use in the run's report; a clone sticks to the draft, so the 24px tap-target minimum is withdrawn; Mama's only accepted differences are everything subscriptions alone need (deferred and not shown), the send-to-hospital item (already out of the draft) and the account banner with mamas-test's wording.
+
+**Mama's:** re-cloned on a local mirror; mamas-test (last pushed 2026-11-05, seven hand-finishing items open in `plans/2026-11-02-clone-finishing-streams.md`, section "Mama's") is replaced only after you have seen the re-clone, with a backup taken first. Done means every surface passes the walk at 375, 768 and 1440 with only the accepted differences, and a test order runs from basket to order confirmation.
 
 **Handover standard:** Spec 48A v1.0 (`handoff-check.mjs`). Open: edit the Eye Care draft to mirror the live site (Spec 48A FR-48A-11).
 
@@ -80,7 +82,7 @@ Signed off by Bean (2026-11-12). eye-care-test (`https://darkcyan-grouse-898606.
 - **Unwired scripts (your ruling):** nav-qa `u1-owed-probe.mjs` with `qa-u1-owed-fixture.php`, and the `motion-qa` probes whose target pages no doc registers (`plugins/sgs-blocks/scripts/audit-live-script-closure.py` lists them).
 - **Product-card value ladder:** 24 editor-canvas controls wait for a bound-mode canvas preview (parked by you; baseline `plugins/sgs-blocks/scripts/wiring-fingerprint-baseline.json`).
 - Optional editor-check speed-ups (`plans/patches/`): `plans/archive/2026-11-11-deploy-speed.md`.
-- **Parked plans, frozen with the framework on 2026-11-12:** Snooza Chair configurator build (`plans/2026-08-03-snooza-configurator-build-plan.md`); form and choice-flow pipeline and analytics (`plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md`); the automatic cloning tool, with the handoff readers, the spec audit register's fix pass and the header and nav Waves 4 and 5 folded in (`plans/2026-10-30-clone-recognition-fixes.md`); the three sites' finishing plan, which now holds Mama's open list as a record (`plans/2026-11-02-clone-finishing-streams.md`).
+- **Parked plans, frozen with the framework on 2026-11-12:** Snooza Chair configurator build (`plans/2026-08-03-snooza-configurator-build-plan.md`); form and choice-flow pipeline and analytics (`plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md`); the three sites' finishing plan, which now holds Mama's open list as a record (`plans/2026-11-02-clone-finishing-streams.md`). The automatic cloning tool's plan (`plans/2026-10-30-clone-recognition-fixes.md`) is no longer parked: the pipeline resumed on 2026-11-15 (Front H).
 
 ## Live state
 
