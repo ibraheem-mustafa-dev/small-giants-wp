@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:35:28.612Z",
-	"inventory": "2026-10-28T06:35:28.381Z",
-	"source": "http://127.0.0.1:58717/",
+	"generated": "2026-11-15T22:52:15.522Z",
+	"inventory": "2026-11-15T22:52:15.338Z",
+	"source": "http://127.0.0.1:56633/",
 	"surface": "page-contact-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -12,6 +12,15 @@
 			"openedBy": "Load",
 			"roots": [
 				"Contact/43"
+			]
+		},
+		{
+			"id": "S-59",
+			"kind": "accordion",
+			"name": "Contact FAQ list",
+			"openedBy": "Question button",
+			"roots": [
+				"Contact/78"
 			]
 		}
 	],
@@ -38,13 +47,13 @@
 		"rule": 1
 	},
 	"counts": {
-		"inventoryElements": 66,
+		"inventoryElements": 85,
 		"parts": 10,
-		"rows": 56,
-		"skeletonNodes": 26,
-		"expandedNodes": 26,
-		"low": 5,
-		"removed": 27,
+		"rows": 75,
+		"skeletonNodes": 52,
+		"expandedNodes": 52,
+		"low": 13,
+		"removed": 23,
 		"unresolved": 0,
 		"byRule": {
 			"hero": 1,
@@ -54,7 +63,7 @@
 			"solitaryIcon": 3,
 			"cardTitle": 3,
 			"formLink": 20,
-			"drawsChildren": 4
+			"label": 4
 		}
 	},
 	"widthAlternatives": [],
@@ -1422,7 +1431,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 6 block children",
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
 						"no row block fits: a generic wrapper",
 						"block_capabilities: sgs/container lists \"flex\" (draft display)"
 					]
@@ -1433,7 +1442,7 @@
 				"375": "shots/Root_74_0@375.png",
 				"1440": "shots/Root_74_0@1440.png"
 			},
-			"snippet": "<div style=\"display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"74\"> <div data-reveal=\"\" style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"75\">quick answers</div> <sc-for list=\"{{ quick }}\" as=\"q\" hint-placeholder-count=\"0\" data-dc-tpl=\"76\"> <a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;ga",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"74\"> <div data-reveal=\"\" style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"75\">quick answers</div> <div style=\"display:flex;flex-direction:column;gap:12px\" data-dc-tpl=\"76\"> <sc-for list=\"{{ faqs }}\" as=\"f\" hint-placeholder-count=\"0\" data-dc-tpl=\"77\"> <div style=\"border:2px solid #3A2A2",
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
@@ -1475,267 +1484,959 @@
 		},
 		{
 			"order": 47,
-			"key": "Root/77#0",
-			"tag": "a",
+			"key": "Root/76#0",
+			"tag": "div",
 			"depth": 5,
-			"words": "When will my order arrive?",
-			"block": "sgs/icon-list",
+			"words": "",
+			"block": "sgs/container",
 			"action": null,
 			"reason": null,
 			"source": null,
-			"confidence": 0.7,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/icon-list",
-					"score": 1.15,
-					"share": 0.697,
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
-						"block_capabilities: sgs/icon-list lists \"list\"",
-						"4 bare text links, one above the next"
-					]
-				},
-				{
-					"block": "sgs/button",
-					"score": 0.5,
-					"share": 0.303,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (each link on its own)"
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_77_0@375.png",
-				"1440": "shots/Root_77_0@1440.png"
+				"375": "shots/Root_76_0@375.png",
+				"1440": "shots/Root_76_0@1440.png"
 			},
-			"snippet": "<a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:64px;padding:12px 18px;background:#FFFAF0;border:2px solid #3A2A22;border-radius:20px;text-decoration:none;color:#3A2A22;font-family:'Young Serif',serif;font-size:18px;transition:transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .25s\" style-hover=\"transform:translate(-3",
-			"attributes": {},
-			"unit": "list",
-			"item": {
-				"text": "When will my order arrive?",
-				"url": "/help/#delivery"
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:12px\" data-dc-tpl=\"76\"> <sc-for list=\"{{ faqs }}\" as=\"f\" hint-placeholder-count=\"0\" data-dc-tpl=\"77\"> <div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"w",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
 			}
 		},
 		{
 			"order": 48,
 			"key": "Root/78#0",
-			"tag": "span",
+			"tag": "div",
 			"depth": 6,
-			"words": "→",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root/77#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_78_0@375.png",
 				"1440": "shots/Root_78_0@1440.png"
 			},
-			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:34px;height:34px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-family:Karla\" data-dc-tpl=\"78\">→</span>",
-			"attributes": {}
+			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
+			"attributes": {
+				"tagName": "div"
+			}
 		},
 		{
 			"order": 49,
-			"key": "Root/77#1",
-			"tag": "a",
-			"depth": 5,
-			"words": "What allergens are in them?",
-			"block": "sgs/icon-list",
+			"key": "Root/79#0",
+			"tag": "button",
+			"depth": 7,
+			"words": "",
+			"block": "sgs/container",
 			"action": null,
 			"reason": null,
 			"source": null,
-			"confidence": 0.7,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/icon-list",
-					"score": 1.15,
-					"share": 0.697,
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
-						"block_capabilities: sgs/icon-list lists \"list\"",
-						"4 bare text links, one above the next"
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_77_1@375.png",
-				"1440": "shots/Root_77_1@1440.png"
+				"375": "shots/Root_79_0@375.png",
+				"1440": "shots/Root_79_0@1440.png"
 			},
-			"snippet": "<a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:64px;padding:12px 18px;background:#FFFAF0;border:2px solid #3A2A22;border-radius:20px;text-decoration:none;color:#3A2A22;font-family:'Young Serif',serif;font-size:18px;transition:transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .25s\" style-hover=\"transform:translate(-3",
-			"attributes": {},
-			"unit": "list",
-			"item": {
-				"text": "What allergens are in them?",
-				"url": "/help/#allergens"
+			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"79\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
 			}
 		},
 		{
 			"order": 50,
-			"key": "Root/78#1",
+			"key": "Root/80#0",
 			"tag": "span",
-			"depth": 6,
-			"words": "→",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"depth": 8,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root/77#1",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_80_0@375.png",
+				"1440": "shots/Root_80_0@1440.png"
+			},
+			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span></span>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 51,
+			"key": "Root/81#0",
+			"tag": "span",
+			"depth": 9,
+			"words": "Ordering & delivery",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_81_0@375.png",
+				"1440": "shots/Root_81_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span>",
+			"attributes": {
+				"text": "Ordering & delivery"
+			}
+		},
+		{
+			"order": 52,
+			"key": "Root/82#0",
+			"tag": "span",
+			"depth": 9,
+			"words": "When will my order arrive?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_82_0@375.png",
+				"1440": "shots/Root_82_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span>",
+			"attributes": {
+				"text": "When will my order arrive?"
+			}
+		},
+		{
+			"order": 53,
+			"key": "Root/83#0",
+			"tag": "span",
+			"depth": 8,
+			"words": "+",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_83_0@375.png",
+				"1440": "shots/Root_83_0@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"83\">+</span>",
+			"attributes": {
+				"text": "+"
+			}
+		},
+		{
+			"order": 54,
+			"key": "Root/85#0",
+			"tag": "p",
+			"depth": 7,
+			"words": "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_85_0@375.png",
+				"1440": "shots/Root_85_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0;padding:0 20px 20px;font-size:16px;line-height:1.6;max-width:700px\" data-dc-tpl=\"85\">{{ f.a }}</p>",
+			"attributes": {
+				"text": "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days."
+			}
+		},
+		{
+			"order": 55,
+			"key": "Root/78#1",
+			"tag": "div",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_78_1@375.png",
 				"1440": "shots/Root_78_1@1440.png"
 			},
-			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:34px;height:34px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-family:Karla\" data-dc-tpl=\"78\">→</span>",
-			"attributes": {}
+			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
+			"attributes": {
+				"tagName": "div"
+			}
 		},
 		{
-			"order": 51,
-			"key": "Root/77#2",
-			"tag": "a",
-			"depth": 5,
-			"words": "How does Subscribe & save work?",
-			"block": "sgs/icon-list",
+			"order": 56,
+			"key": "Root/79#1",
+			"tag": "button",
+			"depth": 7,
+			"words": "",
+			"block": "sgs/container",
 			"action": null,
 			"reason": null,
 			"source": null,
-			"confidence": 0.7,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/icon-list",
-					"score": 1.15,
-					"share": 0.697,
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
-						"block_capabilities: sgs/icon-list lists \"list\"",
-						"4 bare text links, one above the next"
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_77_2@375.png",
-				"1440": "shots/Root_77_2@1440.png"
+				"375": "shots/Root_79_1@375.png",
+				"1440": "shots/Root_79_1@1440.png"
 			},
-			"snippet": "<a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:64px;padding:12px 18px;background:#FFFAF0;border:2px solid #3A2A22;border-radius:20px;text-decoration:none;color:#3A2A22;font-family:'Young Serif',serif;font-size:18px;transition:transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .25s\" style-hover=\"transform:translate(-3",
-			"attributes": {},
-			"unit": "list",
-			"item": {
-				"text": "How does Subscribe & save work?",
-				"url": "/help/"
+			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"79\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
 			}
 		},
 		{
-			"order": 52,
-			"key": "Root/78#2",
+			"order": 57,
+			"key": "Root/80#1",
 			"tag": "span",
-			"depth": 6,
-			"words": "→",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"depth": 8,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root/77#2",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_80_1@375.png",
+				"1440": "shots/Root_80_1@1440.png"
+			},
+			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span></span>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 58,
+			"key": "Root/81#1",
+			"tag": "span",
+			"depth": 9,
+			"words": "Ingredients & allergens",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_81_1@375.png",
+				"1440": "shots/Root_81_1@1440.png"
+			},
+			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span>",
+			"attributes": {
+				"text": "Ingredients & allergens"
+			}
+		},
+		{
+			"order": 59,
+			"key": "Root/82#1",
+			"tag": "span",
+			"depth": 9,
+			"words": "What allergens are in them?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_82_1@375.png",
+				"1440": "shots/Root_82_1@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span>",
+			"attributes": {
+				"text": "What allergens are in them?"
+			}
+		},
+		{
+			"order": 60,
+			"key": "Root/83#1",
+			"tag": "span",
+			"depth": 8,
+			"words": "+",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_83_1@375.png",
+				"1440": "shots/Root_83_1@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"83\">+</span>",
+			"attributes": {
+				"text": "+"
+			}
+		},
+		{
+			"order": 61,
+			"key": "Root/78#2",
+			"tag": "div",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_78_2@375.png",
 				"1440": "shots/Root_78_2@1440.png"
 			},
-			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:34px;height:34px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-family:Karla\" data-dc-tpl=\"78\">→</span>",
-			"attributes": {}
+			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
+			"attributes": {
+				"tagName": "div"
+			}
 		},
 		{
-			"order": 53,
-			"key": "Root/77#3",
-			"tag": "a",
-			"depth": 5,
-			"words": "Can I send them as a gift?",
-			"block": "sgs/icon-list",
+			"order": 62,
+			"key": "Root/79#2",
+			"tag": "button",
+			"depth": 7,
+			"words": "",
+			"block": "sgs/container",
 			"action": null,
 			"reason": null,
 			"source": null,
-			"confidence": 0.7,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/icon-list",
-					"score": 1.15,
-					"share": 0.697,
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
-						"block_capabilities: sgs/icon-list lists \"list\"",
-						"4 bare text links, one above the next"
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_77_3@375.png",
-				"1440": "shots/Root_77_3@1440.png"
+				"375": "shots/Root_79_2@375.png",
+				"1440": "shots/Root_79_2@1440.png"
 			},
-			"snippet": "<a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:64px;padding:12px 18px;background:#FFFAF0;border:2px solid #3A2A22;border-radius:20px;text-decoration:none;color:#3A2A22;font-family:'Young Serif',serif;font-size:18px;transition:transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .25s\" style-hover=\"transform:translate(-3",
-			"attributes": {},
-			"unit": "list",
-			"item": {
-				"text": "Can I send them as a gift?",
-				"url": "/help/"
+			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"79\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
 			}
 		},
 		{
-			"order": 54,
-			"key": "Root/78#3",
+			"order": 63,
+			"key": "Root/80#2",
 			"tag": "span",
-			"depth": 6,
-			"words": "→",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"depth": 8,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root/77#3",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_80_2@375.png",
+				"1440": "shots/Root_80_2@1440.png"
+			},
+			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span></span>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 64,
+			"key": "Root/81#2",
+			"tag": "span",
+			"depth": 9,
+			"words": "Subscriptions",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_81_2@375.png",
+				"1440": "shots/Root_81_2@1440.png"
+			},
+			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span>",
+			"attributes": {
+				"text": "Subscriptions"
+			}
+		},
+		{
+			"order": 65,
+			"key": "Root/82#2",
+			"tag": "span",
+			"depth": 9,
+			"words": "How does Subscribe & save work?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_82_2@375.png",
+				"1440": "shots/Root_82_2@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span>",
+			"attributes": {
+				"text": "How does Subscribe & save work?"
+			}
+		},
+		{
+			"order": 66,
+			"key": "Root/83#2",
+			"tag": "span",
+			"depth": 8,
+			"words": "+",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_83_2@375.png",
+				"1440": "shots/Root_83_2@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"83\">+</span>",
+			"attributes": {
+				"text": "+"
+			}
+		},
+		{
+			"order": 67,
+			"key": "Root/78#3",
+			"tag": "div",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_78_3@375.png",
 				"1440": "shots/Root_78_3@1440.png"
 			},
-			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:34px;height:34px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-family:Karla\" data-dc-tpl=\"78\">→</span>",
-			"attributes": {}
+			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
+			"attributes": {
+				"tagName": "div"
+			}
 		},
 		{
-			"order": 55,
-			"key": "Root/79#0",
+			"order": 68,
+			"key": "Root/79#3",
+			"tag": "button",
+			"depth": 7,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_79_3@375.png",
+				"1440": "shots/Root_79_3@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"79\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 69,
+			"key": "Root/80#3",
+			"tag": "span",
+			"depth": 8,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_80_3@375.png",
+				"1440": "shots/Root_80_3@1440.png"
+			},
+			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span></span>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 70,
+			"key": "Root/81#3",
+			"tag": "span",
+			"depth": 9,
+			"words": "Gifting",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_81_3@375.png",
+				"1440": "shots/Root_81_3@1440.png"
+			},
+			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span>",
+			"attributes": {
+				"text": "Gifting"
+			}
+		},
+		{
+			"order": 71,
+			"key": "Root/82#3",
+			"tag": "span",
+			"depth": 9,
+			"words": "Can I send them as a gift?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_82_3@375.png",
+				"1440": "shots/Root_82_3@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span>",
+			"attributes": {
+				"text": "Can I send them as a gift?"
+			}
+		},
+		{
+			"order": 72,
+			"key": "Root/83#3",
+			"tag": "span",
+			"depth": 8,
+			"words": "+",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_83_3@375.png",
+				"1440": "shots/Root_83_3@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"83\">+</span>",
+			"attributes": {
+				"text": "+"
+			}
+		},
+		{
+			"order": 73,
+			"key": "Root/86#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "More answers on the Help page",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_86_0@375.png",
+				"1440": "shots/Root_86_0@1440.png"
+			},
+			"snippet": "<a href=\"Help.dc.html\" style=\"align-self:flex-start;display:inline-flex;align-items:center;min-height:44px;font-size:15px;font-weight:700;color:#3A2A22;text-decoration:underline;text-underline-offset:4px\" data-dc-tpl=\"86\">More answers on the Help page</a>",
+			"attributes": {
+				"label": "More answers on the Help page",
+				"url": "/help/"
+			}
+		},
+		{
+			"order": 74,
+			"key": "Root/87#0",
 			"tag": "div",
 			"depth": 5,
 			"words": "Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events.",
@@ -1759,10 +2460,10 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_79_0@375.png",
-				"1440": "shots/Root_79_0@1440.png"
+				"375": "shots/Root_87_0@375.png",
+				"1440": "shots/Root_87_0@1440.png"
 			},
-			"snippet": "<div data-reveal=\"\" style=\"border:2px dashed #3A2A22;border-radius:20px;padding:16px 18px;font-size:15px;line-height:1.55\" data-dc-tpl=\"79\">Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events.</div>",
+			"snippet": "<div data-reveal=\"\" style=\"border:2px dashed #3A2A22;border-radius:20px;padding:16px 18px;font-size:15px;line-height:1.55\" data-dc-tpl=\"87\">Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events.</div>",
 			"attributes": {
 				"text": "Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events."
 			}

@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:48:30.709Z",
-	"inventory": "2026-10-28T06:48:30.437Z",
-	"source": "http://127.0.0.1:55059/",
+	"generated": "2026-11-15T23:03:03.292Z",
+	"inventory": "2026-11-15T23:03:03.121Z",
+	"source": "http://127.0.0.1:62726/",
 	"surface": "nav-drawer-left",
 	"siteName": null,
 	"surfaceParts": [],
@@ -150,10 +150,17 @@
 			},
 			"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:44px;width:auto\" data-dc-tpl=\"58\">",
 			"attributes": {
-				"logoId": 91
+				"logoSource": {
+					"desktop": {
+						"kind": "image",
+						"id": 91,
+						"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-horizontal.png",
+						"mime": "image/png"
+					}
+				}
 			},
 			"carried": {
-				"logoId": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-horizontal.png"
+				"logoSource": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-horizontal.png"
 			}
 		},
 		{

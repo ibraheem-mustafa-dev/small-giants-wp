@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:38:17.502Z",
-	"inventory": "2026-10-28T06:38:16.803Z",
-	"source": "http://127.0.0.1:55059/",
+	"generated": "2026-11-15T22:54:37.055Z",
+	"inventory": "2026-11-15T22:54:36.436Z",
+	"source": "http://127.0.0.1:62726/",
 	"surface": "page-home-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -98,10 +98,10 @@
 		"inventoryElements": 372,
 		"parts": 0,
 		"rows": 372,
-		"skeletonNodes": 246,
-		"expandedNodes": 246,
+		"skeletonNodes": 251,
+		"expandedNodes": 251,
 		"low": 77,
-		"removed": 126,
+		"removed": 121,
 		"unresolved": 0,
 		"byRule": {
 			"hero": 1,
@@ -245,7 +245,7 @@
 			"key": "Root/12#0",
 			"tag": "div",
 			"depth": 4,
-			"words": "good morning, mama",
+			"words": "up late feeding? we see you, mama",
 			"block": "sgs/container",
 			"action": null,
 			"reason": null,
@@ -434,15 +434,24 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "",
-			"block": null,
-			"action": "remove",
-			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)",
 			"source": "rule decorationLayer",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "decorationLayer",
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorationLayer: a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_18_0@375.png",
@@ -6519,15 +6528,24 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "remove",
-			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)",
 			"source": "rule decorationLayer",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "decorationLayer",
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorationLayer: a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_154_0@375.png",
@@ -6680,10 +6698,17 @@
 			},
 			"snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"width:84px;transform:rotate(-8deg)\" data-dc-tpl=\"158\">",
 			"attributes": {
-				"logoId": 92
+				"logoSource": {
+					"desktop": {
+						"kind": "image",
+						"id": 92,
+						"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-round.png",
+						"mime": "image/png"
+					}
+				}
 			},
 			"carried": {
-				"logoId": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-round.png"
+				"logoSource": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-round.png"
 			}
 		},
 		{
@@ -6890,15 +6915,24 @@
 			"tag": "span",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "remove",
-			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)",
 			"source": "rule decorationLayer",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "decorationLayer",
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorationLayer: a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_165_0@375.png",
@@ -7999,15 +8033,24 @@
 			"tag": "span",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "remove",
-			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)",
 			"source": "rule decorationLayer",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "decorationLayer",
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorationLayer: a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_197_0@375.png",
@@ -8022,15 +8065,24 @@
 			"tag": "span",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "remove",
-			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)",
 			"source": "rule decorationLayer",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "decorationLayer",
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorationLayer: a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_198_0@375.png",

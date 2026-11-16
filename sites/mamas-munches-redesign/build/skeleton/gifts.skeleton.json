@@ -368,6 +368,28 @@
 										},
 										"innerBlocks": [
 											{
+												"name": "sgs/decorative-image",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/30#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "59d6a40d",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 29
+												},
+												"innerBlocks": []
+											},
+											{
 												"name": "sgs/text",
 												"attributes": {
 													"text": "Dear Aisha,"
@@ -2286,12 +2308,7 @@
 									"textHash": "8d972d8c",
 									"line": 73
 								},
-								"innerBlocks": [],
-								"draftSlots": {
-									".sgs-form-field__input": {
-										"tpl": "Root/63#0"
-									}
-								}
+								"innerBlocks": []
 							},
 							{
 								"name": "sgs/form-field-text",
@@ -2346,12 +2363,35 @@
 						},
 						"innerBlocks": [
 							{
+								"name": "sgs/decorative-image",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/67#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "7c11d604",
+									"parentTags": [
+										"main",
+										"section",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 77
+								},
+								"innerBlocks": []
+							},
+							{
 								"name": "sgs/responsive-logo",
 								"attributes": {
 									"logoSource": {
 										"desktop": {
 											"kind": "image",
-											"id": 92
+											"id": 92,
+											"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-round.png",
+											"mime": "image/png"
 										}
 									}
 								},
@@ -2480,7 +2520,9 @@
 							"logoSource": {
 								"desktop": {
 									"kind": "image",
-									"id": 92
+									"id": 92,
+									"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-round.png",
+									"mime": "image/png"
 								}
 							}
 						},

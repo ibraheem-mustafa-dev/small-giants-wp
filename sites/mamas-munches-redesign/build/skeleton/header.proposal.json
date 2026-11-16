@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:45:51.970Z",
-	"inventory": "2026-10-28T06:45:51.645Z",
-	"source": "http://127.0.0.1:55059/",
+	"generated": "2026-11-15T23:00:39.968Z",
+	"inventory": "2026-11-15T23:00:39.745Z",
+	"source": "http://127.0.0.1:62726/",
 	"surface": "site-header-announcement-strip-bar",
 	"siteName": null,
 	"surfaceParts": [
@@ -103,7 +103,7 @@
 					"share": 0.417,
 					"evidence": [
 						"block_capabilities: sgs/hero lists \"header\" (the draft root tag)",
-						"block_composition: sgs/hero is a section-root accepting [\"sgs/media\"]",
+						"block_composition: sgs/hero is a section-root accepting any block",
 						"the root of the surface"
 					]
 				}
@@ -568,10 +568,17 @@
 			},
 			"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto;display:block\" data-dc-tpl=\"22\">",
 			"attributes": {
-				"logoId": 91
+				"logoSource": {
+					"desktop": {
+						"kind": "image",
+						"id": 91,
+						"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-horizontal.png",
+						"mime": "image/png"
+					}
+				}
 			},
 			"carried": {
-				"logoId": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-horizontal.png"
+				"logoSource": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-horizontal.png"
 			}
 		},
 		{
@@ -790,10 +797,17 @@
 			},
 			"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:60px;width:auto;display:block\" data-dc-tpl=\"37\">",
 			"attributes": {
-				"logoId": 91
+				"logoSource": {
+					"desktop": {
+						"kind": "image",
+						"id": 91,
+						"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-horizontal.png",
+						"mime": "image/png"
+					}
+				}
 			},
 			"carried": {
-				"logoId": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-horizontal.png"
+				"logoSource": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-horizontal.png"
 			}
 		},
 		{
@@ -1084,7 +1098,9 @@
 				"triggerStyle": "pill",
 				"pillLabel": "Basket",
 				"pillCountStyle": "bubble",
-				"showZero": true
+				"showZero": {
+					"desktop": true
+				}
 			},
 			"slots": {
 				".sgs-cart__trigger > .sgs-cart__icon > svg": {

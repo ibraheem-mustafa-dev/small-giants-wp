@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-28T06:35:01.545Z",
-  "source": "http://127.0.0.1:60916/",
+  "generated": "2026-11-15T22:52:25.628Z",
+  "source": "http://127.0.0.1:54611/",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -3730,6 +3730,6052 @@
         "375": "shots/Root_72_0@375.png",
         "1440": "shots/Root_72_0@1440.png"
       }
+    }
+  ],
+  "revealed": [
+    {
+      "key": "Root/8#0",
+      "parentKey": "Root/6#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 8,
+      "attrs": {
+        "style": "padding: 48px 40px 104px;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 11,
+      "membership": [],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"8\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your b",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 97,
+          "w": 375,
+          "h": 719.3
+        },
+        "768": {
+          "x": 0,
+          "y": 97,
+          "w": 768,
+          "h": 648.3
+        },
+        "1440": {
+          "x": 0,
+          "y": 117,
+          "w": 1440,
+          "h": 730.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": true
+        }
+      },
+      "after": null,
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/9#0",
+      "parentKey": "Root/8#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 9,
+      "attrs": {
+        "style": "max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 12,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 121,
+          "w": 335,
+          "h": 631.3
+        },
+        "768": {
+          "x": 32,
+          "y": 133,
+          "w": 704,
+          "h": 532.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 165,
+          "w": 1240,
+          "h": 578.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": true
+        }
+      },
+      "after": "Root/8#0@[\"SiteHeader\",{\"nav\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/10#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 10,
+      "attrs": {
+        "style": "font-family: Caveat, cursive; font-size: 28px; color: rgb(142, 52, 68); line-height: 1;"
+      },
+      "words": "nearly there",
+      "allText": "nearly there",
+      "srcLine": 13,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "nearly there",
+      "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 121,
+          "w": 335,
+          "h": 28
+        },
+        "768": {
+          "x": 32,
+          "y": 133,
+          "w": 704,
+          "h": 28
+        },
+        "1440": {
+          "x": 100,
+          "y": 165,
+          "w": 1240,
+          "h": 28
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": true
+        }
+      },
+      "after": "Root/9#0@[\"SiteHeader\",{\"nav\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/11#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 11,
+      "attrs": {
+        "style": "margin: 4px 0px 24px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 68px; line-height: 1; letter-spacing: -0.02em;"
+      },
+      "words": "Your basket",
+      "allText": "Your basket 0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "h1",
+      "srcOwnText": "Your basket",
+      "snippet": "<h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span></h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 44
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 54
+        },
+        "1440": {
+          "x": 100,
+          "y": 197,
+          "w": 1240,
+          "h": 68
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": true
+        }
+      },
+      "after": "Root/10#0@[\"SiteHeader\",{\"nav\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/12#0",
+      "parentKey": "Root/11#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 12,
+      "attrs": {
+        "style": "font-family: Karla; font-size: 0.4em; font-weight: 700; vertical-align: middle; background: rgb(249, 207, 110); border: 2px solid rgb(58, 42, 34); border-radius: 999px; padding: 4px 12px;"
+      },
+      "words": "0",
+      "allText": "0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "{{ count }}",
+      "snippet": "<span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span>",
+      "box": {
+        "375": {
+          "x": 279.5,
+          "y": 162.2,
+          "w": 38.3,
+          "h": 32
+        },
+        "768": {
+          "x": 350.5,
+          "y": 177.7,
+          "w": 40.6,
+          "h": 37
+        },
+        "1440": {
+          "x": 501.1,
+          "y": 214.4,
+          "w": 43.9,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": true
+        }
+      },
+      "after": "Root/11#0@[\"SiteHeader\",{\"nav\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/14#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 14,
+      "attrs": {
+        "style": "background: rgb(249, 213, 211); border: 2px solid rgb(58, 42, 34); border-radius: 32px; padding: 64px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px;"
+      },
+      "words": "",
+      "allText": "Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included. Build y",
+      "srcLine": 17,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#F9D5D3;border:2px solid #3A2A22;border-radius:32px;padding:{{ L.emptyPad }};display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px\" data-dc-tpl=\"14\"> <img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\"> <div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 221,
+          "w": 335,
+          "h": 531.3
+        },
+        "768": {
+          "x": 32,
+          "y": 243,
+          "w": 704,
+          "h": 422.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 289,
+          "w": 1240,
+          "h": 454.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": true
+        }
+      },
+      "after": "Root/12#0@[\"SiteHeader\",{\"nav\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/15#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "img",
+      "template": "Root",
+      "tpl": 15,
+      "attrs": {
+        "style": "width: 140px; transform: rotate(-8deg);",
+        "srcBasename": "logo-round.png"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\">",
+      "box": {
+        "375": {
+          "x": 108.9,
+          "y": 249.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "768": {
+          "x": 305.4,
+          "y": 283.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "1440": {
+          "x": 641.4,
+          "y": 345.9,
+          "w": 157.2,
+          "h": 151.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": true
+        }
+      },
+      "after": "Root/14#0@[\"SiteHeader\",{\"nav\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/16#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 16,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 32px;"
+      },
+      "words": "Nothing in here yet",
+      "allText": "Nothing in here yet",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "Nothing in here yet",
+      "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</div>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 408.3,
+          "w": 287,
+          "h": 90
+        },
+        "768": {
+          "x": 231.6,
+          "y": 442.3,
+          "w": 304.8,
+          "h": 45
+        },
+        "1440": {
+          "x": 567.6,
+          "y": 504.3,
+          "w": 304.8,
+          "h": 45
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": true
+        }
+      },
+      "after": "Root/15#0@[\"SiteHeader\",{\"nav\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/17#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 17,
+      "attrs": {
+        "style": "margin: 0px; font-size: 17px; color: rgb(78, 60, 49); max-width: 420px;"
+      },
+      "words": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "allText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "srcLine": 20,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "snippet": "<p style=\"margin:0;font-size:17px;color:#4E3C31;max-width:420px\" data-dc-tpl=\"17\">Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.</p>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 514.3,
+          "w": 287,
+          "h": 60
+        },
+        "768": {
+          "x": 174,
+          "y": 503.3,
+          "w": 420,
+          "h": 40
+        },
+        "1440": {
+          "x": 510,
+          "y": 565.3,
+          "w": 420,
+          "h": 40
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": true
+        }
+      },
+      "after": "Root/16#0@[\"SiteHeader\",{\"nav\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/18#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 18,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;"
+      },
+      "words": "",
+      "allText": "Build your box Add a Taster Trio · £5",
+      "srcLine": 21,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:12px;justify-content:center\" data-dc-tpl=\"18\"> <a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:trans",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 590.3,
+          "w": 287,
+          "h": 124
+        },
+        "768": {
+          "x": 189.6,
+          "y": 559.3,
+          "w": 388.8,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 621.3,
+          "w": 388.8,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": true
+        }
+      },
+      "after": "Root/17#0@[\"SiteHeader\",{\"nav\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/19#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 19,
+      "attrs": {
+        "href": "Home.dc.html#build",
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); font-weight: 700; display: flex; align-items: center; text-decoration: none; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Build your box",
+      "allText": "Build your box",
+      "srcLine": 22,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Build your box",
+      "snippet": "<a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"19\">Build your box</a>",
+      "box": {
+        "375": {
+          "x": 104.7,
+          "y": 590.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "768": {
+          "x": 189.6,
+          "y": 559.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 621.3,
+          "w": 165.6,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": true
+        }
+      },
+      "after": "Root/18#0@[\"SiteHeader\",{\"nav\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/20#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 20,
+      "attrs": {
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Add a Taster Trio · £5",
+      "allText": "Add a Taster Trio · £5",
+      "srcLine": 23,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "Add a Taster Trio · £5",
+      "snippet": "<button sc-camel-on-click=\"{{ addTrial }}\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-size:16px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"20\">Add a Taster Trio · £5</button>",
+      "box": {
+        "375": {
+          "x": 81.9,
+          "y": 658.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "768": {
+          "x": 367.2,
+          "y": 559.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "1440": {
+          "x": 703.2,
+          "y": 621.3,
+          "w": 211.2,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": true
+        }
+      },
+      "after": "Root/19#0@[\"SiteHeader\",{\"nav\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/8#0",
+      "parentKey": "Root/6#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 8,
+      "attrs": {
+        "style": "padding: 48px 40px 104px;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 11,
+      "membership": [],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"8\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your b",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 97,
+          "w": 375,
+          "h": 719.3
+        },
+        "768": {
+          "x": 0,
+          "y": 97,
+          "w": 768,
+          "h": 648.3
+        },
+        "1440": {
+          "x": 0,
+          "y": 117,
+          "w": 1440,
+          "h": 730.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "basket": true
+        }
+      },
+      "after": null,
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/9#0",
+      "parentKey": "Root/8#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 9,
+      "attrs": {
+        "style": "max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 12,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 121,
+          "w": 335,
+          "h": 631.3
+        },
+        "768": {
+          "x": 32,
+          "y": 133,
+          "w": 704,
+          "h": 532.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 165,
+          "w": 1240,
+          "h": 578.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "basket": true
+        }
+      },
+      "after": "Root/8#0@[\"SiteHeader\",{\"basket\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/10#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 10,
+      "attrs": {
+        "style": "font-family: Caveat, cursive; font-size: 28px; color: rgb(142, 52, 68); line-height: 1;"
+      },
+      "words": "nearly there",
+      "allText": "nearly there",
+      "srcLine": 13,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "nearly there",
+      "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 121,
+          "w": 335,
+          "h": 28
+        },
+        "768": {
+          "x": 32,
+          "y": 133,
+          "w": 704,
+          "h": 28
+        },
+        "1440": {
+          "x": 100,
+          "y": 165,
+          "w": 1240,
+          "h": 28
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "basket": true
+        }
+      },
+      "after": "Root/9#0@[\"SiteHeader\",{\"basket\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/11#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 11,
+      "attrs": {
+        "style": "margin: 4px 0px 24px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 68px; line-height: 1; letter-spacing: -0.02em;"
+      },
+      "words": "Your basket",
+      "allText": "Your basket 0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "h1",
+      "srcOwnText": "Your basket",
+      "snippet": "<h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span></h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 44
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 54
+        },
+        "1440": {
+          "x": 100,
+          "y": 197,
+          "w": 1240,
+          "h": 68
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "basket": true
+        }
+      },
+      "after": "Root/10#0@[\"SiteHeader\",{\"basket\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/12#0",
+      "parentKey": "Root/11#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 12,
+      "attrs": {
+        "style": "font-family: Karla; font-size: 0.4em; font-weight: 700; vertical-align: middle; background: rgb(249, 207, 110); border: 2px solid rgb(58, 42, 34); border-radius: 999px; padding: 4px 12px;"
+      },
+      "words": "0",
+      "allText": "0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "{{ count }}",
+      "snippet": "<span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span>",
+      "box": {
+        "375": {
+          "x": 279.5,
+          "y": 162.2,
+          "w": 38.3,
+          "h": 32
+        },
+        "768": {
+          "x": 350.5,
+          "y": 177.7,
+          "w": 40.6,
+          "h": 37
+        },
+        "1440": {
+          "x": 501.1,
+          "y": 214.4,
+          "w": 43.9,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "basket": true
+        }
+      },
+      "after": "Root/11#0@[\"SiteHeader\",{\"basket\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/14#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 14,
+      "attrs": {
+        "style": "background: rgb(249, 213, 211); border: 2px solid rgb(58, 42, 34); border-radius: 32px; padding: 64px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px;"
+      },
+      "words": "",
+      "allText": "Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included. Build y",
+      "srcLine": 17,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#F9D5D3;border:2px solid #3A2A22;border-radius:32px;padding:{{ L.emptyPad }};display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px\" data-dc-tpl=\"14\"> <img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\"> <div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 221,
+          "w": 335,
+          "h": 531.3
+        },
+        "768": {
+          "x": 32,
+          "y": 243,
+          "w": 704,
+          "h": 422.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 289,
+          "w": 1240,
+          "h": 454.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "basket": true
+        }
+      },
+      "after": "Root/12#0@[\"SiteHeader\",{\"basket\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/15#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "img",
+      "template": "Root",
+      "tpl": 15,
+      "attrs": {
+        "style": "width: 140px; transform: rotate(-8deg);",
+        "srcBasename": "logo-round.png"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\">",
+      "box": {
+        "375": {
+          "x": 108.9,
+          "y": 249.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "768": {
+          "x": 305.4,
+          "y": 283.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "1440": {
+          "x": 641.4,
+          "y": 345.9,
+          "w": 157.2,
+          "h": 151.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "basket": true
+        }
+      },
+      "after": "Root/14#0@[\"SiteHeader\",{\"basket\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/16#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 16,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 32px;"
+      },
+      "words": "Nothing in here yet",
+      "allText": "Nothing in here yet",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "Nothing in here yet",
+      "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</div>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 408.3,
+          "w": 287,
+          "h": 90
+        },
+        "768": {
+          "x": 231.6,
+          "y": 442.3,
+          "w": 304.8,
+          "h": 45
+        },
+        "1440": {
+          "x": 567.6,
+          "y": 504.3,
+          "w": 304.8,
+          "h": 45
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "basket": true
+        }
+      },
+      "after": "Root/15#0@[\"SiteHeader\",{\"basket\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/17#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 17,
+      "attrs": {
+        "style": "margin: 0px; font-size: 17px; color: rgb(78, 60, 49); max-width: 420px;"
+      },
+      "words": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "allText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "srcLine": 20,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "snippet": "<p style=\"margin:0;font-size:17px;color:#4E3C31;max-width:420px\" data-dc-tpl=\"17\">Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.</p>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 514.3,
+          "w": 287,
+          "h": 60
+        },
+        "768": {
+          "x": 174,
+          "y": 503.3,
+          "w": 420,
+          "h": 40
+        },
+        "1440": {
+          "x": 510,
+          "y": 565.3,
+          "w": 420,
+          "h": 40
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "basket": true
+        }
+      },
+      "after": "Root/16#0@[\"SiteHeader\",{\"basket\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/18#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 18,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;"
+      },
+      "words": "",
+      "allText": "Build your box Add a Taster Trio · £5",
+      "srcLine": 21,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:12px;justify-content:center\" data-dc-tpl=\"18\"> <a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:trans",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 590.3,
+          "w": 287,
+          "h": 124
+        },
+        "768": {
+          "x": 189.6,
+          "y": 559.3,
+          "w": 388.8,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 621.3,
+          "w": 388.8,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "basket": true
+        }
+      },
+      "after": "Root/17#0@[\"SiteHeader\",{\"basket\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/19#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 19,
+      "attrs": {
+        "href": "Home.dc.html#build",
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); font-weight: 700; display: flex; align-items: center; text-decoration: none; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Build your box",
+      "allText": "Build your box",
+      "srcLine": 22,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Build your box",
+      "snippet": "<a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"19\">Build your box</a>",
+      "box": {
+        "375": {
+          "x": 104.7,
+          "y": 590.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "768": {
+          "x": 189.6,
+          "y": 559.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 621.3,
+          "w": 165.6,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "basket": true
+        }
+      },
+      "after": "Root/18#0@[\"SiteHeader\",{\"basket\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/20#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 20,
+      "attrs": {
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Add a Taster Trio · £5",
+      "allText": "Add a Taster Trio · £5",
+      "srcLine": 23,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "Add a Taster Trio · £5",
+      "snippet": "<button sc-camel-on-click=\"{{ addTrial }}\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-size:16px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"20\">Add a Taster Trio · £5</button>",
+      "box": {
+        "375": {
+          "x": 81.9,
+          "y": 658.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "768": {
+          "x": 367.2,
+          "y": 559.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "1440": {
+          "x": 703.2,
+          "y": 621.3,
+          "w": 211.2,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "basket": true
+        }
+      },
+      "after": "Root/19#0@[\"SiteHeader\",{\"basket\":true}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/8#0",
+      "parentKey": "Root/6#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 8,
+      "attrs": {
+        "style": "padding: 48px 40px 104px;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 11,
+      "membership": [],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"8\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your b",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 97,
+          "w": 375,
+          "h": 719.3
+        },
+        "768": {
+          "x": 0,
+          "y": 97,
+          "w": 768,
+          "h": 648.3
+        },
+        "1440": {
+          "x": 0,
+          "y": 97,
+          "w": 1440,
+          "h": 730.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "m|t"
+        }
+      },
+      "after": null,
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/9#0",
+      "parentKey": "Root/8#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 9,
+      "attrs": {
+        "style": "max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 12,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 121,
+          "w": 335,
+          "h": 631.3
+        },
+        "768": {
+          "x": 32,
+          "y": 133,
+          "w": 704,
+          "h": 532.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 145,
+          "w": 1240,
+          "h": 578.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "m|t"
+        }
+      },
+      "after": "Root/8#0@[\"SiteHeader\",{\"bp\":\"m|t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/10#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 10,
+      "attrs": {
+        "style": "font-family: Caveat, cursive; font-size: 28px; color: rgb(142, 52, 68); line-height: 1;"
+      },
+      "words": "nearly there",
+      "allText": "nearly there",
+      "srcLine": 13,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "nearly there",
+      "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 121,
+          "w": 335,
+          "h": 28
+        },
+        "768": {
+          "x": 32,
+          "y": 133,
+          "w": 704,
+          "h": 28
+        },
+        "1440": {
+          "x": 100,
+          "y": 145,
+          "w": 1240,
+          "h": 28
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "m|t"
+        }
+      },
+      "after": "Root/9#0@[\"SiteHeader\",{\"bp\":\"m|t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/11#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 11,
+      "attrs": {
+        "style": "margin: 4px 0px 24px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 68px; line-height: 1; letter-spacing: -0.02em;"
+      },
+      "words": "Your basket",
+      "allText": "Your basket 0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "h1",
+      "srcOwnText": "Your basket",
+      "snippet": "<h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span></h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 44
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 54
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 1240,
+          "h": 68
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "m|t"
+        }
+      },
+      "after": "Root/10#0@[\"SiteHeader\",{\"bp\":\"m|t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/12#0",
+      "parentKey": "Root/11#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 12,
+      "attrs": {
+        "style": "font-family: Karla; font-size: 0.4em; font-weight: 700; vertical-align: middle; background: rgb(249, 207, 110); border: 2px solid rgb(58, 42, 34); border-radius: 999px; padding: 4px 12px;"
+      },
+      "words": "0",
+      "allText": "0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "{{ count }}",
+      "snippet": "<span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span>",
+      "box": {
+        "375": {
+          "x": 279.5,
+          "y": 162.2,
+          "w": 38.3,
+          "h": 32
+        },
+        "768": {
+          "x": 350.5,
+          "y": 177.7,
+          "w": 40.6,
+          "h": 37
+        },
+        "1440": {
+          "x": 501.1,
+          "y": 194.4,
+          "w": 43.9,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "m|t"
+        }
+      },
+      "after": "Root/11#0@[\"SiteHeader\",{\"bp\":\"m|t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/14#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 14,
+      "attrs": {
+        "style": "background: rgb(249, 213, 211); border: 2px solid rgb(58, 42, 34); border-radius: 32px; padding: 64px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px;"
+      },
+      "words": "",
+      "allText": "Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included. Build y",
+      "srcLine": 17,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#F9D5D3;border:2px solid #3A2A22;border-radius:32px;padding:{{ L.emptyPad }};display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px\" data-dc-tpl=\"14\"> <img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\"> <div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 221,
+          "w": 335,
+          "h": 531.3
+        },
+        "768": {
+          "x": 32,
+          "y": 243,
+          "w": 704,
+          "h": 422.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 269,
+          "w": 1240,
+          "h": 454.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "m|t"
+        }
+      },
+      "after": "Root/12#0@[\"SiteHeader\",{\"bp\":\"m|t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/15#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "img",
+      "template": "Root",
+      "tpl": 15,
+      "attrs": {
+        "style": "width: 140px; transform: rotate(-8deg);",
+        "srcBasename": "logo-round.png"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\">",
+      "box": {
+        "375": {
+          "x": 108.9,
+          "y": 249.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "768": {
+          "x": 305.4,
+          "y": 283.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "1440": {
+          "x": 641.4,
+          "y": 325.9,
+          "w": 157.2,
+          "h": 151.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "m|t"
+        }
+      },
+      "after": "Root/14#0@[\"SiteHeader\",{\"bp\":\"m|t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/16#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 16,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 32px;"
+      },
+      "words": "Nothing in here yet",
+      "allText": "Nothing in here yet",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "Nothing in here yet",
+      "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</div>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 408.3,
+          "w": 287,
+          "h": 90
+        },
+        "768": {
+          "x": 231.6,
+          "y": 442.3,
+          "w": 304.8,
+          "h": 45
+        },
+        "1440": {
+          "x": 567.6,
+          "y": 484.3,
+          "w": 304.8,
+          "h": 45
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "m|t"
+        }
+      },
+      "after": "Root/15#0@[\"SiteHeader\",{\"bp\":\"m|t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/17#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 17,
+      "attrs": {
+        "style": "margin: 0px; font-size: 17px; color: rgb(78, 60, 49); max-width: 420px;"
+      },
+      "words": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "allText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "srcLine": 20,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "snippet": "<p style=\"margin:0;font-size:17px;color:#4E3C31;max-width:420px\" data-dc-tpl=\"17\">Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.</p>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 514.3,
+          "w": 287,
+          "h": 60
+        },
+        "768": {
+          "x": 174,
+          "y": 503.3,
+          "w": 420,
+          "h": 40
+        },
+        "1440": {
+          "x": 510,
+          "y": 545.3,
+          "w": 420,
+          "h": 40
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "m|t"
+        }
+      },
+      "after": "Root/16#0@[\"SiteHeader\",{\"bp\":\"m|t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/18#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 18,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;"
+      },
+      "words": "",
+      "allText": "Build your box Add a Taster Trio · £5",
+      "srcLine": 21,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:12px;justify-content:center\" data-dc-tpl=\"18\"> <a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:trans",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 590.3,
+          "w": 287,
+          "h": 124
+        },
+        "768": {
+          "x": 189.6,
+          "y": 559.3,
+          "w": 388.8,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 601.3,
+          "w": 388.8,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "m|t"
+        }
+      },
+      "after": "Root/17#0@[\"SiteHeader\",{\"bp\":\"m|t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/19#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 19,
+      "attrs": {
+        "href": "Home.dc.html#build",
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); font-weight: 700; display: flex; align-items: center; text-decoration: none; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Build your box",
+      "allText": "Build your box",
+      "srcLine": 22,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Build your box",
+      "snippet": "<a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"19\">Build your box</a>",
+      "box": {
+        "375": {
+          "x": 104.7,
+          "y": 590.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "768": {
+          "x": 189.6,
+          "y": 559.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 601.3,
+          "w": 165.6,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "m|t"
+        }
+      },
+      "after": "Root/18#0@[\"SiteHeader\",{\"bp\":\"m|t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/20#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 20,
+      "attrs": {
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Add a Taster Trio · £5",
+      "allText": "Add a Taster Trio · £5",
+      "srcLine": 23,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "Add a Taster Trio · £5",
+      "snippet": "<button sc-camel-on-click=\"{{ addTrial }}\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-size:16px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"20\">Add a Taster Trio · £5</button>",
+      "box": {
+        "375": {
+          "x": 81.9,
+          "y": 658.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "768": {
+          "x": 367.2,
+          "y": 559.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "1440": {
+          "x": 703.2,
+          "y": 601.3,
+          "w": 211.2,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "m|t"
+        }
+      },
+      "after": "Root/19#0@[\"SiteHeader\",{\"bp\":\"m|t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/8#0",
+      "parentKey": "Root/6#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 8,
+      "attrs": {
+        "style": "padding: 48px 40px 104px;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 11,
+      "membership": [],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"8\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your b",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 117,
+          "w": 375,
+          "h": 719.3
+        },
+        "768": {
+          "x": 0,
+          "y": 117,
+          "w": 768,
+          "h": 648.3
+        },
+        "1440": {
+          "x": 0,
+          "y": 117,
+          "w": 1440,
+          "h": 730.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": null,
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/9#0",
+      "parentKey": "Root/8#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 9,
+      "attrs": {
+        "style": "max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 12,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 141,
+          "w": 335,
+          "h": 631.3
+        },
+        "768": {
+          "x": 32,
+          "y": 153,
+          "w": 704,
+          "h": 532.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 165,
+          "w": 1240,
+          "h": 578.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/8#0@[\"SiteHeader\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/10#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 10,
+      "attrs": {
+        "style": "font-family: Caveat, cursive; font-size: 28px; color: rgb(142, 52, 68); line-height: 1;"
+      },
+      "words": "nearly there",
+      "allText": "nearly there",
+      "srcLine": 13,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "nearly there",
+      "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 141,
+          "w": 335,
+          "h": 28
+        },
+        "768": {
+          "x": 32,
+          "y": 153,
+          "w": 704,
+          "h": 28
+        },
+        "1440": {
+          "x": 100,
+          "y": 165,
+          "w": 1240,
+          "h": 28
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/9#0@[\"SiteHeader\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/11#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 11,
+      "attrs": {
+        "style": "margin: 4px 0px 24px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 68px; line-height: 1; letter-spacing: -0.02em;"
+      },
+      "words": "Your basket",
+      "allText": "Your basket 0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "h1",
+      "srcOwnText": "Your basket",
+      "snippet": "<h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span></h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 173,
+          "w": 335,
+          "h": 44
+        },
+        "768": {
+          "x": 32,
+          "y": 185,
+          "w": 704,
+          "h": 54
+        },
+        "1440": {
+          "x": 100,
+          "y": 197,
+          "w": 1240,
+          "h": 68
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/10#0@[\"SiteHeader\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/12#0",
+      "parentKey": "Root/11#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 12,
+      "attrs": {
+        "style": "font-family: Karla; font-size: 0.4em; font-weight: 700; vertical-align: middle; background: rgb(249, 207, 110); border: 2px solid rgb(58, 42, 34); border-radius: 999px; padding: 4px 12px;"
+      },
+      "words": "0",
+      "allText": "0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "{{ count }}",
+      "snippet": "<span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span>",
+      "box": {
+        "375": {
+          "x": 279.5,
+          "y": 182.2,
+          "w": 38.3,
+          "h": 32
+        },
+        "768": {
+          "x": 350.5,
+          "y": 197.7,
+          "w": 40.6,
+          "h": 37
+        },
+        "1440": {
+          "x": 501.1,
+          "y": 214.4,
+          "w": 43.9,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/11#0@[\"SiteHeader\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/14#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 14,
+      "attrs": {
+        "style": "background: rgb(249, 213, 211); border: 2px solid rgb(58, 42, 34); border-radius: 32px; padding: 64px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px;"
+      },
+      "words": "",
+      "allText": "Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included. Build y",
+      "srcLine": 17,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#F9D5D3;border:2px solid #3A2A22;border-radius:32px;padding:{{ L.emptyPad }};display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px\" data-dc-tpl=\"14\"> <img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\"> <div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 241,
+          "w": 335,
+          "h": 531.3
+        },
+        "768": {
+          "x": 32,
+          "y": 263,
+          "w": 704,
+          "h": 422.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 289,
+          "w": 1240,
+          "h": 454.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/12#0@[\"SiteHeader\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/15#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "img",
+      "template": "Root",
+      "tpl": 15,
+      "attrs": {
+        "style": "width: 140px; transform: rotate(-8deg);",
+        "srcBasename": "logo-round.png"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\">",
+      "box": {
+        "375": {
+          "x": 108.9,
+          "y": 269.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "768": {
+          "x": 305.4,
+          "y": 303.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "1440": {
+          "x": 641.4,
+          "y": 345.9,
+          "w": 157.2,
+          "h": 151.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/14#0@[\"SiteHeader\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/16#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 16,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 32px;"
+      },
+      "words": "Nothing in here yet",
+      "allText": "Nothing in here yet",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "Nothing in here yet",
+      "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</div>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 428.3,
+          "w": 287,
+          "h": 90
+        },
+        "768": {
+          "x": 231.6,
+          "y": 462.3,
+          "w": 304.8,
+          "h": 45
+        },
+        "1440": {
+          "x": 567.6,
+          "y": 504.3,
+          "w": 304.8,
+          "h": 45
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/15#0@[\"SiteHeader\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/17#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 17,
+      "attrs": {
+        "style": "margin: 0px; font-size: 17px; color: rgb(78, 60, 49); max-width: 420px;"
+      },
+      "words": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "allText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "srcLine": 20,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "snippet": "<p style=\"margin:0;font-size:17px;color:#4E3C31;max-width:420px\" data-dc-tpl=\"17\">Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.</p>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 534.3,
+          "w": 287,
+          "h": 60
+        },
+        "768": {
+          "x": 174,
+          "y": 523.3,
+          "w": 420,
+          "h": 40
+        },
+        "1440": {
+          "x": 510,
+          "y": 565.3,
+          "w": 420,
+          "h": 40
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/16#0@[\"SiteHeader\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/18#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 18,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;"
+      },
+      "words": "",
+      "allText": "Build your box Add a Taster Trio · £5",
+      "srcLine": 21,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:12px;justify-content:center\" data-dc-tpl=\"18\"> <a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:trans",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 610.3,
+          "w": 287,
+          "h": 124
+        },
+        "768": {
+          "x": 189.6,
+          "y": 579.3,
+          "w": 388.8,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 621.3,
+          "w": 388.8,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/17#0@[\"SiteHeader\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/19#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 19,
+      "attrs": {
+        "href": "Home.dc.html#build",
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); font-weight: 700; display: flex; align-items: center; text-decoration: none; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Build your box",
+      "allText": "Build your box",
+      "srcLine": 22,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Build your box",
+      "snippet": "<a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"19\">Build your box</a>",
+      "box": {
+        "375": {
+          "x": 104.7,
+          "y": 610.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "768": {
+          "x": 189.6,
+          "y": 579.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 621.3,
+          "w": 165.6,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/18#0@[\"SiteHeader\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/20#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 20,
+      "attrs": {
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Add a Taster Trio · £5",
+      "allText": "Add a Taster Trio · £5",
+      "srcLine": 23,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "Add a Taster Trio · £5",
+      "snippet": "<button sc-camel-on-click=\"{{ addTrial }}\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-size:16px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"20\">Add a Taster Trio · £5</button>",
+      "box": {
+        "375": {
+          "x": 81.9,
+          "y": 678.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "768": {
+          "x": 367.2,
+          "y": 579.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "1440": {
+          "x": 703.2,
+          "y": 621.3,
+          "w": 211.2,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/19#0@[\"SiteHeader\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/8#0",
+      "parentKey": "Root/6#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 8,
+      "attrs": {
+        "style": "padding: 48px 40px 104px;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 11,
+      "membership": [],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"8\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your b",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 97,
+          "w": 375,
+          "h": 719.3
+        },
+        "768": {
+          "x": 0,
+          "y": 97,
+          "w": 768,
+          "h": 648.3
+        },
+        "1440": {
+          "x": 0,
+          "y": 117,
+          "w": 1440,
+          "h": 730.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": false,
+          "basket": false
+        }
+      },
+      "after": null,
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/9#0",
+      "parentKey": "Root/8#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 9,
+      "attrs": {
+        "style": "max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 12,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 121,
+          "w": 335,
+          "h": 631.3
+        },
+        "768": {
+          "x": 32,
+          "y": 133,
+          "w": 704,
+          "h": 532.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 165,
+          "w": 1240,
+          "h": 578.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": false,
+          "basket": false
+        }
+      },
+      "after": "Root/8#0@[\"SiteHeader\",{\"basket\":false,\"nav\":false}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/10#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 10,
+      "attrs": {
+        "style": "font-family: Caveat, cursive; font-size: 28px; color: rgb(142, 52, 68); line-height: 1;"
+      },
+      "words": "nearly there",
+      "allText": "nearly there",
+      "srcLine": 13,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "nearly there",
+      "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 121,
+          "w": 335,
+          "h": 28
+        },
+        "768": {
+          "x": 32,
+          "y": 133,
+          "w": 704,
+          "h": 28
+        },
+        "1440": {
+          "x": 100,
+          "y": 165,
+          "w": 1240,
+          "h": 28
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": false,
+          "basket": false
+        }
+      },
+      "after": "Root/9#0@[\"SiteHeader\",{\"basket\":false,\"nav\":false}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/11#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 11,
+      "attrs": {
+        "style": "margin: 4px 0px 24px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 68px; line-height: 1; letter-spacing: -0.02em;"
+      },
+      "words": "Your basket",
+      "allText": "Your basket 0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "h1",
+      "srcOwnText": "Your basket",
+      "snippet": "<h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span></h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 44
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 54
+        },
+        "1440": {
+          "x": 100,
+          "y": 197,
+          "w": 1240,
+          "h": 68
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": false,
+          "basket": false
+        }
+      },
+      "after": "Root/10#0@[\"SiteHeader\",{\"basket\":false,\"nav\":false}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/12#0",
+      "parentKey": "Root/11#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 12,
+      "attrs": {
+        "style": "font-family: Karla; font-size: 0.4em; font-weight: 700; vertical-align: middle; background: rgb(249, 207, 110); border: 2px solid rgb(58, 42, 34); border-radius: 999px; padding: 4px 12px;"
+      },
+      "words": "0",
+      "allText": "0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "{{ count }}",
+      "snippet": "<span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span>",
+      "box": {
+        "375": {
+          "x": 279.5,
+          "y": 162.2,
+          "w": 38.3,
+          "h": 32
+        },
+        "768": {
+          "x": 350.5,
+          "y": 177.7,
+          "w": 40.6,
+          "h": 37
+        },
+        "1440": {
+          "x": 501.1,
+          "y": 214.4,
+          "w": 43.9,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": false,
+          "basket": false
+        }
+      },
+      "after": "Root/11#0@[\"SiteHeader\",{\"basket\":false,\"nav\":false}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/14#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 14,
+      "attrs": {
+        "style": "background: rgb(249, 213, 211); border: 2px solid rgb(58, 42, 34); border-radius: 32px; padding: 64px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px;"
+      },
+      "words": "",
+      "allText": "Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included. Build y",
+      "srcLine": 17,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#F9D5D3;border:2px solid #3A2A22;border-radius:32px;padding:{{ L.emptyPad }};display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px\" data-dc-tpl=\"14\"> <img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\"> <div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 221,
+          "w": 335,
+          "h": 531.3
+        },
+        "768": {
+          "x": 32,
+          "y": 243,
+          "w": 704,
+          "h": 422.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 289,
+          "w": 1240,
+          "h": 454.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": false,
+          "basket": false
+        }
+      },
+      "after": "Root/12#0@[\"SiteHeader\",{\"basket\":false,\"nav\":false}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/15#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "img",
+      "template": "Root",
+      "tpl": 15,
+      "attrs": {
+        "style": "width: 140px; transform: rotate(-8deg);",
+        "srcBasename": "logo-round.png"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\">",
+      "box": {
+        "375": {
+          "x": 108.9,
+          "y": 249.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "768": {
+          "x": 305.4,
+          "y": 283.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "1440": {
+          "x": 641.4,
+          "y": 345.9,
+          "w": 157.2,
+          "h": 151.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": false,
+          "basket": false
+        }
+      },
+      "after": "Root/14#0@[\"SiteHeader\",{\"basket\":false,\"nav\":false}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/16#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 16,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 32px;"
+      },
+      "words": "Nothing in here yet",
+      "allText": "Nothing in here yet",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "Nothing in here yet",
+      "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</div>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 408.3,
+          "w": 287,
+          "h": 90
+        },
+        "768": {
+          "x": 231.6,
+          "y": 442.3,
+          "w": 304.8,
+          "h": 45
+        },
+        "1440": {
+          "x": 567.6,
+          "y": 504.3,
+          "w": 304.8,
+          "h": 45
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": false,
+          "basket": false
+        }
+      },
+      "after": "Root/15#0@[\"SiteHeader\",{\"basket\":false,\"nav\":false}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/17#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 17,
+      "attrs": {
+        "style": "margin: 0px; font-size: 17px; color: rgb(78, 60, 49); max-width: 420px;"
+      },
+      "words": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "allText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "srcLine": 20,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "snippet": "<p style=\"margin:0;font-size:17px;color:#4E3C31;max-width:420px\" data-dc-tpl=\"17\">Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.</p>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 514.3,
+          "w": 287,
+          "h": 60
+        },
+        "768": {
+          "x": 174,
+          "y": 503.3,
+          "w": 420,
+          "h": 40
+        },
+        "1440": {
+          "x": 510,
+          "y": 565.3,
+          "w": 420,
+          "h": 40
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": false,
+          "basket": false
+        }
+      },
+      "after": "Root/16#0@[\"SiteHeader\",{\"basket\":false,\"nav\":false}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/18#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 18,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;"
+      },
+      "words": "",
+      "allText": "Build your box Add a Taster Trio · £5",
+      "srcLine": 21,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:12px;justify-content:center\" data-dc-tpl=\"18\"> <a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:trans",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 590.3,
+          "w": 287,
+          "h": 124
+        },
+        "768": {
+          "x": 189.6,
+          "y": 559.3,
+          "w": 388.8,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 621.3,
+          "w": 388.8,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": false,
+          "basket": false
+        }
+      },
+      "after": "Root/17#0@[\"SiteHeader\",{\"basket\":false,\"nav\":false}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/19#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 19,
+      "attrs": {
+        "href": "Home.dc.html#build",
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); font-weight: 700; display: flex; align-items: center; text-decoration: none; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Build your box",
+      "allText": "Build your box",
+      "srcLine": 22,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Build your box",
+      "snippet": "<a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"19\">Build your box</a>",
+      "box": {
+        "375": {
+          "x": 104.7,
+          "y": 590.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "768": {
+          "x": 189.6,
+          "y": 559.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 621.3,
+          "w": 165.6,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": false,
+          "basket": false
+        }
+      },
+      "after": "Root/18#0@[\"SiteHeader\",{\"basket\":false,\"nav\":false}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/20#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 20,
+      "attrs": {
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Add a Taster Trio · £5",
+      "allText": "Add a Taster Trio · £5",
+      "srcLine": 23,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "Add a Taster Trio · £5",
+      "snippet": "<button sc-camel-on-click=\"{{ addTrial }}\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-size:16px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"20\">Add a Taster Trio · £5</button>",
+      "box": {
+        "375": {
+          "x": 81.9,
+          "y": 658.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "768": {
+          "x": 367.2,
+          "y": 559.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "1440": {
+          "x": 703.2,
+          "y": 621.3,
+          "w": 211.2,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteHeader",
+        "keys": {
+          "nav": false,
+          "basket": false
+        }
+      },
+      "after": "Root/19#0@[\"SiteHeader\",{\"basket\":false,\"nav\":false}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/8#0",
+      "parentKey": "Root/6#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 8,
+      "attrs": {
+        "style": "padding: 48px 40px 104px;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 11,
+      "membership": [],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"8\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your b",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 97,
+          "w": 375,
+          "h": 719.3
+        },
+        "768": {
+          "x": 0,
+          "y": 97,
+          "w": 768,
+          "h": 648.3
+        },
+        "1440": {
+          "x": 0,
+          "y": 117,
+          "w": 1440,
+          "h": 730.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "m"
+        }
+      },
+      "after": null,
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/9#0",
+      "parentKey": "Root/8#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 9,
+      "attrs": {
+        "style": "max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 12,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 121,
+          "w": 335,
+          "h": 631.3
+        },
+        "768": {
+          "x": 32,
+          "y": 133,
+          "w": 704,
+          "h": 532.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 165,
+          "w": 1240,
+          "h": 578.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "m"
+        }
+      },
+      "after": "Root/8#0@[\"SiteFooter\",{\"bp\":\"m\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/10#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 10,
+      "attrs": {
+        "style": "font-family: Caveat, cursive; font-size: 28px; color: rgb(142, 52, 68); line-height: 1;"
+      },
+      "words": "nearly there",
+      "allText": "nearly there",
+      "srcLine": 13,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "nearly there",
+      "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 121,
+          "w": 335,
+          "h": 28
+        },
+        "768": {
+          "x": 32,
+          "y": 133,
+          "w": 704,
+          "h": 28
+        },
+        "1440": {
+          "x": 100,
+          "y": 165,
+          "w": 1240,
+          "h": 28
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "m"
+        }
+      },
+      "after": "Root/9#0@[\"SiteFooter\",{\"bp\":\"m\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/11#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 11,
+      "attrs": {
+        "style": "margin: 4px 0px 24px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 68px; line-height: 1; letter-spacing: -0.02em;"
+      },
+      "words": "Your basket",
+      "allText": "Your basket 0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "h1",
+      "srcOwnText": "Your basket",
+      "snippet": "<h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span></h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 44
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 54
+        },
+        "1440": {
+          "x": 100,
+          "y": 197,
+          "w": 1240,
+          "h": 68
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "m"
+        }
+      },
+      "after": "Root/10#0@[\"SiteFooter\",{\"bp\":\"m\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/12#0",
+      "parentKey": "Root/11#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 12,
+      "attrs": {
+        "style": "font-family: Karla; font-size: 0.4em; font-weight: 700; vertical-align: middle; background: rgb(249, 207, 110); border: 2px solid rgb(58, 42, 34); border-radius: 999px; padding: 4px 12px;"
+      },
+      "words": "0",
+      "allText": "0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "{{ count }}",
+      "snippet": "<span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span>",
+      "box": {
+        "375": {
+          "x": 279.5,
+          "y": 162.2,
+          "w": 38.3,
+          "h": 32
+        },
+        "768": {
+          "x": 350.5,
+          "y": 177.7,
+          "w": 40.6,
+          "h": 37
+        },
+        "1440": {
+          "x": 501.1,
+          "y": 214.4,
+          "w": 43.9,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "m"
+        }
+      },
+      "after": "Root/11#0@[\"SiteFooter\",{\"bp\":\"m\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/14#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 14,
+      "attrs": {
+        "style": "background: rgb(249, 213, 211); border: 2px solid rgb(58, 42, 34); border-radius: 32px; padding: 64px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px;"
+      },
+      "words": "",
+      "allText": "Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included. Build y",
+      "srcLine": 17,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#F9D5D3;border:2px solid #3A2A22;border-radius:32px;padding:{{ L.emptyPad }};display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px\" data-dc-tpl=\"14\"> <img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\"> <div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 221,
+          "w": 335,
+          "h": 531.3
+        },
+        "768": {
+          "x": 32,
+          "y": 243,
+          "w": 704,
+          "h": 422.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 289,
+          "w": 1240,
+          "h": 454.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "m"
+        }
+      },
+      "after": "Root/12#0@[\"SiteFooter\",{\"bp\":\"m\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/15#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "img",
+      "template": "Root",
+      "tpl": 15,
+      "attrs": {
+        "style": "width: 140px; transform: rotate(-8deg);",
+        "srcBasename": "logo-round.png"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\">",
+      "box": {
+        "375": {
+          "x": 108.9,
+          "y": 249.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "768": {
+          "x": 305.4,
+          "y": 283.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "1440": {
+          "x": 641.4,
+          "y": 345.9,
+          "w": 157.2,
+          "h": 151.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "m"
+        }
+      },
+      "after": "Root/14#0@[\"SiteFooter\",{\"bp\":\"m\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/16#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 16,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 32px;"
+      },
+      "words": "Nothing in here yet",
+      "allText": "Nothing in here yet",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "Nothing in here yet",
+      "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</div>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 408.3,
+          "w": 287,
+          "h": 90
+        },
+        "768": {
+          "x": 231.6,
+          "y": 442.3,
+          "w": 304.8,
+          "h": 45
+        },
+        "1440": {
+          "x": 567.6,
+          "y": 504.3,
+          "w": 304.8,
+          "h": 45
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "m"
+        }
+      },
+      "after": "Root/15#0@[\"SiteFooter\",{\"bp\":\"m\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/17#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 17,
+      "attrs": {
+        "style": "margin: 0px; font-size: 17px; color: rgb(78, 60, 49); max-width: 420px;"
+      },
+      "words": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "allText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "srcLine": 20,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "snippet": "<p style=\"margin:0;font-size:17px;color:#4E3C31;max-width:420px\" data-dc-tpl=\"17\">Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.</p>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 514.3,
+          "w": 287,
+          "h": 60
+        },
+        "768": {
+          "x": 174,
+          "y": 503.3,
+          "w": 420,
+          "h": 40
+        },
+        "1440": {
+          "x": 510,
+          "y": 565.3,
+          "w": 420,
+          "h": 40
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "m"
+        }
+      },
+      "after": "Root/16#0@[\"SiteFooter\",{\"bp\":\"m\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/18#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 18,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;"
+      },
+      "words": "",
+      "allText": "Build your box Add a Taster Trio · £5",
+      "srcLine": 21,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:12px;justify-content:center\" data-dc-tpl=\"18\"> <a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:trans",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 590.3,
+          "w": 287,
+          "h": 124
+        },
+        "768": {
+          "x": 189.6,
+          "y": 559.3,
+          "w": 388.8,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 621.3,
+          "w": 388.8,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "m"
+        }
+      },
+      "after": "Root/17#0@[\"SiteFooter\",{\"bp\":\"m\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/19#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 19,
+      "attrs": {
+        "href": "Home.dc.html#build",
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); font-weight: 700; display: flex; align-items: center; text-decoration: none; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Build your box",
+      "allText": "Build your box",
+      "srcLine": 22,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Build your box",
+      "snippet": "<a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"19\">Build your box</a>",
+      "box": {
+        "375": {
+          "x": 104.7,
+          "y": 590.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "768": {
+          "x": 189.6,
+          "y": 559.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 621.3,
+          "w": 165.6,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "m"
+        }
+      },
+      "after": "Root/18#0@[\"SiteFooter\",{\"bp\":\"m\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/20#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 20,
+      "attrs": {
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Add a Taster Trio · £5",
+      "allText": "Add a Taster Trio · £5",
+      "srcLine": 23,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "Add a Taster Trio · £5",
+      "snippet": "<button sc-camel-on-click=\"{{ addTrial }}\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-size:16px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"20\">Add a Taster Trio · £5</button>",
+      "box": {
+        "375": {
+          "x": 81.9,
+          "y": 658.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "768": {
+          "x": 367.2,
+          "y": 559.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "1440": {
+          "x": 703.2,
+          "y": 621.3,
+          "w": 211.2,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "m"
+        }
+      },
+      "after": "Root/19#0@[\"SiteFooter\",{\"bp\":\"m\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/8#0",
+      "parentKey": "Root/6#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 8,
+      "attrs": {
+        "style": "padding: 48px 40px 104px;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 11,
+      "membership": [],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"8\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your b",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 97,
+          "w": 375,
+          "h": 719.3
+        },
+        "768": {
+          "x": 0,
+          "y": 97,
+          "w": 768,
+          "h": 648.3
+        },
+        "1440": {
+          "x": 0,
+          "y": 117,
+          "w": 1440,
+          "h": 730.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "t"
+        }
+      },
+      "after": null,
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/9#0",
+      "parentKey": "Root/8#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 9,
+      "attrs": {
+        "style": "max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 12,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 121,
+          "w": 335,
+          "h": 631.3
+        },
+        "768": {
+          "x": 32,
+          "y": 133,
+          "w": 704,
+          "h": 532.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 165,
+          "w": 1240,
+          "h": 578.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "t"
+        }
+      },
+      "after": "Root/8#0@[\"SiteFooter\",{\"bp\":\"t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/10#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 10,
+      "attrs": {
+        "style": "font-family: Caveat, cursive; font-size: 28px; color: rgb(142, 52, 68); line-height: 1;"
+      },
+      "words": "nearly there",
+      "allText": "nearly there",
+      "srcLine": 13,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "nearly there",
+      "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 121,
+          "w": 335,
+          "h": 28
+        },
+        "768": {
+          "x": 32,
+          "y": 133,
+          "w": 704,
+          "h": 28
+        },
+        "1440": {
+          "x": 100,
+          "y": 165,
+          "w": 1240,
+          "h": 28
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "t"
+        }
+      },
+      "after": "Root/9#0@[\"SiteFooter\",{\"bp\":\"t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/11#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 11,
+      "attrs": {
+        "style": "margin: 4px 0px 24px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 68px; line-height: 1; letter-spacing: -0.02em;"
+      },
+      "words": "Your basket",
+      "allText": "Your basket 0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "h1",
+      "srcOwnText": "Your basket",
+      "snippet": "<h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span></h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 44
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 54
+        },
+        "1440": {
+          "x": 100,
+          "y": 197,
+          "w": 1240,
+          "h": 68
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "t"
+        }
+      },
+      "after": "Root/10#0@[\"SiteFooter\",{\"bp\":\"t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/12#0",
+      "parentKey": "Root/11#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 12,
+      "attrs": {
+        "style": "font-family: Karla; font-size: 0.4em; font-weight: 700; vertical-align: middle; background: rgb(249, 207, 110); border: 2px solid rgb(58, 42, 34); border-radius: 999px; padding: 4px 12px;"
+      },
+      "words": "0",
+      "allText": "0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "{{ count }}",
+      "snippet": "<span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span>",
+      "box": {
+        "375": {
+          "x": 279.5,
+          "y": 162.2,
+          "w": 38.3,
+          "h": 32
+        },
+        "768": {
+          "x": 350.5,
+          "y": 177.7,
+          "w": 40.6,
+          "h": 37
+        },
+        "1440": {
+          "x": 501.1,
+          "y": 214.4,
+          "w": 43.9,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "t"
+        }
+      },
+      "after": "Root/11#0@[\"SiteFooter\",{\"bp\":\"t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/14#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 14,
+      "attrs": {
+        "style": "background: rgb(249, 213, 211); border: 2px solid rgb(58, 42, 34); border-radius: 32px; padding: 64px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px;"
+      },
+      "words": "",
+      "allText": "Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included. Build y",
+      "srcLine": 17,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#F9D5D3;border:2px solid #3A2A22;border-radius:32px;padding:{{ L.emptyPad }};display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px\" data-dc-tpl=\"14\"> <img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\"> <div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 221,
+          "w": 335,
+          "h": 531.3
+        },
+        "768": {
+          "x": 32,
+          "y": 243,
+          "w": 704,
+          "h": 422.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 289,
+          "w": 1240,
+          "h": 454.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "t"
+        }
+      },
+      "after": "Root/12#0@[\"SiteFooter\",{\"bp\":\"t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/15#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "img",
+      "template": "Root",
+      "tpl": 15,
+      "attrs": {
+        "style": "width: 140px; transform: rotate(-8deg);",
+        "srcBasename": "logo-round.png"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\">",
+      "box": {
+        "375": {
+          "x": 108.9,
+          "y": 249.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "768": {
+          "x": 305.4,
+          "y": 283.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "1440": {
+          "x": 641.4,
+          "y": 345.9,
+          "w": 157.2,
+          "h": 151.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "t"
+        }
+      },
+      "after": "Root/14#0@[\"SiteFooter\",{\"bp\":\"t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/16#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 16,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 32px;"
+      },
+      "words": "Nothing in here yet",
+      "allText": "Nothing in here yet",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "Nothing in here yet",
+      "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</div>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 408.3,
+          "w": 287,
+          "h": 90
+        },
+        "768": {
+          "x": 231.6,
+          "y": 442.3,
+          "w": 304.8,
+          "h": 45
+        },
+        "1440": {
+          "x": 567.6,
+          "y": 504.3,
+          "w": 304.8,
+          "h": 45
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "t"
+        }
+      },
+      "after": "Root/15#0@[\"SiteFooter\",{\"bp\":\"t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/17#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 17,
+      "attrs": {
+        "style": "margin: 0px; font-size: 17px; color: rgb(78, 60, 49); max-width: 420px;"
+      },
+      "words": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "allText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "srcLine": 20,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "snippet": "<p style=\"margin:0;font-size:17px;color:#4E3C31;max-width:420px\" data-dc-tpl=\"17\">Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.</p>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 514.3,
+          "w": 287,
+          "h": 60
+        },
+        "768": {
+          "x": 174,
+          "y": 503.3,
+          "w": 420,
+          "h": 40
+        },
+        "1440": {
+          "x": 510,
+          "y": 565.3,
+          "w": 420,
+          "h": 40
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "t"
+        }
+      },
+      "after": "Root/16#0@[\"SiteFooter\",{\"bp\":\"t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/18#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 18,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;"
+      },
+      "words": "",
+      "allText": "Build your box Add a Taster Trio · £5",
+      "srcLine": 21,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:12px;justify-content:center\" data-dc-tpl=\"18\"> <a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:trans",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 590.3,
+          "w": 287,
+          "h": 124
+        },
+        "768": {
+          "x": 189.6,
+          "y": 559.3,
+          "w": 388.8,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 621.3,
+          "w": 388.8,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "t"
+        }
+      },
+      "after": "Root/17#0@[\"SiteFooter\",{\"bp\":\"t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/19#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 19,
+      "attrs": {
+        "href": "Home.dc.html#build",
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); font-weight: 700; display: flex; align-items: center; text-decoration: none; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Build your box",
+      "allText": "Build your box",
+      "srcLine": 22,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Build your box",
+      "snippet": "<a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"19\">Build your box</a>",
+      "box": {
+        "375": {
+          "x": 104.7,
+          "y": 590.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "768": {
+          "x": 189.6,
+          "y": 559.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 621.3,
+          "w": 165.6,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "t"
+        }
+      },
+      "after": "Root/18#0@[\"SiteFooter\",{\"bp\":\"t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/20#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 20,
+      "attrs": {
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Add a Taster Trio · £5",
+      "allText": "Add a Taster Trio · £5",
+      "srcLine": 23,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "Add a Taster Trio · £5",
+      "snippet": "<button sc-camel-on-click=\"{{ addTrial }}\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-size:16px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"20\">Add a Taster Trio · £5</button>",
+      "box": {
+        "375": {
+          "x": 81.9,
+          "y": 658.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "768": {
+          "x": 367.2,
+          "y": 559.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "1440": {
+          "x": 703.2,
+          "y": 621.3,
+          "w": 211.2,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "t"
+        }
+      },
+      "after": "Root/19#0@[\"SiteFooter\",{\"bp\":\"t\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/8#0",
+      "parentKey": "Root/6#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 8,
+      "attrs": {
+        "style": "padding: 48px 40px 104px;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 11,
+      "membership": [],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"8\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your b",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 97,
+          "w": 375,
+          "h": 719.3
+        },
+        "768": {
+          "x": 0,
+          "y": 97,
+          "w": 768,
+          "h": 648.3
+        },
+        "1440": {
+          "x": 0,
+          "y": 117,
+          "w": 1440,
+          "h": 730.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": null,
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/9#0",
+      "parentKey": "Root/8#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 9,
+      "attrs": {
+        "style": "max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "nearly there Your basket 0 Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5",
+      "srcLine": 12,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 121,
+          "w": 335,
+          "h": 631.3
+        },
+        "768": {
+          "x": 32,
+          "y": 133,
+          "w": 704,
+          "h": 532.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 165,
+          "w": 1240,
+          "h": 578.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/8#0@[\"SiteFooter\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/10#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 10,
+      "attrs": {
+        "style": "font-family: Caveat, cursive; font-size: 28px; color: rgb(142, 52, 68); line-height: 1;"
+      },
+      "words": "nearly there",
+      "allText": "nearly there",
+      "srcLine": 13,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "nearly there",
+      "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 121,
+          "w": 335,
+          "h": 28
+        },
+        "768": {
+          "x": 32,
+          "y": 133,
+          "w": 704,
+          "h": 28
+        },
+        "1440": {
+          "x": 100,
+          "y": 165,
+          "w": 1240,
+          "h": 28
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/9#0@[\"SiteFooter\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/11#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 11,
+      "attrs": {
+        "style": "margin: 4px 0px 24px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 68px; line-height: 1; letter-spacing: -0.02em;"
+      },
+      "words": "Your basket",
+      "allText": "Your basket 0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "h1",
+      "srcOwnText": "Your basket",
+      "snippet": "<h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span></h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 44
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 54
+        },
+        "1440": {
+          "x": 100,
+          "y": 197,
+          "w": 1240,
+          "h": 68
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/10#0@[\"SiteFooter\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/12#0",
+      "parentKey": "Root/11#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 12,
+      "attrs": {
+        "style": "font-family: Karla; font-size: 0.4em; font-weight: 700; vertical-align: middle; background: rgb(249, 207, 110); border: 2px solid rgb(58, 42, 34); border-radius: 999px; padding: 4px 12px;"
+      },
+      "words": "0",
+      "allText": "0",
+      "srcLine": 14,
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "{{ count }}",
+      "snippet": "<span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span>",
+      "box": {
+        "375": {
+          "x": 279.5,
+          "y": 162.2,
+          "w": 38.3,
+          "h": 32
+        },
+        "768": {
+          "x": 350.5,
+          "y": 177.7,
+          "w": 40.6,
+          "h": 37
+        },
+        "1440": {
+          "x": 501.1,
+          "y": 214.4,
+          "w": 43.9,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/11#0@[\"SiteFooter\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/14#0",
+      "parentKey": "Root/9#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 14,
+      "attrs": {
+        "style": "background: rgb(249, 213, 211); border: 2px solid rgb(58, 42, 34); border-radius: 32px; padding: 64px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px;"
+      },
+      "words": "",
+      "allText": "Nothing in here yet Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included. Build y",
+      "srcLine": 17,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#F9D5D3;border:2px solid #3A2A22;border-radius:32px;padding:{{ L.emptyPad }};display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px\" data-dc-tpl=\"14\"> <img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\"> <div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 221,
+          "w": 335,
+          "h": 531.3
+        },
+        "768": {
+          "x": 32,
+          "y": 243,
+          "w": 704,
+          "h": 422.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 289,
+          "w": 1240,
+          "h": 454.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/12#0@[\"SiteFooter\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/15#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "img",
+      "template": "Root",
+      "tpl": 15,
+      "attrs": {
+        "style": "width: 140px; transform: rotate(-8deg);",
+        "srcBasename": "logo-round.png"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"width:140px;transform:rotate(-8deg)\" data-dc-tpl=\"15\">",
+      "box": {
+        "375": {
+          "x": 108.9,
+          "y": 249.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "768": {
+          "x": 305.4,
+          "y": 283.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "1440": {
+          "x": 641.4,
+          "y": 345.9,
+          "w": 157.2,
+          "h": 151.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/14#0@[\"SiteFooter\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/16#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 16,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 32px;"
+      },
+      "words": "Nothing in here yet",
+      "allText": "Nothing in here yet",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "Nothing in here yet",
+      "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:32px\" data-dc-tpl=\"16\">Nothing in here yet</div>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 408.3,
+          "w": 287,
+          "h": 90
+        },
+        "768": {
+          "x": 231.6,
+          "y": 442.3,
+          "w": 304.8,
+          "h": 45
+        },
+        "1440": {
+          "x": 567.6,
+          "y": 504.3,
+          "w": 304.8,
+          "h": 45
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/15#0@[\"SiteFooter\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/17#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 17,
+      "attrs": {
+        "style": "margin: 0px; font-size: 17px; color: rgb(78, 60, 49); max-width: 420px;"
+      },
+      "words": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "allText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "srcLine": 20,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.",
+      "snippet": "<p style=\"margin:0;font-size:17px;color:#4E3C31;max-width:420px\" data-dc-tpl=\"17\">Build your own box, or start small with the Taster Trio: 3 Zookies for £5, postage included.</p>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 514.3,
+          "w": 287,
+          "h": 60
+        },
+        "768": {
+          "x": 174,
+          "y": 503.3,
+          "w": 420,
+          "h": 40
+        },
+        "1440": {
+          "x": 510,
+          "y": 565.3,
+          "w": 420,
+          "h": 40
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/16#0@[\"SiteFooter\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/18#0",
+      "parentKey": "Root/14#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 18,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;"
+      },
+      "words": "",
+      "allText": "Build your box Add a Taster Trio · £5",
+      "srcLine": 21,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:12px;justify-content:center\" data-dc-tpl=\"18\"> <a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:trans",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 590.3,
+          "w": 287,
+          "h": 124
+        },
+        "768": {
+          "x": 189.6,
+          "y": 559.3,
+          "w": 388.8,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 621.3,
+          "w": 388.8,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/17#0@[\"SiteFooter\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/19#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 19,
+      "attrs": {
+        "href": "Home.dc.html#build",
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); font-weight: 700; display: flex; align-items: center; text-decoration: none; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Build your box",
+      "allText": "Build your box",
+      "srcLine": 22,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Build your box",
+      "snippet": "<a href=\"Home.dc.html#build\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"19\">Build your box</a>",
+      "box": {
+        "375": {
+          "x": 104.7,
+          "y": 590.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "768": {
+          "x": 189.6,
+          "y": 559.3,
+          "w": 165.6,
+          "h": 56
+        },
+        "1440": {
+          "x": 525.6,
+          "y": 621.3,
+          "w": 165.6,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/18#0@[\"SiteFooter\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/20#0",
+      "parentKey": "Root/18#0",
+      "depth": 4,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 20,
+      "attrs": {
+        "class": "scp0",
+        "style": "height: 56px; padding: 0px 26px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s;"
+      },
+      "words": "Add a Taster Trio · £5",
+      "allText": "Add a Taster Trio · £5",
+      "srcLine": 23,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ empty }}",
+          "tpl": "13"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "Add a Taster Trio · £5",
+      "snippet": "<button sc-camel-on-click=\"{{ addTrial }}\" style=\"height:56px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-size:16px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" data-dc-tpl=\"20\">Add a Taster Trio · £5</button>",
+      "box": {
+        "375": {
+          "x": 81.9,
+          "y": 658.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "768": {
+          "x": 367.2,
+          "y": 559.3,
+          "w": 211.2,
+          "h": 56
+        },
+        "1440": {
+          "x": 703.2,
+          "y": 621.3,
+          "w": 211.2,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "SiteFooter",
+        "keys": {
+          "bp": "d"
+        }
+      },
+      "after": "Root/19#0@[\"SiteFooter\",{\"bp\":\"d\"}]",
+      "layoutChanged375": null,
+      "screenshots": {}
     }
   ]
 }

@@ -85,7 +85,9 @@
             "desktop": "center"
           },
           "margin": {
-            "top": "var:preset|spacing|40"
+            "desktop": {
+              "top": "var:preset|spacing|40"
+            }
           }
         },
         "innerBlocks": [
@@ -114,7 +116,9 @@
             "desktop": "small"
           },
           "margin": {
-            "top": "var:preset|spacing|50"
+            "desktop": {
+              "top": "var:preset|spacing|50"
+            }
           }
         }
       }

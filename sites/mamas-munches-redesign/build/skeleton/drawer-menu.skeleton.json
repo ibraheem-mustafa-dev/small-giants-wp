@@ -40,7 +40,9 @@
 							"logoSource": {
 								"desktop": {
 									"kind": "image",
-									"id": 91
+									"id": 91,
+									"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-horizontal.png",
+									"mime": "image/png"
 								}
 							}
 						},
@@ -375,6 +377,7 @@
 			{
 				"name": "sgs/icon-list",
 				"attributes": {
+					"markerType": "none",
 					"items": [
 						{
 							"text": "Shop all",
@@ -472,6 +475,7 @@
 							{
 								"name": "sgs/icon-list",
 								"attributes": {
+									"markerType": "none",
 									"items": [
 										{
 											"text": "Sign in",
@@ -555,6 +559,7 @@
 							{
 								"name": "sgs/icon-list",
 								"attributes": {
+									"markerType": "none",
 									"items": [
 										{
 											"text": "WhatsApp",

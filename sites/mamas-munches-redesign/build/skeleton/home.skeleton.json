@@ -54,7 +54,7 @@
 								"div",
 								"div"
 							],
-							"textHash": "3d70cc34",
+							"textHash": "266f0aef",
 							"line": 16
 						},
 						"innerBlocks": [
@@ -128,7 +128,31 @@
 									"textHash": "7c6fc200",
 									"line": 17
 								},
-								"innerBlocks": []
+								"innerBlocks": [
+									{
+										"name": "sgs/decorative-image",
+										"attributes": {},
+										"draftRef": {
+											"tpl": "Root/18#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "fb1905db",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"h1",
+												"span"
+											],
+											"textHash": "1505",
+											"line": 17
+										},
+										"innerBlocks": []
+									}
+								]
 							}
 						]
 					},
@@ -2458,6 +2482,28 @@
 										},
 										"innerBlocks": [
 											{
+												"name": "sgs/decorative-image",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/154#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "9c86e1c4",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 139
+												},
+												"innerBlocks": []
+											},
+											{
 												"name": "sgs/text",
 												"attributes": {
 													"text": "“Congratulations, mama! One for the 3am feed. So proud of you. Sara x”"
@@ -2537,7 +2583,9 @@
 													"logoSource": {
 														"desktop": {
 															"kind": "image",
-															"id": 92
+															"id": 92,
+															"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-round.png",
+															"mime": "image/png"
 														}
 													}
 												},
@@ -2692,6 +2740,27 @@
 							"line": 153
 						},
 						"innerBlocks": [
+							{
+								"name": "sgs/decorative-image",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/165#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "f73a85e1",
+									"parentTags": [
+										"main",
+										"section",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 154
+								},
+								"innerBlocks": []
+							},
 							{
 								"name": "sgs/text",
 								"attributes": {
@@ -3463,6 +3532,48 @@
 									"line": 174
 								},
 								"innerBlocks": [
+									{
+										"name": "sgs/decorative-image",
+										"attributes": {},
+										"draftRef": {
+											"tpl": "Root/197#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "82e0ff83",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 175
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/decorative-image",
+										"attributes": {},
+										"draftRef": {
+											"tpl": "Root/198#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "82a137a",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 176
+										},
+										"innerBlocks": []
+									},
 									{
 										"name": "sgs/media",
 										"attributes": {},

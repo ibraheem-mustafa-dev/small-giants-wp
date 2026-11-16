@@ -25,8 +25,10 @@
           },
           "flexDirection": "column",
           "padding": {
-            "top": "var:preset|spacing|50",
-            "bottom": "var:preset|spacing|60"
+            "desktop": {
+              "top": "var:preset|spacing|50",
+              "bottom": "var:preset|spacing|60"
+            }
           }
         },
         "innerBlocks": [

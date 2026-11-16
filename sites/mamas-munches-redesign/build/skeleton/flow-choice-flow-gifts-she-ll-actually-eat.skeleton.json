@@ -1,9 +1,8 @@
 [
 	{
-		"name": "sgs/choice-flow",
+		"name": "sgs/form",
 		"attributes": {
-			"title": "Show 4 gifts ↓",
-			"flowLayout": "compact"
+			"submitLabel": "Show 4 gifts ↓"
 		},
 		"draftRef": {
 			"tpl": "Root/24#0"

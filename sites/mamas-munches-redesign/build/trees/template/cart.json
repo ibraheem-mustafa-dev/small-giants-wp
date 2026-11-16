@@ -11,32 +11,18 @@
     "attributes": {
       "tagName": "main",
       "className": "cr-ref-template-cart-0",
+      "textColour": "mm-cocoa",
       "minHeight": {
         "desktop": "0px"
       },
       "contentWidth": {
         "desktop": "full"
       },
-      "textColourHover": "primary-text",
+      "textColourHover": "mm-cocoa",
       "padding": {
-        "desktop": {
-          "top": "40px",
-          "right": "40px",
-          "bottom": "40px",
-          "left": "40px"
-        },
-        "tablet": {
-          "top": "32px",
-          "right": "32px",
-          "bottom": "32px",
-          "left": "32px"
-        },
-        "mobile": {
-          "top": "20px",
-          "right": "20px",
-          "bottom": "20px",
-          "left": "20px"
-        }
+        "desktop": "40px",
+        "tablet": "32px",
+        "mobile": "20px"
       }
     },
     "innerBlocks": [
@@ -49,7 +35,7 @@
             "mobile": "0px"
           },
           "flexDirection": "row",
-          "textColourHover": "primary-text"
+          "textColourHover": "mm-cocoa"
         },
         "innerBlocks": [
           {
@@ -65,8 +51,8 @@
                 "desktop": 1
               },
               "lineHeightUnit": "",
-              "textColour": "custom-mm-script",
-              "textColourHover": "custom-mm-script"
+              "textColour": "mm-script",
+              "textColourHover": "mm-script"
             },
             "innerBlocks": []
           },
@@ -98,7 +84,7 @@
                   "bottom": "24px"
                 }
               },
-              "textColourHover": "primary-text"
+              "textColourHover": "mm-cocoa"
             },
             "innerBlocks": [
               {
@@ -136,8 +122,8 @@
                       "left": "12px"
                     }
                   },
-                  "textColourHover": "primary-text",
-                  "borderColourHover": "primary-text"
+                  "borderColourHover": "mm-cocoa",
+                  "textColourHover": "mm-cocoa"
                 },
                 "innerBlocks": []
               }

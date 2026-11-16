@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-28T06:35:28.381Z",
-  "source": "http://127.0.0.1:58717/",
+  "generated": "2026-11-15T22:52:15.338Z",
+  "source": "http://127.0.0.1:56633/",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -35,7 +35,22 @@
       {
         "tag": "span",
         "cls": "sc-interp",
+        "text": "Ordering & delivery"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
         "text": "When will my order arrive?"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Zainab bakes every order fresh when it comes in, then posts "
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Ingredients & allergens"
       },
       {
         "tag": "span",
@@ -45,7 +60,17 @@
       {
         "tag": "span",
         "cls": "sc-interp",
+        "text": "Subscriptions"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
         "text": "How does Subscribe & save work?"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Gifting"
       },
       {
         "tag": "span",
@@ -55,11 +80,11 @@
     ],
     "duplicateKeys": 0,
     "perWidthCounts": {
-      "375": 66,
-      "768": 66,
-      "1440": 66
+      "375": 85,
+      "768": 85,
+      "1440": 85
     },
-    "tagAgree": 66,
+    "tagAgree": 85,
     "tagDisagree": [],
     "keysMissingAt": {
       "375": [],
@@ -89,13 +114,13 @@
           "x": 0,
           "y": 97,
           "w": 375,
-          "h": 2563.8
+          "h": 2866.2
         },
         "768": {
           "x": 0,
           "y": 97,
           "w": 768,
-          "h": 1892.5
+          "h": 2083.7
         },
         "1440": {
           "x": 0,
@@ -531,13 +556,13 @@
           "x": 0,
           "y": 566.8,
           "w": 375,
-          "h": 2094
+          "h": 2396.4
         },
         "768": {
           "x": 0,
           "y": 456.7,
           "w": 768,
-          "h": 1532.8
+          "h": 1724
         },
         "1440": {
           "x": 0,
@@ -586,13 +611,13 @@
           "x": 20,
           "y": 606.8,
           "w": 335,
-          "h": 1990
+          "h": 2292.4
         },
         "768": {
           "x": 32,
           "y": 512.7,
           "w": 704,
-          "h": 1396.8
+          "h": 1588
         },
         "1440": {
           "x": 100,
@@ -1893,13 +1918,13 @@
           "x": 20,
           "y": 1253.3,
           "w": 335,
-          "h": 1343.5
+          "h": 1645.9
         },
         "768": {
           "x": 32,
           "y": 770.2,
           "w": 704,
-          "h": 1139.3
+          "h": 1330.5
         },
         "1440": {
           "x": 100,
@@ -3260,30 +3285,30 @@
         "style": "display: flex; flex-direction: column; gap: 14px;"
       },
       "words": "",
-      "allText": "quick answers When will my order arrive?→ What allergens are in them?→ How does Subscribe & save work?→ Can I send them ",
+      "allText": "quick answers Ordering & deliveryWhen will my order arrive?+ Zainab bakes every order fresh when it comes in, then posts",
       "srcLine": 71,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"74\"> <div data-reveal=\"\" style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"75\">quick answers</div> <sc-for list=\"{{ quick }}\" as=\"q\" hint-placeholder-count=\"0\" data-dc-tpl=\"76\"> <a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;ga",
+      "snippet": "<div style=\"display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"74\"> <div data-reveal=\"\" style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"75\">quick answers</div> <div style=\"display:flex;flex-direction:column;gap:12px\" data-dc-tpl=\"76\"> <sc-for list=\"{{ faqs }}\" as=\"f\" hint-placeholder-count=\"0\" data-dc-tpl=\"77\"> <div style=\"border:2px solid #3A2A2",
       "box": {
         "375": {
           "x": 20,
           "y": 2065.8,
           "w": 335,
-          "h": 531
+          "h": 833.4
         },
         "768": {
           "x": 32,
           "y": 1473,
           "w": 704,
-          "h": 436.5
+          "h": 627.7
         },
         "1440": {
           "x": 863.2,
           "y": 807,
           "w": 476.8,
-          "h": 459.8
+          "h": 676.5
         }
       },
       "visible": {
@@ -3360,49 +3385,40 @@
       }
     },
     {
-      "key": "Root/77#0",
+      "key": "Root/76#0",
       "parentKey": "Root/74#0",
       "depth": 5,
-      "tag": "a",
+      "tag": "div",
       "template": "Root",
-      "tpl": 77,
+      "tpl": 76,
       "attrs": {
-        "href": "Help.dc.html#delivery",
-        "class": "scp5",
-        "style": "display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 64px; padding: 12px 18px; background: rgb(255, 250, 240); border: 2px solid rgb(58, 42, 34); border-radius: 20px; text-decoration: none; color: rgb(58, 42, 34); font-family: \"Young Serif\", serif; font-size: 18px; transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.25s;"
+        "style": "display: flex; flex-direction: column; gap: 12px;"
       },
-      "words": "When will my order arrive?",
-      "allText": "When will my order arrive?→",
-      "srcLine": 74,
-      "membership": [
-        {
-          "kind": "sc-for",
-          "list": "{{ quick }}",
-          "as": "q",
-          "tpl": "76"
-        }
-      ],
-      "srcTag": "a",
-      "srcOwnText": "{{ q.t }}",
-      "snippet": "<a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:64px;padding:12px 18px;background:#FFFAF0;border:2px solid #3A2A22;border-radius:20px;text-decoration:none;color:#3A2A22;font-family:'Young Serif',serif;font-size:18px;transition:transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .25s\" style-hover=\"transform:translate(-3",
+      "words": "",
+      "allText": "Ordering & deliveryWhen will my order arrive?+ Zainab bakes every order fresh when it comes in, then posts it with Royal",
+      "srcLine": 73,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-direction:column;gap:12px\" data-dc-tpl=\"76\"> <sc-for list=\"{{ faqs }}\" as=\"f\" hint-placeholder-count=\"0\" data-dc-tpl=\"77\"> <div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"w",
       "box": {
         "375": {
           "x": 20,
           "y": 2107.8,
           "w": 335,
-          "h": 80
+          "h": 590.4
         },
         "768": {
           "x": 32,
           "y": 1515,
           "w": 704,
-          "h": 64
+          "h": 431.2
         },
         "1440": {
           "x": 863.2,
           "y": 849,
           "w": 476.8,
-          "h": 64
+          "h": 456.8
         }
       },
       "visible": {
@@ -3416,56 +3432,55 @@
         "768": "static",
         "1440": "static"
       },
-      "flexDirection": "row",
+      "flexDirection": "column",
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_77_0@375.png",
-        "1440": "shots/Root_77_0@1440.png"
+        "375": "shots/Root_76_0@375.png",
+        "1440": "shots/Root_76_0@1440.png"
       }
     },
     {
       "key": "Root/78#0",
-      "parentKey": "Root/77#0",
+      "parentKey": "Root/76#0",
       "depth": 6,
-      "tag": "span",
+      "tag": "div",
       "template": "Root",
       "tpl": 78,
       "attrs": {
-        "aria-hidden": "true",
-        "style": "flex: 0 0 auto; width: 34px; height: 34px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-family: Karla;"
+        "style": "border: 2px solid rgb(58, 42, 34); border-radius: 22px; background: rgb(252, 235, 190); box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: background 0.25s, box-shadow 0.25s;"
       },
-      "words": "→",
-      "allText": "→",
-      "srcLine": 74,
+      "words": "",
+      "allText": "Ordering & deliveryWhen will my order arrive?+ Zainab bakes every order fresh when it comes in, then posts it with Royal",
+      "srcLine": 75,
       "membership": [
         {
           "kind": "sc-for",
-          "list": "{{ quick }}",
-          "as": "q",
-          "tpl": "76"
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
         }
       ],
-      "srcTag": "span",
-      "srcOwnText": "→",
-      "snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:34px;height:34px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-family:Karla\" data-dc-tpl=\"78\">→</span>",
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
       "box": {
         "375": {
-          "x": 301,
-          "y": 2130.8,
-          "w": 34,
-          "h": 34
+          "x": 20,
+          "y": 2107.8,
+          "w": 335,
+          "h": 230.4
         },
         "768": {
-          "x": 682,
-          "y": 1530,
-          "w": 34,
-          "h": 34
+          "x": 32,
+          "y": 1515,
+          "w": 704,
+          "h": 152.2
         },
         "1440": {
-          "x": 1286,
-          "y": 864,
-          "w": 34,
-          "h": 34
+          "x": 863.2,
+          "y": 849,
+          "w": 476.8,
+          "h": 177.8
         }
       },
       "visible": {
@@ -3473,7 +3488,7 @@
         "768": true,
         "1440": true
       },
-      "display": "flex",
+      "display": "block",
       "position": {
         "375": "static",
         "768": "static",
@@ -3487,49 +3502,47 @@
       }
     },
     {
-      "key": "Root/77#1",
-      "parentKey": "Root/74#0",
-      "depth": 5,
-      "tag": "a",
+      "key": "Root/79#0",
+      "parentKey": "Root/78#0",
+      "depth": 7,
+      "tag": "button",
       "template": "Root",
-      "tpl": 77,
+      "tpl": 79,
       "attrs": {
-        "href": "Help.dc.html#allergens",
-        "class": "scp5",
-        "style": "display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 64px; padding: 12px 18px; background: rgb(255, 250, 240); border: 2px solid rgb(58, 42, 34); border-radius: 20px; text-decoration: none; color: rgb(58, 42, 34); font-family: \"Young Serif\", serif; font-size: 18px; transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.25s;"
+        "style": "width: 100%; min-height: 68px; padding: 16px 20px; border: 0px; background: transparent; display: flex; justify-content: space-between; align-items: center; gap: 16px; text-align: left; cursor: pointer;"
       },
-      "words": "What allergens are in them?",
-      "allText": "What allergens are in them?→",
-      "srcLine": 74,
+      "words": "",
+      "allText": "Ordering & deliveryWhen will my order arrive?+",
+      "srcLine": 76,
       "membership": [
         {
           "kind": "sc-for",
-          "list": "{{ quick }}",
-          "as": "q",
-          "tpl": "76"
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
         }
       ],
-      "srcTag": "a",
-      "srcOwnText": "{{ q.t }}",
-      "snippet": "<a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:64px;padding:12px 18px;background:#FFFAF0;border:2px solid #3A2A22;border-radius:20px;text-decoration:none;color:#3A2A22;font-family:'Young Serif',serif;font-size:18px;transition:transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .25s\" style-hover=\"transform:translate(-3",
+      "srcTag": "button",
+      "srcOwnText": "",
+      "snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"79\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter",
       "box": {
         "375": {
-          "x": 20,
-          "y": 2201.8,
-          "w": 335,
-          "h": 80
+          "x": 22,
+          "y": 2109.8,
+          "w": 331,
+          "h": 104
         },
         "768": {
-          "x": 32,
-          "y": 1593,
-          "w": 704,
-          "h": 64
+          "x": 34,
+          "y": 1517,
+          "w": 700,
+          "h": 77
         },
         "1440": {
-          "x": 863.2,
-          "y": 927,
-          "w": 476.8,
-          "h": 64
+          "x": 865.2,
+          "y": 851,
+          "w": 472.8,
+          "h": 77
         }
       },
       "visible": {
@@ -3546,53 +3559,52 @@
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_77_1@375.png",
-        "1440": "shots/Root_77_1@1440.png"
+        "375": "shots/Root_79_0@375.png",
+        "1440": "shots/Root_79_0@1440.png"
       }
     },
     {
-      "key": "Root/78#1",
-      "parentKey": "Root/77#1",
-      "depth": 6,
+      "key": "Root/80#0",
+      "parentKey": "Root/79#0",
+      "depth": 8,
       "tag": "span",
       "template": "Root",
-      "tpl": 78,
+      "tpl": 80,
       "attrs": {
-        "aria-hidden": "true",
-        "style": "flex: 0 0 auto; width: 34px; height: 34px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-family: Karla;"
+        "style": "display: flex; flex-direction: column; gap: 4px;"
       },
-      "words": "→",
-      "allText": "→",
-      "srcLine": 74,
+      "words": "",
+      "allText": "Ordering & deliveryWhen will my order arrive?",
+      "srcLine": 76,
       "membership": [
         {
           "kind": "sc-for",
-          "list": "{{ quick }}",
-          "as": "q",
-          "tpl": "76"
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
         }
       ],
       "srcTag": "span",
-      "srcOwnText": "→",
-      "snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:34px;height:34px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-family:Karla\" data-dc-tpl=\"78\">→</span>",
+      "srcOwnText": "",
+      "snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span></span>",
       "box": {
         "375": {
-          "x": 301,
-          "y": 2224.8,
-          "w": 34,
-          "h": 34
+          "x": 42,
+          "y": 2125.8,
+          "w": 239,
+          "h": 72
         },
         "768": {
-          "x": 682,
-          "y": 1608,
-          "w": 34,
-          "h": 34
+          "x": 54,
+          "y": 1533,
+          "w": 264.5,
+          "h": 45
         },
         "1440": {
-          "x": 1286,
-          "y": 942,
-          "w": 34,
-          "h": 34
+          "x": 885.2,
+          "y": 867,
+          "w": 264.5,
+          "h": 45
         }
       },
       "visible": {
@@ -3601,6 +3613,322 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_80_0@375.png",
+        "1440": "shots/Root_80_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/81#0",
+      "parentKey": "Root/80#0",
+      "depth": 9,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 81,
+      "attrs": {
+        "style": "font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgb(142, 52, 68);"
+      },
+      "words": "Ordering & delivery",
+      "allText": "Ordering & delivery",
+      "srcLine": 76,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ f.cat }}",
+      "snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 2125.8,
+          "w": 239,
+          "h": 14
+        },
+        "768": {
+          "x": 54,
+          "y": 1533,
+          "w": 264.5,
+          "h": 14
+        },
+        "1440": {
+          "x": 885.2,
+          "y": 867,
+          "w": 264.5,
+          "h": 14
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_81_0@375.png",
+        "1440": "shots/Root_81_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/82#0",
+      "parentKey": "Root/80#0",
+      "depth": 9,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 82,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 19px;"
+      },
+      "words": "When will my order arrive?",
+      "allText": "When will my order arrive?",
+      "srcLine": 76,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ f.q }}",
+      "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 2143.8,
+          "w": 239,
+          "h": 54
+        },
+        "768": {
+          "x": 54,
+          "y": 1551,
+          "w": 264.5,
+          "h": 27
+        },
+        "1440": {
+          "x": 885.2,
+          "y": 885,
+          "w": 264.5,
+          "h": 27
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_82_0@375.png",
+        "1440": "shots/Root_82_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/83#0",
+      "parentKey": "Root/79#0",
+      "depth": 8,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 83,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "flex: 0 0 auto; width: 36px; height: 36px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); display: flex; align-items: center; justify-content: center; font-size: 22px; transform: rotate(45deg); transition: transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);"
+      },
+      "words": "+",
+      "allText": "+",
+      "srcLine": 76,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "+",
+      "snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"83\">+</span>",
+      "box": {
+        "375": {
+          "x": 289.5,
+          "y": 2136.3,
+          "w": 50.9,
+          "h": 50.9
+        },
+        "768": {
+          "x": 670.5,
+          "y": 1530,
+          "w": 50.9,
+          "h": 50.9
+        },
+        "1440": {
+          "x": 1274.5,
+          "y": 864,
+          "w": 50.9,
+          "h": 50.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_83_0@375.png",
+        "1440": "shots/Root_83_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/85#0",
+      "parentKey": "Root/78#0",
+      "depth": 7,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 85,
+      "attrs": {
+        "style": "margin: 0px; padding: 0px 20px 20px; font-size: 16px; line-height: 1.6; max-width: 700px;"
+      },
+      "words": "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days.",
+      "allText": "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 ",
+      "srcLine": 77,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ f.open }}",
+          "tpl": "84"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ f.a }}",
+      "snippet": "<p style=\"margin:0;padding:0 20px 20px;font-size:16px;line-height:1.6;max-width:700px\" data-dc-tpl=\"85\">{{ f.a }}</p>",
+      "box": {
+        "375": {
+          "x": 22,
+          "y": 2213.8,
+          "w": 331,
+          "h": 122.4
+        },
+        "768": {
+          "x": 34,
+          "y": 1594,
+          "w": 700,
+          "h": 71.2
+        },
+        "1440": {
+          "x": 865.2,
+          "y": 928,
+          "w": 472.8,
+          "h": 96.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_85_0@375.png",
+        "1440": "shots/Root_85_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/78#1",
+      "parentKey": "Root/76#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 78,
+      "attrs": {
+        "style": "border: 2px solid rgb(58, 42, 34); border-radius: 22px; background: rgb(255, 250, 240); box-shadow: rgb(58, 42, 34) 0px 0px 0px; transition: background 0.25s, box-shadow 0.25s;"
+      },
+      "words": "",
+      "allText": "Ingredients & allergensWhat allergens are in them?+",
+      "srcLine": 75,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2350.2,
+          "w": 335,
+          "h": 108
+        },
+        "768": {
+          "x": 32,
+          "y": 1679.2,
+          "w": 704,
+          "h": 81
+        },
+        "1440": {
+          "x": 863.2,
+          "y": 1038.8,
+          "w": 476.8,
+          "h": 81
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
       "position": {
         "375": "static",
         "768": "static",
@@ -3614,49 +3942,47 @@
       }
     },
     {
-      "key": "Root/77#2",
-      "parentKey": "Root/74#0",
-      "depth": 5,
-      "tag": "a",
+      "key": "Root/79#1",
+      "parentKey": "Root/78#1",
+      "depth": 7,
+      "tag": "button",
       "template": "Root",
-      "tpl": 77,
+      "tpl": 79,
       "attrs": {
-        "href": "Help.dc.html",
-        "class": "scp5",
-        "style": "display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 64px; padding: 12px 18px; background: rgb(255, 250, 240); border: 2px solid rgb(58, 42, 34); border-radius: 20px; text-decoration: none; color: rgb(58, 42, 34); font-family: \"Young Serif\", serif; font-size: 18px; transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.25s;"
+        "style": "width: 100%; min-height: 68px; padding: 16px 20px; border: 0px; background: transparent; display: flex; justify-content: space-between; align-items: center; gap: 16px; text-align: left; cursor: pointer;"
       },
-      "words": "How does Subscribe & save work?",
-      "allText": "How does Subscribe & save work?→",
-      "srcLine": 74,
+      "words": "",
+      "allText": "Ingredients & allergensWhat allergens are in them?+",
+      "srcLine": 76,
       "membership": [
         {
           "kind": "sc-for",
-          "list": "{{ quick }}",
-          "as": "q",
-          "tpl": "76"
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
         }
       ],
-      "srcTag": "a",
-      "srcOwnText": "{{ q.t }}",
-      "snippet": "<a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:64px;padding:12px 18px;background:#FFFAF0;border:2px solid #3A2A22;border-radius:20px;text-decoration:none;color:#3A2A22;font-family:'Young Serif',serif;font-size:18px;transition:transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .25s\" style-hover=\"transform:translate(-3",
+      "srcTag": "button",
+      "srcOwnText": "",
+      "snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"79\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter",
       "box": {
         "375": {
-          "x": 20,
-          "y": 2295.8,
-          "w": 335,
-          "h": 80
+          "x": 22,
+          "y": 2352.2,
+          "w": 331,
+          "h": 104
         },
         "768": {
-          "x": 32,
-          "y": 1671,
-          "w": 704,
-          "h": 64
+          "x": 34,
+          "y": 1681.2,
+          "w": 700,
+          "h": 77
         },
         "1440": {
-          "x": 863.2,
-          "y": 1005,
-          "w": 476.8,
-          "h": 64
+          "x": 865.2,
+          "y": 1040.8,
+          "w": 472.8,
+          "h": 77
         }
       },
       "visible": {
@@ -3673,53 +3999,52 @@
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_77_2@375.png",
-        "1440": "shots/Root_77_2@1440.png"
+        "375": "shots/Root_79_1@375.png",
+        "1440": "shots/Root_79_1@1440.png"
       }
     },
     {
-      "key": "Root/78#2",
-      "parentKey": "Root/77#2",
-      "depth": 6,
+      "key": "Root/80#1",
+      "parentKey": "Root/79#1",
+      "depth": 8,
       "tag": "span",
       "template": "Root",
-      "tpl": 78,
+      "tpl": 80,
       "attrs": {
-        "aria-hidden": "true",
-        "style": "flex: 0 0 auto; width: 34px; height: 34px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-family: Karla;"
+        "style": "display: flex; flex-direction: column; gap: 4px;"
       },
-      "words": "→",
-      "allText": "→",
-      "srcLine": 74,
+      "words": "",
+      "allText": "Ingredients & allergensWhat allergens are in them?",
+      "srcLine": 76,
       "membership": [
         {
           "kind": "sc-for",
-          "list": "{{ quick }}",
-          "as": "q",
-          "tpl": "76"
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
         }
       ],
       "srcTag": "span",
-      "srcOwnText": "→",
-      "snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:34px;height:34px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-family:Karla\" data-dc-tpl=\"78\">→</span>",
+      "srcOwnText": "",
+      "snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span></span>",
       "box": {
         "375": {
-          "x": 301,
-          "y": 2318.8,
-          "w": 34,
-          "h": 34
+          "x": 42,
+          "y": 2368.2,
+          "w": 239,
+          "h": 72
         },
         "768": {
-          "x": 682,
-          "y": 1686,
-          "w": 34,
-          "h": 34
+          "x": 54,
+          "y": 1697.2,
+          "w": 270.8,
+          "h": 45
         },
         "1440": {
-          "x": 1286,
-          "y": 1020,
-          "w": 34,
-          "h": 34
+          "x": 885.2,
+          "y": 1056.8,
+          "w": 270.8,
+          "h": 45
         }
       },
       "visible": {
@@ -3728,6 +4053,255 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_80_1@375.png",
+        "1440": "shots/Root_80_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/81#1",
+      "parentKey": "Root/80#1",
+      "depth": 9,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 81,
+      "attrs": {
+        "style": "font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgb(142, 52, 68);"
+      },
+      "words": "Ingredients & allergens",
+      "allText": "Ingredients & allergens",
+      "srcLine": 76,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ f.cat }}",
+      "snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 2368.2,
+          "w": 239,
+          "h": 14
+        },
+        "768": {
+          "x": 54,
+          "y": 1697.2,
+          "w": 270.8,
+          "h": 14
+        },
+        "1440": {
+          "x": 885.2,
+          "y": 1056.8,
+          "w": 270.8,
+          "h": 14
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_81_1@375.png",
+        "1440": "shots/Root_81_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/82#1",
+      "parentKey": "Root/80#1",
+      "depth": 9,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 82,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 19px;"
+      },
+      "words": "What allergens are in them?",
+      "allText": "What allergens are in them?",
+      "srcLine": 76,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ f.q }}",
+      "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 2386.2,
+          "w": 239,
+          "h": 54
+        },
+        "768": {
+          "x": 54,
+          "y": 1715.2,
+          "w": 270.8,
+          "h": 27
+        },
+        "1440": {
+          "x": 885.2,
+          "y": 1074.8,
+          "w": 270.8,
+          "h": 27
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_82_1@375.png",
+        "1440": "shots/Root_82_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/83#1",
+      "parentKey": "Root/79#1",
+      "depth": 8,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 83,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "flex: 0 0 auto; width: 36px; height: 36px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); display: flex; align-items: center; justify-content: center; font-size: 22px; transform: rotate(0deg); transition: transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);"
+      },
+      "words": "+",
+      "allText": "+",
+      "srcLine": 76,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "+",
+      "snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"83\">+</span>",
+      "box": {
+        "375": {
+          "x": 297,
+          "y": 2386.2,
+          "w": 36,
+          "h": 36
+        },
+        "768": {
+          "x": 678,
+          "y": 1701.7,
+          "w": 36,
+          "h": 36
+        },
+        "1440": {
+          "x": 1282,
+          "y": 1061.3,
+          "w": 36,
+          "h": 36
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_83_1@375.png",
+        "1440": "shots/Root_83_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/78#2",
+      "parentKey": "Root/76#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 78,
+      "attrs": {
+        "style": "border: 2px solid rgb(58, 42, 34); border-radius: 22px; background: rgb(255, 250, 240); box-shadow: rgb(58, 42, 34) 0px 0px 0px; transition: background 0.25s, box-shadow 0.25s;"
+      },
+      "words": "",
+      "allText": "SubscriptionsHow does Subscribe & save work?+",
+      "srcLine": 75,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2470.2,
+          "w": 335,
+          "h": 108
+        },
+        "768": {
+          "x": 32,
+          "y": 1772.2,
+          "w": 704,
+          "h": 81
+        },
+        "1440": {
+          "x": 863.2,
+          "y": 1131.8,
+          "w": 476.8,
+          "h": 81
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
       "position": {
         "375": "static",
         "768": "static",
@@ -3741,49 +4315,47 @@
       }
     },
     {
-      "key": "Root/77#3",
-      "parentKey": "Root/74#0",
-      "depth": 5,
-      "tag": "a",
+      "key": "Root/79#2",
+      "parentKey": "Root/78#2",
+      "depth": 7,
+      "tag": "button",
       "template": "Root",
-      "tpl": 77,
+      "tpl": 79,
       "attrs": {
-        "href": "Help.dc.html",
-        "class": "scp5",
-        "style": "display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 64px; padding: 12px 18px; background: rgb(255, 250, 240); border: 2px solid rgb(58, 42, 34); border-radius: 20px; text-decoration: none; color: rgb(58, 42, 34); font-family: \"Young Serif\", serif; font-size: 18px; transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.25s;"
+        "style": "width: 100%; min-height: 68px; padding: 16px 20px; border: 0px; background: transparent; display: flex; justify-content: space-between; align-items: center; gap: 16px; text-align: left; cursor: pointer;"
       },
-      "words": "Can I send them as a gift?",
-      "allText": "Can I send them as a gift?→",
-      "srcLine": 74,
+      "words": "",
+      "allText": "SubscriptionsHow does Subscribe & save work?+",
+      "srcLine": 76,
       "membership": [
         {
           "kind": "sc-for",
-          "list": "{{ quick }}",
-          "as": "q",
-          "tpl": "76"
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
         }
       ],
-      "srcTag": "a",
-      "srcOwnText": "{{ q.t }}",
-      "snippet": "<a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:64px;padding:12px 18px;background:#FFFAF0;border:2px solid #3A2A22;border-radius:20px;text-decoration:none;color:#3A2A22;font-family:'Young Serif',serif;font-size:18px;transition:transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .25s\" style-hover=\"transform:translate(-3",
+      "srcTag": "button",
+      "srcOwnText": "",
+      "snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"79\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter",
       "box": {
         "375": {
-          "x": 20,
-          "y": 2389.8,
-          "w": 335,
-          "h": 64
+          "x": 22,
+          "y": 2472.2,
+          "w": 331,
+          "h": 104
         },
         "768": {
-          "x": 32,
-          "y": 1749,
-          "w": 704,
-          "h": 64
+          "x": 34,
+          "y": 1774.2,
+          "w": 700,
+          "h": 77
         },
         "1440": {
-          "x": 863.2,
-          "y": 1083,
-          "w": 476.8,
-          "h": 64
+          "x": 865.2,
+          "y": 1133.8,
+          "w": 472.8,
+          "h": 77
         }
       },
       "visible": {
@@ -3800,53 +4372,52 @@
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_77_3@375.png",
-        "1440": "shots/Root_77_3@1440.png"
+        "375": "shots/Root_79_2@375.png",
+        "1440": "shots/Root_79_2@1440.png"
       }
     },
     {
-      "key": "Root/78#3",
-      "parentKey": "Root/77#3",
-      "depth": 6,
+      "key": "Root/80#2",
+      "parentKey": "Root/79#2",
+      "depth": 8,
       "tag": "span",
       "template": "Root",
-      "tpl": 78,
+      "tpl": 80,
       "attrs": {
-        "aria-hidden": "true",
-        "style": "flex: 0 0 auto; width: 34px; height: 34px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-family: Karla;"
+        "style": "display: flex; flex-direction: column; gap: 4px;"
       },
-      "words": "→",
-      "allText": "→",
-      "srcLine": 74,
+      "words": "",
+      "allText": "SubscriptionsHow does Subscribe & save work?",
+      "srcLine": 76,
       "membership": [
         {
           "kind": "sc-for",
-          "list": "{{ quick }}",
-          "as": "q",
-          "tpl": "76"
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
         }
       ],
       "srcTag": "span",
-      "srcOwnText": "→",
-      "snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:34px;height:34px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-family:Karla\" data-dc-tpl=\"78\">→</span>",
+      "srcOwnText": "",
+      "snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span></span>",
       "box": {
         "375": {
-          "x": 301,
-          "y": 2404.8,
-          "w": 34,
-          "h": 34
+          "x": 42,
+          "y": 2488.2,
+          "w": 239,
+          "h": 72
         },
         "768": {
-          "x": 682,
-          "y": 1764,
-          "w": 34,
-          "h": 34
+          "x": 54,
+          "y": 1790.2,
+          "w": 321.1,
+          "h": 45
         },
         "1440": {
-          "x": 1286,
-          "y": 1098,
-          "w": 34,
-          "h": 34
+          "x": 885.2,
+          "y": 1149.8,
+          "w": 321.1,
+          "h": 45
         }
       },
       "visible": {
@@ -3855,6 +4426,255 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_80_2@375.png",
+        "1440": "shots/Root_80_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/81#2",
+      "parentKey": "Root/80#2",
+      "depth": 9,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 81,
+      "attrs": {
+        "style": "font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgb(142, 52, 68);"
+      },
+      "words": "Subscriptions",
+      "allText": "Subscriptions",
+      "srcLine": 76,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ f.cat }}",
+      "snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 2488.2,
+          "w": 239,
+          "h": 14
+        },
+        "768": {
+          "x": 54,
+          "y": 1790.2,
+          "w": 321.1,
+          "h": 14
+        },
+        "1440": {
+          "x": 885.2,
+          "y": 1149.8,
+          "w": 321.1,
+          "h": 14
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_81_2@375.png",
+        "1440": "shots/Root_81_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/82#2",
+      "parentKey": "Root/80#2",
+      "depth": 9,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 82,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 19px;"
+      },
+      "words": "How does Subscribe & save work?",
+      "allText": "How does Subscribe & save work?",
+      "srcLine": 76,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ f.q }}",
+      "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 2506.2,
+          "w": 239,
+          "h": 54
+        },
+        "768": {
+          "x": 54,
+          "y": 1808.2,
+          "w": 321.1,
+          "h": 27
+        },
+        "1440": {
+          "x": 885.2,
+          "y": 1167.8,
+          "w": 321.1,
+          "h": 27
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_82_2@375.png",
+        "1440": "shots/Root_82_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/83#2",
+      "parentKey": "Root/79#2",
+      "depth": 8,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 83,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "flex: 0 0 auto; width: 36px; height: 36px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); display: flex; align-items: center; justify-content: center; font-size: 22px; transform: rotate(0deg); transition: transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);"
+      },
+      "words": "+",
+      "allText": "+",
+      "srcLine": 76,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "+",
+      "snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"83\">+</span>",
+      "box": {
+        "375": {
+          "x": 297,
+          "y": 2506.2,
+          "w": 36,
+          "h": 36
+        },
+        "768": {
+          "x": 678,
+          "y": 1794.7,
+          "w": 36,
+          "h": 36
+        },
+        "1440": {
+          "x": 1282,
+          "y": 1154.3,
+          "w": 36,
+          "h": 36
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_83_2@375.png",
+        "1440": "shots/Root_83_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/78#3",
+      "parentKey": "Root/76#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 78,
+      "attrs": {
+        "style": "border: 2px solid rgb(58, 42, 34); border-radius: 22px; background: rgb(255, 250, 240); box-shadow: rgb(58, 42, 34) 0px 0px 0px; transition: background 0.25s, box-shadow 0.25s;"
+      },
+      "words": "",
+      "allText": "GiftingCan I send them as a gift?+",
+      "srcLine": 75,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2590.2,
+          "w": 335,
+          "h": 108
+        },
+        "768": {
+          "x": 32,
+          "y": 1865.2,
+          "w": 704,
+          "h": 81
+        },
+        "1440": {
+          "x": 863.2,
+          "y": 1224.8,
+          "w": 476.8,
+          "h": 81
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
       "position": {
         "375": "static",
         "768": "static",
@@ -3868,38 +4688,405 @@
       }
     },
     {
-      "key": "Root/79#0",
+      "key": "Root/79#3",
+      "parentKey": "Root/78#3",
+      "depth": 7,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 79,
+      "attrs": {
+        "style": "width: 100%; min-height: 68px; padding: 16px 20px; border: 0px; background: transparent; display: flex; justify-content: space-between; align-items: center; gap: 16px; text-align: left; cursor: pointer;"
+      },
+      "words": "",
+      "allText": "GiftingCan I send them as a gift?+",
+      "srcLine": 76,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "",
+      "snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"79\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter",
+      "box": {
+        "375": {
+          "x": 22,
+          "y": 2592.2,
+          "w": 331,
+          "h": 104
+        },
+        "768": {
+          "x": 34,
+          "y": 1867.2,
+          "w": 700,
+          "h": 77
+        },
+        "1440": {
+          "x": 865.2,
+          "y": 1226.8,
+          "w": 472.8,
+          "h": 77
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_79_3@375.png",
+        "1440": "shots/Root_79_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/80#3",
+      "parentKey": "Root/79#3",
+      "depth": 8,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 80,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 4px;"
+      },
+      "words": "",
+      "allText": "GiftingCan I send them as a gift?",
+      "srcLine": 76,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span></span>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 2608.2,
+          "w": 239,
+          "h": 72
+        },
+        "768": {
+          "x": 54,
+          "y": 1883.2,
+          "w": 245.2,
+          "h": 45
+        },
+        "1440": {
+          "x": 885.2,
+          "y": 1242.8,
+          "w": 245.2,
+          "h": 45
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_80_3@375.png",
+        "1440": "shots/Root_80_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/81#3",
+      "parentKey": "Root/80#3",
+      "depth": 9,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 81,
+      "attrs": {
+        "style": "font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgb(142, 52, 68);"
+      },
+      "words": "Gifting",
+      "allText": "Gifting",
+      "srcLine": 76,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ f.cat }}",
+      "snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 2608.2,
+          "w": 239,
+          "h": 14
+        },
+        "768": {
+          "x": 54,
+          "y": 1883.2,
+          "w": 245.2,
+          "h": 14
+        },
+        "1440": {
+          "x": 885.2,
+          "y": 1242.8,
+          "w": 245.2,
+          "h": 14
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_81_3@375.png",
+        "1440": "shots/Root_81_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/82#3",
+      "parentKey": "Root/80#3",
+      "depth": 9,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 82,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 19px;"
+      },
+      "words": "Can I send them as a gift?",
+      "allText": "Can I send them as a gift?",
+      "srcLine": 76,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ f.q }}",
+      "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 2626.2,
+          "w": 239,
+          "h": 54
+        },
+        "768": {
+          "x": 54,
+          "y": 1901.2,
+          "w": 245.2,
+          "h": 27
+        },
+        "1440": {
+          "x": 885.2,
+          "y": 1260.8,
+          "w": 245.2,
+          "h": 27
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_82_3@375.png",
+        "1440": "shots/Root_82_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/83#3",
+      "parentKey": "Root/79#3",
+      "depth": 8,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 83,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "flex: 0 0 auto; width: 36px; height: 36px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); display: flex; align-items: center; justify-content: center; font-size: 22px; transform: rotate(0deg); transition: transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);"
+      },
+      "words": "+",
+      "allText": "+",
+      "srcLine": 76,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ faqs }}",
+          "as": "f",
+          "tpl": "77"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "+",
+      "snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"83\">+</span>",
+      "box": {
+        "375": {
+          "x": 297,
+          "y": 2626.2,
+          "w": 36,
+          "h": 36
+        },
+        "768": {
+          "x": 678,
+          "y": 1887.7,
+          "w": 36,
+          "h": 36
+        },
+        "1440": {
+          "x": 1282,
+          "y": 1247.3,
+          "w": 36,
+          "h": 36
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_83_3@375.png",
+        "1440": "shots/Root_83_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/86#0",
+      "parentKey": "Root/74#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 86,
+      "attrs": {
+        "href": "Help.dc.html",
+        "style": "align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; font-weight: 700; color: rgb(58, 42, 34); text-decoration: underline; text-underline-offset: 4px;"
+      },
+      "words": "More answers on the Help page",
+      "allText": "More answers on the Help page",
+      "srcLine": 81,
+      "membership": [],
+      "srcTag": "a",
+      "srcOwnText": "More answers on the Help page",
+      "snippet": "<a href=\"Help.dc.html\" style=\"align-self:flex-start;display:inline-flex;align-items:center;min-height:44px;font-size:15px;font-weight:700;color:#3A2A22;text-decoration:underline;text-underline-offset:4px\" data-dc-tpl=\"86\">More answers on the Help page</a>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2712.2,
+          "w": 221.5,
+          "h": 44
+        },
+        "768": {
+          "x": 32,
+          "y": 1960.2,
+          "w": 221.5,
+          "h": 44
+        },
+        "1440": {
+          "x": 863.2,
+          "y": 1319.8,
+          "w": 221.5,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_86_0@375.png",
+        "1440": "shots/Root_86_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/87#0",
       "parentKey": "Root/74#0",
       "depth": 5,
       "tag": "div",
       "template": "Root",
-      "tpl": 79,
+      "tpl": 87,
       "attrs": {
         "style": "border: 2px dashed rgb(58, 42, 34); border-radius: 20px; padding: 16px 18px; font-size: 15px; line-height: 1.55;"
       },
       "words": "Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events.",
       "allText": "Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local market",
-      "srcLine": 76,
+      "srcLine": 82,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events.",
-      "snippet": "<div data-reveal=\"\" style=\"border:2px dashed #3A2A22;border-radius:20px;padding:16px 18px;font-size:15px;line-height:1.55\" data-dc-tpl=\"79\">Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events.</div>",
+      "snippet": "<div data-reveal=\"\" style=\"border:2px dashed #3A2A22;border-radius:20px;padding:16px 18px;font-size:15px;line-height:1.55\" data-dc-tpl=\"87\">Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events.</div>",
       "box": {
         "375": {
           "x": 20,
-          "y": 2467.8,
+          "y": 2770.2,
           "w": 335,
           "h": 129
         },
         "768": {
           "x": 32,
-          "y": 1827,
+          "y": 2018.2,
           "w": 704,
           "h": 82.5
         },
         "1440": {
           "x": 863.2,
-          "y": 1161,
+          "y": 1377.8,
           "w": 476.8,
           "h": 105.8
         }
@@ -3918,8 +5105,8 @@
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_79_0@375.png",
-        "1440": "shots/Root_79_0@1440.png"
+        "375": "shots/Root_87_0@375.png",
+        "1440": "shots/Root_87_0@1440.png"
       }
     }
   ]

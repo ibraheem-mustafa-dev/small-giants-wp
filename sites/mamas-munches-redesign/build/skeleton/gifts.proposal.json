@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:35:45.797Z",
-	"inventory": "2026-10-28T06:35:45.384Z",
-	"source": "http://127.0.0.1:59003/",
+	"generated": "2026-11-16T00:24:43.903Z",
+	"inventory": "2026-11-16T00:24:43.483Z",
+	"source": "http://127.0.0.1:57471/",
 	"surface": "page-gifts-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -65,10 +65,10 @@
 		"inventoryElements": 127,
 		"parts": 0,
 		"rows": 127,
-		"skeletonNodes": 107,
-		"expandedNodes": 107,
+		"skeletonNodes": 109,
+		"expandedNodes": 109,
 		"low": 33,
-		"removed": 20,
+		"removed": 18,
 		"unresolved": 0,
 		"byRule": {
 			"hero": 1,
@@ -860,15 +860,24 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "remove",
-			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)",
 			"source": "rule decorationLayer",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "decorationLayer",
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorationLayer: a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_0@375.png",
@@ -3672,11 +3681,6 @@
 			"snippet": "<textarea value=\"{{ note }}\" sc-camel-on-change=\"{{ onNote }}\" rows=\"3\" style=\"border:2px solid #3A2A22;border-radius:14px;padding:12px 16px;font-size:16px;background:#FFFAF0;resize:vertical\" data-dc-tpl=\"63\"></textarea>",
 			"attributes": {
 				"label": "Your message"
-			},
-			"slots": {
-				".sgs-form-field__input": {
-					"tpl": "Root/63#0"
-				}
 			}
 		},
 		{
@@ -3782,15 +3786,24 @@
 			"tag": "span",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "remove",
-			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)",
 			"source": "rule decorationLayer",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "decorationLayer",
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorationLayer: a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_67_0@375.png",
@@ -3839,10 +3852,17 @@
 			},
 			"snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"position:absolute;right:18px;top:18px;width:{{ L.noteLogo }};opacity:.95;transform:rotate(10deg)\" data-dc-tpl=\"68\">",
 			"attributes": {
-				"logoId": 92
+				"logoSource": {
+					"desktop": {
+						"kind": "image",
+						"id": 92,
+						"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-round.png",
+						"mime": "image/png"
+					}
+				}
 			},
 			"carried": {
-				"logoId": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-round.png"
+				"logoSource": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-round.png"
 			}
 		},
 		{
@@ -4045,10 +4065,17 @@
 			},
 			"snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"width:{{ L.bandLogo }};transform:rotate(-8deg);justify-self:center\" data-dc-tpl=\"74\">",
 			"attributes": {
-				"logoId": 92
+				"logoSource": {
+					"desktop": {
+						"kind": "image",
+						"id": 92,
+						"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-round.png",
+						"mime": "image/png"
+					}
+				}
 			},
 			"carried": {
-				"logoId": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-round.png"
+				"logoSource": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-round.png"
 			}
 		},
 		{

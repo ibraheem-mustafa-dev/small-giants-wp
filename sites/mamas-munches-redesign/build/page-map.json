@@ -183,6 +183,12 @@
     "parts": [
       {
         "kind": "form",
+        "label": "Gift finder",
+        "owner": "draft-notes",
+        "draftId": "surfaces.json S-20"
+      },
+      {
+        "kind": "form",
         "label": "Gift note preview",
         "owner": "draft-notes",
         "draftId": "surfaces.json S-22"
@@ -332,6 +338,18 @@
     "flags": [],
     "id": 157,
     "draftId": "surfaces.json S-34"
+  },
+  {
+    "slug": "choice-flow-build-your-zookie",
+    "title": "Build your Zookie",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_choice_flow",
+    "collection": "static",
+    "flags": [],
+    "id": null,
+    "draftId": "surfaces.json S-08"
   },
   {
     "slug": "footer",

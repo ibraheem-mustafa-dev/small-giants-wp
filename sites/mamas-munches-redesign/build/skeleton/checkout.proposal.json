@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:35:06.992Z",
-	"inventory": "2026-10-28T06:35:06.494Z",
-	"source": "http://127.0.0.1:60917/",
+	"generated": "2026-11-15T22:51:22.753Z",
+	"inventory": "2026-11-15T22:51:22.375Z",
+	"source": "http://127.0.0.1:54612/",
 	"surface": "page-checkout-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -802,11 +802,6 @@
 			"attributes": {
 				"label": "Email",
 				"required": true
-			},
-			"slots": {
-				".sgs-form-field__input": {
-					"tpl": "Root/53#0"
-				}
 			}
 		},
 		{
@@ -864,11 +859,6 @@
 			"snippet": "<input type=\"tel\" autocomplete=\"tel\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0\" data-dc-tpl=\"55\">",
 			"attributes": {
 				"label": "Mobile, for delivery updates (optional)"
-			},
-			"slots": {
-				".sgs-form-field__input": {
-					"tpl": "Root/55#0"
-				}
 			}
 		},
 		{

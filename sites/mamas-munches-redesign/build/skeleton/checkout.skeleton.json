@@ -415,12 +415,7 @@
 							"textHash": "1505",
 							"line": 48
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-form-field__input": {
-								"tpl": "Root/53#0"
-							}
-						}
+						"innerBlocks": []
 					},
 					{
 						"name": "sgs/form-field-phone",
@@ -444,12 +439,7 @@
 							"textHash": "1505",
 							"line": 49
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-form-field__input": {
-								"tpl": "Root/55#0"
-							}
-						}
+						"innerBlocks": []
 					},
 					{
 						"name": "sgs/form-field-checkbox",

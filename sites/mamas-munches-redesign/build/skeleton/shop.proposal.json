@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:39:08.383Z",
-	"inventory": "2026-10-28T06:39:08.185Z",
-	"source": "http://127.0.0.1:61089/",
+	"generated": "2026-11-16T00:24:43.353Z",
+	"inventory": "2026-11-16T00:24:42.572Z",
+	"source": "http://127.0.0.1:57472/",
 	"surface": "page-shop-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -378,11 +378,6 @@
 			"snippet": "<sc-raw-select value=\"{{ sort }}\" sc-camel-on-change=\"{{ onSort }}\" style=\"height:50px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;padding:0 18px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:3px 3px 0 #3A2A22\" data-dc-tpl=\"17\"> <option value=\"featured\" data-dc-tpl=\"18\">Featured</option> <option value=\"low\" data-dc-tpl=\"19\">Price: low to high</option> <option value=\"",
 			"attributes": {
 				"label": "Sort"
-			},
-			"slots": {
-				".sgs-form-field__input": {
-					"tpl": "Root/17#0"
-				}
 			}
 		},
 		{

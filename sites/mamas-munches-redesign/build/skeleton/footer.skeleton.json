@@ -300,7 +300,9 @@
 									"logoSource": {
 										"desktop": {
 											"kind": "image",
-											"id": 92
+											"id": 92,
+											"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-round.png",
+											"mime": "image/png"
 										}
 									}
 								},
@@ -403,6 +405,7 @@
 									{
 										"name": "sgs/icon-list",
 										"attributes": {
+											"markerType": "none",
 											"items": [
 												{
 													"text": "All Zookies",
@@ -504,6 +507,7 @@
 									{
 										"name": "sgs/icon-list",
 										"attributes": {
+											"markerType": "none",
 											"items": [
 												{
 													"text": "FAQs",

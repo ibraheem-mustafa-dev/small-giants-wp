@@ -570,34 +570,18 @@
 										"innerBlocks": []
 									},
 									{
-										"name": "sgs/icon-list",
+										"name": "sgs/container",
 										"attributes": {
-											"items": [
-												{
-													"text": "When will my order arrive?",
-													"url": "/help/#delivery"
-												},
-												{
-													"text": "What allergens are in them?",
-													"url": "/help/#allergens"
-												},
-												{
-													"text": "How does Subscribe & save work?",
-													"url": "/help/"
-												},
-												{
-													"text": "Can I send them as a gift?",
-													"url": "/help/"
-												}
-											]
+											"tagName": "div",
+											"layout": "stack"
 										},
 										"draftRef": {
-											"tpl": "Root/77#0"
+											"tpl": "Root/76#0"
 										},
 										"draftFingerprint": {
-											"tag": "a",
-											"cls": "scp5",
-											"styleHash": "c35516ea",
+											"tag": "div",
+											"cls": "",
+											"styleHash": "d0f7e8bd",
 											"parentTags": [
 												"main",
 												"section",
@@ -605,8 +589,724 @@
 												"div",
 												"div"
 											],
-											"textHash": "8333fb51",
-											"line": 74
+											"textHash": "1505",
+											"line": 73
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/78#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "f9ab064a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 75
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/79#0"
+														},
+														"draftFingerprint": {
+															"tag": "button",
+															"cls": "",
+															"styleHash": "193a3de7",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 76
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "stack"
+																},
+																"draftRef": {
+																	"tpl": "Root/80#0"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "99ba61aa",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"button"
+																	],
+																	"textHash": "1505",
+																	"line": 76
+																},
+																"innerBlocks": [
+																	{
+																		"name": "sgs/label",
+																		"attributes": {
+																			"text": "Ordering & delivery"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/81#0"
+																		},
+																		"draftFingerprint": {
+																			"tag": "span",
+																			"cls": "",
+																			"styleHash": "ad7165c0",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"button",
+																				"span"
+																			],
+																			"textHash": "c214d7d1",
+																			"line": 76
+																		},
+																		"innerBlocks": []
+																	},
+																	{
+																		"name": "sgs/text",
+																		"attributes": {
+																			"text": "When will my order arrive?"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/82#0"
+																		},
+																		"draftFingerprint": {
+																			"tag": "span",
+																			"cls": "",
+																			"styleHash": "fe58a810",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"button",
+																				"span"
+																			],
+																			"textHash": "8333fb51",
+																			"line": 76
+																		},
+																		"innerBlocks": []
+																	}
+																]
+															},
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "+"
+																},
+																"draftRef": {
+																	"tpl": "Root/83#0"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "c526029",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"button"
+																	],
+																	"textHash": "2b58e",
+																	"line": 76
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days."
+														},
+														"draftRef": {
+															"tpl": "Root/85#0"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "64ba72aa",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "f3666877",
+															"line": 77
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/78#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "a6c4e440",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 75
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/79#1"
+														},
+														"draftFingerprint": {
+															"tag": "button",
+															"cls": "",
+															"styleHash": "193a3de7",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 76
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "stack"
+																},
+																"draftRef": {
+																	"tpl": "Root/80#1"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "99ba61aa",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"button"
+																	],
+																	"textHash": "1505",
+																	"line": 76
+																},
+																"innerBlocks": [
+																	{
+																		"name": "sgs/label",
+																		"attributes": {
+																			"text": "Ingredients & allergens"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/81#1"
+																		},
+																		"draftFingerprint": {
+																			"tag": "span",
+																			"cls": "",
+																			"styleHash": "ad7165c0",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"button",
+																				"span"
+																			],
+																			"textHash": "779f7c5c",
+																			"line": 76
+																		},
+																		"innerBlocks": []
+																	},
+																	{
+																		"name": "sgs/text",
+																		"attributes": {
+																			"text": "What allergens are in them?"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/82#1"
+																		},
+																		"draftFingerprint": {
+																			"tag": "span",
+																			"cls": "",
+																			"styleHash": "fe58a810",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"button",
+																				"span"
+																			],
+																			"textHash": "8b0e251c",
+																			"line": 76
+																		},
+																		"innerBlocks": []
+																	}
+																]
+															},
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "+"
+																},
+																"draftRef": {
+																	"tpl": "Root/83#1"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "2764538",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"button"
+																	],
+																	"textHash": "2b58e",
+																	"line": 76
+																},
+																"innerBlocks": []
+															}
+														]
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/78#2"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "a6c4e440",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 75
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/79#2"
+														},
+														"draftFingerprint": {
+															"tag": "button",
+															"cls": "",
+															"styleHash": "193a3de7",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 76
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "stack"
+																},
+																"draftRef": {
+																	"tpl": "Root/80#2"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "99ba61aa",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"button"
+																	],
+																	"textHash": "1505",
+																	"line": 76
+																},
+																"innerBlocks": [
+																	{
+																		"name": "sgs/label",
+																		"attributes": {
+																			"text": "Subscriptions"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/81#2"
+																		},
+																		"draftFingerprint": {
+																			"tag": "span",
+																			"cls": "",
+																			"styleHash": "ad7165c0",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"button",
+																				"span"
+																			],
+																			"textHash": "5ec90f15",
+																			"line": 76
+																		},
+																		"innerBlocks": []
+																	},
+																	{
+																		"name": "sgs/text",
+																		"attributes": {
+																			"text": "How does Subscribe & save work?"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/82#2"
+																		},
+																		"draftFingerprint": {
+																			"tag": "span",
+																			"cls": "",
+																			"styleHash": "fe58a810",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"button",
+																				"span"
+																			],
+																			"textHash": "862ec2d9",
+																			"line": 76
+																		},
+																		"innerBlocks": []
+																	}
+																]
+															},
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "+"
+																},
+																"draftRef": {
+																	"tpl": "Root/83#2"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "2764538",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"button"
+																	],
+																	"textHash": "2b58e",
+																	"line": 76
+																},
+																"innerBlocks": []
+															}
+														]
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/78#3"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "a6c4e440",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 75
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/79#3"
+														},
+														"draftFingerprint": {
+															"tag": "button",
+															"cls": "",
+															"styleHash": "193a3de7",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 76
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "stack"
+																},
+																"draftRef": {
+																	"tpl": "Root/80#3"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "99ba61aa",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"button"
+																	],
+																	"textHash": "1505",
+																	"line": 76
+																},
+																"innerBlocks": [
+																	{
+																		"name": "sgs/label",
+																		"attributes": {
+																			"text": "Gifting"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/81#3"
+																		},
+																		"draftFingerprint": {
+																			"tag": "span",
+																			"cls": "",
+																			"styleHash": "ad7165c0",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"button",
+																				"span"
+																			],
+																			"textHash": "bd3d2999",
+																			"line": 76
+																		},
+																		"innerBlocks": []
+																	},
+																	{
+																		"name": "sgs/text",
+																		"attributes": {
+																			"text": "Can I send them as a gift?"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/82#3"
+																		},
+																		"draftFingerprint": {
+																			"tag": "span",
+																			"cls": "",
+																			"styleHash": "fe58a810",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"button",
+																				"span"
+																			],
+																			"textHash": "64fcc098",
+																			"line": 76
+																		},
+																		"innerBlocks": []
+																	}
+																]
+															},
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "+"
+																},
+																"draftRef": {
+																	"tpl": "Root/83#3"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "2764538",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"button"
+																	],
+																	"textHash": "2b58e",
+																	"line": 76
+																},
+																"innerBlocks": []
+															}
+														]
+													}
+												]
+											}
+										]
+									},
+									{
+										"name": "sgs/button",
+										"attributes": {
+											"label": "More answers on the Help page",
+											"url": "/help/"
+										},
+										"draftRef": {
+											"tpl": "Root/86#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "",
+											"styleHash": "aa248e31",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1c4e4a65",
+											"line": 81
 										},
 										"innerBlocks": []
 									},
@@ -616,7 +1316,7 @@
 											"text": "Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events."
 										},
 										"draftRef": {
-											"tpl": "Root/79#0"
+											"tpl": "Root/87#0"
 										},
 										"draftFingerprint": {
 											"tag": "div",
@@ -630,7 +1330,7 @@
 												"div"
 											],
 											"textHash": "b1bf543",
-											"line": 76
+											"line": 82
 										},
 										"innerBlocks": []
 									}

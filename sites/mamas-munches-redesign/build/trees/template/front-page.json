@@ -11,13 +11,14 @@
     "attributes": {
       "tagName": "main",
       "className": "cr-ref-home-0",
+      "textColour": "mm-cocoa",
       "minHeight": {
         "desktop": "0px"
       },
       "contentWidth": {
         "desktop": "full"
       },
-      "textColourHover": "primary-text"
+      "textColourHover": "mm-cocoa"
     },
     "innerBlocks": [
       {

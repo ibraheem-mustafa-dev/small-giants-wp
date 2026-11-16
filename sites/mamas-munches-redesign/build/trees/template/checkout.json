@@ -12,6 +12,7 @@
       "tagName": "main",
       "className": "cr-ref-template-checkout-0",
       "layout": "grid",
+      "textColour": "mm-cocoa",
       "gridTemplateColumns": {
         "tablet": "repeat(1, minmax(0, 1fr))",
         "desktop": "minmax(0, 1.35fr) minmax(0, 1fr)"
@@ -27,26 +28,11 @@
       "minHeight": {
         "desktop": "0px"
       },
-      "textColourHover": "primary-text",
+      "textColourHover": "mm-cocoa",
       "padding": {
-        "desktop": {
-          "top": "40px",
-          "right": "40px",
-          "bottom": "40px",
-          "left": "40px"
-        },
-        "tablet": {
-          "top": "28px",
-          "right": "28px",
-          "bottom": "28px",
-          "left": "28px"
-        },
-        "mobile": {
-          "top": "16px",
-          "right": "16px",
-          "bottom": "16px",
-          "left": "16px"
-        }
+        "desktop": "40px",
+        "tablet": "28px",
+        "mobile": "16px"
       }
     },
     "innerBlocks": [
@@ -76,9 +62,9 @@
           "className": "cr-ref-template-checkout-2",
           "fontWeight": "700",
           "textAlign": {
-            "desktop": "center"
+            "mobile": "center"
           },
-          "backgroundColour": "section",
+          "backgroundColour": "mm-pink-soft",
           "borderWidth": {
             "right": "2px",
             "bottom": "2px",
@@ -99,14 +85,14 @@
           },
           "justifyContent": "space-between",
           "alignItems": {
-            "desktop": "center"
+            "mobile": "center"
           },
           "minHeight": {
             "mobile": "60px"
           },
-          "textColourHover": "primary-text",
-          "borderColourHover": "primary-text",
-          "backgroundColourHover": "section",
+          "backgroundColourHover": "mm-pink-soft",
+          "borderColourHover": "mm-cocoa",
+          "textColourHover": "mm-cocoa",
           "padding": {
             "desktop": {
               "right": "18px",
@@ -123,7 +109,7 @@
               "lineHeight": {
                 "mobile": 1.188
               },
-              "textColourHover": "primary-text"
+              "textColourHover": "mm-cocoa"
             },
             "innerBlocks": []
           },
@@ -139,7 +125,7 @@
               "lineHeight": {
                 "mobile": 1.4
               },
-              "textColourHover": "primary-text",
+              "textColourHover": "mm-cocoa",
               "sgsMotion": {
                 "v": 1,
                 "elements": {
@@ -150,7 +136,7 @@
                           "translateX": "-token:distance.sm",
                           "translateY": "-token:distance.sm",
                           "duration": "token:duration.fast",
-                          "easing": "token:easing.spring"
+                          "easing": "token:easing.default"
                         }
                       }
                     }

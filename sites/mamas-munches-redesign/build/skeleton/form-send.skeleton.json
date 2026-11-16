@@ -147,12 +147,7 @@
 							"textHash": "1505",
 							"line": 54
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-form-field__input": {
-								"tpl": "Root/55#0"
-							}
-						}
+						"innerBlocks": []
 					}
 				]
 			},
@@ -202,12 +197,7 @@
 					"textHash": "1505",
 					"line": 58
 				},
-				"innerBlocks": [],
-				"draftSlots": {
-					".sgs-form-field__input": {
-						"tpl": "Root/66#0"
-					}
-				}
+				"innerBlocks": []
 			},
 			{
 				"name": "sgs/button",

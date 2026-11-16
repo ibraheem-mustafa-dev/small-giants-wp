@@ -144,12 +144,7 @@
 									"textHash": "1505",
 									"line": 21
 								},
-								"innerBlocks": [],
-								"draftSlots": {
-									".sgs-form-field__input": {
-										"tpl": "Root/17#0"
-									}
-								}
+								"innerBlocks": []
 							}
 						]
 					},
