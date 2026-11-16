@@ -58,7 +58,10 @@ Fill reported 3,224 values with no setting. Classified by reason (`E:\sgs-tmp\ma
 - **Stale or missing route data:** `sgs/buybox` cannot be calibrated on this mirror; `sgs/decorative-image` has no default paint; Mama's logo `svgParts` file is missing; her theme snapshot needs a full re-extraction; intake proposes nothing on its first run after a draft edit (Task 2).
 - **Stripe:** no test card payment has been run; Apple Pay and Google Pay need her domain registered in Stripe; no webhook is set (Tasks 6 and 8).
 - **74 intake rows** changed by the draft edits carry the route's proposal, not Bean's review.
-- **Tap targets:** the 42 `touch-target` entries in `build/qa/divergences.json` are withdrawn by Bean's ruling of 2026-11-15 and are still in the file, so the walker still accepts them.
+- **Tap targets:** the 42 `touch-target` entries in `build/qa/divergences.json` are withdrawn by Bean's ruling of 2026-11-15 and are still in the file. On the 2026-11-16 walk of `mamas-test` they excused nothing (each names an element number that site does not carry); they still leave the ledger in Task 6.
+- **The walker is blind to what was rebuilt by hand.** It finds a draft element's counterpart by the marker class the cloner writes (`cr-ref-<surface>-<n>`). On `mamas-test` the header and footer carry none, and the hand-built parts of Home (hero, reviews) carry hand-named ones, so those draft elements read as "not found". A hand fix there is checked by sight (screenshots at 375, 768 and 1440 beside the draft), not by the walker (Task 6).
+- **A lab re-clone overwrites the walker files of the site of record.** Fill regenerates `build/qa/parity/*.fill.mjs`, `build/*.origin.json` and adds ledger entries in the one `sites/mamas-munches-redesign/build/` folder, with the re-clone's element numbers. Walking `mamas-test` with those compares the wrong elements (Home: 42 text matches against 121 with the committed files, measured 2026-11-16). The committed files match `mamas-test`; the 2026-11-15 re-clone's copies are kept in `E:\sgs-tmp\mamas-reclone\reclone-build-files\` (Task 3).
+- **A walk-only run skips the template surfaces.** `site-run.mjs --stages walk` fails Product, Shop, Basket and Checkout at "its Fill wrote no tree"; Shop and Product were walked by calling `scripts/parity/draft-live-walk.mjs` on their walker file directly. Basket and Checkout need items in the basket, which the walker does not add, so they are not compared (Task 2).
 
 ## Out of scope
 
@@ -98,6 +101,7 @@ Read this plan, `git log --oneline -15`, and the LEDGER's Front H. Find the firs
   - [ ] `manifest.mjs`: an entry whose page-map row is gone (the gift-finder flow, post 159) is removed, not kept
   - [ ] `lib/intake-run.mjs`: the skeleton step reads `facts.json` after it is refreshed (the first run after a draft change proposed 0 rows and dropped 938 marks)
   - [ ] `apply.mjs`: `no-setting-review.json` is written per surface, and `site-run.mjs` walks a surface whose apply gate failed
+  - [ ] `site-run.mjs`: a run with `--stages walk` walks Product, Shop and the basket and checkout copies from the walker file already in `build/qa/parity/`, with no Fill tree needed
   - [ ] Mama's `build/logo-svgparts.json` (the logo's `svgParts`, which the applier's gate names on five surfaces) and a full theme-snapshot re-extraction (`plugins/sgs-blocks/scripts/theme-extractor/extract.py`)
 - Touches: route scripts, `sites/mamas-munches-redesign/build`
 - Done when: a run of `--only header,template-order-confirmation` on the lab finishes every stage, and a second `intake.mjs mamas-munches-redesign` straight after a draft edit proposes the same row count as the first
@@ -106,9 +110,9 @@ Read this plan, `git log --oneline -15`, and the LEDGER's Front H. Find the firs
 
 ### Task 3: The route clones one surface onto the lab mirror
 - Why: cloning tests must never touch `local-mamas`. Read first: `scripts/computed-route/calibration-targets.json`, `manifest.mjs`, `lib/site-build-map.mjs::rowsForSite`
-- Changes: a `local-mediatest-mamaslab` entry in `calibration-targets.json` (`mirrorOf: mamas-test`); the surfaces manifest generated for the lab without overwriting the one for `local-mamas`; `site-run.mjs --only <surface>` documented as the way to clone; a run limited by `--only` builds no shared template copy unless that template is named, and refuses a template edited after the site build saved it, as `site-build.mjs` does (`site-run.mjs::runKeys`, `lib/template-copies.mjs`)
+- Changes: a `local-mediatest-mamaslab` entry in `calibration-targets.json` (`mirrorOf: mamas-test`); the surfaces manifest generated for the lab without overwriting the one for `local-mamas`; a lab run writes its walker files, origin files and ledger additions beside the lab's manifest, never over the committed ones that match `mamas-test`; `site-run.mjs --only <surface>` documented as the way to clone; a run limited by `--only` builds no shared template copy unless that template is named, and refuses a template edited after the site build saved it, as `site-build.mjs` does (`site-run.mjs::runKeys`, `lib/template-copies.mjs`)
 - Touches: route config, the lab mirror
-- Done when: `site-run.mjs mamas-munches-redesign --site local-mediatest-mamaslab --only contact` rebuilds Contact on 8091 `wp post get 148 --field=post_modified` on `local-mamas` is unchanged, and no `wp_template` post on the lab has a newer `post_modified` than before the run
+- Done when: `site-run.mjs mamas-munches-redesign --site local-mediatest-mamaslab --only contact` rebuilds Contact on 8091 `wp post get 148 --field=post_modified` on `local-mamas` is unchanged, and no `wp_template` post on the lab has a newer `post_modified` than before the run, and `git status --short sites/mamas-munches-redesign/build/qa/parity sites/mamas-munches-redesign/build/*.origin.json` shows no committed file changed
 - Depends on: none
 - Status: not started
 

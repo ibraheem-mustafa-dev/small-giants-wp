@@ -98,6 +98,10 @@ const exclusive = ( task ) => {
 };
 
 // The envFile value of a surface (never read for its secrets: only the site's address).
+// The walker's browser: headless, or visible with SGS_HEADED=1 as the other host tools take it (a Hostinger test site
+// answers a headless browser with a 403 bot challenge, so a walk of one with `--live-base` and SGS_LIVE_ORIGIN needs it).
+const headlessFlag = ( env = process.env ) => ( env.SGS_HEADED && '0' !== env.SGS_HEADED ? [] : [ '--headless' ] );
+
 function liveBase( envFile, envKey ) {
 	const line = fs.readFileSync( path.join( REPO, envFile ), 'utf8' ).split( /\r?\n/ ).find( ( l ) => l.startsWith( `WP_URL_${ envKey }=` ) );
 	return line.slice( line.indexOf( '=' ) + 1 ).trim().replace( /^["']|["']$/g, '' ).replace( /\/+$/, '' );
@@ -393,7 +397,7 @@ export async function main( argv ) {
 		}
 		const parity = path.join( build, 'qa', 'parity' );
 		await step( 'walk', () => exec( 'walk', 'node', [ 'scripts/parity/draft-live-walk.mjs', path.join( parity, path.basename( entry.walkerFull ) ),
-			'--out', path.join( parity, 'out', key ), '--widths', widths, '--headless', '--no-review' ], { SGS_DRAFT_URL: ctx.walkUrl, NODE_EXTRA_CA_CERTS: certs } ).catch( ( e ) => {
+			'--out', path.join( parity, 'out', key ), '--widths', widths, ...headlessFlag(), '--no-review' ], { SGS_DRAFT_URL: ctx.walkUrl, NODE_EXTRA_CA_CERTS: certs } ).catch( ( e ) => {
 			// The walker exits 1 for open differences; the report is what counts.
 			if ( fs.existsSync( path.join( parity, 'out', key, 'report.json' ) ) ) {
 				return `report written (${ String( e.message ).slice( 0, 200 ) })`;
