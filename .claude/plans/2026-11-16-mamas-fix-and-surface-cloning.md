@@ -42,9 +42,27 @@ Home's block tree against the hand-finished one (`E:\sgs-tmp\mamas-reclone\home-
 
 Fill reported 3,224 values with no setting. Classified by reason (`E:\sgs-tmp\mamas-reclone\unmapped2.mjs`): 1,092 are "the default paint is unmeasured" (939 of them plain CSS defaults such as `transform: none`), 490 are motion notes, about 220 are `sgsTimeText` notes that change nothing, 121 are shape notes, and 699 are real "no setting" verdicts, most of which follow from a wrong block (a link built as `sgs/button`, a badge built as `sgs/text`, a slide built as `sgs/container`). It is a reporting fault and a recognition fault, not a count of missing settings.
 
+## What happens next
+
+1. Bean hands over his issue register of `mamas-test` at the start of the next session, each surface marked "polish" or "too different". It is set beside the walker's own list (`sites/mamas-munches-redesign/build/qa/parity-baseline-2026-11-16.md`): an item on both lists is confirmed, an item only on Bean's is something the walker cannot see, an item only on the walker's is checked by sight before it is worked.
+2. Subscriptions are hidden first (Bean, 2026-11-16), as the opening hand fix: see Task 6.
+3. "Polish" surfaces are hand-fixed on `local-mamas`, one surface at a time, then pushed to `mamas-test` (Task 6).
+4. "Too different" surfaces are re-cloned on the lab mirror, one surface at a time, each with the recogniser its tree comparison names, and moved to `local-mamas` only when the tree agrees with the answer key and the walk is clean (Tasks 2 to 5, then 7).
+
+## Gaps still open
+
+- **The route cannot yet clone one surface safely.** It is wired to `local-mamas`, and a run limited to one surface still rebuilds the shared templates (front page, page shell, search, 404 and others) with no check for hand edits (Task 3).
+- **Surfaces the route never clones:** the order confirmation, the basket drawer, the account's inner panels, the sticky phone bar (Tasks 2 and 7).
+- **Working blocks the route builds as static copies:** FAQ accordions, the reviews slider, product rows and cards, the buy box and gallery, the hero's columns and main heading (Task 7).
+- **Misleading run report:** 3,224 "no setting" rows of which 699 are real (Task 5).
+- **Stale or missing route data:** `sgs/buybox` cannot be calibrated on this mirror; `sgs/decorative-image` has no default paint; Mama's logo `svgParts` file is missing; her theme snapshot needs a full re-extraction; intake proposes nothing on its first run after a draft edit (Task 2).
+- **Stripe:** no test card payment has been run; Apple Pay and Google Pay need her domain registered in Stripe; no webhook is set (Tasks 6 and 8).
+- **74 intake rows** changed by the draft edits carry the route's proposal, not Bean's review.
+- **Tap targets:** the 42 `touch-target` entries in `build/qa/divergences.json` are withdrawn by Bean's ruling of 2026-11-15 and are still in the file, so the walker still accepts them.
+
 ## Out of scope
 
-Subscriptions (deferred by Bean); Indus and Eye Care (never touched); new block settings where Custom CSS holds a one-off look (Bean, 2026-11-15).
+Building subscriptions (deferred by Bean; everything that mentions them is hidden, Task 6); Indus and Eye Care (never touched); new block settings where Custom CSS holds a one-off look (Bean, 2026-11-15).
 
 ## Order
 
@@ -88,9 +106,9 @@ Read this plan, `git log --oneline -15`, and the LEDGER's Front H. Find the firs
 
 ### Task 3: The route clones one surface onto the lab mirror
 - Why: cloning tests must never touch `local-mamas`. Read first: `scripts/computed-route/calibration-targets.json`, `manifest.mjs`, `lib/site-build-map.mjs::rowsForSite`
-- Changes: a `local-mediatest-mamaslab` entry in `calibration-targets.json` (`mirrorOf: mamas-test`); the surfaces manifest generated for the lab without overwriting the one for `local-mamas`; `site-run.mjs --only <surface>` documented as the way to clone
+- Changes: a `local-mediatest-mamaslab` entry in `calibration-targets.json` (`mirrorOf: mamas-test`); the surfaces manifest generated for the lab without overwriting the one for `local-mamas`; `site-run.mjs --only <surface>` documented as the way to clone; a run limited by `--only` builds no shared template copy unless that template is named, and refuses a template edited after the site build saved it, as `site-build.mjs` does (`site-run.mjs::runKeys`, `lib/template-copies.mjs`)
 - Touches: route config, the lab mirror
-- Done when: `site-run.mjs mamas-munches-redesign --site local-mediatest-mamaslab --only contact` rebuilds Contact on 8091 and `wp post get 148 --field=post_modified` on `local-mamas` is unchanged
+- Done when: `site-run.mjs mamas-munches-redesign --site local-mediatest-mamaslab --only contact` rebuilds Contact on 8091 `wp post get 148 --field=post_modified` on `local-mamas` is unchanged, and no `wp_template` post on the lab has a newer `post_modified` than before the run
 - Depends on: none
 - Status: not started
 
@@ -114,7 +132,7 @@ Read this plan, `git log --oneline -15`, and the LEDGER's Front H. Find the firs
 
 ### Task 6: Hand-fix the surfaces Bean marks as close
 - Why: Bean's register. Read first: `plans/2026-11-02-clone-finishing-streams.md` ("How an item is worked"), the register
-- Changes: block settings on `local-mamas` with `scripts/local-wp/patch-block-attrs.py`, one surface at a time; Custom CSS where no setting holds a one-off look; the checkout's `sgsStripeMatchFields` so the card fields match the draft
+- Changes: block settings on `local-mamas` with `scripts/local-wp/patch-block-attrs.py`, one surface at a time; Custom CSS where no setting holds a one-off look; the checkout's `sgsStripeMatchFields` so the card fields match the draft. First, hide subscriptions (Bean, 2026-11-16): no purchase-type cards in the buy box, which is laid out as the draft's one-off state; "Build your own box" without "or subscribe and save 10%"; the FAQ question "How does Subscribe & save work?" removed; the "Subscribe & save" menu item removed from the header, footer-shop and drawer-main menus (items 350, 396, 492); and every other mention in pages 154 (Home), 152 (Help), 148 (Contact), 103 (My account), 628 (Sign in) and the shop template (194). Each is recorded as an accepted difference in `build/qa/divergences.json`, and the 42 withdrawn `touch-target` entries are removed from it in the same pass
 - Touches: `local-mamas`, then `mamas-test` (deploy, then `push-to-remote.sh`, dry run first)
 - Done when: each register item is checked by sight on `mamas-test` beside the draft at 375, 768 and 1440 and recorded in `sites/mamas-munches-redesign/build/qa/fix-catalogue.md`
 - Depends on: the register
