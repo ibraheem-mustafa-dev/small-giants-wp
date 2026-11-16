@@ -1868,6 +1868,7 @@ Status: not built.
 - Any draft style a block's own settings cannot hold, on any block, is applied through that block's Custom CSS and is also recorded as a gap row for a future setting, so the draft still clones (Bean, 2026-10-31, 2026-11-01). The route did this only for width thresholds, loops and the buy box; the residual writer covers every block, with an instance list per run.
 - A script effect no SGS effect expresses follows the same rule when CSS expresses it: the effect review proposes `custom-css` and Fill writes the CSS equivalent into the Custom CSS of the block that draws the element (a new `lib/effect-css-equivalent.mjs`).
 - Bean decides between a framework build and R-48-5 (client code); a value, a structure or a behaviour the draft shows is never a question for Bean (Bean, 2026-11-02), and for Eye Care the hand-built eye-care-test shows how SGS builds it.
+- Bean confirmed on 2026-11-15 that Custom CSS is the route for any draft value no setting matches, and that each use is listed in the run's report. A clone sticks to the draft: the 24px tap-target minimum is withdrawn for cloned surfaces (Bean, 2026-11-15), so a draft control's own size stands.
 
 Status: not built.
 

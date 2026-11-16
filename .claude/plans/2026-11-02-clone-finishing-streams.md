@@ -8,7 +8,7 @@ governs: Spec 48 (cloning system) evidence; Front H and Front F
 
 # Finishing the three client sites (Indus, then Eye Care, then Mama's)
 
-**Parked on 2026-11-12 (Bean).** Indus and Eye Care are signed off. Mama's hand-finishing stopped with the seven items below open, because Mama's is now the proof site for the web engine (built in `C:\Users\Bean\Projects\small-giants-engine`; the plan as approved is `plans/archive/2026-11-12-web-engine-architecture.md`) and the WordPress framework is frozen to security updates and client fixes. This plan stays as the record of how an item is worked and of what Mama's still lacked on WordPress; it resumes only if the engine's step 1a stops and Bean chooses to finish Mama's here.
+**Parked on 2026-11-12 (Bean), Mama's part superseded on 2026-11-16.** Indus and Eye Care are signed off. Mama's hand-finishing stopped on 2026-11-12 with the seven items below open; on 2026-11-15 Bean unfroze the cloning pipeline, and since 2026-11-16 Mama's is worked from `plans/2026-11-16-mamas-fix-and-surface-cloning.md` (Bean's issue register, hand fixes where a surface is close, a route re-clone where it is not). The seven items fold into that register. This plan stays as the record of how an item is worked ("How an item is worked" is read by that plan's Task 6).
 
 **Goal (Bean):** three sites good enough to present to prospective clients and sell, each matching its Claude Design draft at 375, 768 and 1440. Indus is finished and signed off first, then Eye Care, then Mama's (Bean 2026-11-08).
 
@@ -36,7 +36,7 @@ governs: Spec 48 (cloning system) evidence; Front H and Front F
 7. Bean looks and signs the site off.
 
 Rules:
-- Never run the clone route (`site-run.mjs`, `fill.mjs`, `intake.mjs`, `site-build.mjs --apply`) for these three clients: it rebuilds the posts and erases the fixes.
+- Never run the clone route (`site-run.mjs`, `fill.mjs`, `intake.mjs`, `site-build.mjs --apply`) for Indus or Eye Care: it rebuilds the posts and erases the fixes. For Mama's it runs only on the lab mirror `local-mediatest-mamaslab`, never on `local-mamas` or `mamas-test` (Bean, 2026-11-16).
 - Work, build and push from a clean worktree of origin/main with its own `node_modules`; run site-check there with `--repo C:/Users/Bean/Projects/small-giants-wp` (the secrets stay in the main checkout).
 - On indus-test, `wp db export` exits 255 silently; push-to-remote backs up with mysqldump itself.
 
@@ -54,7 +54,7 @@ Rules:
   - The drawer sectors card hover shadow (ND16) uses the desktop card's value: alpha .40 against .45. Not visible; Bean dropped a per-device shadow redesign for it.
   - The trade-account button hides at 1199px and below.
 
-## Mama's (stopped 2026-11-12, seven items open)
+## Mama's (stopped 2026-11-12; the seven items fold into Bean's register of 2026-11-16)
 
 - **Live:** mamas-test, framework code `f579fdb33` (marker `e2c227b79`); it does not have Eye Care round 12's framework commits (`f791e433b` to `24095ea4f`). Its content was pushed on 2026-11-05 (site-check 0 failed). Rounds P0 and R4 to R6 and the merged round are done (fix catalogue; `plans/archive/2026-11-05-mamas-merged-round.md`).
 - **Next:** work each surface from a checklist written from the draft's code, structure first, every element, state and width (the Eye Care round 14 method, auto memory "match-a-surface-by-reading-both-codebases-element-by-element"); Bean's look and issues list are the cross-check, not the scope. Everyday properties go in settings, never Custom CSS. The merged round plan's "Open" list holds what earlier rounds left.
