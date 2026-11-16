@@ -249,20 +249,44 @@ async function shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped 
 // Reads the states of the root that show more than its opening state (lib/skeleton-reveal.mjs) and merges their elements into
 // `res.records`; the states are found at each width (a control can exist at one width only, such as a compact layout's toggle).
 // Does nothing without `reveal` ({ records }: the handoff's surfaces.json records).
+// Runs `run` with the page held on its document: a main-frame document request made meanwhile is aborted. A draft
+// control may leave the page by script (a product card sets `location.href`), which a click probe's preventDefault
+// cannot stop, and every later read then fails with "Execution context was destroyed". A same-document hash change
+// makes no request, so state routes still work. Returns what `run` returns; `held` counts the aborted navigations.
+export async function holdNavigation( page, run, held = { count: 0 } ) {
+	const guard = ( route ) => {
+		const request = route.request();
+		if ( request.isNavigationRequest() && request.frame() === page.mainFrame() ) {
+			held.count++;
+			return route.abort( 'aborted' );
+		}
+		return route.fallback();
+	};
+	await page.route( '**/*', guard );
+	try {
+		return await run();
+	} finally {
+		await page.unroute( '**/*', guard );
+	}
+}
+
 async function addReveals( { page, res, args, reveal, w, log } ) {
 	if ( ! reveal ) {
 		return;
 	}
-	const states = await discoverReveals( page, { root: args[ 0 ], records: reveal.records, log } );
-	const read = async () => {
-		const r = await page.evaluate( collect, args );
-		if ( r.error ) {
-			throw new Error( `${ r.error } in a reveal state at ${ w }px` );
-		}
-		return r.records;
-	};
-	res.records = await readReveals( { page, states, read, base: res.records, log } );
-	log( `inventory ${ w }px reveals: ${ states.length } states, ${ res.records.length } elements` );
+	const held = { count: 0 };
+	await holdNavigation( page, async () => {
+		const states = await discoverReveals( page, { root: args[ 0 ], records: reveal.records, log } );
+		const read = async () => {
+			const r = await page.evaluate( collect, args );
+			if ( r.error ) {
+				throw new Error( `${ r.error } in a reveal state at ${ w }px` );
+			}
+			return r.records;
+		};
+		res.records = await readReveals( { page, states, read, base: res.records, log } );
+		log( `inventory ${ w }px reveals: ${ states.length } states, ${ res.records.length } elements${ held.count ? `; ${ held.count } navigation(s) a probed control tried were held` : '' }` );
+	}, held );
 }
 
 // The read on a page the caller prepared (readInventory with `page`): per width, resize, `settle( page, width )`, clear

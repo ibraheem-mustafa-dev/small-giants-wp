@@ -332,7 +332,8 @@ export async function main( argv ) {
 		}
 		const parity = path.join( build, 'qa', 'parity' );
 		fs.mkdirSync( parity, { recursive: true } );
-		for ( const f of [ entry.walker, entry.walkerFull ] ) {
+		// A WooCommerce page surface (basket, checkout) is walked through its template copy and names no walker file.
+		for ( const f of [ entry.walker, entry.walkerFull ].filter( Boolean ) ) {
 			const src = path.join( out, path.basename( f ) );
 			if ( fs.existsSync( src ) ) {
 				fs.writeFileSync( path.join( parity, path.basename( f ) ), fs.readFileSync( src, 'utf8' ).replace( '"../../../divergences.json"', '"../divergences.json"' ) );
