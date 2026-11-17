@@ -1,0 +1,8 @@
+/* ===== SGS Message preview line ===== */
+
+.sgs-message-preview-line {
+	margin: 0;
+	min-height: 1lh;
+	overflow-wrap: anywhere;
+	white-space: pre-wrap;
+}

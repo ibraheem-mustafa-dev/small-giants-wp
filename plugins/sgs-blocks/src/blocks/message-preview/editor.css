@@ -1,0 +1,4 @@
+/* sgs/message-preview editor canvas: the boxes are a read-only picture. */
+.sgs-message-preview--editor .sgs-message-preview__input {
+	pointer-events: none;
+}

@@ -1,0 +1,151 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/message-preview-line",
+	"version": "0.1.0",
+	"title": "Message preview line",
+	"category": "sgs-interactive",
+	"description": "One line of text that shows what the visitor types in a Message preview fields block with the same group name. Put it on a card, a letter or a label.",
+	"keywords": [
+		"message",
+		"note",
+		"preview",
+		"gift",
+		"card",
+		"live",
+		"line"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "editor-paragraph",
+	"supports": {
+		"anchor": true,
+		"html": false,
+		"sgs": {
+			"motion": true,
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				]
+			},
+			"elements": {
+				"text": {
+					"label": "Line text",
+					"order": 1,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"isWrapper": true,
+					"prefix": "",
+					"attrMap": {
+						"css:font-size": "fontSize",
+						"css:font-family": "fontFamily",
+						"css:font-weight": "fontWeight",
+						"css:line-height": "lineHeight",
+						"css:letter-spacing": "letterSpacing",
+						"css:text-transform": "textTransform",
+						"css:text-align": "textAlign",
+						"css:font-style": "fontStyle",
+						"css:color": "textColour",
+						"css:padding": "padding"
+					}
+				}
+			}
+		},
+		"color": {
+			"text": false,
+			"background": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		}
+	},
+	"attributes": {
+		"group": {
+			"type": "string",
+			"default": "note"
+		},
+		"field": {
+			"type": "string",
+			"default": ""
+		},
+		"startingText": {
+			"type": "string",
+			"default": ""
+		},
+		"prefix": {
+			"type": "string",
+			"default": ""
+		},
+		"suffix": {
+			"type": "string",
+			"default": ""
+		},
+		"fallback": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"letterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"letterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"textTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"textAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"fontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
+	"style": "file:./style-index.css",
+	"editorScript": "file:./index.js"
+}

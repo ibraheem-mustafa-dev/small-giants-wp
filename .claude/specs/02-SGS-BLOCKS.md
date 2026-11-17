@@ -94,6 +94,8 @@ sgs-blocks/
 │   │   ├── table-of-contents/    # Auto-generated table of contents (smooth scroll, scroll spy, collapsible)
 │   │   ├── business-info/        # Business details from Settings > Business Details
 │   │   ├── countdown-timer/      # Countdown to a target date, or an evergreen timer
+│   │   ├── message-preview/      # Text boxes whose typing shows live in message-preview-line blocks of the same group
+│   │   ├── message-preview-line/ # One line of card text filled from a message-preview box
 │   │   ├── post-grid/            # Posts in grid / list / masonry / carousel layouts with AJAX filtering
 │   │   ├── mega-panel/           # Content container of a mega menu (lives inside an sgs_mega_menu post)
 │   │   ├── mega-group/           # One column of a mega panel — heading + link list
@@ -991,6 +993,24 @@ npm run format        # Prettier
   }
 }
 ```
+
+---
+
+### sgs/message-preview and sgs/message-preview-line
+
+Text boxes beside a card that mirrors them as the visitor types: a gift note, a card message, a cake inscription. No button, no form and no submission. Two blocks linked by a group name, so the card stays whatever the page builds (an `sgs/container` with a ruled background, tape and a logo sticker, or a plain label).
+
+**Category:** `sgs-interactive`. Both are dynamic (`render.php`). Only the fields block has a `viewScriptModule`: a plain module (`message-preview/mirror.js`; no Interactivity API, because the only state is the box text).
+
+**`sgs/message-preview` (the boxes):** the `fields` array attribute, edited in the inspector, plus `group` (default `note`) and `rememberNote`. Each field has `key` (its name; the line picks it, and it is its name in the saved note), `label` (a real `<label>`), `fieldType` (`text` or `textarea`), `rows`, `placeholder`, `defaultValue` (the box's starting text, cut to `maxLength`) and `maxLength` (0 is no limit; the HTML `maxlength` holds it). Look settings: label and box typography, colours, box border and height, and the gap between boxes.
+
+**`sgs/message-preview-line` (the card text):** one `<p>` with `group`, `field` (the box key), `prefix`, `suffix`, `fallback` and `startingText`. The line reads `prefix + value + suffix`, or the fallback when the box is empty or blank. The server prints `startingText`, so the page reads the same without script; the editor lists the boxes of the matching fields block. Look settings: typography, text colour and padding. Place it anywhere (inside any container); the group name is the only link.
+
+**Accessibility:** the lines are not a live region, because a screen reader already speaks each typed character and a live region would read the whole line again on every keystroke. Focus rings come from the shared focus system. The blocks draw no motion of their own.
+
+**Saved note (off by default):** with `rememberNote` on, every keystroke writes all boxes as one JSON object to `sessionStorage` under `sgs-message-preview:<group>`, for example `{"to":"Aisha","message":"Well done","from":"Sara"}`. A checkout gift-message field can read that key to pre-fill itself; nothing reads it back inside these blocks and nothing is sent to a server. A browser that blocks storage keeps the preview working.
+
+**Tests:** `tests/php/MessagePreviewRenderTest.php`, `tests/js/message-preview.test.js`.
 
 ---
 

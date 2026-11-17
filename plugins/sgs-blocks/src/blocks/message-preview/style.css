@@ -1,0 +1,46 @@
+/* ===== SGS Message preview fields ===== */
+
+/*
+ * Every look default sits in :where() so the block's own settings, printed as
+ * a scoped rule by render.php, always win. Keyboard focus is the shared focus
+ * system (theme focus.css); nothing here draws a focus ring.
+ */
+.sgs-message-preview {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+:where(.sgs-message-preview) {
+	gap: 0.875rem;
+}
+
+.sgs-message-preview__field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+}
+
+:where(.sgs-message-preview__label) {
+	font-weight: 700;
+	font-size: 0.9375rem;
+}
+
+.sgs-message-preview__input {
+	box-sizing: border-box;
+	width: 100%;
+	font: inherit;
+}
+
+:where(.sgs-message-preview__input) {
+	min-height: 3.25rem;
+	padding: 0.75rem 1rem;
+	border: 2px solid currentcolor;
+	border-radius: 0.875rem;
+	background-color: transparent;
+	color: inherit;
+}
+
+:where(textarea.sgs-message-preview__input) {
+	resize: vertical;
+}

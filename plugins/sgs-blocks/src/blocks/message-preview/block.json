@@ -1,0 +1,338 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/message-preview",
+	"version": "0.1.0",
+	"title": "Message preview fields",
+	"category": "sgs-interactive",
+	"description": "Text boxes whose typing appears live in matching Message preview line blocks placed anywhere on the page: a gift note, a card message, a cake inscription. No button and nothing is sent.",
+	"keywords": [
+		"message",
+		"note",
+		"preview",
+		"gift",
+		"card",
+		"live",
+		"inscription",
+		"fields"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "edit-page",
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"sgs": {
+			"motion": true,
+			"boxFamilies": {
+				"borderWidth": [
+					"inputBorderWidth"
+				],
+				"borderRadius": [
+					"inputBorderRadius"
+				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Fields layout",
+					"order": 1,
+					"clusters": [
+						"layout"
+					],
+					"isWrapper": true,
+					"motion": true,
+					"attrMap": {
+						"css:gap": "gap"
+					}
+				},
+				"label": {
+					"selector": ".sgs-message-preview__label",
+					"label": "Field labels",
+					"order": 2,
+					"clusters": [
+						"text"
+					],
+					"prefix": "label",
+					"attrMap": {
+						"css:font-size": "labelFontSize",
+						"css:font-family": "labelFontFamily",
+						"css:font-weight": "labelFontWeight",
+						"css:line-height": "labelLineHeight",
+						"css:letter-spacing": "labelLetterSpacing",
+						"css:text-transform": "labelTextTransform",
+						"css:text-align": "labelTextAlign",
+						"css:font-style": "labelFontStyle",
+						"css:color": "labelColour"
+					}
+				},
+				"input": {
+					"selector": ".sgs-message-preview__input",
+					"label": "Fields",
+					"order": 3,
+					"clusters": [
+						"text",
+						"fill",
+						"border",
+						"layout"
+					],
+					"prefix": "input",
+					"attrMap": {
+						"css:font-size": "inputFontSize",
+						"css:font-family": "inputFontFamily",
+						"css:font-weight": "inputFontWeight",
+						"css:line-height": "inputLineHeight",
+						"css:letter-spacing": "inputLetterSpacing",
+						"css:text-transform": "inputTextTransform",
+						"css:text-align": "inputTextAlign",
+						"css:font-style": "inputFontStyle",
+						"css:color": "inputTextColour",
+						"css:background-color": "inputBackgroundColour",
+						"css:min-height": "inputMinHeight",
+						"css:border-width": "inputBorderWidth",
+						"css:border-style": "inputBorderStyle",
+						"css:border-color": "inputBorderColour",
+						"css:border-radius": "inputBorderRadius"
+					}
+				}
+			}
+		}
+	},
+	"attributes": {
+		"fields": {
+			"type": "array",
+			"default": [
+				{
+					"key": "to",
+					"label": "To",
+					"fieldType": "text",
+					"rows": 3,
+					"placeholder": "",
+					"defaultValue": "",
+					"maxLength": 30
+				},
+				{
+					"key": "message",
+					"label": "Your message",
+					"fieldType": "textarea",
+					"rows": 3,
+					"placeholder": "",
+					"defaultValue": "",
+					"maxLength": 200
+				},
+				{
+					"key": "from",
+					"label": "From",
+					"fieldType": "text",
+					"rows": 3,
+					"placeholder": "",
+					"defaultValue": "",
+					"maxLength": 30
+				}
+			],
+			"items": {
+				"type": "object",
+				"properties": {
+					"key": {
+						"type": "string",
+						"role": "technical",
+						"description": "The box's name: preview lines pick it, and it is its name in the saved note."
+					},
+					"label": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"fieldType": {
+						"type": "string",
+						"enum": [
+							"text",
+							"textarea"
+						],
+						"default": "text",
+						"role": "enum-mode"
+					},
+					"rows": {
+						"type": "number",
+						"default": 3,
+						"role": "technical"
+					},
+					"placeholder": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"defaultValue": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"maxLength": {
+						"type": "number",
+						"default": 0,
+						"role": "technical"
+					}
+				}
+			}
+		},
+		"group": {
+			"type": "string",
+			"default": "note"
+		},
+		"rememberNote": {
+			"type": "boolean",
+			"default": false
+		},
+		"gap": {
+			"type": "object",
+			"default": {}
+		},
+		"labelColour": {
+			"type": "string",
+			"default": ""
+		},
+		"inputBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"inputTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"inputMinHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"labelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"labelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"labelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"labelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"labelLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"labelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"labelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"labelTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"labelTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"labelFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"inputFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"inputFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"inputFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"inputFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"inputLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"inputLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"inputLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"inputLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"inputTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"inputTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"inputFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"inputBorderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"inputBorderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"inputBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"inputBorderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		}
+	},
+	"render": "file:./render.php",
+	"style": "file:./style-index.css",
+	"editorStyle": "file:./index.css",
+	"viewScriptModule": "file:./view.js",
+	"editorScript": "file:./index.js"
+}
