@@ -62,6 +62,41 @@ function setFillLevel( el, pct, pctProperty ) {
 }
 
 /**
+ * Whether the basket's delivery already costs nothing, whatever its total: the basket needs shipping, shipping rates have
+ * been calculated, and in every package the selected rate (the cheapest while none is selected) costs 0. Anything unknown
+ * (no address, rates not calculated yet) is false. Reads the Store API cart's `needs_shipping`, `has_calculated_shipping`
+ * and `shipping_rates` (prices in minor units), under either spelling the `wc/store/cart` store may hand over.
+ *
+ * @param {Object} [cart] The Store API cart response (or cart-live's equivalent).
+ * @return {boolean} True when delivery is already free.
+ */
+export function deliveryCostsNothing( cart ) {
+	const needsShipping = cart?.needs_shipping ?? cart?.needsShipping;
+	const calculated =
+		cart?.has_calculated_shipping ?? cart?.hasCalculatedShipping;
+	const packages = cart?.shipping_rates ?? cart?.shippingRates;
+	if (
+		true !== needsShipping ||
+		false === calculated ||
+		! Array.isArray( packages ) ||
+		! packages.length
+	) {
+		return false;
+	}
+	return packages.every( ( pkg ) => {
+		const rates = pkg?.shipping_rates ?? pkg?.shippingRates;
+		if ( ! Array.isArray( rates ) || ! rates.length ) {
+			return false;
+		}
+		const chosen = rates.find( ( rate ) => true === rate?.selected );
+		const prices = ( chosen ? [ chosen ] : rates ).map( ( rate ) =>
+			Number( rate?.price )
+		);
+		return Math.min( ...prices ) === 0;
+	} );
+}
+
+/**
  * Recompute and render the free-delivery progress against a cart. A no-op
  * when the element is missing.
  *
@@ -93,8 +128,11 @@ export function updateFreeDeliveryProgress( el, cart, freeDelivery, options ) {
 		Number( totals.total_items ?? 0 ) +
 		Number( totals.total_items_tax ?? 0 );
 	const subtotal = subtotalMinor / 10 ** minorUnit;
-	const remaining = Math.max( 0, threshold - subtotal );
-	const pct = Math.max( 0, Math.min( 100, ( subtotal / threshold ) * 100 ) );
+	const costsNothing = deliveryCostsNothing( cart );
+	const remaining = costsNothing ? 0 : Math.max( 0, threshold - subtotal );
+	const pct = costsNothing
+		? 100
+		: Math.max( 0, Math.min( 100, ( subtotal / threshold ) * 100 ) );
 
 	el.hidden = false;
 	setFillLevel( el, pct, pctProperty );

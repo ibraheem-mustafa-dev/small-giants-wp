@@ -51,23 +51,26 @@ $hide_empty = ! empty( $attributes['freeDeliveryHideWhenEmpty'] );
 
 // The real state, only where the page is never cached (cart and checkout): the items' subtotal plus its tax, before
 // discounts, shipping and fees, the same sum the script uses. The editor preview shows a basket at 60% of the threshold.
-$subtotal = null;
-$empty    = false;
+$subtotal      = null;
+$empty         = false;
+$costs_nothing = false;
 if ( $in_editor ) {
 	$subtotal = $threshold * 0.6;
 } elseif ( function_exists( 'is_cart' ) && function_exists( 'is_checkout' ) && ( is_cart() || is_checkout() )
 	&& function_exists( 'WC' ) && WC() && WC()->cart ) {
-	$subtotal = (float) WC()->cart->get_subtotal() + (float) WC()->cart->get_subtotal_tax();
-	$empty    = WC()->cart->is_empty();
+	$subtotal      = (float) WC()->cart->get_subtotal() + (float) WC()->cart->get_subtotal_tax();
+	$empty         = WC()->cart->is_empty();
+	$costs_nothing = sgs_cart_delivery_costs_nothing();
 }
 $state = null;
 if ( null !== $subtotal ) {
-	$remaining = max( 0.0, $threshold - $subtotal );
+	$progress  = sgs_free_delivery_progress( $subtotal, $threshold, $costs_nothing );
+	$remaining = $progress['remaining'];
 	$state     = array(
-		'pct'      => max( 0.0, min( 100.0, ( $subtotal / $threshold ) * 100 ) ),
-		'complete' => $remaining <= 0.0,
+		'pct'      => $progress['pct'],
+		'complete' => $progress['complete'],
 		'empty'    => $empty,
-		'text'     => $remaining <= 0.0
+		'text'     => $progress['complete']
 			? $success_message
 			: str_replace( '%s', function_exists( 'wc_price' ) ? html_entity_decode( wp_strip_all_tags( wc_price( $remaining ) ), ENT_QUOTES, 'UTF-8' ) : number_format_i18n( $remaining, 2 ), $message ),
 	);

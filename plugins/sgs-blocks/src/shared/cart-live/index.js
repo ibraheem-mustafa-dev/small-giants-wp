@@ -13,7 +13,8 @@
  *     listeners with no extra request
  *
  * The published cart has the Store API's snake_case shape: `items`, `items_count`, `totals` (with `total_items`,
- * `total_items_tax`, `currency_*`).
+ * `total_items_tax`, `currency_*`)
+ * and the shipping facts the free-delivery meter reads (`needs_shipping`, `has_calculated_shipping`, `shipping_rates`).
  *
  * @package
  */
@@ -126,6 +127,9 @@ function createInstance() {
 			items: Array.isArray( data.items ) ? data.items : [],
 			items_count: Number( data.itemsCount ?? 0 ),
 			totals: snakeKeys( data.totals ),
+			needs_shipping: data.needsShipping,
+			has_calculated_shipping: data.hasCalculatedShipping,
+			shipping_rates: data.shippingRates,
 		} );
 	};
 

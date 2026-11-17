@@ -282,3 +282,112 @@ describe( 'free-delivery progress renderer', () => {
 		expect( text.firstChild ).toBe( node );
 	} );
 } );
+
+describe( 'free-delivery: delivery that already costs nothing', () => {
+	const {
+		updateFreeDeliveryProgress,
+		deliveryCostsNothing,
+	} = require( '../../src/shared/cart-live/free-delivery-progress' );
+	const rate = ( price, selected = false ) => ( {
+		rate_id: 'r' + price,
+		price: String( price ),
+		selected,
+	} );
+	const withShipping = ( minor, rates, extra = {} ) => ( {
+		...cartJson( minor ),
+		needs_shipping: true,
+		has_calculated_shipping: true,
+		shipping_rates: [ { shipping_rates: rates } ],
+		...extra,
+	} );
+	const config = {
+		threshold: '35',
+		message: 'Add %s more for free delivery',
+		successMessage: 'You have free delivery',
+	};
+	const paint = ( cart ) => {
+		document.body.innerHTML =
+			'<div id="bar"><p data-sgs-cart-free-delivery-text></p><div role="progressbar" data-sgs-cart-free-delivery-track></div></div>';
+		const el = document.getElementById( 'bar' );
+		el.sgsFillReleased = true;
+		updateFreeDeliveryProgress( el, cart, config, {
+			pctProperty: '--p',
+			completeClass: 'done',
+		} );
+		return el;
+	};
+	const text = ( el ) =>
+		el.querySelector( '[data-sgs-cart-free-delivery-text]' ).textContent;
+
+	it( 'over the minimum: success', () => {
+		expect(
+			text( paint( withShipping( 4000, [ rate( 500, true ) ] ) ) )
+		).toBe( 'You have free delivery' );
+	} );
+	it( 'under the minimum with a paid rate: still asks for more', () => {
+		const el = paint( withShipping( 2150, [ rate( 395, true ) ] ) );
+		expect( text( el ) ).toBe( 'Add £13.50 more for free delivery' );
+		expect( el.classList.contains( 'done' ) ).toBe( false );
+	} );
+	it( 'under the minimum with a 0-cost chosen rate: success, full bar', () => {
+		const el = paint(
+			withShipping( 1000, [ rate( 395 ), rate( 0, true ) ] )
+		);
+		expect( text( el ) ).toBe( 'You have free delivery' );
+		expect( el.style.getPropertyValue( '--p' ) ).toBe( '100%' );
+		expect( el.classList.contains( 'done' ) ).toBe( true );
+	} );
+	it( 'a paid chosen rate wins over a free one that is not chosen', () => {
+		expect(
+			deliveryCostsNothing(
+				withShipping( 1000, [ rate( 395, true ), rate( 0 ) ] )
+			)
+		).toBe( false );
+	} );
+	it( 'no chosen rate: the cheapest rate decides', () => {
+		expect(
+			deliveryCostsNothing(
+				withShipping( 1000, [ rate( 395 ), rate( 0 ) ] )
+			)
+		).toBe( true );
+		expect(
+			deliveryCostsNothing(
+				withShipping( 1000, [ rate( 395 ), rate( 595 ) ] )
+			)
+		).toBe( false );
+	} );
+	it( 'no rates calculated: behaves as before', () => {
+		expect( text( paint( withShipping( 1000, [] ) ) ) ).toBe(
+			'Add £25.00 more for free delivery'
+		);
+		expect(
+			deliveryCostsNothing(
+				withShipping( 1000, [ rate( 0 ) ], {
+					has_calculated_shipping: false,
+				} )
+			)
+		).toBe( false );
+		expect( deliveryCostsNothing( cartJson( 1000 ) ) ).toBe( false );
+	} );
+	it( 'a basket that needs no shipping: behaves as before', () => {
+		expect(
+			deliveryCostsNothing(
+				withShipping( 1000, [ rate( 0, true ) ], {
+					needs_shipping: false,
+				} )
+			)
+		).toBe( false );
+	} );
+	it( 'reads the store spelling and needs every package free', () => {
+		expect(
+			deliveryCostsNothing( {
+				needsShipping: true,
+				hasCalculatedShipping: true,
+				shippingRates: [
+					{ shippingRates: [ { price: '0', selected: true } ] },
+					{ shippingRates: [ { price: '300', selected: true } ] },
+				],
+			} )
+		).toBe( false );
+	} );
+} );
