@@ -11,7 +11,7 @@ const ITEMS = [
 	[ 'Subscriptions', 'Can I pause?', 'Any time, online.', false ],
 ];
 
-function build( { multiple = false } = {} ) {
+function build( { multiple = false, below = false } = {} ) {
 	document.body.innerHTML = `<div class="sgs-accordion" data-filter="true" data-allow-multiple="${ multiple }">
 		<div class="sgs-accordion__filter" data-sgs-accordion-filter hidden>
 			<div role="search"><label for="s">Search</label><input class="sgs-accordion__search-input" type="search" id="s"></div>
@@ -29,6 +29,14 @@ function build( { multiple = false } = {} ) {
 		).join( '' ) }
 		<div class="sgs-accordion__empty" data-sgs-accordion-empty hidden>Nothing matches that yet.</div>
 	</div>`;
+	if ( below ) {
+		// With a band the count is its own element after the bar, hidden until the script reveals it.
+		const count = document.querySelector( '.sgs-accordion__count' );
+		count.classList.add( 'sgs-accordion__count--below' );
+		count.setAttribute( 'data-sgs-accordion-count', '' );
+		count.hidden = true;
+		document.querySelector( '[data-sgs-accordion-filter]' ).after( count );
+	}
 	jest.resetModules();
 	require( '../../src/blocks/accordion/filter.js' );
 	return {
@@ -154,4 +162,17 @@ test( 'Escape in the search box clears it and shows every item', () => {
 	input.dispatchEvent( new KeyboardEvent( 'keydown', { key: 'Escape', bubbles: true } ) );
 	expect( input.value ).toBe( '' );
 	expect( visible( items ) ).toEqual( [ true, true, true, true ] );
+} );
+
+test( 'with a band the count sits after the bar: it is revealed with the bar and still updates and announces', () => {
+	const { bar, input, live, painted } = build( { below: true } );
+	const count = document.querySelector( '[data-sgs-accordion-count]' );
+	expect( bar.contains( count ) ).toBe( false );
+	expect( bar.hidden ).toBe( false );
+	expect( count.hidden ).toBe( false );
+	expect( painted.textContent ).toBe( '4 answers' );
+	type( input, 'gift' );
+	jest.advanceTimersByTime( 300 );
+	expect( painted.textContent ).toBe( '1 answer' );
+	expect( live.textContent ).toBe( '1 answer' );
 } );

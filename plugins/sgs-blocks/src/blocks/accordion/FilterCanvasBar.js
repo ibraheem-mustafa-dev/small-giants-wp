@@ -87,6 +87,13 @@ export default function FilterCanvasBar( { attributes, clientId, palette, tier =
 	const bandBottom = sgsLengthPreview( attributes.filterBandBorderWidth?.bottom );
 	const bandHasLine = !! bandBottom && 'none' !== attributes.filterBandBorderStyle && '0' !== bandBottom && '0px' !== bandBottom;
 	const bandFull = !! attributes.filterBandFullWidth;
+	// With a band in use the count is its own row after the band (includes/accordion-filter.php::sgs_accordion_filter_band_in_use).
+	const countBelow = !! ( attributes.filterBandBackground || Object.keys( attributes.filterBandBorderWidth || {} ).length || Object.keys( attributes.filterBandPadding || {} ).length );
+	const countParagraph = (
+		<p className={ 'sgs-accordion__count' + ( countBelow ? ' sgs-accordion__count--below' : '' ) } style={ { color: colour( attributes.filterCountColour ) } }>
+			{ countLine( attributes, items.length ) }
+		</p>
+	);
 	const bandStyle = {
 		backgroundColor: bandFill,
 		...spacingPreview( { padding: attributes.filterBandPadding }, tier ),
@@ -108,6 +115,7 @@ export default function FilterCanvasBar( { attributes, clientId, palette, tier =
 	};
 
 	return (
+		<>
 		<div
 			className={ 'sgs-accordion__filter sgs-accordion__filter--canvas' + ( bandFull && bandFill ? ' sgs-accordion__filter--band-full' : '' ) }
 			style={ bandStyle }
@@ -145,9 +153,9 @@ export default function FilterCanvasBar( { attributes, clientId, palette, tier =
 					) ) }
 				</div>
 			) }
-			<p className="sgs-accordion__count" style={ { color: colour( attributes.filterCountColour ) } }>
-				{ countLine( attributes, items.length ) }
-			</p>
+			{ ! countBelow && countParagraph }
 		</div>
+		{ countBelow && countParagraph }
+		</>
 	);
 }

@@ -333,6 +333,32 @@ final class AccordionFilterTest extends TestCase {
 		$this->assertDoesNotMatchRegularExpression( '#<div class="sgs-accordion__filter"[^>]*style=#', $html, 'no inline style' );
 	}
 
+	/**
+	 * With no band the count stays inside the bar; with any band setting (fill, padding or border width) it is its own row
+	 * after the bar, outside the band, still before the first item and still found by the script through its data hook.
+	 */
+	public function test_the_count_sits_inside_the_bar_without_a_band_and_after_it_with_one(): void {
+		$root = dirname( __DIR__, 2 );
+		$none = $this->render_fixture( $root, 'indus', array( 'filterEnabled' => true ), array( 'category' => 'Trade' ) );
+		$this->assertMatchesRegularExpression( '#<p class="sgs-accordion__count" data-template="[^"]*" data-singular="[^"]*">.*?</p></div>#s', $none, 'the count closes the bar' );
+		$this->assertStringNotContainsString( 'sgs-accordion__count--below', $none );
+		$this->assertStringNotContainsString( 'data-sgs-accordion-count', $none );
+
+		foreach (
+			array(
+				'fill'    => array( 'filterBandBackground' => '#FFE8C0' ),
+				'padding' => array( 'filterBandPadding' => array( 'desktop' => array( 'top' => '8px', 'right' => '0', 'bottom' => '8px', 'left' => '0' ) ) ),
+				'border'  => array( 'filterBandBorderWidth' => array( 'top' => '0', 'right' => '0', 'bottom' => '2px', 'left' => '0' ) ),
+			) as $label => $band
+		) {
+			$html = $this->render_fixture( $root, 'indus', array( 'filterEnabled' => true ) + $band, array( 'category' => 'Trade' ) );
+			$this->assertMatchesRegularExpression( '#</div><p class="sgs-accordion__count sgs-accordion__count--below" data-sgs-accordion-count hidden data-template#', $html, $label . ': the count follows the bar' );
+			$this->assertDoesNotMatchRegularExpression( '#data-sgs-accordion-filter hidden>(?:(?!</div></div>).)*sgs-accordion__count#s', $html, $label . ': the bar holds no count' );
+			$this->assertSame( 1, substr_count( $html, 'data-sgs-accordion-live' ), $label . ': one status node' );
+			$this->assertLessThan( (int) strpos( $html, '<details' ), (int) strpos( $html, 'sgs-accordion__count--below' ), $label . ': before the first item' );
+		}
+	}
+
 	public function test_the_band_palette_slug_resolves_like_the_blocks_other_colours(): void {
 		$root = dirname( __DIR__, 2 );
 		$html = $this->render_fixture( $root, 'indus', array( 'filterEnabled' => true, 'filterBandBackground' => 'surface' ), array( 'category' => 'Trade' ) );

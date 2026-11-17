@@ -106,14 +106,57 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 		}
 
 		// The painted count is aria-hidden; the visually hidden status node speaks one settled count after a visitor's input and is empty until then.
+		// With a band in use the count follows the band as its own row (it prints `hidden` like the bar), so the band holds only the search box and chips.
 		$plural   = (string) ( $attributes['filterCountTemplate'] ?? '' );
 		$singular = (string) ( $attributes['filterCountSingular'] ?? '' );
-		$out     .= '<p class="sgs-accordion__count" data-template="' . esc_attr( $plural ) . '" data-singular="' . esc_attr( $singular ) . '">'
+		$below    = sgs_accordion_filter_band_in_use( $attributes );
+		$count    = '<p class="sgs-accordion__count' . ( $below ? ' sgs-accordion__count--below' : '' ) . '"' . ( $below ? ' data-sgs-accordion-count hidden' : '' )
+			. ' data-template="' . esc_attr( $plural ) . '" data-singular="' . esc_attr( $singular ) . '">'
 			. '<span class="sgs-accordion__count-text" aria-hidden="true">' . esc_html( sgs_accordion_filter_count_for( $attributes, $total ) ) . '</span>'
 			. '<span class="sgs-accordion__sr-only" role="status" aria-live="polite" data-sgs-accordion-live></span>'
 			. '</p>';
 
-		return $out . '</div>';
+		return $below ? $out . '</div>' . $count : $out . $count . '</div>';
+	}
+
+	/**
+	 * The band's border through the shared assembler: base declarations and the `facts` (has_width). The one call in this file.
+	 *
+	 * @param array $attributes Accordion attributes.
+	 * @return array The assembler's result.
+	 */
+	function sgs_accordion_filter_band_border( array $attributes ): array {
+		return sgs_border_element_decls(
+			$attributes,
+			'filterBand',
+			'.sgs-accordion__filter',
+			array(
+				'colour'         => array( 'base' => 'filterBandBorderColour' ),
+				'colour_default' => 'currentColor',
+				'radius'         => false,
+				'facts'          => true,
+			)
+		);
+	}
+
+	/**
+	 * Whether the bar is drawn as a band: any of its fill, padding or border width is set.
+	 *
+	 * @param array $attributes Accordion attributes.
+	 * @return bool True when the count moves out of the bar to follow it.
+	 */
+	function sgs_accordion_filter_band_in_use( array $attributes ): bool {
+		foreach ( array( 'filterBandBackground', 'filterBandPadding' ) as $key ) {
+			if ( ! empty( $attributes[ $key ] ) ) {
+				return true;
+			}
+		}
+		// The border width is read only through the shared assembler, which reports whether any side has a width.
+		$border = sgs_accordion_filter_band_border( $attributes );
+		if ( ! empty( $border['facts']['has_width'] ) ) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -265,16 +308,7 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 		$background = sgs_colour_value( (string) ( $attributes['filterBandBackground'] ?? '' ) );
 
 		// The width, style and colour come out of the shared border assembler; an unset width prints nothing, and an unset colour with a width paints the current text colour.
-		$border = sgs_border_element_decls(
-			$attributes,
-			'filterBand',
-			$root_sel . ' ' . $bar,
-			array(
-				'colour'         => array( 'base' => 'filterBandBorderColour' ),
-				'colour_default' => 'currentColor',
-				'radius'         => false,
-			)
-		);
+		$border = sgs_accordion_filter_band_border( $attributes );
 		$line   = '';
 		foreach ( $border['base'] as $decl ) {
 			if ( ! $full ) {

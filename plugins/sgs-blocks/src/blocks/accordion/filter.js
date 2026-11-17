@@ -18,8 +18,8 @@ import { matches, squash } from '../../utils/filter-text';
 
 const SETTLE_MS = 300;
 
-function countText( bar, count ) {
-	const countEl = bar.querySelector( '.sgs-accordion__count' );
+function countText( countRoot, count ) {
+	const countEl = countRoot.querySelector( '.sgs-accordion__count' ) || countRoot;
 	const plural = countEl?.dataset.template || '{count}';
 	const singular = countEl?.dataset.singular || plural;
 	return ( 1 === count ? singular : plural ).replace( '{count}', String( count ) );
@@ -44,8 +44,13 @@ function initAccordion( accordion ) {
 	const input = bar.querySelector( '.sgs-accordion__search-input' );
 	const chips = Array.from( bar.querySelectorAll( '.sgs-accordion__chip' ) );
 	const empty = accordion.querySelector( '[data-sgs-accordion-empty]' );
-	const live = bar.querySelector( '[data-sgs-accordion-live]' );
-	const painted = bar.querySelector( '.sgs-accordion__count-text' );
+	// With a band the count is its own element after the bar; otherwise it sits inside the bar.
+	const countBelow = Array.from( accordion.querySelectorAll( '[data-sgs-accordion-count]' ) ).find(
+		( el ) => el.closest( '.sgs-accordion' ) === accordion
+	);
+	const countRoot = countBelow || bar;
+	const live = countRoot.querySelector( '[data-sgs-accordion-live]' );
+	const painted = countRoot.querySelector( '.sgs-accordion__count-text' );
 	const allowMultiple = 'true' === accordion.dataset.allowMultiple;
 	const texts = new Map( items.map( ( item ) => [ item, itemText( item ) ] ) );
 
@@ -63,7 +68,7 @@ function initAccordion( accordion ) {
 	}
 
 	function settle( shown ) {
-		const text = countText( bar, shown );
+		const text = countText( countRoot, shown );
 		if ( painted ) {
 			painted.textContent = text;
 		}
@@ -133,6 +138,9 @@ function initAccordion( accordion ) {
 	}
 
 	bar.hidden = false;
+	if ( countBelow ) {
+		countBelow.hidden = false;
+	}
 }
 
 function init() {

@@ -104,6 +104,12 @@
 	font-weight: 700;
 }
 
+/* With a band, the count is its own row after the bar and spans the accordion's content width. */
+.sgs-accordion__count--below:not([hidden]) {
+	grid-column: 1 / -1;
+	margin-block-end: 1rem;
+}
+
 .sgs-accordion-item__heading {
 	display: flex;
 	flex-direction: column;
