@@ -2,7 +2,7 @@
   "_meta": {
     "purpose": "Spec 35 UNIT A0 roster \u2014 the audit denominator. DB-first, regenerate after /sgs-update.",
     "source": "sgs-framework.db blocks(source=sgs,status=built,is_stale=0)",
-    "count": 103,
+    "count": 104,
     "generator": "scripts/consistency/build-roster.py"
   },
   "blocks": [
@@ -263,7 +263,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 25,
+        "paintDeclarations": 32,
         "replacedCoreSupports": []
       }
     },
@@ -1432,6 +1432,25 @@
       },
       "qualifies": {
         "paintDeclarations": 37,
+        "replacedCoreSupports": []
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "title": "SGS Order Items",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
         "replacedCoreSupports": []
       }
     },

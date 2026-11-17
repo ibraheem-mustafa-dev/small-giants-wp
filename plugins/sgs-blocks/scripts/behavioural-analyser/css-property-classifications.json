@@ -8036,6 +8036,22 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "freeDeliveryBandBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "freeDeliveryBand"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "freeDeliveryBandBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "freeDeliveryBand"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "freeDeliveryFillColour",
       "fields": {
         "css_property": "background-color",
@@ -8216,6 +8232,14 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "itemNameFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "item-name"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "itemNameFontSize",
       "fields": {
         "css_property": "font-size",
@@ -8252,6 +8276,38 @@
       "fields": {
         "css_property": "font-weight",
         "css_element": "item-price"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemQtyBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "itemQty"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemQtyBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "itemQty"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemQtyFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "item-stepper"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemQtyFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "item-stepper"
       }
     },
     {
@@ -8426,6 +8482,39 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "panelTaxNoteColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "panelTaxNote"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelTaxNoteFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "panel-tax-note"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelTaxNoteFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "panel-tax-note"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelTaxNoteTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "panel-tax-note"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "panelTextColour",
       "fields": {
         "css_property": "color",
@@ -8465,6 +8554,57 @@
       "fields": {
         "css_property": "font-weight",
         "css_element": "panel-heading"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelViewColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "panelView"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelViewColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "panelView",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelViewFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "panel-view"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelViewFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "panel-view"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelViewLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "panel-view"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelViewTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "panel-view"
       }
     },
     {
@@ -8529,14 +8669,6 @@
       "attr": "pillMinHeight",
       "fields": {
         "css_property": "min-height",
-        "css_element": "pill"
-      }
-    },
-    {
-      "slug": "sgs/cart",
-      "attr": "pillPadding",
-      "fields": {
-        "css_property": "padding",
         "css_element": "pill"
       }
     },
@@ -23278,6 +23410,120 @@
       "fields": {
         "css_property": "width",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "itemMetaFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "itemMetaFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "itemNameFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "itemNameFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "itemPriceFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "itemPriceFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "rowBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "row"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "rowBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "row"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "rowGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "list"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "totalColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "total"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "totalsFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "totals"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "totalsFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "totals"
       }
     },
     {
@@ -38064,6 +38310,32 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "freeDeliveryBandBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "freeDeliveryBand"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "freeDeliveryBandBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "freeDeliveryBand"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "freeDeliveryBandPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "freeDeliveryBand"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "freeDeliveryBarMargin",
       "fields": {
         "css_property": "margin",
@@ -38155,6 +38427,49 @@
         "css_property": "gap",
         "css_layer": "GRID",
         "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemQtyBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "itemQty"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemQtyBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "itemQty"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemQtyColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "itemQty"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemQtyHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "itemQty"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemQtyRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "itemQty"
       }
     },
     {
@@ -38305,6 +38620,14 @@
       "attr": "pillBorderRadius",
       "fields": {
         "css_property": "border-radius",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillPadding",
+      "fields": {
+        "css_property": "padding",
         "css_element": "pill"
       }
     },
@@ -46389,6 +46712,51 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "itemMetaColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "itemMeta"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "itemNameColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "itemName"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "itemPriceColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "itemPrice"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "rowBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "row"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "totalsColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "totals"
       }
     },
     {
