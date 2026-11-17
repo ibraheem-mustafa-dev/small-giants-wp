@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13320,
+    "row_count": 13322,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -2072,6 +2072,8 @@
     "sgs/business-info::textTransform": "typography",
     "sgs/business-info::textWrap": "typography",
     "sgs/business-info::writingMode": "select-from-enum",
+    "sgs/button::addAfter": "select-from-enum",
+    "sgs/button::addProductId": "behaviour",
     "sgs/button::alignSelf": "enum-mode",
     "sgs/button::anchor": "technical",
     "sgs/button::ariaLabel": "a11y-text",
