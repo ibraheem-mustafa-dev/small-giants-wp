@@ -1316,9 +1316,12 @@
  * .product-card is already display:flex/column (base rule); height:100%
  * stretches each card to its grid track so card chrome lines up.
  * Both body variants (.product-card-body bound, .sgs-product-card__body
- * typed built-in) already carry flex:1 globally.
+ * typed built-in) already carry flex:1 globally. WooCommerce's product
+ * collection (`.wc-block-product-template > .wc-block-product`) is a grid of
+ * the same kind, so its cards stretch and pin their button the same way.
  */
-.sgs-card-grid > .product-card {
+.sgs-card-grid > .product-card,
+.wc-block-product-template > .wc-block-product > .product-card {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
@@ -1332,7 +1335,8 @@
  * normal flow above. Typed built-in cards need no rule here —
  * .sgs-product-card__cta-row already carries margin-top:auto globally.
  */
-.sgs-card-grid > .product-card .product-card__add-to-cart {
+.sgs-card-grid > .product-card .product-card__add-to-cart,
+.wc-block-product-template > .wc-block-product > .product-card .product-card__add-to-cart {
 	margin-top: auto;
 }
 

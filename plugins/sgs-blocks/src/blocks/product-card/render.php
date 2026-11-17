@@ -173,7 +173,8 @@ if ( sgs_pcm_sized( $attributes, 'image' ) ) {
 $sgs_css_length_re = '/^(?:[\d.]+(?:%|px|em|rem|vw|vh|ch|ex|fr|cm|mm|in|pt|pc)|calc\([\d.\s+\-*\/%a-z()]+\))$/i';
 
 $inline_styles = array();
-if ( '' !== $card_max_width && preg_match( $sgs_css_length_re, $card_max_width ) ) {
+// `none` (no cap: the card fills its column) is the one keyword the setting takes beside a length.
+if ( '' !== $card_max_width && ( 'none' === strtolower( $card_max_width ) || preg_match( $sgs_css_length_re, $card_max_width ) ) ) {
 	$inline_styles[] = '--sgs-product-card-max-width:' . esc_attr( $card_max_width ) . ';';
 }
 // CSS-length + CSS-keyword sanitisers for any free-text style value concatenated
