@@ -1558,7 +1558,7 @@
 	cursor: pointer;
 }
 
-@container sgs-choice-flow-showcase (max-width: 767px) {
+@container sgs-choice-flow-showcase (max-width: 767.98px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__skip {
 		display: none;
 	}

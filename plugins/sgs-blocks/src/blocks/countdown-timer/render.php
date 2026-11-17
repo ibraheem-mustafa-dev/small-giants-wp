@@ -298,7 +298,7 @@ if ( '' !== $label_colour_gradient_valid ) {
 
 // --- Responsive tiers — padding/margin/border-radius, each routed through the
 // same style-engine call, wrapped in the block's own scoped @media (contract
-// §B2: tablet max-width:1023px, mobile max-width:767px). ---
+// §B2: tablet max-width:1023.98px, mobile max-width:767.98px). ---
 
 $tablet_args = array();
 if ( ! empty( $padding_tablet_obj ) || ! empty( $margin_tablet_obj ) ) {

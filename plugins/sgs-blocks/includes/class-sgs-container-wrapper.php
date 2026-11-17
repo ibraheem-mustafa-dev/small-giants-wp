@@ -2484,7 +2484,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// same-specificity @media rule emitted after the base rule already wins.
 					//
 					// Order matters and matches the explicit-template block directly above:
-					// tablet (max-width:1023px) is emitted BEFORE mobile (max-width:767px),
+					// tablet (max-width:1023.98px) is emitted BEFORE mobile (max-width:767.98px),
 					// so at =<767px both match and the later mobile rule wins on source order.
 					if ( 'grid' === $layout && ! $object_grid && '' === trim( (string) $grid_template ) ) {
 						// D456 — under intrinsicColumns each tier's count becomes that

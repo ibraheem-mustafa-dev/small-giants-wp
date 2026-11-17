@@ -589,7 +589,7 @@ if ( ! empty( $base_style_engine_args ) ) {
 }
 
 // --- Responsive padding/margin/border-radius tiers — box objects, longhands for
-// the set sides and corners only (contract §B/§B2: tablet max-width:1023px, mobile max-width:767px). ---
+// the set sides and corners only (contract §B/§B2: tablet max-width:1023.98px, mobile max-width:767.98px). ---
 $padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
 $padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
 $margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );

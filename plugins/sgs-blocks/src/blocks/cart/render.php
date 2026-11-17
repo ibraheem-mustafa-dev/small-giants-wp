@@ -54,7 +54,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/media/render-item-slot.php';
 // NO-INLINE (Spec 32 FR-32-4): margin is a block-private object attr,
 // emitted scoped via the core style engine below (mirrors sgs/label).
 // marginTablet/marginMobile are SGS object attrs, scoped @media (tablet
-// max-width:1023px, mobile max-width:767px). The `--sgs-cart-*` custom-
+// max-width:1023.98px, mobile max-width:767.98px). The `--sgs-cart-*` custom-
 // property VALUES (icon/badge/panel colours) land in the same scoped
 // `.{uid}.wp-block-sgs-cart{…}` rule — the root carries ZERO inline
 // `style="…"`.

@@ -683,8 +683,8 @@ if ( '' !== $sgs_bb_bg_layer_css ) {
 }
 
 // --- Responsive margin tiers — SGS custom object attrs, hand-built shorthand,
-// scoped @media on the SAME selector (contract §B2: tablet max-width:1023px,
-// mobile max-width:767px). ---
+// scoped @media on the SAME selector (contract §B2: tablet max-width:1023.98px,
+// mobile max-width:767.98px). ---
 $margin_tablet_obj = is_array( $sgs_bb_margin_tiers['tablet'] ?? null ) ? $sgs_bb_margin_tiers['tablet'] : array();
 $margin_mobile_obj = is_array( $sgs_bb_margin_tiers['mobile'] ?? null ) ? $sgs_bb_margin_tiers['mobile'] : array();
 

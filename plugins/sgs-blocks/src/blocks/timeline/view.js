@@ -689,7 +689,7 @@ import { QUERY_MOBILE } from '../../utils/breakpoints';
 		 * left edge has scrolled to or past the scroller's visible edge.
 		 *
 		 * Inert outside carousel mode / above 767px by construction: the class
-		 * only PAINTS anything under the `@media (max-width: 767px)` +
+		 * only PAINTS anything under the `@media (max-width: 767.98px)` +
 		 * `.sgs-timeline--mobile-carousel` gate in style.scss, so toggling it
 		 * elsewhere is a harmless no-op rather than something that needs its
 		 * own runtime guard.

@@ -207,7 +207,7 @@
 
 /* ─── Responsive ─── */
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-toc__link {
 		padding: 0.375em 0;
 	}

@@ -88,11 +88,11 @@ add_action( 'enqueue_block_assets', __NAMESPACE__ . '\\enqueue_device_visibility
  *   - .sgs-hide-desktop : from TABLET_MAX + 1          (1024)
  *
  * The upper bounds carry the `.98px` the media pipeline already uses
- * (`SGS_Breakpoints::query_fractional()`, the Bootstrap convention). A zoomed
- * browser or a scaled display gives a viewport such as 1023.4px, which matches
- * neither `max-width:1023px` nor `min-width:1024px`: an element hidden on
- * desktop and its twin hidden on tablet and phone would both show. With the
- * fractional upper bounds every viewport width from 0 to 767.98px is mobile,
+ * (`SGS_Breakpoints::query()`, the Bootstrap convention). A zoomed
+ * browser or a scaled display gives a viewport such as 1023.4px, which a
+ * whole-pixel upper bound at 1023 and a lower bound at 1024 would both miss: an
+ * element hidden on desktop and its twin hidden on tablet and phone would both
+ * show. With the fractional upper bounds every viewport width from 0 to 767.98px is mobile,
  * 768 to 1023.98px is tablet and 1024px up is desktop; only the 0.02px between
  * 767.98 and 768 (and between 1023.98 and 1024) matches no tier, and no device
  * viewport lands there.

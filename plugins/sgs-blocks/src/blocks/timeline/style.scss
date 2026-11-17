@@ -1107,7 +1107,7 @@
 // Responsive — collapse horizontal to vertical on mobile
 // =============================================================================
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	// Horizontal becomes a vertical scroll-snap list.
 	.sgs-timeline--horizontal {
 		// These three UNDO the desktop row, which since Step 4a lives on
@@ -1332,7 +1332,7 @@
 // date kept `grid-area: 1 / 1` at 375px and the content column was squeezed to
 // ~76px. Placement here now yields to the collapse below 768px; the dedicated
 // mobile re-placement for has-media entries lives further down in the
-// `@media (max-width: 767px)` block.
+// `@media (max-width: 767.98px)` block.
 @media (min-width: 768px) {
 	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-alternating,
 	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-same-side {
@@ -1598,7 +1598,7 @@
 // drop the date BELOW the content, so "the same side as the date" has no meaning
 // here. The media therefore takes its own row at the bottom of the stack and
 // spans the full content column.
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-timeline--media-under.sgs-timeline--vertical .sgs-timeline__entry--has-media {
 		grid-template-rows: auto auto auto;
 
@@ -1619,7 +1619,7 @@
 // mobileLayout: carousel — native scroll-snap card row, ≤767px ONLY (Task 2)
 // =============================================================================
 //
-// ⛔ GATED ON BOTH `@media (max-width: 767px)` AND `.sgs-timeline--mobile-carousel`
+// ⛔ GATED ON BOTH `@media (max-width: 767.98px)` AND `.sgs-timeline--mobile-carousel`
 // (Spec-brief R4). `mobileLayout: stacked` (the default) never carries either
 // half of that gate, so it is untouched by anything below — this section is
 // pure addition, not a rewrite of the stacked path above.
@@ -1630,7 +1630,7 @@
 // off-axis. SC 2.5.7 Dragging is met by NATIVE `overflow-x: auto` +
 // `scroll-snap-type: x mandatory` — no JS-driven scroll hijack, no GSAP.
 // SC 2.1.1 Keyboard is met by `tabindex`/`role`/`aria-label`, added and
-// removed by view.js on a matching `matchMedia('(max-width: 767px)')`
+// removed by view.js on a matching `matchMedia('(max-width: 767.98px)')`
 // listener rather than declared here — those are HTML attributes and cannot
 // be media-queried, and must exist ONLY while the element actually scrolls.
 //
@@ -1657,12 +1657,12 @@
 // existing rule's exact selector one at a time.
 //
 // Media-query scoping gives NO cascade advantage here: every competing rule
-// above is already inside `@media (max-width: 767px)`, so don't "fix" the
+// above is already inside `@media (max-width: 767.98px)`, so don't "fix" the
 // tie by adding a `:not(.sgs-timeline--mobile-carousel)` guard to those
 // rules instead — that raises every one of them by (0,1,0), can flip a tie
 // against a THIRD rule, and risks the `stacked` byte-identity acceptance
 // criterion for zero gain.
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel {
 		// Step 4a — the root no longer IS the scroller. The markup now nests
 		// `<ol class="sgs-timeline__list">` inside the root (so the GSAP
@@ -1776,7 +1776,7 @@
 
 	// Gated separately (Spec: "gate scroll-behavior: smooth behind
 	// prefers-reduced-motion: no-preference"). SCSS nests this into a combined
-	// `@media (max-width: 767px) and (prefers-reduced-motion: no-preference)`.
+	// `@media (max-width: 767.98px) and (prefers-reduced-motion: no-preference)`.
 	// Step 4a — `scroll-behavior` only means something on the element that
 	// actually scrolls, so this moves onto `.sgs-timeline__list` with the
 	// rest of the scroll-container properties above.

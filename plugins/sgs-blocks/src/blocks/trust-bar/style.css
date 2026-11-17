@@ -194,7 +194,7 @@
 :where(.sgs-trust-bar--text-only.sgs-trust-bar--large)  .sgs-trust-bar__badge-label { font-size: var(--wp--preset--font-size--large, 1.125rem); }
 
 /* Mobile: ensure 44px touch target (WCAG 2.2 AA) */
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-trust-bar--text-only .sgs-trust-bar__badge {
 		padding: 0.625rem 1rem;
 		min-height: 44px;
@@ -313,7 +313,7 @@
 	margin: 0;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-trust-bar.sgs-trust-bar[data-sgs-marquee="on"]:has(> .sgs-trust-bar__title):has(> .sgs-trust-bar__lane) {
 		grid-template-columns: minmax(0, 1fr);
 	}

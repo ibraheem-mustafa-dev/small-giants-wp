@@ -2,7 +2,7 @@
  * Responsive class name helpers.
  */
 
-import { SGS_BREAKPOINTS } from './breakpoints.js';
+import { SGS_BREAKPOINTS, MEDIA_TABLET, MEDIA_MOBILE } from './breakpoints.js';
 
 export { SGS_BREAKPOINTS };
 
@@ -219,7 +219,7 @@ export function tierValueOf( value, tier = 'desktop', read ) {
  * §4, 2026-07-28). Rules are scoped to the caller-supplied uidSelector —
  * e.g. '#sgs-abc123' or '.sgs-header--abc123' — NEVER a body class.
  * Breakpoints come from SGS_BREAKPOINTS (768/1024 device-tier standard,
- * emitted as max-width 1023px/767px) — never hardcoded here.
+ * emitted as max-width 1023.98px/767.98px) — never hardcoded here.
  *
  * ⚠ D386: this helper emits whatever CSS text the caller passes in
  * cssOn/cssOff verbatim. Callers MUST NOT pass declarations containing
@@ -258,14 +258,14 @@ export function emitTierRules(
 	if ( tablet.value !== desktop.value ) {
 		const tabletCss = cssForState( tablet.value );
 		if ( tabletCss !== '' ) {
-			css += `@media (max-width:${ SGS_BREAKPOINTS.TABLET_MAX }px){${ uidSelector }{${ tabletCss }}}`;
+			css += `${ MEDIA_TABLET }{${ uidSelector }{${ tabletCss }}}`;
 		}
 	}
 
 	if ( mobile.value !== tablet.value ) {
 		const mobileCss = cssForState( mobile.value );
 		if ( mobileCss !== '' ) {
-			css += `@media (max-width:${ SGS_BREAKPOINTS.MOBILE_MAX }px){${ uidSelector }{${ mobileCss }}}`;
+			css += `${ MEDIA_MOBILE }{${ uidSelector }{${ mobileCss }}}`;
 		}
 	}
 

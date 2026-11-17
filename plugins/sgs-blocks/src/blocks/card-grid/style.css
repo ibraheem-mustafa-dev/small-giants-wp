@@ -382,7 +382,7 @@
 
 /* ===== Responsive ===== */
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-card-grid {
 		grid-template-columns: repeat(
 			var(--sgs-card-grid-columns-mobile, 1),
@@ -392,7 +392,7 @@
 }
 
 /* H16/M22: use columnsTablet attribute instead of hardcoded 2 columns */
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 768px) and (max-width: 1023.98px) {
 	.sgs-card-grid {
 		grid-template-columns: repeat(
 			var(--sgs-card-grid-columns-tablet, 2),

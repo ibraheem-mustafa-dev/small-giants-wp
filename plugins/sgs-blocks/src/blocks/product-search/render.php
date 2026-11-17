@@ -286,7 +286,7 @@ if ( ! empty( $sgs_spacing_args ) ) {
 
 // --- Responsive padding/margin tiers — SGS custom object attrs, longhands for
 // the set sides and corners only, scoped @media on the SAME selector (contract: tablet
-// max-width:1023px, mobile max-width:767px). ---
+// max-width:1023.98px, mobile max-width:767.98px). ---
 $sgs_padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
 $sgs_padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
 $sgs_margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();

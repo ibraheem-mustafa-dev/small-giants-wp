@@ -10,7 +10,7 @@
 	padding: var(--wp--preset--spacing--40, 1.5rem) 0;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-process-steps {
 		--sgs-step-number-size: 52px; /* still bigger than old desktop, smaller for mobile */
 	}
@@ -206,7 +206,7 @@
 	display: none;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-process-steps__connector {
 		display: none;
 	}
@@ -338,7 +338,7 @@
 
 /* ===== Responsive — vertical on mobile ===== */
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-process-steps {
 		flex-direction: column;
 		align-items: flex-start;

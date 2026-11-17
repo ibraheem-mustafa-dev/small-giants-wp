@@ -360,8 +360,8 @@ if ( ! function_exists( 'sgs_label_box_css_rule' ) ) {
 	 *
 	 * `$box` is a NORMALISED struct (NOT raw block attributes), all keys optional:
 	 *   - padding        array{top,right,bottom,left} base padding.
-	 *   - paddingTablet  array box (scoped @media max-width:1023px).
-	 *   - paddingMobile  array box (scoped @media max-width:767px).
+	 *   - paddingTablet  array box (scoped @media max-width:1023.98px).
+	 *   - paddingMobile  array box (scoped @media max-width:767.98px).
 	 *   - radius         string a CSS length ('16px', '1.5rem', '50%'). A bare
 	 *                    number is treated as px (legacy pre-2026-08-13 shape).
 	 *   - background     string a resolved colour VALUE (hex / var()) OR a preset

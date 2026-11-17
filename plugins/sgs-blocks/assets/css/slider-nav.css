@@ -112,7 +112,7 @@
 }
 
 /* A side gutter would eat a phone screen: under 768px the arrows move under the rail (below-end). */
-@media ( max-width: 767px ) {
+@media ( max-width: 767.98px ) {
 	.sgs-slider-nav--sides {
 		grid-template-columns: minmax( 0, 1fr ) auto auto;
 		grid-template-areas:

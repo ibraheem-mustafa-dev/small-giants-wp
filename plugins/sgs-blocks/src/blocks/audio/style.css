@@ -279,7 +279,7 @@
 	clip-path: none;
 	white-space: nowrap;
 }
-@media ( max-width: 1023px ) {
+@media ( max-width: 1023.98px ) {
 	.sgs-audio--toggle[data-toggle-show-label-tablet="1"] .sgs-audio__toggle-label {
 		position: static;
 		width: auto;
@@ -298,7 +298,7 @@
 		white-space: nowrap;
 	}
 }
-@media ( max-width: 767px ) {
+@media ( max-width: 767.98px ) {
 	.sgs-audio--toggle[data-toggle-show-label-mobile="1"] .sgs-audio__toggle-label {
 		position: static;
 		width: auto;

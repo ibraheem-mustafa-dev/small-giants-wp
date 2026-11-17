@@ -523,7 +523,7 @@ if ( $width_decls ) {
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME root selector (contract §B/§B2: tablet
-// max-width:1023px, mobile max-width:767px). Base padding/margin above is
+// max-width:1023.98px, mobile max-width:767.98px). Base padding/margin above is
 // WP-native style.spacing.*; these are the NEW paddingTablet/paddingMobile/
 // marginTablet/marginMobile object attrs. ---
 $padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();

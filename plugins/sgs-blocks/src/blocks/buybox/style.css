@@ -963,7 +963,7 @@
    the page instead of hiding its lower content inside its own scroll box. */
 
 /* stackBelow 'tablet': one column up to 1023px, two from 1024px. */
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 768px) and (max-width: 1023.98px) {
 	.sgs-buybox.sgs-buybox--stack-tablet {
 		grid-template-columns: minmax(0, 1fr);
 	}

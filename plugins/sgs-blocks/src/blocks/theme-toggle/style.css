@@ -57,7 +57,7 @@ see BooleanResponsiveControl), so these selectors need no cascade guesswork. */
 	border: 0;
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1023.98px) {
 	.sgs-theme-toggle--icon-only-tablet .sgs-theme-toggle__label {
 		position: absolute;
 		width: 1px;
@@ -71,7 +71,7 @@ see BooleanResponsiveControl), so these selectors need no cascade guesswork. */
 	}
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-theme-toggle--icon-only-mobile .sgs-theme-toggle__label {
 		position: absolute;
 		width: 1px;

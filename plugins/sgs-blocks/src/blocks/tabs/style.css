@@ -312,7 +312,7 @@
 /* ─── Responsive: vertical collapses to horizontal on small screens ─────────── */
 
 /* 767px = SGS_Breakpoints::MOBILE_MAX. Was 599px. */
-@media ( max-width: 767px ) {
+@media ( max-width: 767.98px ) {
 	.sgs-tabs--vertical {
 		flex-direction: column;
 	}
@@ -384,7 +384,7 @@
    This solves the "horizontal tabs wrap awkwardly on mobile" issue without
    restructuring the DOM into true accordion semantics.
    ───────────────────────────────────────────────────────────────────────────── */
-@media ( max-width: 767px ) {
+@media ( max-width: 767.98px ) {
 	.sgs-tabs--horizontal:not(.sgs-tabs--mobile-row) .sgs-tabs__nav {
 		flex-direction: column;
 		gap: 0.25rem;

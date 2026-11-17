@@ -113,14 +113,14 @@
  * moves ahead of the burger, matching DOM order for the two order:0 items.
  *
  * 767px mirrors nav-bar-menu's own default `collapsePoint` (768 — the burger
- * appears at `max-width:767px`, includes/nav-menu-submenu-css.php). An operator
+ * appears at `max-width:767.98px`, includes/nav-menu-submenu-css.php). An operator
  * who raises `collapsePoint` above the framework default moves the burger's own
  * appearance point independently of this rule; that mismatch is a pre-existing
  * property of collapsePoint being a free-standing per-instance breakpoint
  * (see nav-bar-menu/style.css's own "LEGITIMATE non-device-tier breakpoint"
  * note).
  */
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-site-header-row .sgs-nav-bar-menu:has(~ .wp-block-sgs-cart) {
 		order: 1;
 	}

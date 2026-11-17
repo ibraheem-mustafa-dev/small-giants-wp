@@ -668,7 +668,7 @@
 
 /* Tablet: 768px – 1023px (the mobile block below is later in source order and
    same specificity, so it wins under 768px). */
-@media ( max-width: 1023px ) {
+@media ( max-width: 1023.98px ) {
 	.sgs-gallery--grid .sgs-gallery__grid,
 	.sgs-gallery--carousel .sgs-gallery__grid {
 		grid-template-columns: repeat( var( --sgs-columns-tablet, 2 ), 1fr );
@@ -693,7 +693,7 @@
 }
 
 /* Mobile: max 767px = SGS_Breakpoints::MOBILE_MAX. Was 599px. */
-@media ( max-width: 767px ) {
+@media ( max-width: 767.98px ) {
 	.sgs-gallery--grid .sgs-gallery__grid {
 		grid-template-columns: repeat( var( --sgs-columns-mobile, 1 ), 1fr );
 	}

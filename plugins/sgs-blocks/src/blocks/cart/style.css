@@ -243,7 +243,7 @@
 	}
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 768px) and (max-width: 1023.98px) {
 	.sgs-cart--pill-md .sgs-cart__trigger {
 		min-width: auto;
 		gap: 8px;
@@ -305,7 +305,7 @@
 	}
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-cart--pill-sm .sgs-cart__trigger {
 		min-width: auto;
 		gap: 8px;

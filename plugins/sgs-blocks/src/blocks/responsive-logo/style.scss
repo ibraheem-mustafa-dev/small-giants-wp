@@ -323,14 +323,14 @@
 	&__picture--fallback {
 		display: none; // hidden on desktop; shown via breakpoint below
 
-		@media ( max-width: 1023px ) {
+		@media ( max-width: 1023.98px ) {
 			display: block;
 		}
 	}
 
 	// The inline logo hides below 1024px when a compact logo swaps in.
 	&__svg--swaps {
-		@media ( max-width: 1023px ) {
+		@media ( max-width: 1023.98px ) {
 			display: none;
 		}
 	}
@@ -340,7 +340,7 @@
 	&--animate-hover,
 	&--animate-scroll {
 		.sgs-responsive-logo__svg {
-			@media ( max-width: 1023px ) {
+			@media ( max-width: 1023.98px ) {
 				display: none;
 			}
 		}

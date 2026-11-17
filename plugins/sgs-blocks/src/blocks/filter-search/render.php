@@ -22,7 +22,7 @@
  * is a block-private object attr, emitted scoped via wp_style_engine_get_styles()
  * into this block's own `.{uid}` <style> tag; tablet/mobile tiers are scoped
  *
- * @media(max-width:1023px)/767px on the same selector.
+ * @media(max-width:1023.98px)/767.98px on the same selector.
  *
  * @var array     $attributes Block attributes.
  * @var string    $content    InnerBlocks HTML (unused — no InnerBlocks).
@@ -190,7 +190,7 @@ if ( ! empty( $base_margin_obj ) ) {
 }
 
 // Responsive margin tiers — hand-built shorthand, scoped @media on the same
-// selector (contract §B2: tablet max-width:1023px, mobile max-width:767px).
+// selector (contract §B2: tablet max-width:1023.98px, mobile max-width:767.98px).
 $margin_tablet_obj = is_array( $sgs_fs_margin_tiers['tablet'] ?? null ) ? $sgs_fs_margin_tiers['tablet'] : array();
 $margin_mobile_obj = is_array( $sgs_fs_margin_tiers['mobile'] ?? null ) ? $sgs_fs_margin_tiers['mobile'] : array();
 

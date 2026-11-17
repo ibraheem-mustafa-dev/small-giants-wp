@@ -50,7 +50,7 @@
  */
 
 /* Tablet — up to 1023px. Matches helpers-responsive.php's tablet tier exactly. */
-@media (max-width: 1023px) {
+@media (max-width: 1023.98px) {
 	:root:root {
 		--wp--preset--font-size--x-large: 22px;
 		--wp--preset--font-size--xx-large: 30px;
@@ -59,7 +59,7 @@
 }
 
 /* Mobile — up to 767px. Matches helpers-responsive.php's mobile tier exactly. */
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	:root:root {
 		--wp--preset--font-size--x-large: 21px;
 		--wp--preset--font-size--xx-large: 27px;

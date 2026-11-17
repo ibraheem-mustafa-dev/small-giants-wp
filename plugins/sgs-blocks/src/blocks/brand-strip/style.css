@@ -454,13 +454,13 @@
  * COUNT per device and lets the tile SIZE follow from strip-width ÷ columns.
  * The tile-size calc (see __item) reads --sgs-columns, so switching it here is
  * all that's needed. Breakpoints follow the framework standard (1023 / 767). */
-@media (max-width: 1023px) {
+@media (max-width: 1023.98px) {
 	.sgs-brand-strip {
 		--sgs-columns: var(--sgs-columns-tablet, 4);
 	}
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-brand-strip {
 		--sgs-columns: var(--sgs-columns-mobile, 2);
 	}

@@ -9,8 +9,8 @@
  * Standard (matches ~/.claude/rules/visual-standards.md + the existing SGS
  * device-tier convention): mobile = base up to 767px, tablet = up to 1023px,
  * desktop = 1024px and up. Emission uses max-width tiers (mobile-first-up):
- *   - tablet override:  @media (max-width: TABLET_MAX)   → <=1023px screens
- *   - mobile override:  @media (max-width: MOBILE_MAX)   → <=767px screens, plus @container (max-width: CONTAINER_MOBILE_MAX)
+ *   - tablet override:  @media (max-width: TABLET_MAX)   → up to 1023.98px screens
+ *   - mobile override:  @media (max-width: MOBILE_MAX)   → up to 767.98px screens, plus @container (max-width: CONTAINER_MOBILE_MAX)
  *                       for a block in a box narrower than 480px (FW-H: tiers follow the screen)
  * A block MAY additionally declare a fourth CUSTOM-px tier (e.g. a per-instance
  * collapse breakpoint) — that value is per-instance, but it is still emitted
@@ -35,6 +35,15 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		/** Mobile tier upper bound in px (override applies at <= this width). */
 		const MOBILE_MAX = 767;
 
+		/**
+		 * The decimal that turns a tier's whole-pixel maximum into its upper bound in a media query. A zoomed browser
+		 * or a scaled display reports a fractional viewport width (767.4px) that neither a whole-pixel upper bound at 767
+		 * nor a lower bound at 768 matches, so every tier's upper bound is its maximum plus this, and the next tier starts
+		 * at the next whole pixel: exactly one tier matches at every real width. Query builders add it in one place,
+		 * query_width(). The JS twin is `FRACTION` in `src/utils/breakpoints.js`.
+		 */
+		const UPPER_FRACTION = '.98';
+
 		/** A box narrower than this (px) takes the Mobile tier's values even on a wider screen (the Mobile `@container` copy). */
 		const CONTAINER_MOBILE_MAX = 479;
 
@@ -42,54 +51,42 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		 * The bare media condition for a named device range, built from the tier constants.
 		 *
 		 * Keys: 'tablet' (up to TABLET_MAX), 'mobile' (up to MOBILE_MAX), 'tablet-up' (from MOBILE_MAX + 1),
-		 * 'desktop' (from TABLET_MAX + 1), 'tablet-only' (MOBILE_MAX + 1 to TABLET_MAX).
+		 * 'desktop' (from TABLET_MAX + 1), 'tablet-only' (MOBILE_MAX + 1 to TABLET_MAX). Upper bounds carry
+		 * UPPER_FRACTION (see query_width()), so at any real width exactly one of mobile, tablet-only and desktop matches.
 		 *
 		 * @param string $range Range key.
-		 * @return string e.g. '(max-width:1023px)'; '' for an unknown key.
+		 * @return string e.g. '(max-width:1023.98px)'; '' for an unknown key.
 		 */
 		public static function query( $range ) {
 			switch ( $range ) {
 				case 'tablet':
-					return '(max-width:' . self::TABLET_MAX . 'px)';
+					return self::query_width( 'max', self::TABLET_MAX );
 				case 'mobile':
-					return '(max-width:' . self::MOBILE_MAX . 'px)';
+					return self::query_width( 'max', self::MOBILE_MAX );
 				case 'tablet-up':
 					return '(min-width:' . ( self::MOBILE_MAX + 1 ) . 'px)';
 				case 'desktop':
 					return '(min-width:' . ( self::TABLET_MAX + 1 ) . 'px)';
 				case 'tablet-only':
-					return '(min-width:' . ( self::MOBILE_MAX + 1 ) . 'px) and (max-width:' . self::TABLET_MAX . 'px)';
+					return '(min-width:' . ( self::MOBILE_MAX + 1 ) . 'px) and ' . self::query_width( 'max', self::TABLET_MAX );
 				default:
 					return '';
 			}
 		}
 
 		/**
-		 * The bare media condition for a named device range with no gap at fractional widths (browser zoom, some pixel
-		 * ratios): an upper edge sits at the tier's maximum plus 0.98px, and the next range starts at the next whole
-		 * pixel, so every width matches exactly one of mobile, tablet-only and desktop. The JS twin is
-		 * `QUERY_MOBILE_FRACTIONAL` and `QUERY_TABLET_ONLY_FRACTIONAL` in `src/utils/breakpoints.js`.
+		 * Alias of query(), kept so a caller that names the fractional-width guarantee reads as it. Every upper bound
+		 * query() emits is already fractional-width safe.
 		 *
-		 * Keys as query(): 'tablet', 'mobile', 'tablet-up', 'desktop', 'tablet-only'.
-		 *
-		 * @param string $range Range key.
+		 * @param string $range Range key (see query()).
 		 * @return string e.g. '(max-width:1023.98px)'; '' for an unknown key.
 		 */
 		public static function query_fractional( $range ) {
-			switch ( $range ) {
-				case 'tablet':
-					return '(max-width:' . self::TABLET_MAX . '.98px)';
-				case 'mobile':
-					return '(max-width:' . self::MOBILE_MAX . '.98px)';
-				case 'tablet-only':
-					return '(min-width:' . ( self::MOBILE_MAX + 1 ) . 'px) and (max-width:' . self::TABLET_MAX . '.98px)';
-				default:
-					return self::query( $range );
-			}
+			return self::query( $range );
 		}
 
 		/**
-		 * The at-rule prefix (no opening brace) for a named device range, fractional-width safe (see query_fractional()).
+		 * The at-rule prefix (no opening brace) for a named device range: alias of media().
 		 *
 		 * @param string $range Range key.
 		 * @return string e.g. '@media(max-width:1023.98px)'.
@@ -102,7 +99,7 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		 * The at-rule prefix (no opening brace) for a named device range: `@media` plus query().
 		 *
 		 * @param string $range Range key (see query()).
-		 * @return string e.g. '@media(max-width:1023px)'.
+		 * @return string e.g. '@media(max-width:1023.98px)'.
 		 */
 		public static function media( $range ) {
 			return '@media' . self::query( $range );
@@ -115,7 +112,7 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		 *
 		 * @param string     $edge  'max' or 'min'.
 		 * @param int|float|string $width Width: a number is taken as px; a string such as '767.98px' is used as given.
-		 * @return string e.g. '@media(max-width:1023px)'; '' for an unknown edge or an empty width.
+		 * @return string e.g. '@media(max-width:1023.98px)'; '' for an unknown edge or an empty width.
 		 */
 		public static function media_width( $edge, $width ) {
 			$query = self::query_width( $edge, $width );
@@ -125,13 +122,19 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		/**
 		 * The bare media condition for a single width edge at a width the caller computed (see media_width()).
 		 *
+		 * A `max` edge at exactly a tier maximum (767 or 1023, as a number or '767px') takes UPPER_FRACTION, the one
+		 * place the device-tier rule lives; any other width is used as given.
+		 *
 		 * @param string           $edge  'max' or 'min'.
 		 * @param int|float|string $width Width: a number is taken as px; a string such as '767.98px' is used as given.
-		 * @return string e.g. '(max-width:1023px)'; '' for an unknown edge or an empty width.
+		 * @return string e.g. '(max-width:1023.98px)'; '' for an unknown edge or an empty width.
 		 */
 		public static function query_width( $edge, $width ) {
 			if ( ( 'max' !== $edge && 'min' !== $edge ) || '' === (string) $width ) {
 				return '';
+			}
+			if ( 'max' === $edge && preg_match( '/^(' . self::MOBILE_MAX . '|' . self::TABLET_MAX . ')(?:px)?$/', trim( (string) $width ) ) ) {
+				$width = (int) $width . self::UPPER_FRACTION . 'px';
 			}
 			return '(' . $edge . '-width:' . ( is_numeric( $width ) ? $width . 'px' : $width ) . ')';
 		}
@@ -199,7 +202,7 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		 *
 		 * @param int  $max_px        Max-width in px.
 		 * @param bool $with_container Also emit an @container variant.
-		 * @return array<int,string> At-rule prefixes, e.g. ['@media(max-width:767px){'].
+		 * @return array<int,string> At-rule prefixes, e.g. ['@media(max-width:767.98px){'].
 		 */
 		public static function tier_at_rules( $max_px, $with_container = false ) {
 			$max_px = (int) $max_px;

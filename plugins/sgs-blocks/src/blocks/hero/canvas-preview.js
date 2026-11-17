@@ -2,7 +2,7 @@
  * sgs/hero — the editor canvas's styles for the section, its content column and
  * its split-media grid cell, at the device tier the editor is previewing. Each value
  * is resolved the way render.php emits it (its base rule plus its
- * `@media (max-width:1023px)` / `(max-width:767px)` overrides), so the canvas
+ * `@media (max-width:1023.98px)` / `(max-width:767.98px)` overrides), so the canvas
  * paints what the published page paints at that width.
  *
  * @package

@@ -412,7 +412,7 @@ if ( $has_end_shape ) {
 }
 
 // --- Responsive MARGIN tiers — box objects, scoped @media on the SAME selector
-// (contract §B2: tablet max-width:1023px, mobile max-width:767px). Margin tiers
+// (contract §B2: tablet max-width:1023.98px, mobile max-width:767.98px). Margin tiers
 // are never gated. (Padding tiers are handled inside the box helper above.) ---
 $margin_tab_val = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 $margin_mob_val = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );

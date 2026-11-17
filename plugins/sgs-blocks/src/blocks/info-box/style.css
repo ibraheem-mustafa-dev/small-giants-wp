@@ -205,7 +205,7 @@
    767px = SGS_Breakpoints::MOBILE_MAX (the framework device tier). Was 599px,
    which left 600-767px stacking-free while the wrapper had already switched to
    the mobile tier. */
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-info-box--media-left,
 	.sgs-info-box--media-right {
 		flex-direction: column;

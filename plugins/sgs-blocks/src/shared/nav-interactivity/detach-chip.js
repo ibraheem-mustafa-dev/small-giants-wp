@@ -24,10 +24,10 @@ import { SGS_BREAKPOINTS } from '../../utils/responsive';
  * @return {string} desktop | tablet | mobile.
  */
 export function tierForWidth( width ) {
-	if ( width <= SGS_BREAKPOINTS.MOBILE_MAX ) {
+	if ( width < SGS_BREAKPOINTS.MOBILE_MAX + 1 ) {
 		return 'mobile';
 	}
-	if ( width <= SGS_BREAKPOINTS.TABLET_MAX ) {
+	if ( width < SGS_BREAKPOINTS.TABLET_MAX + 1 ) {
 		return 'tablet';
 	}
 	return 'desktop';

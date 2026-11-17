@@ -524,8 +524,8 @@ if ( $border['base'] ) {
 }
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
-// scoped @media on the SAME selector (contract §B2: tablet max-width:1023px,
-// mobile max-width:767px). ---
+// scoped @media on the SAME selector (contract §B2: tablet max-width:1023.98px,
+// mobile max-width:767.98px). ---
 $padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
 $padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
 $margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );

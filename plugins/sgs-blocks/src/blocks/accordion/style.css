@@ -266,7 +266,7 @@
 
 /* ─── RESPONSIVE ─── */
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-accordion-item {
 		--sgs-accordion-header-pad-base-y: 14px;
 		--sgs-accordion-header-pad-base-x: 16px;

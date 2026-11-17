@@ -470,7 +470,7 @@
 		width: 100%;
 	}
 }
-@media ( max-width: 1023px ) {
+@media ( max-width: 1023.98px ) {
 	.wp-block-sgs-mega-panel .sgs-mega-panel__content {
 		flex-direction: column;
 	}

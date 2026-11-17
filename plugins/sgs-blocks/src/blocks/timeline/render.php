@@ -462,7 +462,7 @@ $scoped_css[] = sgs_typography_css_rule( $attributes, 'title', $title_sel, '', f
 
 // --- Responsive padding/margin/border-radius tiers — box objects, longhands for
 // the set sides and corners only, scoped @media on the root selector (contract §B2: tablet
-// max-width:1023px, mobile max-width:767px). ---
+// max-width:1023.98px, mobile max-width:767.98px). ---
 $padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
 $padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
 $margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
@@ -549,7 +549,7 @@ if ( $date_gutter ) {
 }
 // Task 2 — 'carousel' is a native scroll-snap card row at ≤767px ONLY; every
 // rule it needs in style.scss is scoped behind BOTH this class AND
-// `@media (max-width:767px)`, so it is inert above that width and a 'stacked'
+// `@media (max-width:767.98px)`, so it is inert above that width and a 'stacked'
 // timeline (the default) never carries a rule from it at all.
 if ( 'carousel' === $mobile_layout ) {
 	$wrapper_classes[] = 'sgs-timeline--mobile-carousel';

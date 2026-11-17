@@ -180,8 +180,8 @@ export function overlayPaintPreview( colour, gradient, opacity, blendMode, palet
 
 /**
  * The background image the wrapper's media layer shows at a device tier: its
- * `@media (max-width:1023px)` rule swaps in the tablet image and its
- * `(max-width:767px)` rule the mobile one, so mobile falls back to tablet, then
+ * `@media (max-width:1023.98px)` rule swaps in the tablet image and its
+ * `(max-width:767.98px)` rule the mobile one, so mobile falls back to tablet, then
  * desktop ('' when the tier has no image of its own and desktop has none).
  *
  * @param {Object} desktop Desktop image object (`{url}`).

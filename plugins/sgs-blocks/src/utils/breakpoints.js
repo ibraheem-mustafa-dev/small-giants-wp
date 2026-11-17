@@ -16,36 +16,59 @@ export const SGS_BREAKPOINTS = {
 };
 
 /**
- * Ready-made `matchMedia` conditions built from SGS_BREAKPOINTS (mirror of PHP SGS_Breakpoints::query()). One named
- * export per condition so a bundle carries only the ones it reads. The fractional pair matches the stylesheet gates
- * `max-width: 767.98px`, so a fractional viewport reads as the same tier in script and in CSS.
+ * The decimal that turns a tier's whole-pixel maximum into its upper bound in a media query (mirror of PHP
+ * SGS_Breakpoints::UPPER_FRACTION). A zoomed browser or a scaled display reports a fractional viewport width
+ * (767.4px) that neither a whole-pixel upper bound at 767 nor a lower bound at 768 matches, so every tier's upper bound
+ * is its maximum plus this and the next tier starts at the next whole pixel: exactly one tier matches at every real
+ * width. `queryWidth()` adds it in one place.
  */
-export const QUERY_TABLET = `(max-width: ${ SGS_BREAKPOINTS.TABLET_MAX }px)`;
-export const QUERY_MOBILE = `(max-width: ${ SGS_BREAKPOINTS.MOBILE_MAX }px)`;
-export const QUERY_TABLET_UP = `(min-width: ${ SGS_BREAKPOINTS.MOBILE_MAX + 1 }px)`;
-export const QUERY_DESKTOP = `(min-width: ${ SGS_BREAKPOINTS.TABLET_MAX + 1 }px)`;
-export const QUERY_MOBILE_FRACTIONAL = `(max-width: ${ SGS_BREAKPOINTS.MOBILE_MAX }.98px)`;
-export const QUERY_TABLET_ONLY_FRACTIONAL = `(min-width: ${ SGS_BREAKPOINTS.MOBILE_MAX + 1 }px) and (max-width: ${ SGS_BREAKPOINTS.TABLET_MAX }.98px)`;
+export const UPPER_FRACTION = '.98';
 
 /**
  * The bare media condition for a single width edge at a width the caller computed: a per-instance collapse point, a
  * custom-px tier (mirror of PHP SGS_Breakpoints::query_width()). A number is taken as px; a string is used as given.
+ * A `max` edge at exactly a tier maximum (767 or 1023, as a number or '767px') takes UPPER_FRACTION.
  *
  * @param {string}        edge  'max' or 'min'.
  * @param {number|string} width Width.
- * @return {string} e.g. '(min-width:900px)'; '' for an unknown edge or an empty width.
+ * @return {string} e.g. '(min-width:900px)', '(max-width:767.98px)'; '' for an unknown edge or an empty width.
  */
-export const queryWidth = ( edge, width ) =>
-	( 'max' !== edge && 'min' !== edge ) || '' === String( width )
-		? ''
-		: `(${ edge }-width:${ 'number' === typeof width ? `${ width }px` : width })`;
+export const queryWidth = ( edge, width ) => {
+	if ( ( 'max' !== edge && 'min' !== edge ) || '' === String( width ) ) {
+		return '';
+	}
+	let value = 'number' === typeof width ? `${ width }px` : width;
+	if (
+		'max' === edge &&
+		new RegExp(
+			`^(${ SGS_BREAKPOINTS.MOBILE_MAX }|${ SGS_BREAKPOINTS.TABLET_MAX })(?:px)?$`
+		).test( String( width ).trim() )
+	) {
+		value = `${ parseInt( width, 10 ) }${ UPPER_FRACTION }px`;
+	}
+	return `(${ edge }-width:${ value })`;
+};
+
+/**
+ * Ready-made `matchMedia` conditions built from SGS_BREAKPOINTS (mirror of PHP SGS_Breakpoints::query()). One named
+ * export per condition so a bundle carries only the ones it reads. Upper bounds carry UPPER_FRACTION, so a fractional
+ * viewport reads as the same tier in script and in CSS.
+ */
+export const QUERY_TABLET = queryWidth( 'max', SGS_BREAKPOINTS.TABLET_MAX );
+export const QUERY_MOBILE = queryWidth( 'max', SGS_BREAKPOINTS.MOBILE_MAX );
+export const QUERY_TABLET_UP = `(min-width: ${ SGS_BREAKPOINTS.MOBILE_MAX + 1 }px)`;
+export const QUERY_DESKTOP = `(min-width: ${ SGS_BREAKPOINTS.TABLET_MAX + 1 }px)`;
+export const QUERY_TABLET_ONLY = `(min-width: ${ SGS_BREAKPOINTS.MOBILE_MAX + 1 }px) and ${ QUERY_TABLET }`;
+/** Aliases of QUERY_MOBILE and QUERY_TABLET_ONLY, kept for callers that name the fractional-width guarantee. */
+export const QUERY_MOBILE_FRACTIONAL = QUERY_MOBILE;
+export const QUERY_TABLET_ONLY_FRACTIONAL = QUERY_TABLET_ONLY;
 
 /**
  * The at-rule prefix (no opening brace) for a single width edge (mirror of PHP SGS_Breakpoints::media_width()).
  *
  * @param {string}        edge  'max' or 'min'.
  * @param {number|string} width Width.
- * @return {string} e.g. '@media(max-width:1023px)'.
+ * @return {string} e.g. '@media(max-width:1023.98px)'.
  */
 export const mediaWidth = ( edge, width ) => {
 	const query = queryWidth( edge, width );
@@ -53,5 +76,5 @@ export const mediaWidth = ( edge, width ) => {
 };
 
 /** The at-rule prefixes for the two device tiers (mirror of PHP SGS_Breakpoints::media( 'tablet' | 'mobile' )). */
-export const MEDIA_TABLET = `@media(max-width:${ SGS_BREAKPOINTS.TABLET_MAX }px)`;
-export const MEDIA_MOBILE = `@media(max-width:${ SGS_BREAKPOINTS.MOBILE_MAX }px)`;
+export const MEDIA_TABLET = `@media${ QUERY_TABLET }`;
+export const MEDIA_MOBILE = `@media${ QUERY_MOBILE }`;

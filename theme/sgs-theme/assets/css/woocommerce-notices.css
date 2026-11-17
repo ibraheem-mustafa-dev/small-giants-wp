@@ -149,7 +149,7 @@
 }
 
 /* On a narrow screen the action link sits on its own line under the text, never wrapping around it. */
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.wc-block-components-notice-banner .wc-block-components-notice-banner__content {
 		flex-direction: column-reverse;
 		align-items: flex-start;

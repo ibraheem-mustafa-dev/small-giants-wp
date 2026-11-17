@@ -29,8 +29,8 @@
  *   it, the same pair as the rotate angles (`Sgs_Motion_Rotation::PAIRS`).
  * - The form Focus state (`hover.focus`, `sgs/form` root only): its field-control rules (`Sgs_Motion_Focus_State`).
  *
- * Desktop values sit in the base rule; Tablet and Mobile overrides sit in `@media (max-width:1023px)` and
- * `@media (max-width:767px)` (the `SGS_Breakpoints` constants), and a tier with no override emits no block.
+ * Desktop values sit in the base rule; Tablet and Mobile overrides sit in `@media (max-width:1023.98px)` and
+ * `@media (max-width:767.98px)` (the `SGS_Breakpoints` constants), and a tier with no override emits no block.
  * Every value is printed by `Sgs_Motion_Field_Types::css()`, which resolves `token:<family>.<key>` to
  * `var(--wp--custom--<family>--<key>)`. Field names, owner properties and channels are read from the schema.
  *

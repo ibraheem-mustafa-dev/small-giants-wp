@@ -3,8 +3,8 @@
  * General responsive CSS-rule emitter — Pattern A (Kadence-confirmed).
  *
  * For ANY property with per-device attribute variants, the desktop/base value
- * MUST be emitted on the SAME selector as the tablet (max-width:1023px) and
- * mobile (max-width:767px) tier overrides inside a scoped <style> tag — never
+ * MUST be emitted on the SAME selector as the tablet (max-width:1023.98px) and
+ * mobile (max-width:767.98px) tier overrides inside a scoped <style> tag — never
  * as an inline style="" on the element. Inline style has a higher effective
  * specificity than any selector (including id selectors) so a base value
  * written inline permanently defeats a same-id media-query override; moving
@@ -1029,7 +1029,7 @@ if ( ! function_exists( 'sgs_merge_tri_state_declarations' ) ) {
 				if ( null === $max_width ) {
 					$css .= $selector . '{' . $decls . '}';
 				} else {
-					$css .= '@media (max-width:' . $max_width . 'px){' . $selector . '{' . $decls . '}}';
+					$css .= SGS_Breakpoints::media_width( 'max', (int) $max_width ) . '{' . $selector . '{' . $decls . '}}';
 				}
 			}
 

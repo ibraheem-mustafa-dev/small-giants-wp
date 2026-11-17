@@ -103,7 +103,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_ornament_stroke_draw_css' ) ) {
 		/**
 		 * The 'on' fragment — resting dash-offset + the guarded hover/focus
 		 * reveal + stagger. `%1$s` is the width condition ('' for desktop,
-		 * 'max-width:1023px'/'max-width:767px' for tablet/mobile).
+		 * 'max-width:1023.98px'/'max-width:767.98px' for tablet/mobile).
 		 */
 		$on = static function ( string $width_cond ) use ( $scope, $glyph_shapes, $link, $stagger ): string {
 			$css = $scope . $glyph_shapes . '{stroke-dasharray:64;stroke-dashoffset:64;transition:stroke-dashoffset 500ms var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */}'

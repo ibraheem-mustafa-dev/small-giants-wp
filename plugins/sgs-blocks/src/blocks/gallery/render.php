@@ -271,7 +271,7 @@ if ( '' !== $sgs_gallery_caption_hover_effective ) {
 // Responsive gap tiers (gapTablet / gapMobile).
 //
 // WHY this lives here and not in SGS_Container_Wrapper: the wrapper DOES read
-// gapTablet/gapMobile and emit `@media (max-width:1023px|767px){…{gap:…}}`,
+// gapTablet/gapMobile and emit `@media (max-width:1023.98px|767.98px){…{gap:…}}`,
 // but it scopes those rules to the wrapper's own element — `.sgs-container-<uid>`
 // (or its `>.sgs-container__inner` band). Neither is a grid in this block: the
 // gallery's grid is the CHILD `.sgs-gallery__grid`, and style.css drives its
