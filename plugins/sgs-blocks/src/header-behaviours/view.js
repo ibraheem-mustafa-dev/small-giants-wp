@@ -73,6 +73,7 @@ import {
 	nextDirectionScrollState,
 	positionScrolled,
 } from './direction-scroll-state.js';
+import { nextRowShrunk } from './row-shrink-state.js';
 import { QUERY_MOBILE, QUERY_TABLET } from '../utils/breakpoints';
 
 /**
@@ -646,6 +647,9 @@ function isPageScrollLocked() {
 				// Until this timestamp the row's own collapse or restore is
 				// still moving the page under the visitor (see setRowCollapsed).
 				settleUntil: 0,
+				// Header height the last shrink removed (row-shrink-state.js).
+				shrinkRemovedPx: 0,
+				shrinkPreHeight: 0,
 			};
 		} );
 
@@ -925,12 +929,35 @@ function isPageScrollLocked() {
 				// display:none rule emitted by render.php.
 				if ( row.shrinkTiers.indexOf( tier ) !== -1 ) {
 					row.el.classList.add( 'is-row-shrink-active' );
-					row.el.classList.toggle(
-						'is-row-shrunk',
-						scrollY > 50 ||
-							'shrunk' ===
-								document.documentElement.getAttribute( 'data-sgs-scroll-restore' )
+					const wasShrunk = row.el.classList.contains( 'is-row-shrunk' );
+					const shrinkBox = row.headerEl || row.el;
+					if ( wasShrunk ) {
+						// A shrink that animates keeps removing height after the
+						// class lands, so the removed height is re-read each tick.
+						row.shrinkRemovedPx = Math.max(
+							0,
+							row.shrinkPreHeight - shrinkBox.getBoundingClientRect().height
+						);
+					}
+					const willShrink = nextRowShrunk(
+						wasShrunk,
+						scrollY,
+						row.shrinkRemovedPx,
+						'shrunk' ===
+							document.documentElement.getAttribute( 'data-sgs-scroll-restore' )
 					);
+					if ( willShrink !== wasShrunk ) {
+						// The way back must allow for the height the shrink
+						// removes (scroll anchoring pulls scrollY up by it), so
+						// measure the header either side of the class change.
+						const before = shrinkBox.getBoundingClientRect().height;
+						row.el.classList.toggle( 'is-row-shrunk', willShrink );
+						const after = shrinkBox.getBoundingClientRect().height;
+						row.shrinkPreHeight = before;
+						if ( willShrink ) {
+							row.shrinkRemovedPx = Math.max( 0, before - after );
+						}
+					}
 				} else {
 					row.el.classList.remove( 'is-row-shrink-active' );
 					row.el.classList.remove( 'is-row-shrunk' );
