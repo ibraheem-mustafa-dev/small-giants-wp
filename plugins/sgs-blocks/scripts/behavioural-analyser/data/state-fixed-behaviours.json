@@ -653,6 +653,11 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-container__content-band:has(.sgs-buybox__bar.is-on)",
+   "reason": "the stacking lift that keeps the showing sticky bar above later content bands: layering, not a look, so no setting (the same lift as the .entry-content rule beside it)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
    "selector": ".sgs-buybox .buybox__add-to-cart--hover-lift:hover:not([disabled])",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
