@@ -840,8 +840,9 @@ function SamplePickSet( { attributes, uid, cart = null } ) {
 	const style = [ 'filled', 'outlined', 'ghost', 'tile' ].includes( looks[ 0 ] ) ? looks[ 0 ] : 'outlined';
 	// The sample group is the last one, after three variation pickers, so an auto number reads 4.
 	const row = attributes.pickGroupHeadings && 'object' === typeof attributes.pickGroupHeadings ? Object.values( attributes.pickGroupHeadings )[ 0 ] || {} : {};
+	// The sample shows one of three picked, so a count placeholder in the hint reads as a real count.
 	const heading = row.text || row.hint || attributes.pickGroupNumbers
-		? { text: `${ attributes.pickGroupNumbers ? '4 · ' : '' }${ row.text || __( 'Flavour', 'sgs-blocks' ) }`, hint: row.hint || '' }
+		? { text: `${ attributes.pickGroupNumbers ? '4 · ' : '' }${ row.text || __( 'Flavour', 'sgs-blocks' ) }`, hint: ( row.hint || '' ).replace( /\{picked\}/g, '1' ).replace( /\{max\}/g, '3' ).replace( /\{left\}/g, '2' ) }
 		: null;
 	return (
 		<div className={ `sgs-buybox-pick${ true === attributes.pickHidePreview ? ' sgs-buybox-pick--no-preview' : '' }${ attributes.pickerDotTickInside ? ' sgs-buybox-pick--dot-tick' : '' }${ true === attributes.pickSideButton ? ' sgs-buybox-pick--side-cart' : '' }` }>

@@ -113,3 +113,20 @@ export function addCounted( counts, slug, pack ) {
 export function countsComplete( counts, pack ) {
 	return Object.values( counts ).reduce( ( a, b ) => a + b, 0 ) === pack;
 }
+
+/**
+ * A group hint with its live count filled in: `{picked}` is how many are picked, `{max}` the most allowed and `{left}`
+ * how many more can be picked (never below 0). Text with no placeholder comes back unchanged.
+ * `configurator-look.php::sgs_buybox_configurator_hint_fill` prints the same text on first render.
+ *
+ * @param {string} template The hint as the author wrote it.
+ * @param {number} picked   How many are picked now.
+ * @param {number} max      The most that can be picked.
+ * @return {string} The hint with the numbers in.
+ */
+export function fillHint( template, picked, max ) {
+	return String( template )
+		.replace( /\{picked\}/g, String( picked ) )
+		.replace( /\{max\}/g, String( max ) )
+		.replace( /\{left\}/g, String( Math.max( 0, max - picked ) ) );
+}

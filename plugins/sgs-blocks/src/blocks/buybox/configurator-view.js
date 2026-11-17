@@ -9,7 +9,7 @@
  * @package SGS\Blocks
  */
 
-import { applyPick, removePick, undoSwap, stepCount, addCounted, countsComplete, meetsLeast } from './configurator-picks.js';
+import { applyPick, removePick, undoSwap, stepCount, addCounted, countsComplete, meetsLeast, fillHint } from './configurator-picks.js';
 import { summaryFor, distribute, perUnitText } from './configurator-summary.js';
 
 const ROOT_SELECTOR = '.sgs-buybox--configurator';
@@ -64,6 +64,7 @@ function initRoot( root ) {
 			overflow: el.dataset.overflow || 'refuse',
 			share: el.dataset.share || 'none',
 			inputs,
+			hint: el.querySelector( '[data-sgs-hint-template]' ),
 			order: inputs.filter( ( i ) => i.checked ).map( ( i ) => i.value ),
 			counts: {},
 		};
@@ -219,6 +220,17 @@ function initRoot( root ) {
 		bump();
 	}
 
+	/** A hint with a count placeholder follows the picks; the text is written only when it differs, so a polite live region announces it once per change. */
+	function syncHint( group ) {
+		if ( ! group.hint ) {
+			return;
+		}
+		const text = fillHint( group.hint.dataset.sgsHintTemplate || '', group.order.length, group.most );
+		if ( group.hint.textContent !== text ) {
+			group.hint.textContent = text;
+		}
+	}
+
 	function render() {
 		const lead = groups.find( ( g ) => 'none' !== g.share ) || groups[ 0 ];
 		const labels = lead ? lead.order.map( ( s ) => labelFor( lead, s ) ) : [];
@@ -249,6 +261,7 @@ function initRoot( root ) {
 			perUnitEl.hidden = '' === each;
 			perUnitEl.textContent = each;
 		}
+		groups.forEach( syncHint );
 		renderDots();
 		publishColours();
 		const ready = groups.every( groupReady );

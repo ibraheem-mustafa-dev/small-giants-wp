@@ -179,6 +179,7 @@ export default function ConfiguratorLookPanel( { attributes, setAttributes, list
 									label={ sprintf( /* translators: %s: option group name. */ __( '%s hint', 'sgs-blocks' ), group.label ) }
 									value={ headings[ group.key ]?.hint || '' }
 									onChange={ ( val ) => setHeading( group.key, 'hint', val ) }
+									help={ __( 'Add {picked}, {max} or {left} to show a live count, for example "{picked} of {max} picked".', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
 								/>

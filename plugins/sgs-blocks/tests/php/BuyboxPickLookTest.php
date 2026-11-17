@@ -96,6 +96,26 @@ final class BuyboxPickLookTest extends TestCase {
 		$this->assertStringContainsString( 'sgs-buybox__picker-label-text">How many<', $hinted );
 	}
 
+	public function test_a_hint_with_count_placeholders_is_filled_on_first_render_and_is_a_live_region(): void {
+		$html = self::html( array( 'pickGroupHeadings' => array( 'flavour' => array( 'text' => 'Flavours', 'hint' => '{picked} of {max} picked, {left} left' ) ) ) );
+		$this->assertStringContainsString( '<span class="sgs-buybox-pick__hint" data-sgs-hint-template="{picked} of {max} picked, {left} left" aria-live="polite">1 of 3 picked, 2 left</span>', $html, 'the Start with option counts as one pick' );
+		$this->assertStringContainsString( '<span class="sgs-sr-only">, choose up to 3</span>', $html, 'the accessible limit is unchanged' );
+	}
+
+	public function test_a_hint_without_placeholders_renders_exactly_as_before(): void {
+		$html = self::html( array( 'pickGroupHeadings' => array( 'flavour' => array( 'text' => 'Flavours', 'hint' => 'Up to 3, split evenly' ) ) ) );
+		$this->assertStringContainsString( '<span class="sgs-buybox-pick__hint">Up to 3, split evenly</span>', $html );
+		$this->assertStringNotContainsString( 'data-sgs-hint-template', $html );
+		$this->assertStringNotContainsString( 'aria-live="polite">Up to', $html );
+	}
+
+	public function test_hint_fill_never_reports_a_negative_left(): void {
+		require_once dirname( __DIR__, 2 ) . '/src/blocks/buybox/configurator-look.php';
+		$this->assertSame( '4 of 3, 0 left', sgs_buybox_configurator_hint_fill( '{picked} of {max}, {left} left', 4, 3 ) );
+		$this->assertTrue( sgs_buybox_configurator_hint_counts( 'Pick {max}' ) );
+		$this->assertFalse( sgs_buybox_configurator_hint_counts( 'Pick {up to}' ) );
+	}
+
 	public function test_the_label_typography_also_covers_the_flavour_title(): void {
 		$html = self::html( array( 'pickerLabelFontWeight' => '800', 'pickerLabelTextTransform' => 'uppercase', 'pickerLabelColour' => '#3a2a22', 'pickerHintColour' => '#5e4a3d' ) );
 		$this->assertMatchesRegularExpression( '/sgs-buybox-pick__group-title\{[^}]*font-weight:800/', $html );

@@ -342,7 +342,17 @@ if ( ! function_exists( 'sgs_buybox_configurator_group_html' ) ) {
 			// The author's heading; the limit stays in the accessible name through a screen-reader-only tail.
 			$out .= '<p class="sgs-buybox-pick__group-title" id="' . esc_attr( $head_id ) . '">' . esc_html( $heading['text'] );
 			if ( '' !== $heading['hint'] ) {
-				$out .= ' <span class="sgs-buybox-pick__hint">' . esc_html( $heading['hint'] ) . '</span>';
+				if ( sgs_buybox_configurator_hint_counts( $heading['hint'] ) ) {
+					// A hint with a placeholder is a polite live region: the view script re-fills it from the template on every
+					// change, and writes only when the text differs, so it is announced once per change.
+					$picked = 0;
+					foreach ( $group['terms'] as $term ) {
+						$picked += (string) $term['slug'] === (string) $flags['startWith'] ? 1 : 0;
+					}
+					$out .= ' <span class="sgs-buybox-pick__hint" data-sgs-hint-template="' . esc_attr( $heading['hint'] ) . '" aria-live="polite">' . esc_html( sgs_buybox_configurator_hint_fill( $heading['hint'], $picked, $most ) ) . '</span>';
+				} else {
+					$out .= ' <span class="sgs-buybox-pick__hint">' . esc_html( $heading['hint'] ) . '</span>';
+				}
 			}
 			$out .= '<span class="sgs-sr-only">' . esc_html( substr( $title, strlen( $label ) ) ) . '</span></p>';
 		}

@@ -41,6 +41,41 @@ if ( ! function_exists( 'sgs_buybox_configurator_heading_parts' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_buybox_configurator_hint_counts' ) ) {
+	/**
+	 * Whether a group's hint text carries a live count: any of `{picked}` (how many are picked now), `{max}` (the most
+	 * that can be picked) or `{left}` (how many more can be picked).
+	 *
+	 * @param string $hint The hint text as the author wrote it.
+	 * @return bool True when it holds at least one placeholder.
+	 */
+	function sgs_buybox_configurator_hint_counts( string $hint ): bool {
+		return 1 === preg_match( '/\{(?:picked|max|left)\}/', $hint );
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_configurator_hint_fill' ) ) {
+	/**
+	 * Fill a hint's placeholders: `{picked}`, `{max}` and `{left}` (the most less the picked, never below 0). The view
+	 * script (`configurator-picks.js::fillHint`) does the same on every change.
+	 *
+	 * @param string $hint   The hint text as the author wrote it.
+	 * @param int    $picked How many options are picked now.
+	 * @param int    $max    The most that can be picked.
+	 * @return string The hint with the numbers in.
+	 */
+	function sgs_buybox_configurator_hint_fill( string $hint, int $picked, int $max ): string {
+		return strtr(
+			$hint,
+			array(
+				'{picked}' => (string) $picked,
+				'{max}'    => (string) $max,
+				'{left}'   => (string) max( 0, $max - $picked ),
+			)
+		);
+	}
+}
+
 if ( ! function_exists( 'sgs_buybox_configurator_axis_heading' ) ) {
 	/**
 	 * Apply the group heading settings to one variation axis: its label becomes the heading text (number included) and a

@@ -2,11 +2,12 @@
  * @jest-environment jsdom
  */
 
-const GROUP = ( share, start = '' ) => `
+const GROUP = ( share, start = '', hint = '' ) => `
 <div class="sgs-buybox sgs-buybox--configurator" data-sgs-pick-summary="1" data-wp-context='{"selectedAxes":{"pa_size":"small"},"combos":{"pa_size:small":{"priceMinor":2380}},"currencySymbol":"£"}'>
   <div data-sgs-pick data-summary="Your {pack}: {split}" data-pack-axis="pa_size" data-pack-units='{"small":20}' data-pack-labels='{"small":"20 pack"}' data-layer-axis="" data-layer-colours="{}">
     <div class="sgs-buybox-pick__groups">
       <div data-sgs-pick-group="flavour" data-least="1" data-most="3" data-overflow="replace" data-share="${ share }" data-label="Flavour" data-limit-message="Up to 3" data-least-message="Choose at least 1 flavour">
+        ${ hint ? `<p><span class="sgs-buybox-pick__hint" data-sgs-hint-template="${ hint }" aria-live="polite">stale</span></p>` : '' }
         ${ [ 'vanilla', 'mango', 'mint', 'plum' ].map( ( s ) => `<label><input class="sgs-buybox-pick__input" type="checkbox" value="${ s }" data-label="${ s[ 0 ].toUpperCase() + s.slice( 1 ) }" data-colour="#abcdef" ${ s === start ? 'checked' : '' }><span data-sgs-stepper hidden><button type="button" data-step="-1">-</button><output class="sgs-buybox-pick__count">0</output><button type="button" data-step="1">+</button><input type="hidden" data-sgs-count disabled></span></label>` ).join( '' ) }
         <p class="sgs-buybox-pick__group-error" id="err1" hidden></p>
       </div>
@@ -19,9 +20,9 @@ const GROUP = ( share, start = '' ) => `
   <form class="buybox__cart-form"><button type="submit" class="buybox__add-to-cart">Add</button></form>
 </div>`;
 
-async function setup( share, start ) {
+async function setup( share, start, hint = '' ) {
 	jest.resetModules();
-	document.body.innerHTML = GROUP( share, start );
+	document.body.innerHTML = GROUP( share, start, hint );
 	window.requestAnimationFrame = ( cb ) => cb();
 	await import( '../../src/blocks/buybox/configurator-view.js' );
 	return document.querySelector( '.sgs-buybox' );
@@ -94,5 +95,55 @@ describe( 'Pick a set view', () => {
 		form.dispatchEvent( ok );
 		expect( ok.defaultPrevented ).toBe( false );
 		expect( JSON.parse( root.dataset.extraPicks ).flavour ).toEqual( [ { slug: 'vanilla', count: 18 }, { slug: 'mango', count: 2 } ] );
+	} );
+} );
+
+describe( 'Pick a set hint count', () => {
+	const hintOf = ( root ) => root.querySelector( '.sgs-buybox-pick__hint' );
+
+	test( 'the hint is filled from its template on load, counting the Start with option', async () => {
+		const root = await setup( 'equal', 'vanilla', '{picked} of {max} picked, {left} left' );
+		expect( hintOf( root ).textContent ).toBe( '1 of 3 picked, 2 left' );
+	} );
+
+	test( 'the hint follows every pick and removal, and a swap past the limit stays at the limit', async () => {
+		const root = await setup( 'equal', 'vanilla', '{picked} of {max} picked, {left} left' );
+		click( root, 'mango' );
+		expect( hintOf( root ).textContent ).toBe( '2 of 3 picked, 1 left' );
+		click( root, 'mint' );
+		expect( hintOf( root ).textContent ).toBe( '3 of 3 picked, 0 left' );
+		click( root, 'plum' );
+		expect( hintOf( root ).textContent ).toBe( '3 of 3 picked, 0 left' );
+		click( root, 'plum' );
+		expect( hintOf( root ).textContent ).toBe( '2 of 3 picked, 1 left' );
+	} );
+
+	test( 'Undo and a refused removal keep the hint true', async () => {
+		const root = await setup( 'equal', 'vanilla', '{picked}/{max}' );
+		click( root, 'mango' );
+		click( root, 'mint' );
+		click( root, 'plum' );
+		root.querySelector( '[data-sgs-undo]' ).click();
+		expect( hintOf( root ).textContent ).toBe( '3/3' );
+		const solo = await setup( 'equal', 'vanilla', '{picked}/{max}' );
+		click( solo, 'vanilla' );
+		expect( hintOf( solo ).textContent ).toBe( '1/3' );
+	} );
+
+	test( 'the text is written only when it changes, so a live region speaks once per change', async () => {
+		const root = await setup( 'equal', 'vanilla', '{picked}/{max}' );
+		const writes = jest.fn();
+		new MutationObserver( writes ).observe( hintOf( root ), { childList: true, characterData: true, subtree: true } );
+		click( root, 'vanilla' );
+		await Promise.resolve();
+		expect( writes ).not.toHaveBeenCalled();
+		click( root, 'mango' );
+		await Promise.resolve();
+		expect( writes ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	test( 'NEGATIVE CONTROL: a hint with no placeholder is left exactly as printed', async () => {
+		const root = await setup( 'equal', 'vanilla' );
+		expect( root.querySelector( '[data-sgs-hint-template]' ) ).toBeNull();
 	} );
 } );
