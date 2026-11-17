@@ -17,6 +17,11 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/configurator-look.php';
 
+if ( ! defined( 'SGS_BUYBOX_SIDE_CART_MARKER' ) ) {
+	/** Placeholder for the add-to-basket form while the side column is printed ahead of it (`pickSideButton`). */
+	define( 'SGS_BUYBOX_SIDE_CART_MARKER', '<!--sgs-buybox-side-cart-->' );
+}
+
 if ( ! function_exists( 'sgs_buybox_configurator_styles' ) ) {
 	/**
 	 * The picker looks a group may wear, mapped onto the option picker's own `pickerStyle` enum.
@@ -252,6 +257,10 @@ if ( ! function_exists( 'sgs_buybox_configurator_look_css' ) ) {
 			$css[] = $pill . ' .sgs-option-picker__option{width:auto;}';
 			$css[] = $pill . ' .sgs-option-picker__pill{width:auto;}';
 		}
+		if ( '' !== (string) ( $attributes['pickSideAxis'] ?? '' ) ) {
+			// The moved picker keeps the look rules above (they read `.sgs-buybox__pick-box`) but not a second box.
+			$css[] = $root_sel . ' .sgs-buybox-pick__side-picker.sgs-buybox__pick-box{background:none;border:0;border-radius:0;padding:0;}';
+		}
 		return array_merge( $css, sgs_buybox_configurator_badge_css( $attributes, $root_sel ) );
 	}
 }
@@ -400,7 +409,7 @@ if ( ! function_exists( 'sgs_buybox_configurator_open' ) ) {
 				}
 			}
 		}
-		$out  = '<div class="sgs-buybox-pick' . ( ! empty( $attributes['pickHidePreview'] ) ? ' sgs-buybox-pick--no-preview' : '' ) . ( ! empty( $attributes['pickerDotTickInside'] ) ? ' sgs-buybox-pick--dot-tick' : '' ) . '" data-sgs-pick';
+		$out  = '<div class="sgs-buybox-pick' . ( ! empty( $attributes['pickHidePreview'] ) ? ' sgs-buybox-pick--no-preview' : '' ) . ( ! empty( $attributes['pickerDotTickInside'] ) ? ' sgs-buybox-pick--dot-tick' : '' ) . ( ! empty( $attributes['pickSideButton'] ) ? ' sgs-buybox-pick--side-cart' : '' ) . '" data-sgs-pick';
 		$out .= ' data-summary="' . esc_attr( $template ) . '"';
 		$out .= ' data-pack-axis="' . esc_attr( $pack['key'] ) . '"';
 		$out .= ' data-pack-units="' . esc_attr( (string) wp_json_encode( (object) $pack['units'] ) ) . '"';
@@ -421,9 +430,10 @@ if ( ! function_exists( 'sgs_buybox_configurator_close' ) ) {
 	 * @param string              $form_id    The add-to-cart form's id.
 	 * @param string              $uid        Block uid.
 	 * @param int                 $heading_offset Groups numbered before these (the variation pickers), for the auto number.
+	 * @param string              $side_picker The rendered picker of the `pickSideAxis` attribute ('' when none), printed under the preview.
 	 * @return string Escaped markup.
 	 */
-	function sgs_buybox_configurator_close( array $state, array $attributes, string $form_id, string $uid, int $heading_offset = 0 ): string {
+	function sgs_buybox_configurator_close( array $state, array $attributes, string $form_id, string $uid, int $heading_offset = 0, string $side_picker = '' ): string {
 		$styles    = sgs_buybox_configurator_styles();
 		$by_key    = is_array( $attributes['groupStyles'] ?? null ) ? $attributes['groupStyles'] : array();
 		$fallback  = sanitize_key( (string) ( $attributes['pickerStyle'] ?? '' ) );
@@ -460,6 +470,13 @@ if ( ! function_exists( 'sgs_buybox_configurator_close' ) ) {
 		$out     .= '<figcaption class="sgs-buybox-pick__caption sgs-buybox__pick-summary" data-sgs-caption></figcaption>';
 		$out     .= '</figure>';
 		$out     .= '<p class="sgs-buybox-pick__per-unit" data-sgs-per-unit hidden></p>';
+		if ( '' !== $side_picker ) {
+			$out .= '<div class="sgs-buybox-pick__side-picker sgs-buybox__pick-box">' . $side_picker . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered by render_block().
+		}
+		if ( ! empty( $attributes['pickSideButton'] ) ) {
+			// render.php swaps this marker for the add-to-basket form once it has built it.
+			$out .= '<div class="sgs-buybox-pick__side-cart">' . SGS_BUYBOX_SIDE_CART_MARKER . '</div>';
+		}
 		$out     .= '</div>';
 		$out     .= '<p class="sgs-buybox-pick__live sgs-sr-only" role="status" aria-live="polite" data-sgs-live></p>';
 		$out     .= '<p class="sgs-buybox-pick__undo-row" data-sgs-undo-row hidden><button type="button" class="sgs-buybox-pick__undo" data-sgs-undo>' . esc_html__( 'Undo', 'sgs-blocks' ) . '</button></p>';

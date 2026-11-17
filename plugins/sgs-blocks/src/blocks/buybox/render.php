@@ -148,6 +148,7 @@ $buybox_is_configurator = ( 'configurator' === $buybox_layout );
 $buybox_cfg_state       = array();
 $buybox_cfg_form_id     = '';
 $buybox_cfg_heading_n   = 0;
+$buybox_cfg_side_picker = '';
 if ( $buybox_is_configurator ) {
 	// The "Pick a set" mode: pick-several groups, preview and summary (configurator.php). Loaded only in this mode.
 	require_once dirname( __DIR__, 3 ) . '/includes/configurator-picks/functions.php';
@@ -1308,6 +1309,10 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 		);
 	else :
 		if ( $buybox_is_configurator ) {
+			if ( ! empty( $attributes['pickSideButton'] ) ) {
+				// Held until the cart form is built, which then takes its place in the side column (see 8d below).
+				ob_start();
+			}
 			echo sgs_buybox_configurator_open( $buybox_cfg_state, $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value is escaped inside.
 		}
 		foreach ( $manifest['axes'] as $axis ) {
@@ -1459,16 +1464,20 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 				$buybox_picker_attrs = sgs_buybox_configurator_picker_attrs( $buybox_picker_attrs, $attributes, $buybox_axis_style, $axis, $manifest, array( 'mode' => $tax_mode, 'suffix' => $price_suffix, 'pack_axis' => (string) ( $buybox_cfg_state['pack']['key'] ?? '' ) ) );
 			}
 
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
-			echo render_block(
+			$buybox_picker_html = render_block(
 				array(
 					'blockName' => 'sgs/option-picker',
 					'attrs'     => $buybox_picker_attrs,
 				)
 			);
+			if ( $buybox_is_configurator && '' !== (string) ( $attributes['pickSideAxis'] ?? '' ) && $buybox_axis_taxonomy === $attributes['pickSideAxis'] ) {
+				$buybox_cfg_side_picker .= $buybox_picker_html; // Printed under the preview picture by sgs_buybox_configurator_close().
+			} else {
+				echo $buybox_picker_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
+			}
 		}
 		if ( $buybox_is_configurator ) {
-			echo sgs_buybox_configurator_close( $buybox_cfg_state, $attributes, $buybox_cfg_form_id, $uid, $buybox_cfg_heading_n ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value is escaped inside.
+			echo sgs_buybox_configurator_close( $buybox_cfg_state, $attributes, $buybox_cfg_form_id, $uid, $buybox_cfg_heading_n, $buybox_cfg_side_picker ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value is escaped inside.
 		}
 	endif;
 	?>
@@ -1513,6 +1522,13 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 	</div>
 	<?php endif; ?>
 
+<?php
+	// Pick a set with the button under the picture (pickSideButton): the CTA below is held, then put in the side column.
+	$buybox_side_cart = $buybox_is_configurator && ! empty( $attributes['pickSideButton'] );
+	if ( $buybox_side_cart ) {
+		ob_start();
+	}
+	?>
 	<?php if ( $add_to_cart_opens_modal ) : ?>
 		<?php
 		// ── 8d (modal mode). Spec 43 Phase 3/4 §5a — opens an sgs/modal instead
@@ -1577,6 +1593,12 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 		</button>
 	</form>
 	<?php endif; ?>
+<?php
+	if ( $buybox_side_cart ) {
+		$buybox_side_cart_html = ob_get_clean();
+		echo str_replace( SGS_BUYBOX_SIDE_CART_MARKER, $buybox_side_cart_html, (string) ob_get_clean() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the CTA's own escaped markup, placed in the configurator shell held since its opening.
+	}
+	?>
 
 	<?php // ── 8f. Availability live region — polite, visually hidden (mirrors card L900-906). ?>
 	<p

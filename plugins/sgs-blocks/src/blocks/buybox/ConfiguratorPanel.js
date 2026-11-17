@@ -168,7 +168,7 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 		<InspectorControls>
 			<PanelBody title={ __( 'Pick a set', 'sgs-blocks' ) } initialOpen>
 				<Checklist productId={ productId } list={ state.list } failed={ state.failed } />
-				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { groupStyles: {}, summaryText: 'Your {pack}: {split}', previewLayerAxis: '', pickHideGallery: false, pickHidePreview: false, showPriceRow: true } ) }>
+				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { groupStyles: {}, summaryText: 'Your {pack}: {split}', previewLayerAxis: '', pickHideGallery: false, pickHidePreview: false, pickSideAxis: '', pickSideButton: false, showPriceRow: true } ) }>
 				<Item label={ __( 'Option group looks', 'sgs-blocks' ) } name="groupStyles" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
 					{ ( state.list ? state.list.groups : [] ).map( ( group ) => (
 						<SelectControl
@@ -217,6 +217,29 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 						checked={ true === attributes.pickHidePreview }
 						onChange={ ( val ) => setAttributes( { pickHidePreview: val } ) }
 						help={ __( 'The summary line then sits under the pick groups at full width.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+				</Item>
+				<Item label={ __( 'Option group under the picture', 'sgs-blocks' ) } name="pickSideAxis" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
+					<SelectControl
+						label={ __( 'Option group under the picture', 'sgs-blocks' ) }
+						value={ attributes.pickSideAxis || '' }
+						options={ [
+							{ value: '', label: __( 'None (stays with the other pickers)', 'sgs-blocks' ) },
+							...( state.list ? state.list.groups : [] ).map( ( group ) => ( { value: group.key, label: group.label } ) ),
+						] }
+						onChange={ ( val ) => setAttributes( { pickSideAxis: val } ) }
+						help={ __( 'Moves this variation attribute (for example the pack size) from the main column to the column under the preview picture.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</Item>
+				<Item label={ __( 'Add to basket under the picture', 'sgs-blocks' ) } name="pickSideButton" fallback={ false } attributes={ attributes } setAttributes={ setAttributes }>
+					<ToggleControl
+						label={ __( 'Add to basket under the picture', 'sgs-blocks' ) }
+						checked={ true === attributes.pickSideButton }
+						onChange={ ( val ) => setAttributes( { pickSideButton: val } ) }
+						help={ __( 'Moves the button into the column under the preview picture, at its own width instead of the full width.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>
 				</Item>

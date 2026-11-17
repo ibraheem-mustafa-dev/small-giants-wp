@@ -40,6 +40,22 @@
 	}
 }
 
+/* An option group (pickSideAxis) and the add-to-basket button (pickSideButton) placed under the preview picture. */
+.sgs-buybox-pick__side-picker,
+.sgs-buybox-pick__side-cart {
+	justify-self: stretch;
+	min-width: 0;
+}
+
+.sgs-buybox-pick--side-cart .sgs-buybox-pick__side-cart {
+	justify-self: center;
+}
+
+.sgs-buybox-pick__side-cart .buybox__cart-form,
+.sgs-buybox-pick__side-cart .buybox__add-to-cart {
+	width: auto;
+}
+
 /* Preview picture hidden: the summary and per-unit lines flow under the groups, start-aligned. */
 .sgs-buybox-pick--no-preview .sgs-buybox-pick__side {
 	justify-items: start;

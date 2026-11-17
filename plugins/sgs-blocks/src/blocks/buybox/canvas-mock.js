@@ -835,7 +835,7 @@ function SampleOptionGroup( {
  * @param {Object} props.attributes Block attributes.
  * @return {Element} Sample markup.
  */
-function SamplePickSet( { attributes, uid } ) {
+function SamplePickSet( { attributes, uid, cart = null } ) {
 	const looks = attributes.groupStyles && 'object' === typeof attributes.groupStyles ? Object.values( attributes.groupStyles ) : [];
 	const style = [ 'filled', 'outlined', 'ghost', 'tile' ].includes( looks[ 0 ] ) ? looks[ 0 ] : 'outlined';
 	// The sample group is the last one, after three variation pickers, so an auto number reads 4.
@@ -844,7 +844,7 @@ function SamplePickSet( { attributes, uid } ) {
 		? { text: `${ attributes.pickGroupNumbers ? '4 · ' : '' }${ row.text || __( 'Flavour', 'sgs-blocks' ) }`, hint: row.hint || '' }
 		: null;
 	return (
-		<div className={ `sgs-buybox-pick${ true === attributes.pickHidePreview ? ' sgs-buybox-pick--no-preview' : '' }${ attributes.pickerDotTickInside ? ' sgs-buybox-pick--dot-tick' : '' }` }>
+		<div className={ `sgs-buybox-pick${ true === attributes.pickHidePreview ? ' sgs-buybox-pick--no-preview' : '' }${ attributes.pickerDotTickInside ? ' sgs-buybox-pick--dot-tick' : '' }${ true === attributes.pickSideButton ? ' sgs-buybox-pick--side-cart' : '' }` }>
 			<div className="sgs-buybox-pick__groups sgs-buybox__pick-box">
 				<div className="sgs-buybox-pick__group" role="group" aria-label={ __( 'Flavour', 'sgs-blocks' ) }>
 					{ heading ? (
@@ -887,6 +887,21 @@ function SamplePickSet( { attributes, uid } ) {
 					</div>
 				) }
 				<p className="sgs-buybox-pick__caption sgs-buybox__pick-summary">{ ( attributes.summaryText || 'Your {pack}: {split}' ).replace( '{pack}', '20' ).replace( '{split}', '7 Vanilla · 7 Mango · 6 Mint' ).replace( /\{[a-z_]+\}/g, '' ) }</p>
+				{ attributes.pickSideAxis && (
+					<div className="sgs-buybox-pick__side-picker sgs-buybox__pick-box">
+						<p className="sgs-buybox-pick__group-title">{ attributes.pickSideAxis }</p>
+						<div className="sgs-buybox-pick__options sgs-buybox-pick__options--tile">
+							{ [ '8', '20' ].map( ( n ) => (
+								<span key={ n } className="sgs-buybox-pick__option">
+									<span className="sgs-buybox-pick__option-body">
+										<span className="sgs-buybox-pick__option-name">{ n }</span>
+									</span>
+								</span>
+							) ) }
+						</div>
+					</div>
+				) }
+				{ cart && <div className="sgs-buybox-pick__side-cart">{ cart }</div> }
 			</div>
 		</div>
 	);
@@ -1209,6 +1224,23 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sg
 	)
 		? ` buybox__add-to-cart--${ attributes.addToCartStyle }`
 		: '';
+	// Pick a set can move the add-to-basket button into the side column (pickSideButton), as render.php does.
+	const sideCart = 'configurator' === attributes.buyboxLayout && true === attributes.pickSideButton;
+	const cartForm = (
+		<div className="buybox__cart-form">
+			<span
+				className={ `wp-element-button buybox__add-to-cart${ cartVariant }` }
+				style={ cartStyle }
+			>
+				<AuthoredText
+					value={
+						attributes.addToCartLabel ||
+						__( 'Add to Cart', 'sgs-blocks' )
+					}
+				/>
+			</span>
+		</div>
+	);
 	const stockAbove = 'above' === attributes.stockLinePosition;
 	const stockLine = (
 		<p className="buybox__stock buybox__stock--status buybox__stock--in-stock">
@@ -1467,23 +1499,11 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sg
 							linkStyle={ linkStyle }
 						/>
 						{ 'configurator' === attributes.buyboxLayout && (
-							<SamplePickSet attributes={ attributes } uid={ uid } />
+							<SamplePickSet attributes={ attributes } uid={ uid } cart={ sideCart ? cartForm : null } />
 						) }
 					</>
 				) }
-				<div className="buybox__cart-form">
-					<span
-						className={ `wp-element-button buybox__add-to-cart${ cartVariant }` }
-						style={ cartStyle }
-					>
-						<AuthoredText
-							value={
-								attributes.addToCartLabel ||
-								__( 'Add to Cart', 'sgs-blocks' )
-							}
-						/>
-					</span>
-				</div>
+				{ ! sideCart && cartForm }
 				{ false !== attributes.notifyEnabled && (
 					<SampleNotifyForm attributes={ attributes } />
 				) }
