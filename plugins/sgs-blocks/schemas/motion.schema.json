@@ -9092,6 +9092,39 @@
 						"perDevice": false,
 						"dataAttr": "data-sgs-fx-marquee-pause-control"
 					}
+				},
+				"reducedMotionMode": {
+					"$ref": "#/$defs/choice",
+					"description": "What the strip shows under prefers-reduced-motion: wrap (every item at once, wrapped and centred; the default when nothing is stored) or swap (one line of whole items that is replaced by the next group every interval, with no movement).",
+					"enum": [
+						"wrap",
+						"swap"
+					],
+					"x-sgs-option-labels": {
+						"wrap": "Show every item, wrapped",
+						"swap": "One line, swapping groups"
+					},
+					"x-sgs-field": {
+						"fieldType": "choice",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-marquee-reduced-motion-mode"
+					}
+				},
+				"swapInterval": {
+					"$ref": "#/$defs/ratio",
+					"description": "Seconds each group stays on show in the swap mode (4 when nothing is stored).",
+					"minimum": 1,
+					"maximum": 60,
+					"x-sgs-field": {
+						"fieldType": "ratio",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false,
+						"unit": "s",
+						"dataAttr": "data-sgs-fx-marquee-swap-interval"
+					}
 				}
 			},
 			"additionalProperties": false

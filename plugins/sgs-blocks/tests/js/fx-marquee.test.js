@@ -696,6 +696,32 @@ describe( 'marquee under reduced motion', () => {
 		expect( set.children ).toHaveLength( 2 );
 	} );
 
+	test( 'the swap mode shows one group, animates nothing and hands over to the loop when the preference clears', async () => {
+		reduced = true;
+		const widthOf = jest.spyOn( HTMLElement.prototype, 'offsetWidth', 'get' ).mockReturnValue( 100 );
+		const { root, set } = mount( { attrs: 'data-sgs-fx-marquee-reduced-motion-mode="swap"' } );
+		Object.defineProperty( root, 'clientWidth', { value: 150, configurable: true } );
+		await boot();
+		expect( Element.prototype.animate ).not.toHaveBeenCalled();
+		expect( set.querySelectorAll( '[data-sgs-marquee-off]' ) ).toHaveLength( 1 );
+		expect( root.querySelectorAll( '[data-sgs-marquee-clone]' ) ).toHaveLength( 0 );
+		reduced = false;
+		query( '(prefers-reduced-motion: reduce)' ).fire();
+		expect( set.querySelectorAll( '[data-sgs-marquee-off]' ) ).toHaveLength( 0 );
+		expect( live() ).toHaveLength( 3 );
+		widthOf.mockRestore();
+	} );
+
+	test( 'a strip stored as wrap (or with nothing stored) never swaps', async () => {
+		reduced = true;
+		const widthOf = jest.spyOn( HTMLElement.prototype, 'offsetWidth', 'get' ).mockReturnValue( 100 );
+		const { root, set } = mount();
+		Object.defineProperty( root, 'clientWidth', { value: 150, configurable: true } );
+		await boot();
+		expect( set.querySelectorAll( '[data-sgs-marquee-off]' ) ).toHaveLength( 0 );
+		widthOf.mockRestore();
+	} );
+
 	test( 'starts when the preference clears and stops when it returns', async () => {
 		reduced = true;
 		const { root } = mount();

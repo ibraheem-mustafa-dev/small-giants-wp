@@ -73,4 +73,21 @@ describe( 'the shared marquee lane under reduced motion', () => {
 		const block = reducedMotionBlock( read( 'assets/css/fx-marquee.css' ) );
 		expect( declarations( block, '[data-sgs-marquee-clone]' ) ).toContain( 'display: none' );
 	} );
+
+	test( 'the swap mode is one non-wrapping centred line that keeps its tallest height', () => {
+		const block = reducedMotionBlock( read( 'assets/css/fx-marquee.css' ) );
+		const rule = declarations( block, '[data-sgs-fx-marquee-reduced-motion-mode="swap"][data-sgs-fx-marquee-reduced-motion-mode="swap"]' );
+		expect( rule ).toContain( 'flex-wrap: nowrap' );
+		expect( rule ).toContain( 'justify-content: center' );
+		expect( rule ).toContain( 'max-width: 100%' );
+		expect( rule ).toContain( 'min-height: var(--sgs-marquee-swap-height, 0)' );
+	} );
+
+	test( 'an item off show is clipped, never display:none or removed from the reading order', () => {
+		const block = reducedMotionBlock( read( 'assets/css/fx-marquee.css' ) );
+		const rule = declarations( block, '[data-sgs-marquee-set] > [data-sgs-marquee-off]' );
+		expect( rule ).toContain( 'clip-path: inset(50%)' );
+		expect( rule ).toContain( 'position: absolute' );
+		expect( rule ).not.toMatch( /display\s*:|visibility\s*:/ );
+	} );
 } );

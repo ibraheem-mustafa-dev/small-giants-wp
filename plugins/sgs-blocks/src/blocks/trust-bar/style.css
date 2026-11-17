@@ -370,6 +370,12 @@
 		overflow: visible;
 	}
 
+	/* The swap mode keeps the badges to one line: fx-marquee.css makes the track that line and hides the badges off show,
+	 * and the track takes the bar's gap down from the root (the lane and the track are not boxes in the other layouts). */
+	.sgs-trust-bar[data-sgs-fx-marquee-reduced-motion-mode="swap"] :is(.sgs-trust-bar__lane, .sgs-trust-bar__track) {
+		gap: inherit;
+	}
+
 	/* A title takes a row of its own above the wrapped badges. */
 	.sgs-trust-bar[data-sgs-fx~="marquee"] > .sgs-trust-bar__title {
 		flex: 0 0 100%;

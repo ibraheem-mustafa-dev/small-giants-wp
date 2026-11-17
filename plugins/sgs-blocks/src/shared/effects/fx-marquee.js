@@ -22,9 +22,13 @@
  *   belowBreakpoint always, tablet (1023px and below), mobile (767px and below) or overflow; static outside the range.
  *                  `overflow` runs at every width, but only while one un-duplicated set is wider (or taller) than the root.
  *   pauseControl   the pause button; off by default. Hover and keyboard-focus pause do not depend on it.
+ *   reducedMotionMode  what the strip shows under reduced motion: `wrap` (every item, wrapped; the default) or `swap`
+ *                  (one line of whole items replaced by the next group every `swapInterval` seconds, no movement;
+ *                  `marquee-swap.js`).
  *
  * When the marquee cannot run (reduced motion, off at this device tier, outside the range, no Web Animations) nothing is cloned or animated and
- * the block keeps its static layout, so every item stays visible.
+ * the block keeps its static layout, so every item stays visible. Under reduced motion a strip set to `swap` runs
+ * `marquee-swap.js` instead, inside the same range and device-tier rules.
  *
  * @package
  */
@@ -39,6 +43,7 @@ import {
 import { isEffectOffAtThisTier } from './off-switch';
 import { QUERY_MOBILE, QUERY_TABLET } from '../../utils/breakpoints';
 import { layoutBox, layoutScale } from '../layout-box';
+import { createSwap, swapSeconds } from './marquee-swap';
 
 const SELECTOR = '[data-sgs-fx~="marquee"]';
 const SET = '[data-sgs-marquee-set]';
@@ -65,7 +70,7 @@ function number( text ) {
  *
  * @param {HTMLElement} root The element carrying the `marquee` token.
  * @return {Object} `speed`, `direction`, `hoverRate`, `touchPause`, `edgeFade`, `edgeFadeWidth`,
- *                  `below` and `pauseControl`, with the defaults filled in.
+ *                  `below`, `pauseControl`, `reducedMotionMode` and `swapInterval`, with the defaults filled in.
  */
 export function readMarquee( root ) {
 	const style = window.getComputedStyle( root );
@@ -99,6 +104,8 @@ export function readMarquee( root ) {
 			? below
 			: 'always',
 		pauseControl: attr( 'pause-control' ) === 'true',
+		reducedMotionMode: attr( 'reduced-motion-mode' ) === 'swap' ? 'swap' : 'wrap',
+		swapInterval: swapSeconds( attr( 'swap-interval' ) ),
 	};
 }
 
@@ -185,6 +192,7 @@ export function createMarquee( root ) {
 	let observer = null;
 	const state = { period: 1000, distance: 0, axis: 'x' };
 	const queries = [];
+	let swap = null;
 
 	const clones = () =>
 		Array.from( lane.querySelectorAll( `:scope > [${ CLONE_ATTR }]` ) );
@@ -204,6 +212,33 @@ export function createMarquee( root ) {
 		root.removeAttribute( 'data-sgs-marquee' );
 		lane.removeAttribute( 'data-sgs-marquee-lane' );
 		root.style.removeProperty( '--sgs-marquee-fade-size' );
+	}
+
+	// The reduced-motion swap runs where the loop would have, so the range and the device-tier switch still apply to it.
+	const swapWanted = () =>
+		prefersReducedMotion() &&
+		'swap' === settings.reducedMotionMode &&
+		! isEffectOffAtThisTier( root, 'marquee' ) &&
+		rangeMatches();
+
+	function stopSwap() {
+		if ( swap ) {
+			swap.destroy();
+			swap = null;
+		}
+	}
+
+	function runSwap() {
+		if ( ! swap ) {
+			swap = createSwap( {
+				root,
+				set: original,
+				seconds: settings.swapInterval,
+				touchPause: settings.touchPause,
+				pauseControl: settings.pauseControl,
+			} );
+		}
+		swap.refresh();
 	}
 
 	function teardown() {
@@ -311,8 +346,14 @@ export function createMarquee( root ) {
 		settings = readMarquee( root );
 		if ( ! canRun() ) {
 			teardown();
+			if ( swapWanted() ) {
+				runSwap();
+			} else {
+				stopSwap();
+			}
 			return;
 		}
+		stopSwap();
 		const vertical = VERTICAL.includes( settings.direction );
 		// Read while the static layout still applies: the running layout has its own gap.
 		// The head gate may already have marked the root, so the marks come off while measuring and go back after.
@@ -428,6 +469,7 @@ export function createMarquee( root ) {
 			if ( observer ) {
 				observer.disconnect();
 			}
+			stopSwap();
 			teardown();
 		},
 	};

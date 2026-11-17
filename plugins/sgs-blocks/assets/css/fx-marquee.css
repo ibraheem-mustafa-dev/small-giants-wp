@@ -125,6 +125,41 @@
 	[data-sgs-fx~="marquee"] [data-sgs-marquee-clone] {
 		display: none;
 	}
+
+	/* The still "swap" mode (reducedMotionMode = swap; marquee-swap.js): the set is one centred line that never wraps and
+	   never outgrows the block, and keeps the height of its tallest item so a swap moves nothing below it. The doubled
+	   attribute outranks a block's own static layout for the set (a brand strip's wrapping set). */
+	[data-sgs-fx~="marquee"][data-sgs-fx-marquee-reduced-motion-mode="swap"][data-sgs-fx-marquee-reduced-motion-mode="swap"]:not([data-sgs-marquee="on"]) [data-sgs-marquee-set] {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: center;
+		justify-content: center;
+		position: relative;
+		box-sizing: border-box;
+		width: auto;
+		max-width: 100%;
+		min-width: 0;
+		min-height: var(--sgs-marquee-swap-height, 0);
+		overflow-x: clip;
+	}
+
+	[data-sgs-fx~="marquee"][data-sgs-fx-marquee-reduced-motion-mode="swap"] [data-sgs-marquee-set] > * {
+		flex: 0 0 auto;
+	}
+
+	/* An item that is not on show stays in the accessibility tree and in its place in the reading order: it is clipped to
+	   nothing rather than removed, hidden or aria-hidden. */
+	[data-sgs-fx~="marquee"] [data-sgs-marquee-set] > [data-sgs-marquee-off] {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		border: 0;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
 }
 
 /* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the scroll translate, the cloned items, and the edge-fade mask are removed; the pause control stays because other loops in the same block share it and the script removes it with the last loop. The lane's flex row and overflow clip are left, because the authored layout cannot be recovered in CSS; the script removes those marks when it tears down. */
