@@ -129,6 +129,13 @@ final class OrderItemsRenderTest extends TestCase {
 		$this->assertStringNotContainsString( 'Chocolate · Box of 6', $html );
 	}
 
+	public function test_the_thumbnail_height_rule_outranks_a_shop_themes_img_rule(): void {
+		$order = array( 'items' => array( array( 'name' => 'Pic', 'qty' => 1, 'price' => 'x', 'image_id' => 77, 'fmeta' => array() ) ) );
+		$html  = $this->render( array( 'thumbHeight' => array( 'desktop' => '6rem' ) ), $this->scenario( $order ) );
+		$this->assertSame( 1, preg_match( '/\.(sgs-order-items-[0-9a-f]{8}) \.\1-thumb\{height:6rem/', $html ), 'the height rule names the block scope class and the thumbnail class (0,2,0), beating `.woocommerce img` (0,1,1)' );
+		$this->assertSame( 0, preg_match( '/[>,}]\s*\.sgs-order-items-[0-9a-f]{8}-thumb\{/', $html ), 'no bare single-class thumbnail rule remains' );
+	}
+
 	public function test_a_line_with_a_picture_prints_it_through_the_media_renderer_and_the_switch_hides_it(): void {
 		$order = array( 'items' => array( array( 'name' => 'Pic', 'qty' => 1, 'price' => 'x', 'image_id' => 77, 'fmeta' => array() ) ) );
 		$html  = $this->render( array(), $this->scenario( $order ) );

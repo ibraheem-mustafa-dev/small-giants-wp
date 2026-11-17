@@ -146,7 +146,9 @@ ob_start();
 			);
 			$thumb_html = (string) $out['html'];
 			if ( $thumb_first && '' !== $thumb_html ) {
-				$thumb_css   = (string) $out['css'];
+				// The renderer scopes its rules to the thumbnail's own single class (0,1,0), which loses to a shop theme's
+				// `.woocommerce img { height: auto }` (0,1,1). Naming the block's scope class first lifts every rule to 0,2,0.
+				$thumb_css   = str_replace( '.' . $uid . '-thumb', '.' . $uid . ' .' . $uid . '-thumb', (string) $out['css'] );
 				$thumb_first = false;
 			}
 		}
