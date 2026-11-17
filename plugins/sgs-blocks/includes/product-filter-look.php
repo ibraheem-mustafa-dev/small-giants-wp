@@ -28,6 +28,12 @@
  * parameters removed, marked `aria-current="true"` while nothing in the group is chosen. A group with a start term links
  * to the page with that parameter set to empty, so the start term is not applied again.
  *
+ * One at a time (`sgsChipSingle`): WooCommerce's taxonomy filter is always multi-select. With this on, the chips'
+ * click runs `actions.toggleSingle` of the `@sgs/product-filter-chips` module (src/shared/product-filter-chips-actions.js),
+ * which clears the group's other chosen chips and then toggles through WooCommerce's store; the buttons become radios.
+ * The same module makes the All chip clear its group in place (through WooCommerce's router, no page load) instead of
+ * following its link; the link stays for no-script visitors and a modified click.
+ *
  * Start term (`sgsChipStartTerm`): a term slug the group opens on. WooCommerce keeps filter state only in the URL query
  * (`tags`, `categories`, `filter_<attribute>`), read from REQUEST_URI for the chosen state and from the query vars for the
  * product list, so a page opened with none of those parameters is redirected (302) once to the same URL with the start
@@ -350,12 +356,46 @@ function sgs_chip_group_param_keys( string $type ): array {
  * @param string $href    Page address with the group's parameters removed.
  * @param bool   $current True while nothing in the group is chosen.
  * @param string $count   Count span markup, or '' for none.
+ * @param string $type    Filter type the chip clears (`taxonomy/product_cat`), read by the click action.
  * @return string Markup.
  */
-function sgs_chip_all_markup( string $label, string $href, bool $current, string $count = '' ): string {
+function sgs_chip_all_markup( string $label, string $href, bool $current, string $count = '', string $type = '' ): string {
 	return '<a class="wc-block-product-filter-chips__item sgs-filter-look__all" href="' . esc_url( $href ) . '"'
+		. ' data-wp-interactive="sgs/product-filter-chips" data-wp-on--click="actions.clearAll" data-sgs-all-type="' . esc_attr( $type ) . '"'
 		. ( $current ? ' aria-current="true"' : '' ) . '><span class="wc-block-product-filter-chips__label"><span class="wc-block-product-filter-chips__text">'
 		. esc_html( $label ) . '</span>' . $count . '</span></a>';
+}
+
+/**
+ * Route a chips block's buttons to the one-at-a-time action and mark the group as radios.
+ *
+ * WooCommerce's chips call its own `actions.toggle` (a click on both the server-printed buttons and the client-side
+ * template); the SGS action clears the group's other chosen chips first, then toggles through WooCommerce's store.
+ *
+ * @param string $html Rendered chips markup.
+ * @return string Markup.
+ */
+function sgs_filter_look_single_markup( string $html ): string {
+	return str_replace(
+		array( 'data-wp-on--click="actions.toggle"', 'role="checkbox"', 'role="group"' ),
+		array( 'data-wp-on--click="sgs/product-filter-chips::actions.toggleSingle"', 'role="radio"', 'role="radiogroup"' ),
+		$html
+	);
+}
+
+/**
+ * Load the chips actions script module (`@sgs/product-filter-chips`), once per request.
+ *
+ * @return void
+ */
+function sgs_filter_look_enqueue_actions(): void {
+	if ( ! defined( 'SGS_BLOCKS_PATH' ) || ! defined( 'SGS_BLOCKS_URL' ) ) {
+		return;
+	}
+	$js = 'build/product-filter-chips/index.js';
+	if ( is_file( SGS_BLOCKS_PATH . $js ) ) {
+		wp_enqueue_script_module( '@sgs/product-filter-chips', SGS_BLOCKS_URL . $js, array( '@wordpress/interactivity' ), (string) filemtime( SGS_BLOCKS_PATH . $js ) );
+	}
 }
 
 /**
@@ -380,7 +420,14 @@ function sgs_filter_look_chips_markup( $block_content, $block, $instance = null 
 		);
 	}
 
-	$label = trim( (string) ( $attrs['sgsChipAllLabel'] ?? '' ) );
+	$label  = trim( (string) ( $attrs['sgsChipAllLabel'] ?? '' ) );
+	$single = true === ( $attrs['sgsChipSingle'] ?? false );
+	if ( $single ) {
+		$block_content = sgs_filter_look_single_markup( $block_content );
+	}
+	if ( $single || '' !== $label ) {
+		sgs_filter_look_enqueue_actions();
+	}
 	if ( '' === $label || ! is_object( $instance ) || ! is_array( $instance->context ?? null ) ) {
 		return $block_content;
 	}
@@ -409,7 +456,7 @@ function sgs_filter_look_chips_markup( $block_content, $block, $instance = null 
 	$count = true === ( $attrs['sgsChipAllCount'] ?? false )
 		? sgs_filter_look_all_count_markup( sgs_filter_look_all_count(), true === ( $attrs['sgsChipCountPill'] ?? false ) )
 		: '';
-	return substr_replace( $block_content, $anchor . sgs_chip_all_markup( $label, $href, $current, $count ), $at, strlen( $anchor ) );
+	return substr_replace( $block_content, $anchor . sgs_chip_all_markup( $label, $href, $current, $count, is_array( $first ) ? (string) ( $first['type'] ?? '' ) : '' ), $at, strlen( $anchor ) );
 }
 
 /**

@@ -8,6 +8,7 @@
  * Chips: `sgsChipFontWeight`, `sgsChipBorderWidth`, `sgsChipMinHeight`, `sgsChipPaintButtons` (print the colours picked on the block onto
  * the chip buttons, resting and chosen), and a count pill (`sgsChipCountPill`, `sgsChipCountBackground`,
  * `sgsChipCountColour`, `sgsChipCountRadius`).
+ * One at a time (`sgsChipSingle`): choosing a chip clears the filter's other chosen chips.
  * Chosen chip (`sgsChipSelectedShadow`, `sgsChipSelectedShadowColour`, `sgsChipSelectedOffsetX`, `sgsChipSelectedOffsetY`) and the All chip's count (`sgsChipAllCount`).
  * Sort: `sgsSortBackground`, `sgsSortBorderColour`, `sgsSortBorderWidth`, `sgsSortBorderRadius`, `sgsSortFontWeight`.
  *
@@ -76,6 +77,7 @@ if ( ! window.__sgsFilterLookRegistered ) {
 					sgsChipSelectedOffsetX: { type: 'string', default: '' },
 					sgsChipSelectedOffsetY: { type: 'string', default: '' },
 					sgsChipStartTerm: { type: 'string', default: '' },
+					sgsChipSingle: { type: 'boolean', default: false },
 				},
 			};
 		}
@@ -244,6 +246,13 @@ if ( ! window.__sgsFilterLookRegistered ) {
 								help={ __( 'The term’s slug (for example just-had-a-baby). A page opened with no filter chosen is sent once to the same page with this term chosen, so the address can be shared. Leave empty to open unfiltered.', 'sgs-blocks' ) }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
+							/>
+							<ToggleControl
+								label={ __( 'Choose one at a time', 'sgs-blocks' ) }
+								help={ __( 'Choosing a chip clears the filter’s other chosen chips, so a visitor picks one category at a time. Off lets a visitor choose several.', 'sgs-blocks' ) }
+								checked={ !! attributes.sgsChipSingle }
+								onChange={ ( val ) => setAttributes( { sgsChipSingle: !! val } ) }
+								__nextHasNoMarginBottom
 							/>
 						</PanelBody>
 					) }

@@ -24,6 +24,14 @@ namespace SGS\Blocks {
 			return true;
 		}
 	}
+	if ( ! function_exists( __NAMESPACE__ . '\wp_enqueue_script_module' ) ) {
+		/**
+		 * No-op wp_enqueue_script_module(): the chips actions module is loaded by the markup filter.
+		 *
+		 * @return void
+		 */
+		function wp_enqueue_script_module(): void {}
+	}
 	if ( ! function_exists( __NAMESPACE__ . '\wp_style_engine_get_styles' ) ) {
 		/**
 		 * Minimal wp_style_engine_get_styles(): the chips' padding as CSS.
@@ -211,6 +219,39 @@ namespace {
 			$this->assertStringContainsString( 'aria-current="true"', $none );
 			$this->assertStringNotContainsString( 'aria-current', $chosen );
 			$this->assertStringContainsString( '>All</span>', $chosen );
+		}
+
+		private const WC_BUTTONS = '<div role="group" class="wp-block-woocommerce-product-filter-chips"><div class="wc-block-product-filter-chips__items"><button role="checkbox" data-wp-on--click="actions.toggle">A</button><template><button role="checkbox" data-wp-on--click="actions.toggle">B</button></template></div></div>';
+
+		public function test_single_choice_routes_the_chips_to_the_one_at_a_time_action_and_marks_them_as_radios(): void {
+			$block = array( 'blockName' => 'woocommerce/product-filter-chips', 'attrs' => array( 'sgsChipSingle' => true ) );
+			$out   = \SGS\Blocks\sgs_filter_look_chips_markup( self::WC_BUTTONS, $block );
+			$this->assertSame( 2, substr_count( $out, 'data-wp-on--click="sgs/product-filter-chips::actions.toggleSingle"' ) );
+			$this->assertStringNotContainsString( '"actions.toggle"', $out );
+			$this->assertStringNotContainsString( 'role="checkbox"', $out );
+			$this->assertSame( 2, substr_count( $out, 'role="radio"' ) );
+			$this->assertStringContainsString( 'role="radiogroup"', $out );
+		}
+
+		public function test_single_choice_is_off_by_default_and_leaves_the_markup_untouched(): void {
+			$block = array( 'blockName' => 'woocommerce/product-filter-chips', 'attrs' => array() );
+			$this->assertSame( self::WC_BUTTONS, \SGS\Blocks\sgs_filter_look_chips_markup( self::WC_BUTTONS, $block ) );
+			$off = array( 'blockName' => 'woocommerce/product-filter-chips', 'attrs' => array( 'sgsChipSingle' => false ) );
+			$this->assertSame( self::WC_BUTTONS, \SGS\Blocks\sgs_filter_look_chips_markup( self::WC_BUTTONS, $off ) );
+		}
+
+		public function test_all_chip_clears_in_place_through_the_interactivity_action(): void {
+			$block = array( 'blockName' => 'woocommerce/product-filter-chips', 'attrs' => array( 'sgsChipAllLabel' => 'All' ) );
+			$inst  = (object) array(
+				'context' => array(
+					'woocommerce/selectableItems' => array( 'items' => array( array( 'type' => 'taxonomy/product_cat', 'selected' => false ) ) ),
+				),
+			);
+			$out = \SGS\Blocks\sgs_filter_look_chips_markup( self::COUNTED, $block, $inst );
+			$this->assertStringContainsString( 'data-wp-interactive="sgs/product-filter-chips"', $out );
+			$this->assertStringContainsString( 'data-wp-on--click="actions.clearAll"', $out );
+			$this->assertStringContainsString( 'data-sgs-all-type="taxonomy/product_cat"', $out );
+			$this->assertStringContainsString( 'href="', $out );
 		}
 
 		public function test_all_chip_takes_the_chips_padding(): void {

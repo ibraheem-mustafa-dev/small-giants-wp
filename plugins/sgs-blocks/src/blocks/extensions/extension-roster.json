@@ -176,6 +176,7 @@
 				"sgsChipSelectedOffsetX": { "type": "string", "default": "", "role": "layout", "css_property": "translate", "css_element": "chip-selected" },
 				"sgsChipSelectedOffsetY": { "type": "string", "default": "", "role": "layout", "css_property": "translate-y", "css_element": "chip-selected" },
 				"sgsChipStartTerm": { "type": "string", "default": "", "role": "behaviour" },
+				"sgsChipSingle": { "type": "boolean", "default": false, "role": "behaviour" },
 				"sgsSortBackground": { "type": "string", "default": "", "role": "visual" },
 				"sgsSortBorderColour": { "type": "string", "default": "", "role": "visual" },
 				"sgsSortBorderWidth": { "type": "string", "default": "", "role": "visual" },

@@ -102,6 +102,7 @@ return array(
 	'sgsChipSelectedOffsetY' => array( 'type' => 'string' ),
 	'sgsChipSelectedShadow' => array( 'type' => 'string' ),
 	'sgsChipSelectedShadowColour' => array( 'type' => 'string' ),
+	'sgsChipSingle' => array( 'type' => 'boolean' ),
 	'sgsChipStartTerm' => array( 'type' => 'string' ),
 	'sgsCollapseVisibility' => array( 'type' => 'string' ),
 	'sgsColumnGap' => array( 'type' => 'object' ),

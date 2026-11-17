@@ -295,6 +295,13 @@ if ( moduleConfig ) {
 				'accordion',
 				'filter.js'
 			),
+			// The product filter chips' view module: includes/product-filter-look.php registers it as '@sgs/product-filter-chips' and a chips block with "one at a time" or an All chip loads it.
+			'product-filter-chips/index': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'product-filter-chips-actions.js'
+			),
 			// The basket-count format's view module: includes/helpers-inline-formats.php registers it as '@sgs/basket-count' and a page whose markup holds a basket-count span loads it.
 			'basket-count/index': path.resolve(
 				process.cwd(),
