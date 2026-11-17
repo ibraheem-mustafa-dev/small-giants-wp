@@ -453,7 +453,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/account/style.css",
-   "selector": ".sgs-account__auth-tab:hover",
+   "selector": ".sgs-account__auth-tab:not([aria-selected=\"true\"]):hover",
    "reason": "a sign-in tab lifts on hover by the site's button-preset hover transform, so the hover look is the site's button look, not a block setting"
   },
   {
