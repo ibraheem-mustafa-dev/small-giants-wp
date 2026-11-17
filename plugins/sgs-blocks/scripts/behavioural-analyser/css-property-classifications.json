@@ -23414,6 +23414,15 @@
     },
     {
       "slug": "sgs/order-items",
+      "attr": "itemMetaColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "itemMeta"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
       "attr": "itemMetaFontSize",
       "fields": {
         "css_property": "font-size",
@@ -23430,6 +23439,15 @@
     },
     {
       "slug": "sgs/order-items",
+      "attr": "itemNameColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "itemName"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
       "attr": "itemNameFontSize",
       "fields": {
         "css_property": "font-size",
@@ -23442,6 +23460,15 @@
       "fields": {
         "css_property": "font-weight",
         "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "itemPriceColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "itemPrice"
       }
     },
     {
@@ -23508,6 +23535,15 @@
         "css_property": "color",
         "role": "color",
         "css_element": "total"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "totalsColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "totals"
       }
     },
     {
@@ -46716,47 +46752,11 @@
     },
     {
       "slug": "sgs/order-items",
-      "attr": "itemMetaColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "itemMeta"
-      }
-    },
-    {
-      "slug": "sgs/order-items",
-      "attr": "itemNameColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "itemName"
-      }
-    },
-    {
-      "slug": "sgs/order-items",
-      "attr": "itemPriceColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "itemPrice"
-      }
-    },
-    {
-      "slug": "sgs/order-items",
       "attr": "rowBorderColour",
       "fields": {
         "css_property": "border-color",
         "role": "color",
         "css_element": "row"
-      }
-    },
-    {
-      "slug": "sgs/order-items",
-      "attr": "totalsColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "totals"
       }
     },
     {
