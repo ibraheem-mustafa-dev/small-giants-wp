@@ -107,7 +107,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 148 on `local-mamas`; `sgs/accordion` if a cause is in the block; `mamas-test`
 - Done when: every Contact row is closed by Bean
 - Depends on: Task 1 (social icons)
-- Status: all eleven items and the page's ten entrances are fixed and on `mamas-test` (pushed 2026-11-17, settings and two Custom CSS rules); waiting for Bean to close them. Parked framework work: an accordion item's category label prints only while the accordion's filter is on, so Contact switches the filter on and hides its bar
+- Status: all eleven items and the page's ten entrances are fixed and on `mamas-test` (pushed 2026-11-17, settings and two Custom CSS rules); waiting for Bean to close them. Parked framework work: an accordion item's category label prints only while the accordion's filter is on, so Contact switches the filter on and hides its bar Bean asked why this needs code when Help's labels work: it does not; Contact's labels work today through the workaround, and the code change stays parked.
 
 ### Task 5: Help
 - Why: 9 points. Read first: the register's Help section
@@ -115,7 +115,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 152 on `local-mamas`; `mamas-test`
 - Done when: every Help row is closed by Bean
 - Depends on: Task 4 (accordion)
-- Status: Help 2 to 5 and 7 to 9 are fixed and on `mamas-test` (2026-11-17); waiting for Bean to close them. With Bean: Help 1 (the accordion draws its own search bar and chips and cannot place them in the hero: a code change, or CSS that breaks when the chips wrap) and Help 6 (buttons to policy pages; the Privacy page holds template text and no Terms page exists)
+- Status: Help 2 to 5 and 7 to 9 are fixed and on `mamas-test` (2026-11-17); waiting for Bean to close them. With Bean: Help 1 (the accordion draws its own search bar and chips and cannot place them in the hero: a code change, or CSS that breaks when the chips wrap) and Help 6 (buttons to policy pages; the Privacy page holds template text and no Terms page exists) Bean's decisions of 2026-11-17: Help 1 by a code change (a design for placing the accordion's filter bar is being sized before it is built); Help 6 as two buttons to policy pages, with a simple, standard Terms page drafted from how comparable UK shops structure theirs (being written; the Privacy page still holds WordPress's template text).
 
 ### Task 6: Sign-in
 - Why: 5 points, two of them WooCommerce behaviour (registration fields, where sign-up lands). Read first: the register's Sign-in section
@@ -123,7 +123,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 628 on `local-mamas`; the account blocks if a cause is there; `mamas-test`
 - Done when: every Sign-in row is closed by Bean, and a new test account lands on `/my-account/`
 - Depends on: none
-- Status: Sign-in 1, 2 and 4 are fixed and on `mamas-test` (2026-11-17), with a first-name field for Sign-in 3 and the drawer's two buttons pointed at the sign-in page and its register mode; waiting for Bean to close them. With Bean: the rest of Sign-in 3 (last name and a marketing tick need a block change; a password box is WooCommerce's `woocommerce_registration_generate_password`, which also ends the emailed set-password link) and Sign-in 5 (sign-up returns to the referring page: a block setting for where to land, or a filter)
+- Status: Sign-in 1, 2 and 4 are fixed and on `mamas-test` (2026-11-17), with a first-name field for Sign-in 3 and the drawer's two buttons pointed at the sign-in page and its register mode; waiting for Bean to close them. With Bean: the rest of Sign-in 3 (last name and a marketing tick need a block change; a password box is WooCommerce's `woocommerce_registration_generate_password`, which also ends the emailed set-password link) and Sign-in 5 (sign-up returns to the referring page: a block setting for where to land, or a filter) Bean's decisions of 2026-11-17: last name and an optional marketing tick are added to the block, no password box (WooCommerce's emailed set-password link stays); and a signed-in visitor on the sign-in page is sent to the account page, which also fixes where sign-up lands (the account page keeps its signed-out card, as the draft has it). Being built on branch `feature/account-register-and-redirect` in the worktree `E:\sgs-tmp\wt-account`, for review and merge by the main session.
 
 ### Task 7: Shop
 - Why: 14 points; its product card and filter pills are shared. Read first: the register's Shop section and Gifts 7 to 9b
