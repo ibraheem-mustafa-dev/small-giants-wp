@@ -6563,6 +6563,38 @@
 			"_why": "2026-11-17 (deploy gate, orphan_style_defect). row | stacked: chooses a class variant on the drawer's actions (render.php reads it into the markup, style.css holds the layout), not a CSS value an element manifest could claim. Role mirrors the block's own pillCountStyle."
 		},
 		{
+			"slug": "sgs/cart",
+			"attr": "panelGiftLabel",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-11-17 (deploy gate, orphan_unclassified). Wording of the drawer's gift box: a content attribute with no style behind it; the classifier leaves role NULL. Role mirrors the block's own viewCartLabel."
+		},
+		{
+			"slug": "sgs/cart",
+			"attr": "panelGiftHelp",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-11-17 (deploy gate, orphan_unclassified). Wording of the drawer's gift box: a content attribute with no style behind it; the classifier leaves role NULL. Role mirrors the block's own viewCartLabel."
+		},
+		{
+			"slug": "sgs/cart",
+			"attr": "panelGiftToLabel",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-11-17 (deploy gate, orphan_unclassified). Wording of the drawer's gift box: a content attribute with no style behind it; the classifier leaves role NULL. Role mirrors the block's own viewCartLabel."
+		},
+		{
+			"slug": "sgs/cart",
+			"attr": "panelGiftMessageLabel",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-11-17 (deploy gate, orphan_unclassified). Wording of the drawer's gift box: a content attribute with no style behind it; the classifier leaves role NULL. Role mirrors the block's own viewCartLabel."
+		},
+		{
 			"slug": "sgs/order-items",
 			"attr": "subtotalLabel",
 			"fields": {

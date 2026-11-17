@@ -14,6 +14,7 @@ import { useState } from '@wordpress/element';
 import { Button } from '@wordpress/components';
 import { separatorsLineCss, tierLengthPreview } from '../../utils';
 import { logoUrlFor } from '../../utils/logo-source';
+import { tierValueOf } from '../../utils/responsive';
 import { panelElementStyles, panelRootStyle, scrimPreviewStyle } from './panel-preview-style';
 
 import AuthoredText from '../../components/AuthoredText';
@@ -121,6 +122,17 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 	const scope = `sgs-ed-sep-${ clientId }`;
 	// The centred empty state turns on with any of its additions, as includes/helpers-cart-panel-extras.php decides.
 	const emptyImageUrl = logoUrlFor( attributes.emptyImageSource, tier );
+	// The empty-state picture's own sizing for the previewed tier, as the shared media renderer prints it on the frontend.
+	const emptyImageRatio = String( tierValueOf( attributes.emptyImageRatio, tier ) || '' ).trim();
+	const emptyImageStyle = {
+		width: tierLengthPreview( attributes.emptyImageWidth, tier ),
+		height: tierLengthPreview( attributes.emptyImageHeight, tier ),
+		minWidth: tierLengthPreview( attributes.emptyImageMinWidth, tier ),
+		maxWidth: tierLengthPreview( attributes.emptyImageMaxWidth, tier ),
+		minHeight: tierLengthPreview( attributes.emptyImageMinHeight, tier ),
+		maxHeight: tierLengthPreview( attributes.emptyImageMaxHeight, tier ),
+		aspectRatio: emptyImageRatio || undefined,
+	};
 	const emptyBody = ( attributes.emptyBody || '' ).trim();
 	const emptyHasButton = Number( attributes.emptyProductId ) > 0;
 	const emptyRich = '' !== emptyImageUrl || '' !== emptyBody || emptyHasButton || '' !== ( attributes.emptyCtaUrl || '' ).trim();
@@ -184,7 +196,7 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 						<div className="sgs-cart__panel-items" style={ s.items }>
 							<div className={ `sgs-cart__panel-empty${ emptyRich ? ' sgs-cart__panel-empty--rich' : '' }` } style={ { ...s.empty } }>
 								{ emptyRich && '' !== emptyImageUrl && (
-									<div className="sgs-cart__panel-empty-media"><img src={ emptyImageUrl } alt="" /></div>
+									<div className="sgs-cart__panel-empty-media"><img src={ emptyImageUrl } alt="" style={ emptyImageStyle } /></div>
 								) }
 								{ emptyRich ? (
 									<h3 className="sgs-cart__panel-empty-message" style={ s.emptyMessage }><AuthoredText value={ attributes.emptyCartMessage } /></h3>
