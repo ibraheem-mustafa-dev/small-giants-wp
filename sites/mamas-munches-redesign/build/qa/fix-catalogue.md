@@ -218,3 +218,6 @@ Every change an agent makes to the Mama's Munches site (on its mirror, then push
 | 2026-11-17 Footer link C2 | Footer Privacy link | Went to /help/#legal | post 176 sgs/button Privacy url /privacy-policy/ | hand-built surface, not cloned | Link pointed at the old legal anchor | settings on the mirror, no code |
 | 2026-11-17 Gift card D | Gift card page, 375/768/1440 | Assurance row and accordion carried cookie wording | template 346: three assurance points and four accordion items rewritten for gift cards | hand-built surface, not cloned | Page rebuilt from the product page's parts | settings on the mirror, no code |
 | 2026-11-17 Home stars E | Home review cards, all widths | Stars cocoa; owner prefers pink as on the product page | post 154: ratingColour removed from the 6 testimonial cards (theme default pink rgb(238,128,136)) | hand-built surface, not cloned | Cards set ratingColour mm-cocoa explicitly | settings on the mirror, no code |
+| 2026-11-17 | Gift card custom amount | product 285 meta + template 346 `giftcardformlook` Custom CSS appended | settings on the mirror, no code |  |  |  |
+| 2026-11-17 | Gift card emailed wording | posts 150, 152 text | settings on the mirror, no code |  |  |  |
+| 2026-11-17 | Cookie counts | products 283, 284 short description | settings on the mirror, no code |  |  |  |
