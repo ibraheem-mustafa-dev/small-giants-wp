@@ -164,6 +164,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					viewCartLabel={ viewCartLabel }
 					checkoutLabel={ checkoutLabel }
 					autoOpenOnAdd={ autoOpenOnAdd }
+					autoOpenDrawerOnAdd={ attributes.autoOpenDrawerOnAdd }
 					hideOnCartCheckoutPages={ hideOnCartCheckoutPages }
 					freeDeliveryThresholdOverride={ freeDeliveryThresholdOverride }
 					freeDeliveryMessage={ freeDeliveryMessage }

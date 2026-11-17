@@ -36,6 +36,7 @@ export default function PanelSettingsControls( {
 	viewCartLabel,
 	checkoutLabel,
 	autoOpenOnAdd,
+	autoOpenDrawerOnAdd,
 	hideOnCartCheckoutPages,
 	freeDeliveryThresholdOverride,
 	freeDeliveryMessage,
@@ -120,7 +121,7 @@ export default function PanelSettingsControls( {
 							'sgs-blocks'
 						) }
 						help={ __(
-							'Flyout mode only — the panel appears without moving keyboard focus, and can always be dismissed. Drawer mode never auto-opens (a modal takeover mid-task is disruptive).',
+							'The flyout appears without moving keyboard focus and can always be dismissed. A drawer stays closed unless you also turn on "Open the drawer when an item is added" (a modal takeover mid-task can be disruptive).',
 							'sgs-blocks'
 						) }
 						checked={ !! autoOpenOnAdd }
@@ -129,6 +130,15 @@ export default function PanelSettingsControls( {
 						}
 						__nextHasNoMarginBottom
 					/>
+					{ 'drawer' === displayMode && autoOpenOnAdd && (
+						<ToggleControl
+							label={ __( 'Open the drawer when an item is added', 'sgs-blocks' ) }
+							help={ __( 'A drawer takes over the page, so it stays closed unless you turn this on. The "Added to your basket" message still offers View bag.', 'sgs-blocks' ) }
+							checked={ !! autoOpenDrawerOnAdd }
+							onChange={ ( val ) => setAttributes( { autoOpenDrawerOnAdd: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					) }
 					<ToggleControl
 						label={ __(
 							'Hide the panel on the cart/checkout pages',

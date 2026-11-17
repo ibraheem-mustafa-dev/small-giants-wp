@@ -392,6 +392,10 @@ $wrapper_data_attributes = array(
 	'data-auto-open-on-add' => $auto_open_on_add ? '1' : '0',
 	'data-count-pop'        => $count_pop_animation,
 );
+// A drawer opens on add only when asked to (the drawer is a modal takeover); the flag prints nothing otherwise.
+if ( 'drawer' === $effective_mode && $auto_open_on_add && ! empty( $attributes['autoOpenDrawerOnAdd'] ) ) {
+	$wrapper_data_attributes['data-auto-open-drawer'] = '1';
+}
 if ( null !== $sgs_cart_label_templates ) {
 	$wrapper_data_attributes['data-label-one']   = $sgs_cart_label_templates['one'];
 	$wrapper_data_attributes['data-label-other'] = $sgs_cart_label_templates['other'];

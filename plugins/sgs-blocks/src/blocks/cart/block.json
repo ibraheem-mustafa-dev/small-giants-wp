@@ -1610,6 +1610,7 @@
 		"freeDeliveryBandBorderWidth": {"type": "object", "default": {}, "description": "Border width of the free-delivery band (box object): set only the bottom for a line under it."},
 		"freeDeliveryBandBorderStyle": {"type": "string", "default": ""},
 		"freeDeliveryBandPadding": {"type": "object", "default": {}, "description": "Padding of the free-delivery band: tier object of boxes."},
+		"autoOpenDrawerOnAdd": {"type": "boolean", "default": false, "description": "Drawer mode only: open the drawer when an item is added elsewhere on the page. Off by default because a drawer is a modal takeover; the Add to basket confirmation toast still offers View bag. Needs 'Auto-open when an item is added' on as well."},
 		"itemShowQty": {
 			"type": "boolean",
 			"default": true,

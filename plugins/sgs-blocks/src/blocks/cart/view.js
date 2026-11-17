@@ -22,7 +22,7 @@
  *      reader refetches and every badge refreshes and — flyout mode only, `autoOpenOnAdd` — the panel
  *      opens (dismissible via its existing close affordances).
  *
- * Drawer mode is deliberately EXCLUDED from auto-open-on-add: `showModal()`
+ * Drawer mode is excluded from auto-open-on-add unless the block opts in (`autoOpenDrawerOnAdd`): `showModal()`
  * moves focus into the dialog and inerts the rest of the page — forcing that
  * open the instant an item is added elsewhere on the page would be an
  * unexpected, disruptive context change (WCAG 3.2.1/3.2.2) if the visitor is
@@ -220,9 +220,22 @@ function initWidgetPanel( widget ) {
 	if ( trigger ) {
 		trigger.addEventListener( 'click', panel.refresh );
 	}
-	// Drawer mode intentionally has no `open` handle here — see the module
-	// doc-block for why auto-open-on-add is flyout-only.
-	return { mode, refresh: panel.refresh, autoOpenOnAdd: false };
+	// A drawer opens on add only when the block opted in (`data-auto-open-drawer`, render.php): the trigger's own
+	// click is the open path the shared store owns, and it refreshes the rows. Already open: just refresh.
+	const dialog = panelRoot.matches( 'dialog' ) ? panelRoot : null;
+	const open = () => {
+		if ( dialog?.open ) {
+			panel.refresh();
+		} else {
+			trigger?.click();
+		}
+	};
+	return {
+		mode,
+		open: trigger ? open : undefined,
+		refresh: panel.refresh,
+		autoOpenOnAdd: autoOpenOnAdd && widget.dataset.autoOpenDrawer === '1',
+	};
 }
 
 /**
