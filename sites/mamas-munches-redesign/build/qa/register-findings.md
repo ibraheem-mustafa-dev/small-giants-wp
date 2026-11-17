@@ -4,6 +4,8 @@ One table per section of `issue-register.md` (beside this file), in the order of
 
 ## Footer (post 176 on `local-mamas`, measured 2026-11-17 at 1440; probes and screenshots in `E:\sgs-tmp\mamas-register\footer\`)
 
+**Closed: Bean checked this section on `mamas-test` and approved it on 2026-11-17.**
+
 | ID | Draft → site | Cause | Proof | Layer | Proposed fix | Status |
 |---|---|---|---|---|---|---|
 | Footer 1 | Same 1022px box on both (the draft's 1240px band less the 190px logo column). The draft breaks "Hungry? Of / course you are."; the site breaks "Hungry? Of course you / are." | The `sgs/heading` has no `textWrap`; the draft's h2 has `text-wrap:balance` (`handoff/SiteFooter.dc.html`). At 80px the line needs more than 1022px, so one line never fits | Computed `text-wrap` and line text on both sides; the heading's saved attributes | Site setting | `textWrap` = `balance` (Bean, 2026-11-17: match the draft's two balanced lines) | fixed on `local-mamas` 2026-11-17 |
@@ -22,6 +24,8 @@ Evidence: screenshot pairs and measurements in `E:\sgs-tmp\mamas-register\footer
 
 ## Nav drawer (post 180 on `local-mamas`, measured 2026-11-17 at 375 and 768; probes and screenshots in `E:\sgs-tmp\mamas-register\drawer\`)
 
+**Closed: Bean checked this section on `mamas-test` and approved it on 2026-11-17.**
+
 | ID | Draft → site | Cause | Proof | Layer | Proposed fix | Status |
 |---|---|---|---|---|---|---|
 | Nav drawer 1 | The draft's panel slides in over 320ms, then each of its 14 parts fades and slides in from 18px left over 420ms, 35ms apart from an 80ms start (capped at the 11th). The site slides the panel only | The `sgs/nav-drawer`'s `sgsMotion` holds one entrance, on the panel; no entrance for its children and no stagger | Saved attributes; `getAnimations()` on the open drawer (one animation); timed screenshots at 60, 200 and 500ms | Site setting | The block's Entrance settings: trigger "Panel opens", from opacity 0 and translateX -18px, 420ms, `cubic-bezier(.2,.8,.2,1)`; stagger on children, start 80, step 35, cap 430, order "Flatten nested items". To confirm at fix time: that flattening reaches the menu's seven links one by one; if not, the menu's own item-motion settings carry them | fixed on `local-mamas` 2026-11-17 |
@@ -38,6 +42,8 @@ Evidence for the fixes: `E:\sgs-tmp\mamas-register\drawer\after\` (screenshot pa
 Nav drawer 4, reach (measured 2026-11-17, `E:\sgs-tmp\mamas-register\woo-img\out.json`): on this site only the drawer's two pictures lose a size to WooCommerce's rule, on Shop, both product pages, Basket and Account, at 375 and 1440; no other picture does. The rule is written by `includes/media/atoms/sizing.php::sgs_media_atom_sizing_emit` on the selector from `includes/media/media-values.php::sgs_media_nodes`: one class (`.sgs-media-<uid>`) when the picture is an unwrapped `img`, two (`.<uid> .sgs-media-el`) when it is wrapped, so only an unwrapped picture with a set height is hit. Options put to Bean: (a) the emitter writes `.sgs-media-el.<uid>` for an unwrapped picture, which wins everywhere but then ties with block rules such as `.sgs-gallery__img-wrap .sgs-media-el`, so a before-and-after size diff of every picture is run first; (b) a setting-only fix on the two drawer pictures, leaving the fault for any other shop. Bean chose (a) on 2026-11-17; the fix is kept only if the diff on the Mama's, Indus and Eye Care mirrors shows no picture changing other than those WooCommerce's rule was overriding. Result (2026-11-17): (a) was built with a failing-first test, measured and reverted; the repo and the three mirrors are as committed. Of 657 pictures on Mama's, 2,799 on Indus and 189 on Eye Care, the two drawer pictures went to 84px on all eight WooCommerce pages as intended, and two things broke: the buy box's main photo frame lost its 2px border (`includes/product-card-media.php::sgs_pcm_chrome_css` passes the buy box's own box classes as the uid, and those boxes are not `sgs-media-el`, so the two-class selector no longer matched them), and Eye Care's header logo on `/shop/` at 375 went from 48px to 3,000px wide (which rule it then lost to was not found). Snapshots and the diff: `E:\sgs-tmp\mamas-register\media-fix\`. Nav drawer 4 is therefore fixed by (b), the two pictures framed by settings. The framework fault stays open and is parked in the plan: any later fix must make the two-class selector opt-in for a plain rendered `img` only, and explain the Eye Care logo first.
 
 ## Header (post 178 on `local-mamas`, measured 2026-11-17 from 320 to 1440; probes and screenshots in `E:\sgs-tmp\mamas-register\header\`)
+
+**Closed: Bean checked this section on `mamas-test` and approved it on 2026-11-17.**
 
 | ID | Draft → site | Cause | Proof | Layer | Proposed fix | Status |
 |---|---|---|---|---|---|---|
@@ -108,3 +114,27 @@ Layer: site settings (each block's `sgsMotion.elements.root.entrance.base`, trig
 | Contact 10 | open corner shadow | settings missing | open shadow rgb(58,42,34) 4px 4px 0 0, closed none | Site setting | itemShadowOpen 4px 4px 0 0, itemShadowOpenColour mm-cocoa | fixed on local-mamas 2026-11-17 |
 | Contact 11 | category labels | none set; eyebrow prints only with accordion filterEnabled | DOM eyebrows present | Site setting + block coupling | category + showCategoryEyebrow; subscription item removed; filterEnabled true, filterSearch/filterChips false; Custom CSS hides count line | fixed on local-mamas 2026-11-17 |
 | All pages 1 (Contact) | 10 entrances | none set | 10 data-sgs-me elements; below-fold starts 0.01 ends 1; no replay; reduced motion opacity 1 | Site setting | recipe P on cr-ref-contact-2,-3,-4,hero split-media,-7,-11,-15,-20,-23,-25 | fixed on local-mamas 2026-11-17 |
+
+## Shop (template 194 on `local-mamas`, 2026-11-17; evidence in `E:\sgs-tmp\mamas-register\shop\`)
+
+| ID | Draft → site | Cause | Proof | Layer | Fix made or proposed | Status |
+|---|---|---|---|---|---|---|
+| Shop 1 | eyebrow sits clear above the H1 → was ~17px lower, touching it | restOrigin missing: tilt pivots on the centre of a full-width box | bbox 163.7-226.3 vs draft 146.3-209 at 1440, H1 equal at 215; footer eyebrow carries restOrigin left | setting never set | cr-ref-shop-35 restOrigin left | fixed on local-mamas 2026-11-17 |
+| Shop 2 | one category at a time → several | WooCommerce taxonomy filter hardcodes selectionMode multiple (ProductFilterTaxonomy.php); attribute filter has selectType, taxonomy does not | clicked Zookies + Gifts: URL ?categories=gifts,zookies | missing setting (code) | proposed | proposed |
+| Shop 3 | → full reload on "All" | "All" is an SGS-rendered plain link (product-filter-look.php, class sgs-filter-look__all, href /shop/); other pills use WC's router fetch | window marker lost after All, kept after other pills; All = document request | block behaviour (code) | proposed; no setting avoids it | proposed |
+| Shop 4 | "Sort" 15/700 → "Sort by" 11/400 | WC label string and styling, no settings | template orderby.php | missing setting; fixed by structure | useLabel false + sgs/text "Sort" | fixed |
+| Shop 5 | corner shadow → none | no attribute drives it | DB query | missing setting | Custom CSS on wrapper | fixed |
+| Shop 6 | question | see report | | proposal | | proposed |
+| Shop 7 | card label/tilt/button | see catalogue rows | | settings + Custom CSS | label, hover, button shadow done; wording proposed | fixed (wording proposed) |
+| Shop 8 | pills kept → filter button | overlayMode default mobile | | setting | overlayMode off | fixed |
+| Shop 9 | whole card → link | sgsBlockLink missing on cr-ref-shop-14 | | setting | /product/zookies/ | fixed |
+| Shop 10 | "Start building" + circle | missing text; arrow glyph button | | setting/content | added | fixed |
+| Shop 11 | one shared hover | heading sgsMotion hover; arrow built-in lift | | setting | removed / builtInHoverLift false | fixed |
+| Shop 12 | replace card | | | content | options proposed | proposed |
+| Shop 13 | gap under sort | 32px margin lived inside hidden drawer | | setting | container margin per device | fixed |
+| Shop 14 | clipped corners | container overflow visible | overflow visible, media radius 0 | setting | overflow hidden | fixed |
+| Shop gutters | draft 40px gutters (63px at 1366, 100px at 1440, 340px at 1920) → site 0px at 1024-1200, 30px at 1300 | hero padding 0 and contentWidth 1240; main container maxWidth 1240 with padding 0 | measured at 1920/1440/1366/1300/1200/1100/1024/1023/768/375 (gut-before.txt, gut-after.txt) | setting | hero contentWidth 1320 + padding 40; container maxWidth/contentWidth 1320 + padding 40 | fixed on local-mamas 2026-11-17 |
+| Shop overflow 3px at 1024 | none in draft | the tilted product cards (rotated corners of the `sgs-has-block-link` card, r=1027, and its `product-card__body`, r=1025) stuck out past a grid with no gutter | scrollWidth 1027 before, 1024 after | consequence of the gutter fault | fixed by the gutter settings | fixed |
+| Subscribe pill | remove | product_cat term 44 "Subscribe" (slug subscribe), carried only by Zookies (257); no menu, page or post links to it; the filter block and SGS look have no exclude setting (WC taxonomy filter attributes: taxonomy, showCounts, displayStyle, sortOrder, hideEmpty) | wp term list, wp post list --product_cat=subscribe, DB search | product data | proposed: unassign Zookies from the term (or delete it) | proposed |
+
+Shop, added in review (main session, 2026-11-17): the product cards' rest tilts were the draft's own (-1, 1, -0.6, 1.2, -1.2 degrees, from `ProductCard.dc.html`), which leaves the third card almost straight; Bean asked for the footer gallery's pattern (Gifts 8, and his note on the screenshot), so `restRotate` is now -2, 1.5, -1, 2, -1.5, 1, measured at four widths with no sideways scroll. The "Subscribe" filter pill was the product category `subscribe` (term 44) carried only by Zookies (post 257): Zookies is taken out of it, and the pill is gone. Still showing subscriptions: the Shop's "Subscribe & save 10%" card (its replacement is Bean's choice, Shop 12), two mentions on Home (Task 10) and one line on the account page (Task 13).
