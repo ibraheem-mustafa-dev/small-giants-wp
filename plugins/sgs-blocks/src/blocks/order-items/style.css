@@ -1,0 +1,90 @@
+/* ===== SGS Order Items =====
+   Defaults sit inside :where() so any attribute-driven rule beats them. Borders default to width 0; the divider is the
+   Divider setting's own width. */
+
+:where(.sgs-order-items) {
+	box-sizing: border-box;
+}
+
+:where(.sgs-order-items) .sgs-order-items__list {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+:where(.sgs-order-items) .sgs-order-items__row {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin: 0;
+	padding: 0 0 1rem;
+	border-width: 0;
+	border-style: solid;
+}
+
+:where(.sgs-order-items) .sgs-order-items__thumb {
+	display: block;
+	flex: 0 0 auto;
+	border-width: 0;
+}
+
+:where(.sgs-order-items) .sgs-order-items__thumb .sgs-media-el {
+	display: block;
+	width: 4rem;
+	height: 4rem;
+	object-fit: cover;
+	border-width: 0;
+}
+
+:where(.sgs-order-items) .sgs-order-items__main {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+:where(.sgs-order-items) .sgs-order-items__name {
+	margin: 0;
+	font-weight: 600;
+	overflow-wrap: anywhere;
+}
+
+:where(.sgs-order-items) .sgs-order-items__meta {
+	margin: 0.25rem 0 0;
+	padding: 0;
+	list-style: none;
+	font-size: 0.875em;
+	opacity: 0.8;
+}
+
+:where(.sgs-order-items) .sgs-order-items__price {
+	flex: 0 0 auto;
+	margin-inline-start: auto;
+	font-variant-numeric: tabular-nums;
+}
+
+:where(.sgs-order-items) .sgs-order-items__totals {
+	margin: 1rem 0 0;
+	padding: 0;
+}
+
+:where(.sgs-order-items) .sgs-order-items__totals-row {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0.25rem 0;
+}
+
+:where(.sgs-order-items) .sgs-order-items__label,
+:where(.sgs-order-items) .sgs-order-items__value {
+	margin: 0;
+}
+
+:where(.sgs-order-items) .sgs-order-items__value {
+	font-variant-numeric: tabular-nums;
+}
+
+:where(.sgs-order-items) .sgs-order-items__total {
+	font-weight: 700;
+}

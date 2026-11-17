@@ -24,11 +24,12 @@ if ( ! class_exists( 'WC_Order_Item', false ) ) {
 		public function get_name() { return $this->d['name']; }
 		public function get_quantity() { return $this->d['qty'] ?? 1; }
 		public function get_total() { return $this->d['total'] ?? '0'; }
-		public function get_product() { return $this->d['product'] ?? false; }
+		public function get_product() { $id = (int) ( $this->d['image_id'] ?? 0 ); return $id ? new class( $id ) { public function __construct( private int $id ) {} public function get_image_id() { return $this->id; } } : false; }
 		public function get_product_id() { return $this->d['product_id'] ?? 0; }
 		public function get_variation_id() { return $this->d['variation_id'] ?? 0; }
 		public function get_method_title() { return $this->d['name']; }
 		public function get_meta_data() { return $this->d['meta'] ?? array(); }
+		public function get_formatted_meta_data() { return array_map( fn( $m ) => (object) $m, $this->d['fmeta'] ?? array() ); }
 	}
 }
 if ( ! class_exists( 'WC_Order', false ) ) {
@@ -52,6 +53,10 @@ if ( ! class_exists( 'WC_Order', false ) ) {
 		public function get_total() { return $this->d['total'] ?? 0; }
 		public function get_shipping_total() { return $this->d['ship_total'] ?? 0; }
 		public function get_total_discount() { return $this->d['discount'] ?? 0; }
+		public function get_currency() { return 'GBP'; }
+		public function get_shipping_tax() { return $this->d['ship_tax'] ?? 0; }
+		public function get_formatted_line_subtotal( $item ) { return $item->d['price'] ?? ''; }
+		public function get_order_item_totals() { return $this->d['totals'] ?? array(); }
 		public function get_fees() { return array_map( fn( $i ) => new WC_Order_Item( $i ), $this->d['fees'] ?? array() ); }
 	}
 }
@@ -82,4 +87,23 @@ function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF
 function esc_attr( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF-8' ); }
 function wc_get_order( $id ) { return $GLOBALS['sgs_t']['orders'][ $id ] ?? false; }
 function wc_format_datetime( $dt, $format = '' ) { return $dt ? gmdate( '' !== $format ? $format : 'j F Y', $dt->getTimestamp() ) : ''; }
+function wc_price( $amount, $args = array() ) { return '<span class="amount">&pound;' . number_format( (float) $amount, 2 ) . '</span>'; }
+function wc_get_product( $id ) { return false; }
 function WC() { return new class { public $session = null; }; }
+
+// A scenario handed to a child process (the render harness) as JSON in the environment: orders, query, key, user.
+$sgs_t_scenario = getenv( 'SGS_T_SCENARIO' );
+if ( is_string( $sgs_t_scenario ) && '' !== $sgs_t_scenario ) {
+	$sgs_t_data = json_decode( $sgs_t_scenario, true );
+	foreach ( (array) ( $sgs_t_data['orders'] ?? array() ) as $sgs_t_order ) {
+		sgs_t_order( $sgs_t_order );
+	}
+	$GLOBALS['sgs_t']['query'] = (array) ( $sgs_t_data['query'] ?? array() );
+	$GLOBALS['sgs_t']['user']  = (int) ( $sgs_t_data['user'] ?? 0 );
+	// Attachment 77 is a 400 x 400 picture, for the media renderer's file and size reads.
+	$GLOBALS['sgs_qa_attachments']     = array( '77' => 'https://example.test/wp-content/uploads/p77.jpg' );
+	$GLOBALS['sgs_qa_attachment_meta'] = array( '77' => array( 'width' => 400, 'height' => 400 ) );
+	$_GET['key']               = (string) ( $sgs_t_data['key'] ?? '' );
+	require_once dirname( __DIR__, 3 ) . '/includes/gift-order/class-gift-order-order.php';
+	require_once dirname( __DIR__, 3 ) . '/includes/class-order-binding.php';
+}

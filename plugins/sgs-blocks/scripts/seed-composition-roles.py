@@ -462,6 +462,13 @@ INSERTS: list[dict] = [
         "composition_role": "content-block",
         "accepts_allowed_blocks": None,
     },
+    # Order items (2026-11-17): a leaf that prints the viewed order's line items and totals from its own attributes.
+    {
+        "block_slug": "sgs/order-items",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
 ]
 
 

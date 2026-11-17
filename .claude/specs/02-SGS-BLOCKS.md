@@ -928,7 +928,7 @@ Content that moves on its own for more than five seconds beside other content (a
 
 All blocks can be conditionally shown or hidden per device tier through three independent booleans: `sgsHideOnMobile`, `sgsHideOnTablet`, `sgsHideOnDesktop` (`plugins/sgs-blocks/src/blocks/extensions/responsive-visibility.js`; the device-visibility CSS is `plugins/sgs-blocks/includes/device-visibility.php`).
 
-**Conditions:** a server-side `render_block` filter (`plugins/sgs-blocks/includes/conditional-visibility.php`, zero frontend cost) hides a block unless every active condition passes: `sgsConditionLoggedIn` (`none`, `logged-in`, `logged-out`, or `order-owner`, which shows the block only when the signed-in viewer owns the order on the order-confirmation page; a guest order, another customer's order and a page with no order stay hidden), user role, date range, weekdays, URL parameter, referrer, product reviews and collection results.
+**Conditions:** a server-side `render_block` filter (`plugins/sgs-blocks/includes/conditional-visibility.php`, zero frontend cost) hides a block unless every active condition passes: `sgsConditionLoggedIn` (`none`, `logged-in`, `logged-out`, `order-owner`, which shows the block only when the signed-in viewer owns the order on the order-confirmation page (a guest order, another customer's order and a page with no order stay hidden), or `order-has-gift`, `order-no-gift` and `order-guest`, which read the viewable order of that page the same way the `sgs/order` binding does; FR-30-31), user role, date range, weekdays, URL parameter, referrer, product reviews and collection results.
 
 ---
 

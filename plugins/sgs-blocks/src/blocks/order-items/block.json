@@ -1,0 +1,372 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/order-items",
+	"version": "0.1.0",
+	"title": "SGS Order Items",
+	"category": "sgs-interactive",
+	"description": "The viewed order's line items for an order-confirmation page: a thumbnail, quantity and name, the chosen options and the line price for each item, then optional subtotal, delivery, discount, gift card and total rows. Server-rendered; prints nothing unless the visitor may view the order.",
+	"keywords": [
+		"order",
+		"thank you",
+		"confirmation",
+		"items",
+		"receipt",
+		"woocommerce"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "list-view",
+	"supports": {
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": false,
+			"text": false
+		},
+		"sgs": {
+			"specRef": "30",
+			"mediaElements": [
+				{
+					"prefix": "thumb",
+					"context": "item",
+					"kinds": [
+						"image"
+					],
+					"atoms": [
+						"object-fit",
+						"sizing",
+						"shape"
+					]
+				}
+			],
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				],
+				"margin": [
+					"margin"
+				],
+				"rowBorderWidth": [
+					"rowBorderWidth"
+				]
+			},
+			"elements": {
+				"card": {
+					"label": "Order items card",
+					"order": 1,
+					"clusters": [
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:padding": "padding",
+						"css:margin": "margin"
+					}
+				},
+				"list": {
+					"selector": ".sgs-order-items__list",
+					"motion": false,
+					"label": "Item list",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "row",
+					"attrMap": {
+						"css:gap": "rowGap"
+					}
+				},
+				"row": {
+					"selector": ".sgs-order-items__row",
+					"motion": false,
+					"label": "Item row divider",
+					"order": 3,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "row",
+					"attrMap": {
+						"css:border-width": "rowBorderWidth",
+						"css:border-style": "rowBorderStyle",
+						"css:border-color": "rowBorderColour"
+					}
+				},
+				"itemName": {
+					"selector": ".sgs-order-items__name",
+					"motion": false,
+					"label": "Item name",
+					"order": 4,
+					"clusters": [
+						"text"
+					],
+					"prefix": "itemName",
+					"attrMap": {
+						"css:color": "itemNameColour"
+					}
+				},
+				"itemMeta": {
+					"selector": ".sgs-order-items__meta",
+					"motion": false,
+					"label": "Item options line",
+					"order": 5,
+					"clusters": [
+						"text"
+					],
+					"prefix": "itemMeta",
+					"attrMap": {
+						"css:color": "itemMetaColour"
+					}
+				},
+				"itemPrice": {
+					"selector": ".sgs-order-items__price",
+					"motion": false,
+					"label": "Item line price",
+					"order": 6,
+					"clusters": [
+						"text"
+					],
+					"prefix": "itemPrice",
+					"attrMap": {
+						"css:color": "itemPriceColour"
+					}
+				},
+				"totals": {
+					"selector": ".sgs-order-items__totals",
+					"motion": false,
+					"label": "Totals rows",
+					"order": 7,
+					"clusters": [
+						"text"
+					],
+					"prefix": "totals",
+					"attrMap": {
+						"css:color": "totalsColour"
+					}
+				},
+				"total": {
+					"selector": ".sgs-order-items__total",
+					"motion": false,
+					"label": "Total row",
+					"order": 8,
+					"clusters": [
+						"text"
+					],
+					"prefix": "total",
+					"attrMap": {
+						"css:color": "totalColour"
+					}
+				}
+			},
+			"colourExemptions": {
+				"itemNameColour": {
+					"rule": "states",
+					"reason": "Read-only receipt text on the order-confirmation page: no click target, so no hover or focus colour applies."
+				},
+				"itemMetaColour": {
+					"rule": "states",
+					"reason": "Read-only receipt text on the order-confirmation page: no click target, so no hover or focus colour applies."
+				},
+				"itemPriceColour": {
+					"rule": "states",
+					"reason": "Read-only receipt text on the order-confirmation page: no click target, so no hover or focus colour applies."
+				},
+				"totalsColour": {
+					"rule": "states",
+					"reason": "Read-only receipt text on the order-confirmation page: no click target, so no hover or focus colour applies."
+				},
+				"totalColour": {
+					"rule": "states",
+					"reason": "Read-only receipt text on the order-confirmation page: no click target, so no hover or focus colour applies."
+				},
+				"rowBorderColour": {
+					"rule": "states",
+					"reason": "Read-only receipt text on the order-confirmation page: no click target, so no hover or focus colour applies."
+				}
+			}
+		}
+	},
+	"attributes": {
+		"showThumbnail": {
+			"type": "boolean",
+			"default": true
+		},
+		"showMeta": {
+			"type": "boolean",
+			"default": true
+		},
+		"showSubtotal": {
+			"type": "boolean",
+			"default": true
+		},
+		"showDelivery": {
+			"type": "boolean",
+			"default": true
+		},
+		"showDiscount": {
+			"type": "boolean",
+			"default": true
+		},
+		"showGiftCard": {
+			"type": "boolean",
+			"default": true
+		},
+		"showTotal": {
+			"type": "boolean",
+			"default": true
+		},
+		"showDeliveryMethod": {
+			"type": "boolean",
+			"default": true,
+			"description": "Print the delivery method name under the Delivery label."
+		},
+		"subtotalLabel": {
+			"type": "string",
+			"default": "Subtotal"
+		},
+		"deliveryLabel": {
+			"type": "string",
+			"default": "Delivery"
+		},
+		"discountLabel": {
+			"type": "string",
+			"default": "Discount"
+		},
+		"giftCardLabel": {
+			"type": "string",
+			"default": "Gift card"
+		},
+		"totalLabel": {
+			"type": "string",
+			"default": "Total"
+		},
+		"itemNameColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemNameFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemNameFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"itemNameFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"itemMetaColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemMetaFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemMetaFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"itemMetaFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"itemPriceColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemPriceFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemPriceFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"itemPriceFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"totalsColour": {
+			"type": "string",
+			"default": ""
+		},
+		"totalsFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"totalsFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"totalsFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"totalColour": {
+			"type": "string",
+			"default": ""
+		},
+		"rowGap": {
+			"type": "object",
+			"default": {},
+			"description": "Space between item rows per device (CSS length). Empty keeps 1rem."
+		},
+		"rowBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Divider under each item per device: a box or a tier object of boxes. Empty prints no divider."
+		},
+		"rowBorderStyle": {
+			"type": "string",
+			"default": "solid",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			]
+		},
+		"rowBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"thumbFit": {"type":"object","_generated":"media-atoms"},
+		"thumbRatio": {"type":"object","_generated":"media-atoms"},
+		"thumbWidth": {"type":"object","_generated":"media-atoms"},
+		"thumbHeight": {"type":"object","_generated":"media-atoms"},
+		"thumbMinWidth": {"type":"object","_generated":"media-atoms"},
+		"thumbMaxWidth": {"type":"object","_generated":"media-atoms"},
+		"thumbMinHeight": {"type":"object","_generated":"media-atoms"},
+		"thumbMaxHeight": {"type":"object","_generated":"media-atoms"},
+		"thumbShape": {"type":"object","_generated":"media-atoms"},
+		"thumbRadius": {"type":"object","_generated":"media-atoms"},
+		"thumbBorderWidth": {"type":"object","_generated":"media-atoms"},
+		"thumbBorderStyle": {"type":"string","_generated":"media-atoms"},
+		"thumbBorderColour": {"type":"string","_generated":"media-atoms"},
+		"thumbBorderColourHover": {"type":"string","_generated":"media-atoms"},
+		"thumbBorderColourGradient": {"type":"string","_generated":"media-atoms"},
+		"thumbBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

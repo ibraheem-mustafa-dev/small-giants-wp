@@ -1031,6 +1031,18 @@ Status: not built. Build: the purge deletes the versioned key (it needs the tax 
 
 ---
 
+#### FR-30-31 -- Order confirmation parts: `sgs/order` keys, order Show-to rules, `sgs/order-items` -- built
+
+Any shop's order-confirmation ("thank you") page can be laid out with SGS blocks beside WooCommerce's own `woocommerce/order-confirmation-*` blocks. Every part reads the order on the order-received endpoint through `Order_Binding::viewable_order()` (`plugins/sgs-blocks/includes/class-order-binding.php`): the order key checked with `key_is_valid()`, a customer's order shown only to that customer, a guest's order shown inside WooCommerce's grace period, in the shopper's session or after the billing email was verified. An order the visitor may not view resolves to nothing everywhere.
+
+- **Binding keys.** `sgs/order` resolves `number`, `email` (billing email), `delivery_method` (the shipping method title or titles), `total` (formatted total, plain text), `date` (order date in the site's date format), `view_url` (the My account view-order link, only for the signed-in owner), `gift_to` and `gift_message` (the note saved by `sgs/gift-order`, read through `Gift_Order_Order::for_order()`) and `item_count` (items bought). A fact the order does not have is an empty string; the optional `format` arg then prints nothing. The editor lists each key with a plain label and shows a sample value.
+- **Show-to rules.** `sgsConditionLoggedIn` also takes `order-has-gift` (the order is a gift), `order-no-gift` (it is not) and `order-guest` (no customer account on the order). Each hides the block when the order cannot be viewed. `order-owner` stands in for "not a guest" in practice, because WooCommerce shows an account order only to its customer.
+- **`sgs/order-items`** (category `sgs-interactive`, dynamic, no inner blocks): per item a thumbnail (the `thumb` item media slot: fit, size, shape), "quantity x name", the chosen options (`WC_Order_Item::get_formatted_meta_data()`, hidden keys excluded) and the line price (`WC_Order::get_formatted_line_subtotal()`); then rows switched by `showSubtotal`, `showDelivery` (with `showDeliveryMethod`), `showDiscount`, `showGiftCard` (what gift cards paid, from `Gift_Card_Order::fee_amounts()`) and `showTotal`, each with its own label (`subtotalLabel`, `deliveryLabel`, `discountLabel`, `giftCardLabel`, `totalLabel`, default "Total"). Settings: colour and typography for item name, options, price and totals rows, total-row colour, item divider (`rowBorder*`), row gap, padding and margin. The editor canvas shows a sample order.
+
+Status: built 2026-11-17 on branch `feature/order-confirmation-parts`; PHP tests `run-order-binding-standalone.php`, `run-conditional-order-gift-guest-standalone.php` and `OrderItemsRenderTest.php`. Not yet deployed or reseeded.
+
+**Done when:** on local-mamas a paid test order's confirmation page shows its items, options and totals through `sgs/order-items`, the gift and guest rules show and hide their blocks, and a visitor with a wrong order key sees none of them.
+
 ## Part 4 - Gift cards
 
 An emailed gift card with a ledger-backed balance, redeemed as a payment line on the WooCommerce Cart and Checkout blocks. FR IDs in this part are `FR-27-GC<n>`. Plan: `.claude/plans/archive/2026-10-28-gift-cards.md`; research behind it: `.claude/reports/2026-10-28-gift-card-requirements.md`. All code is in `plugins/sgs-blocks/includes/gift-card/` (namespace `SGS\Blocks\Gift_Card`, loaded by `load.php`); the panel script is `plugins/sgs-blocks/assets/js/gift-card-checkout.js`.

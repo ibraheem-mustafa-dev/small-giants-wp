@@ -265,6 +265,23 @@
 					},
 					"replace": []
 				},
+				"sgs/order-items": {
+					"slots": {
+						"thumb": {
+							"kinds": [
+								"image"
+							],
+							"context": "item",
+							"from": "",
+							"atoms": [
+								"object-fit",
+								"sizing",
+								"shape"
+							]
+						}
+					},
+					"replace": []
+				},
 				"sgs/product-card": {
 					"slots": {
 						"image": {
