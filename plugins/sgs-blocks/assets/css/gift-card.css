@@ -96,18 +96,17 @@
 	min-width: 2.75rem;
 }
 
-.sgs-gift-card-panel__heading {
-	margin: 0;
-	font-size: inherit;
-}
-
-/* The toggle is a real button wearing WooCommerce's panel-button classes, which assume a div. */
-.sgs-gift-card-panel__toggle {
+/* The toggle is a real button wearing WooCommerce's panel-button classes, which assume a div: this undoes what a
+   button brings of its own, at no specificity, so every rule written for the coupon panel's toggle wins here too. */
+:where(.sgs-gift-card-panel__toggle) {
+	display: block;
 	width: 100%;
+	padding-block: 0;
 	border: 0;
 	background: transparent;
 	color: inherit;
 	font: inherit;
+	line-height: inherit;
 	text-align: start;
 	cursor: pointer;
 }

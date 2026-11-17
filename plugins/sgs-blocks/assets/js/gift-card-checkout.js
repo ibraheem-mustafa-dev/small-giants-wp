@@ -352,28 +352,27 @@
 				className:
 					'sgs-gift-card-panel wc-block-components-totals-coupon wc-block-components-panel',
 			},
+			// The toggle is the panel's direct child, as the coupon panel's is: WooCommerce's and a site's rules for
+			// `.wc-block-components-panel__button` then reach both the same way (inside a heading, WooCommerce's
+			// heading-specific rule changed its weight and the heading's line height leaked in).
 			el(
-				'h2',
-				{ className: 'sgs-gift-card-panel__heading' },
-				el(
-					'button',
-					{
-						type: 'button',
-						className:
-							'sgs-gift-card-panel__toggle wc-block-components-panel__button',
-						'aria-expanded': open ? 'true' : 'false',
-						'aria-controls': CONTENT_ID,
-						onClick() {
-							setToggled( ! toggled );
-						},
+				'button',
+				{
+					type: 'button',
+					className:
+						'sgs-gift-card-panel__toggle wc-block-components-panel__button',
+					'aria-expanded': open ? 'true' : 'false',
+					'aria-controls': CONTENT_ID,
+					onClick() {
+						setToggled( ! toggled );
 					},
-					icon(
-						'wc-block-components-panel__button-icon',
-						open ? ICON_EXPANDED : ICON_COLLAPSED,
-						24
-					),
-					__( 'Add a gift card', 'sgs-blocks' )
-				)
+				},
+				icon(
+					'wc-block-components-panel__button-icon',
+					open ? ICON_EXPANDED : ICON_COLLAPSED,
+					24
+				),
+				__( 'Add a gift card', 'sgs-blocks' )
 			),
 			el(
 				'div',
