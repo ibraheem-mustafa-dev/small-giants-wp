@@ -86,7 +86,7 @@ describe( 'the shared marquee lane under reduced motion', () => {
 	test( 'an item off show is clipped, never display:none or removed from the reading order', () => {
 		const block = reducedMotionBlock( read( 'assets/css/fx-marquee.css' ) );
 		const rule = declarations( block, '[data-sgs-marquee-set] > [data-sgs-marquee-off]' );
-		expect( rule ).toContain( 'clip-path: inset(50%)' );
+		expect( rule ).toContain( 'clip: rect(0, 0, 0, 0)' );
 		expect( rule ).toContain( 'position: absolute' );
 		expect( rule ).not.toMatch( /display\s*:|visibility\s*:/ );
 	} );
