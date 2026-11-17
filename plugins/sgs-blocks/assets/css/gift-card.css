@@ -1,5 +1,5 @@
 /**
- * Gift cards: product-page form, cart/checkout panel and balance lookup
+ * Gift cards: product-page form, cart/checkout panel (specifics only; the shared WooCommerce panel classes style the rest) and balance lookup
  * (Spec 27, FR-27-GC4, FR-27-GC10, FR-27-GC11).
  *
  * Layout only. Colour, type and radius come from the theme: controls inherit, and
@@ -9,8 +9,7 @@
  */
 
 .sgs-gift-card-form,
-.sgs-gift-card-balance,
-.sgs-gift-card-panel {
+.sgs-gift-card-balance {
 	display: grid;
 	gap: 1rem;
 }
@@ -73,8 +72,7 @@
 }
 
 .sgs-gift-card-form__input,
-.sgs-gift-card-balance__input,
-.sgs-gift-card-panel__input {
+.sgs-gift-card-balance__input {
 	box-sizing: border-box;
 	width: 100%;
 	min-height: 2.75rem;
@@ -87,59 +85,51 @@
 }
 
 .sgs-gift-card-form__help,
-.sgs-gift-card-form__terms,
-.sgs-gift-card-panel__terms {
+.sgs-gift-card-form__terms {
 	font-size: 0.875em;
 	opacity: 0.85;
 }
 
 .sgs-gift-card-form__submit,
-.sgs-gift-card-balance__submit,
-.sgs-gift-card-panel__apply,
-.sgs-gift-card-panel__remove {
+.sgs-gift-card-balance__submit {
 	min-height: 2.75rem;
 	min-width: 2.75rem;
 }
 
-.sgs-gift-card-panel__row {
-	display: flex;
-	gap: 0.5rem;
+.sgs-gift-card-panel__heading {
+	margin: 0;
+	font-size: inherit;
+}
+
+/* The toggle is a real button wearing WooCommerce's panel-button classes, which assume a div. */
+.sgs-gift-card-panel__toggle {
+	width: 100%;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: start;
+	cursor: pointer;
+}
+
+.sgs-gift-card-panel__content--closed {
+	display: none;
 }
 
 .sgs-gift-card-panel__list {
-	display: grid;
-	gap: 0.5rem;
-	margin: 0;
+	margin: 0 0 0.75rem;
 	padding: 0;
 	list-style: none;
 }
 
-.sgs-gift-card-panel__applied {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0.5rem;
-}
-
-.sgs-gift-card-panel__remove {
-	padding: 0 0.75rem;
-	border: 1px solid currentcolor;
-	border-radius: var(--wp--custom--radius--sm, 0.25em);
-	background: transparent;
-	color: inherit;
-	font: inherit;
-	cursor: pointer;
-}
-
-.sgs-gift-card-panel__error {
-	margin: 0;
-	font-weight: 600;
+.sgs-gift-card-panel__terms {
+	margin: 0.75rem 0 0;
+	font-size: 0.875em;
+	opacity: 0.85;
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.sgs-gift-card-form *,
-	.sgs-gift-card-panel * {
+	.sgs-gift-card-form * {
 		transition: none;
 	}
 }

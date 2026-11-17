@@ -9,6 +9,12 @@
  * recalculates the cart and returns it, so the order summary shows the new
  * "Gift card ending ____" line and the reduced total.
  *
+ * The panel carries WooCommerce's own coupon-panel classes
+ * (`wc-block-components-panel`, `wc-block-components-totals-coupon`,
+ * `…__form`, `…__input`, `…__button`) beside its `sgs-gift-card-panel*` ones, so
+ * any styling a site gives the coupon panel reaches it. It starts collapsed behind
+ * a real button and stays open while a card is applied or an error shows.
+ *
  * Plain script (no JSX, no build step): it only needs globals WooCommerce and
  * WordPress already provide. No jQuery.
  *
@@ -24,6 +30,13 @@
 	}
 
 	const NAMESPACE = 'sgs_gift_card';
+	const CONTENT_ID = 'sgs-gift-card-panel-content';
+	const INPUT_ID = 'sgs-gift-card-code';
+	const ERROR_ID = 'sgs-gift-card-error';
+	const ICON_COLLAPSED = 'M17.5 11.6L12 16l-5.5-4.4.9-1.2L12 14l4.5-3.6 1 1.2z';
+	const ICON_EXPANDED = 'M6.5 12.4L12 8l5.5 4.4-.9 1.2L12 10l-4.5 3.6-1-1.2z';
+	const ICON_REMOVE =
+		'M12 13.06l3.712 3.713 1.061-1.06L13.061 12l3.712-3.712-1.06-1.06L12 10.938 8.288 7.227l-1.061 1.06L10.939 12l-3.712 3.712 1.06 1.061L12 13.061z';
 	const el = wp.element.createElement;
 	const useState = wp.element.useState;
 	const __ = wp.i18n.__;
@@ -51,7 +64,31 @@
 	}
 
 	/**
-	 * One applied card with its remove button.
+	 * An icon in WooCommerce's panel and chip icon markup.
+	 *
+	 * @param {string} className Icon class.
+	 * @param {string} path      SVG path data.
+	 * @param {number} size      Width and height.
+	 * @return {Object} Element.
+	 */
+	function icon( className, path, size ) {
+		return el(
+			'svg',
+			{
+				className,
+				xmlns: 'http://www.w3.org/2000/svg',
+				viewBox: '0 0 24 24',
+				width: size,
+				height: size,
+				'aria-hidden': 'true',
+				focusable: 'false',
+			},
+			el( 'path', { d: path } )
+		);
+	}
+
+	/**
+	 * One applied card as a chip with its remove button, the way WooCommerce shows an applied coupon.
 	 *
 	 * @param {Object} props Card data and remove handler.
 	 * @return {Object} Element.
@@ -60,43 +97,143 @@
 		const card = props.card;
 		return el(
 			'li',
-			{ className: 'sgs-gift-card-panel__applied' },
+			{
+				className:
+					'sgs-gift-card-panel__applied wc-block-components-totals-discount__coupon-list-item',
+			},
 			el(
 				'span',
-				{ className: 'sgs-gift-card-panel__applied-text' },
-				/* translators: 1: last four characters, 2: amount paid, 3: balance left */
-				__( 'Gift card ending', 'sgs-blocks' ) +
-					' ' +
-					card.last4 +
-					': ' +
-					card.applied +
-					' ' +
-					__( 'used,', 'sgs-blocks' ) +
-					card.remaining +
-					' ' +
-					__( 'left', 'sgs-blocks' )
-			),
-			el(
-				'button',
 				{
-					type: 'button',
-					className: 'sgs-gift-card-panel__remove',
-					disabled: props.busy,
-					'aria-label':
-						__( 'Remove gift card ending', 'sgs-blocks' ) +
-						' ' +
-						card.last4,
-					onClick() {
-						props.onRemove( card.id );
-					},
+					className:
+						'sgs-gift-card-panel__chip wc-block-components-chip wc-block-components-chip--radius-large',
 				},
-				__( 'Remove', 'sgs-blocks' )
+				el(
+					'span',
+					{
+						className:
+							'sgs-gift-card-panel__applied-text wc-block-components-chip__text',
+					},
+					/* translators: 1: last four characters, 2: amount paid, 3: balance left */
+					__( 'Gift card ending', 'sgs-blocks' ) +
+						' ' +
+						card.last4 +
+						': ' +
+						card.applied +
+						' ' +
+						__( 'used,', 'sgs-blocks' ) +
+						' ' +
+						card.remaining +
+						' ' +
+						__( 'left', 'sgs-blocks' )
+				),
+				el(
+					'button',
+					{
+						type: 'button',
+						className:
+							'sgs-gift-card-panel__remove wc-block-components-chip__remove',
+						disabled: props.busy,
+						'aria-label':
+							__( 'Remove gift card ending', 'sgs-blocks' ) +
+							' ' +
+							card.last4,
+						onClick() {
+							props.onRemove( card.id );
+						},
+					},
+					icon(
+						'wc-block-components-chip__remove-icon',
+						ICON_REMOVE,
+						16
+					)
+				)
 			)
 		);
 	}
 
 	/**
-	 * The panel.
+	 * The apply form, in the structure of WooCommerce's coupon form (floating label, validation error, button).
+	 *
+	 * @param {Object} props code, error, busy, focused and their handlers.
+	 * @return {Object} Element.
+	 */
+	function ApplyForm( props ) {
+		const error = props.error;
+		const active = props.focused || props.code !== '';
+		return el(
+			'form',
+			{
+				className:
+					'sgs-gift-card-panel__form wc-block-components-totals-coupon__form',
+				onSubmit: props.onSubmit,
+			},
+			el(
+				'div',
+				{
+					className:
+						'sgs-gift-card-panel__field wc-block-components-text-input wc-block-components-totals-coupon__input' +
+						( active ? ' is-active' : '' ) +
+						( error ? ' has-error' : '' ),
+				},
+				el( 'input', {
+					id: INPUT_ID,
+					className: 'sgs-gift-card-panel__input',
+					type: 'text',
+					autoCapitalize: 'off',
+					autoComplete: 'off',
+					value: props.code,
+					'aria-invalid': error ? 'true' : 'false',
+					'aria-describedby': error ? ERROR_ID : undefined,
+					onChange( event ) {
+						props.setCode( event.target.value );
+					},
+					onFocus() {
+						props.setFocused( true );
+					},
+					onBlur() {
+						props.setFocused( false );
+					},
+				} ),
+				el(
+					'label',
+					{
+						className: 'sgs-gift-card-panel__label',
+						htmlFor: INPUT_ID,
+					},
+					__( 'Gift card code', 'sgs-blocks' )
+				),
+				error
+					? el(
+							'div',
+							{
+								className:
+									'sgs-gift-card-panel__error wc-block-components-validation-error',
+								id: ERROR_ID,
+								role: 'alert',
+							},
+							el( 'p', null, error )
+					  )
+					: null
+			),
+			el(
+				'button',
+				{
+					type: 'submit',
+					className:
+						'sgs-gift-card-panel__apply wc-block-components-button wp-element-button wc-block-components-totals-coupon__button contained',
+					disabled: props.busy || props.code.trim() === '',
+				},
+				el(
+					'span',
+					{ className: 'wc-block-components-button__text' },
+					__( 'Apply', 'sgs-blocks' )
+				)
+			)
+		);
+	}
+
+	/**
+	 * The panel: WooCommerce's collapsible coupon panel markup and classes.
 	 *
 	 * @param {Object} props Fill props: { extensions, cart, context }.
 	 * @return {Object|null} Element.
@@ -106,16 +243,26 @@
 		const codeState = useState( '' );
 		const errorState = useState( '' );
 		const busyState = useState( false );
+		const openState = useState( false );
+		const focusState = useState( false );
 		const code = codeState[ 0 ];
 		const setCode = codeState[ 1 ];
 		const error = errorState[ 0 ];
 		const setError = errorState[ 1 ];
 		const busy = busyState[ 0 ];
 		const setBusy = busyState[ 1 ];
+		const toggled = openState[ 0 ];
+		const setToggled = openState[ 1 ];
+		const focused = focusState[ 0 ];
+		const setFocused = focusState[ 1 ];
 
 		if ( ! data || data.blocked ) {
 			return null;
 		}
+
+		const hasCards = !! ( data.cards && data.cards.length );
+		// Stays open while a card is applied or an error is showing.
+		const open = toggled || hasCards || error !== '';
 
 		/**
 		 * Send an apply or remove to the server.
@@ -149,13 +296,17 @@
 			send( { action: 'apply', code } );
 		}
 
-		const children = [];
+		const content = [];
 
-		if ( data.cards && data.cards.length ) {
-			children.push(
+		if ( hasCards ) {
+			content.push(
 				el(
 					'ul',
-					{ className: 'sgs-gift-card-panel__list', key: 'list' },
+					{
+						className:
+							'sgs-gift-card-panel__list wc-block-components-totals-discount__coupon-list',
+						key: 'list',
+					},
 					data.cards.map( function ( card ) {
 						return el( AppliedCard, {
 							key: card.id,
@@ -171,71 +322,22 @@
 		}
 
 		if ( data.canApply ) {
-			children.push(
-				el(
-					'form',
-					{
-						className: 'sgs-gift-card-panel__form',
-						key: 'form',
-						onSubmit,
-					},
-					el(
-						'label',
-						{
-							className: 'sgs-gift-card-panel__label',
-							htmlFor: 'sgs-gift-card-code',
-						},
-						__( 'Gift card code', 'sgs-blocks' )
-					),
-					el(
-						'div',
-						{ className: 'sgs-gift-card-panel__row' },
-						el( 'input', {
-							id: 'sgs-gift-card-code',
-							className: 'sgs-gift-card-panel__input',
-							type: 'text',
-							autoComplete: 'off',
-							value: code,
-							'aria-describedby': error
-								? 'sgs-gift-card-error'
-								: undefined,
-							'aria-invalid': error ? 'true' : undefined,
-							onChange( event ) {
-								setCode( event.target.value );
-							},
-						} ),
-						el(
-							'button',
-							{
-								type: 'submit',
-								className:
-									'sgs-gift-card-panel__apply wc-block-components-button wp-element-button',
-								disabled: busy || code.trim() === '',
-							},
-							__( 'Apply', 'sgs-blocks' )
-						)
-					)
-				)
-			);
-		}
-
-		if ( error ) {
-			children.push(
-				el(
-					'p',
-					{
-						className: 'sgs-gift-card-panel__error',
-						id: 'sgs-gift-card-error',
-						role: 'alert',
-						key: 'error',
-					},
-					error
-				)
+			content.push(
+				el( ApplyForm, {
+					key: 'form',
+					code,
+					error,
+					busy,
+					focused,
+					setCode,
+					setFocused,
+					onSubmit,
+				} )
 			);
 		}
 
 		if ( data.terms ) {
-			children.push(
+			content.push(
 				el(
 					'p',
 					{ className: 'sgs-gift-card-panel__terms', key: 'terms' },
@@ -244,7 +346,54 @@
 			);
 		}
 
-		return el( 'div', { className: 'sgs-gift-card-panel' }, children );
+		return el(
+			'div',
+			{
+				className:
+					'sgs-gift-card-panel wc-block-components-totals-coupon wc-block-components-panel',
+			},
+			el(
+				'h2',
+				{ className: 'sgs-gift-card-panel__heading' },
+				el(
+					'button',
+					{
+						type: 'button',
+						className:
+							'sgs-gift-card-panel__toggle wc-block-components-panel__button',
+						'aria-expanded': open ? 'true' : 'false',
+						'aria-controls': CONTENT_ID,
+						onClick() {
+							setToggled( ! toggled );
+						},
+					},
+					icon(
+						'wc-block-components-panel__button-icon',
+						open ? ICON_EXPANDED : ICON_COLLAPSED,
+						24
+					),
+					__( 'Add a gift card', 'sgs-blocks' )
+				)
+			),
+			el(
+				'div',
+				{
+					id: CONTENT_ID,
+					className:
+						'sgs-gift-card-panel__content wc-block-components-panel__content' +
+						( open ? '' : ' sgs-gift-card-panel__content--closed' ),
+					hidden: ! open,
+				},
+				el(
+					'div',
+					{
+						className:
+							'sgs-gift-card-panel__inner wc-block-components-totals-coupon__content',
+					},
+					content
+				)
+			)
+		);
 	}
 
 	wp.plugins.registerPlugin( 'sgs-gift-card', {
