@@ -46,6 +46,7 @@ Bean's rule (2026-11-17): simple fixes are made as you go; everything else is pr
 - A hero's `contentWidth` does nothing while its left and right padding are set; a container with a maximum width and no side padding touches the screen edges between that width and the tablet breakpoint.
 - An accordion's open colour, open shadow, icon rotation and category labels are separate settings (`itemBackgroundOpen`, `itemShadowOpen`, `itemShadowOpenColour`, `iconRotation`, and each item's `category` with `showCategoryEyebrow`).
 - A hover that is set on every device when the draft only has it on desktop takes per-device values in the motion state (`devices.tablet`, `devices.mobile`).
+- A width saved as fixed pixels for tablet or phone that equals the draft's box at exactly 768 or 375 is a leftover of the clone, not a design: the draft's box is fluid. Measure layout items at 600, 900 and 1023 as well as 375, 768 and 1440 (Sign-in 1 showed only between those widths, and a helper that tested 375 and 768 reported it not reproduced).
 - Bean sees the site signed in as an administrator, on pages you may not have tested. When an item does not reproduce, test other page types and widths before reporting it.
 
 ## Hard limits
