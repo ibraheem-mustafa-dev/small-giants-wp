@@ -90,5 +90,21 @@ $out = sgs_account_apply_tabs( $wc, true, 'u1', 'Sign in', 'Create account' );
 ok( preg_match( '/id="u1-tab-register"[^>]*aria-selected="true"/', $out ) && preg_match( '/u-column1[^>]*hidden/', $out ), '?mode=register opens the second tab' );
 ok( '<form class="x"></form>' === sgs_account_apply_tabs( '<form class="x"></form>', false, 'u1', 'a', 'b' ), 'markup without the two columns is returned unchanged' );
 
+// 3b) Each panel's content sits in one inner wrapper (the box whose height animates); the panel keeps its attributes.
+$wc2 = '<div class="u-columns col2-set" id="customer_login"><div class="u-column1 col-1"><h2>Login</h2><div class="inner"><form></form></div></div><div class="u-column2 col-2"><h2>Register</h2><form></form></div></div>';
+$out = sgs_account_apply_tabs( $wc2, false, 'u1', 'Sign in', 'Create account' );
+ok( 2 === substr_count( $out, '<div class="sgs-account__auth-panel-inner">' ), '3b two inner wrappers, one per panel' );
+ok( 1 === preg_match( '#<div class="u-column1[^>]*>(?:<div class="sgs-account__auth-panel-inner"><h2>Login</h2><div class="inner"><form></form></div></div>)</div>#', $out ), '3b wrapper holds the whole first panel content, nested divs stay balanced' );
+ok( 1 === preg_match( '#<div class="u-column2[^>]*hidden[^>]*><div class="sgs-account__auth-panel-inner"><h2>Register</h2><form></form></div></div></div>#', $out ), '3b second panel wrapped, hidden attribute kept' );
+ok( substr_count( $out, '<div' ) === substr_count( $out, '</div>' ), '3b every div still closes' );
+ok( false === strpos( $out, 'style=' ), '3b no inline style' );
+
+// 3c) Stylesheet: selected tab does not lift; order-attribution element leaves the form grid; panel swap animates.
+$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/account/style.css' );
+ok( 1 === preg_match( '/\.sgs-account__auth-tab:not\(\[aria-selected="true"\]\):hover\s*\{[^}]*transform/', $css ) && 1 !== preg_match( '/\.sgs-account__auth-tab:hover\s*\{/', $css ), '3c hover lift applies to the unselected tab only' );
+ok( 1 === preg_match( '/wc-order-attribution-inputs\s*\{\s*display:\s*contents/', $css ), '3c order-attribution element takes no grid row' );
+ok( 1 === preg_match( '/prefers-reduced-motion:\s*no-preference\)\s*\{[^@]*auth-panel\[hidden\]\s*\{[^}]*grid-template-rows:\s*0fr/s', $css ), '3c hidden panel collapses with grid rows only when motion is allowed' );
+ok( 1 === preg_match( '/auth-panel-inner\s*\{[^}]*overflow:\s*hidden/', $css ) && 1 === preg_match( '/auth-panel-inner\s*\{[^}]*margin:\s*calc\(-1 \* var\(--sgs-account-panel-bleed/s', $css ), '3c inner wrapper clips with a bleed so a hard shadow is not cut' );
+
 echo $failures ? "\n{$failures} FAILED\n" : "\nall passed\n";
 exit( $failures ? 1 : 0 );

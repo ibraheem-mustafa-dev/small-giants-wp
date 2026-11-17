@@ -281,6 +281,48 @@ if ( ! function_exists( 'sgs_account_auth_card_css' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_account_wrap_panels' ) ) {
+	/**
+	 * Put the content of each `.sgs-account__auth-panel` in one `.sgs-account__auth-panel-inner` div: the box whose
+	 * height the stylesheet animates when the tabs switch.
+	 *
+	 * @param string $html Markup holding the panels.
+	 * @return string Markup with each panel's content wrapped.
+	 */
+	function sgs_account_wrap_panels( string $html ): string {
+		$opens = preg_match_all( '/<div\b[^>]*\bsgs-account__auth-panel\b[^>]*>/', $html, $m, PREG_OFFSET_CAPTURE );
+		if ( ! $opens ) {
+			return $html;
+		}
+		$out  = '';
+		$from = 0;
+		foreach ( $m[0] as $open ) {
+			list( $tag, $at ) = $open;
+			if ( $at < $from ) {
+				continue;
+			}
+			$start = $at + strlen( $tag );
+			$depth = 1;
+			$end   = null;
+			if ( preg_match_all( '#<(/?)div\b[^>]*>#', $html, $t, PREG_OFFSET_CAPTURE | PREG_SET_ORDER, $start ) ) {
+				foreach ( $t as $div ) {
+					$depth += '' === $div[1][0] ? 1 : -1;
+					if ( 0 === $depth ) {
+						$end = $div[0][1];
+						break;
+					}
+				}
+			}
+			if ( null === $end ) {
+				continue;
+			}
+			$out .= substr( $html, $from, $start - $from ) . '<div class="sgs-account__auth-panel-inner">' . substr( $html, $start, $end - $start ) . '</div>';
+			$from = $end;
+		}
+		return $out . substr( $html, $from );
+	}
+}
+
 if ( ! function_exists( 'sgs_account_apply_tabs' ) ) {
 	/**
 	 * Turn WooCommerce's log-in / register columns into ARIA tab panels and put
@@ -335,7 +377,7 @@ if ( ! function_exists( 'sgs_account_apply_tabs' ) ) {
 		if ( 2 !== $found ) {
 			return $wc_html;
 		}
-		$wc_html = $proc->get_updated_html();
+		$wc_html = sgs_account_wrap_panels( $proc->get_updated_html() );
 
 		// The tab links keep the card's `?sgs-login=1`, or they would land back on the card.
 		$keep = sgs_account_login_form_requested() ? array( 'sgs-login' => '1' ) : array();
