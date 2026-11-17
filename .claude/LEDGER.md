@@ -77,6 +77,7 @@ Signed off by Bean (2026-11-12). eye-care-test (`https://darkcyan-grouse-898606.
 
 ## Parked
 
+- **Custom CSS and logins without administrator rights (your rulings, 2026-11-17):** a page saved by a Shop manager loses every Custom CSS rule on it; you ruled that a save must never remove Custom CSS it may not change, and that the control is for anyone who may edit the page. Spec 32 FR-32-30, not built. Until it is, give a client an Administrator or Editor login, never Shop manager, on a site that carries Custom CSS (Mama's does).
 - **CR12, parked by you:** the dark-mode toggle renders nothing because no client sets dark tokens; three design options sit on its register row.
 - **CR23:** about 72 Eye Care differences no setting can reach (a 2026-10-07 snapshot), carried as missing-feature rows.
 - **WW-SH-04 (your ruling):** the Solve answer sheet labels a shop write wrong on "assumed" evidence (Spec 48 §5.4 Res 34).

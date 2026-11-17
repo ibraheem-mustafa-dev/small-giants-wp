@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 32
-spec_version: "3.6.0"
+spec_version: "3.7.0"
 title: Styling, Tokens and Theming Contract (framework-wide)
 project: small-giants-wp
 status: active
@@ -162,6 +162,14 @@ The design is a semantic BEM variant class consuming `--wp--custom--{component}-
   4. `plugins/sgs-blocks/src/blocks/extensions/custom-css.js::withCustomCssCanvas` scopes through the same twin; the inspector lists refused rules under the field.
   5. `sgsCustomCssNote` is shown above the field; the route writes it.
   6. Not built: a structured "switch layout below N px" setting; the residual is the only channel today. Also: as WordPress core does for its own per-block CSS, `sgsCustomCss` is stripped on save for a user without `edit_css` (`includes/custom-css.php::sgs_strip_custom_css_from_blocks`). Blocks: Indus (its header branches at 1200 and 1260, which no tier snaps to; Spec 48 FR-48-50).
+
+- **FR-32-30 — Custom CSS is never lost on save, and anyone who may edit the page may use it (Bean, 2026-11-17).** Today `includes/custom-css.php::sgs_custom_css_kses_init` strips `sgsCustomCss`, `sgsCustomCssId` and `sgsCustomCssNote` from every block of a post when it is saved by a user without `edit_css` (WordPress's own rule for its per-block CSS). On a single site that is Administrator and Editor only: WooCommerce's Shop manager can edit pages and cannot save CSS, so one save by a Shop manager silently removes every Custom CSS rule on that page (it happened on 2026-11-17, when a write without administrator rights removed two rules from a drawer). Two rulings replace this:
+  1. **A save never removes Custom CSS it may not change.** When the saving user may not edit Custom CSS, each block keeps the three attributes it had in the stored post, matched by `sgsCustomCssId`; an incoming change to them, a new rule on a block that had none, and the removal of an existing one are all ignored, and the rest of the save goes through. The inspector shows the field read-only with a line saying why.
+  2. **The Custom CSS control is for anyone who may edit the page**, because it is the client's way out when no setting does what they need. This rests on the scoper confining every rule to its own block instance and refusing what cannot be confined (FR-32-20); before the permission is widened, the scoper must also refuse a `url()` that points outside the site, so a rule cannot call another host. Who may use it is filterable (`sgs_custom_css_capability`), so a site can narrow it again.
+
+  *Done when:* a post saved by a Shop manager keeps every block's Custom CSS byte for byte (the test saves as that role and compares); the same user can add a rule to a block they may edit once ruling 2 is built, and a rule with an off-site `url()` is refused with its reason listed under the field.
+
+  Status: not built. Parked with the framework freeze; no client site needs it before its owner is given a non-administrator login.
 
 ## 5. Non-functional requirements
 
