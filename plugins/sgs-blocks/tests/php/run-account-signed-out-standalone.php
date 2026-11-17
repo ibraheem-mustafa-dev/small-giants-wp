@@ -104,6 +104,7 @@ $css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/account/
 ok( 1 === preg_match( '/\.sgs-account__auth-tab:not\(\[aria-selected="true"\]\):hover\s*\{[^}]*transform/', $css ) && 1 !== preg_match( '/\.sgs-account__auth-tab:hover\s*\{/', $css ), '3c hover lift applies to the unselected tab only' );
 ok( 1 === preg_match( '/wc-order-attribution-inputs\s*\{\s*display:\s*contents/', $css ), '3c order-attribution element takes no grid row' );
 ok( 1 === preg_match( '/prefers-reduced-motion:\s*no-preference\)\s*\{[^@]*auth-panel\[hidden\]\s*\{[^}]*grid-template-rows:\s*0fr/s', $css ), '3c hidden panel collapses with grid rows only when motion is allowed' );
+ok( 1 === preg_match( '/\.sgs-account__auth-panel-inner > h2\s*\{[^}]*clip-path/', $css ), '3c the form headings inside the panel wrapper stay for assistive tech only' );
 ok( 1 === preg_match( '/auth-panel-inner\s*\{[^}]*overflow-y:\s*clip/', $css ) && 1 === preg_match( '/auth-panel-inner\s*\{[^}]*margin-block:\s*calc\(-1 \* var\(--sgs-account-panel-bleed/s', $css ) && 1 !== preg_match( '/auth-panel-inner\s*\{[^}]*overflow:\s*hidden/', $css ), '3c inner wrapper clips the block axis only, with a bleed so a hard shadow is not cut' );
 
 echo $failures ? "\n{$failures} FAILED\n" : "\nall passed\n";

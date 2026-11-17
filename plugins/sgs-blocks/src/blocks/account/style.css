@@ -562,7 +562,8 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 }
 
 /* Tabs name the forms, so WooCommerce's own Login / Register headings stay for assistive tech only. */
-.sgs-account__auth-panel > h2 {
+.sgs-account__auth-panel > h2,
+.sgs-account__auth-panel-inner > h2 {
 	position: absolute;
 	width: 1px;
 	height: 1px;
