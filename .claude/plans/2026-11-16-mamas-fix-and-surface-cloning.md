@@ -83,7 +83,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: `local-mamas` footer post and menus; any block the cause names; `mamas-test`
 - Done when: every Footer row in `register-findings.md` is closed by Bean on `mamas-test`
 - Depends on: none
-- Status: fixed on `local-mamas` and copied to `mamas-test` on 2026-11-17 (settings only, no code); waiting for Bean to close each item there. Footer 9 (the tagline band above the footer, taller than the draft's) was added by Bean on 2026-11-17 and is being matched to the draft
+- Status: Footer 1 to 9 and the menu item are fixed and on `mamas-test` (pushed 2026-11-17, settings only); waiting for Bean to close each item there
 
 ### Task 2: Nav drawer
 - Why: 8 points. Read first: the register's Nav drawer section
@@ -91,7 +91,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: `local-mamas` drawer post and menus; `mamas-test`
 - Done when: every Nav drawer row is closed by Bean, and each drawer link opens its page at 375
 - Depends on: Task 1 (social icons)
-- Status: Nav drawer 1, 2a, 2b, 2c, 3 and 5, the menu badges and the `Zainab@` address are fixed and on `mamas-test` (deployed and pushed 2026-11-17, commit `2b89c2945`); waiting for Bean to close them. Nav drawer 4: the fix at the source Bean chose was built, failed its size check on three mirrors and was reverted (it unmatched the buy box's photo frame rule and blew up Eye Care's header logo on its shop page; `register-findings.md`, Nav drawer). The two drawer pictures are being framed by settings instead. Parked framework work: an unwrapped SGS picture with a set height still loses it to WooCommerce's `.woocommerce img { height: auto }` on any shop; a fix makes the two-class selector opt-in for a plain rendered `img` (`includes/media/render-slot.php`) and explains the Eye Care logo first
+- Status: every Nav drawer item, the menu badges and the `Zainab@` address are fixed and on `mamas-test` (2026-11-17; the menu link fix is commit `2b89c2945`, deployed); waiting for Bean to close them. Nav drawer 4 is fixed by Custom CSS on the two pictures: the fix at the source Bean chose was built, failed its size check on three mirrors and was reverted (it unmatched the buy box's photo frame rule and blew up Eye Care's header logo on its shop page; `register-findings.md`, Nav drawer). Parked framework work: an unwrapped SGS picture with a set height still loses it to WooCommerce's `.woocommerce img { height: auto }` on any shop; a fix makes the two-class selector opt-in for a plain rendered `img` (`includes/media/render-slot.php`) and explains the Eye Care logo first
 
 ### Task 3: Header
 - Why: 9 points, one of them a new behaviour (the trust bar ticker). Read first: the register's Header section; Eye Care's trust bar on `eye-care-test` (read only)
@@ -99,7 +99,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: `local-mamas` header post; the trust bar's block if the ticker is a missing behaviour; `mamas-test`
 - Done when: every Header row is closed by Bean, checked at 375, 768, 1024 and 1440
 - Depends on: none
-- Status: Bean approved the fixes on 2026-11-17 (Header 6 by one-off CSS, Header 9 is the scrollbar track in light pink); being applied on `local-mamas`. Header 7 does not reproduce signed out, signed in or scrolled: waiting for Bean's screenshot. Found and not on the list: signed in, the sticky header slides under WordPress's admin bar when the page is scrolled
+- Status: Header 1 to 6, 8 and 9 are fixed and on `mamas-test` (pushed 2026-11-17, settings and the theme snapshot's scrollbar track; the pink track reached `mamas-test` through the copied global-styles post, and `push-theme-snapshot.py` was not run because it warns it would overwrite 33 keys edited on the site: the theme file there takes the snapshot at the next theme deploy); waiting for Bean to close them. Header 7: the empty editor row is removed, and the strip Bean sees on desktop does not reproduce signed out, signed in or scrolled: waiting for his screenshot. Found and not on the list: signed in, the sticky header slides under WordPress's admin bar when the page is scrolled
 
 ### Task 4: Contact
 - Why: 11 points; its accordion and gutters are shared. Read first: the register's Contact section; the Help page's accordion (the working one)
@@ -107,7 +107,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 148 on `local-mamas`; `sgs/accordion` if a cause is in the block; `mamas-test`
 - Done when: every Contact row is closed by Bean
 - Depends on: Task 1 (social icons)
-- Status: not started
+- Status: diagnosis running (2026-11-17), with the survey of every page's entrance animations (All pages 1) beside it
 
 ### Task 5: Help
 - Why: 9 points. Read first: the register's Help section
