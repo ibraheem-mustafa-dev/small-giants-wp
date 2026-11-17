@@ -4,6 +4,7 @@
  *   - Keyboard focus pauses autoplay; a pointer leaving does not resume a focused slider.
  *   - The server-rendered shared pause / play button is shown while autoplay runs and holds a
  *     pause; the script adds no second button of its own.
+ *   - A manual switch (arrow, dot, key) restarts the countdown instead of pausing for good.
  *   - Under prefers-reduced-motion autoplay never starts and the button stays hidden.
  *
  * Set SGS_TEST_VIEW_JS to an absolute path to run the same tests against another copy.
@@ -132,6 +133,70 @@ describe( 'testimonial-slider autoplay: pause (WCAG 2.2.2)', () => {
 		jest.advanceTimersByTime( SPEED * 2 );
 		expect( activeDot( slider ) ).toBe( 0 );
 		expect( button.hidden ).toBe( true );
+	} );
+} );
+
+describe( 'testimonial-slider autoplay: a manual switch restarts the countdown', () => {
+	const dots = ( slider ) => slider.querySelectorAll( '.sgs-testimonial-slider__dot' );
+
+	it( 'carries on one full interval after a dot click', () => {
+		const { slider } = buildSlider();
+		loadView();
+		jest.advanceTimersByTime( SPEED * 0.7 );
+		dots( slider )[ 2 ].click();
+		expect( activeDot( slider ) ).toBe( 2 );
+		jest.advanceTimersByTime( SPEED * 0.9 );
+		expect( activeDot( slider ) ).toBe( 2 );
+		jest.advanceTimersByTime( SPEED * 0.1 );
+		expect( activeDot( slider ) ).toBe( 0 );
+		jest.advanceTimersByTime( SPEED );
+		expect( activeDot( slider ) ).toBe( 1 );
+	} );
+
+	it( 'carries on a full interval after a dot-group arrow key, once focus has left', () => {
+		const { slider } = buildSlider();
+		loadView();
+		dots( slider )[ 0 ].dispatchEvent( new KeyboardEvent( 'keydown', { key: 'ArrowRight', bubbles: true } ) );
+		expect( activeDot( slider ) ).toBe( 1 );
+		// The key moved keyboard focus onto the next dot, which holds autoplay while it stays there.
+		jest.advanceTimersByTime( SPEED * 2 );
+		expect( activeDot( slider ) ).toBe( 1 );
+		dots( slider )[ 1 ].dispatchEvent( focusEvent( 'focusout', document.querySelector( '.outside' ) ) );
+		jest.advanceTimersByTime( SPEED );
+		expect( activeDot( slider ) ).toBe( 2 );
+	} );
+
+	it( 'keeps holding while the pointer is over it and carries on a full interval after it leaves', () => {
+		const { slider } = buildSlider();
+		loadView();
+		hover( slider, true );
+		dots( slider )[ 1 ].click();
+		jest.advanceTimersByTime( SPEED * 3 );
+		expect( activeDot( slider ) ).toBe( 1 );
+		hover( slider, false );
+		jest.advanceTimersByTime( SPEED );
+		expect( activeDot( slider ) ).toBe( 2 );
+	} );
+
+	it( 'does not resume a pause the visitor made with the button', () => {
+		const { slider, button } = buildSlider();
+		loadView();
+		button.click();
+		dots( slider )[ 1 ].click();
+		jest.advanceTimersByTime( SPEED * 3 );
+		expect( activeDot( slider ) ).toBe( 1 );
+		button.click();
+		jest.advanceTimersByTime( SPEED );
+		expect( activeDot( slider ) ).toBe( 2 );
+	} );
+
+	it( 'a switch under reduced motion still moves the track and never starts autoplay', () => {
+		stubMatchMedia( [ '(prefers-reduced-motion: reduce)' ] );
+		const { slider } = buildSlider();
+		loadView();
+		dots( slider )[ 2 ].click();
+		jest.advanceTimersByTime( SPEED * 3 );
+		expect( activeDot( slider ) ).toBe( 2 );
 	} );
 } );
 

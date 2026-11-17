@@ -24,9 +24,9 @@
  *
  * Autoplay pausing (WCAG 2.2.2) goes through the shared runtime
  * (src/shared/motion-pause): the server-rendered pause / play button holds a pause
- * until pressed again, hover, a finger press and keyboard focus pause it while they
- * last, and an arrow, dot, drag or key press is a deliberate pause held like the
- * button's.
+ * until pressed again, and hover, a finger press and keyboard focus pause it while they
+ * last. An arrow, dot, drag or key press does not pause it: it restarts the interval, so
+ * the next automatic advance comes one full interval after the last interaction.
  *
  * No-inline contract: the track position is driven entirely by a
  * CSS custom PROPERTY VALUE (--sgs-slider-offset, allowed — a var value is not
@@ -365,14 +365,14 @@ sliders.forEach( ( slider ) => {
 	if ( prevBtn ) {
 		prevBtn.addEventListener( 'click', () => {
 			goToSlide( currentIndex - 1 );
-			pausePermanently();
+			restartCountdown();
 		} );
 	}
 
 	if ( nextBtn ) {
 		nextBtn.addEventListener( 'click', () => {
 			goToSlide( currentIndex + 1 );
-			pausePermanently();
+			restartCountdown();
 		} );
 	}
 
@@ -380,7 +380,7 @@ sliders.forEach( ( slider ) => {
 	dots.forEach( ( dot, i ) => {
 		dot.addEventListener( 'click', () => {
 			goToSlide( i );
-			pausePermanently();
+			restartCountdown();
 		} );
 	} );
 
@@ -397,7 +397,7 @@ sliders.forEach( ( slider ) => {
 				);
 				dots[ next ].focus();
 				goToSlide( next );
-				pausePermanently();
+				restartCountdown();
 			}
 		} );
 	} );
@@ -518,7 +518,7 @@ sliders.forEach( ( slider ) => {
 			render( true );
 		}
 		dragDelta = 0;
-		pausePermanently();
+		restartCountdown();
 	}
 
 	if ( total > 1 ) {
@@ -580,11 +580,12 @@ sliders.forEach( ( slider ) => {
 	}
 
 	/**
-	 * An explicit interaction (arrow, dot, drag, key) pauses autoplay and holds the pause
-	 * until the visitor presses play.
+	 * A manual switch (arrow, dot, drag, key) restarts the countdown, so the next automatic advance comes one full
+	 * interval after it. It is not a pause: hover and keyboard focus still hold the timer while they last (the
+	 * restart then happens when they end), and only the pause button holds it until pressed again.
 	 */
-	function pausePermanently() {
-		pauser.pause();
+	function restartCountdown() {
+		startAutoplay();
 	}
 
 	/* Initialise */
