@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13087,
+    "row_count": 13093,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -568,6 +568,12 @@
     "sgs/accordion::defaultOpen": "behaviour",
     "sgs/accordion::faqSchema": "technical",
     "sgs/accordion::filterAllLabel": "text-content",
+    "sgs/accordion::filterBandBackground": "color",
+    "sgs/accordion::filterBandBorderColour": "color",
+    "sgs/accordion::filterBandBorderStyle": "visual",
+    "sgs/accordion::filterBandBorderWidth": "visual",
+    "sgs/accordion::filterBandFullWidth": "layout",
+    "sgs/accordion::filterBandPadding": "layout",
     "sgs/accordion::filterChipBackground": "color",
     "sgs/accordion::filterChipBackgroundPressed": "color",
     "sgs/accordion::filterChipBorderColour": "color",

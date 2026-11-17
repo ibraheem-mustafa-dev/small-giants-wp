@@ -58,6 +58,15 @@
     },
     {
       "slug": "sgs/accordion",
+      "attr": "filterBandBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "filterbar"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
       "attr": "filterChipSelectedOffsetX",
       "fields": {
         "css_property": "translate",
@@ -34418,6 +34427,39 @@
       "fields": {
         "css_property": "padding",
         "css_element": "answer"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterBandBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "filterbar"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterBandBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "filterbar"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterBandBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "filterbar"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterBandPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "filterbar"
       }
     },
     {
