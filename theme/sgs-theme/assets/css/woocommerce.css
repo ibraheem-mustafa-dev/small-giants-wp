@@ -2772,10 +2772,12 @@ body.sgs-shop-sort-native .wp-block-woocommerce-product-sort-select select {
 		/* The button is a flex row: its label and arrow sit on its vertical centre. */
 		align-items: center;
 		/* A customisable select shrinks to its chosen option; this keeps the button as wide as the list, which is
-		 * as wide as the menu's longest option: half an em a character plus the padding and arrow. WooCommerce's
-		 * longest ("Sort by price: high to low", 26 characters) gives 15em; a site with its own menu
-		 * (Customizer > Shop Filters > Sort menu) gets its own longest label through --sgs-shop-sort-chars. */
-		min-inline-size: calc(var(--sgs-shop-sort-chars, 26) * 0.5em + 2em);
+		 * as wide as the menu's longest option: half an em a character plus three em for the option's padding and
+		 * its tick column (measured: an 18-character menu's list is 174.8px at 15px type, so two em fell 10px
+		 * short and the list stuck out past the button). WooCommerce's longest ("Sort by price: high to low",
+		 * 26 characters) gives 16em; a site with its own menu (Customizer > Shop Filters > Sort menu) gets its own
+		 * longest label through --sgs-shop-sort-chars. */
+		min-inline-size: calc(var(--sgs-shop-sort-chars, 26) * 0.5em + 3em);
 	}
 
 	/* Open: the button's bottom corners square off to meet the list, and its top corners take the list's
