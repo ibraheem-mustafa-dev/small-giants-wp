@@ -50,7 +50,7 @@ Each is fixed once, in the first task that meets it; later sections check it and
 | Product card (label, tilt, hover, button wording and style) | Shop 7, Gifts 7 to 9b, Product 14 | Task 7 |
 | Reviews slider (arrows, dots, auto-slide, card layout, last card's hover) | Product 9 to 11, Home 19 to 23 | Task 9 |
 | Entrance animations missing on most pages | All pages 1 | Surveyed once at the start of Task 4 (each page's draft entrances against its saved motion settings), then fixed in each page's task |
-| A picture's set height lost on WooCommerce pages (WooCommerce's `.woocommerce img { height: auto }` beats the picture's scoped rule) | Nav drawer 4, and whatever the survey finds on Shop, Product, Basket and Account | Task 2, one fix in the shared picture rule |
+| A picture's set height lost on WooCommerce pages (WooCommerce's `.woocommerce img { height: auto }` beats the picture's scoped rule) | Nav drawer 4 only (the survey found no other picture on this site) | Task 2, by framing the two pictures; the framework fix is parked there |
 
 ## Out of scope
 
@@ -91,7 +91,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: `local-mamas` drawer post and menus; `mamas-test`
 - Done when: every Nav drawer row is closed by Bean, and each drawer link opens its page at 375
 - Depends on: Task 1 (social icons)
-- Status: Nav drawer 1, 2a, 2b, 2c, 3 and 5, the menu badges and the `Zainab@` address are fixed and on `mamas-test` (deployed and pushed 2026-11-17, commit `2b89c2945`); waiting for Bean to close them. Nav drawer 4: Bean chose the fix at the source (2026-11-17): the picture size rule gains a second class at its emitter (`includes/media/media-values.php::sgs_media_nodes`), kept only if a before-and-after size diff of every picture on the Mama's, Indus and Eye Care mirrors shows no unintended change; being built
+- Status: Nav drawer 1, 2a, 2b, 2c, 3 and 5, the menu badges and the `Zainab@` address are fixed and on `mamas-test` (deployed and pushed 2026-11-17, commit `2b89c2945`); waiting for Bean to close them. Nav drawer 4: the fix at the source Bean chose was built, failed its size check on three mirrors and was reverted (it unmatched the buy box's photo frame rule and blew up Eye Care's header logo on its shop page; `register-findings.md`, Nav drawer). The two drawer pictures are being framed by settings instead. Parked framework work: an unwrapped SGS picture with a set height still loses it to WooCommerce's `.woocommerce img { height: auto }` on any shop; a fix makes the two-class selector opt-in for a plain rendered `img` (`includes/media/render-slot.php`) and explains the Eye Care logo first
 
 ### Task 3: Header
 - Why: 9 points, one of them a new behaviour (the trust bar ticker). Read first: the register's Header section; Eye Care's trust bar on `eye-care-test` (read only)
@@ -99,7 +99,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: `local-mamas` header post; the trust bar's block if the ticker is a missing behaviour; `mamas-test`
 - Done when: every Header row is closed by Bean, checked at 375, 768, 1024 and 1440
 - Depends on: none
-- Status: diagnosis running (2026-11-17)
+- Status: Bean approved the fixes on 2026-11-17 (Header 6 by one-off CSS, Header 9 is the scrollbar track in light pink); being applied on `local-mamas`. Header 7 does not reproduce signed out, signed in or scrolled: waiting for Bean's screenshot. Found and not on the list: signed in, the sticky header slides under WordPress's admin bar when the page is scrolled
 
 ### Task 4: Contact
 - Why: 11 points; its accordion and gutters are shared. Read first: the register's Contact section; the Help page's accordion (the working one)
