@@ -83,26 +83,30 @@ add_action( 'enqueue_block_assets', __NAMESPACE__ . '\\enqueue_device_visibility
  *
  * Emits exactly three rules whose bounds are DERIVED from SGS_Breakpoints
  * (the Spec 37 FR-37-16 / FP-1 single source), never a hardcoded pair:
- *   - .sgs-hide-mobile  : max-width MOBILE_MAX (<= 767)
- *   - .sgs-hide-tablet  : MOBILE_MAX+1 .. TABLET_MAX (768–1023)
- *   - .sgs-hide-desktop : min-width TABLET_MAX+1 (>= 1024)
+ *   - .sgs-hide-mobile  : up to MOBILE_MAX + 0.98px   (767.98)
+ *   - .sgs-hide-tablet  : MOBILE_MAX + 1 .. TABLET_MAX + 0.98px (768 to 1023.98)
+ *   - .sgs-hide-desktop : from TABLET_MAX + 1          (1024)
+ *
+ * The upper bounds carry the `.98px` the media pipeline already uses
+ * (`SGS_Breakpoints::query_fractional()`, the Bootstrap convention). A zoomed
+ * browser or a scaled display gives a viewport such as 1023.4px, which matches
+ * neither `max-width:1023px` nor `min-width:1024px`: an element hidden on
+ * desktop and its twin hidden on tablet and phone would both show. With the
+ * fractional upper bounds every viewport width from 0 to 767.98px is mobile,
+ * 768 to 1023.98px is tablet and 1024px up is desktop; only the 0.02px between
+ * 767.98 and 768 (and between 1023.98 and 1024) matches no tier, and no device
+ * viewport lands there.
  *
  * @return string The generated CSS.
  */
 function device_visibility_css(): string {
-	$mobile_max  = (int) \SGS_Breakpoints::MOBILE_MAX;
-	$tablet_max  = (int) \SGS_Breakpoints::TABLET_MAX;
-	$tablet_min  = $mobile_max + 1;
-	$desktop_min = $tablet_max + 1;
-
 	return sprintf(
-		'@media (max-width:%1$dpx){.sgs-hide-mobile{display:none !important;}}' .
-		'@media (min-width:%2$dpx) and (max-width:%3$dpx){.sgs-hide-tablet{display:none !important;}}' .
-		'@media (min-width:%4$dpx){.sgs-hide-desktop{display:none !important;}}',
-		$mobile_max,
-		$tablet_min,
-		$tablet_max,
-		$desktop_min
+		'@media %1$s{.sgs-hide-mobile{display:none !important;}}' .
+		'@media %2$s{.sgs-hide-tablet{display:none !important;}}' .
+		'@media %3$s{.sgs-hide-desktop{display:none !important;}}',
+		\SGS_Breakpoints::query_fractional( 'mobile' ),
+		\SGS_Breakpoints::query_fractional( 'tablet-only' ),
+		\SGS_Breakpoints::query_fractional( 'desktop' )
 	);
 }
 
