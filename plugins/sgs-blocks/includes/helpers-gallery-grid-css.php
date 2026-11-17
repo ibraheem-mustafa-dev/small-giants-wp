@@ -152,12 +152,33 @@ if ( ! function_exists( 'sgs_gallery_layout_tiers' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_gallery_scroll_bleed_declarations' ) ) {
+	/**
+	 * The room a swipe row leaves around its tiles so a tilt, a hover lift or a shadow is not clipped by the row's
+	 * `overflow-x:auto` (which makes the vertical overflow clip too): padding on both block edges, cancelled by a negative
+	 * margin so layout does not move. The same value the static `.sgs-gallery--scroll .sgs-gallery__grid` rule in
+	 * `src/blocks/gallery/style.css` paints for a gallery that is a swipe row on every device: `--sgs-shadow-bleed`, 80px
+	 * when unset.
+	 *
+	 * @param bool $on True for a swipe row (the bleed), false for a layout that is not (the reset).
+	 * @return string Declarations ending in a semicolon.
+	 */
+	function sgs_gallery_scroll_bleed_declarations( bool $on ): string {
+		return $on
+			? 'padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px));'
+			: 'padding-block:0;margin-block:0;';
+	}
+}
+
 if ( ! function_exists( 'sgs_gallery_layout_declarations' ) ) {
 	/**
 	 * The full declarations that make the image grid one layout at one device tier, resetting every property the other
 	 * layouts set, so a narrower tier can switch from any layout to any other (the static stylesheet paints only the
 	 * desktop layout). The column count is the tier's own custom property (`--sgs-columns-tablet`, `--sgs-columns-mobile`):
-	 * the stylesheet reads those per tier, `--sgs-columns` is the desktop count only.
+	 * the stylesheet reads those per tier, `--sgs-columns` is the desktop count only. The swipe row's shadow bleed is part
+	 * of the layout (`sgs_gallery_scroll_bleed_declarations()`): the swipe row sets it and the other layouts reset it, so a
+	 * gallery that is a grid on desktop and a swipe row on phones does not clip tilted tiles, and a swipe row on desktop
+	 * that is a grid on phones does not keep the padding.
 	 *
 	 * @param string $tier `tablet` or `mobile`.
 	 * @return array<string,string> Layout => declarations for `.sgs-gallery__grid`.
@@ -167,9 +188,9 @@ if ( ! function_exists( 'sgs_gallery_layout_declarations' ) ) {
 		$column = 'calc((100% - (' . $cols . ' - 1) * var(--sgs-gap)) / ' . $cols . ')';
 		$reset  = 'column-count:auto;column-gap:var(--sgs-gap);scrollbar-width:auto;';
 		return array(
-			'grid'    => 'display:grid;grid-template-columns:repeat(' . $cols . ',1fr);grid-auto-flow:row;grid-auto-columns:auto;overflow-x:visible;scroll-snap-type:none;' . $reset,
-			'masonry' => 'display:block;column-count:' . $cols . ';column-gap:var(--sgs-gap);grid-template-columns:none;grid-auto-flow:row;grid-auto-columns:auto;overflow-x:visible;scroll-snap-type:none;scrollbar-width:auto;',
-			'scroll'  => 'display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:var(--sgs-scroll-item-width,' . $column . ');overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;column-count:auto;column-gap:var(--sgs-gap);',
+			'grid'    => 'display:grid;grid-template-columns:repeat(' . $cols . ',1fr);grid-auto-flow:row;grid-auto-columns:auto;overflow-x:visible;scroll-snap-type:none;' . $reset . sgs_gallery_scroll_bleed_declarations( false ),
+			'masonry' => 'display:block;column-count:' . $cols . ';column-gap:var(--sgs-gap);grid-template-columns:none;grid-auto-flow:row;grid-auto-columns:auto;overflow-x:visible;scroll-snap-type:none;scrollbar-width:auto;' . sgs_gallery_scroll_bleed_declarations( false ),
+			'scroll'  => 'display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:var(--sgs-scroll-item-width,' . $column . ');overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;column-count:auto;column-gap:var(--sgs-gap);' . sgs_gallery_scroll_bleed_declarations( true ),
 		);
 	}
 }
