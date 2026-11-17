@@ -26784,6 +26784,14 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "linkedProductPosition",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "GRID"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
@@ -27047,14 +27055,6 @@
       "fields": {
         "css_property": "padding-top",
         "css_element": "priceRow"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "productId",
-      "fields": {
-        "css_property": "grid-template-columns",
-        "css_layer": "GRID"
       }
     },
     {
