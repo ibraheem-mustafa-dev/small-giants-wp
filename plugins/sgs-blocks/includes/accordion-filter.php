@@ -152,6 +152,9 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 		require_once __DIR__ . '/helpers-typography.php';
 		$icon_offset = sgs_css_single_length_value( (string) ( $attributes['filterSearchIconOffset'] ?? '' ) );
 		$rules       = array(
+			'.sgs-accordion__filter'                    => array(
+				'background-color' => $colour( 'filterBandBackground' ),
+			),
 			'.sgs-accordion__chip'                      => array(
 				'color'            => $colour( 'filterChipColour' ),
 				'background-color' => $colour( 'filterChipBackground' ),
@@ -189,6 +192,8 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 				}
 			}
 		}
+
+		$band_css = sgs_accordion_filter_band_css( $attributes, $root_sel, $lists );
 
 		// The chips (resting and selected) and the search box take the shared layered shadow; the selected chip also takes an offset
 		// through the individual `translate` property, so the chip's hover `transform` is untouched.
@@ -236,7 +241,78 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 		foreach ( $lists as $selector => $parts ) {
 			$css .= $root_sel . ' ' . $selector . '{' . implode( ';', $parts ) . ';}';
 		}
-		return $css . sgs_accordion_filter_tier_css( $attributes, $root_sel );
+		return $css . $band_css . sgs_accordion_filter_tier_css( $attributes, $root_sel );
+	}
+
+	/**
+	 * The band's bottom border, added to the bar's own rule, and its full-width spread rules.
+	 *
+	 * The band is the bar drawn as a coloured strip (background, padding, bottom border; padding is a per-device setting printed
+	 * by sgs_accordion_filter_tier_css). With "full width" on, the strip's background and line also reach both viewport edges
+	 * while the bar's contents keep the accordion's content box. Neither paint adds scroll width: a box-shadow spread and
+	 * border-image-outset are ink overflow, not scrollable overflow, so no `100vw` or negative margin is needed, the scrollbar
+	 * is never counted, and an off-centre accordion is covered because the spread is symmetric around the bar's own box. A
+	 * clip-path on the pseudo-element keeps the shadow from spreading vertically. The line is a solid line in this mode.
+	 *
+	 * @param array               $attributes Accordion attributes.
+	 * @param string              $root_sel   The accordion's scoped root selector.
+	 * @param array<string,array> $lists      Selector => "prop:value" declarations; the bar's list gains the border declarations.
+	 * @return string CSS for the full-width rules ('' when the switch is off).
+	 */
+	function sgs_accordion_filter_band_css( array $attributes, string $root_sel, array &$lists ): string {
+		$bar        = '.sgs-accordion__filter';
+		$full       = ! empty( $attributes['filterBandFullWidth'] );
+		$background = sgs_colour_value( (string) ( $attributes['filterBandBackground'] ?? '' ) );
+
+		// The width, style and colour come out of the shared border assembler; an unset width prints nothing, and an unset colour with a width paints the current text colour.
+		$border = sgs_border_element_decls(
+			$attributes,
+			'filterBand',
+			$root_sel . ' ' . $bar,
+			array(
+				'colour'         => array( 'base' => 'filterBandBorderColour' ),
+				'colour_default' => 'currentColor',
+				'radius'         => false,
+			)
+		);
+		$line   = '';
+		foreach ( $border['base'] as $decl ) {
+			if ( ! $full ) {
+				$lists[ $bar ][] = $decl;
+				continue;
+			}
+			// Full width keeps only the bottom edge: the other widths would draw into the image's corner slices.
+			if ( 0 === strpos( $decl, 'border-width:' ) ) {
+				$edges = preg_split( '/\s+/', trim( substr( $decl, strlen( 'border-width:' ) ) ) );
+				$edge  = is_array( $edges ) ? ( $edges[2] ?? $edges[0] ?? '' ) : '';
+				if ( '' !== $edge && ! preg_match( '/^0+(\.0+)?[a-z%]*$/', $edge ) ) {
+					$line            = $edge;
+					$lists[ $bar ][] = 'border-width:0 0 ' . $edge . ' 0';
+				}
+				continue;
+			}
+			$lists[ $bar ][] = $decl;
+		}
+		if ( ! $full ) {
+			return '';
+		}
+
+		$css = $root_sel . ' ' . $bar . '{position:relative;isolation:isolate;}';
+		if ( '' !== $line ) {
+			$paint = 'currentColor';
+			foreach ( $border['base'] as $decl ) {
+				if ( 0 === strpos( $decl, 'border-color:' ) ) {
+					$paint = substr( $decl, strlen( 'border-color:' ) );
+				}
+			}
+			$lists[ $bar ][] = 'border-image:linear-gradient(' . $paint . ',' . $paint . ') 0 0 1 0/0 0 ' . $line . ' 0/0 100vmax';
+		}
+		if ( '' !== $background ) {
+			// sgs-shadow-fallback: a decorative fill spread behind the bar; in forced-colours mode the band is plain and the bar stays readable.
+			$css .= $root_sel . ' ' . $bar . '::before{content:"";position:absolute;inset-block:0;inset-inline:0;z-index:-1;background-color:' . $background
+				. ';box-shadow:0 0 0 100vmax ' . $background . ';clip-path:inset(0 -100vmax);}';
+		}
+		return $css;
 	}
 
 	/**
@@ -269,6 +345,14 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 		}
 
 		$rules = array(
+			'.sgs-accordion__filter'       => array(
+				array(
+					'value'        => $tier( 'filterBandPadding' ),
+					'css'          => 'padding',
+					'box'          => true,
+					'unit_default' => 'px',
+				),
+			),
 			'.sgs-accordion__chips'        => array(
 				array(
 					'value'     => $wrap,

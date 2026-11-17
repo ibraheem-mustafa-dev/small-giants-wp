@@ -124,3 +124,20 @@
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
 }
+
+/* Canvas copy of the full-width band (includes/accordion-filter.php::sgs_accordion_filter_band_css): the fill is a shadow spread, so the editor gains no sideways scroll. */
+.sgs-accordion__filter--band-full {
+	position: relative;
+	isolation: isolate;
+}
+
+.sgs-accordion__filter--band-full::before {
+	content: "";
+	position: absolute;
+	inset-block: 0;
+	inset-inline: 0;
+	z-index: -1;
+	background-color: var(--sgs-accordion-band-fill);
+	box-shadow: 0 0 0 100vmax var(--sgs-accordion-band-fill);
+	clip-path: inset(0 -100vmax);
+}

@@ -52,6 +52,9 @@
         ],
         "iconCircleBorderWidth": [
           "iconCircleBorderWidth"
+        ],
+        "filterBandBorderWidth": [
+          "filterBandBorderWidth"
         ]
       },
       "elements": {
@@ -274,8 +277,18 @@
           "motion": false,
           "label": "Filter bar",
           "order": 7,
-          "clusters": [],
-          "_note": "The search box and chip wrapper. It has no setting of its own; the chips, count and empty message inside it carry the settings."
+          "clusters": [
+            "fill",
+            "layout"
+          ],
+          "attrMap": {
+            "css:background-color": "filterBandBackground",
+            "css:padding": "filterBandPadding",
+            "css:border-width": "filterBandBorderWidth",
+            "css:border-style": "filterBandBorderStyle",
+            "css:border-color": "filterBandBorderColour"
+          },
+          "_note": "The search box and chip wrapper, drawn as a band when its fill, padding or bottom line is set. filterBandFullWidth spreads the fill and line to the screen edges (a pseudo-element shadow and border-image-outset), so it has no CSS property of its own."
         },
         "chip": {
           "selector": ".sgs-accordion__chip",
@@ -636,6 +649,37 @@
       "type": "object",
       "default": {},
       "description": "Where a search box narrower than the bar sits, per device {desktop,tablet,mobile}, each \"left\", \"center\" or \"right\". Empty = the start edge."
+    },
+    "filterBandBackground": {
+      "type": "string",
+      "default": "",
+      "description": "Band fill behind the search box and chips (palette slug or CSS colour). Empty = no band fill."
+    },
+    "filterBandPadding": {
+      "type": "object",
+      "default": {},
+      "description": "Band padding as a per-device box {desktop,tablet,mobile}, each a {top,right,bottom,left} box. Empty = no band padding."
+    },
+    "filterBandBorderWidth": {
+      "type": "object",
+      "default": {},
+      "description": "Band border width as a {top,right,bottom,left} box; the bottom edge is the band's line. Empty = no line."
+    },
+    "filterBandBorderStyle": {
+      "type": "string",
+      "enum": ["none", "solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset"],
+      "default": "solid",
+      "description": "Band border style. With full width on, the line is always solid (none removes it)."
+    },
+    "filterBandBorderColour": {
+      "type": "string",
+      "default": "",
+      "description": "Band border colour (palette slug or CSS colour). Empty = the current text colour."
+    },
+    "filterBandFullWidth": {
+      "type": "boolean",
+      "default": false,
+      "description": "Paint the band's fill and line across the whole width of the screen while the search box and chips stay in the accordion's own width."
     },
     "filterSearchHeight": {
       "type": "object",

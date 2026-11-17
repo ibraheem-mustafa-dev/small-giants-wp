@@ -82,8 +82,37 @@ export default function FilterCanvasBar( { attributes, clientId, palette, tier =
 	const showSearch = false !== attributes.filterSearch;
 	const showChips = false !== attributes.filterChips && categories.length > 0;
 
+	const bandFill = colour( attributes.filterBandBackground );
+	const bandLine = colour( attributes.filterBandBorderColour ) || 'currentColor';
+	const bandBottom = sgsLengthPreview( attributes.filterBandBorderWidth?.bottom );
+	const bandHasLine = !! bandBottom && 'none' !== attributes.filterBandBorderStyle && '0' !== bandBottom && '0px' !== bandBottom;
+	const bandFull = !! attributes.filterBandFullWidth;
+	const bandStyle = {
+		backgroundColor: bandFill,
+		...spacingPreview( { padding: attributes.filterBandPadding }, tier ),
+		...( bandHasLine
+			? bandFull
+				? {
+						borderStyle: 'solid',
+						borderWidth: `0 0 ${ bandBottom } 0`,
+						borderColor: bandLine,
+						borderImage: `linear-gradient(${ bandLine },${ bandLine }) 0 0 1 0/0 0 ${ bandBottom } 0/0 100vmax`,
+				  }
+				: {
+						borderStyle: attributes.filterBandBorderStyle || 'solid',
+						borderWidth: `0 0 ${ bandBottom } 0`,
+						borderColor: bandLine,
+				  }
+			: {} ),
+		...( bandFull && bandFill ? { '--sgs-accordion-band-fill': bandFill } : {} ),
+	};
+
 	return (
-		<div className="sgs-accordion__filter sgs-accordion__filter--canvas" contentEditable={ false }>
+		<div
+			className={ 'sgs-accordion__filter sgs-accordion__filter--canvas' + ( bandFull && bandFill ? ' sgs-accordion__filter--band-full' : '' ) }
+			style={ bandStyle }
+			contentEditable={ false }
+		>
 			{ showSearch && (
 				<div
 					className={ 'sgs-accordion__search' + ( searchIcon ? ' sgs-accordion__search--has-icon' : '' ) }

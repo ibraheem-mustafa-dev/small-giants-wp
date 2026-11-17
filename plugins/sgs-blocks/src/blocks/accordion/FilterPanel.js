@@ -12,7 +12,7 @@ import { PanelBody, TextControl, TextareaControl, ToggleControl } from '@wordpre
 import { DesignTokenPicker, LinkPopoverField, SgsLengthControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { LINK_SOURCES_NO_TOP } from '../../shared/link-source-options';
-import { ChipLookFields, SearchLookFields } from './FilterStyleFields';
+import { BandFields, ChipLookFields, SearchLookFields } from './FilterStyleFields';
 
 /** Defaults mirror block.json; the reset of a field writes its default back. */
 export const FILTER_DEFAULTS = {
@@ -72,6 +72,12 @@ export default function FilterPanel( { attributes, setAttributes } ) {
 	const resetAll = () =>
 		setAttributes( {
 			...FILTER_DEFAULTS,
+			filterBandBackground: '',
+			filterBandPadding: {},
+			filterBandBorderWidth: {},
+			filterBandBorderStyle: 'solid',
+			filterBandBorderColour: '',
+			filterBandFullWidth: false,
 			filterChipColour: '',
 			filterChipBackground: '',
 			filterChipBorderColour: '',
@@ -119,6 +125,8 @@ export default function FilterPanel( { attributes, setAttributes } ) {
 			/>
 			{ filterEnabled && (
 				<ToolsPanel label={ __( 'Filter settings', 'sgs-blocks' ) } resetAll={ resetAll }>
+					<ColourField label={ __( 'Band fill', 'sgs-blocks' ) } attribute="filterBandBackground" { ...shared } />
+					<BandFields { ...shared } />
 					<Field label={ __( 'Search box', 'sgs-blocks' ) } attribute="filterSearch" { ...shared }>
 						<ToggleControl
 							label={ __( 'Show the search box', 'sgs-blocks' ) }

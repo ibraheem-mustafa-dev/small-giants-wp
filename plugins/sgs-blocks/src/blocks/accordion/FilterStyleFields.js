@@ -17,6 +17,7 @@ import {
 	IconPicker,
 	ResponsiveLengthControl,
 	ResponsiveOverride,
+	SgsBorderControl,
 	SgsBoxControl,
 	SgsLengthControl,
 	ShadowControl,
@@ -24,6 +25,7 @@ import {
 	normaliseResponsiveBox,
 } from '../../components';
 import { FontFamilyControl, ToolsPanelItem } from '../../components/primitives';
+import { ToggleControl } from '@wordpress/components';
 import { fontFamilyPickerValue, fontFamilyStoredValue, flattenPresetSetting } from '../../utils';
 
 const OFFSET_UNITS = [
@@ -295,6 +297,49 @@ export function SearchLookFields( { attributes, setAttributes } ) {
 					/>
 				</ToolsPanelItem>
 			) }
+		</>
+	);
+}
+
+/** The band: the bar drawn as a strip with its own padding, bottom line and an optional full-screen-width spread (its fill is a ColourField in FilterPanel). */
+export function BandFields( { attributes, setAttributes } ) {
+	const shared = { attributes, setAttributes };
+	const width = attributes.filterBandBorderWidth && 'object' === typeof attributes.filterBandBorderWidth ? attributes.filterBandBorderWidth : {};
+	return (
+		<>
+			<BoxItem label={ __( 'Band padding', 'sgs-blocks' ) } attribute="filterBandPadding" { ...shared } />
+			<ToolsPanelItem
+				label={ __( 'Band bottom line', 'sgs-blocks' ) }
+				hasValue={ () => Object.keys( width ).length > 0 || !! attributes.filterBandBorderColour || 'solid' !== ( attributes.filterBandBorderStyle || 'solid' ) }
+				onDeselect={ () => setAttributes( { filterBandBorderWidth: {}, filterBandBorderStyle: 'solid', filterBandBorderColour: '' } ) }
+				isShownByDefault
+			>
+				<SgsBorderControl
+					label={ __( 'Band bottom line', 'sgs-blocks' ) }
+					widthValues={ width }
+					onWidthChange={ ( next ) => setAttributes( { filterBandBorderWidth: next } ) }
+					styleValue={ attributes.filterBandBorderStyle || 'solid' }
+					onStyleChange={ ( val ) => setAttributes( { filterBandBorderStyle: val } ) }
+					colourLabel={ __( 'Band line colour', 'sgs-blocks' ) }
+					colourValue={ attributes.filterBandBorderColour }
+					onColourChange={ ( val ) => setAttributes( { filterBandBorderColour: val ?? '' } ) }
+					colourLinked
+				/>
+			</ToolsPanelItem>
+			<ToolsPanelItem
+				label={ __( 'Band full width', 'sgs-blocks' ) }
+				hasValue={ () => !! attributes.filterBandFullWidth }
+				onDeselect={ () => setAttributes( { filterBandFullWidth: false } ) }
+				isShownByDefault
+			>
+				<ToggleControl
+					label={ __( 'Band full width', 'sgs-blocks' ) }
+					help={ __( 'Spreads the band fill and line to both edges of the screen. The search box and chips stay in the accordion width. The line is solid in this mode.', 'sgs-blocks' ) }
+					checked={ !! attributes.filterBandFullWidth }
+					onChange={ ( val ) => setAttributes( { filterBandFullWidth: val } ) }
+					__nextHasNoMarginBottom
+				/>
+			</ToolsPanelItem>
 		</>
 	);
 }

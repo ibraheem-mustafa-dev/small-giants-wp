@@ -55,6 +55,12 @@ foreach ( array( 'itemBackgroundOpen', 'itemShadow', 'itemShadowColour', 'itemSh
 		unset( $hash_attrs[ $hash_key ] );
 	}
 }
+// The filter band settings stay out of the hash while unset (empty, false, or the default solid style), for the same reason.
+foreach ( array( 'filterBandBackground', 'filterBandPadding', 'filterBandBorderWidth', 'filterBandBorderStyle', 'filterBandBorderColour', 'filterBandFullWidth' ) as $hash_key ) {
+	if ( isset( $hash_attrs[ $hash_key ] ) && ( empty( $hash_attrs[ $hash_key ] ) || 'solid' === $hash_attrs[ $hash_key ] ) ) {
+		unset( $hash_attrs[ $hash_key ] );
+	}
+}
 // The answer slide timing stays out of the hash while unset, for the same reason.
 foreach ( array( 'panelDuration', 'panelEasing', 'panelEasingCustom' ) as $hash_key ) {
 	if ( isset( $hash_attrs[ $hash_key ] ) && ( '' === $hash_attrs[ $hash_key ] || 0 === $hash_attrs[ $hash_key ] ) ) {

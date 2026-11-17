@@ -282,6 +282,101 @@ final class AccordionFilterTest extends TestCase {
 		$this->assertStringContainsString( ' .sgs-accordion__search-icon{color:#3A2A22;}', $html );
 	}
 
+	/**
+	 * The band settings are off by default: with none set, or each at its block.json default, the bar renders byte-identical
+	 * and keeps the same scope class (no uid normalising here: an unset band attribute stays out of the hash).
+	 */
+	public function test_the_band_settings_print_nothing_and_keep_the_scope_class_when_unset(): void {
+		$root     = dirname( __DIR__, 2 );
+		$bare     = $this->render_fixture( $root, 'indus', array( 'filterEnabled' => true ), array( 'category' => 'Trade' ) );
+		$defaults = $this->render_fixture(
+			$root,
+			'indus',
+			array(
+				'filterEnabled'           => true,
+				'filterBandBackground'    => '',
+				'filterBandPadding'       => array(),
+				'filterBandBorderWidth'   => array(),
+				'filterBandBorderStyle'   => 'solid',
+				'filterBandBorderColour'  => '',
+				'filterBandFullWidth'     => false,
+			),
+			array( 'category' => 'Trade' )
+		);
+		$this->assertSame( $bare, $defaults );
+		$this->assertStringNotContainsString( 'sgs-accordion__filter{', $bare );
+		$this->assertStringNotContainsString( '100vmax', $bare );
+	}
+
+	public function test_the_band_background_padding_and_bottom_border_print_one_scoped_rule_each(): void {
+		$root = dirname( __DIR__, 2 );
+		$html = $this->render_fixture(
+			$root,
+			'indus',
+			array(
+				'filterEnabled'          => true,
+				'filterBandBackground'   => '#FFFAF0',
+				'filterBandPadding'      => array(
+					'desktop' => array( 'top' => '32px', 'right' => '0', 'bottom' => '24px', 'left' => '0' ),
+					'mobile'  => array( 'top' => '16px', 'right' => '0', 'bottom' => '12px', 'left' => '0' ),
+				),
+				'filterBandBorderWidth'  => array( 'top' => '0', 'right' => '0', 'bottom' => '2px', 'left' => '0' ),
+				'filterBandBorderStyle'  => 'solid',
+				'filterBandBorderColour' => '#3A2A22',
+			),
+			array( 'category' => 'Trade' )
+		);
+		$this->assertSame( 1, substr_count( $html, ' .sgs-accordion__filter{background-color:#FFFAF0;border-style:solid;border-width:0px 0px 2px 0px;border-color:#3A2A22;}' ), 'background and bottom border in one scoped rule' );
+		$this->assertStringContainsString( ' .sgs-accordion__filter{padding-top:32px;padding-right:0px;padding-bottom:24px;padding-left:0px;}', $html );
+		$this->assertStringContainsString( ' .sgs-accordion__filter{padding-top:16px;padding-bottom:12px;}', $html, 'the mobile tier (only the sides that differ)' );
+		$this->assertStringNotContainsString( '100vmax', $html, 'full width is a separate switch' );
+		$this->assertDoesNotMatchRegularExpression( '#<div class="sgs-accordion__filter"[^>]*style=#', $html, 'no inline style' );
+	}
+
+	public function test_the_band_palette_slug_resolves_like_the_blocks_other_colours(): void {
+		$root = dirname( __DIR__, 2 );
+		$html = $this->render_fixture( $root, 'indus', array( 'filterEnabled' => true, 'filterBandBackground' => 'surface' ), array( 'category' => 'Trade' ) );
+		$this->assertStringContainsString( ' .sgs-accordion__filter{background-color:var(--wp--preset--color--surface', $html );
+	}
+
+	public function test_the_band_full_width_switch_paints_the_spread_only_when_on_and_never_with_viewport_units_or_negative_margins(): void {
+		$root = dirname( __DIR__, 2 );
+		$base = array(
+			'filterEnabled'          => true,
+			'filterBandBackground'   => '#FFFAF0',
+			'filterBandBorderWidth'  => array( 'top' => '0', 'right' => '0', 'bottom' => '2px', 'left' => '0' ),
+			'filterBandBorderColour' => '#3A2A22',
+		);
+		$off  = $this->render_fixture( $root, 'indus', $base, array( 'category' => 'Trade' ) );
+		$on   = $this->render_fixture( $root, 'indus', $base + array( 'filterBandFullWidth' => true ), array( 'category' => 'Trade' ) );
+		$this->assertStringNotContainsString( '::before', $off );
+		$this->assertStringNotContainsString( '100vmax', $off );
+		$this->assertSame( 1, substr_count( $on, ' .sgs-accordion__filter::before{' ), 'one spread rule' );
+		$this->assertStringContainsString( ' .sgs-accordion__filter{position:relative;isolation:isolate;}', $on );
+		$this->assertStringContainsString( 'box-shadow:0 0 0 100vmax #FFFAF0;clip-path:inset(0 -100vmax);', $on, 'the background is a shadow spread, which adds no scroll width' );
+		$this->assertStringContainsString( 'border-image:linear-gradient(#3A2A22,#3A2A22) 0 0 1 0/0 0 2px 0/0 100vmax;', $on, 'the bottom line rides border-image-outset' );
+		$this->assertStringNotContainsString( '100vw', $on );
+		$this->assertDoesNotMatchRegularExpression( '#margin-inline:\s*calc|margin-(left|right):\s*-#', $on );
+	}
+
+	public function test_the_band_values_are_sanitised(): void {
+		$root = dirname( __DIR__, 2 );
+		$html = $this->render_fixture(
+			$root,
+			'indus',
+			array(
+				'filterEnabled'          => true,
+				'filterBandBackground'   => 'red;}body{display:none',
+				'filterBandBorderColour' => 'red;}body{display:none',
+				'filterBandBorderWidth'  => array( 'top' => '0', 'right' => '0', 'bottom' => '2px;}x{', 'left' => '0' ),
+				'filterBandFullWidth'    => true,
+			),
+			array( 'category' => 'Trade' )
+		);
+		$this->assertStringNotContainsString( 'body{display:none', $html );
+		$this->assertStringNotContainsString( '2px;}x{', $html );
+	}
+
 	public function test_the_chip_and_search_font_families_and_the_search_icon_offset_print_real_properties(): void {
 		$root = dirname( __DIR__, 2 );
 		$html = $this->render_fixture(
