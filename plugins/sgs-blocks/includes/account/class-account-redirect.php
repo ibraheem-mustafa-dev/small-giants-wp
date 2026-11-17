@@ -3,6 +3,9 @@
  * SGS Account Redirect: sends a signed-in visitor away from a page whose sgs/account block has
  * `signedInRedirectUrl` set (the block's "when the visitor is signed in, send them to" setting).
  *
+ * A mirror serves the signed-out visitor: on a page whose card-view sgs/account block has a sign-in address
+ * (`signedOutSignInUrl`), a signed-out visitor is sent to that sign-in page, carrying `redirect_to` back to the page.
+ *
  * Three hooks use one decision:
  * - `template_redirect`: a signed-in visitor who requests such a page is redirected before any output.
  * - `woocommerce_registration_redirect` and `woocommerce_login_redirect`: when WooCommerce would return the visitor to
@@ -89,6 +92,37 @@ final class Account_Redirect {
 	}
 
 	/**
+	 * The signed-out decision, as a pure function: the sign-in page address carrying `redirect_to`, or null.
+	 *
+	 * Keys of `$c`: logged_in, method, request_url, sign_in_url (the block's resolved sign-in page), is_rest, is_ajax,
+	 * is_cron, is_admin, is_preview, has_endpoint (a WooCommerce account endpoint such as lost password) and has_key
+	 * (an email-verification or reset key in the address).
+	 *
+	 * @param array $c Request facts.
+	 * @return string|null
+	 */
+	public static function decide_signed_out( array $c ): ?string {
+		$sign_in = trim( (string) ( $c['sign_in_url'] ?? '' ) );
+		if ( '' === $sign_in || ! empty( $c['logged_in'] ) ) {
+			return null;
+		}
+		if ( ! in_array( strtoupper( (string) ( $c['method'] ?? 'GET' ) ), array( 'GET', 'HEAD' ), true ) ) {
+			return null;
+		}
+		foreach ( array( 'is_rest', 'is_ajax', 'is_cron', 'is_admin', 'is_preview', 'has_endpoint', 'has_key' ) as $flag ) {
+			if ( ! empty( $c[ $flag ] ) ) {
+				return null;
+			}
+		}
+		$request = (string) ( $c['request_url'] ?? '' );
+		if ( self::same_page( $request, $sign_in ) ) {
+			return null;
+		}
+		$back = ( 0 === strpos( $request, '/' ) && 0 !== strpos( $request, '//' ) ) ? \home_url( $request ) : $request;
+		return $sign_in . ( false === strpos( $sign_in, '?' ) ? '?' : '&' ) . 'redirect_to=' . rawurlencode( $back );
+	}
+
+	/**
 	 * The redirect after registration or login, as a pure function: WooCommerce's own `$redirect` unless it is the
 	 * page the visitor came from and that page holds the setting.
 	 *
@@ -113,6 +147,29 @@ final class Account_Redirect {
 	 * @return string '' when none.
 	 */
 	public static function destination_in_blocks( array $blocks, int $depth = 3 ): string {
+		return self::find_in_blocks( $blocks, array( __CLASS__, 'resolve' ), $depth );
+	}
+
+	/**
+	 * The resolved sign-in page address of the first card-view sgs/account block that has one, in a parsed block tree.
+	 *
+	 * @param array $blocks Parsed blocks.
+	 * @param int   $depth  Levels of synced patterns still to follow.
+	 * @return string '' when none.
+	 */
+	public static function sign_in_url_in_blocks( array $blocks, int $depth = 3 ): string {
+		return self::find_in_blocks( $blocks, array( __CLASS__, 'resolve_sign_in' ), $depth );
+	}
+
+	/**
+	 * The first non-empty result of `$resolver` over the sgs/account blocks of a parsed tree.
+	 *
+	 * @param array    $blocks   Parsed blocks.
+	 * @param callable $resolver Takes a block's attributes, returns an address or ''.
+	 * @param int      $depth    Levels of synced patterns still to follow.
+	 * @return string '' when none.
+	 */
+	private static function find_in_blocks( array $blocks, callable $resolver, int $depth ): string {
 		foreach ( $blocks as $block ) {
 			if ( ! is_array( $block ) ) {
 				continue;
@@ -120,25 +177,42 @@ final class Account_Redirect {
 			$name  = (string) ( $block['blockName'] ?? '' );
 			$attrs = (array) ( $block['attrs'] ?? array() );
 			if ( 'sgs/account' === $name ) {
-				$url = self::resolve( $attrs );
+				$url = (string) $resolver( $attrs );
 				if ( '' !== $url ) {
 					return $url;
 				}
 			} elseif ( 'core/block' === $name && $depth > 0 && ! empty( $attrs['ref'] ) && function_exists( 'get_post' ) ) {
 				$pattern = \get_post( (int) $attrs['ref'] );
 				if ( $pattern && 'wp_block' === $pattern->post_type && 'publish' === $pattern->post_status ) {
-					$url = self::destination_in_blocks( \parse_blocks( (string) $pattern->post_content ), $depth - 1 );
+					$url = self::find_in_blocks( \parse_blocks( (string) $pattern->post_content ), $resolver, $depth - 1 );
 					if ( '' !== $url ) {
 						return $url;
 					}
 				}
 			}
-			$url = self::destination_in_blocks( (array) ( $block['innerBlocks'] ?? array() ), $depth );
+			$url = self::find_in_blocks( (array) ( $block['innerBlocks'] ?? array() ), $resolver, $depth );
 			if ( '' !== $url ) {
 				return $url;
 			}
 		}
 		return '';
+	}
+
+	/**
+	 * One block's sign-in page address: set only for the card view (the in-between view that links on to sign in).
+	 *
+	 * @param array $attrs Block attributes.
+	 * @return string '' when the block is not the card view or has no address.
+	 */
+	public static function resolve_sign_in( array $attrs ): string {
+		if ( 'card' !== (string) ( $attrs['signedOutView'] ?? '' ) ) {
+			return '';
+		}
+		$url = trim( sgs_link_source_href( (string) ( $attrs['signedOutSignInUrlSource'] ?? '' ), trim( (string) ( $attrs['signedOutSignInUrl'] ?? '' ) ) ) );
+		if ( '' !== $url && '/' === $url[0] && 0 !== strpos( $url, '//' ) ) {
+			$url = \home_url( $url );
+		}
+		return $url;
 	}
 
 	/**
@@ -178,40 +252,75 @@ final class Account_Redirect {
 		return self::destination_in_blocks( \parse_blocks( $content ) );
 	}
 
-	/** `template_redirect`: send a signed-in visitor on a page that holds the setting to its destination. */
+	/**
+	 * The card-view sign-in page address on one post's content.
+	 *
+	 * @param int $post_id Post id.
+	 * @return string
+	 */
+	private static function sign_in_url_for_post( int $post_id ): string {
+		$post = $post_id > 0 ? \get_post( $post_id ) : null;
+		if ( ! $post ) {
+			return '';
+		}
+		$content = (string) $post->post_content;
+		if ( false === strpos( $content, 'wp:sgs/account' ) && false === strpos( $content, 'wp:block' ) ) {
+			return '';
+		}
+		return self::sign_in_url_in_blocks( \parse_blocks( $content ) );
+	}
+
+	/**
+	 * Request facts shared by both decisions.
+	 *
+	 * @return array
+	 */
+	private static function request_facts(): array {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- reads request facts only; nothing is saved.
+		$endpoint = ( function_exists( 'is_wc_endpoint_url' ) && \is_wc_endpoint_url() ) || isset( $_GET['key'], $_GET['id'] ) || isset( $_GET['show-reset-form'] );
+		$has_key  = isset( $_GET['key'] ) || isset( $_GET['id'] ) || isset( $_GET['show-reset-form'] ) || isset( $_GET['verify'] ) || isset( $_GET['verify_email'] ) || isset( $_GET['token'] );
+		$preview  = \is_preview() || \is_customize_preview() || isset( $_GET['preview'] );
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		return array(
+			'method'       => isset( $_SERVER['REQUEST_METHOD'] ) ? \sanitize_text_field( \wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : 'GET',
+			'request_url'  => isset( $_SERVER['REQUEST_URI'] ) ? \esc_url_raw( \wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '',
+			'is_rest'      => defined( 'REST_REQUEST' ) && REST_REQUEST,
+			'is_ajax'      => \wp_doing_ajax(),
+			'is_cron'      => \wp_doing_cron(),
+			'is_admin'     => \is_admin(),
+			'is_preview'   => $preview,
+			'has_endpoint' => $endpoint,
+			'has_key'      => $has_key,
+		);
+	}
+
+	/** `template_redirect`: a signed-in visitor on a page that holds the setting goes to its destination; a signed-out visitor on the card-view account page goes to the sign-in page. */
 	public static function maybe_redirect(): void {
-		if ( ! \is_user_logged_in() || ! \is_singular() ) {
+		if ( ! \is_singular() ) {
 			return;
 		}
 		$post = \get_queried_object();
 		if ( ! $post instanceof \WP_Post ) {
 			return;
 		}
-		$destination = self::destination_for_post( (int) $post->ID );
-		if ( '' === $destination ) {
+		$signed_in = \is_user_logged_in();
+		if ( $signed_in ) {
+			$address = self::destination_for_post( (int) $post->ID );
+			$key     = 'destination';
+		} else {
+			$address = self::sign_in_url_for_post( (int) $post->ID );
+			$key     = 'sign_in_url';
+		}
+		if ( '' === $address ) {
 			return;
 		}
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- reads request facts only; nothing is saved.
-		$endpoint = ( function_exists( 'is_wc_endpoint_url' ) && \is_wc_endpoint_url() ) || isset( $_GET['key'], $_GET['id'] ) || isset( $_GET['show-reset-form'] );
-		$preview  = \is_preview() || \is_customize_preview() || isset( $_GET['preview'] );
-		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-		$request = isset( $_SERVER['REQUEST_URI'] ) ? \esc_url_raw( \wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
-		$target  = self::decide(
-			array(
-				'logged_in'    => true,
-				'method'       => isset( $_SERVER['REQUEST_METHOD'] ) ? \sanitize_text_field( \wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : 'GET',
-				'request_url'  => $request,
-				'destination'  => $destination,
-				'is_rest'      => defined( 'REST_REQUEST' ) && REST_REQUEST,
-				'is_ajax'      => \wp_doing_ajax(),
-				'is_cron'      => \wp_doing_cron(),
-				'is_admin'     => \is_admin(),
-				'is_preview'   => $preview,
-				'has_endpoint' => $endpoint,
-			)
+		$facts  = self::request_facts() + array(
+			'logged_in' => $signed_in,
+			$key        => $address,
 		);
+		$target = $signed_in ? self::decide( $facts ) : self::decide_signed_out( $facts );
 		if ( null !== $target ) {
-			\wp_safe_redirect( $target );
+			\wp_safe_redirect( $target, 302 );
 			exit;
 		}
 	}

@@ -163,5 +163,24 @@ ok( 'https://example.test/my-account/' === RD::destination_in_blocks( array( arr
 ok( '' === RD::destination_in_blocks( array( array( 'blockName' => 'sgs/account', 'attrs' => array(), 'innerBlocks' => array() ) ) ), '7 a block without the setting finds nothing' );
 ok( '' === RD::destination_in_blocks( array( array( 'blockName' => 'core/template-part', 'attrs' => array( 'slug' => 'x' ), 'innerBlocks' => array() ) ) ), '7 limit: a template part is not searched' );
 
+// 8) Signed-out visitor on the bare account page goes to the sign-in page.
+$so = array( 'logged_in' => false, 'method' => 'GET', 'request_url' => '/my-account/', 'sign_in_url' => 'https://example.test/sign-in/' );
+ok( 'https://example.test/sign-in/?redirect_to=' . rawurlencode( 'https://example.test/my-account/' ) === RD::decide_signed_out( $so ), '8 signed out on the account page: sign-in page, redirect_to kept' );
+ok( null === RD::decide_signed_out( array( 'logged_in' => true ) + $so ), '8 signed in: no redirect' );
+ok( null === RD::decide_signed_out( array( 'sign_in_url' => '' ) + $so ), '8 no separate sign-in page set: no redirect' );
+ok( null === RD::decide_signed_out( array( 'request_url' => '/sign-in/' ) + $so ), '8 already on the sign-in page: no loop' );
+foreach ( array( 'is_rest', 'is_ajax', 'is_cron', 'is_admin', 'is_preview', 'has_endpoint', 'has_key' ) as $flag ) {
+	ok( null === RD::decide_signed_out( array( $flag => true ) + $so ), "8 {$flag}: no redirect" );
+}
+ok( null === RD::decide_signed_out( array( 'method' => 'POST' ) + $so ), '8 a POST: no redirect' );
+ok( 'https://example.test/sign-in/?a=1&redirect_to=' . rawurlencode( 'https://example.test/my-account/' ) === RD::decide_signed_out( array( 'sign_in_url' => 'https://example.test/sign-in/?a=1' ) + $so ), '8 sign-in address with a query: redirect_to appended' );
+ok( 'https://example.test/sign-in/?redirect_to=' . rawurlencode( 'https://example.test/my-account/?x=1' ) === RD::decide_signed_out( array( 'request_url' => '/my-account/?x=1' ) + $so ), '8 the visitor query comes back through redirect_to' );
+
+// 9) Finding the sign-in page in parsed blocks: only a card-view block with a sign-in address counts.
+$blk = static fn( array $a ) => array( array( 'blockName' => 'sgs/account', 'attrs' => $a, 'innerBlocks' => array() ) );
+ok( 'https://example.test/sign-in/' === RD::sign_in_url_in_blocks( $blk( array( 'signedOutView' => 'card', 'signedOutSignInUrl' => '/sign-in/' ) ) ), '9 card view with a typed address: found and made absolute' );
+ok( '' === RD::sign_in_url_in_blocks( $blk( array( 'signedOutView' => 'card' ) ) ), '9 card view with no address: none' );
+ok( '' === RD::sign_in_url_in_blocks( $blk( array( 'signedOutSignInUrl' => '/sign-in/' ) ) ), '9 not the card view: none' );
+
 echo $failures ? "\n{$failures} FAILED\n" : "\nall passed\n";
 exit( $failures ? 1 : 0 );
