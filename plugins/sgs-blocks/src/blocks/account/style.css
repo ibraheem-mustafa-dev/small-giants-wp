@@ -577,7 +577,7 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 
 /*
  * Switching tabs animates the open box's height (Chromium, Safari and Firefox): the panel is a one-row grid whose row
- * runs 1fr to 0fr, and its inner wrapper clips. The wrapper bleeds outwards by --sgs-account-panel-bleed (padding and an
+ * runs 1fr to 0fr, and its inner wrapper clips. The wrapper clips the block axis only and bleeds by --sgs-account-panel-bleed (block padding and an
  * equal negative margin), so the layout at rest is unchanged and a button's hard shadow is not cut at the panel's edge.
  * The hidden panel stays out of the tab order and away from assistive technology through visibility. Reduced motion
  * keeps the instant display:none swap above.
@@ -585,9 +585,9 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 .sgs-account__auth-panel-inner {
 	min-width: 0;
 	min-height: 0;
-	overflow: hidden;
-	padding: var(--sgs-account-panel-bleed, 12px);
-	margin: calc(-1 * var(--sgs-account-panel-bleed, 12px));
+	overflow-y: clip;
+	padding-block: var(--sgs-account-panel-bleed, 12px);
+	margin-block: calc(-1 * var(--sgs-account-panel-bleed, 12px));
 }
 
 @media (prefers-reduced-motion: no-preference) {
