@@ -123,6 +123,52 @@ describe( 'the drawer empty state', () => {
 		jest.dontMock( '../../src/blocks/cart/item-row-template' );
 	} );
 
+	describe( 'removing the last line', () => {
+		const twoLines = { ...cartWithOne, items: [ cartWithOne.items[ 0 ], { ...cartWithOne.items[ 0 ], key: 'k2' } ] };
+		const closeButton = '<button type="button" class="sgs-cart__panel-close" data-sgs-nav-close>x</button>';
+
+		test( 'focus moves to the empty state button, not the page', async () => {
+			document.body.innerHTML = base( template + closeButton );
+			api.fetchCart.mockResolvedValue( cartWithOne );
+			api.removeCartItem.mockResolvedValue( { items: [], totals: {} } );
+			const panel = initPanel( document.querySelector( '[data-sgs-cart-panel]' ) );
+			await panel.refresh();
+			const remove = document.querySelector( 'button.sgs-cart__item-remove' );
+			remove.focus();
+			remove.click();
+			await settle();
+			expect( document.querySelector( 'button[data-sgs-cart-empty-add]' ) ).not.toBeNull();
+			expect( document.activeElement ).toBe( document.querySelector( 'button[data-sgs-cart-empty-add]' ) );
+		} );
+
+		test( 'with no empty state button, focus goes to the drawer close button', async () => {
+			const headingOnly = '<template data-sgs-cart-empty-template><div class="sgs-cart__panel-empty"><h3>Your basket is empty</h3></div></template>';
+			document.body.innerHTML = base( headingOnly + closeButton );
+			api.fetchCart.mockResolvedValue( cartWithOne );
+			api.removeCartItem.mockResolvedValue( { items: [], totals: {} } );
+			const panel = initPanel( document.querySelector( '[data-sgs-cart-panel]' ) );
+			await panel.refresh();
+			const remove = document.querySelector( 'button.sgs-cart__item-remove' );
+			remove.focus();
+			remove.click();
+			await settle();
+			expect( document.activeElement ).toBe( document.querySelector( '.sgs-cart__panel-close' ) );
+		} );
+
+		test( 'removing a line that is not the last leaves focus handling alone', async () => {
+			document.body.innerHTML = base( template + closeButton );
+			api.fetchCart.mockResolvedValue( twoLines );
+			api.removeCartItem.mockResolvedValue( cartWithOne );
+			const panel = initPanel( document.querySelector( '[data-sgs-cart-panel]' ) );
+			await panel.refresh();
+			const remove = document.querySelector( 'button.sgs-cart__item-remove' );
+			remove.focus();
+			remove.click();
+			await settle();
+			expect( document.activeElement ).not.toBe( document.querySelector( '.sgs-cart__panel-close' ) );
+		} );
+	} );
+
 	test( 'a refused add keeps the button, says why and gives focus back to it', async () => {
 		document.body.innerHTML = base( template );
 		api.fetchCart.mockResolvedValue( { items: [], totals: {} } );

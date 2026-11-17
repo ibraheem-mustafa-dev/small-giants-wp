@@ -252,6 +252,7 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	 */
 	async function setQuantity( key, quantity ) {
 		const was = focusedQtyControl();
+		const hadFocus = itemsEl.contains( document.activeElement );
 		setBusy( true );
 		try {
 			const cart =
@@ -260,6 +261,7 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 					: await updateCartItem( key, quantity );
 			render( cart );
 			restoreQtyFocus( was );
+			focusEmptyState( cart, hadFocus );
 			announce(
 				quantity === 0
 					? 'Item removed from your cart.'
@@ -308,6 +310,29 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		panelRoot.focus();
 	}
 
+	/**
+	 * Keep keyboard focus inside the open drawer after the last line is removed and the panel redraws as its empty state.
+	 * The removed row held focus, so without this it falls to the page. Focus goes to the empty state's main button or link,
+	 * else the drawer's close button, else the panel itself. A cart that still has lines is left to its own focus handling.
+	 *
+	 * @param {Object}  cart     The Store API cart the panel has just drawn.
+	 * @param {boolean} hadFocus Whether focus was inside the item list before the mutation.
+	 */
+	function focusEmptyState( cart, hadFocus ) {
+		if ( ! hadFocus || ( Array.isArray( cart?.items ) && cart.items.length > 0 ) || panelRoot.contains( document.activeElement ) ) {
+			return;
+		}
+		const target =
+			itemsEl.querySelector( '.sgs-cart__panel-empty :is(button, a[href]):not(:disabled)' ) ||
+			panelRoot.querySelector( '.sgs-cart__panel-close:not(:disabled)' );
+		target?.focus();
+		if ( target && panelRoot.contains( document.activeElement ) ) {
+			return;
+		}
+		panelRoot.setAttribute( 'tabindex', '-1' );
+		panelRoot.focus();
+	}
+
 	// The empty state's button: add its one product through the Store API, redraw the panel with the new line, keep focus in the list.
 	itemsEl.addEventListener( 'click', async ( event ) => {
 		const button = event.target.closest( 'button[data-sgs-cart-empty-add]' );
@@ -345,11 +370,13 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 			return;
 		}
 		const key = button.dataset.key;
+		const hadFocus = itemsEl.contains( document.activeElement );
 
 		setBusy( true );
 		try {
 			const cart = await removeCartItem( key );
 			render( cart );
+			focusEmptyState( cart, hadFocus );
 			announce( 'Item removed from your cart.' );
 		} catch {
 			announce( 'Could not remove that item. Please try again.' );
@@ -369,12 +396,14 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		}
 		const key = button.dataset.key;
 		const productId = Number( button.dataset.productId );
+		const hadFocus = itemsEl.contains( document.activeElement );
 
 		setBusy( true );
 		try {
 			await addWishlistId( productId );
 			const cart = await removeCartItem( key );
 			render( cart );
+			focusEmptyState( cart, hadFocus );
 			announce( 'Saved for later.' );
 		} catch {
 			announce( 'Could not save that item for later. Please try again.' );
