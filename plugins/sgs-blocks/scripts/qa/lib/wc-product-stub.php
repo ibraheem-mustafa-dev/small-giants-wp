@@ -74,6 +74,19 @@ if ( ! class_exists( 'WC_Product' ) ) {
 		public function get_review_count() {
 			return (int) ( $this->data['review_count'] ?? 0 );
 		}
+		public function get_status() {
+			return (string) ( $this->data['status'] ?? 'publish' );
+		}
+		public function is_visible() {
+			return (bool) ( $this->data['visible'] ?? true );
+		}
+		/** The product file's `upsell_ids` / `cross_sell_ids`: the owner's Linked products lists. */
+		public function get_upsell_ids() {
+			return (array) ( $this->data['upsell_ids'] ?? array() );
+		}
+		public function get_cross_sell_ids() {
+			return (array) ( $this->data['cross_sell_ids'] ?? array() );
+		}
 		public function get_variation_attributes() {
 			return array();
 		}
@@ -122,6 +135,18 @@ if ( ! function_exists( 'wc_get_product' ) ) {
 			}
 		}
 		return false;
+	}
+}
+
+if ( ! function_exists( 'wc_get_related_products' ) ) {
+	/** WooCommerce's related products for a product: its file's `related_ids`. */
+	function wc_get_related_products( $product_id, $limit = 5, $exclude_ids = array() ) {
+		foreach ( $GLOBALS['sgs_qa_products'] ?? array( $GLOBALS['sgs_qa_product'] ?? null ) as $data ) {
+			if ( is_array( $data ) && (int) ( $data['id'] ?? 0 ) === (int) $product_id ) {
+				return array_slice( array_diff( (array) ( $data['related_ids'] ?? array() ), (array) $exclude_ids ), 0, (int) $limit );
+			}
+		}
+		return array();
 	}
 }
 

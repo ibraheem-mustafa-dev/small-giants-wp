@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
@@ -119,7 +119,7 @@ const CTA_JUSTIFY_CONTENT = {
  * @param {Function} props.setAttributes Attribute setter.
  */
 function ProductSourcePanel( { attributes, setAttributes } ) {
-	const { sourceMode, productId, taxDisplayMode } = attributes;
+	const { sourceMode, productId, taxDisplayMode, linkedProductKind, linkedProductPosition } = attributes;
 	const [ wcOptions, setWcOptions ] = useState( [] );
 	const [ wcLoading, setWcLoading ] = useState( false );
 
@@ -216,6 +216,37 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 			) }
 			{ 'wc-product' === sourceMode && productId > 0 && (
 				<>
+					<SelectControl
+						label={ __( 'Product shown on a product page', 'sgs-blocks' ) }
+						help={ __(
+							'Fixed shows the product connected above everywhere. A linked option shows the viewed product’s own Upsells, Cross-sells or Related products, chosen in WooCommerce under Linked products, and never the product being viewed. The product connected above is only the sample you see here in the editor.',
+							'sgs-blocks'
+						) }
+						value={ linkedProductKind || '' }
+						options={ [
+							{ label: __( 'Fixed: the connected product', 'sgs-blocks' ), value: '' },
+							{ label: __( 'Linked: an Upsell of the product being viewed', 'sgs-blocks' ), value: 'upsells' },
+							{ label: __( 'Linked: a Cross-sell of the product being viewed', 'sgs-blocks' ), value: 'cross-sells' },
+							{ label: __( 'Linked: a Related product of the product being viewed', 'sgs-blocks' ), value: 'related' },
+						] }
+						onChange={ ( value ) => setAttributes( { linkedProductKind: value } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ '' !== ( linkedProductKind || '' ) && (
+						<NumberControl
+							label={ __( 'Position in the list (1 = first)', 'sgs-blocks' ) }
+							help={ __(
+								'With fewer linked products than this, the card shows one of WooCommerce’s related products instead; with none left it is left out.',
+								'sgs-blocks'
+							) }
+							value={ linkedProductPosition || 1 }
+							min={ 1 }
+							onChange={ ( v ) => setAttributes( { linkedProductPosition: Math.max( 1, parseInt( v, 10 ) || 1 ) } ) }
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+					) }
 					<SelectControl
 						label={ __( 'Price display (VAT)', 'sgs-blocks' ) }
 						help={ __(
@@ -3465,6 +3496,16 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 				/* Bound mode: server-side render preview */
 				<div { ...blockProps }>
 					{ boundPreviewCss && <style>{ boundPreviewCss }</style> }
+					{ attributes.linkedProductKind && (
+						<p className="sgs-product-card__linked-note">
+							{ sprintf(
+								/* translators: 1: upsells, cross-sells or related; 2: position number */
+								__( 'Sample shown. On a product page this card shows linked product %2$d (%1$s) of the product being viewed.', 'sgs-blocks' ),
+								attributes.linkedProductKind,
+								attributes.linkedProductPosition || 1
+							) }
+						</p>
+					) }
 					{ /*
 					 * FR-30-3 Option C editor-preview fix (2026-09-18):
 					 * `<ServerSideRender>` calls WP core's `wp/v2/block-renderer`

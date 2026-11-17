@@ -237,7 +237,8 @@ final class Product_Item_List {
 						}
 					}
 				}
-			} elseif ( 'sgs/product-card' === $name && 'wc-product' === ( $attrs['sourceMode'] ?? '' ) ) {
+			} elseif ( 'sgs/product-card' === $name && 'wc-product' === ( $attrs['sourceMode'] ?? '' ) && empty( $attrs['linkedProductKind'] ) ) {
+				// A linked-product card's stored productId is only the editor's sample; its real product is per page.
 				$card_product_id = \absint( $attrs['productId'] ?? 0 );
 				// SEC: gate — a loose card's connected product may have been drafted
 				// or hidden after the block was saved; suppress from the ItemList.

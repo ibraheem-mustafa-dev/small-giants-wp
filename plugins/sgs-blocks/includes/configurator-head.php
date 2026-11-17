@@ -43,7 +43,8 @@ defined( 'ABSPATH' ) || exit;
 function sgs_collect_bound_configurator_ids( array $blocks, array &$ids ): void {
 	foreach ( $blocks as $block ) {
 		if ( 'sgs/product-card' === ( $block['blockName'] ?? '' )
-			&& 'wc-product' === ( $block['attrs']['sourceMode'] ?? '' ) ) {
+			&& 'wc-product' === ( $block['attrs']['sourceMode'] ?? '' )
+			&& empty( $block['attrs']['linkedProductKind'] ) ) {
 			$product_id = \absint( $block['attrs']['productId'] ?? 0 );
 			if ( $product_id > 0 ) {
 				$ids[] = $product_id;

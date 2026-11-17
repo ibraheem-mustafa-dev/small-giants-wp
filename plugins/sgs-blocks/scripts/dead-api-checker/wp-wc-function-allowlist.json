@@ -332,6 +332,7 @@
     "wc_get_product_types",
     "wc_get_product_visibility_term_ids",
     "wc_get_products",
+    "wc_get_related_products",
     "wc_get_rating_html",
     "wc_get_shipping_method_count",
     "wc_get_stock_html",

@@ -957,6 +957,21 @@
 			"type": "number",
 			"default": 0
 		},
+		"linkedProductKind": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"upsells",
+				"cross-sells",
+				"related"
+			]
+		},
+		"linkedProductPosition": {
+			"type": "number",
+			"default": 1,
+			"minimum": 1
+		},
 		"taxDisplayMode": {
 			"type": "string",
 			"default": "auto",

@@ -877,6 +877,23 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-configurator-compat.ph
 
 $product_id = absint( $attributes['productId'] ?? 0 );
 
+// Linked-product source: on a product page the card shows the Nth upsell / cross-sell / related product of the product
+// being viewed (includes/product-card-linked-source.php). Everything after this point is the ordinary wc-product card
+// for the resolved ID. In the editor's preview request the stored productId stays the sample card; on the front end
+// with no product page, or no product to show, the card prints nothing so the row closes the gap.
+require_once dirname( __DIR__, 3 ) . '/includes/product-card-linked-source.php';
+$sgs_linked_kind = 'wc-product' === $source_mode ? sgs_product_card_linked_kind( $attributes ) : '';
+if ( '' !== $sgs_linked_kind && ! ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+	$product_id = sgs_product_card_linked_resolve(
+		function_exists( 'is_singular' ) && is_singular( 'product' ) ? absint( get_queried_object_id() ) : 0,
+		$sgs_linked_kind,
+		absint( $attributes['linkedProductPosition'] ?? 1 )
+	);
+	if ( 0 === $product_id ) {
+		return;
+	}
+}
+
 // FR-30-3 Option C: when placed inside a core Product Collection product-template
 // with no explicitly-connected product, bind to the loop's current product via the
 // postId context. Only fills when nothing was explicitly connected — every existing
