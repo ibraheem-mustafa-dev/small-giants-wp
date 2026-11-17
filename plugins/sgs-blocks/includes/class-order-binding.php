@@ -2,9 +2,12 @@
 /**
  * Block binding source: sgs/order (the order on the thank-you page).
  *
- * Lets a heading or text block show the order number on WooCommerce's
+ * Lets a heading or text block show a fact about the order on WooCommerce's
  * order-received endpoint: bind `content` (sgs/heading) or `text` (sgs/text) to
- * `{ "source": "sgs/order", "args": { "key": "number" } }`.
+ * `{ "source": "sgs/order", "args": { "key": "number" } }`. Keys: `number`, `email` (billing email),
+ * `delivery_method` (shipping method title or titles), `total` (formatted total), `date` (order date in the site's
+ * date format), `view_url` (the account's view-order link, for the order's owner only), `gift_to` and `gift_message`
+ * (the gift note saved by sgs/gift-order) and `item_count` (items bought). A fact the order does not have is ''.
  *
  * The order is read the way WooCommerce's own order-confirmation blocks read it
  * (AbstractOrderConfirmationBlock::get_view_order_permissions): the order id from
@@ -28,7 +31,7 @@ defined( 'ABSPATH' ) || exit;
 final class Order_Binding {
 
 	/** Keys the source resolves. */
-	const KEYS = array( 'number' );
+	const KEYS = array( 'number', 'email', 'delivery_method', 'total', 'date', 'view_url', 'gift_to', 'gift_message', 'item_count' );
 
 	/**
 	 * Wire hooks.
@@ -76,7 +79,10 @@ final class Order_Binding {
 		if ( null === $order ) {
 			return null;
 		}
-		$value  = \sanitize_text_field( (string) $order->get_order_number() );
+		$value  = self::value_for( $key, $order );
+		if ( '' === $value ) {
+			return '';
+		}
 		$format = isset( $source_args['format'] ) ? \sanitize_text_field( (string) $source_args['format'] ) : '';
 		$at     = '' !== $format ? \strpos( $format, '%s' ) : false;
 		if ( false === $at ) {
@@ -86,11 +92,45 @@ final class Order_Binding {
 	}
 
 	/**
-	 * The order on the order-received endpoint when this visitor may view it.
+	 * One key's plain-text value for an order ('' when the order has none). Output is escaped by core when printed.
+	 *
+	 * @param string    $key   One of self::KEYS.
+	 * @param \WC_Order $order The viewable order.
+	 * @return string
+	 */
+	private static function value_for( string $key, \WC_Order $order ): string {
+		switch ( $key ) {
+			case 'email':
+				return \sanitize_email( (string) $order->get_billing_email() );
+			case 'delivery_method':
+				return \sanitize_text_field( (string) $order->get_shipping_method() );
+			case 'total':
+				return \sanitize_text_field( \html_entity_decode( \wp_strip_all_tags( (string) $order->get_formatted_order_total() ), ENT_QUOTES, 'UTF-8' ) );
+			case 'date':
+				$created = $order->get_date_created();
+				return $created instanceof \WC_DateTime ? \sanitize_text_field( (string) \wc_format_datetime( $created ) ) : '';
+			case 'view_url':
+				// Only the signed-in owner: a guest holds the order key, which is not an account.
+				$owner = (int) $order->get_customer_id();
+				return $owner > 0 && \get_current_user_id() === $owner ? \esc_url_raw( (string) $order->get_view_order_url() ) : '';
+			case 'gift_to':
+			case 'gift_message':
+				$gift = \class_exists( '\SGS\Blocks\Gift_Order\Gift_Order_Order' ) ? \SGS\Blocks\Gift_Order\Gift_Order_Order::for_order( $order ) : null;
+				return null === $gift ? '' : \sanitize_text_field( \html_entity_decode( (string) $gift['gift_to' === $key ? 'to' : 'message'], ENT_QUOTES, 'UTF-8' ) );
+			case 'item_count':
+				return (string) (int) $order->get_item_count();
+			default:
+				return \sanitize_text_field( (string) $order->get_order_number() );
+		}
+	}
+
+	/**
+	 * The order on the order-received endpoint when this visitor may view it. Public so the Show-to rules and
+	 * sgs/order-items apply the very same check.
 	 *
 	 * @return \WC_Order|null
 	 */
-	private static function viewable_order(): ?\WC_Order {
+	public static function viewable_order(): ?\WC_Order {
 		if ( ! \function_exists( 'wc_get_order' ) ) {
 			return null;
 		}
