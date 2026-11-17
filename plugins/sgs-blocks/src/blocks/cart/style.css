@@ -736,6 +736,11 @@
 	opacity: 1;
 }
 
+/* itemRemovePlacement "inline-end": the text Remove link sits at the right of the quantity's own line. */
+:where(.sgs-cart__panel) .sgs-cart__item-row .sgs-cart__item-remove--text {
+	margin-left: auto;
+}
+
 /* A line's variation and item data (add-ons, a flow's answers), one per row. */
 :where(.sgs-cart__panel) .sgs-cart__item-details {
 	margin: 0.25rem 0 0;

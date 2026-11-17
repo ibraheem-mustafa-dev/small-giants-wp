@@ -150,4 +150,12 @@ final class CartPanelOptionsTest extends TestCase {
 		$this->assertStringContainsString( $v . '{font-size:16px;}', $set );
 		$this->assertStringContainsString( $v . '{font-weight:700;text-transform:uppercase;}', $set );
 	}
+
+	public function test_the_remove_link_position_marks_the_item_list_only_when_it_is_not_the_default(): void {
+		$this->assertStringNotContainsString( 'data-remove-place', $this->panel( array() )['body'] );
+		$this->assertStringNotContainsString( 'data-remove-place', $this->panel( array(), array( 'remove_place' => 'under' ) )['body'] );
+		$this->assertStringContainsString( ' data-remove-place="end"', $this->panel( array(), array( 'remove_place' => 'inline-end' ) )['body'] );
+		$both = $this->panel( array(), array( 'remove_place' => 'inline-end', 'qty_style' => 'stepper' ) )['body'];
+		$this->assertStringContainsString( ' data-qty-style="stepper" data-remove-place="end">', $both );
+	}
 }

@@ -153,6 +153,7 @@ function qtyControlHtml( { item, key, qty, qtyInputId, qtyStyle } ) {
  * @param {string}  [opts.removeLabel]  The text link's label.
  * @param {boolean} [opts.showQty]      Show the quantity input.
  * @param {string}  [opts.qtyStyle]     'input' (a number box) or 'stepper' (minus, number, plus in one pill).
+ * @param {string}  [opts.removePlace]  'under' (the text Remove link in the actions row) or 'end' (at the right of the quantity's own line).
  * @param {boolean} [opts.showSave]     Show Save for later.
  * @param {boolean} [opts.showAddOptions] Show the per-line "add options" link.
  * @param {string}  [opts.addOptionsLabel] That link's label; '' hides it.
@@ -164,6 +165,7 @@ export function itemRowHtml( item, totals, opts = {} ) {
 		removeLabel = 'Remove',
 		showQty = true,
 		qtyStyle = 'input',
+		removePlace = 'under',
 		showSave = true,
 		showAddOptions = false,
 		addOptionsLabel = '',
@@ -227,12 +229,6 @@ export function itemRowHtml( item, totals, opts = {} ) {
 		'</div>' +
 		( brand ? `<span class="sgs-cart__item-name">${ name }</span>` : '' );
 
-	const qtyHtml = showQty
-		? '<div class="sgs-cart__item-row">' +
-		  qtyControlHtml( { item, key, qty, qtyInputId, qtyStyle } ) +
-		  '</div>'
-		: '';
-
 	const removeLabelText = `Remove ${ item.name } from cart`;
 	const removeIconHtml =
 		'text' === removeStyle
@@ -249,6 +245,15 @@ export function itemRowHtml( item, totals, opts = {} ) {
 			  '<span data-sgs-rich-remove></span>' +
 			  '</button>'
 			: '';
+
+	// A text Remove link can sit at the right of the quantity's line instead of under it; with no quantity line it stays under.
+	const removeAtEnd = 'end' === removePlace && 'text' === removeStyle && showQty;
+	const qtyHtml = showQty
+		? '<div class="sgs-cart__item-row">' +
+		  qtyControlHtml( { item, key, qty, qtyInputId, qtyStyle } ) +
+		  ( removeAtEnd ? removeTextHtml : '' ) +
+		  '</div>'
+		: '';
 
 	// Wave 3C U-12 §E: the SAME "Save for later" action as the wishlist
 	// panel's cart-page enhancer (src/blocks/wishlist-panel/save-for-later.js),
@@ -277,8 +282,8 @@ export function itemRowHtml( item, totals, opts = {} ) {
 			: '';
 
 	const actionsHtml =
-		addOptionsHtml || saveForLaterHtml || removeTextHtml
-			? `<div class="sgs-cart__item-actions">${ addOptionsHtml }${ saveForLaterHtml }${ removeTextHtml }</div>`
+		addOptionsHtml || saveForLaterHtml || ( removeTextHtml && ! removeAtEnd )
+			? `<div class="sgs-cart__item-actions">${ addOptionsHtml }${ saveForLaterHtml }${ removeAtEnd ? '' : removeTextHtml }</div>`
 			: '';
 
 	return (

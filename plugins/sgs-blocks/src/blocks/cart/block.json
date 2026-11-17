@@ -1556,6 +1556,7 @@
 		"panelViewLetterSpacing": {"type": "object", "default": {}},
 		"panelViewLetterSpacingUnit": {"type": "string", "default": "em"},
 		"panelViewTextTransform": {"type": "string", "default": ""},
+		"itemRemovePlacement": {"type": "string", "default": "under", "enum": ["under", "inline-end"], "description": "Where the text-style Remove link sits: 'under' the quantity, or 'inline-end' at the right of the quantity's own line. Only reads when the remove style is a text link and the quantity is shown."},
 		"itemShowQty": {
 			"type": "boolean",
 			"default": true,

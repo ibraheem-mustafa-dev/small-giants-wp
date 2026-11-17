@@ -126,6 +126,7 @@ function sgs_cart_trigger_html( string $mode, string $inner_html, array $args ):
  *     @type string $remove_label       Text-style remove label.
  *     @type bool   $show_qty           Show each item's quantity input.
  *     @type string $qty_style          Quantity control: input (a number box) | stepper (minus, number, plus).
+ *     @type string $remove_place       Text-style Remove: under (below the quantity) | inline-end (right of the quantity's line).
  *     @type bool   $show_save          Show each item's Save for later action.
  *     @type bool   $show_add_options   Show each item's "finish configuring this" link.
  *     @type string $add_options_label  That link's label; '' hides it.
@@ -150,6 +151,10 @@ function sgs_cart_panel_body_html( array $args ): string {
 			sgs_rich_text_kses( $args['view_cart_label'], false )
 		)
 		: '';
+
+	// Optional item-list switches the view script reads; each prints nothing at its default.
+	$extra_data  = 'stepper' === ( $args['qty_style'] ?? 'input' ) ? ' data-qty-style="stepper"' : '';
+	$extra_data .= 'inline-end' === ( $args['remove_place'] ?? 'under' ) ? ' data-remove-place="end"' : '';
 
 	// Stacked: Checkout above View cart, full width, in that order in the markup too so the reading and tab order match the picture.
 	$stacked          = 'stacked' === ( $args['actions_layout'] ?? 'row' );
@@ -202,7 +207,7 @@ function sgs_cart_panel_body_html( array $args ): string {
 		! isset( $args['show_save'] ) || ! empty( $args['show_save'] ) ? '1' : '0',
 		! empty( $args['show_add_options'] ) ? '1' : '0',
 		esc_attr( (string) ( $args['add_options_label'] ?? '' ) ),
-		'stepper' === ( $args['qty_style'] ?? 'input' ) ? ' data-qty-style="stepper"' : '', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a fixed string.
+		$extra_data, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed strings built above.
 		$actions_modifier, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a fixed string.
 		$view_after // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_url/esc_html above.
 	);

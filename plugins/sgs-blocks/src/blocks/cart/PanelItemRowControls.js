@@ -3,7 +3,7 @@ import { PanelBody, SelectControl } from '@wordpress/components';
 
 /**
  * SGS Cart — how an item row in the mini-cart is laid out: the quantity control's
- * style. Kept apart from "Mini-cart contents" so that panel stays short.
+ * style and where a text Remove link sits. Kept apart from "Mini-cart contents" so that panel stays short.
  *
  * @param {Object}   root0               Props.
  * @param {Object}   root0.attributes    The block's current attributes.
@@ -14,6 +14,7 @@ export default function PanelItemRowControls( { attributes, setAttributes, hasPa
 	if ( ! hasPanel ) {
 		return null;
 	}
+	const textRemove = 'text' === attributes.itemRemoveStyle && false !== attributes.itemShowQty;
 	return (
 		<PanelBody title={ __( 'Mini-cart item rows', 'sgs-blocks' ) } initialOpen={ false }>
 			{ false !== attributes.itemShowQty && (
@@ -26,6 +27,19 @@ export default function PanelItemRowControls( { attributes, setAttributes, hasPa
 						{ label: __( 'A stepper (minus, number, plus)', 'sgs-blocks' ), value: 'stepper' },
 					] }
 					onChange={ ( val ) => setAttributes( { itemQtyStyle: val } ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
+			{ textRemove && (
+				<SelectControl
+					label={ __( 'Remove link position', 'sgs-blocks' ) }
+					value={ attributes.itemRemovePlacement || 'under' }
+					options={ [
+						{ label: __( 'Under the quantity', 'sgs-blocks' ), value: 'under' },
+						{ label: __( 'At the right of the quantity line', 'sgs-blocks' ), value: 'inline-end' },
+					] }
+					onChange={ ( val ) => setAttributes( { itemRemovePlacement: val } ) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>

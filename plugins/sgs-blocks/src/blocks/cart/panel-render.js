@@ -60,6 +60,7 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		removeLabel: itemsEl.dataset.removeLabel || '',
 		showQty: '0' !== itemsEl.dataset.showQty,
 		qtyStyle: 'stepper' === itemsEl.dataset.qtyStyle ? 'stepper' : 'input',
+		removePlace: 'end' === itemsEl.dataset.removePlace ? 'end' : 'under',
 		showSave: '0' !== itemsEl.dataset.showSave,
 		// Opt-in, so an absent attribute means off — unlike the three above,
 		// whose absence means on.

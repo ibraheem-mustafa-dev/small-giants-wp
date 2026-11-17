@@ -521,6 +521,7 @@ $panel_args = array(
 	'remove_style'       => 'text' === ( $attributes['itemRemoveStyle'] ?? 'icon' ) ? 'text' : 'icon',
 	'remove_label'       => (string) ( $attributes['itemRemoveLabel'] ?? __( 'Remove', 'sgs-blocks' ) ),
 	'show_qty'           => ! isset( $attributes['itemShowQty'] ) || ! empty( $attributes['itemShowQty'] ),
+	'remove_place'       => 'inline-end' === ( $attributes['itemRemovePlacement'] ?? 'under' ) ? 'inline-end' : 'under',
 	'qty_style'          => 'stepper' === ( $attributes['itemQtyStyle'] ?? 'input' ) ? 'stepper' : 'input',
 	'show_save'          => ! isset( $attributes['itemShowSaveForLater'] ) || ! empty( $attributes['itemShowSaveForLater'] ),
 	'show_add_options'   => ! empty( $attributes['itemShowAddOptions'] ),

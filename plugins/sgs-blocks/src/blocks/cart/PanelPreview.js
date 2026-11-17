@@ -42,6 +42,13 @@ function SampleItem( { attrs, s } ) {
 	// front end it hides itself per line once that line has them.
 	const addOptionsLabel = attrs.itemAddOptionsLabel || '';
 	const showAddOptions = true === attrs.itemShowAddOptions && '' !== addOptionsLabel;
+	// A text Remove link can sit at the right of the quantity's line (as the live row draws it) when a quantity is shown.
+	const removeAtEnd = removeText && 'inline-end' === attrs.itemRemovePlacement && false !== attrs.itemShowQty;
+	const removeLink = (
+		<span className="sgs-cart__item-remove sgs-cart__item-remove--text sgs-cart__item-action" style={ { ...s.action, ...s.removeText } }>
+			<AuthoredText value={ attrs.itemRemoveLabel || __( 'Remove', 'sgs-blocks' ) } />
+		</span>
+	);
 	return (
 		<div className={ `sgs-cart__item${ removeText ? ' sgs-cart__item--remove-text' : '' }` } style={ s.item }>
 			<span className="sgs-cart__item-thumb sgs-cart__item-thumb--placeholder" aria-hidden="true" style={ s.thumb } />
@@ -68,9 +75,10 @@ function SampleItem( { attrs, s } ) {
 								<input type="number" className="sgs-cart__item-qty-input" value={ 1 } readOnly tabIndex={ -1 } />
 							</>
 						) }
+						{ removeAtEnd && removeLink }
 					</div>
 				) }
-				{ ( showAddOptions || showSave || removeText ) && (
+				{ ( showAddOptions || showSave || ( removeText && ! removeAtEnd ) ) && (
 					<div className="sgs-cart__item-actions" style={ attrs.itemActionsFlexWrap ? { flexWrap: attrs.itemActionsFlexWrap } : undefined }>
 						{ showAddOptions && (
 							<span className="sgs-cart__item-add-options sgs-cart__item-action" style={ { ...s.action, ...s.save } }>
@@ -82,11 +90,7 @@ function SampleItem( { attrs, s } ) {
 								{ __( 'Save for later', 'sgs-blocks' ) }
 							</span>
 						) }
-						{ removeText && (
-							<span className="sgs-cart__item-remove sgs-cart__item-remove--text sgs-cart__item-action" style={ { ...s.action, ...s.removeText } }>
-								<AuthoredText value={ attrs.itemRemoveLabel || __( 'Remove', 'sgs-blocks' ) } />
-							</span>
-						) }
+						{ removeText && ! removeAtEnd && removeLink }
 					</div>
 				) }
 			</div>
