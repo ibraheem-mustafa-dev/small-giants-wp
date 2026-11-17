@@ -6,8 +6,9 @@
  * sets `data-sgs-in` on each `[data-sgs-me~="scroll"]` element once it crosses its start line; the stylesheet plays
  * the entrance from that attribute, so this script computes no timing. The start line is the percentage of the
  * viewport height above the bottom edge in the element's `--sgs-me-start` custom property (default 6). An element
- * already above its start line when the script runs (all rects are read before any attribute is written) plays its
- * entrance at once. Once it has measured the page it sets `window.sgsMotionRevealArmed`, which tells the head gate
+ * already above its start line when the script runs (all rects are read before any attribute is written), or wholly
+ * on screen (its bottom edge at or above the viewport's bottom, whatever its start line), plays its entrance at once;
+ * one only partly on screen at the bottom waits for its start line, and one taller than the viewport is never wholly on screen. Once it has measured the page it sets `window.sgsMotionRevealArmed`, which tells the head gate
  * to keep the class at the window's load event. An element scrolled above the viewport is revealed at once, and one fully visible in the uncropped viewport
  * is revealed too when the page cannot scroll far enough for its top to cross the start line. An element with no layout box, zero size or a position outside the horizontal viewport is left to the observers.
  * With reduced motion on, the class is removed and every observer released; a change of that preference mid-session
@@ -44,7 +45,7 @@
 			s = s >= 0 ? s : 6;
 			const r = el.getBoundingClientRect();
 			const seen = el.getClientRects().length && r.width && r.height && r.right > 0 && r.left < w.innerWidth;
-			return [ el, s, r, seen && r.top < w.innerHeight * ( 1 - s / 100 ) ];
+			return [ el, s, r, seen && ( r.top < w.innerHeight * ( 1 - s / 100 ) || r.bottom <= w.innerHeight ) ];
 		} );
 	const show = ( rows ) => rows.forEach( ( [ el, , , up ] ) => up && el.setAttribute( 'data-sgs-in', '' ) );
 	const arm = ( rows ) =>

@@ -167,6 +167,35 @@ test( 'a mid-session change to reduced motion releases the observers and drops t
 	expect( [ ...cropped()[ 0 ].targets ] ).toEqual( [ el ] );
 } );
 
+test( 'an element wholly on screen plays at once even when its top sits inside the start strip; one only partly on screen or below the fold waits', () => {
+	// jsdom's viewport is 1024 x 768, so the 6% start line is at y = 722.
+	const inStrip = add( '', '', 725 );
+	const partly = add( '', '', 740 );
+	const below = add( '', '', 2000 );
+	const tall = add( '', '', 725, { height: 900, bottom: 1625 } );
+	run();
+	expect( inStrip.hasAttribute( 'data-sgs-in' ) ).toBe( true );
+	expect( partly.hasAttribute( 'data-sgs-in' ) ).toBe( false );
+	expect( below.hasAttribute( 'data-sgs-in' ) ).toBe( false );
+	expect( tall.hasAttribute( 'data-sgs-in' ) ).toBe( false );
+	expect( [ ...cropped()[ 0 ].targets ] ).toEqual( [ partly, below, tall ] );
+} );
+
+test( 'an element wholly on screen inside a closed (no layout box) or off-screen-horizontally container is left alone', () => {
+	const noBox = add( '', '', 725, { noBox: true } );
+	const offRight = add( '', '', 725, { left: 1100, right: 1200 } );
+	run();
+	expect( noBox.hasAttribute( 'data-sgs-in' ) ).toBe( false );
+	expect( offRight.hasAttribute( 'data-sgs-in' ) ).toBe( false );
+} );
+
+test( 'a scan of printed-after-load elements plays the wholly visible one at once', () => {
+	run();
+	const el = add( '', '', 725 );
+	document.body.dispatchEvent( new window.CustomEvent( 'sgs-motion:scan', { bubbles: true } ) );
+	expect( el.hasAttribute( 'data-sgs-in' ) ).toBe( true );
+} );
+
 test( 'an element whose start line the page cannot scroll to reveals once fully visible in the uncropped viewport', () => {
 	page( 800 );
 	const el = add( '', '', 760 );
@@ -247,7 +276,8 @@ test( 'an element already above its start line is revealed before the class is a
 		return spy.call( this, name, value );
 	};
 	const above = add( '', '', 100 );
-	const edge = add( '', '--sgs-me-start: 20%', 700 );
+	// Top below its 20% line and bottom (780) below the viewport's: partly on screen, so it waits.
+	const edge = add( '', '--sgs-me-start: 20%', 740 );
 	const below = add( '', '', 2000 );
 	run();
 	Element.prototype.setAttribute = spy;
