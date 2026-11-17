@@ -433,6 +433,75 @@ describe( 'touch pause modes', () => {
 	} );
 } );
 
+describe( 'touch pause hold mode', () => {
+	function held() {
+		const [ root ] = build();
+		const el = floatIn( root );
+		loopControl.registerLoop( el, { touchPause: 'hold' } );
+		return { root, el };
+	}
+
+	test( 'a touch down holds the loop and the lift releases it', () => {
+		const { root, el } = held();
+		pointerOn( root, 'pointerdown', 'touch' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( true );
+		pointerOn( root, 'pointerup', 'touch' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+	} );
+
+	test( 'pointercancel (the browser taking the gesture to scroll) releases it', () => {
+		const { root, el } = held();
+		pointerOn( root, 'pointerdown', 'touch' );
+		pointerOn( root, 'pointercancel', 'touch' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+	} );
+
+	test( 'the pointer leaving the strip releases it', () => {
+		const { root, el } = held();
+		pointerOn( root, 'pointerdown', 'touch' );
+		pointerOn( root, 'pointerleave', 'touch' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+	} );
+
+	test( 'a second touch down does not toggle: it stays held until released', () => {
+		const { root, el } = held();
+		pointerOn( root, 'pointerdown', 'touch' );
+		pointerOn( root, 'pointerdown', 'touch' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( true );
+		pointerOn( root, 'pointerup', 'touch' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+	} );
+
+	test( 'NEGATIVE CONTROL: a mouse press never holds, and a mouse release never frees a held touch', () => {
+		const { root, el } = held();
+		pointerOn( root, 'pointerdown', 'mouse' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+		pointerOn( root, 'pointerdown', 'touch' );
+		pointerOn( root, 'pointerup', 'mouse' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( true );
+	} );
+
+	test( 'mouse hover still follows hoverRate in hold mode', () => {
+		const [ root ] = build();
+		const el = floatIn( root );
+		loopControl.registerLoop( el, { touchPause: 'hold', hoverRate: 0 } );
+		pointerOn( root, 'pointerenter', 'mouse' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( true );
+		pointerOn( root, 'pointerleave', 'mouse' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+	} );
+
+	test( 'tap mode is unchanged: it stays paused after the lift', () => {
+		const [ root ] = build();
+		const el = floatIn( root );
+		loopControl.registerLoop( el, { touchPause: 'tap' } );
+		pointerOn( root, 'pointerdown', 'touch' );
+		pointerOn( root, 'pointerup', 'touch' );
+		pointerOn( root, 'pointercancel', 'touch' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( true );
+	} );
+} );
+
 describe( 'animateLoop hover rate', () => {
 	function animated( config ) {
 		const [ root ] = build();

@@ -9025,11 +9025,16 @@
 				},
 				"touchPause": {
 					"$ref": "#/$defs/choice",
-					"description": "What a touch does: off (nothing) or tap (a tap pauses, the next tap resumes; the default when nothing is stored).",
+					"description": "What a touch does: off (nothing), tap (a tap pauses, the next tap resumes; the default when nothing is stored) or hold (paused only while a finger is down; the lift, a scroll that takes the gesture over and the pointer leaving resume it).",
 					"enum": [
 						"off",
-						"tap"
+						"tap",
+						"hold"
 					],
+					"x-sgs-option-labels": {
+						"tap": "Tap to pause, tap again to resume",
+						"hold": "While touched"
+					},
 					"x-sgs-field": {
 						"fieldType": "choice",
 						"cssProperty": null,

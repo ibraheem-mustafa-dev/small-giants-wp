@@ -35,8 +35,9 @@
  *                   rate) and leaving (with 1). Default: hover does nothing.
  *   onRateChange    called with the playback rate the loop should run at.
  *   pauseOnTouch    a touch tap on the block root pauses the loop, and the next tap resumes it. Default false.
- *   touchPause      what a touch on the block root does: `off` or `tap` (as `pauseOnTouch`). When set it wins over
- *                   `pauseOnTouch`.
+ *   touchPause      what a touch on the block root does: `off`, `tap` (as `pauseOnTouch`: a toggle) or `hold` (paused
+ *                   only while a finger is down on the root; the lift, the browser taking the gesture over to scroll
+ *                   the page, and the pointer leaving all release it). When set it wins over `pauseOnTouch`.
  *   observe         the element whose visibility decides the off-screen pause. Default the loop element itself. A
  *                   marquee passes its block root: each copy slides past the root's clipped edge in turn, and a copy
  *                   observed on its own would pause there while the others ran, so the copies fell out of step.
@@ -173,6 +174,7 @@ export function registerLoop( el, options = {} ) {
 			const paused =
 				! loop.visible ||
 				loop.tapped ||
+				loop.held ||
 				stoppedByHover ||
 				group.controller.isPaused();
 			const rate = loop.hovered && hoverRate !== null ? hoverRate : 1;
@@ -231,7 +233,7 @@ export function registerLoop( el, options = {} ) {
 			loop.apply();
 		} );
 	}
-	const touchMode = [ 'off', 'tap' ].includes( options.touchPause )
+	const touchMode = [ 'off', 'tap', 'hold' ].includes( options.touchPause )
 		? options.touchPause
 		: ( options.pauseOnTouch === true && 'tap' ) || 'off';
 	if ( touchMode === 'tap' ) {
@@ -241,6 +243,24 @@ export function registerLoop( el, options = {} ) {
 				loop.apply();
 			}
 		} );
+	} else if ( touchMode === 'hold' ) {
+		// Held only while a touch is down. `pointercancel` is what the browser fires when it takes the gesture over to
+		// scroll the page, so a finger that began on the strip never leaves it stuck.
+		listen( 'pointerdown', ( event ) => {
+			if ( event.pointerType === 'touch' ) {
+				loop.held = true;
+				loop.apply();
+			}
+		} );
+		const release = ( event ) => {
+			if ( event.pointerType === 'touch' && loop.held ) {
+				loop.held = false;
+				loop.apply();
+			}
+		};
+		listen( 'pointerup', release );
+		listen( 'pointercancel', release );
+		listen( 'pointerleave', release );
 	}
 
 	if ( options.pauseControl === true ) {

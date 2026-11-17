@@ -17,7 +17,7 @@
  *                  set or root resizes.
  *   direction      left, right, up or down.
  *   hoverRate      playback rate while a mouse or pen is over the block: 1 no change, 0 pauses.
- *   touchPause     off or tap (a tap pauses, the next tap resumes; the default).
+ *   touchPause     off, tap (a tap pauses, the next tap resumes; the default) or hold (paused only while a finger is down).
  *   edgeFade       fade the two ends; edgeFadeWidth is the fade's size as a percentage of the root.
  *   belowBreakpoint always, tablet (1023px and below), mobile (767px and below) or overflow; static outside the range.
  *                  `overflow` runs at every width, but only while one un-duplicated set is wider (or taller) than the root.
@@ -47,7 +47,7 @@ const PREFIX = 'data-sgs-fx-marquee-';
 const IMAGE_WAIT_MS = 1500;
 const DEFAULT_SPEED = 40;
 const DEFAULT_FADE = 5;
-const TOUCH_MODES = [ 'off', 'tap' ];
+const TOUCH_MODES = [ 'off', 'tap', 'hold' ];
 const DEFAULT_TOUCH_PAUSE = 'tap';
 const BELOW = { tablet: QUERY_TABLET, mobile: QUERY_MOBILE };
 const VERTICAL = [ 'up', 'down' ];

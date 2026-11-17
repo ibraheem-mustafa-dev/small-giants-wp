@@ -27,7 +27,7 @@ const humanise = ( value ) => {
  * @param {string}      props.label         Field label.
  * @param {unknown}     props.value         The chosen option, or undefined.
  * @param {Function}    props.onChange      Receives a schema-valid option, or undefined to clear.
- * @param {Array}       [props.options]     `[ { value, label } ]`; defaults to the node's `enum`, with the value as its label.
+ * @param {Array}       [props.options]     `[ { value, label } ]`; defaults to the node's `enum`, labelled by the node's `x-sgs-option-labels` entry for the value, else the value made readable.
  * @param {Object|null} [props.fieldNode]   The field's schema node (its `enum`).
  * @param {unknown}     [props.presetValue] The preset's stamped value; a differing value shows the Customised tag.
  * @param {string|null} [props.emptyLabel]  Label of the unset option in the select form; `null` leaves the option out
@@ -50,7 +50,9 @@ export default function ChoiceAtom( {
 		options ||
 		( boundsOf( 'choice', fieldNode ).options || [] ).map( ( option ) => ( {
 			value: option,
-			label: humanise( option ),
+			label:
+				( fieldNode && fieldNode[ 'x-sgs-option-labels' ]?.[ option ] ) ||
+				humanise( option ),
 		} ) );
 	const field = useAtomField( {
 		type: 'choice',

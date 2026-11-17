@@ -500,6 +500,20 @@ describe( 'marquee touch pause', () => {
 		live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
 	} );
 
+	test( 'hold: a touch down pauses the strip and the lift or a cancelled gesture resumes it', async () => {
+		const { root } = mount( {
+			attrs: 'data-sgs-fx-marquee-touch-pause="hold"',
+		} );
+		await boot();
+		pointer( root, 'pointerdown', 'touch' );
+		live().forEach( ( a ) => expect( a.playState ).toBe( 'paused' ) );
+		pointer( root, 'pointerup', 'touch' );
+		live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
+		pointer( root, 'pointerdown', 'touch' );
+		pointer( root, 'pointercancel', 'touch' );
+		live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
+	} );
+
 	test( 'tap is the default when the attribute is absent', async () => {
 		const { root } = mount();
 		await boot();
