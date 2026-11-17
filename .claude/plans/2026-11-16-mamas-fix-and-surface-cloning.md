@@ -107,7 +107,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 148 on `local-mamas`; `sgs/accordion` if a cause is in the block; `mamas-test`
 - Done when: every Contact row is closed by Bean
 - Depends on: Task 1 (social icons)
-- Status: diagnosis running (2026-11-17), with the survey of every page's entrance animations (All pages 1) beside it
+- Status: all eleven items and the page's ten entrances are fixed and on `mamas-test` (pushed 2026-11-17, settings and two Custom CSS rules); waiting for Bean to close them. Parked framework work: an accordion item's category label prints only while the accordion's filter is on, so Contact switches the filter on and hides its bar
 
 ### Task 5: Help
 - Why: 9 points. Read first: the register's Help section
@@ -115,7 +115,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 152 on `local-mamas`; `mamas-test`
 - Done when: every Help row is closed by Bean
 - Depends on: Task 4 (accordion)
-- Status: not started
+- Status: Help 2 to 5 and 7 to 9 are fixed and on `mamas-test` (2026-11-17); waiting for Bean to close them. With Bean: Help 1 (the accordion draws its own search bar and chips and cannot place them in the hero: a code change, or CSS that breaks when the chips wrap) and Help 6 (buttons to policy pages; the Privacy page holds template text and no Terms page exists)
 
 ### Task 6: Sign-in
 - Why: 5 points, two of them WooCommerce behaviour (registration fields, where sign-up lands). Read first: the register's Sign-in section
@@ -123,7 +123,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 628 on `local-mamas`; the account blocks if a cause is there; `mamas-test`
 - Done when: every Sign-in row is closed by Bean, and a new test account lands on `/my-account/`
 - Depends on: none
-- Status: not started
+- Status: Sign-in 1, 2 and 4 are fixed and on `mamas-test` (2026-11-17), with a first-name field for Sign-in 3 and the drawer's two buttons pointed at the sign-in page and its register mode; waiting for Bean to close them. With Bean: the rest of Sign-in 3 (last name and a marketing tick need a block change; a password box is WooCommerce's `woocommerce_registration_generate_password`, which also ends the emailed set-password link) and Sign-in 5 (sign-up returns to the referring page: a block setting for where to land, or a filter)
 
 ### Task 7: Shop
 - Why: 14 points; its product card and filter pills are shared. Read first: the register's Shop section and Gifts 7 to 9b
@@ -131,7 +131,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: shop template 194 on `local-mamas`; the product card and filter blocks; `mamas-test`
 - Done when: every Shop row is closed by Bean
 - Depends on: none
-- Status: not started
+- Status: Shop 1, 4, 5, 7 (look and hover), 8, 9, 10, 11, 13 and 14, the gutters between 1024 and 1300 and the seven entrances are fixed and on `mamas-test` (2026-11-17); waiting for Bean to close them. With Bean: Shop 2 and 3 (WooCommerce's category filter always allows several, and "All" is a plain link that reloads: one change in `product-filter-look.php`), Shop 6 (a joined dropdown through `appearance: base-select`, Chromium only), the card button's wording and action (per product: `_sgs_card_label`, `_sgs_card_action`), and Shop 12 (what replaces the Subscribe & save card). For Gifts and Product: the card's settings are on `sgs/product-card`, `overlayMode: off` keeps the pills, and Gifts and Basket have the same missing gutters between 1024 and 1300
 
 ### Task 8: Gifts
 - Why: 13 points. Read first: the register's Gifts section
@@ -155,7 +155,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 154 on `local-mamas`; the hero, builder and slider blocks; `mamas-test`
 - Done when: every Home row is closed by Bean
 - Depends on: Tasks 2 (picture box), 3 (trust bar), 4 (gutters), 9 (reviews slider)
-- Status: not started
+- Status: the hero and trust bar (Home 1 to 9) are being worked (2026-11-17); Home 10 to 23 follow
 
 ### Task 11: Checkout and order confirmation
 - Why: Checkout 1 names no single fault: Bean says the checkout's problems are mainly the ones already solved on Eye Care's test site, and the confirmation page waits on a test purchase. Read first: the register's last two sections; `sites/eye-care-ward-end/build/qa/decided.md` and the checkout on `eye-care-test` (read only: its saved Checkout block settings, its Custom CSS and the checkout commits in `git log`)
@@ -163,7 +163,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: checkout and order-confirmation templates on `local-mamas`; a checkout block if a shared fix belongs there; `mamas-test`
 - Done when: Bean has closed the checkout list and seen the confirmation page of a paid test order
 - Depends on: Task 9
-- Status: not started
+- Status: the difference list is being built from Eye Care's solved checkout faults (2026-11-17)
 
 ## Wave 2: the two re-clones
 
