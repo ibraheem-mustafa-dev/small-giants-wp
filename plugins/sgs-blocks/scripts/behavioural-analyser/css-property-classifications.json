@@ -20854,6 +20854,275 @@
       }
     },
     {
+      "slug": "sgs/message-preview",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "labelColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "labelFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "labelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "labelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "labelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "labelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "labelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "labelTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "labelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/message-preview-line",
+      "attr": "fontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/message-preview-line",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/message-preview-line",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/message-preview-line",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/message-preview-line",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/message-preview-line",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/message-preview-line",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/message-preview-line",
+      "attr": "textAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/message-preview-line",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/message-preview-line",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/modal",
       "attr": "borderStyle",
       "fields": {
@@ -43198,6 +43467,23 @@
         "css_property": "padding",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "input"
       }
     },
     {
