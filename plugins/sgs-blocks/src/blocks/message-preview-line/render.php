@@ -27,9 +27,7 @@ $sgs_mpl_field = sanitize_key( (string) ( $attributes['field'] ?? '' ) );
 $sgs_mpl_uid   = 'sgs-message-preview-line-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $sgs_mpl_scope = '.sgs-message-preview-line.' . $sgs_mpl_uid;
 $sgs_mpl_css   = sgs_typography_css_rule( $attributes, '', $sgs_mpl_scope, '', false, false, sgs_object_attr_keys( $block ) );
-if ( ! empty( $attributes['textColour'] ) ) {
-	$sgs_mpl_css .= $sgs_mpl_scope . '{color:' . sgs_colour_value( (string) $attributes['textColour'] ) . ';}';
-}
+$sgs_mpl_css .= sgs_text_states_css( $sgs_mpl_scope, $attributes, array( 'base' => 'textColour' ) );
 $sgs_mpl_padding = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
 $sgs_mpl_tiers   = array();
 foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_mpl_tier ) {

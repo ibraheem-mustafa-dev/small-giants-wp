@@ -422,6 +422,20 @@ INSERTS: list[dict] = [
     },
     # Cart and Checkout inner blocks (2026-11-04, Spec 27 FR-30-21 and FR-30-22): the gift switch and
     # step, and the one-line note. Each is drawn from its own attributes and holds no child blocks.
+    # Message preview (2026-11-17): the boxes block prints its own labelled fields and the line block prints one
+    # paragraph the boxes fill; each is drawn from its own attributes and holds no child blocks.
+    {
+        "block_slug": "sgs/message-preview",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        "block_slug": "sgs/message-preview-line",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
     {
         "block_slug": "sgs/gift-order",
         "wraps_block": None,

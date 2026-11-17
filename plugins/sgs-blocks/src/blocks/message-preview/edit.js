@@ -468,8 +468,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			{ fields.map( ( field, index ) => {
-				const Control =
-					field.fieldType === 'textarea' ? 'textarea' : 'input';
 				return (
 					<div
 						className="sgs-message-preview__field"
@@ -481,18 +479,28 @@ export default function Edit( { attributes, setAttributes } ) {
 						>
 							{ field.label }
 						</span>
-						<Control
-							className="sgs-message-preview__input"
-							style={ inputStyle }
-							readOnly
-							tabIndex={ -1 }
-							aria-hidden="true"
-							placeholder={ field.placeholder }
-							value={ field.defaultValue }
-							rows={
-								Control === 'textarea' ? field.rows : undefined
-							}
-						/>
+						{ field.fieldType === 'textarea' ? (
+							<textarea
+								className="sgs-message-preview__input"
+								style={ inputStyle }
+								readOnly
+								tabIndex={ -1 }
+								aria-hidden="true"
+								placeholder={ field.placeholder }
+								value={ field.defaultValue }
+								rows={ field.rows }
+							/>
+						) : (
+							<input
+								className="sgs-message-preview__input"
+								style={ inputStyle }
+								readOnly
+								tabIndex={ -1 }
+								aria-hidden="true"
+								placeholder={ field.placeholder }
+								value={ field.defaultValue }
+							/>
+						) }
 					</div>
 				);
 			} ) }

@@ -87,20 +87,14 @@ $sgs_mp_css  = sgs_emit_responsive_css(
 // Labels.
 $sgs_mp_label_sel = $sgs_mp_root . ' .sgs-message-preview__label';
 $sgs_mp_css      .= sgs_typography_css_rule( $attributes, 'label', $sgs_mp_label_sel, '', false, false, $sgs_mp_tier );
-if ( ! empty( $attributes['labelColour'] ) ) {
-	$sgs_mp_css .= $sgs_mp_label_sel . '{color:' . sgs_colour_value( (string) $attributes['labelColour'] ) . ';}';
-}
+$sgs_mp_css      .= sgs_text_states_css( $sgs_mp_label_sel, $attributes, array( 'base' => 'labelColour' ) );
 
 // The text boxes.
 $sgs_mp_input_sel   = $sgs_mp_root . ' .sgs-message-preview__input';
 $sgs_mp_css        .= sgs_typography_css_rule( $attributes, 'input', $sgs_mp_input_sel, '', false, false, $sgs_mp_tier );
-$sgs_mp_input_decls = array();
-if ( ! empty( $attributes['inputTextColour'] ) ) {
-	$sgs_mp_input_decls[] = 'color:' . sgs_colour_value( (string) $attributes['inputTextColour'] );
-}
-if ( ! empty( $attributes['inputBackgroundColour'] ) ) {
-	$sgs_mp_input_decls[] = 'background-color:' . sgs_colour_value( (string) $attributes['inputBackgroundColour'] );
-}
+$sgs_mp_input_text  = sgs_text_decls( $attributes, array( 'base' => 'inputTextColour' ) );
+$sgs_mp_input_fill  = sgs_fill_decls( $attributes, array( 'base' => 'inputBackgroundColour' ) );
+$sgs_mp_input_decls = array_merge( $sgs_mp_input_text['normal'], $sgs_mp_input_fill['normal'] );
 $sgs_mp_input_border = sgs_border_element_decls(
 	$attributes,
 	'input',

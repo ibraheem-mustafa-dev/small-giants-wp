@@ -48,10 +48,19 @@
 						"css:gap": "gap"
 					}
 				},
+				"field": {
+					"selector": ".sgs-message-preview__field",
+					"label": "Each box (label and field)",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {}
+				},
 				"label": {
 					"selector": ".sgs-message-preview__label",
 					"label": "Field labels",
-					"order": 2,
+					"order": 3,
 					"clusters": [
 						"text"
 					],
@@ -71,7 +80,7 @@
 				"input": {
 					"selector": ".sgs-message-preview__input",
 					"label": "Fields",
-					"order": 3,
+					"order": 4,
 					"clusters": [
 						"text",
 						"fill",

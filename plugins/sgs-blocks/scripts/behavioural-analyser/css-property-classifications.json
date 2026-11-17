@@ -20953,28 +20953,10 @@
     },
     {
       "slug": "sgs/message-preview",
-      "attr": "inputTextColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "input"
-      }
-    },
-    {
-      "slug": "sgs/message-preview",
       "attr": "inputTextTransform",
       "fields": {
         "css_property": "text-transform",
         "css_element": "input"
-      }
-    },
-    {
-      "slug": "sgs/message-preview",
-      "attr": "labelColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "label"
       }
     },
     {
@@ -43484,6 +43466,24 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "inputTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/message-preview",
+      "attr": "labelColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "label"
       }
     },
     {
