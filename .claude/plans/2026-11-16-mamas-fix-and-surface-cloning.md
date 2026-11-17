@@ -34,6 +34,17 @@ Sections whose posts differ run side by side; a section that shares a component 
 - Stripe: WooCommerce Stripe Gateway 11.1.1 runs in test mode on both sites with Eye Care's test keys. No test payment has been run; Apple Pay and Google Pay (Product 15) need her domain registered in Stripe, and no webhook is set.
 - Calibration cache `E:\sgs-route-cache` is rebuilt (95 of 97 blocks; `sgs/buybox` and `sgs/theme-toggle` unmeasured). Intake matches the current draft; 74 changed rows carry the route's proposal, not Bean's review. Scratch scripts and logs: `E:\sgs-tmp\mamas-reclone\`.
 
+## In flight and waiting (2026-11-17)
+
+Helpers running; each reports to the main session, which reviews before anything ships (the saved settings diffed before and after, the screenshots looked at, in-between widths measured):
+
+- `gifts-section`: page 150. `home-sections` and `home-builder-reviews`: page 154, through the patch tool only. Each leaves `findings.md`, `catalogue-rows.md` and screenshots in `E:\sgs-tmp\mamas-register\<section>\`; `python E:\sgs-tmp\mamas-register\merge.py <folder> "<heading>" "<surface>"` appends them to `register-findings.md` and `fix-catalogue.md` (a helper that could not write `findings.md` returns its table in its report).
+- `account-block-change` (worktree `wt-account`) and `accordion-band-change` (worktree `wt-accordion`): code on feature branches. Review each diff, run its tests, merge to `main` by explicit paths, delete the branch and the worktree, deploy (`build-deploy.py --target mamas-test --blocks-only`), sync the mirror's build, then set the client's settings named under Tasks 5 and 6. The accordion branch still owes its reseed: tell that helper to do it once the account branch's is published.
+
+On `local-mamas` and not yet on `mamas-test`: the rest of the Home hero, Help 6 and the Terms page, the checkout fixes and its two WooCommerce settings, the footer's Terms link, and whatever the running helpers finish. Ship with `push-to-remote.sh local-mamas mamas-test` (dry run first) once the helpers on pages 150 and 154 have reported, then check on the hosted site in a visible browser.
+
+Waiting for Bean: closing Contact, Help, Sign-in and Shop on `mamas-test`; the four Shop decisions (Task 7); the checkout's differences (Task 11); whether to draft a Privacy page like the Terms; and one framework fix found on 2026-11-17: an entrance starts only when the element's top crosses a line 6% of the screen height above the bottom edge (`assets/js/motion-reveal.js`, `--sgs-me-start`), so a part that loads fully on screen but inside that bottom strip stays invisible until the page is scrolled (the Trustpilot line under Home's hero buttons at 1024 by 1000). Bean's view is that anything on screen should play; the proposed fix is that an element whose whole box is inside the viewport when the script runs plays at once, with a test, in the shared motion script.
+
 ## Components shared between sections
 
 Each is fixed once, in the first task that meets it; later sections check it and close their items.
@@ -91,7 +102,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: `local-mamas` drawer post and menus; `mamas-test`
 - Done when: every Nav drawer row is closed by Bean, and each drawer link opens its page at 375
 - Depends on: Task 1 (social icons)
-- Status: done. every Nav drawer item, the menu badges and the `Zainab@` address are fixed and on `mamas-test` (2026-11-17; the menu link fix is commit `2b89c2945`, deployed); approved by Bean on 2026-11-17. Nav drawer 4 is fixed by Custom CSS on the two pictures: the fix at the source Bean chose was built, failed its size check on three mirrors and was reverted (it unmatched the buy box's photo frame rule and blew up Eye Care's header logo on its shop page; `register-findings.md`, Nav drawer). Parked framework work: an unwrapped SGS picture with a set height still loses it to WooCommerce's `.woocommerce img { height: auto }` on any shop; a fix makes the two-class selector opt-in for a plain rendered `img` (`includes/media/render-slot.php`) and explains the Eye Care logo first
+- Status: done: approved by Bean on `mamas-test` on 2026-11-17. Nav drawer 4 is held by Custom CSS on the two pictures. Parked framework work: an unwrapped SGS picture with a set height loses it to WooCommerce's `.woocommerce img { height: auto }` on any shop page; a two-class selector for every unwrapped picture was built, failed its size check on three mirrors and was reverted (it unmatched the buy box's photo frame rule and blew up Eye Care's header logo on its shop page); a later fix makes the selector opt-in for a plain rendered `img` (`includes/media/render-slot.php`) and explains the Eye Care logo first (`sites/mamas-munches-redesign/build/qa/register-findings.md`, Nav drawer)
 
 ### Task 3: Header
 - Why: 9 points, one of them a new behaviour (the trust bar ticker). Read first: the register's Header section; Eye Care's trust bar on `eye-care-test` (read only)
@@ -99,7 +110,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: `local-mamas` header post; the trust bar's block if the ticker is a missing behaviour; `mamas-test`
 - Done when: every Header row is closed by Bean, checked at 375, 768, 1024 and 1440
 - Depends on: none
-- Status: done. Header 1 to 6, 8 and 9 are fixed and on `mamas-test` (pushed 2026-11-17, settings and the theme snapshot's scrollbar track; the pink track reached `mamas-test` through the copied global-styles post, and `push-theme-snapshot.py` was not run because it warns it would overwrite 33 keys edited on the site: the theme file there takes the snapshot at the next theme deploy); approved by Bean on 2026-11-17. Header 7: the empty editor row is removed, and the strip Bean sees on desktop does not reproduce signed out, signed in or scrolled: waiting for his screenshot. Found and not on the list: signed in, the sticky header slides under WordPress's admin bar when the page is scrolled
+- Status: done: approved by Bean on `mamas-test` on 2026-11-17. Left open by him: whether the sticky header sliding under WordPress's admin bar for a signed-in visitor joins the list. The scrollbar's pink track reached `mamas-test` through the copied global-styles post; `push-theme-snapshot.py` was not run (it warns it would overwrite 33 keys edited on the site), so the theme file there takes the snapshot at the next theme deploy
 
 ### Task 4: Contact
 - Why: 11 points; its accordion and gutters are shared. Read first: the register's Contact section; the Help page's accordion (the working one)
@@ -107,7 +118,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 148 on `local-mamas`; `sgs/accordion` if a cause is in the block; `mamas-test`
 - Done when: every Contact row is closed by Bean
 - Depends on: Task 1 (social icons)
-- Status: all eleven items and the page's ten entrances are fixed and on `mamas-test` (pushed 2026-11-17, settings and two Custom CSS rules); waiting for Bean to close them. Parked framework work: an accordion item's category label prints only while the accordion's filter is on, so Contact switches the filter on and hides its bar Bean asked why this needs code when Help's labels work: it does not; Contact's labels work today through the workaround, and the code change stays parked.
+- Status: all eleven items and the ten entrances are on `mamas-test` (2026-11-17); waiting for Bean to close them. Parked framework work: an accordion item's category label prints only while the filter is on (Contact switches it on and hides its bar); Bean asked why code was needed and the answer is that none is
 
 ### Task 5: Help
 - Why: 9 points. Read first: the register's Help section
@@ -115,7 +126,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 152 on `local-mamas`; `mamas-test`
 - Done when: every Help row is closed by Bean
 - Depends on: Task 4 (accordion)
-- Status: Help 2 to 5 and 7 to 9 are fixed and on `mamas-test` (2026-11-17); waiting for Bean to close them. With Bean: Help 1 (the accordion draws its own search bar and chips and cannot place them in the hero: a code change, or CSS that breaks when the chips wrap) and Help 6 (buttons to policy pages; the Privacy page holds template text and no Terms page exists) Bean's decisions of 2026-11-17: Help 1 by a code change (a design for placing the accordion's filter bar is being sized before it is built); Help 6 as two buttons to policy pages, with a simple, standard Terms page drafted from how comparable UK shops structure theirs (being written; the Privacy page still holds WordPress's template text).
+- Status: Help 2 to 5 and 7 to 9 are on `mamas-test`. Help 6 is fixed on `local-mamas`, not yet shipped: two buttons and a Terms page (725, `/terms/`) with four gaps marked for Zainab; the Privacy button gives a 404 until page 3 is rewritten (ask Bean whether to draft it the same way). Help 1: Bean chose a band setting on the accordion (the filter bar stays at the top of the accordion, drawn full width with its own background, padding and bottom border) and the hero's bottom line moved under the chips; being built on branch `feature/accordion-filter-band` in the worktree `E:\sgs-tmp\wt-accordion` (its reseed waits for the account branch's). After it merges and deploys: on page 152 remove the hero's bottom border and set the band pink (`mm-pink-band`), full width, with a 2px cocoa bottom border and the draft's padding
 
 ### Task 6: Sign-in
 - Why: 5 points, two of them WooCommerce behaviour (registration fields, where sign-up lands). Read first: the register's Sign-in section
@@ -123,7 +134,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 628 on `local-mamas`; the account blocks if a cause is there; `mamas-test`
 - Done when: every Sign-in row is closed by Bean, and a new test account lands on `/my-account/`
 - Depends on: none
-- Status: Sign-in 1, 2 and 4 are fixed and on `mamas-test` (2026-11-17), with a first-name field for Sign-in 3 and the drawer's two buttons pointed at the sign-in page and its register mode; waiting for Bean to close them. With Bean: the rest of Sign-in 3 (last name and a marketing tick need a block change; a password box is WooCommerce's `woocommerce_registration_generate_password`, which also ends the emailed set-password link) and Sign-in 5 (sign-up returns to the referring page: a block setting for where to land, or a filter) Bean's decisions of 2026-11-17: last name and an optional marketing tick are added to the block, no password box (WooCommerce's emailed set-password link stays); and a signed-in visitor on the sign-in page is sent to the account page, which also fixes where sign-up lands (the account page keeps its signed-out card, as the draft has it). Being built on branch `feature/account-register-and-redirect` in the worktree `E:\sgs-tmp\wt-account`, for review and merge by the main session.
+- Status: Sign-in 1, 2 and 4, a first-name field and the drawer's two buttons are on `mamas-test`. Bean's decisions: last name and an optional marketing tick are added, no password box; a signed-in visitor on the sign-in page is sent to the account page (the account page keeps its signed-out card, as the draft has it). Being built on branch `feature/account-register-and-redirect` in the worktree `E:\sgs-tmp\wt-account`, with its reseed. After it merges and deploys: on page 628 switch on the last name, the tick with the draft's label, the register row spacing and the redirect to `/my-account/`, then test a sign-up
 
 ### Task 7: Shop
 - Why: 14 points; its product card and filter pills are shared. Read first: the register's Shop section and Gifts 7 to 9b
@@ -131,7 +142,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: shop template 194 on `local-mamas`; the product card and filter blocks; `mamas-test`
 - Done when: every Shop row is closed by Bean
 - Depends on: none
-- Status: Shop 1, 4, 5, 7 (look and hover), 8, 9, 10, 11, 13 and 14, the gutters between 1024 and 1300 and the seven entrances are fixed and on `mamas-test` (2026-11-17); waiting for Bean to close them. With Bean: Shop 2 and 3 (WooCommerce's category filter always allows several, and "All" is a plain link that reloads: one change in `product-filter-look.php`), Shop 6 (a joined dropdown through `appearance: base-select`, Chromium only), the card button's wording and action (per product: `_sgs_card_label`, `_sgs_card_action`), and Shop 12 (what replaces the Subscribe & save card). For Gifts and Product: the card's settings are on `sgs/product-card`, `overlayMode: off` keeps the pills, and Gifts and Basket have the same missing gutters between 1024 and 1300
+- Status: Shop 1, 4, 5, 7 (look, the gallery's tilt pattern and hover), 8, 9, 10, 11, 13, 14, the gutters between 1024 and 1300 and the seven entrances are on `mamas-test`; waiting for Bean to close them. With Bean, unanswered: Shop 2 and 3 (one category at a time, and no reload on "All": one change in `includes/product-filter-look.php`), Shop 6 (a joined dropdown through `appearance: base-select`, Chromium only), the card button's wording and action (per product: `_sgs_card_label`, `_sgs_card_action`; "Pick flavours" recommended), Shop 12 (what replaces the Subscribe & save card: C, "Proper ingredients", recommended)
 
 ### Task 8: Gifts
 - Why: 13 points. Read first: the register's Gifts section
@@ -139,7 +150,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: the Gifts page on `local-mamas`; `mamas-test`
 - Done when: every Gifts row is closed by Bean, and the note updates as it is typed
 - Depends on: Task 7 (product card, filter pills)
-- Status: not started
+- Status: a helper is diagnosing and fixing page 150 (2026-11-17), reusing the Shop's card settings and fixing the page's missing gutters and sideways scroll between 1024 and 1300
 
 ### Task 9: Product pages
 - Why: 15 points on Zookies, then three on every other product. Read first: the register's two Product sections
@@ -147,7 +158,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: the single-product template and products on `local-mamas`; `sgs/buybox` and the slider if a cause is there; Stripe (Product 15); `mamas-test`
 - Done when: every Product and Other products row is closed by Bean
 - Depends on: Task 7 (product card)
-- Status: not started
+- Status: not started. Starts when the Home reviews slider's findings are in (the slider is shared) and uses the Shop's card settings. Basket has the same missing gutters between 1024 and 1300 as Shop had
 
 ### Task 10: Home
 - Why: 23 points, the hardest: a hero that does not respond to the screen (Home 7) and a broken cookie builder (Home 11 to 14). Read first: the register's Home section
@@ -155,7 +166,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 154 on `local-mamas`; the hero, builder and slider blocks; `mamas-test`
 - Done when: every Home row is closed by Bean
 - Depends on: Tasks 2 (picture box), 3 (trust bar), 4 (gutters), 9 (reviews slider)
-- Status: the hero and trust bar (Home 1 to 9) are being worked (2026-11-17); Home 10 to 23 follow
+- Status: Home 1 to 9 (the hero and trust bar) are fixed on `local-mamas`, partly shipped: the hero had saved the draft's measured pixels at 1440, 768 and 375 and now follows the screen at twelve widths. Two helpers are on the rest of page 154, writing only through the patch tool: one on Home 10, 15, 16, 17, 18, the remaining entrances, the 6,660ms phone delay on `cr-ref-home-144` and the subscription mentions; one on the cookie builder (Home 11 to 14) and the reviews (Home 19 to 23)
 
 ### Task 11: Checkout and order confirmation
 - Why: Checkout 1 names no single fault: Bean says the checkout's problems are mainly the ones already solved on Eye Care's test site, and the confirmation page waits on a test purchase. Read first: the register's last two sections; `sites/eye-care-ward-end/build/qa/decided.md` and the checkout on `eye-care-test` (read only: its saved Checkout block settings, its Custom CSS and the checkout commits in `git log`)
@@ -163,7 +174,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: checkout and order-confirmation templates on `local-mamas`; a checkout block if a shared fix belongs there; `mamas-test`
 - Done when: Bean has closed the checkout list and seen the confirmation page of a paid test order
 - Depends on: Task 9
-- Status: the difference list is being built from Eye Care's solved checkout faults (2026-11-17)
+- Status: thirteen faults are fixed on `local-mamas` by settings (not yet shipped), cash on delivery is off and the sign-in reminder is on. A Stripe test-card order (#726) reached the confirmation page, which is WooCommerce's plain table: the route never cloned it, so it is rebuilt with the re-clones (Task 13) or by hand. Eleven differences are with Bean (`sites/mamas-munches-redesign/build/qa/register-findings.md`, Checkout): the first is raising the snapshot's 11px `small` size to about 13px; Klarna shows beside the card because Stripe's methods were copied from Eye Care
 
 ## Wave 2: the two re-clones
 
