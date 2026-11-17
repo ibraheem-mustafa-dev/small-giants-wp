@@ -336,6 +336,13 @@
 
 .sgs-buybox-pick__dot {
 	position: absolute;
+	/* The script sets these custom properties per dot; a site's own CSS may override them or the declarations below. */
+	left: var(--sgs-pick-dot-x);
+	top: var(--sgs-pick-dot-y);
+	border-radius: var(--sgs-pick-dot-radius, 50%);
+	background-color: var(--sgs-pick-dot-bg, currentColor);
+	background-image: var(--sgs-pick-dot-image, none);
+	background-size: cover;
 	width: var(--sgs-pick-dot-size, 17px);
 	height: var(--sgs-pick-dot-size, 17px);
 	rotate: var(--sgs-pick-dot-rotate, 0deg);

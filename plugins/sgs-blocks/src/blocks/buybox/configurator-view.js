@@ -136,33 +136,87 @@ function initRoot( root ) {
 		dots.replaceChildren();
 		const layer = layerColours[ selections[ layerAxis ] ];
 		if ( layer ) {
-			SQUARE_POINTS.forEach( ( [ x, y ], i ) => addDot( x, y, i % 3 ? 16 : 20, '4px', layer, i * 37 ) );
+			SQUARE_POINTS.forEach( ( [ x, y ], i ) => addDot( x, y, i % 3 ? 16 : 20, '4px', layer, i * 37, 'chip' ) );
 		}
 		const picked = groups.flatMap( ( g ) => g.order.map( ( slug ) => inputFor( g, slug ) ) ).filter( Boolean );
 		if ( picked.length ) {
 			ROUND_POINTS.forEach( ( [ x, y ], i ) => {
 				const input = picked[ i % picked.length ];
 				const swatch = input.closest( 'label' )?.querySelector( '.sgs-buybox-pick__swatch' );
-				addDot( x, y, 17, '50%', input.dataset.colour || '', 0, swatch && input.dataset.hasImage ? window.getComputedStyle( swatch ).backgroundImage : '' );
+				addDot( x, y, 17, '50%', input.dataset.colour || '', 0, 'flavour', swatch && input.dataset.hasImage ? window.getComputedStyle( swatch ).backgroundImage : '' );
 			} );
 		}
 	}
 
-	function addDot( x, y, size, radius, colour, rotate, image = '' ) {
+	function addDot( x, y, size, radius, colour, rotate, kind, image = '' ) {
 		const dot = document.createElement( 'span' );
-		dot.className = 'sgs-buybox-pick__dot';
+		dot.className = `sgs-buybox-pick__dot sgs-buybox-pick__dot--${ kind }`;
+		// Everything a site may restyle is a custom property the stylesheet reads, so a site's own CSS beats it without !important.
 		const s = dot.style;
-		s.left = `${ x }%`;
-		s.top = `${ y }%`;
+		s.setProperty( '--sgs-pick-dot-x', `${ x }%` );
+		s.setProperty( '--sgs-pick-dot-y', `${ y }%` );
 		s.setProperty( '--sgs-pick-dot-size', `${ size }px` );
-		s.borderRadius = radius;
-		s.background = colour || 'currentColor';
+		s.setProperty( '--sgs-pick-dot-radius', radius );
+		if ( colour ) {
+			s.setProperty( '--sgs-pick-dot-bg', colour );
+		}
 		if ( image && 'none' !== image ) {
-			s.backgroundImage = image;
-			s.backgroundSize = 'cover';
+			s.setProperty( '--sgs-pick-dot-image', image );
 		}
 		s.setProperty( '--sgs-pick-dot-rotate', `${ rotate }deg` );
 		dots.appendChild( dot );
+	}
+
+	/**
+	 * Public hook: each chosen single-choice option's colour as `--sgs-pick-axis-<axis>` on the root (axis key without
+	 * `pa_`, underscores as hyphens), removed when the chosen option has no colour. A site's CSS reads it to tint its own picture.
+	 */
+	const published = new Set();
+	function publishColours() {
+		const next = {};
+		root.querySelectorAll( '.sgs-option-picker__options[data-type-key]' ).forEach( ( group ) => {
+			const slug = group.dataset.typeKey.replace( /^pa_/, '' ).replace( /_/g, '-' ).toLowerCase();
+			const input = group.querySelector( 'input[type="radio"]:checked' );
+			const chip = input && input.closest( 'label' )?.querySelector( '.sgs-option-picker__swatch--colour' );
+			const colour = chip ? window.getComputedStyle( chip ).getPropertyValue( '--sgs-op-swatch-bg' ).trim() : '';
+			if ( slug && colour ) {
+				next[ `--sgs-pick-axis-${ slug }` ] = colour;
+			}
+		} );
+		published.forEach( ( name ) => {
+			if ( ! ( name in next ) ) {
+				root.style.removeProperty( name );
+				published.delete( name );
+			}
+		} );
+		Object.entries( next ).forEach( ( [ name, colour ] ) => {
+			root.style.setProperty( name, colour );
+			published.add( name );
+		} );
+	}
+
+	/** Public hook: `is-changed` on the preview after each option change, removed when its animation ends (or after 1s). The block ships no animation for it; skipped under reduced motion. */
+	let bumpTimer = 0;
+	function bump() {
+		if ( ! preview || ( window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ) ) {
+			return;
+		}
+		const clear = () => {
+			window.clearTimeout( bumpTimer );
+			preview.classList.remove( 'is-changed' );
+			preview.removeEventListener( 'animationend', clear );
+		};
+		clear();
+		void preview.offsetWidth; // Restart a running animation.
+		preview.classList.add( 'is-changed' );
+		preview.addEventListener( 'animationend', clear );
+		bumpTimer = window.setTimeout( clear, 1000 );
+	}
+
+	/** Re-render after an option change, then play the change hook. */
+	function changed() {
+		render();
+		bump();
 	}
 
 	function render() {
@@ -196,6 +250,7 @@ function initRoot( root ) {
 			perUnitEl.textContent = each;
 		}
 		renderDots();
+		publishColours();
 		const ready = groups.every( groupReady );
 		root.querySelectorAll( '.buybox__add-to-cart' ).forEach( ( btn ) => btn.setAttribute( 'aria-disabled', ready ? 'false' : 'true' ) );
 	}
@@ -237,7 +292,7 @@ function initRoot( root ) {
 		}
 		syncInputs( group );
 		clearError( group );
-		render();
+		changed();
 	}
 
 	function clearError( group ) {
@@ -268,7 +323,7 @@ function initRoot( root ) {
 		const group = groups.find( ( g ) => g.inputs.includes( input ) );
 		group.counts = stepCount( group.counts, input.value, parseInt( step.dataset.step, 10 ), pack() );
 		syncInputs( group );
-		render();
+		changed();
 	} );
 
 	if ( undoBtn ) {
@@ -282,7 +337,7 @@ function initRoot( root ) {
 			syncInputs( group );
 			undoRow.hidden = true;
 			say( `${ labelFor( group, removed ) } restored, ${ labelFor( group, added ) } removed` );
-			render();
+			changed();
 			const back = inputFor( group, removed );
 			if ( back ) {
 				back.focus();
@@ -312,7 +367,7 @@ function initRoot( root ) {
 						syncInputs( g );
 					}
 				} );
-				render();
+				changed();
 			}, 0 );
 		}
 	} );
