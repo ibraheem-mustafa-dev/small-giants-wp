@@ -119,6 +119,12 @@
 	[data-sgs-fx~="marquee"][data-sgs-fx-marquee-edge-fade="true"] [data-sgs-marquee-lane] {
 		mask-image: none;
 	}
+
+	/* A copy the loop made before the preference changed is hidden from view and from assistive technology, so the still
+	   layout shows each item once. The runtime removes the copies on the change; this covers the moment before it does. */
+	[data-sgs-fx~="marquee"] [data-sgs-marquee-clone] {
+		display: none;
+	}
 }
 
 /* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the scroll translate, the cloned items, and the edge-fade mask are removed; the pause control stays because other loops in the same block share it and the script removes it with the last loop. The lane's flex row and overflow clip are left, because the authored layout cannot be recovered in CSS; the script removes those marks when it tears down. */

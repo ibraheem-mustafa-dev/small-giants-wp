@@ -354,4 +354,37 @@
 	.sgs-trust-bar__badge {
 		transition: none;
 	}
+
+	/* A ticker bar that runs at every width (`always`, `overflow` or no range) never starts under reduced motion, so the
+	 * block keeps its authored layout, which for a ticker is one non-wrapping row or a max-content grid wider than a
+	 * phone. The still layout wraps the badges and centres them, keeps the bar's own gap and never exceeds its container.
+	 * The doubled class outranks the scoped layout rule the wrapper prints for the root (display, columns, flex-wrap). */
+	.sgs-trust-bar.sgs-trust-bar[data-sgs-fx~="marquee"]:not([data-sgs-fx-marquee-below-breakpoint="tablet"]):not([data-sgs-fx-marquee-below-breakpoint="mobile"]) {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		max-width: 100%;
+		min-width: 0;
+		overflow: visible;
+	}
+
+	/* A title takes a row of its own above the wrapped badges. */
+	.sgs-trust-bar[data-sgs-fx~="marquee"] > .sgs-trust-bar__title {
+		flex: 0 0 100%;
+		text-align: center;
+	}
+
+	/* Each badge may shrink to the bar's width, keeps a little inline room so neither it nor its icon touches the edge, and
+	 * wraps a long label. The padding is :where() so an item padding the operator sets still wins. */
+	.sgs-trust-bar[data-sgs-fx~="marquee"] .sgs-trust-bar__badge {
+		max-width: 100%;
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	:where(.sgs-trust-bar[data-sgs-fx~="marquee"] .sgs-trust-bar__badge) {
+		padding-inline: var(--wp--preset--spacing--20, 0.5rem);
+	}
 }
