@@ -294,16 +294,18 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 
 	/**
 	 * Put keyboard focus where the shopper's next step is after the empty state's button has added its product: the first
-	 * control of the first line, else the list itself.
+	 * control of the new line that can take focus, else the panel itself (the open dialog), so focus never falls to the page.
+	 * A disabled control ignores `focus()`, and a one-item line's minus button is disabled at the minimum quantity, so the
+	 * first button of the line is skipped when it is off.
 	 */
 	function focusFirstLine() {
-		const target = itemsEl.querySelector( '.sgs-cart__item button, .sgs-cart__item input, .sgs-cart__item a' );
-		if ( target ) {
-			target.focus();
+		const target = itemsEl.querySelector( '.sgs-cart__item :is(a[href], button, input, select, textarea):not(:disabled)' );
+		target?.focus();
+		if ( target && itemsEl.contains( document.activeElement ) ) {
 			return;
 		}
-		itemsEl.setAttribute( 'tabindex', '-1' );
-		itemsEl.focus();
+		panelRoot.setAttribute( 'tabindex', '-1' );
+		panelRoot.focus();
 	}
 
 	// The empty state's button: add its one product through the Store API, redraw the panel with the new line, keep focus in the list.

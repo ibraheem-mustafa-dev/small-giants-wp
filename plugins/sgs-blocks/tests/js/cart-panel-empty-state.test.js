@@ -87,6 +87,42 @@ describe( 'the drawer empty state', () => {
 		expect( document.querySelector( '[data-sgs-cart-items]' ).contains( document.activeElement ) ).toBe( true );
 	} );
 
+	test( 'focus lands on the first control of the new line that can take it, not on a disabled minus button', async () => {
+		document.body.innerHTML = base( template ).replace( 'data-sgs-cart-items ', 'data-sgs-cart-items data-qty-style="stepper" ' );
+		api.fetchCart.mockResolvedValue( { items: [], totals: {} } );
+		api.addCartItem.mockResolvedValue( cartWithOne );
+		const panel = initPanel( document.querySelector( '[data-sgs-cart-panel]' ) );
+		await panel.refresh();
+		const button = document.querySelector( 'button[data-sgs-cart-empty-add]' );
+		button.focus();
+		button.click();
+		await settle();
+		const minus = document.querySelector( '.sgs-cart__item-qty-step--minus' );
+		expect( minus.disabled ).toBe( true ); // quantity 1 is the minimum, so the first button in the line is off
+		expect( document.activeElement ).not.toBe( document.body );
+		expect( document.activeElement.disabled ).not.toBe( true );
+		expect( document.querySelector( '.sgs-cart__item' ).contains( document.activeElement ) ).toBe( true );
+	} );
+
+	test( 'with nothing in the new line able to take focus, the panel itself takes it, inside the open drawer', async () => {
+		jest.resetModules();
+		jest.doMock( '../../src/blocks/cart/item-row-template', () => ( {
+			escapeHtml: ( text ) => String( text ),
+			itemRowHtml: () => '<div class="sgs-cart__item"><span>Trio</span></div>',
+		} ) );
+		const isolated = require( '../../src/blocks/cart/panel-render' );
+		const isolatedApi = require( '../../src/blocks/cart/store-api' );
+		document.body.innerHTML = '<dialog open data-sgs-cart-panel><div data-sgs-cart-status></div><div data-sgs-cart-items></div>' + template + '<div data-sgs-cart-footer hidden></div></dialog>';
+		isolatedApi.fetchCart.mockResolvedValue( { items: [], totals: {} } );
+		isolatedApi.addCartItem.mockResolvedValue( cartWithOne );
+		const panel = isolated.initPanel( document.querySelector( '[data-sgs-cart-panel]' ) );
+		await panel.refresh();
+		document.querySelector( 'button[data-sgs-cart-empty-add]' ).click();
+		await settle();
+		expect( document.activeElement ).toBe( document.querySelector( 'dialog' ) );
+		jest.dontMock( '../../src/blocks/cart/item-row-template' );
+	} );
+
 	test( 'a refused add keeps the button, says why and gives focus back to it', async () => {
 		document.body.innerHTML = base( template );
 		api.fetchCart.mockResolvedValue( { items: [], totals: {} } );
