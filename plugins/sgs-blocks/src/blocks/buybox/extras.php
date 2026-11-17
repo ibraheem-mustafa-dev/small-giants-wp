@@ -487,3 +487,35 @@ if ( ! function_exists( 'sgs_buybox_split_extras' ) ) {
 		);
 	}
 }
+
+if ( ! function_exists( 'sgs_buybox_after_cart_form_action' ) ) {
+	/**
+	 * Fire WooCommerce's `woocommerce_after_add_to_cart_form` after the buy box's own cart form, which replaces the core
+	 * add-to-cart template that fires it. Payment gateways print here: WooCommerce Stripe prints its Apple Pay and Google
+	 * Pay container (`#wc-stripe-express-checkout-element`) at priority 1; WooCommerce core attaches nothing. Runs once per
+	 * request and product, only on that product's own singular page (a block pinned onto another page would print the
+	 * buttons for the wrong context), with the global `$product` set for the callbacks and restored after, and does nothing
+	 * when WooCommerce is absent or nothing is attached.
+	 *
+	 * @param int $product_id The product the buy box shows.
+	 * @return void
+	 */
+	function sgs_buybox_after_cart_form_action( int $product_id ): void {
+		static $fired = array();
+		if ( $product_id <= 0 || isset( $fired[ $product_id ] ) || ! function_exists( 'wc_get_product' ) || ! is_singular( 'product' ) || get_queried_object_id() !== $product_id || ! has_action( 'woocommerce_after_add_to_cart_form' ) ) {
+			return;
+		}
+		$product = wc_get_product( $product_id );
+		if ( ! $product ) {
+			return;
+		}
+		$fired[ $product_id ] = true;
+		$previous             = $GLOBALS['product'] ?? null;
+		$GLOBALS['product']   = $product;
+		try {
+			do_action( 'woocommerce_after_add_to_cart_form' );
+		} finally {
+			$GLOBALS['product'] = $previous;
+		}
+	}
+}

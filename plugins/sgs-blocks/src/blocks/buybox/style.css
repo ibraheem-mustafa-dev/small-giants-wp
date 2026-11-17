@@ -804,9 +804,9 @@
 	left: 14px;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
 	.sgs-buybox__gallery-col {
-		/* Sticky gallery while the configurator column scrolls. */
+		/* Sticky gallery while the configurator column scrolls: wherever the layout is two columns. */
 		position: sticky;
 		top: 2rem;
 	}
@@ -966,6 +966,11 @@
 @media (min-width: 768px) and (max-width: 1023px) {
 	.sgs-buybox.sgs-buybox--stack-tablet {
 		grid-template-columns: minmax(0, 1fr);
+	}
+
+	/* Stacked, so nothing to pin against: the gallery scrolls with the page. */
+	.sgs-buybox--stack-tablet .sgs-buybox__gallery-col {
+		position: static;
 	}
 }
 

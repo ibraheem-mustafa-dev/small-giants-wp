@@ -196,7 +196,12 @@ if ( ! function_exists( 'apply_filters' ) ) {
 
 if ( ! function_exists( 'do_action' ) ) {
 	function do_action( string $tag, ...$args ): void {
-		// No-op — harness has no listeners registered.
+		// No listeners registered, except the tags named in SGS_QA_ECHO_ACTIONS (comma list): each prints a marker with
+		// the global product's id so a test can see a hook fired, how often and for which product.
+		if ( in_array( $tag, array_filter( explode( ',', (string) getenv( 'SGS_QA_ECHO_ACTIONS' ) ) ), true ) ) {
+			$product = $GLOBALS['product'] ?? null;
+			echo '<!--action:' . $tag . ' product=' . ( is_object( $product ) && method_exists( $product, 'get_id' ) ? $product->get_id() : 'none' ) . '-->';
+		}
 	}
 }
 
@@ -787,8 +792,8 @@ if ( ! function_exists( 'wp_style_is' ) ) {
 
 if ( ! function_exists( 'has_action' ) ) {
 	function has_action( string $tag, $function_to_check = false ) {
-		// Matches do_action()'s "no listeners registered" convention.
-		return false;
+		// Matches do_action()'s "no listeners registered" convention (tags in SGS_QA_ECHO_ACTIONS have one).
+		return in_array( $tag, array_filter( explode( ',', (string) getenv( 'SGS_QA_ECHO_ACTIONS' ) ) ), true );
 	}
 }
 

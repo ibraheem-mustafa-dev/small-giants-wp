@@ -33,13 +33,16 @@ final class BuyboxSnapshotTest extends TestCase {
 	}
 
 	/** Render a fixture through the real render.php in a child process. */
-	public static function render_fixture( string $name, array $attr_overrides = array(), ?array $context_override = null, array $product_overrides = array(), bool $render_children = false ): string {
+	public static function render_fixture( string $name, array $attr_overrides = array(), ?array $context_override = null, array $product_overrides = array(), bool $render_children = false, ?array $queried = null ): string {
 		$fixture = json_decode( (string) file_get_contents( self::DIR . "/$name.json" ), true, 512, JSON_THROW_ON_ERROR );
 		$fixture['attrs'] = array_merge( $fixture['attrs'], $attr_overrides );
 		if ( null !== $context_override ) {
 			$fixture['context'] = $context_override;
 		}
 		$fixture['product'] = array_merge( $fixture['product'], $product_overrides );
+		if ( null !== $queried ) {
+			$fixture['queried'] = $queried;
+		}
 		$harness = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
 		$files   = array();
 		$cmd     = escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( $harness ) . ' --slug sgs/buybox --motion-targets' . ( $render_children ? ' --render-children' : '' );
