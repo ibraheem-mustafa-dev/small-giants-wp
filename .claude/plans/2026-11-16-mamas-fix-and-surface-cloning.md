@@ -52,7 +52,7 @@ Each is fixed once, in the first task that meets it; later sections check it and
 
 ## Out of scope
 
-Building subscriptions (deferred by Bean; every mention is hidden). Indus and Eye Care (never touched). Accepted differences are only Bean's: subscriptions hidden, the send-to-hospital menu item out, the account banner with `mamas-test`'s wording, and each "keep this" in the register (Contact 8). Each is recorded in `sites/mamas-munches-redesign/build/qa/divergences.json`, and its 42 withdrawn `touch-target` entries are removed in Task 1.
+Building subscriptions (deferred by Bean; every mention is hidden). Indus and Eye Care (never touched). Accepted differences are only Bean's: subscriptions hidden, the send-to-hospital menu item out, the account banner with `mamas-test`'s wording, and each "keep this" in the register (Contact 8). Each is recorded in `register-findings.md`, and in `sites/mamas-munches-redesign/build/qa/divergences.json` where the walker can pair the element (it cannot on the hand-built header, footer and drawer). The ledger's 42 withdrawn `touch-target` entries are removed (2026-11-17).
 
 ## Order
 
@@ -77,11 +77,11 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 
 ### Task 1: Footer
 - Why: 11 points, nearly all hover styles on one hand-built surface. Read first: the register's Footer section; "How a section is worked"
-- Changes: Footer 1 to 8; the footer-shop menu loses "Subscribe & save" (item 396); the shared social icons; the 42 `touch-target` entries leave `divergences.json`. Footer 6 is Bean's own request (the SGS attribution link's hover colour: orange or teal, proposed with a picture)
+- Changes: Footer 1 to 8; the footer-shop menu loses "Subscribe & save" (item 396); the shared social icons. Every cause is a setting unset on this site (`register-findings.md`, Footer). Bean approved the fixes on 2026-11-17: Footer 1 matches the draft's balanced two lines, Footer 6 takes the logo teal #0E7E80
 - Touches: `local-mamas` footer post and menus; any block the cause names; `mamas-test`
 - Done when: every Footer row in `register-findings.md` is closed by Bean on `mamas-test`
 - Depends on: none
-- Status: not started
+- Status: fixes approved and being applied on `local-mamas`; then review, ship to `mamas-test`, Bean closes
 
 ### Task 2: Nav drawer
 - Why: 8 points. Read first: the register's Nav drawer section
