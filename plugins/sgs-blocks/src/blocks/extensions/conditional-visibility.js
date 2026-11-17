@@ -106,7 +106,7 @@ function addConditionalAttributes( settings, name ) { // eslint-disable-line no-
 		...settings,
 		attributes: {
 			...settings.attributes,
-			/** 'none' | 'logged-in' | 'logged-out' | 'order-owner' */
+			/** 'none' | 'logged-in' | 'logged-out' | 'order-owner' | 'order-has-gift' | 'order-no-gift' | 'order-guest' */
 			sgsConditionLoggedIn: { type: 'string', default: 'none' },
 			/** Array of WordPress role slugs, e.g. ['administrator','editor'] */
 			sgsConditionUserRole: {
@@ -205,6 +205,12 @@ function buildConditionSummary( attributes ) {
 		parts.push( __( 'logged-out visitors only', 'sgs-blocks' ) );
 	} else if ( 'order-owner' === attributes.sgsConditionLoggedIn ) {
 		parts.push( __( 'the signed-in owner of this order only', 'sgs-blocks' ) );
+	} else if ( 'order-has-gift' === attributes.sgsConditionLoggedIn ) {
+		parts.push( __( 'orders that are a gift only', 'sgs-blocks' ) );
+	} else if ( 'order-no-gift' === attributes.sgsConditionLoggedIn ) {
+		parts.push( __( 'orders that are not a gift only', 'sgs-blocks' ) );
+	} else if ( 'order-guest' === attributes.sgsConditionLoggedIn ) {
+		parts.push( __( 'orders placed without an account only', 'sgs-blocks' ) );
 	}
 
 	if ( attributes.sgsConditionDateStart ) {
@@ -443,6 +449,18 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 									{
 										label: __( 'The signed-in owner of this order (order confirmation page)', 'sgs-blocks' ),
 										value: 'order-owner',
+									},
+									{
+										label: __( 'Order is a gift, with a gift note (order confirmation page)', 'sgs-blocks' ),
+										value: 'order-has-gift',
+									},
+									{
+										label: __( 'Order is not a gift (order confirmation page)', 'sgs-blocks' ),
+										value: 'order-no-gift',
+									},
+									{
+										label: __( 'Order was placed without an account, as a guest (order confirmation page)', 'sgs-blocks' ),
+										value: 'order-guest',
 									},
 								] }
 								onChange={ ( val ) =>
