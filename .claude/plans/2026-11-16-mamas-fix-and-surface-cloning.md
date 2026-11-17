@@ -27,7 +27,7 @@ The item method is `plans/2026-11-02-clone-finishing-streams.md`, "How an item i
 
 ## Where things are
 
-- `local-mamas` (http://localhost:8084): the hand-finished content, where fixes are made. It runs HEAD's build; `mamas-test` runs `419b4cb6a`, so the first ship deploys before it pushes.
+- `local-mamas` (http://localhost:8084): the hand-finished content, where fixes are made. Its content, block and theme code and WooCommerce version (11.3.0) match `mamas-test` (compared post by post on 2026-11-17); a section with a code change deploys to `mamas-test` before the mirror is pushed.
 - `local-mediatest-mamaslab` (http://localhost:8091): the 2026-11-15 re-clone, the lab for the two re-clones. `local-mediatest-mamashand` (8090) is a spare copy to drop in Task 12.
 - The draft is served with `node scripts/computed-route/tools/draft-viewer.mjs mamas-munches-redesign --port 5180`.
 - The parity walker's own list for `mamas-test` is `sites/mamas-munches-redesign/build/qa/parity-baseline-2026-11-16.md`. It cannot see the header, footer or the hand-built parts of Home, and pairs only 19 of Product's 112 elements, so it supports a diagnosis and never closes an item.
@@ -81,7 +81,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: `local-mamas` footer post and menus; any block the cause names; `mamas-test`
 - Done when: every Footer row in `register-findings.md` is closed by Bean on `mamas-test`
 - Depends on: none
-- Status: fixes approved and being applied on `local-mamas`; then review, ship to `mamas-test`, Bean closes
+- Status: fixed on `local-mamas` and copied to `mamas-test` on 2026-11-17 (settings only, no code); waiting for Bean to close each item there. Open with Bean: whether the tagline band above the footer (about 15px taller than the draft, larger type) joins the list
 
 ### Task 2: Nav drawer
 - Why: 8 points. Read first: the register's Nav drawer section
