@@ -451,7 +451,7 @@
       "scrollbar": {
         "thumb": "var(--wp--preset--color--primary)",
         "thumbOnDark": "var(--wp--preset--color--accent)",
-        "track": "var(--wp--preset--color--mm-pink-soft)"
+        "track": "var(--wp--preset--color--mm-pink)"
       },
       "highlight": {
         "colour": "#F9CF6E",

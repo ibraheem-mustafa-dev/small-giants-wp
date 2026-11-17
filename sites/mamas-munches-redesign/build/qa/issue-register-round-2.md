@@ -30,6 +30,7 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Basket page 3:** The fontstyle of the number in the item quantity box is wrong and the plus and minus symbols should be black.
 - **Basket page 4:** The summary block is way too different the draft even though I do recognise that there needs to be some difference due to the addition of coupons and gift card. But gift card section could be collapsible too, the apply button on gift cards is totally wrong styles, it's got the wrong heading, 'CART TOTALS' instead of 'SUMMARY' and that heading is missing under 1024px.
 - **Basket page 5:** This is a bigger issuee than just the cart page but the cart I was testing with was over the free shipping minimum and the cart still added a shipping price - The default should always be the lower priced delivery option especially if it's free.
+- **Basket page 6:** (Added by Bean later the same evening.) The taster trio's free shipping doesn't work, how should that function?
 
 ## Sign-in
 
@@ -88,7 +89,6 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Product 18:** Th button in the sticky bar is huge filling most of the screen's width when it should be quite small, it doesn't seem to even have any padding on it and covers the price.
 - **Product 19:** You might also like product cards still have bits that don't match the draft's styles and the rest of the site's styles e.g. label and button being pill shaped.
 - **Product 20:** The draft has an issue where when it has less products per row it doesn't show any slider or way to show all of the products originally in the section, we shouldn't copy that and should instead give it the same sort of slider functionality we've set up elsewhere on the site.
-- **Product 21:** The wording on the c (Bean's note stops here; asked on 2026-11-17 for the rest.)
 
 ## Account
 
