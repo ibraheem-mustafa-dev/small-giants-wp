@@ -43,6 +43,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/media/render-item-slot.php';
 
 // Sibling PHP files in this folder are copied to build/ together with render.php.
 // render.php is required once per cart instance, so code here uses closures on
@@ -502,6 +503,70 @@ $trigger_html = sgs_cart_trigger_html( $trigger_mode, $trigger_inner_html, $trig
 // only copies PHP paths named in block.json, so a sibling file in THIS
 // directory would never reach build/ and would fatal in production, whereas
 // includes/ ships as source and already hosts every shared render helper.
+// ── Drawer additions: the gift box and the centred empty state. Each prints nothing until its setting is on. ──────────────
+$gift_box_html    = '';
+$empty_state_html = '';
+if ( $has_panel ) {
+	if ( ! empty( $attributes['panelGiftShow'] ) ) {
+		// The route and the session value belong to sgs/gift-order; the box only reads and writes them (view script: panel-gift.js).
+		$gift_limits   = class_exists( '\SGS\Blocks\Gift_Order\Gift_Order_Session' ) ? \SGS\Blocks\Gift_Order\Gift_Order_Session::limits() : array(
+			'to'      => 100,
+			'message' => 500,
+		);
+		$gift_box_html = sgs_cart_gift_box_html(
+			array(
+				'id'            => $panel_id,
+				'label'         => (string) ( $attributes['panelGiftLabel'] ?? __( 'This is a gift', 'sgs-blocks' ) ),
+				'help'          => (string) ( $attributes['panelGiftHelp'] ?? '' ),
+				'to_label'      => (string) ( $attributes['panelGiftToLabel'] ?? __( 'Who is it for?', 'sgs-blocks' ) ),
+				'message_label' => (string) ( $attributes['panelGiftMessageLabel'] ?? __( 'Gift note', 'sgs-blocks' ) ),
+				'rest_url'      => esc_url_raw( rest_url( 'sgs/v1/cart/gift' ) ),
+				'nonce'         => wp_create_nonce( 'wp_rest' ),
+				'to_max'        => (int) $gift_limits['to'],
+				'message_max'   => (int) $gift_limits['message'],
+			)
+		);
+		if ( class_exists( '\SGS\Blocks\Gift_Order\Gift_Order_Store_Api' ) ) {
+			// Lets the cart response carry the gift value on this page, before WooCommerce preloads the cart.
+			\SGS\Blocks\Gift_Order\Gift_Order_Store_Api::ensure_registered();
+		}
+	}
+
+	$empty_product = null;
+	$empty_pid     = absint( $attributes['emptyProductId'] ?? 0 );
+	if ( $empty_pid > 0 && function_exists( 'wc_get_product' ) ) {
+		$empty_wc_product = wc_get_product( $empty_pid );
+		if ( $empty_wc_product && 'publish' === get_post_status( $empty_pid ) ) {
+			$empty_product               = sgs_cart_empty_product( $empty_wc_product );
+			$empty_product['price_text'] = html_entity_decode( wp_strip_all_tags( wc_price( (float) $empty_product['price'] ) ), ENT_QUOTES, 'UTF-8' );
+		}
+	}
+	$empty_image = SGS_Media_Element::render(
+		sgs_media_item_slot_for( $block ?? null, 'emptyImage', array( 'image', 'svg' ), 'content' ),
+		$attributes,
+		array(
+			'uid'       => $uid,
+			'block'     => 'sgs/cart',
+			'in_editor' => defined( 'REST_REQUEST' ) && REST_REQUEST,
+		)
+	);
+	if ( '' !== (string) $empty_image['css'] ) {
+		$scoped_css[] = (string) $empty_image['css'];
+	}
+	$empty_state_html = sgs_cart_empty_state_html(
+		array(
+			'heading'      => $empty_cart_message,
+			'body'         => (string) ( $attributes['emptyBody'] ?? '' ),
+			'image_html'   => (string) $empty_image['html'],
+			'product'      => $empty_product,
+			'button_label' => (string) ( $attributes['emptyButtonLabel'] ?? '' ),
+			'link_label'   => $empty_cart_cta,
+			'link_url'     => (string) ( $attributes['emptyCtaUrl'] ?? '' ),
+			'shop_url'     => $shop_url,
+		)
+	);
+}
+
 $panel_args = array(
 	'uid'                => $uid,
 	'panel_id'           => $panel_id,
@@ -530,6 +595,8 @@ $panel_args = array(
 	'show_save'          => ! isset( $attributes['itemShowSaveForLater'] ) || ! empty( $attributes['itemShowSaveForLater'] ),
 	'show_add_options'   => ! empty( $attributes['itemShowAddOptions'] ),
 	'add_options_label'  => sanitize_text_field( $attributes['itemAddOptionsLabel'] ?? '' ),
+	'gift_html'          => $gift_box_html,
+	'empty_state_html'   => $empty_state_html,
 );
 
 $panel_html = $has_panel

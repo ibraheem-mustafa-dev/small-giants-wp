@@ -58,6 +58,21 @@
 					"bottom": "var(--wp--preset--spacing--40)"
 				}
 			},
+			"mediaElements": [
+				{
+					"prefix": "emptyImage",
+					"context": "content",
+					"kinds": [
+						"image",
+						"svg"
+					],
+					"atoms": [
+						"source",
+						"meaning",
+						"sizing"
+					]
+				}
+			],
 			"iconPicker": true,
 			"headerEssential": true,
 			"scrim": {
@@ -882,6 +897,51 @@
 			"type": "string",
 			"default": "Your cart"
 		},
+		"panelGiftShow": {
+			"type": "boolean",
+			"default": false,
+			"description": "Drawer and flyout: show a \"This is a gift\" tick box above the footer while the basket holds an item. It reads and writes the same gift value the Gift order block keeps for the basket page, the checkout and the order. Off by default."
+		},
+		"panelGiftLabel": {
+			"type": "string",
+			"default": "This is a gift",
+			"description": "The gift tick box's label."
+		},
+		"panelGiftHelp": {
+			"type": "string",
+			"default": "",
+			"description": "A helper line under the gift tick box's label. Empty prints none."
+		},
+		"panelGiftToLabel": {
+			"type": "string",
+			"default": "Who is it for?",
+			"description": "Label of the recipient-name field that appears when the gift box is ticked."
+		},
+		"panelGiftMessageLabel": {
+			"type": "string",
+			"default": "Gift note",
+			"description": "Label of the note field that appears when the gift box is ticked."
+		},
+		"emptyBody": {
+			"type": "string",
+			"default": "",
+			"description": "A line of text under the empty-basket heading. Empty prints none. Any of the empty-basket picture, body line, product button or link address turns on the centred empty state."
+		},
+		"emptyProductId": {
+			"type": "integer",
+			"default": 0,
+			"description": "The product the empty-basket button adds in one tap (0 prints no button). A simple product, or a variable product whose default options name a buyable variation, is added to the basket; any other product makes the button a link to its page."
+		},
+		"emptyButtonLabel": {
+			"type": "string",
+			"default": "Add to basket",
+			"description": "The empty-basket button's label; {price} is replaced with the chosen product's current price."
+		},
+		"emptyCtaUrl": {
+			"type": "string",
+			"default": "",
+			"description": "Where the empty-basket text link goes. Empty uses the shop page. The link's wording is the Empty-cart button text; leaving that blank hides the link when the centred empty state is on."
+		},
 		"emptyCartMessage": {
 			"type": "string",
 			"default": "Your cart is empty"
@@ -1678,7 +1738,18 @@
 			"type": "number",
 			"default": 3,
 			"description": "Number of instalments used to compute the amount in panelInstalmentsNote."
-		}
+		},
+		"emptyImageSource": {"type":"object","_generated":"media-atoms"},
+		"emptyImageLoading": {"type":"string","_generated":"media-atoms"},
+		"emptyImageAlt": {"type":"string","_generated":"media-atoms"},
+		"emptyImageDecorative": {"type":"boolean","_generated":"media-atoms"},
+		"emptyImageRatio": {"type":"object","_generated":"media-atoms"},
+		"emptyImageWidth": {"type":"object","_generated":"media-atoms"},
+		"emptyImageHeight": {"type":"object","_generated":"media-atoms"},
+		"emptyImageMinWidth": {"type":"object","_generated":"media-atoms"},
+		"emptyImageMaxWidth": {"type":"object","_generated":"media-atoms"},
+		"emptyImageMinHeight": {"type":"object","_generated":"media-atoms"},
+		"emptyImageMaxHeight": {"type":"object","_generated":"media-atoms"}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",

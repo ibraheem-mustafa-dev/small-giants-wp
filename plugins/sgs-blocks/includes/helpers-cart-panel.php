@@ -29,6 +29,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-cart-panel-css.php';
+require_once __DIR__ . '/helpers-cart-panel-extras.php';
 
 /**
  * Build the cart trigger for the given display mode.
@@ -162,6 +163,13 @@ function sgs_cart_panel_body_html( array $args ): string {
 	$view_after       = $stacked ? $view_html : '';
 	$actions_modifier = $stacked ? ' sgs-cart__panel-actions--stacked' : '';
 
+	// Optional drawer additions, each printed only when its setting built it: the gift box between the rows and the footer, and the
+	// rich empty state as a template the view script copies in when the basket is empty.
+	$gift_html  = (string) ( $args['gift_html'] ?? '' );
+	$empty_html = '' !== (string) ( $args['empty_state_html'] ?? '' )
+		? '<template data-sgs-cart-empty-template>' . $args['empty_state_html'] . '</template>'
+		: '';
+
 	$instalments_html = '';
 	if ( '' !== (string) ( $args['instalments_note'] ?? '' ) ) {
 		$instalments_html = sprintf(
@@ -176,6 +184,7 @@ function sgs_cart_panel_body_html( array $args ): string {
 			'<div class="sgs-cart__panel-header"><h2 class="sgs-cart__panel-heading" id="%1$s-heading">%2$s%13$s</h2>%14$s</div>' .
 			'<div class="sgs-cart__panel-status" role="status" aria-live="polite" aria-atomic="true" data-sgs-cart-status></div>' .
 			'<div class="sgs-cart__panel-items" data-sgs-cart-items aria-busy="true" data-empty-message="%3$s" data-empty-cta-label="%4$s" data-shop-url="%5$s" data-remove-style="%15$s" data-remove-label="%16$s" data-show-qty="%17$s" data-show-save="%18$s" data-show-add-options="%19$s" data-add-options-label="%20$s"%21$s><p class="sgs-cart__panel-loading">%6$s</p></div>' .
+			'%24$s%25$s' .
 			'<div class="sgs-cart__panel-footer" data-sgs-cart-footer hidden>' .
 				'<div class="sgs-cart__panel-subtotal"><span class="sgs-cart__panel-subtotal-label">%7$s</span><span class="sgs-cart__panel-subtotal-value" data-sgs-cart-subtotal></span></div>' .
 				'%8$s' .
@@ -209,7 +218,9 @@ function sgs_cart_panel_body_html( array $args ): string {
 		esc_attr( (string) ( $args['add_options_label'] ?? '' ) ),
 		$extra_data, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed strings built above.
 		$actions_modifier, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a fixed string.
-		$view_after // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_url/esc_html above.
+		$view_after, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_url/esc_html above.
+		$empty_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by sgs_cart_empty_state_html().
+		$gift_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by sgs_cart_gift_box_html().
 	);
 }
 
