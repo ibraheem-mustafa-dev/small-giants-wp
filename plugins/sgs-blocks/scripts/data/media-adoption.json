@@ -424,6 +424,24 @@
 					},
 					"replace": []
 				},
+				"sgs/cart": {
+					"slots": {
+						"emptyImage": {
+							"kinds": [
+								"image",
+								"svg"
+							],
+							"context": "content",
+							"add": true,
+							"atoms": [
+								"source",
+								"meaning",
+								"sizing"
+							]
+						}
+					},
+					"replace": []
+				},
 				"sgs/nav-drawer": {
 					"slots": {
 						"chromeLogo": {
@@ -710,10 +728,6 @@
 		}
 	],
 	"excluded": [
-		{
-			"block": "sgs/cart",
-			"reason": "small fixed thumbnail: keeps its own attributes and is not a slot (Appendix A)"
-		},
 		{
 			"block": "sgs/mega-panel",
 			"reason": "small fixed thumbnail: keeps its own attributes and is not a slot (Appendix A)"

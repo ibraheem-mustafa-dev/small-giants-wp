@@ -671,11 +671,6 @@
 	font-weight: 600;
 }
 
-:where(.sgs-cart__panel) button.sgs-cart__panel-empty-add:disabled {
-	cursor: progress;
-	opacity: 0.6;
-}
-
 :where(.sgs-cart__panel) .sgs-cart__panel-empty-link {
 	color: inherit;
 	text-decoration: underline;
@@ -683,8 +678,6 @@
 
 /* ── Gift box — tick, then who it is for and a note ─────────────────────────────── */
 :where(.sgs-cart__panel) .sgs-cart__panel-gift {
-	display: grid;
-	gap: 10px;
 	padding: 12px 20px;
 }
 
@@ -717,17 +710,12 @@
 }
 
 :where(.sgs-cart__panel) .sgs-cart__panel-gift-fields {
-	display: grid;
-	gap: 6px;
-}
-
-:where(.sgs-cart__panel) .sgs-cart__panel-gift-fields[hidden],
-:where(.sgs-cart__panel) .sgs-cart__panel-gift[hidden],
-:where(.sgs-cart__panel) .sgs-cart__panel-gift-error[hidden] {
-	display: none;
+	margin-top: 10px;
 }
 
 :where(.sgs-cart__panel) .sgs-cart__panel-gift-field-label {
+	display: block;
+	margin: 6px 0 4px;
 	font-size: 0.85rem;
 }
 
@@ -739,7 +727,7 @@
 }
 
 :where(.sgs-cart__panel) .sgs-cart__panel-gift-error {
-	margin: 0;
+	margin: 8px 0 0;
 	font-size: 0.85rem;
 }
 

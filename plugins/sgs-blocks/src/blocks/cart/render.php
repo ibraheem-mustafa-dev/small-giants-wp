@@ -544,7 +544,7 @@ if ( $has_panel ) {
 		}
 	}
 	$empty_image = SGS_Media_Element::render(
-		sgs_media_item_slot_for( $block ?? null, 'emptyImage', array( 'image', 'svg' ), 'content' ),
+		sgs_media_item_slot_for( $block, 'emptyImage', array( 'image', 'svg' ), 'content' ),
 		$attributes,
 		array(
 			'uid'       => $uid,

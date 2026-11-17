@@ -1,0 +1,1696 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/cart",
+	"version": "0.1.0",
+	"title": "SGS Cart",
+	"category": "sgs-interactive",
+	"description": "WooCommerce mini-cart: live item-count badge plus an optional flyout (disclosure) or drawer (dialog) panel with AJAX add/qty/remove via the WooCommerce Store API. Hydrates client-side to bypass full-page cache.",
+	"keywords": [
+		"cart",
+		"basket",
+		"woocommerce",
+		"shop",
+		"mini-cart",
+		"ecommerce"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "cart",
+	"supports": {
+		"align": [
+			"left",
+			"center",
+			"right"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": false,
+			"text": false
+		},
+		"sgs": {
+			"motion": {
+				"states": [
+					"count-changed",
+					"count-loaded"
+				]
+			},
+			"separators": {
+				"separators": {
+					"axes": [
+						"row"
+					],
+					"edges": false,
+					"hover": false,
+					"sweep": false
+				}
+			},
+			"shadowLift": false,
+			"spacingDefaults": {
+				"panelFooterPadding": {
+					"top": "var(--wp--preset--spacing--30)",
+					"right": "20px",
+					"bottom": "var(--wp--preset--spacing--30)",
+					"left": "20px"
+				},
+				"panelEmptyPadding": {
+					"top": "var(--wp--preset--spacing--40)",
+					"bottom": "var(--wp--preset--spacing--40)"
+				}
+			},
+			"iconPicker": true,
+			"headerEssential": true,
+			"scrim": {
+				"open": "[open]"
+			},
+			"colourExemptions": {
+				"badgeBackground": {
+					"rule": "states",
+					"reason": "The cart-icon badge is a status indicator nested inside .sgs-cart__trigger, not itself a click target — no :hover CSS targets it anywhere in style.css."
+				},
+				"panelBackground": {
+					"rule": "states",
+					"reason": "The flyout/drawer panel surface is not a click target — its child close/view/checkout buttons carry their own separate colour attributes. No :hover CSS targets the panel background anywhere."
+				}
+			},
+			"boxFamilies": {
+				"margin": [
+					"margin"
+				],
+				"pillPadding": [ "pillPadding" ],
+				"panelHeadPadding": [ "panelHeadPadding" ],
+				"panelBodyPadding": [ "panelBodyPadding" ],
+				"panelFooterPadding": [ "panelFooterPadding" ],
+				"panelEmptyPadding": [ "panelEmptyPadding" ],
+				"emptyCtaPadding": [ "emptyCtaPadding" ],
+				"freeDeliveryBarMargin": [ "freeDeliveryBarMargin" ],
+				"freeDeliveryBandPadding": [ "freeDeliveryBandPadding" ]
+			},
+			"elements": {
+				"item-actions": {
+					"selector": ".sgs-cart__item-actions",
+					"motion": false,
+					"label": "Basket line actions row",
+					"order": 33,
+					"clusters": [
+						"layout"
+					],
+					"layer": "OUTER",
+					"attrMap": {
+						"css:flex-wrap": "itemActionsFlexWrap"
+					},
+					"_note": "The basket line actions row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"panel-actions": {
+					"selector": ".sgs-cart__panel-actions",
+					"motion": false,
+					"label": "Basket panel buttons row",
+					"order": 34,
+					"clusters": [
+						"layout"
+					],
+					"layer": "OUTER",
+					"attrMap": {
+						"css:flex-wrap": "panelActionsFlexWrap"
+					},
+					"_note": "The basket panel buttons row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"scrim": {
+					"motion": false,
+					"label": "Backdrop / scrim",
+					"order": 5,
+					"clusters": [
+						"fill",
+						"motion"
+					],
+					"prefix": "scrim",
+					"attrMap": {
+						"css:background-color": "scrimColour",
+						"css:background-image": "scrimColourGradient",
+						"css:opacity": "scrimOpacity",
+						"css:backdrop-filter": "scrimBlur",
+						"css:transition-duration": "scrimFadeDuration"
+					},
+					"_note": "The shared viewport scrim (Wave 3C U-2, `includes/helpers-scrim.php::sgs_scrim_render`): the see-through layer printed at wp_footer that dims the page while this block's drawer, dialog or panel is open. Mapped here so the converter can route a draft's scrim colour, strength and blur to these attributes."
+				},
+				"wrapper": {
+					"label": "Cart wrapper",
+					"order": 1,
+					"clusters": [ "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:margin": "margin"
+					},
+					"_note": "supports.color is explicitly {background:false,text:false} and spacing.padding is false — layout is scoped to margin only (every other layout member is a real gap, not a missing declaration)."
+				},
+				"icon": {
+					"label": "Cart icon",
+					"order": 2,
+					"clusters": [ "text", "fill", "layout"],
+					"prefix": "icon",
+					"attrMap": {
+						"css:color": "iconColour",
+						"css:stroke": "iconColourGradient",
+						"css:background-color": "iconBg",
+						"css:background-image": "iconBgGradient",
+						"css:border-radius": "iconTriggerRadius",
+						"css:min-width": "iconTriggerSize",
+						"css:min-height": "iconTriggerSize"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient",
+								"css:background-color": "iconBgHover",
+								"css:background-image": "iconBgHoverGradient"
+							}
+						}
+					},
+					"_note": "iconSize is a per-breakpoint object that prints --sgs-cart-icon-size (sets width/height, not text size) — no cluster member exists, so it is an honest ORPHAN (FR-35-4). iconBg/iconBgGradient and their hover siblings paint the icon button's own background on the trigger's ::after layer, in icon tiers only. `css:stroke` (icon/SVG gradient mechanism) is explicit-mapped to iconColourGradient — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient mirror sgs/icon's own hover states shape exactly — resolved via sgs_icon_gradient_css() on .sgs-cart__trigger:hover.",
+					"absentIn": [ "pill-link" ],
+					"absentWhy": "The pill trigger shows its label and count in place of the icon."
+				},
+				"badge": {
+					"label": "Item-count badge",
+					"order": 3,
+					"clusters": [ "text", "fill" ],
+					"prefix": "badge",
+					"attrMap": {
+						"css:background-color": "badgeColour",
+						"css:background-image": "badgeColourGradient",
+						"css:color": "badgeTextColour",
+						"css:color-gradient": "badgeTextColourGradient",
+						"css:width": "badgeSize",
+						"css:height": "badgeSize"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "badgeTextColourHover",
+								"css:color-gradient": "badgeTextColourHoverGradient"
+							}
+						}
+					},
+					"_note": "badgeColour/badgeTextColour do not follow the default {prefix}{suffix} convention — explicit attrMap required per ROLLOUT REQUIREMENT 1. Gradient siblings: badgeColourGradient paints a hand-built ::after layer (NOT sgs_block_background_layer_css() — the badge is already position:absolute, which that helper would silently override), freeing the element's own background-image for badgeTextColourGradient's background-clip:text. badgeTextColourHover/badgeTextColourHoverGradient are safe to paint directly on .sgs-cart__badge because the badge's own background always lives on its ::after layer, never on the badge element itself — background-clip:text on hover cannot clip a background that isn't there."
+				},
+				"panel": {
+					"restingShadow": true,
+					"label": "Mini-cart panel",
+					"order": 4,
+					"clusters": [ "fill", "text" ],
+					"prefix": "panel",
+					"attrMap": {
+						"css:background-color": "panelBg",
+						"css:background-image": "panelBgGradient",
+						"css:color": "panelTextColour",
+						"css:color-gradient": "panelTextColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "panelTextColourHover",
+								"css:color-gradient": "panelTextColourHoverGradient"
+							}
+						}
+					},
+					"_note": "FR-36-19 — the flyout/drawer panel surface. panelBg/panelTextColour do not follow {prefix}{suffix} — explicit attrMap. Only rendered when displayMode is flyout|drawer. Gradient siblings use the same hand-built ::after reasoning as the badge element above (the panel's own --flyout/--drawer modifiers declare position:absolute/fixed, at the same specificity a uid-scoped sgs_block_background_layer_css() rule would carry). panelTextColourHover/panelTextColourHoverGradient are safe for the same reason as the badge above — the panel's own background always lives on its ::after layer.",
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"pill": {
+					"selector": ".sgs-cart__trigger",
+					"label": "Trigger pill (text style)",
+					"order": 6,
+					"clusters": [ "text", "fill", "layout" ],
+					"prefix": "pill",
+					"attrMap": {
+						"css:background-color": "pillBgColour",
+						"css:background-image": "pillBgColourGradient",
+						"css:color": "pillTextColour",
+						"css:color-gradient": "pillTextColourGradient",
+						"css:border-color": "pillBorderColour",
+						"css:border-width": "pillBorderWidth",
+						"css:border-style": "pillBorderStyle",
+						"css:border-radius": "pillBorderRadius",
+						"css:min-height": "pillMinHeight",
+						"css:padding": "pillPadding",
+						"css:box-shadow": "pillShadow"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:box-shadow": "pillShadowHover",
+								"css:background-color": "pillBgColourHover",
+								"css:background-image": "pillBgColourHoverGradient",
+								"css:color": "pillTextColourHover",
+								"css:color-gradient": "pillTextColourHoverGradient"
+							}
+						}
+					},
+					"contentAttrs": [ "pillLabel" ],
+					"_note": "Wave B — triggerStyle:'pill' swaps the icon+badge trigger for a word (pillLabel) beside the live item count, in a pill (matches a 'Bag'/'Cart' text trigger draft shape). Only rendered/styled when triggerStyle is 'pill' — the icon element above stays the trigger for triggerStyle:'icon' (the default). HAND-BUILT ::after for the background (same reasoning as badge/panel above: .sgs-cart__trigger is already position:relative in style.css, and a text gradient's background-clip:text must not be clipped by the pill's own fill) — pillTextColour styles the LABEL only; the count beside it keeps using the existing badgeTextColour/badgeTextColourGradient attributes (same badge element, restyled inline for the pill via CSS, so one colour control governs the count in both trigger styles). Border (compliance correction, Spec 35 §14/§1 field 9f): pillBorderWidth (box object, base only) + pillBorderStyle (enum) + pillBorderColour (flat, no gradient sibling) mount through `SgsBorderControl`, mirroring sgs/whatsapp-cta's cardBorderWidth/cardBorderStyle/cardBorderColour (card-fields.js CardTypographyPanel) — no ad-hoc second colour mechanism. pillBorderRadius stays the one exception: a plain CSS-length STRING (default '' — CSS default of border-radius:999px in style.css governs), NOT a responsive 4-corner tier object, per Spec 32 §6.1's deliberate-keep for a single uniform pill radius (mirrors sgs/option-picker's pillBorderRadius) — `SgsBorderControl`'s `onRadiusChange` pairing is typed for that 4-corner tier shape, so pairing this scalar there would force the very object migration §6.1 exempts; it is mounted immediately alongside the composite instead (PillBorderControl.js). `layout` cluster added (compliance pass) purely so css:border-color/css:border-width/css:border-style/css:border-radius — all members of that cluster, per scripts/consistency/cluster-member-sets.json — resolve against this element's own attrMap instead of reporting ORPHAN:STYLE-DEFECT; no other `layout` member (padding/margin/gap/etc.) has an attrMap entry here, so none of them are newly claimed."
+				},
+				"freeDeliveryTrack": {
+					"motion": false,
+					"label": "Free-delivery progress track",
+					"order": 7,
+					"clusters": [ "fill" ],
+					"prefix": "freeDelivery",
+					"attrMap": {
+						"css:background-color": "freeDeliveryTrackColour"
+					},
+					"contentAttrs": [ "freeDeliveryMessage", "freeDeliverySuccessMessage" ],
+					"_note": "Wave B — the empty background of the free-delivery progress bar in the mini-cart panel (flyout or drawer). Only rendered when a threshold (manual override or the WooCommerce free-shipping zone method's min_amount) resolves to a positive number; both empty hides the whole feature. Built entirely client-side (panel-render.js) against Store API cart totals — see render.php's data-free-delivery-* attributes on the block wrapper, which is the only part of this feature render.php can own (the panel BODY markup lives in the shared includes/helpers-cart-panel.php, outside this build's file scope). freeDeliveryMessage/freeDeliverySuccessMessage (the progress-bar's two text states, edited in PanelSettingsControls.js) are declared here as `contentAttrs` — the content half of this element, not a style attribute, following Spec 35's PLACEMENT model (THE ELEMENT MANIFEST §ContentAttrs)."
+				},
+				"freeDeliveryFill": {
+					"motion": false,
+					"label": "Free-delivery progress fill",
+					"order": 8,
+					"clusters": [ "fill", "motion" ],
+					"prefix": "freeDelivery",
+					"attrMap": {
+						"css:background-color": "freeDeliveryFillColour",
+						"css:transition-duration": "freeDeliveryFillDuration",
+						"css:transition-timing-function": "freeDeliveryFillEasing"
+					},
+					"_note": "Wave B — the filled portion of the free-delivery progress bar, width driven live by a --sgs-cart-free-delivery-pct custom property (panel-render.js element.style.setProperty()) — a custom-property VALUE, never a raw style=\"width:...\" declaration (Spec 32 FR-32-4; mirrors sgs/audio's --sgs-progress and sgs/before-after's --sgs-before-after-position)."
+				},
+				"panelFrame": {
+					"restingShadow": true,
+					"selector": ".sgs-cart__panel",
+					"label": "Panel frame",
+					"order": 9,
+					"clusters": [
+						"layout",
+						"fill",
+						"motion"
+					],
+					"prefix": "panel",
+					"attrMap": {
+						"css:max-width": "panelMaxWidth",
+						"css:box-shadow": "panelShadow",
+						"css:transition-duration": "panelSlideDuration",
+						"css:transition-timing-function": "panelSlideEasing"
+					},
+					"_note": "Drawer surface geometry. The dialog carries the block uid class itself because the shared nav store re-parents it to <body> on open, so every panel rule is scoped to `.{uid}.sgs-cart__panel`, never the block wrapper. panelShadowColour pairs with panelShadow through ShadowControl; panelSlideDuration/panelSlideEasing are the drawer slide's duration and curve, emitted as animation-duration/animation-timing-function on the open panel: the slide in plays them forwards and the close plays the same animation reversed (style.css `.sgs-cart__panel--drawer.is-closing`); panelSlideEasingCustom holds a hand-typed curve.",
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"panelHead": {
+					"selector": ".sgs-cart__panel-header",
+					"label": "Panel head row",
+					"order": 10,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "panelHead",
+					"attrMap": {
+						"css:padding": "panelHeadPadding",
+						"css:border-color": "panelHeadBorderColour"
+					},
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"panelTitle": {
+					"text": true,
+					"selector": ".sgs-cart__panel-heading",
+					"label": "Panel heading",
+					"order": 11,
+					"clusters": [
+						"text"
+					],
+					"prefix": "panelTitle",
+					"attrMap": {},
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"panelCount": {
+					"selector": ".sgs-cart__panel-count",
+					"label": "Panel heading count",
+					"order": 12,
+					"clusters": [
+						"text"
+					],
+					"prefix": "panelCount",
+					"attrMap": {
+						"css:color": "panelCountColour"
+					},
+					"_note": "The bracketed live item count after the heading; shown when panelShowCount is on.",
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"panelClose": {
+					"selector": ".sgs-cart__panel-close",
+					"label": "Panel close button",
+					"order": 13,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "panelClose",
+					"attrMap": {
+						"css:color": "panelCloseColour",
+						"css:width": "panelCloseSize"
+					},
+					"absentIn": [ "icon-link", "pill-link", "flyout-panel" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel. The close button is drawer-only; a flyout panel closes on outside click and Escape."
+				},
+				"panelBody": {
+					"selector": ".sgs-cart__panel-items",
+					"label": "Panel body",
+					"order": 14,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "panelBody",
+					"attrMap": {
+						"css:padding": "panelBodyPadding",
+						"css:gap": "panelBodyGap"
+					},
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"panelEmpty": {
+					"motion": false,
+					"label": "Empty-cart block",
+					"order": 15,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "panelEmpty",
+					"attrMap": {
+						"css:color": "panelEmptyColour",
+						"css:padding": "panelEmptyPadding"
+					}
+				},
+				"emptyMessage": {
+					"motion": false,
+					"label": "Empty-cart message",
+					"order": 16,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "emptyMessage",
+					"attrMap": {
+						"css:color": "emptyMessageColour",
+						"css:margin-bottom": "emptyMessageGap"
+					}
+				},
+				"emptyCta": {
+					"motion": false,
+					"label": "Empty-cart button",
+					"order": 17,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "emptyCta",
+					"attrMap": {
+						"css:color": "emptyCtaColour",
+						"css:background-color": "emptyCtaBg",
+						"css:padding": "emptyCtaPadding",
+						"css:border-radius": "emptyCtaRadius"
+					}
+				},
+				"itemThumb": {
+					"motion": false,
+					"label": "Item image",
+					"order": 18,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "itemThumb",
+					"attrMap": {
+						"css:background-color": "itemThumbBg",
+						"css:width": "itemThumbSize",
+						"css:border-radius": "itemThumbRadius"
+					}
+				},
+				"item": {
+					"motion": false,
+					"label": "Item row",
+					"order": 19,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "item",
+					"attrMap": {
+						"css:gap": "itemGap"
+					}
+				},
+				"itemQty": {
+					"selector": ".sgs-cart__item-stepper",
+					"motion": false,
+					"label": "Item quantity stepper",
+					"order": 35,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "itemQty",
+					"attrMap": {
+						"css:color": "itemQtyColour",
+						"css:background-color": "itemQtyBg",
+						"css:border-color": "itemQtyBorderColour",
+						"css:border-width": "itemQtyBorderWidth",
+						"css:border-style": "itemQtyBorderStyle",
+						"css:border-radius": "itemQtyRadius",
+						"css:height": "itemQtyHeight"
+					},
+					"_note": "The item row's quantity stepper (itemQtyStyle 'stepper'): a minus button, the number and a plus button in one pill. Only drawn when the stepper style is chosen."
+				},
+				"panelView": {
+					"selector": ".sgs-cart__panel-view",
+					"motion": false,
+					"label": "View cart button or link",
+					"order": 36,
+					"clusters": [
+						"text"
+					],
+					"prefix": "panelView",
+					"attrMap": {
+						"css:color": "panelViewColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "panelViewColourHover"
+							}
+						}
+					},
+					"_note": "The footer's second action: an outlined button, or with panelViewStyle 'text-link' an underlined text link. Its corners follow the Checkout corners setting.",
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"panelTaxNote": {
+					"selector": ".sgs-cart__panel-tax-note",
+					"motion": false,
+					"label": "Note under the subtotal",
+					"order": 37,
+					"clusters": [
+						"text"
+					],
+					"prefix": "panelTaxNote",
+					"attrMap": {
+						"css:color": "panelTaxNoteColour"
+					},
+					"contentAttrs": [
+						"panelTaxNote"
+					],
+					"_note": "The delivery note under the subtotal row (panelTaxNote is its wording). The Note under Checkout element (panelNote) is the instalments note, a different paragraph.",
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"freeDeliveryBand": {
+					"selector": ".sgs-cart__free-delivery",
+					"motion": false,
+					"label": "Free-delivery band",
+					"order": 38,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "freeDeliveryBand",
+					"attrMap": {
+						"css:background-color": "freeDeliveryBandBg",
+						"css:border-color": "freeDeliveryBandBorderColour",
+						"css:border-width": "freeDeliveryBandBorderWidth",
+						"css:border-style": "freeDeliveryBandBorderStyle",
+						"css:padding": "freeDeliveryBandPadding"
+					},
+					"_note": "The band holding the free-delivery message and its bar. Set only the bottom border width for a line under it."
+				},
+				"itemBrand": {
+					"motion": false,
+					"label": "Item brand",
+					"order": 20,
+					"clusters": [
+						"text"
+					],
+					"prefix": "itemBrand",
+					"attrMap": {
+						"css:color": "itemBrandColour"
+					}
+				},
+				"itemName": {
+					"motion": false,
+					"label": "Item name",
+					"order": 21,
+					"clusters": [
+						"text"
+					],
+					"prefix": "itemName",
+					"attrMap": {}
+				},
+				"itemDetail": {
+					"motion": false,
+					"label": "Item details (lens line)",
+					"order": 22,
+					"clusters": [
+						"text"
+					],
+					"prefix": "itemDetail",
+					"attrMap": {
+						"css:color": "itemDetailColour"
+					}
+				},
+				"itemPrice": {
+					"motion": false,
+					"label": "Item line price",
+					"order": 23,
+					"clusters": [
+						"text"
+					],
+					"prefix": "itemPrice",
+					"attrMap": {}
+				},
+				"itemAction": {
+					"motion": false,
+					"label": "Item action link",
+					"order": 24,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "itemAction",
+					"attrMap": {
+						"css:color": "itemActionColour",
+						"css:border-color": "itemActionBorderColour"
+					}
+				},
+				"itemRemove": {
+					"motion": false,
+					"label": "Item remove link",
+					"order": 25,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "itemRemove",
+					"attrMap": {
+						"css:color": "itemRemoveColour",
+						"css:border-color": "itemRemoveBorderColour"
+					}
+				},
+				"panelFooter": {
+					"selector": ".sgs-cart__panel-footer",
+					"label": "Panel footer",
+					"order": 26,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "panelFooter",
+					"attrMap": {
+						"css:background-color": "panelFooterBg",
+						"css:padding": "panelFooterPadding",
+						"css:border-color": "panelFooterBorderColour"
+					},
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"subtotal": {
+					"selector": ".sgs-cart__panel-subtotal",
+					"label": "Subtotal row",
+					"order": 27,
+					"clusters": [
+						"text"
+					],
+					"prefix": "subtotal",
+					"attrMap": {
+						"css:color": "subtotalLabelColour"
+					},
+					"_note": "subtotalLabelColour colours the label and row; the amount on the right is its own element (subtotalValue).",
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"subtotalValue": {
+					"selector": ".sgs-cart__panel-subtotal-value",
+					"label": "Subtotal amount",
+					"order": 32,
+					"clusters": [
+						"text"
+					],
+					"prefix": "subtotalValue",
+					"attrMap": {
+						"css:color": "subtotalValueColour"
+					},
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"freeDeliveryText": {
+					"motion": false,
+					"label": "Free-delivery message",
+					"order": 28,
+					"clusters": [
+						"text"
+					],
+					"prefix": "freeDeliveryText",
+					"attrMap": {
+						"css:color": "freeDeliveryTextColour"
+					}
+				},
+				"freeDeliveryBar": {
+					"motion": false,
+					"label": "Free-delivery bar geometry",
+					"order": 29,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "freeDelivery",
+					"attrMap": {
+						"css:height": "freeDeliveryTrackHeight",
+						"css:margin": "freeDeliveryBarMargin",
+						"css:border-radius": "freeDeliveryTrackRadius"
+					}
+				},
+				"checkout": {
+					"selector": ".sgs-cart__panel-checkout",
+					"label": "Checkout button",
+					"order": 30,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "checkout",
+					"attrMap": {
+						"css:color": "checkoutColour",
+						"css:background-color": "checkoutBg",
+						"css:min-height": "checkoutMinHeight",
+						"css:border-radius": "checkoutRadius"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "checkoutColourHover",
+								"css:background-color": "checkoutBgHover"
+							}
+						}
+					},
+					"_note": "Hover: checkoutBgHover / checkoutColourHover.",
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"panelNote": {
+					"text": true,
+					"selector": ".sgs-cart__panel-note",
+					"label": "Note under checkout",
+					"order": 31,
+					"clusters": [
+						"text"
+					],
+					"prefix": "panelNote",
+					"attrMap": {
+						"css:color": "panelNoteColour"
+					},
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				}
+			}
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-cart"
+	},
+	"attributes": {
+		"itemActionsFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the actions under each basket line wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"panelActionsFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the View basket and Checkout buttons wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"displayMode": {
+			"type": "string",
+			"default": "link",
+			"enum": [
+				"link",
+				"flyout",
+				"drawer"
+			]
+		},
+		"iconName": {
+			"type": "string",
+			"default": "shopping-cart"
+		},
+		"iconSource": {
+			"type": "string",
+			"default": "lucide",
+			"enum": [
+				"lucide",
+				"custom"
+			],
+			"description": "Where the cart glyph comes from: the Lucide icon named by iconName, or a pasted SVG (iconSvg)."
+		},
+		"iconSvg": {
+			"type": "string",
+			"default": "",
+			"description": "Pasted inline SVG markup when iconSource is 'custom'. Sanitised in the editor and re-sanitised in render.php (wp_kses + sgs_svg_kses_allowed_tags()); an empty or rejected SVG falls back to the Lucide icon."
+		},
+		"iconSize": {
+			"type": "object",
+			"default": {},
+			"description": "Icon size in px per breakpoint: {desktop,tablet,mobile}. An empty tier inherits the tier above; unset keeps 24px."
+		},
+		"iconTriggerRadius": {
+			"type": "string",
+			"default": "",
+			"description": "CSS length (e.g. \"999px\" or \"50%\") for the icon button's corners, in icon tiers only. Empty keeps the trigger's 4px radius. The icon background layer inherits it."
+		},
+		"iconTriggerSize": {
+			"type": "object",
+			"default": {},
+			"description": "Icon button square size in px per breakpoint, in icon tiers only. A set value replaces the 44px tap floor in that tier but never goes below 24px. Unset keeps the floor."
+		},
+		"iconBg": {
+			"type": "string",
+			"default": ""
+		},
+		"iconBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient painting the icon button's background. Non-empty wins over iconBg."
+		},
+		"iconBgHover": {
+			"type": "string",
+			"default": ""
+		},
+		"iconBgHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"badgeSize": {
+			"type": "object",
+			"default": {},
+			"description": "Icon trigger count badge size in px per breakpoint. Unset keeps 18px."
+		},
+		"pillBadgeSize": {
+			"type": "object",
+			"default": {},
+			"description": "Text pill count bubble size in px per breakpoint. Unset keeps 20px."
+		},
+		"iconColour": {
+			"type": "string",
+			"default": "",
+			"description": "Icon and pill label colour. Empty takes the surrounding text colour, which the theme pairs with its surface."
+		},
+		"iconColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the cart icon's stroke instead of a flat colour. Non-empty wins over iconColour at render time."
+		},
+		"iconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the cart icon's stroke on hover instead of a flat colour. Non-empty wins over iconColourHover at render time."
+		},
+		"badgeColour": {
+			"type": "string",
+			"default": "accent"
+		},
+		"badgeColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"badgeTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"badgeTextColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"badgeTextColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"badgeTextColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of badgeTextColourHover. Non-empty wins over badgeTextColourHover on :hover/:focus-visible."
+		},
+		"ariaLabel": {
+			"type": "string",
+			"default": "View your cart"
+		},
+		"showZero": {
+			"type": "object",
+			"default": {},
+			"description": "Show the badge on an empty cart, per breakpoint: {desktop,tablet,mobile} of booleans. An empty tier inherits the tier above; unset hides the badge until there is an item."
+		},
+		"hideWhenEmpty": {
+			"type": "boolean",
+			"default": false
+		},
+		"panelHeading": {
+			"type": "string",
+			"default": "Your cart"
+		},
+		"emptyCartMessage": {
+			"type": "string",
+			"default": "Your cart is empty"
+		},
+		"emptyCartCtaLabel": {
+			"type": "string",
+			"default": "Continue shopping"
+		},
+		"viewCartLabel": {
+			"type": "string",
+			"default": "View cart"
+		},
+		"checkoutLabel": {
+			"type": "string",
+			"default": "Checkout"
+		},
+		"autoOpenOnAdd": {
+			"type": "boolean",
+			"default": true
+		},
+		"hideOnCartCheckoutPages": {
+			"type": "boolean",
+			"default": true
+		},
+		"panelBg": {
+			"type": "string",
+			"default": "base"
+		},
+		"panelBgGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"panelTextColour": {
+			"type": "string",
+			"default": "contrast"
+		},
+		"panelTextColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"panelTextColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"panelTextColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of panelTextColourHover. Non-empty wins over panelTextColourHover on :hover/:focus-visible."
+		},
+		"scrimColour": {
+			"type": "string",
+			"default": "#000000",
+			"description": "Wave 3C U-2 (family M-14): the drawer's backdrop tint. Only painted in the drawer display mode; see includes/helpers-scrim.php."
+		},
+		"scrimColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"scrimOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 0.55
+			}
+		},
+		"scrimBlur": {
+			"type": "object",
+			"default": {}
+		},
+		"triggerStyle": {
+			"type": "string",
+			"default": "icon",
+			"enum": [
+				"icon",
+				"pill"
+			],
+			"description": "Wave B — 'icon' is the existing icon+badge trigger. 'pill' replaces the icon with an editable word (pillLabel) beside the live item count, in a pill shape."
+		},
+		"triggerStyleTablet": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"icon",
+				"pill"
+			],
+			"description": "Tablet-tier override of triggerStyle (viewport up to 1023px). Empty inherits the desktop triggerStyle. One button and one drawer print at every width; the tier switches the label, icon and count visibility by class and stylesheet."
+		},
+		"triggerStyleMobile": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"icon",
+				"pill"
+			],
+			"description": "Mobile-tier override of triggerStyle (viewport up to 767px). Empty inherits the resolved tablet value."
+		},
+		"pillShowIcon": {
+			"type": "boolean",
+			"default": false,
+			"description": "In a pill tier, show the cart icon (sized by iconSize) before the label. Off keeps the word-and-count pill."
+		},
+		"pillLabel": {
+			"type": "string",
+			"default": "Cart"
+		},
+		"pillCountStyle": {
+			"type": "string",
+			"enum": [ "plain", "bubble" ],
+			"default": "plain",
+			"description": "How the pill shows its item count: plain text beside the label, or a round filled bubble (badgeColour fill, badgeTextColour text)."
+		},
+		"badgeFontSize": {
+			"type": "object",
+			"default": {
+				"desktop": 11
+			}
+		},
+		"badgeFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"badgeFontWeight": {
+			"type": "string",
+			"default": "700"
+		},
+		"pillFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"pillFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pillFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"pillLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"pillLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"pillTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"pillMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Pill height floor per device (CSS length). Empty keeps the 44px touch-target default."
+		},
+		"pillBgColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBgColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"pillTextColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pillTextColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBgColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBgColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the trigger pill's background via background-image. Non-empty wins over pillBgColour at render time."
+		},
+		"pillTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the pill label text via background-clip:text. Non-empty wins over pillTextColour at render time."
+		},
+		"pillBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Pill border width, base tier only (Spec 35 §14 — no per-device border width). Empty = the block's own CSS default (1px)."
+		},
+		"pillBorderStyle": {
+			"type": "string",
+			"default": "solid",
+			"enum": [
+				"",
+				"solid",
+				"dashed",
+				"dotted"
+			],
+			"description": "Pill border style. '' = inherit the block's own CSS default (solid)."
+		},
+		"pillShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"pillShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillShadowHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pillShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pillPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Pill padding box per breakpoint: {desktop,tablet,mobile} of {top,right,bottom,left}. Empty keeps style.css's 0 14px."
+		},
+		"pillBorderRadius": {
+			"type": "string",
+			"default": "",
+			"description": "CSS length (e.g. \"999px\" or \"50%\"). Empty uses style.css's own border-radius:999px default (fully rounded)."
+		},
+		"freeDeliveryThresholdOverride": {
+			"type": "string",
+			"default": "",
+			"description": "Wave B — manual override for the free-delivery threshold, in the store's currency major unit (e.g. \"75\"). Empty uses the WooCommerce free-shipping method's min_amount for the store's base-country shipping zone. Both empty hides the progress bar."
+		},
+		"freeDeliveryMessage": {
+			"type": "string",
+			"default": "You're %s away from free delivery"
+		},
+		"freeDeliverySuccessMessage": {
+			"type": "string",
+			"default": "You've unlocked free delivery!"
+		},
+		"freeDeliveryFillColour": {
+			"type": "string",
+			"default": ""
+		},
+		"freeDeliveryTrackColour": {
+			"type": "string",
+			"default": ""
+		},
+		"panelTitleFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"panelTitleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"panelTitleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"panelTitleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"panelCountFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"panelCountFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"panelCountFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"emptyMessageFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"emptyMessageFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"emptyMessageFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"emptyMessageFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"emptyCtaFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"emptyCtaFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"emptyCtaFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"emptyCtaLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"emptyCtaLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"emptyCtaTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBrandFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemBrandFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"itemBrandLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"itemBrandLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"itemBrandTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"itemNameFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemNameFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"itemNameFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"itemNameLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"itemNameLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"itemDetailFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemDetailFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"itemDetailLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"itemDetailLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"itemPriceFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemPriceFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"itemPriceFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"itemActionFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemActionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"subtotalFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"subtotalFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"subtotalFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"freeDeliveryTextFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"freeDeliveryTextFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"freeDeliveryTextFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"checkoutFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"checkoutFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"checkoutFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"checkoutLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"checkoutLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"checkoutTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"panelNoteFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"panelNoteFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"panelNoteTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"panelEmptyTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"panelHeadBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"panelCountColour": {
+			"type": "string",
+			"default": ""
+		},
+		"panelCloseColour": {
+			"type": "string",
+			"default": ""
+		},
+		"panelFooterBg": {
+			"type": "string",
+			"default": ""
+		},
+		"panelFooterBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"panelEmptyColour": {
+			"type": "string",
+			"default": ""
+		},
+		"emptyMessageColour": {
+			"type": "string",
+			"default": ""
+		},
+		"emptyCtaBg": {
+			"type": "string",
+			"default": ""
+		},
+		"emptyCtaColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemThumbBg": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBrandColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemDetailColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemRemoveColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemRemoveBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemActionColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemActionBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"separators": {
+			"type": "object",
+			"default": {},
+			"description": "The line between the mini-cart panel's item rows (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour } }. A horizontal line centred in the space between items (`panelBodyGap`), drawn by the rows themselves. No thickness (the default) draws nothing; no colour inherits the text colour."
+		},
+		"subtotalLabelColour": {
+			"type": "string",
+			"default": ""
+		},
+		"subtotalValueColour": {
+			"type": "string",
+			"default": ""
+		},
+		"freeDeliveryTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"checkoutBg": {
+			"type": "string",
+			"default": ""
+		},
+		"checkoutBgHover": {
+			"type": "string",
+			"default": ""
+		},
+		"checkoutColour": {
+			"type": "string",
+			"default": ""
+		},
+		"checkoutColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"panelNoteColour": {
+			"type": "string",
+			"default": ""
+		},
+		"panelMaxWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Drawer maximum width per device (CSS length). Empty keeps the 400px default."
+		},
+		"panelBodyGap": {
+			"type": "object",
+			"default": {},
+			"description": "Gap between item rows in the panel body, per device (CSS length). Empty keeps 18px."
+		},
+		"panelCloseSize": {
+			"type": "object",
+			"default": {},
+			"description": "Close (x) icon size per device (CSS length). Empty keeps 24px."
+		},
+		"itemThumbSize": {
+			"type": "object",
+			"default": {},
+			"description": "Item image column width per device (CSS length); the image stays square. Empty keeps 96px."
+		},
+		"itemGap": {
+			"type": "object",
+			"default": {},
+			"description": "Gap between an item image and its text per device (CSS length). Empty keeps 16px."
+		},
+		"emptyMessageGap": {
+			"type": "object",
+			"default": {},
+			"description": "Space under the empty-cart message, per device (CSS length). Empty keeps 8px."
+		},
+		"freeDeliveryTrackHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Free-delivery progress track height per device (CSS length). Empty keeps 6px."
+		},
+		"checkoutMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Checkout button height floor per device (CSS length). Empty keeps 44px."
+		},
+		"panelHeadPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Panel head row padding: tier object of boxes {desktop,tablet,mobile}."
+		},
+		"panelBodyPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Panel body (item list) padding: tier object of boxes."
+		},
+		"panelFooterPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Panel footer padding: tier object of boxes."
+		},
+		"panelEmptyPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Empty-cart block padding: tier object of boxes."
+		},
+		"emptyCtaPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Empty-cart button padding: tier object of boxes."
+		},
+		"freeDeliveryBarMargin": {
+			"type": "object",
+			"default": {},
+			"description": "Margin around the free-delivery progress track: tier object of boxes."
+		},
+		"itemThumbRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Item image corner radius (CSS length). Empty keeps 4px."
+		},
+		"emptyCtaRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Empty-cart button corner radius (CSS length). Empty keeps 4px."
+		},
+		"checkoutRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Checkout and View cart button corner radius (CSS length). Empty keeps 4px."
+		},
+		"freeDeliveryTrackRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Free-delivery track corner radius (CSS length). Empty keeps fully rounded."
+		},
+		"panelShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Drawer/flyout box-shadow shape (ShadowControl)."
+		},
+		"panelShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Drawer/flyout box-shadow colour (ShadowControl)."
+		},
+		"panelSlideDuration": {
+			"type": "number",
+			"default": 0,
+			"description": "Drawer slide duration in milliseconds: the slide in, and reversed, the slide out. 0 keeps the 250ms default."
+		},
+		"panelSlideEasing": {
+			"type": "string",
+			"default": "",
+			"description": "Drawer slide easing (the slide out plays it reversed), a named easing from the shared motion easing list (includes/helpers-motion-easing.php). Empty keeps ease-out."
+		},
+		"scrimFadeDuration": {
+			"type": "number",
+			"default": 0,
+			"description": "Fade time of the dimmed layer behind the open drawer, in milliseconds. 0 (default) fades in step with the drawer slide, or the shared scrim's 200ms when the slide time is unset."
+		},
+		"panelSlideEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "Custom cubic-bezier curve, read when panelSlideEasing is custom."
+		},
+		"panelShowCount": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show the live item count in brackets after the panel heading, e.g. \"Bag (2)\"."
+		},
+		"panelShowViewCart": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the View cart button in the panel footer."
+		},
+		"itemQtyStyle": {"type": "string", "default": "input", "enum": ["input", "stepper"], "description": "'input' is the native number box; 'stepper' is a minus button, the number and a plus button in one pill."},
+		"itemQtyHeight": {"type": "object", "default": {}, "description": "Stepper height per device (CSS length). Empty keeps 44px."},
+		"itemQtyBg": {"type": "string", "default": "", "description": "Stepper pill background colour."},
+		"itemQtyColour": {"type": "string", "default": "", "description": "Stepper text and button colour."},
+		"itemQtyBorderColour": {"type": "string", "default": "", "description": "Stepper pill border colour."},
+		"itemQtyBorderWidth": {"type": "object", "default": {}, "description": "Stepper pill border width (box object). Empty keeps no border."},
+		"itemQtyBorderStyle": {"type": "string", "default": "", "description": "Stepper pill border style."},
+		"itemQtyRadius": {"type": "string", "default": "", "description": "Stepper pill corner radius (CSS length). Empty keeps fully rounded."},
+		"itemQtyFontSize": {"type": "object", "default": {}},
+		"itemQtyFontSizeUnit": {"type": "string", "default": "px"},
+		"itemQtyFontWeight": {"type": "string", "default": ""},
+		"panelViewStyle": {"type": "string", "default": "outline", "enum": ["outline", "text-link"], "description": "'outline' is the outlined View cart button; 'text-link' is an underlined text link."},
+		"panelActionsLayout": {"type": "string", "default": "row", "enum": ["row", "stacked"], "description": "'row' puts Checkout and View cart side by side; 'stacked' puts Checkout full width with View cart centred under it."},
+		"panelViewColour": {"type": "string", "default": "", "description": "View cart text colour."},
+		"panelViewColourHover": {"type": "string", "default": "", "description": "View cart text colour on hover and keyboard focus."},
+		"panelViewFontSize": {"type": "object", "default": {}},
+		"panelViewFontSizeUnit": {"type": "string", "default": "px"},
+		"panelViewFontWeight": {"type": "string", "default": ""},
+		"panelViewLetterSpacing": {"type": "object", "default": {}},
+		"panelViewLetterSpacingUnit": {"type": "string", "default": "em"},
+		"panelViewTextTransform": {"type": "string", "default": ""},
+		"itemRemovePlacement": {"type": "string", "default": "under", "enum": ["under", "inline-end"], "description": "Where the text-style Remove link sits: 'under' the quantity, or 'inline-end' at the right of the quantity's own line. Only reads when the remove style is a text link and the quantity is shown."},
+		"itemNameFontFamily": {"type": "string", "default": ""},
+		"panelTaxNoteColour": {"type": "string", "default": "", "description": "Colour of the note under the subtotal (the delivery note)."},
+		"panelTaxNoteFontSize": {"type": "object", "default": {}},
+		"panelTaxNoteFontSizeUnit": {"type": "string", "default": "px"},
+		"panelTaxNoteFontWeight": {"type": "string", "default": ""},
+		"panelTaxNoteTextAlign": {"type": "object", "default": {}},
+		"freeDeliveryBandBg": {"type": "string", "default": "", "description": "Background colour of the free-delivery band (its message and bar)."},
+		"freeDeliveryBandBorderColour": {"type": "string", "default": ""},
+		"freeDeliveryBandBorderWidth": {"type": "object", "default": {}, "description": "Border width of the free-delivery band (box object): set only the bottom for a line under it."},
+		"freeDeliveryBandBorderStyle": {"type": "string", "default": ""},
+		"freeDeliveryBandPadding": {"type": "object", "default": {}, "description": "Padding of the free-delivery band: tier object of boxes."},
+		"autoOpenDrawerOnAdd": {"type": "boolean", "default": false, "description": "Drawer mode only: open the drawer when an item is added elsewhere on the page. Off by default because a drawer is a modal takeover; the Add to basket confirmation toast still offers View bag. Needs 'Auto-open when an item is added' on as well."},
+		"itemShowQty": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the quantity input on each item row."
+		},
+		"itemShowSaveForLater": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the Save for later action on each item row."
+		},
+		"itemShowAddOptions": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show a link on each item row inviting the shopper to finish configuring that item. It hides itself on any row that already carries priced add-on choices, and links to that item's own product page, where the options pop-up opens. Off by default: it is only useful on a shop whose products have optional priced extras."
+		},
+		"itemAddOptionsLabel": {
+			"type": "string",
+			"default": "",
+			"description": "The label for the per-item \"finish configuring this\" link, e.g. \"Add my prescription\" or \"Choose a finish\". Empty (default) hides the link, so no wording is assumed for any trade."
+		},
+		"itemRemoveStyle": {
+			"type": "string",
+			"default": "icon",
+			"enum": ["icon", "text"],
+			"description": "'icon' is the x button in its own column; 'text' is an underlined text link under the item details."
+		},
+		"itemRemoveLabel": {
+			"type": "string",
+			"default": "Remove",
+			"description": "Label of the text-style remove link."
+		},
+		"freeDeliveryHideWhenEmpty": {
+			"type": "boolean",
+			"default": false,
+			"description": "Hide the free-delivery message and bar while the bag is empty (placement above-items; the footer placement is already hidden when empty)."
+		},
+		"freeDeliveryFillDuration": {
+			"type": "number",
+			"default": 0.6,
+			"description": "Seconds the free-delivery bar takes to fill to its new level (0 to 3)."
+		},
+		"freeDeliveryFillEasing": {
+			"type": "string",
+			"default": "smooth",
+			"enum": ["smooth", "ease", "ease-in-out", "linear"],
+			"description": "How the free-delivery bar's fill speeds up and slows down: 'smooth' is a quick start and a gentle finish."
+		},
+		"freeDeliveryPlacement": {
+			"type": "string",
+			"default": "above-items",
+			"enum": ["above-items", "footer"],
+			"description": "'above-items' shows the message and bar above the item list; 'footer' places them in the panel footer under the subtotal."
+		},
+		"panelTaxNote": {
+			"type": "string",
+			"default": "Shipping and taxes calculated at checkout.",
+			"description": "Small note under the subtotal. Empty hides it."
+		},
+		"panelInstalmentsNote": {
+			"type": "string",
+			"default": "",
+			"description": "Optional note under the checkout button; %s is replaced by the subtotal divided by panelInstalmentsCount. Empty hides it."
+		},
+		"panelInstalmentsCount": {
+			"type": "number",
+			"default": 3,
+			"description": "Number of instalments used to compute the amount in panelInstalmentsNote."
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"iconName": "shopping-cart",
+			"iconSize": { "desktop": 24 },
+			"iconColour": "primary",
+			"badgeColour": "accent"
+		}
+	}
+}

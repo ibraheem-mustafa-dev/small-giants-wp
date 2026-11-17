@@ -552,12 +552,12 @@ async function selfTest() {
 		ck( 'negative control: a slot declaring other kinds than the data lists fails the check as half-adopted', checkAdoption( tmp, data ).problems.some( ( p ) => p.includes( 'sgs/media' ) && p.includes( 'half-adopted' ) ) );
 		fs.writeFileSync( opacityBlock, mediaText, 'utf8' );
 		// NEGATIVE CONTROL 5: a block outside the data that declares kinds fails the check.
-		const cartFile = files.get( 'sgs/cart' );
+		const cartFile = files.get( 'sgs/mega-panel' );
 		const cartText = fs.readFileSync( cartFile, 'utf8' );
 		const cart = JSON.parse( cartText );
 		cart.supports.sgs.mediaElements = [ { prefix: '', context: 'element', kinds: [ 'image' ] } ];
 		fs.writeFileSync( cartFile, JSON.stringify( cart, null, '\t' ), 'utf8' );
-		ck( 'negative control: an excluded or unlisted block declaring kinds fails the check', checkAdoption( tmp, data ).problems.some( ( p ) => p.includes( 'sgs/cart' ) ) );
+		ck( 'negative control: an excluded or unlisted block declaring kinds fails the check', checkAdoption( tmp, data ).problems.some( ( p ) => p.includes( 'sgs/mega-panel' ) ) );
 		fs.writeFileSync( cartFile, cartText, 'utf8' );
 		ck( 'the temp copy is restored after the negative controls', JSON.stringify( snapshot( tmp ) ) === JSON.stringify( adoptedSnap ) );
 		ck( 'the worktree itself was not written', JSON.stringify( snapshot( OWN_PLUGIN_DIR ) ) === JSON.stringify( ownBefore ) );
