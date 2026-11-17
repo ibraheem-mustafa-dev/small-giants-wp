@@ -57,18 +57,22 @@ final class OrderItemsRenderTest extends TestCase {
 		);
 	}
 
-	private function render( array $attrs, array $scenario ): string {
+	private function render( array $attrs, array $scenario, array $options = array() ): string {
 		$harness = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
 		$prepend = __DIR__ . '/stubs/order-stubs.php';
 		$attrs_f = tempnam( sys_get_temp_dir(), 'sgsoi' );
 		file_put_contents( $attrs_f, json_encode( (object) $attrs, JSON_THROW_ON_ERROR ) );
 		putenv( 'SGS_T_SCENARIO=' . json_encode( $scenario, JSON_THROW_ON_ERROR ) );
+		if ( array() !== $options ) {
+			putenv( 'SGS_QA_OPTIONS=' . json_encode( $options, JSON_THROW_ON_ERROR ) );
+		}
 		try {
 			$cmd = escapeshellarg( PHP_BINARY ) . ' -d auto_prepend_file=' . escapeshellarg( $prepend )
 				. ' ' . escapeshellarg( $harness ) . ' --slug sgs/order-items --attrs-file ' . escapeshellarg( $attrs_f ) . ' 2>&1';
 			$out = (string) shell_exec( $cmd );
 		} finally {
 			putenv( 'SGS_T_SCENARIO' );
+			putenv( 'SGS_QA_OPTIONS' );
 			@unlink( $attrs_f );
 		}
 		$decoded = json_decode( $out, true );
@@ -109,6 +113,20 @@ final class OrderItemsRenderTest extends TestCase {
 		$this->assertStringContainsString( '2 &times;', $html );
 		$this->assertStringContainsString( '&pound;24.00', $html );
 		$this->assertSame( 1, substr_count( $html, 'class="sgs-order-items__meta"' ), 'a line with no options prints no options list' );
+	}
+
+	public function test_the_shop_wording_option_prints_option_values_without_their_labels(): void {
+		$html = $this->render( array(), $this->scenario(), array( 'sgs_cart_line_summary' => array( 'labelFormat' => 'values' ) ) );
+		$this->assertStringContainsString( '<li>Chocolate · Box of 6</li>', $html, 'values only, joined with the shop summary separator' );
+		$this->assertStringNotContainsString( 'sgs-order-items__meta-label', $html );
+		$this->assertStringNotContainsString( 'Flavour', $html );
+		$this->assertSame( 1, substr_count( $html, 'class="sgs-order-items__meta"' ), 'a line with no options still prints no list' );
+	}
+
+	public function test_the_labelled_wording_keeps_each_label(): void {
+		$html = $this->render( array(), $this->scenario(), array( 'sgs_cart_line_summary' => array( 'labelFormat' => 'labelled' ) ) );
+		$this->assertStringContainsString( '<span class="sgs-order-items__meta-label">Flavour:</span> Chocolate', $html );
+		$this->assertStringNotContainsString( 'Chocolate · Box of 6', $html );
 	}
 
 	public function test_a_line_with_a_picture_prints_it_through_the_media_renderer_and_the_switch_hides_it(): void {

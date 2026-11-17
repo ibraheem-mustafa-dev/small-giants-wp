@@ -26,6 +26,8 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-media.php';
 require_once dirname( __DIR__, 3 ) . '/includes/order-items/helpers-order-items.php';
+require_once dirname( __DIR__, 3 ) . '/includes/cart-line-summary/wording.php';
+require_once dirname( __DIR__, 3 ) . '/includes/cart-line-summary/functions.php';
 
 $in_editor = is_admin() || ( defined( 'REST_REQUEST' ) && REST_REQUEST );
 if ( $in_editor ) {
@@ -50,6 +52,9 @@ $uid      = 'sgs-order-items-' . substr( md5( wp_json_encode( $attributes ) ), 0
 $root_sel = '.' . $uid . '.wp-block-sgs-order-items';
 $scoped   = array();
 $tiered   = sgs_object_attr_keys( $block );
+// The shop's wording option decides whether an option prints as "Label: value" or as its value alone, through the
+// helper and separator the basket drawer, basket and checkout use.
+$values_only = 'values' === ( \SGS\Blocks\sgs_cart_line_summary_wording()['labelFormat'] ?? 'labelled' );
 
 // Card spacing and the gap between rows.
 $scoped[] = sgs_emit_responsive_css(
@@ -154,9 +159,15 @@ ob_start();
 				<p class="sgs-order-items__name"><span class="sgs-order-items__qty"><?php echo esc_html( (string) $line['qty'] ); ?> &times;</span> <?php echo esc_html( $line['name'] ); ?></p>
 				<?php if ( $flag( 'showMeta' ) && array() !== $line['meta'] ) : ?>
 					<ul class="sgs-order-items__meta">
-						<?php foreach ( $line['meta'] as $entry ) : ?>
-							<li><span class="sgs-order-items__meta-label"><?php echo esc_html( $entry['label'] ); ?>:</span> <?php echo esc_html( $entry['value'] ); ?></li>
-						<?php endforeach; ?>
+						<?php if ( $values_only ) : ?>
+							<?php foreach ( \SGS\Blocks\sgs_cart_line_summary_lines( array( 'attributes' => $line['meta'], 'labelFormat' => 'values' ) ) as $meta_line ) : ?>
+								<li><?php echo esc_html( $meta_line ); ?></li>
+							<?php endforeach; ?>
+						<?php else : ?>
+							<?php foreach ( $line['meta'] as $entry ) : ?>
+								<li><span class="sgs-order-items__meta-label"><?php echo esc_html( $entry['label'] ); ?>:</span> <?php echo esc_html( $entry['value'] ); ?></li>
+							<?php endforeach; ?>
+						<?php endif; ?>
 					</ul>
 				<?php endif; ?>
 			</div>
