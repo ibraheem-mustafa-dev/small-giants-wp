@@ -183,7 +183,7 @@ ok(
 	'Case 1: the desktop base rule is unchanged — still transparent'
 );
 ok(
-	false !== strpos( $css1, '@media (max-width:767px){.sgs-sh-test.sgs-site-header{position:revert !important;top:revert !important;left:revert !important;right:revert !important;background-color:' . $expected_colour_mix . ' !important;background-image:none !important;}}' ),
+	false !== strpos( $css1, '@media (max-width:767.98px){.sgs-sh-test.sgs-site-header{position:revert !important;top:revert !important;left:revert !important;right:revert !important;background-color:' . $expected_colour_mix . ' !important;background-image:none !important;}}' ),
 	'Case 1 (THE FIX): the mobile tier repaints the header\'s own resting colour-mix fill, !important, instead of reverting the background away'
 );
 ok( false === strpos( $css1, 'background:revert' ), 'Case 1: `background` is never reverted any more (position/top/left/right still legitimately revert)' );
@@ -200,7 +200,7 @@ $css1b = run_header_merge(
 	)
 );
 ok(
-	false !== strpos( $css1b, '@media (max-width:767px){.sgs-sh-test.sgs-site-header{position:revert !important;top:revert !important;left:revert !important;right:revert !important;background-color:transparent !important;background-image:' . $expected_gradient . ' !important;}}' ),
+	false !== strpos( $css1b, '@media (max-width:767.98px){.sgs-sh-test.sgs-site-header{position:revert !important;top:revert !important;left:revert !important;right:revert !important;background-color:transparent !important;background-image:' . $expected_gradient . ' !important;}}' ),
 	'Case 1b (THE FIX, gradient path): the mobile tier repaints the header\'s own resting gradient, !important, instead of reverting the background away'
 );
 
@@ -256,7 +256,7 @@ $css4 = run_header_merge(
 	)
 );
 ok(
-	false !== strpos( $css4, '@media (max-width:767px){.sgs-sh-test.sgs-site-header{position:sticky !important;top:0 !important;left:revert !important;right:revert !important;background-color:' . $expected_colour_mix . ' !important;background-image:none !important;}}' ),
+	false !== strpos( $css4, '@media (max-width:767.98px){.sgs-sh-test.sgs-site-header{position:sticky !important;top:0 !important;left:revert !important;right:revert !important;background-color:' . $expected_colour_mix . ' !important;background-image:none !important;}}' ),
 	'Case 4 (regression guard): Sticky on everywhere keeps `position:sticky` (never reverted) at mobile while Transparent\'s background still gets the resting-fill fallback'
 );
 ok( false === strpos( $css4, 'position:revert' ), 'Case 4: position is never reverted once Sticky is on at that tier' );
@@ -272,7 +272,7 @@ $css5 = run_header_merge(
 	)
 );
 ok(
-	false !== strpos( $css5, '@media (max-width:767px){.sgs-sh-test.sgs-site-header{position:revert !important;top:revert !important;left:revert !important;right:revert !important;background-color:transparent !important;background-image:none !important;}}' ),
+	false !== strpos( $css5, '@media (max-width:767.98px){.sgs-sh-test.sgs-site-header{position:revert !important;top:revert !important;left:revert !important;right:revert !important;background-color:transparent !important;background-image:none !important;}}' ),
 	'Case 5: a header with no colour/gradient at all falls back to background-color:transparent;background-image:none — identical to today\'s genuine resting state'
 );
 

@@ -3,7 +3,7 @@
  * Standalone runner for sgs/container's "Scroll sideways" setting
  * (includes/container-scroll-row-css.php::sgs_container_scroll_row_css).
  *
- * Checks: mobile-only ON emits the row inside (max-width:767px) only; the
+ * Checks: mobile-only ON emits the row inside (max-width:767.98px) only; the
  * item width is used, 80% when unset, and an unsafe width falls back to 80%;
  * off everywhere and the empty default emit nothing (every existing container
  * byte-identical); container queries add the mobile @container twin; an empty
@@ -55,7 +55,7 @@ require_once $root . '/includes/container-scroll-row-css.php';
 
 $row = '.c>.sgs-container__inner';
 $css = sgs_container_scroll_row_css( $row, array( 'scrollSideways' => array( 'desktop' => 'off', 'mobile' => 'on' ), 'scrollItemWidth' => array( 'mobile' => '236px' ) ) );
-ok( 0 === strpos( $css, '@media (max-width:767px){' . $row . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;' ), '1 mobile-only: a left-to-right row from the first item, inside the mobile range' );
+ok( 0 === strpos( $css, '@media (max-width:767.98px){' . $row . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;' ), '1 mobile-only: a left-to-right row from the first item, inside the mobile range' );
 ok( 1 === substr_count( $css, '@media' ) && false === strpos( $css, '1024px' ) && false === strpos( $css, '768px' ), '2 nothing for desktop or tablet' );
 ok( false !== strpos( $css, 'scroll-snap-type:x mandatory' ) && false !== strpos( $css, $row . '>*{flex:0 0 236px;min-width:0;scroll-snap-align:start;}' ), '3 snap row, items 236px' );
 $default = sgs_container_scroll_row_css( $row, array( 'scrollSideways' => array( 'mobile' => 'on' ) ) );
@@ -64,7 +64,7 @@ $unsafe = sgs_container_scroll_row_css( $row, array( 'scrollSideways' => array( 
 ok( false !== strpos( $unsafe, 'flex:0 0 80%' ) && false === strpos( $unsafe, 'body{' ), '5 an unsafe width falls back to 80%' );
 ok( '' === sgs_container_scroll_row_css( $row, array() ) && '' === sgs_container_scroll_row_css( $row, array( 'scrollSideways' => array( 'desktop' => 'off' ) ) ), '6 off or unset emits nothing' );
 $cq = sgs_container_scroll_row_css( $row, array( 'scrollSideways' => array( 'mobile' => 'on' ) ), true );
-ok( false !== strpos( $cq, '@container (max-width:479px){' ) && false === strpos( $cq, '@container (max-width:767px){' ), '7 container queries add the mobile @container twin (480px box)' );
+ok( false !== strpos( $cq, '@container (max-width:479.98px){' ) && false === strpos( $cq, '@container (max-width:767.98px){' ), '7 container queries add the mobile @container twin (480px box)' );
 ok( '' === sgs_container_scroll_row_css( '', array( 'scrollSideways' => array( 'mobile' => 'on' ) ) ), '8 no selector, nothing' );
 $padded = sgs_container_scroll_row_css( $row, array( 'scrollSideways' => array( 'mobile' => 'on' ) ), false, array( 'desktop' => array( 'left' => '24px', 'right' => 'var:preset|spacing|30' ) ) );
 ok( false !== strpos( $padded, 'scroll-padding-inline-start:24px;scroll-padding-inline-end:var(--wp--preset--spacing--30);' ), '9 band side padding becomes scroll padding (preset resolved)' );

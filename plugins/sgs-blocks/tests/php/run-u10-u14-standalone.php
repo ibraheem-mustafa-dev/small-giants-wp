@@ -165,14 +165,14 @@ $header = array(
 	),
 );
 $css    = sgs_header_collapse_visibility_css( '.h.sgs-site-header', $header );
-ok( false !== strpos( $css, '@media (max-width:1059px){.h.sgs-site-header .sgs-hide-collapsed{display:none !important;}}' ), '2a hide rule below the nested menu\'s collapse point, scoped to the header' );
+ok( false !== strpos( $css, '@media (max-width:1059.98px){.h.sgs-site-header .sgs-hide-collapsed{display:none !important;}}' ), '2a hide rule below the nested menu\'s collapse point, scoped to the header' );
 ok( false !== strpos( $css, '@media (min-width:1060px){.h.sgs-site-header .sgs-only-collapsed{display:none !important;}}' ), '2b only rule at and above it' );
 $no_burger = $header;
 $no_burger['innerBlocks'][0]['innerBlocks'][0]['innerBlocks'][0]['attrs']['showBurger'] = false;
 ok( '' === sgs_header_collapse_visibility_css( '.h', $no_burger ), '2c a menu with showBurger false writes no rules' );
 ok( '' === sgs_header_collapse_visibility_css( '.h', array( 'innerBlocks' => array() ) ), '2d no menu, no rules' );
 $default_point = sgs_header_collapse_visibility_css( '.h', array( 'innerBlocks' => array( array( 'blockName' => 'sgs/nav-bar-menu', 'attrs' => array() ) ) ) );
-ok( false !== strpos( $default_point, '(max-width:767px)' ), '2e an unset collapsePoint is 768' );
+ok( false !== strpos( $default_point, '(max-width:767.98px)' ), '2e an unset collapsePoint is 768' );
 
 // ── 3. Pass-through ─────────────────────────────────────────────────────────
 $pt    = array( 'headerPassThrough' => array( 'desktop' => 'on', 'tablet' => 'off' ) );

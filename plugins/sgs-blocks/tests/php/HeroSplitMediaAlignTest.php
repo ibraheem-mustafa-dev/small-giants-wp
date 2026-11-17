@@ -53,6 +53,6 @@ final class HeroSplitMediaAlignTest extends TestCase {
 
 	public function test_centre_on_mobile_prints_a_mobile_rule_on_the_slot_scope(): void {
 		$out = $this->split_hero( array( 'splitAlignment' => array( 'mobile' => 'center' ) ) );
-		$this->assertMatchesRegularExpression( '/@media ?\(max-width:767px\)\{\.sgs-hero-[0-9a-f]+-split\{margin-inline-end:auto;margin-inline-start:auto;?\}\}/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media ?\(max-width:767.98px\)\{\.sgs-hero-[0-9a-f]+-split\{margin-inline-end:auto;margin-inline-start:auto;?\}\}/', $out['css'] );
 	}
 }

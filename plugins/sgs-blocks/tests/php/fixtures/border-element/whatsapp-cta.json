@@ -18,10 +18,10 @@
             "border-top-left-radius:12px",
             "border-top-right-radius:12px"
         ],
-        "@media(max-width:1023px) || .sgs-wac-UID.wp-block-sgs-whatsapp-cta": [
+        "@media(max-width:1023.98px) || .sgs-wac-UID.wp-block-sgs-whatsapp-cta": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-wac-UID.wp-block-sgs-whatsapp-cta": [
+        "@media(max-width:767.98px) || .sgs-wac-UID.wp-block-sgs-whatsapp-cta": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

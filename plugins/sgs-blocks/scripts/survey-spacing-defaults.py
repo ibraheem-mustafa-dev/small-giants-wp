@@ -745,9 +745,9 @@ def cond_tier(cond):
 
     '' is no condition. A condition that is not one of the fixed tier ranges maps to no tier, so no tier entry covers it."""
     c = re.sub(r'\s+', '', cond.lower())
-    if c == '@media(max-width:767px)':
+    if c == '@media(max-width:767.98px)':
         return 'mobile'
-    if c in ('@media(min-width:768px)and(max-width:1023px)', '@media(max-width:1023px)'):
+    if c in ('@media(min-width:768px)and(max-width:1023.98px)', '@media(max-width:1023.98px)'):
         return 'tablet'
     return None
 

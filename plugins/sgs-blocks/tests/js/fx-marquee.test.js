@@ -10,8 +10,8 @@ jest.mock(
 	{ virtual: true }
 );
 
-const TABLET = '(max-width: 1023px)';
-const MOBILE = '(max-width: 767px)';
+const TABLET = '(max-width: 1023.98px)';
+const MOBILE = '(max-width: 767.98px)';
 
 let animations;
 let queries;

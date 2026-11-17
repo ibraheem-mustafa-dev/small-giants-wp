@@ -33,10 +33,10 @@ const attrsOf = ( settings, file = sizingCases.context.file ) => {
 	return attrs;
 };
 
-/** `.u{a:b;}@media(max-width:767px){.u{c:d;}}` as `{ selector: { device: { prop: value } } }`. */
+/** `.u{a:b;}@media(max-width:767.98px){.u{c:d;}}` as `{ selector: { device: { prop: value } } }`. */
 function parse( css ) {
 	const out = {};
-	const re = /(?:@media\(max-width:(\d+)px\)\{)?([^{}@]+)\{([^{}]*)\}\}?/g;
+	const re = /(?:@media\(max-width:(\d+)(?:\.98)?px\)\{)?([^{}@]+)\{([^{}]*)\}\}?/g;
 	let m;
 	while ( ( m = re.exec( css ) ) !== null ) {
 		const device = { 1023: 'tablet', 767: 'mobile' }[ m[ 1 ] ] || 'desktop';
@@ -75,7 +75,7 @@ describe( 'sizing emitter against sizing-cases.json', () => {
 
 	it( 'sorts properties and prints devices desktop, tablet, mobile', () => {
 		const css = sizing( SLOT, attrsOf( { Ratio: '1 / 1', Height: { desktop: '300px', mobile: '200px' } } ), 'u', false );
-		expect( css ).toBe( '.u{aspect-ratio:1 / 1;height:300px;width:auto;}@media(max-width:767px){.u{height:200px;}}' );
+		expect( css ).toBe( '.u{aspect-ratio:1 / 1;height:300px;width:auto;}@media(max-width:767.98px){.u{height:200px;}}' );
 	} );
 
 	it( 'prints no height for Match its space and drops the ratio', () => {
@@ -101,7 +101,7 @@ describe( 'sizing disclosure', () => {
 describe( 'shape emitter', () => {
 	it( 'draws circle, ellipse and pill as border-radius on the surface', () => {
 		const css = shape( SLOT, attrsOf( { Shape: { desktop: { shape: 'circle' }, tablet: 'pill' } } ), 'u', false );
-		expect( css ).toBe( '.u{border-radius:50%;}@media(max-width:1023px){.u{border-radius:9999px;}}' );
+		expect( css ).toBe( '.u{border-radius:50%;}@media(max-width:1023.98px){.u{border-radius:9999px;}}' );
 	} );
 
 	it( 'draws a registry shape as a mask on the mask layer and clears it where the device says none', () => {
@@ -130,7 +130,7 @@ describe( 'shape emitter', () => {
 			'u',
 			false
 		);
-		expect( css ).toBe( '.u{border-bottom-right-radius:1rem;border-top-left-radius:8px;}@media(max-width:1023px){.u{border-radius:50%;}}' );
+		expect( css ).toBe( '.u{border-bottom-right-radius:1rem;border-top-left-radius:8px;}@media(max-width:1023.98px){.u{border-radius:50%;}}' );
 	} );
 
 	it( 'prints the border with its hover colour, and none with a mask', () => {
@@ -156,7 +156,7 @@ describe( 'filter emitter', () => {
 	it( 'prints grayscale with the strength, brightness-invert for white, and none to cancel', () => {
 		const css = filter( SLOT, attrsOf( { Colour: { desktop: 'greyscale', tablet: 'white', mobile: 'natural' }, Greyscale: 60 } ), 'u', false );
 		expect( css ).toBe(
-			'.u{filter:grayscale(60%);}@media(max-width:1023px){.u{filter:brightness(0) invert(1);}}@media(max-width:767px){.u{filter:none;}}'
+			'.u{filter:grayscale(60%);}@media(max-width:1023.98px){.u{filter:brightness(0) invert(1);}}@media(max-width:767.98px){.u{filter:none;}}'
 		);
 	} );
 
@@ -178,7 +178,7 @@ describe( 'layout emitter', () => {
 	it( 'prints Alignment as inline margins and Order clamped to -20 to 20, per device', () => {
 		const css = layout( SLOT, attrsOf( { Alignment: { desktop: 'center', mobile: 'end' }, Order: { desktop: -3, mobile: 25 } } ), 'u', false );
 		expect( css ).toBe(
-			'.u{margin-inline-end:auto;margin-inline-start:auto;order:-3;}@media(max-width:767px){.u{margin-inline-end:0;margin-inline-start:auto;order:20;}}'
+			'.u{margin-inline-end:auto;margin-inline-start:auto;order:-3;}@media(max-width:767.98px){.u{margin-inline-end:0;margin-inline-start:auto;order:20;}}'
 		);
 	} );
 
@@ -190,14 +190,14 @@ describe( 'layout emitter', () => {
 describe( 'the other atoms print real properties on the C3 nodes', () => {
 	it( 'opacity and focal print on the media element', () => {
 		expect( opacity( SLOT, attrsOf( { Opacity: { desktop: 100, tablet: 40 }, Blend: 'multiply' } ), 'u', true ) ).toBe(
-			'.u .sgs-media-el{mix-blend-mode:multiply;}@media(max-width:1023px){.u .sgs-media-el{opacity:0.4;}}'
+			'.u .sgs-media-el{mix-blend-mode:multiply;}@media(max-width:1023.98px){.u .sgs-media-el{opacity:0.4;}}'
 		);
 		expect( focal( SLOT, attrsOf( { Focal: { x: 0.3, y: 0.7 } } ), 'u', false ) ).toBe( '.u{object-position:30% 70%;}' );
 	} );
 
 	it( 'object-fit prints Fit and the tile settings', () => {
 		expect( objectFit( SLOT, attrsOf( { Fit: { desktop: 'contain', mobile: 'tile' }, TileSize: '80px' } ), 'u', false ) ).toBe(
-			'.u{object-fit:contain;}@media(max-width:767px){.u{background-repeat:repeat;background-size:80px;}}'
+			'.u{object-fit:contain;}@media(max-width:767.98px){.u{background-repeat:repeat;background-size:80px;}}'
 		);
 	} );
 

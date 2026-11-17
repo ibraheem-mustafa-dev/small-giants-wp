@@ -157,10 +157,10 @@
             "border-top-left-radius:12px",
             "border-top-right-radius:12px"
         ],
-        "@media(max-width:1023px) || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
+        "@media(max-width:1023.98px) || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
+        "@media(max-width:767.98px) || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

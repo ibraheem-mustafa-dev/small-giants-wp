@@ -118,13 +118,13 @@ final class CommerceLookSummaryLayoutTest extends TestCase {
 			$this->assertStringContainsString( '.wc-block-components-totals-wrapper:has(.wc-block-components-totals-footer-item){border-top-width:3px;border-top-style:dotted;}', $css, "{$block} total divider" );
 			$this->assertStringContainsString( '.wc-block-components-sidebar-layout.is-large > .wc-block-components-sidebar{flex-basis:480px;width:480px;}', $css, "{$block} sidebar width" );
 			$this->assertStringContainsString( '.wc-block-components-sidebar-layout{column-gap:40px;}', $css, "{$block} column gap" );
-			$this->assertMatchesRegularExpression( '/@media\(max-width:\d+px\)\{[^{]*\.wc-block-components-sidebar-layout\.is-large > \.wc-block-components-sidebar\{flex-basis:360px;width:360px;\}/', $css, "{$block} sidebar width on tablet" );
-			$this->assertMatchesRegularExpression( '/@media\(max-width:\d+px\)\{[^{]*img\{width:80px;\}/', $css, "{$block} picture width on mobile" );
+			$this->assertMatchesRegularExpression( '/@media\(max-width:[\d.]+px\)\{[^{]*\.wc-block-components-sidebar-layout\.is-large > \.wc-block-components-sidebar\{flex-basis:360px;width:360px;\}/', $css, "{$block} sidebar width on tablet" );
+			$this->assertMatchesRegularExpression( '/@media\(max-width:[\d.]+px\)\{[^{]*img\{width:80px;\}/', $css, "{$block} picture width on mobile" );
 		}
 		$cart = $this->css( self::NEW_ATTRS, 'cart' );
 		$this->assertStringContainsString( '.sgs-x .wp-block-woocommerce-proceed-to-checkout-block .wc-block-components-button,.sgs-x .wp-block-woocommerce-proceed-to-checkout-block .wp-element-button{min-height:62px;padding-left:24px;}', $cart );
 		$this->assertStringContainsString( 'wp-element-button{font-size:18px;}', $cart );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:\d+px\)\{[^{]*wp-element-button\{min-height:56px;\}/', $cart );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:[\d.]+px\)\{[^{]*wp-element-button\{min-height:56px;\}/', $cart );
 		$this->assertStringContainsString( '.wc-block-cart-item__remove-link{font-weight:700;}', $cart );
 		$this->assertStringContainsString( '.wc-block-cart-items__row > td{padding-top:0px;padding-bottom:0px;}', $cart );
 		$this->assertStringContainsString( '.wc-block-cart-item__prices{display:none;}', $cart );

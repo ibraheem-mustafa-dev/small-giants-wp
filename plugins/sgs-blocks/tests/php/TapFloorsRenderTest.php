@@ -46,7 +46,7 @@ final class TapFloorsRenderTest extends TestCase {
 	public function test_store_selector_prints_the_flag_only_in_the_tier_the_size_is_set(): void {
 		$mobile = $this->render_block( 'sgs/store-selector', self::STORES + array( 'flagSize' => array( 'mobile' => array( 'w' => 20, 'h' => 14 ) ) ) )['css'];
 		$this->assertSame( 1, substr_count( $mobile, '--sgs-ss-tap-min:0px' ) );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^{]*\{--sgs-ss-tap-min:0px;\}\}/', $mobile, 'a mobile-only size lifts the floor at mobile only' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{[^{]*\{--sgs-ss-tap-min:0px;\}\}/', $mobile, 'a mobile-only size lifts the floor at mobile only' );
 
 		$desktop = $this->render_block( 'sgs/store-selector', self::STORES + array( 'flagSize' => array( 'desktop' => array( 'w' => 20, 'h' => 14 ) ) ) )['css'];
 		$this->assertMatchesRegularExpression( '/(^|\})\.[^{]*\{--sgs-ss-tap-min:0px;\}/', $desktop, 'a desktop size prints the flag outside any media query' );
@@ -58,7 +58,7 @@ final class TapFloorsRenderTest extends TestCase {
 	public function test_theme_toggle_prints_the_flag_only_in_the_tier_the_size_is_set(): void {
 		$mobile = $this->render_block( 'sgs/theme-toggle', array( 'iconSize' => array( 'mobile' => 20 ) ), array(), self::DARK )['css'];
 		$this->assertSame( 1, substr_count( $mobile, '--sgs-tt-tap-min:0px' ) );
-		$this->assertMatchesRegularExpression( '/@media[^{]*max-width:767px[^{]*\{[^{]*\{--sgs-tt-tap-min:0px;\}\}/', $mobile );
+		$this->assertMatchesRegularExpression( '/@media[^{]*max-width:767.98px[^{]*\{[^{]*\{--sgs-tt-tap-min:0px;\}\}/', $mobile );
 		$this->assertStringNotContainsString( '--sgs-tt-tap-min', $this->render_block( 'sgs/theme-toggle', array(), array(), self::DARK )['css'] );
 	}
 

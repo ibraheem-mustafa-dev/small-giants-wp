@@ -56,7 +56,7 @@ preg_match( '#sgs-container-([0-9a-f]{8})#', $html, $u );
 $uid = isset( $u[1] ) ? 'sgs-container-' . $u[1] : '';
 $ok( '' !== $uid, '1 a container with only the setting mints a uid' );
 $ok( false !== strpos( $html, 'class="sgs-container__inner"' ), '2 it renders its inner element' );
-$ok( '' !== $uid && false !== strpos( $css, '@media (max-width:767px){.' . $uid . '>.sgs-container__inner{display:flex;flex-direction:row;flex-wrap:nowrap;' ), '3 the row rules sit on the inner, in the mobile range' );
+$ok( '' !== $uid && false !== strpos( $css, '@media (max-width:767.98px){.' . $uid . '>.sgs-container__inner{display:flex;flex-direction:row;flex-wrap:nowrap;' ), '3 the row rules sit on the inner, in the mobile range' );
 $ok( '' !== $uid && false !== strpos( $css, '.' . $uid . '>.sgs-container__inner>*{flex:0 0 236px;' ), '4 items take the item width' );
 
 list( $html2, $css2 ) = $render( array( 'layout' => 'grid', 'columns' => array( 'desktop' => 2 ), 'contentWidth' => array( 'desktop' => 'normal' ), 'scrollSideways' => array( 'mobile' => 'on' ) ) );

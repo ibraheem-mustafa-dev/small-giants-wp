@@ -15,7 +15,7 @@
     "cssOn": "color:red;",
     "cssOff": "color:blue;",
     "default": "off",
-    "expect": "#sgs-uid1{color:red;}@media (max-width:1023px){#sgs-uid1{color:blue;}}"
+    "expect": "#sgs-uid1{color:red;}@media (max-width:1023.98px){#sgs-uid1{color:blue;}}"
   },
   {
     "name": "Case 3: mobile-override — tablet inherits desktop, no tablet rule",
@@ -24,7 +24,7 @@
     "cssOn": "color:red;",
     "cssOff": "color:blue;",
     "default": "off",
-    "expect": "#sgs-uid1{color:red;}@media (max-width:767px){#sgs-uid1{color:blue;}}"
+    "expect": "#sgs-uid1{color:red;}@media (max-width:767.98px){#sgs-uid1{color:blue;}}"
   },
   {
     "name": "Case 4: both-override — tablet AND mobile each have their own value",
@@ -33,7 +33,7 @@
     "cssOn": "color:red;",
     "cssOff": "color:blue;",
     "default": "off",
-    "expect": ".sgs-header--uid2{color:red;}@media (max-width:1023px){.sgs-header--uid2{color:blue;}}@media (max-width:767px){.sgs-header--uid2{color:red;}}"
+    "expect": ".sgs-header--uid2{color:red;}@media (max-width:1023.98px){.sgs-header--uid2{color:blue;}}@media (max-width:767.98px){.sgs-header--uid2{color:red;}}"
   },
   {
     "name": "Case 5: desktop-off + mobile-on — tablet inherits desktop (no tablet rule), mobile overrides",
@@ -42,7 +42,7 @@
     "cssOn": "color:red;",
     "cssOff": "color:blue;",
     "default": "off",
-    "expect": "#sgs-uid1{color:blue;}@media (max-width:767px){#sgs-uid1{color:red;}}"
+    "expect": "#sgs-uid1{color:blue;}@media (max-width:767.98px){#sgs-uid1{color:red;}}"
   },
   {
     "name": "Case 6: empty/junk value (string) — D328 defence, all tiers resolve to default",
@@ -78,6 +78,6 @@
     "cssOn": "display:block;",
     "cssOff": "",
     "default": "off",
-    "expect": "@media (max-width:767px){#sgs-uid1{display:block;}}"
+    "expect": "@media (max-width:767.98px){#sgs-uid1{display:block;}}"
   }
 ]

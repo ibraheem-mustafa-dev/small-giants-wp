@@ -95,9 +95,9 @@ final class CommerceLookWalletDeliveryTotalsTest extends TestCase {
 		$this->assertStringContainsString( 'border-bottom:0', $line, 'WooCommerce draws a second, bottom line; the setting removes it' );
 		$this->assertStringContainsString( 'height:0', $line );
 		$this->assertStringContainsString( 'background:none', $line );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:\d+px\)\{[^{]*::after\{border-top-width:2px;\}/', $css, 'the line width has a phone value' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:[\d.]+px\)\{[^{]*::after\{border-top-width:2px;\}/', $css, 'the line width has a phone value' );
 		$this->assertStringContainsString( 'gap:16px', $this->bodies( $css, $rule ), 'the gap between the lines and the text' );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:\d+px\)\{[^{]*continue-rule\{gap:12px;\}/', $css, 'the gap has a phone value' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:[\d.]+px\)\{[^{]*continue-rule\{gap:12px;\}/', $css, 'the gap has a phone value' );
 		$this->assertStringContainsString( 'margin-right:0', $this->bodies( $css, $rule . '::before' ), 'WooCommerce adds its own 10px margin beside the text; the gap setting replaces it' );
 		$this->assertStringContainsString( 'margin-left:0', $this->bodies( $css, $rule . '::after' ) );
 	}
@@ -107,14 +107,14 @@ final class CommerceLookWalletDeliveryTotalsTest extends TestCase {
 		$this->assertStringContainsString( 'line-height:20px', $this->bodies( $css, '.sgs-x .wc-block-checkout__shipping-method-option-title,.sgs-x .sgs-delivery-card__price' ), 'the title and the price share the top line' );
 		$this->assertStringContainsString( 'line-height:18px', $this->bodies( $css, '.sgs-x .sgs-delivery-card__description' ) );
 		$this->assertStringContainsString( 'margin-bottom:4px', $this->bodies( $css, '.sgs-x .wc-block-checkout__shipping-method' ), 'the space below the cards' );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:\d+px\)\{[^{]*shipping-method\{margin-bottom:6px;\}/', $css, 'the space below the cards has a phone value' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:[\d.]+px\)\{[^{]*shipping-method\{margin-bottom:6px;\}/', $css, 'the space below the cards has a phone value' );
 	}
 
 	public function test_the_summary_lines(): void {
 		$css = $this->css( self::ATTRS, 'checkout' );
 		$this->assertStringContainsString( 'line-height:16.5px', $this->bodies( $css, '.sgs-x .sgs-checkout-item-brand' ) );
 		$this->assertStringContainsString( 'padding-top:0px', $this->bodies( $css, '.sgs-x .wc-block-components-order-summary-item__description,.sgs-x .wc-block-components-order-summary-item__total-price' ), 'the space above the text and price columns' );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:\d+px\)\{[^{]*__total-price\{padding-top:2px;\}/', $css, 'the space above the columns has a phone value' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:[\d.]+px\)\{[^{]*__total-price\{padding-top:2px;\}/', $css, 'the space above the columns has a phone value' );
 		$this->assertStringContainsString( 'gap:0px', $this->bodies( $css, '.sgs-x .wc-block-components-order-summary-item__description' ), 'the gap between the brand, name and variant lines' );
 		$rows = $this->bodies( $css, '.sgs-x .wp-block-woocommerce-checkout-order-summary-totals-block' );
 		$this->assertStringContainsString( 'padding-top:14px', $rows, 'the totals block padding above the first row' );
@@ -131,7 +131,7 @@ final class CommerceLookWalletDeliveryTotalsTest extends TestCase {
 		$this->assertStringNotContainsString( 'padding-top', $body, 'the top padding makes room for the floated label and stays what WooCommerce sets' );
 		$focus = $this->bodies( $css, str_replace( '[type],', '[type]:focus,', str_replace( ':-webkit-autofill', ':-webkit-autofill:focus', $active ) ) );
 		$this->assertStringContainsString( 'padding-left:14px', $focus, 'WooCommerce shifts the left padding while the field has focus' );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:\d+px\)\{[^{]*is-active input\[type\][^{]*\{padding-right:12px;padding-left:12px;\}/', $css, 'the active side padding has a phone value' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:[\d.]+px\)\{[^{]*is-active input\[type\][^{]*\{padding-right:12px;padding-left:12px;\}/', $css, 'the active side padding has a phone value' );
 	}
 
 	public function test_a_block_with_none_of_them_prints_none_of_it_and_the_cart_has_no_checkout_parts(): void {

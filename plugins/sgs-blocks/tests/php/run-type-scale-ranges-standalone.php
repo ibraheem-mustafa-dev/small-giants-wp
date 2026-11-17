@@ -19,7 +19,7 @@ namespace {
 
 	class SGS_Breakpoints {
 		public static function media( $range ) {
-			return 'tablet' === $range ? '@media (max-width:1023px)' : '';
+			return 'tablet' === $range ? '@media (max-width:1023.98px)' : '';
 		}
 	}
 
@@ -44,7 +44,7 @@ namespace {
 		'custom' => array( array( 'slug' => 'hero', 'size' => 'clamp(42px,4.4vw,72px)' ) ),
 	);
 	$css = \SGS\Theme\type_scale_ranges_css();
-	$check( 'a client range restores itself at the small tiers', false !== strpos( $css, '@media (max-width:1023px){:root:root{--wp--preset--font-size--hero:clamp(42px,4.4vw,72px);}}' ) );
+	$check( 'a client range restores itself at the small tiers', false !== strpos( $css, '@media (max-width:1023.98px){:root:root{--wp--preset--font-size--hero:clamp(42px,4.4vw,72px);}}' ) );
 	$check( 'a fixed size beside it is left alone', false === strpos( $css, 'x-large' ) );
 
 	$GLOBALS['sgs_test_sizes'] = array( 'theme' => array( array( 'slug' => 'regular', 'size' => 'clamp(1px,1vw,2px)' ) ) );

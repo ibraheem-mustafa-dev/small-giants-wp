@@ -75,18 +75,18 @@ final class GalleryLayoutTiersTest extends TestCase {
 		$out = $this->gallery( array( 'desktop' => 'grid', 'mobile' => 'scroll' ), array( 'scrollItemWidth' => array( 'mobile' => '78%' ), 'scrollInset' => array( 'mobile' => '20px' ) ) );
 		$css = $out['css'];
 
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^{]*\.sgs-gallery__grid\{display:grid;grid-template-columns:none;grid-auto-flow:column;/', $css );
-		$this->assertMatchesRegularExpression( '/@container \(max-width:479px\)\{[^{]*\.sgs-gallery__grid\{display:grid;grid-template-columns:none;grid-auto-flow:column;/', $css );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{[^{]*\.sgs-gallery__grid\{display:grid;grid-template-columns:none;grid-auto-flow:column;/', $css );
+		$this->assertMatchesRegularExpression( '/@container \(max-width:479.98px\)\{[^{]*\.sgs-gallery__grid\{display:grid;grid-template-columns:none;grid-auto-flow:column;/', $css );
 		$this->assertStringContainsString( '--sgs-scroll-item-width:78%;', $css );
 		$this->assertStringContainsString( 'padding-inline:20px;scroll-padding-inline:20px;', $css );
-		$this->assertSame( 0, preg_match( '/max-width:1023px\)\{[^{]*\.sgs-gallery__grid\{display:/', $css ), 'the tablet tier inherits desktop: no tablet layout rule' );
+		$this->assertSame( 0, preg_match( '/max-width:1023.98px\)\{[^{]*\.sgs-gallery__grid\{display:/', $css ), 'the tablet tier inherits desktop: no tablet layout rule' );
 		$this->assertStringContainsString( 'data-sgs-scroll-region="Gallery, swipe row"', $out['html'], 'view.js makes it a focusable region while it scrolls' );
 		$this->assertStringNotContainsString( 'tabindex=', $out['html'], 'no static tab stop on a grid that does not scroll at every width' );
 	}
 
 	public function test_a_return_to_grid_resets_what_masonry_set(): void {
 		$css = $this->gallery( array( 'desktop' => 'masonry', 'mobile' => 'grid' ) )['css'];
-		$this->assertMatchesRegularExpression( '/max-width:767px\)\{[^{]*\.sgs-gallery__grid\{display:grid;grid-template-columns:repeat\(var\(--sgs-columns-mobile,1\),1fr\);grid-auto-flow:row;[^}]*column-count:auto;column-gap:var\(--sgs-gap\);/', $css );
+		$this->assertMatchesRegularExpression( '/max-width:767.98px\)\{[^{]*\.sgs-gallery__grid\{display:grid;grid-template-columns:repeat\(var\(--sgs-columns-mobile,1\),1fr\);grid-auto-flow:row;[^}]*column-count:auto;column-gap:var\(--sgs-gap\);/', $css );
 		$this->assertStringContainsString( 'break-inside:auto;margin-bottom:0;', $css, 'the items lose the masonry margin and break rule' );
 	}
 
@@ -101,8 +101,8 @@ final class GalleryLayoutTiersTest extends TestCase {
 		$css = $this->gallery( array( 'desktop' => 'scroll', 'tablet' => 'grid', 'mobile' => 'scroll' ), array( 'scrollInset' => array( 'desktop' => '20px' ) ) )['css'];
 
 		$this->assertMatchesRegularExpression( '/\.sgs-gallery__grid\{padding-inline:20px;scroll-padding-inline:20px;\}/', $css, 'desktop swipe row has its inset' );
-		$this->assertMatchesRegularExpression( '/max-width:1023px\)\{[^{]*\.sgs-gallery__grid\{padding-inline:0px;scroll-padding-inline:0px;\}/', $css, 'the tablet grid is flush' );
-		$this->assertMatchesRegularExpression( '/max-width:767px\)\{[^{]*\.sgs-gallery__grid\{padding-inline:20px;scroll-padding-inline:20px;\}/', $css, 'the mobile swipe row has it back' );
+		$this->assertMatchesRegularExpression( '/max-width:1023.98px\)\{[^{]*\.sgs-gallery__grid\{padding-inline:0px;scroll-padding-inline:0px;\}/', $css, 'the tablet grid is flush' );
+		$this->assertMatchesRegularExpression( '/max-width:767.98px\)\{[^{]*\.sgs-gallery__grid\{padding-inline:20px;scroll-padding-inline:20px;\}/', $css, 'the mobile swipe row has it back' );
 
 		$grid_only = $this->gallery( array( 'desktop' => 'grid', 'mobile' => 'scroll' ), array( 'scrollInset' => array( 'mobile' => '20px' ) ) )['css'];
 		$this->assertDoesNotMatchRegularExpression( '/padding-inline:0px/', $grid_only, 'nothing to undo when no wider tier carries a value' );
@@ -112,7 +112,7 @@ final class GalleryLayoutTiersTest extends TestCase {
 		foreach ( array( array(), array( 'desktop' => 'masonry' ), array( 'desktop' => 'scroll', 'tablet' => 'scroll', 'mobile' => 'scroll' ) ) as $layout ) {
 			$out = $this->gallery( $layout );
 			$this->assertStringNotContainsString( 'grid-auto-flow:row;grid-auto-columns:auto;overflow-x:visible', $out['css'], wp_json_encode( $layout ) );
-			$this->assertSame( 0, preg_match( '/@(media|container) \(max-width:\d+px\)\{[^{]*\.sgs-gallery__grid\{display:/', $out['css'] ), wp_json_encode( $layout ) );
+			$this->assertSame( 0, preg_match( '/@(media|container) \(max-width:[\d.]+px\)\{[^{]*\.sgs-gallery__grid\{display:/', $out['css'] ), wp_json_encode( $layout ) );
 		}
 		$this->assertStringNotContainsString( 'data-sgs-scroll-region', $this->gallery( array( 'desktop' => 'masonry' ) )['html'] );
 	}
@@ -128,12 +128,12 @@ final class GalleryLayoutTiersTest extends TestCase {
 		$map   = array( 'a' => 'x:1;', 'b' => 'x:2;', 'c' => 'x:3;' );
 
 		$this->assertSame(
-			'.s{x:1;}@media(max-width:1023px){.s{x:2;}}@media(max-width:767px){.s{x:3;}}',
+			'.s{x:1;}@media(max-width:1023.98px){.s{x:2;}}@media(max-width:767.98px){.s{x:3;}}',
 			sgs_emit_tier_rules_map( '.s', $value, $map ),
 			'option off: the original output, byte for byte'
 		);
 		$this->assertSame(
-			'.s{x:1;}@media(max-width:1023px){.s{x:2;}}@media(max-width:767px){.s{x:3;}}@container (max-width:479px){.s{x:3;}}',
+			'.s{x:1;}@media(max-width:1023.98px){.s{x:2;}}@media(max-width:767.98px){.s{x:3;}}@container (max-width:479.98px){.s{x:3;}}',
 			sgs_emit_tier_rules_map( '.s', $value, $map, '', 'off', array( 'container' => true ) )
 		);
 	}

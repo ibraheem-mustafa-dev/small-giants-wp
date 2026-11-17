@@ -47,9 +47,9 @@ final class TextLengthStringTest extends TestCase {
 		)['css'];
 
 		$this->assertMatchesRegularExpression( '/max-width:40rem/', $css, 'desktop max width' );
-		$this->assertMatchesRegularExpression( '/@media[^{]*767px[^{]*\{[^@]*max-width:90%/', $css, 'mobile max width' );
+		$this->assertMatchesRegularExpression( '/@media[^{]*767\.98px[^{]*\{[^@]*max-width:90%/', $css, 'mobile max width' );
 		$this->assertMatchesRegularExpression( '/[;{]width:320px/', $css, 'desktop custom width' );
-		$this->assertMatchesRegularExpression( '/@media[^{]*767px[^{]*\{[^@]*[;{]width:auto/', $css, 'a keyword prints as it is' );
+		$this->assertMatchesRegularExpression( '/@media[^{]*767\.98px[^{]*\{[^@]*[;{]width:auto/', $css, 'a keyword prints as it is' );
 	}
 
 	public function test_a_text_max_width_still_centres_the_block(): void {
@@ -69,9 +69,9 @@ final class TextLengthStringTest extends TestCase {
 		)['css'];
 
 		$this->assertMatchesRegularExpression( '/\.sgs-button\{width:240px/', $css, 'desktop width' );
-		$this->assertMatchesRegularExpression( '/@media[^{]*767px[^{]*\{[^@]*width:80%/', $css, 'mobile width' );
+		$this->assertMatchesRegularExpression( '/@media[^{]*767\.98px[^{]*\{[^@]*width:80%/', $css, 'mobile width' );
 		$this->assertStringContainsString( 'min-height:3rem', $css, 'desktop min height' );
-		$this->assertMatchesRegularExpression( '/@media[^{]*767px[^{]*\{[^@]*min-height:56px/', $css, 'mobile min height' );
+		$this->assertMatchesRegularExpression( '/@media[^{]*767\.98px[^{]*\{[^@]*min-height:56px/', $css, 'mobile min height' );
 	}
 
 	public function test_button_min_height_falls_back_to_48px_and_refuses_a_hostile_value(): void {
@@ -86,7 +86,7 @@ final class TextLengthStringTest extends TestCase {
 		$css = $this->render_block( 'sgs/modal', array( 'dialogWidth' => array( 'desktop' => '640px', 'mobile' => '95vw' ) ) )['css'];
 
 		$this->assertMatchesRegularExpression( '/sgs-modal__dialog\{[^}]*width:640px/', $css, 'desktop width' );
-		$this->assertMatchesRegularExpression( '/@media[^{]*767px[^{]*\{[^@]*sgs-modal__dialog\{[^}]*width:95vw/', $css, 'mobile width' );
+		$this->assertMatchesRegularExpression( '/@media[^{]*767\.98px[^{]*\{[^@]*sgs-modal__dialog\{[^}]*width:95vw/', $css, 'mobile width' );
 		$this->assertStringContainsString( 'max-width:calc(100vw - 2rem)', $css );
 	}
 
@@ -99,7 +99,7 @@ final class TextLengthStringTest extends TestCase {
 
 		$base = preg_replace( '/@media[^{]*\{(?:[^{}]*\{[^{}]*\})*\s*\}/', '', $css );
 		$this->assertStringNotContainsString( 'max-width:calc(100vw - 2rem)', $base, 'no clamp outside the mobile query' );
-		$this->assertMatchesRegularExpression( '/@media[^{]*767px[^{]*\{[^@]*sgs-modal__dialog\{[^}]*max-width:calc\(100vw - 2rem\)/', $css, 'the clamp in the mobile query' );
-		$this->assertMatchesRegularExpression( '/@media[^{]*767px[^{]*\{[^@]*sgs-modal__dialog\{[^}]*width:90%/', $css, 'control: the mobile width prints' );
+		$this->assertMatchesRegularExpression( '/@media[^{]*767\.98px[^{]*\{[^@]*sgs-modal__dialog\{[^}]*max-width:calc\(100vw - 2rem\)/', $css, 'the clamp in the mobile query' );
+		$this->assertMatchesRegularExpression( '/@media[^{]*767\.98px[^{]*\{[^@]*sgs-modal__dialog\{[^}]*width:90%/', $css, 'control: the mobile width prints' );
 	}
 }

@@ -38,7 +38,7 @@ final class MultiButtonContentBandTest extends TestCase {
 
 		$this->assertStringContainsString( $root . ':has(>.sgs-container__inner){display:block;}', $out['css'] );
 		$this->assertStringContainsString( $band . '{display:flex;flex-direction:row;', $out['css'] );
-		$this->assertStringContainsString( '@media(max-width:767px){' . $root . ',' . $band . '{flex-direction:column;', $out['css'] );
+		$this->assertStringContainsString( '@media(max-width:767.98px){' . $root . ',' . $band . '{flex-direction:column;', $out['css'] );
 	}
 
 	/**

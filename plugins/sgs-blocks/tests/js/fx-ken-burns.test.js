@@ -389,7 +389,7 @@ describe( 'per-device custom properties', () => {
 		boot();
 		expect( el.animate.mock.calls[ 0 ][ 1 ].duration ).toBe( 20000 );
 		props = { '--sgs-kb-duration': '10000ms', '--sgs-kb-zoom-start': '115' };
-		query( '(max-width: 1023px)' ).fire();
+		query( '(max-width: 1023.98px)' ).fire();
 		expect( el.animate ).toHaveBeenCalledTimes( 2 );
 		const [ keyframes, options ] = el.animate.mock.calls[ 1 ];
 		expect( options.duration ).toBe( 10000 );

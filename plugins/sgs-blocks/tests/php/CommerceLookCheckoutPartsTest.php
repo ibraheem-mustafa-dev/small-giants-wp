@@ -57,12 +57,12 @@ final class CommerceLookCheckoutPartsTest extends TestCase {
 		$this->assertStringContainsString( '.sgs-x .wc-block-checkout__payment-method .wc-block-components-radio-control::after', $css );
 		$this->assertStringContainsString( '::after{border-width:0px;border-style:none;}', $css, 'the group outline takes the tier border' );
 		$this->assertStringContainsString( '.wc-block-components-radio-control-accordion-option{margin-bottom:8px;}', $css, 'option gap' );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:\d+px\)\{[^{]*radio-control-accordion-option\{margin-bottom:6px;\}/', $css, 'option gap on mobile' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:[\d.]+px\)\{[^{]*radio-control-accordion-option\{margin-bottom:6px;\}/', $css, 'option gap on mobile' );
 		$this->assertStringContainsString( '.sgs-x .wp-block-woocommerce-checkout-order-summary-coupon-form-block .wc-block-components-totals-coupon{padding-top:14px;padding-bottom:14px;}', $css, 'coupon padding is printed on the inner coupon section' );
 		$this->assertStringContainsString( '.sgs-x .wp-block-woocommerce-checkout-order-summary-coupon-form-block{padding:0;}', $css, 'the wrapper drops its own padding when the setting is set' );
 		$this->assertStringContainsString( 'totals-coupon__input.wc-block-components-text-input input[type],.sgs-x .wp-block-woocommerce-checkout-order-summary-coupon-form-block .wc-block-components-totals-coupon__input.wc-block-components-text-input{min-height:40px;height:40px;}', $css, 'coupon input and its wrapper share the height' );
 		$this->assertStringContainsString( 'totals-coupon__button.wc-block-components-button{min-height:40px;height:40px;}', $css, 'coupon apply height' );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:\d+px\)\{[^{]*totals-coupon__button\.wc-block-components-button\{min-height:44px;height:44px;\}/', $css, 'coupon apply height on mobile' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:[\d.]+px\)\{[^{]*totals-coupon__button\.wc-block-components-button\{min-height:44px;height:44px;\}/', $css, 'coupon apply height on mobile' );
 		$this->assertStringContainsString( '.wc-block-components-totals-coupon .wc-block-components-panel__button{font-size:14px;}', $css, 'coupon label size' );
 		$this->assertStringContainsString( '.wc-block-components-totals-coupon .wc-block-components-panel__button{color:#5E584F;}', $css, 'coupon label colour' );
 		$cart = $this->css( self::ATTRS, 'cart' );

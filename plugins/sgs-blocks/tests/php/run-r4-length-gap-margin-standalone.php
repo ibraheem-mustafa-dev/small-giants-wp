@@ -84,8 +84,8 @@ if ( ! function_exists( 'sgs_nav_shared_typography_hover_rule' ) ) {
 require_once $root . '/includes/nav-menu-submenu-link-css.php';
 if ( function_exists( 'sgs_nav_shared_submenu_link_css' ) && function_exists( 'sgs_background_paint_decl' ) ) {
 	$out = sgs_nav_shared_submenu_link_css( $tmp_attrs, '.u', 'none', '', '', array(), array(), array(), array(), 0, '', 'sgs-nav-bar-menu' );
-	ok( false !== strpos( $out, '@media (max-width:1023px){.u{margin-top:4px;}}' ), 'nav margin tablet tier prints' );
-	ok( false !== strpos( $out, '@media (max-width:767px){.u{margin-bottom:9px;}}' ), 'nav margin mobile tier prints' );
+	ok( false !== strpos( $out, '@media (max-width:1023.98px){.u{margin-top:4px;}}' ), 'nav margin tablet tier prints' );
+	ok( false !== strpos( $out, '@media (max-width:767.98px){.u{margin-bottom:9px;}}' ), 'nav margin mobile tier prints' );
 } else {
 	ok( false, 'nav helper could not be loaded' );
 }

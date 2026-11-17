@@ -14,7 +14,7 @@ test( 'the showcase container queries switch at 768px, not 600px', () => {
 		expect( css ).not.toMatch( /sgs-choice-flow-showcase\s*\(\s*min-width:\s*600px/ );
 		expect( css ).not.toMatch( /sgs-choice-flow-showcase\s*\(\s*max-width:\s*599px/ );
 	}
-	expect( read( 'src/blocks/choice-flow/style.css' ) ).toMatch( /sgs-choice-flow-showcase \(max-width: 767px\)/ );
+	expect( read( 'src/blocks/choice-flow/style.css' ) ).toMatch( /sgs-choice-flow-showcase \(max-width: 767.98px\)/ );
 } );
 
 test( 'the rating badge hover border defaults to Google blue at zero specificity', () => {

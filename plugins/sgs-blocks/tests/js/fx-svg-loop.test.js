@@ -276,7 +276,7 @@ describe( 'per-device custom properties', () => {
 		boot();
 		expect( el.animate.mock.calls[ 0 ][ 1 ].duration ).toBe( 8000 );
 		props = { '--sgs-svl-duration': '4000ms', '--sgs-svl-amplitude': '2' };
-		query( '(max-width: 767px)' ).fire();
+		query( '(max-width: 767.98px)' ).fire();
 		expect( el.animate ).toHaveBeenCalledTimes( 2 );
 		const [ keyframes, options ] = el.animate.mock.calls[ 1 ];
 		expect( options.duration ).toBe( 4000 );

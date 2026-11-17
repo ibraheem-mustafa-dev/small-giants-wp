@@ -27,12 +27,12 @@
     },
     {
       "file": "theme/sgs-theme/assets/css/core-blocks.css",
-      "condition": "max-width:480px",
+      "condition": "max-width:480.98px",
       "reason": "small-phone refinement inside the mobile tier"
     },
     {
       "file": "theme/sgs-theme/assets/css/core-blocks.css",
-      "condition": "max-width:781px",
+      "condition": "max-width:781.98px",
       "reason": "WordPress core's columns stacking band (600-781px), matched on purpose for core/columns"
     },
     {
@@ -47,7 +47,7 @@
     },
     {
       "file": "theme/sgs-theme/assets/css/shop-load-more.css",
-      "condition": "max-width:781px",
+      "condition": "max-width:781.98px",
       "reason": "WordPress core's 782px mobile edge (shop filters), matched on purpose"
     },
     {
@@ -67,7 +67,7 @@
     },
     {
       "file": "theme/sgs-theme/assets/css/woocommerce.css",
-      "condition": "max-width:781px",
+      "condition": "max-width:781.98px",
       "reason": "WordPress core's 782px mobile edge (shop filters), matched on purpose"
     },
     {

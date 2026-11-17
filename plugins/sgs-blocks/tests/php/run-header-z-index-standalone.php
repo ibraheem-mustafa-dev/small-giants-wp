@@ -60,15 +60,15 @@ ok( '.hdr{z-index:10;}:root{--sgs-header-z:10;}' === $css, 'desktop 10: one rule
 
 // Mobile only.
 $css = sgs_header_z_index_css( $sel, array( 'zIndex' => array( 'mobile' => 999 ) ), true );
-ok( '@media (max-width:767px){.hdr{z-index:999;}:root{--sgs-header-z:999;}}' === $css, 'mobile 999 only: a mobile media rule and nothing else' );
+ok( '@media (max-width:767.98px){.hdr{z-index:999;}:root{--sgs-header-z:999;}}' === $css, 'mobile 999 only: a mobile media rule and nothing else' );
 
 // wearecollins: 999 at mobile, 9 above.
 $css = sgs_header_z_index_css( $sel, array( 'zIndex' => array( 'desktop' => 9, 'mobile' => 999 ) ), true );
-ok( false !== strpos( $css, '.hdr{z-index:9;}' ) && false !== strpos( $css, '@media (max-width:767px){.hdr{z-index:999;}' ), 'desktop 9, mobile 999 (wearecollins)' );
+ok( false !== strpos( $css, '.hdr{z-index:9;}' ) && false !== strpos( $css, '@media (max-width:767.98px){.hdr{z-index:999;}' ), 'desktop 9, mobile 999 (wearecollins)' );
 
 // A narrower tier set back to the default still emits (it differs from the wider tier).
 $css = sgs_header_z_index_css( $sel, array( 'zIndex' => array( 'desktop' => 10, 'mobile' => 100 ) ), true );
-ok( false !== strpos( $css, '@media (max-width:767px){.hdr{z-index:100;}' ), 'mobile set back to 100 after desktop 10 still emits' );
+ok( false !== strpos( $css, '@media (max-width:767.98px){.hdr{z-index:100;}' ), 'mobile set back to 100 after desktop 10 still emits' );
 
 // Values are clamped, never emitted raw.
 ok( array( 'desktop' => 99998, 'tablet' => 99998, 'mobile' => 99998 ) === sgs_header_z_index_tiers( array( 'zIndex' => array( 'desktop' => 999999 ) ) ), 'above the ceiling clamps to 99998' );

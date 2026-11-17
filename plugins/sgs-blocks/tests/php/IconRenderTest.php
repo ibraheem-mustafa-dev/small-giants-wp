@@ -344,7 +344,7 @@ final class IconRenderTest extends TestCase {
 
 		$css = $this->css( $this->render( array( 'iconSize' => array( 'mobile' => '20px' ) ) ) );
 		$this->assertSame( 1, substr_count( $css, '--sgs-icon-tap-min:0px' ) );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^}]*--sgs-icon-tap-min:0px/', $css, 'a mobile-only size lifts the floor at mobile only' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{[^}]*--sgs-icon-tap-min:0px/', $css, 'a mobile-only size lifts the floor at mobile only' );
 	}
 
 	// ── Step 5: registry parity, PHP half ─────────────────────────────────────

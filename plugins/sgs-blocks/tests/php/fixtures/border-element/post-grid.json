@@ -415,10 +415,10 @@
         " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__meta": [
             "color:var(--wp--preset--color--text-muted,currentColor)"
         ],
-        "@media(max-width:1023px) || .sgs-post-grid-UID.wp-block-sgs-post-grid": [
+        "@media(max-width:1023.98px) || .sgs-post-grid-UID.wp-block-sgs-post-grid": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-post-grid-UID.wp-block-sgs-post-grid": [
+        "@media(max-width:767.98px) || .sgs-post-grid-UID.wp-block-sgs-post-grid": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

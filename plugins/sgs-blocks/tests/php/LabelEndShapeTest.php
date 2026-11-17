@@ -168,7 +168,7 @@ final class LabelEndShapeTest extends TestCase {
 		);
 		$out = $this->render_block( 'sgs/label', $this->tag_attributes( array( 'borderWidth' => $tiers ) ) );
 
-		$this->assertMatchesRegularExpression( '/@media\(max-width:1023px\)\{[^{]*::after\{inset:calc\(-1 \* 3px\) calc\(-1 \* 3px\) calc\(-1 \* 3px\) calc\(-1 \* 3px\);border-style:solid;border-width:3px 3px 3px 3px;border-right:1px solid transparent;background-clip:padding-box;\}\}/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:1023.98px\)\{[^{]*::after\{inset:calc\(-1 \* 3px\) calc\(-1 \* 3px\) calc\(-1 \* 3px\) calc\(-1 \* 3px\);border-style:solid;border-width:3px 3px 3px 3px;border-right:1px solid transparent;background-clip:padding-box;\}\}/', $out['css'] );
 	}
 
 	public function test_a_gradient_border_with_a_shape_is_a_border_image_on_the_layer(): void {

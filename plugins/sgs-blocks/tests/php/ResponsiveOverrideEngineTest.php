@@ -32,19 +32,19 @@ final class ResponsiveOverrideEngineTest extends TestCase {
 
 	public function test_tier_at_rules_media_only_by_default(): void {
 		$rules = SGS_Breakpoints::tier_at_rules( 767 );
-		$this->assertSame( array( '@media(max-width:767px){' ), $rules );
+		$this->assertSame( array( '@media(max-width:767.98px){' ), $rules );
 	}
 
 	public function test_tier_at_rules_adds_a_container_copy_for_the_mobile_tier_only(): void {
 		$tablet = SGS_Breakpoints::tier_at_rules( 1023, true );
-		$this->assertSame( array( '@media(max-width:1023px){' ), $tablet, 'tablet follows the screen: no container rule' );
+		$this->assertSame( array( '@media(max-width:1023.98px){' ), $tablet, 'tablet follows the screen: no container rule' );
 
 		$mobile = SGS_Breakpoints::tier_at_rules( 767, true );
-		$this->assertContains( '@media(max-width:767px){', $mobile );
-		$this->assertContains( '@container (max-width:479px){', $mobile, 'mobile also applies in a box narrower than 480px' );
-		$this->assertNotContains( '@container (max-width:767px){', $mobile );
+		$this->assertContains( '@media(max-width:767.98px){', $mobile );
+		$this->assertContains( '@container (max-width:479.98px){', $mobile, 'mobile also applies in a box narrower than 480px' );
+		$this->assertNotContains( '@container (max-width:767.98px){', $mobile );
 
-		$this->assertSame( array( '@media(max-width:767px){' ), SGS_Breakpoints::tier_at_rules( 767 ), 'option off: media only' );
+		$this->assertSame( array( '@media(max-width:767.98px){' ), SGS_Breakpoints::tier_at_rules( 767 ), 'option off: media only' );
 	}
 
 	// ── Scalar tier-diff emission ──────────────────────────────────────────────
@@ -98,8 +98,8 @@ final class ResponsiveOverrideEngineTest extends TestCase {
 			)
 		);
 		$this->assertStringContainsString( '.x{gap:30px;}', $css );
-		$this->assertStringContainsString( '@media(max-width:1023px){.x{gap:20px;}}', $css );
-		$this->assertStringContainsString( '@media(max-width:767px){.x{gap:10px;}}', $css );
+		$this->assertStringContainsString( '@media(max-width:1023.98px){.x{gap:20px;}}', $css );
+		$this->assertStringContainsString( '@media(max-width:767.98px){.x{gap:10px;}}', $css );
 	}
 
 	public function test_scalar_null_tablet_but_set_mobile_skips_tablet(): void {
@@ -120,8 +120,8 @@ final class ResponsiveOverrideEngineTest extends TestCase {
 			)
 		);
 		$this->assertStringContainsString( '.x{gap:30px;}', $css );
-		$this->assertStringNotContainsString( '(max-width:1023px)', $css );
-		$this->assertStringContainsString( '@media(max-width:767px){.x{gap:10px;}}', $css );
+		$this->assertStringNotContainsString( '(max-width:1023.98px)', $css );
+		$this->assertStringContainsString( '@media(max-width:767.98px){.x{gap:10px;}}', $css );
 	}
 
 	// ── Box per-side inheritance ───────────────────────────────────────────────
@@ -153,10 +153,10 @@ final class ResponsiveOverrideEngineTest extends TestCase {
 		$this->assertStringContainsString( 'padding-top:10px;', $css );
 		$this->assertStringContainsString( 'padding-left:10px;', $css );
 		// Mobile tier carries ONLY the diverging side.
-		$this->assertStringContainsString( '@media(max-width:767px){.x{padding-top:20px;}}', $css );
+		$this->assertStringContainsString( '@media(max-width:767.98px){.x{padding-top:20px;}}', $css );
 		$this->assertStringNotContainsString( 'padding-right:20px', $css );
 		// No tablet tier at all (nothing set / diverges there).
-		$this->assertStringNotContainsString( '(max-width:1023px)', $css );
+		$this->assertStringNotContainsString( '(max-width:1023.98px)', $css );
 	}
 
 	public function test_box_side_inherits_through_tablet_to_mobile(): void {
@@ -178,8 +178,8 @@ final class ResponsiveOverrideEngineTest extends TestCase {
 			)
 		);
 		$this->assertStringContainsString( '.x{margin-left:5px;}', $css );
-		$this->assertStringContainsString( '@media(max-width:1023px){.x{margin-left:15px;}}', $css );
-		$this->assertStringNotContainsString( '(max-width:767px)', $css );
+		$this->assertStringContainsString( '@media(max-width:1023.98px){.x{margin-left:15px;}}', $css );
+		$this->assertStringNotContainsString( '(max-width:767.98px)', $css );
 	}
 
 	// ── Container-query emission ────────────────────────────────────────────────
@@ -199,9 +199,9 @@ final class ResponsiveOverrideEngineTest extends TestCase {
 			),
 			array( 'container' => true )
 		);
-		$this->assertStringContainsString( '@media(max-width:767px){.x{gap:10px;}}', $css );
-		$this->assertStringContainsString( '@container (max-width:479px){.x{gap:10px;}}', $css );
-		$this->assertStringNotContainsString( '@container (max-width:767px)', $css );
+		$this->assertStringContainsString( '@media(max-width:767.98px){.x{gap:10px;}}', $css );
+		$this->assertStringContainsString( '@container (max-width:479.98px){.x{gap:10px;}}', $css );
+		$this->assertStringNotContainsString( '@container (max-width:767.98px)', $css );
 	}
 
 	// ── Transform (colour-style) ────────────────────────────────────────────────
@@ -223,7 +223,7 @@ final class ResponsiveOverrideEngineTest extends TestCase {
 			)
 		);
 		$this->assertStringContainsString( '.x{color:var(--wp--preset--color--primary);}', $css );
-		$this->assertStringContainsString( '@media(max-width:767px){.x{color:var(--wp--preset--color--accent);}}', $css );
+		$this->assertStringContainsString( '@media(max-width:767.98px){.x{color:var(--wp--preset--color--accent);}}', $css );
 	}
 
 	// ── normalise_object: legacy/plain lift ─────────────────────────────────────

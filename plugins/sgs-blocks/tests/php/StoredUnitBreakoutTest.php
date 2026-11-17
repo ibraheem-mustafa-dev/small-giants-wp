@@ -63,6 +63,6 @@ final class StoredUnitBreakoutTest extends TestCase {
 		)['css'];
 
 		$this->assertMatchesRegularExpression( '/\{[^{}]*margin-top:1\.5rem;?[^{}]*\}/', $css, 'desktop length in the base rule' );
-		$this->assertMatchesRegularExpression( '/@media[^{]*max-width:767px[^{]*\{[^{}]*\{[^{}]*margin-top:8px/', $css, 'mobile length in the mobile query' );
+		$this->assertMatchesRegularExpression( '/@media[^{]*max-width:767.98px[^{]*\{[^{}]*\{[^{}]*margin-top:8px/', $css, 'mobile length in the mobile query' );
 	}
 }

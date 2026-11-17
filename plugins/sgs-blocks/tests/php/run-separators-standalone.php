@@ -146,7 +146,7 @@ $responsive = sgs_separators_css(
 	array( 'column' => array( 'width' => array( 'desktop' => '2px', 'mobile' => '1px' ) ) ),
 	array( 'list' => '.g', 'layout' => 'flow' )
 );
-ok( has( $responsive, '--sgs-sep-w-column:2px' ) && has( $responsive, '(max-width:767px)' ) && has( $responsive, '--sgs-sep-w-column:1px' ), 'thickness follows the device tiers' );
+ok( has( $responsive, '--sgs-sep-w-column:2px' ) && has( $responsive, '(max-width:767.98px)' ) && has( $responsive, '--sgs-sep-w-column:1px' ), 'thickness follows the device tiers' );
 
 // 6. Root attributes.
 $root = sgs_separators_root_attrs( '> .sgs-container__inner' );

@@ -59,8 +59,8 @@ function hp_check( bool $ok, string $label ): void {
 function hp_tier( string $css, string $tier ): array {
 	$sel   = preg_quote( HP_SEL, '/' );
 	$media = array(
-		'tablet' => '@media (max-width:1023px){',
-		'mobile' => '@media (max-width:767px){',
+		'tablet' => '@media (max-width:1023.98px){',
+		'mobile' => '@media (max-width:767.98px){',
 	);
 	if ( 'desktop' === $tier ) {
 		$body = preg_match( '/^' . $sel . '\{([^}]*)\}/', $css, $m ) ? $m[1] : '';

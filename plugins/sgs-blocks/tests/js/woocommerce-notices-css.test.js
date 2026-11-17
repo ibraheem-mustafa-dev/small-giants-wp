@@ -37,7 +37,7 @@ describe( 'woocommerce notices', () => {
 
 	test( 'radius matches the notice banner and the link stacks when narrow', () => {
 		expect( css ).toContain( '--wp--custom--border-radius--medium' );
-		expect( css ).toMatch( /@media \(max-width: 767px\)[\s\S]*column-reverse/ );
+		expect( css ).toMatch( /@media \(max-width: 767.98px\)[\s\S]*column-reverse/ );
 	} );
 
 	test( 'is enqueued after woocommerce.css', () => {

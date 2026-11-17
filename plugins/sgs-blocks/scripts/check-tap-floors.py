@@ -122,7 +122,7 @@ def load_sized_blocks(db_path: Path = DB, blocks_dir: Path = BLOCKS) -> dict[str
 
 def iter_rules(css: str):
     """(line, selector, [(prop, value)]) for every style rule, descending into @-blocks. A rule inside an
-    @-block carries the at-rule heads before its selector (`@media (max-width: 767px) .sgs-x`)."""
+    @-block carries the at-rule heads before its selector (`@media (max-width: 767.98px) .sgs-x`)."""
     css = re.sub(r"/\*.*?\*/", lambda m: "\n" * m.group(0).count("\n"), css, flags=re.S)
     buf, buf_line, i, line, at_stack = "", 1, 0, 1, []
     while i < len(css):

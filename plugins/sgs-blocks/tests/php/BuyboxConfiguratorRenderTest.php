@@ -161,7 +161,7 @@ final class BuyboxConfiguratorRenderTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/\.sgs-bb-[0-9a-f]+-preview\{[^}]*border-color:#3A2A22;[^}]*border-top-width:2px;/', $html );
 		$this->assertMatchesRegularExpression( '/class="sgs-buybox-pick__preview-box sgs-buybox__pick-preview sgs-bb-[0-9a-f]+-preview/', $html );
 		$this->assertStringContainsString( '.sgs-buybox__pick-preview{padding-top:28px;padding-right:20px;}', $html );
-		$this->assertStringContainsString( '@media(max-width:767px){', $html );
+		$this->assertStringContainsString( '@media(max-width:767.98px){', $html );
 		$this->assertStringContainsString( 'padding-top:12px', $html );
 		$this->assertStringContainsString( 'class="sgs-buybox-pick__preview-box sgs-buybox__pick-preview', $html );
 	}
@@ -212,7 +212,7 @@ final class BuyboxConfiguratorRenderTest extends TestCase {
 		$this->assertStringContainsString( '.sgs-option-picker--tile .sgs-option-picker__pill-label{font-size:26px;}', $html );
 		$this->assertStringContainsString( '.sgs-option-picker--tile .sgs-option-picker__sub-label{font-size:14px;}', $html );
 		$this->assertStringContainsString( '.sgs-option-picker--tile .sgs-option-picker__term-description{font-size:12px;}', $html );
-		$this->assertMatchesRegularExpression( '/@media ?\(max-width:767px\)\{[^}]*pill-label\{font-size:20px;\}\}/', $html, 'the mobile tier prints inside the mobile query' );
+		$this->assertMatchesRegularExpression( '/@media ?\(max-width:767.98px\)\{[^}]*pill-label\{font-size:20px;\}\}/', $html, 'the mobile tier prints inside the mobile query' );
 	}
 
 	public function test_priced_pills_take_their_own_radius_padding_gap_and_size(): void {
@@ -291,7 +291,7 @@ final class BuyboxConfiguratorRenderTest extends TestCase {
 			)
 		);
 		$this->assertStringContainsString( '@media(min-width:768px){', $tiers );
-		$this->assertMatchesRegularExpression( '/\{gap:64px;\}@media ?\(max-width:1023px\)\{[^}]*\{gap:36px;\}\}\}/', $tiers );
+		$this->assertMatchesRegularExpression( '/\{gap:64px;\}@media ?\(max-width:1023.98px\)\{[^}]*\{gap:36px;\}\}\}/', $tiers );
 		$this->assertStringContainsString( '.product-card__thumbs:not([hidden]){gap:10px;}', $tiers );
 		$this->assertStringContainsString( '--sgs-buybox-thumb-size:88px;', $tiers );
 		$this->assertStringContainsString( '--sgs-buybox-thumb-size:76px;', $tiers );

@@ -11,14 +11,14 @@
         " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
             "display:block"
         ],
-        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:1023.98px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:center",
             "flex-direction:row",
             "flex-wrap:nowrap",
             "gap:12px",
             "justify-content:flex-start"
         ],
-        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:767.98px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:stretch",
             "flex-direction:column",
             "flex-wrap:nowrap",
@@ -43,14 +43,14 @@
         " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
             "display:block"
         ],
-        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:1023.98px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:center",
             "flex-direction:row",
             "flex-wrap:nowrap",
             "gap:12px",
             "justify-content:flex-start"
         ],
-        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:767.98px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:stretch",
             "flex-direction:column",
             "flex-wrap:nowrap",
@@ -75,14 +75,14 @@
         " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
             "display:block"
         ],
-        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:1023.98px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:center",
             "flex-direction:row",
             "flex-wrap:nowrap",
             "gap:12px",
             "justify-content:flex-start"
         ],
-        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:767.98px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:stretch",
             "flex-direction:column",
             "flex-wrap:nowrap",
@@ -106,14 +106,14 @@
         " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
             "display:block"
         ],
-        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:1023.98px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:center",
             "flex-direction:row",
             "flex-wrap:nowrap",
             "gap:12px",
             "justify-content:flex-start"
         ],
-        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:767.98px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:stretch",
             "flex-direction:column",
             "flex-wrap:nowrap",
@@ -137,14 +137,14 @@
         " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
             "display:block"
         ],
-        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:1023.98px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:center",
             "flex-direction:row",
             "flex-wrap:nowrap",
             "gap:12px",
             "justify-content:flex-start"
         ],
-        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:767.98px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:stretch",
             "flex-direction:column",
             "flex-wrap:nowrap",
@@ -167,14 +167,14 @@
         " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
             "display:block"
         ],
-        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:1023.98px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:center",
             "flex-direction:row",
             "flex-wrap:nowrap",
             "gap:12px",
             "justify-content:flex-start"
         ],
-        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:767.98px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:stretch",
             "flex-direction:column",
             "flex-wrap:nowrap",
@@ -214,14 +214,14 @@
         " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
             "display:block"
         ],
-        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:1023.98px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:center",
             "flex-direction:row",
             "flex-wrap:nowrap",
             "gap:12px",
             "justify-content:flex-start"
         ],
-        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:767.98px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:stretch",
             "flex-direction:column",
             "flex-wrap:nowrap",
@@ -244,14 +244,14 @@
         " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
             "display:block"
         ],
-        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:1023.98px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:center",
             "flex-direction:row",
             "flex-wrap:nowrap",
             "gap:12px",
             "justify-content:flex-start"
         ],
-        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:767.98px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:stretch",
             "flex-direction:column",
             "flex-wrap:nowrap",
@@ -277,21 +277,21 @@
         " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
             "display:block"
         ],
-        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:1023.98px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:center",
             "flex-direction:row",
             "flex-wrap:nowrap",
             "gap:12px",
             "justify-content:flex-start"
         ],
-        "@media(max-width:1023px) || .sgs-mb-1.sgs-multi-button": [
+        "@media(max-width:1023.98px) || .sgs-mb-1.sgs-multi-button": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button": [
+        "@media(max-width:767.98px) || .sgs-mb-1.sgs-multi-button": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ],
-        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+        "@media(max-width:767.98px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:stretch",
             "flex-direction:column",
             "flex-wrap:nowrap",

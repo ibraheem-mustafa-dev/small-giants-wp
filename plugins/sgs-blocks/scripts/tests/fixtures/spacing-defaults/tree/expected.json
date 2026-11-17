@@ -433,7 +433,7 @@
     "right": {
      "status": "variant-dependent",
      "raw": "20px",
-     "reason": "(max-width: 767px)"
+     "reason": "(max-width: 767.98px)"
     },
     "left": {
      "status": "declared",
@@ -541,7 +541,7 @@
   "tiered:padding:mobile.left": [],
   "tieredbad:padding:top": [],
   "tieredbad:padding:right": [
-   "a variant or media rule repaints this side (.sgs-tieredbad @media (max-width: 767px) = 12px); no tier entry declares it"
+   "a variant or media rule repaints this side (.sgs-tieredbad @media (max-width: 767.98px) = 12px); no tier entry declares it"
   ],
   "tieredbad:padding:mobile.top": [
    "the rule paints preset 30, the declaration names 40"

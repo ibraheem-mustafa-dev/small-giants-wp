@@ -67,11 +67,11 @@ ok( 1023 === SGS_Breakpoints::TABLET_MAX, 'TABLET_MAX = 1023' );
 ok( 767 === SGS_Breakpoints::MOBILE_MAX, 'MOBILE_MAX = 767' );
 ok( 1023 === SGS_Breakpoints::max_for_tier( 'tablet' ), 'max_for_tier(tablet)' );
 ok( null === SGS_Breakpoints::max_for_tier( 'desktop' ), 'max_for_tier(desktop) = null' );
-ok( array( '@media (max-width:767px){' ) === SGS_Breakpoints::tier_at_rules( 767 ), 'tier_at_rules media-only' );
+ok( array( '@media (max-width:767.98px){' ) === SGS_Breakpoints::tier_at_rules( 767 ), 'tier_at_rules media-only' );
 $cq = SGS_Breakpoints::tier_at_rules( 1023, true );
-ok( array( '@media (max-width:1023px){' ) === $cq, 'tier_at_rules tablet: no container rule (tiers follow the screen)' );
+ok( array( '@media (max-width:1023.98px){' ) === $cq, 'tier_at_rules tablet: no container rule (tiers follow the screen)' );
 $cq = SGS_Breakpoints::tier_at_rules( 767, true );
-ok( in_array( '@container (max-width:479px){', $cq, true ) && in_array( '@media (max-width:767px){', $cq, true ), 'tier_at_rules mobile with container: a 480px box' );
+ok( in_array( '@container (max-width:479.98px){', $cq, true ) && in_array( '@media (max-width:767.98px){', $cq, true ), 'tier_at_rules mobile with container: a 480px box' );
 
 // ── Scalar tier-diff ────────────────────────────────────────────────────────────
 $css = sgs_emit_responsive_css(
@@ -115,8 +115,8 @@ $css = sgs_emit_responsive_css(
 	)
 );
 contains( $css, '.x{gap:30px;}', 'distinct tiers: base' );
-contains( $css, '@media (max-width:1023px){.x{gap:20px;}}', 'distinct tiers: tablet' );
-contains( $css, '@media (max-width:767px){.x{gap:10px;}}', 'distinct tiers: mobile' );
+contains( $css, '@media (max-width:1023.98px){.x{gap:20px;}}', 'distinct tiers: tablet' );
+contains( $css, '@media (max-width:767.98px){.x{gap:10px;}}', 'distinct tiers: mobile' );
 
 $css = sgs_emit_responsive_css(
 	'.x',
@@ -133,8 +133,8 @@ $css = sgs_emit_responsive_css(
 	)
 );
 contains( $css, '.x{gap:30px;}', 'null-tablet: base' );
-not_contains( $css, '(max-width:1023px)', 'null-tablet: no tablet rule' );
-contains( $css, '@media (max-width:767px){.x{gap:10px;}}', 'null-tablet: mobile emitted' );
+not_contains( $css, '(max-width:1023.98px)', 'null-tablet: no tablet rule' );
+contains( $css, '@media (max-width:767.98px){.x{gap:10px;}}', 'null-tablet: mobile emitted' );
 
 // ── Box per-side inheritance ─────────────────────────────────────────────────────
 $css = sgs_emit_responsive_css(
@@ -159,9 +159,9 @@ $css = sgs_emit_responsive_css(
 );
 contains( $css, 'padding-top:10px;', 'box base: top' );
 contains( $css, 'padding-left:10px;', 'box base: left' );
-contains( $css, '@media (max-width:767px){.x{padding-top:20px;}}', 'box mobile: only diverging side' );
+contains( $css, '@media (max-width:767.98px){.x{padding-top:20px;}}', 'box mobile: only diverging side' );
 not_contains( $css, 'padding-right:20px', 'box mobile: non-diverging side NOT re-emitted' );
-not_contains( $css, '(max-width:1023px)', 'box: no tablet tier' );
+not_contains( $css, '(max-width:1023.98px)', 'box: no tablet tier' );
 
 $css = sgs_emit_responsive_css(
 	'.x',
@@ -179,8 +179,8 @@ $css = sgs_emit_responsive_css(
 	)
 );
 contains( $css, '.x{margin-left:5px;}', 'box inherit: desktop left' );
-contains( $css, '@media (max-width:1023px){.x{margin-left:15px;}}', 'box inherit: tablet left' );
-not_contains( $css, '(max-width:767px)', 'box inherit: mobile inherits tablet → no mobile rule' );
+contains( $css, '@media (max-width:1023.98px){.x{margin-left:15px;}}', 'box inherit: tablet left' );
+not_contains( $css, '(max-width:767.98px)', 'box inherit: mobile inherits tablet → no mobile rule' );
 
 // ── Container-query emission ──────────────────────────────────────────────────────
 $css = sgs_emit_responsive_css(
@@ -197,8 +197,8 @@ $css = sgs_emit_responsive_css(
 	),
 	array( 'container' => true )
 );
-contains( $css, '@media (max-width:767px){.x{gap:10px;}}', 'container mode: media fallback present' );
-contains( $css, '@container (max-width:479px){.x{gap:10px;}}', 'container mode: mobile container query present (480px box)' );
+contains( $css, '@media (max-width:767.98px){.x{gap:10px;}}', 'container mode: media fallback present' );
+contains( $css, '@container (max-width:479.98px){.x{gap:10px;}}', 'container mode: mobile container query present (480px box)' );
 
 // ── Transform ─────────────────────────────────────────────────────────────────────
 $css = sgs_emit_responsive_css(
@@ -217,7 +217,7 @@ $css = sgs_emit_responsive_css(
 	)
 );
 contains( $css, '.x{color:var(--wp--preset--color--primary);}', 'transform: base colour var' );
-contains( $css, '@media (max-width:767px){.x{color:var(--wp--preset--color--accent);}}', 'transform: mobile colour var' );
+contains( $css, '@media (max-width:767.98px){.x{color:var(--wp--preset--color--accent);}}', 'transform: mobile colour var' );
 
 // ── normalise_object ───────────────────────────────────────────────────────────────
 ok(

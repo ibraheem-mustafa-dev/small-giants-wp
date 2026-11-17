@@ -13,7 +13,7 @@ const cart = ( vars ) =>
 	`<div class="sgs-cart wp-block-sgs-cart sgs-cart--trigger-icon" style="${ vars }"><button type="button" class="sgs-cart__trigger"><span class="sgs-cart__icon"><svg viewBox="0 0 24 24"></svg></span></button></div>`;
 const BURGER_SIZED = '.u1 .sgs-nav-bar-menu__burger{width:30px;height:30px;min-width:30px;min-height:30px;--sgs-burger-tap-min:0px;}';
 const BURGER_DEFAULT = '.u1 .sgs-nav-bar-menu__burger{width:44px;height:44px;min-width:44px;min-height:44px;--sgs-burger-tap-min:0px;}';
-const MOBILE = '@media(max-width:767px)';
+const MOBILE = '@media(max-width:767.98px)';
 
 export const CASES = [
 	{

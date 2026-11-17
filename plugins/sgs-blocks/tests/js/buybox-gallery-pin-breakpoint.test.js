@@ -33,7 +33,7 @@ describe( 'buybox gallery pin breakpoint', () => {
 	} );
 
 	test( 'a block that stacks below 1024px keeps the gallery unpinned from 768 to 1023', () => {
-		const body = block( '@media (min-width: 768px) and (max-width: 1023px)', '.sgs-buybox--stack-tablet .sgs-buybox__gallery-col' );
+		const body = block( '@media (min-width: 768px) and (max-width: 1023.98px)', '.sgs-buybox--stack-tablet .sgs-buybox__gallery-col' );
 		expect( body ).toMatch( /position:\s*static/ );
 	} );
 } );

@@ -126,7 +126,7 @@ check( 'note: shown on desktop and tablet, hidden on mobile', 1 === preg_match( 
 
 // --- Step names hidden per device (the draft keeps only the numbers below 768px).
 $names = render_block_case( 'sgs/form', array( 'formId' => 'f1', 'stepNamesHidden' => array( 'mobile' => true ) ), '', true );
-check( 'step names: hidden on mobile only', 1 === preg_match( '/@media\(max-width:767px\)\{' . $uid . ' \.sgs-form__progress-step-label\{display:none;\}\}/', $names['css'] ) && 0 === preg_match( '/(^|\})' . $uid . ' \.sgs-form__progress-step-label\{display:none;\}/', $names['css'] ) );
+check( 'step names: hidden on mobile only', 1 === preg_match( '/@media\(max-width:767.98px\)\{' . $uid . ' \.sgs-form__progress-step-label\{display:none;\}\}/', $names['css'] ) && 0 === preg_match( '/(^|\})' . $uid . ' \.sgs-form__progress-step-label\{display:none;\}/', $names['css'] ) );
 $names_off = render_block_case( 'sgs/form', array( 'formId' => 'f1' ), '', true );
 check( 'step names: unset prints no display rule', false === strpos( $names_off['css'], 'progress-step-label{display' ) );
 

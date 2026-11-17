@@ -89,8 +89,8 @@ $attrs = array(
 $css   = sgs_nav_shared_item_state_css( $attrs, '.u', 'sgs-nav-bar-menu', array() );
 
 ok( false !== strpos( $css, $link . '{padding-top:10px;padding-right:20px;padding-bottom:10px;padding-left:20px;--sgs-nav-link-pad-start:20px;}' ), 'desktop: four sides on the link, the left side published as --sgs-nav-link-pad-start' );
-ok( false !== strpos( $css, '@media (max-width:767px){' . $link . '{padding-left:var(--wp--preset--spacing--20);--sgs-nav-link-pad-start:var(--wp--preset--spacing--20);}}' ), 'mobile: a spacing preset on one side overrides only that side, and the variable follows it' );
-ok( false === strpos( $css, '@media (max-width:1023px){' . $link . '{padding' ), 'tablet: unset, so no tablet padding rule (desktop carries through)' );
+ok( false !== strpos( $css, '@media (max-width:767.98px){' . $link . '{padding-left:var(--wp--preset--spacing--20);--sgs-nav-link-pad-start:var(--wp--preset--spacing--20);}}' ), 'mobile: a spacing preset on one side overrides only that side, and the variable follows it' );
+ok( false === strpos( $css, '@media (max-width:1023.98px){' . $link . '{padding' ), 'tablet: unset, so no tablet padding rule (desktop carries through)' );
 ok( false !== strpos( $css, 'padding-inline-start:calc(var(--sgs-nav-link-pad-start, 12px) + 8px)' ), 'the hover shift adds to the resting left padding, with the 12px default as fallback' );
 
 $empty = sgs_nav_shared_item_state_css( array( 'itemPadding' => array() ), '.u', 'sgs-nav-bar-menu', array() );

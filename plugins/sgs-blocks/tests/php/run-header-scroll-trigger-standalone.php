@@ -165,7 +165,7 @@ ok(
 	'NEGATIVE CONTROL (unchanged from input): the tablet tier, where Transparent was already off, stays off'
 );
 ok(
-	false === strpos( $fade_mixed['css'], '@media (min-width:768px) and (max-width:1023px)' ),
+	false === strpos( $fade_mixed['css'], '@media (min-width:768px) and (max-width:1023.98px)' ),
 	'NEGATIVE CONTROL: the tablet media block, where Transparent is off, gets no fade rule at all'
 );
 

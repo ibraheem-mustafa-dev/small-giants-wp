@@ -7,7 +7,7 @@ emitted through `sgs_emit_responsive_css`) or `SGS_BREAKPOINTS` (JS: src/utils/r
 second source of the same number. Static .css/.scss cannot import a constant, so they are held to RULE 3 instead.
 
 RULE 3: in every .css/.scss under plugins/sgs-blocks/src and theme/sgs-theme/assets/css a px width media query must sit on a tier edge in the
-right direction: `max-width` is MOBILE_MAX or TABLET_MAX, `min-width` is MOBILE_MAX+1 or TABLET_MAX+1, both read from
+right direction: `max-width` is MOBILE_MAX or TABLET_MAX plus .98, `min-width` is MOBILE_MAX+1 or TABLET_MAX+1, both read from
 includes/class-sgs-breakpoints.php (never typed here), so no block switches 1px away from the rest. A deliberate exception is one entry per
 file+condition in check-breakpoint-literals-css-allow.json with a one-line reason. `prefers-*`, `hover`, `forced-colors`, `@container`, range
 syntax and non-px units are ignored.
@@ -110,12 +110,12 @@ def scan_text(text: str) -> list[tuple[int, str]]:
 
 
 def tier_edges(php: str | None = None) -> dict[str, set[float]]:
-    """The legal px values per direction, parsed from the TABLET_MAX / MOBILE_MAX constants of SGS_Breakpoints."""
+    """The legal px values per direction, parsed from the TABLET_MAX / MOBILE_MAX constants of SGS_Breakpoints: an upper bound is the maximum plus .98 (a fractional viewport matches one tier), a lower bound the next whole pixel."""
     php = php if php is not None else BP_SOURCE.read_text(encoding="utf-8")
     c = {n: int(v) for n, v in re.findall(r"const\s+(TABLET_MAX|MOBILE_MAX)\s*=\s*(\d+)\s*;", php)}
     if set(c) != {"TABLET_MAX", "MOBILE_MAX"}:
         raise SystemExit("[check-breakpoint-literals] cannot read TABLET_MAX / MOBILE_MAX from class-sgs-breakpoints.php")
-    return {"max": {float(c["MOBILE_MAX"]), float(c["TABLET_MAX"])}, "min": {float(c["MOBILE_MAX"] + 1), float(c["TABLET_MAX"] + 1)}}
+    return {"max": {c["MOBILE_MAX"] + 0.98, c["TABLET_MAX"] + 0.98}, "min": {float(c["MOBILE_MAX"] + 1), float(c["TABLET_MAX"] + 1)}}
 
 
 def scan_css_text(rel_path: str, text: str, edges: dict[str, set[float]], allow: set[tuple[str, str]]) -> list[tuple[int, str]]:
@@ -234,9 +234,9 @@ def self_test() -> int:
     php = "const TABLET_MAX = 1023;\n const MOBILE_MAX = 767;"
     e = tier_edges(php)
     n = lambda css, al=(): scan_css_text("a.css", css, e, set(al))
-    ok = ok and e == {"max": {767.0, 1023.0}, "min": {768.0, 1024.0}}
+    ok = ok and e == {"max": {767.98, 1023.98}, "min": {768.0, 1024.0}}
     ok = ok and [h[1] for h in n("@media (max-width: 768px){a{b:c}}")] == ["max-width:768px"]
-    ok = ok and n("@media (max-width: 767px){a{max-width:768px}}") == [] and n("@media (min-width:768px) and (max-width:1023px){}") == []
+    ok = ok and n("@media (max-width: 767.98px){a{max-width:768px}}") == [] and n("@media (min-width:768px) and (max-width:1023.98px){}") == [] and [h[1] for h in n("@media (max-width: 767px){}")] == ["max-width:767px"]
     ok = ok and [h[1] for h in n("@media (min-width: 769px){}")] == ["min-width:769px"] and [h[1] for h in n("@media (max-width: 1024px){}")] == ["max-width:1024px"]
     ok = ok and n("@media (max-width: 781px){}", [("a.css", "max-width:781px")]) == []
     ok = ok and len(scan_css_text("b.css", "@media (max-width: 781px){}", e, {("a.css", "max-width:781px")})) == 1

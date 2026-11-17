@@ -273,9 +273,9 @@ class MediaRendererHardeningTest extends TestCase {
 	}
 
 	public function test_r3_the_integer_queries_other_callers_use_are_unchanged(): void {
-		$this->assertSame( '(max-width:767px)', SGS_Breakpoints::query( 'mobile' ) );
-		$this->assertSame( '(min-width:768px) and (max-width:1023px)', SGS_Breakpoints::query( 'tablet-only' ) );
-		$this->assertSame( '@media(max-width:1023px)', SGS_Breakpoints::media( 'tablet' ) );
+		$this->assertSame( '(max-width:767.98px)', SGS_Breakpoints::query( 'mobile' ) );
+		$this->assertSame( '(min-width:768px) and (max-width:1023.98px)', SGS_Breakpoints::query( 'tablet-only' ) );
+		$this->assertSame( '@media(max-width:1023.98px)', SGS_Breakpoints::media( 'tablet' ) );
 		$this->assertSame( '(min-width:1024px)', SGS_Breakpoints::query_fractional( 'desktop' ) );
 	}
 
@@ -459,7 +459,7 @@ class MediaRendererHardeningTest extends TestCase {
 			)
 		);
 		// 2000x1000 in a square 300px box draws 600px wide; core would add `auto` to a lazy image and ignore this figure.
-		$this->assertStringContainsString( 'sizes="(max-width: 767px) 600px', $out['html'] );
+		$this->assertStringContainsString( 'sizes="(max-width: 767.98px) 600px', $out['html'] );
 		$this->assertStringContainsString( 'data-sgs-cover-crop', $out['html'] );
 	}
 

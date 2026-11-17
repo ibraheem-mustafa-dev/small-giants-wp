@@ -257,7 +257,7 @@ $layout_html = SGS_Container_Wrapper::render( $layout_attrs, null, '<p>cols</p>'
 // 'layout' renders <section> here exactly like 'section' and 'content' do.
 contains( $layout_html, '<section class="sgs-container has-global-padding sgs-container--grid sgs-container-', 'layout: exact class list (the sgs-cols-* shorthand classes are gone; the tier counts are @media rules)' );
 not_contains( $layout_html, 'sgs-cols-', 'layout: no sgs-cols-* shorthand class' );
-contains( $layout_html, '@media (max-width:1023px){', 'layout: default tablet column count is a scoped @media rule' );
+contains( $layout_html, '@media (max-width:1023.98px){', 'layout: default tablet column count is a scoped @media rule' );
 contains( $layout_html, '>.sgs-container__inner{padding-top:32px;padding-bottom:32px;}', 'layout: base spacing golden rule (top+bottom only, on the content band)' );
 contains( $layout_html, '{max-width:960px;margin-inline:auto}', 'layout: base outer max-width golden rule' );
 contains( $layout_html, '>.sgs-container__inner{max-width:var(--wp--style--global--wide-size,1400px);margin-inline:auto}', 'layout: base content-band golden rule (wide token)' );
@@ -289,8 +289,8 @@ $band_html = SGS_Container_Wrapper::render( $band_attrs, null, '<p>x</p>', 'layo
 preg_match( '/sgs-container-([0-9a-f]{8})/', $band_html, $band_uid );
 $band_sel = '.sgs-container-' . ( $band_uid[1] ?? '' ) . '>.sgs-container__inner';
 contains( $band_html, $band_sel . '{max-width:1320px;padding-right:40px;padding-left:40px;}', 'band padding: the cap and the desktop padding share the band rule' );
-contains( $band_html, '@media (max-width:1023px){' . $band_sel . '{padding-right:32px;padding-left:32px;}', 'band padding: the tablet tier paints the band' );
-contains( $band_html, '@media (max-width:767px){' . $band_sel . '{padding-right:20px;padding-left:20px;}', 'band padding: the mobile tier paints the band' );
+contains( $band_html, '@media (max-width:1023.98px){' . $band_sel . '{padding-right:32px;padding-left:32px;}', 'band padding: the tablet tier paints the band' );
+contains( $band_html, '@media (max-width:767.98px){' . $band_sel . '{padding-right:20px;padding-left:20px;}', 'band padding: the mobile tier paints the band' );
 not_contains( $band_html, '.sgs-container-' . ( $band_uid[1] ?? '' ) . '{padding', 'band padding: the outer element carries no padding' );
 not_contains( $band_html, 'has-global-padding', 'band padding: a horizontal padding replaces the gutter class' );
 

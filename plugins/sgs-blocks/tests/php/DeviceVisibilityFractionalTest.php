@@ -1,7 +1,7 @@
 <?php
 /**
  * Device visibility hides exactly one tier's elements at every viewport width, fractional ones included (a zoomed
- * browser or a scaled display gives 1023.4px, which `max-width:1023px` and `min-width:1024px` both miss).
+ * browser or a scaled display gives 1023.4px, which `max-width:1023.98px` and `min-width:1024px` both miss).
  *
  * The test parses the bounds out of the generated CSS and evaluates them at each width, so it asserts the rule a browser
  * would apply, not a string.

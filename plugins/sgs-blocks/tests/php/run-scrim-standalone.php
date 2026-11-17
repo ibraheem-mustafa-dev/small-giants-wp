@@ -97,8 +97,8 @@ $tiers = sgs_scrim_render(
 	array( 'open' => '.u2 [data-sgs-mega-trigger][aria-expanded="true"]' )
 );
 ok( $has( $tiers, '.u2-scrim{--sgs-scrim-opacity:0.28;}' ), 'desktop strength' );
-ok( $has( $tiers, '@media (max-width:1023px){.u2-scrim{--sgs-scrim-opacity:0.5;}}' ), 'tablet strength under the 1023px query' );
-ok( $has( $tiers, '@media (max-width:767px){.u2-scrim{--sgs-scrim-opacity:0;}}' ), 'mobile strength under the 767px query' );
+ok( $has( $tiers, '@media (max-width:1023.98px){.u2-scrim{--sgs-scrim-opacity:0.5;}}' ), 'tablet strength under the 1023px query' );
+ok( $has( $tiers, '@media (max-width:767.98px){.u2-scrim{--sgs-scrim-opacity:0;}}' ), 'mobile strength under the 767px query' );
 ok( $has( $tiers, 'backdrop-filter:blur(var(--sgs-scrim-blur,0px))' ), 'blur is on the scrim element, not ::before' );
 ok( $has( $tiers, '.u2-scrim{--sgs-scrim-blur:2px;}' ), 'desktop blur value' );
 ok( $has( $tiers, '--sgs-scrim-fill:#000' ), 'no colour set: fill falls back to black' );

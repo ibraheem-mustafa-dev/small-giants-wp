@@ -69,7 +69,7 @@ final class MediaLengthStringTest extends TestCase {
 			)['css']
 		);
 		$this->assertMatchesRegularExpression( '/(?<!\}\})\.sgs-hero-[0-9a-f]+-split\{(?:[a-z-]+:[^;}]+;)*' . preg_quote( $prop, '/' ) . ':240px;(?:[a-z-]+:[^;}]+;)*\}/', $css, 'desktop base rule' );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^@]*\.sgs-hero-[0-9a-f]+-split\{' . preg_quote( $prop, '/' ) . ':80%;?\}/', $css, 'mobile rule' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{[^@]*\.sgs-hero-[0-9a-f]+-split\{' . preg_quote( $prop, '/' ) . ':80%;?\}/', $css, 'mobile rule' );
 	}
 
 	public function test_hero_split_image_max_height_prints_and_no_limit_keyword_prints_nothing(): void {
@@ -112,8 +112,8 @@ final class MediaLengthStringTest extends TestCase {
 			)['css']
 		);
 		$this->assertMatchesRegularExpression( '/\.sgs-media-[a-z0-9]+\{height:320px;max-width:640px;width:100%;\}/', $css, 'the desktop values print in the base rule' );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-media-[a-z0-9]+\{height:50vh;max-width:none;\}\}/', $css, 'the phone values print in the phone query, a keyword as itself' );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:1023px\)\{\.sgs-media-[a-z0-9]+\{max-height:calc\(100%-2rem\);\}\}/', $css, 'the tablet value prints in the tablet query' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{\.sgs-media-[a-z0-9]+\{height:50vh;max-width:none;\}\}/', $css, 'the phone values print in the phone query, a keyword as itself' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:1023.98px\)\{\.sgs-media-[a-z0-9]+\{max-height:calc\(100%-2rem\);\}\}/', $css, 'the tablet value prints in the tablet query' );
 	}
 
 	public function test_media_ignores_the_old_number_shape(): void {
@@ -146,9 +146,9 @@ final class MediaLengthStringTest extends TestCase {
 			)['css']
 		);
 		$this->assertMatchesRegularExpression( '/__stage\{height:420px/', $css, 'desktop height' );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^@]*__stage\{height:60vh/', $css, 'mobile height' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{[^@]*__stage\{height:60vh/', $css, 'mobile height' );
 		$this->assertStringContainsString( 'max-width:900px', $css, 'desktop max width' );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^@]*max-width:100%/', $css, 'mobile max width' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{[^@]*max-width:100%/', $css, 'mobile max width' );
 	}
 
 	public function test_before_after_defaults_to_a_400px_stage(): void {

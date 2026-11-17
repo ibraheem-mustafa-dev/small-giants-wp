@@ -48,8 +48,8 @@ final class GalleryVisibleItemsTest extends TestCase {
 	public function test_a_count_hides_the_rest_inside_that_device_range(): void {
 		$css = $this->css( array( 'visibleItems' => array( 'desktop' => 8, 'tablet' => 6, 'mobile' => 4 ) ) );
 		$this->assertMatchesRegularExpression( '/@media\(min-width:1024px\)\{[^{}]*\.sgs-gallery__item:nth-child\(n\+9\)\{display:none;\}\}/', $css );
-		$this->assertMatchesRegularExpression( '/@media\(min-width:768px\) and \(max-width:1023px\)\{[^{}]*\.sgs-gallery__item:nth-child\(n\+7\)\{display:none;\}\}/', $css );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^{}]*\.sgs-gallery__item:nth-child\(n\+5\)\{display:none;\}\}/', $css );
+		$this->assertMatchesRegularExpression( '/@media\(min-width:768px\) and \(max-width:1023.98px\)\{[^{}]*\.sgs-gallery__item:nth-child\(n\+7\)\{display:none;\}\}/', $css );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{[^{}]*\.sgs-gallery__item:nth-child\(n\+5\)\{display:none;\}\}/', $css );
 		$with = $this->render_block( 'sgs/gallery', $this->attrs( array( 'visibleItems' => array( 'desktop' => 8 ) ) ) )['html'];
 		$none = $this->render_block( 'sgs/gallery', $this->attrs() )['html'];
 		$this->assertSame( substr_count( $none, ' style="' ), substr_count( $with, ' style="' ), 'no inline style is added: hiding is a stylesheet rule' );

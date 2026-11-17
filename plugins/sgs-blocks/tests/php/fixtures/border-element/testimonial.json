@@ -170,10 +170,10 @@
         " || .sgs-testimonial-UID.wp-block-sgs-testimonial .sgs-testimonial__name": [
             "font-weight:700"
         ],
-        "@media(max-width:1023px) || .sgs-testimonial-UID.wp-block-sgs-testimonial": [
+        "@media(max-width:1023.98px) || .sgs-testimonial-UID.wp-block-sgs-testimonial": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-testimonial-UID.wp-block-sgs-testimonial": [
+        "@media(max-width:767.98px) || .sgs-testimonial-UID.wp-block-sgs-testimonial": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

@@ -75,10 +75,10 @@
         " || .sgs-form-UID .sgs-form__progress": [
             "--sgs-progress-colour:var(--wp--preset--color--primary,currentColor)"
         ],
-        "@media(max-width:1023px) || .sgs-form-UID .sgs-form-field__input": [
+        "@media(max-width:1023.98px) || .sgs-form-UID .sgs-form-field__input": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-form-UID .sgs-form-field__input": [
+        "@media(max-width:767.98px) || .sgs-form-UID .sgs-form-field__input": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

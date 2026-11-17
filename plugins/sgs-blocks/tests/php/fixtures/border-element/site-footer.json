@@ -93,10 +93,10 @@
         " || :where(.sgs-sf-UID.sgs-site-footer > *,.sgs-sf-UID.sgs-site-footer > .sgs-container__inner > *)": [
             "width:100%"
         ],
-        "@media(max-width:1023px) || .sgs-sf-UID.sgs-site-footer": [
+        "@media(max-width:1023.98px) || .sgs-sf-UID.sgs-site-footer": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-sf-UID.sgs-site-footer": [
+        "@media(max-width:767.98px) || .sgs-sf-UID.sgs-site-footer": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

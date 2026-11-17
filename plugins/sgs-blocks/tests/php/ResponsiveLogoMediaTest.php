@@ -137,7 +137,7 @@ final class ResponsiveLogoMediaTest extends TestCase {
 				),
 			)
 		);
-		$this->assertStringContainsString( '<source media="(max-width:900px)" srcset="https://example.test/u/compact.png"', $html );
+		$this->assertStringContainsString( '<source media="(max-width:900.98px)" srcset="https://example.test/u/compact.png"', $html );
 		$this->assertSame( 1, substr_count( $html, '<source' ) );
 	}
 
@@ -152,7 +152,7 @@ final class ResponsiveLogoMediaTest extends TestCase {
 				),
 			)
 		);
-		$this->assertStringContainsString( '(max-width:2000px)', $html );
+		$this->assertStringContainsString( '(max-width:2000.98px)', $html );
 	}
 
 	public function test_a_compact_file_with_no_desktop_file_renders_nothing(): void {

@@ -49,7 +49,7 @@ final class ItemFitMergeTest extends TestCase {
 	/** The item's resolved object-fit at each device, read from the rendered CSS. */
 	private function fits( string $css ): array {
 		$out = array();
-		foreach ( array( 'desktop' => '', 'tablet' => '@media(max-width:1023px){', 'mobile' => '@media(max-width:767px){' ) as $device => $open ) {
+		foreach ( array( 'desktop' => '', 'tablet' => '@media(max-width:1023.98px){', 'mobile' => '@media(max-width:767.98px){' ) as $device => $open ) {
 			$pattern = '' === $open ? '/(?:^|[}\s])\.[\w-]+-i0 \.sgs-media-el\{[^}]*object-fit:(\w+)/' : '/' . preg_quote( $open, '/' ) . '\.[\w-]+-i0 \.sgs-media-el\{[^}]*object-fit:(\w+)/';
 			if ( preg_match( $pattern, $css, $m ) ) {
 				$out[ $device ] = $m[1];

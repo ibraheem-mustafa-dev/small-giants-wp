@@ -253,7 +253,7 @@ describe( 'values', () => {
 	} );
 
 	test( 'NEGATIVE CONTROL: the retired per-device speed attributes are not read', async () => {
-		widths = [ '(max-width: 1023px)', '(max-width: 767px)' ];
+		widths = [ '(max-width: 1023.98px)', '(max-width: 767.98px)' ];
 		layer(
 			'data-sgs-fx-trigger="load" data-sgs-fx-lottie-speed="2" data-sgs-fx-lottie-speed-tablet="1.5" data-sgs-fx-lottie-speed-mobile="0.5"'
 		);
@@ -280,7 +280,7 @@ describe( 'values', () => {
 
 		/** Cross a breakpoint: fire every loop-control breakpoint query's change listeners. */
 		function crossBreakpoint() {
-			[ '(max-width: 1023px)', '(max-width: 767px)' ].forEach( ( text ) =>
+			[ '(max-width: 1023.98px)', '(max-width: 767.98px)' ].forEach( ( text ) =>
 				query( text ).listeners.forEach( ( listener ) => listener() )
 			);
 		}
@@ -335,11 +335,11 @@ describe( 'values', () => {
 				query( text ).listeners.filter(
 					( listener ) => 'handleBreakpointChange' === listener.name
 				);
-			expect( speedListeners( '(max-width: 1023px)' ) ).toHaveLength( 1 );
-			expect( speedListeners( '(max-width: 767px)' ) ).toHaveLength( 1 );
+			expect( speedListeners( '(max-width: 1023.98px)' ) ).toHaveLength( 1 );
+			expect( speedListeners( '(max-width: 767.98px)' ) ).toHaveLength( 1 );
 			window.dispatchEvent( new Event( 'pagehide' ) );
-			expect( query( '(max-width: 1023px)' ).listeners ).toHaveLength( 0 );
-			expect( query( '(max-width: 767px)' ).listeners ).toHaveLength( 0 );
+			expect( query( '(max-width: 1023.98px)' ).listeners ).toHaveLength( 0 );
+			expect( query( '(max-width: 767.98px)' ).listeners ).toHaveLength( 0 );
 		} );
 	} );
 

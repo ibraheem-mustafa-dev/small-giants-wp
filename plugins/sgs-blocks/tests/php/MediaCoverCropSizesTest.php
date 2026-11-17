@@ -94,7 +94,7 @@ class MediaCoverCropSizesTest extends TestCase {
 		$attrs['maxWidth'] = array( 'desktop' => '400px', 'tablet' => '300px', 'mobile' => '200px' );
 		// Image 10 is 3:2, so a square box draws it 1.5x wider than the box.
 		$this->assertSame(
-			'(max-width: 767px) 300px, (max-width: 1023px) 450px, 600px',
+			'(max-width: 767.98px) 300px, (max-width: 1023.98px) 450px, 600px',
 			$this->plan( $attrs, 10 )['sizes']
 		);
 	}
@@ -107,14 +107,14 @@ class MediaCoverCropSizesTest extends TestCase {
 		$this->assertSame( array( 'widens' => true, 'sizes' => '' ), $this->plan( $attrs, 10 ) );
 		$attrs['ratio']['mobile'] = '2 / 3';
 		// 3:2 image in a 2:3 box: factor 2.25, 675px.
-		$this->assertSame( '(max-width: 767px) 675px, (max-width: 1023px) 450px, 450px', $this->plan( $attrs, 10 )['sizes'] );
+		$this->assertSame( '(max-width: 767.98px) 675px, (max-width: 1023.98px) 450px, 450px', $this->plan( $attrs, 10 )['sizes'] );
 	}
 
 	public function test_a_px_width_wins_over_the_max_width(): void {
 		$attrs             = $this->ratio_attrs( '1 / 1' );
 		$attrs['width']    = $this->all( '200px' );
 		$attrs['maxWidth'] = $this->all( '500px' );
-		$this->assertSame( '(max-width: 767px) 300px, (max-width: 1023px) 300px, 300px', $this->plan( $attrs, 10 )['sizes'] );
+		$this->assertSame( '(max-width: 767.98px) 300px, (max-width: 1023.98px) 300px, 300px', $this->plan( $attrs, 10 )['sizes'] );
 	}
 
 	public function test_the_hero_split_prefix_is_read(): void {
@@ -123,7 +123,7 @@ class MediaCoverCropSizesTest extends TestCase {
 			'splitRatio'    => $this->all( '1 / 1' ),
 			'splitMaxWidth' => $this->all( '400px' ),
 		);
-		$this->assertSame( '(max-width: 767px) 600px, (max-width: 1023px) 600px, 600px', $this->plan( $attrs, 10, 'split' )['sizes'] );
+		$this->assertSame( '(max-width: 767.98px) 600px, (max-width: 1023.98px) 600px, 600px', $this->plan( $attrs, 10, 'split' )['sizes'] );
 		// The same attributes read through the unprefixed slot find nothing and stay on auto for a portrait image.
 		$this->assertFalse( $this->plan( $attrs, 8 )['widens'] );
 		$contain = array_merge( $attrs, array( 'splitFit' => $this->all( 'contain' ) ) );
@@ -148,7 +148,7 @@ class MediaCoverCropSizesTest extends TestCase {
 	public function test_a_px_height_with_an_automatic_width_needs_height_times_the_image_ratio(): void {
 		// Image 10 is 1600x1067: a 48px-high box needs 72px of file whether the width follows the image or a narrow
 		// container crops its sides (a 159x187 card showing a 1.74:1 photo needs the photo at 187px high, not 159 wide).
-		$expected = '(max-width: 767px) 72px, (max-width: 1023px) 72px, 72px';
+		$expected = '(max-width: 767.98px) 72px, (max-width: 1023.98px) 72px, 72px';
 		$this->assertSame( $expected, $this->plan( array( 'height' => $this->all( '48px' ) ), 10 )['sizes'] );
 		$this->assertSame( array( 'widens' => true, 'sizes' => '' ), $this->plan( array( 'height' => $this->all( '48px' ), 'width' => $this->all( '100%' ) ), 10 ), 'a fill width leaves the box shape unknown' );
 	}
@@ -160,7 +160,7 @@ class MediaCoverCropSizesTest extends TestCase {
 		);
 		// Box 1:2; image 10 is 3:2, factor 3 on every device (inherited): 600px.
 		$this->assertSame(
-			'(max-width: 767px) 600px, (max-width: 1023px) 600px, 600px',
+			'(max-width: 767.98px) 600px, (max-width: 1023.98px) 600px, 600px',
 			$this->plan( $attrs, 10 )['sizes']
 		);
 	}

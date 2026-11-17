@@ -141,14 +141,14 @@ final class DecorativeImageLayerTest extends TestCase {
 		$out = $this->render_layer( array( 'layerWidth' => array( 'desktop' => 'max-content' ) ), self::CONTENT );
 
 		$this->assertStringContainsString( 'width:max-content;max-width:100%', $out['css'] );
-		$this->assertStringNotContainsString( '@media(max-width:1023px){.sgs-di', $out['css'], 'nothing to change on narrower devices' );
+		$this->assertStringNotContainsString( '@media(max-width:1023.98px){.sgs-di', $out['css'], 'nothing to change on narrower devices' );
 	}
 
 	public function test_fit_the_content_on_desktop_and_a_fixed_width_on_mobile_lifts_the_cap_there(): void {
 		$out = $this->render_layer( array( 'layerWidth' => array( 'desktop' => 'max-content', 'mobile' => '300px' ) ), self::CONTENT );
 
 		$this->assertStringContainsString( 'width:max-content;max-width:100%', $out['css'] );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{width:300px;max-width:none;/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{width:300px;max-width:none;/', $out['css'] );
 	}
 
 	public function test_a_length_width_takes_its_unit_at_every_device(): void {
@@ -164,8 +164,8 @@ final class DecorativeImageLayerTest extends TestCase {
 		);
 
 		$this->assertMatchesRegularExpression( '/\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*width:60%;/', $out['css'] );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:1023px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{width:40%;/', $out['css'] );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{width:18rem;/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:1023.98px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{width:40%;/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{width:18rem;/', $out['css'] );
 		$this->assertDoesNotMatchRegularExpression( '/[;{]max-width:/', $out['css'], 'no cap the client did not set' );
 	}
 
@@ -187,7 +187,7 @@ final class DecorativeImageLayerTest extends TestCase {
 			)
 		);
 		$this->assertMatchesRegularExpression( '/\.sgs-di-[a-f0-9]{8}\{max-width:30%;width:240px;\}/', $capped['css'] );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\{max-width:12rem;\}\}/', $capped['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{\.sgs-di-[a-f0-9]{8}\{max-width:12rem;\}\}/', $capped['css'] );
 		$this->assertDoesNotMatchRegularExpression( '/\.sgs-decorative-image\{[^}]*width:/', $capped['css'], 'the layer rule carries no size: the atoms own it' );
 
 		$free = $this->render_layer( self::IMAGE + array( 'layerWidth' => array( 'desktop' => '240px' ) ) );
@@ -311,8 +311,8 @@ final class DecorativeImageLayerTest extends TestCase {
 				)
 			)
 		);
-		$this->assertStringContainsString( '@media(max-width:' . SGS_Breakpoints::TABLET_MAX . 'px)', $out['css'] );
-		$this->assertStringContainsString( '@media(max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px)', $out['css'] );
+		$this->assertStringContainsString( '@media(max-width:' . SGS_Breakpoints::TABLET_MAX . SGS_Breakpoints::UPPER_FRACTION . 'px)', $out['css'] );
+		$this->assertStringContainsString( '@media(max-width:' . SGS_Breakpoints::MOBILE_MAX . SGS_Breakpoints::UPPER_FRACTION . 'px)', $out['css'] );
 	}
 
 	public function test_an_unsafe_max_width_prints_nothing(): void {
@@ -440,8 +440,8 @@ final class DecorativeImageLayerTest extends TestCase {
 		);
 		$out = $this->render_layer( $attrs );
 
-		$this->assertMatchesRegularExpression( '/@media\(max-width:1023px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*height:240px/', $out['css'] );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*height:120px/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:1023.98px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*height:240px/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*height:120px/', $out['css'] );
 	}
 
 	public function test_the_legacy_attributes_and_the_video_branch_are_gone_from_the_render(): void {
@@ -503,8 +503,8 @@ final class DecorativeImageLayerTest extends TestCase {
 		);
 		$out                     = $this->render_layer( $attrs );
 
-		$this->assertMatchesRegularExpression( '/@media\(max-width:1023px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{bottom:-40px/', $out['css'] );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{bottom:-2rem/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:1023.98px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{bottom:-40px/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{bottom:-2rem/', $out['css'] );
 		$this->assertStringNotContainsString( 'top:20%', $out['css'], 'an anchored axis prints no centre tier' );
 		$this->assertStringContainsString( 'transform:translateX(-50%)', $out['css'] );
 	}

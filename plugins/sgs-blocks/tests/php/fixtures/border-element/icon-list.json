@@ -77,10 +77,10 @@
             "border-top-left-radius:12px",
             "border-top-right-radius:12px"
         ],
-        "@media(max-width:1023px) || .sgs-ilist-UID.wp-block-sgs-icon-list": [
+        "@media(max-width:1023.98px) || .sgs-ilist-UID.wp-block-sgs-icon-list": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-ilist-UID.wp-block-sgs-icon-list": [
+        "@media(max-width:767.98px) || .sgs-ilist-UID.wp-block-sgs-icon-list": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

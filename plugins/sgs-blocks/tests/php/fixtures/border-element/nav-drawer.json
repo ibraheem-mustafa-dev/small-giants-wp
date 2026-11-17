@@ -266,10 +266,10 @@
             "min-width:44px",
             "width:44px"
         ],
-        "@media(max-width:1023px) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+        "@media(max-width:1023.98px) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+        "@media(max-width:767.98px) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

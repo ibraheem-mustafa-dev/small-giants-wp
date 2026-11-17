@@ -113,10 +113,10 @@
         " || .sgs-team-member-UID.wp-block-sgs-team-member .sgs-team-member__role": [
             "color:var(--wp--preset--color--text-muted,currentColor)"
         ],
-        "@media(max-width:1023px) || .sgs-team-member-UID.wp-block-sgs-team-member": [
+        "@media(max-width:1023.98px) || .sgs-team-member-UID.wp-block-sgs-team-member": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-team-member-UID.wp-block-sgs-team-member": [
+        "@media(max-width:767.98px) || .sgs-team-member-UID.wp-block-sgs-team-member": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

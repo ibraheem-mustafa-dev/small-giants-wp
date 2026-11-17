@@ -6,7 +6,7 @@
 	padding: 28px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-looked.sgs-looked--look-big {
 		padding: 18px;
 	}

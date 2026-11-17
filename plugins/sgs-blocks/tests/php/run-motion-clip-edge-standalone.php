@@ -142,7 +142,7 @@ const GOLDEN = <<<'JSON'
 		}
 	},
 	"uniform-devices": {
-		"css": ".sgs-m-test{--sgs-me-from-clip:40%;--sgs-me-dur:400ms;--sgs-me-ease:ease-out;}@media (max-width:1023px){.sgs-m-test{--sgs-me-from-clip:20%;}}@media (max-width:767px){.sgs-m-test{--sgs-me-from-clip:10%;}}",
+		"css": ".sgs-m-test{--sgs-me-from-clip:40%;--sgs-me-dur:400ms;--sgs-me-ease:ease-out;}@media (max-width:1023.98px){.sgs-m-test{--sgs-me-from-clip:20%;}}@media (max-width:767.98px){.sgs-m-test{--sgs-me-from-clip:10%;}}",
 		"attrs": {
 			"data-sgs-me": "scroll clip-path"
 		}
@@ -274,7 +274,7 @@ $el    = array( 'entrance' => array( 'text' => array( $curtain ) ) );
 $attrs = \SGS\Blocks\Motion\Sgs_Motion_Fx_Emitter::attrs( $el, 'sgs/container', 'root' );
 $check( 'curtain' === ( $attrs['data-sgs-fx'] ?? null ) && 'down' === ( $attrs['data-sgs-fx-curtain-direction'] ?? null ), 'curtain stamps data-sgs-fx and its direction: ' . json_encode( $attrs ) );
 $props = \SGS\Blocks\Motion\Sgs_Motion_Effect_Properties::css( $el, SEL );
-foreach ( array( '--sgs-curtain-colour:#112233', '--sgs-curtain-duration:500ms', '--sgs-curtain-easing:linear', '@media (max-width:767px){' . SEL . '{--sgs-curtain-duration:300ms;}}' ) as $needle ) {
+foreach ( array( '--sgs-curtain-colour:#112233', '--sgs-curtain-duration:500ms', '--sgs-curtain-easing:linear', '@media (max-width:767.98px){' . SEL . '{--sgs-curtain-duration:300ms;}}' ) as $needle ) {
 	$check( false !== strpos( $props, $needle ), "curtain writes $needle: $props" );
 }
 $check( array( 'curtain' ) === \SGS\Blocks\Motion\Sgs_Motion_Layer_Drops::injected_layers( $el ), 'curtain claims one injected layer' );

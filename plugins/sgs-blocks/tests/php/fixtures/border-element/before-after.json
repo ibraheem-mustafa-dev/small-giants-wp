@@ -254,10 +254,10 @@
         " || .sgs-before-after-UID.wp-block-sgs-before-after .wp-block-sgs-before-after__stage": [
             "height:400px"
         ],
-        "@media(max-width:1023px) || .sgs-before-after-UID.wp-block-sgs-before-after": [
+        "@media(max-width:1023.98px) || .sgs-before-after-UID.wp-block-sgs-before-after": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-before-after-UID.wp-block-sgs-before-after": [
+        "@media(max-width:767.98px) || .sgs-before-after-UID.wp-block-sgs-before-after": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ],

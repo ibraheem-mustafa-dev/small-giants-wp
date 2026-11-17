@@ -309,10 +309,10 @@
             "width:-webkit-fill-available",
             "width:stretch"
         ],
-        "@media(max-width:1023px) || .sgs-gallery-UID.wp-block-sgs-gallery": [
+        "@media(max-width:1023.98px) || .sgs-gallery-UID.wp-block-sgs-gallery": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-gallery-UID.wp-block-sgs-gallery": [
+        "@media(max-width:767.98px) || .sgs-gallery-UID.wp-block-sgs-gallery": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

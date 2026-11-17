@@ -46,7 +46,7 @@ $collected = static function (): string {
 
 /**
  * Effective delay per item and device from emitted CSS: a base rule is desktop, a rule inside
- * `@media (max-width:1023px)` is tablet (and below), `@media (max-width:767px)` mobile; a tier with no rule inherits
+ * `@media (max-width:1023.98px)` is tablet (and below), `@media (max-width:767.98px)` mobile; a tier with no rule inherits
  * the tier above. Returns array<index, array{desktop:?int,tablet:?int,mobile:?int}> and the rule count per index.
  */
 $parse = static function ( string $css ): array {

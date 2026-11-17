@@ -109,11 +109,11 @@ final class BreakpointQueryOutputTest extends TestCase {
 	}
 
 	public function test_width_helpers_build_the_query_from_the_edge_and_width(): void {
-		$this->assertSame( '@media(max-width:899px)', SGS_Breakpoints::media_width( 'max', 899 ) );
+		$this->assertSame( '@media(max-width:899.98px)', SGS_Breakpoints::media_width( 'max', 899 ) );
 		$this->assertSame( '@media(min-width:900px)', SGS_Breakpoints::media_width( 'min', '900' ) );
 		$this->assertSame( '@media(max-width:767.98px)', SGS_Breakpoints::media_width( 'max', '767.98px' ) );
-		$this->assertSame( '(max-width:1059px)', SGS_Breakpoints::query_width( 'max', 1059 ) );
-		$this->assertSame( '@container (max-width:479px)', SGS_Breakpoints::container_width( SGS_Breakpoints::CONTAINER_MOBILE_MAX ) );
+		$this->assertSame( '(max-width:1059.98px)', SGS_Breakpoints::query_width( 'max', 1059 ) );
+		$this->assertSame( '@container (max-width:479.98px)', SGS_Breakpoints::container_width( SGS_Breakpoints::CONTAINER_MOBILE_MAX ) );
 		// Negative control: an unknown edge or an empty width prints nothing.
 		$this->assertSame( '', SGS_Breakpoints::media_width( 'between', 899 ) );
 		$this->assertSame( '', SGS_Breakpoints::media_width( 'max', '' ) );

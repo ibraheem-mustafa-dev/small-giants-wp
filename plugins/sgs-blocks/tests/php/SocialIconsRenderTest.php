@@ -121,7 +121,7 @@ final class SocialIconsRenderTest extends TestCase {
 		$this->assertStringContainsString( '--sgs-si-bg:var(--wp--preset--color--surface-alt', $css );
 		$this->assertStringContainsString( '--sgs-si-border-width:1px 1px 1px 1px;--sgs-si-border-style:solid', $css );
 		$this->assertStringContainsString( 'gap:10px', $css );
-		$this->assertStringContainsString( '@media(max-width:767px){.sgs-si-', $css );
+		$this->assertStringContainsString( '@media(max-width:767.98px){.sgs-si-', $css );
 		$this->assertStringContainsString( 'gap:6px', $css );
 		$this->assertStringContainsString( 'justify-content:center', $css );
 		$this->assertStringNotContainsString( '--sgs-si-shape-h', $css, 'height follows width while linked' );

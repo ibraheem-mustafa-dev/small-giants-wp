@@ -100,9 +100,9 @@ foreach ( array( '--sgs-me-from-op:0;', '--sgs-me-from-ty:18px;', '--sgs-me-to-o
 }
 $desktop_close = '.' . $scope . '{--sgs-me-close-to-op:0;--sgs-me-close-to-ty:-10px;--sgs-me-close-dur:250ms;--sgs-me-close-delay:150ms;--sgs-me-close-ease:ease-in;}';
 $check( $has( $css, $desktop_close ), 'open emits its own close values, duration, delay and easing: ' . $css );
-$check( $has( $css, '@media (max-width:1023px){.' . $scope . '{--sgs-me-close-dur:200ms;}}' ), 'tablet close duration in the tablet media query' );
-$check( $has( $css, '@media (max-width:767px){.' . $scope . '{--sgs-me-close-to-ty:-6px;--sgs-me-close-delay:75ms;}}' ), 'mobile close values in the mobile media query' );
-$check( $has( $css, '@media (max-width:767px){.' . $scope . '{--sgs-me-dur:400ms;}}' ), 'mobile open duration unchanged by the close rules' );
+$check( $has( $css, '@media (max-width:1023.98px){.' . $scope . '{--sgs-me-close-dur:200ms;}}' ), 'tablet close duration in the tablet media query' );
+$check( $has( $css, '@media (max-width:767.98px){.' . $scope . '{--sgs-me-close-to-ty:-6px;--sgs-me-close-delay:75ms;}}' ), 'mobile close values in the mobile media query' );
+$check( $has( $css, '@media (max-width:767.98px){.' . $scope . '{--sgs-me-dur:400ms;}}' ), 'mobile open duration unchanged by the close rules' );
 $check( 1 === substr_count( $css, '--sgs-me-close-dur:250ms' ), 'the desktop close duration is written once' );
 $check( in_array( 'sgs-motion-triggers', $GLOBALS['sgs_test_enqueued_styles'], true ), 'the trigger stylesheet is enqueued for an open entrance' );
 $check( Sgs_Motion_Trigger_Open_State::used(), 'the open entrance is recorded as used' );

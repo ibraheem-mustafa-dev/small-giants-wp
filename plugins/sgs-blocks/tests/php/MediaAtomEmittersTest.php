@@ -63,7 +63,7 @@ final class MediaAtomEmittersTest extends TestCase {
 	 */
 	private static function parse( string $css ): array {
 		$out = array();
-		preg_match_all( '/(?:@media\(max-width:(\d+)px\)\{)?([^{}@]+)\{([^{}]*)\}\}?/', $css, $rules, PREG_SET_ORDER );
+		preg_match_all( '/(?:@media\(max-width:(\d+)(?:\.98)?px\)\{)?([^{}@]+)\{([^{}]*)\}\}?/', $css, $rules, PREG_SET_ORDER );
 		foreach ( $rules as $rule ) {
 			$device = array(
 				'1023' => 'tablet',
@@ -162,7 +162,7 @@ final class MediaAtomEmittersTest extends TestCase {
 			'u',
 			false
 		);
-		$this->assertSame( '.u{aspect-ratio:1 / 1;height:300px;width:auto;}@media(max-width:767px){.u{height:200px;}}', $css );
+		$this->assertSame( '.u{aspect-ratio:1 / 1;height:300px;width:auto;}@media(max-width:767.98px){.u{height:200px;}}', $css );
 	}
 
 	public function test_sizing_disclosure_omits_ratio_only_where_height_is_match_its_space(): void {
@@ -174,7 +174,7 @@ final class MediaAtomEmittersTest extends TestCase {
 
 	public function test_shape_draws_radius_shapes_masks_corners_and_border(): void {
 		$this->assertSame(
-			'.u{border-radius:50%;}@media(max-width:1023px){.u{border-radius:9999px;}}',
+			'.u{border-radius:50%;}@media(max-width:1023.98px){.u{border-radius:9999px;}}',
 			sgs_media_atom_shape_emit(
 				self::SLOT,
 				self::attrs(
@@ -232,7 +232,7 @@ final class MediaAtomEmittersTest extends TestCase {
 			'u',
 			false
 		);
-		$this->assertSame( '.u{border-bottom-right-radius:1rem;border-top-left-radius:8px;}@media(max-width:1023px){.u{border-radius:50%;}}', $corners );
+		$this->assertSame( '.u{border-bottom-right-radius:1rem;border-top-left-radius:8px;}@media(max-width:1023.98px){.u{border-radius:50%;}}', $corners );
 		$border = array(
 			'BorderWidth'       => array(
 				'top'    => 2,
@@ -276,7 +276,7 @@ final class MediaAtomEmittersTest extends TestCase {
 			'u',
 			false
 		);
-		$this->assertSame( '.u{filter:grayscale(60%);}@media(max-width:1023px){.u{filter:brightness(0) invert(1);}}@media(max-width:767px){.u{filter:none;}}', $css );
+		$this->assertSame( '.u{filter:grayscale(60%);}@media(max-width:1023.98px){.u{filter:brightness(0) invert(1);}}@media(max-width:767.98px){.u{filter:none;}}', $css );
 		$this->assertSame( '.u .sgs-media-el{filter:grayscale(100%);}', sgs_media_atom_filter_emit( self::SLOT, self::attrs( array( 'Colour' => 'greyscale' ) ), 'u', true ) );
 		$this->assertSame( '', sgs_media_atom_filter_emit( self::SLOT, self::attrs( array( 'Colour' => 'natural' ) ), 'u', false ) );
 		$this->assertSame( 'shown', sgs_media_atom_filter_disclosure( self::attrs( array( 'Colour' => 'greyscale' ) ), 'desktop', 'm' )['Greyscale']['state'] );
@@ -301,13 +301,13 @@ final class MediaAtomEmittersTest extends TestCase {
 			'u',
 			false
 		);
-		$this->assertSame( '.u{margin-inline-end:auto;margin-inline-start:auto;order:-3;}@media(max-width:767px){.u{margin-inline-end:0;margin-inline-start:auto;order:20;}}', $css );
+		$this->assertSame( '.u{margin-inline-end:auto;margin-inline-start:auto;order:-3;}@media(max-width:767.98px){.u{margin-inline-end:0;margin-inline-start:auto;order:20;}}', $css );
 		$this->assertSame( '', sgs_media_atom_layout_emit( self::SLOT, self::attrs( array( 'Alignment' => 'sideways' ) ), 'u', false ) );
 	}
 
 	public function test_existing_atoms_print_real_properties_on_the_c3_nodes(): void {
 		$this->assertSame(
-			'.u .sgs-media-el{mix-blend-mode:multiply;}@media(max-width:1023px){.u .sgs-media-el{opacity:0.4;}}',
+			'.u .sgs-media-el{mix-blend-mode:multiply;}@media(max-width:1023.98px){.u .sgs-media-el{opacity:0.4;}}',
 			sgs_media_atom_opacity_emit(
 				self::SLOT,
 				self::attrs(
@@ -340,7 +340,7 @@ final class MediaAtomEmittersTest extends TestCase {
 			)
 		);
 		$this->assertSame(
-			'.u{object-fit:contain;}@media(max-width:767px){.u{background-repeat:repeat;background-size:80px;}}',
+			'.u{object-fit:contain;}@media(max-width:767.98px){.u{background-repeat:repeat;background-size:80px;}}',
 			sgs_media_atom_object_fit_emit(
 				self::SLOT,
 				self::attrs(

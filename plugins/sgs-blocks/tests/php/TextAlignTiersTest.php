@@ -23,8 +23,8 @@ final class TextAlignTiersTest extends TestCase {
 		$css = $this->render_block( 'sgs/text', array( 'text' => 'Hello', 'textAlign' => array( 'desktop' => 'left', 'mobile' => 'center' ) ) )['css'];
 
 		$this->assertMatchesRegularExpression( '/\{[^}]*text-align:left;[^}]*\}/', $css, 'desktop is the base rule' );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:\s*767px\)\s*\{[^{}]*\{[^}]*text-align:center/', $css, 'mobile overrides' );
-		$this->assertDoesNotMatchRegularExpression( '/@media\(max-width:\s*1023px\)\s*\{[^{}]*\{[^}]*text-align/', $css, 'tablet inherits desktop, so it prints nothing' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:\s*767\.98px\)\s*\{[^{}]*\{[^}]*text-align:center/', $css, 'mobile overrides' );
+		$this->assertDoesNotMatchRegularExpression( '/@media\(max-width:\s*1023\.98px\)\s*\{[^{}]*\{[^}]*text-align/', $css, 'tablet inherits desktop, so it prints nothing' );
 	}
 
 	public function test_a_desktop_only_value_prints_one_base_rule_and_no_media_query(): void {
@@ -53,7 +53,7 @@ final class TextAlignTiersTest extends TestCase {
 
 		$tiered = sgs_typography_css_rule( array( 'textAlign' => array( 'desktop' => 'right', 'tablet' => 'left' ) ), '', '.x', '', false, false, array( 'textAlign' ) );
 		$this->assertStringContainsString( '.x{text-align:right;}', $tiered );
-		$this->assertMatchesRegularExpression( '/@media[^{]*1023px[^{]*\{\.x\{text-align:left;\}/', $tiered );
+		$this->assertMatchesRegularExpression( '/@media[^{]*1023\.98px[^{]*\{\.x\{text-align:left;\}/', $tiered );
 	}
 
 	public function test_the_object_attribute_keys_come_from_the_block_schema(): void {

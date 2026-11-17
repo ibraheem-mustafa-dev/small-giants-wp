@@ -93,10 +93,10 @@
             "border-top-left-radius:12px",
             "border-top-right-radius:12px"
         ],
-        "@media(max-width:1023px) || .sgs-form-UID.sgs-form": [
+        "@media(max-width:1023.98px) || .sgs-form-UID.sgs-form": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-form-UID.sgs-form": [
+        "@media(max-width:767.98px) || .sgs-form-UID.sgs-form": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

@@ -125,8 +125,8 @@ final class ContainerPinBelowHeaderTest extends TestCase {
 		$query      = substr( $out['css'], $open, (int) strpos( $out['css'], '{', $open ) - $open );
 
 		$this->assertStringContainsString( '(min-width:1024px)', $query, 'desktop is covered' );
-		$this->assertStringContainsString( '(max-width:1023px)', $query, 'tablet inherits desktop on' );
-		$this->assertStringNotContainsString( '(max-width:767px)', $query, 'mobile is not covered' );
+		$this->assertStringContainsString( '(max-width:1023.98px)', $query, 'tablet inherits desktop on' );
+		$this->assertStringNotContainsString( '(max-width:767.98px)', $query, 'mobile is not covered' );
 		$this->assertStringContainsString( 'position:sticky;bottom:0;', $out['css'], 'mobile keeps its bottom pin' );
 	}
 

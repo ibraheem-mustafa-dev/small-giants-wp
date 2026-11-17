@@ -2,7 +2,7 @@
 	padding: var(--wp--preset--spacing--40, 1.5rem) 20px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
 	.sgs-tiered {
 		padding: var(--wp--preset--spacing--30, 1rem) 12px;
 	}

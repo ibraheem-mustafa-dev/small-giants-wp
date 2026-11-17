@@ -84,10 +84,10 @@
             "border-top-left-radius:12px",
             "border-top-right-radius:12px"
         ],
-        "@media (max-width:1023px) || .wp-block-sgs-text.sgs-text-UID": [
+        "@media (max-width:1023.98px) || .wp-block-sgs-text.sgs-text-UID": [
             "border-top-left-radius:6px"
         ],
-        "@media (max-width:767px) || .wp-block-sgs-text.sgs-text-UID": [
+        "@media (max-width:767.98px) || .wp-block-sgs-text.sgs-text-UID": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

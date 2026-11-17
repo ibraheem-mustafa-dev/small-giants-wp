@@ -2,7 +2,7 @@
 /**
  * Sgs/multi-button: an unset mobile tier inherits the tablet value.
  *
- * The tablet rules print inside a bounded `(min-width:768px) and (max-width:1023px)` query, so
+ * The tablet rules print inside a bounded `(min-width:768px) and (max-width:1023.98px)` query, so
  * they never cascade down to mobile in CSS. The mobile rule must therefore carry the tablet
  * value itself when the mobile tier is unset (Spec 02, per-breakpoint override model).
  * Direction, cross-axis alignment and gap keep their own mobile defaults (the stacked look).
@@ -29,7 +29,7 @@ final class MultiButtonTierInheritanceTest extends TestCase {
 	 * The CSS inside one media query of the block's output.
 	 *
 	 * @param string $css   Rendered CSS.
-	 * @param string $query Media query as printed, e.g. '@media(max-width:767px)'.
+	 * @param string $query Media query as printed, e.g. '@media(max-width:767.98px)'.
 	 * @return string The query's rule body, or '' when absent.
 	 */
 	private function media_body( string $css, string $query ): string {
@@ -52,8 +52,8 @@ final class MultiButtonTierInheritanceTest extends TestCase {
 			)
 		);
 
-		$tablet = $this->media_body( $out['css'], '@media(max-width:1023px) and (min-width:768px)' );
-		$mobile = $this->media_body( $out['css'], '@media(max-width:767px)' );
+		$tablet = $this->media_body( $out['css'], '@media(max-width:1023.98px) and (min-width:768px)' );
+		$mobile = $this->media_body( $out['css'], '@media(max-width:767.98px)' );
 
 		$this->assertStringContainsString( 'justify-content:flex-start;', $tablet );
 		$this->assertStringContainsString( 'justify-content:flex-start;', $mobile, 'mobile carries the tablet value, not the desktop flex-end' );
@@ -78,7 +78,7 @@ final class MultiButtonTierInheritanceTest extends TestCase {
 			)
 		);
 
-		$mobile = $this->media_body( $out['css'], '@media(max-width:767px)' );
+		$mobile = $this->media_body( $out['css'], '@media(max-width:767.98px)' );
 
 		$this->assertStringContainsString( 'justify-content:center;', $mobile );
 		$this->assertStringContainsString( 'flex-wrap:wrap-reverse;', $mobile );
@@ -88,7 +88,7 @@ final class MultiButtonTierInheritanceTest extends TestCase {
 	public function test_with_no_tablet_value_mobile_still_follows_desktop(): void {
 		$out = $this->render_block( 'sgs/multi-button', array( 'justifyContent' => array( 'desktop' => 'flex-end' ) ) );
 
-		$this->assertStringContainsString( 'justify-content:flex-end;', $this->media_body( $out['css'], '@media(max-width:767px)' ) );
+		$this->assertStringContainsString( 'justify-content:flex-end;', $this->media_body( $out['css'], '@media(max-width:767.98px)' ) );
 	}
 
 	public function test_mobile_keeps_its_own_stacked_defaults(): void {
@@ -99,7 +99,7 @@ final class MultiButtonTierInheritanceTest extends TestCase {
 				'alignItems'    => array( 'desktop' => 'center', 'tablet' => 'flex-start' ),
 			)
 		);
-		$mobile = $this->media_body( $out['css'], '@media(max-width:767px)' );
+		$mobile = $this->media_body( $out['css'], '@media(max-width:767.98px)' );
 
 		$this->assertStringContainsString( 'flex-direction:column;', $mobile );
 		$this->assertStringContainsString( 'align-items:stretch;', $mobile );

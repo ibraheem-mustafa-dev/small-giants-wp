@@ -194,10 +194,10 @@
             "animation:none !important",
             "transition:none !important"
         ],
-        "@media(max-width:1023px) || .sgs-sh-UID.sgs-site-header": [
+        "@media(max-width:1023.98px) || .sgs-sh-UID.sgs-site-header": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-sh-UID.sgs-site-header": [
+        "@media(max-width:767.98px) || .sgs-sh-UID.sgs-site-header": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

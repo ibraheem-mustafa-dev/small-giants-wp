@@ -140,10 +140,10 @@
             "border-top-left-radius:12px",
             "border-top-right-radius:12px"
         ],
-        "@media(max-width:1023px) || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
+        "@media(max-width:1023.98px) || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
+        "@media(max-width:767.98px) || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

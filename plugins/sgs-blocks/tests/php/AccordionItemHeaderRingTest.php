@@ -31,7 +31,7 @@ final class AccordionItemHeaderRingTest extends TestCase {
 		$out = $this->render_block( 'sgs/accordion-item', self::ITEM + array( 'borderRadius' => array( 'desktop' => $box, 'mobile' => $box ) ) );
 
 		$this->assertMatchesRegularExpression( '/\.wp-block-sgs-accordion-item > \.sgs-accordion-item__header\{[^}]*radius[^}]*999px/', $out['css'] );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^{]*> \.sgs-accordion-item__header\{[^}]*radius/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{[^{]*> \.sgs-accordion-item__header\{[^}]*radius/', $out['css'] );
 		$this->assertStringContainsString( '[open] > .sgs-accordion-item__header{border-bottom-left-radius:0;border-bottom-right-radius:0}', $out['css'] );
 		$this->assertStringNotContainsString( 'overflow', $out['css'] );
 	}

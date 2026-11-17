@@ -131,10 +131,10 @@
             "border-top-right-radius:12px",
             "color:var(--wp--preset--color--text,currentColor)"
         ],
-        "@media(max-width:1023px) || .sgs-tb-1.wp-block-sgs-trust-bar": [
+        "@media(max-width:1023.98px) || .sgs-tb-1.wp-block-sgs-trust-bar": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-tb-1.wp-block-sgs-trust-bar": [
+        "@media(max-width:767.98px) || .sgs-tb-1.wp-block-sgs-trust-bar": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

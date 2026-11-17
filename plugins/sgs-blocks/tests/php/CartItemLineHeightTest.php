@@ -51,7 +51,7 @@ final class CartItemLineHeightTest extends TestCase {
 		$detail = sgs_typography_css_rule( $attributes, 'itemDetail', self::PANEL . ' .sgs-cart__item-details', '', false, false, $this->object_keys() );
 
 		$this->assertStringContainsString( self::PANEL . ' .sgs-cart__item-name{line-height:1.2;}', $name );
-		$this->assertMatchesRegularExpression( '/@media[^{]*767px[^{]*\{[^{}]*\.sgs-cart__item-name\{line-height:1\.1;\}/', $name );
+		$this->assertMatchesRegularExpression( '/@media[^{]*767\.98px[^{]*\{[^{}]*\.sgs-cart__item-name\{line-height:1\.1;\}/', $name );
 		$this->assertStringContainsString( self::PANEL . ' .sgs-cart__item-details{line-height:1.6;}', $detail );
 	}
 

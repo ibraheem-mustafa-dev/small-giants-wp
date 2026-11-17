@@ -201,10 +201,10 @@
         " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__ribbon": [
             "background-color:var(--sgs-pt-ribbon-bg,var(--wp--preset--color--accent,#d4a843))"
         ],
-        "@media(max-width:1023px) || .sgs-pricing-UID.wp-block-sgs-pricing-table": [
+        "@media(max-width:1023.98px) || .sgs-pricing-UID.wp-block-sgs-pricing-table": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-pricing-UID.wp-block-sgs-pricing-table": [
+        "@media(max-width:767.98px) || .sgs-pricing-UID.wp-block-sgs-pricing-table": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

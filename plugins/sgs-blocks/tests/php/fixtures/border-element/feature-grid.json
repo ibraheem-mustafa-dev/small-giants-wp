@@ -7,11 +7,11 @@
             "grid-template-columns:repeat(4,1fr)",
             "justify-items:stretch"
         ],
-        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:1023.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:24px",
             "grid-template-columns:repeat(2,1fr)"
         ],
-        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:767.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:16px",
             "grid-template-columns:repeat(1,1fr)"
         ]
@@ -27,11 +27,11 @@
             "grid-template-columns:repeat(4,1fr)",
             "justify-items:stretch"
         ],
-        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:1023.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:24px",
             "grid-template-columns:repeat(2,1fr)"
         ],
-        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:767.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:16px",
             "grid-template-columns:repeat(1,1fr)"
         ]
@@ -47,11 +47,11 @@
             "grid-template-columns:repeat(4,1fr)",
             "justify-items:stretch"
         ],
-        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:1023.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:24px",
             "grid-template-columns:repeat(2,1fr)"
         ],
-        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:767.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:16px",
             "grid-template-columns:repeat(1,1fr)"
         ]
@@ -66,11 +66,11 @@
             "grid-template-columns:repeat(4,1fr)",
             "justify-items:stretch"
         ],
-        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:1023.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:24px",
             "grid-template-columns:repeat(2,1fr)"
         ],
-        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:767.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:16px",
             "grid-template-columns:repeat(1,1fr)"
         ]
@@ -85,11 +85,11 @@
             "grid-template-columns:repeat(4,1fr)",
             "justify-items:stretch"
         ],
-        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:1023.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:24px",
             "grid-template-columns:repeat(2,1fr)"
         ],
-        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:767.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:16px",
             "grid-template-columns:repeat(1,1fr)"
         ]
@@ -103,11 +103,11 @@
             "grid-template-columns:repeat(4,1fr)",
             "justify-items:stretch"
         ],
-        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:1023.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:24px",
             "grid-template-columns:repeat(2,1fr)"
         ],
-        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:767.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:16px",
             "grid-template-columns:repeat(1,1fr)"
         ]
@@ -138,11 +138,11 @@
             "pointer-events:none",
             "position:absolute"
         ],
-        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:1023.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:24px",
             "grid-template-columns:repeat(2,1fr)"
         ],
-        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:767.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:16px",
             "grid-template-columns:repeat(1,1fr)"
         ]
@@ -156,11 +156,11 @@
             "grid-template-columns:repeat(4,1fr)",
             "justify-items:stretch"
         ],
-        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:1023.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:24px",
             "grid-template-columns:repeat(2,1fr)"
         ],
-        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:767.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:16px",
             "grid-template-columns:repeat(1,1fr)"
         ]
@@ -177,18 +177,18 @@
             "grid-template-columns:repeat(4,1fr)",
             "justify-items:stretch"
         ],
-        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:1023.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:24px",
             "grid-template-columns:repeat(2,1fr)"
         ],
-        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media (max-width:767.98px) || .sgs-fg-1.sgs-feature-grid": [
             "gap:16px",
             "grid-template-columns:repeat(1,1fr)"
         ],
-        "@media(max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media(max-width:1023.98px) || .sgs-fg-1.sgs-feature-grid": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+        "@media(max-width:767.98px) || .sgs-fg-1.sgs-feature-grid": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

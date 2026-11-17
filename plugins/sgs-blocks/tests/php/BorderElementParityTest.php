@@ -632,8 +632,8 @@ final class BorderElementParityTest extends TestCase {
 	}
 
 	/**
-	 * Key the map with no space between an at-rule name and its condition, so `@media (max-width:1023px)` and
-	 * `@media(max-width:1023px)` (the same rule, printed through SGS_Breakpoints::media()) compare equal.
+	 * Key the map with no space between an at-rule name and its condition, so `@media (max-width:1023.98px)` and
+	 * `@media(max-width:1023.98px)` (the same rule, printed through SGS_Breakpoints::media()) compare equal.
 	 *
 	 * @param array<string, array<int, string>> $map Declaration map.
 	 * @return array<string, array<int, string>>

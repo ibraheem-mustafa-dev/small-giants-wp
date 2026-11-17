@@ -175,7 +175,7 @@ foreach ( $typos as $typo ) {
 
 // 4) A tier-only value stays in its tier, a wrapped row reads the desktop value only.
 $tab = sgs_account_cells_css( array( 'menuTabRowMarginBottom' => array( 'tablet' => '24px' ) ), $root );
-ok( false !== strpos( $tab, '@media(max-width:1023px){' . $root . '.sgs-account nav.woocommerce-MyAccount-navigation{margin-bottom:24px;}}' ) && 0 === strpos( $tab, '@media' ), 'a tablet-only value prints only inside the tablet query' );
+ok( false !== strpos( $tab, '@media(max-width:1023.98px){' . $root . '.sgs-account nav.woocommerce-MyAccount-navigation{margin-bottom:24px;}}' ) && 0 === strpos( $tab, '@media' ), 'a tablet-only value prints only inside the tablet query' );
 $side = sgs_account_cells_css( array( 'menuSidebarBorderWidth' => array( 'desktop' => '1px', 'tablet' => '5px' ) ), $root );
 ok( 0 === strpos( $side, '@media(min-width:1024px){' ) && false === strpos( $side, '5px' ), 'the desktop sidebar line prints only inside the 1024px query, desktop value only' );
 

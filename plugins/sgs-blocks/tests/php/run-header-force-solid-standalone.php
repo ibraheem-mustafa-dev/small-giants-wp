@@ -127,7 +127,7 @@ ok( false === strpos( $none, '--wp--preset--color--surface' ), 'no force-solid t
 
 // Force-solid alone (no transparency anywhere) still paints its tier.
 $solo = render_merge( array( 'contrastSafe' => array( 'mobile' => 'force-solid' ) ), true );
-ok( false !== strpos( $solo, '@media (max-width:767px){.hdr{background:var(--wp--preset--color--surface,#ffffff) !important;}}' ), 'force-solid alone paints only its tier' );
+ok( false !== strpos( $solo, '@media (max-width:767.98px){.hdr{background:var(--wp--preset--color--surface,#ffffff) !important;}}' ), 'force-solid alone paints only its tier' );
 
 // Tier helper.
 $tiers = sgs_header_force_solid_tiers( array( 'desktop' => 'none', 'mobile' => 'force-solid' ) );

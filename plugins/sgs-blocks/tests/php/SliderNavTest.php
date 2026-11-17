@@ -289,7 +289,7 @@ final class SliderNavTest extends TestCase {
 			}
 		}
 		$this->assertStringContainsString( '"prev rail next"', $side );
-		$mobile = $this->bodies( '.sgs-slider-nav--sides', 'max-width: 767px' );
+		$mobile = $this->bodies( '.sgs-slider-nav--sides', 'max-width: 767.98px' );
 		$this->assertStringContainsString( '"lead prev next"', $mobile, 'under 768px the arrows sit under the rail' );
 		$this->assertStringNotContainsString( '"prev rail next"', $mobile );
 	}

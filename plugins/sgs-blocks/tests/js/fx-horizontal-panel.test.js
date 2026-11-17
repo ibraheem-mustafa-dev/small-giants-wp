@@ -192,7 +192,7 @@ describe( 'createState', () => {
 
 /*
  * Per-device parameters (FR-38A-38, FR-38A-39). The emitter writes each per-device value as a custom property: the
- * desktop value in the base rule, tablet and mobile inside `@media (max-width:1023px)` and `(max-width:767px)`
+ * desktop value in the base rule, tablet and mobile inside `@media (max-width:1023.98px)` and `(max-width:767.98px)`
  * (`Sgs_Motion_Effect_Properties::css`). jsdom applies no media query, so `stylesheetAt` stands in for the browser's
  * cascade of those rules, decided by the mocked `window.matchMedia` at the current width.
  */
@@ -241,8 +241,8 @@ describe( 'per-device parameters', () => {
 	/** The emitted rules as the browser cascades them at the current width. */
 	const stylesheetAt = () => ( {
 		...TIERED.desktop,
-		...( matches( '(max-width: 1023px)' ) ? TIERED.tablet : {} ),
-		...( matches( '(max-width: 767px)' ) ? TIERED.mobile : {} ),
+		...( matches( '(max-width: 1023.98px)' ) ? TIERED.tablet : {} ),
+		...( matches( '(max-width: 767.98px)' ) ? TIERED.mobile : {} ),
 	} );
 
 	const resize = ( next ) => {

@@ -66,7 +66,7 @@ $css = sgs_container_pin_edge_css(
 		'padding' => array( 'desktop' => array( 'bottom' => '16px' ) ),
 	)
 );
-ok( 0 === strpos( $css, '@media (max-width:767px){' ), 'pin: mobile-only bottom sits inside the mobile query only' );
+ok( 0 === strpos( $css, '@media (max-width:767.98px){' ), 'pin: mobile-only bottom sits inside the mobile query only' );
 ok( false !== strpos( $css, 'position:sticky;bottom:0;z-index:2;padding-bottom:calc(16px + env(safe-area-inset-bottom, 0px)) !important;' ), 'pin: bottom sticks at 0, sits above siblings and adds the safe area to the cascaded padding' );
 $css = sgs_container_pin_edge_css( $sel, array( 'pinEdge' => array( 'desktop' => 'top' ) ) );
 ok( 0 === strpos( $css, $sel . '{position:sticky;top:0;' ) && false !== strpos( $css, 'padding-top:env(safe-area-inset-top, 0px) !important' ), 'pin: top on every device needs no media query and pads by the top inset' );
@@ -79,7 +79,7 @@ $css = sgs_container_pin_edge_css(
 		),
 	)
 );
-ok( false !== strpos( $css, '(min-width:1024px),(min-width:768px) and (max-width:1023px)' ) && false === strpos( $css, '(max-width:767px)' ), 'pin: a tier set to none gets no rule' );
+ok( false !== strpos( $css, '(min-width:1024px),(min-width:768px) and (max-width:1023.98px)' ) && false === strpos( $css, '(max-width:767.98px)' ), 'pin: a tier set to none gets no rule' );
 
 // ── Drawer top row extras ────────────────────────────────────────────────────
 $root_sel = '.sgs-nav-drawer-x.wp-block-sgs-nav-drawer';

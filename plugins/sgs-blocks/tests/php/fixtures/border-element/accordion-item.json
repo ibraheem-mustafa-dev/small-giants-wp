@@ -137,17 +137,17 @@
         " || .sgs-accordion-item-UID.wp-block-sgs-accordion-item[open]>.sgs-accordion-item__header,.sgs-accordion-item-UID.wp-block-sgs-accordion-item[open]>summary>.sgs-accordion-item__header": [
             "font-weight:700"
         ],
-        "@media(max-width:1023px) || .sgs-accordion-item-UID.wp-block-sgs-accordion-item": [
+        "@media(max-width:1023.98px) || .sgs-accordion-item-UID.wp-block-sgs-accordion-item": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:1023px) || .sgs-accordion-item-UID.wp-block-sgs-accordion-item>.sgs-accordion-item__header": [
+        "@media(max-width:1023.98px) || .sgs-accordion-item-UID.wp-block-sgs-accordion-item>.sgs-accordion-item__header": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-accordion-item-UID.wp-block-sgs-accordion-item": [
+        "@media(max-width:767.98px) || .sgs-accordion-item-UID.wp-block-sgs-accordion-item": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ],
-        "@media(max-width:767px) || .sgs-accordion-item-UID.wp-block-sgs-accordion-item>.sgs-accordion-item__header": [
+        "@media(max-width:767.98px) || .sgs-accordion-item-UID.wp-block-sgs-accordion-item>.sgs-accordion-item__header": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

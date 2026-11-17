@@ -247,10 +247,10 @@
         " || .sgs-bcr-UID .sgs-breadcrumbs__separator": [
             "color:var(--wp--preset--color--text-muted,currentColor)"
         ],
-        "@media(max-width:1023px) || .sgs-bcr-UID": [
+        "@media(max-width:1023.98px) || .sgs-bcr-UID": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-bcr-UID": [
+        "@media(max-width:767.98px) || .sgs-bcr-UID": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

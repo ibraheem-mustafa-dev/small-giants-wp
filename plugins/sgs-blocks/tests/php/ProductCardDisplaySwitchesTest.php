@@ -59,7 +59,7 @@ final class ProductCardDisplaySwitchesTest extends TestCase {
 
 	public function test_description_per_device(): void {
 		$tier = $this->card( array( 'showDescriptionTier' => array( 'mobile' => 'off' ) ) );
-		$this->assertMatchesRegularExpression( '/@media[^{]*max-width:767px[^{]*\{[^{]*sgs-product-card__description[^{]*\{display:none;\}/', $tier['css'] );
+		$this->assertMatchesRegularExpression( '/@media[^{]*max-width:767.98px[^{]*\{[^{]*sgs-product-card__description[^{]*\{display:none;\}/', $tier['css'] );
 		$this->assertStringContainsString( 'A short description', $tier['html'], 'the markup stays; only CSS hides it' );
 
 		$this->assertSame( $this->card()['css'], $this->card( array( 'showDescriptionTier' => array() ) )['css'], 'negative control: an empty tier object emits nothing' );
@@ -69,7 +69,7 @@ final class ProductCardDisplaySwitchesTest extends TestCase {
 
 	public function test_card_padding_on_tablet_and_mobile(): void {
 		$out = $this->card( array( 'cardPadding' => array( 'top' => '20', 'right' => '20', 'bottom' => '20', 'left' => '20' ), 'cardPaddingTier' => array( 'mobile' => array( 'top' => '8', 'right' => '8', 'bottom' => '8', 'left' => '8' ) ) ) );
-		$this->assertMatchesRegularExpression( '/@media[^{]*max-width:767px[^{]*\{[^{]*sgs-product-card__body[^{]*\{[^}]*padding-top:8px/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media[^{]*max-width:767.98px[^{]*\{[^{]*sgs-product-card__body[^{]*\{[^}]*padding-top:8px/', $out['css'] );
 
 		$base = $this->card( array( 'cardPadding' => array( 'top' => '20', 'right' => '20', 'bottom' => '20', 'left' => '20' ) ) );
 		$this->assertStringNotContainsString( 'padding-top:8px', $base['css'], 'negative control: no tier, no tier rule' );

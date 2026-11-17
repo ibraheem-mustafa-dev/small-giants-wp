@@ -13,7 +13,7 @@ const viewPath = process.env.SGS_J7_VIEW || path.join( root, 'src/header-behavio
 const php = fs.readFileSync( phpPath, 'utf8' );
 const match = php.match( /<<<'JS'\r?\n([\s\S]*?)\r?\nJS\r?\n/ );
 const script = match
-	? match[ 1 ].replace( '__SGS_MOBILE_QUERY__', '(max-width:767px)' ).replace( '__SGS_TABLET_QUERY__', '(max-width:1023px)' )
+	? match[ 1 ].replace( '__SGS_MOBILE_QUERY__', '(max-width:767.98px)' ).replace( '__SGS_TABLET_QUERY__', '(max-width:1023.98px)' )
 	: '';
 
 const ROW = '<div class="sgs-site-header-row--middle sgs-row-behaviour" data-sgs-row-shrink="desktop tablet"></div>';
@@ -35,7 +35,7 @@ function run( { type = 'reload', hash = '', flag = '1', reduced = false, width =
 	}
 	window.performance.getEntriesByType = () => [ { type } ];
 	window.matchMedia = ( q ) => ( {
-		matches: q.includes( 'reduced-motion' ) ? reduced : q === '(max-width:767px)' ? width <= 767 : q === '(max-width:1023px)' ? width <= 1023 : false,
+		matches: q.includes( 'reduced-motion' ) ? reduced : q === '(max-width:767.98px)' ? width <= 767 : q === '(max-width:1023.98px)' ? width <= 1023 : false,
 	} );
 	window.scrollTo = jest.fn();
 	window.history.scrollRestoration = 'auto';

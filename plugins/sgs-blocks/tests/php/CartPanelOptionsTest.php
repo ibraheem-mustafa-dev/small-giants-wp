@@ -84,7 +84,7 @@ final class CartPanelOptionsTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/' . preg_quote( $s, '/' ) . '\{[^}]*border-width:1px/', $css );
 		$this->assertStringContainsString( $s . '{border-radius:12px;}', $css );
 		$this->assertStringContainsString( $s . '{--sgs-cart-qty-height:40px;}', $css );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^}]*--sgs-cart-qty-height:36px/', $css );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{[^}]*--sgs-cart-qty-height:36px/', $css );
 		$this->assertStringContainsString( $s . '{font-size:15px;}', $css );
 		$this->assertStringContainsString( $s . '{font-weight:700;}', $css );
 	}

@@ -96,7 +96,7 @@ beforeEach( () => {
 
 describe( 'the viewport stub', () => {
 	test( 'CONTROL: a resize updates matches and fires the listener of a query that flips', () => {
-		const list = window.matchMedia( '(max-width: 767px)' );
+		const list = window.matchMedia( '(max-width: 767.98px)' );
 		const calls = [];
 		list.addEventListener( 'change', ( event ) =>
 			calls.push( event.matches )

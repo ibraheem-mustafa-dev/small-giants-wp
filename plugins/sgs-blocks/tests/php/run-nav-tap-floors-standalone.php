@@ -69,7 +69,7 @@ ok( false !== strpos( $burger, '.u .sgs-nav-bar-menu__burger{width:30px;height:3
 $burger_default = sgs_nav_bar_menu_trigger_css( array(), '.u' );
 ok( false !== strpos( $burger_default, 'width:44px;height:44px;min-width:44px;min-height:44px;--sgs-burger-tap-min:0px;' ), 'burger: the 44px default prints its own size, so the hit area is the 44px box' );
 $burger_tier = sgs_nav_bar_menu_trigger_css( array( 'burgerWidth' => array( 'mobile' => '30px' ) ), '.u' );
-ok( false !== strpos( $burger_tier, '@media (max-width:767px){.u .sgs-nav-bar-menu__burger{width:30px;height:44px;min-width:30px;min-height:44px;--sgs-burger-tap-min:0px;}}' ), 'burger: a mobile-only width prints the flag with that tier\'s rule' );
+ok( false !== strpos( $burger_tier, '@media (max-width:767.98px){.u .sgs-nav-bar-menu__burger{width:30px;height:44px;min-width:30px;min-height:44px;--sgs-burger-tap-min:0px;}}' ), 'burger: a mobile-only width prints the flag with that tier\'s rule' );
 
 // Caret size: the sub-toggle hit area flag follows it.
 $caret = sgs_nav_menu_caret_css( '.u', 'sgs-nav-bar-menu', array( 'submenuCaretSize' => '12px' ) );
@@ -78,7 +78,7 @@ ok( false === strpos( sgs_nav_menu_caret_css( '.u', 'sgs-nav-bar-menu', array() 
 
 // Drawer expander: caretBoxSize prints the flag only in the tiers it is set.
 $box_mobile = sgs_nav_drawer_menu_caret_box_css( array( 'caretBoxSize' => array( 'mobile' => '30px' ) ), '.u' );
-ok( 1 === preg_match( '/@media ?\(max-width:767px\)\{\.u\{--sgs-ndm-caret-tap-min:0px;\}\}/', $box_mobile ) && 1 === substr_count( $box_mobile, '--sgs-ndm-caret-tap-min' ), 'drawer expander: a mobile-only caretBoxSize lifts the floor at mobile only' );
+ok( 1 === preg_match( '/@media ?\(max-width:767.98px\)\{\.u\{--sgs-ndm-caret-tap-min:0px;\}\}/', $box_mobile ) && 1 === substr_count( $box_mobile, '--sgs-ndm-caret-tap-min' ), 'drawer expander: a mobile-only caretBoxSize lifts the floor at mobile only' );
 $box_desktop = sgs_nav_drawer_menu_caret_box_css( array( 'caretBoxSize' => array( 'desktop' => '30px' ) ), '.u' );
 ok( false !== strpos( $box_desktop, '.u{--sgs-ndm-caret-tap-min:0px;}' ), 'drawer expander: a desktop caretBoxSize prints the flag outside any media query' );
 ok( false === strpos( sgs_nav_drawer_menu_caret_box_css( array( 'caretBoxBg' => 'primary' ), '.u' ), 'tap-min' ), 'drawer expander: a fill without a size keeps the floor' );

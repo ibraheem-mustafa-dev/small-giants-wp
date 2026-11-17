@@ -147,10 +147,10 @@
             "width:-webkit-fill-available",
             "width:stretch"
         ],
-        "@media(max-width:1023px) || .sgs-shr-UID.sgs-site-header-row": [
+        "@media(max-width:1023.98px) || .sgs-shr-UID.sgs-site-header-row": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-shr-UID.sgs-site-header-row": [
+        "@media(max-width:767.98px) || .sgs-shr-UID.sgs-site-header-row": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

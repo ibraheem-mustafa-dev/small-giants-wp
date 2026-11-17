@@ -79,7 +79,7 @@ function cssMaxWidths( raw ) {
 	// false positive inspector-scan rule 18 hit with a literal <img in a comment.
 	const text = raw.replace( /\/\*[\s\S]*?\*\//g, ' ' );
 	const out = [];
-	const re = /max-width:\s*(\d+)px/g;
+	const re = /max-width:\s*(\d+(?:\.\d+)?)px/g;
 	let m;
 	while ( ( m = re.exec( text ) ) !== null ) {
 		const n = Number( m[ 1 ] );
@@ -117,7 +117,8 @@ function evaluate( cssText, phpText, jsText ) {
 		);
 	}
 
-	const expected = [ php.mobile, php.tablet ].sort( ( a, b ) => a - b );
+	// An upper bound is the tier maximum plus .98, so a fractional viewport matches exactly one tier.
+	const expected = [ php.mobile + 0.98, php.tablet + 0.98 ].sort( ( a, b ) => a - b );
 	const unexpected = widths.filter( ( w ) => ! expected.includes( w ) );
 
 	unexpected.forEach( ( w ) =>
@@ -157,7 +158,7 @@ function selfTest() {
 	const cases = [];
 	const ck = ( n, c ) => cases.push( [ n, c ] );
 
-	const good = '@media (max-width: 1023px){} @media (max-width: 767px){}';
+	const good = '@media (max-width: 1023.98px){} @media (max-width: 767.98px){}';
 	ck( 'a correct stylesheet passes', evaluate( good, PHP, JS ).problems.length === 0 );
 
 	// NEGATIVE CONTROL — the exact live drift in extensions.css.
@@ -170,7 +171,7 @@ function selfTest() {
 	);
 
 	// A stylesheet that restates only one breakpoint, or none, is fine: the renderer prints the tier rules.
-	const half = '@media (max-width: 767px){}';
+	const half = '@media (max-width: 767.98px){}';
 	ck( 'a stylesheet using one breakpoint passes', evaluate( half, PHP, JS ).problems.length === 0 );
 
 	// Fails closed when the source cannot be read, rather than assuming 767/1023.
@@ -186,8 +187,8 @@ function selfTest() {
 
 	// A breakpoint quoted inside a COMMENT must not be read as a rule.
 	const commented =
-		'/* never use max-width: 768px here */ @media (max-width: 1023px){} ' +
-		'@media (max-width: 767px){}';
+		'/* never use max-width: 768px here */ @media (max-width: 1023.98px){} ' +
+		'@media (max-width: 767.98px){}';
 	ck(
 		'a bad breakpoint inside a COMMENT is ignored',
 		evaluate( commented, PHP, JS ).problems.length === 0

@@ -213,10 +213,10 @@
             "--sgs-card-grid-columns:3",
             "--sgs-card-grid-gap:30px"
         ],
-        "@media(max-width:1023px) || .sgs-cg-UID.wp-block-sgs-card-grid": [
+        "@media(max-width:1023.98px) || .sgs-cg-UID.wp-block-sgs-card-grid": [
             "border-top-left-radius:6px"
         ],
-        "@media(max-width:767px) || .sgs-cg-UID.wp-block-sgs-card-grid": [
+        "@media(max-width:767.98px) || .sgs-cg-UID.wp-block-sgs-card-grid": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
         ]

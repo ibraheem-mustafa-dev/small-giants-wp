@@ -49,7 +49,7 @@ final class BusinessInfoHoursRowPaddingTest extends TestCase {
 		);
 
 		$this->assertMatchesRegularExpression( '/\.sgs-biz-[0-9a-f]{8}\{--sgs-bi-hours-row-pad-top:0px;--sgs-bi-hours-row-pad-bottom:0px;\}/', $out['css'] );
-		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-biz-[0-9a-f]{8}\{--sgs-bi-hours-row-pad-top:4px;\}\}/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767.98px\)\{\.sgs-biz-[0-9a-f]{8}\{--sgs-bi-hours-row-pad-top:4px;\}\}/', $out['css'] );
 		$this->assertStringNotContainsString( 'style="', $out['html'] );
 	}
 
