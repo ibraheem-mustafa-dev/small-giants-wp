@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13081,
+    "row_count": 13087,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1448,8 +1448,12 @@
     "sgs/account::registerButtonPreset": "select-from-enum",
     "sgs/account::registerFirstNameLabel": null,
     "sgs/account::registerHintMarginTop": "layout",
+    "sgs/account::registerLastNameLabel": null,
+    "sgs/account::registerMarketingOptInLabel": null,
     "sgs/account::registerPasswordHint": "text-content",
     "sgs/account::registerShowFirstName": "boolean-visibility",
+    "sgs/account::registerShowLastName": "boolean-visibility",
+    "sgs/account::registerShowMarketingOptIn": "boolean-visibility",
     "sgs/account::rememberCheckboxSize": "select-from-enum",
     "sgs/account::resetErrorLineFontFamily": "typography",
     "sgs/account::resetErrorLineFontSize": "typography",
@@ -1515,6 +1519,8 @@
     "sgs/account::showMenuIcons": "boolean-visibility",
     "sgs/account::showOrderTracking": "boolean-visibility",
     "sgs/account::showQuickCards": "boolean-visibility",
+    "sgs/account::signedInRedirectUrl": "content",
+    "sgs/account::signedInRedirectUrlSource": null,
     "sgs/account::signedOutActionsFlexWrap": "layout",
     "sgs/account::signedOutButtonGap": "layout",
     "sgs/account::signedOutButtonMinHeight": "layout",
