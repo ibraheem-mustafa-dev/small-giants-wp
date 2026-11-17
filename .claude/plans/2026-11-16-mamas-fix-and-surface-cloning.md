@@ -156,9 +156,9 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Status: not started
 
 ### Task 11: Checkout and order confirmation
-- Why: Bean's Checkout note stops mid-sentence, and the confirmation page waits on a test purchase. Read first: the register's last two sections
-- Changes: the main session lists the checkout's differences from the draft with screenshot pairs for Bean to tick; the ticked ones are fixed (card fields through `sgsStripeMatchFields`); a Stripe test order is placed and the confirmation page shown to Bean beside the draft
-- Touches: checkout and order-confirmation templates on `local-mamas`; `mamas-test`
+- Why: Checkout 1 names no single fault: Bean says the checkout's problems are mainly the ones already solved on Eye Care's test site, and the confirmation page waits on a test purchase. Read first: the register's last two sections; `sites/eye-care-ward-end/build/qa/decided.md` and the checkout on `eye-care-test` (read only: its saved Checkout block settings, its Custom CSS and the checkout commits in `git log`)
+- Changes: the diagnosis lists what was fixed on Eye Care's checkout and which of those faults Mama's has, then any difference from Mama's draft that remains, with screenshot pairs; a fix made in a block for Eye Care is already live here, so what remains is this site's settings (card fields through `sgsStripeMatchFields`) and anything Eye Care solved with its own Custom CSS, which is moved into the block if both sites need it; a Stripe test order is placed and the confirmation page shown to Bean beside the draft
+- Touches: checkout and order-confirmation templates on `local-mamas`; a checkout block if a shared fix belongs there; `mamas-test`
 - Done when: Bean has closed the checkout list and seen the confirmation page of a paid test order
 - Depends on: Task 9
 - Status: not started

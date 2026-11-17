@@ -166,7 +166,7 @@ Bean's own words, one item per line, each given an ID (`<Section> <number>`) so 
 
 ## Checkout
 
-- **Checkout 1:** Generally pretty accurate but it has several areas where there are differences and where it's just really ugly and broken looking. I'm not listing every single one because these are mainly just
+- **Checkout 1:** Generally pretty accurate but it has several areas where there are differences and where it's just really ugly and broken looking. I'm not listing every single one because these are mainly issues we already had to deal with for eye care test.
 
 ## Order confirmation
 
