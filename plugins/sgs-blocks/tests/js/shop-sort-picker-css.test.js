@@ -34,8 +34,8 @@ describe( 'sort dropdown picker', () => {
 		expect( block ).not.toBe( '' );
 	} );
 
-	test( 'opts the select and its picker into base-select, not in the native-arrow case', () => {
-		expect( block ).toMatch( /body:not\(\.sgs-shop-sort-native\) select\.orderby[^{]*\{[^}]*appearance:\s*base-select/ );
+	test( 'opts the select and its picker into base-select, only under the opt-in body class', () => {
+		expect( block ).toMatch( /body\.sgs-shop-sort-joined select\.orderby[^{]*\{[^}]*appearance:\s*base-select/ );
 		expect( block ).toMatch( /select\.orderby::picker\(select\)[^{]*\{[^}]*appearance:\s*base-select/ );
 	} );
 

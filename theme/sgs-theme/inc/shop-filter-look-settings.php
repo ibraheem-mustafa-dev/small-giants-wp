@@ -117,6 +117,7 @@ function register_shop_filter_look_settings( \WP_Customize_Manager $wp_customize
 			'choices' => array(
 				'theme'   => __( 'The theme\'s arrow', 'sgs-theme' ),
 				'browser' => __( 'The browser\'s own arrow', 'sgs-theme' ),
+				'joined'  => __( 'A list joined to the button (Chrome and Edge; other browsers keep the theme\'s arrow)', 'sgs-theme' ),
 			),
 		)
 	);
@@ -140,7 +141,7 @@ function sanitize_shop_filter_look_number( $value ): string {
  * @return string
  */
 function sanitize_shop_sort_arrow( $value ): string {
-	return 'browser' === $value ? 'browser' : 'theme';
+	return in_array( $value, array( 'browser', 'joined' ), true ) ? $value : 'theme';
 }
 
 /**
@@ -177,15 +178,18 @@ function output_shop_filter_look_style(): void {
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\output_shop_filter_look_style', 20 );
 
 /**
- * `sgs-shop-sort-native` on <body> when the sort menu keeps the browser's arrow,
+ * `sgs-shop-sort-native` on <body> when the sort menu keeps the browser's arrow, `sgs-shop-sort-joined` when its open list joins the button,
  * `sgs-shop-drawer-caps` when the drawer's buttons are in capitals.
  *
  * @param string[] $classes Body classes.
  * @return string[]
  */
 function add_shop_filter_look_body_class( array $classes ): array {
-	if ( 'browser' === get_theme_mod( 'sgs_shop_sort_arrow', 'theme' ) ) {
+	$arrow = get_theme_mod( 'sgs_shop_sort_arrow', 'theme' );
+	if ( 'browser' === $arrow ) {
 		$classes[] = 'sgs-shop-sort-native';
+	} elseif ( 'joined' === $arrow ) {
+		$classes[] = 'sgs-shop-sort-joined';
 	}
 	if ( wp_validate_boolean( get_theme_mod( 'sgs_shop_drawer_caps', false ) ) ) {
 		$classes[] = 'sgs-shop-drawer-caps';

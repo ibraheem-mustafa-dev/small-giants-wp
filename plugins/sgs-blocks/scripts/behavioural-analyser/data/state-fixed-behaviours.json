@@ -3023,27 +3023,27 @@
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": "body:not(.sgs-shop-sort-native) select.orderby:open",
+   "selector": "body.sgs-shop-sort-joined select.orderby:open",
    "reason": "the sort button squares its bottom corners while its list is open so the two read as one joined shape; geometry only, no colour"
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": "body:not(.sgs-shop-sort-native) select.orderby:open::picker-icon",
+   "selector": "body.sgs-shop-sort-joined select.orderby:open::picker-icon",
    "reason": "the button arrow turns over while the list is open; a 180 degree rotation with no colour, removed by reduced motion"
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": "body:not(.sgs-shop-sort-native) select.orderby option:hover",
+   "selector": "body.sgs-shop-sort-joined select.orderby option:hover",
    "reason": "an option under the pointer gets a 10% tint of the text colour as fixed feedback inside the sort list"
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": "body:not(.sgs-shop-sort-native) select.orderby option:focus-visible",
+   "selector": "body.sgs-shop-sort-joined select.orderby option:focus-visible",
    "reason": "the keyboard-focused option gets the same 10% tint of the text colour as the hovered one"
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": "body:not(.sgs-shop-sort-native) select.orderby option:checked",
+   "selector": "body.sgs-shop-sort-joined select.orderby option:checked",
    "reason": "the chosen option reads bold inside the sort list; weight only"
   }
  ]
