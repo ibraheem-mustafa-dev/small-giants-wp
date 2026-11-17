@@ -120,11 +120,38 @@ function output_shop_layout_style(): void {
 			$css .= $property . ':' . $value . 'px;';
 		}
 	}
+	$longest = shop_sort_longest_label();
+	if ( $longest > 0 ) {
+		$css .= '--sgs-shop-sort-chars:' . $longest . ';';
+	}
 	if ( '' !== $css ) {
 		wp_add_inline_style( 'sgs-woocommerce', ':root{' . $css . '}' );
 	}
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\output_shop_layout_style', 20 );
+
+/**
+ * The character count of the longest label in the site's own sort menu
+ * (`sgs_shop_sort_menu`), or 0 when the site keeps WooCommerce's menu. The
+ * joined sort button reads it to be as wide as its list and no wider.
+ *
+ * @return int
+ */
+function shop_sort_longest_label(): int {
+	$menu = trim( (string) get_theme_mod( 'sgs_shop_sort_menu', '' ) );
+	if ( '' === $menu ) {
+		return 0;
+	}
+	$longest = 0;
+	foreach ( preg_split( '/\r\n|\r|\n/', $menu ) as $line ) {
+		$parts = array_map( 'trim', explode( '|', $line, 2 ) );
+		if ( 2 === count( $parts ) && '' !== $parts[1] ) {
+			$length  = function_exists( 'mb_strlen' ) ? mb_strlen( $parts[1] ) : strlen( $parts[1] );
+			$longest = max( $longest, $length );
+		}
+	}
+	return $longest;
+}
 
 /**
  * Sanitise the toggle's source.

@@ -2769,12 +2769,20 @@ body.sgs-shop-sort-native .wp-block-woocommerce-product-sort-select select {
 	body.sgs-shop-sort-joined select.orderby {
 		background-image: none;
 		padding-inline-end: 0.75em;
+		/* The button is a flex row: its label and arrow sit on its vertical centre. */
+		align-items: center;
 		/* A customisable select shrinks to its chosen option; this keeps the button as wide as the list, which is
-		 * as wide as WooCommerce's longest option ("Sort by price: high to low"). */
-		min-inline-size: 15em;
+		 * as wide as the menu's longest option: half an em a character plus the padding and arrow. WooCommerce's
+		 * longest ("Sort by price: high to low", 26 characters) gives 15em; a site with its own menu
+		 * (Customizer > Shop Filters > Sort menu) gets its own longest label through --sgs-shop-sort-chars. */
+		min-inline-size: calc(var(--sgs-shop-sort-chars, 26) * 0.5em + 2em);
 	}
 
+	/* Open: the button's bottom corners square off to meet the list, and its top corners take the list's
+	 * radius, so a pill-shaped button does not become a dome over a wider-cornered list. */
 	body.sgs-shop-sort-joined select.orderby:open {
+		border-start-start-radius: var(--sgs-sort-picker-radius, 1.25rem);
+		border-start-end-radius: var(--sgs-sort-picker-radius, 1.25rem);
 		border-end-start-radius: 0;
 		border-end-end-radius: 0;
 	}
@@ -2800,6 +2808,8 @@ body.sgs-shop-sort-native .wp-block-woocommerce-product-sort-select select {
 		border-end-start-radius: var(--sgs-sort-picker-radius, 1.25rem);
 		border-end-end-radius: var(--sgs-sort-picker-radius, 1.25rem);
 		background-color: inherit;
+		/* The button's shadow carries to the list, so their right edges line up. */
+		box-shadow: inherit;
 		color: inherit;
 		font: inherit;
 		overflow: clip;
