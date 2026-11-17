@@ -372,3 +372,24 @@
 	overflow-x: clip;
 	text-overflow: ellipsis;
 }
+
+/* add-to-basket: busy while the add is in flight; the live region that follows the button is empty (and out of the layout)
+   until it has a message to say. */
+.sgs-button[aria-busy="true"] {
+	cursor: progress;
+	opacity: 0.65;
+}
+
+.sgs-button__message {
+	display: block;
+	margin-block-start: 0.5em;
+}
+
+.sgs-button__message:empty {
+	position: absolute;
+	inline-size: 1px;
+	block-size: 1px;
+	margin: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+}

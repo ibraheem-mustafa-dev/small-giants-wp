@@ -5,7 +5,8 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { RangeControl, ToggleControl } from '@wordpress/components';
+import { RangeControl, ToggleControl, SelectControl } from '@wordpress/components';
+import ProductPickerControl from '../../components/ProductPickerControl';
 import { ResponsiveOverride } from '../../components';
 import { ToolsPanelItem } from '../../components/primitives';
 import { SITE_INFO_LABEL_SOURCES } from './site-info-label';
@@ -72,5 +73,40 @@ export function IconShapeSizeItem( { attributes, setAttributes } ) {
 				) }
 			</ResponsiveOverride>
 		</ToolsPanelItem>
+	);
+}
+
+/**
+ * The product picker and the after-add choice; render only for the `add-to-basket` link source.
+ *
+ * @param {Object}   props               Props.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Attribute setter.
+ * @return {JSX.Element|null} The two controls, or null for any other link source.
+ */
+export function AddToBasketControls( { attributes, setAttributes } ) {
+	if ( 'add-to-basket' !== attributes.linkSource ) {
+		return null;
+	}
+	return (
+		<>
+			<ProductPickerControl
+				label={ __( 'Product to add', 'sgs-blocks' ) }
+				help={ __( 'A simple product, or a variable product whose default options are all set, is added in one tap. Type {price} in the label to print its current price.', 'sgs-blocks' ) }
+				value={ Number( attributes.addProductId ) || 0 }
+				onChange={ ( id ) => setAttributes( { addProductId: id } ) }
+			/>
+			<SelectControl
+				label={ __( 'After adding', 'sgs-blocks' ) }
+				value={ attributes.addAfter || 'stay' }
+				options={ [
+					{ label: __( 'Stay on this page', 'sgs-blocks' ), value: 'stay' },
+					{ label: __( 'Go to the basket page', 'sgs-blocks' ), value: 'basket' },
+				] }
+				onChange={ ( val ) => setAttributes( { addAfter: val } ) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
+		</>
 	);
 }

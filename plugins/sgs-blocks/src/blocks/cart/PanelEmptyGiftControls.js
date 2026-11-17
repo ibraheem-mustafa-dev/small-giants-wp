@@ -12,7 +12,7 @@ import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { MediaElementPanel } from '../../components';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import metadata from './block.json';
-import EmptyProductControl from './EmptyProductControl';
+import ProductPickerControl from '../../components/ProductPickerControl';
 
 const IMAGE_SLOT = metadata.supports.sgs.mediaElements.find( ( e ) => 'emptyImage' === e.prefix );
 
@@ -60,7 +60,7 @@ export default function PanelEmptyGiftControls( { attributes, setAttributes, has
 					value={ attributes.emptyBody ?? '' }
 					onChange={ ( val ) => setAttributes( { emptyBody: val } ) }
 				/>
-				<EmptyProductControl value={ Number( attributes.emptyProductId ) || 0 } onChange={ ( id ) => setAttributes( { emptyProductId: id } ) } />
+				<ProductPickerControl help={ __( 'One tap adds it to the basket: a simple product, or a variable product whose default options are all set. Any other product makes the button a link to its page. Clear it for no button.', 'sgs-blocks' ) } value={ Number( attributes.emptyProductId ) || 0 } onChange={ ( id ) => setAttributes( { emptyProductId: id } ) } />
 				{ Number( attributes.emptyProductId ) > 0 &&
 					text( 'emptyButtonLabel', __( 'Button label', 'sgs-blocks' ), __( 'Type {price} where the product\'s current price should go.', 'sgs-blocks' ) ) }
 				{ text( 'emptyCtaUrl', __( 'Text link address', 'sgs-blocks' ), __( 'Empty uses the shop page. The link\'s wording is "Empty-cart button text" in Mini-cart panel; blank wording hides the link.', 'sgs-blocks' ) ) }

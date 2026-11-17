@@ -30,6 +30,7 @@ export const LINK_SOURCE_OPTIONS = [
 	...SITE_INFO_SOURCE_OPTIONS,
 	{ label: __( 'Back to top', 'sgs-blocks' ), value: 'top' },
 	{ label: __( 'Account', 'sgs-blocks' ), value: 'account' },
+	{ label: __( 'Add a product to the basket', 'sgs-blocks' ), value: 'add-to-basket' },
 ];
 
 // Link sources that resolve their own destination and never fall back to the
@@ -60,6 +61,7 @@ export const LINK_SOURCE_HELP = {
 	tiktok: siteInfoHelp( __( 'TikTok link', 'sgs-blocks' ) ),
 	top: __( 'Scrolls smoothly to the top of the page and moves keyboard/screen-reader focus there.', 'sgs-blocks' ),
 	account: __( 'Links to the WooCommerce My Account page, or the login screen when WooCommerce is not active.', 'sgs-blocks' ),
+	'add-to-basket': __( 'One tap adds the product below to the basket. Without JavaScript, or when the product cannot be added, it links to the product page; the typed URL is used if the product is missing or unavailable.', 'sgs-blocks' ),
 	post: __( 'Follows the chosen page or post: if its address changes, the link updates. If it is deleted or unpublished, the last address picked is used.', 'sgs-blocks' ),
 };
 

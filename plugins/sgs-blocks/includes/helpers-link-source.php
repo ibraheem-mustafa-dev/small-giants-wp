@@ -18,6 +18,8 @@
  * - 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok'   Site Info socials.
  * - 'top'           back to the top of the page (focus handled by sgs/button's view module).
  * - 'account'       the WooCommerce My Account page, else the login screen.
+ * - 'add-to-basket' needs a product, so sgs/button resolves it itself (includes/helpers-button-add-to-basket.php);
+ *                   here it returns the typed URL like any source that cannot resolve.
  *
  * Fallback rule (sgs/button's): a Site Info source whose field is empty, a page that no longer
  * exists or is not public, and an unknown source all return the typed URL; with no typed URL

@@ -201,9 +201,24 @@
 				"youtube",
 				"tiktok",
 				"top",
-				"account"
+				"account",
+				"add-to-basket"
 			],
-			"description": "Where the button's link comes from. 'url' (default) uses the typed URL/internal-link fields below. 'phone'/'email'/'whatsapp', 'directions' (the Site Info Maps link, else an address search), 'google' (the Google Business Profile link) and the socials read the value live from Appearance > SGS Site Info through includes/helpers-link-source.php::sgs_resolve_link_source() and fall back to the typed URL when that Site Info field is empty. 'top' scrolls to the top of the page (view.js manages focus). 'account' links to the WooCommerce My Account page, or the login screen when WooCommerce is inactive."
+			"description": "Where the button's link comes from. 'url' (default) uses the typed URL/internal-link fields below. 'phone'/'email'/'whatsapp', 'directions' (the Site Info Maps link, else an address search), 'google' (the Google Business Profile link) and the socials read the value live from Appearance > SGS Site Info through includes/helpers-link-source.php::sgs_resolve_link_source() and fall back to the typed URL when that Site Info field is empty. 'top' scrolls to the top of the page (view.js manages focus). 'account' links to the WooCommerce My Account page, or the login screen when WooCommerce is inactive. 'add-to-basket' adds the product in addProductId to the basket in one tap (its default variation and picks, through the SGS cart proxy) and falls back to a link to the product page without JavaScript; a missing, unpublished or unbuyable product uses the typed URL."
+		},
+		"addProductId": {
+			"type": "integer",
+			"default": 0,
+			"description": "The WooCommerce product the 'add-to-basket' link source adds (0 = none, so the typed URL is used). A simple product, or a variable product whose default options name a buyable variation, is added in one tap; any other published product links to its page."
+		},
+		"addAfter": {
+			"type": "string",
+			"default": "stay",
+			"enum": [
+				"stay",
+				"basket"
+			],
+			"description": "What happens after a successful 'add-to-basket' tap. 'stay' keeps the shopper on the page (the header basket count updates, and a mini-cart set to open on add opens); 'basket' goes to the basket page. On the basket or checkout page the page reloads to show the filled basket."
 		},
 		"labelFromSiteInfo": {
 			"type": "boolean",

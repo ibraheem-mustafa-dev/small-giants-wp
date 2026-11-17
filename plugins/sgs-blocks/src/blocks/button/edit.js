@@ -53,7 +53,7 @@ import {
 	parseSvgGradient,
 	SvgGradientDefs,
 } from '../../utils/svg-gradient-preview';
-import { SiteInfoLabelToggle, IconShapeSizeItem } from './ButtonExtraControls';
+import { SiteInfoLabelToggle, IconShapeSizeItem, AddToBasketControls } from './ButtonExtraControls';
 import { iconCirclePreviewStyle } from './icon-circle-preview';
 import { siteInfoLabelText } from './site-info-label';
 import {
@@ -123,6 +123,8 @@ export default function Edit( {
 		linkKind,
 		linkTarget,
 		linkSource,
+		addProductId,
+		addAfter,
 		rel,
 		download,
 		isSubmit,
@@ -296,6 +298,9 @@ export default function Edit( {
 			? { ...previewStyle, '--sgs-focus-host-border': hostBorder }
 			: previewStyle,
 		role: 'presentation',
+		// The canvas names the one-tap add it will make, so the choice is readable on the canvas as well as in the inspector.
+		'data-sgs-add-product': 'add-to-basket' === linkSource && addProductId > 0 ? addProductId : undefined,
+		'data-sgs-add-after': 'add-to-basket' === linkSource && addProductId > 0 ? addAfter || 'stay' : undefined,
 	} );
 
 	// Icon placeholder SVG for editor preview. When a gradient is set on
@@ -529,6 +534,10 @@ export default function Edit( {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
+					<AddToBasketControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 					{ /* Text is now edited on-canvas via RichText below, matching
 					   core/button — no sidebar duplicate. Link is the D609
 					   row-opens-popover shape: this compact row and the toolbar
@@ -543,6 +552,11 @@ export default function Edit( {
 							help={
 								'url' === ( linkSource || 'url' )
 									? undefined
+									: 'add-to-basket' === linkSource
+									? __(
+											'Used only when the product is missing or cannot be bought.',
+											'sgs-blocks'
+									  )
 									: __(
 											'Used only as a fallback while the Site Info field above is empty.',
 											'sgs-blocks'

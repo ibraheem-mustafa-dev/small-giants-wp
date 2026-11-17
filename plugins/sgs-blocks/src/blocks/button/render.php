@@ -37,6 +37,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-link-source.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-add-to-basket.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-site-info-label.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-icon-circle.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-focus.php';
@@ -106,6 +107,28 @@ if ( in_array( $link_source, array_merge( array( 'phone', 'email', 'whatsapp', '
 	}
 }
 
+// 'add-to-basket': the button links to the chosen product's page (so it works with no JavaScript) and carries the data the
+// view module needs to add that product in one tap (includes/helpers-button-add-to-basket.php). A product that is missing,
+// unpublished or not purchasable leaves the typed URL and the plain label: never a broken control.
+$sgs_add_attrs      = array();
+$sgs_add_price_text = '';
+if ( 'add-to-basket' === $link_source ) {
+	$sgs_add = sgs_button_add_to_basket(
+		absint( $attributes['addProductId'] ?? 0 ),
+		'basket' === ( $attributes['addAfter'] ?? 'stay' ) ? 'basket' : 'stay'
+	);
+	if ( null !== $sgs_add && sgs_link_source_is_safe_url( $sgs_add['url'] ) ) {
+		$effective_url      = $sgs_add['url'];
+		$sgs_add_price_text = $sgs_add['price_text'];
+		$sgs_add_attrs      = $sgs_add['attrs'];
+		if ( $sgs_add_attrs ) {
+			$sgs_add_attrs['data-sgs-link-source'] = 'add-to-basket';
+			wp_enqueue_script_module( generate_block_asset_handle( 'sgs/button', 'viewScriptModule' ) );
+		}
+	}
+	$label = sgs_button_add_label( (string) $label, $sgs_add_price_text );
+}
+
 // Optional: print the Site Info value (the phone number, email address or WhatsApp number the
 // link above points at) as the label. The typed label stands while the Site Info field is empty.
 // The value is plain text: it is HTML-escaped where the label prints (and escaped for the
@@ -132,6 +155,7 @@ $visual_only = ! empty( $attributes['visualOnly'] );
 $tag_name    = $visual_only ? 'span' : ( $has_url ? 'a' : 'button' );
 if ( $visual_only ) {
 	$sgs_link_source_wrapper_extra = array();
+	$sgs_add_attrs                 = array();
 }
 $is_submit  = ! empty( $attributes['isSubmit'] );
 $aria_label = isset( $attributes['ariaLabel'] ) && $attributes['ariaLabel'] ? esc_attr( $attributes['ariaLabel'] ) : esc_attr( $label );
@@ -1032,7 +1056,8 @@ $wrapper_attr = get_block_wrapper_attributes(
 		),
 		// U-12 §F: 'top' adds data-sgs-link-source="top" here so view.js can
 		// find the button without matching on every button on the page.
-		$sgs_link_source_wrapper_extra
+		$sgs_link_source_wrapper_extra,
+		$sgs_add_attrs
 	)
 );
 
