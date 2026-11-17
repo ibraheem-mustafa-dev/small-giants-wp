@@ -102,6 +102,10 @@ $scoped[]   = sgs_emit_tier_decls(
 $scoped     = array_merge( $scoped, $row_border['rules'] );
 
 // Text: colour and typography per part.
+$scoped[] = sgs_text_states_css( $root_sel . ' .sgs-order-items__name', $attributes, array( 'base' => 'itemNameColour' ) );
+$scoped[] = sgs_text_states_css( $root_sel . ' .sgs-order-items__meta', $attributes, array( 'base' => 'itemMetaColour' ) );
+$scoped[] = sgs_text_states_css( $root_sel . ' .sgs-order-items__price', $attributes, array( 'base' => 'itemPriceColour' ) );
+$scoped[] = sgs_text_states_css( $root_sel . ' .sgs-order-items__totals', $attributes, array( 'base' => 'totalsColour' ) );
 $parts = array(
 	'itemName'  => '.sgs-order-items__name',
 	'itemMeta'  => '.sgs-order-items__meta',
@@ -109,7 +113,6 @@ $parts = array(
 	'totals'    => '.sgs-order-items__totals',
 );
 foreach ( $parts as $prefix => $part_sel ) {
-	$scoped[] = sgs_text_states_css( $root_sel . ' ' . $part_sel, $attributes, array( 'base' => $prefix . 'Colour' ) );
 	$scoped[] = sgs_typography_css_rule( $attributes, $prefix, $root_sel . ' ' . $part_sel, '', false, false, $tiered );
 }
 $scoped[] = sgs_text_states_css( $root_sel . ' .sgs-order-items__total', $attributes, array( 'base' => 'totalColour' ) );

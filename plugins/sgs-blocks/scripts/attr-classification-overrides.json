@@ -6555,6 +6555,54 @@
 			"_why": "2026-09-30 (deploy gate, orphan_unclassified). plain | bubble: chooses how the pill shows its count (a markup/class variant), not a CSS value."
 		},
 		{
+			"slug": "sgs/cart",
+			"attr": "panelActionsLayout",
+			"fields": {
+				"role": "select-from-enum"
+			},
+			"_why": "2026-11-17 (deploy gate, orphan_style_defect). row | stacked: chooses a class variant on the drawer's actions (render.php reads it into the markup, style.css holds the layout), not a CSS value an element manifest could claim. Role mirrors the block's own pillCountStyle."
+		},
+		{
+			"slug": "sgs/order-items",
+			"attr": "subtotalLabel",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-11-17 (deploy gate, orphan_unclassified). The wording of one totals row: a content attribute with no style behind it; the classifier leaves role NULL. Role mirrors sgs/cart's viewCartLabel."
+		},
+		{
+			"slug": "sgs/order-items",
+			"attr": "deliveryLabel",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-11-17 (deploy gate, orphan_unclassified). The wording of one totals row: a content attribute with no style behind it; the classifier leaves role NULL. Role mirrors sgs/cart's viewCartLabel."
+		},
+		{
+			"slug": "sgs/order-items",
+			"attr": "discountLabel",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-11-17 (deploy gate, orphan_unclassified). The wording of one totals row: a content attribute with no style behind it; the classifier leaves role NULL. Role mirrors sgs/cart's viewCartLabel."
+		},
+		{
+			"slug": "sgs/order-items",
+			"attr": "giftCardLabel",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-11-17 (deploy gate, orphan_unclassified). The wording of one totals row: a content attribute with no style behind it; the classifier leaves role NULL. Role mirrors sgs/cart's viewCartLabel."
+		},
+		{
+			"slug": "sgs/order-items",
+			"attr": "totalLabel",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-11-17 (deploy gate, orphan_unclassified). The wording of one totals row: a content attribute with no style behind it; the classifier leaves role NULL. Role mirrors sgs/cart's viewCartLabel."
+		},
+		{
 			"slug": "sgs/google-reviews",
 			"attr": "arrowStep",
 			"fields": {
