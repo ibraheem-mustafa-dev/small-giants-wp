@@ -547,7 +547,9 @@ if ( $has_panel ) {
 		sgs_media_item_slot_for( $block, 'emptyImage', array( 'image', 'svg' ), 'content' ),
 		$attributes,
 		array(
-			'uid'       => $uid,
+			// The picture's own scope class: its sizing rules (width, height, limits, ratio) must not print under `$uid`,
+			// which is also the drawer dialog's class.
+			'uid'       => $uid . '-empty',
 			'block'     => 'sgs/cart',
 			'in_editor' => defined( 'REST_REQUEST' ) && REST_REQUEST,
 		)
