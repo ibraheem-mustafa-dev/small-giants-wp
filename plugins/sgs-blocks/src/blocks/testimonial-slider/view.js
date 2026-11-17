@@ -9,7 +9,7 @@
  * - Real slides are moved into a JS-built `.sgs-testimonial-slider__list`
  *   flex row. The track becomes the fixed-width, `overflow:hidden` viewport.
  * - `slidesVisible` clones of the first slides are appended and `slidesVisible`
- *   clones of the last slides are prepended (aria-hidden + inert + no id), so
+ *   clones of the last slides are prepended (aria-hidden + tabindex -1 on focusables + no id; never inert, which would block hover), so
  *   the list can always move one step further in either direction.
  * - `currentIndex` tracks the REAL slide [0, total); `visualIndex` tracks the
  *   position inside the padded (clone + real + clone) list. Moving lands in a
@@ -177,8 +177,14 @@ sliders.forEach( ( slider ) => {
 		return ( ( index % total ) + total ) % total;
 	}
 
+	const CLONE_FOCUSABLE =
+		'a[href], area[href], button, input, select, textarea, summary, iframe, audio[controls], video[controls], [contenteditable], [tabindex]';
+
 	/**
-	 * Clone a slide for the loop padding — inert, unfocusable, no duplicate id.
+	 * Clone a slide for the loop padding — hidden from assistive technology
+	 * (aria-hidden), out of the Tab order (tabindex -1 on every focusable
+	 * descendant), no duplicate id. Deliberately NOT `inert`: inert blocks
+	 * pointer events, so a clone at the end of the loop showed no hover effect.
 	 *
 	 * @param {HTMLElement} original Real slide to clone.
 	 * @return {HTMLElement} Cloned slide.
@@ -187,10 +193,13 @@ sliders.forEach( ( slider ) => {
 		const clone = original.cloneNode( true );
 		clone.removeAttribute( 'id' );
 		clone.setAttribute( 'aria-hidden', 'true' );
-		clone.setAttribute( 'inert', '' );
 		clone.dataset.clone = 'true';
+		if ( clone.hasAttribute( 'tabindex' ) ) {
+			clone.setAttribute( 'tabindex', '-1' );
+		}
+		clone.querySelectorAll( '[id]' ).forEach( ( el ) => el.removeAttribute( 'id' ) );
 		clone
-			.querySelectorAll( 'a, button, input, select, textarea' )
+			.querySelectorAll( CLONE_FOCUSABLE )
 			.forEach( ( el ) => el.setAttribute( 'tabindex', '-1' ) );
 		return clone;
 	}

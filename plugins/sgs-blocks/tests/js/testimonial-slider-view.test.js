@@ -134,3 +134,40 @@ describe( 'testimonial-slider autoplay: pause (WCAG 2.2.2)', () => {
 		expect( button.hidden ).toBe( true );
 	} );
 } );
+
+describe( 'testimonial-slider loop clones: hover-capable but hidden from keyboard and assistive tech', () => {
+	function buildCloneSlider() {
+		document.body.innerHTML = `
+			<div class="sgs-testimonial-slider" data-slides="1">
+				<div class="sgs-testimonial-slider__track">
+					<div class="sgs-testimonial-slider__slide" id="s1"><a href="/one">One</a><button type="button">B</button><span tabindex="0">T</span><div contenteditable="true">E</div></div>
+					<div class="sgs-testimonial-slider__slide"><a href="/two">Two</a></div>
+					<div class="sgs-testimonial-slider__slide"><a href="/three">Three</a></div>
+				</div>
+			</div>`;
+		return document.querySelector( '.sgs-testimonial-slider' );
+	}
+
+	it( 'clones take pointer events (not inert) and are aria-hidden', () => {
+		const slider = buildCloneSlider();
+		loadView();
+		const clones = slider.querySelectorAll( '[data-clone]' );
+		expect( clones.length ).toBeGreaterThan( 0 );
+		clones.forEach( ( clone ) => {
+			expect( clone.hasAttribute( 'inert' ) ).toBe( false );
+			expect( clone.getAttribute( 'aria-hidden' ) ).toBe( 'true' );
+			expect( clone.hasAttribute( 'id' ) ).toBe( false );
+		} );
+	} );
+
+	it( 'every focusable descendant of a clone has tabindex -1', () => {
+		const slider = buildCloneSlider();
+		loadView();
+		const focusable = 'a[href], button, input, select, textarea, summary, [contenteditable], [tabindex]';
+		const inClones = slider.querySelectorAll( '[data-clone] :is(' + focusable + ')' );
+		expect( inClones.length ).toBeGreaterThan( 0 );
+		inClones.forEach( ( el ) => expect( el.getAttribute( 'tabindex' ) ).toBe( '-1' ) );
+		// Real slides keep their own focus order.
+		expect( slider.querySelector( '#s1 span' ).getAttribute( 'tabindex' ) ).toBe( '0' );
+	} );
+} );
