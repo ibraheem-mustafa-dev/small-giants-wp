@@ -32,6 +32,7 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Basket page 5:** This is a bigger issuee than just the cart page but the cart I was testing with was over the free shipping minimum and the cart still added a shipping price - The default should always be the lower priced delivery option especially if it's free.
 - **Basket page 6:** (Added by Bean later the same evening.) The taster trio's free shipping doesn't work, how should that function?
 - **Basket page 7:** (Bean's review of round two's fixes, 2026-11-17 late evening.) The summary on the basket page should be used on the checkout page too (although checkout needs to add the items of the purchase in too) so we're not hand fixing 2 identical cards. But still had greyish font and the text for add coupons/gift card, shipping type/name does not match the site at all, it's very small too. Feel like the input boxes and button sizes in the checkout summary card are better on the checkout version (button bg colour should be yellow though) so should adopt that instead of using the basket page's version instead.
+- **Basket page 8:** (Bean, 2026-11-17 late evening.) Additionally, the basket page when empty still has the ugly default looking product cards when the whole site's product cards have switched already too.
 
 ## Sign-in
 
@@ -132,3 +133,12 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 ## All pages
 
 - **All pages 2:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Need to fix that 1023 px blindspot and check if the other breakpoints have the same blinspot too because I think we have the same thing at 767px because I think the breakpoint is supposed to be 768px but the changes layout changes usually occur at 766px.
+
+## Bean's verdicts so far (2026-11-17 late evening)
+
+- **Shop 18:** fixed.
+- **Product 15 and the checkout's wallet row:** Google Pay and Apple Pay buttons show up in checkout.
+- **Footer 10:** still unresolved on wide screens.
+- **Help:** all resolved (Help 14 raised after).
+- **Gifts:** all issues resolved (Gifts 16 and 17 raised after).
+- **Home 37:** the Undo button is to be removed.
