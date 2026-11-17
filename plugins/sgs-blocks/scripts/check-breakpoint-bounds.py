@@ -4,21 +4,24 @@ check-breakpoint-bounds.py: no device tier may end on a whole-pixel upper bound.
 
 THE RULE
 --------
-A device tier's upper bound is `767.98px` (mobile) or `1023.98px` (tablet); lower bounds stay `768px` and
-`1024px`. A zoomed browser or a scaled display reports a fractional viewport width such as 767.4px, which
-`max-width: 767px` and `min-width: 768px` both miss: the page then falls back to desktop values. With the
-`.98` upper bound exactly one tier matches at every real width (a 0.02px sliver no device produces aside).
-One definition lives in `includes/class-sgs-breakpoints.php` (PHP) and `src/utils/breakpoints.js` (script).
+A switch between two widths has an upper bound `N.98px` and a lower bound `(N+1)px`: 767.98 and 768 for mobile,
+1023.98 and 1024 for tablet, 479.98 and 480 for the Mobile container width, 781.98 and 782 for WordPress's columns break.
+A zoomed browser or a scaled display reports a fractional width such as 767.4px, which `max-width: 767px` and
+`min-width: 768px` both miss: the page then falls back to desktop values. With the `.98` upper bound exactly one side
+matches at every real width (a 0.02px sliver no device produces aside). One definition lives in
+`includes/class-sgs-breakpoints.php::query_width` (PHP) and `src/utils/breakpoints.js::queryWidth` (script): a `max`
+edge at a whole-pixel width gets `.98` there, so every query the helper builds is safe.
 
-WHAT IS FLAGGED (the "device upper bound" shapes)
--------------------------------------------------
-  max-width <ws> : <ws> 767px | 1023px     CSS, PHP strings, JS strings, JSON and snapshots
-  (width <= 767px) / (width <= 1023px)     range-syntax media queries
-  innerWidth <= 767 | 1023, innerWidth > 767 | 1023   (a bare `< 768` / `>= 768` already agrees with the
-                                           `.98` rule at fractional widths, so it is not flagged)
+WHAT IS FLAGGED
+---------------
+  (max-width: Npx) in CSS, PHP strings, JS strings, JSON and snapshots, when N is a named width (767, 1023, 479, 781)
+                   or the same file also holds min-width: (N+1)px, the other side of the switch
+  max-width: 767px | 1023px  anywhere in a line, prose included (device tiers)
+  width <= Npx     range-syntax queries, same rule for N
+  innerWidth <= 767 | 1023, innerWidth > 767 | 1023   (a bare `< 768` / `>= 768` already agrees with `.98`)
 
-A `767px` that is a length (not preceded by max-width) never matches. A block's own component breakpoints
-(`max-width: 600px`) never match.
+NOT FLAGGED: a lone `max-width` with no twin; a `max-width` that is a length (no opening parenthesis); a file holding
+`max-width: N` and `min-width: N` (an overlap at exactly N, a different fault, listed by --survey as OVERLAP).
 
 MODES
 -----
@@ -55,11 +58,40 @@ ROOTS = [
 EXTS = {".css", ".scss", ".php", ".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx", ".json", ".html", ".snap", ".txt"}
 SKIP_DIRS = {"node_modules", "build", "vendor", ".git", "dist"}
 
-# The one definition of what a device upper bound looks like. The codemod imports these.
-MAX_WIDTH = re.compile(r"(max-width\s*:\s*)(767|1023)(px)(?![\w.])")
-RANGE_WIDTH = re.compile(r"(width\s*<=\s*)(767|1023)(px)(?![\w.])")
+# The one definition of what a whole-pixel upper bound looks like. The codemod imports these.
+# A media or container query's `max-width: Npx` is a gap when N is a NAMED_MAXES width, or when the SAME file also holds
+# `min-width: (N+1)px` (the two sides of one switch). A lone `max-width` with no twin is not a gap, and a `max-width`
+# that is a length (`style="max-width:480px"`, no opening parenthesis) is never one. A file that holds `max-width: N`
+# and `min-width: N` (an overlap at exactly N, a different fault) is reported by --survey, never rewritten.
+NAMED_MAXES = frozenset({767, 1023, 479, 781})  # device tiers, the Mobile container width, WordPress's columns break (min 782)
+MAX_WIDTH = re.compile(r"(\(\s*max-width\s*:\s*)(\d+)(px)(?![\w.])")
+LOOSE_MAX_WIDTH = re.compile(r"(max-width\s*:\s*)(767|1023)(px)(?![\w.])")  # prose and strings naming a device tier
+RANGE_WIDTH = re.compile(r"(width\s*<=\s*)(\d+)(px)(?![\w.])")
 INNER_WIDTH = re.compile(r"(innerWidth\s*(?:<=|>)\s*)(767|1023)(?![\w.%])")
-PATTERNS = (MAX_WIDTH, RANGE_WIDTH, INNER_WIDTH)
+MIN_WIDTH = re.compile(r"(?:min-width\s*:\s*|width\s*>=\s*)(\d+)px(?![\w.])")
+
+
+def gap_widths(text: str) -> frozenset:
+    """Integer upper bounds to fix in this file: the named widths, plus N for every `min-width: (N+1)px` here."""
+    mins = set()
+    for line in text.splitlines():
+        if not line.lstrip().startswith(("//", "*", "/*")):
+            mins.update(int(m.group(1)) for m in MIN_WIDTH.finditer(line))
+    return NAMED_MAXES | frozenset(m - 1 for m in mins)
+
+
+def line_hits(line: str, widths: frozenset) -> bool:
+    for pattern in (MAX_WIDTH, RANGE_WIDTH):
+        if any(int(m.group(2)) in widths for m in pattern.finditer(line)):
+            return True
+    return bool(LOOSE_MAX_WIDTH.search(line) or INNER_WIDTH.search(line))
+
+
+def overlaps(text: str) -> List[int]:
+    """Widths N where this file holds both `(max-width: Npx)` and `(min-width: Npx)`: both apply at exactly N."""
+    maxes = {int(m.group(2)) for m in MAX_WIDTH.finditer(text)}
+    mins = {int(m.group(1)) for m in MIN_WIDTH.finditer(text)}
+    return sorted(maxes & mins)
 
 
 def files(root: Path) -> Iterator[Path]:
@@ -73,8 +105,9 @@ def files(root: Path) -> Iterator[Path]:
 
 def scan_text(text: str) -> List[Tuple[int, str]]:
     hits = []
+    widths = gap_widths(text)
     for number, line in enumerate(text.splitlines(), 1):
-        if any(p.search(line) for p in PATTERNS):
+        if line_hits(line, widths):
             hits.append((number, line.strip()))
     return hits
 
@@ -100,6 +133,14 @@ def folder_of(rel: str) -> str:
     return "/".join(parts[:2])
 
 
+def all_files(repo: Path):
+    for rel in ROOTS:
+        base = repo / rel
+        if base.exists():
+            for path in files(base):
+                yield path.relative_to(repo).as_posix()
+
+
 def survey(repo: Path, per_file: bool) -> int:
     hits = list(scan(repo))
     by_folder = Counter(folder_of(r) for r, _, _ in hits)
@@ -111,6 +152,18 @@ def survey(repo: Path, per_file: bool) -> int:
     print("per file type:")
     for key, count in sorted(by_type.items()):
         print(f"  {count:5d}  {key}")
+    pairs = Counter()
+    overlap_files = []
+    for rel in sorted({r for r, _, _ in hits} | set(all_files(repo))):
+        text = (repo / rel).read_text(encoding="utf-8", errors="ignore")
+        for width in overlaps(text):
+            overlap_files.append(f"{rel}: both (max-width: {width}px) and (min-width: {width}px)")
+    for rel, number, line in hits:
+        for m in MAX_WIDTH.finditer(line):
+            pairs[int(m.group(2))] += 1
+    print("per upper-bound width (query hits): " + ", ".join(f"{w}px x{c}" for w, c in sorted(pairs.items())))
+    for entry in overlap_files:
+        print("OVERLAP (not rewritten): " + entry)
     if per_file:
         print("per file:")
         for key, count in sorted(Counter(r for r, _, _ in hits).items()):
@@ -147,6 +200,16 @@ def self_test() -> int:
         if check(repo) != 0:
             print("SELF-TEST FAIL: clean file flagged")
             return 1
+        twin = src / "twin.css"
+        twin.write_text("@media (max-width: 480px){.a{}}\n@media (min-width: 481px){.a{}}\n", encoding="utf-8")
+        if check(repo) != 1:
+            print("SELF-TEST FAIL: a max-width with a min-width twin one pixel up was not caught")
+            return 1
+        twin.write_text("@media (max-width: 480px){.a{}}\n.b{max-width:481px}\n", encoding="utf-8")
+        if check(repo) != 0:
+            print("SELF-TEST FAIL: a lone max-width was flagged")
+            return 1
+        twin.unlink()
         (src / "bad.js").write_text("matchMedia('(max-width:1023px)')\n", encoding="utf-8")
         (src / "bad.js").write_text("if (window.innerWidth <= 767) {}\n", encoding="utf-8")
         if check(repo) != 1:

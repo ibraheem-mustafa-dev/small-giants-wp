@@ -353,7 +353,7 @@ footer .wp-block-list a:focus-visible {
  * Using display:grid overrides the flex stacking without touching the
  * desktop flex layout (min-width: 782px+).
  */
-@media (min-width: 600px) and (max-width: 781px) {
+@media (min-width: 600px) and (max-width: 781.98px) {
 	.has-surface-background-color > .wp-block-columns,
 	.has-surface-background-color .wp-block-columns:has(> .wp-block-column > .wp-block-group.has-background) {
 		display: grid !important;
@@ -823,7 +823,7 @@ footer .is-style-no-bullets a {
  * The block attribute sets width:300px via inline style — override with
  * max-width so the logo scales down proportionally without reflowing the header.
  */
-@media (max-width: 480px) {
+@media (max-width: 480.98px) {
 	.wp-block-site-logo img {
 		max-width: 180px !important;
 	}

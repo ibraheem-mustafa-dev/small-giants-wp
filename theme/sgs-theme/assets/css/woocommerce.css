@@ -494,7 +494,7 @@ body .wc-block-components-form .wc-block-components-text-input input[type]:focus
 	width: 100%;
 }
 
-@media ( max-width: 781px ) {
+@media ( max-width: 781.98px ) {
 	/* Mobile: single column; aside sits above grid (no-JS fallback) */
 	.wp-block-sgs-container.sgs-shop-layout {
 		display: block;
@@ -733,7 +733,7 @@ body.sgs-shop-filters-no-desktop-heading .sgs-shop-filters:not(:modal) .sgs-shop
 }
 
 /* JS-enhanced mobile: show the toggle. */
-@media ( max-width: 781px ) {
+@media ( max-width: 781.98px ) {
 	body.is-enhanced .sgs-shop-filters__toggle {
 		/* ── Toggle-only layout (NOT owned by .btn-primary) ── */
 		display: inline-flex;       /* icon + label row (.btn is inline-block) */
@@ -819,7 +819,7 @@ dialog.sgs-shop-filters {
 	min-height: 0;
 }
 
-@media ( max-width: 781px ) {
+@media ( max-width: 781.98px ) {
 	dialog#sgs-shop-filters:modal {
 		/* Bottom sheet: full width, ~85vh, anchored to the viewport bottom. */
 		position: fixed;
@@ -930,7 +930,7 @@ dialog.sgs-shop-filters {
 	display: none;
 }
 
-@media ( max-width: 781px ) {
+@media ( max-width: 781.98px ) {
 	dialog.sgs-shop-filters:modal .sgs-shop-filters__sheet-footer {
 		display: flex;
 		align-items: center;
@@ -3184,7 +3184,7 @@ body.sgs-shop-sort-native .wp-block-woocommerce-product-sort-select select {
 }
 
 /* Filter button: outlined text in capitals, and its place in the toolbar. */
-@media ( max-width: 781px ) {
+@media ( max-width: 781.98px ) {
 	body.is-enhanced.sgs-shop-toggle-outlined .sgs-shop-filters__toggle,
 	body.is-enhanced.sgs-shop-toggle-outlined .sgs-shop-filters__toggle:hover {
 		gap: 0;
@@ -3427,7 +3427,7 @@ body.sgs-shop-active-bar .sgs-shop-filters .wp-block-woocommerce-product-filter-
  * inc/shop-filters-first-paint.php. */
 
 /* Below the drawer breakpoint the panel is a closed dialog, so the aside is never part of the page. */
-@media ( max-width: 781px ) {
+@media ( max-width: 781.98px ) {
 	body.is-enhanced aside#sgs-shop-filters {
 		display: none;
 	}

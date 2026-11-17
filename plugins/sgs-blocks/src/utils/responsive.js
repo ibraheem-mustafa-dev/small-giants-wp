@@ -2,7 +2,7 @@
  * Responsive class name helpers.
  */
 
-import { SGS_BREAKPOINTS, MEDIA_TABLET, MEDIA_MOBILE } from './breakpoints.js';
+import { SGS_BREAKPOINTS, UPPER_FRACTION } from './breakpoints.js';
 
 export { SGS_BREAKPOINTS };
 
@@ -258,14 +258,14 @@ export function emitTierRules(
 	if ( tablet.value !== desktop.value ) {
 		const tabletCss = cssForState( tablet.value );
 		if ( tabletCss !== '' ) {
-			css += `${ MEDIA_TABLET }{${ uidSelector }{${ tabletCss }}}`;
+			css += `@media (max-width:${ SGS_BREAKPOINTS.TABLET_MAX }${ UPPER_FRACTION }px){${ uidSelector }{${ tabletCss }}}`;
 		}
 	}
 
 	if ( mobile.value !== tablet.value ) {
 		const mobileCss = cssForState( mobile.value );
 		if ( mobileCss !== '' ) {
-			css += `${ MEDIA_MOBILE }{${ uidSelector }{${ mobileCss }}}`;
+			css += `@media (max-width:${ SGS_BREAKPOINTS.MOBILE_MAX }${ UPPER_FRACTION }px){${ uidSelector }{${ mobileCss }}}`;
 		}
 	}
 

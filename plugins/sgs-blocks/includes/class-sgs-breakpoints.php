@@ -122,8 +122,9 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		/**
 		 * The bare media condition for a single width edge at a width the caller computed (see media_width()).
 		 *
-		 * A `max` edge at exactly a tier maximum (767 or 1023, as a number or '767px') takes UPPER_FRACTION, the one
-		 * place the device-tier rule lives; any other width is used as given.
+		 * A `max` edge at a whole-pixel width (a number or '767px': a tier maximum, the Mobile container width, a
+		 * collapse point minus one) takes UPPER_FRACTION, the one place the rule lives, because the switch's other side
+		 * starts at the next whole pixel; a width that already has a decimal or another unit is used as given.
 		 *
 		 * @param string           $edge  'max' or 'min'.
 		 * @param int|float|string $width Width: a number is taken as px; a string such as '767.98px' is used as given.
@@ -133,7 +134,7 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 			if ( ( 'max' !== $edge && 'min' !== $edge ) || '' === (string) $width ) {
 				return '';
 			}
-			if ( 'max' === $edge && preg_match( '/^(' . self::MOBILE_MAX . '|' . self::TABLET_MAX . ')(?:px)?$/', trim( (string) $width ) ) ) {
+			if ( 'max' === $edge && preg_match( '/^\d+(?:px)?$/', trim( (string) $width ) ) ) {
 				$width = (int) $width . self::UPPER_FRACTION . 'px';
 			}
 			return '(' . $edge . '-width:' . ( is_numeric( $width ) ? $width . 'px' : $width ) . ')';
@@ -143,7 +144,7 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		 * The at-rule prefix for a tier's `@container` copy (a box narrower than the Mobile container width).
 		 *
 		 * @param int|string $width Container max-width in px (or with unit).
-		 * @return string e.g. '@container (max-width:479px)'.
+		 * @return string e.g. '@container (max-width:479.98px)'.
 		 */
 		public static function container_width( $width ) {
 			return '@container ' . self::query_width( 'max', $width );

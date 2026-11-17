@@ -2,8 +2,9 @@
 """
 migrate-breakpoint-bounds.py: rewrite whole-pixel device upper bounds to the fractional-safe form.
 
-`max-width: 767px` becomes `max-width: 767.98px` and `max-width: 1023px` becomes `max-width: 1023.98px`, in source,
-tests, fixtures and snapshots; `innerWidth <= 767` becomes `innerWidth < 768` (and `> 767` becomes `>= 768`), which
+Every integer upper bound the detector reports (a device tier maximum, the Mobile container width 479, WordPress's
+columns break 781, and any N whose twin `min-width: (N+1)px` is in the same file) gains `.98`, in source, tests,
+fixtures and snapshots; a file holding `max-width: N` and `min-width: N` is an overlap, not a gap, and is left alone; `innerWidth <= 767` becomes `innerWidth < 768` (and `> 767` becomes `>= 768`), which
 is the same split without a gap. What counts as a device upper bound is defined once, in
 `check-breakpoint-bounds.py`, which this script imports; run that with `--check` after `--apply` (it must report zero).
 
@@ -34,8 +35,16 @@ def inner_width(match) -> str:
 
 
 def transform(text: str) -> str:
-    text = detector.MAX_WIDTH.sub(lambda m: f"{m.group(1)}{m.group(2)}.98{m.group(3)}", text)
-    text = detector.RANGE_WIDTH.sub(lambda m: f"{m.group(1)}{m.group(2)}.98{m.group(3)}", text)
+    widths = detector.gap_widths(text)
+
+    def widen(match):
+        if int(match.group(2)) not in widths:
+            return match.group(0)
+        return f"{match.group(1)}{match.group(2)}.98{match.group(3)}"
+
+    text = detector.MAX_WIDTH.sub(widen, text)
+    text = detector.LOOSE_MAX_WIDTH.sub(widen, text)
+    text = detector.RANGE_WIDTH.sub(widen, text)
     text = detector.INNER_WIDTH.sub(inner_width, text)
     return text
 

@@ -27,7 +27,7 @@ export const UPPER_FRACTION = '.98';
 /**
  * The bare media condition for a single width edge at a width the caller computed: a per-instance collapse point, a
  * custom-px tier (mirror of PHP SGS_Breakpoints::query_width()). A number is taken as px; a string is used as given.
- * A `max` edge at exactly a tier maximum (767 or 1023, as a number or '767px') takes UPPER_FRACTION.
+ * A `max` edge at a whole-pixel width (a number or '767px') takes UPPER_FRACTION; any other width is used as given.
  *
  * @param {string}        edge  'max' or 'min'.
  * @param {number|string} width Width.
@@ -40,9 +40,7 @@ export const queryWidth = ( edge, width ) => {
 	let value = 'number' === typeof width ? `${ width }px` : width;
 	if (
 		'max' === edge &&
-		new RegExp(
-			`^(${ SGS_BREAKPOINTS.MOBILE_MAX }|${ SGS_BREAKPOINTS.TABLET_MAX })(?:px)?$`
-		).test( String( width ).trim() )
+		/^\d+(?:px)?$/.test( String( width ).trim() )
 	) {
 		value = `${ parseInt( width, 10 ) }${ UPPER_FRACTION }px`;
 	}
@@ -54,8 +52,8 @@ export const queryWidth = ( edge, width ) => {
  * export per condition so a bundle carries only the ones it reads. Upper bounds carry UPPER_FRACTION, so a fractional
  * viewport reads as the same tier in script and in CSS.
  */
-export const QUERY_TABLET = queryWidth( 'max', SGS_BREAKPOINTS.TABLET_MAX );
-export const QUERY_MOBILE = queryWidth( 'max', SGS_BREAKPOINTS.MOBILE_MAX );
+export const QUERY_TABLET = `(max-width: ${ SGS_BREAKPOINTS.TABLET_MAX }${ UPPER_FRACTION }px)`;
+export const QUERY_MOBILE = `(max-width: ${ SGS_BREAKPOINTS.MOBILE_MAX }${ UPPER_FRACTION }px)`;
 export const QUERY_TABLET_UP = `(min-width: ${ SGS_BREAKPOINTS.MOBILE_MAX + 1 }px)`;
 export const QUERY_DESKTOP = `(min-width: ${ SGS_BREAKPOINTS.TABLET_MAX + 1 }px)`;
 export const QUERY_TABLET_ONLY = `(min-width: ${ SGS_BREAKPOINTS.MOBILE_MAX + 1 }px) and ${ QUERY_TABLET }`;
@@ -76,5 +74,5 @@ export const mediaWidth = ( edge, width ) => {
 };
 
 /** The at-rule prefixes for the two device tiers (mirror of PHP SGS_Breakpoints::media( 'tablet' | 'mobile' )). */
-export const MEDIA_TABLET = `@media${ QUERY_TABLET }`;
-export const MEDIA_MOBILE = `@media${ QUERY_MOBILE }`;
+export const MEDIA_TABLET = `@media(max-width:${ SGS_BREAKPOINTS.TABLET_MAX }${ UPPER_FRACTION }px)`;
+export const MEDIA_MOBILE = `@media(max-width:${ SGS_BREAKPOINTS.MOBILE_MAX }${ UPPER_FRACTION }px)`;

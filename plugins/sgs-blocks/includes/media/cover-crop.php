@@ -198,10 +198,10 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 		return array(
 			'widens' => true,
 			'sizes'  => sprintf(
-				'(max-width: %dpx) %dpx, (max-width: %dpx) %dpx, %dpx',
-				(int) SGS_Breakpoints::MOBILE_MAX,
+				'(max-width: %spx) %dpx, (max-width: %spx) %dpx, %dpx',
+				(int) SGS_Breakpoints::MOBILE_MAX . SGS_Breakpoints::UPPER_FRACTION,
 				$drawn['mobile'],
-				(int) SGS_Breakpoints::TABLET_MAX,
+				(int) SGS_Breakpoints::TABLET_MAX . SGS_Breakpoints::UPPER_FRACTION,
 				$drawn['tablet'],
 				$drawn['desktop']
 			),

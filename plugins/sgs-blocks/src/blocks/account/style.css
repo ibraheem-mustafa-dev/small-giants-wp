@@ -161,7 +161,7 @@
 }
 
 /* A box narrower than 480px takes the Mobile tabs layout on any screen. */
-@container sgs-account (max-width: 479px) {
+@container sgs-account (max-width: 479.98px) {
 	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation ul {
 		flex-direction: row;
 		overflow-x: auto;
@@ -201,7 +201,7 @@
 	}
 }
 
-@container sgs-account (max-width: 479px) {
+@container sgs-account (max-width: 479.98px) {
 	.sgs-account--mobile-tabs .sgs-account__wc {
 		display: block;
 	}

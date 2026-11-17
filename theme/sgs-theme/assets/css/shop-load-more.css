@@ -60,7 +60,7 @@
 }
 
 /* Below the wide-screen breakpoint the count sits under the button. */
-@media ( max-width: 781px ) {
+@media ( max-width: 781.98px ) {
 	.sgs-shop-load-more {
 		flex-direction: column;
 	}
