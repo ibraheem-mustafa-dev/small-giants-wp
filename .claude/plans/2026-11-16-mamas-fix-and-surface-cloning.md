@@ -8,7 +8,7 @@ created: 2026-11-16
 
 ## Goal and why
 
-Mama's Munches is a working shop on `mamas-test`, matching her Claude Design draft, ready for the client and for Bean's portfolio at the MIC event on 2026-11-28. The work is Bean's issue register of 2026-11-17 (`sites/mamas-munches-redesign/build/qa/issue-register.md`, 125 items, each with an ID such as `Footer 2a`). Done is every item closed by Bean's eye on `mamas-test` beside the draft, and a test order paid with a Stripe test card from basket to order confirmation.
+Mama's Munches is a working shop on `mamas-test`, matching her Claude Design draft, ready for the client and for Bean's portfolio at the MIC event on 2026-11-28. The work is Bean's issue register of 2026-11-17 (`sites/mamas-munches-redesign/build/qa/issue-register.md`, 126 items, each with an ID such as `Footer 2a`). Done is every item closed by Bean's eye on `mamas-test` beside the draft, and a test order paid with a Stripe test card from basket to order confirmation.
 
 ## Approach
 
@@ -49,6 +49,8 @@ Each is fixed once, in the first task that meets it; later sections check it and
 | Filter pills kept on tablet and phone | Shop 8, Gifts 2 | Task 7 |
 | Product card (label, tilt, hover, button wording and style) | Shop 7, Gifts 7 to 9b, Product 14 | Task 7 |
 | Reviews slider (arrows, dots, auto-slide, card layout, last card's hover) | Product 9 to 11, Home 19 to 23 | Task 9 |
+| Entrance animations missing on most pages | All pages 1 | Surveyed once at the start of Task 4 (each page's draft entrances against its saved motion settings), then fixed in each page's task |
+| A picture's set height lost on WooCommerce pages (WooCommerce's `.woocommerce img { height: auto }` beats the picture's scoped rule) | Nav drawer 4, and whatever the survey finds on Shop, Product, Basket and Account | Task 2, one fix in the shared picture rule |
 
 ## Out of scope
 
@@ -89,7 +91,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: `local-mamas` drawer post and menus; `mamas-test`
 - Done when: every Nav drawer row is closed by Bean, and each drawer link opens its page at 375
 - Depends on: Task 1 (social icons)
-- Status: not started
+- Status: Bean approved the fixes on 2026-11-17 (with the menu badges and the `Zainab@` email address); being applied on `local-mamas`. Nav drawer 4 is a shared fault on WooCommerce pages: its fix is proposed to Bean after the reach survey
 
 ### Task 3: Header
 - Why: 9 points, one of them a new behaviour (the trust bar ticker). Read first: the register's Header section; Eye Care's trust bar on `eye-care-test` (read only)

@@ -2,6 +2,10 @@
 
 Bean's own words, one item per line, each given an ID (`<Section> <number>`) so the plan (`.claude/plans/2026-11-16-mamas-fix-and-surface-cloning.md`) and the fix catalogue (`fix-catalogue.md`, beside this file) can name it. "Live" is `mamas-test`; "draft" is the Claude Design draft in `sites/mamas-munches-redesign/handoff/`. Status is kept in the fix catalogue, not here.
 
+## All pages
+
+- **All pages 1:** Most pages are missing the entrance animations. (Bean, 2026-11-17, added after the register.)
+
 ## Header
 
 - **Header 1:** Selling strip has dashed pattern top and bottom border on draft but dotted on live
