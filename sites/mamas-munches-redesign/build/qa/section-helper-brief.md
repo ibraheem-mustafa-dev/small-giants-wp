@@ -1,6 +1,6 @@
 # Brief for a helper working one section of Bean's issue register
 
-This is the standing brief for a subagent that diagnoses one section of `issue-register.md` (beside this file) and applies its simple fixes. The main session adds the section's name, its posts and its particular notes. Plan: `.claude/plans/2026-11-16-mamas-fix-and-surface-cloning.md`.
+This is the standing brief for a subagent that diagnoses one section of `issue-register.md` or `issue-register-round-2.md` (beside this file; IDs carry on across the two, so one ID names one row in `register-findings.md` and `fix-catalogue.md`) and applies its simple fixes. The main session adds the section's name, its posts and its particular notes. Plan: `.claude/plans/2026-11-16-mamas-fix-and-surface-cloning.md`.
 
 ## The job
 
@@ -48,6 +48,11 @@ Bean's rule (2026-11-17): simple fixes are made as you go; everything else is pr
 - A hover that is set on every device when the draft only has it on desktop takes per-device values in the motion state (`devices.tablet`, `devices.mobile`).
 - A width saved as fixed pixels for tablet or phone that equals the draft's box at exactly 768 or 375 is a leftover of the clone, not a design: the draft's box is fluid. Measure layout items at 600, 900 and 1023 as well as 375, 768 and 1440 (Sign-in 1 showed only between those widths, and a helper that tested 375 and 768 reported it not reproduced).
 - A block that is not rendered by PHP (WooCommerce's and core's blocks: `woocommerce/product-filters`, `core/*`) keeps its markup in the post, built by its `save()` from its settings. Changing a setting on such a block with the patch tool leaves that markup stale: the public page still looks right and the block editor reports "Block validation failed". Setting `overlayMode` to `off` on `woocommerce/product-filters` needed the class `is-filter-drawer-disabled` added to its saved wrapper. After any setting change on a non-`sgs/` block, open the post in the block editor and read the console; change the saved markup to what `save()` expects in the same write.
+- A `set` of `sgsCustomCss` with `scripts/local-wp/patch-block-attrs.py` replaces the whole string. Read the current string, edit it, write the full result, and count the block's Custom CSS attributes and total length before and after. The tool also re-serialises an empty object `{}` as `[]` inside `sgsMotion`.
+- Step every width, not three. A fix that holds at 375, 768 and 1440 can break at 600, 900, 1023, 1024, 1200 and 1366, and at a fractional width such as 1023.4px (a zoomed browser or scaled display), where an integer `max-width: N` and its `min-width: N+1` twin match neither. Run the sweep at 20px steps plus 767, 768, 1023 and 1024, signed out and signed in.
+- When a code fix arrives for something a Custom CSS rule works around, remove the rule in the same pass (the Gifts and Shop button pin after `e864e867d`), and check the computed result again.
+- A code change that wraps existing markup breaks direct-child selectors: `.sgs-account__auth-panel > h2` stopped hiding WooCommerce's "Login" and "Register" headings when the forms moved into a wrapper. Only a screenshot noticed. Look at the page after any deploy that wraps markup.
+- The draft itself can hold the fault: the 16px sideways scroll at 320 (the footer's one-word heading) and the star's drift are in the draft too. Bean's description wins over the draft; say that the draft shares the fault and fix the site.
 - Bean sees the site signed in as an administrator, on pages you may not have tested. When an item does not reproduce, test other page types and widths before reporting it.
 
 ## Hard limits
