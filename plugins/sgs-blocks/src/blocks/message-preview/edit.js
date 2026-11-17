@@ -6,6 +6,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
+import { Fragment } from '@wordpress/element';
 import { NumberControl } from '../../components/primitives';
 import {
 	Button,
@@ -264,9 +265,31 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ fields.map( ( field, index ) => (
+					<Button
+						variant="secondary"
+						onClick={ () =>
+							setAttributes( {
+								fields: [
+									...fields,
+									{
+										key: uniqueKey( 'box', fields ),
+										label: __( 'New box', 'sgs-blocks' ),
+										fieldType: 'text',
+										rows: 3,
+										placeholder: '',
+										defaultValue: '',
+										maxLength: 0,
+									},
+								],
+							} )
+						}
+					>
+						{ __( 'Add a box', 'sgs-blocks' ) }
+					</Button>
+				</PanelBody>
+				{ fields.map( ( field, index ) => (
+					<Fragment key={ field.key || index }>
 						<PanelBody
-							key={ field.key || index }
 							title={ field.label || __( 'Box', 'sgs-blocks' ) }
 							initialOpen={ false }
 						>
@@ -301,23 +324,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
-							{ field.fieldType === 'textarea' ? (
-								<NumberControl
-									label={ __(
-										'Visible lines',
-										'sgs-blocks'
-									) }
-									value={ field.rows }
-									min={ 2 }
-									max={ 12 }
-									onChange={ ( val ) =>
-										setField( index, {
-											rows: Number( val ) || 3,
-										} )
-									}
-									__next40pxDefaultSize
-								/>
-							) : null }
 							<TextControl
 								label={ __( 'Placeholder', 'sgs-blocks' ) }
 								value={ field.placeholder }
@@ -358,6 +364,32 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								__next40pxDefaultSize
 							/>
+						</PanelBody>
+						<PanelBody
+							title={
+								( field.label || __( 'Box', 'sgs-blocks' ) ) +
+								': ' +
+								__( 'name and order', 'sgs-blocks' )
+							}
+							initialOpen={ false }
+						>
+							{ field.fieldType === 'textarea' ? (
+								<NumberControl
+									label={ __(
+										'Visible lines',
+										'sgs-blocks'
+									) }
+									value={ field.rows }
+									min={ 2 }
+									max={ 12 }
+									onChange={ ( val ) =>
+										setField( index, {
+											rows: Number( val ) || 3,
+										} )
+									}
+									__next40pxDefaultSize
+								/>
+							) : null }
 							<TextControl
 								label={ __( 'Box name', 'sgs-blocks' ) }
 								help={ __(
@@ -401,29 +433,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								</Button>
 							</div>
 						</PanelBody>
-					) ) }
-					<Button
-						variant="secondary"
-						onClick={ () =>
-							setAttributes( {
-								fields: [
-									...fields,
-									{
-										key: uniqueKey( 'box', fields ),
-										label: __( 'New box', 'sgs-blocks' ),
-										fieldType: 'text',
-										rows: 3,
-										placeholder: '',
-										defaultValue: '',
-										maxLength: 0,
-									},
-								],
-							} )
-						}
-					>
-						{ __( 'Add a box', 'sgs-blocks' ) }
-					</Button>
-				</PanelBody>
+					</Fragment>
+				) ) }
 				<PanelBody
 					title={ __( 'Layout and saved note', 'sgs-blocks' ) }
 					initialOpen={ false }

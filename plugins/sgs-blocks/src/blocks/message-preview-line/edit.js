@@ -186,6 +186,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							__next40pxDefaultSize
 						/>
 					) }
+				</PanelBody>
+				<PanelBody
+					title={ __( 'Line wording', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TextControl
 						label={ __( 'Text before', 'sgs-blocks' ) }
 						value={ prefix }

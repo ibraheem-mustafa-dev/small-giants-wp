@@ -1533,6 +1533,22 @@
    },
    "pathsWhy": "The eyebrow is printed only when variant is brands and brandsEyebrow is non-empty (eyebrow_html in render.php); general and media-cards print no eyebrow by design and no other attribute changes which parts print, so brands is the only part-bearing path."
   },
+  "message-preview": {
+   "base": {
+    "group": "note",
+    "fields": [
+     {"key": "to", "label": "To", "fieldType": "text", "defaultValue": "Aisha", "maxLength": 30},
+     {"key": "message", "label": "Your message", "fieldType": "textarea", "rows": 3, "defaultValue": "Well done", "maxLength": 200}
+    ]
+   },
+   "paths": {
+    "boxes": {
+     "why": "one label and one text box per field, a one-line input or a several-line textarea; every box sits in a .sgs-message-preview__field wrapper",
+     "attrs": {}
+    }
+   },
+   "pathsWhy": "render.php prints the same field, label and input elements for every field; only the control tag differs between a text and a textarea field, and both carry the input class"
+  },
   "modal": {
    "base": {},
    "paths": {
