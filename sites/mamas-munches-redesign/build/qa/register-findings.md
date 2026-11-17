@@ -68,3 +68,18 @@ As built (evidence in `E:\sgs-tmp\mamas-register\header\after\`): Header 3 keeps
 | Contact 9 | An open item turns yellow all over in the draft and on Help; on Contact only its heading does | `itemBackgroundOpen` (`mm-yellow-soft` on Help) is missing on Contact's accordion. The first item looks right only because its own `backgroundColour` is yellow | Attribute diff of the two pages; computed background after opening item 2 | Site setting | `itemBackgroundOpen` `mm-yellow-soft`, and the first item's own `backgroundColour` set to `mm-paper` so a closed item is cream | verified |
 | Contact 10 | No corner shadow on an open item; Help has `4px 4px 0` cocoa | `itemShadowOpen` and `itemShadowOpenColour` are missing on Contact | Attribute diff; computed shadows | Site setting | Both set as on Help | verified |
 | Contact 11 | No category label above each question; Help has one | Contact's items have no `category` and no `showCategoryEyebrow` | Attribute diff; DOM | Site setting | Each item's `category` from the draft (Ordering & delivery, Ingredients & allergens, Gifting) with `showCategoryEyebrow` true. The draft's "Subscriptions" item goes with the subscription removal, leaving three. The label's styling is Help 3 | verified |
+
+## All pages 1: entrance animations (surveyed 2026-11-17; full tables in `entrance-survey.md` beside this file)
+
+The draft has one entrance mechanism: an element marked `data-reveal` fades in and rises once when it scrolls into view (Home: 32px, 800ms, each sibling 90ms later up to the fourth; Shop, Gifts, Product and Contact: 28px, 750ms, no delay; easing `cubic-bezier(.2,.7,.2,1)`; nothing under reduced motion). Help, Sign-in and Account have none. The site's motion tokens already hold these values (`distance.xl`, `duration.extra-slow`, `entrance.distance`, `entrance.duration`, `entrance.easing`), and Home's 18 existing entrances use exactly the Home recipe.
+
+| Page | Draft entrances | On the site | Missing | Fixed in |
+|---|---|---|---|---|
+| Home | 30 | 18 | 12 | Task 10 |
+| Shop | 7 | 0 | 7 (the "Sort" label is a WooCommerce block with no motion setting: it needs a container round it) | Task 7 |
+| Gifts | 15 | 0 | 15 | Task 8 |
+| Product | 6 | 0 | 6 | Task 9 |
+| Contact | 10 | 0 | 10 | Task 4 |
+| Help, Sign-in, Account | 0 | 0 | 0 | none |
+
+Layer: site settings (each block's `sgsMotion.elements.root.entrance.base`, trigger `scroll`). Also found: on Home, "our story" (`cr-ref-home-144`) has a phone-only entrance delay of 6,660ms, so it stays invisible for about seven seconds at 375 (the draft's delay is 0); and Home's two looping animations (the hero star's twinkle and the "Baked to order" sticker's float, Home 3) are absent. Status: verified against the saved settings for Home's count; the per-page lists are applied and measured in each page's task.
