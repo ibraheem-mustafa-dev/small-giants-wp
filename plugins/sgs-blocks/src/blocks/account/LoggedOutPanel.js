@@ -9,6 +9,8 @@ import { PanelBody, ToggleControl } from '@wordpress/components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import { LinkPopoverField } from '../../components';
+import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 /**
  * @param {Object}   props
  * @param {Object}   props.attributes
@@ -53,6 +55,26 @@ export default function LoggedOutPanel( { attributes, setAttributes } ) {
 					/>
 				</>
 			) }
+
+			<LinkPopoverField
+				label={ __( 'When the visitor is signed in, send them to', 'sgs-blocks' ) }
+				help={ __(
+					'Leave empty to show the account view on this page. Set it on a sign-in page so a signed-in visitor lands on the account page, including straight after signing in or registering. Password-reset links and account pages are never redirected.',
+					'sgs-blocks'
+				) }
+				value={ { url: attributes.signedInRedirectUrl, linkSource: attributes.signedInRedirectUrlSource || '' } }
+				linkSources={ LINK_SOURCES_PAGES }
+				onChange={ ( next ) => {
+					const patch = {};
+					if ( undefined !== next.url ) {
+						patch.signedInRedirectUrl = next.url || undefined;
+					}
+					if ( undefined !== next.linkSource ) {
+						patch.signedInRedirectUrlSource = next.linkSource || undefined;
+					}
+					setAttributes( patch );
+				} }
+			/>
 
 			<ToggleControl
 				__nextHasNoMarginBottom

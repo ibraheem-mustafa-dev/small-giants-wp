@@ -237,7 +237,12 @@ if ( ! function_exists( 'sgs_account_cells_css' ) ) {
 		);
 		$css    = array();
 		foreach ( sgs_account_cell_rows() as $row ) {
-			$css[] = sgs_account_cell_css( $row, $attributes, $ctx );
+			$row_css = sgs_account_cell_css( $row, $attributes, $ctx );
+			if ( 'authFormRowGap' === $row[0] && '' !== $row_css ) {
+				// WooCommerce's register form is a plain block, where `row-gap` does nothing: give it a grid to space.
+				$css[] = $r . ' #customer_login form.woocommerce-form-register{display:grid;}';
+			}
+			$css[] = $row_css;
 		}
 		$css[] = sgs_typography_css_rule( $attributes, 'authHeading', $r . ' #customer_login h2', '', false, false, $tiered );
 		$css[] = sgs_typography_css_rule( $attributes, 'loginRememberText', $r . ' .woocommerce-form-login__rememberme', '', false, false, $tiered );

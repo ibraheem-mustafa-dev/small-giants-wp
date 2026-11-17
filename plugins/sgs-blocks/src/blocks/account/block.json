@@ -1535,6 +1535,15 @@
 		"signedOutSignInUrlSource": {
 			"type": "string"
 		},
+		"signedInRedirectUrl": {
+			"type": "string",
+			"role": "content",
+			"description": "Where a signed-in visitor on a page holding this block is sent, instead of seeing the account view there. Empty keeps the account view on the page. Also used straight after registration and login."
+		},
+		"signedInRedirectUrlSource": {
+			"type": "string",
+			"description": "Link source of signedInRedirectUrl: a typed address, or account for the WooCommerce My Account page."
+		},
 		"signedOutRegisterLabel": {
 			"type": "string",
 			"role": "content"
@@ -4602,6 +4611,24 @@
 			"registerFirstNameLabel": {
 				"type": "string",
 				"role": "content"
+			},
+			"registerShowLastName": {
+				"type": "boolean",
+				"description": "Add a required Last name field to the create-account form, saved to the customer's last name and billing last name. Off by default."
+			},
+			"registerLastNameLabel": {
+				"type": "string",
+				"role": "content",
+				"description": "Label of the Last name field on the create-account form. Empty uses Last name."
+			},
+			"registerShowMarketingOptIn": {
+				"type": "boolean",
+				"description": "Add an optional, unticked email-me tick to the create-account form. A ticked box stores sgs_marketing_opt_in and sgs_marketing_opt_in_at on the new user; nothing is sent. Off by default."
+			},
+			"registerMarketingOptInLabel": {
+				"type": "string",
+				"role": "content",
+				"description": "Label of the email-me tick on the create-account form. Empty uses Email me news and offers."
 			},
 			"registerPasswordHint": {
 				"type": "string",

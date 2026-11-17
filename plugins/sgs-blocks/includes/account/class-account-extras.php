@@ -36,6 +36,11 @@ final class Account_Extras {
 		\add_action( 'woocommerce_register_form_start', array( __CLASS__, 'register_first_name_field' ) );
 		\add_filter( 'woocommerce_registration_errors', array( __CLASS__, 'validate_first_name' ), 10, 1 );
 		\add_action( 'woocommerce_created_customer', array( __CLASS__, 'save_first_name' ), 10, 1 );
+		\add_action( 'woocommerce_register_form_start', array( __CLASS__, 'register_last_name_field' ), 11 );
+		\add_filter( 'woocommerce_registration_errors', array( __CLASS__, 'validate_last_name' ), 10, 1 );
+		\add_action( 'woocommerce_created_customer', array( __CLASS__, 'save_last_name' ), 10, 1 );
+		\add_action( 'woocommerce_register_form', array( __CLASS__, 'register_marketing_opt_in_field' ), 20 );
+		\add_action( 'woocommerce_created_customer', array( __CLASS__, 'save_marketing_opt_in' ), 20, 1 );
 	}
 
 	/**
@@ -414,6 +419,98 @@ final class Account_Extras {
 			return null;
 		}
 		return isset( $_POST['first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['first_name'] ) ) : '';
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+	/** The Last name field under First name on the register form, while an sgs/account block with the setting on renders. */
+	public static function register_last_name_field(): void {
+		if ( ! is_array( Account_Endpoints::$active ) || empty( Account_Endpoints::$active['registerShowLastName'] ) ) {
+			return;
+		}
+		$label = trim( (string) ( Account_Endpoints::$active['registerLastNameLabel'] ?? '' ) );
+		$label = '' !== $label ? $label : __( 'Last name', 'sgs-blocks' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- redisplays the visitor's own typed value only.
+		$value = isset( $_POST['last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['last_name'] ) ) : '';
+		echo '<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">'
+			. '<label for="reg_last_name">' . esc_html( $label ) . '&nbsp;<span class="required" aria-hidden="true">*</span><span class="screen-reader-text">' . esc_html__( 'Required', 'sgs-blocks' ) . '</span></label>'
+			. '<input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="last_name" id="reg_last_name" autocomplete="family-name" value="' . esc_attr( $value ) . '" required aria-required="true" />'
+			. '<input type="hidden" name="sgs_register_last_name" value="1" /></p>';
+	}
+
+	/**
+	 * Last name is required when the form carried the field (runs inside WooCommerce's registration, after its
+	 * register nonce check).
+	 *
+	 * @param mixed $errors WP_Error collecting the registration's errors.
+	 * @return mixed
+	 */
+	public static function validate_last_name( $errors ) {
+		$name = self::posted_last_name();
+		if ( null !== $name && '' === $name && $errors instanceof \WP_Error ) {
+			$errors->add( 'registration-error-missing-last-name', __( 'Please enter your last name.', 'sgs-blocks' ) );
+		}
+		return $errors;
+	}
+
+	/**
+	 * Store the last name on the new customer (runs after WooCommerce has created the account).
+	 *
+	 * @param mixed $customer_id New customer id.
+	 */
+	public static function save_last_name( $customer_id ) {
+		$name = self::posted_last_name();
+		if ( null === $name || '' === $name || ! is_numeric( $customer_id ) ) {
+			return;
+		}
+		update_user_meta( (int) $customer_id, 'last_name', $name );
+		update_user_meta( (int) $customer_id, 'billing_last_name', $name );
+	}
+
+	/**
+	 * The posted last name, or null when the register form did not carry the field.
+	 *
+	 * @return string|null
+	 */
+	private static function posted_last_name() {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- only called from WooCommerce's registration hooks, after its nonce check.
+		if ( empty( $_POST['sgs_register_last_name'] ) ) {
+			return null;
+		}
+		return isset( $_POST['last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['last_name'] ) ) : '';
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+	/** The optional "email me" tick before the register button, unticked, while an sgs/account block with the setting on renders. */
+	public static function register_marketing_opt_in_field(): void {
+		if ( ! is_array( Account_Endpoints::$active ) || empty( Account_Endpoints::$active['registerShowMarketingOptIn'] ) ) {
+			return;
+		}
+		$label = trim( (string) ( Account_Endpoints::$active['registerMarketingOptInLabel'] ?? '' ) );
+		$label = '' !== $label ? $label : __( 'Email me news and offers', 'sgs-blocks' );
+		echo '<p class="woocommerce-form-row form-row sgs-account__marketing-opt-in">'
+			. '<label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox" for="reg_sgs_marketing_opt_in">'
+			. '<input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" name="sgs_marketing_opt_in" id="reg_sgs_marketing_opt_in" value="1" /> '
+			. '<span>' . esc_html( $label ) . '</span></label>'
+			. '<input type="hidden" name="sgs_register_marketing" value="1" /></p>';
+	}
+
+	/**
+	 * Record the visitor's consent on the new customer: a flag and the GMT time, only when the tick was posted.
+	 * Unticked records nothing. Checks the register form's own nonce itself, because the choice is a consent record.
+	 *
+	 * @param mixed $customer_id New customer id.
+	 */
+	public static function save_marketing_opt_in( $customer_id ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- the nonce is verified on the next lines.
+		if ( ! is_numeric( $customer_id ) || empty( $_POST['sgs_register_marketing'] ) || empty( $_POST['sgs_marketing_opt_in'] ) ) {
+			return;
+		}
+		$nonce = isset( $_POST['woocommerce-register-nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['woocommerce-register-nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'woocommerce-register' ) ) {
+			return;
+		}
+		update_user_meta( (int) $customer_id, 'sgs_marketing_opt_in', '1' );
+		update_user_meta( (int) $customer_id, 'sgs_marketing_opt_in_at', gmdate( 'Y-m-d H:i:s' ) );
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 }

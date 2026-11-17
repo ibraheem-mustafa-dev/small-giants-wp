@@ -293,7 +293,30 @@ export function RegisterFormPanel( { attributes, setAttributes } ) {
 			{ attributes.registerShowFirstName && (
 				<TextField { ...p } name="registerFirstNameLabel" label={ __( 'First name field label', 'sgs-blocks' ) } />
 			) }
+			<Toggle
+				{ ...p }
+				name="registerShowLastName"
+				label={ __( 'Ask for a last name', 'sgs-blocks' ) }
+				help={ __( 'A required Last name field under First name, saved to the customer’s name and billing last name.', 'sgs-blocks' ) }
+			/>
+			{ attributes.registerShowLastName && (
+				<TextField { ...p } name="registerLastNameLabel" label={ __( 'Last name field label', 'sgs-blocks' ) } />
+			) }
 			<TextField { ...p } name="registerPasswordHint" label={ __( 'Hint under the password field', 'sgs-blocks' ) } />
+			<Toggle
+				{ ...p }
+				name="registerShowMarketingOptIn"
+				label={ __( 'Offer an “email me” tick', 'sgs-blocks' ) }
+				help={ __( 'An optional, unticked box. A ticked box saves the choice and the time on the new customer; nothing is sent from here.', 'sgs-blocks' ) }
+			/>
+			{ attributes.registerShowMarketingOptIn && (
+				<TextField
+					{ ...p }
+					name="registerMarketingOptInLabel"
+					label={ __( 'Email-me tick label', 'sgs-blocks' ) }
+					help={ __( 'Empty uses “Email me news and offers”.', 'sgs-blocks' ) }
+				/>
+			) }
 		</PanelBody>
 	);
 }
