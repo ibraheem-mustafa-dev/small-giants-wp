@@ -16,6 +16,7 @@ import PanelButtonsControls from './PanelButtonsControls';
 import PanelButtonsDesign from './PanelButtonsDesign';
 import PanelFooterDesign from './PanelFooterDesign';
 import PanelItemRowControls from './PanelItemRowControls';
+import PanelEmptyGiftControls from './PanelEmptyGiftControls';
 import PanelItemRowDesign from './PanelItemRowDesign';
 import PanelPreview from './PanelPreview';
 import { triggerStyles } from './panel-preview-style';
@@ -173,6 +174,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				/>
 
 				<PanelContentControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					hasPanel={ hasPanel }
+				/>
+
+				<PanelEmptyGiftControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					hasPanel={ hasPanel }

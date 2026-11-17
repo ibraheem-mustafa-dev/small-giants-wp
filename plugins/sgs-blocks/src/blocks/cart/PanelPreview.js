@@ -13,6 +13,7 @@ import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { Button } from '@wordpress/components';
 import { separatorsLineCss, tierLengthPreview } from '../../utils';
+import { logoUrlFor } from '../../utils/logo-source';
 import { panelElementStyles, panelRootStyle, scrimPreviewStyle } from './panel-preview-style';
 
 import AuthoredText from '../../components/AuthoredText';
@@ -118,6 +119,13 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 	const note = ( attributes.panelInstalmentsNote || '' ).trim();
 	const taxNote = attributes.panelTaxNote ?? __( 'Shipping and taxes calculated at checkout.', 'sgs-blocks' );
 	const scope = `sgs-ed-sep-${ clientId }`;
+	// The centred empty state turns on with any of its additions, as includes/helpers-cart-panel-extras.php decides.
+	const emptyImageUrl = logoUrlFor( attributes.emptyImageSource, tier );
+	const emptyBody = ( attributes.emptyBody || '' ).trim();
+	const emptyHasButton = Number( attributes.emptyProductId ) > 0;
+	const emptyRich = '' !== emptyImageUrl || '' !== emptyBody || emptyHasButton || '' !== ( attributes.emptyCtaUrl || '' ).trim();
+	const emptyButtonLabel = ( attributes.emptyButtonLabel || '' ).trim() || __( 'Add to basket', 'sgs-blocks' );
+	const giftHelp = ( attributes.panelGiftHelp || '' ).trim();
 	// The footer's actions: View cart as a button or a link, and Checkout first when the two are stacked (as the markup orders them).
 	const stacked = 'stacked' === attributes.panelActionsLayout;
 	const viewCart = false !== attributes.panelShowViewCart && (
@@ -174,9 +182,22 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 					</div>
 					{ showEmpty ? (
 						<div className="sgs-cart__panel-items" style={ s.items }>
-							<div className="sgs-cart__panel-empty" style={ { ...s.empty } }>
-								<p className="sgs-cart__panel-empty-message" style={ s.emptyMessage }><AuthoredText value={ attributes.emptyCartMessage } /></p>
-								<span className="sgs-cart__panel-empty-cta" style={ s.emptyCta }><AuthoredText value={ attributes.emptyCartCtaLabel } /></span>
+							<div className={ `sgs-cart__panel-empty${ emptyRich ? ' sgs-cart__panel-empty--rich' : '' }` } style={ { ...s.empty } }>
+								{ emptyRich && '' !== emptyImageUrl && (
+									<div className="sgs-cart__panel-empty-media"><img src={ emptyImageUrl } alt="" /></div>
+								) }
+								{ emptyRich ? (
+									<h3 className="sgs-cart__panel-empty-message" style={ s.emptyMessage }><AuthoredText value={ attributes.emptyCartMessage } /></h3>
+								) : (
+									<p className="sgs-cart__panel-empty-message" style={ s.emptyMessage }><AuthoredText value={ attributes.emptyCartMessage } /></p>
+								) }
+								{ emptyRich && '' !== emptyBody && <AuthoredText as="p" className="sgs-cart__panel-empty-body" value={ emptyBody } /> }
+								{ emptyRich && emptyHasButton && (
+									<span className="sgs-cart__panel-empty-cta sgs-cart__panel-empty-add" style={ s.emptyCta }>{ emptyButtonLabel.replace( '{price}', '£5.00' ) }</span>
+								) }
+								{ ( ! emptyRich || '' !== ( attributes.emptyCartCtaLabel || '' ).trim() ) && (
+									<span className={ emptyRich ? 'sgs-cart__panel-empty-link' : 'sgs-cart__panel-empty-cta' } style={ emptyRich ? undefined : s.emptyCta }><AuthoredText value={ attributes.emptyCartCtaLabel } /></span>
+								) }
 							</div>
 						</div>
 					) : (
@@ -193,6 +214,20 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 								<SampleItem attrs={ attributes } s={ s } />
 								<SampleItem attrs={ attributes } s={ s } />
 							</div>
+							{ attributes.panelGiftShow && (
+								<div className="sgs-cart__panel-gift">
+									<label className="sgs-cart__panel-gift-switch">
+										<input type="checkbox" className="sgs-cart__panel-gift-checkbox" disabled />
+										<span className="sgs-cart__panel-gift-text">
+											<span className="sgs-cart__panel-gift-label">{ attributes.panelGiftLabel }</span>
+											{ '' !== giftHelp && <span className="sgs-cart__panel-gift-help">{ giftHelp }</span> }
+										</span>
+									</label>
+									<span className="components-base-control__help">
+										{ __( 'When ticked it asks:', 'sgs-blocks' ) } { attributes.panelGiftToLabel }, { attributes.panelGiftMessageLabel }
+									</span>
+								</div>
+							) }
 							<div className="sgs-cart__panel-footer" style={ s.footer }>
 								<div className="sgs-cart__panel-subtotal" style={ s.subtotal }>
 									<span className="sgs-cart__panel-subtotal-label">{ __( 'Subtotal', 'sgs-blocks' ) }</span>

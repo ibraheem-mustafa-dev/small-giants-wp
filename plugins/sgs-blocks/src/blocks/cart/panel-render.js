@@ -12,6 +12,7 @@
 
 import {
 	fetchCart,
+	addCartItem,
 	updateCartItem,
 	removeCartItem,
 	formatMoney,
@@ -25,6 +26,7 @@ import { addWishlistId } from '../../shared/wishlist-store';
 import { appendAuthoredText } from '../../utils/authored-text-dom';
 import { updatePanelExtras } from './panel-extras';
 import { publishCart } from '../../shared/cart-live';
+import { initGift } from './panel-gift';
 
 /**
  * Wire one panel instance against the Store API.
@@ -51,6 +53,10 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	const subtotalEl = panelRoot.querySelector( '[data-sgs-cart-subtotal]' );
 	const statusEl = panelRoot.querySelector( '[data-sgs-cart-status]' );
 	const freeDeliveryEl = initFreeDeliveryElement( panelRoot, itemsEl, freeDelivery );
+	// The gift box (opt-in): shown while the basket has an item, filled from the session value the cart read returns.
+	const gift = initGift( panelRoot );
+	// The centred empty state (opt-in): server-built markup kept in a template and copied in whenever the basket is empty.
+	const emptyTemplate = panelRoot.querySelector( '[data-sgs-cart-empty-template]' );
 
 	const emptyMessage = itemsEl.dataset.emptyMessage || 'Your cart is empty';
 	const emptyCtaLabel = itemsEl.dataset.emptyCtaLabel || 'Continue shopping';
@@ -87,6 +93,13 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	 */
 	function renderEmpty() {
 		itemsEl.removeAttribute( 'aria-busy' );
+		if ( emptyTemplate ) {
+			itemsEl.replaceChildren( emptyTemplate.content.cloneNode( true ) );
+			if ( footerEl ) {
+				footerEl.hidden = true;
+			}
+			return;
+		}
 		// The typed wording is markup: inserted as DOM nodes through the one sanitised path, never as an HTML string.
 		const wrap = document.createElement( 'div' );
 		wrap.className = 'sgs-cart__panel-empty';
@@ -165,6 +178,7 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		}
 		updateFreeDeliveryProgress( freeDeliveryEl, cart, freeDelivery );
 		updatePanelExtras( panelRoot, cart );
+		gift.sync( cart );
 		publishCart( cart );
 	}
 
@@ -174,7 +188,7 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	async function refresh() {
 		itemsEl.setAttribute( 'aria-busy', 'true' );
 		try {
-			const cart = await fetchCart();
+			const cart = await fetchCart( gift.headers );
 			render( cart );
 		} catch {
 			renderError();
@@ -275,6 +289,43 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		const input = button.closest( '.sgs-cart__item-stepper' )?.querySelector( 'input.sgs-cart__item-qty-input' );
 		const next = ( Number.parseInt( input?.value, 10 ) || 0 ) + ( Number.parseInt( button.dataset.step, 10 ) || 0 );
 		setQuantity( button.dataset.key, Math.max( 0, next ) );
+	} );
+
+	/**
+	 * Put keyboard focus where the shopper's next step is after the empty state's button has added its product: the first
+	 * control of the first line, else the list itself.
+	 */
+	function focusFirstLine() {
+		const target = itemsEl.querySelector( '.sgs-cart__item button, .sgs-cart__item input, .sgs-cart__item a' );
+		if ( target ) {
+			target.focus();
+			return;
+		}
+		itemsEl.setAttribute( 'tabindex', '-1' );
+		itemsEl.focus();
+	}
+
+	// The empty state's button: add its one product through the Store API, redraw the panel with the new line, keep focus in the list.
+	itemsEl.addEventListener( 'click', async ( event ) => {
+		const button = event.target.closest( 'button[data-sgs-cart-empty-add]' );
+		if ( ! button || button.disabled ) {
+			return;
+		}
+		const id = Number.parseInt( button.dataset.sgsCartEmptyAdd, 10 );
+		if ( ! ( id > 0 ) ) {
+			return;
+		}
+		button.disabled = true;
+		try {
+			const cart = await addCartItem( id, 1, gift.headers );
+			render( cart );
+			focusFirstLine();
+			announce( 'Added to your basket.' );
+		} catch ( error ) {
+			announce( error?.message || 'Could not add that to your basket. Please try again.' );
+			button.disabled = false;
+			button.focus();
+		}
 	} );
 
 	// Remove — no redirect.

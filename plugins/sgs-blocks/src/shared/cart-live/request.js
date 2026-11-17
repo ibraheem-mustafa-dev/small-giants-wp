@@ -32,10 +32,11 @@ export function apiBase() {
  * @param {Object} [options]        Fetch options.
  * @param {string} [options.method] HTTP method (default GET).
  * @param {Object} [options.body]   JSON-serialisable request body.
+ * @param {Object} [options.headers] Extra request headers (the gift value is added to the response by `X-SGS-Gift: 1`).
  * @return {Promise<Object>} The parsed JSON response.
  */
-export async function storeRequest( path, { method = 'GET', body } = {} ) {
-	const headers = { 'Content-Type': 'application/json' };
+export async function storeRequest( path, { method = 'GET', body, headers: extra } = {} ) {
+	const headers = { 'Content-Type': 'application/json', ...extra };
 	if ( 'GET' !== method && window[ NONCE_KEY ] ) {
 		headers.Nonce = window[ NONCE_KEY ];
 	}
@@ -72,8 +73,9 @@ export async function storeRequest( path, { method = 'GET', body } = {} ) {
  * Read the live cart from the Store API once, for a caller that renders it itself (the cart drawer on opening). The
  * reading is not published: the caller publishes what it renders (`publishCart` in `index.js`).
  *
+ * @param {Object} [headers] Extra request headers.
  * @return {Promise<Object>} The Store API cart response; rejects when the request fails.
  */
-export function readCart() {
-	return storeRequest( '/cart' );
+export function readCart( headers ) {
+	return storeRequest( '/cart', { headers } );
 }

@@ -640,6 +640,109 @@
 	font-weight: 600;
 }
 
+/* The centred empty state (picture, heading, body line, product button, text link): on only when a setting builds it
+   (includes/helpers-cart-panel-extras.php). :where() keeps every rule at zero specificity so the empty-state settings win. */
+:where(.sgs-cart__panel) .sgs-cart__panel-empty--rich {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
+	text-align: center;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-empty--rich .sgs-cart__panel-empty-message {
+	margin: 0;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-empty-media {
+	max-width: 100%;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-empty-body {
+	margin: 0;
+	font-size: 0.95rem;
+}
+
+/* The one-tap product button is a <button>: take the link-button look without the browser's button chrome. */
+:where(.sgs-cart__panel) button.sgs-cart__panel-empty-add {
+	border: 0;
+	cursor: pointer;
+	font: inherit;
+	font-weight: 600;
+}
+
+:where(.sgs-cart__panel) button.sgs-cart__panel-empty-add:disabled {
+	cursor: progress;
+	opacity: 0.6;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-empty-link {
+	color: inherit;
+	text-decoration: underline;
+}
+
+/* ── Gift box — tick, then who it is for and a note ─────────────────────────────── */
+:where(.sgs-cart__panel) .sgs-cart__panel-gift {
+	display: grid;
+	gap: 10px;
+	padding: 12px 20px;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-gift-switch {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	cursor: pointer;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-gift-checkbox {
+	flex: none;
+	width: 20px;
+	height: 20px;
+	margin: 0;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-gift-text {
+	display: grid;
+	gap: 2px;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-gift-label {
+	font-weight: 600;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-gift-help {
+	font-size: 0.85rem;
+	opacity: 0.75;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-gift-fields {
+	display: grid;
+	gap: 6px;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-gift-fields[hidden],
+:where(.sgs-cart__panel) .sgs-cart__panel-gift[hidden],
+:where(.sgs-cart__panel) .sgs-cart__panel-gift-error[hidden] {
+	display: none;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-gift-field-label {
+	font-size: 0.85rem;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-gift-to,
+:where(.sgs-cart__panel) .sgs-cart__panel-gift-message {
+	box-sizing: border-box;
+	width: 100%;
+	font: inherit;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-gift-error {
+	margin: 0;
+	font-size: 0.85rem;
+}
+
 /* ── Item row ─────────────────────────────────────────────────────────────────── */
 :where(.sgs-cart__panel) .sgs-cart__item {
 	display: grid;

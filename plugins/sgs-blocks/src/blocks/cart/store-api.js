@@ -16,10 +16,11 @@ import { readCart, storeRequest } from '../../shared/cart-live/request';
 /**
  * Fetch the current cart (items + totals).
  *
+ * @param {Object} [headers] Extra request headers (the drawer's gift box asks for the gift value with `X-SGS-Gift: 1`).
  * @return {Promise<Object>} The Store API cart response.
  */
-export function fetchCart() {
-	return readCart();
+export function fetchCart( headers ) {
+	return readCart( headers );
 }
 
 /**
@@ -55,12 +56,14 @@ export function removeCartItem( key ) {
  *
  * @param {number} id       Product or variation id.
  * @param {number} quantity Quantity (default 1).
+ * @param {Object} [headers] Extra request headers (the gift box's `X-SGS-Gift: 1`, so the new cart carries the gift value).
  * @return {Promise<Object>} The updated cart.
  */
-export function addCartItem( id, quantity = 1 ) {
+export function addCartItem( id, quantity = 1, headers ) {
 	return storeRequest( '/cart/add-item', {
 		method: 'POST',
 		body: { id, quantity },
+		headers,
 	} );
 }
 

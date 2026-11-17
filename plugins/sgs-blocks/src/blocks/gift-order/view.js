@@ -11,6 +11,9 @@
 
 const TYPING_DELAY = 600;
 
+// Another gift box on the page (the cart drawer's) announces its saved value with this event; see src/blocks/cart/panel-gift.js.
+const GIFT_EVENT = 'sgs:gift-changed';
+
 /**
  * Fill `%1$d` (used), `%2$d` (maximum) and `%3$d` (left) in the block's count text.
  *
@@ -68,6 +71,11 @@ function init( root ) {
 	const save = () => {
 		timer = null;
 		const sent = edits;
+		const value = {
+			on: box.checked,
+			to: box.checked ? recipient : '',
+			message: box.checked ? note.value : '',
+		};
 		fetch( config.restUrl, {
 			method: 'POST',
 			credentials: 'same-origin',
@@ -75,16 +83,19 @@ function init( root ) {
 				'Content-Type': 'application/json',
 				'X-WP-Nonce': config.nonce,
 			},
-			body: JSON.stringify( {
-				on: box.checked,
-				to: box.checked ? recipient : '',
-				message: box.checked ? note.value : '',
-			} ),
+			body: JSON.stringify( value ),
 		} )
 			.then( ( response ) =>
 				response.json().then( ( body ) => ( { response, body } ) )
 			)
 			.then( ( { response, body } ) => {
+				if ( response.ok ) {
+					document.dispatchEvent(
+						new CustomEvent( GIFT_EVENT, {
+							detail: { ...value, source: root },
+						} )
+					);
+				}
 				if ( sent !== edits ) {
 					return;
 				}
@@ -117,6 +128,17 @@ function init( root ) {
 		}
 	} );
 	draw();
+
+	document.addEventListener( GIFT_EVENT, ( event ) => {
+		const value = event.detail;
+		if ( ! value || value.source === root || null !== timer ) {
+			return;
+		}
+		box.checked = !! value.on;
+		note.value = value.on ? value.message || '' : '';
+		recipient = value.on ? value.to || '' : '';
+		draw();
+	} );
 
 	// A cached page carries someone else's state: read this shopper's own from the cart.
 	fetch( config.storeUrl, {
