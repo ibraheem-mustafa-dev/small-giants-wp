@@ -119,6 +119,25 @@ final class TrustBarRenderTest extends TestCase {
 		}
 	}
 
+	// ── Icon hover colour ────────────────────────────────────────────────────
+
+	public function test_icon_hover_colour_re_points_the_icon_property_on_the_hovered_item(): void {
+		foreach ( array( $this->circle_attrs(), $this->bare_attrs() ) as $base ) {
+			$out = $this->render( array_merge( $base, array( 'iconColourHover' => 'accent' ) ) );
+			$css = $out['css'];
+			$sel = '.sgs-tb-1 .sgs-trust-bar__badge';
+			$this->assertStringContainsString( $sel . ':hover{--sgs-trust-badge-icon-colour:var(--wp--preset--color--accent, currentColor)}', $css, $base['badgeStyle'] . ': hover re-points the icon colour' );
+			$this->assertStringContainsString( $sel . ':focus-visible{--sgs-trust-badge-icon-colour:', $css, $base['badgeStyle'] . ': focus does too' );
+			$this->assertStringNotContainsString( '.wp-block-sgs-trust-bar:hover', $css, $base['badgeStyle'] . ': the bar itself no longer takes a hover colour' );
+			$this->assertStringNotContainsString( ' style="', $out['html'], 'no inline style attribute (Spec 32)' );
+		}
+	}
+
+	public function test_no_icon_hover_colour_prints_no_hover_rule(): void {
+		$out = $this->render( $this->circle_attrs() );
+		$this->assertStringNotContainsString( '.sgs-trust-bar__badge:hover', $out['css'] );
+	}
+
 	// ── Marquee lane ────────────────────────────────────────────
 
 	public function test_titled_marquee_prints_the_set_in_a_lane_beside_the_title(): void {

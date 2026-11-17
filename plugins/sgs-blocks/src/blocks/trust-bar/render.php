@@ -300,10 +300,19 @@ if ( '' !== $tb_text_colour_hover_effective ) {
 }
 
 if ( $tb_root_colour_decls || $tb_root_colour_hover_decls ) {
-	if ( '' !== ( $attributes['iconColourHover'] ?? '' ) ) {
-		$tb_root_colour_hover_decls[] = 'color:' . sgs_colour_value( $attributes['iconColourHover'] );
-	}
 	$tb_extra_scoped_css .= sgs_emit_state_colour_css( $root_sel, $tb_root_colour_decls, $tb_root_colour_hover_decls );
+}
+
+// Icon colour on hover: an item's icon reads --sgs-trust-badge-icon-colour (set from iconColour on the bar, in both
+// icon styles), so the hover colour re-points that property on the item (`.sgs-trust-bar__badge`) while it is hovered
+// or focused; the plain and circled icons both follow.
+$tb_icon_colour_hover = '' !== ( $attributes['iconColourHover'] ?? '' ) ? sgs_colour_value( $attributes['iconColourHover'] ) : '';
+if ( '' !== $tb_icon_colour_hover && in_array( $badge_style, array( 'icon-circle', 'icon-bare' ), true ) ) {
+	$tb_extra_scoped_css .= sgs_emit_state_colour_css(
+		$uid_scope . ' .sgs-trust-bar__badge',
+		array(),
+		array( '--sgs-trust-badge-icon-colour:' . $tb_icon_colour_hover )
+	);
 }
 
 // `@supports not (background-clip: text)` fallback rules — no-op ('') for a
