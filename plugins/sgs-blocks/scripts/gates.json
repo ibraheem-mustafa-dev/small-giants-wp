@@ -2285,5 +2285,23 @@
     "added_commit": null,
     "budget_ms": 60000,
     "order": 263
+  },
+  {
+    "id": "check-breakpoint-bounds",
+    "cmd": "python scripts/check-breakpoint-bounds.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 264
+  },
+  {
+    "id": "check-breakpoint-bounds-selftest",
+    "cmd": "python scripts/check-breakpoint-bounds.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 300,
+    "order": 265
   }
 ]
