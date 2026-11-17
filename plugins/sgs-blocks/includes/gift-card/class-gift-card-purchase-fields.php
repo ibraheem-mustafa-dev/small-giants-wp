@@ -42,13 +42,11 @@ final class Gift_Card_Purchase_Fields {
 		$errors = array();
 		$data   = array();
 
-		$pence = Gift_Card_Amounts::resolve(
-			$config,
-			self::text( $input[ self::F_AMOUNT ] ?? '' ),
-			self::text( $input[ self::F_CUSTOM ] ?? '' )
-		);
+		$choice = self::text( $input[ self::F_AMOUNT ] ?? '' );
+		$custom = self::text( $input[ self::F_CUSTOM ] ?? '' );
+		$pence  = Gift_Card_Amounts::resolve( $config, $choice, $custom );
 		if ( null === $pence ) {
-			$errors[ self::F_AMOUNT ] = 'Choose one of the gift card amounts.';
+			$errors[ self::F_AMOUNT ] = self::amount_error( $config, $choice, $custom );
 		} else {
 			$data['amount_pence'] = $pence;
 		}
@@ -93,6 +91,44 @@ final class Gift_Card_Purchase_Fields {
 			'errors' => $errors,
 			'data'   => $data,
 		);
+	}
+
+	/**
+	 * The notice for a refused amount: a custom amount says what is allowed, a preset keeps the generic line.
+	 *
+	 * Plain text; the caller escapes it when it shows the notice.
+	 *
+	 * @param array<string,mixed> $config Product amounts configuration.
+	 * @param string              $choice Posted amount choice.
+	 * @param string              $custom Posted custom amount.
+	 * @return string
+	 */
+	private static function amount_error( array $config, string $choice, string $custom ): string {
+		if ( 'custom' !== $choice || empty( $config['custom_enabled'] ) ) {
+			return \__( 'Choose one of the gift card amounts.', 'sgs-blocks' );
+		}
+		if ( null === Gift_Card_Money::to_pence( $custom ) ) {
+			return \__( 'Enter an amount for your gift card.', 'sgs-blocks' );
+		}
+		return \sprintf(
+			/* translators: 1: smallest custom amount, 2: largest custom amount, both with the currency symbol. */
+			\__( 'Enter an amount between %1$s and %2$s.', 'sgs-blocks' ),
+			self::price_text( (int) $config['custom_min'] ),
+			self::price_text( (int) $config['custom_max'] )
+		);
+	}
+
+	/**
+	 * Pence as plain price text in the shop's currency format, without trailing zero pence ("£10").
+	 *
+	 * @param int $pence Amount in pence.
+	 * @return string
+	 */
+	private static function price_text( int $pence ): string {
+		if ( \function_exists( 'wc_price' ) ) {
+			return \html_entity_decode( \wp_strip_all_tags( \wc_price( $pence / 100, array( 'trim_zeros' => true ) ) ), ENT_QUOTES, 'UTF-8' );
+		}
+		return \preg_replace( '/\.00$/', '', Gift_Card_Money::format( $pence ) );
 	}
 
 	/**

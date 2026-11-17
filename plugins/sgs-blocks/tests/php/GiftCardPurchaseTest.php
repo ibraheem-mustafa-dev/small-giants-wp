@@ -23,6 +23,19 @@ if ( ! function_exists( 'sanitize_email' ) ) {
 	}
 }
 
+if ( ! function_exists( '__' ) ) {
+	// phpcs:ignore
+	function __( $text, $domain = 'default' ) {
+		return $text;
+	}
+}
+if ( ! function_exists( 'wp_strip_all_tags' ) ) {
+	// phpcs:ignore
+	function wp_strip_all_tags( $text ) {
+		return trim( strip_tags( (string) $text ) );
+	}
+}
+
 #[Group( 'sgs_gift_card' )]
 final class GiftCardPurchaseTest extends Gift_Card_Test_Case {
 
@@ -180,5 +193,52 @@ final class GiftCardPurchaseTest extends Gift_Card_Test_Case {
 		$this->assertFalse( $other->partial_use() );
 		$this->assertSame( 'email', $other->get( 'delivery_method' ), 'Only email exists today.' );
 		$this->assertNull( $other->get( 'unknown' ) );
+	}
+
+	public function test_a_refused_custom_amount_says_the_allowed_range(): void {
+		$on = Gift_Card_Amounts::config( array( 2500 ), true, 1000, 10000 );
+		foreach ( array( '9', '100.01' ) as $bad ) {
+			$result = F::validate( $this->good_input( array( F::F_AMOUNT => 'custom', F::F_CUSTOM => $bad ) ), $on, new Gift_Card_Settings(), self::TODAY );
+			$this->assertFalse( $result['ok'] );
+			$this->assertSame( 'Enter an amount between £10 and £100.', $result['errors'][ F::F_AMOUNT ], $bad );
+		}
+	}
+
+	public function test_an_empty_or_non_numeric_custom_amount_says_to_enter_an_amount(): void {
+		$on = Gift_Card_Amounts::config( array( 2500 ), true, 1000, 10000 );
+		foreach ( array( '', 'abc' ) as $bad ) {
+			$result = F::validate( $this->good_input( array( F::F_AMOUNT => 'custom', F::F_CUSTOM => $bad ) ), $on, new Gift_Card_Settings(), self::TODAY );
+			$this->assertSame( 'Enter an amount for your gift card.', $result['errors'][ F::F_AMOUNT ], $bad );
+		}
+	}
+
+	public function test_a_refused_preset_keeps_the_generic_message(): void {
+		$on = Gift_Card_Amounts::config( array( 2500 ), true, 1000, 10000 );
+		$result = F::validate( $this->good_input( array( F::F_AMOUNT => '3000' ) ), $on, new Gift_Card_Settings(), self::TODAY );
+		$this->assertSame( 'Choose one of the gift card amounts.', $result['errors'][ F::F_AMOUNT ] );
+	}
+
+	public function test_the_cart_line_regular_sale_and_active_price_all_equal_the_chosen_amount(): void {
+		require_once dirname( __DIR__, 2 ) . '/includes/gift-card/class-gift-card-purchase.php';
+		if ( ! function_exists( 'is_admin' ) ) {
+			// phpcs:ignore
+			function is_admin() {
+				return false;
+			}
+		}
+		$product = new class() {
+			public array $p = array( 'regular' => '15.00', 'sale' => '', 'price' => '15.00' );
+			public function set_regular_price( $v ) { $this->p['regular'] = $v; }
+			public function set_sale_price( $v ) { $this->p['sale'] = $v; }
+			public function set_price( $v ) { $this->p['price'] = $v; }
+		};
+		$cart = new class( $product ) {
+			public function __construct( private object $product ) {}
+			public function get_cart() {
+				return array( array( 'data' => $this->product, \SGS\Blocks\Gift_Card\Gift_Card_Purchase::CART_KEY => array( 'amount_pence' => 1000 ) ) );
+			}
+		};
+		\SGS\Blocks\Gift_Card\Gift_Card_Purchase::apply_price( $cart );
+		$this->assertSame( array( 'regular' => '10.00', 'sale' => '', 'price' => '10.00' ), $product->p );
 	}
 }

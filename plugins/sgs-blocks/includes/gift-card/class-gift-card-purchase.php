@@ -108,7 +108,11 @@ final class Gift_Card_Purchase {
 			}
 			$pence = Gift_Card_Money::to_pence( (int) $item[ self::CART_KEY ]['amount_pence'], true );
 			if ( null !== $pence ) {
-				$item['data']->set_price( Gift_Card_Money::decimal( $pence ) );
+				// Regular, sale and active price all equal the chosen amount, so no cart surface shows a saving or a struck-through price.
+				$amount = Gift_Card_Money::decimal( $pence );
+				$item['data']->set_regular_price( $amount );
+				$item['data']->set_sale_price( '' );
+				$item['data']->set_price( $amount );
 			}
 		}
 	}
