@@ -91,7 +91,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: `local-mamas` drawer post and menus; `mamas-test`
 - Done when: every Nav drawer row is closed by Bean, and each drawer link opens its page at 375
 - Depends on: Task 1 (social icons)
-- Status: Bean approved the fixes on 2026-11-17 (with the menu badges and the `Zainab@` email address); being applied on `local-mamas`. Nav drawer 4 is a shared fault on WooCommerce pages: its fix is proposed to Bean after the reach survey
+- Status: Nav drawer 1, 2a, 2b, 2c, 3 and 5, the menu badges and the `Zainab@` address are fixed and on `mamas-test` (deployed and pushed 2026-11-17, commit `2b89c2945`); waiting for Bean to close them. Nav drawer 4 waits for Bean's choice: (A) the picture size rule gains a second class at its emitter (`includes/media/media-values.php::sgs_media_nodes`), after a before-and-after size diff of every picture on Mama's pages and the canary, or (B) the two drawer pictures are framed by settings only
 
 ### Task 3: Header
 - Why: 9 points, one of them a new behaviour (the trust bar ticker). Read first: the register's Header section; Eye Care's trust bar on `eye-care-test` (read only)
@@ -99,7 +99,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: `local-mamas` header post; the trust bar's block if the ticker is a missing behaviour; `mamas-test`
 - Done when: every Header row is closed by Bean, checked at 375, 768, 1024 and 1440
 - Depends on: none
-- Status: not started
+- Status: diagnosis running (2026-11-17)
 
 ### Task 4: Contact
 - Why: 11 points; its accordion and gutters are shared. Read first: the register's Contact section; the Help page's accordion (the working one)
