@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-11-16
+last_updated: 2026-11-17
 ---
 
 # small-giants-wp: LEDGER (the one living status)
@@ -10,8 +10,8 @@ last_updated: 2026-11-16
 
 - **Web engine (Front E):** the engine has its own repository, `C:\Users\Bean\Projects\small-giants-engine` (private on GitHub). You rejected its first plan on 2026-11-12. The design that replaces it is written there as a register of solutions, six specs and a build plan: existing open-source pieces for almost everything (Payload CMS, the Puck editor, shadcn/ui, Astro, Stripe), a back office on the VPS and each client's site as plain files on the business hosting. You are reviewing it piece by piece (piece 1 is settled; pieces 2 to 10 remain), in sessions that run in the engine's own folder; nothing is built until that review ends and you say go.
 - **WordPress framework: frozen on 2026-11-12 (your decision), except the cloning pipeline, which you unfroze on 2026-11-15.** Outside the pipeline: security updates and client fixes only, no new framework features, specs or checks. Indus (signed off 2026-11-08) and Eye Care (signed off 2026-11-12) launch on WordPress when their clients are ready. A new client is built on WordPress until the engine passes its platform gate (the engine's Spec 01 section 13).
-- **Mama's (Front H): WordPress is the goal again (your ruling, 2026-11-15); the engine is a side project.** Your method of 2026-11-16: you write an issue register of mamas-test; I hand-fix the surfaces that are close, one at a time, and re-clone the ones you judge too different, one surface at a time. Plan: `plans/2026-11-16-mamas-fix-and-surface-cloning.md`. Target: the MIC event on 2026-11-28.
-- **Need you (Mama's):** the issue register of mamas-test, marking each surface "polish" or "too different".
+- **Mama's (Front H): WordPress is the goal again (your ruling, 2026-11-15); the engine is a side project.** The work is your issue register of 2026-11-17 (`sites/mamas-munches-redesign/build/qa/issue-register.md`, 125 items), taken one section at a time, easiest first: Footer, Nav drawer, Header, Contact, Help, Sign-in, Shop, Gifts, Product, Home, Checkout. A helper diagnoses each section, I check its causes, you approve the fixes before they are made, and you close each item on mamas-test. Only the basket drawer and the account page are re-cloned. Plan: `plans/2026-11-16-mamas-fix-and-surface-cloning.md`. Target: the MIC event on 2026-11-28.
+- **Need you (Mama's):** your go on each section's proposed fixes as it arrives (Footer first), and the rest of your Checkout note, which stops mid-sentence.
 - **Media system (Spec 49, Front P):** released 2026-11-12 on all four test sites.
 - **Need you:** the rest of the engine's design review, in the engine's own folder; its LEDGER lists what is open. The rulings under Parked and Front N wait until a client fix needs one.
 
@@ -41,7 +41,7 @@ Built and closed (2026-10-18; Bean signed Gate 9). Open: FR-38A-33's `hover.effe
 
 **Your rulings of 2026-11-15 for cloning:** where no setting matches a draft value the route writes Custom CSS and lists each use in the run's report; a clone sticks to the draft, so the 24px tap-target minimum is withdrawn; Mama's only accepted differences are everything subscriptions alone need (deferred and not shown), the send-to-hospital item (already out of the draft) and the account banner with mamas-test's wording.
 
-**Mama's:** worked from `plans/2026-11-16-mamas-fix-and-surface-cloning.md`, which holds the 2026-11-15 baseline run (13 of 24 surfaces had a failed stage), the mirrors' state and every open task. `local-mamas` (8084) holds the hand-finished content and is where hand fixes are made; `local-mediatest-mamaslab` (8091) is the lab for cloning tests; mamas-test was last pushed 2026-11-05 and gained Stripe (test mode) on 2026-11-16. Resume from the plan's first task that is not done; Tasks 6 and 7 wait for your register. The seven items of `plans/2026-11-02-clone-finishing-streams.md`, section "Mama's", fold into the register.
+**Mama's:** worked from `plans/2026-11-16-mamas-fix-and-surface-cloning.md`: your register of 2026-11-17, one section per task (Tasks 1 to 11, hand fixes), then the basket drawer and account page re-cloned on the lab (Tasks 12 and 13). Each section's causes and proposed fixes are in `sites/mamas-munches-redesign/build/qa/register-findings.md`; each change made is a row in `fix-catalogue.md` beside it. `local-mamas` (8084) holds the hand-finished content and is where fixes are made; `local-mediatest-mamaslab` (8091) is the lab; mamas-test was last pushed 2026-11-05 and gained Stripe (test mode) on 2026-11-16. The walker's own list of differences on mamas-test is `sites/mamas-munches-redesign/build/qa/parity-baseline-2026-11-16.md`. The 2026-11-15 whole-site run (13 of 24 surfaces with a failed stage) is in `sites/mamas-munches-redesign/build/qa/site-run/2026-11-15T22-50-39/`. Resume from the plan's first task that is not done. The seven items of `plans/2026-11-02-clone-finishing-streams.md`, section "Mama's", are checked in the diagnosis of the section each belongs to.
 
 **Handover standard:** Spec 48A v1.0 (`handoff-check.mjs`). Open: edit the Eye Care draft to mirror the live site (Spec 48A FR-48A-11).
 
