@@ -220,6 +220,50 @@ if ( ! function_exists( 'sgs_account_cell_css' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_account_name_row_css' ) ) {
+	/**
+	 * The register form's First name and Last name fields in one row of two equal columns, on the devices the
+	 * `registerNameRow` setting turns on ({desktop,tablet,mobile} booleans; unset prints nothing). The column gap is the
+	 * form's row gap for that device (`authFormRowGap`, cascading down from desktop), or 1rem when that is unset.
+	 * Only a form that holds both fields is touched, so a lone First name stays full width. The fields keep their DOM
+	 * order; every other row spans both columns.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $r          The block root selector plus `.sgs-account`.
+	 * @return string CSS text (may be '').
+	 */
+	function sgs_account_name_row_css( array $attributes, string $r ): string {
+		$on = $attributes['registerNameRow'] ?? null;
+		if ( ! is_array( $on ) ) {
+			return '';
+		}
+		$gaps  = is_array( $attributes['authFormRowGap'] ?? null ) ? $attributes['authFormRowGap'] : array();
+		$form  = $r . ' #customer_login form.woocommerce-form-register:has(#reg_first_name):has(#reg_last_name)';
+		$media = array(
+			'desktop' => 'desktop',
+			'tablet'  => 'tablet-only',
+			'mobile'  => 'mobile',
+		);
+		$gap   = '';
+		$css   = '';
+		foreach ( $media as $device => $range ) {
+			$own = $gaps[ $device ] ?? null;
+			if ( null !== $own && '' !== $own ) {
+				$gap = sgs_account_length_transform( $own );
+			}
+			if ( true !== ( $on[ $device ] ?? null ) ) {
+				continue;
+			}
+			$css .= SGS_Breakpoints::media( $range ) . '{'
+				. $form . '{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:' . ( '' !== $gap ? $gap : '1rem' ) . ';}'
+				. $form . ' > *{grid-column:1/-1;}'
+				. $form . ' > p:has(#reg_first_name),' . $form . ' > p:has(#reg_last_name){grid-column:auto;}'
+				. '}';
+		}
+		return $css;
+	}
+}
+
 if ( ! function_exists( 'sgs_account_cells_css' ) ) {
 	/**
 	 * Every setting row and type target of this file for one sgs/account instance.
@@ -244,6 +288,7 @@ if ( ! function_exists( 'sgs_account_cells_css' ) ) {
 			}
 			$css[] = $row_css;
 		}
+		$css[] = sgs_account_name_row_css( $attributes, $r );
 		$css[] = sgs_typography_css_rule( $attributes, 'authHeading', $r . ' #customer_login h2', '', false, false, $tiered );
 		$css[] = sgs_typography_css_rule( $attributes, 'loginRememberText', $r . ' .woocommerce-form-login__rememberme', '', false, false, $tiered );
 		$css[] = sgs_typography_css_rule( $attributes, 'lostPasswordRow', $r . ' .woocommerce-form-login .lost_password', '', false, false, $tiered );

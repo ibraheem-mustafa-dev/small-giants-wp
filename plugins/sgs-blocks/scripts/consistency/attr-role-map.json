@@ -1458,6 +1458,7 @@
     "sgs/account::registerMarketingOptInLabel": null,
     "sgs/account::registerPasswordHint": "text-content",
     "sgs/account::registerShowFirstName": "boolean-visibility",
+    "sgs/account::registerNameRow": "layout",
     "sgs/account::registerShowLastName": "boolean-visibility",
     "sgs/account::registerShowMarketingOptIn": "boolean-visibility",
     "sgs/account::rememberCheckboxSize": "select-from-enum",

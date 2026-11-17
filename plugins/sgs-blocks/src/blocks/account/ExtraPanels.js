@@ -5,7 +5,7 @@
  * (block.json holds no default for them).
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody, TextControl } from '@wordpress/components';
+import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { ResponsiveOverride, SgsBorderControl, SgsLengthControl, ShadowControl } from '../../components';
 import { Choice, TextField, TierBox, Toggle } from './extraControls';
 
@@ -301,6 +301,35 @@ export function RegisterFormPanel( { attributes, setAttributes } ) {
 			/>
 			{ attributes.registerShowLastName && (
 				<TextField { ...p } name="registerLastNameLabel" label={ __( 'Last name field label', 'sgs-blocks' ) } />
+			) }
+			{ attributes.registerShowFirstName && attributes.registerShowLastName && (
+				<>
+					<ToggleControl
+						__nextHasNoMarginBottom
+						label={ __( 'First and last name side by side', 'sgs-blocks' ) }
+						help={ __( 'Two equal columns, with the form’s row gap between them. Off keeps them stacked.', 'sgs-blocks' ) }
+						checked={ !! attributes.registerNameRow }
+						onChange={ ( on ) =>
+							setAttributes( { registerNameRow: on ? { desktop: true, tablet: true, mobile: false } : undefined } )
+						}
+					/>
+					{ attributes.registerNameRow &&
+						[
+							[ 'desktop', __( 'Side by side on desktop', 'sgs-blocks' ) ],
+							[ 'tablet', __( 'Side by side on tablet', 'sgs-blocks' ) ],
+							[ 'mobile', __( 'Side by side on mobile', 'sgs-blocks' ) ],
+						].map( ( [ device, label ] ) => (
+							<ToggleControl
+								key={ device }
+								__nextHasNoMarginBottom
+								label={ label }
+								checked={ true === attributes.registerNameRow[ device ] }
+								onChange={ ( on ) =>
+									setAttributes( { registerNameRow: { ...attributes.registerNameRow, [ device ]: on } } )
+								}
+							/>
+						) ) }
+				</>
 			) }
 			<TextField { ...p } name="registerPasswordHint" label={ __( 'Hint under the password field', 'sgs-blocks' ) } />
 			<Toggle

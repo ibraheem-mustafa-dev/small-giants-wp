@@ -125,6 +125,17 @@ $on = sgs_account_cells_css( $attrs + array( 'authFormRowGap' => array( 'desktop
 ok( str_contains( $on, '#customer_login form.woocommerce-form-register{display:grid;}' ) && str_contains( $on, '#customer_login form{row-gap:14px' ), '4 authFormRowGap: register form becomes a grid and the gap applies' );
 ok( ! str_contains( sgs_account_cells_css( array( 'authFormRowGap' => 'bad' ), '.u1.wp-block-sgs-account' ), 'display:grid' ), '4 authFormRowGap: an unusable value prints no grid rule' );
 
+// 4b) First and last name in one row: off prints nothing new; on prints the two-column rule only for the chosen devices.
+$row = array( 'registerNameRow' => array( 'desktop' => true, 'tablet' => true, 'mobile' => false ) );
+ok( $expected === sgs_account_cells_css( $attrs + array( 'registerNameRow' => array() ), '.u1.wp-block-sgs-account' ), '4b setting empty: output byte-identical to the stored expectation' );
+$nr = sgs_account_cells_css( $row, '.u1.wp-block-sgs-account' );
+ok( 2 === substr_count( $nr, 'grid-template-columns:repeat(2,minmax(0,1fr))' ), '4b default-on: two-column rule for desktop and tablet only' );
+ok( str_contains( $nr, SGS_Breakpoints::media( 'desktop' ) ) && str_contains( $nr, SGS_Breakpoints::media( 'tablet-only' ) ) && ! str_contains( $nr, SGS_Breakpoints::media( 'mobile' ) ), '4b mobile stays stacked: no mobile rule' );
+ok( str_contains( $nr, 'column-gap:1rem' ) && ! str_contains( $nr, 'style=' ), '4b no row gap set: fallback column gap, no inline style' );
+$nr2 = sgs_account_cells_css( array( 'registerNameRow' => array( 'mobile' => true ), 'authFormRowGap' => array( 'desktop' => 20, 'mobile' => 8 ) ), '.u1.wp-block-sgs-account' );
+ok( 1 === substr_count( $nr2, 'grid-template-columns' ) && str_contains( $nr2, 'column-gap:8px' ), '4b mobile only: one rule, column gap follows the mobile row gap' );
+ok( str_contains( $nr, ':has(#reg_first_name):has(#reg_last_name)' ) && str_contains( $nr, '> *{grid-column:1/-1;}' ), '4b only a form with both fields is touched; other rows span both columns' );
+
 // 5) Redirect decision (pure).
 $base = array( 'logged_in' => true, 'method' => 'GET', 'request_url' => '/sign-in/', 'destination' => 'https://example.test/my-account/' );
 ok( 'https://example.test/my-account/' === RD::decide( $base ), '5 signed in on a sign-in page: redirect' );
