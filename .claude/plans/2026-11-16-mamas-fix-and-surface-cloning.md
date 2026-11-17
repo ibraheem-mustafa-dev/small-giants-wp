@@ -28,36 +28,32 @@ Sections whose posts differ run side by side; a section that shares a component 
 ## Where things are
 
 - `local-mamas` (http://localhost:8084): the hand-finished content, where fixes are made. Its content, block and theme code and WooCommerce version (11.3.0) match `mamas-test` (compared post by post on 2026-11-17); a section with a code change deploys to `mamas-test` before the mirror is pushed.
-- `local-mediatest-mamaslab` (http://localhost:8091): the 2026-11-15 re-clone, the lab for the two re-clones. `local-mediatest-mamashand` (8090) is a spare copy to drop in Task 12.
+- `local-mediatest-mamaslab` (http://localhost:8091): the 2026-11-15 re-clone, kept as the lab for the route work parked in Task 12. `local-mediatest-mamashand` (8090) is a spare copy to drop in Task 12.
 - The draft is served with `node scripts/computed-route/tools/draft-viewer.mjs mamas-munches-redesign --port 5180`.
 - The parity walker's own list for `mamas-test` is `sites/mamas-munches-redesign/build/qa/parity-baseline-2026-11-16.md`. It cannot see the header, footer or the hand-built parts of Home, and pairs only 19 of Product's 112 elements, so it supports a diagnosis and never closes an item.
 - Stripe: WooCommerce Stripe Gateway 11.1.1 runs in test mode on both sites with Eye Care's test keys. No test payment has been run; Apple Pay and Google Pay (Product 15) need her domain registered in Stripe, and no webhook is set.
 - Calibration cache `E:\sgs-route-cache` is rebuilt (95 of 97 blocks; `sgs/buybox` and `sgs/theme-toggle` unmeasured). Intake matches the current draft; 74 changed rows carry the route's proposal, not Bean's review. Scratch scripts and logs: `E:\sgs-tmp\mamas-reclone\`.
 
-## In flight and waiting (2026-11-17, evening)
+## Where it stands and what is next (handoff of 2026-11-17)
 
-Deployed to `mamas-test` at 4b253c101 (plugin and theme, the theme carrying the client's snapshot with the 13px `small` size): the account form's fields, tick and redirect; the accordion's filter band and the count outside it; the slider's hover on loop clones; entrances that play when wholly on screen; the shop filter's one-at-a-time chips, "All" without a reload and the opt-in joined sort list; a container's scroll-row arrows, dots and drag; the `sgs/message-preview` and `sgs/message-preview-line` blocks; the buy box's preview hooks, side-column layout, gallery pin and the express-pay hook. e1c6e4684 (a refused gift card amount names its range; a gift card line shows no saving) is on `main` and deploying.
+`main` is at the commit `git log -1` shows; `mamas-test` runs the plugin and theme at 1e2a1aa37 (every code commit up to it; later commits are documents) and the content shipped from `local-mamas` at 16:27 on 2026-11-17, checked there in a visible browser at 1440 and 375 on eleven pages. Every register section has been worked; none of Contact, Help, Sign-in, Shop, Gifts, Home, Product, Checkout, Account, Basket drawer or Order confirmation is closed by Bean yet.
 
-Bean's rulings today, beyond the register: review stars pink everywhere; no bake date anywhere (Zainab bakes fresh for every order); the gift card is emailed, gift notes for cookie orders are written; Taster Trio, Gift Box and Care Bundle take Zookies' options; Gift Box 12 Zookies, Care Bundle six weekly deliveries of 7 (for Zainab to confirm); gift card custom amount on, £10 to £100; the phone field's label stays; "Secure" on phones; hand-building, not the cloning route, for the basket drawer, account page and order confirmation (each investigation found the block's settings unset or the page never built, and Eye Care has nothing to reuse); skip optional deploy steps (no `--editor-check`, no motion QA) but never `--allow-dirty` or `--skip-verify`.
+**Next, in this order:**
 
-Helpers working on `local-mamas` (scratch folders under `E:\sgs-tmp\mamas-register\`):
+1. Bean brings a new list: discrepancies he found on `mamas-test` after the ship, some new and some fixes that hold at 375, 768 and 1440 and break at other widths. Add each to `sites/mamas-munches-redesign/build/qa/issue-register.md` with an ID in its section, then work them by "How a section is worked" above. A width fault is measured at 600, 900, 1023, 1024, 1200 and 1366 as well, and the draft's source is read for `fr`, `%`, `clamp()` and `max-width`, before anything is called fixed.
+2. Batch four of code: combine `feature/order-confirmation-parts` (`E:\sgs-tmp\wt-orderparts`) and `feature/cart-drawer-options` (`E:\sgs-tmp\wt-cartdrawer`, its helper may still be working: its report names its commits) on one branch, one reseed, one gate, one publish (`.claude/dev-setup.md`, "Publishing a private reseed"; `SGS_FRAMEWORK_DB=<copy> python plugins/sgs-blocks/scripts/build-deploy.py --gate-only --blocks-only`, no `--editor-check`), fast-forward `main`, deploy to `mamas-test`, copy the gate's cached build (`~/.cache/sgs-deploy/<key>/build`, the key whose `gate-pass.json` names the commit) into `plugins/sgs-blocks/build`, run `scripts/local-wp/sync-build.sh local-mamas`, then set the new settings: on template 219 the `sgs/order-items` block in `oc-items` (total label "Paid"), the gift-note card and the "View order" card; on post 178 the cart block's stepper, values-only options line, link-style "View full basket", dividers.
+3. Ship again with `push-to-remote.sh local-mamas mamas-test` (dry run first) and check on the hosted site.
+4. A code review of the session's code commits (fe0d573c6..1e2a1aa37, the `feat` and `fix` commits under `plugins/` and `theme/`): none was run on 2026-11-17; each commit passed its tests and the full gate tier, and the main session read the accordion, slider and account diffs only.
 
-- `batch-two-settings` (`batch2`): switches the new features on: `sgsChipSingle` on the shop filter, theme mod `sgs_shop_sort_arrow` `joined`, arrows and dots on `cr-ref-home-49`, the gift note blocks on page 150 (`batch2\note-markup.md`), the cookie picture on `cr-ref-home-41b` (`home-builder\cookie-css.md`, chip term colours, `pickSideAxis`, `pickSideButton`), the Help count's and labels' look on page 152.
-- `basket-drawer-finish` (`drawer2`): the `sgs/cart` block in the header (post 178) set to the draft; proves why the panel paints dark. Left for code: a quantity stepper, the variant line's wording, a gift-message row, an upsell row, the empty state's extras.
-- `account-page-finish` (`account2`): page 103's `sgs/account` settings to the draft, the notice palette entries (`info`, `success`, `error` and their light variants) in the snapshot, a test order for `shopper2`.
-- `order-confirmation-layout` (`confirmation`): template 219 rebuilt from existing blocks with WooCommerce's own confirmation blocks kept; slots `oc-items`, `oc-gift-note`, `oc-view-order` wait for the code below.
+**What a new block or attribute needs before the full gate tier passes** (learned on `sgs/message-preview`, three rounds): `block_composition` entries in `plugins/sgs-blocks/scripts/seed-composition-roles.py`; an editor canvas that reads every attribute plainly (the wiring gate does not count a dynamic `Control` component); colours printed through `sgs_text_states_css`, `sgs_text_decls` and `sgs_fill_decls`; border width 0 by default in the stylesheet; no dense inspector panel (`inspector-scan` rule `03-dense-panel-candidate`, never raise its backlog); a `tests/fixtures/motion/render-paths.json` entry for a block that offers motion parts. A helper's brief for new code names these.
 
-Code branches not yet merged (worktrees under `E:\sgs-tmp\`); each new attribute needs the one batched reseed, gate and publish (the `sgs/message-preview` round showed what a new block must have before the full tier passes: `block_composition` seed entries, a canvas that reads every attribute plainly, colours through the shared helpers, border width 0 by default, no dense inspector panel, a motion render-paths entry):
+**Bean's rulings of 2026-11-17 beyond the register:** review stars pink everywhere; no bake date anywhere (Zainab bakes fresh for every order); the gift card is emailed, gift notes for cookie orders are written; Gift Box 12 Zookies and Care Bundle six weekly deliveries of 7 (for Zainab to confirm); information notices pink, errors red; nothing about subscriptions on the account page; the cookie picture is drawn by the site's own CSS from general hooks, never cookie settings in the buy box; optional deploy steps are skipped (no `--editor-check`, no motion QA), `--allow-dirty` and `--skip-verify` are never used.
 
-- `feature/account-name-row` (`wt-namerow`, 7b32aaca7): `registerNameRow`, first and last name side by side; then set `{"desktop":true,"tablet":true,"mobile":false}` on post 628.
-- `feature/product-card-linked-source` (`wt-cardlink`): a card shows the viewed product's Nth upsell; then set it on `cr-ref-product-card-1` to `-3` in template 202 and fill each product's Upsells (Zookies: Gift Box, Care Bundle, Gift Card; Trio: Zookies, Gift Box, Care Bundle; Gift Box: Zookies, Care Bundle, Gift Card; Care Bundle: Zookies, Gift Box, Gift Card; Gift Card: Zookies, Gift Box, Care Bundle).
-- `feature/order-confirmation-parts` (`wt-orderparts`): `sgs/order-items`, more `sgs/order` binding keys, Show-to rules for a gift note and a guest order.
+**Open, small, each with its section:** Gifts: the letter's logo overlaps the message on phones; the hero text narrows between 700 and 767. Home: the builder's step numbers. Product: the flavour hint on products with no pack size; the gift card's "£15.00" tiles and button wording. Site-wide: with the visitor's reduced-motion setting on, the footer's picture strip makes pages scroll sideways on phones and tablets; the footer is 16px too wide at 320. Tools: `scripts/local-wp/patch-block-attrs.py` should refuse `set` on a block with a real `save()` (a patched `overlayMode` broke three posts in the editor); a block default that names a palette slug a client lacks paints `currentColor` (the basket drawer). Tests failing on `main` before this session's work and still: five PHP (`BorderElementParityTest` testimonial-slider `i_hover_gradient`, three in `MotionPauseRenderTest`, one in `MotionRingTest`) and two JS snapshots in `configurator-schema-compat`.
 
-Then: ship `local-mamas` to `mamas-test` (`push-to-remote.sh`, dry run first; Bean asked for it as soon as the batch's settings are on), check there in a visible browser, and confirm on a real basket that a £10 custom gift card shows no saving.
+**For Zainab (through Bean):** the Terms page's gaps (legal name and trading status, address, the 48-hour window); the Privacy page's gaps (ICO number, how long messages and unused accounts are kept, other services that see customer details); the cookie counts; whether she emails tracking numbers (the confirmation page leaves the draft's "tracking link" promise out); which diets she can bake for safely beyond vegan, egg-free and milk-free.
 
-Open, small: the flavour hint reads "Up to 3, split evenly" on products with no pack size; the gift card tiles read "£15.00" and its button "Add gift card to basket"; with reduced motion on, the footer's picture strip makes pages scroll sideways on phones and tablets; the Gifts hero text narrows between 700 and 767; the footer is 16px too wide at 320; the patch tool should refuse `set` on a block with a real `save()`; five PHP tests fail on `main` (`BorderElementParityTest` testimonial-slider `i_hover_gradient`, three in `MotionPauseRenderTest`, one in `MotionRingTest`) and two JS snapshots in `configurator-schema-compat`. Leaked worktrees to remove: `E:\sgs-tmp\sgs-deploy-wt-56436-1794927489`, and the merged branches' worktrees (`wt-accordion`, `wt-motion`, `wt-slider`, `wt-shopfilter`, `wt-scrollrow`, `wt-note`, `wt-buybox`, `wt-batch`, `wt-giftfix`), each after removing its junction links with `rmdir`.
-
-For Zainab: the Terms page's gaps (legal name and trading status, address, the 48-hour window), the Privacy page's gaps (ICO number, retention periods, other services), the cookie counts, whether she emails tracking numbers. For Bean: closing Contact, Help, Sign-in, Shop, Gifts, Home and Product on `mamas-test` after the ship.
+**Mailing list:** the sign-up tick is her list (user meta `sgs_marketing_opt_in` and `sgs_marketing_opt_in_at`). WordPress sends no newsletter by itself; a newsletter plugin and a tick at checkout for guests are later choices, not built.
 
 ## Components shared between sections
 
@@ -89,7 +85,6 @@ Tasks 1 to 11 run in order, one section at a time: each fixes shared components 
 
 - A push from `local-mamas` replaces `mamas-test`'s whole database: take the script's backup, and re-check Stripe after the first push.
 - A block fix changes every site that uses the block. Signal: `build-deploy.py`'s gates, and the canary before `mamas-test`.
-- The two re-clones need route work that may outrun the deadline. Signal: Task 12 not done by 2026-11-24; then the basket drawer and account page are hand-built from the draft with `scripts/wp-build-page.js`, and the route work stays parked here.
 - The recognisers removed by the 2026-11-02 rewind (`git log d79135af4..0ea1a6cb2~1 -- scripts/computed-route`) include ones a re-clone needs. Re-apply one rule at a time; that range as a whole made the clones worse.
 
 ## Session breaks
@@ -140,7 +135,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 152 on `local-mamas`; `mamas-test`
 - Done when: every Help row is closed by Bean
 - Depends on: Task 4 (accordion)
-- Status: Help 2 to 5 and 7 to 9 are on `mamas-test`. Help 6 is fixed on `local-mamas`, not yet shipped: two buttons and a Terms page (725, `/terms/`) with four gaps marked for Zainab; the Privacy button gives a 404 until page 3 is rewritten (ask Bean whether to draft it the same way). Help 1: Bean chose a band setting on the accordion (the filter bar stays at the top of the accordion, drawn full width with its own background, padding and bottom border) and the hero's bottom line moved under the chips; being built on branch `feature/accordion-filter-band` in the worktree `E:\sgs-tmp\wt-accordion` (its reseed waits for the account branch's). After it merges and deploys: on page 152 remove the hero's bottom border and set the band pink (`mm-pink-band`), full width, with a 2px cocoa bottom border and the draft's padding
+- Status: Help 1 to 9 are on `mamas-test` since the ship of 2026-11-17 16:27; waiting for Bean to close. Help 1 is the accordion's filter band (pink, full width, the line under the chips) with the answer count below it; Help 6 is two buttons, a Terms page (725) and a Privacy page (3, `/privacy-policy/`), both with bracketed gaps for Zainab
 
 ### Task 6: Sign-in
 - Why: 5 points, two of them WooCommerce behaviour (registration fields, where sign-up lands). Read first: the register's Sign-in section
@@ -148,7 +143,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 628 on `local-mamas`; the account blocks if a cause is there; `mamas-test`
 - Done when: every Sign-in row is closed by Bean, and a new test account lands on `/my-account/`
 - Depends on: none
-- Status: Sign-in 1, 2 and 4, a first-name field and the drawer's two buttons are on `mamas-test`. Bean's decisions: last name and an optional marketing tick are added, no password box; a signed-in visitor on the sign-in page is sent to the account page (the account page keeps its signed-out card, as the draft has it). Being built on branch `feature/account-register-and-redirect` in the worktree `E:\sgs-tmp\wt-account`, with its reseed. After it merges and deploys: on page 628 switch on the last name, the tick with the draft's label, the register row spacing and the redirect to `/my-account/`, then test a sign-up
+- Status: Sign-in 1 to 5 are on `mamas-test` since the ship of 2026-11-17 16:27; waiting for Bean to close: first and last name side by side from tablet up, the email-me tick (saved as `sgs_marketing_opt_in` with its date), a signed-in visitor sent to the account page, tested with two real sign-ups on the mirror (`shopper2`, `shopper3`). No password box (Bean): WooCommerce emails a set-password link
 
 ### Task 7: Shop
 - Why: 14 points; its product card and filter pills are shared. Read first: the register's Shop section and Gifts 7 to 9b
@@ -156,7 +151,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: shop template 194 on `local-mamas`; the product card and filter blocks; `mamas-test`
 - Done when: every Shop row is closed by Bean
 - Depends on: none
-- Status: Shop 1, 4, 5, 7 (look, the gallery's tilt pattern and hover), 8, 9, 10, 11, 13, 14, the gutters between 1024 and 1300 and the seven entrances are on `mamas-test`; waiting for Bean to close them. With Bean, unanswered: Shop 2 and 3 (one category at a time, and no reload on "All": one change in `includes/product-filter-look.php`), Shop 6 (a joined dropdown through `appearance: base-select`, Chromium only), the card button's wording and action (per product: `_sgs_card_label`, `_sgs_card_action`; "Pick flavours" recommended), Shop 12 (what replaces the Subscribe & save card: C, "Proper ingredients", recommended)
+- Status: Shop 1 to 14 are on `mamas-test` since the ship of 2026-11-17 16:27; waiting for Bean to close: one category at a time and "All" without a reload (`sgsChipSingle`), the joined sort list (theme mod `sgs_shop_sort_arrow` `joined`, Chromium only), "Pick flavours" on every product with options, and the allergy card in place of Subscribe & save (Bean's wording; never the words "gluten-free")
 
 ### Task 8: Gifts
 - Why: 13 points. Read first: the register's Gifts section
@@ -164,7 +159,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: the Gifts page on `local-mamas`; `mamas-test`
 - Done when: every Gifts row is closed by Bean, and the note updates as it is typed
 - Depends on: Task 7 (product card, filter pills)
-- Status: a helper is diagnosing and fixing page 150 (2026-11-17), reusing the Shop's card settings and fixing the page's missing gutters and sideways scroll between 1024 and 1300
+- Status: Gifts 1 to 12 are on `mamas-test` since the ship of 2026-11-17 16:27; waiting for Bean to close. Gifts 11 is the new `sgs/message-preview` and `sgs/message-preview-line` blocks (the letter updates as the visitor types; no button). Open: on phones the letter's logo overlaps the message text; the hero text narrows between 700 and 767 wide
 
 ### Task 9: Product pages
 - Why: 15 points on Zookies, then three on every other product. Read first: the register's two Product sections
@@ -172,7 +167,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: the single-product template and products on `local-mamas`; `sgs/buybox` and the slider if a cause is there; Stripe (Product 15); `mamas-test`
 - Done when: every Product and Other products row is closed by Bean
 - Depends on: Task 7 (product card)
-- Status: not started. Starts when the Home reviews slider's findings are in (the slider is shared) and uses the Shop's card settings. Basket has the same missing gutters between 1024 and 1300 as Shop had
+- Status: Product 1 to 14 and Other products 1 to 3 are on `mamas-test` since the ship of 2026-11-17 16:27; waiting for Bean to close: Taster Trio, Gift Box and Care Bundle are variable products with Zookies' base, chips and flavours (eight variations each; one "any" variation is skipped by `Product_Manifest::build`), the gift card page (template 346) has the product page's frame with amount tiles and a custom amount of £10 to £100, the related cards read each product's WooCommerce Upsells (`linkedProductKind`), the gallery pins wherever the layout is two columns. Product 15 (Google and Apple Pay): the buy box now fires `woocommerce_after_add_to_cart_form`, so Stripe's express buttons can print; not yet seen on the hosted product page. Open: the flavour hint reads "Up to 3, split evenly" on products with no pack size; the gift card tiles read "£15.00" and its button "Add gift card to basket"; confirm on a real basket that a £10 custom card shows no saving
 
 ### Task 10: Home
 - Why: 23 points, the hardest: a hero that does not respond to the screen (Home 7) and a broken cookie builder (Home 11 to 14). Read first: the register's Home section
@@ -180,7 +175,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: page 154 on `local-mamas`; the hero, builder and slider blocks; `mamas-test`
 - Done when: every Home row is closed by Bean
 - Depends on: Tasks 2 (picture box), 3 (trust bar), 4 (gutters), 9 (reviews slider)
-- Status: Home 1 to 9 (the hero and trust bar) are fixed on `local-mamas`, partly shipped: the hero had saved the draft's measured pixels at 1440, 768 and 375 and now follows the screen at twelve widths. Two helpers are on the rest of page 154, writing only through the patch tool: one on Home 10, 15, 16, 17, 18, the remaining entrances, the 6,660ms phone delay on `cr-ref-home-144` and the subscription mentions; one on the cookie builder (Home 11 to 14) and the reviews (Home 19 to 23)
+- Status: Home 1 to 23 are on `mamas-test` since the ship of 2026-11-17 16:27; waiting for Bean to close: the cookie picture is the buy box's own preview drawn by the site's Custom CSS from three public hooks (the chosen options' colours, an `is-changed` class, restylable dots), with the pack tiles and the button under it; the gift row has arrows, dots and drag on phone and tablet; the review cards take hover at the slider's end. Open: the builder's step numbers read 2, 3, 4 on the left and 1 on the moved "How many" group
 
 ### Task 11: Checkout and order confirmation
 - Why: Checkout 1 names no single fault: Bean says the checkout's problems are mainly the ones already solved on Eye Care's test site, and the confirmation page waits on a test purchase. Read first: the register's last two sections; `sites/eye-care-ward-end/build/qa/decided.md` and the checkout on `eye-care-test` (read only: its saved Checkout block settings, its Custom CSS and the checkout commits in `git log`)
@@ -188,12 +183,12 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: checkout and order-confirmation templates on `local-mamas`; a checkout block if a shared fix belongs there; `mamas-test`
 - Done when: Bean has closed the checkout list and seen the confirmation page of a paid test order
 - Depends on: Task 9
-- Status: thirteen faults are fixed on `local-mamas` by settings (not yet shipped), cash on delivery is off and the sign-in reminder is on. A Stripe test-card order (#726) reached the confirmation page, which is WooCommerce's plain table: the route never cloned it, so it is rebuilt with the re-clones (Task 13) or by hand. Eleven differences are with Bean (`sites/mamas-munches-redesign/build/qa/register-findings.md`, Checkout): the first is raising the snapshot's 11px `small` size to about 13px; Klarna shows beside the card because Stripe's methods were copied from Eye Care
+- Status: the checkout is on `mamas-test` since the ship of 2026-11-17 16:27; waiting for Bean to close (thirteen settings fixes, 13px small text, "Pay £8.95", the terms line under the button, the lock, "Secure" on phones, cash on delivery off, taxes off because the business is not VAT-registered). Bean's rulings: the phone field's label stays (nothing sends delivery texts); no postcode lookup (Eye Care's temporary solution is none, Spec 27 FR-30-23); the phone "Show order summary" bar is parked until after the event (the theme hides it below 920px on purpose); Klarna stays on (it shows live only if Zainab enables it in her Stripe account). The order confirmation (template 219) is rebuilt by hand and shipped: Bean saw the paid test order's page beside the draft and asked for a full rebuild, with no bake date anywhere. Waiting for code on `feature/order-confirmation-parts` (`E:\sgs-tmp\wt-orderparts`, commits bead3ec88, 0bf13dceb, 44db28691; needs the batched reseed): the item list with thumbnails and "Paid" for the slot `oc-items`, the gift-note card (`oc-gift-note`), the signed-in "View order" card (`oc-view-order`); then a guest who has not confirmed their email no longer sees an empty "What's coming" card
 
-## Wave 2: the two re-clones
+## Wave 2: the surfaces Bean called too different to list
 
 ### Task 12: The route clones one surface onto the lab, safely
-- Why: Basket drawer 1 and Account 1 are re-cloned, and a route run must never touch `local-mamas`. Read first: `scripts/computed-route/calibration-targets.json`, `manifest.mjs`, `lib/site-build-map.mjs::rowsForSite`, `lib/template-copies.mjs`
+- Why: a route run that clones one surface must never touch `local-mamas` (written when Basket drawer 1 and Account 1 were to be re-cloned; both were hand-built instead, Task 13). Read first: `scripts/computed-route/calibration-targets.json`, `manifest.mjs`, `lib/site-build-map.mjs::rowsForSite`, `lib/template-copies.mjs`
 - Changes:
   - [ ] a `local-mediatest-mamaslab` entry in `calibration-targets.json` (`mirrorOf: mamas-test`), and a manifest for the lab that leaves the one for `local-mamas` alone
   - [ ] a lab run writes its walker files, origin files and ledger additions beside the lab's manifest, never over the committed ones that match `mamas-test` (the 2026-11-15 re-clone's copies are in `E:\sgs-tmp\mamas-reclone\reclone-build-files\`)
@@ -203,16 +198,16 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: route scripts, the lab mirror
 - Done when: `site-run.mjs mamas-munches-redesign --site local-mediatest-mamaslab --only my-account` finishes every stage, `wp post get 103 --field=post_modified` on `local-mamas` is unchanged, no `wp_template` post on the lab is newer than before the run, and `git status --short sites/mamas-munches-redesign/build` shows no committed file changed
 - Depends on: none
-- Status: not started
+- Status: parked, not needed for the event. On 2026-11-17 three read-only investigations found that the basket drawer and the account area were the existing blocks with their settings never set, and that the order confirmation was never built; each was hand-built the same day (Task 13, Task 11). The route work listed here stands as framework work for after 2026-11-28; Bean has not ruled on dropping it
 - Parked route work, not needed for these two surfaces: the order confirmation as a surface (S-32); the stale manifest entry for the gift-finder flow (post 159); intake reading `facts.json` before it is refreshed (the first run after a draft edit proposed 0 rows); a walk-only run of the template surfaces; Mama's `build/logo-svgparts.json` and a full theme-snapshot re-extraction; `sgs/buybox` calibration and `sgs/decorative-image`'s default paint; a tree comparison tool (`tools/tree-compare.mjs`); Fill's "no setting" report (3,224 reported, 699 real: run `/second-opinion` on the cause first); the walker's blindness to hand-built parts
 
-### Task 13: Basket drawer and account page re-cloned
-- Why: Basket drawer 1, Account 1 and Account 2. Read first: the draft's basket drawer and account surfaces; Eye Care's verify-email notice (already styled there)
-- Changes: each surface cloned on the lab, compared with the draft at 375, 768 and 1440, fixed at the rule that built it wrongly, then moved to `local-mamas`; the verify-email notice takes the site's tokens
-- Touches: route scripts, the lab, then `local-mamas` and `mamas-test`
+### Task 13: Basket drawer and account page finished by hand
+- Why: Basket drawer 1, Account 1 and Account 2. Read first: the gap tables in `E:\sgs-tmp\mamas-register\inv-basket-drawer` and `inv-account`, and the sections "Basket drawer finished by settings" and "Account area finished by settings" in `sites/mamas-munches-redesign/build/qa/register-findings.md`
+- Changes: the `sgs/cart` block's settings in the header (post 178) and the `sgs/account` block's settings on page 103 set to the draft; the notice colours in the snapshot's `settings.custom.colourRoles`; then the code on `feature/cart-drawer-options` merged and its settings switched on
+- Touches: posts 178 and 103 on `local-mamas`, `sites/mamas-munches-redesign/theme-snapshot.json`, the cart block, `mamas-test`
 - Done when: Bean has closed Basket drawer 1, Account 1 and Account 2 on `mamas-test`
-- Depends on: Task 12
-- Status: not started
+- Depends on: none
+- Status: both hand-finished by settings on 2026-11-17 and on `mamas-test` since the ship of 2026-11-17 16:27; waiting for Bean to close. Basket drawer: the `sgs/cart` block in the header (post 178); it painted cocoa on cocoa because its unset defaults name palette slugs this site lacks (`base`, `contrast`). Left for code, being built on `feature/cart-drawer-options` (`E:\sgs-tmp\wt-cartdrawer`; needs the batched reseed): a quantity stepper, a values-only options line, "View full basket" as a link under the button, row dividers, Remove at the row's right, controls for the delivery note and the item name's font, the free-delivery band's fill and line, and why the drawer may not open after add-to-basket on a product page; to be sized, not built: the drawer's gift box, the Taster Trio row, the empty state's picture and second button. Account (page 103): opens on Orders with pill navigation; Account 2's notice is pink for information and red for errors (the snapshot's `settings.custom.colourRoles`); test order #835 belongs to `shopper2`. Needs code, proposed to Bean, not started: order thumbnails and a labelled "View order" on the orders list, a default-address flag with Make default and Remove, a gift-note card on an order, the marketing tick on Account details
 
 ### Task 14: Proof
 - Why: the Goal. Read first: `scripts/computed-route/site-check.mjs`
