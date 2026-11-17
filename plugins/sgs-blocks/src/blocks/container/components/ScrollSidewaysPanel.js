@@ -11,7 +11,7 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { TextControl } from '@wordpress/components';
+import { TextControl, ToggleControl } from '@wordpress/components';
 import {
 	ResponsiveOverride,
 	ResponsiveTriStateControl,
@@ -26,7 +26,7 @@ import { resolveOnTiers } from '../../../utils/responsive';
  * @return {Element|null} The controls (mounted inside the container's Layout panel).
  */
 export default function ScrollSidewaysPanel( { attributes, setAttributes } ) {
-	const { scrollSideways, scrollItemWidth, scrollRegionLabel } = attributes;
+	const { scrollSideways, scrollItemWidth, scrollRegionLabel, scrollArrows, scrollDots, scrollDrag } = attributes;
 	// `fx` is the effects extension's attribute (not declared in this block.json).
 	if ( 'horizontal-panel' === attributes.fx ) {
 		return null;
@@ -62,6 +62,33 @@ export default function ScrollSidewaysPanel( { attributes, setAttributes } ) {
 						/>
 					) }
 				</ResponsiveOverride>
+			) }
+			{ onAnywhere && (
+				<ToggleControl
+					label={ __( 'Previous and next arrows', 'sgs-blocks' ) }
+					help={ __( 'Two buttons under the row that move it one step. They show only at the devices where the row scrolls and its items overflow.', 'sgs-blocks' ) }
+					checked={ !! scrollArrows }
+					onChange={ ( value ) => setAttributes( { scrollArrows: value } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
+			{ onAnywhere && (
+				<ToggleControl
+					label={ __( 'Position dots', 'sgs-blocks' ) }
+					help={ __( 'One dot for each place the row can rest, the current one marked. Shown like the arrows.', 'sgs-blocks' ) }
+					checked={ !! scrollDots }
+					onChange={ ( value ) => setAttributes( { scrollDots: value } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
+			{ onAnywhere && (
+				<ToggleControl
+					label={ __( 'Drag with the mouse', 'sgs-blocks' ) }
+					help={ __( 'Lets a mouse drag the row. A finger already swipes it.', 'sgs-blocks' ) }
+					checked={ !! scrollDrag }
+					onChange={ ( value ) => setAttributes( { scrollDrag: value } ) }
+					__nextHasNoMarginBottom
+				/>
 			) }
 			{ onAnywhere && (
 				<TextControl

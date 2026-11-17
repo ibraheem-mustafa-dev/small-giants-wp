@@ -3045,6 +3045,36 @@
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": "body.sgs-shop-sort-joined select.orderby option:checked",
    "reason": "the chosen option reads bold inside the sort list; weight only"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/container/style.css",
+   "selector": ".sgs-container__arrow:hover:not(:disabled)",
+   "reason": "the scroll row's arrow darkens and lifts 5% on hover as fixed behaviour, in the same theme tokens as sgs/testimonial-slider's arrow; reduced motion removes the lift"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/container/style.css",
+   "selector": ".sgs-container__arrow:active:not(:disabled)",
+   "reason": "the scroll row's arrow darkens and depresses on press as fixed behaviour, in the same theme tokens as sgs/testimonial-slider's arrow"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/container/style.css",
+   "selector": ".sgs-container__arrow:disabled",
+   "reason": "the scroll row's arrow dims at its end of the row (opacity 0.4, default cursor) so it reads as unavailable; a state of the row's position, not a look"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/container/style.css",
+   "selector": ".sgs-container__dot:hover::before",
+   "reason": "the scroll row's position dot takes the primary colour and grows 20% on hover as fixed behaviour; reduced motion removes the growth"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/container/style.css",
+   "selector": ".sgs-container__dot--active:hover::before",
+   "reason": "the active position dot keeps its size and darkens on hover as fixed behaviour"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/container/style.css",
+   "selector": ".sgs-container__inner.sgs-container__inner--draggable.is-dragging",
+   "reason": "while a mouse drags the scroll row it shows the grabbing cursor, stops text selection and pauses snapping so the row follows the pointer; behaviour set by the drag script, not a look"
   }
  ]
 }

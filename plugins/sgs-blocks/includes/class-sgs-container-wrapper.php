@@ -3336,8 +3336,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 			// The band also carries its block's own class, `sgs-<slug>__content-band`: the element the motion parts `content-band` and `inner` resolve to (Spec 38A §6.2), as the root's direct child.
 			// The scroll-sideways row is the __inner: marked so the view script makes it a focusable, named region while it overflows.
+			$sgs_scroll_nav_html = '';
 			if ( $sgs_scroll_row_on ) {
 				$fx_track_attr .= sgs_container_scroll_region_attrs( $attributes );
+				// Optional arrows, dots and mouse drag (all off by default): the row names what the script wires, the bar follows the row.
+				$sgs_scroll_controls = sgs_container_scroll_controls( $attributes );
+				$sgs_scroll_nav_html = $sgs_scroll_controls['nav_html'];
+				if ( '' !== $sgs_scroll_controls['tokens'] ) {
+					$fx_track_attr .= ' data-sgs-scroll-controls="' . esc_attr( $sgs_scroll_controls['tokens'] ) . '"';
+				}
 			}
 			$inner_class = 'sgs-container__inner' . ( $block instanceof \WP_Block && 0 === strpos( (string) $block->name, 'sgs/' ) ? ' sgs-' . sanitize_html_class( substr( (string) $block->name, 4 ) ) . '__content-band' : '' );
 			if ( $do_wrap && $has_band_responsive && '' !== $uid ) {
@@ -3394,7 +3401,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$video_html,
 				$overlay_html,
 				$svg_bg_html,
-				$inner_open . $inner_html . $inner_close,
+				$inner_open . $inner_html . $inner_close . $sgs_scroll_nav_html,
 				$svg_fg_html,
 				$shape_bottom_html
 			);

@@ -124,3 +124,54 @@ if ( ! function_exists( 'sgs_container_scroll_region_attrs' ) ) {
 		return ' data-sgs-scroll-region="' . esc_attr( $label ) . '" data-sgs-scroll-region-default="' . esc_attr__( 'Scrolling row', 'sgs-blocks' ) . '"';
 	}
 }
+
+if ( ! function_exists( 'sgs_container_scroll_controls' ) ) {
+	/**
+	 * The row's optional controls: which of arrows, dots and mouse drag are on (`scrollArrows`, `scrollDots`,
+	 * `scrollDrag`, each off by default), as the token list the view script reads and the bar of buttons printed after
+	 * the row.
+	 *
+	 * The bar is one element after the row (never inside it, which scrolls): the shared slider arrows
+	 * (includes/helpers-slider-nav.php::sgs_slider_nav_arrow_html) and an empty dot group that
+	 * src/shared/scroll-row-controls fills with one dot per stop the row can rest on, because the stops depend on the
+	 * device. The stylesheet hides the bar until the script marks it `is-ready`, which happens only while the row
+	 * overflows and scrolls, so the bar shows at the devices where Scroll sideways is on, and without script nothing
+	 * dead is shown.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return array{tokens: string, nav_html: string} `tokens` is '' and `nav_html` is '' when every control is off.
+	 */
+	function sgs_container_scroll_controls( array $attributes ): array {
+		require_once __DIR__ . '/helpers-slider-nav.php';
+		$arrows = ! empty( $attributes['scrollArrows'] );
+		$dots   = ! empty( $attributes['scrollDots'] );
+		$drag   = ! empty( $attributes['scrollDrag'] );
+
+		$tokens = array();
+		foreach ( array( 'arrows' => $arrows, 'dots' => $dots, 'drag' => $drag ) as $name => $on ) {
+			if ( $on ) {
+				$tokens[] = $name;
+			}
+		}
+		if ( ! $arrows && ! $dots ) {
+			return array( 'tokens' => implode( ' ', $tokens ), 'nav_html' => '' );
+		}
+
+		$nav = '';
+		if ( $arrows ) {
+			$nav .= sgs_slider_nav_arrow_html( 'prev', 'sgs-container', __( 'Previous', 'sgs-blocks' ), array() );
+		}
+		if ( $dots ) {
+			/* translators: %d: the dot's position, starting at 1. */
+			$dot_label = __( 'Go to position %d', 'sgs-blocks' );
+			$nav      .= '<div class="sgs-container__dots" data-sgs-dot-label="' . esc_attr( $dot_label ) . '" role="group" aria-label="' . esc_attr__( 'Scroll position', 'sgs-blocks' ) . '"></div>';
+		}
+		if ( $arrows ) {
+			$nav .= sgs_slider_nav_arrow_html( 'next', 'sgs-container', __( 'Next', 'sgs-blocks' ), array() );
+		}
+		return array(
+			'tokens'   => implode( ' ', $tokens ),
+			'nav_html' => '<div class="sgs-container__scroll-nav">' . $nav . '</div>',
+		);
+	}
+}

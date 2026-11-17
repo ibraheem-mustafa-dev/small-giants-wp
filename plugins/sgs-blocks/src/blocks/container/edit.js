@@ -478,6 +478,16 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		resolveOnTiers( attributes.scrollSideways, 'on', 'off' ).includes(
 			previewTier
 		);
+	// The row's optional arrows, dots and mouse drag, named the way the frontend names them (the view script is not loaded in the editor).
+	const scrollControlTokens = scrollRowPreview
+		? [
+				attributes.scrollArrows && 'arrows',
+				attributes.scrollDots && 'dots',
+				attributes.scrollDrag && 'drag',
+		  ]
+				.filter( Boolean )
+				.join( ' ' )
+		: '';
 	if ( scrollRowPreview ) {
 		Object.assign( hasBandProps ? bandStyle : style, {
 			display: 'flex',
@@ -567,6 +577,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					'data-sgs-scroll-region': scrollRowPreview
 						? attributes.scrollRegionLabel || ''
 						: undefined,
+					'data-sgs-scroll-controls': scrollControlTokens || undefined,
 					ref: gridRef,
 			  }
 			: { ...blockProps, ref: rootRef },

@@ -645,6 +645,21 @@
 			"default": "",
 			"description": "The accessible name of the sideways-scrolling row, read out when a keyboard or screen-reader user reaches it. Empty: the nearest heading before the row, then 'Scrolling row'."
 		},
+		"scrollArrows": {
+			"type": "boolean",
+			"default": false,
+			"description": "Previous and next arrow buttons under a sideways-scrolling row, shown at the devices where Scroll sideways is on and only while the items overflow. Each press moves the row one stop. Off prints nothing."
+		},
+		"scrollDots": {
+			"type": "boolean",
+			"default": false,
+			"description": "Position dots under a sideways-scrolling row, one per stop the row can rest on, the current one marked. Shown at the devices where Scroll sideways is on and only while the items overflow. Off prints nothing."
+		},
+		"scrollDrag": {
+			"type": "boolean",
+			"default": false,
+			"description": "Lets a mouse drag the sideways-scrolling row (a finger already swipes it). Off prints nothing."
+		},
 		"scrollItemWidth": {
 			"type": "object",
 			"default": {},
