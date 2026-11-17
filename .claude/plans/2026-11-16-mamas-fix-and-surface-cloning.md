@@ -34,17 +34,28 @@ Sections whose posts differ run side by side; a section that shares a component 
 - Stripe: WooCommerce Stripe Gateway 11.1.1 runs in test mode on both sites with Eye Care's test keys. No test payment has been run; Apple Pay and Google Pay (Product 15) need her domain registered in Stripe, and no webhook is set.
 - Calibration cache `E:\sgs-route-cache` is rebuilt (95 of 97 blocks; `sgs/buybox` and `sgs/theme-toggle` unmeasured). Intake matches the current draft; 74 changed rows carry the route's proposal, not Bean's review. Scratch scripts and logs: `E:\sgs-tmp\mamas-reclone\`.
 
-## In flight and waiting (2026-11-17)
+## In flight and waiting (2026-11-17, afternoon)
 
-Helpers running; each reports to the main session, which reviews before anything ships (the saved settings diffed before and after, the screenshots looked at, in-between widths measured):
+Reviewed and merged into the register files: Gifts (page 150), both Home helpers (page 154), the Privacy page (page 3, `/privacy-policy/`). Merged to `main`: the account form's last name, email-me tick, row spacing and signed-in redirect (reseed published; not yet deployed).
 
-- `gifts-section`: page 150. `home-sections` and `home-builder-reviews`: page 154, through the patch tool only. Each leaves `findings.md`, `catalogue-rows.md` and screenshots in `E:\sgs-tmp\mamas-register\<section>\`; `python E:\sgs-tmp\mamas-register\merge.py <folder> "<heading>" "<surface>"` appends them to `register-findings.md` and `fix-catalogue.md` (a helper that could not write `findings.md` returns its table in its report).
-- `motion-reveal-change` (worktree `E:\sgs-tmp\wt-motion`, branch `fix/motion-reveal-onscreen`): Bean said yes on 2026-11-17 to the motion fix (an entrance plays at once when the element's whole box is on screen at load). It carries a test that fails first and a before-and-after snapshot of every scroll entrance on the Mama's, Indus and Eye Care mirrors that reverts it on any unintended change. Review, merge and deploy it with the other two.
-- `account-block-change` (worktree `wt-account`) and `accordion-band-change` (worktree `wt-accordion`): code on feature branches. Review each diff, run its tests, merge to `main` by explicit paths, delete the branch and the worktree, deploy (`build-deploy.py --target mamas-test --blocks-only`), sync the mirror's build, then set the client's settings named under Tasks 5 and 6. The accordion branch still owes its reseed: tell that helper to do it once the account branch's is published.
+Code branches, each in a worktree under `E:\sgs-tmp\`; the main session reviews the diff, runs the tests and merges by fast-forward:
 
-On `local-mamas` and not yet on `mamas-test`: the rest of the Home hero, Help 6 and the Terms page, the checkout fixes and its two WooCommerce settings, the footer's Terms link, and whatever the running helpers finish. Ship with `push-to-remote.sh local-mamas mamas-test` (dry run first) once the helpers on pages 150 and 154 have reported, then check on the hosted site in a visible browser.
+- `feature/accordion-filter-band` (`wt-accordion`): built; its helper is rebasing, reseeding, gating and publishing. Merge and deploy without committing anything to `main` in between (the gate pass is keyed on the whole tree).
+- `fix/motion-reveal-onscreen` (`wt-motion`): an element wholly on screen at load plays at once; merge only if its three-mirror snapshot shows no unintended change.
+- `fix/slider-clone-hover` (`wt-slider`): loop clones lose `inert` so the last cards take hover (Home 23, Product 9). No new attribute.
+- `feature/shop-filter-single-and-sort` (`wt-shopfilter`): one category at a time, "All" without a reload, the joined sort dropdown (Shop 2, 3, 6).
+- `feature/scroll-row-controls` (`wt-scrollrow`): optional arrows, dots and drag on a container's sideways-scroll row (Home 17).
+- `feature/message-preview-block` (`wt-note`): a new block whose fields mirror into a preview card as the visitor types (Gifts 11); it replaces the form and "Save my note" on page 150.
+- Not yet started (the eight-helper limit was reached): `feature/buybox-preview-hooks`, the buy box publishes each chosen option's colour as a CSS custom property, toggles a state class on change and gains a layout option for a picker group and the button under the picture; the cookie drawing itself goes in the site's Custom CSS (Home 11 to 13). The design pass that sized it is in the session; the chip terms need `_sgs_swatch_color` (milk #7A4A2E, white #FFF6E6, dark #2E1A10).
+- The branches with new attributes (shop filter, scroll row, message preview, buy box layout) do not reseed on their own: merge them into one batch branch and run one reseed, gate and publish for the lot.
 
-Waiting for Bean: closing Contact, Help, Sign-in and Shop on `mamas-test`; the four Shop decisions (Task 7); the checkout's differences (Task 11); whether to draft a Privacy page like the Terms; and whatever the Home builder helper proposes for the cookie builder.
+Settings helpers on `local-mamas`: `product-section` (Product 1 to 15, Other products 1 to 3, Basket gutters; scratch `product`), `checkout-round-two` (small text 13px, checkout wording, lock icon, mobile field, Eye Care's temporary postcode solution, the phone summary bar diagnosed, the Shop allergy card, "Pick flavours" on cards; scratch `checkout2`).
+
+After the account code is deployed: on page 628 switch on the last name, the tick with the draft's label, the row spacing and the redirect to `/my-account/`, test a sign-up; in the Privacy page remove the bracketed note about the tick and add the last name to what an account holds; point the footer's Privacy link at `/privacy-policy/` (it goes to `/help/#legal`). After the accordion code is deployed: page 152 as Task 5 says.
+
+Open, found in review: with reduced motion on, the footer's picture strip makes every page scroll sideways on phones and tablets; the Gifts hero text narrows between 700 and 767; the footer is 16px too wide at 320. Mailing list: the account tick stores `sgs_marketing_opt_in` and its date on the user; a sender (a newsletter plugin) and a tick at checkout for guests are later choices.
+
+Then ship the mirror to `mamas-test` (`push-to-remote.sh`, dry run first) and check on the hosted site in a visible browser. Waiting for Bean: closing Contact, Help, Sign-in and Shop on `mamas-test`.
 
 ## Components shared between sections
 
