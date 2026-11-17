@@ -17,7 +17,9 @@
  * - sgsConditionLoggedIn   : 'none' | 'logged-in' | 'logged-out' | 'order-owner' (the signed-in viewer
  *   owns the order of the current order-confirmation page; hidden when no order is on the page) |
  *   'order-has-gift' | 'order-no-gift' (the order is, or is not, a gift with a note) | 'order-guest' (the order was
- *   placed without a customer account). The three gift and guest rules read the order through
+ *   placed without a customer account) | 'order-viewable' (the order on the page can be viewed by this visitor: the plain
+ *   case, which hides a block while WooCommerce shows its confirm-your-email form instead of the order). The four
+ *   order rules read the order through
  *   Order_Binding::viewable_order(), the same permission check as the sgs/order binding, and hide the block when the
  *   order cannot be viewed. 'order-owner' is the inverse of 'order-guest' in practice: WooCommerce shows an account
  *   order only to its customer, so a viewer who owns the order is never looking at a guest order.
@@ -125,7 +127,7 @@ function viewer_owns_current_order(): bool {
 }
 
 /**
- * Whether the order Show-to rule (`order-has-gift`, `order-no-gift`, `order-guest`) passes for the order on the
+ * Whether the order Show-to rule (`order-has-gift`, `order-no-gift`, `order-guest`, `order-viewable`) passes for the order on the
  * current order-confirmation page. An order this visitor may not view, or a page with no order, fails every rule.
  *
  * @param string $rule The sgsConditionLoggedIn value.
@@ -135,6 +137,9 @@ function order_rule_passes( string $rule ): bool {
 	$order = class_exists( __NAMESPACE__ . '\Order_Binding' ) ? Order_Binding::viewable_order() : null;
 	if ( null === $order ) {
 		return false;
+	}
+	if ( 'order-viewable' === $rule ) {
+		return true;
 	}
 	if ( 'order-guest' === $rule ) {
 		return 0 === (int) $order->get_customer_id();
@@ -183,7 +188,7 @@ function check_conditional_visibility( string $block_content, array $block, $ins
 		return '';
 	}
 
-	if ( in_array( $login_rule, array( 'order-has-gift', 'order-no-gift', 'order-guest' ), true ) && ! order_rule_passes( $login_rule ) ) {
+	if ( in_array( $login_rule, array( 'order-has-gift', 'order-no-gift', 'order-guest', 'order-viewable' ), true ) && ! order_rule_passes( $login_rule ) ) {
 		return '';
 	}
 

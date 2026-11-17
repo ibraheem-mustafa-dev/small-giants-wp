@@ -57,6 +57,19 @@ $GLOBALS['sgs_t']['query'] = array();
 ok( '' === $run( 'order-has-gift' ) && '' === $run( 'order-no-gift' ) && '' === $run( 'order-guest' ), 'a page with no order hides every order rule' );
 
 $view( 1, 'k1' );
+ok( $html === $run( 'order-viewable' ), 'a viewable gift order shows the viewable block' );
+$view( 2, 'k2' );
+ok( $html === $run( 'order-viewable' ), 'a viewable guest order with no gift shows the viewable block' );
+$view( 3, 'k3', 7 );
+ok( $html === $run( 'order-viewable' ), 'a viewable account order shows the viewable block' );
+$view( 1, 'wrong' );
+ok( '' === $run( 'order-viewable' ), 'a wrong order key hides the viewable block' );
+$view( 4, 'k4' );
+ok( '' === $run( 'order-viewable' ), 'a guest order past the grace period with no email check hides the viewable block' );
+$GLOBALS['sgs_t']['query'] = array();
+ok( '' === $run( 'order-viewable' ), 'a page with no order hides the viewable block' );
+
+$view( 1, 'k1' );
 ok( $html === $run( 'logged-out' ) && $html === $run( 'none' ), 'the older login rules are unchanged' );
 
 echo $failures ? "\n$failures failed\n" : "\nall passed\n";
