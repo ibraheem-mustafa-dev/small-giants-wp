@@ -31,6 +31,7 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Basket page 4:** The summary block is way too different the draft even though I do recognise that there needs to be some difference due to the addition of coupons and gift card. But gift card section could be collapsible too, the apply button on gift cards is totally wrong styles, it's got the wrong heading, 'CART TOTALS' instead of 'SUMMARY' and that heading is missing under 1024px.
 - **Basket page 5:** This is a bigger issuee than just the cart page but the cart I was testing with was over the free shipping minimum and the cart still added a shipping price - The default should always be the lower priced delivery option especially if it's free.
 - **Basket page 6:** (Added by Bean later the same evening.) The taster trio's free shipping doesn't work, how should that function?
+- **Basket page 7:** (Bean's review of round two's fixes, 2026-11-17 late evening.) The summary on the basket page should be used on the checkout page too (although checkout needs to add the items of the purchase in too) so we're not hand fixing 2 identical cards. But still had greyish font and the text for add coupons/gift card, shipping type/name does not match the site at all, it's very small too. Feel like the input boxes and button sizes in the checkout summary card are better on the checkout version (button bg colour should be yellow though) so should adopt that instead of using the basket page's version instead.
 
 ## Sign-in
 
@@ -40,12 +41,14 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Sign-in 9:** When switching between the 2 options, can we have the box animate it's extension/shrinking height instead of an instant switch.
 - **Sign-in 10:** The account button when not signed in opens a useless my account page that just leaves links to the sign-in page. Needs to redirect, that useless page can just get deleted or we get rid of the sign-in url and replace that unsigned-in my account design that leaves links to sign-in page with the actual sign-in page itself.
 - **Sign-in 11:** Remove bake date wording.
+- **Sign-in 12:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Sign in form's vertical gaps between the input boxes is bigger than the create an account's vertical gaps between the input boxes.
 
 ## Contact
 
 - **Contact 12:** Instead of wrapping letters to the next line, when the email card gets too small for the full length of the email to fit, the email just extends out of the box on live.
 - **Contact 13:** The input boxes of the form have only the top border line be the full proper black border, the rest are very thin.
 - **Contact 14:** Add an arrow symbol to the end of the 'More answers on the Help page' button so it's clear that it's clickable since our live setup has the underline show up after hovering on it.
+- **Contact 15:** (Bean's review of round two's fixes, 2026-11-17 late evening.) The wrapping starts even when there's a huge amount of space in the boxes on desktop, the wrap point leaves a lot of space on the right and the wrapping still applies when the layout changes to stacked mode even though there's again a huge amount of space when it goes under 767px. (The email address in its contact card, after Contact 12's fix.)
 
 ## Help
 
@@ -53,12 +56,15 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Help 11:** On 1022px and below - On the 3 options in the delivery card, the price bit which should be left aligned gets messed up on the 2nd and 3rd option with them getting an extra push inwards.
 - **Help 12:** Vegan base paragraph on allergens and ingredients section has a hover lift effect on it which should be removed.
 - **Help 13:** You've turned terms and conditions and the privacy bits into regular buttons, I prefer the structure of the draft, can you adapt that layout to fit the current setup where we have separate pages for those and they are just really nicely designed buttons that fit the aesthetic of the page.
+- **Help 14:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Help all resolved, but found a new issue. The 'Still Stuck' label is a bad colour for the background. Should switch it to the same dark pink as other labels.
 
 ## Gifts
 
 - **Gifts 13:** The 'Gift for' heading is tilted on live.
 - **Gifts 14:** The responsiveness points in the live site and draft are different. Look at all screen widths and match the draft.
 - **Gifts 15:** There is a really thin cream strip under the header above the hero section.
+- **Gifts 16:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Gifts all issues resolved but the pick flavours button should be aligned to the bottom, some product cards at lower widths end up with the pick flavours button having a gap underneath it.
+- **Gifts 17:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Also, the gap between the products seems like it's gone on the live especially on the 2 card per row range.
 
 ## Shop
 
@@ -66,6 +72,7 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Shop 16:** Similar issue to the gifts page, the responsiveness of the cards doesn't match the draft at all, need to check where exactly the draft switches how many cards per row and apply that.
 - **Shop 17:** The sorting picker is messed up. THe text and chevron pointing down are top aligned instead of sitting in the vertical centre. Also, it says 'Default sorting' on live when it should say 'Default' like the draft. Lastly, the top corners of the picker morph and look really weird when the dropdown has been opened and the right side still has the thicker border/shadow effect on it which looks weird and I think is the reason the right corner of the picker doesn't align with the top right of the dropdown.
 - **Shop 18:** This is a global issue wherever on the site a product card exists, the whole thing should be clickable, linking to the product page. But on the content part of the product cards it isn't clickable, the image and the button are clickable, but not that area.
+- **Shop 19:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Why did you remove a bunch of sorting options and not fix the shape issue?
 
 ## Home
 
@@ -81,6 +88,10 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Home 33:** Testimonial slider's auto sliding to the next card seems to stop working after I manually switch to another card.
 - **Home 34:** Hovering on/touching the trust bar under the hero doesn't pause is temporarily like the other trust bars in the header and footer. Additionally, are you able to make the colours of the icon in the trust bar items change colour when that item is hovered on?
 - **Home 35:** The 2 links on the homepage hero under the buttons have the button up and to the left lift on them when hovered, it just doesn't look right on plain text. Please give it better hover effects that are more consistent with the rest of the site.
+- **Home 36:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Trust bar text doesn't wrap but it's even worse now. The text gets hidden under the icon of the next item in the ranges that used to have the text wrap.
+- **Home 37:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Undo, doesn't have a gap between it and the options above it. It also doesn't show up when you reach 3 flavours - Vanilla flavour is already picked by default and I don't think the logic counts it and instead you have to click 3 options instead of just having 3 options selected without needing to select a 3rd if you keep the default vanilla flavour.
+- **Home 38:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Gifts section still has huge super long content part of the product cards with huge vertical gaps everywhere between 1023-1318px.
+- **Home 39:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Trust bar pauses when tapped and stays paused even when you move away. Should be paused during hover and touch states.
 
 ## Product page: Zookies
 
@@ -89,6 +100,7 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Product 18:** Th button in the sticky bar is huge filling most of the screen's width when it should be quite small, it doesn't seem to even have any padding on it and covers the price.
 - **Product 19:** You might also like product cards still have bits that don't match the draft's styles and the rest of the site's styles e.g. label and button being pill shaped.
 - **Product 20:** The draft has an issue where when it has less products per row it doesn't show any slider or way to show all of the products originally in the section, we shouldn't copy that and should instead give it the same sort of slider functionality we've set up elsewhere on the site.
+- **Product 21:** (Bean's review of round two's fixes, 2026-11-17 late evening.) You might also like cards getting cut off on the left/right when on the edge of the page.
 
 ## Account
 
@@ -105,7 +117,18 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Checkout 8:** On tablet/mobile the top of the express checkout words are cut off and there's no gap between summary card and pay button
 - **Checkout 9:** Country/Region - She only sells to UK so is the dropdown necessary? Also, the arrow for the dropdown is at the top of the box instead of the centre.
 - **Checkout 10:** The focus/selected border colour for the input boxes is just a darker/thicker black than the regular border, why don't we make it the brand pink instead?
+- **Checkout 11:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Selected, who's it for still has a second border outside of the border.
+- **Checkout 12:** (Bean's review of round two's fixes, 2026-11-17 late evening.) The summary card gets its right side's shadow cut off.
+- **Checkout 13:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Delivery options still have no vertical gap.
+- **Checkout 14:** (Bean's review of round two's fixes, 2026-11-17 late evening.) As mentioned regarding the design of the summary card to unify between basket and checkout but checkout needs the order items in it in addition.
+- **Checkout 15:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Who's it for heading overlaps the border and the bottom of that section has a bit too much empty space/padding.
+- **Checkout 16:** (Bean's review of round two's fixes, 2026-11-17 late evening.) All of the input boxes are too tall. The text sits in the bottom (should be centred) and it looks like the input box is built to fit 2 lines of the text for these simple and short boxes like names, post-code, email etc
+- **Checkout 17:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Side agent said the UK only checkout could block people buying whose card address is abroad even if the delivery address is UK.
 
 ## Order confirmation
 
 - **Order confirmation 2:** Bean had not reviewed the rebuilt page at the time of his round-two list ("Same status as account page to my knowledge").
+
+## All pages
+
+- **All pages 2:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Need to fix that 1023 px blindspot and check if the other breakpoints have the same blinspot too because I think we have the same thing at 767px because I think the breakpoint is supposed to be 768px but the changes layout changes usually occur at 766px.
