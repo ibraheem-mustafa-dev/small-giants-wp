@@ -61,11 +61,17 @@ namespace {
 			'public'             => false,
 			'publicly_queryable' => false,
 		),
+		'nav_menu_item' => (object) array(
+			'_builtin'           => true,
+			'public'             => false,
+			'publicly_queryable' => false,
+		),
 	);
 	$GLOBALS['sgs_test_posts'] = array(
 		10 => 'page',
 		11 => 'post',
 		12 => 'sgs_mega_menu',
+		13 => 'nav_menu_item',
 	);
 
 	function get_post_type( $id ) {
@@ -96,6 +102,7 @@ namespace {
 	$check( 'a post item keeps its link', sgs_nav_drawer_menu_has_real_destination( 'https://example.test/news/', 11 ), true );
 	$check( 'a mega-panel item is a disclosure', sgs_nav_drawer_menu_has_real_destination( 'https://example.test/?sgs_mega_menu=about', 12 ), false );
 	$check( 'a custom link keeps its link', sgs_nav_drawer_menu_has_real_destination( 'https://example.test/x/', 0 ), true );
+	$check( 'a custom link whose object is the menu item itself keeps its link', sgs_nav_drawer_menu_has_real_destination( 'https://example.test/shop/', 13 ), true );
 	$check( 'an empty URL is no destination', sgs_nav_drawer_menu_has_real_destination( '', 10 ), false );
 	$check( 'a bare # is no destination', sgs_nav_drawer_menu_has_real_destination( '#', 0 ), false );
 

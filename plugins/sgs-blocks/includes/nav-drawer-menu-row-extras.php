@@ -24,10 +24,12 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_has_real_destination' ) ) {
 	 * its own; its whole row should act as the accordion toggle rather than a
 	 * dead link. Viewability is WordPress's own is_post_type_viewable(): a
 	 * built-in type counts when public, so a page (publicly_queryable false,
-	 * reached through its page name) keeps its link.
+	 * reached through its page name) keeps its link. A custom link's object is
+	 * the menu item itself (post type nav_menu_item, never viewable): the item
+	 * is the link, so it counts as a real destination.
 	 *
 	 * @param string $raw_url   The item's own URL as authored.
-	 * @param int    $object_id The linked post's ID (0 for a custom link).
+	 * @param int    $object_id The linked post's ID (0 for a custom link, or the menu item's own ID).
 	 * @return bool True when the item has a real, visitable destination.
 	 */
 	function sgs_nav_drawer_menu_has_real_destination( string $raw_url, int $object_id ): bool {
@@ -38,7 +40,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_has_real_destination' ) ) {
 			return true;
 		}
 		$post_type = get_post_type( $object_id );
-		if ( ! $post_type ) {
+		if ( ! $post_type || 'nav_menu_item' === $post_type ) {
 			return true;
 		}
 		return ! get_post_type_object( $post_type ) || is_post_type_viewable( $post_type );
