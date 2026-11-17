@@ -1021,6 +1021,31 @@
 	border: 1px solid currentColor;
 }
 
+:where(.sgs-cart__panel) .sgs-cart__panel-view.sgs-cart__panel-view--link {
+	flex: 0 0 auto;
+	border: 0;
+	border-radius: 0;
+	background-color: transparent;
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+/* panelActionsLayout "stacked": Checkout full width, View cart centred under it. */
+:where(.sgs-cart__panel) .sgs-cart__panel-actions--stacked {
+	flex-direction: column;
+	align-items: stretch;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-actions--stacked .sgs-cart__panel-checkout {
+	flex: 0 0 auto;
+	width: 100%;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-actions--stacked .sgs-cart__panel-view {
+	flex: 0 0 auto;
+	align-self: center;
+}
+
 :where(.sgs-cart__panel) .sgs-cart__panel-checkout {
 	background-color: var(--wp--preset--color--primary, #111);
 	color: var(--wp--preset--color--primary-text, #fff);

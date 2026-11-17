@@ -512,6 +512,8 @@ $panel_args = array(
 	'checkout_label'     => $checkout_label,
 	'show_count'         => ! empty( $attributes['panelShowCount'] ),
 	'show_view_cart'     => ! isset( $attributes['panelShowViewCart'] ) || ! empty( $attributes['panelShowViewCart'] ),
+	'view_style'         => 'text-link' === ( $attributes['panelViewStyle'] ?? 'outline' ) ? 'text-link' : 'outline',
+	'actions_layout'     => 'stacked' === ( $attributes['panelActionsLayout'] ?? 'row' ) ? 'stacked' : 'row',
 	'tax_note'           => (string) ( $attributes['panelTaxNote'] ?? __( 'Shipping and taxes calculated at checkout.', 'sgs-blocks' ) ),
 	'instalments_note'   => (string) ( $attributes['panelInstalmentsNote'] ?? '' ),
 	'instalments_count'  => absint( $attributes['panelInstalmentsCount'] ?? 3 ),

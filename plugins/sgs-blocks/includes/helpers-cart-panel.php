@@ -116,6 +116,8 @@ function sgs_cart_trigger_html( string $mode, string $inner_html, array $args ):
  *     @type string $checkout_label     Operator-set "Checkout" label.
  *     @type bool   $show_count         Show the live "(N)" after the heading.
  *     @type bool   $show_view_cart     Show the View cart button.
+ *     @type string $view_style         View cart: outline (an outlined button) | text-link (underlined text).
+ *     @type string $actions_layout     Footer actions: row (side by side) | stacked (Checkout, then View cart, full width).
  *     @type string $tax_note           Note under the subtotal; '' hides it.
  *     @type string $instalments_note   Note under checkout with a %s amount; '' hides it.
  *     @type int    $instalments_count  Instalment count used for that amount.
@@ -141,8 +143,19 @@ function sgs_cart_panel_body_html( array $args ): string {
 	}
 
 	$view_html = ! isset( $args['show_view_cart'] ) || ! empty( $args['show_view_cart'] )
-		? sprintf( '<a class="sgs-cart__panel-view" href="%1$s">%2$s</a>', esc_url( $args['cart_url'] ), sgs_rich_text_kses( $args['view_cart_label'], false ) )
+		? sprintf(
+			'<a class="sgs-cart__panel-view%1$s" href="%2$s">%3$s</a>',
+			'text-link' === ( $args['view_style'] ?? 'outline' ) ? ' sgs-cart__panel-view--link' : '',
+			esc_url( $args['cart_url'] ),
+			sgs_rich_text_kses( $args['view_cart_label'], false )
+		)
 		: '';
+
+	// Stacked: Checkout above View cart, full width, in that order in the markup too so the reading and tab order match the picture.
+	$stacked          = 'stacked' === ( $args['actions_layout'] ?? 'row' );
+	$view_before      = $stacked ? '' : $view_html;
+	$view_after       = $stacked ? $view_html : '';
+	$actions_modifier = $stacked ? ' sgs-cart__panel-actions--stacked' : '';
 
 	$instalments_html = '';
 	if ( '' !== (string) ( $args['instalments_note'] ?? '' ) ) {
@@ -161,9 +174,10 @@ function sgs_cart_panel_body_html( array $args ): string {
 			'<div class="sgs-cart__panel-footer" data-sgs-cart-footer hidden>' .
 				'<div class="sgs-cart__panel-subtotal"><span class="sgs-cart__panel-subtotal-label">%7$s</span><span class="sgs-cart__panel-subtotal-value" data-sgs-cart-subtotal></span></div>' .
 				'%8$s' .
-				'<div class="sgs-cart__panel-actions">' .
+				'<div class="sgs-cart__panel-actions%22$s">' .
 					'%9$s' .
 					'<a class="sgs-cart__panel-checkout" href="%11$s">%12$s</a>' .
+					'%23$s' .
 				'</div>' .
 				'%10$s' .
 			'</div>' .
@@ -176,7 +190,7 @@ function sgs_cart_panel_body_html( array $args ): string {
 		esc_html__( 'Loading your cart…', 'sgs-blocks' ),
 		esc_html__( 'Subtotal', 'sgs-blocks' ),
 		$note_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_html above.
-		$view_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_url/esc_html above.
+		$view_before, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_url/esc_html above.
 		$instalments_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr above.
 		esc_url( $args['checkout_url'] ),
 		sgs_rich_text_kses( $args['checkout_label'], false ),
@@ -188,7 +202,9 @@ function sgs_cart_panel_body_html( array $args ): string {
 		! isset( $args['show_save'] ) || ! empty( $args['show_save'] ) ? '1' : '0',
 		! empty( $args['show_add_options'] ) ? '1' : '0',
 		esc_attr( (string) ( $args['add_options_label'] ?? '' ) ),
-		'stepper' === ( $args['qty_style'] ?? 'input' ) ? ' data-qty-style="stepper"' : '' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a fixed string.
+		'stepper' === ( $args['qty_style'] ?? 'input' ) ? ' data-qty-style="stepper"' : '', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a fixed string.
+		$actions_modifier, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a fixed string.
+		$view_after // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_url/esc_html above.
 	);
 }
 

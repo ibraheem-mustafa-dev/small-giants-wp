@@ -12,6 +12,8 @@ import buildCartColourRows from './colourPanelRows';
 import buildPanelColourRows from './panelColourRows';
 import PanelContentControls from './PanelContentControls';
 import PanelDesignControls from './PanelDesignControls';
+import PanelButtonsControls from './PanelButtonsControls';
+import PanelButtonsDesign from './PanelButtonsDesign';
 import PanelItemRowControls from './PanelItemRowControls';
 import PanelItemRowDesign from './PanelItemRowDesign';
 import PanelPreview from './PanelPreview';
@@ -180,6 +182,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					hasPanel={ hasPanel }
 				/>
 
+				<PanelButtonsControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					hasPanel={ hasPanel }
+				/>
+
 				{ hasPanel && (
 					<RowWrapPanel
 						rows={ [
@@ -238,6 +246,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					hasDrawer={ hasDrawer }
 				/>
 				<PanelItemRowDesign
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					hasPanel={ hasPanel }
+				/>
+				<PanelButtonsDesign
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					hasPanel={ hasPanel }

@@ -94,4 +94,60 @@ final class CartPanelOptionsTest extends TestCase {
 		$this->assertStringNotContainsString( '#111111', $css );
 		$this->assertStringNotContainsString( '#222222', $css );
 	}
+
+	/**
+	 * The footer's actions row of the body markup, from its opening tag to the end of the row.
+	 *
+	 * @param string $body Panel body markup.
+	 */
+	private function actions_row( string $body ): string {
+		$this->assertSame( 1, preg_match( '/<div class="sgs-cart__panel-actions[^"]*">.*?<\/div>/s', $body, $m ), 'the footer has an actions row' );
+		return $m[0];
+	}
+
+	public function test_the_view_cart_button_and_the_row_layout_are_the_default_markup(): void {
+		$row = $this->actions_row( $this->panel( array() )['body'] );
+		$this->assertSame(
+			'<div class="sgs-cart__panel-actions"><a class="sgs-cart__panel-view" href="/cart">View cart</a><a class="sgs-cart__panel-checkout" href="/checkout">Checkout</a></div>',
+			$row
+		);
+		$named = $this->actions_row( $this->panel( array(), array( 'view_style' => 'outline', 'actions_layout' => 'row' ) )['body'] );
+		$this->assertSame( $row, $named, 'naming the defaults changes nothing' );
+	}
+
+	public function test_a_link_view_cart_carries_its_own_class(): void {
+		$row = $this->actions_row( $this->panel( array(), array( 'view_style' => 'text-link' ) )['body'] );
+		$this->assertStringContainsString( '<a class="sgs-cart__panel-view sgs-cart__panel-view--link" href="/cart">View cart</a>', $row );
+	}
+
+	public function test_a_stacked_layout_puts_checkout_first_in_the_markup_and_marks_the_row(): void {
+		$row = $this->actions_row( $this->panel( array(), array( 'view_style' => 'text-link', 'actions_layout' => 'stacked' ) )['body'] );
+		$this->assertStringStartsWith( '<div class="sgs-cart__panel-actions sgs-cart__panel-actions--stacked">', $row );
+		$this->assertLessThan( strpos( $row, 'sgs-cart__panel-view' ), strpos( $row, 'sgs-cart__panel-checkout' ), 'the reading and tab order follow the picture: checkout, then View cart' );
+	}
+
+	public function test_a_hidden_view_cart_leaves_checkout_alone_in_either_layout(): void {
+		$row = $this->actions_row( $this->panel( array(), array( 'show_view_cart' => false, 'actions_layout' => 'stacked' ) )['body'] );
+		$this->assertStringNotContainsString( 'sgs-cart__panel-view', $row );
+		$this->assertStringContainsString( 'sgs-cart__panel-checkout', $row );
+	}
+
+	public function test_the_view_cart_colour_hover_and_type_print_only_when_set(): void {
+		$css = $this->panel( array() )['css'];
+		$this->assertStringNotContainsString( '.sgs-cart__panel-view{', $css );
+		$set = $this->panel(
+			array(
+				'panelViewColour'          => '#3a2a22',
+				'panelViewColourHover'     => '#ee8088',
+				'panelViewFontSize'        => array( 'desktop' => 16 ),
+				'panelViewFontWeight'      => '700',
+				'panelViewTextTransform'   => 'uppercase',
+			)
+		)['css'];
+		$v = self::P . ' .sgs-cart__panel-view';
+		$this->assertStringContainsString( $v . '{color:#3a2a22}', $set );
+		$this->assertStringContainsString( $v . ':hover{color:#ee8088}', $set );
+		$this->assertStringContainsString( $v . '{font-size:16px;}', $set );
+		$this->assertStringContainsString( $v . '{font-weight:700;text-transform:uppercase;}', $set );
+	}
 }

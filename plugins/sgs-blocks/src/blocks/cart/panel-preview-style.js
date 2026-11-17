@@ -156,6 +156,8 @@ export function panelElementStyles( attributes, tier, palette ) {
 			gap: tierLengthPreview( attributes.itemGap, tier ),
 		},
 		view: {
+			...typographyPreviewStyle( attributes, 'panelView', tier ),
+			color: colour( attributes.panelViewColour ),
 			borderRadius: radius( attributes.checkoutRadius ),
 		},
 	};

@@ -114,6 +114,13 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 	const note = ( attributes.panelInstalmentsNote || '' ).trim();
 	const taxNote = attributes.panelTaxNote ?? __( 'Shipping and taxes calculated at checkout.', 'sgs-blocks' );
 	const scope = `sgs-ed-sep-${ clientId }`;
+	// The footer's actions: View cart as a button or a link, and Checkout first when the two are stacked (as the markup orders them).
+	const stacked = 'stacked' === attributes.panelActionsLayout;
+	const viewCart = false !== attributes.panelShowViewCart && (
+		<span className={ `sgs-cart__panel-view${ 'text-link' === attributes.panelViewStyle ? ' sgs-cart__panel-view--link' : '' }` } style={ s.view }>
+			<AuthoredText value={ attributes.viewCartLabel } />
+		</span>
+	);
 
 	// The line between item rows: the canvas mirrors the item-drawn rules the front end
 	// emits (includes/helpers-cart-panel-css.php) for the previewed device, in the space
@@ -188,11 +195,13 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 									<span className="sgs-cart__panel-subtotal-value" style={ s.subtotalValue }>{ '£12.00' }</span>
 								</div>
 								{ '' !== taxNote && <AuthoredText as="p" className="sgs-cart__panel-tax-note" value={ taxNote } /> }
-								<div className="sgs-cart__panel-actions" style={ attributes.panelActionsFlexWrap ? { flexWrap: attributes.panelActionsFlexWrap } : undefined }>
-									{ false !== attributes.panelShowViewCart && (
-										<span className="sgs-cart__panel-view" style={ s.view }><AuthoredText value={ attributes.viewCartLabel } /></span>
-									) }
+								<div
+									className={ `sgs-cart__panel-actions${ stacked ? ' sgs-cart__panel-actions--stacked' : '' }` }
+									style={ attributes.panelActionsFlexWrap ? { flexWrap: attributes.panelActionsFlexWrap } : undefined }
+								>
+									{ ! stacked && viewCart }
 									<span className="sgs-cart__panel-checkout" style={ s.checkout }><AuthoredText value={ attributes.checkoutLabel } /></span>
+									{ stacked && viewCart }
 								</div>
 								{ '' !== note && (
 									<AuthoredText as="p" className="sgs-cart__panel-note" style={ s.note } value={ note.replace( '%s', '£4.00' ) } />

@@ -66,3 +66,29 @@ function sgs_cart_qty_stepper_css( array $attributes, string $p ): array {
 
 	return array_values( array_filter( $css ) );
 }
+
+/**
+ * Scoped CSS for the "View cart" button or link: its text colour at rest and on hover or keyboard focus.
+ * Its typography prints through the panel's shared typography loop, and the stacked layout and the link
+ * look are stylesheet classes the markup carries (`sgs-cart__panel-view--link`, `sgs-cart__panel-actions--stacked`).
+ *
+ * @param array  $attributes Block attributes.
+ * @param string $p          The panel selector prefix, `.{uid}.sgs-cart__panel`.
+ * @return string[] CSS rule strings.
+ */
+function sgs_cart_view_cart_css( array $attributes, string $p ): array {
+	return array_values(
+		array_filter(
+			array(
+				sgs_text_states_css(
+					$p . ' .sgs-cart__panel-view',
+					$attributes,
+					array(
+						'base'  => 'panelViewColour',
+						'hover' => 'panelViewColourHover',
+					)
+				),
+			)
+		)
+	);
+}

@@ -67,6 +67,7 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 		'subtotal'         => '.sgs-cart__panel-subtotal',
 		'freeDeliveryText' => '.sgs-cart__free-delivery-text',
 		'checkout'         => '.sgs-cart__panel-checkout',
+		'panelView'        => '.sgs-cart__panel-view',
 		'panelNote'        => '.sgs-cart__panel-note',
 	);
 	foreach ( $typography as $prefix => $sel ) {
@@ -132,8 +133,8 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 			'sweep' => false,
 		)
 	);
-	foreach ( sgs_cart_qty_stepper_css( $attributes, $p ) as $stepper_rule ) {
-		$css[] = $stepper_rule;
+	foreach ( array_merge( sgs_cart_qty_stepper_css( $attributes, $p ), sgs_cart_view_cart_css( $attributes, $p ) ) as $options_rule ) {
+		$css[] = $options_rule;
 	}
 	// Checkout hover and keyboard focus (touch-safe pair).
 	$hover = array_filter(

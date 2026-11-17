@@ -464,6 +464,32 @@
 					},
 					"_note": "The item row's quantity stepper (itemQtyStyle 'stepper'): a minus button, the number and a plus button in one pill. Only drawn when the stepper style is chosen."
 				},
+				"panelView": {
+					"selector": ".sgs-cart__panel-view",
+					"motion": false,
+					"label": "View cart button or link",
+					"order": 36,
+					"clusters": [
+						"text"
+					],
+					"prefix": "panelView",
+					"attrMap": {
+						"css:color": "panelViewColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "panelViewColourHover"
+							}
+						}
+					},
+					"_note": "The footer's second action: an outlined button, or with panelViewStyle 'text-link' an underlined text link. Its corners follow the Checkout corners setting.",
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
 				"itemBrand": {
 					"motion": false,
 					"label": "Item brand",
@@ -1520,6 +1546,16 @@
 		"itemQtyFontSize": {"type": "object", "default": {}},
 		"itemQtyFontSizeUnit": {"type": "string", "default": "px"},
 		"itemQtyFontWeight": {"type": "string", "default": ""},
+		"panelViewStyle": {"type": "string", "default": "outline", "enum": ["outline", "text-link"], "description": "'outline' is the outlined View cart button; 'text-link' is an underlined text link."},
+		"panelActionsLayout": {"type": "string", "default": "row", "enum": ["row", "stacked"], "description": "'row' puts Checkout and View cart side by side; 'stacked' puts Checkout full width with View cart centred under it."},
+		"panelViewColour": {"type": "string", "default": "", "description": "View cart text colour."},
+		"panelViewColourHover": {"type": "string", "default": "", "description": "View cart text colour on hover and keyboard focus."},
+		"panelViewFontSize": {"type": "object", "default": {}},
+		"panelViewFontSizeUnit": {"type": "string", "default": "px"},
+		"panelViewFontWeight": {"type": "string", "default": ""},
+		"panelViewLetterSpacing": {"type": "object", "default": {}},
+		"panelViewLetterSpacingUnit": {"type": "string", "default": "em"},
+		"panelViewTextTransform": {"type": "string", "default": ""},
 		"itemShowQty": {
 			"type": "boolean",
 			"default": true,
