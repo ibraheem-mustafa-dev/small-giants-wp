@@ -21,7 +21,7 @@ const TEXT_TARGETS = [
 	[ 'panelEmpty', __( 'Empty block', 'sgs-blocks' ), { showSize: false, showWeight: false, showTextAlign: true } ],
 	[ 'emptyCta', __( 'Empty button', 'sgs-blocks' ), { showLetterSpacing: true, showTransform: true } ],
 	[ 'itemBrand', __( 'Item brand', 'sgs-blocks' ), { showWeight: false, showLetterSpacing: true, showTransform: true } ],
-	[ 'itemName', __( 'Item name', 'sgs-blocks' ), { showLineHeight: true } ],
+	[ 'itemName', __( 'Item name', 'sgs-blocks' ), { showLineHeight: true, showFontFamily: true } ],
 	[ 'itemDetail', __( 'Item details', 'sgs-blocks' ), { showWeight: false, showLineHeight: true } ],
 	[ 'itemPrice', __( 'Item price', 'sgs-blocks' ), {} ],
 	[ 'itemAction', __( 'Item links', 'sgs-blocks' ), { showWeight: false } ],

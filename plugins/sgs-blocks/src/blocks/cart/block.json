@@ -83,7 +83,8 @@
 				"panelFooterPadding": [ "panelFooterPadding" ],
 				"panelEmptyPadding": [ "panelEmptyPadding" ],
 				"emptyCtaPadding": [ "emptyCtaPadding" ],
-				"freeDeliveryBarMargin": [ "freeDeliveryBarMargin" ]
+				"freeDeliveryBarMargin": [ "freeDeliveryBarMargin" ],
+				"freeDeliveryBandPadding": [ "freeDeliveryBandPadding" ]
 			},
 			"elements": {
 				"item-actions": {
@@ -489,6 +490,47 @@
 						"pill-link"
 					],
 					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"panelTaxNote": {
+					"selector": ".sgs-cart__panel-tax-note",
+					"motion": false,
+					"label": "Note under the subtotal",
+					"order": 37,
+					"clusters": [
+						"text"
+					],
+					"prefix": "panelTaxNote",
+					"attrMap": {
+						"css:color": "panelTaxNoteColour"
+					},
+					"contentAttrs": [
+						"panelTaxNote"
+					],
+					"_note": "The delivery note under the subtotal row (panelTaxNote is its wording). The Note under Checkout element (panelNote) is the instalments note, a different paragraph.",
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"freeDeliveryBand": {
+					"selector": ".sgs-cart__free-delivery",
+					"motion": false,
+					"label": "Free-delivery band",
+					"order": 38,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "freeDeliveryBand",
+					"attrMap": {
+						"css:background-color": "freeDeliveryBandBg",
+						"css:border-color": "freeDeliveryBandBorderColour",
+						"css:border-width": "freeDeliveryBandBorderWidth",
+						"css:border-style": "freeDeliveryBandBorderStyle",
+						"css:padding": "freeDeliveryBandPadding"
+					},
+					"_note": "The band holding the free-delivery message and its bar. Set only the bottom border width for a line under it."
 				},
 				"itemBrand": {
 					"motion": false,
@@ -1557,6 +1599,17 @@
 		"panelViewLetterSpacingUnit": {"type": "string", "default": "em"},
 		"panelViewTextTransform": {"type": "string", "default": ""},
 		"itemRemovePlacement": {"type": "string", "default": "under", "enum": ["under", "inline-end"], "description": "Where the text-style Remove link sits: 'under' the quantity, or 'inline-end' at the right of the quantity's own line. Only reads when the remove style is a text link and the quantity is shown."},
+		"itemNameFontFamily": {"type": "string", "default": ""},
+		"panelTaxNoteColour": {"type": "string", "default": "", "description": "Colour of the note under the subtotal (the delivery note)."},
+		"panelTaxNoteFontSize": {"type": "object", "default": {}},
+		"panelTaxNoteFontSizeUnit": {"type": "string", "default": "px"},
+		"panelTaxNoteFontWeight": {"type": "string", "default": ""},
+		"panelTaxNoteTextAlign": {"type": "object", "default": {}},
+		"freeDeliveryBandBg": {"type": "string", "default": "", "description": "Background colour of the free-delivery band (its message and bar)."},
+		"freeDeliveryBandBorderColour": {"type": "string", "default": ""},
+		"freeDeliveryBandBorderWidth": {"type": "object", "default": {}, "description": "Border width of the free-delivery band (box object): set only the bottom for a line under it."},
+		"freeDeliveryBandBorderStyle": {"type": "string", "default": ""},
+		"freeDeliveryBandPadding": {"type": "object", "default": {}, "description": "Padding of the free-delivery band: tier object of boxes."},
 		"itemShowQty": {
 			"type": "boolean",
 			"default": true,

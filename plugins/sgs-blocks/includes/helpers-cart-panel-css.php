@@ -69,6 +69,7 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 		'checkout'         => '.sgs-cart__panel-checkout',
 		'panelView'        => '.sgs-cart__panel-view',
 		'panelNote'        => '.sgs-cart__panel-note',
+		'panelTaxNote'     => '.sgs-cart__panel-tax-note',
 	);
 	foreach ( $typography as $prefix => $sel ) {
 		$rule = sgs_typography_css_rule( $attributes, $prefix, $p . ' ' . $sel, '', false, false, sgs_object_attr_keys( 'sgs/cart' ) );
@@ -133,7 +134,7 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 			'sweep' => false,
 		)
 	);
-	foreach ( array_merge( sgs_cart_qty_stepper_css( $attributes, $p ), sgs_cart_view_cart_css( $attributes, $p ) ) as $options_rule ) {
+	foreach ( array_merge( sgs_cart_qty_stepper_css( $attributes, $p ), sgs_cart_view_cart_css( $attributes, $p ), sgs_cart_footer_band_css( $attributes, $p ) ) as $options_rule ) {
 		$css[] = $options_rule;
 	}
 	// Checkout hover and keyboard focus (touch-safe pair).

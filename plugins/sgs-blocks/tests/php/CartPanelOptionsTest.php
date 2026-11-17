@@ -158,4 +158,52 @@ final class CartPanelOptionsTest extends TestCase {
 		$both = $this->panel( array(), array( 'remove_place' => 'inline-end', 'qty_style' => 'stepper' ) )['body'];
 		$this->assertStringContainsString( ' data-qty-style="stepper" data-remove-place="end">', $both );
 	}
+
+	public function test_the_note_under_the_subtotal_has_its_own_controls_and_the_checkout_note_keeps_its_own(): void {
+		$css = $this->panel(
+			array(
+				'panelTaxNoteColour'     => '#6b5646',
+				'panelTaxNoteFontSize'   => array( 'desktop' => 14 ),
+				'panelTaxNoteFontWeight' => '600',
+				'panelTaxNoteTextAlign'  => array( 'desktop' => 'center' ),
+			)
+		)['css'];
+		$t = self::P . ' .sgs-cart__panel-tax-note';
+		$this->assertStringContainsString( $t . '{color:#6b5646}', $css );
+		$this->assertStringContainsString( $t . '{font-size:14px;text-align:center;}', $css );
+		$this->assertStringContainsString( $t . '{font-weight:600;}', $css );
+		$this->assertStringNotContainsString( 'sgs-cart__panel-note', $css, 'the instalments note is left alone' );
+		$checkout_note = $this->panel( array( 'panelNoteColour' => '#123456' ) )['css'];
+		$this->assertStringContainsString( self::P . ' .sgs-cart__panel-note{color:#123456;}', $checkout_note );
+		$this->assertStringNotContainsString( 'sgs-cart__panel-tax-note', $checkout_note, 'and its colour does not reach the delivery note' );
+	}
+
+	public function test_the_item_name_takes_a_font_family(): void {
+		$css = $this->panel( array( 'itemNameFontFamily' => 'young-serif' ) )['css'];
+		$this->assertMatchesRegularExpression( '/' . preg_quote( self::P . ' .sgs-cart__item-name', '/' ) . '\{[^}]*font-family:/', $css );
+		$this->assertStringNotContainsString( 'font-family', $this->panel( array() )['css'] );
+	}
+
+	public function test_the_free_delivery_band_takes_a_fill_a_bottom_border_and_padding(): void {
+		$attrs = array(
+			'freeDeliveryBandBg'           => '#fffaf0',
+			'freeDeliveryBandBorderColour' => '#e6d4b4',
+			'freeDeliveryBandBorderStyle'  => 'dashed',
+			'freeDeliveryBandBorderWidth'  => array( 'desktop' => array( 'bottom' => '1.5px' ) ),
+			'freeDeliveryBandPadding'      => array( 'desktop' => array( 'top' => '14px', 'right' => '20px', 'bottom' => '14px', 'left' => '20px' ) ),
+		);
+		$css = $this->panel( $attrs )['css'];
+		$b   = self::P . ' .sgs-cart__free-delivery';
+		$this->assertStringContainsString( $b . '{background-color:#fffaf0}', $css );
+		$this->assertMatchesRegularExpression( '/' . preg_quote( $b, '/' ) . '\{[^}]*border-style:dashed[^}]*\}/', $css );
+		$this->assertMatchesRegularExpression( '/' . preg_quote( $b, '/' ) . '\{[^}]*border-width:[^;}]*1\.5px[^}]*\}/', $css );
+		$this->assertMatchesRegularExpression( '/' . preg_quote( $b, '/' ) . '\{[^}]*border-color:#e6d4b4/', $css );
+		$this->assertMatchesRegularExpression( '/' . preg_quote( $b, '/' ) . '\{[^}]*padding[^}]*14px/', $css );
+	}
+
+	public function test_nothing_set_prints_no_band_or_tax_note_rule(): void {
+		$css = $this->panel( array() )['css'];
+		$this->assertStringNotContainsString( 'sgs-cart__free-delivery{', $css );
+		$this->assertStringNotContainsString( 'sgs-cart__panel-tax-note', $css );
+	}
 }

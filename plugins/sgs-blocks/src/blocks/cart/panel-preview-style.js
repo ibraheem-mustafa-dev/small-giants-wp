@@ -93,6 +93,20 @@ export function panelElementStyles( attributes, tier, palette ) {
 			...typographyPreviewStyle( attributes, 'subtotal', tier ),
 			color: colour( attributes.subtotalLabelColour ),
 		},
+		// The note under the subtotal (render: includes/helpers-cart-panel-items-css.php).
+		taxNote: {
+			...typographyPreviewStyle( attributes, 'panelTaxNote', tier ),
+			color: colour( attributes.panelTaxNoteColour ),
+		},
+		freeBand: {
+			backgroundColor: colour( attributes.freeDeliveryBandBg ),
+			...sgsBorderPreview(
+				{ widthValues: attributes.freeDeliveryBandBorderWidth, styleValue: attributes.freeDeliveryBandBorderStyle, colourValue: attributes.freeDeliveryBandBorderColour },
+				tier,
+				palette
+			),
+			...tierBoxLonghands( attributes.freeDeliveryBandPadding, tier, 'padding' ),
+		},
 		freeText: {
 			...typographyPreviewStyle( attributes, 'freeDeliveryText', tier ),
 			color: colour( attributes.freeDeliveryTextColour ),

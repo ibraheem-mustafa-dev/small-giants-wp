@@ -45,6 +45,8 @@ export default function buildPanelColourRows( { attributes, setAttributes, hasPa
 		[ 'checkoutBg', __( 'Checkout button background', 'sgs-blocks' ), 'checkoutBgHover' ],
 		[ 'checkoutColour', __( 'Checkout button text', 'sgs-blocks' ), 'checkoutColourHover' ],
 		...( false !== attributes.panelShowViewCart ? [ [ 'panelViewColour', __( 'View cart text', 'sgs-blocks' ), 'panelViewColourHover' ] ] : [] ),
+		[ 'panelTaxNoteColour', __( 'Note under the subtotal', 'sgs-blocks' ) ],
+		[ 'freeDeliveryBandBg', __( 'Free-delivery band background', 'sgs-blocks' ) ],
 		[ 'panelNoteColour', __( 'Note under Checkout', 'sgs-blocks' ) ],
 	];
 	const state = ( key, label, attr ) => ( {

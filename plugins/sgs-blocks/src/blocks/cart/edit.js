@@ -14,6 +14,7 @@ import PanelContentControls from './PanelContentControls';
 import PanelDesignControls from './PanelDesignControls';
 import PanelButtonsControls from './PanelButtonsControls';
 import PanelButtonsDesign from './PanelButtonsDesign';
+import PanelFooterDesign from './PanelFooterDesign';
 import PanelItemRowControls from './PanelItemRowControls';
 import PanelItemRowDesign from './PanelItemRowDesign';
 import PanelPreview from './PanelPreview';
@@ -251,6 +252,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					hasPanel={ hasPanel }
 				/>
 				<PanelButtonsDesign
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					hasPanel={ hasPanel }
+				/>
+				<PanelFooterDesign
+					name={ name }
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					hasPanel={ hasPanel }

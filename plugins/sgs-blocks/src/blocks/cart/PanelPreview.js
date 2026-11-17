@@ -181,7 +181,7 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 						</div>
 					) : (
 						<>
-							<div className="sgs-cart__free-delivery">
+							<div className="sgs-cart__free-delivery" style={ s.freeBand }>
 								<p className="sgs-cart__free-delivery-text" style={ s.freeText }>
 									{ __( 'You are £10.00 away from free delivery', 'sgs-blocks' ) }
 								</p>
@@ -198,7 +198,7 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 									<span className="sgs-cart__panel-subtotal-label">{ __( 'Subtotal', 'sgs-blocks' ) }</span>
 									<span className="sgs-cart__panel-subtotal-value" style={ s.subtotalValue }>{ '£12.00' }</span>
 								</div>
-								{ '' !== taxNote && <AuthoredText as="p" className="sgs-cart__panel-tax-note" value={ taxNote } /> }
+								{ '' !== taxNote && <AuthoredText as="p" className="sgs-cart__panel-tax-note" style={ s.taxNote } value={ taxNote } /> }
 								<div
 									className={ `sgs-cart__panel-actions${ stacked ? ' sgs-cart__panel-actions--stacked' : '' }` }
 									style={ attributes.panelActionsFlexWrap ? { flexWrap: attributes.panelActionsFlexWrap } : undefined }
