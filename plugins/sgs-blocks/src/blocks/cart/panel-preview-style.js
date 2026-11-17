@@ -76,6 +76,19 @@ export function panelElementStyles( attributes, tier, palette ) {
 		action: {
 			...typographyPreviewStyle( attributes, 'itemAction', tier ),
 		},
+		// The quantity stepper's pill (render: includes/helpers-cart-panel-items-css.php).
+		qty: {
+			...typographyPreviewStyle( attributes, 'itemQty', tier ),
+			color: colour( attributes.itemQtyColour ),
+			backgroundColor: colour( attributes.itemQtyBg ),
+			borderRadius: radius( attributes.itemQtyRadius ),
+			'--sgs-cart-qty-height': tierLengthPreview( attributes.itemQtyHeight, tier ),
+			...sgsBorderPreview(
+				{ widthValues: attributes.itemQtyBorderWidth, styleValue: attributes.itemQtyBorderStyle, colourValue: attributes.itemQtyBorderColour },
+				tier,
+				palette
+			),
+		},
 		subtotal: {
 			...typographyPreviewStyle( attributes, 'subtotal', tier ),
 			color: colour( attributes.subtotalLabelColour ),

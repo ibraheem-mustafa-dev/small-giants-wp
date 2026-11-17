@@ -442,6 +442,28 @@
 						"css:gap": "itemGap"
 					}
 				},
+				"itemQty": {
+					"selector": ".sgs-cart__item-stepper",
+					"motion": false,
+					"label": "Item quantity stepper",
+					"order": 35,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "itemQty",
+					"attrMap": {
+						"css:color": "itemQtyColour",
+						"css:background-color": "itemQtyBg",
+						"css:border-color": "itemQtyBorderColour",
+						"css:border-width": "itemQtyBorderWidth",
+						"css:border-style": "itemQtyBorderStyle",
+						"css:border-radius": "itemQtyRadius",
+						"css:height": "itemQtyHeight"
+					},
+					"_note": "The item row's quantity stepper (itemQtyStyle 'stepper'): a minus button, the number and a plus button in one pill. Only drawn when the stepper style is chosen."
+				},
 				"itemBrand": {
 					"motion": false,
 					"label": "Item brand",
@@ -1487,6 +1509,17 @@
 			"default": true,
 			"description": "Show the View cart button in the panel footer."
 		},
+		"itemQtyStyle": {"type": "string", "default": "input", "enum": ["input", "stepper"], "description": "'input' is the native number box; 'stepper' is a minus button, the number and a plus button in one pill."},
+		"itemQtyHeight": {"type": "object", "default": {}, "description": "Stepper height per device (CSS length). Empty keeps 44px."},
+		"itemQtyBg": {"type": "string", "default": "", "description": "Stepper pill background colour."},
+		"itemQtyColour": {"type": "string", "default": "", "description": "Stepper text and button colour."},
+		"itemQtyBorderColour": {"type": "string", "default": "", "description": "Stepper pill border colour."},
+		"itemQtyBorderWidth": {"type": "object", "default": {}, "description": "Stepper pill border width (box object). Empty keeps no border."},
+		"itemQtyBorderStyle": {"type": "string", "default": "", "description": "Stepper pill border style."},
+		"itemQtyRadius": {"type": "string", "default": "", "description": "Stepper pill corner radius (CSS length). Empty keeps fully rounded."},
+		"itemQtyFontSize": {"type": "object", "default": {}},
+		"itemQtyFontSizeUnit": {"type": "string", "default": "px"},
+		"itemQtyFontWeight": {"type": "string", "default": ""},
 		"itemShowQty": {
 			"type": "boolean",
 			"default": true,

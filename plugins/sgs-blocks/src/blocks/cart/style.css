@@ -768,6 +768,75 @@
 	font-size: 0.85rem;
 }
 
+/* Quantity stepper (itemQtyStyle "stepper"): minus, the number and plus in one pill. The pill has no border until a
+   width is set (render: includes/helpers-cart-panel-items-css.php); the height is --sgs-cart-qty-height. */
+:where(.sgs-cart__panel) .sgs-cart__item-qty-label--hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__item-stepper {
+	display: inline-flex;
+	align-items: center;
+	height: var(--sgs-cart-qty-height, 44px);
+	border: 0 solid currentColor;
+	border-radius: 999px;
+	background-color: rgba(128, 128, 128, 0.12);
+	font-size: 0.9rem;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__item-stepper .sgs-cart__item-qty-step {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	width: var(--sgs-cart-qty-height, 44px);
+	height: 100%;
+	padding: 0;
+	border: 0;
+	border-radius: inherit;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	font-size: 1.25em;
+	line-height: 1;
+	cursor: pointer;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__item-stepper .sgs-cart__item-qty-step:disabled {
+	cursor: not-allowed;
+	color: color-mix( in srgb, currentColor 40%, transparent );
+}
+
+:where(.sgs-cart__panel) .sgs-cart__item-stepper .sgs-cart__item-qty-input {
+	width: 3ch;
+	min-width: 22px;
+	min-height: 0;
+	height: 100%;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	font-weight: 700;
+	text-align: center;
+	-moz-appearance: textfield;
+	appearance: textfield;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__item-stepper .sgs-cart__item-qty-input::-webkit-inner-spin-button,
+:where(.sgs-cart__panel) .sgs-cart__item-stepper .sgs-cart__item-qty-input::-webkit-outer-spin-button {
+	margin: 0;
+	-webkit-appearance: none;
+}
+
 :where(.sgs-cart__panel) .sgs-cart__item-price {
 	flex: 0 0 auto;
 	margin-left: auto;

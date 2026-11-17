@@ -90,6 +90,57 @@ function detailsHtml( item ) {
 }
 
 /**
+ * The quantity control: the native number box, or the stepper (a minus button, the number and a plus button in one pill).
+ *
+ * The stepper keeps a real number input between its buttons, so a screen reader announces the value and the keyboard can
+ * type one; the buttons name the product and are disabled at the line's own limits from the Store API
+ * (`quantity_limits`: the minimum, the maximum that stock and the cart's rules allow, and the step the line moves by).
+ * A line the Store API marks not editable disables all three. The stepper's disabled buttons carry `data-at-limit` so
+ * the panel's busy toggle never re-enables them.
+ *
+ * @param {Object} args          The line and its already-escaped ids.
+ * @param {Object} args.item     The Store API cart item.
+ * @param {string} args.key      The escaped cart item key.
+ * @param {number} args.qty      The line's quantity.
+ * @param {string} args.qtyInputId The number input's id.
+ * @param {string} args.qtyStyle 'input' or 'stepper'.
+ * @return {string} The control's HTML.
+ */
+function qtyControlHtml( { item, key, qty, qtyInputId, qtyStyle } ) {
+	const label = `<label class="sgs-cart__item-qty-label${ 'stepper' === qtyStyle ? ' sgs-cart__item-qty-label--hidden' : '' }" for="${ qtyInputId }">${ escapeHtml( 'Qty' ) }</label>`;
+	const ariaLabel = escapeHtml( 'Quantity for ' + item.name );
+	if ( 'stepper' !== qtyStyle ) {
+		return (
+			label +
+			`<input type="number" min="0" step="1" id="${ qtyInputId }" ` +
+			`class="sgs-cart__item-qty-input" value="${ qty }" data-key="${ key }" ` +
+			`aria-label="${ ariaLabel }" />`
+		);
+	}
+	const limits = item.quantity_limits || {};
+	const min = Math.max( 1, Number( limits.minimum ) || 1 );
+	const max = Number( limits.maximum ) > 0 ? Number( limits.maximum ) : 0;
+	const step = Math.max( 1, Number( limits.multiple_of ) || 1 );
+	const editable = false !== limits.editable;
+	const atMin = ! editable || qty - step < min;
+	const atMax = ! editable || ( max > 0 && qty + step > max );
+	const button = ( dir, glyph, name, off ) =>
+		`<button type="button" class="sgs-cart__item-qty-step sgs-cart__item-qty-step--${ dir }" data-key="${ key }" data-step="${ 'minus' === dir ? -step : step }" ` +
+		`aria-label="${ escapeHtml( name + ' ' + item.name ) }"${ off ? ' disabled data-at-limit' : '' }>` +
+		`<span aria-hidden="true">${ glyph }</span></button>`;
+	return (
+		label +
+		'<div class="sgs-cart__item-stepper">' +
+		button( 'minus', '&minus;', 'Decrease quantity of', atMin ) +
+		`<input type="number" min="${ min }" ${ max ? `max="${ max }" ` : '' }step="${ step }" id="${ qtyInputId }" ` +
+		`class="sgs-cart__item-qty-input" value="${ qty }" data-key="${ key }" ` +
+		`aria-label="${ ariaLabel }"${ editable ? '' : ' readonly' } />` +
+		button( 'plus', '+', 'Increase quantity of', atMax ) +
+		'</div>'
+	);
+}
+
+/**
  * Build one item row's markup: thumbnail, a top line (brand, else the name,
  * with the line price on the right), the name, the line's details
  * (variation and item data), the optional quantity input, and the actions
@@ -101,6 +152,7 @@ function detailsHtml( item ) {
  * @param {string}  [opts.removeStyle]  'icon' (an × in its own column) or 'text' (a link under the details).
  * @param {string}  [opts.removeLabel]  The text link's label.
  * @param {boolean} [opts.showQty]      Show the quantity input.
+ * @param {string}  [opts.qtyStyle]     'input' (a number box) or 'stepper' (minus, number, plus in one pill).
  * @param {boolean} [opts.showSave]     Show Save for later.
  * @param {boolean} [opts.showAddOptions] Show the per-line "add options" link.
  * @param {string}  [opts.addOptionsLabel] That link's label; '' hides it.
@@ -111,6 +163,7 @@ export function itemRowHtml( item, totals, opts = {} ) {
 		removeStyle = 'icon',
 		removeLabel = 'Remove',
 		showQty = true,
+		qtyStyle = 'input',
 		showSave = true,
 		showAddOptions = false,
 		addOptionsLabel = '',
@@ -176,12 +229,7 @@ export function itemRowHtml( item, totals, opts = {} ) {
 
 	const qtyHtml = showQty
 		? '<div class="sgs-cart__item-row">' +
-		  `<label class="sgs-cart__item-qty-label" for="${ qtyInputId }">` +
-		  escapeHtml( 'Qty' ) +
-		  '</label>' +
-		  `<input type="number" min="0" step="1" id="${ qtyInputId }" ` +
-		  `class="sgs-cart__item-qty-input" value="${ qty }" data-key="${ key }" ` +
-		  `aria-label="${ escapeHtml( 'Quantity for ' + item.name ) }" />` +
+		  qtyControlHtml( { item, key, qty, qtyInputId, qtyStyle } ) +
 		  '</div>'
 		: '';
 

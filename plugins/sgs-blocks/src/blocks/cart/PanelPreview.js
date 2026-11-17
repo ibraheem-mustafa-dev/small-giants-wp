@@ -56,8 +56,18 @@ function SampleItem( { attrs, s } ) {
 				</ul>
 				{ false !== attrs.itemShowQty && (
 					<div className="sgs-cart__item-row">
-						<label className="sgs-cart__item-qty-label">{ __( 'Qty', 'sgs-blocks' ) }</label>
-						<input type="number" className="sgs-cart__item-qty-input" value={ 1 } readOnly tabIndex={ -1 } />
+						{ 'stepper' === attrs.itemQtyStyle ? (
+							<div className="sgs-cart__item-stepper" style={ s.qty }>
+								<span className="sgs-cart__item-qty-step sgs-cart__item-qty-step--minus" aria-hidden="true">&minus;</span>
+								<input type="number" className="sgs-cart__item-qty-input" value={ 2 } readOnly tabIndex={ -1 } aria-label={ __( 'Quantity', 'sgs-blocks' ) } />
+								<span className="sgs-cart__item-qty-step sgs-cart__item-qty-step--plus" aria-hidden="true">+</span>
+							</div>
+						) : (
+							<>
+								<label className="sgs-cart__item-qty-label">{ __( 'Qty', 'sgs-blocks' ) }</label>
+								<input type="number" className="sgs-cart__item-qty-input" value={ 1 } readOnly tabIndex={ -1 } />
+							</>
+						) }
 					</div>
 				) }
 				{ ( showAddOptions || showSave || removeText ) && (

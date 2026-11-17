@@ -3075,6 +3075,11 @@
    "file": "plugins/sgs-blocks/src/blocks/container/style.css",
    "selector": ".sgs-container__inner.sgs-container__inner--draggable.is-dragging",
    "reason": "while a mouse drags the scroll row it shows the grabbing cursor, stops text selection and pauses snapping so the row follows the pointer; behaviour set by the drag script, not a look"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/cart/style.css",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__item-stepper .sgs-cart__item-qty-step:disabled",
+   "reason": "a stepper button at the line's quantity limit shows muted and not-allowed as fixed behaviour; the Store API limits decide it, not a look setting"
   }
  ]
 }

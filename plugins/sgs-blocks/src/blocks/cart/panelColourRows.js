@@ -29,6 +29,12 @@ export default function buildPanelColourRows( { attributes, setAttributes, hasPa
 		[ 'itemDetailColour', __( 'Item details', 'sgs-blocks' ) ],
 		[ 'itemActionColour', __( 'Save for later link', 'sgs-blocks' ) ],
 		[ 'itemActionBorderColour', __( 'Save for later underline', 'sgs-blocks' ) ],
+		...( 'stepper' === attributes.itemQtyStyle && false !== attributes.itemShowQty
+			? [
+					[ 'itemQtyBg', __( 'Quantity stepper background', 'sgs-blocks' ) ],
+					[ 'itemQtyColour', __( 'Quantity stepper text', 'sgs-blocks' ) ],
+			  ]
+			: [] ),
 		[ 'itemRemoveColour', __( 'Remove link', 'sgs-blocks' ) ],
 		[ 'itemRemoveBorderColour', __( 'Remove link underline', 'sgs-blocks' ) ],
 		[ 'panelFooterBg', __( 'Panel footer background', 'sgs-blocks' ) ],

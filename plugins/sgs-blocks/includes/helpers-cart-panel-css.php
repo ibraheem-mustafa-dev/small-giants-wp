@@ -11,6 +11,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-cart-panel-items-css.php';
+
 /**
  * Scoped CSS for the mini-cart panel's own settings (typography, colours,
  * per-device lengths, padding boxes, shadow, motion), for flyout and drawer.
@@ -60,6 +62,7 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 		'itemName'         => '.sgs-cart__item-name',
 		'itemDetail'       => '.sgs-cart__item-details',
 		'itemPrice'        => '.sgs-cart__item-price',
+		'itemQty'          => '.sgs-cart__item-stepper',
 		'itemAction'       => '.sgs-cart__item-action',
 		'subtotal'         => '.sgs-cart__panel-subtotal',
 		'freeDeliveryText' => '.sgs-cart__free-delivery-text',
@@ -129,6 +132,9 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 			'sweep' => false,
 		)
 	);
+	foreach ( sgs_cart_qty_stepper_css( $attributes, $p ) as $stepper_rule ) {
+		$css[] = $stepper_rule;
+	}
 	// Checkout hover and keyboard focus (touch-safe pair).
 	$hover = array_filter(
 		array(
@@ -170,6 +176,7 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 	$radii = array(
 		'itemThumbRadius'         => '.sgs-cart__item-thumb',
 		'emptyCtaRadius'          => '.sgs-cart__panel-empty-cta',
+		'itemQtyRadius'           => '.sgs-cart__item-stepper',
 		'checkoutRadius'          => '.sgs-cart__panel-checkout,' . $p . ' .sgs-cart__panel-view',
 		'freeDeliveryTrackRadius' => '.sgs-cart__free-delivery-track',
 	);

@@ -12,6 +12,8 @@ import buildCartColourRows from './colourPanelRows';
 import buildPanelColourRows from './panelColourRows';
 import PanelContentControls from './PanelContentControls';
 import PanelDesignControls from './PanelDesignControls';
+import PanelItemRowControls from './PanelItemRowControls';
+import PanelItemRowDesign from './PanelItemRowDesign';
 import PanelPreview from './PanelPreview';
 import { triggerStyles } from './panel-preview-style';
 
@@ -172,6 +174,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					hasPanel={ hasPanel }
 				/>
 
+				<PanelItemRowControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					hasPanel={ hasPanel }
+				/>
+
 				{ hasPanel && (
 					<RowWrapPanel
 						rows={ [
@@ -229,8 +237,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					hasPanel={ hasPanel }
 					hasDrawer={ hasDrawer }
 				/>
-					/>
-				) }
+				<PanelItemRowDesign
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					hasPanel={ hasPanel }
+				/>
 
 				<PillBorderControl
 					isPill={ anyPill }

@@ -59,6 +59,7 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		removeStyle: itemsEl.dataset.removeStyle || 'icon',
 		removeLabel: itemsEl.dataset.removeLabel || '',
 		showQty: '0' !== itemsEl.dataset.showQty,
+		qtyStyle: 'stepper' === itemsEl.dataset.qtyStyle ? 'stepper' : 'input',
 		showSave: '0' !== itemsEl.dataset.showSave,
 		// Opt-in, so an absent attribute means off — unlike the three above,
 		// whose absence means on.
@@ -187,19 +188,54 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	 */
 	function setBusy( busy ) {
 		itemsEl.querySelectorAll( 'input, button' ).forEach( ( el ) => {
-			el.disabled = busy;
+			// A stepper button already off at the line's limit stays off when the panel goes idle again.
+			el.disabled = busy || el.hasAttribute( 'data-at-limit' );
 		} );
 	}
 
-	// Inline qty-edit — fires on `change` (blur/Enter), no redirect.
-	itemsEl.addEventListener( 'change', async ( event ) => {
-		const input = event.target.closest( 'input.sgs-cart__item-qty-input' );
-		if ( ! input ) {
+	/**
+	 * Name the control that has focus, so it can be found again after the rows are redrawn.
+	 *
+	 * @return {{key: string, role: string}|null} The cart line and which of its stepper controls, or null.
+	 */
+	function focusedQtyControl() {
+		const el = document.activeElement;
+		if ( ! el || ! itemsEl.contains( el ) ) {
+			return null;
+		}
+		const role = el.matches( '.sgs-cart__item-qty-step--minus' )
+			? 'minus'
+			: el.matches( '.sgs-cart__item-qty-step--plus' )
+			? 'plus'
+			: el.matches( '.sgs-cart__item-qty-input' )
+			? 'input'
+			: '';
+		return role && el.dataset.key ? { key: el.dataset.key, role } : null;
+	}
+
+	/**
+	 * Put focus back on a stepper control after a redraw; a button that has just reached its limit hands focus to the number.
+	 *
+	 * @param {{key: string, role: string}|null} was What had focus before the redraw.
+	 */
+	function restoreQtyFocus( was ) {
+		if ( ! was ) {
 			return;
 		}
-		const key = input.dataset.key;
-		const quantity = Math.max( 0, Number.parseInt( input.value, 10 ) || 0 );
+		const row = [ ...itemsEl.querySelectorAll( '.sgs-cart__item' ) ].find( ( el ) => el.dataset.key === was.key );
+		const target = row?.querySelector( `.sgs-cart__item-qty-${ 'input' === was.role ? 'input' : `step--${ was.role }` }` );
+		const usable = target && ! target.disabled ? target : row?.querySelector( '.sgs-cart__item-qty-input' );
+		usable?.focus();
+	}
 
+	/**
+	 * Set one line's quantity (0 removes it), redraw, announce, and keep keyboard focus on the stepper control in use.
+	 *
+	 * @param {string} key      The cart item key.
+	 * @param {number} quantity The new quantity.
+	 */
+	async function setQuantity( key, quantity ) {
+		const was = focusedQtyControl();
 		setBusy( true );
 		try {
 			const cart =
@@ -207,6 +243,7 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 					? await removeCartItem( key )
 					: await updateCartItem( key, quantity );
 			render( cart );
+			restoreQtyFocus( was );
 			announce(
 				quantity === 0
 					? 'Item removed from your cart.'
@@ -215,7 +252,28 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		} catch {
 			announce( 'Could not update your cart. Please try again.' );
 			setBusy( false );
+			restoreQtyFocus( was );
 		}
+	}
+
+	// Inline qty-edit — fires on `change` (blur/Enter), no redirect.
+	itemsEl.addEventListener( 'change', ( event ) => {
+		const input = event.target.closest( 'input.sgs-cart__item-qty-input' );
+		if ( ! input ) {
+			return;
+		}
+		setQuantity( input.dataset.key, Math.max( 0, Number.parseInt( input.value, 10 ) || 0 ) );
+	} );
+
+	// The stepper's minus and plus buttons: one step from the number shown, through the same update path.
+	itemsEl.addEventListener( 'click', ( event ) => {
+		const button = event.target.closest( 'button.sgs-cart__item-qty-step' );
+		if ( ! button || button.disabled ) {
+			return;
+		}
+		const input = button.closest( '.sgs-cart__item-stepper' )?.querySelector( 'input.sgs-cart__item-qty-input' );
+		const next = ( Number.parseInt( input?.value, 10 ) || 0 ) + ( Number.parseInt( button.dataset.step, 10 ) || 0 );
+		setQuantity( button.dataset.key, Math.max( 0, next ) );
 	} );
 
 	// Remove — no redirect.
