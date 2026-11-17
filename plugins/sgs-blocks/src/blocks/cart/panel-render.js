@@ -13,6 +13,7 @@
 import {
 	fetchCart,
 	addCartItem,
+	addViaProxy,
 	updateCartItem,
 	removeCartItem,
 	formatMoney,
@@ -317,7 +318,14 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		}
 		button.disabled = true;
 		try {
-			const cart = await addCartItem( id, 1, gift.headers );
+			let cart;
+			if ( button.dataset.addBody ) {
+				// A variation or picks: the buy box's own add route, then read the cart it changed.
+				await addViaProxy( button.dataset.restUrl, button.dataset.nonce, JSON.parse( button.dataset.addBody ) );
+				cart = await fetchCart( gift.headers );
+			} else {
+				cart = await addCartItem( id, 1, gift.headers );
+			}
 			render( cart );
 			focusFirstLine();
 			announce( 'Added to your basket.' );

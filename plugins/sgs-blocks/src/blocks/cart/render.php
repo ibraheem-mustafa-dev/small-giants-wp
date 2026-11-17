@@ -538,6 +538,8 @@ if ( $has_panel ) {
 		$empty_wc_product = wc_get_product( $empty_pid );
 		if ( $empty_wc_product && 'publish' === get_post_status( $empty_pid ) ) {
 			$empty_product               = sgs_cart_empty_product( $empty_wc_product );
+			$empty_product['rest_url']   = esc_url_raw( rest_url( 'sgs/v1/cart/add-item' ) );
+			$empty_product['nonce']      = wp_create_nonce( 'wp_rest' );
 			$empty_product['price_text'] = html_entity_decode( wp_strip_all_tags( wc_price( (float) $empty_product['price'] ) ), ENT_QUOTES, 'UTF-8' );
 		}
 	}

@@ -200,58 +200,154 @@ final class CartDrawerExtrasTest extends TestCase {
 	}
 
 	/**
-	 * What sgs_cart_empty_product() makes of a product with these traits.
+	 * What sgs_cart_empty_product() makes of a product, with the buy box's sources replaced by these fixtures.
 	 *
-	 * @param array<string, mixed> $traits Product traits (type, purchasable, in_stock, price, defaults, variation_attributes) and the matching variation (id, purchasable, in_stock, price) or null.
+	 * @param array<string, mixed> $traits   Product traits: id, type, purchasable, in_stock, price.
+	 * @param array<string, mixed> $fixtures `manifest` (the configurator manifest or null), `groups` (the option groups), `pack` (default pack size or null), `variation` (the default variation's id, purchasable, in_stock, price).
 	 * @return array<string, mixed>
 	 */
-	private function product( array $traits, ?array $variation ): array {
-		$code = 'class FakeProduct { public function __construct( private array $t ) {}'
+	private function product( array $traits, array $fixtures = array() ): array {
+		$root = dirname( __DIR__, 2 );
+		$code = ' require ' . var_export( $root . '/includes/flow-fields/functions.php', true ) . '; require ' . var_export( $root . '/includes/configurator-picks/functions.php', true ) . ';'
+			. ' class FakeProduct { public function __construct( private array $t ) {}'
 			. ' public function get_id() { return $this->t["id"]; } public function get_type() { return $this->t["type"]; }'
 			. ' public function is_purchasable() { return $this->t["purchasable"]; } public function is_in_stock() { return $this->t["in_stock"]; }'
-			. ' public function get_price() { return $this->t["price"]; } public function get_permalink() { return "/product/" . $this->t["id"] . "/"; }'
-			. ' public function get_default_attributes() { return $this->t["defaults"] ?? array(); }'
-			. ' public function get_variation_attributes() { return $this->t["variation_attributes"] ?? array(); } }'
-			. ' $traits = ' . var_export( $traits, true ) . '; $variation = ' . var_export( $variation, true ) . ';'
-			. ' $find = static function ( $product, array $attributes ) use ( $variation ) { $GLOBALS["asked"] = $attributes; return $variation ? $variation["id"] : 0; };'
-			. ' $get = static function ( int $id ) use ( $variation ) { return $variation && $id === $variation["id"] ? new FakeProduct( array( "id" => $id, "type" => "variation", "purchasable" => $variation["purchasable"], "in_stock" => $variation["in_stock"], "price" => $variation["price"] ) ) : null; };'
-			. ' $out = sgs_cart_empty_product( new FakeProduct( $traits ), $find, $get ); $out["asked"] = $GLOBALS["asked"] ?? null; echo "#JSON#" . json_encode( $out );';
+			. ' public function get_price() { return $this->t["price"]; } public function get_permalink() { return "/product/" . $this->t["id"] . "/"; } }'
+			. ' $traits = ' . var_export( $traits, true ) . '; $fx = ' . var_export( $fixtures, true ) . ';'
+			. ' $deps = array( "manifest" => static fn( $id ) => $fx["manifest"] ?? null, "groups" => static fn( $id ) => $fx["groups"] ?? array(), "pack" => static fn( $id, $v, $a, $g ) => $fx["pack"] ?? null,'
+			. ' "get_product" => static function ( $id ) use ( $fx ) { $v = $fx["variation"] ?? null; return $v && $id === $v["id"] ? new FakeProduct( array( "id" => $id, "type" => "variation", "purchasable" => $v["purchasable"], "in_stock" => $v["in_stock"], "price" => $v["price"] ) ) : null; } );'
+			. ' echo "#JSON#" . json_encode( sgs_cart_empty_product( new FakeProduct( $traits ), $deps ) );';
 		return $this->run_php( $code );
 	}
 
-	public function test_a_simple_purchasable_in_stock_product_adds_by_its_own_id(): void {
-		$p = $this->product( array( 'id' => 12, 'type' => 'simple', 'purchasable' => true, 'in_stock' => true, 'price' => '5.00' ), null );
+	private const SIMPLE = array( 'id' => 12, 'type' => 'simple', 'purchasable' => true, 'in_stock' => true, 'price' => '5.00' );
+
+	private const VARIABLE = array( 'id' => 20, 'type' => 'variable', 'purchasable' => true, 'in_stock' => true, 'price' => '4.00' );
+
+	/**
+	 * A manifest whose default combination is pack-of-3 and a buyable variation 21 for it.
+	 *
+	 * @param array<string, mixed> $over Overrides for the fixtures.
+	 * @return array<string, mixed>
+	 */
+	private function variable_fixtures( array $over = array() ): array {
+		return array_merge(
+			array(
+				'manifest'  => array(
+					'defaultKey'  => 'pa_pack:pack-of-3',
+					'defaultAxes' => array( 'pa_pack' => 'pack-of-3' ),
+					'combos'      => array( 'pa_pack:pack-of-3' => array( 'variationId' => 21, 'inStock' => true ) ),
+				),
+				'variation' => array( 'id' => 21, 'purchasable' => true, 'in_stock' => true, 'price' => '5.00' ),
+			),
+			$over
+		);
+	}
+
+	/**
+	 * A pick group (Flavour) the buy box starts with the given option.
+	 *
+	 * @param string               $start Start-with slug ('' for none).
+	 * @param array<string, mixed> $flags Flag overrides.
+	 * @return array<int, array<string, mixed>>
+	 */
+	private function flavour_groups( string $start, array $flags = array() ): array {
+		return array(
+			array(
+				'key'   => 'flavour',
+				'label' => 'Flavour',
+				'role'  => 'answer',
+				'terms' => array( array( 'id' => 1, 'slug' => 'vanilla', 'label' => 'Vanilla' ), array( 'id' => 2, 'slug' => 'mango', 'label' => 'Mango' ) ),
+				'flags' => array_merge( array( 'multi' => true, 'least' => 1, 'most' => 3, 'overflow' => 'refuse', 'startWith' => $start, 'share' => 'none' ), $flags ),
+			),
+		);
+	}
+
+	public function test_a_simple_buyable_product_adds_by_its_own_id_through_the_store_api(): void {
+		$p = $this->product( self::SIMPLE );
 		$this->assertSame( 12, $p['add_id'] );
 		$this->assertSame( '5.00', $p['price'] );
 		$this->assertSame( '/product/12/', $p['url'] );
+		$this->assertNull( $p['body'], 'no variation and no picks: the Store API path' );
 	}
 
 	public function test_a_simple_product_out_of_stock_or_not_purchasable_links_to_its_page(): void {
-		$this->assertSame( 0, $this->product( array( 'id' => 12, 'type' => 'simple', 'purchasable' => true, 'in_stock' => false, 'price' => '5' ), null )['add_id'] );
-		$this->assertSame( 0, $this->product( array( 'id' => 12, 'type' => 'simple', 'purchasable' => false, 'in_stock' => true, 'price' => '5' ), null )['add_id'] );
+		$this->assertSame( 0, $this->product( array_merge( self::SIMPLE, array( 'in_stock' => false ) ) )['add_id'] );
+		$this->assertSame( 0, $this->product( array_merge( self::SIMPLE, array( 'purchasable' => false ) ) )['add_id'] );
 	}
 
-	public function test_a_variable_product_whose_default_options_resolve_adds_that_variation(): void {
-		$p = $this->product(
-			array( 'id' => 20, 'type' => 'variable', 'purchasable' => true, 'in_stock' => true, 'price' => '4.00', 'defaults' => array( 'size' => 'small', 'pa_flavour' => 'oat' ), 'variation_attributes' => array( 'Size' => array( 'small', 'large' ), 'pa_flavour' => array( 'oat', 'fruit' ) ) ),
-			array( 'id' => 21, 'purchasable' => true, 'in_stock' => true, 'price' => '5.00' )
-		);
+	public function test_a_variable_product_adds_the_manifests_default_variation_with_its_axes_and_price(): void {
+		$p = $this->product( self::VARIABLE, $this->variable_fixtures() );
 		$this->assertSame( 21, $p['add_id'] );
-		$this->assertSame( '5.00', $p['price'], 'the price is the chosen variation\'s' );
-		$this->assertSame( array( 'attribute_size' => 'small', 'attribute_pa_flavour' => 'oat' ), $p['asked'] );
+		$this->assertSame( '5.00', $p['price'], 'the default variation price' );
+		$this->assertSame(
+			array( 'id' => 21, 'quantity' => 1, 'variation' => array( array( 'attribute' => 'pa_pack', 'value' => 'pack-of-3' ) ), 'picks' => array() ),
+			$p['body'],
+			'the body the buy box would post to the cart proxy'
+		);
 	}
 
-	public function test_a_variable_product_with_no_complete_defaults_or_no_buyable_match_links_to_its_page(): void {
-		$base = array( 'id' => 20, 'type' => 'variable', 'purchasable' => true, 'in_stock' => true, 'price' => '4.00', 'variation_attributes' => array( 'size' => array( 'small', 'large' ) ) );
-		$none = $this->product( $base + array( 'defaults' => array() ), array( 'id' => 21, 'purchasable' => true, 'in_stock' => true, 'price' => '5' ) );
-		$this->assertSame( 0, $none['add_id'] );
-		$this->assertSame( '4.00', $none['price'], 'the product\'s own price when no variation is chosen' );
-		$this->assertSame( 0, $this->product( $base + array( 'defaults' => array( 'size' => 'small' ) ), null )['add_id'] );
-		$this->assertSame( 0, $this->product( $base + array( 'defaults' => array( 'size' => 'small' ) ), array( 'id' => 21, 'purchasable' => true, 'in_stock' => false, 'price' => '5' ) )['add_id'] );
+	public function test_a_variable_product_with_no_default_combination_or_no_buyable_variation_links_to_its_page(): void {
+		$this->assertSame( 0, $this->product( self::VARIABLE, array( 'manifest' => null ) )['add_id'] );
+		$this->assertSame( 0, $this->product( self::VARIABLE, $this->variable_fixtures( array( 'variation' => array( 'id' => 21, 'purchasable' => true, 'in_stock' => false, 'price' => '5' ) ) ) )['add_id'] );
+		$sold_out = $this->variable_fixtures();
+		$sold_out['manifest']['combos']['pa_pack:pack-of-3']['inStock'] = false;
+		$this->assertSame( 0, $this->product( self::VARIABLE, $sold_out )['add_id'] );
+		$this->assertSame( '4.00', $this->product( self::VARIABLE, array( 'manifest' => null ) )['price'], 'the product own price when no variation is chosen' );
+	}
+
+	public function test_a_pick_group_with_a_start_with_option_adds_that_pick(): void {
+		$p = $this->product( self::VARIABLE, $this->variable_fixtures( array( 'groups' => $this->flavour_groups( 'vanilla' ) ) ) );
+		$this->assertSame( 21, $p['add_id'] );
+		$this->assertSame( array( 'flavour' => array( array( 'slug' => 'vanilla', 'count' => 0 ) ) ), $p['body']['picks'] );
+	}
+
+	public function test_a_pick_group_with_no_start_with_option_has_no_complete_default_and_links_to_the_page(): void {
+		$p = $this->product( self::VARIABLE, $this->variable_fixtures( array( 'groups' => $this->flavour_groups( '' ) ) ) );
+		$this->assertSame( 0, $p['add_id'] );
+		$this->assertNull( $p['body'] );
+		$bad = $this->product( self::VARIABLE, $this->variable_fixtures( array( 'groups' => $this->flavour_groups( 'gone' ) ) ) );
+		$this->assertSame( 0, $bad['add_id'], 'a start-with option the group no longer has' );
+	}
+
+	public function test_a_default_that_the_servers_own_pick_check_refuses_links_to_the_page(): void {
+		$needs_two = $this->product( self::VARIABLE, $this->variable_fixtures( array( 'groups' => $this->flavour_groups( 'vanilla', array( 'least' => 2 ) ) ) ) );
+		$this->assertSame( 0, $needs_two['add_id'], 'one starting option cannot meet a minimum of two' );
+	}
+
+	public function test_a_counted_share_group_puts_the_whole_pack_on_the_starting_option(): void {
+		$p = $this->product( self::VARIABLE, $this->variable_fixtures( array( 'groups' => $this->flavour_groups( 'mango', array( 'share' => 'counts' ) ), 'pack' => 3 ) ) );
+		$this->assertSame( 21, $p['add_id'] );
+		$this->assertSame( array( 'flavour' => array( array( 'slug' => 'mango', 'count' => 3 ) ) ), $p['body']['picks'] );
+	}
+
+	public function test_a_simple_product_with_a_pick_group_is_added_through_the_proxy_with_its_picks(): void {
+		$p = $this->product( self::SIMPLE, array( 'groups' => $this->flavour_groups( 'vanilla' ) ) );
+		$this->assertSame( 12, $p['add_id'] );
+		$this->assertSame( array( 'id' => 12, 'quantity' => 1, 'variation' => array(), 'picks' => array( 'flavour' => array( array( 'slug' => 'vanilla', 'count' => 0 ) ) ) ), $p['body'] );
 	}
 
 	public function test_any_other_product_type_links_to_its_page(): void {
-		$this->assertSame( 0, $this->product( array( 'id' => 30, 'type' => 'grouped', 'purchasable' => true, 'in_stock' => true, 'price' => '' ), null )['add_id'] );
-		$this->assertSame( 0, $this->product( array( 'id' => 31, 'type' => 'external', 'purchasable' => true, 'in_stock' => true, 'price' => '9' ), null )['add_id'] );
+		$this->assertSame( 0, $this->product( array( 'id' => 30, 'type' => 'grouped', 'purchasable' => true, 'in_stock' => true, 'price' => '' ) )['add_id'] );
+		$this->assertSame( 0, $this->product( array( 'id' => 31, 'type' => 'external', 'purchasable' => true, 'in_stock' => true, 'price' => '9' ) )['add_id'] );
+	}
+
+	public function test_a_button_for_a_product_with_a_body_carries_it_with_the_proxy_address_and_nonce(): void {
+		$body = array( 'id' => 21, 'quantity' => 1, 'variation' => array( array( 'attribute' => 'pa_pack', 'value' => 'pack-of-3' ) ), 'picks' => array() );
+		$html = $this->empty_state(
+			array(
+				'heading'      => 'Empty',
+				'shop_url'     => '/shop',
+				'link_label'   => '',
+				'product'      => array( 'id' => 20, 'add_id' => 21, 'url' => '/p/', 'price_text' => '£5.00', 'body' => $body, 'rest_url' => '/wp-json/sgs/v1/cart/add-item', 'nonce' => 'n9' ),
+				'button_label' => 'Add',
+			)
+		);
+		$this->assertStringContainsString( 'data-sgs-cart-empty-add="21"', $html );
+		$this->assertStringContainsString( 'data-rest-url="/wp-json/sgs/v1/cart/add-item"', $html );
+		$this->assertStringContainsString( 'data-nonce="n9"', $html );
+		$this->assertMatchesRegularExpression( '/data-add-body="[^"]*pa_pack[^"]*pack-of-3/', $html );
+		$plain = $this->empty_state( array( 'heading' => 'Empty', 'shop_url' => '/shop', 'link_label' => '', 'product' => array( 'id' => 12, 'add_id' => 12, 'url' => '/p/', 'price_text' => '£5', 'body' => null ), 'button_label' => 'Add' ) );
+		$this->assertStringNotContainsString( 'data-add-body', $plain );
 	}
 }

@@ -7,6 +7,7 @@
 jest.mock( '../../src/blocks/cart/store-api', () => ( {
 	fetchCart: jest.fn(),
 	addCartItem: jest.fn(),
+	addViaProxy: jest.fn(),
 	updateCartItem: jest.fn(),
 	removeCartItem: jest.fn(),
 	formatMoney: jest.fn( () => '£5.00' ),
@@ -98,5 +99,19 @@ describe( 'the drawer empty state', () => {
 		expect( document.querySelector( '[data-sgs-cart-status]' ).textContent ).toBe( 'Sold out.' );
 		expect( button.disabled ).toBe( false );
 		expect( document.activeElement ).toBe( button );
+	} );
+	test( 'a button with a body adds through the cart proxy with the nonce, then reads the cart and shows the line', async () => {
+		const body = { id: 21, quantity: 1, variation: [ { attribute: 'pa_pack', value: 'pack-of-3' } ], picks: { flavour: [ { slug: 'vanilla', count: 0 } ] } };
+		const withBody = template.replace( 'data-sgs-cart-empty-add="12"', `data-sgs-cart-empty-add="21" data-rest-url="/wp-json/sgs/v1/cart/add-item" data-nonce="n9" data-add-body='${ JSON.stringify( body ) }'` );
+		document.body.innerHTML = base( withBody );
+		api.fetchCart.mockResolvedValueOnce( { items: [], totals: {} } ).mockResolvedValueOnce( cartWithOne );
+		api.addViaProxy.mockResolvedValue( { added: true } );
+		const panel = initPanel( document.querySelector( '[data-sgs-cart-panel]' ) );
+		await panel.refresh();
+		document.querySelector( 'button[data-sgs-cart-empty-add]' ).click();
+		await settle();
+		expect( api.addViaProxy ).toHaveBeenCalledWith( '/wp-json/sgs/v1/cart/add-item', 'n9', body );
+		expect( api.addCartItem ).not.toHaveBeenCalled();
+		expect( document.querySelector( '.sgs-cart__item' ) ).not.toBeNull();
 	} );
 } );
