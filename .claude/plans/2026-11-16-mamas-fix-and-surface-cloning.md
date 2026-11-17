@@ -8,7 +8,7 @@ created: 2026-11-16
 
 ## Goal and why
 
-Mama's Munches is a working shop on `mamas-test`, matching her Claude Design draft, ready for the client and for Bean's portfolio at the MIC event on 2026-11-28. The work is Bean's issue register of 2026-11-17 (`sites/mamas-munches-redesign/build/qa/issue-register.md`, 126 items, each with an ID such as `Footer 2a`). Done is every item closed by Bean's eye on `mamas-test` beside the draft, and a test order paid with a Stripe test card from basket to order confirmation.
+Mama's Munches is a working shop on `mamas-test`, matching her Claude Design draft, ready for the client and for Bean's portfolio at the MIC event on 2026-11-28. The work is Bean's issue register of 2026-11-17 (`sites/mamas-munches-redesign/build/qa/issue-register.md`, 127 items, each with an ID such as `Footer 2a`). Done is every item closed by Bean's eye on `mamas-test` beside the draft, and a test order paid with a Stripe test card from basket to order confirmation.
 
 ## Approach
 
@@ -83,7 +83,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: `local-mamas` footer post and menus; any block the cause names; `mamas-test`
 - Done when: every Footer row in `register-findings.md` is closed by Bean on `mamas-test`
 - Depends on: none
-- Status: fixed on `local-mamas` and copied to `mamas-test` on 2026-11-17 (settings only, no code); waiting for Bean to close each item there. Open with Bean: whether the tagline band above the footer (about 15px taller than the draft, larger type) joins the list
+- Status: fixed on `local-mamas` and copied to `mamas-test` on 2026-11-17 (settings only, no code); waiting for Bean to close each item there. Footer 9 (the tagline band above the footer, taller than the draft's) was added by Bean on 2026-11-17 and is being matched to the draft
 
 ### Task 2: Nav drawer
 - Why: 8 points. Read first: the register's Nav drawer section
@@ -91,7 +91,7 @@ Start Task 1's diagnosis: brief a subagent with "How a section is worked" step 1
 - Touches: `local-mamas` drawer post and menus; `mamas-test`
 - Done when: every Nav drawer row is closed by Bean, and each drawer link opens its page at 375
 - Depends on: Task 1 (social icons)
-- Status: Nav drawer 1, 2a, 2b, 2c, 3 and 5, the menu badges and the `Zainab@` address are fixed and on `mamas-test` (deployed and pushed 2026-11-17, commit `2b89c2945`); waiting for Bean to close them. Nav drawer 4 waits for Bean's choice: (A) the picture size rule gains a second class at its emitter (`includes/media/media-values.php::sgs_media_nodes`), after a before-and-after size diff of every picture on Mama's pages and the canary, or (B) the two drawer pictures are framed by settings only
+- Status: Nav drawer 1, 2a, 2b, 2c, 3 and 5, the menu badges and the `Zainab@` address are fixed and on `mamas-test` (deployed and pushed 2026-11-17, commit `2b89c2945`); waiting for Bean to close them. Nav drawer 4: Bean chose the fix at the source (2026-11-17): the picture size rule gains a second class at its emitter (`includes/media/media-values.php::sgs_media_nodes`), kept only if a before-and-after size diff of every picture on the Mama's, Indus and Eye Care mirrors shows no unintended change; being built
 
 ### Task 3: Header
 - Why: 9 points, one of them a new behaviour (the trust bar ticker). Read first: the register's Header section; Eye Care's trust bar on `eye-care-test` (read only)

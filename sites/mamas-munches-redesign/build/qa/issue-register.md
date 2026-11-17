@@ -45,6 +45,7 @@ Bean's own words, one item per line, each given an ID (`<Section> <number>`) so 
 - **Footer 6:** This point isn't in the draft but please fix the sgs attribution link hover colour to switch to either my SGS orange or teal - whichever looks better on the pink bg colour.
 - **Footer 7:** The gallery images get a white tint on them when hovered on on the live version but the draft has no white tint effect.
 - **Footer 8:** Not sure about this but I feel like the draft's hover on the gallery images staggers the 2 effects like first it straightens out rotation and then extends the shadow and on live they both animate at the same time or maybe the difference is the speed of the animation. I'm not sure if I'm right or not because the visual difference could not exist.
+- **Footer 9:** The yellow tagline band above the footer is about 15px taller on live than on the draft, with larger type. (Found in review; Bean added it to the list on 2026-11-17.)
 
 ## Sign-in
 
