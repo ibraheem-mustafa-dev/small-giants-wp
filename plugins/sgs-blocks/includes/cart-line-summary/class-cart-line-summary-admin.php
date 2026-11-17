@@ -2,7 +2,7 @@
 /**
  * Cart line summary — "Shop wording" settings page.
  *
- * WooCommerce > Shop wording. A plain accessible form for the five wording
+ * WooCommerce > Shop wording. A plain accessible form for the wording
  * fields a client edits without code: the two lead words, the label
  * separator and the two add-to-bag toast sentences. The attribute renames and
  * size band stay as they are stored (the CLI seeder writes them); a save here
@@ -105,6 +105,16 @@ final class Cart_Line_Summary_Admin {
 							</td>
 						</tr>
 					<?php endforeach; ?>
+					<tr>
+						<th scope="row"><label for="sgs-wording-labelFormat"><?php \esc_html_e( 'Attribute labels', 'sgs-blocks' ); ?></label></th>
+						<td>
+							<select id="sgs-wording-labelFormat" name="wording[labelFormat]" aria-describedby="sgs-wording-labelFormat-help">
+								<option value="labelled" <?php \selected( $wording['labelFormat'], 'labelled' ); ?>><?php \esc_html_e( 'Show the label and the value ("Colour: Ivory")', 'sgs-blocks' ); ?></option>
+								<option value="values" <?php \selected( $wording['labelFormat'], 'values' ); ?>><?php \esc_html_e( 'Show the value only ("Ivory")', 'sgs-blocks' ); ?></option>
+							</select>
+							<p class="description" id="sgs-wording-labelFormat-help"><?php \esc_html_e( 'How the line under an item name reads in the basket drawer, the cart page, the checkout and new order emails. Orders already placed keep the wording they were placed with.', 'sgs-blocks' ); ?></p>
+						</td>
+					</tr>
 				</table>
 				<?php \submit_button( \__( 'Save shop wording', 'sgs-blocks' ) ); ?>
 			</form>
@@ -123,7 +133,7 @@ final class Cart_Line_Summary_Admin {
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitised in sgs_cart_line_summary_wording_normalise().
 		$posted = isset( $_POST['wording'] ) && \is_array( $_POST['wording'] ) ? \wp_unslash( $_POST['wording'] ) : array();
 		$merged = sgs_cart_line_summary_wording();
-		foreach ( \array_keys( self::fields() ) as $key ) {
+		foreach ( \array_merge( \array_keys( self::fields() ), array( 'labelFormat' ) ) as $key ) {
 			if ( isset( $posted[ $key ] ) && \is_scalar( $posted[ $key ] ) ) {
 				$merged[ $key ] = (string) $posted[ $key ];
 			}

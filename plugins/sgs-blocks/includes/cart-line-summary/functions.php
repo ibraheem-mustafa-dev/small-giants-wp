@@ -67,8 +67,11 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_lines' ) ) {
 	 * already reads as a sentence needs no invented label.
 	 *
 	 * `labelSeparator` (default ": ") sits between an attribute's label and its value.
+	 * `labelFormat` "values" drops every attribute's label and prints the value alone
+	 * ("Classic oat · Milk choc · Vanilla, Chocolate"); anything else, or absent, keeps
+	 * the "Label: value" shape.
 	 *
-	 * @param array{lead?:string,addons?:array<int,string>,attributes?:array<int,array{label?:string,value?:string}>,labelSeparator?:string} $parts Summary parts.
+	 * @param array{lead?:string,addons?:array<int,string>,attributes?:array<int,array{label?:string,value?:string}>,labelSeparator?:string,labelFormat?:string} $parts Summary parts.
 	 * @return array<int,string> 0, 1 or 2 non-empty lines.
 	 */
 	function sgs_cart_line_summary_lines( array $parts ): array {
@@ -76,7 +79,8 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_lines' ) ) {
 		$join = isset( $parts['labelSeparator'] ) && \is_string( $parts['labelSeparator'] ) && '' !== $parts['labelSeparator']
 			? $parts['labelSeparator']
 			: ': ';
-		$lead = isset( $parts['lead'] ) ? \trim( (string) $parts['lead'] ) : '';
+		$values_only = isset( $parts['labelFormat'] ) && 'values' === $parts['labelFormat'];
+		$lead        = isset( $parts['lead'] ) ? \trim( (string) $parts['lead'] ) : '';
 
 		$addons = array();
 		foreach ( (array) ( $parts['addons'] ?? array() ) as $addon ) {
@@ -103,7 +107,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_lines' ) ) {
 			$label                = isset( $attribute['label'] ) && \is_scalar( $attribute['label'] )
 				? \trim( (string) $attribute['label'] )
 				: '';
-			$attribute_segments[] = '' !== $label ? $label . $join . $value : $value;
+			$attribute_segments[] = ( '' !== $label && ! $values_only ) ? $label . $join . $value : $value;
 		}
 		$attribute_line = \implode( $sep, $attribute_segments );
 
@@ -382,6 +386,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_for_cart_item' 
 				'addons'         => $has_addons ? sgs_addon_short_labels( $addon_lines ) : array(),
 				'attributes'     => \array_merge( $attributes, $answers ),
 				'labelSeparator' => $wording['labelSeparator'],
+				'labelFormat'    => $wording['labelFormat'] ?? 'labelled',
 			)
 		);
 	}

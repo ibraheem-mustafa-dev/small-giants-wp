@@ -22,6 +22,7 @@ namespace SGS\Blocks {
 				'leadWithAddons'    => 'Prescription',
 				'leadWithoutAddons' => 'Frame only',
 				'labelSeparator'    => ': ',
+				'labelFormat'       => $GLOBALS['sgs_test_label_format'] ?? 'labelled',
 			);
 		}
 	}
@@ -64,6 +65,10 @@ namespace SGS\Blocks\Tests {
 	require_once dirname( __DIR__, 2 ) . '/includes/cart-line-summary/functions.php';
 
 	final class CartLineSummaryAnswersTest extends TestCase {
+
+		protected function tearDown(): void {
+			unset( $GLOBALS['sgs_test_label_format'] );
+		}
 
 		private function answers(): array {
 			return array(
@@ -131,6 +136,37 @@ namespace SGS\Blocks\Tests {
 					),
 				),
 				\SGS\Blocks\sgs_cart_line_summary_answers( $item )
+			);
+		}
+
+		public function test_values_only_drops_every_label_and_keeps_the_lead(): void {
+			$GLOBALS['sgs_test_label_format'] = 'values';
+			$item                             = array(
+				'variation'       => array( 'attribute_size' => 'M' ),
+				'sgs_flow_fields' => $this->answers(),
+			);
+			$this->assertSame(
+				array( 'Frame only · M · A, B, C · Vegan' ),
+				\SGS\Blocks\sgs_cart_line_summary_for_cart_item( $item )
+			);
+		}
+
+		public function test_values_only_on_a_line_with_add_ons_keeps_both_lines(): void {
+			$GLOBALS['sgs_test_label_format'] = 'values';
+			$item                             = array(
+				'sgs_addons'      => array( array( 'label' => 'Thin' ) ),
+				'sgs_flow_fields' => $this->answers(),
+			);
+			$this->assertSame(
+				array( 'Prescription · Thin', 'A, B, C · Vegan' ),
+				\SGS\Blocks\sgs_cart_line_summary_for_cart_item( $item )
+			);
+		}
+
+		public function test_wording_without_the_format_key_keeps_the_labels(): void {
+			$this->assertSame(
+				array( 'Frame only · Size: M' ),
+				\SGS\Blocks\sgs_cart_line_summary_for_cart_item( array( 'variation' => array( 'attribute_size' => 'M' ) ) )
 			);
 		}
 
