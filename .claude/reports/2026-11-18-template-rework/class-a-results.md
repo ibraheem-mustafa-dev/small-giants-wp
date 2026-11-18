@@ -1,0 +1,65 @@
+# Class A Custom CSS on Mama's Munches: what a setting could take over
+
+Class A is the 58 Custom CSS rules (11 groups, 6,890 characters) that the classification said an existing block setting could hold. Each group was tried on the scratch copy `local-mediatest-classa` (http://localhost:8096, a copy of `local-mamas`; nothing else was written to). A group counts as done only where the page renders the same with the setting set and the rule gone.
+
+**Result: 2,699 characters of Custom CSS removed with an identical render (72,794 to 70,095 across the site, 74 Custom CSS attributes to 70).** Five groups gave something; six gave nothing, because no setting holds the look or the setting does something else. 2,100 of the 6,890 characters (the product card button shadow) were never a setting.
+
+## Result per group
+
+| Group | Class A size | Removed | Settings set | Result | Why it was missed |
+|---|---|---|---|---|---|
+| `A.wc-coupon-field` | 6 rules, 2,020 | 1,318 chars (1 rule gone, 5 shortened) | Cart: `sgsFieldBackground`, `sgsFieldBorderWidth`, `sgsFieldBorderStyle`, `sgsFieldBorderColour`, `sgsFieldBorderRadius`, `sgsFieldMinHeight`, `sgsFieldColour`, `sgsFieldLineHeight`, `sgsFieldLabelLineHeight` (and the two unit attributes) | Identical at 375, 768, 1440, rest and focus. Kept: the toggle's `min-height`, `padding`, `margin` (no setting); the Cart input's `padding` (the setting loses, see bugs); on the Checkout the input's height, padding, line height, colour and fill, and the label's line height | A true miss on the Cart: the field settings were set on the Checkout only, and one shared rule block was pasted into both. Eight type declarations per block repeated settings that were already saved (`sgsCouponLabel*`, `sgsFieldLabel*`). On the Checkout the setting is broader: `sgsField*` paints every field at 54px and white, the coupon box is 48px and paper |
+| `A.wc-summary` | 13 rules, 1,347 | 952 chars (8 rules gone, 3 shortened) | Cart: `sgsSummaryMargin`. Checkout: `sgsBarPadding` (changed), `sgsBarMargin`, `sgsSummaryTitleTextDeepMargin`, `sgsSummaryInnerPadding`, `sgsTotalsItemPadding` | Identical. Kept: the Cart's inner card reset (fill, radius, padding, bottom border), `border-top:0` and `padding:8px 0` on the totals wrappers, `padding:0` on `.wc-block-components-totals-coupon` | Mixed. Three Cart rules match nothing (they name Checkout-only parts and were copied across). The Checkout settings exist and were not used. Seven of the named settings are registered on the Cart but have no Cart selector, so they print nothing there. The coupon padding rule stays for the gift card panel, which reuses the coupon's class |
+| `A.account-address-text` | 3 rules, 294 | 182 chars (1 rule gone, 2 shortened) | `addressTextFontSize`, `addressTextLineHeight`, `addressEditLinkFontSize`, `addressEditLinkFontWeight` (and three unit attributes) | Identical, including the Edit link at rest, focus and hover and the open editor. Kept: `order`, `flex`, the link's `padding` (no setting) | A true miss, caused by the database: these attributes have no `css_property` or `css_element` there, so the lookup by property never returns them |
+| `A.media-rest-rotate` | 4 rules, 136 | 136 chars (4 rules and 4 whole Custom CSS attributes gone) | `sgsMotion` rest rotation -8 on four `sgs/media` blocks | Same box and pixel-identical at rest and on hover, with reduced motion on and off. The computed style names the tilt differently: `rotate: -8deg` where the rule wrote `transform: rotate(-8deg)` | A true miss: the setting lives in the Motion panel (`motion_fields`), not in `block_attributes`, so a lookup for `transform` on `sgs/media` finds nothing. The post's own note says "the media block has no rotation setting" |
+| `A.container-position-pin` | 5 rules, 143 | 111 chars (4 rules gone) | none | The four `position: relative` rules: identical with nothing set, because `sgs/container` is already `position: relative`. The sticky gallery rule stays | No setting was needed for four of the five. For the sticky gallery the pin setting differs: it sits at the header height plus a gap (117px at 1440, 97px at 768) where the rule fixes 108px, and adds `z-index: 2`. The rule's 108px puts the gallery 9px behind the 117px header on desktop, so the setting is the better behaviour, not the same one |
+| `A.product-card-cta-shadow` | 20 rules, 2,100 | 0 | none | No setting after all | The classification was wrong and the helper was right. `showCtaShadow` only turns a shadow off (`plugins/sgs-blocks/src/blocks/product-card/render.php` prints `box-shadow:none` when it is false); with it on, nothing paints a shadow on `.sgs-product-card__cta--primary`. Removing the rule gives `box-shadow: none` |
+| `A.cart-drawer-empty` | 2 rules, 234 | 0 | none | No setting after all | The classification was wrong: `emptyMessage*` and `emptyCta*` paint the heading and the button; the rules style the body line and the plain link. Removing them moves the text to 15.2px cocoa and the link to weight 400 with no padding |
+| `A.wc-checkbox-label` | 1 rule, 201 | 0 | none | Differs | `sgsCheckboxLabel*` paints all four tick-box labels on the checkout (today 16px, 15px, 15px and 13px); the rule sets two of them |
+| `A.buybox-add-to-cart` | 1 rule, 162 | 0 | none | No setting for this part | `addToCart*` paints the main button and the bar's button alike (64px, 18px, 4px shadow); the bar's compact button (52px, 16px, 3px shadow) has no setting of its own |
+| `A.account-fields-bg-gap` | 2 rules, 140 | 0 | none | Differs | `accountFormGap` is one gap for the form and for each card inside it (saved 14px; the rule wants 18px between the cards). `fieldBackground` paints every account field (saved paper; the rule wants white on this form only) |
+| `A.account-menu-indicator` | 1 rule, 113 | 0 | none | Differs | `menuActiveIndicatorStyle` has no "none". Its `line` value removes the arrow but also removes the yellow fill of the current item below 1024px and adds an inset line under keyboard focus |
+
+Totals on the scratch copy: 72,794 characters before (the same figure `local-mamas` holds today), 70,095 after. Per post: 101 5,979 to 4,680; 102 8,849 to 7,844; 103 19,154 to 18,972; 216 1,866 to 1,832; 217 1,589 to 1,555; 218 904 to 870; 219 5,541 to 5,430.
+
+## How "identical" was proved
+
+`checks/capture.mjs` records, for every element on the page, its box and 91 computed properties (plus `::before` and `::after`), takes a full-page screenshot, and for named parts records the same under forced keyboard focus and a real mouse hover with a crop. `checks/compare.py` fails on a box that moved more than 1px, on any computed value that changed, on a page height change and on pixel differences above what two captures of the unchanged build show (`checks/noise.json`).
+
+- 24 states at 375, 768 and 1440 (72 captures): basket filled, basket with the coupon open, basket empty, checkout, checkout with the coupon open, account signed out, dashboard, orders, one order, addresses, the address editor open, account details, home, home with the empty basket drawer open, product, product scrolled (the basket bar showing at 375), gift card product, gift card scrolled, gifts, shop, product search with results, product search empty, search empty, order received.
+- Each state asserts it was reached (the `wordpress_logged_in` cookie after login, a basket line, the open `dialog`, the coupon input) and a failed action fails the run.
+- Two captures of the unchanged build differ in no element; only screenshots of home, the drawer, the gift card page, shop and product search differ by pixels (pictures and time-driven content).
+- Final comparison (`checks/final-compare.txt`, `checks/b2-report.md`): 57 of 72 captures identical. The 15 others: nine are the three empty-state pages where the logo's tilt moved from `transform` to `rotate` (0 pixels differ in the logo crops); six are home, the drawer, shop and product search, pages the patches do not touch, with no element difference and pixel differences only.
+- The rejected groups' measured differences are in `checks/b1-report.md` (the first batch, which tried all ten).
+
+Things the check does not cover: template 218 (the attribute archive) has no public URL on this site (attribute archives are off), so its logo change is the same block change as 216 and 217 but was not rendered; Stripe is blocked in the captures (its frames resize the wallet row at their own pace); the trust bar's rotating badges are masked.
+
+## Settings that exist but do not work, or lose
+
+1. **`sgsFieldPadding` loses on the Cart.** Set to 0 and 14px on the coupon field, the input still renders 24px top and 8.5px left: WooCommerce's active-field rule wins. The Checkout has a second setting for this (`sgsFieldInputPadding`, `selectors.json::rows.field_input`, scope repeated three times), but that row has no `cart` selector.
+2. **Settings registered on the Cart that print nothing there.** `sgsBar*`, `sgsSummaryTitleBoxMargin`, `sgsSummaryTitleFlexMargin`, `sgsSummaryTitleTextMargin`, `sgsSummaryInnerPadding`, `sgsTotalsItemPadding`, `sgsTotalsWrapperPadding`, `sgsSummaryRowsPadding`, `sgsCheckboxLabel*`, `sgsFieldInputHeight` and `sgsFieldInputPadding` are attributes of `woocommerce/cart`, and their rows in `plugins/sgs-blocks/includes/woocommerce/commerce-look/selectors.json` have no `cart` key. A client (or a helper) can set them on the Cart and see nothing.
+3. **`sgsSummaryWrapsButton` leaves a card inside the card.** With it on, the summary card is painted on the side column, but `.wp-block-woocommerce-cart-order-summary-block` keeps its own 10px padding, 20px radius, paper fill and 16px bottom margin; Custom CSS removes them.
+4. **`showCtaShadow` (product card) shows nothing when on.** The site's button preset has a shadow (`--wp--custom--button-presets--primary--shadow`: 4px 4px 0, hover 7px 7px 0) and the card's button never reads it, so 20 rules restate it by hand. Reading the two tokens on the card button would remove 2,100 characters here and make the switch mean what its label says.
+5. **The gift card panel is outside the coupon settings.** `.sgs-gift-card-panel` reuses the coupon's classes, but `sgsCouponPadding` and `sgsCouponControlHeight` are scoped to the coupon form block, so without Custom CSS the panel gets 16px padding and its input 54px.
+6. **`sgsBarPadding` on the Checkout was saved at 18px for tablet and phone and Custom CSS set it back to 0.** The patch saves the 0 the page shows.
+7. **`sgsSummaryTitleTextMargin` also moves the phone "Order summary" step title** (its selector includes `.checkout-order-summary-block-fill-wrapper .wc-block-components-title`): setting it to 0 dropped that title's 16px bottom margin. `sgsSummaryTitleTextDeepMargin` is the one that matches the rule.
+8. **The database hides settings from the lookup.** 478 of `sgs/account`'s 944 attributes have no `css_property`, the address type settings among them; Motion rest fields are not in `block_attributes` at all.
+
+## Replaying the change
+
+All changes are data: `changes.json` (written by `make-changes.py`), built into `patches/post-<id>.json` by `build-patches.py`, with each block's full new Custom CSS in `patches/new-css/`.
+
+```
+python E:\sgs-tmp\template-rework\class-a\apply.py --site local-mamas --dry-run
+python E:\sgs-tmp\template-rework\class-a\apply.py --site local-mamas
+```
+
+`apply.py` refuses a block whose Custom CSS on the site is not byte-for-byte the string the patch was built from (a `set` of `sgsCustomCss` replaces the whole string), and prints the Custom CSS attribute count and length per post before and after. The dry run against `local-mamas` passed that check today and wrote nothing. Replay proof on the scratch copy: post 101 was restored from `patch-block-attrs.py`'s own backup (md5 `f400192c…`, the original), its patch replayed, and the content came back to md5 `e27786df…`, the content the captures were taken from.
+
+Not done: the `sgsCustomCssNote` beside each shortened rule block still describes the removed declarations.
+
+## The detector
+
+`detector/check-custom-css-has-setting.py` (write-up and blind spots: `detector/detector-vs-class-a.md`). On Mama's it exits 1 with 111 confirmed and 66 likely declarations (49 and 36 rules) before the change, 71 and 57 after.
+
+Read against the rendered results above, a finding is safe to act on only when the setting is unset and the detector calls the two selectors the same part. "Setting broader" findings were right on the Cart's coupon field (the only text field there) and wrong for the checkbox labels, the account fields and the bar's button; a "different" saved value means the setting is in use for something else. The detector missed the address text settings (it has no rendered page to see that two class names are one element) and rated the product card's switch as likely. Its exit code is a prompt to check, and the render comparison is what decides.

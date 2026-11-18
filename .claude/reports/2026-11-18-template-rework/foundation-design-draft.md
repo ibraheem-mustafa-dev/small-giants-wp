@@ -1,6 +1,6 @@
 # DRAFT for review: foundation-first cloning and a block map in the handoff (2026-11-18)
 
-Status: a draft put to a review council at Bean's request. Not approved; nothing is built. Bean's comment on its first telling: "there are some clear gaps and basic reading you should've done before this that you didn't." It was first proposed from the morning's evidence (`inventory.md`, `by-missing-setting.md`, `clone-audit.md`, `checks.md` beside this file) without a full reading of the handoff folder, Spec 48 or Spec 48A. The section "What the handoff already carries" was added after a first look and is not a full reading. The council's job is to say what this draft ignores, duplicates or gets wrong against those sources, and what the better design is.
+Status: reviewed by a council on 2026-11-18 and NOT to be built as written. The verdict, the verified findings and the plan that replaces this draft are in `council-report.md` beside this file. Kept as the record of what was reviewed. Bean's comment on its first telling: "there are some clear gaps and basic reading you should've done before this that you didn't." It was first proposed from the morning's evidence (`inventory.md`, `by-missing-setting.md`, `clone-audit.md`, `checks.md` beside this file) without a full reading of the handoff folder, Spec 48 or Spec 48A. The section "What the handoff already carries" was added after a first look and is not a full reading. The council's job is to say what this draft ignores, duplicates or gets wrong against those sources, and what the better design is.
 
 ## The goal
 
