@@ -66,6 +66,10 @@ Bean's rule (2026-11-17): simple fixes are made as you go; everything else is pr
 - Every tick box is the browser's own box at 22px in the accent colour with a 10px gap to its label, from one shared stylesheet (`theme/sgs-theme/assets/css/choice-controls.css`, custom properties `--sgs-checkbox-size`, `--sgs-checkbox-gap`, `--sgs-checkbox-accent`). Never restyle a tick box in a page's Custom CSS.
 - Light grey text is banned site-wide (Bean, twice). List the computed text colours of any surface you touch; WooCommerce also greys text with `opacity` (its notice links are 70%), which a colour check alone misses.
 
+- The footer carries the gap above it (its first strip's top padding, 112 / 80 / 64px) and that strip has no fill of its own, so a card's offset shadow at the bottom of a page shows over it. Never give that strip a background, and never add bottom padding to a page's last band to clear a shadow.
+- The Saved items page (post 105) is a draft on purpose: no visitor can save a product on this site (Bean, 2026-11-18). Do not publish it or link to it.
+- A change you ask for in plugin code may not alter another client's site: say so in any code brief (a new option value or an off-by-default setting, never a redefined value or default).
+
 ## Hard limits
 
 - Back up before your first write: as root, `wp --allow-root db export /var/www/local-mamas-before-<section>-fixes-<date>.sql`; confirm it is not empty. Keep a copy of each post's content before you change it.
