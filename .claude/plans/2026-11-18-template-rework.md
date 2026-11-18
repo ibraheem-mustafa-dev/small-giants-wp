@@ -6,7 +6,7 @@ created: 2026-11-18
 
 # Template rework: shop surfaces the cloning route fills without hand-tuning
 
-Status: waiting for Bean's design gate (the six decisions below). Nothing is built.
+Status (2026-11-18): Bean ruled on decisions 1 and 2 and corrected the timetable; decision 4 is open; the class A swap (Task 5's first step) is running on a scratch copy. Deadline, in Bean's words: this work, two more whole sites designed, built and cloned, and the event material, all before 2026-11-28. So the order is by what removes the most hand work from the next clone, and nothing waits for the event to pass.
 
 ## Goal and why
 
@@ -30,9 +30,9 @@ Rejected, with the reason: blanking the theme's files behind a freeze of each si
 
 ## Decisions at the design gate (Bean)
 
-1. Templates: the theme's files stay and the route builds each site's blank copy (recommended), or the files are blanked too, behind a freeze of every existing site.
-2. Settings: the route writes what exists, writes the rest as its own Custom CSS and promotes a look to a setting on two-draft evidence (recommended), or every ranked setting is built now.
-3. Until 2026-11-29, this plan's plugin and theme changes wait on `feature/template-rework` and only tools, route code and docs reach `main` (recommended; an exception to commit-to-main, because every Mama's fix deploys `main` whole).
+1. Templates. Ruled (Bean, 2026-11-18): the theme's files stay and the route builds each site's blank copy; "each site starts from a blank slate".
+2. Settings. Ruled (Bean, 2026-11-18), his own third way: first fix the mechanism that missed a setting that exists, set the setting and remove the Custom CSS; then review every remaining case and convert whatever would plausibly be used a second time, without waiting for it to appear on a second draft; leave as Custom CSS only a true one-off, or a look that needs a block or system rebuilt where the pay-off is not worth it.
+3. Withdrawn by its author on Bean's timetable: nothing is parked on a branch. Each batch goes to `main` after a before-and-after comparison on a scratch copy of the Mama's mirror shows no unwanted difference (the prototype in `E:\sgs-tmp\template-rework\checks\` until Task 1 replaces it); `main` still does not deploy to `indus-test` or `eye-care-test` before Task 5.
 4. The tick box look: opt-in per site through its snapshot, with its four faults fixed (recommended), or framework-wide once fixed, with Bean accepting the size change on Indus and Eye Care by eye.
 5. A read-only local copy of `eye-care-test` for the render check (recommended; it brings that site's customer names and emails onto this PC, mail stays blocked).
 6. Eye Care's draft as the second shop for the proof, cloned onto a lab copy only, never `eye-care-test` (recommended).
@@ -94,11 +94,11 @@ Bean rules on the six decisions. Then `git worktree add --detach E:\sgs-tmp\wt-r
 - Depends on: the route session's lab safety; decision 6
 - Status: not started
 
-## Wave 1: plugin and theme, on the branch until 2026-11-29
+## Wave 1: plugin and theme, in batches to `main`
 
 ### Task 5: The first batch of fixes
 - Why: Bean's list of 2026-11-18 and Task 2's backlog. Read first: `checks.md`, `backlog.md`, Spec 32 FR-32-31, Spec 02 FR-2-26
-- Changes: `theme/sgs-theme/assets/css/choice-controls.css` per decision 4, with the sign-in label no longer an inline row, the ticked colour never under 3:1 on its ground, the 22px minimum height yielding to `sgs_shop_filter_box_size`, and the theme mod `sgs_shop_filter_box_border` restored; `theme/sgs-theme/assets/css/woocommerce.css` hides WooCommerce's drawn tick when ticked; `sgs/account` `orderStatusLabels` reaches WooCommerce's own orders table; the backlog's "fix" rows; then FR-2-26's two faults (tests in `plugins/sgs-blocks/scripts/tests/test-wishlist-cards.mjs` fail first; correct the path FR-2-26 cites)
+- Changes: first, the class A swap (the 58 rules whose setting already existed: set the setting, delete the rule, prove the page unchanged; in progress on the scratch copy `local-mediatest-classa`, results and the replayable patches in `E:\sgs-tmp\template-rework\class-a\`), with a detector `check-custom-css-has-setting.py` that fails on any Custom CSS declaration a setting already holds, run before every mirror push and by the route's residual writer; then `theme/sgs-theme/assets/css/choice-controls.css` per decision 4, with the sign-in label no longer an inline row, the ticked colour never under 3:1 on its ground, the 22px minimum height yielding to `sgs_shop_filter_box_size`, and the theme mod `sgs_shop_filter_box_border` restored; `theme/sgs-theme/assets/css/woocommerce.css` hides WooCommerce's drawn tick when ticked; `sgs/account` `orderStatusLabels` reaches WooCommerce's own orders table; the backlog's "fix" rows; then FR-2-26's two faults (tests in `plugins/sgs-blocks/scripts/tests/test-wishlist-cards.mjs` fail first; correct the path FR-2-26 cites)
 - Touches: plugin, theme, Spec 02, Spec 32
 - Done when: the render check passes on the Indus, Eye Care and Mama's copies with only accepted entries, and each fix's test fails before it and passes after
 - Depends on: 2
@@ -120,12 +120,12 @@ Bean rules on the six decisions. Then `git worktree add --detach E:\sgs-tmp\wt-r
 - Depends on: 6
 - Status: not started
 
-### Task 8: Settings promoted on two-draft evidence
-- Why: FR-48-60. Read first: Task 4's report for both drafts, `by-missing-setting.md`
-- Changes: rows and columns for the parts both drafts needed and no setting held; site-wide parts (notice, field, primary and secondary button) as snapshot tokens where one look serves every block; the class D and F rules of `by-missing-setting.md` each as a fix or an off-by-default option
+### Task 8: A setting for every look that would be used a second time
+- Why: Bean's ruling on decision 2. Read first: `.claude/reports/2026-11-18-template-rework/by-missing-setting.md` and the verdict per group Bean approved (`setting-verdicts.md` beside it), Task 4's report where it exists
+- Changes: rows and columns for every group marked "convert"; site-wide parts (notice, field, primary and secondary button) as snapshot tokens where one look serves every block; the class D and F rules of `by-missing-setting.md` each as a fix or an off-by-default option
 - Touches: plugin, theme, batched reseeds, Spec 27, Spec 32
-- Done when: Task 4's report on both drafts lists no part needed by both, and the render check passes on every site copy
-- Depends on: 4, 7
+- Done when: on a scratch copy of `local-mamas` every rule of a "convert" group is replaced by its setting and deleted with no difference in the before-and-after comparison, and what remains is only the groups marked "one-off" or "not worth a rebuild"
+- Depends on: 7; Bean's approval of the verdicts
 - Status: not started
 
 ## Wave 2: the route builds the canvases
