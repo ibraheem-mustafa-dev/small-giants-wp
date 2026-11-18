@@ -69,21 +69,7 @@ $greeting          = str_replace( '{name}', esc_html( $name ), esc_html( $greeti
 			</p>
 			<p class="sgs-account__order-total"><?php echo wp_kses_post( $order->get_formatted_order_total() ); ?></p>
 
-			<?php
-			$items = array_slice( $order->get_items(), 0, 4 );
-			if ( $items ) :
-				?>
-				<div class="sgs-account__order-thumbs">
-					<?php foreach ( $items as $item ) :
-						$product = $item->get_product();
-						if ( ! $product ) {
-							continue;
-						}
-						echo wp_kses_post( $product->get_image( 'thumbnail', array( 'alt' => '' ) ) );
-					endforeach;
-					?>
-				</div>
-			<?php endif; ?>
+			<?php echo sgs_account_order_thumbs_html( $order ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>
 
 			<p class="sgs-account__chip"><?php echo esc_html( wc_get_order_status_name( $status ) ); ?></p>
 

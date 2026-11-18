@@ -1366,3 +1366,16 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	width: var(--sgs-btn-icon-shape-size, calc(var(--sgs-btn-icon-size, 1em) * 1.8));
 	height: var(--sgs-btn-icon-shape-size, calc(var(--sgs-btn-icon-size, 1em) * 1.8));
 }
+
+/* Orders-list rows: the optional thumbnail strip above the items line, and the text label that replaces the chevron. */
+.sgs-account__order-summary--thumbs {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.sgs-account__order-view {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4em;
+}

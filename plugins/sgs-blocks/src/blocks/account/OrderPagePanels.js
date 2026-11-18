@@ -3,6 +3,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
+import { FlexWrapControl, IconPicker } from '../../components';
 import { Choice, TextField, Toggle } from './extraControls';
 
 /**
@@ -20,6 +21,27 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 			<Toggle { ...p } name="ordersRowList" label={ __( 'Orders as link rows', 'sgs-blocks' ) } help={ __( 'Each order is one row that links to the order: number and date, items, status, total and a chevron. Replaces WooCommerce’s table; its pagination stays.', 'sgs-blocks' ) } />
 			<TextField { ...p } name="ordersNumberPrefix" label={ __( 'Order number prefix', 'sgs-blocks' ) } help={ __( 'Printed before the order number in the list and on the order page.', 'sgs-blocks' ) } />
 			<TextField { ...p } name="ordersDateFormat" label={ __( 'Date format', 'sgs-blocks' ) } help={ __( 'A PHP date format such as j F Y. Empty = the site’s format.', 'sgs-blocks' ) } />
+			{ attributes.ordersRowList && (
+				<>
+					<Toggle { ...p } name="ordersRowThumbs" label={ __( 'Product thumbnails in each row', 'sgs-blocks' ) } help={ __( 'The same thumbnails the latest-order card shows, above the items line.', 'sgs-blocks' ) } />
+					{ attributes.ordersRowThumbs && (
+						<FlexWrapControl
+							label={ __( 'Wrap row thumbnails', 'sgs-blocks' ) }
+							value={ attributes.ordersRowThumbsFlexWrap }
+							onChange={ ( value ) => setAttributes( { ordersRowThumbsFlexWrap: value } ) }
+						/>
+					) }
+					<TextField { ...p } name="ordersRowViewLabel" label={ __( 'Row end label', 'sgs-blocks' ) } help={ __( 'Text at the end of each row in place of the chevron, for example View order. Empty keeps the chevron.', 'sgs-blocks' ) } />
+					{ attributes.ordersRowViewLabel && (
+						<IconPicker
+							label={ __( 'Row end label icon', 'sgs-blocks' ) }
+							sources={ [ 'lucide' ] }
+							value={ attributes.ordersRowViewIcon ? { source: 'lucide', name: attributes.ordersRowViewIcon } : null }
+							onChange={ ( val ) => setAttributes( { ordersRowViewIcon: val ? val.name : '' } ) }
+						/>
+					) }
+				</>
+			) }
 			<Toggle { ...p } name="ordersTrimZeros" label={ __( 'Whole pounds without pence', 'sgs-blocks' ) } help={ __( 'Prints £248 instead of £248.00 in the list and on the order page.', 'sgs-blocks' ) } />
 		</PanelBody>
 		<PanelBody title={ __( 'Order page', 'sgs-blocks' ) } initialOpen={ false }>

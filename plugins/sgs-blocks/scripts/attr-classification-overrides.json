@@ -8377,6 +8377,10 @@
 		{"slug": "sgs/account", "attr": "registerButtonIconGap", "fields": {"role": "layout"}, "_reason": "2026-11-18: the icon inside the create-account button; per-device gap between label and icon."},
 		{"slug": "sgs/account", "attr": "registerButtonIconColour", "fields": {"role": "color"}, "_reason": "2026-11-18: the icon inside the create-account button; icon colour, printed through sgs_text_states_css."},
 		{"slug": "sgs/account", "attr": "registerButtonIconBackground", "fields": {"role": "color"}, "_reason": "2026-11-18: the icon inside the create-account button; circle fill behind the icon, printed through sgs_fill_states_css."},
-		{"slug": "sgs/account", "attr": "registerButtonIconShapeSize", "fields": {"role": "select-from-enum"}, "_reason": "2026-11-18: the icon inside the create-account button; per-device circle diameter, printed as --sgs-btn-icon-shape-size (the same unmapped bespoke control as sgs/button::iconShapeSize)."}
+		{"slug": "sgs/account", "attr": "registerButtonIconShapeSize", "fields": {"role": "select-from-enum"}, "_reason": "2026-11-18: the icon inside the create-account button; per-device circle diameter, printed as --sgs-btn-icon-shape-size (the same unmapped bespoke control as sgs/button::iconShapeSize)."},
+		{"slug": "sgs/account", "attr": "ordersRowThumbs", "fields": {"role": "boolean-visibility"}, "_reason": "2026-11-18, orders list: shows the order thumbnail strip in each row; a markup switch."},
+		{"slug": "sgs/account", "attr": "ordersRowThumbsFlexWrap", "fields": {"role": "layout"}, "_reason": "2026-11-18, orders list: flex-wrap of the thumbnail strip."},
+		{"slug": "sgs/account", "attr": "ordersRowViewLabel", "fields": {"role": "text-content"}, "_reason": "2026-11-18, orders list: the row end label in place of the chevron; authored text."},
+		{"slug": "sgs/account", "attr": "ordersRowViewIcon", "fields": {"role": "visual"}, "_reason": "2026-11-18, orders list: the Lucide icon after the row end label."}
 	]
 }

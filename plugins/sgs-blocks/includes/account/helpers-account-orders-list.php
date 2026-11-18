@@ -10,6 +10,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-account-button-icon.php';
+
 if ( ! function_exists( 'sgs_account_order_number' ) ) {
 	/**
 	 * The order's number as the block prints it: the block's prefix, then WooCommerce's order number.
@@ -73,6 +75,30 @@ if ( ! function_exists( 'sgs_account_order_summary' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_account_order_thumbs_html' ) ) {
+	/**
+	 * A strip of an order's product thumbnails (WooCommerce's own product image, no alt text: the product names sit beside it).
+	 * The dashboard's latest-order card and the orders list rows both print it.
+	 *
+	 * @param \WC_Order $order The order.
+	 * @param string    $tag   Container tag: 'div' in a card, 'span' inside a link row (phrasing content only).
+	 * @param int       $max   Most thumbnails shown.
+	 * @return string Escaped HTML, or '' when the order has no product with an image slot.
+	 */
+	function sgs_account_order_thumbs_html( $order, string $tag = 'div', int $max = 4 ): string {
+		$tag    = 'span' === $tag ? 'span' : 'div';
+		$images = '';
+		foreach ( array_slice( $order->get_items(), 0, $max ) as $item ) {
+			$product = $item->get_product();
+			if ( ! $product ) {
+				continue;
+			}
+			$images .= wp_kses_post( $product->get_image( 'thumbnail', array( 'alt' => '' ) ) );
+		}
+		return '' === $images ? '' : '<' . $tag . ' class="sgs-account__order-thumbs">' . $images . '</' . $tag . '>';
+	}
+}
+
 if ( ! function_exists( 'sgs_account_orders_list_html' ) ) {
 	/**
 	 * The order rows.
@@ -83,7 +109,14 @@ if ( ! function_exists( 'sgs_account_orders_list_html' ) ) {
 	 */
 	function sgs_account_orders_list_html( array $orders, array $attributes ): string {
 		$chevron = '<svg class="sgs-account__order-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>';
-		$html    = '<div class="sgs-account__orders-list">';
+		$thumbs  = ! empty( $attributes['ordersRowThumbs'] );
+		$view    = trim( (string) ( $attributes['ordersRowViewLabel'] ?? '' ) );
+		$end_tag = $chevron;
+		if ( '' !== $view ) {
+			// A text label (with the chosen icon after it) stands in for the chevron.
+			$end_tag = '<span class="sgs-account__order-view">' . esc_html( $view ) . sgs_account_button_icon_markup( (string) ( $attributes['ordersRowViewIcon'] ?? '' ), false ) . '</span>';
+		}
+		$html = '<div class="sgs-account__orders-list">';
 		foreach ( $orders as $order ) {
 			if ( ! is_object( $order ) || ! method_exists( $order, 'get_order_number' ) ) {
 				continue;
@@ -91,9 +124,9 @@ if ( ! function_exists( 'sgs_account_orders_list_html' ) ) {
 			$html .= '<a class="sgs-account__order sgs-account__order--status-' . esc_attr( (string) $order->get_status() ) . '" href="' . esc_url( (string) $order->get_view_order_url() ) . '">'
 				. '<span class="sgs-account__order-id"><span class="sgs-account__order-number">' . esc_html( sgs_account_order_number( $order, $attributes ) ) . '</span>'
 				. '<span class="sgs-account__order-date">' . esc_html( sgs_account_order_date( $order, $attributes ) ) . '</span></span>'
-				. '<span class="sgs-account__order-summary">' . esc_html( sgs_account_order_summary( $order ) ) . '</span>'
+				. '<span class="sgs-account__order-summary' . ( $thumbs ? ' sgs-account__order-summary--thumbs' : '' ) . '">' . ( $thumbs ? sgs_account_order_thumbs_html( $order, 'span' ) : '' ) . esc_html( sgs_account_order_summary( $order ) ) . '</span>'
 				. '<span class="sgs-account__order-status">' . esc_html( (string) wc_get_order_status_name( $order->get_status() ) ) . '</span>'
-				. '<span class="sgs-account__order-end"><span class="sgs-account__order-total">' . sgs_account_money( (float) $order->get_total(), $attributes ) . '</span>' . $chevron . '</span>'
+				. '<span class="sgs-account__order-end"><span class="sgs-account__order-total">' . sgs_account_money( (float) $order->get_total(), $attributes ) . '</span>' . $end_tag . '</span>'
 				. '</a>';
 		}
 		return $html . '</div>';

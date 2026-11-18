@@ -100,6 +100,20 @@
 					},
 					"_note": "The latest-order thumbnails row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
 				},
+				"order-row-thumbs": {
+					"selector": ".sgs-account__order-summary .sgs-account__order-thumbs",
+					"motion": false,
+					"label": "Orders-list row thumbnails",
+					"order": 125,
+					"clusters": [
+						"layout"
+					],
+					"layer": "OUTER",
+					"attrMap": {
+						"css:flex-wrap": "ordersRowThumbsFlexWrap"
+					},
+					"_note": "The thumbnail strip inside an orders-list row (ordersRowThumbs): a flex row; the wrap setting chooses between one line and wrapping."
+				},
 				"order-actions": {
 					"selector": ".sgs-account__order-actions",
 					"motion": false,
@@ -4170,6 +4184,31 @@
 			},
 			"ordersRowList": {
 				"type": "boolean"
+			},
+			"ordersRowThumbs": {
+				"type": "boolean",
+				"default": false,
+				"description": "Shows a strip of the order's product thumbnails in each orders-list row (the same thumbnails the latest-order card shows). Off prints none."
+			},
+			"ordersRowThumbsFlexWrap": {
+				"type": "string",
+				"default": "",
+				"enum": [
+					"",
+					"nowrap",
+					"wrap"
+				],
+				"description": "Whether the thumbnails in an orders-list row wrap onto further lines when they overrun the row. Empty keeps the stylesheet's own behaviour."
+			},
+			"ordersRowViewLabel": {
+				"type": "string",
+				"default": "",
+				"description": "Text at the end of each orders-list row in place of the chevron (for example View order). Empty keeps the chevron."
+			},
+			"ordersRowViewIcon": {
+				"type": "string",
+				"default": "",
+				"description": "Lucide icon name printed after the row's end label. Used only while the label is set; empty draws none."
 			},
 			"ordersTrimZeros": {
 				"type": "boolean"

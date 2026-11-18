@@ -278,6 +278,7 @@ if ( ! function_exists( 'sgs_account_scoped_css' ) ) {
 			array(
 				'orderThumbsFlexWrap'  => '.sgs-account__order-thumbs',
 				'orderActionsFlexWrap' => '.sgs-account__order-actions',
+				'ordersRowThumbsFlexWrap' => '.sgs-account__order-summary .sgs-account__order-thumbs',
 			)
 		);
 
