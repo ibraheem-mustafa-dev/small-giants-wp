@@ -24,6 +24,7 @@
 @property --sgs-focus-offset { syntax: "*"; inherits: false; }
 @property --sgs-focus-halo { syntax: "*"; inherits: false; }
 @property --sgs-focus-under { syntax: "*"; inherits: false; }
+@property --sgs-focus-edge { syntax: "*"; inherits: false; }
 
 /* 1. Tokens: the client's snapshot (settings.custom.focus -> --wp--custom--focus--*), framework defaults from the palette.
    The painted hairline is --sgs-focus-hairline: the inner token on G1, and on G2 and G3 the ground's band, the other half
@@ -75,13 +76,15 @@
 	--sgs-focus-far: var(--sgs-focus-ink);
 }
 /* Inside a clipping or full-bleed container: the ring sits on the element's edge, the hairline inside it.
-   Text-entry inputs, selects and textareas always take this look: one ring drawn inside the border, no gap. */
+   Text-entry inputs, selects and textareas always take this look: one ring drawn inside the border, no gap.
+   A host with its own border hands that border's width in --sgs-focus-edge, so the ring sits inside the border and not on it
+   (a ring the colour of the border would vanish into it). Unset, the ring starts at the border box edge as before. */
 .sgs-focus--inset,
 input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="file"], [type="color"], [type="image"], [type="hidden"]),
 select,
 textarea,
 .sgs-focus--inset.sgs-focus-card > .sgs-block-link-overlay {
-	--sgs-focus-offset: calc(var(--sgs-focus-width) * -1);
+	--sgs-focus-offset: calc(var(--sgs-focus-width) * -1 - var(--sgs-focus-edge, 0px));
 	--sgs-focus-halo: inset 0 0 0 calc(var(--sgs-focus-width) * 2 * var(--sgs-focus-keep, 1)) var(--sgs-focus-hairline);
 }
 

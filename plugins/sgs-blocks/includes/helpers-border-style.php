@@ -89,6 +89,42 @@ if ( ! function_exists( 'sgs_border_box_decls' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_border_edge_width' ) ) {
+	/**
+	 * The widest border a block draws, as a CSS length, for an element that rings itself inside its own border.
+	 *
+	 * focus.css draws an inset focus ring (`.sgs-focus--inset`) from the border box edge inward, which lays it over the
+	 * element's own border. An element with a border prints this as `--sgs-focus-edge`, and the ring sits inside the border
+	 * instead, so a ring the colour of the border still shows. A width stored per device counts every device's sides;
+	 * `''` when no side has a width or the style is `none`.
+	 *
+	 * @param mixed $width_raw Stored width: a `{top,right,bottom,left}` box, or a `{desktop,tablet,mobile}` object of boxes.
+	 * @param mixed $style_raw Stored border style.
+	 * @return string A length, `max(...)` of the distinct lengths, or `''`.
+	 */
+	function sgs_border_edge_width( $width_raw, $style_raw ): string {
+		if ( ! is_array( $width_raw ) || 'none' === sgs_border_style_keyword( $style_raw ) ) {
+			return '';
+		}
+		$is_tiered = isset( $width_raw['desktop'] ) || isset( $width_raw['tablet'] ) || isset( $width_raw['mobile'] );
+		$boxes     = $is_tiered ? array_values( array_filter( array( $width_raw['desktop'] ?? null, $width_raw['tablet'] ?? null, $width_raw['mobile'] ?? null ), 'is_array' ) ) : array( $width_raw );
+		$lengths   = array();
+		foreach ( $boxes as $box ) {
+			foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+				$value = is_scalar( $box[ $side ] ?? null ) ? sgs_css_length_value( $box[ $side ] ) : '';
+				if ( '' !== $value && 1 !== preg_match( '/^0+(?:\.0+)?(?:[a-z%]+)?$/', $value ) ) {
+					$lengths[] = $value;
+				}
+			}
+		}
+		$lengths = array_values( array_unique( $lengths ) );
+		if ( array() === $lengths ) {
+			return '';
+		}
+		return 1 === count( $lengths ) ? $lengths[0] : 'max(' . implode( ',', $lengths ) . ')';
+	}
+}
+
 if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 	/**
 	 * Every border declaration one element needs: width, style, colour (flat or

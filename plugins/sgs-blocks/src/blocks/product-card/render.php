@@ -256,6 +256,11 @@ $sgs_card_typo_css .= sgs_typography_css_rule(
 // pickers render sgs/option-picker).
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_card_uid . ' .sgs-option-picker__pill', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $sgs_card_uid . ' .sgs-product-card__price-note, .' . $sgs_card_uid . ' .price-note', '', false, false, sgs_object_attr_keys( $block ) );
+// The card rings itself inside its own border (focus.css, `.sgs-focus--inset`): a border the colour of the ring would otherwise hide it.
+$sgs_card_focus_edge = sgs_border_edge_width( $attributes['borderWidth'] ?? null, $attributes['borderStyle'] ?? '' );
+if ( '' !== $sgs_card_focus_edge ) {
+	$sgs_card_typo_css .= '.' . $sgs_card_uid . '{--sgs-focus-edge:' . $sgs_card_focus_edge . ';}';
+}
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceFromLabel', '.' . $sgs_card_uid . ' .price-from-label', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_card_uid . ' .sgs-product-card__tag', '', false, false, sgs_object_attr_keys( $block ) );
 // 'brand' typography targets the Frame Card brand overlay (image top-left).
