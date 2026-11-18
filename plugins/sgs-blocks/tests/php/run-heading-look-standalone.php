@@ -21,10 +21,11 @@ declare(strict_types=1);
 namespace {
 	define( 'ABSPATH', dirname( __DIR__, 2 ) . '/' );
 	$GLOBALS['styles'] = array();
-	function add_action() {}
+	function add_action( $h, $cb ) { $GLOBALS['actions'][ $h ][] = $cb; }
 	function add_filter() {}
 	function apply_filters( $hook, $value ) { return $value; }
 	function wp_get_global_styles( $path ) {
+		++$GLOBALS['computed'];
 		$node = $GLOBALS['styles'];
 		foreach ( $path as $key ) {
 			$node = $node[ $key ] ?? array();
@@ -43,7 +44,21 @@ namespace {
 		return array( 'declarations' => $out );
 	}
 	function wp_style_is() { return true; }
-	function wp_add_inline_style() {}
+	function wp_add_inline_style( $h, $css ) { $GLOBALS['inline'][] = $css; }
+	function did_action( $h ) { return $GLOBALS['did'][ $h ] ?? 0; }
+	$GLOBALS['did']     = array();
+	$GLOBALS['actions'] = array();
+	function wp_strip_all_tags( $s ) { return strip_tags( $s ); }
+	function wp_json_encode( $v ) { return json_encode( $v ); }
+	function get_template_directory() { return sys_get_temp_dir(); }
+	function get_stylesheet_directory() { return sys_get_temp_dir(); }
+	function get_post( $id ) { return null; }
+	function get_transient( $k ) { return $GLOBALS['transients'][ $k ] ?? false; }
+	function set_transient( $k, $v ) { $GLOBALS['transients'][ $k ] = $v; return true; }
+	define( 'DAY_IN_SECONDS', 86400 );
+	$GLOBALS['transients'] = array();
+	$GLOBALS['inline']     = array();
+	$GLOBALS['computed']   = 0;
 	require dirname( __DIR__, 2 ) . '/includes/class-heading-look.php';
 
 	use SGS\Blocks\Heading_Look;
@@ -92,7 +107,28 @@ namespace {
 	$all = Heading_Look::css();
 	$check( 'both drawer titles get a zero-specificity rule', 0 === strpos( $all, ':where(.sgs-cart__panel-heading){' ) && false !== strpos( $all, ':where(.sgs-cart__panel-empty--rich .sgs-cart__panel-empty-message){' ) );
 	$GLOBALS['styles'] = array();
+	$GLOBALS['transients'] = array();
 	$check( 'a site with no heading styles prints no rules', '' === Heading_Look::css() );
+
+	// Cost: nothing without a drawer, one computation with it, none while the global styles are unchanged.
+	$GLOBALS['styles'] = array( 'elements' => array( 'heading' => array( 'typography' => array( 'fontWeight' => '400' ) ) ) );
+	$GLOBALS['transients'] = array();
+	$GLOBALS['computed']   = 0;
+	$check( 'a request that renders no drawer computes nothing (the front end no longer hooks the heading look)', 0 === $GLOBALS['computed'] );
+	Heading_Look::enqueue();
+	$first = $GLOBALS['computed'];
+	$check( 'the drawer renders before wp_enqueue_scripts: the rules wait for that hook, nothing is added yet', $first > 0 && 0 === count( $GLOBALS['inline'] ) && 1 === count( $GLOBALS['actions']['wp_enqueue_scripts'] ?? array() ) );
+	foreach ( $GLOBALS['actions']['wp_enqueue_scripts'] as $cb ) {
+		$cb();
+	}
+	$check( 'on that hook the rules join the global styles', 1 === count( $GLOBALS['inline'] ) && false !== strpos( $GLOBALS['inline'][0], 'font-weight:400;' ) );
+	Heading_Look::enqueue();
+	$check( 'a second drawer on the same request adds nothing', 1 === count( $GLOBALS['actions']['wp_enqueue_scripts'] ) && 1 === count( $GLOBALS['inline'] ) );
+	$GLOBALS['computed'] = 0;
+	$cached = Heading_Look::css();
+	$check( 'the next request reads the rules from the transient and computes nothing', 0 === $GLOBALS['computed'] && false !== strpos( $cached, 'font-weight:400;' ) );
+	$GLOBALS['transients'] = array();
+	$check( 'with the transient gone the rules are rebuilt', '' !== Heading_Look::css() && $GLOBALS['computed'] > 0 );
 
 	echo "\n==== " . ( $total - $failures ) . ' of ' . $total . ' checks passed (' . $failures . " failed) ====\n";
 	exit( $failures > 0 ? 1 : 0 );

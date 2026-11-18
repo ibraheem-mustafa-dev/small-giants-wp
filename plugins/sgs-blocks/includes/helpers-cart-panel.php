@@ -179,6 +179,10 @@ function sgs_cart_panel_body_html( array $args ): string {
 		);
 	}
 
+	// The drawer's titles are plain elements that wear the theme's heading look; the rules are computed only on a request that renders a drawer.
+	require_once __DIR__ . '/class-heading-look.php';
+	\SGS\Blocks\Heading_Look::enqueue();
+
 	return sprintf(
 		'<div class="sgs-cart__panel-inner">' .
 			'<div class="sgs-cart__panel-header"><div class="sgs-cart__panel-heading" id="%1$s-heading">%2$s%13$s</div>%14$s</div>' .

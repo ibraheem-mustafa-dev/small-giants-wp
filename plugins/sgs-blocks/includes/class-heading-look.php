@@ -6,7 +6,7 @@
  * message) must not be an `h2` or `h3`: assistive technology and search engines read it as the page's first
  * heading. Those titles are plain elements, and this gives them the look the theme gives that heading level: the
  * typography and text colour of `styles.elements.heading` and `styles.elements.<level>` in the site's global styles
- * (theme.json plus the saved snapshot), printed as zero-specificity rules. A block's own settings and base rules
+ * (theme.json plus the saved snapshot), printed as zero-specificity rules, and only on a request whose drawer renders. A block's own settings and base rules
  * still win, as they did over the element rule. Text colour follows `--sgs-tone-heading` on a dark surface, as headings do.
  *
  * The selector list is `self::SELECTORS`; the `sgs_heading_look_selectors` filter adds or removes entries (selector
@@ -35,25 +35,77 @@ final class Heading_Look {
 	);
 
 	/**
-	 * Register the front-end and editor output.
+	 * Whether the rules were already added on this request.
+	 *
+	 * @var bool
+	 */
+	private static bool $added = false;
+
+	/**
+	 * Register the editor output. The front end adds its rules only when a drawer renders ({@see self::enqueue()}).
 	 *
 	 * @return void
 	 */
 	public static function register(): void {
-		\add_action( 'wp_enqueue_scripts', array( __CLASS__, 'print_front' ), 100 );
 		\add_filter( 'block_editor_settings_all', array( __CLASS__, 'add_editor_style' ) );
 	}
 
 	/**
-	 * Add the rules after the global styles on the front end.
+	 * The rules to print, set by {@see self::enqueue()}.
+	 *
+	 * @var string
+	 */
+	private static string $front_css = '';
+
+	/**
+	 * Queue the rules for the page; the basket drawer's markup builder calls this, so a request that renders no
+	 * drawer computes and prints nothing.
+	 *
+	 * A block theme builds the template (and so the drawer) before `wp_head` runs `wp_enqueue_scripts`, so the rules
+	 * join the `global-styles` inline style there. A drawer built later (a classic theme, or a late widget area) prints
+	 * them as a `<style>` tag in the footer instead.
+	 *
+	 * @return void
+	 */
+	public static function enqueue(): void {
+		if ( self::$added ) {
+			return;
+		}
+		self::$added = true;
+		$css         = self::css();
+		if ( '' === $css ) {
+			return;
+		}
+		self::$front_css = $css;
+		if ( ! \did_action( 'wp_enqueue_scripts' ) ) {
+			\add_action( 'wp_enqueue_scripts', array( __CLASS__, 'print_front' ), 100 );
+			return;
+		}
+		if ( \wp_style_is( 'global-styles', 'enqueued' ) && ! \did_action( 'wp_head' ) ) {
+			self::print_front();
+			return;
+		}
+		\add_action( 'wp_footer', array( __CLASS__, 'print_footer' ) );
+	}
+
+	/**
+	 * Add the queued rules to the `global-styles` inline style.
 	 *
 	 * @return void
 	 */
 	public static function print_front(): void {
-		$css = self::css();
-		if ( '' !== $css && \wp_style_is( 'global-styles', 'enqueued' ) ) {
-			\wp_add_inline_style( 'global-styles', $css );
+		if ( '' !== self::$front_css && \wp_style_is( 'global-styles', 'enqueued' ) ) {
+			\wp_add_inline_style( 'global-styles', self::$front_css );
 		}
+	}
+
+	/**
+	 * Print the queued rules as a style tag (a drawer built after the head was printed).
+	 *
+	 * @return void
+	 */
+	public static function print_footer(): void {
+		echo '<style id="sgs-heading-look">' . \wp_strip_all_tags( self::$front_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS built from global-styles values by wp_style_engine_get_styles(), tags stripped.
 	}
 
 	/**
@@ -73,11 +125,53 @@ final class Heading_Look {
 	}
 
 	/**
-	 * The CSS for every selector.
+	 * The CSS for every selector, from a transient while the global styles are unchanged.
+	 *
+	 * The transient name carries a hash of what the global styles are built from: the plugin version, the selector list, the modified
+	 * time of the parent and child `theme.json`, and the saved user global styles (post id and modified time, which
+	 * is where a pushed theme snapshot lands). Any of them changing gives a new name, so the old rules are never
+	 * served; the old transient expires on its own.
 	 *
 	 * @return string
 	 */
 	public static function css(): string {
+		$key    = 'sgs_heading_look_' . self::source_hash();
+		$cached = \get_transient( $key );
+		if ( \is_string( $cached ) ) {
+			return $cached;
+		}
+		$css = self::build_css();
+		\set_transient( $key, $css, DAY_IN_SECONDS );
+		return $css;
+	}
+
+	/**
+	 * A hash of everything the heading look is read from (see {@see self::css()}).
+	 *
+	 * @return string
+	 */
+	private static function source_hash(): string {
+		$parts = array(
+			defined( 'SGS_BLOCKS_VERSION' ) ? SGS_BLOCKS_VERSION : '',
+			(string) \wp_json_encode( \apply_filters( 'sgs_heading_look_selectors', self::SELECTORS ) ),
+		);
+		foreach ( array_unique( array( \get_template_directory(), \get_stylesheet_directory() ) ) as $dir ) {
+			$parts[] = $dir . ':' . (int) @filemtime( $dir . '/theme.json' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- a theme without theme.json has no file to stat.
+		}
+		if ( class_exists( '\WP_Theme_JSON_Resolver' ) && method_exists( '\WP_Theme_JSON_Resolver', 'get_user_global_styles_post_id' ) ) {
+			$post_id = (int) \WP_Theme_JSON_Resolver::get_user_global_styles_post_id();
+			$post    = $post_id > 0 ? \get_post( $post_id ) : null;
+			$parts[] = $post_id . ':' . ( $post instanceof \WP_Post ? $post->post_modified_gmt : '' );
+		}
+		return md5( implode( '|', $parts ) );
+	}
+
+	/**
+	 * Compute the CSS for every selector.
+	 *
+	 * @return string
+	 */
+	private static function build_css(): string {
 		/**
 		 * Filters the title elements that wear the theme's heading look.
 		 *
