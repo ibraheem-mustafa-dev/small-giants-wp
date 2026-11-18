@@ -18,6 +18,7 @@ let observers;
 let queries;
 let reduced;
 let props;
+let style;
 
 class FakeObserver {
 	constructor( callback ) {
@@ -93,9 +94,11 @@ beforeEach( () => {
 	queries = {};
 	reduced = false;
 	props = {};
+	style = { transform: 'none', scale: 'none' };
 	window.IntersectionObserver = FakeObserver;
 	window.matchMedia = jest.fn( query );
 	window.getComputedStyle = jest.fn( () => ( {
+		...style,
 		getPropertyValue: ( name ) => props[ name ] || '',
 	} ) );
 	document.body.innerHTML = '';
@@ -107,6 +110,11 @@ function boot() {
 	return require( '../../src/shared/effects/fx-ken-burns' );
 }
 
+/** One compositor frame: the transform Ken Burns animates (the zoom as a ratio to the zoom the stylesheet holds). */
+const tf = ( zoom, x = 0, y = 0 ) => ( {
+	transform: `translate(${ x }px, ${ y }px) scale(${ zoom })`,
+} );
+
 const once = ( extra = '' ) =>
 	`${ ATTR }mode="zoom-out-once" ${ ATTR }zoom-start="108" ${ ATTR }zoom-end="100" ${ ATTR }duration="20000" ${ extra }`;
 
@@ -116,10 +124,7 @@ describe( 'zoom out once', () => {
 		boot();
 		expect( el.animate ).toHaveBeenCalledTimes( 1 );
 		const [ keyframes, options ] = el.animate.mock.calls[ 0 ];
-		expect( keyframes ).toEqual( [
-			{ '--sgs-kb-s': '1.08' },
-			{ '--sgs-kb-s': '1' },
-		] );
+		expect( keyframes ).toEqual( [ tf( 1.08 ), tf( 1 ) ] );
 		expect( options ).toEqual( {
 			duration: 20000,
 			easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
@@ -222,10 +227,7 @@ describe( 'loop', () => {
 		} );
 		boot();
 		const [ keyframes, options ] = el.animate.mock.calls[ 0 ];
-		expect( keyframes ).toEqual( [
-			{ '--sgs-kb-s': '1.1' },
-			{ '--sgs-kb-s': '1.2' },
-		] );
+		expect( keyframes ).toEqual( [ tf( 1.1 ), tf( 1.2 ) ] );
 		expect( options ).toEqual( {
 			duration: 20000,
 			delay: -0,
@@ -240,34 +242,34 @@ describe( 'loop', () => {
 		const { el } = mount();
 		boot();
 		const [ keyframes, options ] = el.animate.mock.calls[ 0 ];
-		expect( keyframes ).toEqual( [
-			{ '--sgs-kb-s': '1.08' },
-			{ '--sgs-kb-s': '1' },
-		] );
+		expect( keyframes ).toEqual( [ tf( 1.08 ), tf( 1 ) ] );
 		expect( options.iterations ).toBe( Infinity );
 		expect( options.duration ).toBe( 20000 );
 	} );
 
 	test.each( [
-		[ 'left', { '--sgs-kb-x': '-20px' } ],
-		[ 'right', { '--sgs-kb-x': '20px' } ],
-		[ 'up', { '--sgs-kb-y': '-10px' } ],
-		[ 'down', { '--sgs-kb-y': '10px' } ],
-	] )( 'pan %s moves the end keyframe by 2% of the element', ( dir, end ) => {
-		const { el } = mount( {
-			attrs: `${ ATTR }zoom-start="110" ${ ATTR }zoom-end="120" ${ ATTR }pan-direction="${ dir }"`,
-		} );
-		boot();
-		const [ from, to ] = el.animate.mock.calls[ 0 ][ 0 ];
-		expect( to ).toEqual( { '--sgs-kb-s': '1.2', ...end } );
-		expect( from[ Object.keys( end )[ 0 ] ] ).toBe( '0px' );
-	} );
+		[ 'left', -20, 0 ],
+		[ 'right', 20, 0 ],
+		[ 'up', 0, -10 ],
+		[ 'down', 0, 10 ],
+	] )(
+		'pan %s moves the end keyframe by 2% of the element',
+		( dir, x, y ) => {
+			const { el } = mount( {
+				attrs: `${ ATTR }zoom-start="110" ${ ATTR }zoom-end="120" ${ ATTR }pan-direction="${ dir }"`,
+			} );
+			boot();
+			const [ from, to ] = el.animate.mock.calls[ 0 ][ 0 ];
+			expect( from ).toEqual( tf( 1.1 ) );
+			expect( to ).toEqual( tf( 1.2, x, y ) );
+		}
+	);
 
-	test( 'pan none writes no translate owner', () => {
+	test( 'pan none keeps the end keyframe at the origin', () => {
 		const { el } = mount( { attrs: `${ ATTR }pan-direction="none"` } );
 		boot();
 		const keyframes = el.animate.mock.calls[ 0 ][ 0 ];
-		expect( Object.keys( keyframes[ 1 ] ) ).toEqual( [ '--sgs-kb-s' ] );
+		expect( keyframes[ 1 ] ).toEqual( tf( 1 ) );
 	} );
 
 	test( 'the pan never exceeds what the zoom leaves spare on a side', () => {
@@ -275,9 +277,51 @@ describe( 'loop', () => {
 			attrs: `${ ATTR }zoom-start="101" ${ ATTR }zoom-end="100" ${ ATTR }pan-direction="right"`,
 		} );
 		boot();
-		expect( el.animate.mock.calls[ 0 ][ 0 ][ 1 ][ '--sgs-kb-x' ] ).toBe(
-			'5px'
+		expect( el.animate.mock.calls[ 0 ][ 0 ][ 1 ] ).toEqual( tf( 1, 5, 0 ) );
+	} );
+
+	test( 'the zoom is a ratio to the zoom the stylesheet already holds, so their product is the authored zoom', () => {
+		props = { '--sgs-kb-s': '1.08' };
+		const { el } = mount( { attrs: once() } );
+		boot();
+		const [ from, to ] = el.animate.mock.calls[ 0 ][ 0 ];
+		expect( from ).toEqual( tf( 1 ) );
+		expect( to ).toEqual( tf( 0.925926 ) );
+	} );
+
+	test( 'the pan is divided by the scale the element already has, so it keeps its pixel size', () => {
+		style.scale = '1.25';
+		const { el } = mount( {
+			attrs: `${ ATTR }zoom-start="110" ${ ATTR }zoom-end="120" ${ ATTR }pan-direction="right"`,
+		} );
+		boot();
+		expect( el.animate.mock.calls[ 0 ][ 0 ][ 1 ] ).toEqual(
+			tf( 1.2, 16, 0 )
 		);
+	} );
+
+	test( 'an authored transform that nothing animates is written after the zoom', () => {
+		style.transform = 'matrix(0.97, 0.2, -0.2, 0.97, 0, 0)';
+		const { el } = mount( { attrs: once() } );
+		boot();
+		expect( el.animate.mock.calls[ 0 ][ 0 ] ).toEqual( [
+			{
+				transform: `translate(0px, 0px) scale(1.08) ${ style.transform }`,
+			},
+			{ transform: `translate(0px, 0px) scale(1) ${ style.transform }` },
+		] );
+	} );
+
+	test( 'an element holding the transform channel keeps the registered-property run, so its transform survives', () => {
+		style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
+		const { el } = mount( {
+			attrs: `${ ATTR }zoom-start="110" ${ ATTR }zoom-end="120" ${ ATTR }pan-direction="right" data-sgs-mc="scale transform"`,
+		} );
+		boot();
+		expect( el.animate.mock.calls[ 0 ][ 0 ] ).toEqual( [
+			{ '--sgs-kb-s': '1.1', '--sgs-kb-x': '0px' },
+			{ '--sgs-kb-s': '1.2', '--sgs-kb-x': '20px' },
+		] );
 	} );
 
 	test( 'a zoom outside 100 to 200 falls back to the default', () => {
@@ -286,8 +330,8 @@ describe( 'loop', () => {
 		} );
 		boot();
 		expect( el.animate.mock.calls[ 0 ][ 0 ] ).toEqual( [
-			{ '--sgs-kb-s': '1.08' },
-			{ '--sgs-kb-s': '1' },
+			tf( 1.08 ),
+			tf( 1 ),
 		] );
 	} );
 
@@ -364,10 +408,7 @@ describe( 'per-device custom properties', () => {
 		} );
 		boot();
 		const [ keyframes, options ] = el.animate.mock.calls[ 0 ];
-		expect( keyframes ).toEqual( [
-			{ '--sgs-kb-s': '1.2' },
-			{ '--sgs-kb-s': '1.1' },
-		] );
+		expect( keyframes ).toEqual( [ tf( 1.2 ), tf( 1.1 ) ] );
 		expect( options.duration ).toBe( 8000 );
 	} );
 
@@ -378,7 +419,7 @@ describe( 'per-device custom properties', () => {
 		} );
 		boot();
 		const [ keyframes, options ] = el.animate.mock.calls[ 0 ];
-		expect( keyframes[ 0 ] ).toEqual( { '--sgs-kb-s': '1.1' } );
+		expect( keyframes[ 0 ] ).toEqual( tf( 1.1 ) );
 		expect( options.duration ).toBe( 12000 );
 	} );
 
@@ -388,11 +429,14 @@ describe( 'per-device custom properties', () => {
 		} );
 		boot();
 		expect( el.animate.mock.calls[ 0 ][ 1 ].duration ).toBe( 20000 );
-		props = { '--sgs-kb-duration': '10000ms', '--sgs-kb-zoom-start': '115' };
+		props = {
+			'--sgs-kb-duration': '10000ms',
+			'--sgs-kb-zoom-start': '115',
+		};
 		query( '(max-width: 1023.98px)' ).fire();
 		expect( el.animate ).toHaveBeenCalledTimes( 2 );
 		const [ keyframes, options ] = el.animate.mock.calls[ 1 ];
 		expect( options.duration ).toBe( 10000 );
-		expect( keyframes[ 0 ] ).toEqual( { '--sgs-kb-s': '1.15' } );
+		expect( keyframes[ 0 ] ).toEqual( tf( 1.15 ) );
 	} );
 } );

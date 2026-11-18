@@ -7,8 +7,18 @@
  * (`data-sgs-fx-ken-burns-mode`, `-zoom-start`, `-zoom-end`, `-pan-direction`, `-duration` in milliseconds, `-easing`
  * and `-pause-control`); this module reads them and runs one Web Animations run on the registered channel owners
  * `--sgs-kb-s` (scale) and `--sgs-kb-x` / `--sgs-kb-y` (translate), which `assets/css/motion.css` composes into
- * `scale` and `translate`. Neither run touches an animation property in CSS, so an entrance on the same element never
- * replaces it.
+ * `scale` and `translate` at rest (the emitter writes the start zoom there, so the first paint is already zoomed). Neither
+ * run touches an animation property in CSS, so an entrance on the same element never replaces it.
+ *
+ * The run itself animates `transform` (`translate()` then `scale()`), which Chrome runs on the compositor thread: a custom
+ * property cannot be, so animating `--sgs-kb-s` made the main thread restyle the hero on every frame. `transform` is
+ * applied after the individual `translate` and `scale` properties, so the zoom multiplies with whatever the stylesheet
+ * composes there (a hover or entrance scale, a background parallax's translate) instead of replacing it. The frames
+ * carry the zoom as a ratio to the zoom the stylesheet already holds (the computed `--sgs-kb-s`), so the product is the
+ * authored zoom at every moment, and the pan is divided by the element's own `scale` so it keeps its pixel size. An
+ * element that also holds the `transform` channel (`data-sgs-mc` names it) would lose that value to a `transform`
+ * animation, so it keeps the registered-property run (`values.channel` is `property`); an authored transform that nothing
+ * animates is carried in the frames (`loop-transform.js`).
  *
  * - `loop` goes through the shared loop control (`animateLoop`): it alternates between the start and end zoom for ever,
  *   pausing off screen, while focus is inside its block and from the pause button.
@@ -32,6 +42,12 @@ import {
 	registerLoop,
 } from '@sgs/loop-control'; // eslint-disable-line import/no-unresolved -- a webpack external (script module `@sgs/loop-control`).
 import { bootGated } from './off-switch';
+import {
+	positive,
+	readChannel,
+	readLift,
+	transformFrame,
+} from './loop-transform';
 
 const SELECTOR = '[data-sgs-fx~="ken-burns"]';
 const PREFIX = 'data-sgs-fx-ken-burns-';
@@ -108,8 +124,11 @@ function easing( el, fallback ) {
  * (which carry the tablet and mobile values), then the data attributes, then the defaults.
  *
  * @param {HTMLElement} el The Ken Burns element.
- * @return {Object} `mode`, `zoomStart` and `zoomEnd` (scale factors), `panX` and `panY` (px), and the loop timing
- *                  (`period`, `phase`, `easing`, `direction`) that `animateLoop` reads.
+ * @return {Object} `mode`, `zoomStart` and `zoomEnd` (scale factors), `panX` and `panY` (px), the loop timing
+ *                  (`period`, `phase`, `easing`, `direction`) that `animateLoop` reads, `channel` (`transform`, or
+ *                  `property` when the element holds the transform channel), `base` (an authored transform the frames
+ *                  are written in front of), `held` (the zoom the stylesheet holds at
+ *                  rest, the computed `--sgs-kb-s`) and `lift` (the element's whole computed `scale`).
  */
 export function readKenBurns( el ) {
 	const once = el.getAttribute( PREFIX + 'mode' ) === 'zoom-out-once';
@@ -136,16 +155,38 @@ export function readKenBurns( el ) {
 		phase: 0,
 		easing: easing( el, once ? ONCE_EASING : LOOP_EASING ),
 		direction: 'alternate',
+		...readChannel( el ),
+		held: positive( custom( el, '--sgs-kb-s' ), 1 ),
+		lift: readLift( el ),
 	};
 }
 
 /**
  * The two keyframes: the start zoom at rest, then the end zoom with the pan applied.
  *
+ * On the compositor channel (the default) they animate `transform`, as a ratio to the zoom the stylesheet holds: the
+ * zoom runs from `zoomStart / held` to `zoomEnd / held`, so the held zoom times the ratio is the authored zoom, and the
+ * pan is the authored pixels divided by the element's own scale.
+ *
  * @param {Object} values The result of `readKenBurns`.
- * @return {Object[]} Two keyframes on `--sgs-kb-s`, plus `--sgs-kb-x` and `--sgs-kb-y` when the pan moves that axis.
+ * @return {Object[]} Two keyframes: `transform` on the compositor channel, else `--sgs-kb-s`, plus `--sgs-kb-x` and
+ *                    `--sgs-kb-y` when the pan moves that axis.
  */
 export function kenBurnsKeyframes( values ) {
+	if ( values.channel !== 'property' ) {
+		const { held, lift, base } = values;
+		return [
+			transformFrame( { scale: values.zoomStart, held, lift, base } ),
+			transformFrame( {
+				scale: values.zoomEnd,
+				x: `${ values.panX }px`,
+				y: `${ values.panY }px`,
+				held,
+				lift,
+				base,
+			} ),
+		];
+	}
 	const from = { '--sgs-kb-s': String( values.zoomStart ) };
 	const to = { '--sgs-kb-s': String( values.zoomEnd ) };
 	if ( values.panX !== 0 ) {
