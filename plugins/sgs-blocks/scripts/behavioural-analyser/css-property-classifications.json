@@ -361,15 +361,6 @@
     },
     {
       "slug": "sgs/account",
-      "attr": "accountFormGap",
-      "fields": {
-        "css_property": "gap",
-        "css_layer": "OUTER",
-        "css_element": "accountForm"
-      }
-    },
-    {
-      "slug": "sgs/account",
       "attr": "accountPasswordHelperColour",
       "fields": {
         "css_property": "color",
@@ -35654,6 +35645,15 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "accountFormGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "OUTER",
+        "css_element": "accountForm"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "accountFormMaxWidth",
       "fields": {
         "css_property": "max-width",
@@ -36108,6 +36108,24 @@
       "fields": {
         "css_property": "width",
         "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonIconBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "loginButtonIcon"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonIconColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "loginButtonIcon"
       }
     },
     {
@@ -36617,11 +36635,38 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "ordersRowThumbsFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "OUTER",
+        "css_element": "order-row-thumbs"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "ordersTotalColour",
       "fields": {
         "css_property": "color",
         "role": "color",
         "css_element": "ordersTotal"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "registerButtonIconBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "registerButtonIcon"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "registerButtonIconColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "registerButtonIcon"
       }
     },
     {
