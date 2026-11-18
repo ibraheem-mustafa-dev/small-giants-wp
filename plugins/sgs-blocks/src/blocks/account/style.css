@@ -1338,3 +1338,31 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 		justify-content: flex-end;
 	}
 }
+
+/* An icon inside the sign-in and create-account buttons (includes/account/helpers-account-button-icon.php). The size,
+   gap and circle diameter are set per device on the button; no icon chosen prints none of this markup. */
+.sgs-account__button--icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sgs-account__button-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+}
+
+.sgs-account__button-icon svg {
+	display: block;
+	width: var(--sgs-btn-icon-size, 1em);
+	height: var(--sgs-btn-icon-size, 1em);
+}
+
+.sgs-account__button-icon--circle {
+	box-sizing: border-box;
+	border-radius: 50%;
+	width: var(--sgs-btn-icon-shape-size, calc(var(--sgs-btn-icon-size, 1em) * 1.8));
+	height: var(--sgs-btn-icon-shape-size, calc(var(--sgs-btn-icon-size, 1em) * 1.8));
+}

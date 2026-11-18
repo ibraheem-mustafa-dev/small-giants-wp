@@ -44,6 +44,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-order-de
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-orders-list.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-address-editor.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-register.php';
+require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-button-icon.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-strings.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-extras.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-endpoints.php';
@@ -86,6 +87,7 @@ $scoped_css   = array();
 $scoped_css[] = sgs_account_scoped_css( $attributes, $root_sel );
 $scoped_css[] = sgs_account_field_css( $attributes, $root_sel );
 $scoped_css[] = sgs_account_look_css( $attributes, $root_sel );
+$scoped_css[] = sgs_account_button_icon_css( $attributes, $root_sel );
 $show_card    = sgs_account_signed_out_card_active( $attributes );
 if ( $show_menu_icons ) {
 	$scoped_css[] = sgs_account_menu_icon_css( $menu_icons, $root_sel );
@@ -105,6 +107,7 @@ try {
 		\WC_Shortcode_My_Account::output( array() );
 	}
 	$wc_output = \SGS\Blocks\Account_Strings::register_heading( sgs_account_register_markup( sgs_account_edit_account_markup( (string) ob_get_clean(), $attributes ), $attributes ) );
+		$wc_output        = sgs_account_button_icons( $wc_output, $attributes );
 } finally {
 	while ( ob_get_level() > $sgs_buffer_level ) {
 		ob_end_clean();

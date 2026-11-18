@@ -104,6 +104,10 @@ export function extraColourRows( attributes, setAttributes ) {
 		t( 'accountPasswordHelper', __( 'Change password helper text', 'sgs-blocks' ), { base: 'accountPasswordHelperColour' } ),
 		f( 'loginButtonBackground', __( 'Sign in button background', 'sgs-blocks' ), { base: 'loginButtonBackground', hover: 'loginButtonBackgroundHover' } ),
 		t( 'loginButtonText', __( 'Sign in button text', 'sgs-blocks' ), { base: 'loginButtonText', hover: 'loginButtonTextHover' } ),
+		t( 'loginButtonIcon', __( 'Sign in button icon', 'sgs-blocks' ), { base: 'loginButtonIconColour' } ),
+		f( 'loginButtonIconBackground', __( 'Sign in button icon circle', 'sgs-blocks' ), { base: 'loginButtonIconBackground' } ),
+		t( 'registerButtonIcon', __( 'Create account button icon', 'sgs-blocks' ), { base: 'registerButtonIconColour' } ),
+		f( 'registerButtonIconBackground', __( 'Create account button icon circle', 'sgs-blocks' ), { base: 'registerButtonIconBackground' } ),
 		t( 'loginLink', __( 'Lost password link', 'sgs-blocks' ), { base: 'loginLinkColour', hover: 'loginLinkColourHover' } )
 	);
 	return rows;

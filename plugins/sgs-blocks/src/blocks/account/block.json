@@ -1015,6 +1015,38 @@
 						},
 						"_note": "The sign-in button; with loginButtonScope all-forms it is also the register, lost-password, account-details and address buttons. loginButtonPreset takes the site's button preset variables."
 					},
+					"loginButtonIcon": {
+						"selector": ".sgs-account__wc form .woocommerce-form-login__submit .sgs-account__button-icon",
+						"motion": false,
+						"label": "Sign in button icon",
+						"order": 123,
+						"clusters": [
+							"text",
+							"fill"
+						],
+						"prefix": "loginButtonIcon",
+						"attrMap": {
+							"css:color": "loginButtonIconColour",
+							"css:background-color": "loginButtonIconBackground"
+						},
+						"_note": "The icon inside the sign-in button (loginButtonIcon names it). The gap prints on the button itself, between the label and the icon; the size and circle diameter are custom properties on the button."
+					},
+					"registerButtonIcon": {
+						"selector": ".sgs-account__wc form .woocommerce-form-register__submit .sgs-account__button-icon",
+						"motion": false,
+						"label": "Create account button icon",
+						"order": 124,
+						"clusters": [
+							"text",
+							"fill"
+						],
+						"prefix": "registerButtonIcon",
+						"attrMap": {
+							"css:color": "registerButtonIconColour",
+							"css:background-color": "registerButtonIconBackground"
+						},
+						"_note": "The icon inside the create-account button (registerButtonIcon names it). The gap prints on the button itself, between the label and the icon."
+					},
 					"loginLink": {
 						"selector": ".sgs-account__wc form .lost_password a",
 						"motion": false,
@@ -4846,6 +4878,74 @@
 			},
 			"loginButtonFullWidth": {
 				"type": "boolean"
+			},
+			"loginButtonIcon": {
+				"type": "string",
+				"default": "",
+				"description": "Lucide icon name drawn inside the sign-in button. Empty draws no icon."
+			},
+			"loginButtonIconPosition": {
+				"type": "string",
+				"enum": [
+					"",
+					"before",
+					"after"
+				],
+				"description": "Which side of the sign-in button's label the icon sits. Empty = after the label."
+			},
+			"loginButtonIconSize": {
+				"type": "object",
+				"description": "Per-device icon size in px ({desktop,tablet,mobile}). Empty = 1em, the button's text size."
+			},
+			"loginButtonIconGap": {
+				"type": "object",
+				"description": "Per-device gap between the label and the icon (CSS length). Empty adds no gap."
+			},
+			"loginButtonIconColour": {
+				"type": "string",
+				"description": "Icon colour (a palette slug or colour). Empty = the button's own text colour."
+			},
+			"loginButtonIconBackground": {
+				"type": "string",
+				"description": "Fill of a circle behind the icon (a palette slug or colour). Empty = no circle."
+			},
+			"loginButtonIconShapeSize": {
+				"type": "object",
+				"description": "Diameter in px of the circle behind the icon, per device ({desktop,tablet,mobile}). Empty = 1.8 times the icon size. Used only while the circle fill is set."
+			},
+			"registerButtonIcon": {
+				"type": "string",
+				"default": "",
+				"description": "Lucide icon name drawn inside the create-account button. Empty draws no icon."
+			},
+			"registerButtonIconPosition": {
+				"type": "string",
+				"enum": [
+					"",
+					"before",
+					"after"
+				],
+				"description": "Which side of the create-account button's label the icon sits. Empty = after the label."
+			},
+			"registerButtonIconSize": {
+				"type": "object",
+				"description": "Per-device icon size in px ({desktop,tablet,mobile}). Empty = 1em, the button's text size."
+			},
+			"registerButtonIconGap": {
+				"type": "object",
+				"description": "Per-device gap between the label and the icon (CSS length). Empty adds no gap."
+			},
+			"registerButtonIconColour": {
+				"type": "string",
+				"description": "Icon colour (a palette slug or colour). Empty = the button's own text colour."
+			},
+			"registerButtonIconBackground": {
+				"type": "string",
+				"description": "Fill of a circle behind the icon (a palette slug or colour). Empty = no circle."
+			},
+			"registerButtonIconShapeSize": {
+				"type": "object",
+				"description": "Diameter in px of the circle behind the icon, per device ({desktop,tablet,mobile}). Empty = 1.8 times the icon size. Used only while the circle fill is set."
 			},
 			"loginLinkPlacement": {
 				"type": "string",
