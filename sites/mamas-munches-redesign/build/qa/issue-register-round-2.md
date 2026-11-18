@@ -119,6 +119,10 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Account 10:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) Switch view order button's resting bg/fill colour to be the yellow.
 - **Account 11:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) Order summary is missing the order again button.
 - **Account 12:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) Isn't the first step supposed to be the processing stage? Why does the live example screenshot show us on the second stage with it saying the woocommerce status is still processing? I thought it'd say something at least like confirmed.
+- **Account 13:** (Bean's review of the account and order confirmation pairs, 2026-11-18; first filed as Order confirmation 7.) The "Confirm email address" link in the notice above the orders was light grey.
+- **Account 14:** (Bean's proofing on mamas-test, 2026-11-18 morning.) Address shadow cut off at the bottom.
+- **Account 15:** (Bean's proofing on mamas-test, 2026-11-18 morning.) Change the bg/fill colour of the delivered to card to pink on the order details.
+- **Account 16:** (Bean's proofing on mamas-test, 2026-11-18 morning.) Feel like the something not right hyperlink is a bit out of place, what do you think?
 
 ## Checkout
 
@@ -166,6 +170,7 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **All pages 7:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) All tick boxes on the site should match the tick box look on the basket drawer's gift note tick box. - Do a full site sweep and make sure all are standardised.
 - **All pages 8:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) (On All pages 6.) The bottom page padding/gap should be equal across all pages at a sensible value that you can decide based on /research
 - **All pages 9:** (Raised by the main session and a side agent on 2026-11-18, not Bean's words; Bean may rule it out.) Three pages the draft has no design for and nobody has reviewed look unstyled: search results (very large pink headings with "Read more", a pink search button), Saved items when empty (small plain text, a pink "Continue shopping" button) and the 404 page (a search box with the same pink button). To be restyled in the site's own look, matched to the nearest built pages.
+- **All pages 10:** (Bean's proofing on mamas-test, 2026-11-18 morning.) Wishlist should have identical product cards to the rest of the site.
 
 ## Bean's verdicts so far (2026-11-17 late evening)
 
@@ -188,3 +193,4 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Light grey text (2026-11-18):** banned everywhere. "Pretty sure I've banned this a few times, I'm doing it again. Never do this or allow this, switch it back to black." (Raised first as Checkout 7.)
 - **Account notice and order wording (2026-11-18):** "Restyle the pink notice, and use Posted for completed orders." The notice above an unverified customer's orders is a dashed yellow card with a bold "Confirm email address" link; a completed order's pill reads "Posted" and its tracker stops at the Posted step (`orderCompletedStep` `dispatched`), with "With you" ahead.
 - **Old proofing photos (2026-11-18):** "can you delete the old proofing photos that are in the same folder as the new ones you've taken for me. It's confusing". `E:\sgs-tmp\mamas-register\round2\for-bean\` holds only the current set; an older pass is deleted when its replacement is made.
+- **Wording and card fills (2026-11-18):** "Keep the wording and the card fills as they are." The cannot-show-this-order wording ("Let's find your order." …) and the order confirmation page's card fills are approved.
