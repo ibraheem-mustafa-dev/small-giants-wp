@@ -20,14 +20,14 @@ const POSITIONS = [
  * @param {Object}   props               Panel props.
  * @param {string}   props.prefix        Attribute prefix, 'loginButton' or 'registerButton'.
  * @param {string}   props.title         Panel title.
+ * @param {Node}     props.gap           The per-device gap control (written out per button, so each mount names its own setting).
  * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Attribute setter.
  * @return {JSX.Element} The icon panel for one button.
  */
-function ButtonIconPanel( { prefix, title, attributes, setAttributes } ) {
+function ButtonIconPanel( { prefix, title, gap, attributes, setAttributes } ) {
 	const icon = attributes[ prefix + 'Icon' ];
 	const sizeName = prefix + 'IconSize';
-	const gapName = prefix + 'IconGap';
 	const shapeName = prefix + 'IconShapeSize';
 	const p = { attributes, setAttributes };
 	return (
@@ -60,19 +60,7 @@ function ButtonIconPanel( { prefix, title, attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveOverride>
-					<ResponsiveOverride
-						label={ __( 'Icon gap', 'sgs-blocks' ) }
-						value={ attributes[ gapName ] }
-						onChange={ ( obj ) => setAttributes( { [ gapName ]: obj } ) }
-					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<SgsLengthControl
-								value={ ownValue }
-								placeholder={ inherited ? effectiveValue : '' }
-								onChange={ setOwnValue }
-							/>
-						) }
-					</ResponsiveOverride>
+					{ gap }
 					<ResponsiveOverride
 						label={ __( 'Icon circle size (px)', 'sgs-blocks' ) }
 						value={ attributes[ shapeName ] }
@@ -108,10 +96,32 @@ function ButtonIconPanel( { prefix, title, attributes, setAttributes } ) {
  * @return {JSX.Element} Both button icon panels.
  */
 export default function ButtonIconPanels( { attributes, setAttributes } ) {
+	const loginGap = (
+		<ResponsiveOverride
+			label={ __( 'Icon gap', 'sgs-blocks' ) }
+			value={ attributes.loginButtonIconGap }
+			onChange={ ( obj ) => setAttributes( { loginButtonIconGap: obj } ) }
+		>
+			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+				<SgsLengthControl label={ __( 'Icon gap', 'sgs-blocks' ) } value={ ownValue } placeholder={ inherited ? effectiveValue : '' } onChange={ setOwnValue } />
+			) }
+		</ResponsiveOverride>
+	);
+	const registerGap = (
+		<ResponsiveOverride
+			label={ __( 'Icon gap', 'sgs-blocks' ) }
+			value={ attributes.registerButtonIconGap }
+			onChange={ ( obj ) => setAttributes( { registerButtonIconGap: obj } ) }
+		>
+			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+				<SgsLengthControl label={ __( 'Icon gap', 'sgs-blocks' ) } value={ ownValue } placeholder={ inherited ? effectiveValue : '' } onChange={ setOwnValue } />
+			) }
+		</ResponsiveOverride>
+	);
 	return (
 		<>
-			<ButtonIconPanel prefix="loginButton" title={ __( 'Sign in button icon', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } />
-			<ButtonIconPanel prefix="registerButton" title={ __( 'Create account button icon', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } />
+			<ButtonIconPanel prefix="loginButton" title={ __( 'Sign in button icon', 'sgs-blocks' ) } gap={ loginGap } attributes={ attributes } setAttributes={ setAttributes } />
+			<ButtonIconPanel prefix="registerButton" title={ __( 'Create account button icon', 'sgs-blocks' ) } gap={ registerGap } attributes={ attributes } setAttributes={ setAttributes } />
 		</>
 	);
 }

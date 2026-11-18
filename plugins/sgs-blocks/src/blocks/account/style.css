@@ -1202,7 +1202,7 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	height: 36px;
 	border-radius: 50%;
 	background: #25d366;
-	color: #fff;
+	color: var(--sgs-account-chat-icon-colour, #fff);
 }
 
 .sgs-account__od-chat-glyph {
@@ -1389,8 +1389,11 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	background: var(--wp--preset--color--surface-alt, rgba(0, 0, 0, 0.04));
 }
 
-.sgs-account__gift-note-title {
+:where(.sgs-account__gift-note-title) {
 	font-weight: 600;
+}
+
+.sgs-account__gift-note-title {
 	margin-block-end: 0.5rem;
 }
 
@@ -1398,6 +1401,6 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	margin: 0;
 }
 
-.sgs-account__gift-note-to {
+:where(.sgs-account__gift-note-to) {
 	font-weight: 600;
 }
