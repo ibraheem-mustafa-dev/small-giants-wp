@@ -21,6 +21,7 @@ final class Account_Extras {
 		\add_action( 'woocommerce_before_account_navigation', array( __CLASS__, 'start_menu_buffer' ), 1 );
 		\add_action( 'woocommerce_after_account_navigation', array( __CLASS__, 'end_menu_buffer' ), 99 );
 		\add_action( 'woocommerce_view_order', array( __CLASS__, 'view_order_gift_note' ), 20 );
+		\add_filter( 'woocommerce_valid_order_statuses_for_order_again', array( __CLASS__, 'order_again_statuses' ), 20 );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_orders_template' ), 10, 5 );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_lost_confirmation_template' ), 10, 5 );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_view_order_template' ), 10, 5 );
@@ -184,6 +185,54 @@ final class Account_Extras {
 			return $template;
 		}
 		return __DIR__ . '/templates/order-detail.php';
+	}
+
+	/**
+	 * The order statuses that may be ordered again, widened by the account block's `orderDetailOrderAgainWhen` setting:
+	 * `paid` adds a processing order to WooCommerce's completed. The filter runs for the order page's link and again when
+	 * the link is clicked (the cart page, where no account block renders), so the setting is read from the block while it
+	 * renders and from the saved My account page otherwise.
+	 *
+	 * @param mixed $statuses WooCommerce's allowed statuses.
+	 * @return mixed
+	 */
+	public static function order_again_statuses( $statuses ) {
+		return is_array( $statuses ) ? self::order_again_statuses_for( self::order_again_when(), $statuses ) : $statuses;
+	}
+
+	/**
+	 * The status list for one setting value.
+	 *
+	 * @param string   $when     `completed` or `paid`.
+	 * @param string[] $statuses The allowed statuses so far.
+	 * @return string[]
+	 */
+	public static function order_again_statuses_for( string $when, array $statuses ): array {
+		if ( 'paid' === $when && ! in_array( 'processing', $statuses, true ) ) {
+			$statuses[] = 'processing';
+		}
+		return $statuses;
+	}
+
+	/**
+	 * The `orderDetailOrderAgainWhen` value for this request: the rendering block's own, else the My account page's.
+	 *
+	 * @return string
+	 */
+	private static function order_again_when(): string {
+		if ( is_array( Account_Endpoints::$active ) ) {
+			return (string) ( Account_Endpoints::$active['orderDetailOrderAgainWhen'] ?? '' );
+		}
+		static $cached = null;
+		if ( null === $cached ) {
+			$cached = '';
+			$page   = function_exists( 'wc_get_page_id' ) ? (int) \wc_get_page_id( 'myaccount' ) : 0;
+			$post   = $page > 0 ? \get_post( $page ) : null;
+			if ( $post && false !== strpos( (string) $post->post_content, 'wp:sgs/account' ) ) {
+				$cached = Account_Redirect::attr_in_blocks( \parse_blocks( (string) $post->post_content ), 'orderDetailOrderAgainWhen' );
+			}
+		}
+		return $cached;
 	}
 
 	/**

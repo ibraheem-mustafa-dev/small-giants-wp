@@ -5081,6 +5081,20 @@
 				"default": "",
 				"description": "Label of the order-again button. Empty = Order again."
 			},
+			"orderDetailOrderAgainWhen": {
+				"type": "string",
+				"enum": [
+					"completed",
+					"paid"
+				],
+				"default": "completed",
+				"description": "Which orders may be ordered again: completed = WooCommerce's default (completed orders only), paid = a processing order too. It widens WooCommerce's order-again status list for the order page's link and for the click that lands on the cart page."
+			},
+			"orderStatusLabels": {
+				"type": "object",
+				"default": {},
+				"description": "The status pill's wording per WooCommerce order status (keys pending, processing, on-hold, completed, cancelled, refunded, failed, no wc- prefix). An empty or missing value prints WooCommerce's own status name. Applies to the orders list, the order page and the dashboard's latest order."
+			},
 			"orderDetailHelpLabel": {
 				"type": "string",
 				"default": "",

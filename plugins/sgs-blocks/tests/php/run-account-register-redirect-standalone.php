@@ -213,7 +213,7 @@ EX::save_account_marketing_opt_in( 4 );
 ok( ! isset( $GLOBALS['meta'][4]['sgs_marketing_opt_in'] ) && ! isset( $GLOBALS['meta'][4]['sgs_marketing_opt_in_at'] ), '10 save: unticking removes the flag and the time' );
 $_POST = array();
 EX::register();
-ok( isset( $GLOBALS['hooks']['woocommerce_edit_account_form'], $GLOBALS['hooks']['woocommerce_save_account_details'] ), '10 hooks wired on WooCommerce account-details form and save' );
+ok( isset( $GLOBALS['hooks']['woocommerce_edit_account_form_fields'], $GLOBALS['hooks']['woocommerce_save_account_details'] ), '10 hooks wired on WooCommerce account-details form and save' );
 EP::$active = null;
 
 // 11) Tab headings: the heading setting wins, an empty one falls back to the tab label.

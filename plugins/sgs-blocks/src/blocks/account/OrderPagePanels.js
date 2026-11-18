@@ -2,10 +2,21 @@
  * Panels for the account block's order page, the orders list summary and the Saved items tab: each a small panel of its own.
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody } from '@wordpress/components';
+import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
 import { FlexWrapControl, IconPicker, LinkPopoverField } from '../../components';
 import { LINK_SOURCES_NO_TOP } from '../../shared/link-source-options';
 import { Choice, TextField, Toggle } from './extraControls';
+
+// [ WooCommerce status slug without the wc- prefix, editor label ]
+const ORDER_STATUSES = [
+	[ 'pending', __( 'Pending payment', 'sgs-blocks' ) ],
+	[ 'processing', __( 'Processing', 'sgs-blocks' ) ],
+	[ 'on-hold', __( 'On hold', 'sgs-blocks' ) ],
+	[ 'completed', __( 'Completed', 'sgs-blocks' ) ],
+	[ 'cancelled', __( 'Cancelled', 'sgs-blocks' ) ],
+	[ 'refunded', __( 'Refunded', 'sgs-blocks' ) ],
+	[ 'failed', __( 'Failed', 'sgs-blocks' ) ],
+];
 
 /**
  * @param {Object}   props               Panel props.
@@ -17,6 +28,27 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 	const p = { attributes, setAttributes };
 	return (
 		<>
+		<PanelBody title={ __( 'Order status wording', 'sgs-blocks' ) } initialOpen={ false }>
+			<p>{ __( 'The status pill in the orders list, on the order page and on the dashboard. Empty keeps WooCommerce’s own name.', 'sgs-blocks' ) }</p>
+			{ ORDER_STATUSES.map( ( [ slug, label ] ) => (
+				<TextControl
+					key={ slug }
+					__next40pxDefaultSize
+					__nextHasNoMarginBottom
+					label={ label }
+					value={ attributes.orderStatusLabels?.[ slug ] ?? '' }
+					onChange={ ( value ) => {
+						const next = { ...( attributes.orderStatusLabels || {} ) };
+						if ( value ) {
+							next[ slug ] = value;
+						} else {
+							delete next[ slug ];
+						}
+						setAttributes( { orderStatusLabels: next } );
+					} }
+				/>
+			) ) }
+		</PanelBody>
 		<PanelBody title={ __( 'Orders list: items summary', 'sgs-blocks' ) } initialOpen={ false }>
 			<Toggle { ...p } name="ordersSummary" label={ __( 'Items summary in the orders list', 'sgs-blocks' ) } help={ __( 'A column naming the order’s products.', 'sgs-blocks' ) } />
 			<Toggle { ...p } name="ordersRowList" label={ __( 'Orders as link rows', 'sgs-blocks' ) } help={ __( 'Each order is one row that links to the order: number and date, items, status, total and a chevron. Replaces WooCommerce’s table; its pagination stays.', 'sgs-blocks' ) } />
@@ -84,6 +116,20 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 					/>
 					<Toggle { ...p } name="orderDetailOrderAgain" label={ __( 'Order again button', 'sgs-blocks' ) } help={ __( 'Under the totals; WooCommerce decides which orders can be re-ordered (completed by default).', 'sgs-blocks' ) } />
 					{ attributes.orderDetailOrderAgain && <TextField { ...p } name="orderDetailOrderAgainLabel" label={ __( 'Order again button label', 'sgs-blocks' ) } help={ __( 'Empty uses “Order again”.', 'sgs-blocks' ) } /> }
+					{ attributes.orderDetailOrderAgain && (
+						<SelectControl
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+							label={ __( 'Orders that can be ordered again', 'sgs-blocks' ) }
+							help={ __( 'Completed orders only (WooCommerce’s default), or a processing order too.', 'sgs-blocks' ) }
+							value={ attributes.orderDetailOrderAgainWhen || 'completed' }
+							options={ [
+								{ value: 'completed', label: __( 'Completed orders', 'sgs-blocks' ) },
+								{ value: 'paid', label: __( 'Completed and processing orders', 'sgs-blocks' ) },
+							] }
+							onChange={ ( value ) => setAttributes( { orderDetailOrderAgainWhen: value } ) }
+						/>
+					) }
 				</>
 			) }
 		</PanelBody>

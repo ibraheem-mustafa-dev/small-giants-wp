@@ -182,6 +182,24 @@ final class Account_Redirect {
 	}
 
 	/**
+	 * The first non-empty value of one attribute over the sgs/account blocks of a parsed tree (a request that is not
+	 * the account page itself reads the account page's saved settings this way).
+	 *
+	 * @param array  $blocks Parsed blocks.
+	 * @param string $attr   Attribute name.
+	 * @return string '' when no account block sets it.
+	 */
+	public static function attr_in_blocks( array $blocks, string $attr ): string {
+		return self::find_in_blocks(
+			$blocks,
+			static function ( array $attrs ) use ( $attr ): string {
+				return is_scalar( $attrs[ $attr ] ?? null ) ? (string) $attrs[ $attr ] : '';
+			},
+			3
+		);
+	}
+
+	/**
 	 * The first non-empty result of `$resolver` over the sgs/account blocks of a parsed tree.
 	 *
 	 * @param array    $blocks   Parsed blocks.
