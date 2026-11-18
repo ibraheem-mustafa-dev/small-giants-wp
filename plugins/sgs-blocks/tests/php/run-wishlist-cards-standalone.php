@@ -39,6 +39,7 @@ function wp_json_encode( $v ) { return json_encode( $v ); }
 function wp_salt( $s = 'auth' ) { return 'test-salt-' . $s; }
 function sanitize_text_field( $v ) { return trim( (string) $v ); }
 function get_post_status( $id ) { return $GLOBALS['posts'][ (int) $id ]['status'] ?? false; }
+function get_post_type( $id ) { return isset( $GLOBALS['posts'][ (int) $id ] ) ? ( $GLOBALS['posts'][ (int) $id ]['type'] ?? 'product' ) : false; }
 function get_post_field( $f, $id ) { return $GLOBALS['posts'][ (int) $id ][ $f ] ?? ''; }
 function wc_get_product( $id ) { return isset( $GLOBALS['posts'][ (int) $id ] ) ? new Fake_Product( $GLOBALS['posts'][ (int) $id ]['visible'] ) : false; }
 function render_block( array $block ) {
@@ -58,6 +59,7 @@ $GLOBALS['posts'] = array(
 	14 => array( 'status' => 'publish', 'visible' => true, 'post_password' => 'secret' ),
 	15 => array( 'status' => 'publish', 'visible' => true, 'post_password' => '' ),
 	16 => array( 'status' => 'private', 'visible' => true, 'post_password' => '' ),
+	17 => array( 'status' => 'publish', 'visible' => true, 'post_password' => '', 'type' => 'product_variation' ),
 );
 
 $negative   = in_array( '--negative-control', $argv, true );
@@ -130,6 +132,8 @@ ok( $R::verify_template( $signed['template'], $signed['sig'] ), 'a signed templa
 ok( ! $R::verify_template( $signed['template'] . ' ', $signed['sig'] ), 'a changed template does not verify' );
 ok( ! $R::verify_template( $signed['template'], 'deadbeef' ), 'a wrong signature does not verify' );
 ok( ! $R::verify_template( $signed['template'], '' ), 'an empty signature does not verify' );
+
+ok( $R::is_listable( 11 ) && ! $R::is_listable( 17 ), 'a published, visible variation is refused: only a product itself is drawn (its parent may be a draft or hidden)' );
 
 // Handler: refusal.
 $bad = ask( array( 'ids' => array( 11 ), 'template' => '{"showPickers":true}', 'sig' => $signed['sig'] ) );

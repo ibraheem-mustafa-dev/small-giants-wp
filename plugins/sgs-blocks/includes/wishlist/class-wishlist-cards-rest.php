@@ -186,13 +186,15 @@ final class Wishlist_Cards_Rest {
 	}
 
 	/**
-	 * Whether a product may be drawn for any visitor: published, visible in the catalogue, not password protected.
+	 * Whether a product may be drawn for any visitor: a product itself (never a variation, whose own post is published
+	 * and visible even when its parent product is a draft or hidden), published, visible in the catalogue, not password
+	 * protected.
 	 *
 	 * @param int $product_id Product ID.
 	 * @return bool
 	 */
 	public static function is_listable( int $product_id ): bool {
-		if ( $product_id <= 0 || 'publish' !== \get_post_status( $product_id ) || ! \function_exists( 'wc_get_product' ) ) {
+		if ( $product_id <= 0 || 'product' !== \get_post_type( $product_id ) || 'publish' !== \get_post_status( $product_id ) || ! \function_exists( 'wc_get_product' ) ) {
 			return false;
 		}
 		$product = \wc_get_product( $product_id );
