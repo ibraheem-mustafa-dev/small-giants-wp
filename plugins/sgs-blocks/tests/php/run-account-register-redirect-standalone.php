@@ -229,5 +229,17 @@ $h = (string) ob_get_clean();
 ok( str_contains( $h, '>Your &lt;orders&gt;</h2>' ), '11 the printed heading carries the setting, escaped' );
 EP::$active = null;
 
+// 12) Signed-out deep links: orders, addresses and account details redirect; lost password, reset and key links do not.
+foreach ( array( 'orders', 'edit-address', 'edit-account' ) as $ep ) {
+	ok( 'https://example.test/sign-in/?redirect_to=' . rawurlencode( 'https://example.test/my-account/' . $ep . '/' ) === RD::decide_signed_out( array( 'has_endpoint' => true, 'endpoint' => $ep, 'request_url' => '/my-account/' . $ep . '/' ) + $so ), "12 signed out on /{$ep}/: sign-in page, redirect_to kept" );
+}
+ok( 'https://example.test/sign-in/?redirect_to=' . rawurlencode( 'https://example.test/my-account/orders/2/' ) === RD::decide_signed_out( array( 'has_endpoint' => true, 'endpoint' => 'orders', 'request_url' => '/my-account/orders/2/' ) + $so ), '12 a later orders page keeps its address in redirect_to' );
+foreach ( array( 'lost-password', 'customer-logout', 'view-order', 'downloads', '' ) as $ep ) {
+	ok( null === RD::decide_signed_out( array( 'has_endpoint' => true, 'endpoint' => $ep, 'request_url' => '/my-account/' . $ep . '/' ) + $so ), "12 endpoint '{$ep}': left as WooCommerce shows it" );
+}
+ok( null === RD::decide_signed_out( array( 'has_endpoint' => true, 'endpoint' => 'orders', 'has_key' => true, 'request_url' => '/my-account/orders/?key=x' ) + $so ), '12 a key in the address stops the redirect even on an orders endpoint' );
+ok( null === RD::decide_signed_out( array( 'has_endpoint' => true, 'endpoint' => 'orders', 'logged_in' => true, 'request_url' => '/my-account/orders/' ) + $so ), '12 signed in on orders: no redirect' );
+ok( null === RD::decide_signed_out( array( 'has_endpoint' => true, 'request_url' => '/my-account/lost-password/' ) + $so ), '12 an endpoint with no name given (old callers): no redirect' );
+
 echo $failures ? "\n{$failures} FAILED\n" : "\nall passed\n";
 exit( $failures ? 1 : 0 );

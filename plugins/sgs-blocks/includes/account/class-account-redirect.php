@@ -26,6 +26,13 @@ require_once dirname( __DIR__ ) . '/helpers-link-source.php';
 /** Signed-in redirect for sgs/account. */
 final class Account_Redirect {
 
+	/**
+	 * The account endpoints a signed-out visitor is sent to the sign-in page from (orders, addresses and account details only
+	 * show a signed-in customer's own data). Lost-password, reset-password, view-order and every other endpoint stay as
+	 * WooCommerce shows them.
+	 */
+	private const SIGNED_OUT_REDIRECT_ENDPOINTS = array( 'orders', 'edit-address', 'edit-account' );
+
 	/** Wire WordPress hooks. Called once from sgs-blocks.php. */
 	public static function register(): void {
 		\add_action( 'template_redirect', array( __CLASS__, 'maybe_redirect' ), 5 );
@@ -95,8 +102,9 @@ final class Account_Redirect {
 	 * The signed-out decision, as a pure function: the sign-in page address carrying `redirect_to`, or null.
 	 *
 	 * Keys of `$c`: logged_in, method, request_url, sign_in_url (the block's resolved sign-in page), is_rest, is_ajax,
-	 * is_cron, is_admin, is_preview, has_endpoint (a WooCommerce account endpoint such as lost password) and has_key
-	 * (an email-verification or reset key in the address).
+	 * is_cron, is_admin, is_preview, has_endpoint (a WooCommerce account endpoint is being shown), endpoint (its name, for example
+	 * `orders` or `lost-password`; only the names in SIGNED_OUT_REDIRECT_ENDPOINTS still redirect) and has_key (an
+	 * email-verification or reset key in the address, which always stops the redirect).
 	 *
 	 * @param array $c Request facts.
 	 * @return string|null
@@ -109,10 +117,15 @@ final class Account_Redirect {
 		if ( ! in_array( strtoupper( (string) ( $c['method'] ?? 'GET' ) ), array( 'GET', 'HEAD' ), true ) ) {
 			return null;
 		}
-		foreach ( array( 'is_rest', 'is_ajax', 'is_cron', 'is_admin', 'is_preview', 'has_endpoint', 'has_key' ) as $flag ) {
+		foreach ( array( 'is_rest', 'is_ajax', 'is_cron', 'is_admin', 'is_preview', 'has_key' ) as $flag ) {
 			if ( ! empty( $c[ $flag ] ) ) {
 				return null;
 			}
+		}
+		// An endpoint page stays as WooCommerce shows it (lost password, reset, verification) unless it is one of the
+		// signed-in-only pages named in SIGNED_OUT_REDIRECT_ENDPOINTS.
+		if ( ! empty( $c['has_endpoint'] ) && ! in_array( (string) ( $c['endpoint'] ?? '' ), self::SIGNED_OUT_REDIRECT_ENDPOINTS, true ) ) {
+			return null;
 		}
 		$request = (string) ( $c['request_url'] ?? '' );
 		if ( self::same_page( $request, $sign_in ) ) {
@@ -288,7 +301,9 @@ final class Account_Redirect {
 		$has_key  = isset( $_GET['key'] ) || isset( $_GET['id'] ) || isset( $_GET['show-reset-form'] ) || isset( $_GET['verify'] ) || isset( $_GET['verify_email'] ) || isset( $_GET['token'] );
 		$preview  = \is_preview() || \is_customize_preview() || isset( $_GET['preview'] );
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		$current = function_exists( 'WC' ) && \WC()->query ? (string) \WC()->query->get_current_endpoint() : '';
 		return array(
+			'endpoint'     => $current,
 			'method'       => isset( $_SERVER['REQUEST_METHOD'] ) ? \sanitize_text_field( \wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : 'GET',
 			'request_url'  => isset( $_SERVER['REQUEST_URI'] ) ? \esc_url_raw( \wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '',
 			'is_rest'      => defined( 'REST_REQUEST' ) && REST_REQUEST,
