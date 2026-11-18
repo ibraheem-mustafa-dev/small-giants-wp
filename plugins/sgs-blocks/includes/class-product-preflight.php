@@ -678,6 +678,8 @@ final class Product_Preflight {
 	 */
 	private static function lean_manifest_subset( array $manifest ): array {
 		$lean = $manifest;
+		// The `images` map is never seeded into the context (the buy box prints it as its own script).
+		unset( $lean['images'] );
 		if ( isset( $lean['combos'] ) && \is_array( $lean['combos'] ) && ! empty( $lean['combos'] ) ) {
 			$lean['combos'] = sgs_lean_seed_combos( $lean['combos'] );
 		}

@@ -84,13 +84,16 @@ final class Product_Manifest {
 	}
 
 	/**
-	 * One gallery item for an attachment id.
+	 * One gallery item for an attachment id: the thumbnail-strip entry.
 	 *
-	 * wp_get_attachment_image_src() returns [ url, w, h, is_intermediate ] in one
-	 * call, so dimensions need no second lookup.
+	 * The lookup returns [ url, w, h, is_intermediate ] in one
+	 * call, so dimensions need no second lookup. The entry carries the small
+	 * `woocommerce_thumbnail` copy (the strip's picture) and the attachment `id`,
+	 * which keys the manifest's `images` map (the main photo's sharp `src` and
+	 * `srcset`, stored once per attachment).
 	 *
 	 * @param int $attachment_id Attachment id.
-	 * @return array{url:string,w:int,h:int,alt:string}|null Null when the attachment does not resolve.
+	 * @return array{id:int,url:string,w:int,h:int,alt:string}|null Null when the attachment does not resolve.
 	 */
 	private static function gallery_item( int $attachment_id ): ?array {
 		$src = \wp_get_attachment_image_src( $attachment_id, 'woocommerce_thumbnail' );
@@ -99,6 +102,7 @@ final class Product_Manifest {
 		}
 
 		return array(
+			'id'  => $attachment_id,
 			'url' => \esc_url_raw( (string) $src[0] ),
 			'w'   => (int) $src[1],
 			'h'   => (int) $src[2],
@@ -106,6 +110,62 @@ final class Product_Manifest {
 				(string) \get_post_meta( $attachment_id, '_wp_attachment_image_alt', true )
 			),
 		);
+	}
+
+	/**
+	 * What a sharp main photo needs for one attachment: the `src` and `srcset` WordPress prints for the full size.
+	 *
+	 * These are the same two values `wp_get_attachment_image( $id, 'full' )` prints (the shared media renderer's
+	 * file for an attachment), so the first paint and a later swap give the browser the same candidates. The
+	 * `srcset` lists every resized copy (AVIF for a new upload) and the original.
+	 *
+	 * @param int $attachment_id Attachment id.
+	 * @return array{src:string,srcset:string,w:int,h:int}|null Null when the attachment has no file.
+	 */
+	private static function image_data( int $attachment_id ): ?array {
+		$full = \wp_get_attachment_image_src( $attachment_id, 'full' );
+		if ( ! $full ) {
+			return null;
+		}
+		$srcset = \function_exists( 'wp_get_attachment_image_srcset' )
+			? (string) \wp_get_attachment_image_srcset( $attachment_id, 'full' )
+			: '';
+
+		return array(
+			'src'    => \esc_url_raw( (string) $full[0] ),
+			'srcset' => $srcset,
+			'w'      => (int) $full[1],
+			'h'      => (int) $full[2],
+		);
+	}
+
+	/**
+	 * A large address of an attachment that every consumer reads: structured data, Open Graph and the product feed.
+	 *
+	 * The attachment's original file, because a new upload's resized copies are AVIF and some crawlers and merchant
+	 * feeds do not read AVIF, while the original keeps the format it was uploaded in. An original that is itself
+	 * AVIF (or another format those consumers may refuse) falls back to the largest copy in a safe format, then to
+	 * the original as the last resort.
+	 *
+	 * @param int $attachment_id Attachment id.
+	 * @return string URL, or '' when the attachment has no file.
+	 */
+	public static function share_url( int $attachment_id ): string {
+		$safe = array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' );
+		$url  = (string) \wp_get_attachment_url( $attachment_id );
+		if ( '' === $url ) {
+			return '';
+		}
+		if ( \in_array( (string) \get_post_mime_type( $attachment_id ), $safe, true ) ) {
+			return \esc_url_raw( $url );
+		}
+		foreach ( array( 'full', 'large', 'woocommerce_single' ) as $size ) {
+			$copy = \wp_get_attachment_image_src( $attachment_id, $size );
+			if ( $copy && \preg_match( '/\.(jpe?g|png|gif|webp)(\?|$)/i', (string) $copy[0] ) ) {
+				return \esc_url_raw( (string) $copy[0] );
+			}
+		}
+		return \esc_url_raw( $url );
 	}
 
 	/**
@@ -177,7 +237,9 @@ final class Product_Manifest {
 		// the parent's WooCommerce gallery; adds hasOwnImage per combo.
 		// v8: hasOwnImage reads the variation image in 'edit' context, so it is
 		// false when WC would have substituted the parent's image.
-		$cache_key = 'sgs_manifest_v9_' . $product_id . '_' . self::tax_fingerprint();
+		// v10: gallery entries carry the attachment id, each combo carries imageId and
+		// imageFull, and the manifest carries the `images` map (sharp src + srcset).
+		$cache_key = 'sgs_manifest_v10_' . $product_id . '_' . self::tax_fingerprint();
 		$cached    = \get_transient( $cache_key );
 
 		global $wpdb;
@@ -261,6 +323,8 @@ final class Product_Manifest {
 
 		// ── Combos ────────────────────────────────────────────────────────────
 		$combos   = array();
+		$images   = array(); // attachment id => { src, srcset, w, h }, stored once per photo.
+		$shares   = array(); // attachment id => the large address structured data, Open Graph and the feed print.
 		$children = $product->get_children();
 
 		// Loop-invariant gallery sources: the parent's featured image and the
@@ -369,12 +433,20 @@ final class Product_Manifest {
 				$item = self::gallery_item( $gid );
 				if ( null !== $item ) {
 					$gallery[] = $item;
+					if ( ! isset( $images[ $gid ] ) ) {
+						$data = self::image_data( $gid );
+						if ( null !== $data ) {
+							$images[ $gid ] = $data;
+						}
+						$shares[ $gid ] = self::share_url( $gid );
+					}
 				}
 			}
 
 			// imageUrl is gallery[0].url ('' when no image resolves); the SSR main
 			// <img>, the no-image gate and the view.js swap all read it.
 			$image_url = '' !== ( $gallery[0]['url'] ?? '' ) ? $gallery[0]['url'] : '';
+			$image_id  = (int) ( $gallery[0]['id'] ?? 0 );
 
 			// Translated "% off" label seeded per combo so view.js shows the SAME
 			// (localised) string on swap that the SSR literal shows (i18n parity).
@@ -426,6 +498,11 @@ final class Product_Manifest {
 				'pctDisplay'     => $pct_display,
 				'inStock'        => $in_stock,
 				'imageUrl'       => $image_url,
+				// The main photo's attachment id (keys the manifest `images` map; 0 when no image resolves).
+				'imageId'        => $image_id,
+				// The large, format-safe address of the main photo for structured data, Open Graph and the feed
+				// ('' when no image resolves). Server-only: the lean seed strips it.
+				'imageFull'      => $image_id > 0 ? (string) ( $shares[ $image_id ] ?? '' ) : '',
 				// True when the variation has its own featured image (not the parent's).
 				'hasOwnImage'    => $vid > 0,
 				// Tax components for the per-card taxDisplayMode (TAX-UI / FR-27-H3).
@@ -441,7 +518,7 @@ final class Product_Manifest {
 				'sku'            => $sku,
 				'gtin'           => $gtin,
 				'saleEndDate'    => $sale_end_date,
-				// Ordered { url, w, h, alt } items; imageUrl == gallery[0].url.
+				// Ordered { id, url, w, h, alt } items; imageUrl == gallery[0].url.
 				// Empty array when no image resolves.
 				'gallery'        => $gallery,
 			);
@@ -502,6 +579,7 @@ final class Product_Manifest {
 			'generatedAt'    => $mod_ts,
 			'axes'           => $axes,
 			'combos'         => $combos,
+			'images'         => $images,
 			'defaultKey'     => $default_key,
 			'defaultAxes'    => $default_axes,
 		);

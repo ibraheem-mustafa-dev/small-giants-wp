@@ -29,29 +29,36 @@ if ( ! function_exists( 'sgs_lean_seed_combos' ) ) {
 	 *
 	 * Applies the canonical strip used by the product-card render.php before
 	 * seeding data-wp-context:
-	 *   - Removes four server-only fields: sku, gtin, incMinor, saleEndDate.
+	 *   - Removes five server-only fields: sku, gtin, incMinor, saleEndDate, imageFull.
 	 *     view.js needs none of these; they exist only for JSON-LD / SEC-2 purposes.
 	 *   - Empties the gallery array when it has fewer than 2 images. A 0/1-image
 	 *     combo's view.js falls back to combo.imageUrl (the main image). Only a
 	 *     gallery with >=2 images is kept in full, because the thumbnail strip needs
 	 *     every entry.
 	 *
+	 *   - With `$with_image_ids` false, also removes each combo's `imageId` and each
+	 *     gallery entry's `id`. They key the buy box's `images` map (the main photo's
+	 *     sharp `src` and `srcset`); a product card has no such map, so for it they
+	 *     would only add bytes to the seed.
+	 *
 	 * Keys in the returned array are identical to the input; values are new copies
 	 * (the original $combos array is not mutated).
 	 *
-	 * @param array $combos Manifest combos array (keyed by combo key string).
+	 * @param array $combos        Manifest combos array (keyed by combo key string).
+	 * @param bool  $with_image_ids Keep the attachment ids (the buy box does; the product card does not).
 	 * @return array Stripped combos keyed identically to $combos.
 	 */
-	function sgs_lean_seed_combos( array $combos ): array {
+	function sgs_lean_seed_combos( array $combos, bool $with_image_ids = true ): array {
 		$seed_combos = array();
 
 		foreach ( $combos as $combo_key => $combo_data ) {
-			// Strip four server-only fields that bloat the client seed.
+			// Strip five server-only fields that bloat the client seed.
 			unset(
 				$combo_data['sku'],
 				$combo_data['gtin'],
 				$combo_data['incMinor'],
-				$combo_data['saleEndDate']
+				$combo_data['saleEndDate'],
+				$combo_data['imageFull']
 			);
 
 			// Empty the gallery when it holds fewer than 2 images.
@@ -63,6 +70,17 @@ if ( ! function_exists( 'sgs_lean_seed_combos' ) ) {
 			if ( isset( $combo_data['gallery'] ) && is_array( $combo_data['gallery'] )
 				&& count( $combo_data['gallery'] ) < 2 ) {
 				$combo_data['gallery'] = array();
+			}
+
+			if ( ! $with_image_ids ) {
+				unset( $combo_data['imageId'] );
+				if ( isset( $combo_data['gallery'] ) && is_array( $combo_data['gallery'] ) ) {
+					foreach ( $combo_data['gallery'] as $item_index => $item ) {
+						if ( is_array( $item ) ) {
+							unset( $combo_data['gallery'][ $item_index ]['id'] );
+						}
+					}
+				}
 			}
 
 			$seed_combos[ $combo_key ] = $combo_data;
