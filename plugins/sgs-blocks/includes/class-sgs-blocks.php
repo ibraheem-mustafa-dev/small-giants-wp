@@ -211,6 +211,8 @@ final class SGS_Blocks {
 		Product_Bindings::register();
 		require_once SGS_BLOCKS_PATH . 'includes/class-order-binding.php';
 		Order_Binding::register();
+		require_once SGS_BLOCKS_PATH . 'includes/class-customer-binding.php';
+		Customer_Binding::register();
 		Product_Field_Variations::register();
 
 		// Cart proxy (POST /sgs/v1/cart/add-item) — validates (CSRF + IDOR +
