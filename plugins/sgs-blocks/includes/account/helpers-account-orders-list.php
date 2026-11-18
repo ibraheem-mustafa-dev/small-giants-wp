@@ -114,7 +114,8 @@ if ( ! function_exists( 'sgs_account_orders_list_html' ) ) {
 		$end_tag = $chevron;
 		if ( '' !== $view ) {
 			// A text label (with the chosen icon after it) stands in for the chevron.
-			$end_tag = '<span class="sgs-account__order-view">' . esc_html( $view ) . sgs_account_button_icon_markup( (string) ( $attributes['ordersRowViewIcon'] ?? '' ), false ) . '</span>';
+			$view_icon = (string) ( $attributes['ordersRowViewIcon'] ?? '' );
+			$end_tag   = '<span class="sgs-account__order-view' . ( '' !== $view_icon ? ' sgs-account__order-view--has-icon' : '' ) . '">' . esc_html( $view ) . sgs_account_button_icon_markup( $view_icon, false ) . '</span>';
 		}
 		$html = '<div class="sgs-account__orders-list">';
 		foreach ( $orders as $order ) {

@@ -1377,6 +1377,9 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 .sgs-account__order-view {
 	display: inline-flex;
 	align-items: center;
+}
+
+.sgs-account__order-view--has-icon {
 	gap: 0.4em;
 }
 
