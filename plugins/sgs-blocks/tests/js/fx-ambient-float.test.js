@@ -18,6 +18,7 @@ let observers;
 let queries;
 let reduced;
 let props;
+let style;
 
 class FakeObserver {
 	constructor( callback ) {
@@ -75,6 +76,13 @@ function query( text ) {
 	return queries[ text ];
 }
 
+/** One compositor frame: the transform the float animates, as `loop-transform.js` writes it. */
+const tf = ( x, y, scale = 1, base = '' ) => ( {
+	transform: `translate(${ x }, ${ y }) scale(${ scale })${
+		base ? ` ${ base }` : ''
+	}`,
+} );
+
 function mount( { effectToken = 'ambient-float', attrs = '' } = {} ) {
 	document.body.innerHTML = `<div class="wp-block-sgs-container"><span data-sgs-fx="${ effectToken }" ${ attrs }></span><a href="#x">link</a></div>`;
 	const root = document.body.firstElementChild;
@@ -91,9 +99,11 @@ beforeEach( () => {
 	queries = {};
 	reduced = false;
 	props = {};
+	style = { transform: 'none', scale: 'none' };
 	window.IntersectionObserver = FakeObserver;
 	window.matchMedia = jest.fn( query );
 	window.getComputedStyle = jest.fn( () => ( {
+		...style,
 		getPropertyValue: ( name ) => props[ name ] || '',
 	} ) );
 	document.body.innerHTML = '';
@@ -127,8 +137,8 @@ describe( 'ambient float animation', () => {
 			fill: 'both',
 		} );
 		expect( keyframes ).toEqual( [
-			{ '--sgs-float-y': '0px' },
-			{ '--sgs-float-y': '20px' },
+			tf( '0px', '0px' ),
+			tf( '0px', '20px' ),
 		] );
 	} );
 
@@ -140,7 +150,7 @@ describe( 'ambient float animation', () => {
 		expect( options.delay ).toBe( -0 );
 		expect( options.easing ).toBe( 'ease-in-out' );
 		expect( options.direction ).toBe( 'alternate' );
-		expect( keyframes[ 1 ] ).toEqual( { '--sgs-float-y': '12px' } );
+		expect( keyframes[ 1 ] ).toEqual( tf( '0px', '12px' ) );
 	} );
 
 	test( 'axis x animates only the x property', () => {
@@ -149,8 +159,8 @@ describe( 'ambient float animation', () => {
 		} );
 		boot();
 		expect( el.animate.mock.calls[ 0 ][ 0 ] ).toEqual( [
-			{ '--sgs-float-x': '0px' },
-			{ '--sgs-float-x': '12px' },
+			tf( '0px', '0px' ),
+			tf( '12px', '0px' ),
 		] );
 	} );
 
@@ -165,8 +175,8 @@ describe( 'ambient float animation', () => {
 		boot();
 		expect( el.animate ).toHaveBeenCalledTimes( 1 );
 		expect( el.animate.mock.calls[ 0 ][ 0 ] ).toEqual( [
-			{ '--sgs-float-x': '0px', '--sgs-float-y': '0px' },
-			{ '--sgs-float-x': '10px', '--sgs-float-y': '24px' },
+			tf( '0px', '0px' ),
+			tf( '10px', '24px' ),
 		] );
 	} );
 
@@ -180,8 +190,8 @@ describe( 'ambient float animation', () => {
 		boot();
 		expect( el.animate ).toHaveBeenCalledTimes( 1 );
 		expect( el.animate.mock.calls[ 0 ][ 0 ] ).toEqual( [
-			{ '--sgs-float-y': '0px', '--sgs-float-s': '1' },
-			{ '--sgs-float-y': '10px', '--sgs-float-s': '1.088' },
+			tf( '0px', '0px', 1 ),
+			tf( '0px', '10px', 1.088 ),
 		] );
 	} );
 
@@ -190,8 +200,8 @@ describe( 'ambient float animation', () => {
 		const { el } = mount( {} );
 		boot();
 		expect( el.animate.mock.calls[ 0 ][ 0 ] ).toEqual( [
-			{ '--sgs-float-y': '0px' },
-			{ '--sgs-float-y': '10px' },
+			tf( '0px', '0px' ),
+			tf( '0px', '10px' ),
 		] );
 	} );
 
@@ -201,10 +211,41 @@ describe( 'ambient float animation', () => {
 			attrs: 'data-sgs-fx-ambient-float-axis="both"',
 		} );
 		boot();
-		expect( el.animate.mock.calls[ 0 ][ 0 ][ 1 ] ).toEqual( {
-			'--sgs-float-x': '10px',
-			'--sgs-float-y': '10px',
-		} );
+		expect( el.animate.mock.calls[ 0 ][ 0 ][ 1 ] ).toEqual(
+			tf( '10px', '10px' )
+		);
+	} );
+
+	test( 'an authored transform that nothing animates is written after the float, so the float stays outside it', () => {
+		props = { '--sgs-float-travel': '10px' };
+		style.transform = 'matrix(0.97, 0.2, -0.2, 0.97, 0, 0)';
+		const { el } = mount();
+		boot();
+		expect( el.animate.mock.calls[ 0 ][ 0 ] ).toEqual( [
+			tf( '0px', '0px', 1, style.transform ),
+			tf( '0px', '10px', 1, style.transform ),
+		] );
+	} );
+
+	test( 'an element holding the motion transform channel keeps the registered-property run', () => {
+		props = { '--sgs-float-travel': '10px' };
+		style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
+		const { el } = mount( { attrs: 'data-sgs-mc="translate transform"' } );
+		boot();
+		expect( el.animate.mock.calls[ 0 ][ 0 ] ).toEqual( [
+			{ '--sgs-float-y': '0px' },
+			{ '--sgs-float-y': '10px' },
+		] );
+	} );
+
+	test( 'the movement is divided by the scale the element already has, so it keeps its size', () => {
+		props = { '--sgs-float-travel': '20px' };
+		style.scale = '1.25';
+		const { el } = mount();
+		boot();
+		expect( el.animate.mock.calls[ 0 ][ 0 ][ 1 ] ).toEqual(
+			tf( '0px', '16px' )
+		);
 	} );
 
 	test( 'NEGATIVE CONTROL: an element without ambient-float in data-sgs-fx is never animated', () => {

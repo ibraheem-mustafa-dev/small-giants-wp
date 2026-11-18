@@ -11,8 +11,14 @@
  * never replaces it; the loop control pauses it off screen, while focus is inside its block and from the pause
  * button, and cancels it under reduced motion.
  *
- * The optional scale range (`--sgs-float-scale-from`, `--sgs-float-scale-to`, both 1 by default) pulses the element in
- * the scale channel through `--sgs-float-s` while it drifts.
+ * The run animates `transform` (`translate()` then `scale()`), which Chrome runs on the compositor thread; a custom
+ * property cannot be, so animating `--sgs-float-y` made the main thread restyle the element on every frame, for as long
+ * as the page was open. `transform` applies after the individual `translate` and `scale` properties, so the float still
+ * adds to an entrance, hover or parallax translate on the same element (`loop-transform.js` explains the frames, the
+ * authored transform they are written in front of, and the elements that keep the registered-property run).
+ *
+ * The optional scale range (`--sgs-float-scale-from`, `--sgs-float-scale-to`, both 1 by default) pulses the element
+ * while it drifts: its scale in the same animation, so the scale shares the movement's period, easing and direction.
  *
  * Attributes: `data-sgs-fx-ambient-float-axis` (`x`, `y` or `both`; default `y`) and
  * `data-sgs-fx-ambient-float-pause-control="true"`, which asks for the pause button.
@@ -27,6 +33,7 @@
 // eslint-disable-next-line import/no-unresolved -- a webpack external (script module `@sgs/loop-control`).
 import { animateLoop, parseLength, readLoopTiming } from '@sgs/loop-control';
 import { bootGated } from './off-switch';
+import { readChannel, readLift, transformFrame } from './loop-transform';
 
 const SELECTOR = '[data-sgs-fx~="ambient-float"]';
 const PREFIX = 'data-sgs-fx-ambient-float-';
@@ -56,7 +63,8 @@ let stopGated = () => {};
  * The element's float values from its computed custom properties and axis attribute.
  *
  * @param {HTMLElement} el The floating element.
- * @return {Object} Timing from `readLoopTiming` plus `axis`, `travel`, `travelY`, `scaleFrom` and `scaleTo`.
+ * @return {Object} Timing from `readLoopTiming` plus `axis`, `travel`, `travelY`, `scaleFrom`, `scaleTo`, `channel`
+ *                  and `base` (as `readChannel` returns them) and `lift` (the element's own computed `scale`).
  */
 export function readFloat( el ) {
 	const style = window.getComputedStyle( el );
@@ -67,6 +75,8 @@ export function readFloat( el ) {
 	const axis = el.getAttribute( PREFIX + 'axis' );
 	return {
 		...readLoopTiming( el, 'float' ),
+		...readChannel( el ),
+		lift: readLift( el ),
 		axis: axis === 'x' || axis === 'both' ? axis : 'y',
 		travel,
 		travelY: parseLength(
@@ -76,31 +86,45 @@ export function readFloat( el ) {
 		scaleFrom: parseScale(
 			style.getPropertyValue( '--sgs-float-scale-from' )
 		),
-		scaleTo: parseScale(
-			style.getPropertyValue( '--sgs-float-scale-to' )
-		),
+		scaleTo: parseScale( style.getPropertyValue( '--sgs-float-scale-to' ) ),
 	};
 }
 
 /**
- * The keyframes for one axis choice: x animates `--sgs-float-x`, y animates `--sgs-float-y`, both animates the two in
- * one animation (x by `travel`, y by `travelY`). When the two scale values differ the same animation also runs
- * `--sgs-float-s` from `scaleFrom` to `scaleTo`, so the scale shares the movement's period, easing and direction.
+ * The keyframes for one axis choice: x moves by `travel`, y by `travel` (or `travelY` for both axes), in one animation.
+ * When the two scale values differ the same animation also scales from `scaleFrom` to `scaleTo`. They are `transform`
+ * frames, or, for an element that holds the motion `transform` channel, the registered owners `--sgs-float-x`,
+ * `--sgs-float-y` and `--sgs-float-s`.
  *
  * @param {Object} values The result of `readFloat`.
  * @return {Object[]} Two keyframes.
  */
 export function floatKeyframes( values ) {
+	const moveX = values.axis !== 'y';
+	const moveY = values.axis !== 'x';
+	const travelY = values.axis === 'both' ? values.travelY : values.travel;
+	if ( values.channel !== 'property' ) {
+		const { lift, base } = values;
+		return [
+			transformFrame( { scale: values.scaleFrom, lift, base } ),
+			transformFrame( {
+				scale: values.scaleTo,
+				x: moveX ? values.travel : '0px',
+				y: moveY ? travelY : '0px',
+				lift,
+				base,
+			} ),
+		];
+	}
 	const from = {};
 	const to = {};
-	if ( values.axis !== 'y' ) {
+	if ( moveX ) {
 		from[ '--sgs-float-x' ] = '0px';
 		to[ '--sgs-float-x' ] = values.travel;
 	}
-	if ( values.axis !== 'x' ) {
+	if ( moveY ) {
 		from[ '--sgs-float-y' ] = '0px';
-		to[ '--sgs-float-y' ] =
-			values.axis === 'both' ? values.travelY : values.travel;
+		to[ '--sgs-float-y' ] = travelY;
 	}
 	if ( values.scaleFrom !== values.scaleTo ) {
 		from[ '--sgs-float-s' ] = String( values.scaleFrom );
@@ -111,12 +135,36 @@ export function floatKeyframes( values ) {
 
 function boot() {
 	stopGated = bootGated( 'ambient-float', SELECTOR, ( el ) => {
+		let carried = false;
 		const loop = animateLoop( el, {
-			read: () => readFloat( el ),
+			read: () => {
+				const values = readFloat( el );
+				carried = values.base !== '';
+				return values;
+			},
 			keyframes: floatKeyframes,
-			pauseControl: el.getAttribute( PREFIX + 'pause-control' ) === 'true',
+			pauseControl:
+				el.getAttribute( PREFIX + 'pause-control' ) === 'true',
 		} );
-		return () => loop.destroy();
+		// A transform the frames carry was read at its pixel size (a centring translate in percent resolves against the
+		// element's box), so a resize reads it again. The first report is the observer starting, not a resize.
+		let observer = null;
+		if ( carried && typeof window.ResizeObserver === 'function' ) {
+			let started = false;
+			observer = new window.ResizeObserver( () => {
+				if ( started ) {
+					loop.rebuild();
+				}
+				started = true;
+			} );
+			observer.observe( el );
+		}
+		return () => {
+			if ( observer ) {
+				observer.disconnect();
+			}
+			loop.destroy();
+		};
 	} );
 }
 
