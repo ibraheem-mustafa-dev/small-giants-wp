@@ -11,7 +11,7 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, CheckboxControl, TextControl } from '@wordpress/components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { ResponsiveControl, ResponsiveOverride, IconPicker, SgsLengthControl } from '../../components';
-import { Toggle, Choice } from './extraControls';
+import { Toggle, Choice, TextField } from './extraControls';
 import { patchTier } from '../../utils';
 
 const DEFAULT_MENU_ICONS = {
@@ -186,6 +186,19 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 				label={ __( 'Heading on each tab', 'sgs-blocks' ) }
 			/>
 			</ToolsPanelItem>
+
+			{ attributes.tabHeadings && (
+				<ToolsPanelItem
+					label={ __( 'Tab heading wording', 'sgs-blocks' ) }
+					hasValue={ () => !! ( attributes.ordersTabHeading || attributes.addressesTabHeading || attributes.accountDetailsTabHeading || attributes.savedItemsTabHeading ) }
+					onDeselect={ () => setAttributes( { ordersTabHeading: undefined, addressesTabHeading: undefined, accountDetailsTabHeading: undefined, savedItemsTabHeading: undefined } ) }
+				>
+					<TextField attributes={ attributes } setAttributes={ setAttributes } name="ordersTabHeading" label={ __( 'Orders tab heading', 'sgs-blocks' ) } help={ __( 'Empty uses the tab label.', 'sgs-blocks' ) } />
+					<TextField attributes={ attributes } setAttributes={ setAttributes } name="addressesTabHeading" label={ __( 'Addresses tab heading', 'sgs-blocks' ) } />
+					<TextField attributes={ attributes } setAttributes={ setAttributes } name="accountDetailsTabHeading" label={ __( 'Account details tab heading', 'sgs-blocks' ) } />
+					<TextField attributes={ attributes } setAttributes={ setAttributes } name="savedItemsTabHeading" label={ __( 'Saved items tab heading', 'sgs-blocks' ) } />
+				</ToolsPanelItem>
+			) }
 
 			<ToolsPanelItem
 				label={ __( 'Space under headings', 'sgs-blocks' ) }

@@ -8385,6 +8385,10 @@
 		{"slug": "sgs/account", "attr": "giftNote", "fields": {"role": "boolean-visibility"}, "_reason": "2026-11-18, gift note: shows the gift note box on the view-order page; a markup switch."},
 		{"slug": "sgs/account", "attr": "giftNoteHeading", "fields": {"role": "text-content"}, "_reason": "2026-11-18, gift note: the note box heading; authored text."},
 		{"slug": "sgs/account", "attr": "accountShowMarketingOptIn", "fields": {"role": "boolean-visibility"}, "_reason": "2026-11-18, account details: shows the email-me tick on the account-details form; a markup switch."},
-		{"slug": "sgs/account", "attr": "accountMarketingOptInLabel", "fields": {"role": "text-content"}, "_reason": "2026-11-18, account details: the tick label; authored text."}
+		{"slug": "sgs/account", "attr": "accountMarketingOptInLabel", "fields": {"role": "text-content"}, "_reason": "2026-11-18, account details: the tick label; authored text."},
+		{"slug": "sgs/account", "attr": "ordersTabHeading", "fields": {"role": "text-content"}, "_reason": "2026-11-18, tab headings: the heading printed on the Orders tab when it differs from the tab label; authored text."},
+		{"slug": "sgs/account", "attr": "addressesTabHeading", "fields": {"role": "text-content"}, "_reason": "2026-11-18, tab headings: the heading printed on the Addresses tab when it differs from the tab label; authored text."},
+		{"slug": "sgs/account", "attr": "accountDetailsTabHeading", "fields": {"role": "text-content"}, "_reason": "2026-11-18, tab headings: the heading printed on the Account details tab when it differs from the tab label; authored text."},
+		{"slug": "sgs/account", "attr": "savedItemsTabHeading", "fields": {"role": "text-content"}, "_reason": "2026-11-18, tab headings: the heading printed on the Saved items tab when it differs from the tab label; authored text."}
 	]
 }

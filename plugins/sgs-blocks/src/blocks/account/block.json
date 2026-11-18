@@ -2645,6 +2645,26 @@
 				},
 				"description": "Endpoint keys in the order the menu shows them; endpoints not listed follow in their own order and Log out stays last. Unset = WooCommerce's order with Saved items after Orders."
 			},
+			"ordersTabHeading": {
+				"type": "string",
+				"default": "",
+				"description": "Heading printed at the top of the Orders tab (while tabHeadings is on). Empty = the tab's menu label."
+			},
+			"addressesTabHeading": {
+				"type": "string",
+				"default": "",
+				"description": "Heading printed at the top of the Addresses tab (while tabHeadings is on). Empty = the tab's menu label."
+			},
+			"accountDetailsTabHeading": {
+				"type": "string",
+				"default": "",
+				"description": "Heading printed at the top of the Account details tab (while tabHeadings is on). Empty = the tab's menu label."
+			},
+			"savedItemsTabHeading": {
+				"type": "string",
+				"default": "",
+				"description": "Heading printed at the top of the Saved items tab (while tabHeadings is on). Empty = the tab's menu label."
+			},
 			"tabHeadings": {
 				"type": "boolean",
 				"description": "Print an H2 with the menu label at the top of the Orders, Addresses and Account details tabs. Unset = none."

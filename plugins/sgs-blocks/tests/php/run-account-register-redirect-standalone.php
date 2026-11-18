@@ -216,5 +216,18 @@ EX::register();
 ok( isset( $GLOBALS['hooks']['woocommerce_edit_account_form'], $GLOBALS['hooks']['woocommerce_save_account_details'] ), '10 hooks wired on WooCommerce account-details form and save' );
 EP::$active = null;
 
+// 11) Tab headings: the heading setting wins, an empty one falls back to the tab label.
+EP::$active = array();
+ok( 'Orders' === EP::heading_text( 'ordersTabHeading', 'Orders' ), '11 no setting: the tab label' );
+EP::$active = array( 'ordersTabHeading' => ' Your orders ', 'addressesTabHeading' => '  ' );
+ok( 'Your orders' === EP::heading_text( 'ordersTabHeading', 'Orders' ), '11 setting set: it replaces the label' );
+ok( 'Addresses' === EP::heading_text( 'addressesTabHeading', 'Addresses' ), '11 blank setting: the tab label' );
+ob_start();
+EP::$active = array( 'tabHeadings' => true, 'ordersTabHeading' => 'Your <orders>' );
+EP::render_orders_heading();
+$h = (string) ob_get_clean();
+ok( str_contains( $h, '>Your &lt;orders&gt;</h2>' ), '11 the printed heading carries the setting, escaped' );
+EP::$active = null;
+
 echo $failures ? "\n{$failures} FAILED\n" : "\nall passed\n";
 exit( $failures ? 1 : 0 );

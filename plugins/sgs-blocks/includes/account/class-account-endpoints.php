@@ -51,7 +51,7 @@ final class Account_Endpoints {
 	 * @param mixed $value The endpoint's query var value (unused).
 	 */
 	public static function render_orders_heading( $value = '' ) {
-		self::print_tab_heading( Account_Strings::text( 'orders', __( 'Orders', 'sgs-blocks' ) ) );
+		self::print_tab_heading( self::heading_text( 'ordersTabHeading', Account_Strings::text( 'orders', __( 'Orders', 'sgs-blocks' ) ) ) );
 	}
 
 	/**
@@ -63,7 +63,7 @@ final class Account_Endpoints {
 		if ( is_string( $value ) && '' !== $value ) {
 			return;
 		}
-		self::print_tab_heading( Account_Strings::text( 'addresses', __( 'Addresses', 'sgs-blocks' ) ) );
+		self::print_tab_heading( self::heading_text( 'addressesTabHeading', Account_Strings::text( 'addresses', __( 'Addresses', 'sgs-blocks' ) ) ) );
 	}
 
 	/**
@@ -72,7 +72,19 @@ final class Account_Endpoints {
 	 * @param mixed $value The endpoint's query var value (unused).
 	 */
 	public static function render_account_details_heading( $value = '' ) {
-		self::print_tab_heading( Account_Strings::text( 'accountDetails', __( 'Account details', 'sgs-blocks' ) ) );
+		self::print_tab_heading( self::heading_text( 'accountDetailsTabHeading', Account_Strings::text( 'accountDetails', __( 'Account details', 'sgs-blocks' ) ) ) );
+	}
+
+	/**
+	 * The heading text for a tab: the block's own heading setting when set, else the tab's menu label.
+	 *
+	 * @param string $attr  Heading attribute name (`ordersTabHeading`, ...).
+	 * @param string $label The tab's menu label.
+	 * @return string Plain text.
+	 */
+	public static function heading_text( string $attr, string $label ): string {
+		$own = is_array( self::$active ) ? trim( (string) ( self::$active[ $attr ] ?? '' ) ) : '';
+		return '' !== $own ? $own : $label;
 	}
 
 	/**
@@ -247,7 +259,7 @@ final class Account_Endpoints {
 		// The tab heading (when the block prints one) names the tab, so the panel
 		// drops its own heading here.
 		$saved = class_exists( Wishlist_Store::class ) ? count( Wishlist_Store::read_list( \get_current_user_id() ) ) : 0;
-		self::print_tab_heading( Account_Strings::text( 'savedItems', __( 'Saved items', 'sgs-blocks' ) ), self::count_text( $saved, is_array( self::$active ) ? self::$active : array() ) );
+		self::print_tab_heading( self::heading_text( 'savedItemsTabHeading', Account_Strings::text( 'savedItems', __( 'Saved items', 'sgs-blocks' ) ) ), self::count_text( $saved, is_array( self::$active ) ? self::$active : array() ) );
 		$empty = self::saved_items_empty_card();
 		if ( '' !== $empty ) {
 			echo $empty; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in sgs_account_empty_card_html().
