@@ -135,6 +135,9 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 
 - **Order confirmation 2:** Bean had not reviewed the rebuilt page at the time of his round-two list ("Same status as account page to my knowledge").
 - **Order confirmation 3:** (Bean's proofing of 2026-11-18.) Open with Account 4: a first careful comparison of the order confirmation page with the draft, for a guest, a signed-in owner and a gift order.
+- **Order confirmation 4:** (Bean's proofing of 2026-11-18.) Order confirmation page's back to the kitchen arrow icon and posted card arrow icons are both the wrong type too.
+- **Order confirmation 5:** (Bean's proofing of 2026-11-18.) the ig icon is black when it should be white to match the rest of the ig icons on the site.
+- **Order confirmation 6:** (Bean's proofing of 2026-11-18.) why's there a different vertical gap between the order card and Billing address card?
 
 ## Gift card page
 
@@ -145,6 +148,8 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **All pages 2:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Need to fix that 1023 px blindspot and check if the other breakpoints have the same blinspot too because I think we have the same thing at 767px because I think the breakpoint is supposed to be 768px but the changes layout changes usually occur at 766px.
 - **All pages 3:** (Bean's proofing of 2026-11-18.) Several buttons don't use the standardised arrow shape that is used across the site e.g. the homepage hero's first button or the arrows in the nav drawer are correct. The incorrect arrows exist in the sign-in form's sign in button, the contact form's submit button, the help page's 3 bottom cards - terms and conditions, privacy policy and still stuck.
 - **All pages 4:** (Bean's proofing of 2026-11-18.) You should do that small framework fix for add to baskets and the cache now. (The security token printed into cached pages: a page cache older than about a day would make add to basket fail.)
+- **All pages 5:** (Bean's proofing of 2026-11-18.) the yellow bg cards also have a darker yellow/gold label on them like we fixed previously. Make sure to switch all offenders with dark pin[k] label.
+- **All pages 6:** (Bean's proofing of 2026-11-18.) across the site most pages have a large amount of white space (a large gap) between the bottom of the page's content and the top of the footer. Can we cut this down to normal and make it consistent across all of the pages, it just looks really unnatural and a bit broken like I accidentally hit enter a bunch of times while writing a word doc.
 
 ## Bean's verdicts so far (2026-11-17 late evening)
 
