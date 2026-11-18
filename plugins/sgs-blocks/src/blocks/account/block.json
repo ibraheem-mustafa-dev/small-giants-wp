@@ -5026,6 +5026,21 @@
 				"type": "object",
 				"description": "Diameter in px of the circle behind the icon, per device ({desktop,tablet,mobile}). Empty = 1.8 times the icon size. Used only while the circle fill is set."
 			},
+			"ordersRowItemCount": {
+				"type": "boolean",
+				"default": false,
+				"description": "Prints the order's item count (for example 3 items) beside the date in each orders-list row. Off prints none."
+			},
+			"ordersRowItemCountOne": {
+				"type": "string",
+				"default": "",
+				"description": "Wording of the item count for exactly one item; {count} is the number. Empty = the translatable default (1 item)."
+			},
+			"ordersRowItemCountMany": {
+				"type": "string",
+				"default": "",
+				"description": "Wording of the item count for any other number of items; {count} is the number. Empty = the translatable default (3 items)."
+			},
 			"loginLinkPlacement": {
 				"type": "string",
 				"enum": [

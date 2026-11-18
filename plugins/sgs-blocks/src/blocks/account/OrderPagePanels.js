@@ -31,6 +31,13 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 							onChange={ ( value ) => setAttributes( { ordersRowThumbsFlexWrap: value } ) }
 						/>
 					) }
+					<Toggle { ...p } name="ordersRowItemCount" label={ __( 'Item count beside the date', 'sgs-blocks' ) } help={ __( 'For example “3 items”. Wording below; {count} is the number.', 'sgs-blocks' ) } />
+					{ attributes.ordersRowItemCount && (
+						<>
+							<TextField { ...p } name="ordersRowItemCountOne" label={ __( 'Item count wording: one item', 'sgs-blocks' ) } help={ __( 'Empty uses “1 item”.', 'sgs-blocks' ) } />
+							<TextField { ...p } name="ordersRowItemCountMany" label={ __( 'Item count wording: several items', 'sgs-blocks' ) } help={ __( 'Empty uses “3 items”.', 'sgs-blocks' ) } />
+						</>
+					) }
 					<TextField { ...p } name="ordersRowViewLabel" label={ __( 'Row end label', 'sgs-blocks' ) } help={ __( 'Text at the end of each row in place of the chevron, for example View order. Empty keeps the chevron.', 'sgs-blocks' ) } />
 					{ attributes.ordersRowViewLabel && (
 						<IconPicker

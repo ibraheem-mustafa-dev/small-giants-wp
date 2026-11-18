@@ -99,6 +99,29 @@ if ( ! function_exists( 'sgs_account_order_thumbs_html' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_account_order_count_text' ) ) {
+	/**
+	 * The item count line of an order row ("3 items"): the block's wording for one and for many (`{count}` is the number),
+	 * else translatable defaults chosen with `_n()`.
+	 *
+	 * @param \WC_Order $order      The order.
+	 * @param array     $attributes Block attributes.
+	 * @return string Plain text, '' for an order with no items.
+	 */
+	function sgs_account_order_count_text( $order, array $attributes ): string {
+		$count = (int) $order->get_item_count();
+		if ( $count < 1 ) {
+			return '';
+		}
+		$own = trim( (string) ( $attributes[ 1 === $count ? 'ordersRowItemCountOne' : 'ordersRowItemCountMany' ] ?? '' ) );
+		if ( '' !== $own ) {
+			return str_replace( '{count}', (string) $count, $own );
+		}
+		/* translators: %d: number of items in the order. */
+		return sprintf( _n( '%d item', '%d items', $count, 'sgs-blocks' ), $count );
+	}
+}
+
 if ( ! function_exists( 'sgs_account_orders_list_html' ) ) {
 	/**
 	 * The order rows.
@@ -110,6 +133,7 @@ if ( ! function_exists( 'sgs_account_orders_list_html' ) ) {
 	function sgs_account_orders_list_html( array $orders, array $attributes ): string {
 		$chevron = '<svg class="sgs-account__order-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>';
 		$thumbs  = ! empty( $attributes['ordersRowThumbs'] );
+		$counts  = ! empty( $attributes['ordersRowItemCount'] );
 		$view    = trim( (string) ( $attributes['ordersRowViewLabel'] ?? '' ) );
 		$end_tag = $chevron;
 		if ( '' !== $view ) {
@@ -117,14 +141,14 @@ if ( ! function_exists( 'sgs_account_orders_list_html' ) ) {
 			$view_icon = (string) ( $attributes['ordersRowViewIcon'] ?? '' );
 			$end_tag   = '<span class="sgs-account__order-view' . ( '' !== $view_icon ? ' sgs-account__order-view--has-icon' : '' ) . '">' . esc_html( $view ) . sgs_account_button_icon_markup( $view_icon, false ) . '</span>';
 		}
-		$html = '<div class="sgs-account__orders-list">';
+		$html = '<div class="sgs-account__orders-list' . ( $counts ? ' sgs-account__orders-list--item-count' : '' ) . '">';
 		foreach ( $orders as $order ) {
 			if ( ! is_object( $order ) || ! method_exists( $order, 'get_order_number' ) ) {
 				continue;
 			}
 			$html .= '<a class="sgs-account__order sgs-account__order--status-' . esc_attr( (string) $order->get_status() ) . '" href="' . esc_url( (string) $order->get_view_order_url() ) . '">'
 				. '<span class="sgs-account__order-id"><span class="sgs-account__order-number">' . esc_html( sgs_account_order_number( $order, $attributes ) ) . '</span>'
-				. '<span class="sgs-account__order-date">' . esc_html( sgs_account_order_date( $order, $attributes ) ) . '</span></span>'
+				. '<span class="sgs-account__order-date">' . esc_html( sgs_account_order_date( $order, $attributes ) ) . '</span>' . ( $counts && '' !== sgs_account_order_count_text( $order, $attributes ) ? '<span class="sgs-account__order-count">' . esc_html( sgs_account_order_count_text( $order, $attributes ) ) . '</span>' : '' ) . '</span>'
 				. '<span class="sgs-account__order-summary' . ( $thumbs ? ' sgs-account__order-summary--thumbs' : '' ) . '">' . ( $thumbs ? sgs_account_order_thumbs_html( $order, 'span' ) : '' ) . esc_html( sgs_account_order_summary( $order ) ) . '</span>'
 				. '<span class="sgs-account__order-status">' . esc_html( (string) wc_get_order_status_name( $order->get_status() ) ) . '</span>'
 				. '<span class="sgs-account__order-end"><span class="sgs-account__order-total">' . sgs_account_money( (float) $order->get_total(), $attributes ) . '</span>' . $end_tag . '</span>'

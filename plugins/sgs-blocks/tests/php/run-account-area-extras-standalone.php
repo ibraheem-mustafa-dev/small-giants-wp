@@ -10,6 +10,7 @@
 define( 'ABSPATH', __DIR__ );
 $GLOBALS['sgs_meta'] = array();
 function __( $t, $d = null ) { return $t; }
+function _n( $one, $many, $n, $d = null ) { return 1 === $n ? $one : $many; }
 function esc_html__( $t, $d = null ) { return $t; }
 function esc_attr__( $t, $d = null ) { return $t; }
 function get_option( $k, $d = false ) { return $d; }
@@ -51,6 +52,8 @@ class Fake_Item {
 	public function get_name() { return 'Cake'; }
 }
 class Fake_Order {
+	public $count = 3;
+	public function get_item_count() { return $this->count; }
 	public function get_order_number() { return '101'; }
 	public function get_status() { return 'processing'; }
 	public function get_view_order_url() { return 'https://example.test/my-account/view-order/101/'; }
@@ -84,6 +87,19 @@ ok( '' === sgs_account_gift_note_html( $plain, array( 'giftNote' => true ) ), 'B
 $GLOBALS['sgs_can_view'] = false;
 ok( '' === sgs_account_gift_note_html( $gift, array( 'giftNote' => true ) ), 'B someone who may not view the order sees nothing' );
 $GLOBALS['sgs_can_view'] = true;
+
+// 1) Orders list: item count behind a setting; singular and plural; site wording with {count}.
+$o = new Fake_Order();
+ok( ! str_contains( sgs_account_orders_list_html( array( $o ), array() ), 'order-count' ), '1 count: nothing while off' );
+$html = sgs_account_orders_list_html( array( $o ), array( 'ordersRowItemCount' => true ) );
+ok( str_contains( $html, '<span class="sgs-account__order-count">3 items</span>' ) && str_contains( $html, 'orders-list--item-count' ), '1 count: default plural, list class set' );
+$o->count = 1;
+ok( str_contains( sgs_account_orders_list_html( array( $o ), array( 'ordersRowItemCount' => true ) ), '>1 item</span>' ), '1 count: default singular' );
+ok( str_contains( sgs_account_orders_list_html( array( $o ), array( 'ordersRowItemCount' => true, 'ordersRowItemCountOne' => '· {count} bake <b>', 'ordersRowItemCountMany' => 'many' ) ), '>· 1 bake &lt;b&gt;</span>' ), '1 count: site wording for one, escaped' );
+$o->count = 4;
+ok( str_contains( sgs_account_orders_list_html( array( $o ), array( 'ordersRowItemCount' => true, 'ordersRowItemCountOne' => 'one' , 'ordersRowItemCountMany' => '· {count} items' ) ), '>· 4 items</span>' ), '1 count: site wording for many' );
+$o->count = 0;
+ok( ! str_contains( sgs_account_orders_list_html( array( $o ), array( 'ordersRowItemCount' => true ) ), 'order-count"' ), '1 count: an order with no items prints none' );
 
 echo $failures ? "\n$failures FAILED\n" : "\nAll passed\n";
 exit( $failures ? 1 : 0 );
