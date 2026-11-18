@@ -91,12 +91,19 @@ function sgs_get_bound_configurator_product_ids(): array {
 /**
  * Whether an SEO plugin owns OG/canonical/sitemap on this site (SEC-9).
  *
+ * Presence of any recognised SEO plugin ({@see \SGS\Blocks\Org_Website_Schema::seo_plugin_active()}),
+ * so the product Open Graph tags are never printed twice. It governs only the
+ * Open Graph deferral: the Organisation/WebSite data follows
+ * {@see \SGS\Blocks\Org_Website_Schema::seo_plugin_owns_schema()}, and the
+ * ProductGroup data is always printed.
+ *
  * @return bool
  */
 function sgs_configurator_seo_plugin_active(): bool {
 	return \defined( 'WPSEO_VERSION' )
 		|| \class_exists( 'RankMath' )
-		|| \defined( 'RANK_MATH_VERSION' );
+		|| \defined( 'RANK_MATH_VERSION' )
+		|| ( \class_exists( '\SGS\Blocks\Org_Website_Schema' ) && \SGS\Blocks\Org_Website_Schema::seo_plugin_active() );
 }
 
 /**

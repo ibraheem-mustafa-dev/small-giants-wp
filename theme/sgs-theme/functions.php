@@ -620,10 +620,47 @@ function enqueue_woocommerce_blocks_style_early(): void {
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_woocommerce_blocks_style_early', 20 );
 
 /**
+ * Whether an SEO plugin prints the page's meta description, so the theme must not
+ * print a second one.
+ *
+ * Yoast and Rank Math count whenever active (the long-standing rule). Slim SEO
+ * counts unless its Features tab has "Meta description" switched off. The SEO
+ * Framework, SEOPress and All in One SEO count while active. A site can decide for
+ * any other plugin with the `sgs_seo_plugin_prints_description` filter.
+ *
+ * @return bool
+ */
+function seo_plugin_prints_description(): bool {
+	if ( defined( 'SLIM_SEO_VER' ) && ! defined( 'WPSEO_VERSION' ) && ! defined( 'RANK_MATH_VERSION' ) ) {
+		$option   = get_option( 'slim_seo' );
+		$features = is_array( $option ) ? ( $option['features'] ?? null ) : null;
+		$prints   = empty( $features ) || in_array( 'meta_description', (array) $features, true );
+	} else {
+		$prints = defined( 'WPSEO_VERSION' )
+			|| defined( 'RANK_MATH_VERSION' )
+			|| defined( 'SLIM_SEO_VER' )
+			|| function_exists( 'the_seo_framework' )
+			|| defined( 'SEOPRESS_VERSION' )
+			|| defined( 'AIOSEO_VERSION' );
+	}
+
+	/**
+	 * Filters whether an SEO plugin prints the meta description.
+	 *
+	 * @param bool $prints True when a plugin prints it and the theme must stay silent.
+	 */
+	return (bool) apply_filters( 'sgs_seo_plugin_prints_description', $prints );
+}
+
+/**
  * Output meta description from post excerpt or custom field.
- * Only fires when no SEO plugin is active.
+ * Prints nothing when an SEO plugin prints the description.
  */
 function meta_description(): void {
+	if ( seo_plugin_prints_description() ) {
+		return;
+	}
+
 	if ( is_front_page() || is_home() ) {
 		$desc = get_bloginfo( 'description' );
 		$post = get_post();
@@ -646,10 +683,7 @@ function meta_description(): void {
 		);
 	}
 }
-// Only add if no SEO plugin handles it.
-if ( ! defined( 'WPSEO_VERSION' ) && ! defined( 'RANK_MATH_VERSION' ) ) {
-	add_action( 'wp_head', __NAMESPACE__ . '\meta_description', 1 );
-}
+add_action( 'wp_head', __NAMESPACE__ . '\meta_description', 1 );
 
 /**
  * Register block pattern category for SGS patterns.

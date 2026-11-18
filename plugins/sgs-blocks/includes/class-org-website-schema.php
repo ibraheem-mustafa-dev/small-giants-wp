@@ -61,7 +61,8 @@ final class Org_Website_Schema {
 	 * Emit Organization + WebSite JSON-LD on the front page.
 	 *
 	 * Gated by: front page, not admin, not feed, not JSON request, not 404,
-	 * no active SEO plugin (SEC-9), site name exists.
+	 * no SEO plugin printing its own Organisation/WebSite data (SEC-9,
+	 * {@see self::seo_plugin_owns_schema()}), site name exists.
 	 *
 	 * @return void
 	 */
@@ -75,7 +76,7 @@ final class Org_Website_Schema {
 		if ( ! \is_front_page() ) {
 			return;
 		}
-		if ( self::seo_plugin_active() ) {
+		if ( self::seo_plugin_owns_schema() ) {
 			return;
 		}
 
@@ -218,7 +219,7 @@ final class Org_Website_Schema {
 		if ( ! \current_user_can( 'manage_options' ) ) {
 			return;
 		}
-		if ( ! self::seo_plugin_active() ) {
+		if ( ! self::seo_plugin_owns_schema() ) {
 			return;
 		}
 		// Dismissible via user meta.
@@ -249,9 +250,10 @@ final class Org_Website_Schema {
 	/**
 	 * Whether any of the 7 recognised SEO plugins is active (SEC-9, FR-30-9 F2).
 	 *
-	 * Canonical constant list — drop the brittle class_exists('RankMath') per contract.
-	 * Keep callers of sgs_configurator_seo_plugin_active() working; this method is the
-	 * expanded version used for site-identity (Org/WebSite) deferral.
+	 * Canonical constant list. Presence only: it says nothing about whether the
+	 * plugin prints structured data (see {@see self::seo_plugin_owns_schema()}).
+	 * The cart/checkout noindex deferral and the configurator Open Graph deferral
+	 * use this presence check.
 	 *
 	 * @return bool
 	 */
@@ -261,8 +263,57 @@ final class Org_Website_Schema {
 			|| \defined( 'SEOPRESS_VERSION' )                   // SEOPress.
 			|| \defined( 'AIOSEO_VERSION' )                     // All in One SEO.
 			|| \function_exists( 'the_seo_framework' )          // The SEO Framework.
-			|| \class_exists( 'SlimSEO\\Plugin', false )        // Slim SEO.
+			|| \defined( 'SLIM_SEO_VER' )                       // Slim SEO.
 			|| \defined( 'SQ_VERSION' );                        // Squirrly.
+	}
+
+	/**
+	 * Whether an SEO plugin is actually printing its own Organisation and WebSite
+	 * structured data, so SGS must not print a second copy (SEC-9).
+	 *
+	 * An active plugin whose schema is switched off does not own it: SGS keeps
+	 * printing, so the site never ends up with none. Slim SEO and The SEO Framework
+	 * are checked against their own schema switches, Rank Math against its Schema
+	 * module. Yoast and the other recognised plugins count as owning while active.
+	 * Any site can decide with the `sgs_seo_plugin_owns_schema` filter.
+	 *
+	 * @return bool
+	 */
+	public static function seo_plugin_owns_schema(): bool {
+		$owns = false;
+
+		if ( \defined( 'WPSEO_VERSION' ) ) {
+			// Yoast has no stored switch for its structured data, so active counts as owning.
+			$owns = true;
+		} elseif ( \defined( 'RANK_MATH_VERSION' ) ) {
+			// Rank Math: the Schema (Structured Data) module.
+			$owns = ! ( \class_exists( '\RankMath\Helper' ) && \method_exists( '\RankMath\Helper', 'is_module_active' ) )
+				|| \RankMath\Helper::is_module_active( 'rich-snippet' );
+		} elseif ( \defined( 'SLIM_SEO_VER' ) ) {
+			// Slim SEO: Features tab, "Schema". No saved list means all defaults, schema on.
+			$option   = \get_option( 'slim_seo' );
+			$features = \is_array( $option ) ? ( $option['features'] ?? null ) : null;
+			$owns     = empty( $features ) || \in_array( 'schema', (array) $features, true );
+		} elseif ( \function_exists( 'the_seo_framework' ) ) {
+			// The SEO Framework: master switch, then Organisation or WebSite output.
+			$option = \get_option( 'autodescription-site-settings' );
+			$option = \is_array( $option ) ? $option : array();
+			$owns   = ! empty( $option['ld_json_enabled'] ?? 1 )
+				&& ( ! empty( $option['knowledge_output'] ?? 1 ) || ! empty( $option['ld_json_searchbox'] ?? 1 ) );
+		} else {
+			// SEOPress, All in One SEO, Squirrly: active counts as owning.
+			$owns = self::seo_plugin_active();
+		}
+
+		/**
+		 * Filters whether an SEO plugin owns the Organisation and WebSite structured data.
+		 *
+		 * Return false to make SGS print its own, true to make SGS stay silent
+		 * (for a plugin SGS does not recognise).
+		 *
+		 * @param bool $owns True when an SEO plugin prints Organisation/WebSite data.
+		 */
+		return (bool) \apply_filters( 'sgs_seo_plugin_owns_schema', $owns );
 	}
 
 	/**
