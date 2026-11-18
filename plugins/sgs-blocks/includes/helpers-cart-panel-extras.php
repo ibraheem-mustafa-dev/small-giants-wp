@@ -209,7 +209,7 @@ if ( ! function_exists( 'sgs_cart_empty_state_html' ) ) {
 		if ( '' !== $image ) {
 			$html .= '<div class="sgs-cart__panel-empty-media">' . $image . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the media renderer's escaped markup.
 		}
-		$html .= '<div class="sgs-cart__panel-empty-message">' . sgs_rich_text_kses( (string) ( $args['heading'] ?? '' ) ) . '</div>';
+		$html .= '<p class="sgs-cart__panel-empty-message">' . sgs_rich_text_kses( (string) ( $args['heading'] ?? '' ) ) . '</p>';
 		if ( '' !== $body ) {
 			$html .= '<p class="sgs-cart__panel-empty-body">' . sgs_rich_text_kses( $body ) . '</p>';
 		}

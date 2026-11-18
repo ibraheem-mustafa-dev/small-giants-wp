@@ -179,7 +179,7 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 			>
 				<div className="sgs-cart__panel-inner">
 					<div className="sgs-cart__panel-header" style={ s.header }>
-						<div className="sgs-cart__panel-heading" style={ s.heading }>
+						<p className="sgs-cart__panel-heading" style={ s.heading }>
 							<AuthoredText value={ attributes.panelHeading } />
 							{ attributes.panelShowCount && (
 								<>
@@ -187,7 +187,7 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 									<span className="sgs-cart__panel-count" style={ s.count }>{ '(1)' }</span>
 								</>
 							) }
-						</div>
+						</p>
 						{ isDrawer && (
 							<span className="sgs-cart__panel-close" style={ s.close }><CloseGlyph /></span>
 						) }
@@ -199,7 +199,7 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 									<div className="sgs-cart__panel-empty-media"><img src={ emptyImageUrl } alt="" style={ emptyImageStyle } /></div>
 								) }
 								{ emptyRich ? (
-									<div className="sgs-cart__panel-empty-message" style={ s.emptyMessage }><AuthoredText value={ attributes.emptyCartMessage } /></div>
+									<p className="sgs-cart__panel-empty-message" style={ s.emptyMessage }><AuthoredText value={ attributes.emptyCartMessage } /></p>
 								) : (
 									<p className="sgs-cart__panel-empty-message" style={ s.emptyMessage }><AuthoredText value={ attributes.emptyCartMessage } /></p>
 								) }

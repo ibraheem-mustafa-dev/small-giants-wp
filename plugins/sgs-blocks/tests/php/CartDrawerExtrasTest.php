@@ -122,7 +122,7 @@ final class CartDrawerExtrasTest extends TestCase {
 			)
 		);
 		$this->assertStringContainsString( '<div class="sgs-cart__panel-empty sgs-cart__panel-empty--rich">', $html );
-		$this->assertStringContainsString( '<div class="sgs-cart__panel-empty-message">Your basket is empty</div>', $html );
+		$this->assertStringContainsString( '<p class="sgs-cart__panel-empty-message">Your basket is empty</p>', $html );
 		$this->assertStringContainsString( '<p class="sgs-cart__panel-empty-body">New here? Start with a taster.</p>', $html );
 		$this->assertStringContainsString( '<a class="sgs-cart__panel-empty-link" href="/shop">Browse the shop</a>', $html );
 		$this->assertStringNotContainsString( 'sgs-cart__panel-empty-add', $html );
