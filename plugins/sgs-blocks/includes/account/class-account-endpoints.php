@@ -286,6 +286,22 @@ final class Account_Endpoints {
 				)
 			);
 		}
+		if ( is_array( self::$active ) && 'product-cards' === ( self::$active['wishlistLayout'] ?? '' ) ) {
+			// The site's own product card for each saved product: a three-column grid (two on a phone).
+			$attrs = array_merge(
+				$attrs,
+				array(
+					'layout'    => 'product-cards',
+					'columns'   => array(
+						'desktop' => 3,
+						'tablet'  => 3,
+						'mobile'  => 2,
+					),
+					'showSort'  => false,
+					'showCount' => false,
+				)
+			);
+		}
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() output is already escaped by the block's own render.php.
 		echo \render_block(
 			array(

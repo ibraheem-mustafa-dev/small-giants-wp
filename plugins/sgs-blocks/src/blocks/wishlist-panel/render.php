@@ -15,7 +15,7 @@
  * `view.js`) — resolved by `render-labels.php` into one data-* attribute map
  * on the root element. URLs (Saved items page, sign-in, shop) are resolved
  * by `render-urls.php`; the new elements' colours by `render-colours.php`.
- * `layout` (grid/list/strip/cards) becomes a root modifier class; the client reads
+ * `layout` (grid/list/strip/cards/product-cards) becomes a root modifier class; the client reads
  * it (`view.js`) to pick its row/bar templates.
  *
  * NO-INLINE (Spec 32): zero inline style property declarations; colours/
@@ -28,7 +28,7 @@
  * __notify-form / __guest-prompt / __bar / __share-field / __view-all.
  *
  * @var array     $attributes Block attributes.
- * @var string    $content    Unused: the one inner `sgs/product-card` is the cards layout's template (render-cards.php), never rendered here.
+ * @var string    $content    Unused: the one inner `sgs/product-card` is the product-cards layout's template (render-cards.php), never rendered here.
  * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
@@ -56,7 +56,7 @@ $show_price_drop  = ! empty( $attributes['showPriceDrop'] );
 $show_guest_promo = ! empty( $attributes['showGuestPrompt'] );
 
 $layout_raw = (string) ( $attributes['layout'] ?? 'grid' );
-$layout     = in_array( $layout_raw, array( 'grid', 'list', 'strip', 'cards' ), true ) ? $layout_raw : 'grid';
+$layout     = in_array( $layout_raw, array( 'grid', 'list', 'strip', 'cards', 'product-cards' ), true ) ? $layout_raw : 'grid';
 $max_items  = max( 0, absint( $attributes['maxItems'] ?? 0 ) );
 
 $shop_url        = sgs_wishlist_panel_shop_url();
@@ -209,7 +209,7 @@ $data_attrs = array(
 foreach ( $label_data as $key => $value ) {
 	$data_attrs[ 'data-' . $key ] = $value;
 }
-if ( 'cards' === $layout ) {
+if ( 'product-cards' === $layout ) {
 	foreach ( sgs_wishlist_panel_cards_data( $block ) as $key => $value ) {
 		$data_attrs[ 'data-' . $key ] = $value;
 	}

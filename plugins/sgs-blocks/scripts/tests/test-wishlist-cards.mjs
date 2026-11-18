@@ -202,6 +202,36 @@ assert(
 const sharedRow = wishlistRowHtml( product, { ...base, shared: true, cardHtml: '<article>CARD</article>' } );
 assert( 'a read-only shared row stays the plain row', ! sharedRow.includes( 'sgs-wishlist-panel__item' ) );
 
+// -- The frame-cards layout is unchanged --------------------------------------------------------------------------------
+// Fixtures captured once from main's render-rows.js (git show main:plugins/sgs-blocks/src/blocks/wishlist-panel/render-rows.js)
+// for the product below: the markup a site that saves layout "cards" (or grid) already prints.
+const MAIN_FIXTURE = {
+	"cards": "<div class=\"sgs-wishlist-panel__row sgs-wishlist-panel__card\" data-product-id=\"7\"><a class=\"sgs-wishlist-panel__card-media\" href=\"/p/7\" tabindex=\"-1\" aria-hidden=\"true\"><img class=\"sgs-wishlist-panel__card-img sgs-media-el\" src=\"/img/7.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\" /></a><span class=\"sgs-wishlist-panel__card-brand\">Zainab</span><button type=\"button\" class=\"sgs-wishlist-panel__remove sgs-wishlist-panel__card-heart\" data-product-id=\"7\" aria-label=\"Remove Chocolate Hazelnut\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" aria-hidden=\"true\" fill=\"currentColor\"><path d=\"M12 21s-7-4.6-9.3-9A5.4 5.4 0 0 1 12 6.6 5.4 5.4 0 0 1 21.3 12C19 16.4 12 21 12 21z\"/></svg></button><div class=\"sgs-wishlist-panel__card-body\"><a class=\"sgs-wishlist-panel__row-name\" href=\"/p/7\">Chocolate Hazelnut</a><div class=\"sgs-wishlist-panel__card-prices\"><span class=\"sgs-wishlist-panel__row-price\">\u00a35.00</span><span class=\"sgs-wishlist-panel__card-rrp\">\u00a36.50</span></div></div></div>",
+	"cardsShared": "<div class=\"sgs-wishlist-panel__row\" data-product-id=\"7\"><a class=\"sgs-wishlist-panel__row-link\" href=\"/p/7\" tabindex=\"-1\" aria-hidden=\"true\"><img class=\"sgs-wishlist-panel__row-thumb sgs-media-el\" src=\"/img/7-t.jpg\" alt=\"\" width=\"64\" height=\"64\" loading=\"lazy\" decoding=\"async\" /></a><div class=\"sgs-wishlist-panel__row-info\"><a class=\"sgs-wishlist-panel__row-name\" href=\"/p/7\">Chocolate Hazelnut</a><span class=\"sgs-wishlist-panel__row-price\">\u00a35.00</span></div><div class=\"sgs-wishlist-panel__row-actions\"><button type=\"button\" class=\"sgs-wishlist-panel__move-to-basket wp-element-button\" data-product-id=\"7\">Move to basket</button><button type=\"button\" class=\"sgs-wishlist-panel__add-to-mine\" data-product-id=\"7\">Save to my list</button></div></div>",
+	"grid": "<div class=\"sgs-wishlist-panel__row\" data-product-id=\"7\"><a class=\"sgs-wishlist-panel__row-link\" href=\"/p/7\" tabindex=\"-1\" aria-hidden=\"true\"><img class=\"sgs-wishlist-panel__row-thumb sgs-media-el\" src=\"/img/7-t.jpg\" alt=\"\" width=\"64\" height=\"64\" loading=\"lazy\" decoding=\"async\" /></a><div class=\"sgs-wishlist-panel__row-info\"><a class=\"sgs-wishlist-panel__row-name\" href=\"/p/7\">Chocolate Hazelnut</a><span class=\"sgs-wishlist-panel__row-price\">\u00a35.00</span></div><div class=\"sgs-wishlist-panel__row-actions\"><button type=\"button\" class=\"sgs-wishlist-panel__move-to-basket wp-element-button\" data-product-id=\"7\">Move to basket</button><button type=\"button\" class=\"sgs-wishlist-panel__remove\" data-product-id=\"7\" aria-label=\"Remove Chocolate Hazelnut\">Remove</button></div></div>"
+};
+const fixtureProduct = {
+	id: 7,
+	name: 'Chocolate Hazelnut',
+	permalink: '/p/7',
+	is_in_stock: true,
+	images: [ { src: '/img/7.jpg', thumbnail: '/img/7-t.jpg' } ],
+	brands: [ { name: 'Zainab' } ],
+	prices: { price: 500, regular_price: 650, currency_minor_unit: 2, currency_prefix: '\u00a3', currency_suffix: '' },
+};
+assert(
+	'the cards layout prints the same frame card as main',
+	MAIN_FIXTURE.cards === wishlistRowHtml( fixtureProduct, { showPrice: true, layout: 'cards', shared: false, labels: rowLabels } )
+);
+assert(
+	'a shared cards row prints the same plain row as main',
+	MAIN_FIXTURE.cardsShared === wishlistRowHtml( fixtureProduct, { showPrice: true, showStock: true, layout: 'cards', shared: true, labels: rowLabels } )
+);
+assert(
+	'the grid layout prints the same row as main',
+	MAIN_FIXTURE.grid === wishlistRowHtml( fixtureProduct, { showPrice: true, showStock: true, layout: 'grid', shared: false, labels: rowLabels } )
+);
+
 if ( failures > 0 ) {
 	console.error( `\n${ failures } assertion(s) failed.` );
 	process.exit( 1 );

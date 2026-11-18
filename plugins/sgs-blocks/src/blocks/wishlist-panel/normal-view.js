@@ -1,5 +1,5 @@
 /**
- * SGS Wishlist Panel — the visitor's own list (grid/list/strip/cards layouts).
+ * SGS Wishlist Panel — the visitor's own list (grid/list/strip/cards/product-cards layouts).
  *
  * @package
  */
@@ -90,11 +90,11 @@ export async function renderNormalView( elements, labels, ids, announce ) {
 	const { itemsEl, barsEl } = elements;
 	itemsEl.setAttribute( 'aria-busy', 'true' );
 
-	const isCards = 'cards' === labels.layout;
+	const isCards = 'product-cards' === labels.layout;
 	let products;
 	let cards = new Map();
 	try {
-		// The cards layout asks for the product cards at the same time as the product data (sort, price drop and stock
+		// The product-cards layout asks for the product cards at the same time as the product data (sort, price drop and stock
 		// read the data; the markup is the site's own card).
 		[ products, cards ] = await Promise.all( [
 			fetchWishlistProducts( ids ),
@@ -126,6 +126,7 @@ export async function renderNormalView( elements, labels, ids, announce ) {
 					showDateSaved: ! isStrip && labels.showDateSaved,
 					showPriceDrop: ! isStrip && labels.showPriceDrop,
 					shared: false,
+					layout: labels.layout,
 					cardHtml: cards.get( Number( product.id ) ),
 					labels,
 					savedPrice: savedPrices[ Number( product.id ) ],

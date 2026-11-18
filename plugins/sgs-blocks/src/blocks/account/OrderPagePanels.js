@@ -214,6 +214,7 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 				options={ [
 					{ label: __( 'Wishlist panel default', 'sgs-blocks' ), value: '' },
 					{ label: __( 'Frame cards', 'sgs-blocks' ), value: 'cards' },
+					{ label: __( 'Site product cards', 'sgs-blocks' ), value: 'product-cards' },
 				] }
 			/>
 			<TextField { ...p } name="wishlistCountText" label={ __( 'Count beside the heading', 'sgs-blocks' ) } help={ __( '{count} becomes the number of saved items, for example “{count} frames”. Empty = no count.', 'sgs-blocks' ) } />

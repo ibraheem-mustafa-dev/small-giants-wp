@@ -1,6 +1,6 @@
 <?php
 /**
- * Sgs/wishlist-panel — the cards layout's data (the site's own product cards).
+ * Sgs/wishlist-panel — the product-cards layout's data (the site's own product cards).
  *
  * The panel holds one `sgs/product-card` as its template (the design every saved product's card renders with). The
  * template is never rendered on the page (`Wishlist_Cards_Rest::metadata_settings` registers the panel with
@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! function_exists( 'sgs_wishlist_panel_cards_data' ) ) {
 	/**
-	 * The data-* attributes of the cards layout, and the card block's assets.
+	 * The data-* attributes of the product-cards layout, and the card block's assets.
 	 *
 	 * @param \WP_Block|null $block The panel's WP_Block (its parsed inner blocks hold the template card).
 	 * @return array<string,string> Attribute name (without `data-`) => value.

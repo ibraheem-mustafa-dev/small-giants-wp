@@ -4335,9 +4335,10 @@
 				"type": "string",
 				"enum": [
 					"",
-					"cards"
+					"cards",
+					"product-cards"
 				],
-				"description": "How the Saved items tab draws the list: empty = the wishlist panel's own layout, cards = a three-column grid of frame cards (two on a phone) with a heart that removes."
+				"description": "How the Saved items tab draws the list: empty = the wishlist panel's own layout, cards = a three-column grid of frame cards (two on a phone) with a heart that removes, product-cards = the site's own product card for each saved product (a three-column grid, two on a phone)."
 			},
 			"wishlistCountText": {
 				"type": "string",

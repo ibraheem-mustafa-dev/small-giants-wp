@@ -5,7 +5,7 @@
  * with the "View all" link when the cap hides items) — the real content is
  * fetched client-side from the shared wishlist store + the WooCommerce Store
  * API (view.js), so there is nothing meaningful to preview server-side
- * inside the editor's own request. The cards layout shows its template instead: the one inner `sgs/product-card`
+ * inside the editor's own request. The product-cards layout shows its template instead: the one inner `sgs/product-card`
  * every saved product's card is drawn from, edited in place like any card on the Shop.
  */
 import { __ } from '@wordpress/i18n';
@@ -28,7 +28,7 @@ import AuthoredText from '../../components/AuthoredText';
 export default function Edit( { attributes, setAttributes } ) {
 	const { heading, layout, maxItems, viewAllLabel, viewAllUrl, showCount, moveLabel, removeLabel, rowActionsFlexWrap } =
 		attributes;
-	const previewLayout = [ 'grid', 'list', 'strip', 'cards' ].includes( layout ) ? layout : 'grid';
+	const previewLayout = [ 'grid', 'list', 'strip', 'cards', 'product-cards' ].includes( layout ) ? layout : 'grid';
 	const sampleCount = 6;
 	const cap = Number( maxItems ) > 0 ? Math.min( Number( maxItems ), sampleCount ) : sampleCount;
 	const showViewAll = Number( maxItems ) > 0 && Number( maxItems ) < sampleCount;
@@ -50,9 +50,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: wishlistGridStyle( attributes, previewTier ),
 	} );
 
-	// The cards layout's template: one product card, which the author styles (or replaces by pasting the Shop's card) and
+	// The product-cards layout's template: one product card, which the author styles (or replaces by pasting the Shop's card) and
 	// the panel then draws for every saved product. Locked to one card; its own product connection is only a sample.
-	const isCards = 'cards' === previewLayout;
+	const isCards = 'product-cards' === previewLayout;
 	const innerBlocksProps = useInnerBlocksProps(
 		{ className: 'sgs-wishlist-panel__items' },
 		{
