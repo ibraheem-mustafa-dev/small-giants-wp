@@ -2128,7 +2128,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 7,
+        "paintDeclarations": 12,
         "replacedCoreSupports": []
       }
     }
