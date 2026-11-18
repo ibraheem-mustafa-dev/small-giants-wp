@@ -643,3 +643,10 @@ Features switched on, added in review and shipped (main session, 2026-11-17): th
 | Order confirmation 5 | the Instagram glyph was dark | icon colour never set | white on the gradient disc, the footer icon's settings | site | `iconColour` `mm-white`, the footer's gradient | fixed on local-mamas 2026-11-18 |
 | Order confirmation 6 | 67 to 68px above the address cards, 20 to 28px between the other cards | WooCommerce's stylesheet gives `.wc-block-order-confirmation-address-wrapper` `margin-block-start: 48px` | every gap in the column 27/23/20px at 1440/768/375 | site | the container's top margin 0 and the column gap 28/24/20 | fixed on local-mamas 2026-11-18 |
 | All pages 5 (confirmation) | script labels on yellow cards were dark gold | `mm-script-gold` | 6.52:1 on the pale yellow | site | `textColour` `mm-script` on "know another new mum?" and "all in one place" | fixed on local-mamas 2026-11-18; the site-wide sweep is helper `r2f-gap-labels` |
+
+## Round two: the gap above the footer and the gold labels site-wide (2026-11-18)
+
+| ID | Draft → site | Cause | Proof | Layer | Fix made or proposed | Status |
+|---|---|---|---|---|---|---|
+| All pages 6 | Gap above footer 71-226px by page (1440) | Each page's last band has its own bottom padding on top of the footer strip's top padding | measure-before.json / measure-after.json (chains per page) | site setting | See catalogue-rows.md | fixed on local-mamas 2026-11-18 (103 and 219 reported only) |
+| All pages 5 | 3 gold labels on pale yellow | textColour mm-script-gold | labels-before.json / labels-after.json | site setting | textColour and textColourHover mm-script | fixed on local-mamas 2026-11-18 |

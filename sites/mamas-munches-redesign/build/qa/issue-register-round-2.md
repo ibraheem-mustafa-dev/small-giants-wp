@@ -111,6 +111,14 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 
 - **Account 3:** Bean had not reviewed the rebuilt account area at the time of his round-two list ("Wasn't ready for review at point of compaction and handoff").
 - **Account 4:** (Bean's proofing of 2026-11-18.) "What about the order confirmation page and account page? Those have to still be open too right as they didn't even have items on the review register." Open: a first careful comparison of the signed-in account area with the draft, and the draft's extras (order thumbnails with "View order", the gift note on an order, the "Email me about new flavours and bake days" tick, the address book with "Make default"), which Bean asked about ("Are the other 2 you're recommending for dropping part of the draft too?": all four are in the draft).
+- **Account 5:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) Edit on address cards should be on the top right corner - same line as the heading.
+- **Account 6:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) Heading for address cards needs increasing, it's smaller than the person's name underneath it.
+- **Account 7:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) a) The email me about new flavours checkbox and text should be a good size proportion to eachother. b) Currently looks like the text is too small for the checkbox. Also, the text should add on 'and treats as well as special offers.' c) The consent should definitely be above the password area if it doesn't require a lot of effort. I also think that the account details and password reset should be separated like in the draft too unless it requires some framework building too.
+- **Account 8:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) Padding above 'your account' label in the hero is less on the live than the draft.
+- **Account 9:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) View order link text needs to be left aligned on the stacked/mobile view. Screenshot shows it sitting with a visible indent compared to the text above it.
+- **Account 10:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) Switch view order button's resting bg/fill colour to be the yellow.
+- **Account 11:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) Order summary is missing the order again button.
+- **Account 12:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) Isn't the first step supposed to be the processing stage? Why does the live example screenshot show us on the second stage with it saying the woocommerce status is still processing? I thought it'd say something at least like confirmed.
 
 ## Checkout
 
@@ -138,6 +146,11 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Order confirmation 4:** (Bean's proofing of 2026-11-18.) Order confirmation page's back to the kitchen arrow icon and posted card arrow icons are both the wrong type too.
 - **Order confirmation 5:** (Bean's proofing of 2026-11-18.) the ig icon is black when it should be white to match the rest of the ig icons on the site.
 - **Order confirmation 6:** (Bean's proofing of 2026-11-18.) why's there a different vertical gap between the order card and Billing address card?
+- **Order confirmation 7:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) Email confirmation link text colour is light grey. Pretty sure I've banned this a few times, I'm doing it again. Never do this or allow this, switch it back to black.
+- **Order confirmation 8:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) Confirm email and view order button has dark pink bg/fill colour. Should just be the regular yellow instead.
+- **Order confirmation 9:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) When the order confirmation page is not in stacked mode and the 'What's coming' and 'send here a taster trio' cards are in the same row, they should fill height, the taster trio card is a little shorter and all of the cards on the same row aside from these 2 are the same height.
+- **Order confirmation 10:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) the order confirmation page feels like it should have more of its cards have non-blank bg/fill colours like the pink or yellow of other cards, especially towards the bottom of the page.
+- **Order confirmation 11:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) Confirm email and view button doesn't have much of a vertical gap/padding between it and the content above it. That should be increased and the vertical gap/padding above the Email address* label needs reducing it's quite large and is inconsistent with the rest of the gaps/padding. And should probably make the label bold or add weight to it so it stands our from the regular text.
 
 ## Gift card page
 
@@ -150,6 +163,8 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **All pages 4:** (Bean's proofing of 2026-11-18.) You should do that small framework fix for add to baskets and the cache now. (The security token printed into cached pages: a page cache older than about a day would make add to basket fail.)
 - **All pages 5:** (Bean's proofing of 2026-11-18.) the yellow bg cards also have a darker yellow/gold label on them like we fixed previously. Make sure to switch all offenders with dark pin[k] label.
 - **All pages 6:** (Bean's proofing of 2026-11-18.) across the site most pages have a large amount of white space (a large gap) between the bottom of the page's content and the top of the footer. Can we cut this down to normal and make it consistent across all of the pages, it just looks really unnatural and a bit broken like I accidentally hit enter a bunch of times while writing a word doc.
+- **All pages 7:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) All tick boxes on the site should match the tick box look on the basket drawer's gift note tick box. - Do a full site sweep and make sure all are standardised.
+- **All pages 8:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) (On All pages 6.) The bottom page padding/gap should be equal across all pages at a sensible value that you can decide based on /research
 
 ## Bean's verdicts so far (2026-11-17 late evening)
 
@@ -169,3 +184,4 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **No bake days (2026-11-18):** "Don't include any content with bake days in it." The account tick reads "Email me about new flavours".
 - **Screenshots (2026-11-18):** Bean wants pairs, the draft beside the test site, at the three main widths, for the account and order confirmation pages.
 - **Account 4, "Something not right? Message Zainab" (2026-11-18):** the link goes to the Contact page.
+- **Light grey text (2026-11-18):** banned everywhere. "Pretty sure I've banned this a few times, I'm doing it again. Never do this or allow this, switch it back to black." (Raised first as Checkout 7.)
