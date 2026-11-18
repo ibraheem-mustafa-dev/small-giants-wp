@@ -19,8 +19,9 @@
  *
  * Nothing is printed for an option that is empty or not an array: a value is never invented. Google reads
  * both on an `Offer` (merchant listings) and on the `Organization` (the shop-wide default), so
- * the product emitters add {@see self::offer_fields()} to every `Offer` and the Organisation emitter uses
- * {@see self::returns()} and {@see self::shipping()}.
+ * the product emitters print {@see self::offer_fields()} once per page (inside the only `Offer`, or the group's
+ * `AggregateOffer`), each variant's `Offer` points at it with {@see self::offer_references()}, and the Organisation
+ * emitter prints the same nodes with the same `@id`s ({@see self::returns()}, {@see self::shipping_service()}).
  *
  * @package SGS\Blocks
  */
@@ -61,9 +62,18 @@ final class Product_Offer_Policy {
 			return null;
 		}
 		if ( self::is_list( $returns ) ) {
-			return $returns; // Several policies print as stored.
+			// Several policies print as stored, each with its own @id.
+			foreach ( $returns as $i => $one ) {
+				if ( \is_array( $one ) ) {
+					$returns[ $i ] = $one + array( '@id' => self::node_id( 'return-policy', (int) $i, \count( $returns ) ) );
+				}
+			}
+			return $returns;
 		}
-		$returns += array( '@type' => 'MerchantReturnPolicy' );
+		$returns += array(
+			'@type' => 'MerchantReturnPolicy',
+			'@id'   => self::node_id( 'return-policy', 0, 1 ),
+		);
 		$raw_cc   = (string) \get_option( 'woocommerce_default_country', '' );
 		$cc       = \strtoupper( (string) \strtok( $raw_cc, ':' ) ); // 'GB:ENG' becomes 'GB'; '' stays ''.
 		if ( \preg_match( '/^[A-Z]{2}$/', $cc ) ) {
@@ -87,7 +97,8 @@ final class Product_Offer_Policy {
 		}
 		$objects  = self::is_list( $shipping ) ? $shipping : array( $shipping );
 		$services = array();
-		foreach ( $objects as $details ) {
+		$total    = \count( $objects );
+		foreach ( \array_values( $objects ) as $n => $details ) {
 			if ( ! \is_array( $details ) ) {
 				continue;
 			}
@@ -105,6 +116,7 @@ final class Product_Offer_Policy {
 			}
 			$services[] = array(
 				'@type'              => 'ShippingService',
+				'@id'                => self::node_id( 'shipping-service', $n, $total ),
 				'shippingConditions' => $conditions,
 			);
 		}
@@ -115,21 +127,84 @@ final class Product_Offer_Policy {
 	}
 
 	/**
-	 * The fields to add to an `Offer`: `shippingDetails` and `hasMerchantReturnPolicy`, each only when set.
+	 * The full policies to print inside one `Offer` (a product with one offer, or the group's `AggregateOffer`).
+	 *
+	 * `hasMerchantReturnPolicy` carries the policy with its `@id`; `shippingDetails` is an `OfferShippingDetails`
+	 * whose `hasShippingService` carries the `ShippingService` with its `@id`. Each key only when the shop set it.
 	 *
 	 * @return array<string,mixed>
 	 */
 	public static function offer_fields(): array {
-		$fields   = array();
-		$shipping = self::shipping();
-		if ( null !== $shipping ) {
-			$fields['shippingDetails'] = $shipping;
+		$fields  = array();
+		$service = self::shipping_service();
+		if ( null !== $service ) {
+			$fields['shippingDetails'] = array(
+				'@type'              => 'OfferShippingDetails',
+				'hasShippingService' => $service,
+			);
 		}
 		$returns = self::returns();
 		if ( null !== $returns ) {
 			$fields['hasMerchantReturnPolicy'] = $returns;
 		}
 		return $fields;
+	}
+
+	/**
+	 * The references to put on each further `Offer` of the same page: the `@id` of the policies
+	 * {@see self::offer_fields()} prints once and {@see Org_Website_Schema} prints on the home page.
+	 *
+	 * Google documents a global policy under `Organization` and a reference to it from an `Offer` by `@id` alone
+	 * (shipping: `OfferShippingDetails.hasShippingService`; returns: `hasMerchantReturnPolicy`), so a variant's `Offer`
+	 * carries a few dozen bytes, not a copy of the policy.
+	 *
+	 * @return array<string,mixed>
+	 */
+	public static function offer_references(): array {
+		$fields  = array();
+		$service = self::shipping_service();
+		if ( null !== $service ) {
+			$fields['shippingDetails'] = array(
+				'@type'              => 'OfferShippingDetails',
+				'hasShippingService' => self::references( $service ),
+			);
+		}
+		$returns = self::returns();
+		if ( null !== $returns ) {
+			$fields['hasMerchantReturnPolicy'] = self::references( $returns );
+		}
+		return $fields;
+	}
+
+	/**
+	 * `{ "@id": ... }` for a node, or a list of them for a list of nodes.
+	 *
+	 * @param array<mixed> $nodes One node or a list of nodes carrying `@id`.
+	 * @return array<mixed>
+	 */
+	private static function references( array $nodes ): array {
+		if ( ! self::is_list( $nodes ) ) {
+			return array( '@id' => (string) ( $nodes['@id'] ?? '' ) );
+		}
+		$refs = array();
+		foreach ( $nodes as $node ) {
+			if ( \is_array( $node ) && ! empty( $node['@id'] ) ) {
+				$refs[] = array( '@id' => (string) $node['@id'] );
+			}
+		}
+		return $refs;
+	}
+
+	/**
+	 * A stable node id on the home page: `<home>#return-policy`, or `<home>#return-policy-2` in a list.
+	 *
+	 * @param string $name  Node name.
+	 * @param int    $index Zero-based position.
+	 * @param int    $total Number of nodes of this kind.
+	 * @return string
+	 */
+	private static function node_id( string $name, int $index, int $total ): string {
+		return \home_url( '/' ) . '#' . $name . ( $total > 1 ? '-' . ( $index + 1 ) : '' );
 	}
 
 	/**

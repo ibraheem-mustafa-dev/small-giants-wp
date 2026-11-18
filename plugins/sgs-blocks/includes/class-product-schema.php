@@ -34,6 +34,15 @@ require_once __DIR__ . '/class-product-offer-policy.php';
 final class Product_Schema {
 
 	/**
+	 * Largest ProductGroup script, in characters, before variants are trimmed from the end.
+	 *
+	 * The group lists at most 50 variants (build_has_variant()); a variant is about 0.7 KB with the shared policies
+	 * referenced by `@id` rather than copied, so 50 variants stay near 36 KB. 48 KB leaves room for long names,
+	 * descriptions and the policies printed once, and still stops a runaway product from printing a megabyte.
+	 */
+	private const MAX_JSON_CHARS = 49152;
+
+	/**
 	 * Allowed GTIN lengths and their corresponding schema property name.
 	 *
 	 * @var array<int,string>
@@ -131,7 +140,8 @@ final class Product_Schema {
 		}
 
 		// AggregateOffer (price-from / price-to rich result).
-		$data['offers'] = self::build_aggregate_offer( $combos, $decimals, $currency );
+		// The shop's shipping and return policies print once, here; each variant's Offer points at them by @id.
+		$data['offers'] = self::build_aggregate_offer( $combos, $decimals, $currency ) + Product_Offer_Policy::offer_fields();
 
 		// hasVariant nodes (max 50, selection rule applied).
 		$data['hasVariant'] = self::build_has_variant(
@@ -144,13 +154,9 @@ final class Product_Schema {
 			$currency
 		);
 
-		// shippingDetails / hasMerchantReturnPolicy sit on each variant's Offer
-		// (Product_Offer_Policy::offer_fields(), only when the shop has set them),
-		// where Google reads them for merchant listings.
-
 		// Encode and size-cap (SEC-3). build_has_variant() puts the low- and
 		// high-price anchor nodes FIRST, so when a large product (e.g. the 48-SKU
-		// fixture) would overflow the 16 KB cap we drop filler nodes from the END
+		// fixture) would overflow the size cap we drop filler nodes from the END
 		// until it fits — the AggregateOffer still carries the TRUE offerCount, so
 		// trimming the hasVariant SAMPLE keeps the price-range rich result intact
 		// rather than suppressing the whole block. (Spec FR-27-E1: "hasVariant ≤50 =
@@ -158,12 +164,12 @@ final class Product_Schema {
 		// + the two anchors alone still exceed the cap emits nothing.
 		$json       = self::encode( $data );
 		$node_count = \count( $data['hasVariant'] );
-		while ( false !== $json && \mb_strlen( $json ) >= 16384 && $node_count > 2 ) {
+		while ( false !== $json && \mb_strlen( $json ) >= self::MAX_JSON_CHARS && $node_count > 2 ) {
 			\array_pop( $data['hasVariant'] );
 			--$node_count;
 			$json = self::encode( $data );
 		}
-		if ( false === $json || \mb_strlen( $json ) >= 16384 ) {
+		if ( false === $json || \mb_strlen( $json ) >= self::MAX_JSON_CHARS ) {
 			return '';
 		}
 
@@ -352,6 +358,33 @@ final class Product_Schema {
 	}
 
 	/**
+	 * A variation's own saved SKU, '' when it has none (never the parent's).
+	 *
+	 * @param int $variation_id Variation post ID.
+	 * @return string
+	 */
+	private static function own_sku( int $variation_id ): string {
+		return self::sanitise_text( (string) \get_post_meta( $variation_id, '_sku', true ) );
+	}
+
+	/**
+	 * The schema.org availability of one variant: OutOfStock, BackOrder (the variation's stock status is
+	 * `onbackorder`; the manifest counts it as in stock because it can be bought) or InStock.
+	 *
+	 * @param int  $variation_id Variation post ID.
+	 * @param bool $in_stock     The manifest's `inStock` flag.
+	 * @return string
+	 */
+	private static function variant_availability( int $variation_id, bool $in_stock ): string {
+		if ( ! $in_stock ) {
+			return 'https://schema.org/OutOfStock';
+		}
+		return 'onbackorder' === (string) \get_post_meta( $variation_id, '_stock_status', true )
+			? 'https://schema.org/BackOrder'
+			: 'https://schema.org/InStock';
+	}
+
+	/**
 	 * Build AggregateOffer node (price-from / price-to, true total combo count).
 	 *
 	 * @param array  $combos   All combos from manifest.
@@ -472,6 +505,15 @@ final class Product_Schema {
 		$parent_name = self::sanitise_text( $wc_product->get_name() );
 		$nodes       = array();
 
+		// One query for every selected variation's SKU and stock status.
+		$variation_ids = array();
+		foreach ( $selected_keys as $selected_key ) {
+			if ( isset( $combos[ $selected_key ]['variationId'] ) ) {
+				$variation_ids[] = (int) $combos[ $selected_key ]['variationId'];
+			}
+		}
+		\update_meta_cache( 'post', $variation_ids );
+
 		foreach ( $selected_keys as $combo_key ) {
 			if ( ! isset( $combos[ $combo_key ] ) ) {
 				continue;
@@ -549,8 +591,10 @@ final class Product_Schema {
 			'name'  => $variant_name,
 		);
 
-		// SKU.
-		$sku = (string) ( $combo['sku'] ?? '' );
+		// SKU: the variation's own saved SKU only. WooCommerce's default read returns the PARENT's SKU for a
+		// variation with none, which would print one code on every variant; a variant with no code of its own
+		// prints neither `sku` nor `mpn`.
+		$sku = self::own_sku( $variation_id );
 		if ( '' !== $sku ) {
 			$node['sku'] = $sku;
 		}
@@ -603,9 +647,7 @@ final class Product_Schema {
 			'@type'         => 'Offer',
 			'price'         => self::format_price( (int) $combo['incMinor'], $decimals ),
 			'priceCurrency' => $currency,
-			'availability'  => ! empty( $combo['inStock'] )
-				? 'https://schema.org/InStock'
-				: 'https://schema.org/OutOfStock',
+			'availability'  => self::variant_availability( $variation_id, ! empty( $combo['inStock'] ) ),
 			'url'           => $permalink,
 			'itemCondition' => 'https://schema.org/NewCondition',
 		);
@@ -616,7 +658,7 @@ final class Product_Schema {
 			$offer['priceValidUntil'] = $sale_end;
 		}
 
-		$node['offers'] = $offer + Product_Offer_Policy::offer_fields();
+		$node['offers'] = $offer + Product_Offer_Policy::offer_references();
 
 		return $node;
 	}

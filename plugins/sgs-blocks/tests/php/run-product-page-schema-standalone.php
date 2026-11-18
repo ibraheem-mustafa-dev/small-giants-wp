@@ -4,8 +4,8 @@
  *
  * Covers the shop's two policy options ({@see Product_Offer_Policy}), the plain `Product` built for a
  * product without options ({@see Product_Schema_Simple}) and the routing of {@see Product_Page_Schema}
- * (a draft prints nothing; a plain product and a gift card defer to an SEO plugin that prints structured
- * data; the filter decides last). The `ProductGroup` for a product with options is proved on a scratch copy of
+ * (a draft prints nothing; a plain product and a gift card print whatever SEO plugin is active and step aside only
+ * through `sgs_seo_plugin_owns_product_schema`; the filter decides last). The `ProductGroup` for a product with options is proved on a scratch copy of
  * the shop, because it reads the live manifest.
  *
  * Run with: php plugins/sgs-blocks/tests/php/run-product-page-schema-standalone.php
@@ -30,6 +30,7 @@ namespace {
 		'seo_owns' => false,
 		'products' => array(),
 		'removed' => array(),
+		'meta' => array(),
 	);
 
 	class WC_Product {
@@ -61,6 +62,8 @@ namespace {
 		return $value;
 	}
 	function get_option( $key, $default = false ) { return $GLOBALS['t']['options'][ $key ] ?? $default; }
+	function home_url( $p = '' ) { return 'https://shop.example' . $p; }
+	function get_post_meta( $id, $key, $single = false ) { return $GLOBALS['t']['meta'][ $id ][ $key ] ?? ''; }
 	function is_product() { return $GLOBALS['t']['is_product']; }
 	function get_queried_object_id() { return $GLOBALS['t']['queried']; }
 	function wc_get_product( $id ) { return $GLOBALS['t']['products'][ $id ] ?? null; }
@@ -117,6 +120,14 @@ namespace {
 	$GLOBALS['t']['options']['woocommerce_default_country'] = 'GB:ENG';
 	$f = Product_Offer_Policy::offer_fields();
 	$check( 'return policy gets its type and the store country, shipping stays absent', 'MerchantReturnPolicy' === $f['hasMerchantReturnPolicy']['@type'] && 'GB' === $f['hasMerchantReturnPolicy']['returnPolicyCountry'] && ! isset( $f['shippingDetails'] ) );
+	$check( 'the return policy carries a stable @id on the home page', 'https://shop.example/#return-policy' === $f['hasMerchantReturnPolicy']['@id'] );
+	$GLOBALS['t']['options']['sgs_configurator_shipping'] = array( 'shippingRate' => array( 'value' => '3.95' ), 'deliveryTime' => array( 'transitTime' => array( 'minValue' => 3 ) ) );
+	$full = Product_Offer_Policy::offer_fields();
+	$refs = Product_Offer_Policy::offer_references();
+	$check( 'the full policy prints the ShippingService once, with its @id', 'https://shop.example/#shipping-service' === $full['shippingDetails']['hasShippingService']['@id'] && isset( $full['shippingDetails']['hasShippingService']['shippingConditions'] ) );
+	$check( 'a further offer points at both policies by @id alone', array( '@id' => 'https://shop.example/#return-policy' ) === $refs['hasMerchantReturnPolicy'] && array( '@id' => 'https://shop.example/#shipping-service' ) === $refs['shippingDetails']['hasShippingService'] );
+	$check( 'a reference is a few dozen bytes, not a copy of the policy', strlen( json_encode( $refs ) ) < strlen( json_encode( $full ) ) );
+	unset( $GLOBALS['t']['options']['sgs_configurator_shipping'] );
 	$GLOBALS['t']['options']['woocommerce_default_country'] = '';
 	$check( 'a missing store country leaves returnPolicyCountry out, never empty', ! array_key_exists( 'returnPolicyCountry', Product_Offer_Policy::returns() ) );
 	$GLOBALS['t']['options']['sgs_configurator_returns'] = 'not an array';
@@ -144,14 +155,35 @@ namespace {
 	$GLOBALS['t']['products'][11] = new WC_Product( array( 'id' => 11, 'type' => 'external' ) );
 	$check( 'a product type that is not simple is not built here', null === Product_Schema_Simple::build_node( $GLOBALS['t']['products'][11] ) );
 
+	// A variant: its own SKU only, backorder, and the policy by reference.
+	$variant = new ReflectionMethod( 'SGS\Blocks\Product_Schema', 'variant_node' );
+	$variant->setAccessible( true );
+	$combo   = array( 'variationId' => 31, 'incMinor' => 950, 'inStock' => true );
+	$build   = static fn( array $combo ) => $variant->invoke( null, 'pa_flavour:oat', $combo, array(), array(), 'Zookies', '', 'https://shop.example/product/zookies/', 2, 'GBP' );
+	$node    = $build( $combo );
+	$check( 'a variation with no SKU of its own prints neither sku nor mpn (never the parent SKU)', ! isset( $node['sku'] ) && ! isset( $node['mpn'] ) );
+	$GLOBALS['t']['meta'][31]['_sku'] = 'ZK-8-OAT';
+	$node = $build( $combo + array( 'sku' => 'PARENT-SKU' ) );
+	$check( 'a variation with its own SKU prints it as sku and mpn, and ignores the manifest copy', 'ZK-8-OAT' === $node['sku'] && 'ZK-8-OAT' === $node['mpn'] );
+	$check( 'in stock prints InStock', 'https://schema.org/InStock' === $node['offers']['availability'] );
+	$GLOBALS['t']['meta'][31]['_stock_status'] = 'onbackorder';
+	$check( 'a variation on backorder prints BackOrder, as a simple product does', 'https://schema.org/BackOrder' === $build( $combo )['offers']['availability'] );
+	$check( 'out of stock prints OutOfStock whatever the stored status', 'https://schema.org/OutOfStock' === $build( array( 'inStock' => false ) + $combo )['offers']['availability'] );
+	$GLOBALS['t']['options']['sgs_configurator_returns'] = array( 'merchantReturnDays' => 14 );
+	$check( 'a variant Offer carries the return policy as an @id reference only', array( '@id' => 'https://shop.example/#return-policy' ) === $build( $combo )['offers']['hasMerchantReturnPolicy'] );
+	$GLOBALS['t']['options'] = array();
+
 	// Routing.
 	$out = $nodes( $emit() );
 	$check( 'a product page with no card prints exactly one Product node', 1 === count( $out ) && 'Product' === $out[0]['@type'] );
 	$check( 'the entity in the shop name is decoded in the printed JSON', "Mama's Munches" === $out[0]['brand']['name'] );
 	$check( 'WooCommerce\'s own Product copy is removed when this prints', 1 === count( $GLOBALS['t']['removed'] ) && 'woocommerce_single_product_summary' === $GLOBALS['t']['removed'][0][0] );
 	$GLOBALS['t']['filters']['sgs_seo_plugin_owns_schema'] = array( static fn() => true );
-	$check( 'a plain Product defers to an SEO plugin that prints structured data', '' === $emit() );
+	$check( 'a plain Product still prints when an SEO plugin owns the Organisation and WebSite schema (it prints no Product)', 1 === count( $nodes( $emit() ) ) );
 	$GLOBALS['t']['filters']['sgs_seo_plugin_owns_schema'] = array();
+	$GLOBALS['t']['filters']['sgs_seo_plugin_owns_product_schema'] = array( static fn() => true );
+	$check( 'a plain Product steps aside when the site says its SEO plugin prints Product', '' === $emit() );
+	$GLOBALS['t']['filters']['sgs_seo_plugin_owns_product_schema'] = array();
 	$GLOBALS['t']['listable'] = false;
 	$check( 'a draft or hidden product prints nothing', '' === $emit() );
 	$GLOBALS['t']['listable'] = true;

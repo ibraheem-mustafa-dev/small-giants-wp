@@ -597,14 +597,20 @@ if ( $scoped_css ) {
 	printf( '<style>%s</style>', wp_strip_all_tags( implode( '', $scoped_css ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
+// An SEO plugin whose schema feature is on prints the page's BreadcrumbList itself (Slim SEO does, on every page
+// but Home): the block then prints no second list, and the trail stays visible HTML.
+require_once dirname( __DIR__, 3 ) . '/includes/class-org-website-schema.php';
+$schema_script = \SGS\Blocks\Org_Website_Schema::seo_plugin_owns_schema()
+	? ''
+	: '<script type="application/ld+json">' . \SGS\Blocks\Sgs_Schema::encode_jsonld( $schema ) . '</script>';
+
 printf(
-	'<nav %s aria-label="%s"><ol class="sgs-breadcrumbs__list">%s</ol><script type="application/ld+json">%s</script></nav>',
+	'<nav %s aria-label="%s"><ol class="sgs-breadcrumbs__list">%s</ol>%s</nav>',
 	$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	esc_attr__( 'Breadcrumbs', 'sgs-blocks' ),
 	$items_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	// One shared encoder (FR-30-9): JSON_UNESCAPED_SLASHES alone disables PHP's
 	// default `\/` escaping, which was the only thing stopping a `</script>` in a
 	// crumb title from closing this tag. Sgs_Schema adds JSON_HEX_TAG.
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json via Sgs_Schema HEX flags, not HTML.
-	\SGS\Blocks\Sgs_Schema::encode_jsonld( $schema )
+	$schema_script // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json via Sgs_Schema HEX flags, not HTML.
 );

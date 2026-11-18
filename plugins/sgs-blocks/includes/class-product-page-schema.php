@@ -15,10 +15,12 @@
  * catalogue). WooCommerce prints its own `Product` markup when a classic template calls its summary hook; when
  * this prints, that copy is removed so the page carries one `Product` node.
  *
- * An SEO plugin that prints structured data ({@see Org_Website_Schema::seo_plugin_owns_schema()}) keeps the
- * plain `Product` and gift-card nodes: it prints those itself. The `ProductGroup` stays SGS's, as before, because
- * those plugins do not produce it from the manifest. The `sgs_product_page_schema` filter overrides the decision
- * for a product (return false to print nothing, true to print whatever an SEO plugin does).
+ * The plain `Product` and the gift-card `Product` print whatever SEO plugin is active: most plugins print no
+ * `Product` node for a page built from blocks (Slim SEO prints none, checked on a scratch copy with its schema on),
+ * and `seo_plugin_owns_schema()` answers for the Organisation and WebSite nodes only. A site whose SEO plugin does
+ * print a `Product` node returns true from the `sgs_seo_plugin_owns_product_schema` filter and SGS steps aside for
+ * those two. The `ProductGroup` is always SGS's: no plugin builds it from the variation manifest. The
+ * `sgs_product_page_schema` filter overrides the final tag for a product (return '' to print nothing).
  *
  * @package SGS\Blocks
  */
@@ -98,8 +100,17 @@ final class Product_Page_Schema {
 			return Product_Schema::build_script( $product->get_id() );
 		}
 
-		// A plain Product or a gift card: an SEO plugin that prints structured data prints these itself.
-		if ( Org_Website_Schema::seo_plugin_owns_schema() ) {
+		// A plain Product or a gift card prints unless the site says its SEO plugin prints a Product node.
+		/**
+		 * Filters whether an SEO plugin already prints the `Product` node of a simple product or gift card.
+		 *
+		 * Default false: SGS prints it. Return true on a site whose SEO plugin (for example Yoast with its
+		 * WooCommerce add-on, or Rank Math) prints a `Product` node, so the page does not carry two.
+		 *
+		 * @param bool        $owns    Whether a plugin prints the node.
+		 * @param \WC_Product $product The product.
+		 */
+		if ( (bool) \apply_filters( 'sgs_seo_plugin_owns_product_schema', false, $product ) ) {
 			return '';
 		}
 
