@@ -615,3 +615,31 @@ Features switched on, added in review and shipped (main session, 2026-11-17): th
 | Gift card: amount box padding | Draft 20px 16px / 24px / 28px; site 22px | Custom CSS constant | gcm.mjs tiles 93/87/165 | Custom CSS | three media rules in gc-form | fixed on local-mamas 2026-11-18 |
 | Gift card: custom £10 | No saving line | n/a | gc11.mjs Store API price = regular = sale, discount 0 | works | none | proved |
 | Gift card: legend and note | Draft "Amount" and printed-card note; site "Choose an amount" | fixed plugin string; cards are emailed | source | wording | none | accepted |
+
+## Round two: the neutral confirmation page, card arrows and the gift card form settings (2026-11-18)
+
+| ID | Draft → site | Cause | Proof | Layer | Fix made or proposed | Status |
+|---|---|---|---|---|---|---|
+| Confirmation hero, order not viewable | Site read "Your order's in" in every state | one hero for all states | states run: exactly one h1 and one lead line in 8 states; no private data in not-viewable states | new behaviour | 219: Show-to order-viewable on eyebrow, heading, lead, pill; order-not-viewable copies of heading and lead with the neutral wording | fixed on local-mamas 2026-11-18 |
+| Taster and account cards arrows | typed arrow | text block | cards.mjs at 375/768/1440 | setting exists | oc-taster-cta and oc-account-cta are sgs/button with arrow-right icon, whole card clickable through Custom CSS (ids ordertastercardlink, orderaccountcardlink), card block link removed | fixed on local-mamas 2026-11-18 |
+| Gift card button, default tile, tiles | per brief | new plugin settings | gc.mjs | settings | product 285 meta default 2500, button label | fixed on local-mamas 2026-11-18 |
+| Gift card tile background | draft paper, site white | Custom CSS constant | cmp.mjs | Custom CSS | gc-form mm-white to mm-paper on the tiles | fixed on local-mamas 2026-11-18 |
+
+## Round two: the account Orders tab and single-order page aligned to the draft (2026-11-18)
+
+| ID | Draft → site | Cause | Proof | Layer | Fix made or proposed | Status |
+|---|---|---|---|---|---|---|
+| Orders row | card: number + chip, placed line, thumbs, total + View order pill → inline row | Custom CSS grid on the row (display:contents on the id group), pill, hover, tablet/mobile padding via ordersRowPadding; names line hidden; "Placed" via ordersDateFormat | fixed except "· n items" (proposed) |
+| View order | chip far right, plain pills, three small cards → draft arrangement | Custom CSS grid, step cards with icons, items+total card, address+payment card, gift note | fixed except step sub-lines, "What you ordered" heading, quantity, Order this again, Message Zainab link (proposed) |
+| Side tab counts | count/tick on every tab → Orders only | none: Account_Extras::end_menu_buffer hard-codes orders and saved-items | proposed |
+
+## Round two: account settings and the order confirmation icons, labels and gap (2026-11-18)
+
+| ID | Draft → site | Cause | Proof | Layer | Fix made or proposed | Status |
+|---|---|---|---|---|---|---|
+| All pages 3 (Sign-in button) | the Sign in and Create account buttons used a typed arrow, and the second read "Register" | `sgs/account` had no icon setting for WooCommerce's form buttons | both buttons measure as the contact form's button: 10px gap, 32px disc, 16px arrow | framework, then site | `loginButtonIcon…` and `registerButtonIcon…` set on post 628; `strings.signIn` "Sign in", `strings.register` "Create account" | fixed on local-mamas 2026-11-18 |
+| Account 4 (extras) | the draft's order thumbnails with "View order", gift note, email tick, "Hello, name" heading and tab headings were missing | not built | signed in as `shopper2` at 375, 768, 1440; ticking saves `sgs_marketing_opt_in`, unticking clears it; signed-out deep links go to `/sign-in/?redirect_to=…` | framework, then site | `ordersRowThumbs`, `ordersRowViewLabel`, `ordersRowViewIcon`, `giftNote`, `giftNoteHeading`, `accountShowMarketingOptIn` (label "Email me about new flavours", no bake days), `ordersTabHeading` and siblings, `tabHeadingMarginBottom` 18px, hero heading bound to `sgs/customer` `first_name` | fixed on local-mamas 2026-11-18; test order #835 was given gift meta |
+| Order confirmation 4 | the "Posted" and "Back to the kitchen" circles used typed arrows | `sgs/icon` set to an emoji character | Lucide `arrow-right` and `arrow-left`, 2px stroke | site | icon source and `iconName` on template 219 | fixed on local-mamas 2026-11-18 |
+| Order confirmation 5 | the Instagram glyph was dark | icon colour never set | white on the gradient disc, the footer icon's settings | site | `iconColour` `mm-white`, the footer's gradient | fixed on local-mamas 2026-11-18 |
+| Order confirmation 6 | 67 to 68px above the address cards, 20 to 28px between the other cards | WooCommerce's stylesheet gives `.wc-block-order-confirmation-address-wrapper` `margin-block-start: 48px` | every gap in the column 27/23/20px at 1440/768/375 | site | the container's top margin 0 and the column gap 28/24/20 | fixed on local-mamas 2026-11-18 |
+| All pages 5 (confirmation) | script labels on yellow cards were dark gold | `mm-script-gold` | 6.52:1 on the pale yellow | site | `textColour` `mm-script` on "know another new mum?" and "all in one place" | fixed on local-mamas 2026-11-18; the site-wide sweep is helper `r2f-gap-labels` |

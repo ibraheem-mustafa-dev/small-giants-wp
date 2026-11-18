@@ -168,3 +168,4 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Order confirmation 3, card arrows (2026-11-18):** "I've looked at both arrows, replace them" ("Send one" and "Create an account" take the standard arrow). Typed arrows inside sentences stay: "we've got a lot of normal arrows in text, it's just the buttons I'm looking for or components that looks and act like buttons".
 - **No bake days (2026-11-18):** "Don't include any content with bake days in it." The account tick reads "Email me about new flavours".
 - **Screenshots (2026-11-18):** Bean wants pairs, the draft beside the test site, at the three main widths, for the account and order confirmation pages.
+- **Account 4, "Something not right? Message Zainab" (2026-11-18):** the link goes to the Contact page.
