@@ -157,3 +157,4 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **"Add a Taster Trio for a friend" row in a filled drawer (2026-11-18):** dropped. "They can't split where that ships vs the rest of the shopping and ... it's just not cost-effective to buy 3 cookies for £5 when the rest of the order will have the cookies at a much better price."
 - **Gift card 1 (2026-11-18):** the amount tiles read "£15", not "£15.00" ("Sure").
 - **Footer 10 (2026-11-18):** the redrawn underline is too thin; see Footer 12.
+- **Account 4, addresses (2026-11-18):** "Go with the closest honest version for addresses": one billing and one delivery address as cards in the draft's style, with no "Make default", no "Remove" and no address book.
