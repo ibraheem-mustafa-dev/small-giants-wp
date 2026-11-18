@@ -56,6 +56,8 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	const freeDeliveryEl = initFreeDeliveryElement( panelRoot, itemsEl, freeDelivery );
 	// The gift box (opt-in): shown while the basket has an item, filled from the session value the cart read returns.
 	const gift = initGift( panelRoot );
+	// Counts every drawing of the cart, so a cart read can tell that a newer one was drawn while it was in flight.
+	let drawn = 0;
 	// The centred empty state (opt-in): server-built markup kept in a template and copied in whenever the basket is empty.
 	const emptyTemplate = panelRoot.querySelector( '[data-sgs-cart-empty-template]' );
 
@@ -168,6 +170,7 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	 * @param {Object} cart The Store API cart response.
 	 */
 	function render( cart ) {
+		drawn += 1;
 		if (
 			! cart ||
 			! Array.isArray( cart.items ) ||
@@ -184,15 +187,21 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	}
 
 	/**
-	 * Fetch the live cart and render it.
+	 * Fetch the live cart and render it. A reply that arrives after the panel has drawn a newer cart (the shopper changed a
+	 * quantity while the read was in flight) is dropped, so an older reading never replaces a newer one.
 	 */
 	async function refresh() {
 		itemsEl.setAttribute( 'aria-busy', 'true' );
+		const at = drawn;
 		try {
 			const cart = await fetchCart( gift.headers );
-			render( cart );
+			if ( at === drawn ) {
+				render( cart );
+			}
 		} catch {
-			renderError();
+			if ( at === drawn ) {
+				renderError();
+			}
 		}
 	}
 
@@ -253,6 +262,7 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	async function setQuantity( key, quantity ) {
 		const was = focusedQtyControl();
 		const hadFocus = itemsEl.contains( document.activeElement );
+		const index = lineIndex( key );
 		setBusy( true );
 		try {
 			const cart =
@@ -261,7 +271,7 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 					: await updateCartItem( key, quantity );
 			render( cart );
 			restoreQtyFocus( was );
-			focusEmptyState( cart, hadFocus );
+			keepFocusInPanel( cart, hadFocus, index );
 			announce(
 				quantity === 0
 					? 'Item removed from your cart.'
@@ -311,20 +321,35 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	}
 
 	/**
-	 * Keep keyboard focus inside the open drawer after the last line is removed and the panel redraws as its empty state.
-	 * The removed row held focus, so without this it falls to the page. Focus goes to the empty state's main button or link,
-	 * else the drawer's close button, else the panel itself. A cart that still has lines is left to its own focus handling.
+	 * Where a cart line sits in the list, read before a mutation removes it.
+	 *
+	 * @param {string} key The cart item key.
+	 * @return {number} The line's position, or -1.
+	 */
+	function lineIndex( key ) {
+		return [ ...itemsEl.querySelectorAll( '.sgs-cart__item' ) ].findIndex( ( el ) => el.dataset.key === key );
+	}
+
+	/**
+	 * Keep keyboard focus inside the open drawer after a line is removed. The removed row held focus, so without this it
+	 * falls to the page. With lines left, focus goes to the first usable control of the line now in the removed line's place
+	 * (the last line when the removed one was last). With none left, it goes to the empty state's main button or link, else
+	 * the drawer's close button. The panel itself takes focus when nothing else can.
 	 *
 	 * @param {Object}  cart     The Store API cart the panel has just drawn.
 	 * @param {boolean} hadFocus Whether focus was inside the item list before the mutation.
+	 * @param {number}  index    Where the removed line sat (see lineIndex()).
 	 */
-	function focusEmptyState( cart, hadFocus ) {
-		if ( ! hadFocus || ( Array.isArray( cart?.items ) && cart.items.length > 0 ) || panelRoot.contains( document.activeElement ) ) {
+	function keepFocusInPanel( cart, hadFocus, index ) {
+		if ( ! hadFocus || panelRoot.contains( document.activeElement ) ) {
 			return;
 		}
-		const target =
-			itemsEl.querySelector( '.sgs-cart__panel-empty :is(button, a[href]):not(:disabled)' ) ||
-			panelRoot.querySelector( '.sgs-cart__panel-close:not(:disabled)' );
+		const rows = [ ...itemsEl.querySelectorAll( '.sgs-cart__item' ) ];
+		const row = rows[ Math.min( Math.max( index, 0 ), rows.length - 1 ) ];
+		const target = row
+			? row.querySelector( ':is(a[href], button, input, select, textarea):not(:disabled)' )
+			: itemsEl.querySelector( '.sgs-cart__panel-empty :is(button, a[href]):not(:disabled)' ) ||
+			  panelRoot.querySelector( '.sgs-cart__panel-close:not(:disabled)' );
 		target?.focus();
 		if ( target && panelRoot.contains( document.activeElement ) ) {
 			return;
@@ -371,12 +396,13 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		}
 		const key = button.dataset.key;
 		const hadFocus = itemsEl.contains( document.activeElement );
+		const index = lineIndex( key );
 
 		setBusy( true );
 		try {
 			const cart = await removeCartItem( key );
 			render( cart );
-			focusEmptyState( cart, hadFocus );
+			keepFocusInPanel( cart, hadFocus, index );
 			announce( 'Item removed from your cart.' );
 		} catch {
 			announce( 'Could not remove that item. Please try again.' );
@@ -397,13 +423,14 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		const key = button.dataset.key;
 		const productId = Number( button.dataset.productId );
 		const hadFocus = itemsEl.contains( document.activeElement );
+		const index = lineIndex( key );
 
 		setBusy( true );
 		try {
 			await addWishlistId( productId );
 			const cart = await removeCartItem( key );
 			render( cart );
-			focusEmptyState( cart, hadFocus );
+			keepFocusInPanel( cart, hadFocus, index );
 			announce( 'Saved for later.' );
 		} catch {
 			announce( 'Could not save that item for later. Please try again.' );

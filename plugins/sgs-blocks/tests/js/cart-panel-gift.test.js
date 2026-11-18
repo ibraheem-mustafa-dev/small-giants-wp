@@ -90,7 +90,7 @@ describe( 'initGift', () => {
 		expect( seen[ 0 ].on ).toBe( true );
 	} );
 
-	test( 'typing waits for a pause, and leaving the field saves straight away', () => {
+	test( 'typing waits for a pause, and leaving the field saves without waiting for another pause', async () => {
 		jest.useFakeTimers();
 		initGift( panel );
 		const to = panel.querySelector( '.sgs-cart__panel-gift-to' );
@@ -104,7 +104,49 @@ describe( 'initGift', () => {
 		to.value = 'Sami';
 		to.dispatchEvent( new Event( 'input', { bubbles: true } ) );
 		to.dispatchEvent( new Event( 'blur' ) );
+		// One save runs at a time, so the newest values go out the moment the first save returns: no timer is involved.
+		expect( global.fetch ).toHaveBeenCalledTimes( 1 );
+		for ( let turn = 0; turn < 6; turn++ ) {
+			await Promise.resolve();
+		}
 		expect( global.fetch ).toHaveBeenCalledTimes( 2 );
+		expect( JSON.parse( global.fetch.mock.calls[ 1 ][ 1 ].body ) ).toEqual( { on: true, to: 'Sami', message: '' } );
+		jest.useRealTimers();
+	} );
+
+	test( 'a change made while a save is in flight is sent after it, with the newest values, and a save outlives the page', async () => {
+		let finishFirst;
+		global.fetch = jest
+			.fn()
+			.mockImplementationOnce( () => new Promise( ( resolve ) => ( finishFirst = resolve ) ) )
+			.mockImplementation( () => Promise.resolve( { ok: true, json: () => Promise.resolve( {} ) } ) );
+		initGift( panel );
+		const box = panel.querySelector( '.sgs-cart__panel-gift-checkbox' );
+		const note = panel.querySelector( '.sgs-cart__panel-gift-message' );
+		box.checked = true;
+		box.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+		note.value = 'Congratulations';
+		note.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+		note.dispatchEvent( new Event( 'blur' ) );
+		expect( global.fetch ).toHaveBeenCalledTimes( 1 );
+		expect( global.fetch.mock.calls[ 0 ][ 1 ].keepalive ).toBe( true );
+
+		finishFirst( { ok: true, json: () => Promise.resolve( {} ) } );
+		await flush();
+		expect( global.fetch ).toHaveBeenCalledTimes( 2 );
+		expect( JSON.parse( global.fetch.mock.calls[ 1 ][ 1 ].body ).message ).toBe( 'Congratulations' );
+	} );
+
+	test( 'leaving the page with a change still waiting sends it at once', () => {
+		jest.useFakeTimers();
+		initGift( panel );
+		const to = panel.querySelector( '.sgs-cart__panel-gift-to' );
+		panel.querySelector( '.sgs-cart__panel-gift-checkbox' ).checked = true;
+		to.value = 'Sam';
+		to.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+		expect( global.fetch ).not.toHaveBeenCalled();
+		window.dispatchEvent( new Event( 'pagehide' ) );
+		expect( global.fetch ).toHaveBeenCalledTimes( 1 );
 		jest.useRealTimers();
 	} );
 

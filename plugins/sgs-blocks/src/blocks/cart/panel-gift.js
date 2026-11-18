@@ -39,6 +39,7 @@ export function initGift( panelRoot ) {
 
 	let timer = null;
 	let inFlight = 0;
+	let again = false;
 
 	const draw = () => {
 		fields.hidden = ! box.checked;
@@ -56,15 +57,24 @@ export function initGift( panelRoot ) {
 		draw();
 	};
 	// Typing or a save in progress owns the fields: a cart reading or another box's news waits until it is done.
-	const busy = () => null !== timer || inFlight > 0;
+	const busy = () => null !== timer || inFlight > 0 || again;
 
-	const save = () => {
+	// One save runs at a time. A change made while one is in flight is sent when it returns, so the server always ends on
+	// the newest values whatever order the network delivers. `force` sends at once beside a save in flight: the page is
+	// going away and a queued save would never start. `keepalive` lets a request outlive the page.
+	const save = ( force ) => {
 		timer = null;
+		if ( inFlight > 0 && true !== force ) {
+			again = true;
+			return;
+		}
+		again = false;
 		inFlight += 1;
 		const sent = { on: box.checked, to: box.checked ? to.value : '', message: box.checked ? note.value : '' };
 		fetch( root.dataset.restUrl, {
 			method: 'POST',
 			credentials: 'same-origin',
+			keepalive: true,
 			headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': root.dataset.nonce || '' },
 			body: JSON.stringify( sent ),
 		} )
@@ -78,6 +88,9 @@ export function initGift( panelRoot ) {
 			.catch( () => fail( SAVE_ERROR ) )
 			.finally( () => {
 				inFlight -= 1;
+				if ( again ) {
+					save();
+				}
 			} );
 	};
 	const later = ( immediate ) => {
@@ -86,7 +99,7 @@ export function initGift( panelRoot ) {
 			save();
 			return;
 		}
-		timer = window.setTimeout( save, TYPING_DELAY );
+		timer = window.setTimeout( () => save(), TYPING_DELAY );
 	};
 	const flush = () => {
 		if ( null !== timer ) {
@@ -102,6 +115,13 @@ export function initGift( panelRoot ) {
 	[ to, note ].forEach( ( field ) => {
 		field.addEventListener( 'input', () => later( false ) );
 		field.addEventListener( 'blur', flush );
+	} );
+	// Leaving the page (the checkout link) with a change still waiting: send it now.
+	window.addEventListener( 'pagehide', () => {
+		if ( null !== timer || again ) {
+			window.clearTimeout( timer );
+			save( true );
+		}
 	} );
 	document.addEventListener( GIFT_EVENT, ( event ) => {
 		if ( event.detail?.source !== root && ! busy() ) {

@@ -31,6 +31,7 @@
 
 	const NAMESPACE = 'sgs_gift_card';
 	const CONTENT_ID = 'sgs-gift-card-panel-content';
+	const TOGGLE_ID = 'sgs-gift-card-panel-toggle';
 	const INPUT_ID = 'sgs-gift-card-code';
 	const ERROR_ID = 'sgs-gift-card-error';
 	const ICON_COLLAPSED = 'M17.5 11.6L12 16l-5.5-4.4.9-1.2L12 14l4.5-3.6 1 1.2z';
@@ -39,6 +40,7 @@
 		'M12 13.06l3.712 3.713 1.061-1.06L13.061 12l3.712-3.712-1.06-1.06L12 10.938 8.288 7.227l-1.061 1.06L10.939 12l-3.712 3.712 1.06 1.061L12 13.061z';
 	const el = wp.element.createElement;
 	const useState = wp.element.useState;
+	const useEffect = wp.element.useEffect;
 	const __ = wp.i18n.__;
 	const Fill = wc.blocksCheckout.ExperimentalDiscountsMeta;
 	const extensionCartUpdate = wc.blocksCheckout.extensionCartUpdate;
@@ -245,6 +247,7 @@
 		const busyState = useState( false );
 		const openState = useState( false );
 		const focusState = useState( false );
+		const returnState = useState( 0 );
 		const code = codeState[ 0 ];
 		const setCode = codeState[ 1 ];
 		const error = errorState[ 0 ];
@@ -255,6 +258,23 @@
 		const setToggled = openState[ 1 ];
 		const focused = focusState[ 0 ];
 		const setFocused = focusState[ 1 ];
+		const returnTick = returnState[ 0 ];
+		const setReturnTick = returnState[ 1 ];
+
+		// Apply and Remove are switched off while their request runs, and Remove's chip leaves the page, so keyboard focus
+		// would fall to the page. Once the panel has redrawn, focus returns to the code field (which also names any error),
+		// or to the panel's toggle when no more cards can be added.
+		useEffect(
+			function () {
+				if ( returnTick > 0 ) {
+					const target = document.getElementById( INPUT_ID ) || document.getElementById( TOGGLE_ID );
+					if ( target ) {
+						target.focus();
+					}
+				}
+			},
+			[ returnTick ]
+		);
 
 		if ( ! data || data.blocked ) {
 			return null;
@@ -285,6 +305,9 @@
 				} )
 				.then( function () {
 					setBusy( false );
+					setReturnTick( function ( tick ) {
+						return tick + 1;
+					} );
 				} );
 		}
 
@@ -359,6 +382,7 @@
 				'button',
 				{
 					type: 'button',
+					id: TOGGLE_ID,
 					className:
 						'sgs-gift-card-panel__toggle wc-block-components-panel__button',
 					'aria-expanded': open ? 'true' : 'false',

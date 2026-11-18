@@ -155,7 +155,7 @@ describe( 'the drawer empty state', () => {
 			expect( document.activeElement ).toBe( document.querySelector( '.sgs-cart__panel-close' ) );
 		} );
 
-		test( 'removing a line that is not the last leaves focus handling alone', async () => {
+		test( 'removing a line while others remain moves focus to the line now in its place', async () => {
 			document.body.innerHTML = base( template + closeButton );
 			api.fetchCart.mockResolvedValue( twoLines );
 			api.removeCartItem.mockResolvedValue( cartWithOne );
@@ -165,7 +165,32 @@ describe( 'the drawer empty state', () => {
 			remove.focus();
 			remove.click();
 			await settle();
-			expect( document.activeElement ).not.toBe( document.querySelector( '.sgs-cart__panel-close' ) );
+			expect( document.activeElement ).not.toBe( document.body );
+			expect( document.querySelector( '.sgs-cart__item' ).contains( document.activeElement ) ).toBe( true );
+		} );
+
+		test( 'a cart read that returns after a newer drawing is dropped', async () => {
+			document.body.innerHTML = base( template + closeButton );
+			api.fetchCart.mockResolvedValueOnce( twoLines );
+			const panel = initPanel( document.querySelector( '[data-sgs-cart-panel]' ) );
+			await panel.refresh();
+			expect( document.querySelectorAll( '.sgs-cart__item' ) ).toHaveLength( 2 );
+
+			let deliverLateRead;
+			api.fetchCart.mockReturnValueOnce(
+				new Promise( ( resolve ) => {
+					deliverLateRead = resolve;
+				} )
+			);
+			const lateRead = panel.refresh();
+			api.removeCartItem.mockResolvedValue( cartWithOne );
+			document.querySelector( 'button.sgs-cart__item-remove' ).click();
+			await settle();
+			expect( document.querySelectorAll( '.sgs-cart__item' ) ).toHaveLength( 1 );
+
+			deliverLateRead( twoLines );
+			await lateRead;
+			expect( document.querySelectorAll( '.sgs-cart__item' ) ).toHaveLength( 1 );
 		} );
 	} );
 

@@ -180,3 +180,27 @@ test( 'renders nothing when a gift card is in the basket', async () => {
 	const host = await mount( data( { blocked: true } ) );
 	expect( host.querySelector( '.sgs-gift-card-panel' ) ).toBeNull();
 } );
+
+test( 'after Apply returns, keyboard focus is on the code field, not lost to the page', async () => {
+	const host = await mount( data() );
+	await act( async () =>
+		host.querySelector( '.wc-block-components-panel__button' ).click()
+	);
+	const input = host.querySelector( 'input' );
+	const setter = Object.getOwnPropertyDescriptor(
+		window.HTMLInputElement.prototype,
+		'value'
+	).set;
+	await act( async () => {
+		setter.call( input, 'ABCD' );
+		input.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+	} );
+	host.querySelector( 'button[type="submit"]' ).focus();
+	await act( async () => {
+		host.querySelector( 'form' ).dispatchEvent(
+			new Event( 'submit', { bubbles: true, cancelable: true } )
+		);
+	} );
+	expect( update ).toHaveBeenCalledTimes( 1 );
+	expect( document.activeElement ).toBe( host.querySelector( 'input' ) );
+} );
