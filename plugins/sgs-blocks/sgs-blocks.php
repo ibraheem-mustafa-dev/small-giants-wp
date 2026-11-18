@@ -320,6 +320,10 @@ Sitemap_Exclusions::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-product-page-schema.php';
 Product_Page_Schema::register();
 
+// Titles that sit before the page's h1 (the basket drawer's) are plain elements wearing the theme's heading look.
+require_once SGS_BLOCKS_PATH . 'includes/class-heading-look.php';
+Heading_Look::register();
+
 // llms.txt + llms-full.txt — AI navigation files at site root (FR-27-F2 llms clause).
 // Serves curated navigation map + per-product expansion in llmstxt.org shape.
 // SEC-9: defers to Yoast / RankMath when active. Rate-limited 60/hr per IP.

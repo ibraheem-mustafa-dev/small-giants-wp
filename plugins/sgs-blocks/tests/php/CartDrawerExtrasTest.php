@@ -112,7 +112,7 @@ final class CartDrawerExtrasTest extends TestCase {
 		$this->assertSame( '', $this->empty_state( array( 'heading' => 'Empty', 'shop_url' => '/shop', 'link_label' => 'Shop' ) ) );
 	}
 
-	public function test_a_body_line_alone_turns_the_rich_empty_state_on_with_an_h3_heading_and_a_text_link(): void {
+	public function test_a_body_line_alone_turns_the_rich_empty_state_on_with_a_non_heading_title_and_a_text_link(): void {
 		$html = $this->empty_state(
 			array(
 				'heading'    => 'Your basket is empty',
@@ -122,7 +122,7 @@ final class CartDrawerExtrasTest extends TestCase {
 			)
 		);
 		$this->assertStringContainsString( '<div class="sgs-cart__panel-empty sgs-cart__panel-empty--rich">', $html );
-		$this->assertStringContainsString( '<h3 class="sgs-cart__panel-empty-message">Your basket is empty</h3>', $html );
+		$this->assertStringContainsString( '<div class="sgs-cart__panel-empty-message">Your basket is empty</div>', $html );
 		$this->assertStringContainsString( '<p class="sgs-cart__panel-empty-body">New here? Start with a taster.</p>', $html );
 		$this->assertStringContainsString( '<a class="sgs-cart__panel-empty-link" href="/shop">Browse the shop</a>', $html );
 		$this->assertStringNotContainsString( 'sgs-cart__panel-empty-add', $html );

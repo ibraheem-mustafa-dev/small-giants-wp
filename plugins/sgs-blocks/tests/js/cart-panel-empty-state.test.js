@@ -28,7 +28,7 @@ const base = ( extra ) => `
 
 const template = `<template data-sgs-cart-empty-template>
 	<div class="sgs-cart__panel-empty sgs-cart__panel-empty--rich">
-		<h3 class="sgs-cart__panel-empty-message">Your basket is empty</h3>
+		<div class="sgs-cart__panel-empty-message">Your basket is empty</div>
 		<button type="button" class="sgs-cart__panel-empty-cta sgs-cart__panel-empty-add" data-sgs-cart-empty-add="12">Add</button>
 		<a class="sgs-cart__panel-empty-link" href="/shop">Browse</a>
 	</div>
@@ -53,7 +53,7 @@ describe( 'the drawer empty state', () => {
 		const panel = initPanel( document.querySelector( '[data-sgs-cart-panel]' ) );
 		await panel.refresh();
 		const items = document.querySelector( '[data-sgs-cart-items]' );
-		expect( items.querySelector( 'h3.sgs-cart__panel-empty-message' ).textContent ).toBe( 'Your basket is empty' );
+		expect( items.querySelector( 'div.sgs-cart__panel-empty-message' ).textContent ).toBe( 'Your basket is empty' );
 		expect( items.querySelector( 'button[data-sgs-cart-empty-add="12"]' ) ).not.toBeNull();
 		expect( items.querySelector( 'a.sgs-cart__panel-empty-link' ).getAttribute( 'href' ) ).toBe( '/shop' );
 		expect( document.querySelector( '[data-sgs-cart-footer]' ).hidden ).toBe( true );

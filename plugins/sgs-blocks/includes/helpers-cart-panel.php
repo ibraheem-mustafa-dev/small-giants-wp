@@ -181,7 +181,7 @@ function sgs_cart_panel_body_html( array $args ): string {
 
 	return sprintf(
 		'<div class="sgs-cart__panel-inner">' .
-			'<div class="sgs-cart__panel-header"><h2 class="sgs-cart__panel-heading" id="%1$s-heading">%2$s%13$s</h2>%14$s</div>' .
+			'<div class="sgs-cart__panel-header"><div class="sgs-cart__panel-heading" id="%1$s-heading">%2$s%13$s</div>%14$s</div>' .
 			'<div class="sgs-cart__panel-status" role="status" aria-live="polite" aria-atomic="true" data-sgs-cart-status></div>' .
 			'<div class="sgs-cart__panel-items" data-sgs-cart-items aria-busy="true" data-empty-message="%3$s" data-empty-cta-label="%4$s" data-shop-url="%5$s" data-remove-style="%15$s" data-remove-label="%16$s" data-show-qty="%17$s" data-show-save="%18$s" data-show-add-options="%19$s" data-add-options-label="%20$s"%21$s><p class="sgs-cart__panel-loading">%6$s</p></div>' .
 			'%24$s%25$s' .
