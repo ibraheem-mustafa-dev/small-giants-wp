@@ -271,9 +271,10 @@ if ( $faq_schema && ! empty( $block->inner_blocks ) ) {
 			'mainEntity' => $faq_items,
 		);
 
-		$faq_json = wp_json_encode( $schema, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+		require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-schema.php';
+		$faq_json = \SGS\Blocks\Sgs_Schema::encode_jsonld( $schema );
 		if ( false !== $faq_json ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json (wp_json_encode HEX flags), not HTML.
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json (Sgs_Schema HEX flags), not HTML.
 			printf( '<script type="application/ld+json">%s</script>', $faq_json );
 		}
 	}

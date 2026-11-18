@@ -48,14 +48,10 @@ if ( ! function_exists( 'sgs_emit_faq_page_jsonld' ) ) {
 			'mainEntity' => array_values( $sgs_faq_jsonld_items ),
 		);
 
-		// HEX flags match class-product-schema.php: without JSON_HEX_TAG a literal
-		// </script> inside a value would close the inline script tag (stored XSS
-		// if the upstream strip_tags ever moves — defence-in-depth, red-team F2).
-		$json_ld = wp_json_encode(
-			$schema,
-			JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
-			| JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-		);
+		// The one shared encoder: HEX flags (a literal </script> in a value cannot
+		// close the inline script tag) and entity decoding.
+		require_once __DIR__ . '/class-sgs-schema.php';
+		$json_ld = \SGS\Blocks\Sgs_Schema::encode_jsonld( $schema );
 		if ( ! $json_ld ) {
 			return;
 		}

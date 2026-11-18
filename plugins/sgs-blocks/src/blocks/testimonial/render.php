@@ -868,7 +868,8 @@ if ( $schema_enabled ) {
 				'bestRating'  => 5,
 			);
 		}
-		$schema_html = '<script type="application/ld+json">' . wp_json_encode( $schema ) . '</script>';
+		require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-schema.php';
+		$schema_html = \SGS\Blocks\Sgs_Schema::script_tag( $schema );
 	}
 }
 

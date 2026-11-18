@@ -16,6 +16,11 @@
  *   JSON_UNESCAPED_SLASHES  — keeps URLs readable and avoids double-encoding.
  *   JSON_UNESCAPED_UNICODE  — keeps UTF-8 characters (e.g. £, Arabic) intact.
  *
+ * Text is decoded before encoding: WordPress stores and returns titles, term names and the
+ * site name with HTML entities (an apostrophe is `&#039;`), JSON-LD is not HTML, and
+ * encoding the entity as it stands prints the literal characters `&#039;` to a search
+ * engine. Every string in the tree passes through {@see Sgs_Schema::decode_text()}.
+ *
  * NEVER use esc_attr() / esc_html() as the JSON escape — those are for HTML contexts,
  * not JSON-LD script content, and will corrupt structured data.
  *
@@ -48,7 +53,25 @@ final class Sgs_Schema {
 	 * @return string|false Encoded JSON string, or false on encoding failure.
 	 */
 	public static function encode_jsonld( array $data ) {
+		\array_walk_recursive(
+			$data,
+			static function ( &$value ): void {
+				if ( \is_string( $value ) ) {
+					$value = self::decode_text( $value );
+				}
+			}
+		);
 		return \wp_json_encode( $data, self::JSON_FLAGS );
+	}
+
+	/**
+	 * Turn HTML entities in a string back into the characters they stand for.
+	 *
+	 * @param string $text Text that may carry entities (`Mama&#039;s`, `A &amp; B`).
+	 * @return string The plain text (`Mama's`, `A & B`).
+	 */
+	public static function decode_text( string $text ): string {
+		return \html_entity_decode( $text, \ENT_QUOTES | \ENT_HTML5, 'UTF-8' );
 	}
 
 	/**

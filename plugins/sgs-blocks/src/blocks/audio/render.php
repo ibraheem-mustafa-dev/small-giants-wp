@@ -195,7 +195,8 @@ $schema = array(
 if ( '' !== $audio_title ) {
 	$schema['name'] = sgs_authored_text_plain( $audio_title );
 }
-$schema_json = wp_json_encode( $schema, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES );
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-schema.php';
+$schema_json = \SGS\Blocks\Sgs_Schema::encode_jsonld( $schema );
 
 // ---------------------------------------------------------------------------
 // NO-INLINE: this block emits zero inline style property declarations.
