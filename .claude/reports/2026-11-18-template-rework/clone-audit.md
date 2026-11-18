@@ -37,7 +37,7 @@ Neither page arrives presentable without hand work.
 | G-8 | Transitions, hover states and loops listed and not carried: 45 unmapped motion rows on Contact, 52 on Home, 107 "holds its items in sgsTimeText", 53 `timing-no-home` | Recogniser (motion) and Fill (`lib/fill-motion-account.mjs::silentRows`, `lib/fill-timing.mjs`) | `qa/fill/contact/2026-11-18T11-49-31/unmapped.json`, `qa/fill/home/2026-11-18T12-08-34/unmapped.json` | FR-48-102, FR-48-104 |
 | G-9 | Home's builder is "unavailable"; its 52 missing text leaves are the builder | Site build. The skeleton proposes `sgs/choice-flow` and the page-map row has `id: null` (no flow post is built) | `fresh-154.content.html` | FR-48-105, FR-48-106 |
 | G-10 | About 200 settings on Home that the hand-finished site holds and Fill never wrote (`sgs/media` fit, width, height and ratio; heading `textWrap`; container `minHeight`, `margin`, `contentWidth`) | Fill; not diagnosed per row (the count is rough) | `attrdiff.py hand-154.content.html fresh-154.content.html` | FR-48-101, FR-48-104 |
-| G-11 | The walker and the gates cannot tell this clone from the hand-finished page | Walker | the row counts above | Spec 48 §3.6 |
+| G-11 | The walker cannot tell the Contact clone from the hand-finished page (a hero that lost its padding is four rows among 235). Home's walk, finished after the audit, left 8,032 open rows across its six state-and-width runs and took 45 minutes; whether that count separates Home from the hand-finished baseline (1,465, 1,551 and 1,290) was not checked row by row | Walker | the row counts above; `qa/parity/out/home/report.md` in the worktree | Spec 48 §3.6 |
 
 ## Process bugs met running it
 
