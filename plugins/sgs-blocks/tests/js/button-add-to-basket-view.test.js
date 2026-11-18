@@ -3,7 +3,7 @@
  *
  * Negative controls: 'a failed add shows the message' fails if the failure is swallowed; 'a second tap while busy is
  * ignored' fails if the busy state does not guard the handler; 'an ordinary link is left alone' fails if the handler binds
- * to every link; 'a button the page redrew after load still adds' fails if the listener is bound to the first element.
+ * to every link; 'a button the page redrew after load still adds' fails if the listener is bound to the first element; 'a button put into the page after load still adds' fails if boot looks for a button before listening.
  */
 
 const MARKUP =
@@ -81,6 +81,22 @@ describe( 'add-to-basket button', () => {
 
 		expect( global.fetch ).toHaveBeenCalledTimes( 1 );
 		expect( redrawn.getAttribute( 'aria-busy' ) ).toBe( 'true' );
+	} );
+
+	it( 'a button put into the page after load still adds', async () => {
+		global.fetch = jest.fn( () => new Promise( () => {} ) );
+		viewListeners.forEach( ( [ type, listener ] ) => document.removeEventListener( type, listener ) );
+		document.body.innerHTML = '';
+		jest.resetModules();
+		const addListener = jest.spyOn( document, 'addEventListener' );
+		require( '../../src/blocks/button/view' );
+		viewListeners = addListener.mock.calls.filter( ( call ) => 'click' === call[ 0 ] );
+		addListener.mockRestore();
+		document.body.innerHTML = MARKUP;
+		document.getElementById( 'add' ).click();
+		await flush();
+
+		expect( global.fetch ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'a second tap while busy is ignored', async () => {

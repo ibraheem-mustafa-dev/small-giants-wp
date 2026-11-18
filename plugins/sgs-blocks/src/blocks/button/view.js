@@ -15,10 +15,10 @@
  * a sensible landing target, so activating the button also relocates focus
  * the way a real skip-link does.
  *
- * COST CONTRACT: each boot function bails immediately when no element of its
- * link source exists on the page, so an ordinary button (the overwhelming
- * majority) pays for one `querySelectorAll` call per source and nothing else —
- * no listeners attached, no further work.
+ * COST CONTRACT: an ordinary button (the overwhelming majority) pays for one
+ * `querySelectorAll` call for the `top` source, which attaches nothing when no
+ * such button exists, and one document click listener for `add-to-basket`,
+ * which does a single `closest()` lookup per click.
  *
  * @package
  */
@@ -179,12 +179,12 @@ async function handleAddClick( event ) {
 }
 
 /**
- * Boot the add-to-basket buttons. Cost-gated like the top buttons: a page with none gets no listener.
+ * Boot the add-to-basket buttons: one click listener on the document, attached whether or not a button is in the page
+ * yet. The WooCommerce Cart block empties its markup while it loads and puts the empty state (and a button inside it)
+ * back afterwards, so a check for a button at boot can find none on the one page that needs the listener. A click that is
+ * not on such a button costs one `closest()` call.
  */
 function bootAddToBasketButtons() {
-	if ( ! document.querySelector( ADD_BUTTON_SELECTOR ) ) {
-		return;
-	}
 	document.addEventListener( 'click', handleAddClick );
 }
 
