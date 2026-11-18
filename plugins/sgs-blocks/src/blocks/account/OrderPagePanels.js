@@ -114,25 +114,29 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 							setAttributes( patch );
 						} }
 					/>
-					<Toggle { ...p } name="orderDetailOrderAgain" label={ __( 'Order again button', 'sgs-blocks' ) } help={ __( 'Under the totals; WooCommerce decides which orders can be re-ordered (completed by default).', 'sgs-blocks' ) } />
-					{ attributes.orderDetailOrderAgain && <TextField { ...p } name="orderDetailOrderAgainLabel" label={ __( 'Order again button label', 'sgs-blocks' ) } help={ __( 'Empty uses “Order again”.', 'sgs-blocks' ) } /> }
-					{ attributes.orderDetailOrderAgain && (
-						<SelectControl
-							__next40pxDefaultSize
-							__nextHasNoMarginBottom
-							label={ __( 'Orders that can be ordered again', 'sgs-blocks' ) }
-							help={ __( 'Completed orders only (WooCommerce’s default), or a processing order too.', 'sgs-blocks' ) }
-							value={ attributes.orderDetailOrderAgainWhen || 'completed' }
-							options={ [
-								{ value: 'completed', label: __( 'Completed orders', 'sgs-blocks' ) },
-								{ value: 'paid', label: __( 'Completed and processing orders', 'sgs-blocks' ) },
-							] }
-							onChange={ ( value ) => setAttributes( { orderDetailOrderAgainWhen: value } ) }
-						/>
-					) }
 				</>
 			) }
 		</PanelBody>
+		{ attributes.orderDetailLook && (
+			<PanelBody title={ __( 'Order page: order again', 'sgs-blocks' ) } initialOpen={ false }>
+				<Toggle { ...p } name="orderDetailOrderAgain" label={ __( 'Order again button', 'sgs-blocks' ) } help={ __( 'Under the totals; WooCommerce decides which orders can be re-ordered (completed by default).', 'sgs-blocks' ) } />
+				{ attributes.orderDetailOrderAgain && <TextField { ...p } name="orderDetailOrderAgainLabel" label={ __( 'Order again button label', 'sgs-blocks' ) } help={ __( 'Empty uses “Order again”.', 'sgs-blocks' ) } /> }
+				{ attributes.orderDetailOrderAgain && (
+					<SelectControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+						label={ __( 'Orders that can be ordered again', 'sgs-blocks' ) }
+						help={ __( 'Completed orders only (WooCommerce’s default), or a processing order too.', 'sgs-blocks' ) }
+						value={ attributes.orderDetailOrderAgainWhen || 'completed' }
+						options={ [
+							{ value: 'completed', label: __( 'Completed orders', 'sgs-blocks' ) },
+							{ value: 'paid', label: __( 'Completed and processing orders', 'sgs-blocks' ) },
+						] }
+						onChange={ ( value ) => setAttributes( { orderDetailOrderAgainWhen: value } ) }
+					/>
+				) }
+			</PanelBody>
+		) }
 		{ attributes.orderDetailLook && (
 			<PanelBody title={ __( 'Order page: progress line', 'sgs-blocks' ) } initialOpen={ false }>
 				<Toggle { ...p } name="orderDetailProgress" label={ __( 'Progress line', 'sgs-blocks' ) } />
