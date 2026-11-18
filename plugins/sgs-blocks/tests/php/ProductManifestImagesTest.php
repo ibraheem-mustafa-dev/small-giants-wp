@@ -37,6 +37,8 @@ $GLOBALS['att'] = json_decode( file_get_contents( $argv[1] ), true );
 function esc_url_raw( $u ) { return $u; }
 function wp_get_attachment_url( $id ) { return $GLOBALS['att']['original']; }
 function get_post_mime_type( $id ) { return $GLOBALS['att']['mime']; }
+function wp_get_attachment_metadata( $id ) { return isset( $GLOBALS['att']['bytes'] ) ? array( 'filesize' => $GLOBALS['att']['bytes'] ) : array(); }
+function get_attached_file( $id ) { return ''; }
 function get_post_meta( $id, $k, $single = false ) { return 'Alt text'; }
 function wp_get_attachment_image_srcset( $id, $size ) { return $GLOBALS['att']['srcset']; }
 function wp_get_attachment_image_src( $id, $size ) {
@@ -96,6 +98,14 @@ PHP;
 			'https://x.test/u/a.jpg',
 			$this->call( 'share_url', 5985, $this->attachment( 'image/jpeg', 'https://x.test/u/a.jpg' ) )
 		);
+	}
+
+	public function test_an_original_over_8_mb_is_not_offered_and_the_largest_copy_stands_in(): void {
+		$png          = $this->attachment( 'image/png', 'https://x.test/u/a.png' );
+		$png['bytes'] = 9 * 1048576;
+		$this->assertSame( 'https://x.test/u/a-1024x892.avif', $this->call( 'share_url', 1, $png ) );
+		$png['bytes'] = 6 * 1048576;
+		$this->assertSame( 'https://x.test/u/a.png', $this->call( 'share_url', 1, $png ) );
 	}
 
 	public function test_an_avif_original_falls_back_to_a_copy_in_a_safe_format_else_the_original(): void {
