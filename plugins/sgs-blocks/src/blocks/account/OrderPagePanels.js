@@ -3,7 +3,8 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
-import { FlexWrapControl, IconPicker } from '../../components';
+import { FlexWrapControl, IconPicker, LinkPopoverField } from '../../components';
+import { LINK_SOURCES_NO_TOP } from '../../shared/link-source-options';
 import { Choice, TextField, Toggle } from './extraControls';
 
 /**
@@ -73,6 +74,10 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 				<TextField { ...p } name="orderStepProcessing" label={ __( 'Step: processing', 'sgs-blocks' ) } help={ __( 'Empty = the step is left out.', 'sgs-blocks' ) } />
 				<TextField { ...p } name="orderStepDispatched" label={ __( 'Step: dispatched / posted', 'sgs-blocks' ) } />
 				<TextField { ...p } name="orderStepDelivered" label={ __( 'Step: delivered', 'sgs-blocks' ) } />
+				<TextField { ...p } name="orderStepPlacedNote" label={ __( 'Placed: line under the step', 'sgs-blocks' ) } help={ __( 'Empty prints nothing. {date} is the date the order was placed.', 'sgs-blocks' ) } />
+				<TextField { ...p } name="orderStepProcessingNote" label={ __( 'Processing: line under the step', 'sgs-blocks' ) } />
+				<TextField { ...p } name="orderStepDispatchedNote" label={ __( 'Dispatched: line under the step', 'sgs-blocks' ) } />
+				<TextField { ...p } name="orderStepDeliveredNote" label={ __( 'Delivered: line under the step', 'sgs-blocks' ) } />
 			</PanelBody>
 		) }
 		{ attributes.orderDetailLook && (

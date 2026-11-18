@@ -12,6 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-account-orders-list.php';
 require_once __DIR__ . '/helpers-account-gift-note.php';
+require_once dirname( __DIR__ ) . '/helpers-link-source.php';
 require_once dirname( __DIR__ ) . '/helpers-brand-glyphs.php';
 
 if ( ! function_exists( 'sgs_account_order_is_pickup' ) ) {
@@ -39,7 +40,7 @@ if ( ! function_exists( 'sgs_account_order_steps' ) ) {
 	 *
 	 * @param \WC_Order $order      The order.
 	 * @param array     $attributes Block attributes.
-	 * @return array<int,array{label:string,done:bool,current:bool}> Empty when the order has no track.
+	 * @return array<int,array{label:string,note:string,done:bool,current:bool}> Empty when the order has no track.
 	 */
 	function sgs_account_order_steps( $order, array $attributes ): array {
 		$current = sgs_account_map_order_status_to_step( (string) $order->get_status() );
@@ -56,6 +57,13 @@ if ( ! function_exists( 'sgs_account_order_steps' ) ) {
 			'dispatched' => $pickup && '' !== $text( 'orderStepReady' ) ? $text( 'orderStepReady' ) : $text( 'orderStepDispatched' ),
 			'delivered'  => $pickup && '' !== $text( 'orderStepCollected' ) ? $text( 'orderStepCollected' ) : $text( 'orderStepDelivered' ),
 		);
+		$notes   = array(
+			'placed'     => $text( 'orderStepPlacedNote' ),
+			'processing' => $text( 'orderStepProcessingNote' ),
+			'dispatched' => $text( 'orderStepDispatchedNote' ),
+			'delivered'  => $text( 'orderStepDeliveredNote' ),
+		);
+		$date    = sgs_account_order_date( $order, $attributes );
 		$reached = array_search( $current, sgs_account_step_order(), true );
 		$steps   = array();
 		foreach ( sgs_account_step_order() as $index => $key ) {
@@ -64,6 +72,7 @@ if ( ! function_exists( 'sgs_account_order_steps' ) ) {
 			}
 			$steps[] = array(
 				'label'   => $labels[ $key ],
+				'note'    => str_replace( '{date}', $date, $notes[ $key ] ),
 				'done'    => $index <= (int) $reached,
 				'current' => false,
 			);
@@ -120,7 +129,10 @@ if ( ! function_exists( 'sgs_account_order_items_html' ) ) {
 	 * @return string Escaped HTML.
 	 */
 	function sgs_account_order_items_html( $order, array $attributes = array() ): string {
-		$html = '<div class="sgs-account__od-items">';
+		$heading = trim( (string) ( $attributes['orderDetailItemsHeading'] ?? '' ) );
+		$qty     = ! empty( $attributes['orderDetailItemQtyFirst'] );
+		$html    = '<div class="sgs-account__od-items' . ( $qty ? ' sgs-account__od-items--qty-first' : '' ) . '">'
+			. ( '' !== $heading ? '<div class="sgs-account__od-items-title">' . esc_html( $heading ) . '</div>' : '' );
 		foreach ( $order->get_items() as $item ) {
 			$product = $item->get_product();
 			$image_id = $product ? (int) $product->get_image_id() : 0;
@@ -150,11 +162,33 @@ if ( ! function_exists( 'sgs_account_order_items_html' ) ) {
 				. ( $image ? '<img src="' . esc_url( (string) $image ) . '" alt="" loading="lazy">' : '' )
 				. '</div><div class="sgs-account__od-item-info">'
 				. ( '' !== $brand ? '<div class="sgs-account__od-item-brand">' . esc_html( $brand ) . '</div>' : '' )
-				. '<div class="sgs-account__od-item-name">' . esc_html( (string) $item->get_name() ) . '</div>'
+				. '<div class="sgs-account__od-item-name">' . ( $qty ? '<span class="sgs-account__od-item-qty">' . esc_html( (string) (int) $item->get_quantity() ) . ' &times; </span>' : '' ) . esc_html( (string) $item->get_name() ) . '</div>'
 				. ( '' !== $meta ? '<div class="sgs-account__od-item-meta">' . esc_html( $meta ) . '</div>' : '' )
 				. '</div><div class="sgs-account__od-item-total">' . sgs_account_money( (float) $item->get_total() + (float) $item->get_total_tax(), $attributes ) . '</div></div>';
 		}
 		return $html . '</div>';
+	}
+}
+
+if ( ! function_exists( 'sgs_account_order_again_url' ) ) {
+	/**
+	 * WooCommerce's own order-again address for an order: its nonce'd `order_again` link on the cart page, which
+	 * `WC_Form_Handler::order_again()` turns into a refilled cart. Empty unless the visitor is signed in, may view the
+	 * order and the order's status is one WooCommerce allows for order again (`woocommerce_valid_order_statuses_for_order_again`,
+	 * default completed), the same rules as `woocommerce_order_again_button()`.
+	 *
+	 * @param \WC_Order $order The order.
+	 * @return string
+	 */
+	function sgs_account_order_again_url( $order ): string {
+		if ( ! is_user_logged_in() || ! current_user_can( 'view_order', (int) $order->get_id() ) || ! function_exists( 'wc_get_cart_url' ) ) {
+			return '';
+		}
+		$statuses = (array) apply_filters( 'woocommerce_valid_order_statuses_for_order_again', array( 'completed' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce's own filter.
+		if ( ! $order->has_status( $statuses ) ) {
+			return '';
+		}
+		return (string) wp_nonce_url( add_query_arg( 'order_again', $order->get_id(), wc_get_cart_url() ), 'woocommerce-order_again' );
 	}
 }
 
@@ -199,7 +233,7 @@ if ( ! function_exists( 'sgs_account_order_detail_html' ) ) {
 		if ( array() !== $steps ) {
 			$html .= '<ol class="sgs-account__od-steps" aria-label="' . esc_attr( $text( 'orderDetailProgressLabel', 'Progress' ) ) . '">';
 			foreach ( $steps as $step ) {
-				$html .= '<li class="sgs-account__od-step' . ( $step['done'] ? ' sgs-account__od-step--done' : '' ) . '"' . ( $step['current'] ? ' aria-current="step"' : '' ) . '><span class="sgs-account__od-step-bar"></span><span>' . esc_html( $step['label'] ) . '</span></li>';
+				$html .= '<li class="sgs-account__od-step' . ( $step['done'] ? ' sgs-account__od-step--done' : '' ) . '"' . ( $step['current'] ? ' aria-current="step"' : '' ) . '><span class="sgs-account__od-step-bar"></span><span>' . esc_html( $step['label'] ) . '</span>' . ( '' !== trim( $step['note'] ) ? '<span class="sgs-account__od-step-note">' . esc_html( $step['note'] ) . '</span>' : '' ) . '</li>';
 			}
 			$html .= '</ol>';
 		}
@@ -223,6 +257,16 @@ if ( ! function_exists( 'sgs_account_order_detail_html' ) ) {
 					. '<div class="sgs-account__od-row sgs-account__od-row--total"><span>' . esc_html( $text( 'orderDetailTotalLabel', 'Total' ) ) . '</span><span>' . sgs_account_money( (float) $order->get_total(), $attributes ) . '</span></div>'
 				)
 				. '</div>';
+		}
+		$again_label = trim( (string) ( $attributes['orderDetailOrderAgainLabel'] ?? '' ) );
+		$again_url   = $on( 'orderDetailOrderAgain' ) ? sgs_account_order_again_url( $order ) : '';
+		if ( '' !== $again_url ) {
+			$html .= '<p class="sgs-account__od-again"><a class="sgs-account__od-again-link" href="' . esc_url( $again_url ) . '">' . esc_html( '' !== $again_label ? $again_label : __( 'Order again', 'sgs-blocks' ) ) . '</a></p>';
+		}
+		$help_label = trim( (string) ( $attributes['orderDetailHelpLabel'] ?? '' ) );
+		$help_href  = '' !== $help_label ? trim( sgs_link_source_href( (string) ( $attributes['orderDetailHelpUrlSource'] ?? '' ), trim( (string) ( $attributes['orderDetailHelpUrl'] ?? '' ) ) ) ) : '';
+		if ( '' !== $help_href ) {
+			$html .= '<p class="sgs-account__od-help"><a class="sgs-account__od-help-link" href="' . esc_url( $help_href ) . '">' . esc_html( $help_label ) . '</a></p>';
 		}
 		$number = preg_replace( '/\D+/', '', (string) ( $attributes['orderDetailWhatsAppNumber'] ?? '' ) );
 		if ( $on( 'orderDetailWhatsApp' ) && '' !== (string) $number ) {

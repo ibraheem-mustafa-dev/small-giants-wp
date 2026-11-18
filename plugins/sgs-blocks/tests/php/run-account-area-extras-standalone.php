@@ -16,6 +16,9 @@ function esc_attr__( $t, $d = null ) { return $t; }
 function get_option( $k, $d = false ) { return $d; }
 function wc_price( $a, $args = array() ) { return '£' . number_format( (float) $a, isset( $args['decimals'] ) ? $args['decimals'] : 2 ); }
 function wc_get_order_status_name( $s ) { return ucfirst( (string) $s ); }
+function wc_get_cart_url() { return 'https://example.test/cart/'; }
+function wp_nonce_url( $u, $a ) { return $u . '&_wpnonce=abc123'; }
+function add_query_arg( $k, $v, $u ) { return $u . '?' . $k . '=' . $v; }
 require dirname( __DIR__, 2 ) . '/scripts/qa/lib/wp-stubs.php';
 if ( ! function_exists( 'sgs_object_attr_keys' ) ) {
 	function sgs_object_attr_keys( $block ) { return array(); }
@@ -24,7 +27,8 @@ $root = dirname( __DIR__, 2 ) . '/includes';
 require $root . '/render-helpers.php';
 require $root . '/helpers-responsive.php';
 require $root . '/account/helpers-account-orders-list.php';
-require $root . '/account/helpers-account-gift-note.php';
+require $root . '/account/helpers-account-defaults.php';
+require $root . '/account/helpers-account-order-detail.php';
 
 $failures = 0;
 function ok( bool $cond, string $label ): void {
@@ -44,21 +48,30 @@ class WC_Order {
 }
 
 class Fake_Product {
+	public function get_image_id() { return 0; }
 	public function get_image( $size, $attr ) { return '<img src="p.jpg" alt="">'; }
 }
 class Fake_Item {
+	public function get_quantity() { return 2; }
+	public function get_total() { return '10'; }
+	public function get_total_tax() { return '0'; }
 	public function get_product() { return new Fake_Product(); }
 	public function get_product_id() { return 1; }
 	public function get_name() { return 'Cake'; }
 }
 class Fake_Order {
 	public $count = 3;
+	public $status = 'processing';
+	public function get_id() { return 7; }
+	public function has_status( $s ) { return in_array( $this->status, (array) $s, true ); }
+	public function get_shipping_methods() { return array(); }
+	public function get_shipping_method() { return 'Post'; }
 	public function get_item_count() { return $this->count; }
 	public function get_order_number() { return '101'; }
-	public function get_status() { return 'processing'; }
+	public function get_status() { return $this->status; }
 	public function get_view_order_url() { return 'https://example.test/my-account/view-order/101/'; }
 	public function get_total() { return 12.0; }
-	public function get_date_created() { return null; }
+	public function get_date_created() { return new class() { public function date_i18n( $f ) { return 'Sat 7 Nov'; } }; }
 	public function get_items() { return array( new Fake_Item(), new Fake_Item() ); }
 }
 
@@ -100,6 +113,18 @@ $o->count = 4;
 ok( str_contains( sgs_account_orders_list_html( array( $o ), array( 'ordersRowItemCount' => true, 'ordersRowItemCountOne' => 'one' , 'ordersRowItemCountMany' => '· {count} items' ) ), '>· 4 items</span>' ), '1 count: site wording for many' );
 $o->count = 0;
 ok( ! str_contains( sgs_account_orders_list_html( array( $o ), array( 'ordersRowItemCount' => true ) ), 'order-count"' ), '1 count: an order with no items prints none' );
+
+// 2) Order page step sub-lines: none by default; {date} filled; escaped; empty prints nothing.
+$o = new Fake_Order();
+$labels = array( 'orderStepPlaced' => 'Placed', 'orderStepProcessing' => 'Baking', 'orderStepDispatched' => 'Posted', 'orderStepDelivered' => 'Delivered' );
+$steps  = sgs_account_order_steps( $o, $labels );
+ok( 4 === count( $steps ) && '' === $steps[0]['note'] && '' === $steps[3]['note'], '2 notes: empty by default' );
+$html = sgs_account_order_detail_html( $o, $labels + array( 'orderDetailProgress' => true ) );
+ok( ! str_contains( $html, 'od-step-note' ), '2 notes: nothing printed when every note is empty' );
+$steps = sgs_account_order_steps( $o, $labels + array( 'orderStepPlacedNote' => '{date}', 'orderStepDeliveredNote' => 'Left by <b>door' ) );
+ok( 'Sat 7 Nov' === $steps[0]['note'] && 'Left by <b>door' === $steps[3]['note'] && '' === $steps[1]['note'], '2 notes: {date} is the placed date, other steps stay empty' );
+$html = sgs_account_order_detail_html( $o, $labels + array( 'orderDetailProgress' => true, 'orderStepPlacedNote' => '{date}', 'orderStepDeliveredNote' => 'Left by <b>door' ) );
+ok( str_contains( $html, '<span class="sgs-account__od-step-note">Sat 7 Nov</span>' ) && str_contains( $html, 'Left by &lt;b&gt;door' ) && 2 === substr_count( $html, 'od-step-note' ), '2 notes: printed under their steps, escaped, only where set' );
 
 echo $failures ? "\n$failures FAILED\n" : "\nAll passed\n";
 exit( $failures ? 1 : 0 );

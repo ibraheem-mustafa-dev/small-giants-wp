@@ -5041,6 +5041,26 @@
 				"default": "",
 				"description": "Wording of the item count for any other number of items; {count} is the number. Empty = the translatable default (3 items)."
 			},
+			"orderStepPlacedNote": {
+				"type": "string",
+				"default": "",
+				"description": "Optional sub-line under the Placed step on the order page; {date} is the order's placed date. Empty prints nothing."
+			},
+			"orderStepProcessingNote": {
+				"type": "string",
+				"default": "",
+				"description": "Optional sub-line under the Processing step on the order page; {date} is the order's placed date. Empty prints nothing."
+			},
+			"orderStepDispatchedNote": {
+				"type": "string",
+				"default": "",
+				"description": "Optional sub-line under the Dispatched (or Ready) step on the order page; {date} is the order's placed date. Empty prints nothing."
+			},
+			"orderStepDeliveredNote": {
+				"type": "string",
+				"default": "",
+				"description": "Optional sub-line under the Delivered (or Collected) step on the order page; {date} is the order's placed date. Empty prints nothing."
+			},
 			"loginLinkPlacement": {
 				"type": "string",
 				"enum": [
