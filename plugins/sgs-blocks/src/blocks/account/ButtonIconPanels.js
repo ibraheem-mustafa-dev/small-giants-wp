@@ -103,7 +103,7 @@ export default function ButtonIconPanels( { attributes, setAttributes } ) {
 			onChange={ ( obj ) => setAttributes( { loginButtonIconGap: obj } ) }
 		>
 			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-				<SgsLengthControl label={ __( 'Icon gap', 'sgs-blocks' ) } value={ ownValue } placeholder={ inherited ? effectiveValue : '' } onChange={ setOwnValue } />
+				<SgsLengthControl label={ __( 'Icon gap', 'sgs-blocks' ) } hideLabelFromVision value={ ownValue } placeholder={ inherited ? effectiveValue : '' } onChange={ setOwnValue } />
 			) }
 		</ResponsiveOverride>
 	);
@@ -114,7 +114,7 @@ export default function ButtonIconPanels( { attributes, setAttributes } ) {
 			onChange={ ( obj ) => setAttributes( { registerButtonIconGap: obj } ) }
 		>
 			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-				<SgsLengthControl label={ __( 'Icon gap', 'sgs-blocks' ) } value={ ownValue } placeholder={ inherited ? effectiveValue : '' } onChange={ setOwnValue } />
+				<SgsLengthControl label={ __( 'Icon gap', 'sgs-blocks' ) } hideLabelFromVision value={ ownValue } placeholder={ inherited ? effectiveValue : '' } onChange={ setOwnValue } />
 			) }
 		</ResponsiveOverride>
 	);
