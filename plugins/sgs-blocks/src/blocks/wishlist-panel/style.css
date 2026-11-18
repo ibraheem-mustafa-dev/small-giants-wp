@@ -461,8 +461,18 @@
 
 /* -- Product-cards layout: each saved item is the site's own product card, with the panel's own parts under it -- */
 .sgs-wishlist-panel--product-cards .sgs-wishlist-panel__items {
-	align-items: start;
 	gap: var(--sgs-wishlist-panel-gap);
+}
+
+/* Cards in a row share a height, as in the shop's grid: the item fills its cell and the card fills the item. */
+.sgs-wishlist-panel__item-card {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+}
+
+.sgs-wishlist-panel__item-card > * {
+	flex: 1 1 auto;
 }
 
 /* The card draws its own frame, so the item wrapper adds none (the plain row's box is for the other layouts). */

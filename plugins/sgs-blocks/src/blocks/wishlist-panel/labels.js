@@ -37,6 +37,7 @@ export function readPanelData( panel ) {
 		cardTemplate: d.cardTemplate || '',
 		cardSig: d.cardSig || '',
 		cardsChunk: Number( d.cardsChunk ) || 24,
+		removedText: d.removedText || '{name} removed from saved items.',
 		viewAllLabel: d.viewAllLabel || 'View all saved items',
 		sortLabel: d.sortLabel || 'Sort',
 		sortRecentLabel: d.sortRecentLabel || 'Recently saved',
@@ -88,4 +89,16 @@ export function formatSavedDate( addedTs ) {
 	} catch ( e ) {
 		return '';
 	}
+}
+
+/**
+ * What the live region says after an item is removed: the result, with the product's name. A remove button that carries
+ * no product name (the other layouts) keeps announcing the panel's Remove label.
+ *
+ * @param {Object} labels `readPanelData()` output.
+ * @param {string} name   The removed product's name (`data-product-name` on the remove button), or ''.
+ * @return {string} The announcement.
+ */
+export function removedAnnouncement( labels, name ) {
+	return name ? String( labels.removedText ).replace( '{name}', name ) : labels.removeLabel;
 }

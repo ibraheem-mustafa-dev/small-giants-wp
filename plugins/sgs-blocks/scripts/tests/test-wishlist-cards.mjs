@@ -43,7 +43,8 @@ globalThis.DOMParser = class {
 };
 
 const { nextItemId, visibleIds, applyFocus } = await import( BLOCK + '/focus-after-remove.js' );
-const { fetchProductCards, chunkIds } = await import( BLOCK + '/cards-api.js' );
+const { fetchProductCards, chunkIds, cardProducts } = await import( BLOCK + '/cards-api.js' );
+const { removedAnnouncement } = await import( BLOCK + '/labels.js' );
 const { wishlistRowHtml } = await import( BLOCK + '/render-rows.js' );
 
 let failures = 0;
@@ -187,7 +188,7 @@ assert(
 	cardRow.includes( 'data-product-id="7"' ) && cardRow.includes( 'sgs-wishlist-panel__row' )
 );
 const removeMatch =
-	/<button type="button" class="sgs-wishlist-panel__remove"[^>]*aria-label="([^"]*)"[^>]*>([^<]*)<\/button>/.exec( cardRow );
+	/<button type="button"[^>]*class="sgs-wishlist-panel__remove"[^>]*aria-label="([^"]*)"[^>]*>([^<]*)<\/button>/.exec( cardRow );
 assert( 'the remove control is a real button', null !== removeMatch );
 assert( 'the remove button is named with the product', removeMatch && 'Remove Chocolate Hazelnut' === removeMatch[ 1 ] );
 assert( 'the remove button shows the panel label', removeMatch && 'Remove' === removeMatch[ 2 ] );
@@ -196,11 +197,27 @@ const soldOut = wishlistRowHtml( { ...product, is_in_stock: false }, { ...base, 
 assert( 'a sold-out card row offers Notify me and the stock chip', soldOut.includes( 'notify-toggle' ) && soldOut.includes( 'Out of stock' ) );
 const noCard = wishlistRowHtml( product, base );
 assert(
-	'a product with no card draws the plain row',
+	'the row template with no card html still draws the plain row (the other layouts, and the shared list)',
 	! noCard.includes( 'sgs-wishlist-panel__item' ) && noCard.includes( 'sgs-wishlist-panel__row-name' )
 );
 const sharedRow = wishlistRowHtml( product, { ...base, shared: true, cardHtml: '<article>CARD</article>' } );
 assert( 'a read-only shared row stays the plain row', ! sharedRow.includes( 'sgs-wishlist-panel__item' ) );
+
+// -- Product-cards layout: the announcement, and products with no card -------------------------------------------------
+
+const announceLabels = { removeLabel: 'Remove', removedText: '{name} removed from saved items.' };
+assert( 'a removal announces the result with the product name', 'Zookies removed from saved items.' === removedAnnouncement( announceLabels, 'Zookies' ) );
+assert( 'the announcement is not the button name (no instruction)', ! removedAnnouncement( announceLabels, 'Zookies' ).startsWith( 'Remove ' ) );
+assert( 'a remove button with no product name keeps the panel label (other layouts)', 'Remove' === removedAnnouncement( announceLabels, '' ) );
+const named = wishlistRowHtml( product, { ...base, cardHtml: '<article>CARD</article>' } );
+assert( 'the product-cards remove button carries the product name for the announcement', named.includes( 'data-product-name="Chocolate Hazelnut"' ) );
+assert( 'the plain row remove button is unchanged (no name attribute)', ! noCard.includes( 'data-product-name' ) );
+
+const saved = [ { id: 1 }, { id: 2 }, { id: 3 } ];
+const shown = cardProducts( saved, new Map( [ [ 3, '<c3>' ], [ 1, '<c1>' ] ] ) );
+assert( 'a product with no card is left out of the grid', '1,3' === shown.map( ( x ) => x.id ).join( ',' ) );
+assert( 'the count is the cards shown', 2 === shown.length );
+assert( 'with no cards at all nothing is shown', 0 === cardProducts( saved, new Map() ).length );
 
 // -- The frame-cards layout is unchanged --------------------------------------------------------------------------------
 // Fixtures captured once from main's render-rows.js (git show main:plugins/sgs-blocks/src/blocks/wishlist-panel/render-rows.js)

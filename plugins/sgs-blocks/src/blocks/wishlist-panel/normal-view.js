@@ -5,7 +5,7 @@
  */
 import { config, getSavedPrices, getAccountState } from '../../shared/wishlist-store';
 import { fetchWishlistProducts } from './api';
-import { fetchProductCards } from './cards-api';
+import { cardProducts, fetchProductCards } from './cards-api';
 import { hydrateCards } from './hydrate-cards';
 import { wishlistRowHtml, escapeHtml } from './render-rows';
 import { guestPromptHtml, alertsBarHtml } from './render-bars';
@@ -106,6 +106,10 @@ export async function renderNormalView( elements, labels, ids, announce ) {
 		return;
 	}
 	itemsEl.removeAttribute( 'aria-busy' );
+	if ( isCards ) {
+		// A product with no card (the route refused it) is left out of the grid and the count.
+		products = cardProducts( products, cards );
+	}
 
 	if ( 0 === products.length ) {
 		itemsEl.innerHTML = `<p class="sgs-wishlist-panel__error">${ escapeHtml( labels.errorText ) }</p>`;

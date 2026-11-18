@@ -13,7 +13,7 @@ import { addCartItem } from './api';
 import { appendAuthoredText } from '../../utils/authored-text-dom';
 import { applyFocus, nextItemId, visibleIds } from './focus-after-remove';
 import { mountNotifyForm } from './notify-form';
-import { readPanelData } from './labels';
+import { readPanelData, removedAnnouncement } from './labels';
 import { renderNormalView } from './normal-view';
 import { parseShareToken, renderSharedView } from './shared-view';
 import { wireAlerts } from './alerts';
@@ -132,12 +132,12 @@ export function initPanel( panel ) {
 
 		if ( removeButton ) {
 			const productId = Number( removeButton.dataset.productId );
-			const removedName = removeButton.getAttribute( 'aria-label' ) || labels.removeLabel;
+			const removedMessage = removedAnnouncement( labels, removeButton.dataset.productName || '' );
 			removeButton.disabled = true;
 			focusAfterRender = nextItemId( visibleIds( itemsEl ), productId );
 			try {
 				await toggleWishlistId( productId );
-				announce( removedName );
+				announce( removedMessage );
 			} catch {
 				focusAfterRender = undefined;
 				announce( labels.errorText );

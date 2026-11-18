@@ -213,6 +213,7 @@ export function wishlistRowHtml( product, options ) {
 		// The card is the site's own product card (markup from `sgs/product-card`'s render, escaped there); the panel adds
 		// only what a card does not carry: the saved-list parts and the remove button.
 		const metaHtml = priceDropHtml + stockHtml + dateHtml;
+		const cardRemoveHtml = removeHtml.replace( '<button type="button"', `<button type="button" data-product-name="${ name }"` );
 		const notifyHtml = isInStock( product )
 			? ''
 			: `<button type="button" class="sgs-wishlist-panel__notify-toggle" data-product-id="${ id }" aria-expanded="false">${ escapeHtml(
@@ -222,7 +223,7 @@ export function wishlistRowHtml( product, options ) {
 			`<div class="sgs-wishlist-panel__row sgs-wishlist-panel__item" data-product-id="${ id }">` +
 			`<div class="sgs-wishlist-panel__item-card">${ cardHtml }</div>` +
 			( metaHtml ? `<div class="sgs-wishlist-panel__item-meta">${ metaHtml }</div>` : '' ) +
-			`<div class="sgs-wishlist-panel__item-actions sgs-wishlist-panel__row-actions">${ notifyHtml }${ removeHtml }</div>` +
+			`<div class="sgs-wishlist-panel__item-actions sgs-wishlist-panel__row-actions">${ notifyHtml }${ cardRemoveHtml }</div>` +
 			'</div>'
 		);
 	}

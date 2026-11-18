@@ -38,6 +38,8 @@ if ( ! function_exists( 'sgs_wishlist_panel_cards_data' ) ) {
 			'card-template' => $signed['template'],
 			'card-sig'      => $signed['sig'],
 			'cards-chunk'   => (string) \SGS\Blocks\Wishlist_Cards_Rest::MAX_IDS,
+			/* translators: {name} is the product's name; it is replaced in the browser. */
+			'removed-text'  => __( '{name} removed from saved items.', 'sgs-blocks' ),
 		);
 	}
 }

@@ -66,3 +66,15 @@ export async function fetchProductCards( labels, ids, send = window.fetch.bind( 
 	);
 	return cards;
 }
+
+/**
+ * The saved products the product-cards layout shows: those with a card. A product the route left out (hidden,
+ * unpublished, password-protected) is not drawn, so the count and the grid agree.
+ *
+ * @param {Object[]}           products Store API products.
+ * @param {Map<number,string>} cards    `fetchProductCards()` output.
+ * @return {Object[]} The products that have a card, in order.
+ */
+export function cardProducts( products, cards ) {
+	return products.filter( ( product ) => cards.has( Number( product.id ) ) );
+}
