@@ -85,5 +85,17 @@ SGS\Blocks\sgs_stripe_appearance_record( array( 'blockName' => 'woocommerce/chec
 $bare = SGS\Blocks\sgs_stripe_appearance_params( array() )['blocksAppearance'] ?? null;
 ok( is_array( $bare ) && 'Outfit, system-ui, sans-serif' === ( $bare['variables']['fontFamily'] ?? '' ) && ! isset( $bare['rules']['.Input']['border'] ), 'with no field settings the appearance carries the site font only (nothing invented)' );
 
+// Payment Plugins for Stripe: the same object arrives as the Elements options' `appearance`.
+$opts = SGS\Blocks\sgs_stripe_appearance_element_options(
+	array(
+		'locale'     => 'en-GB',
+		'appearance' => array( 'theme' => 'stripe' ),
+	)
+);
+ok( 'en-GB' === ( $opts['locale'] ?? '' ) && is_array( $bare ) && $bare === ( $opts['appearance'] ?? null ), 'the second plugin\'s options carry the same appearance object and keep their other members' );
+ok( 'x' === SGS\Blocks\sgs_stripe_appearance_element_options( 'x' ), 'options that are not an array pass through' );
+SGS\Blocks\sgs_stripe_appearance_record( array( 'blockName' => 'woocommerce/checkout', 'attrs' => array( 'sgsStripeMatchFields' => false ) ) );
+ok( array( 'appearance' => array( 'theme' => 'stripe' ) ) === SGS\Blocks\sgs_stripe_appearance_element_options( array( 'appearance' => array( 'theme' => 'stripe' ) ) ), 'with the setting off the second plugin keeps its own appearance' );
+
 echo $failures ? "\n{$failures} failed\n" : "\nall passed\n";
 exit( $failures ? 1 : 0 );

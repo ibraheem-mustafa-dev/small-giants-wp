@@ -9,6 +9,10 @@
  * padding, minimum height, fill, text, label colour and size, font) and the theme's focus ring and font, resolving
  * palette slugs to hex because Stripe cannot read CSS variables. A block without the setting changes nothing.
  *
+ * Two Stripe plugins are served by the same object. WooCommerce Stripe takes it as `blocksAppearance` in its script
+ * data (`wc_stripe_params`). Payment Plugins for Stripe takes it as the `appearance` member of the options it hands to
+ * Stripe's Elements (`wc_stripe_get_element_options`).
+ *
  * @package SGS\Blocks
  */
 
@@ -20,6 +24,7 @@ require_once dirname( __DIR__ ) . '/helpers-global-settings.php';
 
 add_filter( 'render_block_data', __NAMESPACE__ . '\sgs_stripe_appearance_record' );
 add_filter( 'wc_stripe_params', __NAMESPACE__ . '\sgs_stripe_appearance_params' );
+add_filter( 'wc_stripe_get_element_options', __NAMESPACE__ . '\sgs_stripe_appearance_element_options' );
 
 /**
  * The attributes of the Checkout block rendered on this request (set while the block's data is prepared, which is
@@ -62,6 +67,22 @@ function sgs_stripe_appearance_params( $params ) {
 	}
 	$params['blocksAppearance'] = sgs_stripe_appearance_from_attrs( $attrs );
 	return $params;
+}
+
+/**
+ * `wc_stripe_get_element_options` filter (Payment Plugins for Stripe): set `appearance` when the Checkout block asks
+ * for it.
+ *
+ * @param mixed $options The options that plugin hands to Stripe's Elements.
+ * @return mixed
+ */
+function sgs_stripe_appearance_element_options( $options ) {
+	$attrs = sgs_stripe_appearance_state();
+	if ( ! is_array( $options ) || true !== ( $attrs['sgsStripeMatchFields'] ?? false ) ) {
+		return $options;
+	}
+	$options['appearance'] = sgs_stripe_appearance_from_attrs( $attrs );
+	return $options;
 }
 
 /**
