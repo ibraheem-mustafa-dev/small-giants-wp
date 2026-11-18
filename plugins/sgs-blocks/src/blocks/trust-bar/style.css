@@ -319,6 +319,42 @@
 	}
 }
 
+/* ─── Marquee hold (an `overflow` bar before the module has measured it) ───────── */
+/*
+ * The head gate marks an `overflow` bar `data-sgs-marquee-hold` and the module drops it once it knows whether the badges
+ * fit. While it holds, the bar paints as its authored layout when the badges fit one row, and as one clipped row at the
+ * leading edge when they do not. The track stops being a box, so the badges are the lane's own items; the lane takes
+ * the room the bar's content band gives it and inherits that band's distribution (justify, align, gap), so the badges sit
+ * where the band alone would put them. A band laid out as a grid gives the lane the band's full width and one equal column per badge that never
+ * shrinks below the badge (`contain: inline-size`, so the lane adds nothing to the band's own column sizing and the lane's columns come out as the band's would). A badge never shrinks, so a row that does not fit overflows (the bar's root clips it).
+ */
+.sgs-trust-bar[data-sgs-marquee-hold] .sgs-trust-bar__track {
+	display: contents;
+}
+
+.sgs-trust-bar.sgs-trust-bar[data-sgs-marquee-hold] .sgs-trust-bar__lane[data-sgs-marquee-lane="on"] {
+	flex: 1 0 auto;
+	min-width: auto;
+	overflow: visible;
+	justify-content: inherit;
+	align-items: inherit;
+	justify-items: inherit;
+	justify-self: stretch;
+	gap: inherit;
+}
+
+.sgs-trust-bar.sgs-container--grid[data-sgs-marquee-hold] .sgs-trust-bar__lane[data-sgs-marquee-lane="on"] {
+	display: grid;
+	grid-column: 1 / -1;
+	contain: inline-size;
+	grid-auto-flow: column;
+	grid-auto-columns: minmax(max-content, 1fr);
+}
+
+.sgs-trust-bar[data-sgs-marquee-hold] .sgs-trust-bar__badge {
+	flex-shrink: 0;
+}
+
 /* ─── Overflow: drop mode ────────────────────────────────────────────────────── */
 /*
  * overflowMode="drop" (default is "wrap", unchanged) marks the root with

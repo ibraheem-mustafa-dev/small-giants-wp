@@ -154,6 +154,12 @@ function pointer( target, type, pointerType = 'mouse' ) {
 	target.dispatchEvent( event );
 }
 
+// A gap that exists only while the root carries no running mark (the static layout's gap).
+const restGapFor = ( element ) => {
+	const root = element?.closest?.( '[data-sgs-fx]' );
+	return layout.restGap && root && ! root.hasAttribute( 'data-sgs-marquee' ) ? layout.restGap : 0;
+};
+
 beforeEach( () => {
 	animations = [];
 	intersections = [];
@@ -172,8 +178,8 @@ beforeEach( () => {
 		paddingTop: element?.style?.paddingTop || '0px',
 		paddingBottom: element?.style?.paddingBottom || '0px',
 		getPropertyValue: ( name ) => props[ name ] || '',
-		columnGap: `${ layout.gap }px`,
-		rowGap: `${ layout.gap }px`,
+		columnGap: `${ layout.gap + restGapFor( element ) }px`,
+		rowGap: `${ layout.gap + restGapFor( element ) }px`,
 	} ) );
 	originalRect = Element.prototype.getBoundingClientRect;
 	Element.prototype.getBoundingClientRect = function () {
@@ -610,27 +616,89 @@ describe( 'marquee below a breakpoint', () => {
 describe( 'marquee only when the items overflow', () => {
 	const ATTRS = 'data-sgs-fx-marquee-below-breakpoint="overflow"';
 
-	test( 'items that fit the block: no animation, no copies, and the one-row layout stays so settling moves nothing', async () => {
+	const marked = ( root, set ) => {
+		root.setAttribute( 'data-sgs-marquee', 'on' );
+		root.setAttribute( 'data-sgs-marquee-hold', '' );
+		set.parentElement.setAttribute( 'data-sgs-marquee-lane', 'on' );
+	};
+	const unmarked = ( root, set ) =>
+		! root.hasAttribute( 'data-sgs-marquee' ) &&
+		! root.hasAttribute( 'data-sgs-marquee-hold' ) &&
+		! set.parentElement.hasAttribute( 'data-sgs-marquee-lane' );
+
+	test( 'items that fit the block: no animation, no copies, and every mark comes off so the block keeps its own layout', async () => {
 		layout.set = 400;
 		layout.root = 600;
 		const { root, set } = mount( { attrs: ATTRS } );
 		await boot();
 		expect( Element.prototype.animate ).not.toHaveBeenCalled();
 		expect( root.querySelectorAll( '[data-sgs-marquee-clone]' ) ).toHaveLength( 0 );
-		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
-		expect( set.parentElement.getAttribute( 'data-sgs-marquee-lane' ) ).toBe( 'on' );
-		expect( root.hasAttribute( 'data-sgs-marquee-fit' ) ).toBe( true );
+		expect( unmarked( root, set ) ).toBe( true );
 	} );
 
-	test( 'a fitting strip the head gate already marked keeps its marks (fault: it was unmarked, so the page shifted)', async () => {
+	test( 'a fitting strip the head gate held ends with no marks (the hold painted the authored look, so nothing moves)', async () => {
 		layout.set = 400;
 		layout.root = 600;
 		const { root, set } = mount( { attrs: ATTRS } );
+		marked( root, set );
+		await boot();
+		expect( unmarked( root, set ) ).toBe( true );
+		expect( Element.prototype.animate ).not.toHaveBeenCalled();
+	} );
+
+	test( 'a strip that does not fit drops the hold and runs, with the running marks kept', async () => {
+		layout.set = 700;
+		layout.root = 600;
+		const { root, set } = mount( { attrs: ATTRS } );
+		marked( root, set );
+		await boot();
+		expect( root.hasAttribute( 'data-sgs-marquee-hold' ) ).toBe( false );
+		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
+		expect( set.parentElement.getAttribute( 'data-sgs-marquee-lane' ) ).toBe( 'on' );
+		expect( live() ).toHaveLength( 2 );
+	} );
+
+	test( 'a held strip measured at zero size (a closed drawer) stays held, so it does not snap when shown', async () => {
+		layout.set = 0;
+		layout.root = 0;
+		const { root, set } = mount( { attrs: ATTRS } );
+		marked( root, set );
+		await boot();
+		expect( root.hasAttribute( 'data-sgs-marquee-hold' ) ).toBe( true );
+		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
+		layout.set = 700;
+		layout.root = 600;
+		resizeObservers.forEach( ( o ) => o.fire() );
+		expect( root.hasAttribute( 'data-sgs-marquee-hold' ) ).toBe( false );
+		expect( live() ).toHaveLength( 2 );
+	} );
+
+	test( 'a web font that arrives after the measuring is measured again: a strip that now overflows runs', async () => {
+		layout.set = 400;
+		layout.root = 600;
+		const { root, set } = mount( { attrs: ATTRS } );
+		let fontsLoaded;
+		Object.defineProperty( document, 'fonts', { configurable: true, value: { ready: new Promise( ( resolve ) => ( fontsLoaded = resolve ) ) } } );
+		marked( root, set );
+		await boot();
+		expect( unmarked( root, set ) ).toBe( true );
+		layout.set = 700;
+		fontsLoaded();
+		await flush();
+		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
+		expect( live() ).toHaveLength( 2 );
+		delete document.fonts;
+	} );
+
+	test( 'NEGATIVE CONTROL: an always strip is never held, and a zero-size one still goes back to its static layout', async () => {
+		layout.set = 0;
+		layout.root = 0;
+		const { root, set } = mount( { attrs: 'data-sgs-fx-marquee-below-breakpoint="always"' } );
 		root.setAttribute( 'data-sgs-marquee', 'on' );
 		set.parentElement.setAttribute( 'data-sgs-marquee-lane', 'on' );
 		await boot();
-		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
-		expect( set.parentElement.getAttribute( 'data-sgs-marquee-lane' ) ).toBe( 'on' );
+		expect( root.hasAttribute( 'data-sgs-marquee-hold' ) ).toBe( false );
+		expect( root.hasAttribute( 'data-sgs-marquee' ) ).toBe( false );
 	} );
 
 	test( "items that fit the block but not its padded content area run: the block's side padding counts", async () => {
@@ -653,33 +721,42 @@ describe( 'marquee only when the items overflow', () => {
 		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
 	} );
 
-	test( 'a marked root is measured in the one-row layout it paints in: a set wider than the root runs', async () => {
-		layout.set = 700;
+	test( 'the gaps the items need at rest count towards what has to fit', async () => {
+		layout.set = 500;
 		layout.root = 600;
-		const { root, set } = mount( { attrs: ATTRS } );
-		root.setAttribute( 'data-sgs-marquee', 'on' );
-		set.parentElement.setAttribute( 'data-sgs-marquee-lane', 'on' );
+		layout.gap = 120;
+		const { root } = mount( { attrs: ATTRS } );
 		await boot();
 		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
-		expect( root.hasAttribute( 'data-sgs-marquee-fit' ) ).toBe( false );
-		expect( live() ).toHaveLength( 2 );
 	} );
 
-	test( 'items wider than the block run, and widening the block stops them without looping on the copies', async () => {
+	test( 'a root the head gate held still has its resting gaps measured: a wrapping bar runs', async () => {
+		layout.set = 500;
+		layout.root = 600;
+		layout.restGap = 120;
+		const { root, set } = mount( { attrs: ATTRS } );
+		marked( root, set );
+		await boot();
+		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
+		expect( root.hasAttribute( 'data-sgs-marquee-hold' ) ).toBe( false );
+		expect( live() ).toHaveLength( 3 );
+	} );
+
+	test( 'items wider than the block run, and widening the block stops them and unmarks it, without looping on the copies', async () => {
 		layout.set = 400;
 		layout.root = 300;
-		const { root } = mount( { attrs: ATTRS } );
+		const { root, set } = mount( { attrs: ATTRS } );
 		await boot();
 		expect( live() ).toHaveLength( 2 );
 		layout.root = 500;
 		resizeObservers.forEach( ( o ) => o.fire() );
 		expect( live() ).toHaveLength( 0 );
 		expect( root.querySelectorAll( '[data-sgs-marquee-clone]' ) ).toHaveLength( 0 );
-		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
-		expect( root.hasAttribute( 'data-sgs-marquee-fit' ) ).toBe( true );
+		expect( unmarked( root, set ) ).toBe( true );
 		layout.root = 300;
 		resizeObservers.forEach( ( o ) => o.fire() );
 		expect( live() ).toHaveLength( 2 );
+		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
 	} );
 } );
 

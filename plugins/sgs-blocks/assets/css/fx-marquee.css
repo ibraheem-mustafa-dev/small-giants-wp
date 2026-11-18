@@ -44,18 +44,16 @@
 	justify-content: flex-start;
 }
 
-/* An `overflow` strip is the running one-row layout from first paint (the head gate marks it), whether or not its items
-   fit. While one set fits (no copies; fx-marquee.js adds `data-sgs-marquee-fit`) the row is centred; when it does not
-   fit, `safe` starts the row at the leading edge, where the loop begins, so the items never jump. The doubled lane
-   attribute outranks a block's own lane rule (the brand strip's track). */
-[data-sgs-fx~="marquee"][data-sgs-fx-marquee-below-breakpoint="overflow"]:not([data-sgs-fx-marquee-direction="up"]):not([data-sgs-fx-marquee-direction="down"]) [data-sgs-marquee-lane="on"][data-sgs-marquee-lane="on"],
-[data-sgs-fx~="marquee"][data-sgs-fx-marquee-below-breakpoint="overflow"]:not([data-sgs-fx-marquee-direction="up"]):not([data-sgs-fx-marquee-direction="down"])[data-sgs-marquee-lane="on"][data-sgs-marquee-lane="on"] {
+/* Hold: an `overflow` strip the head gate has marked and the module has not yet measured (`data-sgs-marquee-hold`). It is
+   one non-wrapping row, so a strip that does not fit paints at the height it runs at, and a strip that fits paints as its
+   authored layout: `safe center` is the authored look of a block that centres its wrapped row (the brand strip), and a
+   block that lays its own items out (the trust bar) overrides this with its authored distribution. When the row does not
+   fit, `safe` starts it at the leading edge where the loop begins. The module then drops the hold and runs the strip, or
+   drops every mark so the block's authored layout is all that is left. The doubled lane attribute outranks a block's own
+   lane rule (the brand strip's track); the trust bar's hold rule is more specific still. */
+[data-sgs-fx~="marquee"][data-sgs-marquee-hold]:where(:not([data-sgs-fx-marquee-direction="up"]):not([data-sgs-fx-marquee-direction="down"])) [data-sgs-marquee-lane="on"][data-sgs-marquee-lane="on"],
+[data-sgs-fx~="marquee"][data-sgs-marquee-hold]:where(:not([data-sgs-fx-marquee-direction="up"]):not([data-sgs-fx-marquee-direction="down"]))[data-sgs-marquee-lane="on"][data-sgs-marquee-lane="on"] {
 	justify-content: safe center;
-}
-
-/* A fitting `overflow` strip stands still, so its edge fade is not drawn. */
-[data-sgs-fx~="marquee"][data-sgs-marquee="on"][data-sgs-marquee-fit][data-sgs-fx-marquee-edge-fade="true"] [data-sgs-marquee-lane="on"] {
-	mask-image: none;
 }
 
 [data-sgs-fx~="marquee"][data-sgs-fx-marquee-direction="up"] [data-sgs-marquee-lane="on"],
@@ -106,6 +104,11 @@
 	   layout does not move), so a tile's shadow sits inside the mask's box and paints even where no-clip is not honoured. */
 	padding-block: var(--sgs-marquee-bleed, var(--sgs-shadow-bleed, 80px));
 	margin-block: calc(-1 * var(--sgs-marquee-bleed, var(--sgs-shadow-bleed, 80px)));
+}
+
+/* A held strip may turn out to fit and stand still, so it paints no edge fade; the running strip fades in when it starts. */
+[data-sgs-fx~="marquee"][data-sgs-marquee-hold][data-sgs-fx-marquee-edge-fade="true"] [data-sgs-marquee-lane="on"] {
+	mask-image: none;
 }
 
 [data-sgs-fx~="marquee"][data-sgs-marquee="on"][data-sgs-fx-marquee-edge-fade="true"][data-sgs-fx-marquee-direction="up"] [data-sgs-marquee-lane="on"],

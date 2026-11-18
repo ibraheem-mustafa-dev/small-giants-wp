@@ -1,7 +1,7 @@
 /**
  * The head gate (assets/js/marquee-ready-gate.js) marks a marquee root before the module boots. An `overflow` marquee
- * is pre-marked too: its marks are the one-row layout it keeps when the items fit, so first paint and settled state
- * have the same height.
+ * is pre-marked too, and held (`data-sgs-marquee-hold`): the one-row layout that is its authored look while its items
+ * fit, so first paint and settled state are the same.
  */
 const fs = require( 'fs' );
 const path = require( 'path' );
@@ -34,9 +34,20 @@ test( 'an overflow marquee is pre-marked: first paint is the one-row layout it s
 	const root = await runGate( 'overflow' );
 	expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
 	expect( root.querySelector( '.lane' ).getAttribute( 'data-sgs-marquee-lane' ) ).toBe( 'on' );
+	expect( root.hasAttribute( 'data-sgs-marquee-hold' ) ).toBe( true );
 } );
 
-test( 'NEGATIVE CONTROL: an always marquee is still pre-marked', async () => {
+test( 'NEGATIVE CONTROL: an always marquee is still pre-marked, and never held', async () => {
 	const root = await runGate( 'always' );
 	expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
+	expect( root.hasAttribute( 'data-sgs-marquee-hold' ) ).toBe( false );
+} );
+
+test( 'a held strip loses its marks and its hold when the module never arrives (the window loads without sgsMarqueeArmed)', async () => {
+	delete window.sgsMarqueeArmed;
+	const root = await runGate( 'overflow' );
+	window.dispatchEvent( new Event( 'load' ) );
+	expect( root.hasAttribute( 'data-sgs-marquee' ) ).toBe( false );
+	expect( root.hasAttribute( 'data-sgs-marquee-hold' ) ).toBe( false );
+	expect( root.querySelector( '.lane' ).hasAttribute( 'data-sgs-marquee-lane' ) ).toBe( false );
 } );

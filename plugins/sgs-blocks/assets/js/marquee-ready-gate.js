@@ -9,9 +9,10 @@
  * page. This gate sets the same marks while the parser adds the set, so the first paint is already the running layout.
  * It decides exactly as the module's `canRun` does: not reduced motion, not switched off at this device tier
  * (`src/shared/effects/off-switch.js`), inside the `below-breakpoint` range, and Web Animations present. An `overflow`
- * strip (it runs only while its items do not fit) is marked too: the marks are the one-row layout, which is also what
- * the strip shows once the module has measured and found the items fit (still, centred), so its first paint and its
- * settled state have the same height whether or not it ends up moving.
+ * strip (it runs only while its items do not fit) is marked too, and also gets `data-sgs-marquee-hold`: a one-row
+ * layout that keeps the strip's authored distribution while the items fit (so the first paint is the authored look) and
+ * starts at the leading edge, clipped, when they do not (so the first paint is the height the running strip settles
+ * at). The module measures, then drops the hold and runs the strip, or drops every mark and leaves the authored layout.
  *
  * It stops watching at DOMContentLoaded. If the module has not set `window.sgsMarqueeArmed` by the window's load event
  * (it failed to download or threw: a deferred module always runs before load), the gate removes its marks, so the
@@ -69,6 +70,9 @@
 		}
 		root.setAttribute( 'data-sgs-marquee', 'on' );
 		lane.setAttribute( 'data-sgs-marquee-lane', 'on' );
+		if ( 'overflow' === root.getAttribute( PREFIX + 'below-breakpoint' ) ) {
+			root.setAttribute( 'data-sgs-marquee-hold', '' );
+		}
 		marked.push( { root, lane } );
 		if ( 'true' === root.getAttribute( PREFIX + 'edge-fade' ) ) {
 			const prop = w.getComputedStyle( root ).getPropertyValue( '--sgs-marquee-edge-fade-width' ).trim();
@@ -105,6 +109,7 @@
 		}
 		marked.forEach( ( item ) => {
 			item.root.removeAttribute( 'data-sgs-marquee' );
+			item.root.removeAttribute( 'data-sgs-marquee-hold' );
 			item.lane.removeAttribute( 'data-sgs-marquee-lane' );
 			item.root.style.removeProperty( '--sgs-marquee-fade-size' );
 		} );
