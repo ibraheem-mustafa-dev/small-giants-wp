@@ -58,6 +58,8 @@ Bean's rule (2026-11-17): simple fixes are made as you go; everything else is pr
 - Every upper bound in a Custom CSS media or container query ends in `.98px` (`max-width: 767.98px`, `1023.98px`, `919.98px` beside a `min-width: 920px`), never a whole pixel: a zoomed or scaled screen reports a fractional width that a whole-pixel bound misses.
 - The WooCommerce Cart and Checkout blocks empty their markup while they load and redraw it, so test anything inside them the way a returning visitor arrives: visit two other pages first in the same browser context, then the page under test. A fresh context per test hid a dead button twice.
 - The site's standard arrow is an icon, not the `→` character: the Home hero's first button and the nav drawer's rows show it. A button-shaped control uses that icon through the block's icon settings.
+- Bean is sent one image per surface, the draft on the left and the site on the right, at 375, 768 and 1440: make it with `python E:\sgs-tmp\mamas-register\round2\pairs.py` (read its header for the arguments) and leave the images in your scratch folder, not only the separate `-draft` and `-site` files.
+- The media tool `plugins/sgs-blocks/scripts/migrate-media-system/cli.py` knows the mirror as `mamas`, not `local-mamas` (`cli.py check --mirror mamas --active on`). A setting saved in the wrong shape stops the next deploy at the old-shape audit and then at the media guard (which also reads revisions); report any such write so the main session can run `cli.py fix`.
 
 ## Hard limits
 
@@ -68,7 +70,7 @@ Bean's rule (2026-11-17): simple fixes are made as you go; everything else is pr
 
 ## What to leave behind
 
-In your scratch folder:
+In your scratch folder (both files are required: two helpers once finished without them, and the main session then had to rebuild the rows from the posts):
 
 - `findings.md`: one table row per item, in the format of `register-findings.md` (ID | draft → site | cause | proof | layer | fix made or proposed | status: `fixed on local-mamas <date>`, `proposed`, `not reproduced`, `accepted`).
 - `catalogue-rows.md`: one row per change you made, in the table format of `fix-catalogue.md` (read its header and its rows dated 2026-11-17), Commit column `settings on the mirror, no code`. One line per row.
