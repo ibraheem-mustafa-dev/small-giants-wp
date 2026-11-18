@@ -1203,6 +1203,19 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	border-top: 1px solid var(--wp--preset--color--border, #e2e2e2);
 }
 
+/* The help row spans the whole order page layout, so a site that lays the page out in columns gets a full-width row. */
+.sgs-account__od-help {
+	grid-column: 1 / -1;
+}
+
+/* With a lead-in line: the text and the link sit on one wrapping row. */
+.sgs-account__od-help--split {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 4px 8px;
+}
+
 .sgs-account__od-chat {
 	display: flex;
 	align-items: center;

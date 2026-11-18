@@ -5109,6 +5109,11 @@
 				"default": "",
 				"description": "Label of the help link under the order page (for example Something not right? Message us). Empty prints nothing."
 			},
+			"orderDetailHelpText": {
+				"type": "string",
+				"default": "",
+				"description": "A line of text printed before the order page help link, for example Something not right? Empty prints the link alone. Shown only while the help link itself prints."
+			},
 			"orderDetailHelpUrl": {
 				"type": "string",
 				"default": "",

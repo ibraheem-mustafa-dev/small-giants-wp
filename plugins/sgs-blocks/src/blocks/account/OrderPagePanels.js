@@ -97,26 +97,31 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 					<TextField { ...p } name="orderDetailItemsHeading" label={ __( 'Heading above the item rows', 'sgs-blocks' ) } help={ __( 'Empty prints none.', 'sgs-blocks' ) } />
 					<Toggle { ...p } name="orderDetailItemQtyFirst" label={ __( 'Quantity before each name', 'sgs-blocks' ) } help={ __( 'Prints 2 × Taster Trio.', 'sgs-blocks' ) } />
 					<Toggle { ...p } name="orderDetailBoxes" label={ __( 'Address, payment and total boxes', 'sgs-blocks' ) } />
-					<TextField { ...p } name="orderDetailHelpLabel" label={ __( 'Help link label', 'sgs-blocks' ) } help={ __( 'A link under the order page, for example “Something not right? Message us”. Empty prints nothing.', 'sgs-blocks' ) } />
-					<LinkPopoverField
-						label={ __( 'Help link destination', 'sgs-blocks' ) }
-						help={ __( 'A page, a Site Info value such as WhatsApp, or a typed address. Nothing prints while it is empty.', 'sgs-blocks' ) }
-						value={ { url: attributes.orderDetailHelpUrl, linkSource: attributes.orderDetailHelpUrlSource || '' } }
-						linkSources={ LINK_SOURCES_NO_TOP }
-						onChange={ ( next ) => {
-							const patch = {};
-							if ( undefined !== next.url ) {
-								patch.orderDetailHelpUrl = next.url;
-							}
-							if ( undefined !== next.linkSource ) {
-								patch.orderDetailHelpUrlSource = next.linkSource;
-							}
-							setAttributes( patch );
-						} }
-					/>
 				</>
 			) }
 		</PanelBody>
+		{ attributes.orderDetailLook && (
+			<PanelBody title={ __( 'Order page: help link', 'sgs-blocks' ) } initialOpen={ false }>
+				<TextField { ...p } name="orderDetailHelpText" label={ __( 'Help line before the link', 'sgs-blocks' ) } help={ __( 'For example “Something not right?”. Empty prints the link alone.', 'sgs-blocks' ) } />
+				<TextField { ...p } name="orderDetailHelpLabel" label={ __( 'Help link label', 'sgs-blocks' ) } help={ __( 'A link under the order page, for example “Message us”. Empty prints nothing.', 'sgs-blocks' ) } />
+				<LinkPopoverField
+					label={ __( 'Help link destination', 'sgs-blocks' ) }
+					help={ __( 'A page, a Site Info value such as WhatsApp, or a typed address. Nothing prints while it is empty.', 'sgs-blocks' ) }
+					value={ { url: attributes.orderDetailHelpUrl, linkSource: attributes.orderDetailHelpUrlSource || '' } }
+					linkSources={ LINK_SOURCES_NO_TOP }
+					onChange={ ( next ) => {
+						const patch = {};
+						if ( undefined !== next.url ) {
+							patch.orderDetailHelpUrl = next.url;
+						}
+						if ( undefined !== next.linkSource ) {
+							patch.orderDetailHelpUrlSource = next.linkSource;
+						}
+						setAttributes( patch );
+					} }
+				/>
+			</PanelBody>
+		) }
 		{ attributes.orderDetailLook && (
 			<PanelBody title={ __( 'Order page: order again', 'sgs-blocks' ) } initialOpen={ false }>
 				<Toggle { ...p } name="orderDetailOrderAgain" label={ __( 'Order again button', 'sgs-blocks' ) } help={ __( 'Under the totals; WooCommerce decides which orders can be re-ordered (completed by default).', 'sgs-blocks' ) } />

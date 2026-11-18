@@ -118,6 +118,17 @@ ok( 'processing' === sgs_account_order_step_for( 'processing', array( 'orderComp
 $off = $has ? sgs_account_order_detail_html( new Fake_Order(), array( 'orderDetailLook' => true ) ) : 'x od-steps';
 ok( false === strpos( $off, 'od-steps' ) && false === strpos( $off, 'od-items' ) && false === strpos( $off, 'od-boxes' ) && false === strpos( $off, 'od-chat' ) && false === strpos( $off, 'od-back' ), 'each part is off until its own setting is on' );
 
+$help      = array( 'orderDetailHelpLabel' => 'Message us', 'orderDetailHelpUrl' => 'https://example.test/contact/' );
+$help_link = $has ? sgs_account_order_detail_html( new Fake_Order(), $help ) : '';
+ok( false !== strpos( $help_link, '<p class="sgs-account__od-help"><a class="sgs-account__od-help-link" href="https://example.test/contact/">Message us</a></p>' ), 'the help link alone prints as before when no lead-in line is set' );
+ok( false === strpos( $help_link, 'od-help-text' ) && false === strpos( $help_link, 'od-help--split' ), 'a link with no lead-in has neither the text span nor the modifier' );
+$help_row = $has ? sgs_account_order_detail_html( new Fake_Order(), $help + array( 'orderDetailHelpText' => 'Something not <right>?' ) ) : '';
+ok( false !== strpos( $help_row, '<p class="sgs-account__od-help sgs-account__od-help--split"><span class="sgs-account__od-help-text">Something not &lt;right&gt;?</span> <a class="sgs-account__od-help-link" href="https://example.test/contact/">Message us</a></p>' ), 'a lead-in line prints before the link in the same paragraph, escaped, with the modifier class' );
+$help_none = $has ? sgs_account_order_detail_html( new Fake_Order(), array( 'orderDetailHelpText' => 'Something not right?', 'orderDetailHelpLabel' => 'Message us' ) ) : 'od-help';
+ok( false === strpos( $help_none, 'od-help' ), 'a lead-in line with no link destination prints nothing' );
+$help_blank = $has ? sgs_account_order_detail_html( new Fake_Order(), $help + array( 'orderDetailHelpText' => '   ' ) ) : '';
+ok( false === strpos( $help_blank, 'od-help-text' ), 'a blank lead-in line prints no text span' );
+
 SGS\Blocks\Account_Endpoints::$active = array();
 $swap = method_exists( 'SGS\Blocks\Account_Extras', 'maybe_swap_view_order_template' );
 ok( $swap && '/wc/view-order.php' === SGS\Blocks\Account_Extras::maybe_swap_view_order_template( '/wc/view-order.php', 'myaccount/view-order.php' ), 'with the master setting off WooCommerce keeps its order page' );
