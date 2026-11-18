@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace {
 	define( 'ABSPATH', dirname( __DIR__, 2 ) . '/' );
+	define( 'DAY_IN_SECONDS', 86400 );
 
 	class WP_Post {
 		public $ID;
@@ -39,7 +40,14 @@ namespace {
 		'filters'  => array(),
 		'wc_pages' => array( 'cart' => 101, 'checkout' => 102, 'myaccount' => 103 ),
 		'pages'    => array(),
+		'transients' => array(),
+		'queries'  => 0,
+		'actions'  => array(),
 	);
+	function add_action( $hook, $cb ) { $GLOBALS['t']['actions'][ $hook ][] = $cb; }
+	function get_transient( $k ) { return $GLOBALS['t']['transients'][ $k ] ?? false; }
+	function set_transient( $k, $v ) { $GLOBALS['t']['transients'][ $k ] = $v; return true; }
+	function delete_transient( $k ) { unset( $GLOBALS['t']['transients'][ $k ] ); return true; }
 
 	function add_filter( $hook, $cb, $priority = 10, $args = 1 ) { $GLOBALS['t']['filters'][ $hook ][] = $cb; return true; }
 	function apply_filters( $hook, $value, ...$rest ) {
@@ -70,6 +78,7 @@ namespace {
 		public function prepare( $q, ...$a ) { return $q; }
 		public function esc_like( $s ) { return $s; }
 		public function get_col( $q ) {
+			++$GLOBALS['t']['queries'];
 			$ids = array();
 			foreach ( $GLOBALS['t']['pages'] as $id => $p ) {
 				if ( false !== strpos( $p->post_content, '<!-- wp:sgs/account' ) ) {
@@ -150,7 +159,7 @@ namespace {
 	$check( 'the sitemap list is cart, checkout, account and the account-block pages', array( 101, 102, 103, 628 ) === $ids, json_encode( $ids ) );
 	$args = Sitemap_Exclusions::exclude_noindexed_pages( array( 'post__not_in' => array( 5 ) ), 'page' );
 	$check( 'the pages sitemap query excludes that list and keeps an existing exclusion', array( 5, 101, 102, 103, 628 ) === $args['post__not_in'], json_encode( $args ) );
-	$args = Sitemap_Exclusions::exclude_noindexed_pages( array(), 'product' );
+	$args = Sitemap_Exclusions::exclude_noindexed_pages( array(), 'post' );
 	$check( 'other post types are not touched', array() === $args );
 	$check( 'the users provider is off by default', false === Sitemap_Exclusions::filter_provider( new stdClass(), 'users' ) );
 	$check( 'the posts provider stays', Sitemap_Exclusions::filter_provider( new stdClass(), 'posts' ) instanceof stdClass );
@@ -161,6 +170,36 @@ namespace {
 	$GLOBALS['t']['filters']['user:sgs_noindex_page_ids']             = array( static fn( $ids ) => array_merge( $ids, array( 900 ) ) );
 	$check( 'a site can opt back in to users', Sitemap_Exclusions::filter_provider( new stdClass(), 'users' ) instanceof stdClass );
 	$check( 'a site can opt back in to product tags', isset( Sitemap_Exclusions::filter_taxonomies( array( 'product_tag' => 1 ) )['product_tag'] ) );
+	// The content search runs once, not on every request, and a page change clears it.
+	$GLOBALS['t']['filters']['user:sgs_noindex_page_ids'] = array();
+	$GLOBALS['t']['transients'] = array();
+	$GLOBALS['t']['queries']    = 0;
+	Noindex_Store_Pages::noindexed_page_ids();
+	Noindex_Store_Pages::noindexed_page_ids();
+	Noindex_Store_Pages::noindexed_page_ids();
+	$check( 'three sitemap requests run the LIKE on page content once', 1 === $GLOBALS['t']['queries'], (string) $GLOBALS['t']['queries'] );
+	foreach ( array( 'save_post_page', 'deleted_post', 'transition_post_status' ) as $hook ) {
+		$GLOBALS['t']['queries'] = 0;
+		foreach ( $GLOBALS['t']['actions'][ $hook ] ?? array() as $cb ) {
+			$cb( 1 );
+		}
+		Noindex_Store_Pages::noindexed_page_ids();
+		$check( 'the cached list is cleared on ' . $hook, 1 === $GLOBALS['t']['queries'], $hook );
+	}
+	$GLOBALS['t']['pages'][800] = new WP_Post( 800, '<!-- wp:sgs/account /-->' );
+	foreach ( $GLOBALS['t']['actions']['save_post_page'] as $cb ) {
+		$cb( 800 );
+	}
+	$check( 'a newly saved account page appears in the list after the clear', in_array( 800, Noindex_Store_Pages::noindexed_page_ids(), true ) );
+
+	// Hidden products.
+	$args = Sitemap_Exclusions::exclude_noindexed_pages( array(), 'product' );
+	$tq   = $args['tax_query'] ?? array();
+	$flat = json_encode( $tq );
+	$check( 'the products sitemap leaves out a product hidden from catalogue and search (lacks at least one exclusion term)', false !== strpos( $flat, 'exclude-from-catalog' ) && false !== strpos( $flat, 'exclude-from-search' ) && false !== strpos( $flat, '"OR"' ) && 2 === substr_count( $flat, 'NOT IN' ), $flat );
+	$args = Sitemap_Exclusions::exclude_noindexed_pages( array( 'tax_query' => array( array( 'taxonomy' => 'x' ) ) ), 'product' );
+	$check( 'an existing tax_query is kept beside the visibility rule', false !== strpos( json_encode( $args['tax_query'] ), '"x"' ) && 'AND' === $args['tax_query']['relation'] );
+	$GLOBALS['t']['filters']['user:sgs_noindex_page_ids'] = array( static fn( $ids ) => array_merge( $ids, array( 900 ) ) );
 	$check( 'a site can add a page to the noindex list and the sitemap exclusion together', in_array( 900, Noindex_Store_Pages::noindexed_page_ids(), true ) );
 
 	echo "\n==== " . ( $total - $failures ) . ' of ' . $total . ' checks passed (' . $failures . " failed) ====\n";

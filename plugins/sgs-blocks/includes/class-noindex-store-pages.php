@@ -35,12 +35,23 @@ defined( 'ABSPATH' ) || exit;
 final class Noindex_Store_Pages {
 
 	/**
+	 * Transient holding the ids of pages that hold an `sgs/account` block.
+	 *
+	 * @var string
+	 */
+	private const CACHE_KEY = 'sgs_account_block_page_ids';
+
+	/**
 	 * Register the `wp_robots` filter.
 	 *
 	 * @return void
 	 */
 	public static function register(): void {
 		\add_filter( 'wp_robots', array( __CLASS__, 'filter_robots' ), 20 );
+		// The sitemap's list of account-block pages is cached; any page change clears it.
+		\add_action( 'save_post_page', array( __CLASS__, 'clear_account_block_cache' ) );
+		\add_action( 'deleted_post', array( __CLASS__, 'clear_account_block_cache' ) );
+		\add_action( 'transition_post_status', array( __CLASS__, 'clear_account_block_cache' ) );
 	}
 
 	/**
@@ -136,22 +147,7 @@ final class Noindex_Store_Pages {
 			}
 		}
 
-		global $wpdb;
-		if ( isset( $wpdb ) ) {
-			$candidates = (array) $wpdb->get_col(
-				$wpdb->prepare(
-					"SELECT ID FROM {$wpdb->posts} WHERE post_type = %s AND post_status = %s AND post_content LIKE %s",
-					'page',
-					'publish',
-					'%' . $wpdb->esc_like( '<!-- wp:sgs/account' ) . '%'
-				)
-			);
-			foreach ( $candidates as $candidate ) {
-				if ( self::is_account_block_page( \get_post( (int) $candidate ) ) ) {
-					$ids[] = (int) $candidate;
-				}
-			}
-		}
+		$ids = array_merge( $ids, self::account_block_page_ids() );
 
 		/**
 		 * Filters the pages that are never indexed (robots `noindex` and left out of the sitemap).
@@ -160,6 +156,51 @@ final class Noindex_Store_Pages {
 		 */
 		$ids = (array) \apply_filters( 'sgs_noindex_page_ids', $ids );
 		return \array_values( \array_unique( \array_filter( \array_map( 'intval', $ids ) ) ) );
+	}
+
+	/**
+	 * IDs of the published pages whose own content holds an `sgs/account` block.
+	 *
+	 * The search is a `LIKE` on page content, so the answer is kept in a transient and cleared
+	 * ({@see self::clear_account_block_cache()}) whenever a page is saved, trashed, restored or deleted.
+	 *
+	 * @return int[]
+	 */
+	private static function account_block_page_ids(): array {
+		$cached = \get_transient( self::CACHE_KEY );
+		if ( \is_array( $cached ) ) {
+			return array_map( 'intval', $cached );
+		}
+		global $wpdb;
+		if ( ! isset( $wpdb ) ) {
+			return array();
+		}
+		$ids        = array();
+		$candidates = (array) $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT ID FROM {$wpdb->posts} WHERE post_type = %s AND post_status = %s AND post_content LIKE %s",
+				'page',
+				'publish',
+				'%' . $wpdb->esc_like( '<!-- wp:sgs/account' ) . '%'
+			)
+		);
+		foreach ( $candidates as $candidate ) {
+			if ( self::is_account_block_page( \get_post( (int) $candidate ) ) ) {
+				$ids[] = (int) $candidate;
+			}
+		}
+		\set_transient( self::CACHE_KEY, $ids, DAY_IN_SECONDS );
+		return $ids;
+	}
+
+	/**
+	 * Forget the cached account-block page list (a page changed).
+	 *
+	 * @param mixed $unused Hook argument, not used.
+	 * @return void
+	 */
+	public static function clear_account_block_cache( $unused = null ): void {
+		\delete_transient( self::CACHE_KEY );
 	}
 
 	/**

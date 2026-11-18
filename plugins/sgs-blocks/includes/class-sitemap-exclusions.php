@@ -5,6 +5,7 @@
  * - A page the framework marks `noindex` ({@see Noindex_Store_Pages::noindexed_page_ids()}: cart,
  *   checkout, account and sign-in pages, plus anything added with `sgs_noindex_page_ids`) is left
  *   out, so the sitemap and the robots meta tag come from one list and cannot drift.
+ * - A product WooCommerce marks hidden (catalogue visibility "Hidden") is left out of the products sitemap.
  * - The users sitemap is off: it lists `/author/<username>/` for every author, which exposes an
  *   administrator's username. A site that wants it returns true from `sgs_sitemap_include_users`.
  * - Product tag archives are left out: they are thin lists. A site that wants them returns true
@@ -47,6 +48,9 @@ final class Sitemap_Exclusions {
 	 */
 	public static function exclude_noindexed_pages( $args, $post_type ) {
 		$args = (array) $args;
+		if ( 'product' === $post_type ) {
+			return self::exclude_hidden_products( $args );
+		}
 		if ( 'page' !== $post_type ) {
 			return $args;
 		}
@@ -54,6 +58,37 @@ final class Sitemap_Exclusions {
 		if ( ! empty( $ids ) ) {
 			$args['post__not_in'] = \array_values( \array_unique( \array_merge( (array) ( $args['post__not_in'] ?? array() ), $ids ) ) );
 		}
+		return $args;
+	}
+
+	/**
+	 * Keep products WooCommerce hides from both the catalogue and search out of the products sitemap.
+	 *
+	 * Such a product (catalogue visibility "Hidden") prints no `Product` node ({@see Product_Item_List::is_publicly_listable()})
+	 * and is not for sale in the shop, so it has no place in the sitemap. The condition is "lacks at least one of the
+	 * two exclusion terms", which is every visibility but hidden.
+	 *
+	 * @param array<string,mixed> $args Query arguments for the sitemap's posts.
+	 * @return array<string,mixed>
+	 */
+	private static function exclude_hidden_products( array $args ): array {
+		$visibility = array(
+			'relation' => 'OR',
+			array(
+				'taxonomy' => 'product_visibility',
+				'field'    => 'name',
+				'terms'    => array( 'exclude-from-catalog' ),
+				'operator' => 'NOT IN',
+			),
+			array(
+				'taxonomy' => 'product_visibility',
+				'field'    => 'name',
+				'terms'    => array( 'exclude-from-search' ),
+				'operator' => 'NOT IN',
+			),
+		);
+		$existing   = isset( $args['tax_query'] ) && \is_array( $args['tax_query'] ) ? $args['tax_query'] : array();
+		$args['tax_query'] = array_merge( array( 'relation' => 'AND' ), $existing ? array( $existing ) : array(), array( $visibility ) );
 		return $args;
 	}
 
