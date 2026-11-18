@@ -133,7 +133,7 @@ final class Sgs_Email_Introduction {
 	 * @return string The HTML unchanged when it has no introduction wrapper.
 	 */
 	public static function apply( string $html, string $text, array $placeholders ): string {
-		if ( 1 !== \preg_match( '#(<div\b[^>]*\bclass="email-introduction"[^>]*>)(.*?)(</div>)#is', $html, $wrapper, PREG_OFFSET_CAPTURE ) ) {
+		if ( 1 !== \preg_match( '#(<div\b[^>]*\bclass="(?:[^"]*\s)?email-introduction(?:\s[^"]*)?"[^>]*>)(.*?)(</div>)#is', $html, $wrapper, PREG_OFFSET_CAPTURE ) ) {
 			return $html;
 		}
 		$inner = $wrapper[2][0];

@@ -34,6 +34,7 @@ final class Sgs_Email_Site_Styles {
 		\add_filter( 'woocommerce_email_styles', array( __CLASS__, 'filter_styles' ), 20 );
 		\add_filter( 'woocommerce_email_settings', array( __CLASS__, 'add_setting' ) );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'swap_button_template' ), 20, 2 );
+		\add_filter( 'woocommerce_email_body_display_section_divider', array( __CLASS__, 'hide_section_divider' ) );
 	}
 
 	/**
@@ -50,7 +51,34 @@ final class Sgs_Email_Site_Styles {
 			return $template;
 		}
 		$bundled = \trailingslashit( \WC()->plugin_path() ) . 'templates/emails/email-button.php';
-		return \wp_normalize_path( $template ) === \wp_normalize_path( $bundled ) ? __DIR__ . '/templates/email-button.php' : $template;
+		return self::same_file( $template, $bundled ) ? __DIR__ . '/templates/email-button.php' : $template;
+	}
+
+	/**
+	 * Whether two paths name one file, following links (a plugin folder may be a symlink).
+	 *
+	 * @param  string $a First path.
+	 * @param  string $b Second path.
+	 * @return bool
+	 */
+	private static function same_file( string $a, string $b ): bool {
+		$real_a = \realpath( $a );
+		$real_b = \realpath( $b );
+		if ( false !== $real_a && false !== $real_b ) {
+			return \wp_normalize_path( $real_a ) === \wp_normalize_path( $real_b );
+		}
+		return \wp_normalize_path( $a ) === \wp_normalize_path( $b );
+	}
+
+	/**
+	 * Drop WooCommerce's own section dividers while the switch is on: each sits beside a rule the site's line
+	 * style already draws, so the two would double. A divider anyone else writes into an email stays.
+	 *
+	 * @param  mixed $show Whether WooCommerce prints its dividers.
+	 * @return mixed
+	 */
+	public static function hide_section_divider( $show ) {
+		return self::enabled() ? false : $show;
 	}
 
 	/**
@@ -65,10 +93,13 @@ final class Sgs_Email_Site_Styles {
 	/**
 	 * Append the gift card code rule, and the site's rules when the switch is on.
 	 *
-	 * @param  string $css Compiled email CSS, before WooCommerce inlines it.
-	 * @return string
+	 * @param  mixed $css Compiled email CSS, before WooCommerce inlines it.
+	 * @return mixed The CSS with the rules appended; anything but a string is returned as it came.
 	 */
-	public static function filter_styles( string $css ): string {
+	public static function filter_styles( $css ) {
+		if ( ! \is_string( $css ) ) {
+			return $css;
+		}
 		if ( ! self::enabled() ) {
 			return $css . self::gift_code_rule( self::NEUTRAL_LINE, 'dashed' );
 		}
@@ -79,10 +110,13 @@ final class Sgs_Email_Site_Styles {
 	/**
 	 * Add the switch beside the email template colour settings.
 	 *
-	 * @param  array<int,array<string,mixed>> $settings WooCommerce email settings.
-	 * @return array<int,array<string,mixed>>
+	 * @param  mixed $settings WooCommerce email settings.
+	 * @return mixed The settings with the switch added; anything but an array is returned as it came.
 	 */
-	public static function add_setting( array $settings ): array {
+	public static function add_setting( $settings ) {
+		if ( ! \is_array( $settings ) ) {
+			return $settings;
+		}
 		$field = array(
 			'title'    => \__( 'Site styles', 'sgs-blocks' ),
 			'desc'     => \__( "Use the site's styles in emails", 'sgs-blocks' ),
@@ -208,8 +242,6 @@ final class Sgs_Email_Site_Styles {
 					'opacity'       => '1',
 				)
 			);
-			// The divider between the item rows and the totals draws a second rule beside the last row's own.
-			$css .= self::rule( '#body_content hr', array( 'display' => 'none !important' ) );
 		}
 
 		// A tint behind the order summary.

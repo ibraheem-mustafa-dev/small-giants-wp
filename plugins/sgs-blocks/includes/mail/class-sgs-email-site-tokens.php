@@ -206,7 +206,7 @@ final class Sgs_Email_Site_Tokens {
 		}
 		$tokens['faces'] = self::font_faces( $settings, array_filter( array( $body_font, $head_font ) ), $theme_uri );
 
-		$button = self::button( $settings, $styles, $vars );
+		$button = self::button( $settings, $styles, $vars, $override );
 		if ( null !== $button ) {
 			$tokens['button'] = $button;
 		}
@@ -217,18 +217,24 @@ final class Sgs_Email_Site_Tokens {
 	/**
 	 * The button token set: the primary button preset, then the site's button element.
 	 *
+	 * `settings.custom.email.buttonBackground` replaces the fill alone (the shape, border and shadow stay the
+	 * preset's); the text colour is kept when it reads on the new fill, else dark or white.
+	 *
 	 * @param  array<string,mixed>  $settings Settings.
 	 * @param  array<string,mixed>  $styles   Styles.
 	 * @param  array<string,string> $vars     Custom properties.
+	 * @param  array<string,mixed>  $override `settings.custom.email`.
 	 * @return array<string,mixed>|null Null when no button background resolves.
 	 */
-	private static function button( array $settings, array $styles, array $vars ): ?array {
+	private static function button( array $settings, array $styles, array $vars, array $override = array() ): ?array {
 		$preset = self::dig( $settings, 'custom.buttonPresets.primary' );
 		$preset = \is_array( $preset ) ? $preset : array();
 		$el     = self::dig( $styles, 'elements.button' );
 		$el     = \is_array( $el ) ? $el : array();
 
-		$bg = self::colour( $preset['background'] ?? null, $vars ) ?? self::colour( self::dig( $el, 'color.background' ), $vars );
+		$bg = self::colour( $override['buttonBackground'] ?? null, $vars )
+			?? self::colour( $preset['background'] ?? null, $vars )
+			?? self::colour( self::dig( $el, 'color.background' ), $vars );
 		if ( null === $bg ) {
 			return null;
 		}

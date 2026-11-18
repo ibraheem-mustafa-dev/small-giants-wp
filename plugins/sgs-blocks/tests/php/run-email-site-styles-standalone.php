@@ -280,6 +280,21 @@ $ov['custom']['email'] = array( 'cardBorderColour' => 'red;', 'cardBorderStyle' 
 $tx                    = T::from_sources( $ov, $styles, $vars, $theme_uri );
 ok( 'solid' === $tx['line_style'] && ! isset( $tx['heading_align'], $tx['panel_bg'], $tx['card_border_colour'], $tx['card_border_style'] ) && '20px' === $tx['card_radius'] && '#eadbc0' === $tx['line'], 'bad overrides are ignored and the defaults stand' );
 
+// The button's fill alone: the preset keeps its shape, border, shadow and (when readable) its text colour.
+$fill                           = $settings;
+$fill['custom']['email']        = array( 'buttonBackground' => '#EE8088' );
+$tf                             = T::from_sources( $fill, $styles, $vars, $theme_uri );
+ok( '#ee8088' === $tf['button']['bg'] && '#3a2a22' === $tf['button']['text'] && T::contrast_ratio( $tf['button']['text'], $tf['button']['bg'] ) >= 4.5, 'button fill override: the fill changes and the preset text colour stays, readable at 4.5:1' );
+ok( $tf['button']['radius'] === $b['radius'] && $tf['button']['shadow'] === $b['shadow'] && $tf['button']['border_colour'] === $b['border_colour'] && $tf['button']['pad_v'] === $b['pad_v'], 'button fill override: shape, border and shadow stay the preset\'s' );
+$fill['custom']['email']        = array( 'buttonBackground' => '#3A2A22' );
+$td                             = T::from_sources( $fill, $styles, $vars, $theme_uri );
+ok( '#3a2a22' === $td['button']['bg'] && '#ffffff' === $td['button']['text'], 'button fill override: text the fill makes unreadable becomes white or dark' );
+$fill['custom']['email']        = array( 'buttonBackground' => 'pink;}' );
+ok( '#f9cf6e' === T::from_sources( $fill, $styles, $vars, $theme_uri )['button']['bg'], 'button fill override: a bad value is ignored and the preset fill stands' );
+$nofill                         = $el;
+$nofill['custom']['email']      = array( 'buttonBackground' => '#EE8088' );
+ok( '#ee8088' === ( T::from_sources( $nofill, array(), $vars, $theme_uri )['button']['bg'] ?? '' ), 'button fill override: gives a site with no preset or button element a button colour' );
+
 // -- The switch --------------------------------------------------------------------------------------------------
 
 Sgs_Email_Site_Styles::register();
@@ -298,7 +313,7 @@ ok( Sgs_Email_Site_Styles::filter_styles( $woo ) === $off, 'switch "no": same as
 $css = Sgs_Email_Site_Styles::build_css( $t );
 ok( str_contains( $css, '@font-face' ) && str_contains( $css, 'font-family: "Young Serif"' ), 'on: @font-face rules for the body and heading families' );
 ok( str_contains( $css, 'a.sgs-email-button' ) && str_contains( $css, 'box-shadow: 4px 4px 0px #3a2a22 !important' ) && str_contains( $css, 'border-radius: 999px !important' ), 'on: the button rule carries radius, border and shadow with !important' );
-ok( str_contains( $css, '#body_content hr' ) && str_contains( $css, 'border-bottom: 1px solid #eadbc0' ), 'on: one line colour and style; the doubled divider is removed' );
+ok( ! str_contains( $css, ' hr' ) && str_contains( $css, 'border-bottom: 1px solid #eadbc0' ), 'on: one line colour and style; no rule hides a divider someone else wrote' );
 ok( str_contains( $css, 'background-color: #fffaf0' ) && str_contains( $css, 'border: 1px solid #eadbc0' ) && str_contains( $css, 'border-radius: 20px' ), 'on: card background, border and radius' );
 ok( str_contains( $css, 'font-size: 13px' ), 'on: footer text at 13px or more' );
 ok( false === strpos( $css, '#fff3c4' ), 'no panel tint when the site sets none' );
@@ -313,6 +328,11 @@ $settings_out = Sgs_Email_Site_Styles::add_setting( $settings_in );
 ok( 5 === count( $settings_out ) && 'sgs_email_site_styles' === $settings_out[2]['id'] && 'checkbox' === $settings_out[2]['type'] && 'no' === $settings_out[2]['default'], 'the checkbox is added inside the email template section, default no' );
 ok( $settings_in === array_values( array_filter( $settings_out, static fn( $s ) => 'sgs_email_site_styles' !== ( $s['id'] ?? '' ) ) ), 'the other settings are unchanged' );
 ok( Sgs_Email_Site_Styles::add_setting( array( array( 'type' => 'title', 'id' => 'x' ) ) ) === array( array( 'type' => 'title', 'id' => 'x' ) ), 'no email template section: settings unchanged' );
+ok( null === Sgs_Email_Site_Styles::add_setting( null ) && false === Sgs_Email_Site_Styles::filter_styles( false ), 'a value of the wrong type from another plugin is handed back, with no type error' );
+ok( isset( $GLOBALS['sgs_test_filters']['woocommerce_email_body_display_section_divider'] ) && false === Sgs_Email_Site_Styles::hide_section_divider( true ), 'on: WooCommerce prints no section divider of its own' );
+$GLOBALS['sgs_test_options']['sgs_email_site_styles'] = 'no';
+ok( true === Sgs_Email_Site_Styles::hide_section_divider( true ), 'off: the section dividers stay' );
+$GLOBALS['sgs_test_options']['sgs_email_site_styles'] = 'yes';
 
 // -- The introduction --------------------------------------------------------------------------------------------
 
@@ -330,6 +350,9 @@ ok( str_contains( Sgs_Email_Introduction::apply( $page, '<script>alert(1)</scrip
 $plain_page = '<div id="body_content_inner"><p>Hi</p></div>';
 ok( Sgs_Email_Introduction::apply( $plain_page, 'New words', $ph ) === $plain_page, 'introduction: no wrapper present leaves the email unchanged' );
 ok( Sgs_Email_Introduction::apply( $page, "   \n\n  ", $ph ) === $page, 'introduction: only blank lines leaves the email unchanged' );
+$classed_page = str_replace( 'class="email-introduction"', 'class="first email-introduction wide"', $page );
+ok( str_contains( Sgs_Email_Introduction::apply( $classed_page, 'New words', $ph ), 'New words' ), 'introduction: the wrapper is found when it carries other classes' );
+ok( Sgs_Email_Introduction::apply( str_replace( 'class="email-introduction"', 'class="email-introduction-note"', $page ), 'New words', $ph ) === str_replace( 'class="email-introduction"', 'class="email-introduction-note"', $page ), 'introduction: a longer class name is not the wrapper' );
 $button_page = '<div class="email-introduction" style="padding-bottom: 24px;"><p style="margin: 0 0 16px;">Hi</p><p style="margin: 24px 0;"><a class="sgs-email-button" href="u" style="display: inline-block; padding: 16px 32px;">Confirm</a></p><p style="margin: 0 0 16px;">Ignore this.</p></div>';
 $bo          = Sgs_Email_Introduction::apply( $button_page, 'Welcome', $ph );
 ok( str_contains( $bo, 'Confirm</a>' ) && str_contains( $bo, 'Welcome' ) && ! str_contains( $bo, 'Ignore this' ) && strpos( $bo, 'Welcome' ) < strpos( $bo, 'Confirm' ), 'introduction: a button inside the wrapper is kept, after the new words' );
