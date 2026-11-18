@@ -58,7 +58,7 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 						value: 'strip',
 					},
 					{
-						label: __( 'Product cards (the site's own card)', 'sgs-blocks' ),
+						label: __( 'Product cards (same as the shop)', 'sgs-blocks' ),
 						value: 'cards',
 					},
 				] }
