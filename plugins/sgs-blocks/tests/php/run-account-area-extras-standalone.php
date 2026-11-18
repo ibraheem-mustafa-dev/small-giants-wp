@@ -16,6 +16,7 @@ function esc_attr__( $t, $d = null ) { return $t; }
 function get_option( $k, $d = false ) { return $d; }
 function wc_price( $a, $args = array() ) { return '£' . number_format( (float) $a, isset( $args['decimals'] ) ? $args['decimals'] : 2 ); }
 function wc_get_order_status_name( $s ) { return ucfirst( (string) $s ); }
+function is_user_logged_in() { return true; }
 function wc_get_cart_url() { return 'https://example.test/cart/'; }
 function wp_nonce_url( $u, $a ) { return $u . '&_wpnonce=abc123'; }
 function add_query_arg( $k, $v, $u ) { return $u . '?' . $k . '=' . $v; }
@@ -133,6 +134,23 @@ ok( ! str_contains( $base, 'od-items-title' ) && ! str_contains( $base, 'od-item
 $html = sgs_account_order_items_html( $o, array( 'orderDetailItemsHeading' => 'What you <i>ordered', 'orderDetailItemQtyFirst' => true ) );
 ok( str_contains( $html, '<div class="sgs-account__od-items-title">What you &lt;i&gt;ordered</div>' ), '3 items: heading above the rows, escaped' );
 ok( str_contains( $html, '<span class="sgs-account__od-item-qty">2 &times; </span>Cake' ) && str_contains( $html, 'od-items--qty-first' ), '3 items: quantity before the name, class set' );
+
+// 4) Order again: WooCommerce's nonce'd link, only for allowed statuses and a signed-in viewer, behind a setting.
+$o         = new Fake_Order();
+$o->status = 'completed';
+$GLOBALS['sgs_can_view'] = true;
+$url = sgs_account_order_again_url( $o );
+ok( 'https://example.test/cart/?order_again=7&_wpnonce=abc123' === $url, '4 again: WooCommerce order_again address on the cart page with its nonce' );
+$o->status = 'processing';
+ok( '' === sgs_account_order_again_url( $o ), '4 again: a processing order is not re-orderable (WooCommerce default statuses)' );
+$o->status = 'completed';
+$GLOBALS['sgs_can_view'] = false;
+ok( '' === sgs_account_order_again_url( $o ), '4 again: someone who may not view the order gets no link' );
+$GLOBALS['sgs_can_view'] = true;
+ok( ! str_contains( sgs_account_order_detail_html( $o, array() ), 'od-again' ), '4 again: nothing while the setting is off' );
+$html = sgs_account_order_detail_html( $o, array( 'orderDetailOrderAgain' => true ) );
+ok( str_contains( $html, '<a class="sgs-account__od-again-link" href="https://example.test/cart/?order_again=7&#038;_wpnonce=abc123">Order again</a>' ) || str_contains( $html, 'od-again-link" href="https://example.test/cart/?order_again=7' ), '4 again: button with the default label' );
+ok( str_contains( sgs_account_order_detail_html( $o, array( 'orderDetailOrderAgain' => true, 'orderDetailOrderAgainLabel' => 'Bake <b>again' ) ), '>Bake &lt;b&gt;again</a>' ), '4 again: label from the setting, escaped' );
 
 echo $failures ? "\n$failures FAILED\n" : "\nAll passed\n";
 exit( $failures ? 1 : 0 );

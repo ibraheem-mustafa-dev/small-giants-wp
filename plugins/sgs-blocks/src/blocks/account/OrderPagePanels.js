@@ -65,6 +65,8 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 					<TextField { ...p } name="orderDetailItemsHeading" label={ __( 'Heading above the item rows', 'sgs-blocks' ) } help={ __( 'Empty prints none.', 'sgs-blocks' ) } />
 					<Toggle { ...p } name="orderDetailItemQtyFirst" label={ __( 'Quantity before each name', 'sgs-blocks' ) } help={ __( 'Prints 2 × Taster Trio.', 'sgs-blocks' ) } />
 					<Toggle { ...p } name="orderDetailBoxes" label={ __( 'Address, payment and total boxes', 'sgs-blocks' ) } />
+					<Toggle { ...p } name="orderDetailOrderAgain" label={ __( 'Order again button', 'sgs-blocks' ) } help={ __( 'Under the totals; WooCommerce decides which orders can be re-ordered (completed by default).', 'sgs-blocks' ) } />
+					{ attributes.orderDetailOrderAgain && <TextField { ...p } name="orderDetailOrderAgainLabel" label={ __( 'Order again button label', 'sgs-blocks' ) } help={ __( 'Empty uses “Order again”.', 'sgs-blocks' ) } /> }
 				</>
 			) }
 		</PanelBody>

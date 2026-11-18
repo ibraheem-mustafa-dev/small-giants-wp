@@ -5071,6 +5071,16 @@
 				"default": false,
 				"description": "Prints each item's quantity before its name (2 × Taster Trio). Off prints the name alone."
 			},
+			"orderDetailOrderAgain": {
+				"type": "boolean",
+				"default": false,
+				"description": "Shows an order-again button under the totals on the order page, using WooCommerce's own order-again link and its rules for which orders may be re-ordered. Off prints none."
+			},
+			"orderDetailOrderAgainLabel": {
+				"type": "string",
+				"default": "",
+				"description": "Label of the order-again button. Empty = Order again."
+			},
 			"loginLinkPlacement": {
 				"type": "string",
 				"enum": [
