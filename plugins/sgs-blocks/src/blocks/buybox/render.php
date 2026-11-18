@@ -53,6 +53,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/buybox-picker-band.php';
 require_once __DIR__ . '/picker-variation-swatch.php';
 require_once __DIR__ . '/gallery-saving-badge.php';
 require_once __DIR__ . '/gallery-sticker.php';
+require_once __DIR__ . '/gallery-width.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-hover-state.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-variants.php';
 
@@ -406,6 +407,8 @@ if ( '' !== (string) $buybox_img_src ) {
 			'block' => 'sgs/buybox',
 			'class' => 'product-card-img sgs-buybox__main-photo',
 			'bind'  => true,
+			// The photo is as wide as its gallery column, not the whole row (gallery-width.php).
+			'avail' => sgs_buybox_gallery_avail( $attributes, class_exists( 'Sgs_Layout_Width' ) ? Sgs_Layout_Width::own() : null ),
 		)
 	);
 	if ( '' !== $buybox_main['src'] ) {

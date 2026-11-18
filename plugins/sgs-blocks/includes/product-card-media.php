@@ -195,7 +195,7 @@ if ( ! function_exists( 'sgs_pcm_render' ) ) {
 	 *
 	 * `$opts`: `source` (a Source laid over the block's own `{prefix}Source`; null keeps the block's), `alt`,
 	 * `decorative`, `class` (on the outermost printed element), `block` (`sgs/product-card` or `sgs/buybox`), `hidden`
-	 * (inside a hidden surface: lazy, claims nothing), `role`, `bind` (carry the colour swap's bindings), `desktop_only`.
+	 * (inside a hidden surface: lazy, claims nothing), `role`, `bind` (carry the colour swap's bindings), `desktop_only`, `avail` (per-device width models of the column the picture sits in, when narrower than the block's box).
 	 *
 	 * @param string $prefix Slot prefix.
 	 * @param array  $attrs  Block attributes.
@@ -241,6 +241,7 @@ if ( ! function_exists( 'sgs_pcm_render' ) ) {
 				'extra_class' => (string) ( $opts['class'] ?? '' ),
 				'hidden'      => ! empty( $opts['hidden'] ),
 				'role'        => (string) ( $opts['role'] ?? '' ),
+				'avail'       => $opts['avail'] ?? null,
 			)
 		);
 		$html = (string) $out['html'];

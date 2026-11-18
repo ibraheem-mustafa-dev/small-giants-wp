@@ -57,7 +57,7 @@ function sgs_media_item_atom_ids(): array {
  *
  * @param array $slot    `{prefix, kinds, context}`.
  * @param array $attrs   Block attributes.
- * @param array $context `{uid, block, area, section_index, item_set:{index,columns,block_rules}, in_editor, extra_class, anchor,
+ * @param array $context `{uid, block, area, section_index, item_set:{index,columns,block_rules}, in_editor, extra_class, anchor, avail,
  *                       device_queries}` (device_queries: device => the media condition that shows that device's image, for a
  *                       block with its own switch width) plus `effects`, `entrance` and `hover` for §7.3.
  * @return array{html:string,css:string,needs_helper:bool,lead_candidate:bool}
@@ -211,7 +211,9 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 			$max_widths[ $device ] = $h_cap . 'px';
 		}
 	}
-	$avail       = class_exists( 'Sgs_Layout_Width' ) ? Sgs_Layout_Width::own() : null;
+	// A caller that knows its slot's column narrower than the block's box (the buy box's gallery column) passes the
+	// per-device models as `avail`; otherwise the slot sits in the block's own box.
+	$avail       = is_array( $context['avail'] ?? null ) ? $context['avail'] : ( class_exists( 'Sgs_Layout_Width' ) ? Sgs_Layout_Width::own() : null );
 	$sizes       = array();
 	foreach ( sgs_media_devices() as $device ) {
 		$sizes[ $device ] = sgs_media_sizes_for_width( $widths[ $device ], 'lazy' === $loading, (int) $columns[ $device ], $max_widths[ $device ], $avail[ $device ] ?? null, $item_widths[ $device ] ?? null );
