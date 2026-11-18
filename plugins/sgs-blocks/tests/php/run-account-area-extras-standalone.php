@@ -68,7 +68,7 @@ ok( 1 === preg_match( '#<span class="sgs-account__order-summary sgs-account__ord
 $html = sgs_account_orders_list_html( $orders, array( 'ordersRowViewLabel' => 'View <b>order' ) );
 ok( ! str_contains( $html, 'order-chevron' ) && str_contains( $html, '<span class="sgs-account__order-view">View &lt;b&gt;order</span>' ), 'A label: replaces the chevron, escaped' );
 $html = sgs_account_orders_list_html( $orders, array( 'ordersRowViewLabel' => 'View order', 'ordersRowViewIcon' => 'arrow-right' ) );
-ok( 1 === preg_match( '#View order<span class="sgs-button__icon sgs-account__button-icon" aria-hidden="true">#', $html ), 'A label: the standard icon follows the label, aria-hidden' );
+ok( 1 === preg_match( '#View order<span class="sgs-account__button-icon" aria-hidden="true">#', $html ), 'A label: the standard icon follows the label, aria-hidden' );
 ok( '' === sgs_account_order_thumbs_html( new class() { public function get_items() { return array(); } } ), 'A thumbs helper: nothing for an order without items' );
 
 // B) Gift note: only for a gift order, when on, and only for someone allowed to view the order.

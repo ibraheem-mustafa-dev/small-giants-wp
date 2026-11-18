@@ -35,17 +35,17 @@ ok( '' === sgs_account_button_icon_css( array(), '.root' ), '1 default: no CSS' 
 
 // 2) Sign-in icon after the label by default; the register button is untouched.
 $out = sgs_account_button_icons( $html, array( 'loginButtonIcon' => 'arrow-right' ) );
-ok( 1 === preg_match( '#<button[^>]*woocommerce-form-login__submit sgs-account__button--icon"[^>]*>Log in<span class="sgs-button__icon sgs-account__button-icon" aria-hidden="true">(?:<!--.*?-->)?<svg#s', $out ), '2 sign-in: icon inside the button, after the label, aria-hidden' );
+ok( 1 === preg_match( '#<button[^>]*woocommerce-form-login__submit sgs-account__button--icon"[^>]*>Log in<span class="sgs-account__button-icon" aria-hidden="true">(?:<!--.*?-->)?<svg#s', $out ), '2 sign-in: icon inside the button, after the label, aria-hidden' );
 ok( str_contains( $out, '>Register</button>' ) && 1 === substr_count( $out, 'sgs-account__button-icon"' ), '2 sign-in: the register button is unchanged' );
 ok( str_contains( $out, 'type="submit"' ) && str_contains( $out, 'name="login"' ), '2 sign-in: form attributes kept' );
 
 // 3) Before the label, and the circle modifier.
 $out = sgs_account_button_icons( $login, array( 'loginButtonIcon' => 'arrow-right', 'loginButtonIconPosition' => 'before', 'loginButtonIconBackground' => 'primary' ) );
-ok( 1 === preg_match( '#<button[^>]*><span class="sgs-button__icon sgs-account__button-icon sgs-account__button-icon--circle" aria-hidden="true">(?:<!--.*?-->)?<svg.*</svg></span>Log in</button>#s', $out ), '3 sign-in: before the label, with the circle modifier' );
+ok( 1 === preg_match( '#<button[^>]*><span class="sgs-account__button-icon sgs-account__button-icon--circle" aria-hidden="true">(?:<!--.*?-->)?<svg.*</svg></span>Log in</button>#s', $out ), '3 sign-in: before the label, with the circle modifier' );
 
 // 4) Register button likewise.
 $out = sgs_account_button_icons( $html, array( 'registerButtonIcon' => 'arrow-right' ) );
-ok( 1 === preg_match( '#woocommerce-form-register__submit sgs-account__button--icon"[^>]*>Register<span class="sgs-button__icon[^"]*" aria-hidden="true">(?:<!--.*?-->)?<svg#s', $out ) && str_contains( $out, '>Log in</button>' ), '4 register: icon after the label; sign-in unchanged' );
+ok( 1 === preg_match( '#woocommerce-form-register__submit sgs-account__button--icon"[^>]*>Register<span class="sgs-account__button-icon[^"]*" aria-hidden="true">(?:<!--.*?-->)?<svg#s', $out ) && str_contains( $out, '>Log in</button>' ), '4 register: icon after the label; sign-in unchanged' );
 
 // 5) An unknown icon name or a hostile one draws nothing.
 ok( $html === sgs_account_button_icons( $html, array( 'loginButtonIcon' => 'no-such-icon-zzz', 'registerButtonIcon' => '<script>' ) ), '5 unknown icon name: markup unchanged' );

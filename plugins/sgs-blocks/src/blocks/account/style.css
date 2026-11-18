@@ -1354,7 +1354,8 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	flex: none;
 }
 
-.sgs-account__button-icon svg {
+.sgs-account__button-icon svg,
+.sgs-account__button--icon .sgs-account__button-icon svg {
 	display: block;
 	width: var(--sgs-btn-icon-size, 1em);
 	height: var(--sgs-btn-icon-size, 1em);

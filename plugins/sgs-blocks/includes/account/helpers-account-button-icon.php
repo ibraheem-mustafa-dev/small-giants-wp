@@ -6,8 +6,9 @@
  * same way Account_Strings::register_heading() sets the register heading): the label stays WooCommerce's, the
  * `<button>` stays the one tap target, and the form still submits. The glyph is the framework's Lucide icon
  * (`sgs_get_lucide_icon()`) sanitised with the allowlist sgs/button prints its icon through
- * (`sgs_button_icon_svg_allowed()`), inside the same `.sgs-button__icon` span, and it reads the same custom
- * properties (`--sgs-btn-icon-size`, `--sgs-btn-icon-shape-size`). With no icon chosen nothing changes.
+ * (`sgs_button_icon_svg_allowed()`), inside a span of its own, and it reads the same custom
+ * properties (`--sgs-btn-icon-size`, `--sgs-btn-icon-shape-size`). The span does not carry sgs/button's `.sgs-button__icon`
+ * class, whose `svg{width:1em}` rule would beat the block's own size setting. With no icon chosen nothing changes.
  *
  * Settings per button (`loginButton…` and `registerButton…`): Icon, IconPosition, IconSize, IconGap, IconColour,
  * IconBackground, IconShapeSize.
@@ -40,7 +41,7 @@ if ( ! function_exists( 'sgs_account_button_icon_markup' ) ) {
 		if ( ! is_string( $svg ) || '' === $svg ) {
 			return '';
 		}
-		$class = 'sgs-button__icon sgs-account__button-icon' . ( $with_circle ? ' sgs-account__button-icon--circle' : '' );
+		$class = 'sgs-account__button-icon' . ( $with_circle ? ' sgs-account__button-icon--circle' : '' );
 		return sprintf(
 			'<span class="%s" aria-hidden="true">%s</span>',
 			esc_attr( $class ),
