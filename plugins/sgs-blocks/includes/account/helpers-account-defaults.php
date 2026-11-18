@@ -131,6 +131,25 @@ if ( ! function_exists( 'sgs_account_map_order_status_to_step' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_account_order_step_for' ) ) {
+	/**
+	 * The progress step an order's status stands for on this site. WooCommerce has no status that means "delivered", so
+	 * a shop that marks an order completed when it posts it sets `orderCompletedStep` to `dispatched`: a completed order
+	 * then stops at the dispatched step, and the delivered step stays ahead of it.
+	 *
+	 * @param string $status     Order status (no 'wc-' prefix).
+	 * @param array  $attributes Block attributes.
+	 * @return string One of 'placed'|'processing'|'dispatched'|'delivered', or ''.
+	 */
+	function sgs_account_order_step_for( string $status, array $attributes ): string {
+		$step = sgs_account_map_order_status_to_step( $status );
+		if ( 'completed' === $status && 'dispatched' === ( $attributes['orderCompletedStep'] ?? '' ) ) {
+			return 'dispatched';
+		}
+		return $step;
+	}
+}
+
 if ( ! function_exists( 'sgs_account_step_order' ) ) {
 	/**
 	 * The 4 steps in display order — index also doubles as "how far along".

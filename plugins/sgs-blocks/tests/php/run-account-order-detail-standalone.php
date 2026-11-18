@@ -106,6 +106,15 @@ ok( 2 === substr_count( $html, 'class="sgs-account__od-box sgs-account__od-box--
 $pick = $has ? sgs_account_order_steps( new Fake_Order( 'completed', 'pickup_location' ), $all ) : array();
 ok( array() !== $pick && 'Collected' === end( $pick )['label'], 'a pickup order uses the pickup labels for the last step' );
 ok( $has && array() === sgs_account_order_steps( new Fake_Order( 'cancelled' ), $all ), 'a cancelled order has no track' );
+$done = static function ( array $steps ): int {
+	return count( array_filter( $steps, static fn( array $s ): bool => $s['done'] ) );
+};
+$four   = array( 'orderStepProcessing' => 'Preparing' ) + $all;
+$full   = $has ? sgs_account_order_steps( new Fake_Order( 'completed' ), $four ) : array();
+$posted = $has ? sgs_account_order_steps( new Fake_Order( 'completed' ), array( 'orderCompletedStep' => 'dispatched' ) + $four ) : array();
+ok( 4 === count( $full ) && 4 === $done( $full ) && true === end( $full )['current'], 'a completed order stands on the last step by default' );
+ok( 4 === count( $posted ) && 3 === $done( $posted ) && true === $posted[2]['current'] && false === $posted[3]['done'], 'with orderCompletedStep dispatched a completed order stops at the dispatched step' );
+ok( 'processing' === sgs_account_order_step_for( 'processing', array( 'orderCompletedStep' => 'dispatched' ) ) && '' === sgs_account_order_step_for( 'cancelled', array( 'orderCompletedStep' => 'dispatched' ) ), 'the setting changes a completed order only' );
 $off = $has ? sgs_account_order_detail_html( new Fake_Order(), array( 'orderDetailLook' => true ) ) : 'x od-steps';
 ok( false === strpos( $off, 'od-steps' ) && false === strpos( $off, 'od-items' ) && false === strpos( $off, 'od-boxes' ) && false === strpos( $off, 'od-chat' ) && false === strpos( $off, 'od-back' ), 'each part is off until its own setting is on' );
 

@@ -141,6 +141,18 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 			<PanelBody title={ __( 'Order page: progress line', 'sgs-blocks' ) } initialOpen={ false }>
 				<Toggle { ...p } name="orderDetailProgress" label={ __( 'Progress line', 'sgs-blocks' ) } />
 				<TextField { ...p } name="orderDetailProgressLabel" label={ __( 'Screen-reader label', 'sgs-blocks' ) } />
+				<SelectControl
+					__next40pxDefaultSize
+					__nextHasNoMarginBottom
+					label={ __( 'A completed order stands on', 'sgs-blocks' ) }
+					help={ __( 'WooCommerce has no “delivered” status. Choose the dispatched step if orders are marked completed when they are posted.', 'sgs-blocks' ) }
+					value={ attributes.orderCompletedStep || 'delivered' }
+					options={ [
+						{ value: 'delivered', label: __( 'The delivered step', 'sgs-blocks' ) },
+						{ value: 'dispatched', label: __( 'The dispatched step', 'sgs-blocks' ) },
+					] }
+					onChange={ ( value ) => setAttributes( { orderCompletedStep: value } ) }
+				/>
 				<TextField { ...p } name="orderStepPlaced" label={ __( 'Step: placed', 'sgs-blocks' ) } />
 				<TextField { ...p } name="orderStepProcessing" label={ __( 'Step: processing', 'sgs-blocks' ) } help={ __( 'Empty = the step is left out.', 'sgs-blocks' ) } />
 				<TextField { ...p } name="orderStepDispatched" label={ __( 'Step: dispatched / posted', 'sgs-blocks' ) } />

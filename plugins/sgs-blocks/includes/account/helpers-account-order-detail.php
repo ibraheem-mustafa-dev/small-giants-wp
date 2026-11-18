@@ -43,7 +43,7 @@ if ( ! function_exists( 'sgs_account_order_steps' ) ) {
 	 * @return array<int,array{label:string,note:string,done:bool,current:bool}> Empty when the order has no track.
 	 */
 	function sgs_account_order_steps( $order, array $attributes ): array {
-		$current = sgs_account_map_order_status_to_step( (string) $order->get_status() );
+		$current = sgs_account_order_step_for( (string) $order->get_status(), $attributes );
 		if ( '' === $current ) {
 			return array();
 		}

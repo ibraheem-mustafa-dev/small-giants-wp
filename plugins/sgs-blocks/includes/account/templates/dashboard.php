@@ -49,7 +49,7 @@ $greeting          = str_replace( '{name}', esc_html( $name ), esc_html( $greeti
 	<?php if ( $order instanceof \WC_Order ) : ?>
 		<?php
 		$status      = $order->get_status();
-		$step        = sgs_account_map_order_status_to_step( $status );
+		$step        = sgs_account_order_step_for( (string) $status, is_array( $attrs ) ? $attrs : array() );
 		$step_order  = sgs_account_step_order();
 		$step_labels = wp_parse_args( is_array( $attrs['statusStepLabels'] ?? null ) ? $attrs['statusStepLabels'] : array(), sgs_account_default_status_step_labels() );
 		$step_index  = '' !== $step ? array_search( $step, $step_order, true ) : false;
