@@ -561,9 +561,13 @@ sliders.forEach( ( slider ) => {
 		}, 150 );
 	} );
 
-	/* Autoplay — loops infinitely; restarts from the current slide after a pause. */
+	/*
+	 * Autoplay — loops infinitely; restarts from the current slide after a pause. It runs only while some of the
+	 * slider is on screen: an advance nobody can see still costs the page work in the middle of a scroll.
+	 */
+	let onScreen = true;
 	function startAutoplay() {
-		if ( ! autoplayOn || pauser.isPaused() ) {
+		if ( ! autoplayOn || ! onScreen || pauser.isPaused() ) {
 			return;
 		}
 		stopAutoplay();
@@ -593,4 +597,15 @@ sliders.forEach( ( slider ) => {
 	render( false );
 	pauser.setRunning( autoplayOn );
 	startAutoplay();
+
+	if ( autoplayOn && 'IntersectionObserver' in globalThis ) {
+		new globalThis.IntersectionObserver( ( entries ) => {
+			onScreen = entries[ entries.length - 1 ].isIntersecting;
+			if ( onScreen ) {
+				startAutoplay();
+			} else {
+				stopAutoplay();
+			}
+		} ).observe( slider );
+	}
 } );

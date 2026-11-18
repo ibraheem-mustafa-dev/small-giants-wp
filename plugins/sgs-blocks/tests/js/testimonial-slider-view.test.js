@@ -136,6 +136,49 @@ describe( 'testimonial-slider autoplay: pause (WCAG 2.2.2)', () => {
 	} );
 } );
 
+describe( 'testimonial-slider autoplay: only while on screen', () => {
+	let report;
+	beforeEach( () => {
+		window.IntersectionObserver = class {
+			constructor( callback ) {
+				report = ( isIntersecting ) => callback( [ { isIntersecting } ] );
+			}
+			observe() {}
+		};
+	} );
+	afterEach( () => {
+		delete window.IntersectionObserver;
+	} );
+
+	it( 'stops advancing once scrolled off screen and carries on a full interval after it returns', () => {
+		const { slider } = buildSlider();
+		loadView();
+		jest.advanceTimersByTime( SPEED );
+		expect( activeDot( slider ) ).toBe( 1 );
+		report( false );
+		jest.advanceTimersByTime( SPEED * 5 );
+		expect( activeDot( slider ) ).toBe( 1 );
+		report( true );
+		jest.advanceTimersByTime( SPEED * 0.9 );
+		expect( activeDot( slider ) ).toBe( 1 );
+		jest.advanceTimersByTime( SPEED * 0.1 );
+		expect( activeDot( slider ) ).toBe( 2 );
+	} );
+
+	it( 'a manual switch off screen does not restart it, and a pause made with the button holds on return', () => {
+		const { slider, button } = buildSlider();
+		loadView();
+		report( false );
+		slider.querySelectorAll( '.sgs-testimonial-slider__dot' )[ 2 ].click();
+		jest.advanceTimersByTime( SPEED * 3 );
+		expect( activeDot( slider ) ).toBe( 2 );
+		button.click();
+		report( true );
+		jest.advanceTimersByTime( SPEED * 3 );
+		expect( activeDot( slider ) ).toBe( 2 );
+	} );
+} );
+
 describe( 'testimonial-slider autoplay: a manual switch restarts the countdown', () => {
 	const dots = ( slider ) => slider.querySelectorAll( '.sgs-testimonial-slider__dot' );
 

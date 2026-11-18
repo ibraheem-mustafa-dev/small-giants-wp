@@ -107,7 +107,18 @@
  * var value, not a property declaration) consumed by the `transform`
  * declaration below. `.no-transition` is the transition kill-switch view.js
  * toggles for instant snaps (clone-zone reset) and while dragging.
+ *
+ * The property is registered as not inherited: an ordinary custom property is
+ * inherited by every slide and everything inside each, so each write would
+ * restyle the whole strip (every advance, and every frame of a drag). Registered
+ * this way only the list itself is restyled.
  */
+@property --sgs-slider-offset {
+	syntax: "<length>";
+	inherits: false;
+	initial-value: 0px;
+}
+
 .sgs-testimonial-slider__list {
 	display: flex;
 	gap: var(--sgs-slide-gap, var(--wp--preset--spacing--30, 16px));
