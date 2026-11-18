@@ -161,6 +161,8 @@ function findEnclosingIfConditionAndBody( phpSrc, mask, offset ) {
  * Classify a usage site that is the CONDITION of an `if (...)` whose braced
  * BODY textually contains a data-, aria-, or JSON-LD marker (real shape:
  * sgs/accordion's `$faq_schema` gating `if(){ ...wp_json_encode... }`;
+ * sgs/testimonial's `$schema_enabled` gating a body that prints through the
+ * shared `Sgs_Schema::script_tag()` / `Sgs_Schema::encode_jsonld()`;
  * sgs/google-reviews' `$sgs_gr_drag_to_scroll` gating
  * `if(){ $x = ' data-sgs-fx="draggable"'; }`).
  *
@@ -175,7 +177,7 @@ function classifyIfConditionGate( phpSrc, mask, offset ) {
 		return null;
 	}
 	const bodyText = phpSrc.slice( enclosing.bodyStart, enclosing.bodyEnd );
-	if ( /wp_json_encode\s*\(|application\/ld\+json/.test( bodyText ) ) {
+	if ( /wp_json_encode\s*\(|application\/ld\+json|Sgs_Schema::(?:script_tag|encode_jsonld)\s*\(/.test( bodyText ) ) {
 		return 'json-ld';
 	}
 	if ( /data-[\w-]+\s*=|['"]data-[\w-]+['"]\s*=>/.test( bodyText ) ) {

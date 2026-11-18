@@ -195,7 +195,7 @@ final class Heading_Look {
 	 * @return string
 	 */
 	public static function declarations( string $level ): string {
-		if ( ! \function_exists( 'wp_get_global_styles' ) || ! \function_exists( 'wp_style_engine_get_styles' ) || ! \preg_match( '/^h[1-6]$/', $level ) ) {
+		if ( ! \function_exists( 'wp_get_global_styles' ) || ! \preg_match( '/^h[1-6]$/', $level ) ) {
 			return '';
 		}
 		$heading = (array) \wp_get_global_styles( array( 'elements', 'heading' ) );
