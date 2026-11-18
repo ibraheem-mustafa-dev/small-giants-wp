@@ -307,10 +307,14 @@ Sgs_Toast::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-org-website-schema.php';
 Org_Website_Schema::register();
 
-// Store-page noindex emitter — cart/checkout/account/WC endpoints (FR-30-9 F3).
+// Store-page noindex rule (wp_robots filter) — cart/checkout/account/account-block pages/WC endpoints (FR-30-9 F3).
 // SEC-9: defers to active SEO plugin on cart/checkout; always noindexes account + endpoints.
 require_once SGS_BLOCKS_PATH . 'includes/class-noindex-store-pages.php';
 Noindex_Store_Pages::register();
+
+// Core sitemap exclusions — noindexed pages, the users sitemap and product tags stay out (same list as the noindex rule).
+require_once SGS_BLOCKS_PATH . 'includes/class-sitemap-exclusions.php';
+Sitemap_Exclusions::register();
 
 // llms.txt + llms-full.txt — AI navigation files at site root (FR-27-F2 llms clause).
 // Serves curated navigation map + per-product expansion in llmstxt.org shape.

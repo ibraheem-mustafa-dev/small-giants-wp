@@ -1,20 +1,24 @@
 <?php
 /**
- * Store-page noindex emitter (FR-30-9 F3).
+ * Store-page noindex rule (FR-30-9 F3), the one source of "this page is never indexed".
  *
- * Emits `<meta name="robots" content="noindex,nofollow">` on WooCommerce
- * utility surfaces (account pages, WC endpoint URLs, cart, checkout) that
- * must never be indexed.
+ * A page is a utility surface, and so never indexed, when it is a WooCommerce cart, checkout
+ * or account page, a WooCommerce endpoint URL, or any page that holds an `sgs/account` block
+ * (the sign-in page is such a page: the block shows its signed-out view there). The rule
+ * answers in two places that must agree: the robots meta tag of the request
+ * ({@see self::filter_robots()}, through core's `wp_robots` filter, so one tag prints) and the
+ * list of page IDs the sitemap leaves out ({@see self::noindexed_page_ids()}, used by
+ * {@see Sitemap_Exclusions}). A site adds pages with the `sgs_noindex_page_ids` filter.
  *
  * Money pages are explicitly excluded from noindexing:
  *   front page, shop, single product, product category, product tag.
  *
- * SEC-9 defer on cart/checkout: when an active SEO plugin is detected, this
- * emitter defers on cart/checkout only — the SEO plugin owns robots there.
- * Account pages + WC endpoint URLs are always noindexed regardless (SGS-owned
- * sensitive surfaces, not delegated to any SEO plugin).
+ * SEC-9 defer on cart/checkout: when an active SEO plugin is detected, cart and checkout
+ * defer to it, because it owns robots there. Account pages, account-block pages and WC
+ * endpoint URLs are always noindexed regardless (SGS-owned sensitive surfaces, not
+ * delegated to any SEO plugin).
  *
- * No-op when WooCommerce is inactive (`is_cart` function absent).
+ * No-op for the WooCommerce checks when WooCommerce is inactive (`is_cart` function absent).
  *
  * @package SGS\Blocks
  */
@@ -26,27 +30,47 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class Noindex_Store_Pages
  *
- * Emits a noindex robots meta tag on WooCommerce utility/sensitive pages.
+ * Adds `noindex, nofollow` to the robots meta of WooCommerce utility and account pages.
  */
 final class Noindex_Store_Pages {
 
 	/**
-	 * Register the wp_head hook (priority 1 — before SEO plugins, before theme).
+	 * Register the `wp_robots` filter.
 	 *
 	 * @return void
 	 */
 	public static function register(): void {
-		\add_action( 'wp_head', array( __CLASS__, 'emit' ), 1 );
+		\add_filter( 'wp_robots', array( __CLASS__, 'filter_robots' ), 20 );
 	}
 
 	/**
-	 * Emit `<meta name="robots" content="noindex,nofollow">` on utility pages.
+	 * Add `noindex, nofollow` to the directives core prints, on a utility page.
 	 *
-	 * @return void
+	 * Core prints one `<meta name="robots">` tag from this array, so WooCommerce's and this
+	 * rule's directives merge into one tag.
+	 *
+	 * @param array<string,bool|string> $robots Robots directives.
+	 * @return array<string,bool|string>
 	 */
-	public static function emit(): void {
+	public static function filter_robots( $robots ) {
+		$robots = (array) $robots;
+		if ( self::is_noindex_request() ) {
+			$robots['noindex']  = true;
+			$robots['nofollow'] = true;
+			// WooCommerce adds `follow` on the cart; it must not sit beside `nofollow`.
+			unset( $robots['follow'] );
+		}
+		return $robots;
+	}
+
+	/**
+	 * Whether the current request is a page that is never indexed.
+	 *
+	 * @return bool
+	 */
+	public static function is_noindex_request(): bool {
 		if ( \is_admin() ) {
-			return;
+			return false;
 		}
 
 		// Never noindex the money pages.
@@ -55,36 +79,99 @@ final class Noindex_Store_Pages {
 			|| ( \function_exists( 'is_product' ) && \is_product() )
 			|| ( \function_exists( 'is_product_category' ) && \is_product_category() )
 			|| ( \function_exists( 'is_product_tag' ) && \is_product_tag() ) ) {
-			return;
+			return false;
 		}
 
 		// A shared wishlist view (?sgs-list=<token>) is a per-visitor, dynamic
 		// read of someone else's saved items — never worth indexing, whatever
 		// page it happens to render on (FR-30-15).
 		if ( self::has_shared_list_param() ) {
-			echo '<meta name="robots" content="noindex,nofollow">' . "\n";
-			return;
+			return true;
+		}
+
+		// A page that holds the account block (the sign-in page, a custom account page) shows
+		// a signed-out form or a signed-in customer's area: never a search result.
+		if ( self::is_account_block_page( \get_queried_object() ) ) {
+			return true;
 		}
 
 		if ( ! \function_exists( 'is_cart' ) ) {
-			// WC inactive — nothing to noindex.
-			return;
+			// WC inactive — nothing more to noindex.
+			return false;
 		}
 
 		// Account + WC endpoints: noindex regardless of any SEO plugin
 		// (SGS-owned sensitive surfaces).
 		if ( \is_account_page() || \is_wc_endpoint_url() ) {
-			echo '<meta name="robots" content="noindex,nofollow">' . "\n";
-			return;
+			return true;
 		}
 
 		// Cart/checkout: may defer to an active SEO plugin (it owns robots there).
 		if ( \is_cart() || \is_checkout() ) {
-			if ( \SGS\Blocks\Org_Website_Schema::seo_plugin_active() ) {
-				return;
-			}
-			echo '<meta name="robots" content="noindex,nofollow">' . "\n";
+			return ! \SGS\Blocks\Org_Website_Schema::seo_plugin_active();
 		}
+
+		return false;
+	}
+
+	/**
+	 * IDs of the pages that are never indexed, for the sitemap to leave out.
+	 *
+	 * The WooCommerce cart, checkout and account pages, every page holding an `sgs/account` block,
+	 * and whatever the `sgs_noindex_page_ids` filter adds. Unlike the request rule this
+	 * includes cart and checkout whatever SEO plugin is active: a utility page has no place in
+	 * a sitemap.
+	 *
+	 * @return int[]
+	 */
+	public static function noindexed_page_ids(): array {
+		$ids = array();
+
+		if ( \function_exists( 'wc_get_page_id' ) ) {
+			foreach ( array( 'cart', 'checkout', 'myaccount' ) as $page ) {
+				$id = (int) \wc_get_page_id( $page );
+				if ( $id > 0 ) {
+					$ids[] = $id;
+				}
+			}
+		}
+
+		global $wpdb;
+		if ( isset( $wpdb ) ) {
+			$candidates = (array) $wpdb->get_col(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->posts} WHERE post_type = %s AND post_status = %s AND post_content LIKE %s",
+					'page',
+					'publish',
+					'%' . $wpdb->esc_like( '<!-- wp:sgs/account' ) . '%'
+				)
+			);
+			foreach ( $candidates as $candidate ) {
+				if ( self::is_account_block_page( \get_post( (int) $candidate ) ) ) {
+					$ids[] = (int) $candidate;
+				}
+			}
+		}
+
+		/**
+		 * Filters the pages that are never indexed (robots `noindex` and left out of the sitemap).
+		 *
+		 * @param int[] $ids Page IDs.
+		 */
+		$ids = (array) \apply_filters( 'sgs_noindex_page_ids', $ids );
+		return \array_values( \array_unique( \array_filter( \array_map( 'intval', $ids ) ) ) );
+	}
+
+	/**
+	 * Whether a post is a page whose own content holds an `sgs/account` block.
+	 *
+	 * @param mixed $post The queried object or a post.
+	 * @return bool
+	 */
+	private static function is_account_block_page( $post ): bool {
+		return $post instanceof \WP_Post
+			&& 'page' === $post->post_type
+			&& \has_block( 'sgs/account', $post );
 	}
 
 	/**
