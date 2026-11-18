@@ -684,7 +684,20 @@
         "mm-section-t",
         "mm-track-h1",
         "mm-track-h2"
-      ]
+      ],
+      "choiceControls": {
+        "size": "22px"
+      },
+      "email": {
+        "lineStyle": "dashed",
+        "lineColour": "#C4BCB2",
+        "headingAlign": "center",
+        "panelBackground": "var(--wp--preset--color--mm-yellow-soft)",
+        "cardBorderWidth": "2px",
+        "cardBorderColour": "var(--wp--preset--color--mm-cocoa)",
+        "cardBorderStyle": "solid",
+        "imageRadius": "12px"
+      }
     },
     "appearanceTools": true,
     "useRootPaddingAwareAlignments": true,
