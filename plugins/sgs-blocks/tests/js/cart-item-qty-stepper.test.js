@@ -145,6 +145,19 @@ describe( 'stepper in the drawer', () => {
 		await flush();
 	} );
 
+	it( 'a remove that fails says so and puts keyboard focus back on the remove button', async () => {
+		const remove = document.querySelector( 'button.sgs-cart__item-remove' );
+		remove.focus();
+		// A browser drops focus from a button the moment it is disabled; jsdom does not, so the call itself is the proof.
+		const refocus = jest.spyOn( remove, 'focus' );
+		global.fetch = jest.fn( () => Promise.reject( new TypeError( 'offline' ) ) );
+		remove.click();
+		await flush();
+		expect( document.querySelector( '[data-sgs-cart-status]' ).textContent ).toBe( 'Could not remove that item. Please try again.' );
+		expect( remove.disabled ).toBe( false );
+		expect( refocus ).toHaveBeenCalledTimes( 1 );
+	} );
+
 	it( 'plus adds one through the same update request', async () => {
 		const plus = document.querySelector( '.sgs-cart__item-qty-step--plus' );
 		plus.focus();

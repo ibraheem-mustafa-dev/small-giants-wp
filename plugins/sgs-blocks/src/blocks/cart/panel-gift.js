@@ -10,7 +10,7 @@
  * @package
  */
 
-import { fetchWithNonce } from '../../shared/rest-nonce';
+import { fetchWithNonce, primeNonce } from '../../shared/rest-nonce';
 
 const TYPING_DELAY = 600;
 
@@ -119,6 +119,8 @@ export function initGift( panelRoot ) {
 		later( true );
 	} );
 	[ to, note ].forEach( ( field ) => {
+		// Typing may end with a tap on the checkout link, and that last save cannot retry a stale nonce: get a fresh one now.
+		field.addEventListener( 'focus', primeNonce );
 		field.addEventListener( 'input', () => later( false ) );
 		field.addEventListener( 'blur', flush );
 	} );

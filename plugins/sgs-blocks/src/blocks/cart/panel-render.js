@@ -407,6 +407,9 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		} catch {
 			announce( 'Could not remove that item. Please try again.' );
 			setBusy( false );
+			if ( hadFocus ) {
+				button.focus();
+			}
 		}
 	} );
 
@@ -435,6 +438,9 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		} catch {
 			announce( 'Could not save that item for later. Please try again.' );
 			setBusy( false );
+			if ( hadFocus ) {
+				button.focus();
+			}
 		}
 	} );
 

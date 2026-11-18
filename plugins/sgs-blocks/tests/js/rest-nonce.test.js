@@ -4,10 +4,11 @@
  *
  * Negative controls: 'a later request reuses the fresh nonce' fails if the fresh nonce is not remembered; 'another code is
  * not retried' fails if any 403 is retried; 'a second 403 is returned' fails if the retry loops; 'a failed nonce fetch
- * returns the original reply' fails if that failure throws or hides the 403.
+ * returns the original reply' fails if that failure throws or hides the 403; 'priming fetches a fresh nonce once' fails if
+ * priming asks on every call or does not keep the nonce.
  */
 
-import { fetchWithNonce, currentNonce } from '../../src/shared/rest-nonce';
+import { fetchWithNonce, currentNonce, primeNonce } from '../../src/shared/rest-nonce';
 
 const NONCE_URL = 'https://shop.test/wp-admin/admin-ajax.php?action=sgs_rest_nonce';
 
@@ -27,6 +28,7 @@ describe( 'fetchWithNonce', () => {
 	beforeEach( () => {
 		delete window.sgsRestNonce;
 		delete window.sgsRestNonceRefresh;
+		delete window.sgsRestNoncePrimed;
 		document.head.innerHTML = `<meta name="sgs-rest-nonce-url" content="${ NONCE_URL }">`;
 	} );
 
@@ -138,5 +140,25 @@ describe( 'fetchWithNonce', () => {
 		const both = await Promise.all( [ fetchWithNonce( '/a', {}, 'page' ), fetchWithNonce( '/b', {}, 'page' ) ] );
 		expect( both.map( ( r ) => r.status ) ).toEqual( [ 200, 200 ] );
 		expect( nonceFetches ).toBe( 1 );
+	} );
+
+	it( 'priming fetches a fresh nonce once, and the next request sends it', async () => {
+		global.fetch = jest.fn( ( url ) => Promise.resolve( url === NONCE_URL ? freshNonce( 'fresh' ) : ok() ) );
+		primeNonce();
+		primeNonce();
+		await window.sgsRestNonceRefresh;
+		expect( global.fetch ).toHaveBeenCalledTimes( 1 );
+		expect( currentNonce( 'page' ) ).toBe( 'fresh' );
+		primeNonce();
+		await fetchWithNonce( '/r', {}, 'page' );
+		expect( global.fetch ).toHaveBeenCalledTimes( 2 );
+		expect( nonceOf( global.fetch.mock.calls[ 1 ] ) ).toBe( 'fresh' );
+	} );
+
+	it( 'priming does nothing once a fresh nonce is known', () => {
+		window.sgsRestNonce = 'known';
+		global.fetch = jest.fn();
+		primeNonce();
+		expect( global.fetch ).not.toHaveBeenCalled();
 	} );
 } );

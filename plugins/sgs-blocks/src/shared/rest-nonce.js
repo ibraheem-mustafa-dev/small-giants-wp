@@ -15,6 +15,7 @@
 
 const NONCE_KEY = 'sgsRestNonce';
 const REFRESH_KEY = 'sgsRestNonceRefresh';
+const PRIMED_KEY = 'sgsRestNoncePrimed';
 const META_NAME = 'sgs-rest-nonce-url';
 
 /** Error codes that mean "the nonce is stale": core's cookie check, and the SGS routes' own check. */
@@ -59,6 +60,21 @@ function refreshNonce() {
 		} );
 	window[ REFRESH_KEY ] = pending;
 	return pending;
+}
+
+/**
+ * Fetch a fresh nonce ahead of a request that cannot be retried: one sent with `keepalive` as the page goes away, whose
+ * retry would never run because the page is gone before the 403 comes back. Asks at most once per page, and not at all
+ * once a fresh nonce is known.
+ *
+ * @return {void}
+ */
+export function primeNonce() {
+	if ( window[ PRIMED_KEY ] || window[ NONCE_KEY ] ) {
+		return;
+	}
+	window[ PRIMED_KEY ] = true;
+	refreshNonce();
 }
 
 /**

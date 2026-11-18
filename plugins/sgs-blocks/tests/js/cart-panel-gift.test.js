@@ -150,6 +150,25 @@ describe( 'initGift', () => {
 		jest.useRealTimers();
 	} );
 
+	test( 'focusing the note asks for a fresh nonce once, so a save sent as the page goes away is not refused', async () => {
+		delete window.sgsRestNonce;
+		delete window.sgsRestNoncePrimed;
+		document.head.innerHTML = '<meta name="sgs-rest-nonce-url" content="/nonce">';
+		global.fetch = jest.fn( () => Promise.resolve( { ok: true, json: () => Promise.resolve( { nonce: 'fresh' } ) } ) );
+		initGift( panel );
+		const note = panel.querySelector( '.sgs-cart__panel-gift-message' );
+		note.dispatchEvent( new Event( 'focus' ) );
+		note.dispatchEvent( new Event( 'focus' ) );
+		panel.querySelector( '.sgs-cart__panel-gift-to' ).dispatchEvent( new Event( 'focus' ) );
+		await flush();
+		expect( global.fetch ).toHaveBeenCalledTimes( 1 );
+		expect( global.fetch.mock.calls[ 0 ][ 0 ] ).toBe( '/nonce' );
+		expect( window.sgsRestNonce ).toBe( 'fresh' );
+		document.head.innerHTML = '';
+		delete window.sgsRestNonce;
+		delete window.sgsRestNoncePrimed;
+	} );
+
 	test( 'untick sends an empty name and note', () => {
 		initGift( panel );
 		const box = panel.querySelector( '.sgs-cart__panel-gift-checkbox' );
