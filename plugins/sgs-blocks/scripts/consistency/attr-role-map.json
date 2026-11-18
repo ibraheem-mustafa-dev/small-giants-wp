@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13367,
+    "row_count": 13368,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1216,6 +1216,7 @@
     "sgs/account::navWidth": "layout",
     "sgs/account::noOrdersText": "text-content",
     "sgs/account::orderActionsFlexWrap": "layout",
+    "sgs/account::orderCompletedStep": "behaviour",
     "sgs/account::orderDetailAddressTitle": "text-content",
     "sgs/account::orderDetailBackGap": "layout",
     "sgs/account::orderDetailBackLabel": null,
