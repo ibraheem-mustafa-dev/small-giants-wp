@@ -241,5 +241,33 @@ ok( null === RD::decide_signed_out( array( 'has_endpoint' => true, 'endpoint' =>
 ok( null === RD::decide_signed_out( array( 'has_endpoint' => true, 'endpoint' => 'orders', 'logged_in' => true, 'request_url' => '/my-account/orders/' ) + $so ), '12 signed in on orders: no redirect' );
 ok( null === RD::decide_signed_out( array( 'has_endpoint' => true, 'request_url' => '/my-account/lost-password/' ) + $so ), '12 an endpoint with no name given (old callers): no redirect' );
 
+// 13) Side tab counts: Addresses count and Account details tick, each behind a setting.
+function get_userdata( $id ) { return $GLOBALS['sgs_user'][ $id ] ?? false; }
+$GLOBALS['sgs_user'] = array( 3 => (object) array( 'first_name' => 'Aisha', 'last_name' => 'Khan', 'user_email' => 'a@example.test' ) );
+$GLOBALS['meta']     = array( 3 => array( 'billing_address_1' => '1 High St', 'shipping_address_1' => '' ) );
+$nav = '<nav><ul><li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--orders"><a href="/o/">Orders</a></li><li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--edit-address"><a href="/a/">Addresses</a></li><li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--edit-account"><a href="/d/">Account details</a></li></ul></nav>';
+$run = static function ( array $attrs ) use ( $nav ): string {
+	EP::$active = $attrs;
+	ob_start();
+	EX::start_menu_buffer();
+	echo $nav;
+	EX::end_menu_buffer();
+	return (string) ob_get_clean();
+};
+$ob_level = ob_get_level();
+ok( 1 === EX::filled_address_count( 3 ), '13 filled_address_count: one of two addresses filled' );
+ok( EX::account_details_complete( 3 ), '13 account_details_complete: names and email present' );
+$out = $run( array( 'menuAddressesCount' => true ) );
+ok( str_contains( $out, '>Addresses<span class="sgs-account__menu-count">1</span></a>' ) && ! str_contains( $out, 'menu-tick' ), '13 addresses count: a count after Addresses only' );
+$out = $run( array( 'menuAccountTick' => true, 'menuAccountTickLabel' => 'Done <b>' ) );
+ok( str_contains( $out, 'sgs-account__menu-tick' ) && str_contains( $out, 'Done &lt;b&gt;' ) && str_contains( $out, 'aria-hidden="true"' ) && ! str_contains( $out, '>Addresses<span' ), '13 tick: after Account details, decorative svg plus escaped screen-reader text' );
+$GLOBALS['sgs_user'][3]->last_name = '';
+ok( ! str_contains( $run( array( 'menuAccountTick' => true ) ), 'menu-tick' ), '13 tick: not shown while the details are incomplete' );
+$GLOBALS['meta'][3] = array();
+ok( ! str_contains( $run( array( 'menuAddressesCount' => true ) ), 'menu-count' ), '13 addresses count: none shown for no addresses' );
+ok( str_contains( $run( array() ), 'Addresses</a>' ) && ! str_contains( $run( array() ), 'menu-count' ), '13 all off: markup untouched' );
+ok( ob_get_level() === $ob_level, '13 no output buffer left open' );
+EP::$active = null;
+
 echo $failures ? "\n{$failures} FAILED\n" : "\nall passed\n";
 exit( $failures ? 1 : 0 );

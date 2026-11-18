@@ -5096,6 +5096,21 @@
 				"default": "",
 				"description": "Link source of the order page help link: a page, a Site Info value such as WhatsApp, or empty for the typed address."
 			},
+			"menuAddressesCount": {
+				"type": "boolean",
+				"default": false,
+				"description": "Shows a count on the Addresses tab: how many of the customer's delivery and billing addresses are filled in. Off prints none."
+			},
+			"menuAccountTick": {
+				"type": "boolean",
+				"default": false,
+				"description": "Shows a tick on the Account details tab once the customer has a first name, a last name and an email address. Off prints none."
+			},
+			"menuAccountTickLabel": {
+				"type": "string",
+				"default": "",
+				"description": "Screen-reader text of the Account details tick. Empty = Details complete."
+			},
 			"loginLinkPlacement": {
 				"type": "string",
 				"enum": [

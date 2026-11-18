@@ -74,13 +74,41 @@ final class Account_Extras {
 
 	/** Open an output buffer around the menu when the menu counts are on. */
 	public static function start_menu_buffer(): void {
-		if ( is_array( Account_Endpoints::$active ) && ! empty( Account_Endpoints::$active['menuOrdersCount'] ) ) {
+		$active = Account_Endpoints::$active;
+		if ( is_array( $active ) && ( ! empty( $active['menuOrdersCount'] ) || ! empty( $active['menuAddressesCount'] ) || ! empty( $active['menuAccountTick'] ) ) ) {
 			ob_start();
 			self::$menu_buffer_level = ob_get_level();
 		}
 	}
 
-	/** Close the buffer and add the count span after the Orders and Saved items labels (WooCommerce escapes menu labels, so the span is added to the finished markup). */
+	/**
+	 * How many of the customer's two addresses (delivery and billing) have a first address line.
+	 *
+	 * @param int $user_id The customer.
+	 * @return int 0 to 2.
+	 */
+	public static function filled_address_count( int $user_id ): int {
+		$count = 0;
+		foreach ( array( 'billing_address_1', 'shipping_address_1' ) as $key ) {
+			if ( '' !== trim( (string) get_user_meta( $user_id, $key, true ) ) ) {
+				++$count;
+			}
+		}
+		return $count;
+	}
+
+	/**
+	 * Whether the customer's account details are complete: a first name, a last name and an email address.
+	 *
+	 * @param int $user_id The customer.
+	 * @return bool
+	 */
+	public static function account_details_complete( int $user_id ): bool {
+		$user = function_exists( 'get_userdata' ) ? get_userdata( $user_id ) : null;
+		return $user && '' !== trim( (string) $user->first_name ) && '' !== trim( (string) $user->last_name ) && '' !== trim( (string) $user->user_email );
+	}
+
+	/** Close the buffer and add the count span after the Orders, Saved items and (when on) Addresses labels and the tick after Account details (WooCommerce escapes menu labels, so the markup is added to the finished markup). */
 	public static function end_menu_buffer(): void {
 		$level                   = self::$menu_buffer_level;
 		self::$menu_buffer_level = null;
@@ -89,10 +117,16 @@ final class Account_Extras {
 			return;
 		}
 		$html   = (string) ob_get_clean();
-		$counts = array(
-			'orders'      => function_exists( 'wc_get_customer_order_count' ) ? (int) \wc_get_customer_order_count( get_current_user_id() ) : 0,
-			'saved-items' => class_exists( Wishlist_Store::class ) ? count( Wishlist_Store::read_list( get_current_user_id() ) ) : 0,
-		);
+		$active = (array) Account_Endpoints::$active;
+		$user   = get_current_user_id();
+		$counts = array();
+		if ( ! empty( $active['menuOrdersCount'] ) ) {
+			$counts['orders']      = function_exists( 'wc_get_customer_order_count' ) ? (int) \wc_get_customer_order_count( $user ) : 0;
+			$counts['saved-items'] = class_exists( Wishlist_Store::class ) ? count( Wishlist_Store::read_list( $user ) ) : 0;
+		}
+		if ( ! empty( $active['menuAddressesCount'] ) ) {
+			$counts['edit-address'] = self::filled_address_count( $user );
+		}
 		foreach ( $counts as $endpoint => $count ) {
 			if ( $count > 0 ) {
 				$html = (string) preg_replace(
@@ -103,7 +137,17 @@ final class Account_Extras {
 				);
 			}
 		}
-		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce's own escaped navigation markup plus an integer.
+		if ( ! empty( $active['menuAccountTick'] ) && self::account_details_complete( $user ) ) {
+			$label = trim( (string) ( $active['menuAccountTickLabel'] ?? '' ) );
+			$tick  = '<span class="sgs-account__menu-count sgs-account__menu-tick"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l5 5 9-10"></path></svg><span class="screen-reader-text">' . esc_html( '' !== $label ? $label : __( 'Details complete', 'sgs-blocks' ) ) . '</span></span>';
+			$html  = (string) preg_replace_callback(
+				'#(<li[^>]*woocommerce-MyAccount-navigation-link--edit-account[^>]*>\s*<a\b[^>]*>)(.*?)(</a>)#s',
+				static fn( array $m ): string => $m[1] . $m[2] . $tick . $m[3],
+				$html,
+				1
+			);
+		}
+		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce's own escaped navigation markup plus integers and a fixed tick with an escaped label.
 	}
 
 	/**

@@ -159,6 +159,13 @@ if ( ! empty( $attributes['orderDetailOrderAgain'] ) ) {
 	$wrapper_classes[] = 'sgs-account--order-again';
 }
 
+if ( ! empty( $attributes['menuAddressesCount'] ) ) {
+	$wrapper_classes[] = 'sgs-account--menu-addresses-count';
+}
+if ( ! empty( $attributes['menuAccountTick'] ) ) {
+	$wrapper_classes[] = 'sgs-account--menu-account-tick';
+}
+
 $wrapper_attrs = get_block_wrapper_attributes( array( 'class' => implode( ' ', $wrapper_classes ) ) );
 
 ?>

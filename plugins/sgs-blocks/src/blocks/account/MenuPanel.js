@@ -157,6 +157,33 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 			</ToolsPanelItem>
 
 			<ToolsPanelItem
+				label={ __( 'Count on the Addresses tab', 'sgs-blocks' ) }
+				hasValue={ () => !! attributes.menuAddressesCount }
+				onDeselect={ () => setAttributes( { menuAddressesCount: undefined } ) }
+			>
+			<Toggle
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				name="menuAddressesCount"
+				label={ __( 'Count on the Addresses tab', 'sgs-blocks' ) }
+				help={ __( 'How many of the customer’s delivery and billing addresses are filled in.', 'sgs-blocks' ) }
+			/>
+			</ToolsPanelItem>
+			<ToolsPanelItem
+				label={ __( 'Tick on the Account details tab', 'sgs-blocks' ) }
+				hasValue={ () => !! attributes.menuAccountTick }
+				onDeselect={ () => setAttributes( { menuAccountTick: undefined, menuAccountTickLabel: undefined } ) }
+			>
+			<Toggle
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				name="menuAccountTick"
+				label={ __( 'Tick on the Account details tab', 'sgs-blocks' ) }
+				help={ __( 'Shows once the customer has a first name, a last name and an email address.', 'sgs-blocks' ) }
+			/>
+			{ attributes.menuAccountTick && <TextField attributes={ attributes } setAttributes={ setAttributes } name="menuAccountTickLabel" label={ __( 'Tick screen-reader text', 'sgs-blocks' ) } help={ __( 'Empty uses “Details complete”.', 'sgs-blocks' ) } /> }
+			</ToolsPanelItem>
+			<ToolsPanelItem
 				label={ __( 'Menu order', 'sgs-blocks' ) }
 				hasValue={ () => Array.isArray( attributes.menuOrder ) && attributes.menuOrder.length > 0 }
 				onDeselect={ () => setAttributes( { menuOrder: undefined } ) }
