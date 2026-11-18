@@ -11,6 +11,7 @@
 import { ensureWishlistReady, onWishlistChange, toggleWishlistId, addWishlistId } from '../../shared/wishlist-store';
 import { addCartItem } from './api';
 import { appendAuthoredText } from '../../utils/authored-text-dom';
+import { applyFocus, nextItemId, visibleIds } from './focus-after-remove';
 import { mountNotifyForm } from './notify-form';
 import { readPanelData } from './labels';
 import { renderNormalView } from './normal-view';
@@ -51,6 +52,9 @@ export function initPanel( panel ) {
 
 	const sharedToken = parseShareToken( window.location.search );
 
+	// The item that takes keyboard focus once the one being removed is gone (`undefined`: no removal pending).
+	let focusAfterRender;
+
 	if ( sharedToken ) {
 		panel.hidden = false;
 		renderSharedView( elements, labels, sharedToken );
@@ -75,11 +79,27 @@ export function initPanel( panel ) {
 				cta.setAttribute( 'href', labels.shopUrl );
 				appendAuthoredText( cta, labels.emptyLinkLabel, { links: false } );
 				itemsEl.replaceChildren( message, cta );
+				takePendingFocus( null );
 				return;
 			}
 
 			panel.hidden = false;
 			await renderNormalView( elements, labels, ids, announce );
+			takePendingFocus();
+		}
+
+		/**
+		 * Move focus to where the removal planned, once the list has repainted.
+		 *
+		 * @param {number|null} [forced] An id (or null: the empty state's button) that overrides the plan.
+		 */
+		function takePendingFocus( forced ) {
+			if ( undefined === focusAfterRender ) {
+				return;
+			}
+			const target = undefined === forced ? focusAfterRender : forced;
+			focusAfterRender = undefined;
+			applyFocus( itemsEl, target );
 		}
 
 		render();
@@ -112,11 +132,14 @@ export function initPanel( panel ) {
 
 		if ( removeButton ) {
 			const productId = Number( removeButton.dataset.productId );
+			const removedName = removeButton.getAttribute( 'aria-label' ) || labels.removeLabel;
 			removeButton.disabled = true;
+			focusAfterRender = nextItemId( visibleIds( itemsEl ), productId );
 			try {
 				await toggleWishlistId( productId );
-				announce( labels.removeLabel );
+				announce( removedName );
 			} catch {
+				focusAfterRender = undefined;
 				announce( labels.errorText );
 				removeButton.disabled = false;
 			}

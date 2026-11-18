@@ -1,10 +1,12 @@
 /**
- * SGS Wishlist Panel — the visitor's own list (grid/list/strip layouts).
+ * SGS Wishlist Panel — the visitor's own list (grid/list/strip/cards layouts).
  *
  * @package
  */
 import { config, getSavedPrices, getAccountState } from '../../shared/wishlist-store';
 import { fetchWishlistProducts } from './api';
+import { fetchProductCards } from './cards-api';
+import { hydrateCards } from './hydrate-cards';
 import { wishlistRowHtml, escapeHtml } from './render-rows';
 import { guestPromptHtml, alertsBarHtml } from './render-bars';
 import { sortSelectHtml, wireSortSelect } from './sort-ui';
@@ -88,9 +90,16 @@ export async function renderNormalView( elements, labels, ids, announce ) {
 	const { itemsEl, barsEl } = elements;
 	itemsEl.setAttribute( 'aria-busy', 'true' );
 
+	const isCards = 'cards' === labels.layout;
 	let products;
+	let cards = new Map();
 	try {
-		products = await fetchWishlistProducts( ids );
+		// The cards layout asks for the product cards at the same time as the product data (sort, price drop and stock
+		// read the data; the markup is the site's own card).
+		[ products, cards ] = await Promise.all( [
+			fetchWishlistProducts( ids ),
+			isCards ? fetchProductCards( labels, ids ) : Promise.resolve( cards ),
+		] );
 	} catch {
 		itemsEl.removeAttribute( 'aria-busy' );
 		itemsEl.innerHTML = `<p class="sgs-wishlist-panel__error">${ escapeHtml( labels.errorText ) }</p>`;
@@ -117,13 +126,16 @@ export async function renderNormalView( elements, labels, ids, announce ) {
 					showDateSaved: ! isStrip && labels.showDateSaved,
 					showPriceDrop: ! isStrip && labels.showPriceDrop,
 					shared: false,
-					layout: labels.layout,
+					cardHtml: cards.get( Number( product.id ) ),
 					labels,
 					savedPrice: savedPrices[ Number( product.id ) ],
 				} )
 			)
 			.join( '' );
 		updateHeadingAndViewAll( elements, labels, sortedProducts.length, view.hasMore );
+		if ( isCards ) {
+			hydrateCards( itemsEl );
+		}
 	};
 
 	paint( sortProducts( products, readStoredSort(), savedPrices ) );

@@ -45,6 +45,11 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 				label={ __( 'Layout', 'sgs-blocks' ) }
 				value={ layout }
+				help={
+					'cards' === layout
+						? __( 'Each saved product is drawn with the product card inside the panel. Style that card like a Shop card, or paste a Shop card over it.', 'sgs-blocks' )
+						: undefined
+				}
 				options={ [
 					{ label: __( 'Grid', 'sgs-blocks' ), value: 'grid' },
 					{ label: __( 'List', 'sgs-blocks' ), value: 'list' },
@@ -53,7 +58,7 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 						value: 'strip',
 					},
 					{
-						label: __( 'Cards (photo, brand, heart, price)', 'sgs-blocks' ),
+						label: __( 'Product cards (the site's own card)', 'sgs-blocks' ),
 						value: 'cards',
 					},
 				] }

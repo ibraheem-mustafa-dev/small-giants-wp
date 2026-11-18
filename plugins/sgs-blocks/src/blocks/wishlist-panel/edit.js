@@ -5,10 +5,11 @@
  * with the "View all" link when the cap hides items) — the real content is
  * fetched client-side from the shared wishlist store + the WooCommerce Store
  * API (view.js), so there is nothing meaningful to preview server-side
- * inside the editor's own request.
+ * inside the editor's own request. The cards layout shows its template instead: the one inner `sgs/product-card`
+ * every saved product's card is drawn from, edited in place like any card on the Shop.
  */
 import { __ } from '@wordpress/i18n';
-import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
+import { InspectorControls, useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
 import { SgsColourPanel, fillRow, textRow } from '../../components';
 import { usePreviewTier } from '../../utils';
 import { wishlistColourStyles, wishlistGridStyle } from './colour-preview';
@@ -48,6 +49,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		}`,
 		style: wishlistGridStyle( attributes, previewTier ),
 	} );
+
+	// The cards layout's template: one product card, which the author styles (or replaces by pasting the Shop's card) and
+	// the panel then draws for every saved product. Locked to one card; its own product connection is only a sample.
+	const isCards = 'cards' === previewLayout;
+	const innerBlocksProps = useInnerBlocksProps(
+		{ className: 'sgs-wishlist-panel__items' },
+		{
+			allowedBlocks: [ 'sgs/product-card' ],
+			template: [ [ 'sgs/product-card', { sourceMode: 'wc-product', showLadder: false } ] ],
+			templateLock: 'insert',
+		}
+	);
 
 	const colourRows = [
 		textRow( {
@@ -170,6 +183,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						aria-label={ __( 'Share link', 'sgs-blocks' ) }
 					/>
 				</div>
+				{ isCards ? (
+					<div { ...innerBlocksProps } />
+				) : (
 				<div className="sgs-wishlist-panel__items">
 					{ Array.from( { length: cap }, ( _, i ) => (
 						<div className="sgs-wishlist-panel__row" key={ i }>
@@ -205,8 +221,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						</div>
 					) ) }
 				</div>
+				) }
 				<p className="sgs-wishlist-panel__editor-note">
-					{ __( 'Sample rows. Each visitor sees their own saved items on the live page.', 'sgs-blocks' ) }
+					{ isCards
+						? __( 'This card is the template: every saved product is drawn with it, as on the Shop. Pick any product in the card to preview it.', 'sgs-blocks' )
+						: __( 'Sample rows. Each visitor sees their own saved items on the live page.', 'sgs-blocks' ) }
 				</p>
 			</div>
 		</>

@@ -210,12 +210,14 @@ require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-alert-mailer.ph
 require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-rest.php';
 require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-account-rest.php';
 require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-shared-rest.php';
+require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-cards-rest.php';
 require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-privacy.php';
 require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-alerts-scan.php';
 Wishlist_Settings::register();
 Wishlist_Rest::register();
 Wishlist_Account_Rest::register();
 Wishlist_Shared_Rest::register();
+Wishlist_Cards_Rest::register();
 Wishlist_Privacy::register();
 Wishlist_Alerts_Scan::register();
 // Customer account area (Spec 30 FR-30-14): the Saved items endpoint, the

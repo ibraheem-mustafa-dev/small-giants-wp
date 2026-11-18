@@ -28,7 +28,7 @@
  * __notify-form / __guest-prompt / __bar / __share-field / __view-all.
  *
  * @var array     $attributes Block attributes.
- * @var string    $content    Unused — no InnerBlocks.
+ * @var string    $content    Unused: the one inner `sgs/product-card` is the cards layout's template (render-cards.php), never rendered here.
  * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
@@ -41,6 +41,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 require_once __DIR__ . '/render-urls.php';
 require_once __DIR__ . '/render-labels.php';
 require_once __DIR__ . '/render-colours.php';
+require_once __DIR__ . '/render-cards.php';
 
 $heading          = (string) ( $attributes['heading'] ?? __( 'Saved for later', 'sgs-blocks' ) );
 $empty_text       = (string) ( $attributes['emptyText'] ?? __( 'Your wishlist is empty.', 'sgs-blocks' ) );
@@ -207,6 +208,11 @@ $data_attrs = array(
 );
 foreach ( $label_data as $key => $value ) {
 	$data_attrs[ 'data-' . $key ] = $value;
+}
+if ( 'cards' === $layout ) {
+	foreach ( sgs_wishlist_panel_cards_data( $block ) as $key => $value ) {
+		$data_attrs[ 'data-' . $key ] = $value;
+	}
 }
 
 $attrs_html = '';

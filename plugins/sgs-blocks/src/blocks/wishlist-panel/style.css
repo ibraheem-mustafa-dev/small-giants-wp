@@ -385,76 +385,29 @@
 	cursor: pointer;
 }
 
-/* -- Cards layout: a frame card per saved item (photo, brand, heart, name, price) -- */
+/* -- Cards layout: each saved item is the site's own product card, with the panel's own parts under it -- */
 .sgs-wishlist-panel--cards .sgs-wishlist-panel__items {
 	align-items: start;
 	gap: var(--sgs-wishlist-panel-gap);
 }
 
-.sgs-wishlist-panel__card {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	border: 1px solid var(--wp--preset--color--border, #e2e2e2);
-	background: var(--wp--preset--color--surface, #fff);
-}
-
-.sgs-wishlist-panel__card-media {
-	display: block;
-	aspect-ratio: 1;
-	overflow: hidden;
-	background: var(--wp--preset--color--surface-alt, #f0f0f0);
-}
-
-.sgs-wishlist-panel__card-img {
-	display: block;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-}
-
-.sgs-wishlist-panel__card-brand {
-	position: absolute;
-	top: 0;
-	left: 0;
-	padding: 12px 14px;
-	background: var(--wp--preset--color--surface, #fff);
-	font-size: 0.78rem;
-	letter-spacing: 0.26em;
-	text-transform: uppercase;
-}
-
-.sgs-wishlist-panel__card-heart {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 44px;
-	height: 44px;
+/* The card draws its own frame, so the item wrapper adds none (the plain row's box is for the other layouts). */
+.sgs-wishlist-panel__item {
 	padding: 0;
-	border: 1px solid var(--wp--preset--color--border, #e2e2e2);
-	border-radius: 50%;
-	background: var(--wp--preset--color--surface, #fff);
-	color: var(--wp--preset--color--text, currentColor);
-	cursor: pointer;
+	border: 0;
+	border-radius: 0;
+	gap: 0.5rem;
 }
 
-.sgs-wishlist-panel__card-body {
+.sgs-wishlist-panel__item-meta {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
-	padding: 16px;
+	gap: 0.25rem;
 }
 
-.sgs-wishlist-panel__card-prices {
+.sgs-wishlist-panel__item-actions {
 	display: flex;
-	align-items: baseline;
-	gap: 8px;
-}
-
-.sgs-wishlist-panel__card-rrp {
-	text-decoration: line-through;
-	opacity: 0.75;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
 }

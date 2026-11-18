@@ -95,50 +95,6 @@ function actionHtml( product, labels, shared ) {
 	);
 }
 
-const HEART_PATH = 'M12 21s-7-4.6-9.3-9A5.4 5.4 0 0 1 12 6.6 5.4 5.4 0 0 1 21.3 12C19 16.4 12 21 12 21z';
-
-/**
- * One frame card of the cards layout: a large photo, the brand, a filled heart that removes the item, the name, the
- * price and the struck regular price. It carries no basket or options button.
- *
- * @param {Object} product Store API product.
- * @param {Object} options Row options (`showPrice`, `labels`).
- * @return {string} The card's HTML.
- */
-function wishlistCardHtml( product, options ) {
-	const { showPrice, labels } = options;
-	const id = Number( product.id ) || 0;
-	const name = escapeHtml( plainText( product.name ) );
-	const permalink = escapeHtml( product.permalink || '#' );
-	const photo = product.images?.[ 0 ]?.src || product.images?.[ 0 ]?.thumbnail || '';
-	const brand = product.brands?.[ 0 ]?.name || '';
-	const prices = product.prices;
-	const showRrp = prices && prices.regular_price && prices.regular_price !== prices.price;
-	const photoHtml = photo
-		? `<img class="sgs-wishlist-panel__card-img sgs-media-el" src="${ escapeHtml( photo ) }" alt="" loading="lazy" decoding="async" />`
-		: '';
-	const priceHtml =
-		showPrice && prices
-			? `<span class="sgs-wishlist-panel__row-price">${ escapeHtml( formatMoney( prices.price, prices ) ) }</span>` +
-			  ( showRrp
-					? `<span class="sgs-wishlist-panel__card-rrp">${ escapeHtml( formatMoney( prices.regular_price, prices ) ) }</span>`
-					: '' )
-			: '';
-	return (
-		`<div class="sgs-wishlist-panel__row sgs-wishlist-panel__card" data-product-id="${ id }">` +
-		`<a class="sgs-wishlist-panel__card-media" href="${ permalink }" tabindex="-1" aria-hidden="true">${ photoHtml }</a>` +
-		( brand ? `<span class="sgs-wishlist-panel__card-brand">${ escapeHtml( brand ) }</span>` : '' ) +
-		`<button type="button" class="sgs-wishlist-panel__remove sgs-wishlist-panel__card-heart" data-product-id="${ id }" aria-label="${ escapeHtml(
-			labels.removeLabel + ' ' + plainText( product.name )
-		) }"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="${ HEART_PATH }"/></svg></button>` +
-		'<div class="sgs-wishlist-panel__card-body">' +
-		`<a class="sgs-wishlist-panel__row-name" href="${ permalink }">${ name }</a>` +
-		( priceHtml ? `<div class="sgs-wishlist-panel__card-prices">${ priceHtml }</div>` : '' ) +
-		'</div>' +
-		'</div>'
-	);
-}
-
 /**
  * Build one saved-item row's markup.
  *
@@ -148,17 +104,15 @@ function wishlistCardHtml( product, options ) {
  * @param {boolean} options.showStock     Whether to render the stock line.
  * @param {boolean} options.showDateSaved Whether to render "Saved {date}" (grid/list only).
  * @param {boolean} options.showPriceDrop Whether to render the price-drop line (grid/list only).
- * @param {string}  [options.layout]      'cards' draws a frame card; anything else the row.
+ * @param {string}  [options.cardHtml]    The server-rendered `sgs/product-card` for this product (cards layout): the row
+ *                                        becomes that card with the panel's own parts under it; absent, the plain row.
  * @param {boolean} options.shared        Read-only shared-list row (no dates, no drop, no Remove).
  * @param {Object}  options.labels        `labels.js::readPanelData()` output.
  * @param {Object}  [options.savedPrice]  This item's `getSavedPrices()` record.
  * @return {string} The row's HTML.
  */
 export function wishlistRowHtml( product, options ) {
-	if ( 'cards' === options.layout && ! options.shared ) {
-		return wishlistCardHtml( product, options );
-	}
-	const { showPrice, showStock, showDateSaved, showPriceDrop, shared, labels, savedPrice } = options;
+	const { showPrice, showStock, showDateSaved, showPriceDrop, shared, labels, savedPrice, cardHtml } = options;
 	const id = Number( product.id ) || 0;
 	const name = escapeHtml( plainText( product.name ) );
 	const permalink = escapeHtml( product.permalink || '#' );
@@ -206,6 +160,24 @@ export function wishlistRowHtml( product, options ) {
 		: `<button type="button" class="sgs-wishlist-panel__remove" data-product-id="${ id }" aria-label="${ escapeHtml(
 				labels.removeLabel + ' ' + plainText( product.name )
 		  ) }">${ escapeHtml( labels.removeLabel ) }</button>`;
+
+	if ( cardHtml && ! shared ) {
+		// The card is the site's own product card (markup from `sgs/product-card`'s render, escaped there); the panel adds
+		// only what a card does not carry: the saved-list parts and the remove button.
+		const metaHtml = priceDropHtml + stockHtml + dateHtml;
+		const notifyHtml = isInStock( product )
+			? ''
+			: `<button type="button" class="sgs-wishlist-panel__notify-toggle" data-product-id="${ id }" aria-expanded="false">${ escapeHtml(
+					labels.notifyLabel
+			  ) }</button><div class="sgs-wishlist-panel__notify-form" data-product-id="${ id }" hidden></div>`;
+		return (
+			`<div class="sgs-wishlist-panel__row sgs-wishlist-panel__item" data-product-id="${ id }">` +
+			`<div class="sgs-wishlist-panel__item-card">${ cardHtml }</div>` +
+			( metaHtml ? `<div class="sgs-wishlist-panel__item-meta">${ metaHtml }</div>` : '' ) +
+			`<div class="sgs-wishlist-panel__item-actions">${ notifyHtml }${ removeHtml }</div>` +
+			'</div>'
+		);
+	}
 
 	return (
 		`<div class="sgs-wishlist-panel__row" data-product-id="${ id }">` +
