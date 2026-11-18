@@ -34,7 +34,7 @@ final class Account_Extras {
 		\add_action( 'wp_loaded', array( __CLASS__, 'fill_display_name' ), 10 );
 		\add_action( 'woocommerce_save_account_details_errors', array( __CLASS__, 'validate_mobile' ), 10, 1 );
 		\add_action( 'woocommerce_save_account_details', array( __CLASS__, 'save_mobile' ), 10, 1 );
-		\add_action( 'woocommerce_edit_account_form', array( __CLASS__, 'account_marketing_opt_in_field' ), 20 );
+		\add_action( 'woocommerce_edit_account_form_fields', array( __CLASS__, 'account_marketing_opt_in_field' ), 20 );
 		\add_action( 'woocommerce_save_account_details', array( __CLASS__, 'save_account_marketing_opt_in' ), 20, 1 );
 		\add_action( 'woocommerce_register_form_start', array( __CLASS__, 'register_first_name_field' ) );
 		\add_filter( 'woocommerce_registration_errors', array( __CLASS__, 'validate_first_name' ), 10, 1 );

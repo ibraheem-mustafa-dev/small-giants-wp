@@ -285,20 +285,22 @@ if ( ! function_exists( 'sgs_account_details_look_css' ) ) {
 	function sgs_account_details_look_css( array $attributes, string $root_sel ): string {
 		$tiered = sgs_object_attr_keys( 'sgs/account' );
 		$form   = $root_sel . ' .woocommerce-EditAccountForm';
+		// The form holds two cards (details, password change); the columns, gap and spans lay out each card's own fields.
+		$cards  = $form . ' .sgs-account__edit-card';
 		$css    = array();
 
 		$cols = (string) ( $attributes['accountFormColumns'] ?? '' );
 		if ( in_array( $cols, array( '1', '2' ), true ) ) {
 			// Each field takes one cell; WooCommerce's floats and 47% widths are neutralised, and the password section,
-			// the clearing node and the Save row span the form.
-			$cell  = $form . ' > p{float:none;width:auto;margin:0;}';
-			$span  = $form . ' > fieldset,' . $form . ' > .clear,' . $form . ' > p:has(> button[type="submit"]){grid-column:1/-1;}';
-			$one   = $form . '{display:grid;grid-template-columns:minmax(0,1fr);}';
-			$two   = '@container sgs-account (min-width:640px){' . $form . '{grid-template-columns:repeat(2,minmax(0,1fr));}}';
+			// the clearing node, the marketing tick and the Save row span the card.
+			$cell  = $cards . ' > p{float:none;width:auto;margin:0;}';
+			$span  = $cards . ' > fieldset,' . $cards . ' > .clear,' . $cards . ' > .sgs-account__marketing-opt-in,' . $cards . ' > p:has(> button[type="submit"]){grid-column:1/-1;}';
+			$one   = $cards . '{display:grid;grid-template-columns:minmax(0,1fr);}';
+			$two   = '@container sgs-account (min-width:640px){' . $cards . '{grid-template-columns:repeat(2,minmax(0,1fr));}}';
 			$css[] = $one . $cell . $span . ( '2' === $cols ? $two : '' );
 		}
 		$css[] = sgs_emit_responsive_css(
-			$form,
+			$form . ',' . $cards,
 			array(
 				array(
 					'value'     => $attributes['accountFormGap'] ?? array(),

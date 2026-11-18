@@ -62,6 +62,7 @@ final class Account_Strings {
 			'passwordChange'    => 'Password change',
 			'resetConfirmLabel' => 'Re-enter new password',
 			'savePassword'      => 'Save',
+			'updatePassword'    => 'Update password',
 			'passwordMismatch'  => 'Passwords do not match.',
 		);
 	}

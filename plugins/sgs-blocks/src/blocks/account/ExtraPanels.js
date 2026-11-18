@@ -34,6 +34,7 @@ const WORDING = [
 	[ 'addAddressLink', __( 'Add address link (whole text; %s is the address title)', 'sgs-blocks' ), 'Add %s' ],
 	[ 'editAddressLink', __( 'Edit address link (whole text; %s is the address title)', 'sgs-blocks' ), 'Edit %s' ],
 	[ 'passwordChange', __( 'Password change heading', 'sgs-blocks' ), 'Password change' ],
+	[ 'updatePassword', __( 'Password change button (account details page)', 'sgs-blocks' ), 'Update password' ],
 	[ 'resetConfirmLabel', __( 'Choose a new password: repeat field label', 'sgs-blocks' ), 'Re-enter new password' ],
 	[ 'savePassword', __( 'Choose a new password: button', 'sgs-blocks' ), 'Save' ],
 ];
