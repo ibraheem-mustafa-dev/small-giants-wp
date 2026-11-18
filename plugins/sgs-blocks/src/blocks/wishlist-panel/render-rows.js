@@ -174,7 +174,7 @@ export function wishlistRowHtml( product, options ) {
 			`<div class="sgs-wishlist-panel__row sgs-wishlist-panel__item" data-product-id="${ id }">` +
 			`<div class="sgs-wishlist-panel__item-card">${ cardHtml }</div>` +
 			( metaHtml ? `<div class="sgs-wishlist-panel__item-meta">${ metaHtml }</div>` : '' ) +
-			`<div class="sgs-wishlist-panel__item-actions">${ notifyHtml }${ removeHtml }</div>` +
+			`<div class="sgs-wishlist-panel__item-actions sgs-wishlist-panel__row-actions">${ notifyHtml }${ removeHtml }</div>` +
 			'</div>'
 		);
 	}
