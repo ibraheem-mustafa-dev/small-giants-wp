@@ -165,6 +165,7 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **All pages 6:** (Bean's proofing of 2026-11-18.) across the site most pages have a large amount of white space (a large gap) between the bottom of the page's content and the top of the footer. Can we cut this down to normal and make it consistent across all of the pages, it just looks really unnatural and a bit broken like I accidentally hit enter a bunch of times while writing a word doc.
 - **All pages 7:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) All tick boxes on the site should match the tick box look on the basket drawer's gift note tick box. - Do a full site sweep and make sure all are standardised.
 - **All pages 8:** (Bean's review of the account and order confirmation pairs, 2026-11-18.) (On All pages 6.) The bottom page padding/gap should be equal across all pages at a sensible value that you can decide based on /research
+- **All pages 9:** (Raised by the main session and a side agent on 2026-11-18, not Bean's words; Bean may rule it out.) Three pages the draft has no design for and nobody has reviewed look unstyled: search results (very large pink headings with "Read more", a pink search button), Saved items when empty (small plain text, a pink "Continue shopping" button) and the 404 page (a search box with the same pink button). To be restyled in the site's own look, matched to the nearest built pages.
 
 ## Bean's verdicts so far (2026-11-17 late evening)
 
