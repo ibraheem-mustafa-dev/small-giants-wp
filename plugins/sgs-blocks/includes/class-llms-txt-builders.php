@@ -47,7 +47,7 @@ final class Llms_Txt_Builders {
 		if ( \function_exists( 'wc_get_page_id' ) ) {
 			$shop_id = \wc_get_page_id( 'shop' );
 			if ( $shop_id > 0 ) {
-				$shop_url   = \get_permalink( $shop_id );
+				$shop_url   = self::published_page_url( (int) $shop_id );
 				$shop_title = \get_the_title( $shop_id );
 				if ( $shop_url ) {
 					$lines[]       = '## Shop';
@@ -196,9 +196,9 @@ final class Llms_Txt_Builders {
 	public static function build_policy_lines(): array {
 		$lines = array();
 
-		// Privacy policy — WP core helper is the most reliable source.
-		$privacy_url = \get_privacy_policy_url();
-		if ( $privacy_url ) {
+		// Privacy policy: the page WordPress names, listed only while it is published.
+		$privacy_url = self::published_page_url( (int) \get_option( 'wp_page_for_privacy_policy', 0 ) );
+		if ( '' !== $privacy_url ) {
 			$lines[] = '- [Privacy Policy](' . \esc_url_raw( $privacy_url ) . '): How we handle your personal data';
 		}
 
@@ -206,8 +206,8 @@ final class Llms_Txt_Builders {
 			// WooCommerce terms and conditions page.
 			$terms_id = \wc_get_page_id( 'terms' );
 			if ( $terms_id > 0 ) {
-				$terms_url = \get_permalink( $terms_id );
-				if ( $terms_url ) {
+				$terms_url = self::published_page_url( (int) $terms_id );
+				if ( '' !== $terms_url ) {
 					$lines[] = '- [Terms & Conditions](' . \esc_url_raw( $terms_url ) . '): Our terms of service';
 				}
 			}
@@ -216,8 +216,8 @@ final class Llms_Txt_Builders {
 			// introduced in WC 3.9; get_option() returns 0 on older installs (safe).
 			$refund_id = (int) \get_option( 'woocommerce_refund_returns_page_id', 0 );
 			if ( $refund_id > 0 ) {
-				$refund_url = \get_permalink( $refund_id );
-				if ( $refund_url ) {
+				$refund_url = self::published_page_url( (int) $refund_id );
+				if ( '' !== $refund_url ) {
 					$lines[] = '- [Refund & Returns Policy](' . \esc_url_raw( $refund_url ) . '): Returns, refunds and cancellation rights';
 				}
 			}
@@ -245,6 +245,26 @@ final class Llms_Txt_Builders {
 			}
 		}
 		return array();
+	}
+
+	/**
+	 * The permalink of a page that is published and not password-protected, or '' for anything else.
+	 *
+	 * A draft, private, trashed or missing page has no public permalink (WordPress answers `?page_id=N`, a link
+	 * that does not resolve for a visitor), so it is never listed.
+	 *
+	 * @param int $page_id Page ID.
+	 * @return string URL or ''.
+	 */
+	public static function published_page_url( int $page_id ): string {
+		if ( $page_id <= 0 ) {
+			return '';
+		}
+		$page = \get_post( $page_id );
+		if ( ! $page || 'publish' !== $page->post_status || '' !== (string) $page->post_password ) {
+			return '';
+		}
+		return (string) \get_permalink( $page );
 	}
 
 	/**
