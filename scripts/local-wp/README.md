@@ -58,6 +58,10 @@ It reads both URLs from `.claude/secrets/<name>.env` (`WP_URL_<KEY>`), backs up 
 
 `scripts/computed-route/solve.mjs --site local-eye-care` builds and walks a surface on the mirror instead of the test site (`solve.mjs::siteOverride`; the walker's live URLs move with `SGS_LIVE_ORIGIN`). The mirror is a database copy, so the surface's post ids and templates are its own. Calibration targets the mirrors as `local-eye-care` / `local-sandybrown` / `local-indus` / `local-mamas`.
 
+## Back up a site's database before editing it
+
+`bash scripts/local-wp/backup-remote-db.sh <target> [label]` dumps a deploy target's database to `~/backups/db/<host>-<timestamp>[-label].sql.gz` on its own server (any site in the roster, a live one included, because it only reads) and fails unless the file is whole: not empty, a valid gzip, ending in mysqldump's completion line. It prints the restore command and keeps the newest 12 per host. Run it before any script edits a live site's content or settings: a deploy can roll code back, never a database change, and Hostinger's `wp db export` writes nothing. The file holds customer details and payment settings, so it stays on the server.
+
 ## Push the mirror to the test site
 
 The reverse of the refresh: the clone is built on the mirror, then its database and uploads are copied onto the test site so the posts, menus and media keep the same ids (from Git Bash, which holds the SSH key):
