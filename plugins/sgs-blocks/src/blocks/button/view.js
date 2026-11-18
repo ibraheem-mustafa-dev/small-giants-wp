@@ -98,6 +98,7 @@ function bootTopButtons() {
 	} );
 }
 
+const ADD_BUTTON_SELECTOR = '[data-sgs-link-source="add-to-basket"][data-sgs-add-body]';
 const GENERIC_ADD_ERROR = 'Could not add that to your basket. Please try again.';
 
 /**
@@ -124,10 +125,17 @@ function ensureMessageRegion( button ) {
  * A modified or non-primary click, a button already working and a button whose last add failed all keep the link's own
  * behaviour, so the product page is always reachable.
  *
+ * The listener sits on the document and finds the button from the click's target: a page that redraws its own markup
+ * after load (the WooCommerce Cart block rebuilds its empty state in the browser) replaces the button's element, and a
+ * listener bound to the first element would be lost with it.
+ *
  * @param {MouseEvent} event The click event.
  */
 async function handleAddClick( event ) {
-	const button = event.currentTarget;
+	const button = event.target instanceof window.Element ? event.target.closest( ADD_BUTTON_SELECTOR ) : null;
+	if ( ! button ) {
+		return;
+	}
 	if ( event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ) {
 		return;
 	}
@@ -171,14 +179,13 @@ async function handleAddClick( event ) {
 }
 
 /**
- * Boot the add-to-basket buttons. Cost-gated like the top buttons.
+ * Boot the add-to-basket buttons. Cost-gated like the top buttons: a page with none gets no listener.
  */
 function bootAddToBasketButtons() {
-	const buttons = document.querySelectorAll( '[data-sgs-link-source="add-to-basket"][data-sgs-add-body]' );
-	buttons.forEach( ( button ) => {
-		ensureMessageRegion( button );
-		button.addEventListener( 'click', handleAddClick );
-	} );
+	if ( ! document.querySelector( ADD_BUTTON_SELECTOR ) ) {
+		return;
+	}
+	document.addEventListener( 'click', handleAddClick );
 }
 
 bootTopButtons();

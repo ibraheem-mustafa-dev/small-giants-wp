@@ -3,7 +3,7 @@
  *
  * Negative controls: 'a failed add shows the message' fails if the failure is swallowed; 'a second tap while busy is
  * ignored' fails if the busy state does not guard the handler; 'an ordinary link is left alone' fails if the handler binds
- * to every link.
+ * to every link; 'a button the page redrew after load still adds' fails if the listener is bound to the first element.
  */
 
 const MARKUP =
@@ -18,6 +18,7 @@ describe( 'add-to-basket button', () => {
 	let events;
 	let onDocument;
 	let onWindow;
+	let viewListeners;
 
 	beforeEach( () => {
 		jest.resetModules();
@@ -27,10 +28,15 @@ describe( 'add-to-basket button', () => {
 		onWindow = () => events.push( 'window' );
 		document.addEventListener( 'wc-blocks_added_to_cart', onDocument );
 		window.addEventListener( 'sgs-cart-updated', onWindow );
+		// The view listens on the document, which outlives a test: record its listeners so each test removes its own.
+		const addListener = jest.spyOn( document, 'addEventListener' );
 		require( '../../src/blocks/button/view' );
+		viewListeners = addListener.mock.calls.filter( ( call ) => 'click' === call[ 0 ] );
+		addListener.mockRestore();
 	} );
 
 	afterEach( () => {
+		viewListeners.forEach( ( [ type, listener ] ) => document.removeEventListener( type, listener ) );
 		document.removeEventListener( 'wc-blocks_added_to_cart', onDocument );
 		window.removeEventListener( 'sgs-cart-updated', onWindow );
 		delete global.fetch;
@@ -63,6 +69,18 @@ describe( 'add-to-basket button', () => {
 		expect( link.hasAttribute( 'aria-busy' ) ).toBe( false );
 		expect( link.nextElementSibling.getAttribute( 'aria-live' ) ).toBe( 'polite' );
 		expect( link.nextElementSibling.textContent ).toBe( 'Added to your basket.' );
+	} );
+
+	it( 'a button the page redrew after load still adds', async () => {
+		global.fetch = jest.fn( () => new Promise( () => {} ) );
+		const first = document.getElementById( 'add' );
+		const redrawn = first.cloneNode( true );
+		first.replaceWith( redrawn );
+		redrawn.click();
+		await flush();
+
+		expect( global.fetch ).toHaveBeenCalledTimes( 1 );
+		expect( redrawn.getAttribute( 'aria-busy' ) ).toBe( 'true' );
 	} );
 
 	it( 'a second tap while busy is ignored', async () => {
