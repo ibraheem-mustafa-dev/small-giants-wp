@@ -2,8 +2,8 @@
  * SGS motion: marquee (Spec 38A FR-38A-44). The painting half.
  *
  * `src/shared/effects/fx-marquee.js` clones the block's `[data-sgs-marquee-set]` and runs a Web Animations loop on
- * `--sgs-marquee-x` (or `-y` for a vertical marquee) on every copy; this file turns that channel into `translate`,
- * lays the lane out as one non-wrapping row while the marquee runs, and fades the two ends of the lane. It sets no `animation-name`
+ * `translate` (x, or y for a vertical marquee) on every copy, which Chrome runs on the compositor thread. This file lays
+ * the lane out as one non-wrapping row while the marquee runs and fades the two ends of the lane. It sets no `animation-name`
  * (an entrance on the same element owns that list) and nothing here applies while the marquee is off, so a static
  * block keeps its own layout and every item stays visible.
  *
@@ -13,9 +13,6 @@
  * masked box, so a block prints a lane element distinct from its root (the trust bar's `.sgs-trust-bar__lane`, the
  * brand strip's `.sgs-brand-strip__track`). The lane layout rules still match a root that is its own lane.
  */
-
-@property --sgs-marquee-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@property --sgs-marquee-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
 
 [data-sgs-fx~="marquee"][data-sgs-marquee="on"] {
 	overflow: hidden;
@@ -67,7 +64,9 @@
 [data-sgs-fx~="marquee"][data-sgs-marquee="on"][data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]) {
 	flex: 0 0 auto;
 	max-width: none;
-	translate: var(--sgs-marquee-x) var(--sgs-marquee-y);
+	/* The loop's own `translate` animation replaces this, so a block's other translate channels (an entrance's
+	   `--sgs-me-ty`) never shift a set or a copy: the strip's items move by the loop alone. */
+	translate: none;
 }
 
 /* A per-item scroll entrance does not apply to a running marquee: fx-marquee.js shows every item before it clones the set,
@@ -180,14 +179,8 @@
 	}
 }
 
-/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the scroll translate, the cloned items, and the edge-fade mask are removed; the pause control stays because other loops in the same block share it and the script removes it with the last loop. The lane's flex row and overflow clip are left, because the authored layout cannot be recovered in CSS; the script removes those marks when it tears down. */
+/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the cloned items and the edge-fade mask are removed here and the script cancels the loop (a running `translate` animation outranks any stylesheet declaration, so only the script can stop the movement); the pause control stays because other loops in the same block share it and the script removes it with the last loop. The lane's flex row and overflow clip are left, because the authored layout cannot be recovered in CSS; the script removes those marks when it tears down. */
 @media (max-width: 767.98px) {
-	[data-sgs-fx~="marquee"][data-sgs-fx-off-mobile~="marquee"][data-sgs-marquee="on"] [data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
-	[data-sgs-fx~="marquee"][data-sgs-fx-disable-mobile][data-sgs-marquee="on"] [data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
-	[data-sgs-fx~="marquee"][data-sgs-fx-off-mobile~="marquee"][data-sgs-marquee="on"][data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
-	[data-sgs-fx~="marquee"][data-sgs-fx-disable-mobile][data-sgs-marquee="on"][data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]) {
-		translate: none;
-	}
 	[data-sgs-fx~="marquee"][data-sgs-fx-off-mobile~="marquee"] [data-sgs-marquee-clone],
 	[data-sgs-fx~="marquee"][data-sgs-fx-disable-mobile] [data-sgs-marquee-clone] {
 		display: none;
@@ -198,12 +191,6 @@
 	}
 }
 @media (min-width: 768px) and (max-width: 1023.98px) {
-	[data-sgs-fx~="marquee"][data-sgs-fx-off-tablet~="marquee"][data-sgs-marquee="on"] [data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
-	[data-sgs-fx~="marquee"][data-sgs-fx-disable-tablet][data-sgs-marquee="on"] [data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
-	[data-sgs-fx~="marquee"][data-sgs-fx-off-tablet~="marquee"][data-sgs-marquee="on"][data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
-	[data-sgs-fx~="marquee"][data-sgs-fx-disable-tablet][data-sgs-marquee="on"][data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]) {
-		translate: none;
-	}
 	[data-sgs-fx~="marquee"][data-sgs-fx-off-tablet~="marquee"] [data-sgs-marquee-clone],
 	[data-sgs-fx~="marquee"][data-sgs-fx-disable-tablet] [data-sgs-marquee-clone] {
 		display: none;
@@ -214,10 +201,6 @@
 	}
 }
 @media (min-width: 1024px) {
-	[data-sgs-fx~="marquee"][data-sgs-fx-off-desktop~="marquee"][data-sgs-marquee="on"] [data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
-	[data-sgs-fx~="marquee"][data-sgs-fx-off-desktop~="marquee"][data-sgs-marquee="on"][data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]) {
-		translate: none;
-	}
 	[data-sgs-fx~="marquee"][data-sgs-fx-off-desktop~="marquee"] [data-sgs-marquee-clone] {
 		display: none;
 	}

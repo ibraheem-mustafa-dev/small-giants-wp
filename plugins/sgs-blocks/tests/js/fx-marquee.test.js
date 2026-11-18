@@ -228,8 +228,8 @@ describe( 'marquee speed in px/s', () => {
 		expect( first.options.iterations ).toBe( Infinity );
 		expect( first.options.direction ).toBe( 'normal' );
 		expect( first.keyframes ).toEqual( [
-			{ '--sgs-marquee-x': '0px' },
-			{ '--sgs-marquee-x': '-400px' },
+			{ translate: '0px 0px' },
+			{ translate: '-400px 0px' },
 		] );
 		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
 		expect(
@@ -241,8 +241,8 @@ describe( 'marquee speed in px/s', () => {
 		layout.gap = 40;
 		mount( { attrs: 'data-sgs-fx-marquee-speed="110"' } );
 		await boot();
-		expect( animations[ 0 ].keyframes[ 1 ][ '--sgs-marquee-x' ] ).toBe(
-			'-440px'
+		expect( animations[ 0 ].keyframes[ 1 ].translate ).toBe(
+			'-440px 0px'
 		);
 		expect( animations[ 0 ].options.duration ).toBe( 4000 );
 	} );
@@ -262,7 +262,7 @@ describe( 'marquee speed in px/s', () => {
 		resizeObservers[ 0 ].fire();
 		const latest = live().pop();
 		expect( latest.options.duration ).toBe( 5000 );
-		expect( latest.keyframes[ 1 ][ '--sgs-marquee-x' ] ).toBe( '-500px' );
+		expect( latest.keyframes[ 1 ].translate ).toBe( '-500px 0px' );
 		expect( live() ).toHaveLength( 3 );
 	} );
 
@@ -385,17 +385,17 @@ describe( 'marquee direction', () => {
 		mount( { attrs: 'data-sgs-fx-marquee-direction="right"' } );
 		await boot();
 		expect( animations[ 0 ].options.direction ).toBe( 'reverse' );
-		expect( animations[ 0 ].keyframes[ 1 ][ '--sgs-marquee-x' ] ).toBe(
-			'-400px'
+		expect( animations[ 0 ].keyframes[ 1 ].translate ).toBe(
+			'-400px 0px'
 		);
 	} );
 
-	test( 'up animates the vertical channel by the set height', async () => {
+	test( 'up animates the vertical translate by the set height', async () => {
 		mount( { attrs: 'data-sgs-fx-marquee-direction="up"' } );
 		await boot();
 		expect( animations[ 0 ].keyframes ).toEqual( [
-			{ '--sgs-marquee-y': '0px' },
-			{ '--sgs-marquee-y': '-100px' },
+			{ translate: '0px 0px' },
+			{ translate: '0px -100px' },
 		] );
 		expect( animations[ 0 ].options.direction ).toBe( 'normal' );
 	} );

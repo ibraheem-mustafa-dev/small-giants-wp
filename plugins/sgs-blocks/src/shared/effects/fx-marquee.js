@@ -7,8 +7,12 @@
  * Markup contract (printed by the block's render.php): inside the block root, one element marked
  * `data-sgs-marquee-set` holds the items. This module clones that set, appends the copies after it (aria-hidden, their
  * links and buttons at tabindex=-1 so a linked logo never takes focus, still live to the pointer), and runs the same Web Animations loop on every copy through the shared
- * loop control (`@sgs/loop-control`): the registered channel owner `--sgs-marquee-x` (or `-y` for a vertical
- * marquee) runs from 0 to minus one set pitch, and `assets/css/fx-marquee.css` composes it into `translate`.
+ * loop control (`@sgs/loop-control`): the `translate` property (x, or y for a vertical marquee) runs from 0 to minus
+ * one set pitch. `translate` is animated directly, not through a custom property, because Chrome runs it on the
+ * compositor thread: an animated custom property is recomputed on the main thread every frame, which kept a page with a
+ * strip restyling at 60 frames a second while idle. A set and its copies carry no other `translate` (the stylesheet
+ * composes none onto them: `fx-marquee.css` gives the lane's children only this animation), so the animation replaces
+ * nothing; a Web Animations `translate` is not an inline `style` declaration, so the no-inline-style rule holds.
  * One pitch is the distance between a set and its copy, so the loop is seamless at any item count or width.
  *
  * Controls, each read from a custom property of the same name when the emitter writes one (the per-device fields)
@@ -334,11 +338,10 @@ export function createMarquee( root ) {
 						: 'normal',
 				} ),
 				keyframes: () => {
-					const prop = `--sgs-marquee-${ state.axis }`;
-					return [
-						{ [ prop ]: '0px' },
-						{ [ prop ]: `-${ state.distance }px` },
-					];
+					const end = `-${ state.distance }px`;
+					return 'y' === state.axis
+						? [ { translate: '0px 0px' }, { translate: `0px ${ end }` } ]
+						: [ { translate: '0px 0px' }, { translate: `${ end } 0px` } ];
 				},
 				// Every copy takes its visibility from the block root, so the copies pause and run together.
 				observe: root,
