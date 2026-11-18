@@ -190,6 +190,12 @@ if ( ! function_exists( 'apply_filters' ) ) {
 			$groups = json_decode( (string) getenv( 'SGS_QA_GROUPS' ), true );
 			return is_array( $groups ) ? $groups : $value;
 		}
+		// SGS_QA_FILTER_RETURNS (a JSON object of filter tag => value) answers any other filter, so a test can switch a filter
+		// such as sgs_buybox_express_buttons on or off without a WordPress hook table.
+		$returns = json_decode( (string) getenv( 'SGS_QA_FILTER_RETURNS' ), true );
+		if ( is_array( $returns ) && array_key_exists( $tag, $returns ) ) {
+			return $returns[ $tag ];
+		}
 		return $value;
 	}
 }

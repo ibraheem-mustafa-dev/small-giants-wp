@@ -164,6 +164,17 @@
 	margin: 0;
 }
 
+/* Express payment buttons (Apple Pay, Google Pay) under the form. The wrapper keeps its size while inert, so the buttons
+   returning when the choices are complete moves nothing; the payment plugin lays out its own buttons inside. */
+.sgs-buybox .sgs-buybox__express {
+	margin-block-start: var(--wp--preset--spacing--20, 0.75rem);
+}
+
+.sgs-buybox .sgs-buybox__express[data-state="unavailable"] {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
 /* Primary conversion CTA (uimax e-commerce rule: high-contrast, dominant).
    Full-width inside the buybox column; brand accent with the theme text
    colour for contrast (yellow accents need dark text, not white). All

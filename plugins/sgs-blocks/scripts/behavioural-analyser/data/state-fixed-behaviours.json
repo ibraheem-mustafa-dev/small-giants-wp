@@ -3090,6 +3090,11 @@
    "file": "plugins/sgs-blocks/src/blocks/button/style.css",
    "selector": ".sgs-button[aria-busy=\"true\"]",
    "reason": "an add-to-basket button dims and shows a progress cursor while its add is in flight, as fixed behaviour; the view module sets and clears aria-busy, and it is not a look setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox .sgs-buybox__express[data-state=\"unavailable\"]",
+   "reason": "the express payment buttons dim and show a not-allowed cursor while the choices are incomplete, as fixed behaviour; the product-card store sets data-state and inert together, and it is not a look setting"
   }
  ]
 }
