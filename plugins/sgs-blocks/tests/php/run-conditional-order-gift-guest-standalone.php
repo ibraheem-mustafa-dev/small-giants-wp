@@ -69,6 +69,25 @@ ok( '' === $run( 'order-viewable' ), 'a guest order past the grace period with n
 $GLOBALS['sgs_t']['query'] = array();
 ok( '' === $run( 'order-viewable' ), 'a page with no order hides the viewable block' );
 
+// order-not-viewable: the inverse of order-viewable for an order that exists; a page with no order hides it like every order rule.
+sgs_t_order( array( 'id' => 5, 'key' => 'k5', 'user' => 9, 'created' => $now - 30 ) );
+$view( 1, 'wrong' );
+ok( $html === $run( 'order-not-viewable' ), 'a wrong order key shows the not-viewable block' );
+$view( 1, '' );
+ok( $html === $run( 'order-not-viewable' ), 'a missing order key shows the not-viewable block' );
+$view( 4, 'k4' );
+ok( $html === $run( 'order-not-viewable' ), 'a guest who has not confirmed the order email shows the not-viewable block' );
+$view( 5, 'k5', 0 );
+ok( $html === $run( 'order-not-viewable' ), 'a signed-out visitor on a member order shows the not-viewable block' );
+$view( 1, 'k1' );
+ok( '' === $run( 'order-not-viewable' ), 'a viewable guest order hides the not-viewable block' );
+$view( 3, 'k3', 7 );
+ok( '' === $run( 'order-not-viewable' ), 'a viewable account order hides the not-viewable block' );
+$view( 99, 'k99' );
+ok( '' === $run( 'order-not-viewable' ), 'an order id that does not exist hides the not-viewable block' );
+$GLOBALS['sgs_t']['query'] = array();
+ok( '' === $run( 'order-not-viewable' ), 'a page with no order hides the not-viewable block' );
+
 $view( 1, 'k1' );
 ok( $html === $run( 'logged-out' ) && $html === $run( 'none' ), 'the older login rules are unchanged' );
 

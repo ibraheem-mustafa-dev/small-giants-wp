@@ -106,7 +106,7 @@ function addConditionalAttributes( settings, name ) { // eslint-disable-line no-
 		...settings,
 		attributes: {
 			...settings.attributes,
-			/** 'none' | 'logged-in' | 'logged-out' | 'order-owner' | 'order-has-gift' | 'order-no-gift' | 'order-guest' | 'order-viewable' */
+			/** 'none' | 'logged-in' | 'logged-out' | 'order-owner' | 'order-has-gift' | 'order-no-gift' | 'order-guest' | 'order-viewable' | 'order-not-viewable' */
 			sgsConditionLoggedIn: { type: 'string', default: 'none' },
 			/** Array of WordPress role slugs, e.g. ['administrator','editor'] */
 			sgsConditionUserRole: {
@@ -213,6 +213,8 @@ function buildConditionSummary( attributes ) {
 		parts.push( __( 'orders placed without an account only', 'sgs-blocks' ) );
 	} else if ( 'order-viewable' === attributes.sgsConditionLoggedIn ) {
 		parts.push( __( 'when the order on this page can be viewed', 'sgs-blocks' ) );
+	} else if ( 'order-not-viewable' === attributes.sgsConditionLoggedIn ) {
+		parts.push( __( 'when the order on this page cannot be viewed', 'sgs-blocks' ) );
 	}
 
 	if ( attributes.sgsConditionDateStart ) {
@@ -467,6 +469,10 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 									{
 										label: __( 'The order on this page can be viewed', 'sgs-blocks' ),
 										value: 'order-viewable',
+									},
+									{
+										label: __( 'The order on this page cannot be viewed (wrong link, or email not confirmed)', 'sgs-blocks' ),
+										value: 'order-not-viewable',
 									},
 								] }
 								onChange={ ( val ) =>

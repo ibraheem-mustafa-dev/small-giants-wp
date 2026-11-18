@@ -18,7 +18,9 @@
  *   owns the order of the current order-confirmation page; hidden when no order is on the page) |
  *   'order-has-gift' | 'order-no-gift' (the order is, or is not, a gift with a note) | 'order-guest' (the order was
  *   placed without a customer account) | 'order-viewable' (the order on the page can be viewed by this visitor: the plain
- *   case, which hides a block while WooCommerce shows its confirm-your-email form instead of the order). The four
+ *   case, which hides a block while WooCommerce shows its confirm-your-email form instead of the order) |
+ *   'order-not-viewable' (the inverse: an order is on the page but this visitor cannot view it, so a neutral message can
+ *   stand in for "your order is in"; a page with no order at all hides it, like every other order rule). The five
  *   order rules read the order through
  *   Order_Binding::viewable_order(), the same permission check as the sgs/order binding, and hide the block when the
  *   order cannot be viewed. 'order-owner' is the inverse of 'order-guest' in practice: WooCommerce shows an account
@@ -127,14 +129,32 @@ function viewer_owns_current_order(): bool {
 }
 
 /**
- * Whether the order Show-to rule (`order-has-gift`, `order-no-gift`, `order-guest`, `order-viewable`) passes for the order on the
- * current order-confirmation page. An order this visitor may not view, or a page with no order, fails every rule.
+ * Whether the order-confirmation page names an order that exists, whoever may view it.
+ *
+ * @return bool
+ */
+function order_exists_on_page(): bool {
+	if ( ! function_exists( 'wc_get_order' ) ) {
+		return false;
+	}
+	$order_id = absint( get_query_var( 'order-received' ) );
+	return $order_id > 0 && wc_get_order( $order_id ) instanceof \WC_Order;
+}
+
+/**
+ * Whether the order Show-to rule (`order-has-gift`, `order-no-gift`, `order-guest`, `order-viewable`, `order-not-viewable`) passes for
+ * the order on the current order-confirmation page. An order this visitor may not view, or a page with no order, fails every rule
+ * except `order-not-viewable`, which passes for an order that exists but cannot be viewed (wrong or missing key, a guest who has
+ * not confirmed the order's email, a signed-out visitor on a member's order) and still fails on a page with no order.
  *
  * @param string $rule The sgsConditionLoggedIn value.
  * @return bool
  */
 function order_rule_passes( string $rule ): bool {
 	$order = class_exists( __NAMESPACE__ . '\Order_Binding' ) ? Order_Binding::viewable_order() : null;
+	if ( 'order-not-viewable' === $rule ) {
+		return null === $order && order_exists_on_page();
+	}
 	if ( null === $order ) {
 		return false;
 	}
@@ -188,7 +208,7 @@ function check_conditional_visibility( string $block_content, array $block, $ins
 		return '';
 	}
 
-	if ( in_array( $login_rule, array( 'order-has-gift', 'order-no-gift', 'order-guest', 'order-viewable' ), true ) && ! order_rule_passes( $login_rule ) ) {
+	if ( in_array( $login_rule, array( 'order-has-gift', 'order-no-gift', 'order-guest', 'order-viewable', 'order-not-viewable' ), true ) && ! order_rule_passes( $login_rule ) ) {
 		return '';
 	}
 
