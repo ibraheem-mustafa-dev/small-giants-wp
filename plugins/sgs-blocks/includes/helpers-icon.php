@@ -31,7 +31,9 @@ if ( ! function_exists( 'sgs_icon_length_value' ) ) {
 	 * @return string A CSS length, or ''.
 	 */
 	function sgs_icon_length_value( $raw, int $max_px = 512 ): string {
-		if ( is_int( $raw ) || is_float( $raw ) ) {
+		// A saved number is a pixel size; only a string can name a spacing preset (the slug "20" is not 20 pixels).
+		$is_number = is_int( $raw ) || is_float( $raw );
+		if ( $is_number ) {
 			$raw = (string) $raw;
 		}
 		if ( ! is_string( $raw ) ) {
@@ -45,7 +47,7 @@ if ( ! function_exists( 'sgs_icon_length_value' ) ) {
 		if ( '' !== $resolved ) {
 			return $resolved;
 		}
-		if ( preg_match( '/^\d+$/', $value ) && in_array( $value, sgs_css_length_value_preset_slugs(), true ) ) {
+		if ( ! $is_number && preg_match( '/^\d+$/', $value ) && in_array( $value, sgs_css_length_value_preset_slugs(), true ) ) {
 			return 'var(--wp--preset--spacing--' . $value . ')';
 		}
 		if ( ! preg_match( '/^(\d+(?:\.\d+)?)(px|rem|em|%|vw|vh)?$/', $value, $m ) ) {

@@ -222,7 +222,9 @@ export function labelPositionFor( own, group ) {
  * @return {string} CSS length, or a spacing or font-size preset var.
  */
 export function iconLengthValue( raw, maxPx = 512, presetSlugs = [] ) {
-	if ( 'number' === typeof raw ) {
+	// A saved number is a pixel size; only a string can name a spacing preset (the slug "20" is not 20 pixels).
+	const isNumber = 'number' === typeof raw;
+	if ( isNumber ) {
 		raw = String( raw );
 	}
 	if ( 'string' !== typeof raw ) {
@@ -236,7 +238,7 @@ export function iconLengthValue( raw, maxPx = 512, presetSlugs = [] ) {
 	if ( resolved ) {
 		return resolved;
 	}
-	if ( /^\d+$/.test( value ) && presetSlugs.includes( value ) ) {
+	if ( ! isNumber && /^\d+$/.test( value ) && presetSlugs.includes( value ) ) {
 		return `var(--wp--preset--spacing--${ value })`;
 	}
 	const m = /^(\d+(?:\.\d+)?)(px|rem|em|%|vw|vh)?$/.exec( value );

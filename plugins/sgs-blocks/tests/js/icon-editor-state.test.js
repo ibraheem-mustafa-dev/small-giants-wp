@@ -97,6 +97,9 @@ describe( 'brand and name', () => {
 		expect( iconLengthValue( '9999px', 512 ) ).toBe( '512px' );
 		expect( iconLengthValue( '50', 512, [ '50' ] ) ).toBe( 'var(--wp--preset--spacing--50)' );
 		expect( iconLengthValue( 24, 512 ) ).toBe( '24px' );
+		// A saved number is pixels even when a spacing preset has the same name; the string is the preset.
+		expect( iconLengthValue( 20, 512, [ '20', '50' ] ) ).toBe( '20px' );
+		expect( iconLengthValue( '20', 512, [ '20', '50' ] ) ).toBe( 'var(--wp--preset--spacing--20)' );
 		expect( iconLengthValue( 'var(--wp--preset--font-size--large)', 512 ) ).toBe( 'var(--wp--preset--font-size--large)' );
 		expect( iconLengthValue( '5vw', 512 ) ).toBe( '5vw' );
 		expect( iconLengthValue( 'var(--wp--preset--font-size--x);}', 512 ) ).toBe( '' );

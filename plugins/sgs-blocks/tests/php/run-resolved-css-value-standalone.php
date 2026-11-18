@@ -25,6 +25,10 @@ if ( ! function_exists( 'esc_attr' ) ) {
 }
 if ( ! function_exists( 'wp_get_global_settings' ) ) {
 	function wp_get_global_settings( $path = array() ) {
+		// The theme's spacing presets, for the helpers that tell a preset name from a pixel number.
+		if ( array( 'spacing', 'spacingSizes' ) === $path ) {
+			return array( 'theme' => array( array( 'slug' => '20' ), array( 'slug' => '50' ) ) );
+		}
 		return array();
 	}
 }
@@ -127,6 +131,11 @@ foreach ( $contract as $name => $fn ) {
 		$check( "contract $name keeps $value", $value, $fn( $value ) );
 	}
 }
+
+// A saved number is pixels even when a spacing preset has the same name; the string names the preset.
+$check( 'icon length: the number 20 is 20 pixels', '20px', sgs_icon_length_value( 20 ) );
+$check( 'icon length: the string 20 is the spacing preset', 'var(--wp--preset--spacing--20)', sgs_icon_length_value( '20' ) );
+$check( 'icon length: a number with no preset of that name', '24px', sgs_icon_length_value( 24 ) );
 
 echo ( 0 === $fail ? 'PASS' : 'FAIL' ) . " $total assertions, $fail failed\n";
 exit( 0 === $fail ? 0 : 1 );
