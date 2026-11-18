@@ -849,6 +849,219 @@ document.addEventListener( 'click', ( event ) => {
 	selectSwatch( card, btn );
 } );
 
+/**
+ * The add request's payload for the card's current choices: the cart proxy's body, shared by the add button
+ * (`actions.addToCart`) and the express payment buttons (`expressFields`), so the two cannot drift.
+ *
+ * @param {Object} ctx The card's Interactivity context.
+ * @return {{id:number, body:Object}|null} Null when there is nothing to add.
+ */
+function buildAddBody( ctx ) {
+	// Resolve the correct ID to send:
+	//   variable product → selected variation ID
+	//   simple / CPT    → parent product ID (addToCartId)
+	const variationId = parseInt( ctx.selectedVariationId, 10 ) || 0;
+	const parentId    = parseInt( ctx.addToCartId, 10 ) || 0;
+	const id          = variationId > 0 ? variationId : parentId;
+
+	if ( ! id ) {
+		return null;
+	}
+
+	// Build the variation array using WC attribute taxonomies + term
+	// slugs (M-C2 wire format). Only populated for variable products.
+	const variation = [];
+	if ( variationId > 0 && Array.isArray( ctx.axes ) && ctx.selectedAxes ) {
+		for ( const axis of ctx.axes ) {
+			const slug = ctx.selectedAxes[ axis.taxonomy ];
+			if ( slug ) {
+				variation.push( { attribute: axis.taxonomy, value: slug } );
+			}
+		}
+	}
+
+	const body = { id, quantity: 1 };
+	if ( variation.length ) {
+		body.variation = variation;
+	}
+
+	// Spec 43 FR-43-23 — sgs/buybox's guided layout resolves answer
+	// groups (e.g. Topping, Dietary) that never enter variation
+	// resolution; guided.js keeps their chosen labels as JSON on the
+	// card root's data-extra-fields attribute (the smallest generic
+	// extension point this store needs — read fresh on every add, so
+	// a later re-answer is picked up with no extra wiring).
+	const cardRefForFields = cardRefByCtx.get( ctx );
+	const extraFieldsRaw = cardRefForFields
+		? cardRefForFields.dataset.extraFields
+		: '';
+	if ( extraFieldsRaw ) {
+		try {
+			const extraFields = JSON.parse( extraFieldsRaw );
+			if ( Array.isArray( extraFields ) && extraFields.length ) {
+				body.fields = extraFields;
+			}
+		} catch {
+			// Malformed JSON — proceed with no fields rather than failing the add.
+		}
+	}
+
+	// Buy box "Pick a set": configurator-view.js keeps the picks as JSON on the card root; the server checks
+	// every slug and builds the cart row (Configurator_Picks), so only slugs and counts travel.
+	const extraPicksRaw = cardRefForFields ? cardRefForFields.dataset.extraPicks : '';
+	if ( extraPicksRaw ) {
+		try {
+			const extraPicks = JSON.parse( extraPicksRaw );
+			if ( extraPicks && 'object' === typeof extraPicks ) {
+				body.picks = extraPicks;
+			}
+		} catch {
+			// Malformed JSON: add without picks; the server refuses a product that needs them.
+		}
+	}
+	return { id, body };
+}
+
+/* ------------------------------------------------------------------------------------------------------------------
+ * Express payment buttons (Apple Pay, Google Pay)
+ *
+ * Payment Plugins for Stripe prints its wallet buttons under the buy box (`.sgs-buybox__express`, printed by
+ * extras.php::sgs_buybox_after_cart_form_action) and adds the product on a tap through its own route, from its own idea
+ * of the product (`wcStripe.product`) plus the fields its filters return. The buy box keeps the choices in this store,
+ * so `applyExpress` keeps that idea in step and makes the buttons inert whenever "Add to basket" would not be allowed.
+ * Everything is feature-detected: without the plugin nothing here runs.
+ *
+ *   wcStripe.actions.doAction( 'single_product_variation_changed', variationId, { attributes, prices, is_in_stock } )
+ *       the variation, its attributes and its price, so the wallet sheet's amount follows the pack size.
+ *   wcStripe.actions.addFilter( 'add_to_cart_data' )          adds `sgs_picks` and `sgs_pick_counts` to the one-tap add.
+ *   wcStripe.actions.addFilter( 'cart_calculation_data' )     adds the same to the amount calculation, which adds the line
+ *                                                             to a throw-away basket and so needs the picks to be accepted.
+ *   wcStripe.actions.addFilter( 'cart_calculation_enabled' )  holds the calculation back while the choices are incomplete.
+ *   wcStripe.cart.cartCalculation()                           re-runs the calculation when the choices become complete.
+ * ---------------------------------------------------------------------------------------------------------------- */
+
+const EXPRESS_BOX = '.sgs-buybox__express';
+/** The card whose choices the payment plugin's filters read: a product page has one buy box. */
+let expressActive = null;
+let expressFiltersAdded = false;
+let expressProductSignature = '';
+let expressCalculationSignature = '';
+
+/** The payment plugin's globals, or null while it is absent or not yet loaded. */
+function expressPlugin() {
+	const wc = window.wcStripe;
+	return wc && wc.actions && wc.product && wc.cart && 'function' === typeof wc.actions.addFilter ? wc : null;
+}
+
+/**
+ * The picks in the form the payment plugin's request carries them, `sgs_picks[group][]` slugs and
+ * `sgs_pick_counts[group][slug]`, which the server reads like the no-JS form (Configurator_Picks::picks_from_post).
+ * Built from the add request's own body, so the counts of an unequal split travel too.
+ *
+ * @param {Object} ctx The card's Interactivity context.
+ * @return {Object} The extra request fields (empty without picks).
+ */
+function expressFields( ctx ) {
+	const built = buildAddBody( ctx );
+	const picks = built && built.body.picks;
+	if ( ! picks ) {
+		return {};
+	}
+	const slugs = {};
+	const counts = {};
+	for ( const [ group, rows ] of Object.entries( picks ) ) {
+		if ( Array.isArray( rows ) ) {
+			slugs[ group ] = rows.map( ( row ) => row.slug );
+			counts[ group ] = Object.fromEntries( rows.map( ( row ) => [ row.slug, row.count ] ) );
+		}
+	}
+	return { sgs_picks: slugs, sgs_pick_counts: counts };
+}
+
+/** True when the buy box's own "Add to basket" would go ahead: in stock, nothing pending, a variation chosen, picks complete. */
+function expressUsable( ctx, ref ) {
+	if ( ctx.pending || ! ctx.inStock || ! buildAddBody( ctx ) ) {
+		return false;
+	}
+	if ( ctx.combos && Object.keys( ctx.combos ).length && ! ( parseInt( ctx.selectedVariationId, 10 ) > 0 ) ) {
+		return false;
+	}
+	return '0' !== ref.dataset.sgsPicksReady;
+}
+
+function expressAddFilters( wc ) {
+	if ( expressFiltersAdded ) {
+		return;
+	}
+	expressFiltersAdded = true;
+	const withPicks = ( data ) => ( expressActive ? { ...data, ...expressFields( expressActive.ctx ) } : data );
+	wc.actions.addFilter( 'add_to_cart_data', withPicks );
+	wc.actions.addFilter( 'cart_calculation_data', withPicks );
+	wc.actions.addFilter( 'cart_calculation_enabled', ( enabled ) => !! enabled && !! expressActive && expressUsable( expressActive.ctx, expressActive.ref ), 20 );
+}
+
+/** Tell the payment plugin which variation, attributes and price the buy box shows (once per change). */
+function expressSyncProduct( wc, ctx ) {
+	const combo = ctx.combos && ctx.combos[ ctx.selectedKey ];
+	const variationId = parseInt( ctx.selectedVariationId, 10 ) || 0;
+	if ( ! combo || ! variationId ) {
+		return;
+	}
+	const attributes = {};
+	for ( const axis of ctx.axes || [] ) {
+		if ( ctx.selectedAxes && ctx.selectedAxes[ axis.taxonomy ] ) {
+			attributes[ 'attribute_' + axis.taxonomy ] = ctx.selectedAxes[ axis.taxonomy ];
+		}
+	}
+	const signature = [ variationId, combo.priceMinor, !! combo.inStock, JSON.stringify( attributes ) ].join( '|' );
+	if ( signature === expressProductSignature ) {
+		return;
+	}
+	expressProductSignature = signature;
+	wc.actions.doAction( 'single_product_variation_changed', variationId, {
+		attributes,
+		prices: { price: String( combo.priceMinor ), currency_minor_unit: ctx.decimals ?? 2 },
+		is_in_stock: !! combo.inStock,
+	} );
+}
+
+/**
+ * Bring the payment plugin and the buttons in step with the buy box. Called from the store's watch (the variation, stock
+ * and pending flags) and from `sgs:picks-changed` (the picks).
+ *
+ * @param {Object}      ctx The card's Interactivity context.
+ * @param {HTMLElement} ref The card root.
+ */
+function applyExpress( ctx, ref ) {
+	const box = ref.querySelector( EXPRESS_BOX );
+	if ( ! box ) {
+		return;
+	}
+	const usable = expressUsable( ctx, ref );
+	box.hidden = ! ctx.inStock;
+	box.toggleAttribute( 'inert', ! usable );
+	box.dataset.state = usable ? 'ready' : 'unavailable';
+	const wc = expressPlugin();
+	if ( ! wc ) {
+		return;
+	}
+	expressActive = { ctx, ref };
+	expressAddFilters( wc );
+	expressSyncProduct( wc, ctx );
+	if ( ! usable ) {
+		return;
+	}
+	// The amount comes from the server's calculation of this exact line. The plugin runs it on a variation change, which
+	// can land while the picks are still incomplete (held back); run it again once they are complete and whenever they change.
+	const signature = [ ctx.selectedVariationId, JSON.stringify( expressFields( ctx ) ) ].join( '|' );
+	if ( signature !== expressCalculationSignature ) {
+		expressCalculationSignature = signature;
+		if ( wc.actions.applyFilters( 'cart_calculation_enabled', false, wc.product, wc.cart ) ) {
+			wc.cart.cartCalculation();
+		}
+	}
+}
+
 store( 'sgs/product-card', {
 	callbacks: {
 		/**
@@ -905,6 +1118,43 @@ store( 'sgs/product-card', {
 				}
 			} );
 		},
+
+		/**
+		 * Express payment buttons: wired by the `data-wp-watch` / `data-wp-init` marker that extras.php prints beside
+		 * `.sgs-buybox__express`. The watch re-runs when the variation, stock or pending flag changes.
+		 */
+		syncExpress() {
+			const ctx = getContext();
+			const ref = cardRefByCtx.get( ctx );
+			if ( ref ) {
+				applyExpress( ctx, ref );
+			}
+		},
+
+		/**
+		 * Express payment buttons: re-checks on every picks change, and waits (up to ten seconds) for the payment plugin's
+		 * scripts, which load after this module on some pages.
+		 */
+		initExpress() {
+			const ctx = getContext();
+			const { ref: marker } = getElement();
+			const ref = marker && marker.closest( '[data-wp-interactive="sgs/product-card"]' );
+			if ( ! ref || '1' === ref.dataset.sgsExpress ) {
+				return;
+			}
+			ref.dataset.sgsExpress = '1';
+			cardRefByCtx.set( ctx, ref );
+			ref.addEventListener( 'sgs:picks-changed', () => applyExpress( ctx, ref ) );
+			let tries = 0;
+			const wait = () => {
+				if ( expressPlugin() ) {
+					applyExpress( ctx, ref );
+				} else if ( ++tries < 40 ) {
+					window.setTimeout( wait, 250 );
+				}
+			};
+			wait();
+		},
 	},
 	actions: {
 		/**
@@ -947,16 +1197,11 @@ store( 'sgs/product-card', {
 
 			const ctx = getContext();
 
-			// Resolve the correct ID to send:
-			//   variable product → selected variation ID
-			//   simple / CPT    → parent product ID (addToCartId)
-			const variationId = parseInt( ctx.selectedVariationId, 10 ) || 0;
-			const parentId    = parseInt( ctx.addToCartId, 10 ) || 0;
-			const id          = variationId > 0 ? variationId : parentId;
-
-			if ( ! id ) {
+			const built = buildAddBody( ctx );
+			if ( ! built ) {
 				return;
 			}
+			const body = built.body;
 
 			// A4: spam guard — bail immediately if a request is already in flight.
 			if ( ctx.pending ) {
@@ -966,58 +1211,6 @@ store( 'sgs/product-card', {
 			ctx.pending = true;
 
 			try {
-				// Build the variation array using WC attribute taxonomies + term
-				// slugs (M-C2 wire format). Only populated for variable products.
-				const variation = [];
-				if ( variationId > 0 && Array.isArray( ctx.axes ) && ctx.selectedAxes ) {
-					for ( const axis of ctx.axes ) {
-						const slug = ctx.selectedAxes[ axis.taxonomy ];
-						if ( slug ) {
-							variation.push( { attribute: axis.taxonomy, value: slug } );
-						}
-					}
-				}
-
-				const body = { id, quantity: 1 };
-				if ( variation.length ) {
-					body.variation = variation;
-				}
-
-				// Spec 43 FR-43-23 — sgs/buybox's guided layout resolves answer
-				// groups (e.g. Topping, Dietary) that never enter variation
-				// resolution; guided.js keeps their chosen labels as JSON on the
-				// card root's data-extra-fields attribute (the smallest generic
-				// extension point this store needs — read fresh on every add, so
-				// a later re-answer is picked up with no extra wiring).
-				const cardRefForFields = cardRefByCtx.get( ctx );
-				const extraFieldsRaw = cardRefForFields
-					? cardRefForFields.dataset.extraFields
-					: '';
-				if ( extraFieldsRaw ) {
-					try {
-						const extraFields = JSON.parse( extraFieldsRaw );
-						if ( Array.isArray( extraFields ) && extraFields.length ) {
-							body.fields = extraFields;
-						}
-					} catch {
-						// Malformed JSON — proceed with no fields rather than failing the add.
-					}
-				}
-
-				// Buy box "Pick a set": configurator-view.js keeps the picks as JSON on the card root; the server checks
-				// every slug and builds the cart row (Configurator_Picks), so only slugs and counts travel.
-				const extraPicksRaw = cardRefForFields ? cardRefForFields.dataset.extraPicks : '';
-				if ( extraPicksRaw ) {
-					try {
-						const extraPicks = JSON.parse( extraPicksRaw );
-						if ( extraPicks && 'object' === typeof extraPicks ) {
-							body.picks = extraPicks;
-						}
-					} catch {
-						// Malformed JSON: add without picks; the server refuses a product that needs them.
-					}
-				}
-
 				const response = yield fetchWithNonce(
 					getStoreApiBase() + '/sgs/v1/cart/add-item',
 					{

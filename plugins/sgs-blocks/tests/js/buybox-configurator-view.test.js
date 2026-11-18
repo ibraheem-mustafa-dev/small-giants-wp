@@ -147,3 +147,33 @@ describe( 'Pick a set hint count', () => {
 		expect( root.querySelector( '[data-sgs-hint-template]' ) ).toBeNull();
 	} );
 } );
+
+describe( 'Pick a set published state (read by the express payment buttons)', () => {
+	test( 'data-extra-picks and data-sgs-picks-ready follow every change, and sgs:picks-changed fires only when they change', async () => {
+		const root = await setup( 'counts', 'vanilla' );
+		const seen = jest.fn();
+		root.addEventListener( 'sgs:picks-changed', seen );
+		expect( root.dataset.sgsPicksReady ).toBe( '1' );
+		expect( JSON.parse( root.dataset.extraPicks ).flavour ).toEqual( [ { slug: 'vanilla', count: 20 } ] );
+		click( root, 'mango' );
+		expect( JSON.parse( root.dataset.extraPicks ).flavour ).toEqual( [ { slug: 'vanilla', count: 19 }, { slug: 'mango', count: 1 } ] );
+		const step = ( slug, delta ) => root.querySelector( `input[value="${ slug }"]` ).closest( 'label' ).querySelector( `[data-step="${ delta }"]` );
+		step( 'vanilla', -1 ).click();
+		expect( root.dataset.sgsPicksReady ).toBe( '0' );
+		expect( seen ).toHaveBeenCalled();
+		step( 'mango', 1 ).click();
+		expect( root.dataset.sgsPicksReady ).toBe( '1' );
+		expect( JSON.parse( root.dataset.extraPicks ).flavour ).toEqual( [ { slug: 'vanilla', count: 18 }, { slug: 'mango', count: 2 } ] );
+		const calls = seen.mock.calls.length;
+		root.querySelector( '.sgs-buybox__bar-variant' ).dispatchEvent( new Event( 'noop', { bubbles: true } ) );
+		expect( seen.mock.calls.length ).toBe( calls );
+	} );
+
+	test( 'the add gate and the published payload agree: the submit sends what was published', async () => {
+		const root = await setup( 'equal', 'vanilla' );
+		click( root, 'mango' );
+		const published = root.dataset.extraPicks;
+		root.querySelector( 'form' ).dispatchEvent( new Event( 'submit', { bubbles: true, cancelable: true } ) );
+		expect( root.dataset.extraPicks ).toBe( published );
+	} );
+} );

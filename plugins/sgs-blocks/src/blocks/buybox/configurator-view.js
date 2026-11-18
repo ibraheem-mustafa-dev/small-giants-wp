@@ -231,6 +231,32 @@ function initRoot( root ) {
 		}
 	}
 
+	/** The picks as the cart proxy takes them: `{ group: [ { slug, count } ] }`. */
+	function currentPicks() {
+		const picks = {};
+		groups.forEach( ( g ) => {
+			const counts = countsFor( g );
+			picks[ g.key ] = g.order.map( ( slug, i ) => ( { slug, count: 'counts' === g.share ? counts[ i ] || 0 : 0 } ) );
+		} );
+		return picks;
+	}
+
+	/**
+	 * Keep `data-extra-picks` and `data-sgs-picks-ready` on the root current after every change, so the add request and the
+	 * express payment buttons (product-card store, `syncExpress`) read the one payload. `sgs:picks-changed` tells them to
+	 * look again.
+	 */
+	function publishPicks() {
+		const json = JSON.stringify( currentPicks() );
+		const ready = groups.every( groupReady ) ? '1' : '0';
+		if ( root.dataset.extraPicks === json && root.dataset.sgsPicksReady === ready ) {
+			return;
+		}
+		root.dataset.extraPicks = json;
+		root.dataset.sgsPicksReady = ready;
+		root.dispatchEvent( new CustomEvent( 'sgs:picks-changed' ) );
+	}
+
 	function render() {
 		const lead = groups.find( ( g ) => 'none' !== g.share ) || groups[ 0 ];
 		const labels = lead ? lead.order.map( ( s ) => labelFor( lead, s ) ) : [];
@@ -262,6 +288,7 @@ function initRoot( root ) {
 			perUnitEl.textContent = each;
 		}
 		groups.forEach( syncHint );
+		publishPicks();
 		renderDots();
 		publishColours();
 		const ready = groups.every( groupReady );
@@ -372,6 +399,8 @@ function initRoot( root ) {
 		const key = event.detail && event.detail.selectedKey;
 		if ( 'string' === typeof typeKey && 'string' === typeof key && typeKey && key ) {
 			selections = { ...selections, [ typeKey ]: key };
+			// Until the counts settle below, the new pack size must not read as ready with the old counts.
+			publishPicks();
 			// The pickers swap their own labels a moment later; counts depend on the pack, so settle after them.
 			window.setTimeout( () => {
 				groups.forEach( ( g ) => {
@@ -403,12 +432,7 @@ function initRoot( root ) {
 				root.querySelectorAll( '.buybox__add-to-cart' ).forEach( ( btn ) => btn.setAttribute( 'aria-describedby', err.id ) );
 				return;
 			}
-			const picks = {};
-			groups.forEach( ( g ) => {
-				const counts = countsFor( g );
-				picks[ g.key ] = g.order.map( ( slug, i ) => ( { slug, count: 'counts' === g.share ? counts[ i ] || 0 : 0 } ) );
-			} );
-			root.dataset.extraPicks = JSON.stringify( picks );
+			publishPicks();
 		},
 		true
 	);
