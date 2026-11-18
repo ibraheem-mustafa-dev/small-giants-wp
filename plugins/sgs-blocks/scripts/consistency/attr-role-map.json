@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13365,
+    "row_count": 13367,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1247,7 +1247,7 @@
     "sgs/account::orderDetailChatUnderline": "enum-mode",
     "sgs/account::orderDetailHelpLabel": "text-content",
     "sgs/account::orderDetailHelpUrl": "link-href",
-    "sgs/account::orderDetailHelpUrlSource": null,
+    "sgs/account::orderDetailHelpUrlSource": "link-href",
     "sgs/account::orderDetailItemBrandFontFamily": "typography",
     "sgs/account::orderDetailItemBrandFontSize": "typography",
     "sgs/account::orderDetailItemBrandFontSizeUnit": "typography",
@@ -1267,6 +1267,7 @@
     "sgs/account::orderDetailLook": "boolean-visibility",
     "sgs/account::orderDetailOrderAgain": "boolean-visibility",
     "sgs/account::orderDetailOrderAgainLabel": "text-content",
+    "sgs/account::orderDetailOrderAgainWhen": "behaviour",
     "sgs/account::orderDetailPaymentTitle": "text-content",
     "sgs/account::orderDetailPlacedLineFontFamily": "typography",
     "sgs/account::orderDetailPlacedLineFontSize": "typography",
@@ -1318,6 +1319,7 @@
     "sgs/account::orderDetailWhatsAppNumber": "link-href",
     "sgs/account::orderDetailWhatsAppText": "text-content",
     "sgs/account::orderDetailWhatsAppTitle": "text-content",
+    "sgs/account::orderStatusLabels": "text-content",
     "sgs/account::orderStepCollected": null,
     "sgs/account::orderStepDelivered": null,
     "sgs/account::orderStepDeliveredNote": "text-content",
