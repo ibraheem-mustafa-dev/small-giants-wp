@@ -553,6 +553,9 @@ It installs FluentSMTP, writes `FLUENTMAIL_SMTP_USERNAME` / `FLUENTMAIL_SMTP_PAS
 
 sandybrown and eye-care-test: From `admin@smallgiantsstudio.co.uk` (alias; eye-care-test's From name is "Eye Care Birmingham"), login `ibraheem@smallgiantsstudio.co.uk`, key `SMTP_PASS_SGS`, digest to the SGS mailbox. eye-care-test sent nothing through PHP mail until 2026-11-12 (its Hostinger temporary domain has no SPF, DKIM or DMARC and its parent publishes `v=spf1 -all`), so provision FluentSMTP on every new test site; at Eye Care's launch switch it to Eye Care's own mailbox. From a worktree the default secrets file is absent: pass `--secret-file <main checkout>/.claude/secrets/ai-agent-credentials-and-info/email.env`. Sent mail is listed in WP Admin > Settings > FluentSMTP > Email Logs (table `{prefix}fsmpt_email_logs`).
 
+
+Two per-site email settings are off or empty until a site sets them. WooCommerce > Settings > Emails > "Use the site's styles in emails" (`sgs_email_site_styles`, `yes` or `no`, default `no`) puts the site's fonts, button, colours and lines in every email; a site can refine them under `settings.custom.email` in `theme-snapshot.json` (Spec 04 FR-4-16). Each customer email's own settings screen has an "Introduction" box (`sgs_introduction`) that replaces its opening sentences (FR-4-17). Preview either in WooCommerce > Settings > Emails > the email's Preview.
+
 ### N8N: optional automation events, never the email path
 
 Emails go through `wp_mail()` and FluentSMTP (§Site email above). A site that sets `sgs_n8n_webhook_url` also POSTs events there for automations (CRM rows, Slack): form submissions (`Form_Processor::send_webhook`), `sgs_wishlist_alert` and `sgs_back_in_stock` (`Sgs_Webhook::send`). The URL's path is a secret; read it with `wp option get sgs_n8n_webhook_url`, never commit it.

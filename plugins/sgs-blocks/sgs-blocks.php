@@ -193,6 +193,14 @@ require_once SGS_BLOCKS_PATH . 'includes/mail/class-sgs-mail-template.php';
 // never the brand accent (unified-email plan row 7, Spec 04).
 require_once SGS_BLOCKS_PATH . 'includes/mail/class-sgs-woocommerce-email-contrast.php';
 Sgs_Woocommerce_Email_Contrast::register();
+// The site's own fonts, button, colours and lines in every email, off until a site
+// switches it on, and the per-email Introduction wording (Spec 04, FR-04-EMAIL-STYLES,
+// FR-04-EMAIL-INTRO).
+require_once SGS_BLOCKS_PATH . 'includes/mail/class-sgs-email-site-tokens.php';
+require_once SGS_BLOCKS_PATH . 'includes/mail/class-sgs-email-site-styles.php';
+require_once SGS_BLOCKS_PATH . 'includes/mail/class-sgs-email-introduction.php';
+\SGS\Blocks\Mail\Sgs_Email_Site_Styles::register();
+\SGS\Blocks\Mail\Sgs_Email_Introduction::register();
 // Shop-alert WooCommerce emails (saved-items alert, back in stock): the
 // subclass files require WC_Email, so they load inside this registrar's
 // woocommerce_email_classes callback, never here at plugin load (Spec 30

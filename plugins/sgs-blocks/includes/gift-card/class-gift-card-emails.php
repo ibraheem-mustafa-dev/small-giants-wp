@@ -21,6 +21,9 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Gift_Card_Emails {
 
+	/** Placeholder line: the code is set here, in its own block in the HTML and on its own line in the plain text. */
+	const CODE_HERE = "\0code";
+
 	/**
 	 * Purchaser: "your gift card is on its way".
 	 *
@@ -59,7 +62,8 @@ final class Gift_Card_Emails {
 		if ( '' !== (string) $card['message'] ) {
 			$lines[] = '"' . $card['message'] . '"';
 		}
-		$lines[] = \__( 'Your gift card code:', 'sgs-blocks' ) . ' ' . $code;
+		$lines[] = \__( 'Your gift card code:', 'sgs-blocks' );
+		$lines[] = self::CODE_HERE;
 		$lines[] = \__( 'Enter this code at the basket or checkout to use it. You can spend it in more than one order; the balance stays on the card.', 'sgs-blocks' );
 		$lines[] = self::expiry_line( $card );
 		return self::send( (string) $card['recipient_email'], \__( 'You have been sent a gift card', 'sgs-blocks' ), $lines, $code );
@@ -76,7 +80,8 @@ final class Gift_Card_Emails {
 		$lines = array(
 			/* translators: %s: last four characters */
 			\sprintf( \__( 'Here is the replacement code for your gift card ending %s. The old code no longer works.', 'sgs-blocks' ), $card['code_last4'] ),
-			\__( 'Your new gift card code:', 'sgs-blocks' ) . ' ' . $code,
+			\__( 'Your new gift card code:', 'sgs-blocks' ),
+			self::CODE_HERE,
 			self::expiry_line( $card ),
 		);
 		return self::send( (string) $card['purchaser_email'], \__( 'Your replacement gift card code', 'sgs-blocks' ), $lines, $code );
@@ -129,20 +134,29 @@ final class Gift_Card_Emails {
 	/**
 	 * Send one message through the shared mailer.
 	 *
+	 * The plain code is printed once: the line before {@see self::CODE_HERE} is its label, and the code
+	 * sits in a highlighted block there (a line of its own in the plain-text alternative).
+	 *
 	 * @param string            $to      Address.
 	 * @param string            $subject Subject and heading.
-	 * @param array<int,string> $lines   Paragraphs (plain text; escaped for the HTML body).
+	 * @param array<int,string> $lines   Paragraphs (plain text; escaped for the HTML body), with CODE_HERE where the code goes.
 	 * @param string            $code    Optional plain code to set in a highlighted block.
 	 * @return bool
 	 */
 	private static function send( string $to, string $subject, array $lines, string $code = '' ): bool {
-		$html = '';
+		$html  = '';
+		$plain = array();
 		foreach ( \array_filter( $lines ) as $line ) {
-			$html .= '<p class="sgs-gift-card-email__line">' . \esc_html( $line ) . '</p>';
+			if ( self::CODE_HERE === $line ) {
+				if ( '' !== $code ) {
+					$html   .= '<p class="sgs-gift-card-email__code"><strong>' . \esc_html( $code ) . '</strong></p>';
+					$plain[] = $code;
+				}
+				continue;
+			}
+			$html   .= '<p class="sgs-gift-card-email__line">' . \esc_html( $line ) . '</p>';
+			$plain[] = $line;
 		}
-		if ( '' !== $code ) {
-			$html .= '<p class="sgs-gift-card-email__code"><strong>' . \esc_html( $code ) . '</strong></p>';
-		}
-		return Sgs_Mailer::send( $to, $subject, $subject, $html, \implode( "\n\n", \array_filter( $lines ) ) );
+		return Sgs_Mailer::send( $to, $subject, $subject, $html, \implode( "\n\n", $plain ) );
 	}
 }
