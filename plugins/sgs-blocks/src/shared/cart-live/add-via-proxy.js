@@ -4,6 +4,8 @@
  * @package SGS\Blocks
  */
 
+import { fetchWithNonce } from '../rest-nonce';
+
 /**
  * Add a product through the SGS cart proxy (`POST /sgs/v1/cart/add-item`), the route the buy box adds through: the server
  * checks the variation's attributes and any "Pick a set" picks again and builds the cart line. The reply is only a summary,
@@ -15,12 +17,16 @@
  * @return {Promise<Object>} The proxy's summary (`added`, `items_count`, `cart_total`).
  */
 export async function addViaProxy( url, nonce, body ) {
-	const response = await fetch( url, {
-		method: 'POST',
-		credentials: 'same-origin',
-		headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce || '' },
-		body: JSON.stringify( body ),
-	} );
+	const response = await fetchWithNonce(
+		url,
+		{
+			method: 'POST',
+			credentials: 'same-origin',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify( body ),
+		},
+		nonce
+	);
 	let json = null;
 	try {
 		json = await response.json();

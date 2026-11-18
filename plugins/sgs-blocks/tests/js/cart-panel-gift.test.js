@@ -106,7 +106,7 @@ describe( 'initGift', () => {
 		to.dispatchEvent( new Event( 'blur' ) );
 		// One save runs at a time, so the newest values go out the moment the first save returns: no timer is involved.
 		expect( global.fetch ).toHaveBeenCalledTimes( 1 );
-		for ( let turn = 0; turn < 6; turn++ ) {
+		for ( let turn = 0; turn < 12; turn++ ) {
 			await Promise.resolve();
 		}
 		expect( global.fetch ).toHaveBeenCalledTimes( 2 );

@@ -20,6 +20,7 @@ import { applyLinkValues } from './field-from-link.js';
 import { populateReview } from './review-cards.js';
 import { initSavedProgress, saveStep, clearProgress } from './saved-progress.js';
 import { initStickyActions } from './sticky-actions.js';
+import { fetchWithNonce } from '../../shared/rest-nonce';
 
 /**
  * The progress fill as a 0 to 1 fraction. "current" counts the step being shown (step 1 of 5 is 0.2);
@@ -329,13 +330,12 @@ const { state } = store( 'sgs/form', {
 				} );
 
 				// Submit to REST endpoint.
-				const response = yield fetch(
+				const response = yield fetchWithNonce(
 					state.restUrl + 'submit',
 					{
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
-							'X-WP-Nonce': state.nonce,
 						},
 						body: JSON.stringify( {
 							formId: ctx.formId,
@@ -344,7 +344,8 @@ const { state } = store( 'sgs/form', {
 							honeypot: honeypotValue,
 							storeSubmissions: formRoot.getAttribute( 'data-store-submissions' ) !== 'false',
 						} ),
-					}
+					},
+					state.nonce
 				);
 
 				if ( ! response.ok ) {
@@ -439,15 +440,13 @@ const { state } = store( 'sgs/form', {
 				const formData = new FormData();
 				formData.append( 'file', file );
 
-				const response = yield fetch(
+				const response = yield fetchWithNonce(
 					state.restUrl + 'upload',
 					{
 						method: 'POST',
-						headers: {
-							'X-WP-Nonce': state.nonce,
-						},
 						body: formData,
-					}
+					},
+					state.nonce
 				);
 
 				if ( ! response.ok ) {

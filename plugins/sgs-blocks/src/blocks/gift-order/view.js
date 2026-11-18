@@ -9,6 +9,8 @@
  * @package
  */
 
+import { fetchWithNonce } from '../../shared/rest-nonce';
+
 const TYPING_DELAY = 600;
 
 // Another gift box on the page (the cart drawer's) announces its saved value with this event; see src/blocks/cart/panel-gift.js.
@@ -76,15 +78,16 @@ function init( root ) {
 			to: box.checked ? recipient : '',
 			message: box.checked ? note.value : '',
 		};
-		fetch( config.restUrl, {
-			method: 'POST',
-			credentials: 'same-origin',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-WP-Nonce': config.nonce,
+		fetchWithNonce(
+			config.restUrl,
+			{
+				method: 'POST',
+				credentials: 'same-origin',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify( value ),
 			},
-			body: JSON.stringify( value ),
-		} )
+			config.nonce
+		)
 			.then( ( response ) =>
 				response.json().then( ( body ) => ( { response, body } ) )
 			)

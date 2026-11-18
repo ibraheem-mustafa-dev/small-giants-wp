@@ -26,6 +26,7 @@ import { collectFlowFields, validateTerminalFields } from './flow-fields.js';
 import { getResolvedVariation } from './variation.js';
 import { FLOW_SELECTOR, getActiveResultEl } from './navigation.js';
 import { closeEnclosingModal } from './flow-modal.js';
+import { fetchWithNonce } from '../../shared/rest-nonce';
 
 /**
  * Whether this flow ever asked a variation-mode product-option question
@@ -128,15 +129,16 @@ async function addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout,
 	}
 
 	try {
-		const response = await fetch( endpoint, {
-			method: 'POST',
-			credentials: 'same-origin',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-WP-Nonce': nonce || '',
+		const response = await fetchWithNonce(
+			endpoint,
+			{
+				method: 'POST',
+				credentials: 'same-origin',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify( body ),
 			},
-			body: JSON.stringify( body ),
-		} );
+			nonce
+		);
 
 		if ( ! response.ok ) {
 			let message = 'Sorry, this item could not be added to your bag.';

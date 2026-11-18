@@ -11,6 +11,7 @@
  */
 
 import { chosenButtons, joinAnswerLabels } from './flow-multi.js';
+import { fetchWithNonce } from '../../shared/rest-nonce';
 
 /**
  * Unpriced answers per flow instance, in the order they were given. `label`
@@ -214,12 +215,11 @@ export async function uploadFlowFile( event ) {
 	try {
 		const body = new FormData();
 		body.append( 'file', file );
-		const response = await fetch( endpoint, {
-			method: 'POST',
-			credentials: 'same-origin',
-			headers: { 'X-WP-Nonce': buttonEl.getAttribute( 'data-nonce' ) || '' },
-			body,
-		} );
+		const response = await fetchWithNonce(
+			endpoint,
+			{ method: 'POST', credentials: 'same-origin', body },
+			buttonEl.getAttribute( 'data-nonce' )
+		);
 		const result = await response.json().catch( () => ( {} ) );
 		if ( ! response.ok || ! result.id ) {
 			throw new Error( result.message || 'Upload failed. Please try again.' );

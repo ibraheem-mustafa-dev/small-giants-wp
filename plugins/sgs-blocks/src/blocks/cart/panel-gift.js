@@ -10,6 +10,8 @@
  * @package
  */
 
+import { fetchWithNonce } from '../../shared/rest-nonce';
+
 const TYPING_DELAY = 600;
 
 /** Document event carrying `{ on, to, message, source }` after a gift box saved. */
@@ -71,13 +73,17 @@ export function initGift( panelRoot ) {
 		again = false;
 		inFlight += 1;
 		const sent = { on: box.checked, to: box.checked ? to.value : '', message: box.checked ? note.value : '' };
-		fetch( root.dataset.restUrl, {
-			method: 'POST',
-			credentials: 'same-origin',
-			keepalive: true,
-			headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': root.dataset.nonce || '' },
-			body: JSON.stringify( sent ),
-		} )
+		fetchWithNonce(
+			root.dataset.restUrl,
+			{
+				method: 'POST',
+				credentials: 'same-origin',
+				keepalive: true,
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify( sent ),
+			},
+			root.dataset.nonce
+		)
 			.then( ( response ) => response.json().then( ( body ) => ( { response, body } ) ) )
 			.then( ( { response, body } ) => {
 				fail( response.ok ? '' : body?.message || SAVE_ERROR );

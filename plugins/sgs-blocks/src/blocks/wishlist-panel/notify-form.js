@@ -8,11 +8,12 @@
  * `includes/wishlist/class-wishlist-rest.php::Wishlist_Rest::enqueue_client_config()` already
  * exposes on `window.sgsWishlistData.nonce` (Stock_Notify's own
  * `permission_callback` is `__return_true`, but its handler still verifies
- * `X-WP-Nonce` itself — see that file's Step 1).
+ * `X-WP-Nonce` itself — see that file's Step 1). The request goes through `fetchWithNonce`, which refreshes an expired nonce.
  *
  * @package
  */
 import { escapeHtml } from './render-rows';
+import { fetchWithNonce } from '../../shared/rest-nonce';
 
 /**
  * @return {string} The REST root, no trailing slash.
@@ -78,15 +79,16 @@ export function mountNotifyForm( container, productId, labels ) {
 			messageEl.textContent = '';
 
 			try {
-				const response = await fetch( restRoot() + '/sgs/v1/notify/subscribe', {
-					method: 'POST',
-					credentials: 'same-origin',
-					headers: {
-						'Content-Type': 'application/json',
-						'X-WP-Nonce': window?.sgsWishlistData?.nonce || '',
+				const response = await fetchWithNonce(
+					restRoot() + '/sgs/v1/notify/subscribe',
+					{
+						method: 'POST',
+						credentials: 'same-origin',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify( { productId, email, consent } ),
 					},
-					body: JSON.stringify( { productId, email, consent } ),
-				} );
+					window?.sgsWishlistData?.nonce
+				);
 				const json = await response.json().catch( () => null );
 				if ( response.ok ) {
 					messageEl.textContent = labels.notifySuccessText;

@@ -62,6 +62,7 @@ import '../../shared/wishlist-store';
 import { toastActions } from '../../shared/toast/store.js';
 import { renderThumbStrip } from './thumb-strip';
 import { pulseState } from '../../shared/motion-state-publish';
+import { fetchWithNonce } from '../../shared/rest-nonce';
 
 /**
  * Replay the main photo's entrance after its image changes, when the photo has a State entrance to replay.
@@ -358,14 +359,15 @@ function recordDemandAttempt( ctx, comboKey, reason ) {
 		return;
 	}
 	try {
-		fetch( getStoreApiBase() + '/sgs/v1/demand/attempt', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-WP-Nonce': ctx.restNonce,
+		fetchWithNonce(
+			getStoreApiBase() + '/sgs/v1/demand/attempt',
+			{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify( { productId, comboKey, reason } ),
 			},
-			body: JSON.stringify( { productId, comboKey, reason } ),
-		} ).catch( () => {} ); // Never block or surface — analytics is best-effort.
+			ctx.restNonce
+		).catch( () => {} ); // Never block or surface — analytics is best-effort.
 	} catch ( e ) {
 		// No-op: demand recording must never affect the shopping UI.
 	}
@@ -912,7 +914,7 @@ store( 'sgs/product-card', {
 		 *
 		 * Wire format (M-C2, verified live on WC 10.8.1):
 		 *   POST /sgs/v1/cart/add-item
-		 *   Header: X-WP-Nonce: <wp_rest nonce seeded into ctx.restNonce>
+		 *   Header: X-WP-Nonce: <wp_rest nonce seeded into ctx.restNonce, set by fetchWithNonce>
 		 *   Body:   { id: <variationId|productId>, quantity: 1,
 		 *             variation: [{ attribute: "pa_size", value: "12-pack" }, …] }
 		 *   `attribute` = the WC attribute taxonomy (axis.taxonomy), never the
@@ -1016,17 +1018,15 @@ store( 'sgs/product-card', {
 					}
 				}
 
-				const response = yield fetch(
+				const response = yield fetchWithNonce(
 					getStoreApiBase() + '/sgs/v1/cart/add-item',
 					{
 						method: 'POST',
 						credentials: 'same-origin',
-						headers: {
-							'Content-Type': 'application/json',
-							'X-WP-Nonce': ctx.restNonce || '',
-						},
+						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify( body ),
-					}
+					},
+					ctx.restNonce
 				);
 
 				if ( ! response.ok ) {
@@ -1049,17 +1049,15 @@ store( 'sgs/product-card', {
 					// us the card element without a DOM query dependency.
 					if ( response.status === 409 && ctx.productId ) {
 						try {
-							const avRes = yield fetch(
+							const avRes = yield fetchWithNonce(
 								getStoreApiBase() +
 									'/sgs/v1/cart/availability/' +
 									encodeURIComponent( ctx.productId ),
 								{
 									method: 'GET',
 									credentials: 'same-origin',
-									headers: {
-										'X-WP-Nonce': ctx.restNonce || '',
-									},
-								}
+								},
+								ctx.restNonce
 							);
 							if ( avRes.ok ) {
 								const avData = yield avRes.json();

@@ -2,6 +2,8 @@
 
 /* global wpApiSettings */
 
+import { fetchWithNonce } from '../../shared/rest-nonce';
+
 const REST_BASE = ( typeof wpApiSettings !== 'undefined' && wpApiSettings.root )
 	? wpApiSettings.root.replace( /\/$/, '' ) + '/sgs-blocks/v1/posts'
 	: '/wp-json/sgs-blocks/v1/posts';
@@ -171,9 +173,7 @@ export async function fetchPosts( queryData, page, filterCategory ) {
 	}
 
 	const url = REST_BASE + '?' + buildQuery( params );
-	const response = await fetch( url, {
-		headers: nonce ? { 'X-WP-Nonce': nonce } : {},
-	} );
+	const response = await fetchWithNonce( url, {}, nonce );
 
 	if ( ! response.ok ) {
 		throw new Error( 'REST request failed: ' + response.status );

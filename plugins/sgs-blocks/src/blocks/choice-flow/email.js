@@ -12,6 +12,7 @@
  */
 
 import { collectFlowFields } from './flow-fields.js';
+import { fetchWithNonce } from '../../shared/rest-nonce';
 
 /**
  * Wire every `sgs/choice-flow-result` email-capture form inside this flow
@@ -92,15 +93,16 @@ async function handleEmailSubmit( event, flowEl, getTags ) {
 	}
 
 	try {
-		const response = await fetch( endpoint, {
-			method: 'POST',
-			credentials: 'same-origin',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-WP-Nonce': nonce || '',
+		const response = await fetchWithNonce(
+			endpoint,
+			{
+				method: 'POST',
+				credentials: 'same-origin',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify( body ),
 			},
-			body: JSON.stringify( body ),
-		} );
+			nonce
+		);
 
 		let result = {};
 		try {

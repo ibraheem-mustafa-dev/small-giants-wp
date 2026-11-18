@@ -9,6 +9,8 @@
  * @package
  */
 
+import { fetchWithNonce } from '../rest-nonce';
+
 /**
  * @return {{restUrl:string,nonce:string,isLoggedIn:boolean,features:Object,savedItemsUrl:string}}
  *   The localised wishlist config.
@@ -44,18 +46,18 @@ export function isLoggedIn() {
 export async function apiFetch( path, { method = 'GET', body } = {} ) {
 	const cfg = config();
 	const root = String( cfg.restUrl || '/wp-json/' ).replace( /\/$/, '' );
-	const headers = { 'Content-Type': 'application/json' };
-	if ( cfg.nonce ) {
-		headers[ 'X-WP-Nonce' ] = cfg.nonce;
-	}
 	let response;
 	try {
-		response = await window.fetch( root + '/sgs/v1' + path, {
-			method,
-			credentials: 'same-origin',
-			headers,
-			body: body ? JSON.stringify( body ) : undefined,
-		} );
+		response = await fetchWithNonce(
+			root + '/sgs/v1' + path,
+			{
+				method,
+				credentials: 'same-origin',
+				headers: { 'Content-Type': 'application/json' },
+				body: body ? JSON.stringify( body ) : undefined,
+			},
+			cfg.nonce
+		);
 	} catch ( e ) {
 		return { ok: false, status: 0, json: null };
 	}

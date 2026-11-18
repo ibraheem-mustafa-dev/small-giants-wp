@@ -11,6 +11,8 @@
  * @since 1.18.0 (FR-30-10 Spec 27 Part 3 Step 10)
  */
 
+import { fetchWithNonce } from '../../shared/rest-nonce';
+
 /**
  * Attach submit handlers to all notify forms on the page.
  */
@@ -78,19 +80,20 @@ async function handleSubmit( event ) {
 	}
 
 	try {
-		const response = await fetch( '/wp-json/sgs/v1/notify/subscribe', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-WP-Nonce': nonce,
+		const response = await fetchWithNonce(
+			'/wp-json/sgs/v1/notify/subscribe',
+			{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify( {
+					productId,
+					email,
+					consent,
+					turnstileToken,
+				} ),
 			},
-			body: JSON.stringify( {
-				productId,
-				email,
-				consent,
-				turnstileToken,
-			} ),
-		} );
+			nonce
+		);
 
 		if ( response.ok ) {
 			// Success — clear inputs and show confirmation.
