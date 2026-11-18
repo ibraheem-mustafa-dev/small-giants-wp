@@ -488,23 +488,40 @@ if ( ! function_exists( 'sgs_buybox_split_extras' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_buybox_express_plugin_present' ) ) {
+	/**
+	 * True when Payment Plugins for Stripe's product-page renderer is loaded: the plugin the express buttons were built and
+	 * proved against. A loaded-class check only (no autoload), so it costs nothing and loads nothing.
+	 *
+	 * @return bool
+	 */
+	function sgs_buybox_express_plugin_present(): bool {
+		return class_exists( 'PaymentPlugins\\Stripe\\Checkout\\ExpressCheckoutRenderer', false );
+	}
+}
+
 if ( ! function_exists( 'sgs_buybox_after_cart_form_action' ) ) {
 	/**
 	 * Fire WooCommerce's `woocommerce_after_add_to_cart_form` after the buy box's own cart form, which replaces the core
 	 * add-to-cart template that fires it. Payment gateways and add-on plugins print here; WooCommerce core attaches nothing.
-	 * Runs once per
-	 * request and product, only on that product's own singular page (a block pinned onto another page would print the
-	 * buttons for the wrong context), with the global `$product` set for the callbacks and restored after, and does nothing
-	 * when WooCommerce is absent or nothing is attached.
+	 * Runs once per request and product, only on that product's own singular page (a block pinned onto another page would
+	 * print the buttons for the wrong context), with the global `$product` set for the callbacks and restored after, and
+	 * does nothing when WooCommerce is absent or nothing is attached.
 	 *
-	 * Express payment buttons (Apple Pay, Google Pay) print on `woocommerce_after_add_to_cart_button` after the form, once
-	 * `woocommerce_before_add_to_cart_form` has fired, which is how Payment Plugins for Stripe 4.x places them. Both hooks
-	 * run inside one capture and the result is wrapped in `.sgs-buybox__express`, which prints `inert` (a marker span carries
-	 * the store's `initExpress` and `syncExpress` callbacks) until the product-card store has matched the payment plugin's idea of the product to the buy box's choices and found the
-	 * "Add to basket" button usable. The payment plugin reads the quantity from a `quantity` field on the page; the buy box
-	 * has none, so a hidden 1 sits in the wrapper. A guided flow, a modal and a linked flow also collect answers and add-ons
-	 * that only the buy box's own add carries, so those print no express buttons (`$plain_flow`). The filter
-	 * `sgs_buybox_express_buttons` ( bool $print, WC_Product $product ) switches the buttons off, or on, per product.
+	 * Express payment buttons (Apple Pay, Google Pay): Payment Plugins for Stripe 4.x picks its slot on
+	 * `woocommerce_before_add_to_cart_form` and prints on `woocommerce_after_add_to_cart_button`. When the express path is
+	 * on, both hooks run inside one capture and the result is wrapped in `.sgs-buybox__express`, which prints `inert` (a
+	 * marker span carries the store's `initExpress` and `syncExpress` callbacks) until the product-card store has matched
+	 * the payment plugin's idea of the product to the buy box's choices and found the "Add to basket" button usable. A
+	 * visually hidden note before the wrapper says why the buttons are unavailable (`syncExpress` hides it while they are
+	 * usable or the product is out of stock). The payment plugin reads the quantity from a `quantity` field on the page;
+	 * the buy box has none, so a hidden 1 sits inside the wrapper, which prints after the cart form: the field is outside
+	 * `<form>`, so the buy box's own add never sends it. A guided flow, a modal and a linked flow also collect answers and
+	 * add-ons that only the buy box's own add carries, so those print no express buttons (`$plain_flow`).
+	 *
+	 * The express path is on by default only for a plain add flow on a site where that plugin is loaded
+	 * (`sgs_buybox_express_plugin_present`); the filter `sgs_buybox_express_buttons` ( bool $print, WC_Product $product )
+	 * forces it on or off. When it is off, only `woocommerce_after_add_to_cart_form` fires and nothing else prints.
 	 *
 	 * @param int  $product_id The product the buy box shows.
 	 * @param bool $plain_flow True when the buy box's button adds straight to the basket (no guided flow, no modal).
@@ -519,11 +536,15 @@ if ( ! function_exists( 'sgs_buybox_after_cart_form_action' ) ) {
 		if ( ! $product ) {
 			return;
 		}
+		$print_express = (bool) apply_filters( 'sgs_buybox_express_buttons', $plain_flow && sgs_buybox_express_plugin_present(), $product );
+		if ( ! has_action( 'woocommerce_after_add_to_cart_form' ) && ! ( $print_express && ( has_action( 'woocommerce_before_add_to_cart_form' ) || has_action( 'woocommerce_after_add_to_cart_button' ) ) ) ) {
+			return;
+		}
 		$fired[ $product_id ] = true;
 		$previous             = $GLOBALS['product'] ?? null;
 		$GLOBALS['product']   = $product;
 		try {
-			if ( apply_filters( 'sgs_buybox_express_buttons', $plain_flow, $product ) ) {
+			if ( $print_express ) {
 				ob_start();
 				try {
 					do_action( 'woocommerce_before_add_to_cart_form' );
@@ -532,7 +553,9 @@ if ( ! function_exists( 'sgs_buybox_after_cart_form_action' ) ) {
 					$express = trim( (string) ob_get_clean() );
 				}
 				if ( '' !== $express ) {
-					echo '<span hidden data-wp-init="callbacks.initExpress" data-wp-watch="callbacks.syncExpress"></span><div class="sgs-buybox__express" data-state="unavailable" inert>' . $express . '<input type="hidden" name="quantity" value="1" /></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the payment plugin's own escaped markup.
+					echo '<span hidden data-wp-init="callbacks.initExpress" data-wp-watch="callbacks.syncExpress"></span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed markup.
+					echo '<p class="sgs-buybox__express-note sgs-sr-only">' . esc_html__( 'Express payment buttons become available once the options above are chosen.', 'sgs-blocks' ) . '</p>';
+					echo '<div class="sgs-buybox__express" data-state="unavailable" inert>' . $express . '<input type="hidden" name="quantity" value="1" /></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the payment plugin's own escaped markup.
 				}
 			}
 			do_action( 'woocommerce_after_add_to_cart_form' );

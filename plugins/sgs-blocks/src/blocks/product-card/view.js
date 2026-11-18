@@ -941,6 +941,7 @@ function buildAddBody( ctx ) {
  * ---------------------------------------------------------------------------------------------------------------- */
 
 const EXPRESS_BOX = '.sgs-buybox__express';
+const EXPRESS_NOTE = '.sgs-buybox__express-note';
 /** The card whose choices the payment plugin's filters read: a product page has one buy box. */
 let expressActive = null;
 let expressFiltersAdded = false;
@@ -1038,9 +1039,23 @@ function applyExpress( ctx, ref ) {
 		return;
 	}
 	const usable = expressUsable( ctx, ref );
+	const wasInert = box.hasAttribute( 'inert' );
 	box.hidden = ! ctx.inStock;
 	box.toggleAttribute( 'inert', ! usable );
 	box.dataset.state = usable ? 'ready' : 'unavailable';
+	// An inert wrapper is invisible to assistive technology, so the reason sits beside it in a visually hidden note, shown
+	// only while the buttons are unavailable and the product is in stock (out of stock hides the wrapper itself).
+	const note = ref.querySelector( EXPRESS_NOTE );
+	if ( note ) {
+		note.hidden = usable || ! ctx.inStock;
+	}
+	// Going inert drops focus to the page body; the buy box's own Add button is where the shopper carries on.
+	if ( ! usable && ! wasInert && box.contains( document.activeElement ) ) {
+		const add = ref.querySelector( '.buybox__add-to-cart' );
+		if ( add ) {
+			add.focus();
+		}
+	}
 	const wc = expressPlugin();
 	if ( ! wc ) {
 		return;

@@ -26,15 +26,26 @@ final class BuyboxExpressPayHookTest extends TestCase {
 	private const TAG    = 'woocommerce_after_add_to_cart_form';
 	private const BEFORE = 'woocommerce_before_add_to_cart_form';
 	private const BUTTON = 'woocommerce_after_add_to_cart_button';
+	/** The class the buy box detects Payment Plugins for Stripe by (a loaded-class check). */
+	private const PLUGIN_CLASS = 'PaymentPlugins\Stripe\Checkout\ExpressCheckoutRenderer';
+
+	/** Whether the stand-in for the payment plugin is declared in the rendering process. */
+	private static bool $plugin = true;
+
+	protected function tearDown(): void {
+		self::$plugin = true;
+	}
 
 	private static function html( array $attrs, array $context, ?array $queried, bool $listener = true, string $fixture = 'standard', string $tags = '', ?bool $filter = null ): string {
 		putenv( 'SGS_QA_ECHO_ACTIONS=' . ( $listener ? ( '' !== $tags ? $tags : self::TAG ) : '' ) );
+		putenv( self::$plugin ? 'SGS_QA_DECLARE_CLASSES=' . self::PLUGIN_CLASS : 'SGS_QA_DECLARE_CLASSES' );
 		putenv( null === $filter ? 'SGS_QA_FILTER_RETURNS' : 'SGS_QA_FILTER_RETURNS=' . json_encode( array( 'sgs_buybox_express_buttons' => $filter ) ) );
 		try {
 			return BuyboxSnapshotTest::render_fixture( $fixture, $attrs, $context, array(), false, $queried );
 		} finally {
 			putenv( 'SGS_QA_ECHO_ACTIONS' );
 			putenv( 'SGS_QA_FILTER_RETURNS' );
+			putenv( 'SGS_QA_DECLARE_CLASSES' );
 		}
 	}
 
@@ -102,5 +113,50 @@ final class BuyboxExpressPayHookTest extends TestCase {
 		$archive = self::html( array(), array( 'postId' => 52 ), null, true, 'standard', self::all_tags() );
 		$this->assertStringNotContainsString( 'sgs-buybox__express', $archive );
 		$this->assertStringNotContainsString( 'sgs-buybox__express', self::html( array(), array( 'postId' => 52 ), array( 'id' => 52, 'post_type' => 'product' ), false ), 'nothing attached: nothing prints' );
+	}
+
+	public function test_without_the_payment_plugin_the_output_is_byte_identical_to_before_the_feature(): void {
+		self::$plugin = false;
+		$before_the_feature = self::html( array(), array( 'postId' => 52 ), array( 'id' => 52, 'post_type' => 'product' ), true, 'standard', self::TAG );
+		$all_hooks_listening = self::product_page();
+		$this->assertSame( BuyboxSnapshotTest::norm( $before_the_feature ), BuyboxSnapshotTest::norm( $all_hooks_listening ), 'only the after-form hook fires; no wrapper, no note, no quantity field' );
+		$this->assertStringNotContainsString( 'sgs-buybox__express', $all_hooks_listening );
+		$this->assertStringNotContainsString( 'name="quantity"', $all_hooks_listening );
+		$this->assertStringNotContainsString( '<!--action:' . self::BEFORE, $all_hooks_listening );
+		$this->assertStringNotContainsString( '<!--action:' . self::BUTTON, $all_hooks_listening );
+	}
+
+	public function test_without_the_payment_plugin_a_site_hooking_only_the_button_hooks_prints_nothing_new(): void {
+		self::$plugin = false;
+		$html = self::html( array(), array( 'postId' => 52 ), array( 'id' => 52, 'post_type' => 'product' ), true, 'standard', self::BEFORE . ',' . self::BUTTON );
+		$this->assertStringNotContainsString( '<!--action:', $html );
+		$this->assertStringNotContainsString( 'sgs-buybox__express', $html );
+	}
+
+	public function test_with_the_payment_plugin_the_wrapper_and_its_reason_note_print_by_default(): void {
+		$html = self::product_page();
+		$this->assertStringContainsString( '<div class="sgs-buybox__express" data-state="unavailable" inert>', $html );
+		$this->assertStringContainsString( '<p class="sgs-buybox__express-note sgs-sr-only">', $html );
+		$this->assertStringNotContainsString( 'aria-live', substr( $html, (int) strpos( $html, 'sgs-buybox__express-note' ), 200 ), 'a static note: a live region would announce on every pick change' );
+		$this->assertLessThan( (int) strpos( $html, '<div class="sgs-buybox__express"' ), (int) strpos( $html, 'sgs-buybox__express-note' ), 'the note sits beside the wrapper, outside it' );
+	}
+
+	public function test_the_filter_false_with_the_plugin_present_prints_nothing(): void {
+		$html = self::product_page( array(), 'standard', false );
+		$this->assertStringNotContainsString( 'sgs-buybox__express', $html );
+		$this->assertStringNotContainsString( 'name="quantity"', $html );
+		$this->assertStringNotContainsString( '<!--action:' . self::BUTTON, $html );
+	}
+
+	public function test_the_filter_true_without_the_plugin_prints_the_wrapper(): void {
+		self::$plugin = false;
+		$html         = self::product_page( array(), 'standard', true );
+		$this->assertStringContainsString( 'sgs-buybox__express', $html );
+		$this->assertStringContainsString( 'name="quantity" value="1"', $html );
+	}
+
+	public function test_the_hidden_quantity_sits_outside_the_cart_form(): void {
+		$html = self::product_page();
+		$this->assertGreaterThan( (int) strpos( $html, '</form>' ), (int) strpos( $html, 'name="quantity" value="1"' ) );
 	}
 }

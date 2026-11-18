@@ -1450,3 +1450,12 @@ if ( ! function_exists( 'wp_get_attachment_image' ) ) {
 		return $html . ' />';
 	}
 }
+
+// SGS_QA_DECLARE_CLASSES (comma list of fully qualified class names) declares empty classes, so a test can stand in for a
+// third-party plugin that a feature detects by class.
+foreach ( array_filter( explode( ',', (string) getenv( 'SGS_QA_DECLARE_CLASSES' ) ) ) as $sgs_qa_class ) {
+	$sgs_qa_pos = strrpos( $sgs_qa_class, chr( 92 ) );
+	if ( false !== $sgs_qa_pos && ! class_exists( $sgs_qa_class, false ) ) {
+		eval( 'namespace ' . substr( $sgs_qa_class, 0, $sgs_qa_pos ) . '; class ' . substr( $sgs_qa_class, $sgs_qa_pos + 1 ) . ' {}' ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- test stub.
+	}
+}

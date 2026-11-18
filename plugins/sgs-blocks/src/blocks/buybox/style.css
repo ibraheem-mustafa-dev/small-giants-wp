@@ -172,7 +172,6 @@
 
 .sgs-buybox .sgs-buybox__express[data-state="unavailable"] {
 	opacity: 0.4;
-	cursor: not-allowed;
 }
 
 /* Primary conversion CTA (uimax e-commerce rule: high-contrast, dominant).
