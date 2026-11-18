@@ -197,7 +197,7 @@ class Form_REST_API {
 
 		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
 			return new \WP_Error(
-				'rest_forbidden',
+				'sgs_bad_nonce',
 				__( 'Invalid security token. Please refresh the page and try again.', 'sgs-blocks' ),
 				[ 'status' => 403 ]
 			);

@@ -219,6 +219,10 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/class-cart-proxy.php';
 		Cart_Proxy::register();
 
+		// A fresh wp_rest nonce for pages a full-page cache served after the printed one expired (admin-ajax, never REST: no CORS).
+		require_once SGS_BLOCKS_PATH . 'includes/class-rest-nonce-refresh.php';
+		Rest_Nonce_Refresh::register();
+
 		// Product Search REST (GET /sgs/v1/product-search) — guest typeahead
 		// with zero data leakage. Security chain: global circuit breaker →
 		// per-IP rate-limit → input guards → visibility tax_query (fail-closed)
