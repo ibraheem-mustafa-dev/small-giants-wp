@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13368,
+    "row_count": 13370,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1217,6 +1217,7 @@
     "sgs/account::noOrdersText": "text-content",
     "sgs/account::orderActionsFlexWrap": "layout",
     "sgs/account::orderCompletedStep": "behaviour",
+    "sgs/account::orderDeliveredAfterDays": "behaviour",
     "sgs/account::orderDetailAddressTitle": "text-content",
     "sgs/account::orderDetailBackGap": "layout",
     "sgs/account::orderDetailBackLabel": null,
@@ -1247,6 +1248,7 @@
     "sgs/account::orderDetailChatTextTextTransform": "typography",
     "sgs/account::orderDetailChatUnderline": "enum-mode",
     "sgs/account::orderDetailHelpLabel": "text-content",
+    "sgs/account::orderDetailHelpText": "text-content",
     "sgs/account::orderDetailHelpUrl": "link-href",
     "sgs/account::orderDetailHelpUrlSource": "link-href",
     "sgs/account::orderDetailItemBrandFontFamily": "typography",
