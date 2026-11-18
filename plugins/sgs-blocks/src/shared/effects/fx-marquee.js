@@ -20,7 +20,9 @@
  *   touchPause     off, tap (a tap pauses, the next tap resumes; the default) or hold (paused only while a finger is down).
  *   edgeFade       fade the two ends; edgeFadeWidth is the fade's size as a percentage of the root.
  *   belowBreakpoint always, tablet (1023px and below), mobile (767px and below) or overflow; static outside the range.
- *                  `overflow` runs at every width, but only while one un-duplicated set is wider (or taller) than the root.
+ *                  `overflow` runs at every width, but only while one un-duplicated set is wider (or taller) than the room
+ *                  the root gives it. It always lays out as the running one-row layout (the head gate marks it before
+ *                  first paint), still and centred while the set fits (`data-sgs-marquee-fit`), so deciding moves nothing.
  *   pauseControl   the pause button; off by default. Hover and keyboard-focus pause do not depend on it.
  *   reducedMotionMode  what the strip shows under reduced motion: `wrap` (every item, wrapped; the default) or `swap`
  *                  (one line of whole items replaced by the next group every `swapInterval` seconds, no movement;
@@ -49,6 +51,7 @@ const SELECTOR = '[data-sgs-fx~="marquee"]';
 const SET = '[data-sgs-marquee-set]';
 const CLONE_ATTR = 'data-sgs-marquee-clone';
 const PREFIX = 'data-sgs-fx-marquee-';
+const FIT_ATTR = 'data-sgs-marquee-fit';
 const IMAGE_WAIT_MS = 1500;
 const DEFAULT_SPEED = 40;
 const DEFAULT_FADE = 5;
@@ -210,6 +213,7 @@ export function createMarquee( root ) {
 
 	function unmark() {
 		root.removeAttribute( 'data-sgs-marquee' );
+		root.removeAttribute( FIT_ATTR );
 		lane.removeAttribute( 'data-sgs-marquee-lane' );
 		root.style.removeProperty( '--sgs-marquee-fade-size' );
 	}
@@ -241,11 +245,15 @@ export function createMarquee( root ) {
 		swap.refresh();
 	}
 
-	function teardown() {
+	function stopLoops() {
 		loops.forEach( ( loop ) => loop.destroy() );
 		loops = [];
 		clones().forEach( ( clone ) => clone.remove() );
 		copies = [];
+	}
+
+	function teardown() {
+		stopLoops();
 		unmark();
 	}
 
@@ -260,32 +268,30 @@ export function createMarquee( root ) {
 		}
 	}
 
-	let resting = { gaps: 0, padding: 0 };
-
-	// The elements from the lane up to the root: their padding and gaps shape the items' resting layout.
-	function restingChain() {
-		const chain = [];
+	// The elements from the lane up to the root: their padding narrows the room the items have.
+	function paddingChain( vertical ) {
+		let sum = 0;
 		for ( let el = lane; el; el = el.parentElement ) {
-			chain.push( window.getComputedStyle( el ) );
+			const style = window.getComputedStyle( el );
+			const start = parseFloat( vertical ? style.paddingTop : style.paddingLeft ) || 0;
+			const end = parseFloat( vertical ? style.paddingBottom : style.paddingRight ) || 0;
+			sum += start + end;
 			if ( el === root ) {
 				break;
 			}
 		}
-		return chain;
+		return sum;
 	}
 
-	function restingPadding( vertical ) {
-		return restingChain().reduce( ( sum, style ) => {
-			const start = parseFloat( vertical ? style.paddingTop : style.paddingLeft ) || 0;
-			const end = parseFloat( vertical ? style.paddingBottom : style.paddingRight ) || 0;
-			return sum + start + end;
-		}, 0 );
-	}
-
-	// The running layout drops the gaps between items, so the widest gap in the chain stands in for the resting one.
-	function restingGaps( vertical ) {
-		const gap = Math.max( 0, ...restingChain().map( ( style ) => parseFloat( vertical ? style.rowGap : style.columnGap ) || 0 ) );
-		return gap * Math.max( 0, original.children.length - 1 );
+	// The room one un-duplicated set has in the running layout: the root's width less the padding between the root and
+	// the items, and no more than the lane's own content box when the lane is narrower than the root (a title beside it).
+	function roomFor( vertical, view ) {
+		const room = view - paddingChain( vertical );
+		const box = layoutBox( lane );
+		const own = vertical ? box.height : box.width;
+		const style = window.getComputedStyle( lane );
+		const inner = own - ( parseFloat( vertical ? style.paddingTop : style.paddingLeft ) || 0 ) - ( parseFloat( vertical ? style.paddingBottom : style.paddingRight ) || 0 );
+		return own > 0 && inner > 0 ? Math.min( room, inner ) : room;
 	}
 
 	function measure( vertical ) {
@@ -355,23 +361,9 @@ export function createMarquee( root ) {
 		}
 		stopSwap();
 		const vertical = VERTICAL.includes( settings.direction );
-		// Read while the static layout still applies: the running layout has its own gap.
-		// The head gate may already have marked the root, so the marks come off while measuring and go back after.
-		if ( 0 === loops.length ) {
-			const rootMark = root.getAttribute( 'data-sgs-marquee' );
-			const laneMark = lane.getAttribute( 'data-sgs-marquee-lane' );
-			root.removeAttribute( 'data-sgs-marquee' );
-			lane.removeAttribute( 'data-sgs-marquee-lane' );
-			resting = { gaps: restingGaps( vertical ), padding: restingPadding( vertical ) };
-			if ( null !== rootMark ) {
-				root.setAttribute( 'data-sgs-marquee', rootMark );
-			}
-			if ( null !== laneMark ) {
-				lane.setAttribute( 'data-sgs-marquee-lane', laneMark );
-			}
-		}
-		// The set is measured in the running layout: a block can keep the set out of its static layout until the
-		// marquee runs (the trust bar's track is `display: contents` until then), so the marks go on first.
+		// The set is measured in the running layout, which is also what an `overflow` strip shows at rest (one
+		// non-wrapping row): a block can keep the set out of its static layout until the marquee runs (the trust bar's
+		// track is `display: contents` until then), so the marks go on first.
 		root.setAttribute( 'data-sgs-marquee', 'on' );
 		lane.setAttribute( 'data-sgs-marquee-lane', 'on' );
 		settleEntrances( original );
@@ -384,12 +376,15 @@ export function createMarquee( root ) {
 			}
 			return;
 		}
-		if ( 'overflow' === settings.below && size + resting.gaps <= view - resting.padding ) {
-			// The un-duplicated set fits the root: nothing to scroll. The copies are never measured, so the resize
-			// observer's callback cannot loop on them.
-			teardown();
+		if ( 'overflow' === settings.below && size <= roomFor( vertical, view ) ) {
+			// The un-duplicated set fits: nothing to scroll. The strip keeps the one-row layout it painted in (the
+			// head gate marked it before first paint), so settling moves nothing; the edge fade is dropped, as the
+			// items need no fade. The copies are never measured, so the resize observer's callback cannot loop on them.
+			stopLoops();
+			root.setAttribute( FIT_ATTR, '' );
 			return;
 		}
+		root.removeAttribute( FIT_ATTR );
 		if (
 			! force &&
 			loops.length > 0 &&

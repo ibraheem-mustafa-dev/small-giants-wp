@@ -44,6 +44,20 @@
 	justify-content: flex-start;
 }
 
+/* An `overflow` strip is the running one-row layout from first paint (the head gate marks it), whether or not its items
+   fit. While one set fits (no copies; fx-marquee.js adds `data-sgs-marquee-fit`) the row is centred; when it does not
+   fit, `safe` starts the row at the leading edge, where the loop begins, so the items never jump. The doubled lane
+   attribute outranks a block's own lane rule (the brand strip's track). */
+[data-sgs-fx~="marquee"][data-sgs-fx-marquee-below-breakpoint="overflow"]:not([data-sgs-fx-marquee-direction="up"]):not([data-sgs-fx-marquee-direction="down"]) [data-sgs-marquee-lane="on"][data-sgs-marquee-lane="on"],
+[data-sgs-fx~="marquee"][data-sgs-fx-marquee-below-breakpoint="overflow"]:not([data-sgs-fx-marquee-direction="up"]):not([data-sgs-fx-marquee-direction="down"])[data-sgs-marquee-lane="on"][data-sgs-marquee-lane="on"] {
+	justify-content: safe center;
+}
+
+/* A fitting `overflow` strip stands still, so its edge fade is not drawn. */
+[data-sgs-fx~="marquee"][data-sgs-marquee="on"][data-sgs-marquee-fit][data-sgs-fx-marquee-edge-fade="true"] [data-sgs-marquee-lane="on"] {
+	mask-image: none;
+}
+
 [data-sgs-fx~="marquee"][data-sgs-fx-marquee-direction="up"] [data-sgs-marquee-lane="on"],
 [data-sgs-fx~="marquee"][data-sgs-fx-marquee-direction="down"] [data-sgs-marquee-lane="on"],
 [data-sgs-fx~="marquee"][data-sgs-fx-marquee-direction="up"][data-sgs-marquee-lane="on"],

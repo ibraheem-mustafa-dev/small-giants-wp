@@ -8,7 +8,10 @@
  * `src/shared/effects/fx-marquee.js` sets. Until it runs the static layout paints, and the swap to one row shifts the
  * page. This gate sets the same marks while the parser adds the set, so the first paint is already the running layout.
  * It decides exactly as the module's `canRun` does: not reduced motion, not switched off at this device tier
- * (`src/shared/effects/off-switch.js`), inside the `below-breakpoint` range, and Web Animations present.
+ * (`src/shared/effects/off-switch.js`), inside the `below-breakpoint` range, and Web Animations present. An `overflow`
+ * strip (it runs only while its items do not fit) is marked too: the marks are the one-row layout, which is also what
+ * the strip shows once the module has measured and found the items fit (still, centred), so its first paint and its
+ * settled state have the same height whether or not it ends up moving.
  *
  * It stops watching at DOMContentLoaded. If the module has not set `window.sgsMarqueeArmed` by the window's load event
  * (it failed to download or threw: a deferred module always runs before load), the gate removes its marks, so the
@@ -46,11 +49,6 @@
 	};
 	const wouldRun = ( root ) => {
 		const range = root.getAttribute( PREFIX + 'below-breakpoint' );
-		if ( 'overflow' === range ) {
-			// Whether the items overflow is known only after measuring, so the module decides; marking now would show
-			// a running layout that snaps back when the items fit, or hide a resting wrap the module has to measure.
-			return false;
-		}
 		if ( below[ range ] && ! matches( below[ range ] ) ) {
 			return false;
 		}

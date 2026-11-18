@@ -1,7 +1,7 @@
 /**
  * The head gate (assets/js/marquee-ready-gate.js) marks a marquee root before the module boots. An `overflow` marquee
- * is never pre-marked: whether the items overflow is known only after measuring, so a pre-mark would show a running
- * layout that snaps back (a layout shift) or hide the resting wrap the module has to measure.
+ * is pre-marked too: its marks are the one-row layout it keeps when the items fit, so first paint and settled state
+ * have the same height.
  */
 const fs = require( 'fs' );
 const path = require( 'path' );
@@ -30,10 +30,10 @@ afterEach( () => {
 	delete Element.prototype.animate;
 } );
 
-test( 'an overflow marquee is not pre-marked: the module decides after measuring', async () => {
+test( 'an overflow marquee is pre-marked: first paint is the one-row layout it settles in', async () => {
 	const root = await runGate( 'overflow' );
-	expect( root.hasAttribute( 'data-sgs-marquee' ) ).toBe( false );
-	expect( root.querySelector( '.lane' ).hasAttribute( 'data-sgs-marquee-lane' ) ).toBe( false );
+	expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
+	expect( root.querySelector( '.lane' ).getAttribute( 'data-sgs-marquee-lane' ) ).toBe( 'on' );
 } );
 
 test( 'NEGATIVE CONTROL: an always marquee is still pre-marked', async () => {
