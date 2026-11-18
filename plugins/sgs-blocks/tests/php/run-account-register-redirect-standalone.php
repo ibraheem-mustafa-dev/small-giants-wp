@@ -18,6 +18,9 @@ function esc_html__( $t, $d = null ) { return $t; }
 function wp_unslash( $v ) { return $v; }
 function wp_verify_nonce( $nonce, $action ) { return 'good-nonce' === $nonce && 'woocommerce-register' === $action ? 1 : false; }
 function update_user_meta( $id, $k, $v ) { $GLOBALS['meta'][ $id ][ $k ] = $v; return true; }
+function get_user_meta( $id, $k, $single = false ) { return $GLOBALS['meta'][ $id ][ $k ] ?? ''; }
+function delete_user_meta( $id, $k ) { unset( $GLOBALS['meta'][ $id ][ $k ] ); return true; }
+function get_current_user_id() { return 3; }
 function home_url( $path = '' ) { return ( $GLOBALS['sgs_test_home'] ?? 'https://example.test' ) . $path; }
 function wp_parse_url( $url, $component = -1 ) { return parse_url( $url, $component ); }
 function wc_get_page_permalink( $p ) { return 'https://example.test/my-account/'; }
@@ -184,6 +187,34 @@ $blk = static fn( array $a ) => array( array( 'blockName' => 'sgs/account', 'att
 ok( 'https://example.test/sign-in/' === RD::sign_in_url_in_blocks( $blk( array( 'signedOutView' => 'card', 'signedOutSignInUrl' => '/sign-in/' ) ) ), '9 card view with a typed address: found and made absolute' );
 ok( '' === RD::sign_in_url_in_blocks( $blk( array( 'signedOutView' => 'card' ) ) ), '9 card view with no address: none' );
 ok( '' === RD::sign_in_url_in_blocks( $blk( array( 'signedOutSignInUrl' => '/sign-in/' ) ) ), '9 not the card view: none' );
+
+// 10) Account-details marketing tick: off prints nothing; on shows the saved choice; saving ticks on, keeps the first time, clears honestly.
+$GLOBALS['meta'] = array();
+EP::$active      = array();
+ok( '' === capture( array( EX::class, 'account_marketing_opt_in_field' ) ), '10 tick: nothing printed while off' );
+EP::$active = array( 'accountShowMarketingOptIn' => true, 'accountMarketingOptInLabel' => 'Mail <b>' );
+$html       = capture( array( EX::class, 'account_marketing_opt_in_field' ) );
+ok( str_contains( $html, 'type="checkbox"' ) && ! str_contains( $html, ' checked' ) && str_contains( $html, 'Mail &lt;b&gt;' ), '10 tick: unticked with no saved choice, label from the setting and escaped' );
+$GLOBALS['meta'][3]['sgs_marketing_opt_in'] = '1';
+ok( str_contains( capture( array( EX::class, 'account_marketing_opt_in_field' ) ), ' checked' ), '10 tick: ticked from the saved choice' );
+$GLOBALS['meta'] = array();
+$_POST           = array( 'sgs_marketing_opt_in' => '1' );
+EX::save_account_marketing_opt_in( 4 );
+ok( array() === ( $GLOBALS['meta'][4] ?? array() ), '10 save: a form without the tick field changes nothing' );
+$_POST['sgs_account_marketing'] = '1';
+EX::save_account_marketing_opt_in( 4 );
+$at = $GLOBALS['meta'][4]['sgs_marketing_opt_in_at'] ?? '';
+ok( '1' === ( $GLOBALS['meta'][4]['sgs_marketing_opt_in'] ?? '' ) && 1 === preg_match( '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', (string) $at ), '10 save: ticking on records the flag and a GMT time' );
+$GLOBALS['meta'][4]['sgs_marketing_opt_in_at'] = '2020-01-01 00:00:00';
+EX::save_account_marketing_opt_in( 4 );
+ok( '2020-01-01 00:00:00' === $GLOBALS['meta'][4]['sgs_marketing_opt_in_at'], '10 save: saving again while on keeps the first time' );
+$_POST = array( 'sgs_account_marketing' => '1' );
+EX::save_account_marketing_opt_in( 4 );
+ok( ! isset( $GLOBALS['meta'][4]['sgs_marketing_opt_in'] ) && ! isset( $GLOBALS['meta'][4]['sgs_marketing_opt_in_at'] ), '10 save: unticking removes the flag and the time' );
+$_POST = array();
+EX::register();
+ok( isset( $GLOBALS['hooks']['woocommerce_edit_account_form'], $GLOBALS['hooks']['woocommerce_save_account_details'] ), '10 hooks wired on WooCommerce account-details form and save' );
+EP::$active = null;
 
 echo $failures ? "\n{$failures} FAILED\n" : "\nall passed\n";
 exit( $failures ? 1 : 0 );

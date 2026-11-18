@@ -33,6 +33,8 @@ final class Account_Extras {
 		\add_action( 'wp_loaded', array( __CLASS__, 'fill_display_name' ), 10 );
 		\add_action( 'woocommerce_save_account_details_errors', array( __CLASS__, 'validate_mobile' ), 10, 1 );
 		\add_action( 'woocommerce_save_account_details', array( __CLASS__, 'save_mobile' ), 10, 1 );
+		\add_action( 'woocommerce_edit_account_form', array( __CLASS__, 'account_marketing_opt_in_field' ), 20 );
+		\add_action( 'woocommerce_save_account_details', array( __CLASS__, 'save_account_marketing_opt_in' ), 20, 1 );
 		\add_action( 'woocommerce_register_form_start', array( __CLASS__, 'register_first_name_field' ) );
 		\add_filter( 'woocommerce_registration_errors', array( __CLASS__, 'validate_first_name' ), 10, 1 );
 		\add_action( 'woocommerce_created_customer', array( __CLASS__, 'save_first_name' ), 10, 1 );
@@ -528,6 +530,46 @@ final class Account_Extras {
 		}
 		update_user_meta( (int) $customer_id, 'sgs_marketing_opt_in', '1' );
 		update_user_meta( (int) $customer_id, 'sgs_marketing_opt_in_at', gmdate( 'Y-m-d H:i:s' ) );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+	/** The "email me" tick on the account-details form, ticked from the customer's saved choice, while the setting is on. */
+	public static function account_marketing_opt_in_field(): void {
+		if ( ! is_array( Account_Endpoints::$active ) || empty( Account_Endpoints::$active['accountShowMarketingOptIn'] ) ) {
+			return;
+		}
+		$label = trim( (string) ( Account_Endpoints::$active['accountMarketingOptInLabel'] ?? '' ) );
+		$label = '' !== $label ? $label : __( 'Email me news and offers', 'sgs-blocks' );
+		$on    = '1' === (string) get_user_meta( get_current_user_id(), 'sgs_marketing_opt_in', true );
+		echo '<p class="woocommerce-form-row form-row sgs-account__marketing-opt-in">'
+			. '<label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox" for="account_sgs_marketing_opt_in">'
+			. '<input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" name="sgs_marketing_opt_in" id="account_sgs_marketing_opt_in" value="1"' . ( $on ? ' checked' : '' ) . ' /> '
+			. '<span>' . esc_html( $label ) . '</span></label>'
+			. '<input type="hidden" name="sgs_account_marketing" value="1" /></p>';
+	}
+
+	/**
+	 * Save the tick (runs on WooCommerce's `woocommerce_save_account_details`, after its own nonce and validation).
+	 * Only a form that carried the tick changes anything. Turning it on records the flag and the GMT time once; turning
+	 * it off removes both, so no consent record outlives the choice.
+	 *
+	 * @param mixed $user_id The customer being saved.
+	 */
+	public static function save_account_marketing_opt_in( $user_id ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- WooCommerce verifies the account-details nonce before this action fires.
+		if ( ! is_numeric( $user_id ) || empty( $_POST['sgs_account_marketing'] ) ) {
+			return;
+		}
+		$user_id = (int) $user_id;
+		if ( ! empty( $_POST['sgs_marketing_opt_in'] ) ) {
+			if ( '1' !== (string) get_user_meta( $user_id, 'sgs_marketing_opt_in', true ) ) {
+				update_user_meta( $user_id, 'sgs_marketing_opt_in', '1' );
+				update_user_meta( $user_id, 'sgs_marketing_opt_in_at', gmdate( 'Y-m-d H:i:s' ) );
+			}
+			return;
+		}
+		delete_user_meta( $user_id, 'sgs_marketing_opt_in' );
+		delete_user_meta( $user_id, 'sgs_marketing_opt_in_at' );
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 }

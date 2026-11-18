@@ -4706,6 +4706,16 @@
 				"type": "object",
 				"description": "Lay the First name and Last name fields of the create-account form in one row of two equal columns on the devices set true: {desktop,tablet,mobile}. Unset keeps them stacked. The column gap follows the form row gap."
 			},
+			"accountShowMarketingOptIn": {
+				"type": "boolean",
+				"default": false,
+				"description": "Adds an email-me tick to the account-details form, ticked from the customer's saved choice and saved with the form (user meta sgs_marketing_opt_in and sgs_marketing_opt_in_at). Off prints nothing."
+			},
+			"accountMarketingOptInLabel": {
+				"type": "string",
+				"default": "",
+				"description": "Label of the account-details email-me tick. Empty = Email me news and offers."
+			},
 			"registerShowMarketingOptIn": {
 				"type": "boolean",
 				"description": "Add an optional, unticked email-me tick to the create-account form. A ticked box stores sgs_marketing_opt_in and sgs_marketing_opt_in_at on the new user; nothing is sent. Off by default."

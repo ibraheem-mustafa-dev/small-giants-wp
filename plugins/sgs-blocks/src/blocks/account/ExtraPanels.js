@@ -268,6 +268,15 @@ export function AccountDetailsPanel( { attributes, setAttributes } ) {
 					/>
 				</>
 			) }
+			<Toggle
+				{ ...p }
+				name="accountShowMarketingOptIn"
+				label={ __( 'Show an email-me tick', 'sgs-blocks' ) }
+				help={ __( 'Ticked from the customer’s saved choice and saved with the form; nothing is sent.', 'sgs-blocks' ) }
+			/>
+			{ attributes.accountShowMarketingOptIn && (
+				<TextField { ...p } name="accountMarketingOptInLabel" label={ __( 'Email-me tick label', 'sgs-blocks' ) } help={ __( 'Empty uses “Email me news and offers”.', 'sgs-blocks' ) } />
+			) }
 			<TextField { ...p } name="accountPasswordHelper" label={ __( 'Text under the password heading', 'sgs-blocks' ) } />
 			<Toggle { ...p } name="accountSaveFullWidth" label={ __( 'Save button full width', 'sgs-blocks' ) } />
 		</PanelBody>
