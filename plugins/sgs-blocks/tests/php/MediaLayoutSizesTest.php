@@ -152,16 +152,110 @@ class MediaLayoutSizesTest extends TestCase {
 		$this->assertSame( array(), Sgs_Layout_Width::fr_tracks( 'repeat(auto-fit, minmax(240px, 1fr))' ) );
 	}
 
-	public function test_a_product_list_divides_by_the_collection_columns_on_desktop_only(): void {
+	public function test_a_flex_product_list_divides_by_the_collection_columns_from_tablet_up(): void {
 		$this->open(
 			$this->container( array( 'contentWidth' => array( 'desktop' => '1200px' ) ) ),
-			$this->leaf( array( 'displayLayout' => array( 'columns' => 4 ) ), 'woocommerce/product-collection' ),
+			$this->leaf( array( 'displayLayout' => array( 'type' => 'flex', 'columns' => 4 ) ), 'woocommerce/product-collection' ),
 			$this->leaf( array(), 'woocommerce/product-template' ),
 			$this->leaf( array(), 'sgs/product-card' )
 		);
 		// Four columns with WooCommerce's 20px gap between them: (1200 - 3 * 20) / 4.
 		$this->assertSame( 'min(285px, calc(25vw - 15px))', $this->sizes( 'desktop' ) );
-		$this->assertSame( '(max-width: 1200px) 100vw, 1200px', $this->sizes( 'mobile' ) );
+		$this->assertSame( 'min(285px, calc(25vw - 15px))', $this->sizes( 'tablet' ) );
+		$this->assertSame( '(max-width: 1200px) 100vw, 1200px', $this->sizes( 'mobile' ), 'below 600px the list is one column, and 600px to 767px is still mobile' );
+	}
+
+	public function test_a_responsive_product_list_is_an_auto_fill_grid_of_150px_holding_at_most_its_columns(): void {
+		$this->open(
+			$this->container( array( 'contentWidth' => array( 'desktop' => 'full' ), 'padding' => array( 'desktop' => array( 'left' => '20px', 'right' => '20px' ), 'tablet' => array( 'left' => '20px', 'right' => '20px' ), 'mobile' => array( 'left' => '20px', 'right' => '20px' ) ) ) ),
+			$this->leaf( array( 'displayLayout' => array( 'type' => 'flex', 'columns' => 3, 'shrinkColumns' => true ) ), 'woocommerce/product-collection' ),
+			$this->leaf( array(), 'woocommerce/product-template' ),
+			$this->leaf( array(), 'sgs/product-card' )
+		);
+		$segs = Sgs_Layout_Width::grid_segments( Sgs_Layout_Width::own()['mobile'] );
+		// A 150px minimum and a 20px gap: two columns from a 320px row (a 360px viewport), three from 490px (530px), never more.
+		$this->assertSame( array( 530, 360, null ), array_column( $segs, 0 ) );
+		$this->assertSame( '(min-width:530px) calc(33.33vw - 26.67px), (min-width:360px) calc(50vw - 30px), calc(100vw - 40px)', $this->sizes( 'mobile' ) );
+		$this->assertSame( '(min-width:530px) calc(33.33vw - 26.67px), (min-width:360px) calc(50vw - 30px), calc(100vw - 40px)', $this->sizes( 'tablet' ) );
+	}
+
+	public function test_a_block_gap_on_a_responsive_product_list_sizes_by_its_smallest_and_fits_by_its_largest(): void {
+		$template = $this->leaf( array( 'style' => array( 'spacing' => array( 'blockGap' => '40px' ) ) ), 'woocommerce/product-template' );
+		$this->open(
+			$this->container( array( 'contentWidth' => array( 'desktop' => 'full' ) ) ),
+			$this->leaf( array( 'displayLayout' => array( 'type' => 'flex', 'columns' => 2, 'shrinkColumns' => true ) ), 'woocommerce/product-collection' ),
+			$template,
+			$this->leaf( array(), 'sgs/product-card' )
+		);
+		$segs = Sgs_Layout_Width::grid_segments( Sgs_Layout_Width::own()['desktop'] );
+		$this->assertSame( array( 340, null ), array_column( $segs, 0 ), 'two columns need 150 + 150 + the largest gap (40px)' );
+		// The gap taken off each cell is the smaller 20px (WooCommerce's), so the cell is never narrower than the real one.
+		$this->assertStringStartsWith( '(min-width:340px) calc(50vw - 10px), 100vw', $this->sizes( 'desktop' ) );
+	}
+
+	public function test_a_product_list_in_the_shop_layout_is_below_two_card_minimums_and_a_gap(): void {
+		$this->open(
+			$this->container( array( 'contentWidth' => array( 'desktop' => 'full' ), 'className' => 'sgs-shop-layout' ) ),
+			$this->leaf( array( 'displayLayout' => array( 'type' => 'flex', 'columns' => 3, 'shrinkColumns' => true ) ), 'woocommerce/product-collection' ),
+			$this->leaf( array(), 'woocommerce/product-template' ),
+			$this->leaf( array(), 'sgs/product-card' )
+		);
+		// The theme defaults (240px minimum, 24px gap) bound a cell at 504px whatever the sidebar leaves; the desktop keeps its row over columns.
+		$this->assertSame( '(max-width: 504px) 100vw, 504px', $this->sizes( 'mobile' ) );
+		$this->assertSame( '(max-width: 504px) 100vw, 504px', $this->sizes( 'tablet' ) );
+		$this->assertSame( 'min(504px, 33.33vw)', $this->sizes( 'desktop' ) );
+	}
+
+	public function test_a_row_share_reads_px_percent_and_calc(): void {
+		$this->assertSame( array( 0.76, 0.0 ), Sgs_Layout_Width::row_share( '76%' ) );
+		$this->assertSame( array( 0.0, 220.0 ), Sgs_Layout_Width::row_share( '220px' ) );
+		$this->assertSame( array( 0.0, 320.0 ), Sgs_Layout_Width::row_share( '20rem' ) );
+		$this->assertSame( array( 0.5, -7.0 ), Sgs_Layout_Width::row_share( 'calc((100% - 14px) / 2)' ) );
+		$third = Sgs_Layout_Width::row_share( 'calc((100% - 2 * 20px) / 3)' );
+		$this->assertEqualsWithDelta( 1 / 3, $third[0], 0.000001 );
+		$this->assertEqualsWithDelta( -40 / 3, $third[1], 0.000001 );
+		$this->assertSame( array( 0.25, 4.0 ), Sgs_Layout_Width::row_share( 'calc(25% + 4px)' ) );
+		$this->assertNull( Sgs_Layout_Width::row_share( 'min(300px, 50%)' ) );
+		$this->assertNull( Sgs_Layout_Width::row_share( '50vw' ) );
+		$this->assertNull( Sgs_Layout_Width::row_share( 'calc(100% / 0)' ) );
+		$this->assertNull( Sgs_Layout_Width::row_share( 'calc(100% * 50%)' ) );
+		$this->assertNull( Sgs_Layout_Width::row_share( 'var(--card-w)' ) );
+	}
+
+	public function test_a_scroll_row_pulled_out_by_negative_margins_is_wider_than_its_parent(): void {
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/helpers-responsive.php';
+		$padding = array( 'left' => '20px', 'right' => '20px' );
+		$this->open(
+			$this->container( array( 'contentWidth' => array( 'desktop' => 'full' ), 'padding' => array( 'mobile' => $padding ) ) ),
+			$this->container(
+				array(
+					'contentWidth'    => array( 'desktop' => 'full' ),
+					'scrollSideways'  => array( 'mobile' => 'on' ),
+					'scrollItemWidth' => array( 'mobile' => '76%' ),
+					'padding'         => array( 'mobile' => $padding ),
+					'margin'          => array( 'mobile' => array( 'left' => '-20px', 'right' => '-20px' ) ),
+				)
+			),
+			$this->leaf()
+		);
+		// The parent is 100vw - 40px; the row bleeds 40px back, and its own 40px padding takes them off again: 76% of 100vw - 40px.
+		$this->assertSame( 'calc(76vw - 30.4px)', $this->sizes( 'mobile' ) );
+	}
+
+	public function test_a_sideways_scroll_item_of_two_per_row_is_half_the_row_less_its_gap(): void {
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/helpers-responsive.php';
+		$this->open(
+			$this->container(
+				array(
+					'scrollSideways'  => array( 'mobile' => 'on' ),
+					'scrollItemWidth' => array( 'mobile' => 'calc((100% - 14px) / 2)' ),
+					'contentWidth'    => array( 'desktop' => 'full' ),
+				)
+			),
+			$this->leaf()
+		);
+		$this->assertSame( 'calc(50vw - 7px)', $this->sizes( 'mobile' ) );
+		$this->assertSame( '100vw', $this->sizes( 'desktop' ) );
 	}
 
 	public function test_an_item_set_divides_its_box_by_its_columns(): void {
@@ -378,7 +472,7 @@ class MediaLayoutSizesTest extends TestCase {
 	public function test_a_product_list_takes_woocommerces_gap_off_each_cell(): void {
 		$template = array(
 			'blockName' => 'woocommerce/product-template',
-			'attrs'     => array( 'displayLayout' => array( 'columns' => 4 ) ),
+			'attrs'     => array( 'displayLayout' => array( 'type' => 'flex', 'columns' => 4 ) ),
 		);
 		$row      = array( 'contentWidth' => array( 'desktop' => 'full' ), 'maxWidth' => array( 'desktop' => '1240px' ) );
 		$this->open( $this->container( $row ), $template, $this->leaf() );

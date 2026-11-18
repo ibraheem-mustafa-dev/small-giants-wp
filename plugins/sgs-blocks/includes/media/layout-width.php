@@ -35,6 +35,11 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 		private const WC_TEMPLATE_GAP = 20.0;
 
 		/**
+		 * The smallest track in px of WooCommerce's responsive product list (`max(150px, ...)` in its stylesheet).
+		 */
+		private const WC_RESPONSIVE_MIN = 150.0;
+
+		/**
 		 * Open frames, outermost first.
 		 *
 		 * @var array<int,array{name:string,own:array,row:array,cell:array,display:int}>
@@ -177,6 +182,8 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 				}
 			}
 			$display = isset( $attrs['displayLayout']['columns'] ) ? (int) $attrs['displayLayout']['columns'] : (int) ( $parent['display'] ?? 0 );
+			// A product collection's `displayLayout` (`type`, `columns`, `shrinkColumns`) reaches its product template as block context.
+			$layout = is_array( $attrs['displayLayout'] ?? null ) ? $attrs['displayLayout'] : (array) ( $parent['layout'] ?? array() );
 			if ( 'sgs/container' === $name ) {
 				$frame = self::container_frame( $name, $attrs, $own, $inner, $parent );
 			} else {
@@ -195,21 +202,21 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 						$frame['cell'][ $device ] = self::capped( $frame['cell'][ $device ], $px );
 					}
 				}
-				// A product list's items fill a grid whose column count the collection holds (`displayLayout.columns`). Its
-				// CSS drops columns on narrow screens, which makes a cell wider than 1 / columns, so only the desktop divides.
-				// WooCommerce's own stylesheet puts a 1.25rem gap between the items. The theme's shop layout and product rail set
-				// their own gap (a Customiser setting), and a block gap set on the collection overrides it, so the gap is taken
-				// as 0 wherever one of those is in play.
-				if ( 'woocommerce/product-template' === $name && $display > 1 ) {
-					$gap                      = empty( $parent['own_gap'] ) && ! isset( $attrs['style']['spacing']['blockGap'] ) ? self::WC_TEMPLATE_GAP : 0.0;
-					$frame['cell']['desktop'] = self::divided( self::shifted( $own['desktop'], -( $display - 1 ) * $gap ), $display );
+				if ( 'woocommerce/product-template' === $name ) {
+					$frame['cell'] = self::product_list_cells( $own, $layout, $parent, $attrs );
 				}
 			}
 			$frame['display'] = $display;
+			$frame['layout']  = $layout;
 			// Whether a block gap may differ from WooCommerce's default here: this block or an ancestor is the theme's shop
 			// layout or product rail, or sets a block gap of its own.
 			$classes            = is_string( $attrs['className'] ?? null ) ? $attrs['className'] : '';
 			$frame['own_gap']   = ! empty( $parent['own_gap'] ) || (bool) preg_match( '/(?:^|\s)sgs-(?:shop-layout|product-rail)(?:\s|$)/', $classes ) || isset( $attrs['style']['spacing']['blockGap'] );
+			// The theme's shop layout and product rail lay their cards out by their own CSS, not WooCommerce's.
+			$frame['shop_layout'] = ! empty( $parent['shop_layout'] ) || (bool) preg_match( '/(?:^|\s)sgs-shop-layout(?:\s|$)/', $classes );
+			$frame['rail']        = ! empty( $parent['rail'] ) || (bool) preg_match( '/(?:^|\s)sgs-product-rail(?:\s|$)/', $classes );
+			// The block gap set on this block or on the nearest ancestor that sets one (a spacing token, a length or a clamp()).
+			$frame['block_gap'] = $attrs['style']['spacing']['blockGap'] ?? ( $parent['block_gap'] ?? null );
 			$frame['box']     = null !== $parent ? ( $parent['child_box'] ?? null ) : null;
 			// A container's content height per device for its only child: its px min-height (a narrower device inherits the wider
 			// one's) less its top and bottom padding and border, taken at their largest so the figure never overgrows the box. The
@@ -259,6 +266,7 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 			$max     = sgs_media_device_values( $attrs['maxWidth'] ?? null );
 			$band    = sgs_media_device_values( $attrs['contentWidth'] ?? array( 'desktop' => 'normal' ) );
 			$padding = sgs_media_device_values( $attrs['padding'] ?? null );
+			$margin  = sgs_media_device_values( $attrs['margin'] ?? null );
 			$gap     = sgs_media_device_values( $attrs['gap'] ?? null );
 			$columns = sgs_media_device_values(
 				$attrs['columns'] ?? array(
@@ -274,6 +282,13 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 			$row     = array();
 			$cell    = array();
 			foreach ( sgs_media_devices() as $device ) {
+				// A negative side margin pulls the box out past its parent (a sideways-scroll row that bleeds to the screen edge), so
+				// it is that much wider; a positive margin is left out, which can only leave the model wider.
+				$sides = is_array( $margin[ $device ] ) ? $margin[ $device ] : array();
+				$bleed = self::bleed_px( $sides['left'] ?? null ) + self::bleed_px( $sides['right'] ?? null );
+				if ( $bleed > 0 ) {
+					$own[ $device ] = self::shifted( $own[ $device ], $bleed );
+				}
 				$own[ $device ] = self::capped( $own[ $device ], sgs_media_sizes_px( $max[ $device ] ) );
 				$model          = $own[ $device ];
 				$band_cap       = null;
@@ -296,11 +311,9 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 					// `scrollItemWidth`, a `%` of the row, or 80% of it when none is set. Any other unit leaves the item at the row.
 					$item  = function_exists( 'sgs_resolve_tier' ) ? sgs_resolve_tier( $attrs['scrollItemWidth'] ?? array(), $device, '' )['value'] : '';
 					$item  = is_string( $item ) ? trim( $item ) : '';
-					$fixed = sgs_media_sizes_px( $item );
-					if ( null !== $fixed ) {
-						$cell[ $device ] = self::capped( $model, $fixed );
-					} elseif ( '' === $item || preg_match( '/^(\d+(?:\.\d+)?)%$/', $item, $m ) ) {
-						$cell[ $device ] = self::scaled( $model, '' === $item ? 0.8 : min( 1.0, (float) $m[1] / 100 ) );
+					$share = '' === $item ? array( 0.8, 0.0 ) : self::row_share( $item );
+					if ( null !== $share ) {
+						$cell[ $device ] = self::share_of( $model, $share[0], $share[1] );
 					}
 					continue;
 				}
@@ -653,6 +666,219 @@ if ( ! class_exists( 'Sgs_Layout_Width' ) ) {
 				}
 			}
 			return $widest > 0 ? $widest : null;
+		}
+
+		/**
+		 * How far a negative px, rem or em margin pulls a box out.
+		 *
+		 * @param mixed $value A margin side.
+		 * @return float Px, 0 when the margin is not negative or not a length.
+		 */
+		private static function bleed_px( $value ): float {
+			return is_string( $value ) && preg_match( '/^-\s*(\d+(?:\.\d+)?)(px|rem|em)$/i', trim( $value ), $m ) ? (float) $m[1] * ( 'px' === strtolower( $m[2] ) ? 1 : 16 ) : 0.0;
+		}
+
+		/**
+		 * A CSS length as a share of the box it is measured against: `pct` of that box plus `px`.
+		 *
+		 * Reads px, rem and em (16px), `%`, and `calc()` of those with `+`, `-`, `*` and `/` (a unitless operand scales a length),
+		 * so `76%`, `220px` and `calc((100% - 14px) / 2)` all give a share. Any other length (a token, `vw`, `min()`, `auto`) gives
+		 * null, and the caller leaves the box as wide as the row.
+		 *
+		 * @param string $css A CSS length.
+		 * @return array{0:float,1:float}|null `[pct as a fraction of the box, px]`; null when it is not readable.
+		 */
+		public static function row_share( string $css ): ?array {
+			$css = strtolower( trim( $css ) );
+			if ( '' === $css || ! preg_match_all( '/calc|\d*\.?\d+(?:px|rem|em|%)?|[()+\-*\/]|\s+/', $css, $found ) || implode( '', $found[0] ) !== $css ) {
+				return null;
+			}
+			$tokens = array_values( array_filter( $found[0], static fn( string $t ): bool => '' !== trim( $t ) ) );
+			$pos    = 0;
+			$value  = self::share_expr( $tokens, $pos );
+			if ( null === $value || $pos !== count( $tokens ) || $value['scalar'] ) {
+				return null;
+			}
+			return array( $value['pct'], $value['px'] );
+		}
+
+		/**
+		 * Parse `term (('+' | '-') term)*` of a length expression.
+		 *
+		 * @param string[] $tokens Tokens.
+		 * @param int      $pos    Read position, advanced.
+		 * @return array{pct:float,px:float,scalar:bool}|null
+		 */
+		private static function share_expr( array $tokens, int &$pos ): ?array {
+			$left = self::share_term( $tokens, $pos );
+			while ( null !== $left && isset( $tokens[ $pos ] ) && ( '+' === $tokens[ $pos ] || '-' === $tokens[ $pos ] ) ) {
+				$sign  = '-' === $tokens[ $pos ] ? -1.0 : 1.0;
+				++$pos;
+				$right = self::share_term( $tokens, $pos );
+				if ( null === $right || $left['scalar'] !== $right['scalar'] ) {
+					return null;
+				}
+				$left['pct'] += $sign * $right['pct'];
+				$left['px']  += $sign * $right['px'];
+			}
+			return $left;
+		}
+
+		/**
+		 * Parse `factor (('*' | '/') factor)*`.
+		 *
+		 * @param string[] $tokens Tokens.
+		 * @param int      $pos    Read position, advanced.
+		 * @return array{pct:float,px:float,scalar:bool}|null
+		 */
+		private static function share_term( array $tokens, int &$pos ): ?array {
+			$left = self::share_factor( $tokens, $pos );
+			while ( null !== $left && isset( $tokens[ $pos ] ) && ( '*' === $tokens[ $pos ] || '/' === $tokens[ $pos ] ) ) {
+				$op    = $tokens[ $pos ];
+				++$pos;
+				$right = self::share_factor( $tokens, $pos );
+				if ( null === $right ) {
+					return null;
+				}
+				if ( '*' === $op && $right['scalar'] ) {
+					$k = $right['px'];
+				} elseif ( '*' === $op && $left['scalar'] ) {
+					$k    = $left['px'];
+					$left = $right;
+				} elseif ( '/' === $op && $right['scalar'] && abs( $right['px'] ) > 0.0000001 ) {
+					$k = 1 / $right['px'];
+				} else {
+					return null;
+				}
+				$left['pct'] *= $k;
+				$left['px']  *= $k;
+			}
+			return $left;
+		}
+
+		/**
+		 * Parse a number with an optional unit, a parenthesised expression or a `calc(` expression.
+		 *
+		 * @param string[] $tokens Tokens.
+		 * @param int      $pos    Read position, advanced.
+		 * @return array{pct:float,px:float,scalar:bool}|null A unitless number is `scalar` with its figure in `px`.
+		 */
+		private static function share_factor( array $tokens, int &$pos ): ?array {
+			$t = $tokens[ $pos ] ?? null;
+			if ( null === $t ) {
+				return null;
+			}
+			++$pos;
+			if ( 'calc' === $t ) {
+				if ( '(' !== ( $tokens[ $pos ] ?? null ) ) {
+					return null;
+				}
+				$t = '(';
+				++$pos;
+			} elseif ( '(' === $t ) {
+				$t = '(';
+			}
+			if ( '(' === $t ) {
+				$inner = self::share_expr( $tokens, $pos );
+				if ( null === $inner || ')' !== ( $tokens[ $pos ] ?? null ) ) {
+					return null;
+				}
+				++$pos;
+				return $inner;
+			}
+			if ( ! preg_match( '/^(\d*\.?\d+)(px|rem|em|%)?$/', $t, $m ) ) {
+				return null;
+			}
+			$n = (float) $m[1];
+			$u = $m[2] ?? '';
+			return array(
+				'pct'    => '%' === $u ? $n / 100 : 0.0,
+				'px'     => '' === $u || 'px' === $u ? $n : ( '%' === $u ? 0.0 : $n * 16 ),
+				'scalar' => '' === $u,
+			);
+		}
+
+		/**
+		 * A box that is `$pct` of a model plus `$px`: a share of the row, or a fixed px width held to the row.
+		 *
+		 * @param array $model Model of the row.
+		 * @param float $pct   Share of the row as a fraction.
+		 * @param float $px    Extra px (negative takes space away).
+		 * @return array
+		 */
+		public static function share_of( array $model, float $pct, float $px ): array {
+			if ( $pct <= 0.0 ) {
+				return $px > 0 ? self::capped( $model, $px ) : $model;
+			}
+			return self::shifted( self::scaled( $model, min( 1.0, $pct ) ), $px );
+		}
+
+		/**
+		 * The cell models of a product list's items, per device, from how the list is laid out.
+		 *
+		 * - The theme's shop layout (`sgs-shop-layout`) fills auto-fill tracks of the Customiser's card minimum beside a sidebar of
+		 *   unknown width, so no column count is known: a cell is below two minimums plus a gap whatever the row (or the wide size
+		 *   over the "columns once the grid is wide" setting when that is larger), and on desktop also the row over the collection's columns.
+		 * - WooCommerce's responsive list (`shrinkColumns`) is `repeat(auto-fill, minmax(max(150px, row / columns less gaps), 1fr))`:
+		 *   an auto-fill grid of a 150px minimum holding at most `columns` columns.
+		 * - WooCommerce's flex list is one column below 600px and `columns` columns from there, so the tablet and desktop divide
+		 *   and the mobile (which spans 600px to 767px) keeps the row.
+		 * - Any other list (a plain list, a carousel) keeps the row; the product rail divides on desktop only.
+		 * A block gap set on the list or an ancestor may replace the 1.25rem gap, so the smallest gap sizes the cell and the
+		 * largest decides how few columns fit.
+		 *
+		 * @param array      $own    The list's own models per device.
+		 * @param array      $layout The collection's `displayLayout`.
+		 * @param array|null $parent The parent frame.
+		 * @param array      $attrs  The list's parsed attributes.
+		 * @return array Device => model.
+		 */
+		private static function product_list_cells( array $own, array $layout, ?array $parent, array $attrs ): array {
+			$cells   = $own;
+			$columns = min( 6, (int) ( $layout['columns'] ?? 0 ) );
+			if ( ! empty( $parent['shop_layout'] ) ) {
+				$min = function_exists( 'get_theme_mod' ) ? absint( get_theme_mod( 'sgs_shop_card_min_width', '' ) ) : 0;
+				$gap = function_exists( 'get_theme_mod' ) ? trim( (string) get_theme_mod( 'sgs_shop_col_gap', '' ) ) : '';
+				$wid = function_exists( 'get_theme_mod' ) ? absint( get_theme_mod( 'sgs_shop_columns_wide', 4 ) ) : 4;
+				$min = $min >= 120 && $min <= 480 ? (float) $min : 240.0;
+				$gap = '' !== $gap && absint( $gap ) <= 64 ? (float) absint( $gap ) : 24.0;
+				$cap = max( 2 * $min + $gap, ceil( self::theme_sizes()[1] / max( 1, $wid ) ) );
+				foreach ( sgs_media_devices() as $device ) {
+					$cells[ $device ] = self::capped( $own[ $device ], $cap );
+				}
+				// On desktop the layout has always sized a card as the row over the collection's columns, with no gap taken off.
+				if ( $columns > 1 ) {
+					$cells['desktop'] = self::capped( self::divided( $own['desktop'], $columns ), $cap );
+				}
+				return $cells;
+			}
+			if ( ! empty( $parent['rail'] ) ) {
+				if ( $columns > 1 ) {
+					$cells['desktop'] = self::divided( $own['desktop'], $columns );
+				}
+				return $cells;
+			}
+			if ( 'flex' !== ( $layout['type'] ?? '' ) || $columns < 2 ) {
+				return $cells;
+			}
+			$gap_set = $attrs['style']['spacing']['blockGap'] ?? ( $parent['block_gap'] ?? null );
+			$glo     = self::WC_TEMPLATE_GAP;
+			$ghi     = self::WC_TEMPLATE_GAP;
+			if ( null !== $gap_set ) {
+				$bounds = self::length_bounds( $gap_set );
+				$glo    = min( $glo, $bounds[0] );
+				$ghi    = null === $bounds[1] ? null : max( $ghi, $bounds[1] );
+			}
+			foreach ( sgs_media_devices() as $device ) {
+				if ( ! empty( $layout['shrinkColumns'] ) ) {
+					if ( null !== $ghi && ! isset( $own[ $device ]['grid'] ) ) {
+						$cells[ $device ] = self::gridded( $own[ $device ], self::WC_RESPONSIVE_MIN, $glo, $ghi, $columns );
+					}
+				} elseif ( 'mobile' !== $device && ! isset( $own[ $device ]['grid'] ) ) {
+					$cells[ $device ] = self::divided( self::shifted( $own[ $device ], -( $columns - 1 ) * $glo ), $columns );
+				}
+			}
+			return $cells;
 		}
 
 		/**
