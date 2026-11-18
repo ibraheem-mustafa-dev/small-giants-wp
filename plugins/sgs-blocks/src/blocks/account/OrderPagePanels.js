@@ -13,6 +13,7 @@ const ORDER_STATUSES = [
 	[ 'processing', __( 'Processing', 'sgs-blocks' ) ],
 	[ 'on-hold', __( 'On hold', 'sgs-blocks' ) ],
 	[ 'completed', __( 'Completed', 'sgs-blocks' ) ],
+	[ 'delivered', __( 'Completed, after the delivery wait', 'sgs-blocks' ) ],
 	[ 'cancelled', __( 'Cancelled', 'sgs-blocks' ) ],
 	[ 'refunded', __( 'Refunded', 'sgs-blocks' ) ],
 	[ 'failed', __( 'Failed', 'sgs-blocks' ) ],
@@ -158,6 +159,18 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 					] }
 					onChange={ ( value ) => setAttributes( { orderCompletedStep: value } ) }
 				/>
+				{ 'dispatched' === attributes.orderCompletedStep && (
+					<TextControl
+						type="number"
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+						label={ __( 'Days after posting until the last step', 'sgs-blocks' ) }
+						help={ __( '0 = never. A completed order moves to the last step, by itself, this many whole days after it was completed.', 'sgs-blocks' ) }
+						min={ 0 }
+						value={ attributes.orderDeliveredAfterDays || 0 }
+						onChange={ ( value ) => setAttributes( { orderDeliveredAfterDays: Math.max( 0, parseInt( value, 10 ) || 0 ) } ) }
+					/>
+				) }
 				<TextField { ...p } name="orderStepPlaced" label={ __( 'Step: placed', 'sgs-blocks' ) } />
 				<TextField { ...p } name="orderStepProcessing" label={ __( 'Step: processing', 'sgs-blocks' ) } help={ __( 'Empty = the step is left out.', 'sgs-blocks' ) } />
 				<TextField { ...p } name="orderStepDispatched" label={ __( 'Step: dispatched / posted', 'sgs-blocks' ) } />

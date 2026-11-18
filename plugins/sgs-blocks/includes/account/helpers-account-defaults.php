@@ -150,6 +150,32 @@ if ( ! function_exists( 'sgs_account_order_step_for' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_account_order_step_for_order' ) ) {
+	/**
+	 * The progress step one order stands on: `sgs_account_order_step_for()` for its status, and with orderCompletedStep
+	 * `dispatched` a completed order moves on to the last step once `orderDeliveredAfterDays` whole days have passed
+	 * since it was completed. An order with no completed date stays on the dispatched step. Worked out at render time:
+	 * nothing is stored, sent or changed.
+	 *
+	 * @param \WC_Order $order      The order.
+	 * @param array     $attributes Block attributes.
+	 * @return string One of 'placed'|'processing'|'dispatched'|'delivered', or ''.
+	 */
+	function sgs_account_order_step_for_order( $order, array $attributes ): string {
+		$status = (string) $order->get_status();
+		$step   = sgs_account_order_step_for( $status, $attributes );
+		$days   = max( 0, (int) ( $attributes['orderDeliveredAfterDays'] ?? 0 ) );
+		if ( 'dispatched' !== $step || 'completed' !== $status || $days <= 0 || ! method_exists( $order, 'get_date_completed' ) ) {
+			return $step;
+		}
+		$completed = $order->get_date_completed();
+		if ( ! is_object( $completed ) || ! method_exists( $completed, 'getTimestamp' ) ) {
+			return $step;
+		}
+		return (int) floor( ( time() - (int) $completed->getTimestamp() ) / DAY_IN_SECONDS ) >= $days ? 'delivered' : $step;
+	}
+}
+
 if ( ! function_exists( 'sgs_account_step_order' ) ) {
 	/**
 	 * The 4 steps in display order — index also doubles as "how far along".

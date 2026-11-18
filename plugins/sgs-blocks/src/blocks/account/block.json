@@ -5097,12 +5097,18 @@
 					"dispatched"
 				],
 				"default": "delivered",
-				"description": "The progress step a completed order stands on: delivered = the last step, dispatched = the dispatched step (for a shop that marks an order completed when it posts it, since WooCommerce has no delivered status). Applies to the order page's progress line and the dashboard's latest order."
+				"description": "The progress step a completed order stands on: delivered = the last step, dispatched = the dispatched step (for a shop that marks an order completed when it posts it, since WooCommerce has no delivered status), until orderDeliveredAfterDays have passed. Applies to the order page's progress line and the dashboard's latest order."
+			},
+			"orderDeliveredAfterDays": {
+				"type": "integer",
+				"default": 0,
+				"minimum": 0,
+				"description": "With orderCompletedStep dispatched: a completed order moves to the last progress step (and takes the delivered status wording) once this many whole days have passed since it was completed. 0 = never; an order with no completed date stays on the dispatched step. Worked out when the page prints."
 			},
 			"orderStatusLabels": {
 				"type": "object",
 				"default": {},
-				"description": "The status pill's wording per WooCommerce order status (keys pending, processing, on-hold, completed, cancelled, refunded, failed, no wc- prefix). An empty or missing value prints WooCommerce's own status name. Applies to the orders list, the order page and the dashboard's latest order."
+				"description": "The status pill's wording per WooCommerce order status (keys pending, processing, on-hold, completed, cancelled, refunded, failed, no wc- prefix, plus delivered: a completed order that orderDeliveredAfterDays has moved to the last step; empty uses the completed wording). An empty or missing value prints WooCommerce's own status name. Applies to the orders list, the order page and the dashboard's latest order."
 			},
 			"orderDetailHelpLabel": {
 				"type": "string",

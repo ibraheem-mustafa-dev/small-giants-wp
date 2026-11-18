@@ -49,7 +49,7 @@ $greeting          = str_replace( '{name}', esc_html( $name ), esc_html( $greeti
 	<?php if ( $order instanceof \WC_Order ) : ?>
 		<?php
 		$status      = $order->get_status();
-		$step        = sgs_account_order_step_for( (string) $status, is_array( $attrs ) ? $attrs : array() );
+		$step        = sgs_account_order_step_for_order( $order, is_array( $attrs ) ? $attrs : array() );
 		$step_order  = sgs_account_step_order();
 		$step_labels = wp_parse_args( is_array( $attrs['statusStepLabels'] ?? null ) ? $attrs['statusStepLabels'] : array(), sgs_account_default_status_step_labels() );
 		$step_index  = '' !== $step ? array_search( $step, $step_order, true ) : false;
@@ -71,7 +71,7 @@ $greeting          = str_replace( '{name}', esc_html( $name ), esc_html( $greeti
 
 			<?php echo sgs_account_order_thumbs_html( $order ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>
 
-			<p class="sgs-account__chip"><?php echo esc_html( sgs_account_order_status_name( (string) $status, $attrs ) ); ?></p>
+			<p class="sgs-account__chip"><?php echo esc_html( sgs_account_order_pill_name( $order, $attrs ) ); ?></p>
 
 			<?php if ( false !== $step_index ) : ?>
 				<ol class="sgs-account__progress" aria-label="<?php esc_attr_e( 'Order progress', 'sgs-blocks' ); ?>">

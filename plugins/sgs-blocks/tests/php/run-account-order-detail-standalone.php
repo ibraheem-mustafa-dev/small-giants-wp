@@ -35,9 +35,12 @@ class Fake_Parent { function get_image_id() { $GLOBALS['parent_photo_read'] = tr
 class Fake_Product { function get_image_id() { return 0; } function get_id() { return 5; } }
 class Fake_Item { function get_name() { return 'Original Wayfarer'; } function get_product() { return new Fake_Product(); } function get_product_id() { return 4; } function get_total() { return 248; } function get_total_tax() { return 0; } }
 class Fake_Method { function __construct( private string $id ) {} function get_method_id() { return $this->id; } }
+if ( ! defined( 'DAY_IN_SECONDS' ) ) { define( 'DAY_IN_SECONDS', 86400 ); }
+class Fake_Completed { function __construct( private int $ts ) {} function getTimestamp() { return $this->ts; } }
 class Fake_Date { function date_i18n( $f ) { return '2 October 2026'; } }
 class Fake_Order {
-	function __construct( public string $status = 'processing', public string $method = 'flat_rate' ) {}
+	function __construct( public string $status = 'processing', public string $method = 'flat_rate', public ?int $completed_ts = null ) {}
+	function get_date_completed() { return null === $this->completed_ts ? null : new Fake_Completed( $this->completed_ts ); }
 	function get_status() { return $this->status; }
 	function get_order_number() { return 'EC-1700'; }
 	function get_date_created() { return new Fake_Date(); }
@@ -115,6 +118,34 @@ $posted = $has ? sgs_account_order_steps( new Fake_Order( 'completed' ), array( 
 ok( 4 === count( $full ) && 4 === $done( $full ) && true === end( $full )['current'], 'a completed order stands on the last step by default' );
 ok( 4 === count( $posted ) && 3 === $done( $posted ) && true === $posted[2]['current'] && false === $posted[3]['done'], 'with orderCompletedStep dispatched a completed order stops at the dispatched step' );
 ok( 'processing' === sgs_account_order_step_for( 'processing', array( 'orderCompletedStep' => 'dispatched' ) ) && '' === sgs_account_order_step_for( 'cancelled', array( 'orderCompletedStep' => 'dispatched' ) ), 'the setting changes a completed order only' );
+$ago     = static fn( int $days ): int => time() - $days * DAY_IN_SECONDS - 600;
+$wait    = array( 'orderCompletedStep' => 'dispatched', 'orderDeliveredAfterDays' => 3 ) + $four;
+$cur     = static function ( array $steps ): string {
+	foreach ( $steps as $s ) { if ( $s['current'] ) { return $s['label']; } }
+	return '';
+};
+$day1    = $has ? sgs_account_order_steps( new Fake_Order( 'completed', 'flat_rate', $ago( 1 ) ), $wait ) : array();
+$day4    = $has ? sgs_account_order_steps( new Fake_Order( 'completed', 'flat_rate', $ago( 4 ) ), $wait ) : array();
+$day3    = $has ? sgs_account_order_steps( new Fake_Order( 'completed', 'flat_rate', $ago( 3 ) ), $wait ) : array();
+$nodate  = $has ? sgs_account_order_steps( new Fake_Order( 'completed' ), $wait ) : array();
+$never   = $has ? sgs_account_order_steps( new Fake_Order( 'completed', 'flat_rate', $ago( 30 ) ), array( 'orderDeliveredAfterDays' => 0 ) + $wait ) : array();
+$deliv   = $has ? sgs_account_order_steps( new Fake_Order( 'completed', 'flat_rate', $ago( 30 ) ), array( 'orderCompletedStep' => 'delivered', 'orderDeliveredAfterDays' => 3 ) + $four ) : array();
+ok( 'Posted' === $cur( $day1 ) && 3 === $done( $day1 ), 'completed 1 day ago with 3 days set stands on the dispatched step' );
+ok( 'Delivered' === $cur( $day4 ) && 4 === $done( $day4 ), 'completed 4 days ago stands on the delivered step with every step done' );
+ok( 'Delivered' === $cur( $day3 ), 'exactly 3 whole days after completion the order moves on' );
+ok( 'Posted' === $cur( $nodate ), 'an order with no completed date stays on the dispatched step' );
+ok( 'Posted' === $cur( $never ), '0 days never moves the order' );
+ok( 'Delivered' === $cur( $deliv ) && 4 === $done( $deliv ), 'orderCompletedStep delivered is unaffected by the wait' );
+$pill    = array( 'orderStatusLabels' => array( 'completed' => 'Posted out', 'delivered' => 'Arrived' ) ) + $wait;
+$pill_off = array( 'orderStatusLabels' => array( 'completed' => 'Posted out' ) ) + $wait;
+ok( $has && 'Posted out' === sgs_account_order_pill_name( new Fake_Order( 'completed', 'flat_rate', $ago( 1 ) ), $pill ), 'the pill keeps the completed wording before the wait is over' );
+ok( $has && 'Arrived' === sgs_account_order_pill_name( new Fake_Order( 'completed', 'flat_rate', $ago( 4 ) ), $pill ), 'the pill takes the delivered wording once the order has moved on' );
+ok( $has && 'Posted out' === sgs_account_order_pill_name( new Fake_Order( 'completed', 'flat_rate', $ago( 4 ) ), $pill_off ), 'an empty delivered wording keeps the completed wording' );
+ok( $has && 'Processing' === sgs_account_order_pill_name( new Fake_Order( 'processing', 'flat_rate', $ago( 4 ) ), $pill ), 'another status never takes the delivered wording' );
+ok( $has && 'Posted out' === sgs_account_order_pill_name( new Fake_Order( 'completed', 'flat_rate', $ago( 30 ) ), array( 'orderCompletedStep' => 'delivered' ) + $pill ), 'with orderCompletedStep delivered the delivered wording is never used' );
+ok( $has && false !== strpos( sgs_account_order_detail_html( new Fake_Order( 'completed', 'flat_rate', $ago( 4 ) ), $pill ), 'od-status">Arrived<' ), 'the order page pill prints the delivered wording' );
+ok( $has && false !== strpos( sgs_account_orders_list_html( array( new Fake_Order( 'completed', 'flat_rate', $ago( 4 ) ) ), $pill ), 'order-status">Arrived<' ), 'the orders list pill prints the delivered wording' );
+
 $off = $has ? sgs_account_order_detail_html( new Fake_Order(), array( 'orderDetailLook' => true ) ) : 'x od-steps';
 ok( false === strpos( $off, 'od-steps' ) && false === strpos( $off, 'od-items' ) && false === strpos( $off, 'od-boxes' ) && false === strpos( $off, 'od-chat' ) && false === strpos( $off, 'od-back' ), 'each part is off until its own setting is on' );
 

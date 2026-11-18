@@ -29,6 +29,29 @@ if ( ! function_exists( 'sgs_account_order_status_name' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_account_order_pill_name' ) ) {
+	/**
+	 * The words on one order's status pill. As `sgs_account_order_status_name()`, except that a completed order the
+	 * delivery wait (`orderDeliveredAfterDays`) has moved to the last step takes the `delivered` wording of
+	 * `orderStatusLabels`; empty keeps the `completed` wording. Plain text: callers escape it.
+	 *
+	 * @param \WC_Order $order      The order.
+	 * @param array     $attributes Block attributes.
+	 * @return string
+	 */
+	function sgs_account_order_pill_name( $order, array $attributes ): string {
+		$status = (string) $order->get_status();
+		if ( 'completed' === $status && 'delivered' === sgs_account_order_step_for_order( $order, $attributes ) && 'dispatched' === ( $attributes['orderCompletedStep'] ?? '' ) ) {
+			$labels = is_array( $attributes['orderStatusLabels'] ?? null ) ? $attributes['orderStatusLabels'] : array();
+			$own    = isset( $labels['delivered'] ) && is_scalar( $labels['delivered'] ) ? trim( (string) $labels['delivered'] ) : '';
+			if ( '' !== $own ) {
+				return $own;
+			}
+		}
+		return sgs_account_order_status_name( $status, $attributes );
+	}
+}
+
 if ( ! function_exists( 'sgs_account_order_number' ) ) {
 	/**
 	 * The order's number as the block prints it: the block's prefix, then WooCommerce's order number.
@@ -167,7 +190,7 @@ if ( ! function_exists( 'sgs_account_orders_list_html' ) ) {
 				. '<span class="sgs-account__order-id"><span class="sgs-account__order-number">' . esc_html( sgs_account_order_number( $order, $attributes ) ) . '</span>'
 				. '<span class="sgs-account__order-date">' . esc_html( sgs_account_order_date( $order, $attributes ) ) . '</span>' . ( $counts && '' !== sgs_account_order_count_text( $order, $attributes ) ? '<span class="sgs-account__order-count">' . esc_html( sgs_account_order_count_text( $order, $attributes ) ) . '</span>' : '' ) . '</span>'
 				. '<span class="sgs-account__order-summary' . ( $thumbs ? ' sgs-account__order-summary--thumbs' : '' ) . '">' . ( $thumbs ? sgs_account_order_thumbs_html( $order, 'span' ) : '' ) . esc_html( sgs_account_order_summary( $order ) ) . '</span>'
-				. '<span class="sgs-account__order-status">' . esc_html( sgs_account_order_status_name( (string) $order->get_status(), $attributes ) ) . '</span>'
+				. '<span class="sgs-account__order-status">' . esc_html( sgs_account_order_pill_name( $order, $attributes ) ) . '</span>'
 				. '<span class="sgs-account__order-end"><span class="sgs-account__order-total">' . sgs_account_money( (float) $order->get_total(), $attributes ) . '</span>' . $end_tag . '</span>'
 				. '</a>';
 		}

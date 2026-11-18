@@ -43,7 +43,7 @@ if ( ! function_exists( 'sgs_account_order_steps' ) ) {
 	 * @return array<int,array{label:string,note:string,done:bool,current:bool}> Empty when the order has no track.
 	 */
 	function sgs_account_order_steps( $order, array $attributes ): array {
-		$current = sgs_account_order_step_for( (string) $order->get_status(), $attributes );
+		$current = sgs_account_order_step_for_order( $order, $attributes );
 		if ( '' === $current ) {
 			return array();
 		}
@@ -227,7 +227,7 @@ if ( ! function_exists( 'sgs_account_order_detail_html' ) ) {
 		}
 		$html .= '<div class="sgs-account__od-head"><div><h2 class="sgs-account__heading sgs-account__od-title">' . esc_html( strtr( $text( 'orderDetailTitle', '#{order}' ), array( '{order}' => $num ) ) ) . '</h2>'
 			. '<p class="sgs-account__od-placed">' . $fill( $text( 'orderDetailPlacedText', 'Placed {date}' ) ) . '</p></div>'
-			. '<span class="sgs-account__od-status">' . esc_html( sgs_account_order_status_name( (string) $order->get_status(), $attributes ) ) . '</span></div>';
+			. '<span class="sgs-account__od-status">' . esc_html( sgs_account_order_pill_name( $order, $attributes ) ) . '</span></div>';
 
 		$steps = $on( 'orderDetailProgress' ) ? sgs_account_order_steps( $order, $attributes ) : array();
 		if ( array() !== $steps ) {
