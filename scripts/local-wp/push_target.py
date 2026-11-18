@@ -74,8 +74,8 @@ def self_test() -> list[str]:
         if got["TARGET_DOCROOT"] != f"domains/{got['TARGET_HOST']}/public_html":
             failures.append(f"{name}: docroot {got['TARGET_DOCROOT']} is not domains/<host>/public_html")
     for name, t in deploy_common.TARGETS.items():
-        if t.get("kind") not in ("canary", "test", "reference"):
-            failures.append(f"{name}: kind {t.get('kind')!r} is not canary, test or reference")
+        if t.get("kind") not in ("canary", "test", "reference", "live"):
+            failures.append(f"{name}: kind {t.get('kind')!r} is not canary, test, reference or live")
     return failures
 
 

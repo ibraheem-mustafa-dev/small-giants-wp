@@ -14,7 +14,7 @@ import { VariesByError } from './lib/shop-fixtures-variesby.mjs';
 import { wpFetch } from './lib/shop-fixtures-wp.mjs';
 
 // The sites the fixtures may be written to: fresh test sites that hold no client content.
-export const FIXTURE_SITES = [ 'mamas-test', 'eye-care-clone-test', 'local-mamas', 'local-eye-care' ];
+export const FIXTURE_SITES = [ 'eye-care-clone-test', 'local-mamas', 'local-eye-care' ];
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );

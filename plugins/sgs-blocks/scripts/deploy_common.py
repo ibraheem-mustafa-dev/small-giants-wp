@@ -43,8 +43,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 # "editor_mirror" names the local mirror (scripts/local-wp/README.md) whose block editor ship.py loads with this build
 # before the upload (build-deploy.py --editor-check).
 #
-# "kind" says what the site is for: "canary" (the framework's own live site), "test" (a per-client test site) or
-# "reference" (a hand-built site kept as a read-only reference). scripts/local-wp/push-to-remote.sh, which overwrites
+# "kind" says what the site is for: "canary" (the framework's own live site), "test" (a per-client test site),
+# "reference" (a hand-built site kept as a read-only reference) or "live" (a client's live site). scripts/local-wp/push-to-remote.sh, which overwrites
 # a site's database and adds to its uploads from a local mirror, copies only into a "test" site (it reads this dict
 # through scripts/local-wp/push_target.py), so it can never touch the canary or a reference site.
 TARGETS = {
@@ -96,15 +96,17 @@ TARGETS = {
         "kind": "test",
         "editor_mirror": "local-eye-care",
     },
-    # Dedicated Mama's Munches redesign test site: a fresh WordPress for the redesign draft
-    # (sites/mamas-munches-redesign/), independent of sandybrown, which keeps the live catalogue.
+    # Mama's Munches: the client's LIVE shop since 2026-11-18 (real orders and customers). It was built as the
+    # redesign's test site and keeps that target name and folder: mamasmunches.com's own folder on the server is a
+    # link to this one, so the hosting entry named lightsalmon-... IS the live shop and must never be deleted.
+    # Kind "live": nothing may copy a local mirror's database over it.
     # Credentials: .claude/secrets/mamas-test.env (gitignored).
     "mamas-test": {
-        "host": "lightsalmon-tarsier-683012.hostingersite.com",
+        "host": "mamasmunches.com",
         "wp_content": "domains/lightsalmon-tarsier-683012.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": True,
         "client": "mamas-munches-redesign",
-        "kind": "test",
+        "kind": "live",
         "editor_mirror": "local-mamas",
     },
 }
