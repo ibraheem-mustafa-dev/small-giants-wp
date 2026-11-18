@@ -260,8 +260,8 @@ function sgs_emit_og_tags( int $product_id ): void {
 		\esc_url( $permalink )
 	);
 
-	// og:image — default combo imageUrl from manifest (SEC-1); skip if empty.
-	$image_url = (string) ( $combo['imageUrl'] ?? '' );
+	// og:image — default combo's large format-safe copy (imageFull), else its thumbnail, from the manifest (SEC-1); skip if empty.
+	$image_url = (string) ( '' !== (string) ( $combo['imageFull'] ?? '' ) ? $combo['imageFull'] : ( $combo['imageUrl'] ?? '' ) );
 	if ( '' !== $image_url ) {
 		\printf(
 			"<meta property=\"og:image\" content=\"%s\" />\n",

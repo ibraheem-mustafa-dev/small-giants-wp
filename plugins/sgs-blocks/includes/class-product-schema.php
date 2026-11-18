@@ -272,7 +272,8 @@ final class Product_Schema {
 	}
 
 	/**
-	 * Retrieve the parent product's main image URL at a usable size (>=250 px).
+	 * Retrieve the parent product's main image URL: the original in a format every crawler reads
+	 * (Product_Manifest::share_url), else a copy of at least 250 px.
 	 *
 	 * @param \WC_Product $wc_product Parent product object.
 	 * @return string URL or ''.
@@ -281,6 +282,10 @@ final class Product_Schema {
 		$image_id = $wc_product->get_image_id();
 		if ( ! $image_id ) {
 			return '';
+		}
+		$shared = Product_Manifest::share_url( (int) $image_id );
+		if ( '' !== $shared ) {
+			return $shared;
 		}
 		foreach ( array( 'woocommerce_single', 'large', 'full' ) as $size ) {
 			$url = \wp_get_attachment_image_url( $image_id, $size );
@@ -579,8 +584,8 @@ final class Product_Schema {
 		}
 		$variant_name = $parent_name . ' – ' . \implode( ', ', $label_parts );
 
-		// Image: combo imageUrl → parent image → omit.
-		$image_url = (string) ( $combo['imageUrl'] ?? '' );
+		// Image: the combo's large format-safe copy (imageFull) → its thumbnail (imageUrl) → parent image → omit.
+		$image_url = (string) ( '' !== (string) ( $combo['imageFull'] ?? '' ) ? $combo['imageFull'] : ( $combo['imageUrl'] ?? '' ) );
 		if ( '' === $image_url ) {
 			$image_url = $parent_image;
 		}

@@ -109,17 +109,29 @@ if ( ! function_exists( 'sgs_choice_flow_variation_seed_attr' ) ) {
 			return '';
 		}
 
-		$seed = array();
+		$seed   = array();
+		$singles = array(); // Attachment id => its single-product copy (one lookup per photo, not per combo).
 		foreach ( $manifest['combos'] as $combo_key => $combo ) {
+			// The summary stage's picture is the single-product copy, as the panel's own fallback image is, not the
+			// 300 px strip thumbnail the manifest's `imageUrl` holds. A combo with no attachment id keeps `imageUrl`.
+			$image_id = isset( $combo['imageId'] ) ? (int) $combo['imageId'] : 0;
+			if ( $image_id > 0 && ! isset( $singles[ $image_id ] ) ) {
+				$singles[ $image_id ] = (string) wp_get_attachment_image_url( $image_id, 'woocommerce_single' );
+			}
+			$stage_image = $image_id > 0 && '' !== $singles[ $image_id ]
+				? $singles[ $image_id ]
+				: ( isset( $combo['imageUrl'] ) ? (string) $combo['imageUrl'] : '' );
+
 			$seed[ (string) $combo_key ] = array(
 				'v' => isset( $combo['variationId'] ) ? (int) $combo['variationId'] : 0,
 				'p' => isset( $combo['priceMinor'] ) ? (int) $combo['priceMinor'] : 0,
 				's' => ! empty( $combo['inStock'] ) ? 1 : 0,
 				// D4 (Spec 43 v1.8.0) — the summary panel's own image, read
 				// by `choice-flow/summary.js` once this combo's variation
-				// resolves. Already resolved by Product_Manifest::build()
-				// (variation image, falling back to the parent product's).
-				'i' => isset( $combo['imageUrl'] ) ? (string) $combo['imageUrl'] : '',
+				// resolves. The photo is resolved by Product_Manifest::build()
+				// (variation image, falling back to the parent product's) and
+				// shown at the single-product size.
+				'i' => $stage_image,
 			);
 		}
 

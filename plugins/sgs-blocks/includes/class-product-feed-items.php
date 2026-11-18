@@ -112,7 +112,7 @@ final class Product_Feed_Items {
 		$link = self::build_variant_url( $product_id, $variation_id, $parent_link );
 
 		// ── g:image_link (SSRF guard) ─────────────────────────────────────────
-		$image_url = (string) ( $combo['imageUrl'] ?? '' );
+		$image_url = (string) ( '' !== (string) ( $combo['imageFull'] ?? '' ) ? $combo['imageFull'] : ( $combo['imageUrl'] ?? '' ) );
 		$image_url = self::same_origin_url( $image_url );
 
 		// Google requires g:image_link; skip the item when none is available.
