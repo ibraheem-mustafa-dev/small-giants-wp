@@ -24,6 +24,7 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/class-sgs-schema.php';
 require_once __DIR__ . '/class-product-manifest.php';
 require_once __DIR__ . '/class-configurator-meta.php';
+require_once __DIR__ . '/class-product-offer-policy.php';
 
 /**
  * Class Product_Schema
@@ -108,8 +109,8 @@ final class Product_Schema {
 			$data['image'] = $parent_image;
 		}
 
-		// Brand (first-hit resolution; never fabricated).
-		$brand = self::resolve_brand( $parent );
+		// Brand: the product's own brand, else the shop's name (see brand_for()).
+		$brand = self::brand_for( $parent );
 		if ( '' !== $brand ) {
 			$data['brand'] = array(
 				'@type' => 'Brand',
@@ -143,23 +144,9 @@ final class Product_Schema {
 			$currency
 		);
 
-		// shippingDetails / hasMerchantReturnPolicy — attach verbatim if stored.
-		$shipping = \get_option( 'sgs_configurator_shipping' );
-		$returns  = \get_option( 'sgs_configurator_returns' );
-		if ( ! empty( $shipping ) ) {
-			$data['shippingDetails'] = $shipping;
-		}
-		if ( \is_array( $returns ) && ! empty( $returns ) ) {
-			// F1 (FR-30-9): inject returnPolicyCountry from WooCommerce store setting.
-			// OMIT the key entirely when the store country is absent or malformed —
-			// never emit returnPolicyCountry:"" (council: unanimous must-fix).
-			$raw_cc = (string) \get_option( 'woocommerce_default_country', '' );
-			$cc     = \strtoupper( \strtok( $raw_cc, ':' ) ); // 'GB:ENG' -> 'GB'; '' -> ''.
-			if ( \preg_match( '/^[A-Z]{2}$/', $cc ) ) {
-				$returns['returnPolicyCountry'] = $cc; // runtime-only; never written back.
-			}
-			$data['hasMerchantReturnPolicy'] = $returns;
-		}
+		// shippingDetails / hasMerchantReturnPolicy sit on each variant's Offer
+		// (Product_Offer_Policy::offer_fields(), only when the shop has set them),
+		// where Google reads them for merchant listings.
 
 		// Encode and size-cap (SEC-3). build_has_variant() puts the low- and
 		// high-price anchor nodes FIRST, so when a large product (e.g. the 48-SKU
@@ -232,6 +219,50 @@ final class Product_Schema {
 	public static function product_group_id( \WC_Product $wc_product, int $product_id ): string {
 		$sku = self::sanitise_text( $wc_product->get_sku() );
 		return '' !== $sku ? $sku : (string) $product_id;
+	}
+
+	/**
+	 * Free text for a sibling emitter: tags stripped, entities left for the encoder to decode, trimmed.
+	 *
+	 * @param string $text Raw text.
+	 * @return string
+	 */
+	public static function text( string $text ): string {
+		return self::sanitise_text( $text );
+	}
+
+	/**
+	 * The product's main image URL, for a sibling emitter (same value the ProductGroup prints).
+	 *
+	 * @param \WC_Product $wc_product Product.
+	 * @return string URL or ''.
+	 */
+	public static function image_url_for( \WC_Product $wc_product ): string {
+		return self::parent_image_url( $wc_product );
+	}
+
+	/**
+	 * The brand name to print: the product's own brand, else the shop's name.
+	 *
+	 * A shop that makes what it sells is the brand of every product, and a shop that resells sets a brand
+	 * taxonomy term or a `brand` attribute, which always wins. The fallback is the `sgs_product_schema_brand_fallback`
+	 * filter, whose default is the site name; return '' to print no brand when a product has none.
+	 *
+	 * @param \WC_Product $wc_product Product.
+	 * @return string Brand name or ''.
+	 */
+	public static function brand_for( \WC_Product $wc_product ): string {
+		$brand = self::resolve_brand( $wc_product );
+		if ( '' !== $brand ) {
+			return $brand;
+		}
+		/**
+		 * Filters the brand printed for a product that has no brand term or attribute.
+		 *
+		 * @param string      $fallback   The site name.
+		 * @param \WC_Product $wc_product The product.
+		 */
+		return self::sanitise_text( (string) \apply_filters( 'sgs_product_schema_brand_fallback', (string) \get_bloginfo( 'name' ), $wc_product ) );
 	}
 
 	/**
@@ -532,13 +563,9 @@ final class Product_Schema {
 				$node[ self::GTIN_LENGTHS[ $gtin_len ] ] = $gtin;
 			} elseif ( '' !== $sku ) {
 				$node['mpn'] = $sku;
-			} else {
-				$node['identifier_exists'] = false;
 			}
 		} elseif ( '' !== $sku ) {
 			$node['mpn'] = $sku;
-		} else {
-			$node['identifier_exists'] = false;
 		}
 
 		// Image.
@@ -589,7 +616,7 @@ final class Product_Schema {
 			$offer['priceValidUntil'] = $sale_end;
 		}
 
-		$node['offers'] = $offer;
+		$node['offers'] = $offer + Product_Offer_Policy::offer_fields();
 
 		return $node;
 	}

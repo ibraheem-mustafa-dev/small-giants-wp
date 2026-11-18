@@ -32,6 +32,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/class-sgs-schema.php';
 require_once __DIR__ . '/class-sgs-site-info-logo.php';
+require_once __DIR__ . '/class-product-offer-policy.php';
 
 /**
  * Class Org_Website_Schema
@@ -159,22 +160,15 @@ final class Org_Website_Schema {
 			$org['contactPoint'] = $contact_point;
 		}
 
-		// hasMerchantReturnPolicy — reuse sgs_configurator_returns (F1 country rule).
-		$returns = \get_option( 'sgs_configurator_returns' );
-		if ( \is_array( $returns ) && ! empty( $returns ) ) {
-			$raw_cc = (string) \get_option( 'woocommerce_default_country', '' );
-			// Strip region suffix: 'GB:ENG' becomes 'GB'; empty string stays empty.
-			$cc = \strtoupper( \strtok( $raw_cc, ':' ) );
-			if ( \preg_match( '/^[A-Z]{2}$/', $cc ) ) {
-				$returns['returnPolicyCountry'] = $cc; // runtime-only; never written back.
-			}
+		// hasMerchantReturnPolicy and hasShippingService — the shop-wide policy, from the same two
+		// options the product Offers read (Product_Offer_Policy); each only when the shop has set it.
+		$returns = Product_Offer_Policy::returns();
+		if ( null !== $returns ) {
 			$org['hasMerchantReturnPolicy'] = $returns;
 		}
-
-		// hasShippingService — attach verbatim if stored.
-		$shipping = \get_option( 'sgs_configurator_shipping' );
-		if ( \is_array( $shipping ) && ! empty( $shipping ) ) {
-			$org['hasShippingService'] = $shipping;
+		$shipping_service = Product_Offer_Policy::shipping_service();
+		if ( null !== $shipping_service ) {
+			$org['hasShippingService'] = $shipping_service;
 		}
 
 		// ── WebSite node ──────────────────────────────────────────────────────

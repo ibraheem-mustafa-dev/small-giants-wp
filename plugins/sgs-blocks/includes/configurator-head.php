@@ -155,7 +155,9 @@ function sgs_configurator_emit_head(): void {
 		$sgs_single_product_focus = 1 === \count( $sgs_page_products['ids'] );
 	}
 
-	if ( $sgs_single_product_focus ) {
+	// A product page's own schema comes from Product_Page_Schema (the queried product,
+	// whatever block shows it), so this loop covers pages that are not a product page.
+	if ( $sgs_single_product_focus && ! ( \function_exists( 'is_product' ) && \is_product() ) ) {
 		require_once __DIR__ . '/class-product-schema.php';
 		foreach ( $product_ids as $product_id ) {
 			echo Product_Schema::build_script( $product_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json (wp_json_encode HEX flags), not HTML.

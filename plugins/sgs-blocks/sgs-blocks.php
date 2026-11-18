@@ -316,6 +316,10 @@ Noindex_Store_Pages::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-sitemap-exclusions.php';
 Sitemap_Exclusions::register();
 
+// Product structured data on every product page (ProductGroup, Product or gift-card Product), whatever block shows the product.
+require_once SGS_BLOCKS_PATH . 'includes/class-product-page-schema.php';
+Product_Page_Schema::register();
+
 // llms.txt + llms-full.txt — AI navigation files at site root (FR-27-F2 llms clause).
 // Serves curated navigation map + per-product expansion in llmstxt.org shape.
 // SEC-9: defers to Yoast / RankMath when active. Rate-limited 60/hr per IP.
