@@ -71,7 +71,7 @@ $greeting          = str_replace( '{name}', esc_html( $name ), esc_html( $greeti
 
 			<?php echo sgs_account_order_thumbs_html( $order ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>
 
-			<p class="sgs-account__chip"><?php echo esc_html( wc_get_order_status_name( $status ) ); ?></p>
+			<p class="sgs-account__chip"><?php echo esc_html( sgs_account_order_status_name( (string) $status, $attrs ) ); ?></p>
 
 			<?php if ( false !== $step_index ) : ?>
 				<ol class="sgs-account__progress" aria-label="<?php esc_attr_e( 'Order progress', 'sgs-blocks' ); ?>">

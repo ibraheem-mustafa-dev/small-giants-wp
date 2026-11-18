@@ -12,6 +12,23 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-account-button-icon.php';
 
+if ( ! function_exists( 'sgs_account_order_status_name' ) ) {
+	/**
+	 * The words on an order's status pill: the client's wording for the status (`orderStatusLabels`, keyed by the
+	 * status slug without the `wc-` prefix), else WooCommerce's own status name. Plain text: callers escape it.
+	 *
+	 * @param string $status     The order's status slug (with or without `wc-`).
+	 * @param array  $attributes Block attributes.
+	 * @return string
+	 */
+	function sgs_account_order_status_name( string $status, array $attributes ): string {
+		$slug   = 0 === strpos( $status, 'wc-' ) ? substr( $status, 3 ) : $status;
+		$labels = is_array( $attributes['orderStatusLabels'] ?? null ) ? $attributes['orderStatusLabels'] : array();
+		$own    = isset( $labels[ $slug ] ) && is_scalar( $labels[ $slug ] ) ? trim( (string) $labels[ $slug ] ) : '';
+		return '' !== $own ? $own : (string) wc_get_order_status_name( $slug );
+	}
+}
+
 if ( ! function_exists( 'sgs_account_order_number' ) ) {
 	/**
 	 * The order's number as the block prints it: the block's prefix, then WooCommerce's order number.
@@ -150,7 +167,7 @@ if ( ! function_exists( 'sgs_account_orders_list_html' ) ) {
 				. '<span class="sgs-account__order-id"><span class="sgs-account__order-number">' . esc_html( sgs_account_order_number( $order, $attributes ) ) . '</span>'
 				. '<span class="sgs-account__order-date">' . esc_html( sgs_account_order_date( $order, $attributes ) ) . '</span>' . ( $counts && '' !== sgs_account_order_count_text( $order, $attributes ) ? '<span class="sgs-account__order-count">' . esc_html( sgs_account_order_count_text( $order, $attributes ) ) . '</span>' : '' ) . '</span>'
 				. '<span class="sgs-account__order-summary' . ( $thumbs ? ' sgs-account__order-summary--thumbs' : '' ) . '">' . ( $thumbs ? sgs_account_order_thumbs_html( $order, 'span' ) : '' ) . esc_html( sgs_account_order_summary( $order ) ) . '</span>'
-				. '<span class="sgs-account__order-status">' . esc_html( (string) wc_get_order_status_name( $order->get_status() ) ) . '</span>'
+				. '<span class="sgs-account__order-status">' . esc_html( sgs_account_order_status_name( (string) $order->get_status(), $attributes ) ) . '</span>'
 				. '<span class="sgs-account__order-end"><span class="sgs-account__order-total">' . sgs_account_money( (float) $order->get_total(), $attributes ) . '</span>' . $end_tag . '</span>'
 				. '</a>';
 		}

@@ -227,7 +227,7 @@ if ( ! function_exists( 'sgs_account_order_detail_html' ) ) {
 		}
 		$html .= '<div class="sgs-account__od-head"><div><h2 class="sgs-account__heading sgs-account__od-title">' . esc_html( strtr( $text( 'orderDetailTitle', '#{order}' ), array( '{order}' => $num ) ) ) . '</h2>'
 			. '<p class="sgs-account__od-placed">' . $fill( $text( 'orderDetailPlacedText', 'Placed {date}' ) ) . '</p></div>'
-			. '<span class="sgs-account__od-status">' . esc_html( (string) wc_get_order_status_name( $order->get_status() ) ) . '</span></div>';
+			. '<span class="sgs-account__od-status">' . esc_html( sgs_account_order_status_name( (string) $order->get_status(), $attributes ) ) . '</span></div>';
 
 		$steps = $on( 'orderDetailProgress' ) ? sgs_account_order_steps( $order, $attributes ) : array();
 		if ( array() !== $steps ) {
