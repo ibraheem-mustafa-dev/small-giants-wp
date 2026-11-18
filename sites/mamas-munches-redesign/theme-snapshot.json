@@ -696,7 +696,8 @@
         "cardBorderWidth": "2px",
         "cardBorderColour": "var(--wp--preset--color--mm-cocoa)",
         "cardBorderStyle": "solid",
-        "imageRadius": "12px"
+        "imageRadius": "12px",
+        "buttonBackground": "var(--wp--preset--color--accent)"
       }
     },
     "appearanceTools": true,
