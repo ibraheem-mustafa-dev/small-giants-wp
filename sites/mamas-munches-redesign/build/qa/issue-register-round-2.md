@@ -12,6 +12,7 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 
 - **Footer 10:** Above 1024px the attribution link's hover underline gets thinner after the sweep animation completes.
 - **Footer 11:** The gallery images on 766px and below have the top and bottom getting cut off.
+- **Footer 12:** (Bean's proofing of 2026-11-18.) The underline fix on the attribution link has just made the underline very thin consistently, I liked the thicker/normal underline.
 
 ## Basket drawer
 
@@ -43,6 +44,7 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Sign-in 10:** The account button when not signed in opens a useless my account page that just leaves links to the sign-in page. Needs to redirect, that useless page can just get deleted or we get rid of the sign-in url and replace that unsigned-in my account design that leaves links to sign-in page with the actual sign-in page itself.
 - **Sign-in 11:** Remove bake date wording.
 - **Sign-in 12:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Sign in form's vertical gaps between the input boxes is bigger than the create an account's vertical gaps between the input boxes.
+- **Sign-in 13:** (Bean's proofing of 2026-11-18.) Go to the shop hyperlink doesn't have the underline effect on it when hovered.
 
 ## Contact
 
@@ -74,6 +76,7 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Shop 17:** The sorting picker is messed up. THe text and chevron pointing down are top aligned instead of sitting in the vertical centre. Also, it says 'Default sorting' on live when it should say 'Default' like the draft. Lastly, the top corners of the picker morph and look really weird when the dropdown has been opened and the right side still has the thicker border/shadow effect on it which looks weird and I think is the reason the right corner of the picker doesn't align with the top right of the dropdown.
 - **Shop 18:** This is a global issue wherever on the site a product card exists, the whole thing should be clickable, linking to the product page. But on the content part of the product cards it isn't clickable, the image and the button are clickable, but not that area.
 - **Shop 19:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Why did you remove a bunch of sorting options and not fix the shape issue?
+- **Shop 19:** (Bean's proofing of 2026-11-18.) The build your own box and allergy cards should have their buttons aligned to the bottom so they're aligned. otherwise the build your own box looks squashed because it has less content.
 
 ## Home
 
@@ -93,6 +96,7 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Home 37:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Undo, doesn't have a gap between it and the options above it. It also doesn't show up when you reach 3 flavours - Vanilla flavour is already picked by default and I don't think the logic counts it and instead you have to click 3 options instead of just having 3 options selected without needing to select a 3rd if you keep the default vanilla flavour.
 - **Home 38:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Gifts section still has huge super long content part of the product cards with huge vertical gaps everywhere between 1023-1318px.
 - **Home 39:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Trust bar pauses when tapped and stays paused even when you move away. Should be paused during hover and touch states.
+- **Home 40:** (Bean's proofing of 2026-11-18.) The vertical spacing/padding in the cookie builder above and below the step labels/headings is basically non-existent. Look at what the buybox's equivalent step label/heading vertical padding/gaps are and copy that.
 
 ## Product page: Zookies
 
@@ -106,6 +110,7 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 ## Account
 
 - **Account 3:** Bean had not reviewed the rebuilt account area at the time of his round-two list ("Wasn't ready for review at point of compaction and handoff").
+- **Account 4:** (Bean's proofing of 2026-11-18.) "What about the order confirmation page and account page? Those have to still be open too right as they didn't even have items on the review register." Open: a first careful comparison of the signed-in account area with the draft, and the draft's extras (order thumbnails with "View order", the gift note on an order, the "Email me about new flavours and bake days" tick, the address book with "Make default"), which Bean asked about ("Are the other 2 you're recommending for dropping part of the draft too?": all four are in the draft).
 
 ## Checkout
 
@@ -129,10 +134,17 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 ## Order confirmation
 
 - **Order confirmation 2:** Bean had not reviewed the rebuilt page at the time of his round-two list ("Same status as account page to my knowledge").
+- **Order confirmation 3:** (Bean's proofing of 2026-11-18.) Open with Account 4: a first careful comparison of the order confirmation page with the draft, for a guest, a signed-in owner and a gift order.
+
+## Gift card page
+
+- **Gift card 1:** (Bean's proofing of 2026-11-18.) The amount tiles read "£15.00"; Bean agreed they should read "£15", and the button wording follows the draft.
 
 ## All pages
 
 - **All pages 2:** (Bean's review of round two's fixes, 2026-11-17 late evening.) Need to fix that 1023 px blindspot and check if the other breakpoints have the same blinspot too because I think we have the same thing at 767px because I think the breakpoint is supposed to be 768px but the changes layout changes usually occur at 766px.
+- **All pages 3:** (Bean's proofing of 2026-11-18.) Several buttons don't use the standardised arrow shape that is used across the site e.g. the homepage hero's first button or the arrows in the nav drawer are correct. The incorrect arrows exist in the sign-in form's sign in button, the contact form's submit button, the help page's 3 bottom cards - terms and conditions, privacy policy and still stuck.
+- **All pages 4:** (Bean's proofing of 2026-11-18.) You should do that small framework fix for add to baskets and the cache now. (The security token printed into cached pages: a page cache older than about a day would make add to basket fail.)
 
 ## Bean's verdicts so far (2026-11-17 late evening)
 
@@ -142,3 +154,6 @@ What Bean found on `mamas-test` after round one's fixes shipped: some new, some 
 - **Help:** all resolved (Help 14 raised after).
 - **Gifts:** all issues resolved (Gifts 16 and 17 raised after).
 - **Home 37:** the Undo button is to be removed.
+- **"Add a Taster Trio for a friend" row in a filled drawer (2026-11-18):** dropped. "They can't split where that ships vs the rest of the shopping and ... it's just not cost-effective to buy 3 cookies for £5 when the rest of the order will have the cookies at a much better price."
+- **Gift card 1 (2026-11-18):** the amount tiles read "£15", not "£15.00" ("Sure").
+- **Footer 10 (2026-11-18):** the redrawn underline is too thin; see Footer 12.
