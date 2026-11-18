@@ -1,0 +1,72 @@
+/* The one tick box look (every real `input[type="checkbox"]` a visitor ticks).
+   The look is the browser's own tick box, sized and coloured by three tokens, so it keeps its native states (hover,
+   checked, disabled, forced-colours) and takes the unified focus ring from focus.css:
+     --sgs-checkbox-size    the box (default 22px, a tap area that fits the control)
+     --sgs-checkbox-gap     the space between the box and its label text (default 10px)
+     --sgs-checkbox-accent  the ticked fill and tick (default: the palette's `accent` colour)
+   Every SGS-rendered tick box and WooCommerce's own (classic `input-checkbox`, block checkout
+   `wc-block-components-checkbox`) read this one definition. A block setting that sets one of the tokens, or a scoped rule on
+   a block's own control (a longer selector), still wins: this sheet adds no specificity beyond one attribute selector. */
+
+:root {
+	--sgs-checkbox-size: 22px;
+	--sgs-checkbox-gap: 10px;
+	--sgs-checkbox-accent: var(--wp--preset--color--accent, currentColor);
+}
+
+/* Inputs that are not tick boxes a visitor sees: a visually hidden input stretched over a tile or card, a switch, and the
+   card-style option box a form field draws itself. They keep their own rules. */
+input[type="checkbox"]:not(:where(
+	[role="switch"],
+	.sgs-buybox-pick__input,
+	.sgs-form-tile__input,
+	.sgs-form-field--option-card .sgs-form-field__option input
+)) {
+	appearance: auto;
+	-webkit-appearance: auto;
+	flex: none;
+	box-sizing: border-box;
+	width: var(--sgs-checkbox-size);
+	height: var(--sgs-checkbox-size);
+	min-width: var(--sgs-checkbox-size);
+	min-height: var(--sgs-checkbox-size);
+	margin: 0;
+	accent-color: var(--sgs-checkbox-accent);
+	cursor: pointer;
+}
+
+/* The row that holds a box and its label: the box, then the gap, then the text. WooCommerce's classic form row makes its
+   checkbox label inline (`.woocommerce form .form-row label.checkbox`), so that row repeats its class four times to out-rank it. */
+.woocommerce-form__label-for-checkbox.woocommerce-form__label-for-checkbox.woocommerce-form__label-for-checkbox.woocommerce-form__label-for-checkbox {
+	display: inline-flex;
+	align-items: center;
+}
+
+.woocommerce-form__label-for-checkbox,
+.wc-block-components-checkbox label,
+.sgs-form-field__option,
+.sgs-form-field__consent,
+.sgs-gift-order__switch,
+.sgs-cart__panel-gift-switch,
+.sgs-buybox__notify-consent-row {
+	gap: var(--sgs-checkbox-gap);
+}
+
+/* WooCommerce's block checkout draws its own box (appearance none, a white fill, a 1px border) plus an SVG tick.
+   Bring it to the shared look: the native box, no second tick. The doubled classes outrank WooCommerce's `:checked` rule. */
+.wc-block-components-checkbox.wc-block-components-checkbox .wc-block-components-checkbox__input.wc-block-components-checkbox__input[type="checkbox"] {
+	appearance: auto;
+	-webkit-appearance: auto;
+	width: var(--sgs-checkbox-size);
+	height: var(--sgs-checkbox-size);
+	min-width: var(--sgs-checkbox-size);
+	border: 0;
+	border-radius: 0;
+	background: none;
+	overflow: visible;
+	position: static;
+}
+
+.wc-block-components-checkbox .wc-block-components-checkbox__mark {
+	display: none;
+}

@@ -1546,6 +1546,7 @@
 		},
 		"checkbox_input": {
 			"checkout": ".wc-block-components-checkbox .wc-block-components-checkbox__input[type=checkbox]",
+			"root_repeat": 2,
 			"label": "Checkbox tick box",
 			"columns": [
 				"width",

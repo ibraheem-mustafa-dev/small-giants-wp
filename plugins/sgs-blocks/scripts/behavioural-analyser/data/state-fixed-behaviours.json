@@ -2683,16 +2683,6 @@
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": ".sgs-shop-filters .wc-block-components-checkbox input[type=\"checkbox\"]:checked",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": ".sgs-shop-filters .wc-block-components-checkbox input[type=\"checkbox\"]:checked::after",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": ".sgs-shop-filters .wc-block-components-product-filter-chips__button:hover",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
@@ -2714,16 +2704,6 @@
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": ".sgs-shop-filters .wc-block-components-product-filter-chips__item button[aria-pressed=\"true\"]",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": ".sgs-shop-filters .wc-block-product-filter-checkbox-list input[type=\"checkbox\"]:checked",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": ".sgs-shop-filters .wc-block-product-filter-checkbox-list input[type=\"checkbox\"]:checked::after",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {

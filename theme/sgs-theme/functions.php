@@ -372,6 +372,14 @@ function enqueue_styles(): void {
 		asset_version( 'assets/css/focus.css', $theme_version )
 	);
 
+	// The one tick box look (size, gap and accent tokens): synchronous, so no box repaints after first paint.
+	wp_enqueue_style(
+		'sgs-choice-controls',
+		get_theme_file_uri( 'assets/css/choice-controls.css' ),
+		array( 'sgs-core-blocks-critical' ),
+		asset_version( 'assets/css/choice-controls.css', $theme_version )
+	);
+
 	// Branded scrollbars (Spec 32 FR-32-26): synchronous, so the page's own bar is branded from first paint.
 	// The only reader of settings.custom.scrollbar.
 	wp_enqueue_style(
