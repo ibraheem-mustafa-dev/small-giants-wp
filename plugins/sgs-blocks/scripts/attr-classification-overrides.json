@@ -8381,6 +8381,8 @@
 		{"slug": "sgs/account", "attr": "ordersRowThumbs", "fields": {"role": "boolean-visibility"}, "_reason": "2026-11-18, orders list: shows the order thumbnail strip in each row; a markup switch."},
 		{"slug": "sgs/account", "attr": "ordersRowThumbsFlexWrap", "fields": {"role": "layout"}, "_reason": "2026-11-18, orders list: flex-wrap of the thumbnail strip."},
 		{"slug": "sgs/account", "attr": "ordersRowViewLabel", "fields": {"role": "text-content"}, "_reason": "2026-11-18, orders list: the row end label in place of the chevron; authored text."},
-		{"slug": "sgs/account", "attr": "ordersRowViewIcon", "fields": {"role": "visual"}, "_reason": "2026-11-18, orders list: the Lucide icon after the row end label."}
+		{"slug": "sgs/account", "attr": "ordersRowViewIcon", "fields": {"role": "visual"}, "_reason": "2026-11-18, orders list: the Lucide icon after the row end label."},
+		{"slug": "sgs/account", "attr": "giftNote", "fields": {"role": "boolean-visibility"}, "_reason": "2026-11-18, gift note: shows the gift note box on the view-order page; a markup switch."},
+		{"slug": "sgs/account", "attr": "giftNoteHeading", "fields": {"role": "text-content"}, "_reason": "2026-11-18, gift note: the note box heading; authored text."}
 	]
 }

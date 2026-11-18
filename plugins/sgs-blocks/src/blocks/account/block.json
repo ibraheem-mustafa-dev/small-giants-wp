@@ -4185,6 +4185,16 @@
 			"ordersRowList": {
 				"type": "boolean"
 			},
+			"giftNote": {
+				"type": "boolean",
+				"default": false,
+				"description": "Prints the gift note (recipient and message) after the order table on the view-order page of an order placed as a gift. Off prints nothing."
+			},
+			"giftNoteHeading": {
+				"type": "string",
+				"default": "",
+				"description": "Heading of the gift note box. Empty = Gift note."
+			},
 			"ordersRowThumbs": {
 				"type": "boolean",
 				"default": false,

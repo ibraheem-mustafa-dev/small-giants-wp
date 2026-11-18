@@ -140,6 +140,23 @@ final class Account_Extras {
 	}
 
 	/**
+	 * Print the gift note after WooCommerce's own order table (its `woocommerce_view_order` action). The block's own order
+	 * detail (`orderDetailLook`) prints the note itself, so this stands down then.
+	 *
+	 * @param mixed $order_id The order being viewed.
+	 * @return void
+	 */
+	public static function view_order_gift_note( $order_id ): void {
+		if ( ! is_array( Account_Endpoints::$active ) || ! empty( Account_Endpoints::$active['orderDetailLook'] ) || ! function_exists( 'wc_get_order' ) ) {
+			return;
+		}
+		$order = \wc_get_order( (int) $order_id );
+		if ( $order ) {
+			echo sgs_account_gift_note_html( $order, Account_Endpoints::$active ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper.
+		}
+	}
+
+	/**
 	 * Swap `myaccount/form-reset-password.php` for the block's own while `resetErrorsInline` is on: its validation
 	 * errors print as red text under the fields instead of a boxed notice above the form.
 	 *

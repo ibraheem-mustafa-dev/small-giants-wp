@@ -1379,3 +1379,25 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	align-items: center;
 	gap: 0.4em;
 }
+
+/* The gift note on the view-order page (includes/account/helpers-account-gift-note.php). */
+.sgs-account__gift-note {
+	margin-block: 1.25rem;
+	padding: 16px 18px;
+	border-width: 0;
+	border-radius: 8px;
+	background: var(--wp--preset--color--surface-alt, rgba(0, 0, 0, 0.04));
+}
+
+.sgs-account__gift-note-title {
+	font-weight: 600;
+	margin-block-end: 0.5rem;
+}
+
+.sgs-account__gift-note p {
+	margin: 0;
+}
+
+.sgs-account__gift-note-to {
+	font-weight: 600;
+}

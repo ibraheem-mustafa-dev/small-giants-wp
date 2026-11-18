@@ -45,6 +45,8 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 			<Toggle { ...p } name="ordersTrimZeros" label={ __( 'Whole pounds without pence', 'sgs-blocks' ) } help={ __( 'Prints £248 instead of £248.00 in the list and on the order page.', 'sgs-blocks' ) } />
 		</PanelBody>
 		<PanelBody title={ __( 'Order page', 'sgs-blocks' ) } initialOpen={ false }>
+			<Toggle { ...p } name="giftNote" label={ __( 'Gift note on the order page', 'sgs-blocks' ) } help={ __( 'For an order placed as a gift, prints the recipient and the message after the order table. Shown only to someone allowed to view the order.', 'sgs-blocks' ) } />
+			{ attributes.giftNote && <TextField { ...p } name="giftNoteHeading" label={ __( 'Gift note heading', 'sgs-blocks' ) } help={ __( 'Empty uses “Gift note”.', 'sgs-blocks' ) } /> }
 			<Toggle { ...p } name="orderDetailLook" label={ __( 'Order detail page', 'sgs-blocks' ) } help={ __( 'Replaces WooCommerce’s order page with the parts in the panels below. Off = WooCommerce’s own page.', 'sgs-blocks' ) } />
 			{ attributes.orderDetailLook && (
 				<>

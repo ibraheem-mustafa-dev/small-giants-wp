@@ -23,6 +23,7 @@ $root = dirname( __DIR__, 2 ) . '/includes';
 require $root . '/render-helpers.php';
 require $root . '/helpers-responsive.php';
 require $root . '/account/helpers-account-orders-list.php';
+require $root . '/account/helpers-account-gift-note.php';
 
 $failures = 0;
 function ok( bool $cond, string $label ): void {
@@ -31,6 +32,14 @@ function ok( bool $cond, string $label ): void {
 	if ( ! $cond ) {
 		++$failures;
 	}
+}
+
+$GLOBALS['sgs_can_view'] = true;
+function current_user_can( $cap, ...$args ) { return 'view_order' === $cap ? $GLOBALS['sgs_can_view'] : false; }
+class WC_Order {
+	public $meta = array();
+	public function get_id() { return 7; }
+	public function get_meta( $k, $single = true ) { return $this->meta[ $k ] ?? ''; }
 }
 
 class Fake_Product {
@@ -61,6 +70,20 @@ ok( ! str_contains( $html, 'order-chevron' ) && str_contains( $html, '<span clas
 $html = sgs_account_orders_list_html( $orders, array( 'ordersRowViewLabel' => 'View order', 'ordersRowViewIcon' => 'arrow-right' ) );
 ok( 1 === preg_match( '#View order<span class="sgs-button__icon sgs-account__button-icon" aria-hidden="true">#', $html ), 'A label: the standard icon follows the label, aria-hidden' );
 ok( '' === sgs_account_order_thumbs_html( new class() { public function get_items() { return array(); } } ), 'A thumbs helper: nothing for an order without items' );
+
+// B) Gift note: only for a gift order, when on, and only for someone allowed to view the order.
+$gift       = new WC_Order();
+$gift->meta = array( '_sgs_gift' => 'yes', '_sgs_gift_to' => 'Aisha <i>', '_sgs_gift_message' => "Happy birthday
+<script>x</script>" );
+ok( '' === sgs_account_gift_note_html( $gift, array() ), 'B off by default: nothing printed' );
+$html = sgs_account_gift_note_html( $gift, array( 'giftNote' => true ) );
+ok( str_contains( $html, 'Gift note</div>' ) && str_contains( $html, 'Aisha &lt;i&gt;' ) && str_contains( $html, 'Happy birthday<br />' ) && str_contains( $html, '&lt;script&gt;' ) && ! str_contains( $html, '<script>' ), 'B on: default heading, recipient and message escaped' );
+ok( str_contains( sgs_account_gift_note_html( $gift, array( 'giftNote' => true, 'giftNoteHeading' => 'A note <b>' ) ), 'A note &lt;b&gt;</div>' ), 'B heading setting is used and escaped' );
+$plain = new WC_Order();
+ok( '' === sgs_account_gift_note_html( $plain, array( 'giftNote' => true ) ), 'B an order that is no gift prints nothing' );
+$GLOBALS['sgs_can_view'] = false;
+ok( '' === sgs_account_gift_note_html( $gift, array( 'giftNote' => true ) ), 'B someone who may not view the order sees nothing' );
+$GLOBALS['sgs_can_view'] = true;
 
 echo $failures ? "\n$failures FAILED\n" : "\nAll passed\n";
 exit( $failures ? 1 : 0 );
