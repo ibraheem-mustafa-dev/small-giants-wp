@@ -20,6 +20,7 @@ final class Account_Extras {
 		\add_filter( 'woocommerce_account_menu_item_classes', array( __CLASS__, 'root_active_class' ), 20, 2 );
 		\add_action( 'woocommerce_before_account_navigation', array( __CLASS__, 'start_menu_buffer' ), 1 );
 		\add_action( 'woocommerce_after_account_navigation', array( __CLASS__, 'end_menu_buffer' ), 99 );
+		\add_action( 'woocommerce_view_order', array( __CLASS__, 'view_order_gift_note' ), 20 );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_orders_template' ), 10, 5 );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_lost_confirmation_template' ), 10, 5 );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_view_order_template' ), 10, 5 );

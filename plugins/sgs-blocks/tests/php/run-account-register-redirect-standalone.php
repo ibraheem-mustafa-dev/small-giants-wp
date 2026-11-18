@@ -269,5 +269,9 @@ ok( str_contains( $run( array() ), 'Addresses</a>' ) && ! str_contains( $run( ar
 ok( ob_get_level() === $ob_level, '13 no output buffer left open' );
 EP::$active = null;
 
+$GLOBALS['hooks'] = array();
+\SGS\Blocks\Account_Extras::register();
+ok( in_array( array( array( '\SGS\Blocks\Account_Extras', 'view_order_gift_note' ), 20 ), $GLOBALS['hooks']['woocommerce_view_order'] ?? array(), true ), 'view_order_gift_note is hooked to woocommerce_view_order' );
+
 echo $failures ? "\n{$failures} FAILED\n" : "\nall passed\n";
 exit( $failures ? 1 : 0 );
