@@ -152,5 +152,13 @@ $html = sgs_account_order_detail_html( $o, array( 'orderDetailOrderAgain' => tru
 ok( str_contains( $html, '<a class="sgs-account__od-again-link" href="https://example.test/cart/?order_again=7&#038;_wpnonce=abc123">Order again</a>' ) || str_contains( $html, 'od-again-link" href="https://example.test/cart/?order_again=7' ), '4 again: button with the default label' );
 ok( str_contains( sgs_account_order_detail_html( $o, array( 'orderDetailOrderAgain' => true, 'orderDetailOrderAgainLabel' => 'Bake <b>again' ) ), '>Bake &lt;b&gt;again</a>' ), '4 again: label from the setting, escaped' );
 
+// 5) Help link: needs both a label and a destination; typed address or a link source.
+$o = new Fake_Order();
+ok( ! str_contains( sgs_account_order_detail_html( $o, array() ), 'od-help' ), '5 help: nothing by default' );
+ok( ! str_contains( sgs_account_order_detail_html( $o, array( 'orderDetailHelpLabel' => 'Message us' ) ), 'od-help' ), '5 help: a label with no destination prints nothing' );
+ok( ! str_contains( sgs_account_order_detail_html( $o, array( 'orderDetailHelpUrl' => '/contact/' ) ), 'od-help' ), '5 help: a destination with no label prints nothing' );
+$html = sgs_account_order_detail_html( $o, array( 'orderDetailHelpLabel' => 'Something <b>not right?', 'orderDetailHelpUrl' => '/contact/' ) );
+ok( str_contains( $html, '<p class="sgs-account__od-help"><a class="sgs-account__od-help-link" href="/contact/">Something &lt;b&gt;not right?</a></p>' ), '5 help: typed address, label escaped' );
+
 echo $failures ? "\n$failures FAILED\n" : "\nAll passed\n";
 exit( $failures ? 1 : 0 );

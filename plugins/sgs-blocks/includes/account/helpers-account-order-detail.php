@@ -265,8 +265,9 @@ if ( ! function_exists( 'sgs_account_order_detail_html' ) ) {
 		}
 		$help_label = trim( (string) ( $attributes['orderDetailHelpLabel'] ?? '' ) );
 		$help_href  = '' !== $help_label ? trim( sgs_link_source_href( (string) ( $attributes['orderDetailHelpUrlSource'] ?? '' ), trim( (string) ( $attributes['orderDetailHelpUrl'] ?? '' ) ) ) ) : '';
+		$help_href  = '' !== $help_href ? esc_url( $help_href ) : '';
 		if ( '' !== $help_href ) {
-			$html .= '<p class="sgs-account__od-help"><a class="sgs-account__od-help-link" href="' . esc_url( $help_href ) . '">' . esc_html( $help_label ) . '</a></p>';
+			$html .= '<p class="sgs-account__od-help"><a class="sgs-account__od-help-link" href="' . $help_href . '">' . esc_html( $help_label ) . '</a></p>';
 		}
 		$number = preg_replace( '/\D+/', '', (string) ( $attributes['orderDetailWhatsAppNumber'] ?? '' ) );
 		if ( $on( 'orderDetailWhatsApp' ) && '' !== (string) $number ) {

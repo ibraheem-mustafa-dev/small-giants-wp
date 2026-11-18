@@ -5081,6 +5081,21 @@
 				"default": "",
 				"description": "Label of the order-again button. Empty = Order again."
 			},
+			"orderDetailHelpLabel": {
+				"type": "string",
+				"default": "",
+				"description": "Label of the help link under the order page (for example Something not right? Message us). Empty prints nothing."
+			},
+			"orderDetailHelpUrl": {
+				"type": "string",
+				"default": "",
+				"description": "Destination of the order page help link: a typed address. Empty (with no link source) prints nothing."
+			},
+			"orderDetailHelpUrlSource": {
+				"type": "string",
+				"default": "",
+				"description": "Link source of the order page help link: a page, a Site Info value such as WhatsApp, or empty for the typed address."
+			},
 			"loginLinkPlacement": {
 				"type": "string",
 				"enum": [
