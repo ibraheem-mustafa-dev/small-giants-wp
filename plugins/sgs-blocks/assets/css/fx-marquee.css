@@ -128,12 +128,14 @@
 
 	/* The still "swap" mode (reducedMotionMode = swap; marquee-swap.js): the set is one centred line that never wraps and
 	   never outgrows the block, and keeps the height of its tallest item so a swap moves nothing below it. The doubled
-	   attribute outranks a block's own static layout for the set (a brand strip's wrapping set). */
+	   attribute outranks a block's own static layout for the set (a brand strip's wrapping set). In a block laid out as a
+	   grid the set spans every column, so the group on show is centred across the whole block, not inside one column. */
 	[data-sgs-fx~="marquee"][data-sgs-fx-marquee-reduced-motion-mode="swap"][data-sgs-fx-marquee-reduced-motion-mode="swap"]:not([data-sgs-marquee="on"]) [data-sgs-marquee-set] {
 		display: flex;
 		flex-wrap: nowrap;
 		align-items: center;
 		justify-content: center;
+		grid-column: 1 / -1;
 		position: relative;
 		box-sizing: border-box;
 		width: auto;
