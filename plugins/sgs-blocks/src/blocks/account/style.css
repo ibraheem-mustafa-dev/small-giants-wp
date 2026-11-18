@@ -341,9 +341,9 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	text-underline-offset: 0.15em;
 }
 
-/* -- Account details: one form, two cards (details, then password change), each ending in its own Save button ------- */
+/* -- Account details, two-cards option (accountDetailsCards): one form, two cards (details, then password change), each ending in its own Save button ------- */
 /* Zero specificity on the form's own layout, so the form gap and column settings (scoped rules) win. */
-:where(.sgs-account .woocommerce-EditAccountForm) {
+:where(.sgs-account--details-cards .woocommerce-EditAccountForm) {
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;

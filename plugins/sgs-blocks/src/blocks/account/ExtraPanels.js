@@ -220,6 +220,7 @@ export function AccountDetailsPanel( { attributes, setAttributes } ) {
 	const p = { attributes, setAttributes };
 	return (
 		<PanelBody title={ __( 'Account details form', 'sgs-blocks' ) } initialOpen={ false }>
+			<Toggle { ...p } name="accountDetailsCards" label={ __( 'Details and password as two cards', 'sgs-blocks' ) } help={ __( 'One form laid out as a details card and a password card, each with its own button. Off = WooCommerce’s single form.', 'sgs-blocks' ) } />
 			<Choice
 				{ ...p }
 				name="accountFormColumns"

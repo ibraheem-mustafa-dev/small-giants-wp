@@ -4692,6 +4692,11 @@
 					"line-through"
 				]
 			},
+			"accountDetailsCards": {
+				"type": "boolean",
+				"default": false,
+				"description": "Lays the account details page out as two cards in one form, details then password change, each ending in its own button. Off = WooCommerce's single form."
+			},
 			"accountFormColumns": {
 				"type": "string",
 				"enum": [

@@ -155,6 +155,10 @@ if ( 'cards' === ( $attributes['wishlistLayout'] ?? '' ) ) {
 	$wrapper_classes[] = 'sgs-account--wishlist-cards';
 }
 
+if ( ! empty( $attributes['accountDetailsCards'] ) ) {
+	$wrapper_classes[] = 'sgs-account--details-cards';
+}
+
 if ( ! empty( $attributes['orderDetailOrderAgain'] ) ) {
 	$wrapper_classes[] = 'sgs-account--order-again';
 }

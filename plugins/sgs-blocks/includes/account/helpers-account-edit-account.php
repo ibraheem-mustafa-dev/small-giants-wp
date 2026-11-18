@@ -100,7 +100,8 @@ if ( ! function_exists( 'sgs_account_edit_account_markup' ) ) {
 				1
 			);
 		}
-		return sgs_account_edit_account_cards( $html );
+		// Two cards in one form is opt-in (accountDetailsCards); off, WooCommerce's single form is kept as it prints.
+		return ! empty( $attributes['accountDetailsCards'] ) ? sgs_account_edit_account_cards( $html ) : $html;
 	}
 }
 
