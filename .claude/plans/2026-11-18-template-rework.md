@@ -6,7 +6,7 @@ created: 2026-11-18
 
 # Template rework: shop surfaces the cloning route fills without hand-tuning
 
-Status (2026-11-18, end of day): planned, reviewed twice by councils, and re-cut on Bean's rulings. Nothing is built. This plan covers the shop surfaces and the before-and-after check. The general cloning work has its own brief, `.claude/prompts/2026-11-18-route-regular-pages.md`, for a second session.
+Status (2026-11-18, end of day): planned, reviewed twice by councils, and re-cut on Bean's rulings. Nothing is built: all nine tasks are open. This plan covers the shop surfaces and the before-and-after check. The general cloning work has its own brief, `.claude/prompts/2026-11-18-route-regular-pages.md`, for a second session.
 
 ## Goal and why
 

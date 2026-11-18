@@ -1,5 +1,7 @@
 # Council report on the foundation design draft (2026-11-18)
 
+Bean's rulings after this report are in `.claude/plans/2026-11-18-template-rework.md` and override the report's "improved plan" where they differ (no Components page, no section-level block choice, no block map).
+
 Four reviewers (Fable, high effort, blind to each other) read the draft `foundation-design-draft.md` against the Claude Design handoff folder, Specs 48, 48A, 32, 11, 02, 27, 36, 37, 38 and 38A and the three clients' handoff folders. A fifth reader covered the Spec 48 sections, Specs 36 and 37 and `METHOD.md` that the four did not finish. Four fact-checkers (Sonnet, high effort) opened the evidence for 48 findings. This report holds what survived, written for the session that acts on it. Raw outputs: `E:\sgs-tmp\template-rework\council\`.
 
 ## Verdict
