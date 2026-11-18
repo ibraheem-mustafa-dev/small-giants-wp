@@ -14,6 +14,7 @@ While you work, check the drafts' text and widgets against how the clone reads t
 - Inline formatting inside a text element is kept: write bold (strong, b), italic (em, i), strikethrough (s, del), links (a) and line breaks (br) as ordinary content inside the element. Never flatten them to plain text or split one sentence across several elements to fake them.
 - Lists, tabs, accordions and breadcrumbs are read by their meaning, not their tag or class names. Use real lists (ul, ol with li), give each widget its correct ARIA roles and states (role="tablist", "tab" and "tabpanel" with aria-selected; a button with aria-expanded and aria-controls for each accordion panel; a nav with an aria-label holding an ordered list for a breadcrumb, with aria-current on the current page), and make the behaviour match (one tab open at a time; panels that open and close). A class called "tabs" on a plain div is not a tab set.
 - Do not add data-sgs-block tags or any other SGS block names to the drafts. Natural names (data-part ids, class names, headings) are enough.
+- Coverage: compare the drafts with the pages and states CLAUDE.md's Rules list for this kind of site (every site, a blog, a shop). Do not draw a missing one during the handoff; name each missing page or state in your final reply as an unresolved item, and name anything a draft shows that CLAUDE.md says a shop does not do.
 
 Follow the rules in CLAUDE.md throughout. If I ask for any change after this, run this whole prompt again and I'll download the whole folder again.
 

@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 48A
-spec_version: "1.2"
+spec_version: "1.3"
 title: The Claude Design handoff folder
 project: small-giants-wp
 status: active
-last_verified: 2026-10-29
+last_verified: 2026-11-18
 authors: Bean + Claude
 parent_spec: Spec 48 (`.claude/specs/48-CLONING-SYSTEM.md`, the cloning system)
 ---
@@ -109,6 +109,11 @@ Status: schema, method, prompt and `CLAUDE.md` updated 2026-10-29. The route rea
 - They map to the client snapshot's `settings.custom.focus` keys: `--focus-color` to `focus.ring`, `--focus-width` to `focus.width`, `--focus-offset` to `focus.offset`. Input boxes take the framework's inset look automatically (Spec 32 §14.5), so a draft gives them no focus rule.
 - `checkHandoff` warns, never fails, for each token no `tokens/*.css` declares: `FR-48A-15 tokens/*.css: focus token <name> is not declared`.
 - Status: the reader is built (`lib/handoff.mjs::checkHandoff`). The step that writes the snapshot's focus values from these tokens is not built: the values are copied by hand when a client is set up.
+
+### FR-48A-16 -- A draft covers every page and state a visitor reaches, within what a shop does
+- The producer's `CLAUDE.md` lists the pages and states to design: for every site the page-not-found page, search results with and without results, each form's sent and error states and the open menu drawer; for a blog the post list and one post; for a shop the listing (with filters, and empty), a product (with options, sold out), the basket page and drawer (filled, empty), the checkout (guest, signed in, a field error), the order confirmation, sign in, create account, lost password, each account view and one notice of each kind. It also lists what a WooCommerce shop does and does not do, so a draft promises nothing the shop cannot deliver (Mama's Munches' draft showed an address book, tracking links and a bake date, and had no page-not-found, search or account sub-view designs; each cost a ruling or a hand-built page, `.claude/reports/2026-11-18-template-rework/inventory.md`).
+- At handoff the prompt compares the drafts with that list and reports each missing page or state, and each feature a shop does not do, as an unresolved item; it draws nothing new.
+- Status: `CLAUDE.md` and `PROMPT.txt` updated 2026-11-18 (version 1.3). Not built: `handoff-check.mjs` warning on a missing surface (the three existing exports predate this and would only warn), and the route composing a surface the draft lacks from the site's own designed parts (`.claude/plans/2026-11-18-template-rework.md`, Tasks 3 and 9).
 
 ## 3. Readers
 
