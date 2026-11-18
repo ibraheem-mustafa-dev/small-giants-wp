@@ -65,6 +65,75 @@ final class Gift_Card_Money {
 	}
 
 	/**
+	 * Format pence in whole currency units when the amount has no pence ("£15"), else with decimals ("£12.50").
+	 *
+	 * Used for the amount tiles and range text of the purchase form. `format()` keeps its decimals for the basket,
+	 * checkout, emails and balances. The symbol and its position default to the shop's own settings.
+	 *
+	 * @param int         $pence    Amount in pence (may be negative).
+	 * @param string|null $symbol   Currency symbol, or null for the shop's.
+	 * @param string|null $position WooCommerce position: left, right, left_space or right_space; null for the shop's.
+	 * @return string
+	 */
+	public static function format_whole( int $pence, ?string $symbol = null, ?string $position = null ): string {
+		$abs    = \abs( $pence );
+		$number = 0 === $abs % 100 ? (string) \intdiv( $abs, 100 ) : \intdiv( $abs, 100 ) . '.' . \str_pad( (string) ( $abs % 100 ), 2, '0', STR_PAD_LEFT );
+		return ( $pence < 0 ? '-' : '' ) . self::place_symbol( $number, $symbol, $position );
+	}
+
+	/**
+	 * Format pence with decimals in the shop's currency symbol and position ("£25.00", "25.00 €").
+	 *
+	 * @param int         $pence    Amount in pence (may be negative).
+	 * @param string|null $symbol   Currency symbol, or null for the shop's.
+	 * @param string|null $position WooCommerce position; null for the shop's.
+	 * @return string
+	 */
+	public static function format_price( int $pence, ?string $symbol = null, ?string $position = null ): string {
+		return ( $pence < 0 ? '-' : '' ) . self::place_symbol( self::decimal( \abs( $pence ) ), $symbol, $position );
+	}
+
+	/**
+	 * The shop's currency symbol (plain text) and its position setting.
+	 *
+	 * @return array{symbol:string,position:string}
+	 */
+	public static function shop_currency(): array {
+		$symbol = \function_exists( 'get_woocommerce_currency_symbol' ) ? (string) \get_woocommerce_currency_symbol() : '£';
+		$pos    = \function_exists( 'get_option' ) ? (string) \get_option( 'woocommerce_currency_pos', 'left' ) : 'left';
+		return array(
+			'symbol'   => \html_entity_decode( $symbol, ENT_QUOTES, 'UTF-8' ),
+			'position' => \in_array( $pos, array( 'left', 'right', 'left_space', 'right_space' ), true ) ? $pos : 'left',
+		);
+	}
+
+	/**
+	 * Put the currency symbol on the shop's side of a number.
+	 *
+	 * @param string      $number   Digits.
+	 * @param string|null $symbol   Symbol, or null for the shop's.
+	 * @param string|null $position Position, or null for the shop's.
+	 * @return string
+	 */
+	private static function place_symbol( string $number, ?string $symbol, ?string $position ): string {
+		if ( null === $symbol || null === $position ) {
+			$shop     = self::shop_currency();
+			$symbol   = $symbol ?? $shop['symbol'];
+			$position = $position ?? $shop['position'];
+		}
+		switch ( $position ) {
+			case 'right':
+				return $number . $symbol;
+			case 'left_space':
+				return $symbol . ' ' . $number;
+			case 'right_space':
+				return $number . ' ' . $symbol;
+			default:
+				return $symbol . $number;
+		}
+	}
+
+	/**
 	 * Format pence as a plain decimal ("25.00") for feeds and CSV.
 	 *
 	 * @param int $pence Amount in pence.
