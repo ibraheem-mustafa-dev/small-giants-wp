@@ -106,6 +106,8 @@ final class Gift_Card_Product_Type {
 		$custom_on  = 'yes' === \get_post_meta( $product_id, Gift_Card_Amounts::META_CUSTOM, true );
 		$custom_min = (int) \get_post_meta( $product_id, Gift_Card_Amounts::META_CUSTOM_MIN, true );
 		$custom_max = (int) \get_post_meta( $product_id, Gift_Card_Amounts::META_CUSTOM_MAX, true );
+		$default    = (int) \get_post_meta( $product_id, Gift_Card_Amounts::META_DEFAULT_AMOUNT, true );
+		$label      = (string) \get_post_meta( $product_id, Gift_Card_Amounts::META_BUTTON_LABEL, true );
 		?>
 		<div id="sgs_gift_card_data" class="panel woocommerce_options_panel hidden">
 			<div class="options_group">
@@ -113,6 +115,16 @@ final class Gift_Card_Product_Type {
 					<label for="sgs_gift_card_amounts"><?php \esc_html_e( 'Fixed amounts (pounds)', 'sgs-blocks' ); ?></label>
 					<input type="text" id="sgs_gift_card_amounts" name="sgs_gift_card_amounts" value="<?php echo \esc_attr( $list ); ?>" placeholder="15, 25, 40" />
 					<span class="description"><?php \esc_html_e( 'Separate amounts with commas. Each amount becomes its own choice on the product page and its own item in the Google feed.', 'sgs-blocks' ); ?></span>
+				</p>
+				<p class="form-field">
+					<label for="sgs_gift_card_default_amount"><?php \esc_html_e( 'Amount selected on page load (pounds)', 'sgs-blocks' ); ?></label>
+					<input type="text" id="sgs_gift_card_default_amount" name="sgs_gift_card_default_amount" value="<?php echo \esc_attr( $default > 0 ? Gift_Card_Money::decimal( $default ) : '' ); ?>" placeholder="25" />
+					<span class="description"><?php \esc_html_e( 'Must be one of the fixed amounts above. Leave empty, or type anything else, and the first fixed amount is selected.', 'sgs-blocks' ); ?></span>
+				</p>
+				<p class="form-field">
+					<label for="sgs_gift_card_button_label"><?php \esc_html_e( 'Button wording', 'sgs-blocks' ); ?></label>
+					<input type="text" id="sgs_gift_card_button_label" name="sgs_gift_card_button_label" value="<?php echo \esc_attr( $label ); ?>" maxlength="<?php echo (int) Gift_Card_Amounts::MAX_LABEL_CHARS; ?>" placeholder="<?php echo \esc_attr( Gift_Card_Form_View::default_button_label() ); ?>" />
+					<span class="description"><?php \esc_html_e( 'Type {amount} where the chosen amount should appear, for example "Add to basket · {amount}". Leave empty for the standard wording.', 'sgs-blocks' ); ?></span>
 				</p>
 				<p class="form-field">
 					<label for="sgs_gift_card_custom"><?php \esc_html_e( 'Allow a custom amount', 'sgs-blocks' ); ?></label>
@@ -153,6 +165,8 @@ final class Gift_Card_Product_Type {
 		$custom_on  = isset( $_POST['sgs_gift_card_custom'] ) && 'yes' === \sanitize_text_field( \wp_unslash( $_POST['sgs_gift_card_custom'] ) );
 		$custom_min = Gift_Card_Money::to_pence( isset( $_POST['sgs_gift_card_custom_min'] ) ? \sanitize_text_field( \wp_unslash( $_POST['sgs_gift_card_custom_min'] ) ) : '' ) ?? 0;
 		$custom_max = Gift_Card_Money::to_pence( isset( $_POST['sgs_gift_card_custom_max'] ) ? \sanitize_text_field( \wp_unslash( $_POST['sgs_gift_card_custom_max'] ) ) : '' ) ?? 0;
+		$default    = Gift_Card_Money::to_pence( isset( $_POST['sgs_gift_card_default_amount'] ) ? \sanitize_text_field( \wp_unslash( $_POST['sgs_gift_card_default_amount'] ) ) : '' ) ?? 0;
+		$label      = Gift_Card_Amounts::sanitise_button_label( isset( $_POST['sgs_gift_card_button_label'] ) ? \sanitize_text_field( \wp_unslash( $_POST['sgs_gift_card_button_label'] ) ) : '' );
 		// phpcs:enable
 
 		$config = Gift_Card_Amounts::config( $amounts, $custom_on, $custom_min, $custom_max );
@@ -163,6 +177,9 @@ final class Gift_Card_Product_Type {
 		}
 		$product->update_meta_data( Gift_Card_Amounts::META_AMOUNTS, $config['amounts'] );
 		$product->update_meta_data( Gift_Card_Amounts::META_CUSTOM, $config['custom_enabled'] ? 'yes' : 'no' );
+		// A default that is not one of the fixed amounts is saved as 0 (the first fixed amount is selected).
+		$product->update_meta_data( Gift_Card_Amounts::META_DEFAULT_AMOUNT, \in_array( $default, $config['amounts'], true ) ? $default : 0 );
+		$product->update_meta_data( Gift_Card_Amounts::META_BUTTON_LABEL, $label );
 		$product->update_meta_data( Gift_Card_Amounts::META_CUSTOM_MIN, $config['custom_min'] );
 		$product->update_meta_data( Gift_Card_Amounts::META_CUSTOM_MAX, $config['custom_max'] );
 

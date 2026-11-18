@@ -34,6 +34,41 @@ final class Gift_Card_Amounts {
 	/** Product meta: largest custom amount in pence. */
 	const META_CUSTOM_MAX = '_sgs_gift_card_custom_max';
 
+	/** Product meta: the amount selected when the page loads, in pence (0 = the first fixed amount). */
+	const META_DEFAULT_AMOUNT = '_sgs_gift_card_default_amount';
+
+	/** Product meta: the add-to-basket button wording; `{amount}` stands for the chosen amount (empty = the default wording). */
+	const META_BUTTON_LABEL = '_sgs_gift_card_button_label';
+
+	/** Longest button label saved. */
+	const MAX_LABEL_CHARS = 80;
+
+	/**
+	 * The fixed amount selected when the page loads: the product's chosen default when it is one of the fixed
+	 * amounts, otherwise the first.
+	 *
+	 * @param array<int,int> $amounts Fixed amounts in pence, sorted.
+	 * @param int            $default The saved default in pence (0 = none chosen).
+	 * @return int Pence, or 0 when there are no fixed amounts.
+	 */
+	public static function initial_amount( array $amounts, int $default ): int {
+		if ( $default > 0 && \in_array( $default, $amounts, true ) ) {
+			return $default;
+		}
+		return array() !== $amounts ? (int) \reset( $amounts ) : 0;
+	}
+
+	/**
+	 * Clean a typed button label: no markup, one line, a sensible length.
+	 *
+	 * @param string $label Typed text.
+	 * @return string
+	 */
+	public static function sanitise_button_label( string $label ): string {
+		$label = \trim( (string) \preg_replace( '/\s+/u', ' ', \wp_strip_all_tags( $label ) ) );
+		return \function_exists( 'mb_substr' ) ? \mb_substr( $label, 0, self::MAX_LABEL_CHARS ) : \substr( $label, 0, self::MAX_LABEL_CHARS );
+	}
+
 	/**
 	 * Parse an admin-typed list ("15, 25, 40" or "£15; £25") into sorted unique pence.
 	 *

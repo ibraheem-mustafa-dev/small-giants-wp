@@ -131,6 +131,27 @@ class Gift_Card_Product extends \WC_Product_Simple {
 	}
 
 	/**
+	 * The fixed amount (pence) selected when the page loads: the saved default when it is still one of the fixed amounts, else the first.
+	 *
+	 * @return int Pence, or 0 when there are no fixed amounts.
+	 */
+	public function initial_amount(): int {
+		return Gift_Card_Amounts::initial_amount(
+			$this->amounts_config()['amounts'],
+			(int) $this->get_meta( Gift_Card_Amounts::META_DEFAULT_AMOUNT, true )
+		);
+	}
+
+	/**
+	 * The add-to-basket button wording with its `{amount}` placeholder; empty when the site uses the default wording.
+	 *
+	 * @return string
+	 */
+	public function button_label_template(): string {
+		return Gift_Card_Amounts::sanitise_button_label( (string) $this->get_meta( Gift_Card_Amounts::META_BUTTON_LABEL, true ) );
+	}
+
+	/**
 	 * "From £15.00" or a range, never a single misleading price.
 	 *
 	 * @param string $price Unused.

@@ -49,18 +49,29 @@ final class Gift_Card_Form_View {
 			return isset( $_POST[ $name ] ) && \is_string( $_POST[ $name ] ) ? \sanitize_text_field( \wp_unslash( $_POST[ $name ] ) ) : '';
 		};
 		$chosen   = $val( Gift_Card_Purchase_Fields::F_AMOUNT );
+		$initial  = (int) $product->initial_amount();
+		$money    = Gift_Card_Money::shop_currency();
+		$template = $product->button_label_template();
+		$template = '' !== $template ? $template : self::default_button_label();
+		if ( '' === $chosen ) {
+			$pence = $initial > 0 ? $initial : null;
+		} else {
+			$pence = Gift_Card_Amounts::resolve( $config, $chosen, $val( Gift_Card_Purchase_Fields::F_CUSTOM ) );
+		}
+		$button_text = self::button_label( $template, null === $pence ? null : Gift_Card_Money::format_price( $pence, $money['symbol'], $money['position'] ) );
+		self::enqueue_script();
 
 		\ob_start();
 		?>
-		<form class="sgs-gift-card-form cart" method="post" enctype="multipart/form-data" action="<?php echo \esc_url( \get_permalink( $product->get_id() ) ); ?>">
+		<form class="sgs-gift-card-form cart" method="post" enctype="multipart/form-data" action="<?php echo \esc_url( \get_permalink( $product->get_id() ) ); ?>" data-label-template="<?php echo \esc_attr( $template ); ?>" data-currency-symbol="<?php echo \esc_attr( $money['symbol'] ); ?>" data-currency-position="<?php echo \esc_attr( $money['position'] ); ?>" data-custom-min="<?php echo (int) $config['custom_min']; ?>" data-custom-max="<?php echo (int) $config['custom_max']; ?>">
 			<?php \wp_nonce_field( Gift_Card_Purchase::NONCE_ACTION, Gift_Card_Purchase::NONCE_FIELD ); ?>
 
 			<fieldset class="sgs-gift-card-form__amounts">
 				<legend class="sgs-gift-card-form__legend"><?php \esc_html_e( 'Choose an amount', 'sgs-blocks' ); ?></legend>
 				<?php foreach ( $config['amounts'] as $i => $pence ) : ?>
 					<span class="sgs-gift-card-form__amount">
-						<input class="sgs-gift-card-form__radio sgs-focus-source" type="radio" id="sgs-gc-amount-<?php echo (int) $pence; ?>" name="<?php echo \esc_attr( Gift_Card_Purchase_Fields::F_AMOUNT ); ?>" value="<?php echo (int) $pence; ?>" <?php \checked( (string) $pence === $chosen || ( '' === $chosen && 0 === $i ) ); ?> required />
-						<label class="sgs-gift-card-form__amount-label sgs-focus-proxy" for="sgs-gc-amount-<?php echo (int) $pence; ?>"><?php echo \esc_html( Gift_Card_Money::format( $pence ) ); ?></label>
+						<input class="sgs-gift-card-form__radio sgs-focus-source" type="radio" id="sgs-gc-amount-<?php echo (int) $pence; ?>" name="<?php echo \esc_attr( Gift_Card_Purchase_Fields::F_AMOUNT ); ?>" value="<?php echo (int) $pence; ?>" <?php \checked( (string) $pence === $chosen || ( '' === $chosen && (int) $pence === $initial ) ); ?> required />
+						<label class="sgs-gift-card-form__amount-label sgs-focus-proxy" for="sgs-gc-amount-<?php echo (int) $pence; ?>"><?php echo \esc_html( Gift_Card_Money::format_whole( $pence, $money['symbol'], $money['position'] ) ); ?></label>
 					</span>
 				<?php endforeach; ?>
 				<?php if ( $config['custom_enabled'] ) : ?>
@@ -72,7 +83,7 @@ final class Gift_Card_Form_View {
 						<label class="sgs-gift-card-form__label" for="sgs-gc-custom">
 							<?php
 							/* translators: 1: minimum amount, 2: maximum amount */
-							echo \esc_html( \sprintf( \__( 'Other amount, between %1$s and %2$s', 'sgs-blocks' ), Gift_Card_Money::format( $config['custom_min'] ), Gift_Card_Money::format( $config['custom_max'] ) ) );
+							echo \esc_html( \sprintf( \__( 'Other amount, between %1$s and %2$s', 'sgs-blocks' ), Gift_Card_Money::format_whole( $config['custom_min'], $money['symbol'], $money['position'] ), Gift_Card_Money::format_whole( $config['custom_max'], $money['symbol'], $money['position'] ) ) );
 							?>
 						</label>
 						<input class="sgs-gift-card-form__input" type="text" inputmode="decimal" id="sgs-gc-custom" name="<?php echo \esc_attr( Gift_Card_Purchase_Fields::F_CUSTOM ); ?>" value="<?php echo \esc_attr( $val( Gift_Card_Purchase_Fields::F_CUSTOM ) ); ?>" />
@@ -97,10 +108,39 @@ final class Gift_Card_Form_View {
 
 			<p class="sgs-gift-card-form__terms"><?php echo \esc_html( self::terms_text( $settings ) ); ?></p>
 
-			<button type="submit" name="add-to-cart" value="<?php echo (int) $product->get_id(); ?>" class="sgs-gift-card-form__submit single_add_to_cart_button button alt wp-element-button"><?php \esc_html_e( 'Add gift card to basket', 'sgs-blocks' ); ?></button>
+			<button type="submit" name="add-to-cart" value="<?php echo (int) $product->get_id(); ?>" class="sgs-gift-card-form__submit single_add_to_cart_button button alt wp-element-button"><?php echo \esc_html( $button_text ); ?></button>
 		</form>
 		<?php
 		return (string) \ob_get_clean();
+	}
+
+	/**
+	 * The standard button wording, used when a product sets none.
+	 *
+	 * @return string
+	 */
+	public static function default_button_label(): string {
+		return \__( 'Add gift card to basket', 'sgs-blocks' );
+	}
+
+	/**
+	 * Fill a button wording with the chosen amount.
+	 *
+	 * `{amount}` becomes the formatted amount. With no valid amount chosen the placeholder is dropped together with the
+	 * separator beside it ("Add to basket · {amount}" reads "Add to basket"). The browser script
+	 * (`assets/js/gift-card-form.js::buildLabel`) applies the same rule as the shopper picks amounts.
+	 *
+	 * @param string      $template Wording with an optional `{amount}`.
+	 * @param string|null $amount   The formatted amount, or null when none is chosen.
+	 * @return string
+	 */
+	public static function button_label( string $template, ?string $amount ): string {
+		if ( null !== $amount ) {
+			return \str_replace( '{amount}', $amount, $template );
+		}
+		$gap   = '[\s\x{00B7}\-\x{2013}\x{2014}:|,\/]*';
+		$label = (string) \preg_replace( '/' . $gap . '\{amount\}' . $gap . '/u', ' ', $template );
+		return \trim( (string) \preg_replace( '/\s+/u', ' ', $label ) );
 	}
 
 	/**
@@ -141,6 +181,26 @@ final class Gift_Card_Form_View {
 			<input class="sgs-gift-card-form__input" type="<?php echo \esc_attr( $type ); ?>" id="sgs-gc-<?php echo \esc_attr( $slug ); ?>" name="<?php echo \esc_attr( $name ); ?>" value="<?php echo \esc_attr( $value ); ?>" <?php echo $required ? 'required' : ''; ?> />
 		</p>
 		<?php
+	}
+
+	/**
+	 * Load the form script once: it keeps the button wording in step with the chosen amount.
+	 *
+	 * @return void
+	 */
+	private static function enqueue_script(): void {
+		if ( \defined( 'SGS_BLOCKS_URL' ) && \defined( 'SGS_BLOCKS_PATH' ) && \file_exists( SGS_BLOCKS_PATH . 'assets/js/gift-card-form.js' ) ) {
+			\wp_enqueue_script(
+				'sgs-gift-card-form',
+				SGS_BLOCKS_URL . 'assets/js/gift-card-form.js',
+				array(),
+				(string) \filemtime( SGS_BLOCKS_PATH . 'assets/js/gift-card-form.js' ),
+				array(
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				)
+			);
+		}
 	}
 
 	/**
