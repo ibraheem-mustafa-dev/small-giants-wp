@@ -264,6 +264,8 @@ $ov['custom']['email']          = array(
 	'cardBackground'  => '#ffffff',
 	'cardRadius'      => '0px',
 	'cardBorderWidth' => '3px',
+	'cardBorderColour' => '#222222',
+	'cardBorderStyle' => 'solid',
 	'lineColour'      => '#ff0000',
 	'lineStyle'       => 'dashed',
 	'imageRadius'     => '999px',
@@ -273,9 +275,10 @@ $ov['custom']['email']          = array(
 $to = T::from_sources( $ov, $styles, $vars, $theme_uri );
 ok( '#112233' === $to['outer_bg'] && '#ffffff' === $to['card_bg'] && '0' === $to['card_radius'] && '3px' === $to['card_border_width'], 'overrides: outer, card, radius, border width' );
 ok( '#ff0000' === $to['line'] && 'dashed' === $to['line_style'] && '999px' === $to['image_radius'] && 'center' === $to['heading_align'] && '#fff3c4' === $to['panel_bg'], 'overrides: line colour and style, image radius, heading align, panel' );
-$ov['custom']['email'] = array( 'lineStyle' => 'dotted;x', 'headingAlign' => 'right', 'cardRadius' => 'huge', 'panelBackground' => 'url(x)', 'lineColour' => 'nope' );
+ok( '#222222' === ( $to['card_border_colour'] ?? '' ) && 'solid' === ( $to['card_border_style'] ?? '' ) && ! isset( $t['card_border_colour'], $t['card_border_style'] ), 'overrides: the card edge takes its own colour and style, and has none by default' );
+$ov['custom']['email'] = array( 'cardBorderColour' => 'red;', 'cardBorderStyle' => 'double', 'lineStyle' => 'dotted;x', 'headingAlign' => 'right', 'cardRadius' => 'huge', 'panelBackground' => 'url(x)', 'lineColour' => 'nope' );
 $tx                    = T::from_sources( $ov, $styles, $vars, $theme_uri );
-ok( 'solid' === $tx['line_style'] && ! isset( $tx['heading_align'], $tx['panel_bg'] ) && '20px' === $tx['card_radius'] && '#eadbc0' === $tx['line'], 'bad overrides are ignored and the defaults stand' );
+ok( 'solid' === $tx['line_style'] && ! isset( $tx['heading_align'], $tx['panel_bg'], $tx['card_border_colour'], $tx['card_border_style'] ) && '20px' === $tx['card_radius'] && '#eadbc0' === $tx['line'], 'bad overrides are ignored and the defaults stand' );
 
 // -- The switch --------------------------------------------------------------------------------------------------
 

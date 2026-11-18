@@ -83,7 +83,8 @@ final class Sgs_Email_Site_Tokens {
 	 * line_height, shadow), `text`, `heading`, `link`, `muted`, `line`,
 	 * `outer_bg`, `card_bg`, `body_font`, `heading_font`, `heading_weight`,
 	 * `heading_line_height`, `faces` (list of family, src, weight, style),
-	 * `card_radius`, `card_border_width`, `line_style`, `image_radius`,
+	 * `card_radius`, `card_border_width`, `card_border_colour`, `card_border_style`,
+	 * `line_style`, `image_radius`,
 	 * `heading_align`, `panel_bg`.
 	 *
 	 * @param  array<string,mixed>  $settings  Merged `settings` (theme.json shape).
@@ -163,6 +164,15 @@ final class Sgs_Email_Site_Tokens {
 			?? self::length( self::dig( $settings, 'custom.borderRadius.medium' ), $vars )
 			?? '8px';
 		$tokens['card_border_width'] = self::length( $override['cardBorderWidth'] ?? null, $vars ) ?? '1px';
+		// The card's own edge may differ from the rules inside it (a dark solid outline around dashed rules).
+		$card_border = self::colour( $override['cardBorderColour'] ?? null, $vars );
+		if ( null !== $card_border ) {
+			$tokens['card_border_colour'] = $card_border;
+		}
+		$card_border_style = $override['cardBorderStyle'] ?? '';
+		if ( 'solid' === $card_border_style || 'dashed' === $card_border_style ) {
+			$tokens['card_border_style'] = $card_border_style;
+		}
 
 		$image_radius = self::length( $override['imageRadius'] ?? null, $vars ) ?? self::length( self::dig( $settings, 'custom.borderRadius.small' ), $vars );
 		if ( null !== $image_radius ) {

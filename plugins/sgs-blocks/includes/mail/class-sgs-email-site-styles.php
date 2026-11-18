@@ -111,7 +111,7 @@ final class Sgs_Email_Site_Styles {
 	 * @return string
 	 */
 	public static function gift_code_rule( string $line, string $style ): string {
-		return "\n.sgs-gift-card-email__code {\n\ttext-align: center;\n\tfont-size: 28px;\n\tletter-spacing: 3px;\n\tline-height: 120%;\n\tmargin: 24px 0;\n\tpadding: 16px;\n\tborder: 2px {$style} {$line};\n}\n";
+		return "\n.sgs-gift-card-email__code {\n\ttext-align: center;\n\tfont-size: 20px;\n\tletter-spacing: 1px;\n\twhite-space: nowrap;\n\tline-height: 120%;\n\tmargin: 24px 0;\n\tpadding: 16px;\n\tborder: 2px {$style} {$line};\n}\n";
 	}
 
 	/**
@@ -181,8 +181,10 @@ final class Sgs_Email_Site_Styles {
 				'border-radius'    => $t['card_radius'] ?? '8px',
 				'border-collapse'  => 'separate',
 			);
-			if ( null !== $line ) {
-				$card['border'] = ( $t['card_border_width'] ?? '1px' ) . " {$kind} {$line}";
+			$card_line = $t['card_border_colour'] ?? $line;
+			$card_kind = $t['card_border_style'] ?? $kind;
+			if ( null !== $card_line ) {
+				$card['border'] = ( $t['card_border_width'] ?? '1px' ) . " {$card_kind} {$card_line}";
 			}
 			$css   .= self::rule( '#inner_wrapper', $card );
 			$css   .= self::rule( '#template_container, #template_header, #body_content, #template_footer', array( 'background-color' => $t['card_bg'] ) );
@@ -216,6 +218,8 @@ final class Sgs_Email_Site_Styles {
 			$css   .= self::rule( '#body_content table.email-order-details', array( 'background-color' => $t['panel_bg'] ) );
 			$css   .= self::rule( '#body_content table.email-order-details:first-child', array( 'border-radius' => "{$radius} {$radius} 0 0" ) );
 			$css   .= self::rule( '#body_content table.email-order-details:last-child', array( 'border-radius' => "0 0 {$radius} {$radius}" ) );
+			// The tinted panel's own edge ends the summary, so the rule under the totals goes.
+			$css   .= self::rule( '#body_content .email-order-details .order-totals-last td, #body_content .email-order-details .order-totals-last th', array( 'border-bottom' => '0' ) );
 			$css   .= self::rule( '#body_content table.email-order-details td:first-child, #body_content table.email-order-details th:first-child', array( 'padding-left' => '16px !important' ) );
 			$css   .= self::rule( '#body_content table.email-order-details td:last-child, #body_content table.email-order-details th:last-child', array( 'padding-right' => '16px !important' ) );
 		}
