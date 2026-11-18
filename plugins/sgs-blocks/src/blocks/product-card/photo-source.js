@@ -4,8 +4,9 @@
  * A gallery entry carries the small thumbnail copy (`url`) the strip shows, plus the attachment `id`. The buy box
  * prints every attachment's `src` and `srcset` once, in `<script class="sgs-buybox-images">`, keyed by id. A swap
  * writes that pair to the main photo together, so the browser chooses a copy wide enough for the screen. An entry
- * with no id, or a card with no such script (the product card), falls back to the entry's own `url` and an empty
- * `srcset`, which is the behaviour before the map existed.
+ * with no id, or a card with no such script, falls back to the entry's own `url` and an empty `srcset`, which is
+ * the behaviour before the map existed. A product card prints its own map (`<script class="sgs-photo-images">`)
+ * keyed by the thumbnail address, because its seeded context carries no attachment id.
  */
 
 /**
@@ -16,7 +17,7 @@
 const imagesByRef = new WeakMap();
 
 /**
- * The card's images map (attachment id -> { src, srcset, w, h }), or null when it has none.
+ * The card's images map (attachment id, or a card's thumbnail address -> { src, srcset }), or null when it has none.
  *
  * @param {Element|undefined} card The card or buybox root.
  * @return {(Object|null)} The parsed map.
@@ -29,7 +30,7 @@ export function imageMap( card ) {
 		return imagesByRef.get( card );
 	}
 	let map = null;
-	const el = card.querySelector( 'script.sgs-buybox-images' );
+	const el = card.querySelector( 'script.sgs-photo-images, script.sgs-buybox-images' );
 	if ( el ) {
 		try {
 			const parsed = JSON.parse( el.textContent || '{}' );
@@ -52,7 +53,7 @@ export function imageMap( card ) {
  */
 export function photoFor( card, id, fallback ) {
 	const map = imageMap( card );
-	const entry = map && id > 0 ? map[ id ] : null;
+	const entry = map ? ( id > 0 && map[ id ] ) || map[ fallback ] || null : null;
 	if ( entry && entry.src ) {
 		return { src: entry.src, srcset: entry.srcset || '', sharp: true };
 	}

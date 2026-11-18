@@ -20,12 +20,12 @@ const MAP = {
 	},
 };
 
-function buybox( map ) {
+function buybox( map, className = 'sgs-buybox-images' ) {
 	const root = document.createElement( 'div' );
 	if ( map !== null ) {
 		const script = document.createElement( 'script' );
 		script.type = 'application/json';
-		script.className = 'sgs-buybox-images';
+		script.className = className;
 		script.textContent = typeof map === 'string' ? map : JSON.stringify( map );
 		root.appendChild( script );
 	}
@@ -108,5 +108,33 @@ describe( 'applyPhoto', () => {
 		const ctx = { imageSrc: 'https://example.test/a.avif', imageSrcset: '' };
 		expect( applyPhoto( ctx, buybox( null ), 0, '' ) ).toBe( false );
 		expect( ctx.imageSrc ).toBe( 'https://example.test/a.avif' );
+	} );
+} );
+
+describe( 'a product card photo map (keyed by thumbnail address)', () => {
+	const THUMB_A = 'https://example.test/up/cookies-300x300.avif';
+	const THUMB_B = 'https://example.test/up/second-300x300.avif';
+	const CARD_MAP = {
+		[ THUMB_A ]: { src: MAP[ 5985 ].src, srcset: MAP[ 5985 ].srcset },
+		[ THUMB_B ]: { src: MAP[ 6001 ].src, srcset: MAP[ 6001 ].srcset },
+	};
+
+	it( 'is read from the card script and gives the sharp pair for a thumbnail address with no id', () => {
+		const card = buybox( CARD_MAP, 'sgs-photo-images' );
+		expect( photoFor( card, 0, THUMB_A ) ).toEqual( { src: MAP[ 5985 ].src, srcset: MAP[ 5985 ].srcset, sharp: true } );
+		expect( photoFor( card, undefined, THUMB_B ).sharp ).toBe( true );
+	} );
+
+	it( 'swaps src and srcset together and never leaves a thumbnail with an empty srcset', () => {
+		const card = buybox( CARD_MAP, 'sgs-photo-images' );
+		const ctx = { imageSrc: MAP[ 5985 ].src, imageSrcset: MAP[ 5985 ].srcset };
+		expect( applyPhoto( ctx, card, 0, THUMB_B ) ).toBe( true );
+		expect( ctx ).toEqual( { imageSrc: MAP[ 6001 ].src, imageSrcset: MAP[ 6001 ].srcset } );
+		expect( applyPhoto( ctx, card, 0, THUMB_B ) ).toBe( false );
+	} );
+
+	it( 'falls back to the thumbnail with an empty srcset for an address the map lacks (an external image)', () => {
+		const card = buybox( CARD_MAP, 'sgs-photo-images' );
+		expect( photoFor( card, 0, 'https://cdn.test/x.jpg' ) ).toEqual( { src: 'https://cdn.test/x.jpg', srcset: '', sharp: false } );
 	} );
 } );

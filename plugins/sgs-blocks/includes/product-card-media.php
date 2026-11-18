@@ -171,6 +171,70 @@ if ( ! function_exists( 'sgs_pcm_src' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_pcm_card_images' ) ) {
+	/**
+	 * The sharp `src` and `srcset` of every photo a card's options can show, keyed by the photo's thumbnail address.
+	 *
+	 * The manifest's `images` map holds each photo's `src` and `srcset` once, keyed by attachment id. A card's seeded
+	 * context carries no id (it would add bytes to a context under a 24 KB cap), so the card's map is keyed by the
+	 * thumbnail address the seeded options do carry (`imageUrl`, and a gallery entry's `url`). A photo shared by
+	 * several options is stored once. Only photos the swap can write are kept: each option's own photo, the default
+	 * gallery, and the gallery of an option that has two or more photos (a shorter gallery is not seeded). A photo
+	 * with no file in the map is left out: its option swaps to its thumbnail, as before.
+	 *
+	 * @param array $combos  The manifest's combos (with `imageId` and gallery ids).
+	 * @param array $gallery The default combo's gallery (with ids).
+	 * @param array $images  The manifest's `images` map: id => { src, srcset, w, h }.
+	 * @return array<string,array{src:string,srcset:string}> thumbnail address => pair; empty when no photo qualifies.
+	 */
+	function sgs_pcm_card_images( array $combos, array $gallery, array $images ): array {
+		$pairs = array(); // [ thumbnail address, attachment id ].
+		foreach ( $combos as $combo ) {
+			if ( ! is_array( $combo ) ) {
+				continue;
+			}
+			$pairs[] = array( (string) ( $combo['imageUrl'] ?? '' ), (int) ( $combo['imageId'] ?? 0 ) );
+			$items   = (array) ( $combo['gallery'] ?? array() );
+			if ( count( $items ) >= 2 ) {
+				foreach ( $items as $item ) {
+					$pairs[] = is_array( $item ) ? array( (string) ( $item['url'] ?? '' ), (int) ( $item['id'] ?? 0 ) ) : array( '', 0 );
+				}
+			}
+		}
+		foreach ( $gallery as $item ) {
+			$pairs[] = is_array( $item ) ? array( (string) ( $item['url'] ?? '' ), (int) ( $item['id'] ?? 0 ) ) : array( '', 0 );
+		}
+		$out = array();
+		foreach ( $pairs as list( $url, $id ) ) {
+			if ( '' !== $url && $id > 0 && ! isset( $out[ $url ] ) && ! empty( $images[ $id ]['src'] ) ) {
+				$out[ $url ] = array(
+					'src'    => (string) $images[ $id ]['src'],
+					'srcset' => (string) ( $images[ $id ]['srcset'] ?? '' ),
+				);
+			}
+		}
+		return $out;
+	}
+}
+
+if ( ! function_exists( 'sgs_pcm_images_script' ) ) {
+	/**
+	 * The card's photo map as an inert JSON script (read by product-card/photo-source.js on a swap).
+	 *
+	 * It sits beside the seeded context, outside the context's 24 KB cap. Same JSON flags as the buy box's map.
+	 *
+	 * @param array $images thumbnail address => { src, srcset } from `sgs_pcm_card_images()`.
+	 * @return string The script element, '' when the map is empty.
+	 */
+	function sgs_pcm_images_script( array $images ): string {
+		if ( empty( $images ) ) {
+			return '';
+		}
+		$json = wp_json_encode( $images, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES );
+		return false === $json ? '' : '<script type="application/json" class="sgs-photo-images">' . $json . '</script>';
+	}
+}
+
 if ( ! function_exists( 'sgs_pcm_bind' ) ) {
 	/**
 	 * Put the colour swap's bindings on the picture. `srcset` is bound too: the swap writes `src`, and a `srcset` left in

@@ -1261,7 +1261,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				'url'    => (string) $def['imageUrl'],
 				'width'  => (int) ( $sgs_var_first['w'] ?? 0 ),
 				'height' => (int) ( $sgs_var_first['h'] ?? 0 ),
-				'id'     => 0,
+				'id'     => (int) ( $sgs_var_first['id'] ?? $def['imageId'] ?? 0 ),
 				'alt'    => (string) $data['image_alt'],
 			)
 			: $sgs_live_image;
@@ -1367,7 +1367,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			// gallery = default combo's ordered { url, w, h, alt } image set.
 			// thumbsHidden = true when < 2 images (strip not shown for solo image).
 			// selectedThumb = 0 = first image highlighted on load (SSR-wipe-safe).
-			// The default gallery without the attachment ids: a card has no images map to look them up in.
+			// The default gallery without the attachment ids: the card's photo map (`script.sgs-photo-images`) is keyed by
+			// the thumbnail address instead, so the seeded context carries no id and stays as small as it was.
 			'gallery'             => array_map(
 				static fn( $item ) => is_array( $item ) ? array_diff_key( $item, array( 'id' => true ) ) : $item,
 				$def['gallery']
@@ -1849,7 +1850,9 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<?php endif; ?>
 			</div>
 			<?php
-			$inner = $sgs_card_typo_tag . ob_get_clean();
+			// The photos the options can show (sharp `src` and `srcset`, once per photo), read by the colour swap.
+			$sgs_card_photos = sgs_pcm_images_script( sgs_pcm_card_images( $manifest['combos'], (array) $def['gallery'], is_array( $manifest['images'] ?? null ) ? $manifest['images'] : array() ) );
+			$inner           = $sgs_card_typo_tag . ob_get_clean() . $sgs_card_photos;
 
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-escaped HTML.
 			echo SGS_Container_Wrapper::render( $attributes, $block, $inner, 'content', $var_opts );
