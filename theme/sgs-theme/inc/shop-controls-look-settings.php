@@ -78,7 +78,8 @@ function shop_controls_look_numbers(): array {
 		'sgs_shop_filter_list_weight' => __( 'Weight of checkbox-list option text (100 to 900, blank for 400)', 'sgs-theme' ),
 		'sgs_shop_filter_heading_size' => __( 'Filter panel heading size (px, blank for the theme large size)', 'sgs-theme' ),
 		'sgs_shop_filter_count_size'  => __( 'Text size of checkbox-list option counts (px, blank for the theme small size)', 'sgs-theme' ),
-		'sgs_shop_filter_box_size'    => __( 'Tick-box size of checkbox-list options (px, blank for the site-wide tick box size)', 'sgs-theme' ),
+		'sgs_shop_filter_box_size'    => __( 'Tick-box size of checkbox-list options (px, blank for 18, or the site-wide tick box size on a site that opted in to that look)', 'sgs-theme' ),
+		'sgs_shop_filter_box_border'  => __( 'Tick-box border width of checkbox-list options (px, blank for 2; not used on a site that opted in to the site-wide tick box look)', 'sgs-theme' ),
 	);
 }
 
@@ -238,6 +239,7 @@ function output_shop_controls_look_style(): void {
 		'sgs_shop_filter_heading_size' => '--sgs-filter-heading-size',
 		'sgs_shop_filter_count_size' => '--sgs-filter-count-size',
 		'sgs_shop_filter_box_size'  => '--sgs-filter-box-size',
+		'sgs_shop_filter_box_border' => '--sgs-filter-box-border',
 	);
 	// The smallest value each setting may print, so a typed 0 cannot hide the tick box or the text.
 	$floors = array(

@@ -31,6 +31,7 @@ require_once __DIR__ . '/inc/shop-filters-first-paint.php';
 require_once __DIR__ . '/inc/shop-load-more-settings.php';
 require_once __DIR__ . '/inc/core-block-styles.php';
 require_once __DIR__ . '/inc/selection.php';
+require_once __DIR__ . '/inc/choice-controls.php';
 require_once __DIR__ . '/inc/colour-roles.php';
 require_once __DIR__ . '/inc/font-fallback.php';
 
@@ -370,14 +371,6 @@ function enqueue_styles(): void {
 		get_theme_file_uri( 'assets/css/focus.css' ),
 		array( 'sgs-core-blocks-critical' ),
 		asset_version( 'assets/css/focus.css', $theme_version )
-	);
-
-	// The one tick box look (size, gap and accent tokens): synchronous, so no box repaints after first paint.
-	wp_enqueue_style(
-		'sgs-choice-controls',
-		get_theme_file_uri( 'assets/css/choice-controls.css' ),
-		array( 'sgs-core-blocks-critical' ),
-		asset_version( 'assets/css/choice-controls.css', $theme_version )
 	);
 
 	// Branded scrollbars (Spec 32 FR-32-26): synchronous, so the page's own bar is branded from first paint.

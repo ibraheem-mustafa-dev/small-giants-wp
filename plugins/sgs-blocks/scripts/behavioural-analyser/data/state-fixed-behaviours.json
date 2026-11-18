@@ -3032,6 +3032,26 @@
    "reason": "the chosen option reads bold inside the sort list; weight only"
   },
   {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ":where(body:not(.sgs-choice-controls)) .sgs-shop-filters .wc-block-components-checkbox input[type=\"checkbox\"]:checked",
+   "reason": "fixed paint, no setting: the drawn tick box a site keeps until it opts in to the shared tick box look (baseline 2026-10-20, selector re-keyed 2026-11-18)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ":where(body:not(.sgs-choice-controls)) .sgs-shop-filters .wc-block-product-filter-checkbox-list input[type=\"checkbox\"]:checked",
+   "reason": "fixed paint, no setting: the drawn tick box a site keeps until it opts in to the shared tick box look (baseline 2026-10-20, selector re-keyed 2026-11-18)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ":where(body:not(.sgs-choice-controls)) .sgs-shop-filters .wc-block-components-checkbox input[type=\"checkbox\"]:checked::after",
+   "reason": "fixed paint, no setting: the drawn tick box a site keeps until it opts in to the shared tick box look (baseline 2026-10-20, selector re-keyed 2026-11-18)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ":where(body:not(.sgs-choice-controls)) .sgs-shop-filters .wc-block-product-filter-checkbox-list input[type=\"checkbox\"]:checked::after",
+   "reason": "fixed paint, no setting: the drawn tick box a site keeps until it opts in to the shared tick box look (baseline 2026-10-20, selector re-keyed 2026-11-18)"
+  },
+  {
    "file": "plugins/sgs-blocks/src/blocks/container/style.css",
    "selector": ".sgs-container__arrow:hover:not(:disabled)",
    "reason": "the scroll row's arrow darkens and lifts 5% on hover as fixed behaviour, in the same theme tokens as sgs/testimonial-slider's arrow; reduced motion removes the lift"

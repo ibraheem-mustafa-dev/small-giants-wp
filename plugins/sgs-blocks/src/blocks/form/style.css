@@ -483,9 +483,22 @@ select.sgs-form-field__input {
 	cursor: pointer;
 }
 
-/* Radio rows keep their 0.5rem gap; a tick box row takes the shared gap. */
+/* Radio rows keep their 0.5rem gap; a tick box row takes the shared gap on a site that opted in to the look, and keeps
+   the 20px box (as drawn before the look) on one that has not. */
 .sgs-form-field__option:has(input[type="radio"]) {
 	gap: 0.5rem;
+}
+
+:where(body:not(.sgs-choice-controls)) .sgs-form-field__option {
+	gap: 0.5rem;
+}
+
+:where(body:not(.sgs-choice-controls)) .sgs-form-field__option input[type="checkbox"] {
+	width: 20px;
+	height: 20px;
+	min-width: 20px;
+	accent-color: var(--wp--preset--color--primary, #0f7e80);
+	cursor: pointer;
 }
 
 /* Card option rows (optionPresentation "card" on the checkbox field): the native input stays the real control, drawn
@@ -941,9 +954,23 @@ select.sgs-form-field__input {
 	min-height: 44px;
 }
 
-/* The consent box takes the shared tick box look (theme assets/css/choice-controls.css); nudged to sit on the first text line. */
+/* The consent box takes the shared tick box look (theme assets/css/choice-controls.css) on a site that opted in, nudged to sit
+   on the first text line; any other site keeps the 20px primary-coloured box it had before the look. */
 .sgs-form-field__consent input[type="checkbox"] {
 	margin-top: 0.0625rem;
+}
+
+:where(body:not(.sgs-choice-controls)) .sgs-form-field__consent {
+	gap: 0.75rem;
+}
+
+:where(body:not(.sgs-choice-controls)) .sgs-form-field__consent input[type="checkbox"] {
+	width: 20px;
+	height: 20px;
+	min-width: 20px;
+	margin-top: 0.125rem;
+	accent-color: var(--wp--preset--color--primary, #0f7e80);
+	cursor: pointer;
 }
 
 :where(.sgs-form-field__consent-text) {

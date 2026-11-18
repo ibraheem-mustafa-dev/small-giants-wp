@@ -688,8 +688,19 @@
 }
 
 :where(.sgs-cart__panel) .sgs-cart__panel-gift-checkbox {
-	/* Size, accent and gap come from the shared tick box look (theme assets/css/choice-controls.css). */
+	/* Size, accent and gap come from the shared tick box look (theme assets/css/choice-controls.css) on a site that opted in. */
 	flex: none;
+}
+
+/* A site that has not opted in to that look (no `sgs-choice-controls` body class) keeps the gift box as it was drawn before it. */
+:where(body:not(.sgs-choice-controls) .sgs-cart__panel) .sgs-cart__panel-gift-switch {
+	gap: 10px;
+}
+
+:where(body:not(.sgs-choice-controls) .sgs-cart__panel) .sgs-cart__panel-gift-checkbox {
+	width: 20px;
+	height: 20px;
+	margin: 0;
 }
 
 :where(.sgs-cart__panel) .sgs-cart__panel-gift-text {

@@ -1,4 +1,6 @@
-/* The one tick box look (every real `input[type="checkbox"]` a visitor ticks).
+/* The one tick box look (every real `input[type="checkbox"]` a visitor ticks), loaded only for a site whose theme tokens
+   ask for it (`settings.custom.choiceControls` in its snapshot; theme inc/choice-controls.php). The token keys are `size`,
+   `gap` and `accent`; WordPress prints them as --wp--custom--choice-controls--size and so on.
    The look is the browser's own tick box, sized and coloured by three tokens, so it keeps its native states (hover,
    checked, disabled, forced-colours) and takes the unified focus ring from focus.css:
      --sgs-checkbox-size    the box (default 22px, a tap area that fits the control)
@@ -9,9 +11,9 @@
    a block's own control (a longer selector), still wins: this sheet adds no specificity beyond one attribute selector. */
 
 :root {
-	--sgs-checkbox-size: 22px;
-	--sgs-checkbox-gap: 10px;
-	--sgs-checkbox-accent: var(--wp--preset--color--accent, currentColor);
+	--sgs-checkbox-size: var(--wp--custom--choice-controls--size, 22px);
+	--sgs-checkbox-gap: var(--wp--custom--choice-controls--gap, 10px);
+	--sgs-checkbox-accent: var(--wp--custom--choice-controls--accent, var(--wp--preset--color--accent, currentColor));
 }
 
 /* Inputs that are not tick boxes a visitor sees: a visually hidden input stretched over a tile or card, a switch, and the

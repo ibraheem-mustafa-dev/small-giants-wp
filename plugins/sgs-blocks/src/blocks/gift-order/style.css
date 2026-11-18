@@ -73,8 +73,19 @@
 }
 
 .sgs-gift-order__checkbox {
-	/* Size, accent and gap come from the shared tick box look (theme assets/css/choice-controls.css). */
+	/* Size, accent and gap come from the shared tick box look (theme assets/css/choice-controls.css) on a site that opted in. */
 	flex: none;
+}
+
+/* A site that has not opted in to that look (no `sgs-choice-controls` body class) keeps the switch row as it was drawn before it. */
+:where(body:not(.sgs-choice-controls)) .sgs-gift-order__switch {
+	gap: 0.75rem;
+}
+
+:where(body:not(.sgs-choice-controls)) .sgs-gift-order__checkbox {
+	width: 24px;
+	height: 24px;
+	margin: 0.25rem 0 0;
 }
 
 .sgs-gift-order__switch-label {
