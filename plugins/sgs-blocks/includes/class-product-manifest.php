@@ -30,6 +30,11 @@ defined( 'ABSPATH' ) || exit;
 final class Product_Manifest {
 
 	/**
+	 * The largest original, in bytes, that structured data, Open Graph and the feed will point at (Facebook's 8 MB limit).
+	 */
+	private const SHARE_MAX_BYTES = 8388608;
+
+	/**
 	 * The key an axis carries in the manifest: the key WooCommerce gives the variation's own attribute.
 	 *
 	 * `WC_Product_Variable::get_variation_attributes()` keys a product-local attribute by its raw name ("Pack"),
@@ -145,7 +150,8 @@ final class Product_Manifest {
 	 * The attachment's original file, because a new upload's resized copies are AVIF and some crawlers and merchant
 	 * feeds do not read AVIF, while the original keeps the format it was uploaded in. An original that is itself
 	 * AVIF (or another format those consumers may refuse) falls back to the largest copy in a safe format, then to
-	 * the original as the last resort.
+	 * the original as the last resort. An original over 8 MB (`SHARE_MAX_BYTES`) is not offered at all: the largest
+	 * resized copy stands in.
 	 *
 	 * @param int $attachment_id Attachment id.
 	 * @return string URL, or '' when the attachment has no file.
@@ -156,16 +162,48 @@ final class Product_Manifest {
 		if ( '' === $url ) {
 			return '';
 		}
-		if ( \in_array( (string) \get_post_mime_type( $attachment_id ), $safe, true ) ) {
+		$original_safe = \in_array( (string) \get_post_mime_type( $attachment_id ), $safe, true );
+		$too_big       = $original_safe && ! self::original_within_share_limit( $attachment_id );
+		if ( $original_safe && ! $too_big ) {
 			return \esc_url_raw( $url );
 		}
-		foreach ( array( 'full', 'large', 'woocommerce_single' ) as $size ) {
+		// An original in a format crawlers may refuse (AVIF) looks for a resized copy in a safe format; one over the size
+		// limit looks for a resized copy of any format, since the original itself is not offered.
+		$resized = array( 'large', 'woocommerce_single' );
+		foreach ( $too_big ? array() : array_merge( array( 'full' ), $resized ) as $size ) {
 			$copy = \wp_get_attachment_image_src( $attachment_id, $size );
 			if ( $copy && \preg_match( '/\.(jpe?g|png|gif|webp)(\?|$)/i', (string) $copy[0] ) ) {
 				return \esc_url_raw( (string) $copy[0] );
 			}
 		}
+		if ( $too_big ) {
+			foreach ( $resized as $size ) {
+				$copy = \wp_get_attachment_image_src( $attachment_id, $size );
+				if ( $copy && ! empty( $copy[3] ) ) {
+					return \esc_url_raw( (string) $copy[0] );
+				}
+			}
+		}
 		return \esc_url_raw( $url );
+	}
+
+	/**
+	 * Whether the original file is small enough to hand to a crawler or a feed.
+	 *
+	 * Facebook refuses an Open Graph image over 8 MB, so a larger original (a heavy PNG) is not offered; the largest
+	 * resized copy stands in. A size WordPress did not record is read from the file; one that cannot be read is let through.
+	 *
+	 * @param int $attachment_id Attachment id.
+	 * @return bool
+	 */
+	private static function original_within_share_limit( int $attachment_id ): bool {
+		$meta  = \wp_get_attachment_metadata( $attachment_id );
+		$bytes = \is_array( $meta ) ? (int) ( $meta['filesize'] ?? 0 ) : 0;
+		if ( $bytes <= 0 ) {
+			$file  = \get_attached_file( $attachment_id );
+			$bytes = \is_string( $file ) && '' !== $file && \is_readable( $file ) ? (int) \filesize( $file ) : 0;
+		}
+		return $bytes <= self::SHARE_MAX_BYTES;
 	}
 
 	/**
