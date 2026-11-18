@@ -157,6 +157,20 @@ if ( ! function_exists( 'sgs_pcm_srcset' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_pcm_src' ) ) {
+	/**
+	 * The `src` the renderer printed on the first picture, or '' when it printed none.
+	 *
+	 * `\ssrc` does not match the `data-wp-bind--src` binding the swap adds, so this reads the real attribute.
+	 *
+	 * @param string $html The renderer's markup.
+	 * @return string
+	 */
+	function sgs_pcm_src( string $html ): string {
+		return preg_match( '/<img\b[^>]*\ssrc="([^"]*)"/i', $html, $m ) ? html_entity_decode( $m[1], ENT_QUOTES ) : '';
+	}
+}
+
 if ( ! function_exists( 'sgs_pcm_bind' ) ) {
 	/**
 	 * Put the colour swap's bindings on the picture. `srcset` is bound too: the swap writes `src`, and a `srcset` left in
@@ -262,7 +276,7 @@ if ( ! function_exists( 'sgs_pcm_main_image' ) ) {
 	 * @param array  $live     The live picture: `url`, `width`, `height`, `id`, `alt`.
 	 * @param bool   $override Whether the block's own Source replaces the live file.
 	 * @param array  $opts     `block`, `bind`, `class`.
-	 * @return array{html:string,css:string,srcset:string}
+	 * @return array{html:string,css:string,src:string,srcset:string}
 	 */
 	function sgs_pcm_main_image( string $prefix, array $attrs, string $uid, array $live, bool $override, array $opts = array() ): array {
 		$render = array_merge(
@@ -279,6 +293,7 @@ if ( ! function_exists( 'sgs_pcm_main_image' ) ) {
 			return array(
 				'html'   => '',
 				'css'    => '',
+				'src'    => '',
 				'srcset' => '',
 			);
 		}
@@ -286,6 +301,7 @@ if ( ! function_exists( 'sgs_pcm_main_image' ) ) {
 		return array(
 			'html'   => $out['html'],
 			'css'    => $out['css'],
+			'src'    => sgs_pcm_src( $out['html'] ),
 			'srcset' => sgs_pcm_srcset( $out['html'] ),
 		);
 	}

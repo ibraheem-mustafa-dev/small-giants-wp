@@ -45,7 +45,7 @@
  *   inStock            {boolean}
  *   stockText          {string}   e.g. "Out of stock" (empty when in stock)
  *   imageSrc           {string}
- *   imageSrcset        {string}  the printed photo's srcset; emptied once a swap writes a new src
+ *   imageSrcset        {string}  the printed photo's srcset; a swap writes the new photo's srcset with its src (empty when only a thumbnail is known)
  *   imageAlt           {string}
  *   pending            {boolean}  true while addToCart XHR is in flight
  *
@@ -61,6 +61,7 @@ import { store, getContext, getElement } from '@wordpress/interactivity';
 import '../../shared/wishlist-store';
 import { toastActions } from '../../shared/toast/store.js';
 import { renderThumbStrip } from './thumb-strip';
+import { applyPhoto } from './photo-source';
 import { pulseState } from '../../shared/motion-state-publish';
 import { fetchWithNonce } from '../../shared/rest-nonce';
 
@@ -612,15 +613,27 @@ function applyPillSelection( ctx, detail ) {
 		ctx.selectedThumb = 0;
 		// Update main image from gallery[0] if present, else fall back to imageUrl.
 		// M-C7 parity: leave current image if the variation has none at all.
-		const previousImage = ctx.imageSrc;
+		// The photo's `src` and `srcset` are written together: a `srcset` left from the
+		// previous photo would outrank the new `src`, and a bare thumbnail `src` would be
+		// soft on a large photo box. The buy box's images map gives the sharp pair; a
+		// card with no map falls back to the thumbnail with an empty `srcset`.
+		let photoChanged = false;
 		if ( newGallery.length > 0 && newGallery[ 0 ].url ) {
-			ctx.imageSrc = newGallery[ 0 ].url;
+			photoChanged = applyPhoto(
+				ctx,
+				cardRefByCtx.get( ctx ),
+				newGallery[ 0 ].id || 0,
+				newGallery[ 0 ].url
+			);
 		} else if ( combo.imageUrl ) {
-			ctx.imageSrc = combo.imageUrl;
+			photoChanged = applyPhoto(
+				ctx,
+				cardRefByCtx.get( ctx ),
+				combo.imageId || 0,
+				combo.imageUrl
+			);
 		}
-		if ( ctx.imageSrc !== previousImage ) {
-			// The printed photo's srcset would outrank the new src; the swap empties it.
-			ctx.imageSrcset = '';
+		if ( photoChanged ) {
 			replayPhoto( cardRefByCtx.get( ctx ) );
 		}
 
@@ -706,11 +719,12 @@ function selectThumbByIndex( ctx, card, idx ) {
 	if ( ! Array.isArray( ctx.gallery ) || ! ctx.gallery[ idx ] || ! ctx.gallery[ idx ].url ) {
 		return;
 	}
-	const imageChanged = ctx.imageSrc !== ctx.gallery[ idx ].url;
-	ctx.imageSrc = ctx.gallery[ idx ].url;
-	if ( imageChanged ) {
-		ctx.imageSrcset = '';
-	}
+	const imageChanged = applyPhoto(
+		ctx,
+		card,
+		ctx.gallery[ idx ].id || 0,
+		ctx.gallery[ idx ].url
+	);
 	ctx.selectedThumb = idx;
 	if ( imageChanged ) {
 		replayPhoto( card );

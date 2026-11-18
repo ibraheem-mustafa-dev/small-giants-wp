@@ -159,8 +159,13 @@ final class BuyboxImagePriorityTest extends TestCase {
 	}
 
 	public function test_no_buybox_partial_hardcodes_a_high_priority_image(): void {
-		$src = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/buybox/gallery-col.php' );
+		$dir = dirname( __DIR__, 2 ) . '/src/blocks/buybox/';
+		$col = (string) file_get_contents( $dir . 'gallery-col.php' );
+		$src = (string) file_get_contents( $dir . 'render.php' );
+		$this->assertSame( 0, preg_match( '/fetchpriority="high"/', $col ), 'the main photo decides its priority per render' );
 		$this->assertSame( 0, preg_match( '/fetchpriority="high"/', $src ), 'the main photo decides its priority per render' );
+		// render.php prints the main photo (its `src` and `srcset` seed the interactive context); gallery-col.php only places it.
 		$this->assertSame( 1, substr_count( $src, 'sgs_pcm_main_image(' ), 'the main photo prints through the media renderer, which asks SGS_Media_Priority' );
+		$this->assertSame( 0, substr_count( $col, 'sgs_pcm_main_image(' ), 'gallery-col.php places the photo render.php printed' );
 	}
 }

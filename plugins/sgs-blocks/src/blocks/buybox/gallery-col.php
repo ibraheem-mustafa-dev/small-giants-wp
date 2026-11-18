@@ -12,8 +12,9 @@
  *
  * Called via require __DIR__ . '/gallery-col.php' inside the buybox render
  * ob_start() buffer. The $buybox_def_gallery, $buybox_img_src,
- * $buybox_img_alt, and $buybox_thumbs_hidden variables are resolved in
- * render.php step 5 before this file is required.
+ * $buybox_img_alt, $buybox_main (the printed main photo: html, css, src, srcset)
+ * and $buybox_thumbs_hidden variables are resolved in render.php step 5
+ * before this file is required.
  *
  * GROUND-TRUTH: product-card/render.php L684-750 live-read 2026-06-12:
  * confirmed .product-card__media wrapping img, .product-card__thumbs with
@@ -39,38 +40,9 @@ if ( ! isset( $buybox_img_src ) ) {
 
 // The main photo and each thumbnail are the `main` and `thumb` media slots: the renderer prints each with its scope
 // class and rules, and sizes it from the manifest's own width and height (so a photo never shifts the layout). The main
-// photo carries the colour swap's bindings. The `main` slot's border, corners, shadow and ground print on the frame
+// photo carries the colour swap's bindings and is printed by render.php (`$buybox_main`), because its `src` and
+// `srcset` seed the interactive context there. The `main` slot's border, corners, shadow and ground print on the frame
 // (render.php), so the renderer gets the slot without them.
-// A product page's own buybox is its page's lead content (single-product.html prints it before the post content), so its
-// main photo asks to load first unless the author chose Later.
-$buybox_main_attrs = sgs_pcm_picture_attrs( $attributes, 'main' );
-if ( function_exists( 'is_singular' ) && is_singular( 'product' ) && $product instanceof \WC_Product && (int) get_queried_object_id() === (int) $product->get_id() && 'later' !== ( $attributes['mainLoading'] ?? '' ) ) {
-	$buybox_main_attrs['mainLoading'] = 'first';
-}
-$buybox_first       = isset( $buybox_def_gallery[0] ) && is_array( $buybox_def_gallery[0] ) ? $buybox_def_gallery[0] : array();
-$buybox_main        = '' !== $buybox_img_src
-	? sgs_pcm_main_image(
-		'main',
-		$buybox_main_attrs,
-		$uid . '-main',
-		array(
-			'url'    => (string) $buybox_img_src,
-			'width'  => (int) ( $buybox_first['w'] ?? 0 ),
-			'height' => (int) ( $buybox_first['h'] ?? 0 ),
-			'id'     => 0,
-			'alt'    => (string) $buybox_img_alt,
-		),
-		false,
-		array(
-			'block' => 'sgs/buybox',
-			'class' => 'product-card-img sgs-buybox__main-photo',
-			'bind'  => true,
-		)
-	)
-	: array(
-		'html' => '',
-		'css'  => '',
-	);
 $buybox_frame_class = 'product-card__media sgs-buybox__main-photo-frame ' . $uid . '-frame' . ( sgs_pcm_sized( $attributes, 'main' ) ? ' sgs-buybox__main-photo-frame--sized' : '' );
 $buybox_thumb_attrs = sgs_pcm_picture_attrs( $attributes, 'thumb' );
 ?>

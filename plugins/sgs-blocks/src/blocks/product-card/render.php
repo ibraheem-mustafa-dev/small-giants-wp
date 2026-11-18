@@ -1312,7 +1312,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		// "From" card. SEC-1 intact: the manifest is still the single source; this is
 		// only the client SEED subset.
 		// Canonical implementation: includes/configurator-seed.php (sgs_lean_seed_combos).
-		$seed_combos = sgs_lean_seed_combos( $manifest['combos'] );
+		$seed_combos = sgs_lean_seed_combos( $manifest['combos'], false );
 
 		// Context array — manifest lives here (M-C3: NOT in wp_interactivity_state).
 		$context = array(
@@ -1367,7 +1367,11 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			// gallery = default combo's ordered { url, w, h, alt } image set.
 			// thumbsHidden = true when < 2 images (strip not shown for solo image).
 			// selectedThumb = 0 = first image highlighted on load (SSR-wipe-safe).
-			'gallery'             => $def['gallery'],
+			// The default gallery without the attachment ids: a card has no images map to look them up in.
+			'gallery'             => array_map(
+				static fn( $item ) => is_array( $item ) ? array_diff_key( $item, array( 'id' => true ) ) : $item,
+				$def['gallery']
+			),
 			'thumbsHidden'        => ( count( $def['gallery'] ) < 2 ),
 			'selectedThumb'       => 0,
 			'showGalleryThumbs'   => $attributes['showGalleryThumbs'] ?? false,

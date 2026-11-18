@@ -359,15 +359,59 @@ unset( $buybox_seed_combo );
 
 // FR-30-10 Step-10a: resolve gallery seed values from the default combo.
 // Mirrors product-card context L509-511 exactly.
+$uid                = 'sgs-bb-' . sgs_instance_scope_hash( $attributes, $block, wp_json_encode( $block->context ) );
 $buybox_def_gallery = isset( $def['gallery'] ) && is_array( $def['gallery'] ) ? $def['gallery'] : array();
 $buybox_img_src     = ! empty( $buybox_def_gallery[0]['url'] )
 	? $buybox_def_gallery[0]['url']
 	: ( '' !== $def['imageUrl'] ? $def['imageUrl'] : '' );
+
 // WCAG fallback: empty image alt falls back to the product name. applyPillSelection
 // never updates ctx.imageAlt, so this seeded value persists across swaps too.
-$buybox_img_alt       = ! empty( $buybox_def_gallery[0]['alt'] )
+$buybox_img_alt = ! empty( $buybox_def_gallery[0]['alt'] )
 	? $buybox_def_gallery[0]['alt']
 	: ( $product instanceof \WC_Product ? $product->get_name() : '' );
+
+// The main photo goes through the shared renderer with the attachment id, so it prints the file WordPress picks for the
+// size (`src`) and every resized copy (`srcset`), not the thumbnail the strip uses. The interactive store binds the
+// same two values (`context.imageSrc`, `context.imageSrcset`), so they are seeded from what was printed: a seed that
+// differed would replace the printed pair when the page wakes. An entry with no attachment id (an external image
+// address) prints its one file with no `srcset`, as before.
+$buybox_main_attrs = sgs_pcm_picture_attrs( $attributes, 'main' );
+if ( function_exists( 'is_singular' ) && is_singular( 'product' ) && $product instanceof \WC_Product && (int) get_queried_object_id() === (int) $product->get_id() && 'later' !== ( $attributes['mainLoading'] ?? '' ) ) {
+	// A product page's own buybox is its page's lead content (single-product.html prints it before the post content), so
+	// its main photo asks to load first unless the author chose Later.
+	$buybox_main_attrs['mainLoading'] = 'first';
+}
+$buybox_first = isset( $buybox_def_gallery[0] ) && is_array( $buybox_def_gallery[0] ) ? $buybox_def_gallery[0] : array();
+$buybox_main  = array(
+	'html'   => '',
+	'css'    => '',
+	'src'    => '',
+	'srcset' => '',
+);
+if ( '' !== (string) $buybox_img_src ) {
+	$buybox_main = sgs_pcm_main_image(
+		'main',
+		$buybox_main_attrs,
+		$uid . '-main',
+		array(
+			'url'    => (string) $buybox_img_src,
+			'width'  => (int) ( $buybox_first['w'] ?? 0 ),
+			'height' => (int) ( $buybox_first['h'] ?? 0 ),
+			'id'     => (int) ( $buybox_first['id'] ?? 0 ),
+			'alt'    => (string) $buybox_img_alt,
+		),
+		false,
+		array(
+			'block' => 'sgs/buybox',
+			'class' => 'product-card-img sgs-buybox__main-photo',
+			'bind'  => true,
+		)
+	);
+	if ( '' !== $buybox_main['src'] ) {
+		$buybox_img_src = $buybox_main['src'];
+	}
+}
 $buybox_thumbs_hidden = count( $buybox_def_gallery ) < 2;
 
 /*
@@ -435,7 +479,7 @@ $context = array(
 	'inStock'             => (bool) $def['inStock'],
 	// FR-30-10 Step-10a: real gallery seed (was neutral '' / '' / [] / true before).
 	'imageSrc'            => $buybox_img_src,
-	'imageSrcset'         => '',
+	'imageSrcset'         => $buybox_main['srcset'],
 	'imageAlt'            => $buybox_img_alt,
 	'pending'             => false,
 	'restNonce'           => wp_create_nonce( 'wp_rest' ),
@@ -551,7 +595,6 @@ if ( $add_to_cart_hover_lift ) {
 // attrs below — padding is off, so nothing else to route.
 // ---------------------------------------------------------------------------
 
-$uid      = 'sgs-bb-' . sgs_instance_scope_hash( $attributes, $block, wp_json_encode( $block->context ) );
 $root_sel = '.' . $uid . '.wp-block-sgs-buybox';
 
 $scoped_css = array();
@@ -1654,8 +1697,21 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 	if ( false === $buybox_island_json ) {
 		$buybox_island_json = '{}';
 	}
+
+	// The main photo's sharp files, keyed by attachment id: `src` and `srcset` of each photo any variation can show,
+	// stored once per photo however many variations share it. It is a second script beside the gallery island, outside
+	// the 24 KB context cap. A swap (variation change or thumbnail click) writes the entry's pair to the main photo
+	// together (product-card/photo-source.js). Printed only when the manifest has photos with attachment ids; a buy box
+	// without the script swaps to the thumbnail with an empty `srcset`, as before. Same JSON flags as above.
+	$buybox_images_json = ! empty( $manifest['images'] ) && is_array( $manifest['images'] )
+		? wp_json_encode( $manifest['images'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES )
+		: false;
+	echo "\t" . '<script type="application/json" class="sgs-buybox-galleries">' . $buybox_island_json . '</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode with JSON_HEX_TAG|AMP|APOS|QUOT neutralises all script-breakout / XSS vectors.
+	if ( false !== $buybox_images_json ) {
+		echo "\n\t" . '<script type="application/json" class="sgs-buybox-images">' . $buybox_images_json . '</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- same flags as the gallery island.
+	}
 	?>
-	<script type="application/json" class="sgs-buybox-galleries"><?php echo $buybox_island_json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode with JSON_HEX_TAG|AMP|APOS|QUOT neutralises all script-breakout / XSS vectors. ?></script>
+
 
 </div>
 <?php
