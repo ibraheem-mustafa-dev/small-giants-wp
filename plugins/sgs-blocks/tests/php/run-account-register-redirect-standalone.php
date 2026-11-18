@@ -271,7 +271,7 @@ EP::$active = null;
 
 $GLOBALS['hooks'] = array();
 \SGS\Blocks\Account_Extras::register();
-ok( in_array( array( array( '\SGS\Blocks\Account_Extras', 'view_order_gift_note' ), 20 ), $GLOBALS['hooks']['woocommerce_view_order'] ?? array(), true ), 'view_order_gift_note is hooked to woocommerce_view_order' );
+ok( in_array( array( array( 'SGS\Blocks\Account_Extras', 'view_order_gift_note' ), 20 ), $GLOBALS['hooks']['woocommerce_view_order'] ?? array(), true ), 'view_order_gift_note is hooked to woocommerce_view_order' );
 
 echo $failures ? "\n{$failures} FAILED\n" : "\nall passed\n";
 exit( $failures ? 1 : 0 );
