@@ -257,7 +257,7 @@ $sgs_card_typo_css .= sgs_typography_css_rule(
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_card_uid . ' .sgs-option-picker__pill', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $sgs_card_uid . ' .sgs-product-card__price-note, .' . $sgs_card_uid . ' .price-note', '', false, false, sgs_object_attr_keys( $block ) );
 // The card rings itself inside its own border (focus.css, `.sgs-focus--inset`): a border the colour of the ring would otherwise hide it.
-$sgs_card_focus_edge = sgs_border_edge_width( $attributes['borderWidth'] ?? null, $attributes['borderStyle'] ?? '' );
+$sgs_card_focus_edge = (string) ( sgs_border_element_decls( $attributes, '', '.' . $sgs_card_uid, array( 'colour_as_paint' => true, 'radius' => false, 'facts' => true ) )['facts']['edge'] ?? '' );
 if ( '' !== $sgs_card_focus_edge ) {
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . '{--sgs-focus-edge:' . $sgs_card_focus_edge . ';}';
 }

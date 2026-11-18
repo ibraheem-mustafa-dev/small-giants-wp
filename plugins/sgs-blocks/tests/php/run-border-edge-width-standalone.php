@@ -41,5 +41,10 @@ ok( 'max(1px,4px)' === sgs_border_edge_width( $box( '1px', '4px', '1px', '1px' )
 ok( 'max(2px,5px)' === sgs_border_edge_width( array( 'desktop' => $box( '2px' ), 'mobile' => $box( '5px' ) ), 'solid' ), 'per-device widths count every device' );
 ok( '2px' === sgs_border_edge_width( array( 'desktop' => $box( '2px' ), 'tablet' => $box( '2px' ) ), 'solid' ), 'equal per-device widths collapse to one length' );
 
+$facts = sgs_border_element_decls( array( 'borderWidth' => $box( '2px' ), 'borderStyle' => 'solid' ), '', '.card', array( 'colour_as_paint' => true, 'radius' => false, 'facts' => true ) )['facts'] ?? array();
+ok( '2px' === ( $facts['edge'] ?? null ), 'the border emitter hands the product card its edge through facts' );
+$none = sgs_border_element_decls( array( 'borderWidth' => $box( '2px' ), 'borderStyle' => 'none' ), '', '.card', array( 'colour_as_paint' => true, 'radius' => false, 'facts' => true ) )['facts'] ?? array();
+ok( '' === ( $none['edge'] ?? null ), 'a style of none leaves the edge empty' );
+
 echo $failures ? "\n{$failures} failure(s)\n" : "\nAll passed\n";
 exit( $failures ? 1 : 0 );

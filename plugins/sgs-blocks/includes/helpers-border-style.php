@@ -181,12 +181,12 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 	 *                           `facts.paint`; default false); `hover_colour` (true
 	 *                           adds the `hover_colour` entry to the result, default
 	 *                           false).
-	 * @return array{base: string[], tablet: string[], mobile: string[], hover: string[], rules: string[], facts?: array{width_top: string, style: string, paint: string}, hover_colour?: string}
+	 * @return array{base: string[], tablet: string[], mobile: string[], hover: string[], rules: string[], facts?: array{width_top: string, style: string, paint: string, edge: string}, hover_colour?: string}
 	 *         Declarations without trailing semicolons; tablet and mobile are for
 	 *         the caller's max-width 1023px and 767px queries; hover is for the
 	 *         caller's guarded hover rule; rules are complete CSS rules. `facts`
 	 *         (only with the `facts` option) is the resolved top width as a CSS
-	 *         length or '', the style keyword, and the background-paint
+	 *         length or '', the style keyword, the widest border as `sgs_border_edge_width()` resolves it (`edge`), and the background-paint
 	 *         declaration for the colour map's `base` and `gradient` ('' when
 	 *         none or the style is none). `hover_colour` (only with the
 	 *         `hover_colour` option) is the flat hover border colour as the
@@ -222,6 +222,7 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 		$out['mobile'] = $is_tiered ? sgs_border_box_decls( $width_raw['mobile'] ?? null, $style_raw ) : array();
 		$has_width     = $width_decls || $out['tablet'] || $out['mobile'];
 		$facts['has_width'] = (bool) $has_width;
+		$facts['edge']      = $is_none ? '' : sgs_border_edge_width( $width_raw, $style_raw );
 		$facts['has_ring']  = false;
 		$facts_box     = is_array( $width_box ) ? $width_box : array();
 		if ( is_scalar( $facts_box['top'] ?? null ) ) {
