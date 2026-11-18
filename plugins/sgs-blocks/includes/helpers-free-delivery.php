@@ -62,10 +62,12 @@ if ( ! function_exists( 'sgs_delivery_costs_nothing' ) ) {
 	 * Whether the basket's delivery already costs nothing, whatever the basket total.
 	 *
 	 * True only when the basket needs shipping, at least one package has rates, and in every package the chosen rate (the
-	 * cheapest available one while none is chosen) costs 0. Anything unknown (no rates yet) is false.
+	 * cheapest available one while none is chosen) costs 0. Anything unknown (no rates yet) is false. While no rate is
+	 * chosen a collection option (WooCommerce's `local_pickup` and `pickup_location` methods) is left out of the cheapest
+	 * rate, because collecting an order is not delivery; a package offering only collection counts its rates as they are.
 	 *
 	 * @param bool                     $needs_shipping Whether the basket needs shipping.
-	 * @param array<int,mixed>         $packages       Shipping packages; each has a `rates` array of objects with `get_cost()`.
+	 * @param array<int,mixed>         $packages       Shipping packages; each has a `rates` array of objects with `get_cost()` and, on a real rate, `get_method_id()`.
 	 * @param array<int|string,string> $chosen         Chosen rate ids, indexed by package.
 	 * @return bool
 	 */
@@ -82,11 +84,16 @@ if ( ! function_exists( 'sgs_delivery_costs_nothing' ) ) {
 			if ( '' !== $chosen_id && isset( $rates[ $chosen_id ] ) ) {
 				$cost = (float) $rates[ $chosen_id ]->get_cost();
 			} else {
-				$costs = array();
+				$costs    = array();
+				$delivery = array();
 				foreach ( $rates as $rate ) {
 					$costs[] = (float) $rate->get_cost();
+					$method  = method_exists( $rate, 'get_method_id' ) ? (string) $rate->get_method_id() : '';
+					if ( ! in_array( $method, array( 'local_pickup', 'pickup_location' ), true ) ) {
+						$delivery[] = (float) $rate->get_cost();
+					}
 				}
-				$cost = min( $costs );
+				$cost = min( array() !== $delivery ? $delivery : $costs );
 			}
 			if ( $cost > 0.0 ) {
 				return false;

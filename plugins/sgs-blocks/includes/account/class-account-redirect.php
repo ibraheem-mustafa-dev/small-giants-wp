@@ -118,7 +118,14 @@ final class Account_Redirect {
 		if ( self::same_page( $request, $sign_in ) ) {
 			return null;
 		}
-		$back = ( 0 === strpos( $request, '/' ) && 0 !== strpos( $request, '//' ) ) ? \home_url( $request ) : $request;
+		$back = $request;
+		if ( 0 === strpos( $request, '/' ) && 0 !== strpos( $request, '//' ) ) {
+			// The request path starts at the host's root, so it already holds the folder of a site installed in a
+			// subdirectory: it joins the site's origin, where home_url() would repeat the folder.
+			$home   = (array) \wp_parse_url( \home_url() );
+			$origin = ( $home['scheme'] ?? 'https' ) . '://' . ( $home['host'] ?? '' ) . ( isset( $home['port'] ) ? ':' . $home['port'] : '' );
+			$back   = $origin . $request;
+		}
 		return $sign_in . ( false === strpos( $sign_in, '?' ) ? '?' : '&' ) . 'redirect_to=' . rawurlencode( $back );
 	}
 

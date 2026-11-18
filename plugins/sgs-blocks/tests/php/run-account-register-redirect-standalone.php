@@ -18,7 +18,7 @@ function esc_html__( $t, $d = null ) { return $t; }
 function wp_unslash( $v ) { return $v; }
 function wp_verify_nonce( $nonce, $action ) { return 'good-nonce' === $nonce && 'woocommerce-register' === $action ? 1 : false; }
 function update_user_meta( $id, $k, $v ) { $GLOBALS['meta'][ $id ][ $k ] = $v; return true; }
-function home_url( $path = '' ) { return 'https://example.test' . $path; }
+function home_url( $path = '' ) { return ( $GLOBALS['sgs_test_home'] ?? 'https://example.test' ) . $path; }
 function wp_parse_url( $url, $component = -1 ) { return parse_url( $url, $component ); }
 function wc_get_page_permalink( $p ) { return 'https://example.test/my-account/'; }
 function wp_login_url() { return 'https://example.test/wp-login.php'; }
@@ -175,6 +175,9 @@ foreach ( array( 'is_rest', 'is_ajax', 'is_cron', 'is_admin', 'is_preview', 'has
 ok( null === RD::decide_signed_out( array( 'method' => 'POST' ) + $so ), '8 a POST: no redirect' );
 ok( 'https://example.test/sign-in/?a=1&redirect_to=' . rawurlencode( 'https://example.test/my-account/' ) === RD::decide_signed_out( array( 'sign_in_url' => 'https://example.test/sign-in/?a=1' ) + $so ), '8 sign-in address with a query: redirect_to appended' );
 ok( 'https://example.test/sign-in/?redirect_to=' . rawurlencode( 'https://example.test/my-account/?x=1' ) === RD::decide_signed_out( array( 'request_url' => '/my-account/?x=1' ) + $so ), '8 the visitor query comes back through redirect_to' );
+$GLOBALS['sgs_test_home'] = 'https://example.test/shop';
+ok( 'https://example.test/shop/sign-in/?redirect_to=' . rawurlencode( 'https://example.test/shop/my-account/' ) === RD::decide_signed_out( array( 'request_url' => '/shop/my-account/', 'sign_in_url' => 'https://example.test/shop/sign-in/' ) + $so ), '8 a site in a subdirectory: the folder appears once in redirect_to' );
+unset( $GLOBALS['sgs_test_home'] );
 
 // 9) Finding the sign-in page in parsed blocks: only a card-view block with a sign-in address counts.
 $blk = static fn( array $a ) => array( array( 'blockName' => 'sgs/account', 'attrs' => $a, 'innerBlocks' => array() ) );

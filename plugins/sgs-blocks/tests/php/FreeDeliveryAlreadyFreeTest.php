@@ -102,4 +102,38 @@ final class FreeDeliveryAlreadyFreeTest extends TestCase {
 		);
 		$this->assertFalse( sgs_delivery_costs_nothing( true, $packages, array( 'a', 'b' ) ) );
 	}
+
+	/**
+	 * A collection option is not delivery: while no rate is chosen, a free pickup beside a paid delivery does not make
+	 * delivery free. Chosen, it does; and a package that offers only collection counts it.
+	 */
+	public function test_a_free_collection_option_is_not_free_delivery_until_it_is_chosen(): void {
+		$pickup   = new class() {
+			public function get_cost(): string {
+				return '0';
+			}
+			public function get_method_id(): string {
+				return 'local_pickup';
+			}
+		};
+		$paid     = new class() {
+			public function get_cost(): string {
+				return '3.95';
+			}
+			public function get_method_id(): string {
+				return 'flat_rate';
+			}
+		};
+		$packages = array(
+			array(
+				'rates' => array(
+					'local_pickup:1' => $pickup,
+					'flat_rate:2'    => $paid,
+				),
+			),
+		);
+		$this->assertFalse( sgs_delivery_costs_nothing( true, $packages, array() ) );
+		$this->assertTrue( sgs_delivery_costs_nothing( true, $packages, array( 'local_pickup:1' ) ) );
+		$this->assertTrue( sgs_delivery_costs_nothing( true, array( array( 'rates' => array( 'local_pickup:1' => $pickup ) ) ), array() ) );
+	}
 }
