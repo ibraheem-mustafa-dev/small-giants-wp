@@ -37,6 +37,10 @@ Rejected, with the reason: blanking the theme's files behind a freeze of each si
 5. A read-only local copy of `eye-care-test` for the render check (recommended; it brings that site's customer names and emails onto this PC, mail stays blocked).
 6. Eye Care's draft as the second shop for the proof, cloned onto a lab copy only, never `eye-care-test` (recommended).
 
+## Parked, recorded once
+
+muslimsinconstruction.uk specifics (Bean, 2026-11-18: do not raise again until the general cloning work is settled): the current site runs WooCommerce with no live orders; what must carry over is the bookings and event data held by the MEC plugin. No fallback of starting its shop surfaces from Mama's: they are cloned from blank from its own draft. Button sizes: a preset takes the size most of its family share, and a button that differs keeps its difference; no separate size system.
+
 ## Out of scope
 
 Regular pages and the route's general mechanisms (the parallel route session, `.claude/prompts/2026-11-18-route-regular-pages.md`: lab safety for route runs, the applier, the residual Custom CSS writer, the "no setting" report fix); header, footer, drawer, mega, form and modal surfaces (already one container block each); WooCommerce's forms rebuilt; subscriptions; the shop's emails; any write to `eye-care-test`.
@@ -123,7 +127,7 @@ Bean rules on the six decisions. Then `git worktree add --detach E:\sgs-tmp\wt-r
 
 ### Task 8: A setting for every look that would be used a second time
 - Why: Bean's ruling on decision 2. Read first: `.claude/reports/2026-11-18-template-rework/by-missing-setting.md` and the verdict per group Bean approved (`setting-verdicts.md` beside it), Task 4's report where it exists
-- Changes: rows and columns for every group marked "convert"; site-wide parts (notice, field, primary and secondary button) as snapshot tokens where one look serves every block; the class D and F rules of `by-missing-setting.md` each as a fix or an off-by-default option
+- Changes: first prove each group on a scratch copy, because the ranked list in `by-missing-setting.md` is one helper's sorting made without rendering a page, and the only class tested so far held for 5 of 11 groups (`class-a-results.md`): run `E:\sgs-tmp	emplate-rework\class-a\detector\check-custom-css-has-setting.py` (it already flags 71 confirmed and 57 likely declarations a setting covers), try the existing setting, and build a new one only for what is left and is aimed at the right part (a setting that restyles every tick box label where the design changed two brings the CSS back). Then rows and columns for every group marked "convert"; site-wide parts (notice, field, primary and secondary button) as snapshot tokens where one look serves every block; the class D and F rules of `by-missing-setting.md` each as a fix or an off-by-default option
 - Touches: plugin, theme, batched reseeds, Spec 27, Spec 32
 - Done when: on a scratch copy of `local-mamas` every rule of a "convert" group is replaced by its setting and deleted with no difference in the before-and-after comparison, and what remains is only the groups marked "one-off" or "not worth a rebuild"
 - Depends on: 7; Bean's approval of the verdicts
