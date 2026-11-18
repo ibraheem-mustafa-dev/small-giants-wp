@@ -127,7 +127,7 @@ $cases = array(
 	array( 'ordersRowTextDecoration', '@r .sgs-account__order,@r .sgs-account__order:hover,@r .sgs-account__order *', array( 'text-decoration:none;' ) ),
 	array( 'ordersEmptyButtonMinHeight', '@r .sgs-account__orders-empty-actions .sgs-button', array( 'min-height:52px;' ) ),
 	array( 'ordersEmptyButtonPadding', '@r .sgs-account__orders-empty-actions .sgs-button', array( 'padding-right:26px;', 'padding-left:26px;' ) ),
-	array( 'tabHeadingMarginBottom', '@r .sgs-account__tab-head .sgs-account__tab-heading', array( 'margin-bottom:0px;' ) ),
+	array( 'tabHeadingMarginBottom', '@r .sgs-account__tab-heading,@r .sgs-account__tab-head .sgs-account__tab-heading', array( 'margin-bottom:0px;' ) ),
 	array( 'signedOutMaxWidth', '@root:not(:has(nav.woocommerce-MyAccount-navigation))', array( 'max-width:996px;' ) ),
 );
 $typos = array(
