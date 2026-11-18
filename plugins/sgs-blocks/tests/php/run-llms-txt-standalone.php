@@ -1,6 +1,6 @@
 <?php
 /**
- * Standalone runner: llms.txt is off until a site switches it on, and never lists a page that is not published.
+ * Standalone runner: llms.txt is on until a site switches it off, and never lists a page that is not published.
  *
  * Run with: php plugins/sgs-blocks/tests/php/run-llms-txt-standalone.php
  *
@@ -54,16 +54,17 @@ namespace {
 		$failures += $ok ? 0 : 1;
 	};
 
-	// Off by default.
-	$check( 'off when the option was never saved', false === Llms_Txt::is_enabled() );
+	// On by default; the option or the filter switches it off.
+	$check( 'on when the option was never saved', true === Llms_Txt::is_enabled() );
 	$GLOBALS['t']['options']['sgs_llms_txt_enabled'] = '0';
 	$check( 'off when the option is 0', false === Llms_Txt::is_enabled() );
 	$GLOBALS['t']['options']['sgs_llms_txt_enabled'] = '1';
 	$check( 'on when the option is 1', true === Llms_Txt::is_enabled() );
 	unset( $GLOBALS['t']['options']['sgs_llms_txt_enabled'] );
-	$GLOBALS['t']['filters']['sgs_llms_txt_enabled'] = array( static fn() => true );
-	$check( 'on when the filter says so', true === Llms_Txt::is_enabled() );
+	$GLOBALS['t']['filters']['sgs_llms_txt_enabled'] = array( static fn() => false );
+	$check( 'off when the filter says so, whatever the option', false === Llms_Txt::is_enabled() );
 	$GLOBALS['t']['filters'] = array();
+	$check( 'on again once the filter is gone', true === Llms_Txt::is_enabled() );
 
 	// Pages that are not published are not listed.
 	page( 103, 'terms', 'publish' );

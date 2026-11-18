@@ -12,7 +12,7 @@
  * Content-Type: text/plain; charset=utf-8 (NOT text/markdown).
  * X-Robots-Tag: noindex on both files. UTF-8, no BOM.
  *
- * Off by default; {@see self::is_enabled()} says how a site switches it on.
+ * On by default; {@see self::is_enabled()} says how a site switches it off.
  *
  * SEC-9 detect-and-defer: if Yoast SEO (which can generate llms.txt from
  * version 25.1) or RankMath is active we do NOT serve — mirror of the pattern
@@ -78,16 +78,16 @@ final class Llms_Txt {
 	}
 
 	/**
-	 * Whether the site has switched the llms.txt files on.
+	 * Whether the llms.txt files are served.
 	 *
-	 * Off by default: the files are not part of what search engines or AI search read, and a stale one lists dead
-	 * links. A site turns them on with the `sgs_llms_txt_enabled` option set to `1` (`wp option update sgs_llms_txt_enabled 1`)
-	 * or by returning true from the `sgs_llms_txt_enabled` filter. An option that was never saved means off.
+	 * On by default. A site turns them off with the `sgs_llms_txt_enabled` option set to `0`
+	 * (`wp option update sgs_llms_txt_enabled 0`) or by returning false from the `sgs_llms_txt_enabled` filter. An option
+	 * that was never saved means on.
 	 *
 	 * @return bool
 	 */
 	public static function is_enabled(): bool {
-		return (bool) \apply_filters( 'sgs_llms_txt_enabled', '1' === (string) \get_option( 'sgs_llms_txt_enabled', '0' ) );
+		return (bool) \apply_filters( 'sgs_llms_txt_enabled', '0' !== (string) \get_option( 'sgs_llms_txt_enabled', '1' ) );
 	}
 
 	// ── Request intercept ────────────────────────────────────────────────────
@@ -119,7 +119,7 @@ final class Llms_Txt {
 			return;
 		}
 
-		// Off unless the site switched it on (see is_enabled()).
+		// Off only when the site switched it off (see is_enabled()).
 		if ( ! self::is_enabled() ) {
 			return;
 		}
