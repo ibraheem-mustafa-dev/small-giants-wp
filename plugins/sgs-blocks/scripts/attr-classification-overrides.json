@@ -8396,6 +8396,8 @@
 		{"slug": "sgs/account", "attr": "orderStepPlacedNote", "fields": {"role": "text-content"}, "_reason": "2026-11-18, order page step sub-lines: Optional sub-line under the Placed step on the order page; {date} is the order's placed date. Empty prints nothing."},
 		{"slug": "sgs/account", "attr": "orderStepProcessingNote", "fields": {"role": "text-content"}, "_reason": "2026-11-18, order page step sub-lines: Optional sub-line under the Processing step on the order page; {date} is the order's placed date. Empty prints nothing."},
 		{"slug": "sgs/account", "attr": "orderStepDispatchedNote", "fields": {"role": "text-content"}, "_reason": "2026-11-18, order page step sub-lines: Optional sub-line under the Dispatched (or Ready) step on the order page; {date} is the order's placed date. Empty prints nothing."},
-		{"slug": "sgs/account", "attr": "orderStepDeliveredNote", "fields": {"role": "text-content"}, "_reason": "2026-11-18, order page step sub-lines: Optional sub-line under the Delivered (or Collected) step on the order page; {date} is the order's placed date. Empty prints nothing."}
+		{"slug": "sgs/account", "attr": "orderStepDeliveredNote", "fields": {"role": "text-content"}, "_reason": "2026-11-18, order page step sub-lines: Optional sub-line under the Delivered (or Collected) step on the order page; {date} is the order's placed date. Empty prints nothing."},
+		{"slug": "sgs/account", "attr": "orderDetailItemsHeading", "fields": {"role": "text-content"}, "_reason": "2026-11-18, order page items card: Optional heading above the order page's item rows. Empty prints none."},
+		{"slug": "sgs/account", "attr": "orderDetailItemQtyFirst", "fields": {"role": "boolean-visibility"}, "_reason": "2026-11-18, order page items card: Prints each item's quantity before its name (2 × Taster Trio). Off prints the name alone."}
 	]
 }

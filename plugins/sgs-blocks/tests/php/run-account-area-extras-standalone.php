@@ -126,5 +126,13 @@ ok( 'Sat 7 Nov' === $steps[0]['note'] && 'Left by <b>door' === $steps[3]['note']
 $html = sgs_account_order_detail_html( $o, $labels + array( 'orderDetailProgress' => true, 'orderStepPlacedNote' => '{date}', 'orderStepDeliveredNote' => 'Left by <b>door' ) );
 ok( str_contains( $html, '<span class="sgs-account__od-step-note">Sat 7 Nov</span>' ) && str_contains( $html, 'Left by &lt;b&gt;door' ) && 2 === substr_count( $html, 'od-step-note' ), '2 notes: printed under their steps, escaped, only where set' );
 
+// 3) Order page items card: no heading and no quantity by default; both behind settings.
+$o    = new Fake_Order();
+$base = sgs_account_order_items_html( $o, array() );
+ok( ! str_contains( $base, 'od-items-title' ) && ! str_contains( $base, 'od-item-qty' ) && ! str_contains( $base, 'qty-first' ), '3 items: unchanged by default' );
+$html = sgs_account_order_items_html( $o, array( 'orderDetailItemsHeading' => 'What you <i>ordered', 'orderDetailItemQtyFirst' => true ) );
+ok( str_contains( $html, '<div class="sgs-account__od-items-title">What you &lt;i&gt;ordered</div>' ), '3 items: heading above the rows, escaped' );
+ok( str_contains( $html, '<span class="sgs-account__od-item-qty">2 &times; </span>Cake' ) && str_contains( $html, 'od-items--qty-first' ), '3 items: quantity before the name, class set' );
+
 echo $failures ? "\n$failures FAILED\n" : "\nAll passed\n";
 exit( $failures ? 1 : 0 );

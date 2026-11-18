@@ -62,6 +62,8 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 					<TextField { ...p } name="orderDetailTitle" label={ __( 'Heading ({order} = order number)', 'sgs-blocks' ) } />
 					<TextField { ...p } name="orderDetailPlacedText" label={ __( 'Line under the heading ({date}, {method})', 'sgs-blocks' ) } />
 					<Toggle { ...p } name="orderDetailItems" label={ __( 'Item rows', 'sgs-blocks' ) } />
+					<TextField { ...p } name="orderDetailItemsHeading" label={ __( 'Heading above the item rows', 'sgs-blocks' ) } help={ __( 'Empty prints none.', 'sgs-blocks' ) } />
+					<Toggle { ...p } name="orderDetailItemQtyFirst" label={ __( 'Quantity before each name', 'sgs-blocks' ) } help={ __( 'Prints 2 × Taster Trio.', 'sgs-blocks' ) } />
 					<Toggle { ...p } name="orderDetailBoxes" label={ __( 'Address, payment and total boxes', 'sgs-blocks' ) } />
 				</>
 			) }

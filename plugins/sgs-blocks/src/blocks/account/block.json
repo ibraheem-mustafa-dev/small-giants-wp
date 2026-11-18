@@ -5061,6 +5061,16 @@
 				"default": "",
 				"description": "Optional sub-line under the Delivered (or Collected) step on the order page; {date} is the order's placed date. Empty prints nothing."
 			},
+			"orderDetailItemsHeading": {
+				"type": "string",
+				"default": "",
+				"description": "Optional heading above the order page's item rows. Empty prints none."
+			},
+			"orderDetailItemQtyFirst": {
+				"type": "boolean",
+				"default": false,
+				"description": "Prints each item's quantity before its name (2 × Taster Trio). Off prints the name alone."
+			},
 			"loginLinkPlacement": {
 				"type": "string",
 				"enum": [
