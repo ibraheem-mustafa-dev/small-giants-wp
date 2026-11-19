@@ -70,6 +70,12 @@ test( 'MUST FAIL WITHOUT THE UNITLESS FORM: a line height declared as a ratio sw
 	assert.deepEqual( r.writes?.map( ( x ) => [ x.attr, x.value ] ), [ [ 'lineHeight', { desktop: 1.188 } ], [ 'lineHeightUnit', '' ] ], JSON.stringify( r ) );
 } );
 
+test( 'MUST FAIL WITHOUT THE WIDTH: a side with a style and no width draws nothing, so the one painted side\'s style holds', () => {
+	// `border: 0 solid` with a 2px dashed bottom: three sides carry a style and no width.
+	const r = resolve( { block: 'sgs/box', slot: '', prop: 'border-bottom-style', perWidth: perW( 'dashed' ), siblings: sides( 'solid', 'solid', 'dashed', 'solid', [ '0px', '0px', '2px', '0px' ] ) }, ctx );
+	assert.deepEqual( r.writes?.map( ( x ) => [ x.attr, x.value ] ), [ [ 'borderStyle', 'dashed' ] ], JSON.stringify( r ) );
+} );
+
 test( 'negative control: two painted sides of different styles stay a shape gap', () => {
 	const r = resolve( { block: 'sgs/box', slot: '', prop: 'border-bottom-style', perWidth: perW( 'solid' ), siblings: sides( 'dashed', 'none', 'solid', 'none', [ '2px', '0px', '2px', '0px' ] ) }, ctx );
 	assert.equal( r.gap, 'shape' );
