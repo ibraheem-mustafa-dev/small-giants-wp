@@ -514,6 +514,9 @@
 			},
 			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays; the wrapper stacking two or more items with no picture inside is the hero's content column, the draft element of contentSetting's calibrated slot"
 		},
+		"heroBackdrop": {
+			"reason": "a picture the draft lays behind the hero's content (an absolutely placed layer covering the hero's whole box, with no words of its own) is the hero's background picture, read at the hero's background setting; the hero stays a full-width hero and no split media part is read from it (lib/skeleton-hero-background.mjs::behindContent)"
+		},
 		"marqueeFrame": {
 			"reason": "the frame that only clips or fades a marquee track goes: sgs/brand-strip draws its own overflow, and a masked edge fade belongs to its marquee motion (Bean, 2026-10-13)"
 		},

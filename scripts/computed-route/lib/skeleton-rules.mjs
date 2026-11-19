@@ -25,6 +25,7 @@ import { widgetModel } from './skeleton-widgets.mjs';
 import { keptSvg } from './fill-icon.mjs';
 import { draftTokenLookup, handoffOf, resolvedOrRaw } from './draft-tokens.mjs';
 import { heroSplitOrder, heroMediaAlignment } from './skeleton-hero-order.mjs';
+import { behindContent } from './skeleton-hero-background.mjs';
 import { openerTargets, controlWrites, openedBy, openerAttributes } from './skeleton-openers.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
@@ -947,7 +948,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( 1 !== e.depth && ! ( parent && wrapperOfPage( parent ) && m.blockKids( parent ).length >= 2 && m.blockKids( parent ).find( holdsH1 ) === e ) ) {
 				return null;
 			}
-			const pictures = desc( e ).filter( isMedia );
+			// A picture laid behind the content (lib/skeleton-hero-background.mjs) is the hero's background: only a picture beside
+			// the content makes it the split hero.
+			const backdrop = desc( e ).filter( isMedia ).filter( ( p ) => behindContent( { hero: e, picture: p, m, desc } ) );
+			const pictures = desc( e ).filter( isMedia ).filter( ( p ) => ! backdrop.includes( p ) );
 			const media = pictures.length > 0;
 			// A split hero's order per device is the draft's (lib/skeleton-hero-order.mjs): its picture against every worded
 			// element outside a picture, at each device's width.
@@ -969,7 +973,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			for ( let up = picture ? m.byKey[ picture.parentKey ] : null; up && up !== e && 1 === m.blockKids( up ).length; up = m.byKey[ up.parentKey ] ) {
 				Object.keys( declared( up, tokens ) ).some( ( p ) => framing.has( p ) ) && ( frame = up );
 			}
-			const verdict = v( 'hero', { block: R.hero?.block, attributes, ...( frame ? { mediaFrame: frame.key } : {} ), ...( media ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s split media setting' } } : {} ) } );
+			const verdict = v( 'hero', { block: R.hero?.block, attributes, ...( frame ? { mediaFrame: frame.key } : {} ), ...( media ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s split media setting' } } : backdrop.length ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s background setting' } } : {} ) } );
 			verdict && order.problems.length && ( verdict.reason = `${ verdict.reason }; ${ order.problems.join( '; ' ) }` );
 			return verdict;
 		},
@@ -995,7 +999,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return null;
 			}
 			if ( isMedia( e ) ) {
-				return v( 'heroInner', { action: 'absorbed', into: hero.key } );
+				// A picture laid behind the hero's content is its background (rules.heroBackdrop), not a part of its split media.
+				return behindContent( { hero: m.byKey[ hero.key ], picture: e, m, desc } ) ? v( 'heroBackdrop', { action: 'absorbed', into: hero.key } ) : v( 'heroInner', { action: 'absorbed', into: hero.key } );
 			}
 			// A wrapper laying two or more items side by side is a row (a button group, a row of labels), not a layout
 			// wrapper: it stays, and the scoring proposes it (the multi-button for buttons, a container for labels).

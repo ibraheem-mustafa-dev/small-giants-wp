@@ -162,7 +162,20 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 			snap.emptyPictures = [ el, ...el.querySelectorAll( '*' ) ]
 				.filter( ( n ) => n.localName.includes( '-' ) && n.shadowRoot && n.shadowRoot.querySelector( 'img' ) && ! shadowImgs( n ).some( ( i ) => '' !== imgSrc( i ) ) && shown( n ) )
 				.map( ( n ) => ( { id: n.id || null, placeholder: n.getAttribute( 'placeholder' ) || null } ) );
-			const read = ( n ) => {
+			// The outermost absolutely placed wrapper between a picture and this element that covers this element's whole box and
+			// holds no words (a parallax wrapper sized past the hero): the picture is laid behind the element's content through it.
+			const coverOf = ( n ) => {
+				const er = el.getBoundingClientRect();
+				let wrap = null;
+				for ( let a = n.parentElement; a && a !== el; a = a.parentElement ) {
+					const r = a.getBoundingClientRect();
+					if ( 'absolute' === getComputedStyle( a ).position && r.width >= er.width - 1 && r.height >= er.height - 1 && '' === ( a.textContent || '' ).trim() ) {
+						wrap = a;
+					}
+				}
+				return wrap;
+			};
+			const readOne = ( n ) => {
 				const c = getComputedStyle( n );
 				const par = n.parentElement;
 				const box = n.getBoundingClientRect();
@@ -183,6 +196,17 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 						hasText: '' !== ( n.textContent || '' ).trim(), offsets: [ c.top, c.right, c.bottom, c.left ].some( ( v ) => 'auto' !== v ),
 					},
 				};
+			};
+			// A picture laid behind this element's content through a covering wrapper reads as that wrapper's placement (the hero's
+			// background), not as the static picture inside it.
+			const read = ( n ) => {
+				const out = readOne( n );
+				const cover = n === el ? null : coverOf( n );
+				if ( ! cover ) {
+					return out;
+				}
+				const sibs = [ ...cover.parentElement.children ].filter( ( x ) => x !== cover && 'none' !== getComputedStyle( x ).display );
+				return { ...out, element: { computed: { position: 'absolute', inset: true }, fullBox: true, behindSiblings: sibs.some( ( x ) => 4 & cover.compareDocumentPosition( x ) ), hasSiblingContent: sibs.length > 0, hasText: false, offsets: true } };
 			};
 			// A wordless element with no child element that paints one picture as its own background
 			// (`<div style="background-image:url(card.jpg)">`, a card's photo drawn with CSS) shows that picture: it is the

@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/skeleton-hero-background.mjs",
+		"find": "b.w >= area.w - 1 && b.h >= area.h - 1",
+		"replace": "b.h >= area.h - 1",
+		"why": "an absolute panel on one side as tall as the hero would be its background"
+	},
+	{
+		"file": "lib/skeleton-hero-background.mjs",
+		"find": "'absolute' === up.position?.[ w ] && b",
+		"replace": "b",
+		"why": "a picture in the page flow as wide as the hero would be its background"
+	},
+	{
+		"file": "lib/skeleton-hero-background.mjs",
+		"find": "! desc( up ).some( ( k ) => m.words( k ) )",
+		"replace": "true",
+		"why": "a covering wrapper holding words (content) would be a backdrop"
+	},
+	{
+		"file": "lib/skeleton-hero-background.mjs",
+		"find": "for ( let up = picture; up && up !== hero; up = m.byKey[ up.parentKey ] ) {",
+		"replace": "for ( let up = picture; up; up = m.byKey[ up.parentKey ] ) {",
+		"why": "the walk would pass the hero and look at the page above it"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": ".filter( ( p ) => ! backdrop.includes( p ) );",
+		"replace": ";",
+		"why": "a backdrop picture would still make the hero the split hero"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return behindContent( { hero: m.byKey[ hero.key ], picture: e, m, desc } ) ? v( 'heroBackdrop', { action: 'absorbed', into: hero.key } ) : v( 'heroInner', { action: 'absorbed', into: hero.key } );",
+		"replace": "return v( 'heroInner', { action: 'absorbed', into: hero.key } );",
+		"why": "a backdrop picture would be read as the split-media part's slot"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "} : backdrop.length ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\\'s background setting' } } : {} ) } );",
+		"replace": "} : {} ) } );",
+		"why": "the page editor would not be told where to choose the hero's background picture"
+	}
+]

@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "r.width >= er.width - 1 && r.height >= er.height - 1 && '' === ( a.textContent || '' ).trim()",
+		"replace": "r.width >= er.width - 1 && r.height >= er.height - 1",
+		"why": "a covering wrapper that holds words would be a backdrop"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "'absolute' === getComputedStyle( a ).position && r.width",
+		"replace": "r.width",
+		"why": "an in-flow wrapper as wide as the element would be a backdrop"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "const cover = n === el ? null : coverOf( n );",
+		"replace": "const cover = null;",
+		"why": "the picture under a covering wrapper would read as a static image, the split media (the 2026-11-19 hero)"
+	}
+]
