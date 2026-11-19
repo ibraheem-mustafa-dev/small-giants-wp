@@ -440,16 +440,18 @@ function foldFamily( { prop, perWidth, siblings = {}, row, attr, tiers } ) {
 		}
 		const whole = siblings[ fam.short ]?.[ w ] ? unfoldValue( fam.short, siblings[ fam.short ][ w ] ) : null;
 		const parts = Object.fromEntries( fam.members.map( ( m ) => [ m, m === own ? value : siblings[ m ]?.[ w ] ?? whole?.[ m ] ] ) );
+		// The draft's border width beside each style side at this width (a side with no stated width is judged by its style).
+		const widths = 'border-style' === fam.short ? Object.fromEntries( fam.members.map( ( m ) => [ m, parseFloat( siblings[ m.replace( /-style$/, '-width' ) ]?.[ w ] ) ] ) ) : {};
 		const fold = foldParts( fam.short, parts );
 		if ( shape ) {
 			if ( fold.missing.length || Object.values( parts ).some( ( v ) => /\s/.test( String( v ).trim() ) ) ) {
 				return { gap: 'shape', detail: fold.missing.length ? `${ attr } needs all ${ fam.members.length } corners and the draft states ${ fam.members.length - fold.missing.length } at ${ w }` : `${ attr } cannot hold an elliptical corner (${ Object.values( parts ).join( ', ' ) } at ${ w })` };
 			}
 			out[ tier ] = fold.css;
-		} else if ( ! fold.equal && drawnStyle( fam.short, parts ) ) {
-			// A side whose border style is none or hidden draws no border (its computed width is 0, which the block's per-side
-			// width writes), so one style for every side draws the draft when the drawn sides agree.
-			out[ tier ] = drawnStyle( fam.short, parts );
+		} else if ( ! fold.equal && drawnStyle( fam.short, parts, widths ) ) {
+			// A side whose border style is none or hidden, or whose width is 0, draws no border (the block's per-side width
+			// keeps it bare), so one style for every side draws the draft when the drawn sides agree.
+			out[ tier ] = drawnStyle( fam.short, parts, widths );
 		} else if ( ! fold.equal ) {
 			return { gap: 'shape', detail: `${ attr } holds one value for every ${ 'corner' === fam.kind ? 'corner' : ( 'side' === fam.kind ? 'side' : fam.short ) }; draft has ${ fam.members.map( ( m ) => `${ m } ${ parts[ m ] ?? '(unstated)' }` ).join( ', ' ) } at ${ w }` };
 		}
@@ -457,14 +459,16 @@ function foldFamily( { prop, perWidth, siblings = {}, row, attr, tiers } ) {
 	return { tiers: out };
 }
 
-// The one border style the drawn sides share, when at least one side draws (its style is neither none nor hidden) and the
-// drawn sides agree (an unstated side is a style of its own, so it never agrees); null otherwise, and for any family but
-// border-style.
-export function drawnStyle( short, parts ) {
+// The one border style the drawn sides share, when at least one side draws and the drawn sides agree; null otherwise, and
+// for any family but border-style. A side draws when its style is neither none nor hidden and its width, where `widths`
+// ({ member: px }) states one, is above 0 (`border: 0 solid` beside a 2px dashed bottom draws the bottom only). An unstated
+// side is a style of its own, so it never agrees.
+export function drawnStyle( short, parts, widths = {} ) {
 	if ( 'border-style' !== short ) {
 		return null;
 	}
-	const drawn = [ ...new Set( Object.values( parts ).map( ( v ) => String( v ).trim() ).filter( ( v ) => ! /^(none|hidden)$/.test( v ) ) ) ];
+	const draws = ( [ m, v ] ) => ! /^(none|hidden)$/.test( String( v ).trim() ) && 0 !== widths[ m ];
+	const drawn = [ ...new Set( Object.entries( parts ).filter( draws ).map( ( [ , v ] ) => String( v ).trim() ) ) ];
 	return 1 === drawn.length ? drawn[ 0 ] : null;
 }
 
@@ -639,7 +643,7 @@ export function resolve( input, ctx ) {
 	const done = ( out ) => ( out.writes ? { ...out, ...( fluid ? { fluid } : {} ), ...( instrumentDebt ? { instrumentDebt } : {} ) } : out );
 	const tierPx = ( t ) => fontPx[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] || 16;
 	// The draft element's layout context at a tier's width (else the one value every read width agrees on).
-	const layoutAt = ( t ) => Object.fromEntries( [ 'display', 'flex-wrap', 'flex-direction' ].map( ( p ) => {
+	const layoutAt = ( t ) => Object.fromEntries( [ 'display', 'flex-wrap', 'flex-direction', 'direction' ].map( ( p ) => {
 		const pw = input.siblings?.[ p ] || {};
 		const all = [ ...new Set( Object.values( pw ) ) ];
 		return [ p, pw[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] ?? ( 1 === all.length ? all[ 0 ] : undefined ) ];
