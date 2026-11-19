@@ -102,7 +102,7 @@ export async function loadSurfaces( { repo, client, only = null, draftOrigin } )
 		const cfg = ( await import( pathToFileURL( config ).href ) ).default;
 		const origin = readJson( path.join( build, `${ name }.origin.json` ), {} );
 		const { pairs, refused } = pairsReport( cfg, origin, readJson( path.join( build, `${ name }.pairs.json` ) ) );
-		out.push( { name, postId: Number( postId ), shell: s.shell ?? null, site: s.site, cfg: { ...cfg, draft: { ...cfg.draft, url: draftUrl( cfg.draft.url, draftOrigin ) } }, pairs, refused } );
+		out.push( { name, postId: Number( postId ), shell: s.shell ?? null, draftIndex: s.draftIndex ?? null, site: s.site, cfg: { ...cfg, draft: { ...cfg.draft, url: draftUrl( cfg.draft.url, draftOrigin ) } }, pairs, refused } );
 	}
 	return { surfaces: out, skipped };
 }
