@@ -438,3 +438,14 @@ test( 'MUST FAIL: a list block made from a run of links reads its link part (the
 	assert.deepEqual( list.draftSlots, { [ LINK ]: list.draftRef }, 'the link part is the first link, the node\'s draft element' );
 	assert.equal( listOf( {} ).draftSlots, undefined, 'negative control: no calibrated link part, no slot' );
 } );
+
+test( 'MUST FAIL: a code-built marquee whose items hold no icon marks its word-only style as decided, and one with an icon marks nothing', () => {
+	const strip = ( codeItems ) => N( 'section', {}, [ N( 'div', { style: 'overflow-x:hidden', hole: 'trustBar', words: 'Baked fresh Handmade', codeItems } ) ] );
+	const motion = new Set( [ 'Root/2' ] );
+	const STAR = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" stroke="currentColor" fill="none"></path></svg>';
+	const node = ( items ) => JSON.parse( JSON.stringify( run( strip( items ), { motion } ).skeleton ) )[ 0 ].innerBlocks[ 0 ];
+	const plain = node( [ { text: 'Baked fresh', svg: null }, { text: 'Handmade', svg: null } ] );
+	assert.deepEqual( plain.decided, { badgeStyle: 'text-only' }, 'Fill may not swap the style the rule chose' );
+	const iconed = node( [ { text: 'Baked fresh', svg: STAR }, { text: 'Handmade', svg: null } ] );
+	assert.equal( iconed.decided, undefined, 'negative control: no style was chosen, so none is protected' );
+} );

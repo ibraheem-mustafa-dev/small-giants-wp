@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "...( Object.keys( plain ).length ? { decided: plain } : {} ), ",
+		"replace": "",
+		"why": "the marquee rule marks nothing as decided"
+	},
+	{
+		"file": "lib/skeleton-classify.mjs",
+		"find": "...( r.decided ? { decided: r.decided } : {} ), ",
+		"replace": "",
+		"why": "the classifier drops the rule's decided settings"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "\t\tr.decided && ( node.decided = r.decided );\n",
+		"replace": "",
+		"why": "the node never carries the decided settings"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "...( Object.keys( plain ).length ? { decided: plain } : {} ), ",
+		"replace": "decided: plain, ",
+		"why": "an empty decision is attached when no style was chosen"
+	}
+]

@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "{ ...( skeletonNode?.decided || {} ), ...( OWNED.get( node ) ?? {} ) }",
+		"replace": "{ ...( OWNED.get( node ) ?? {} ) }",
+		"why": "the rule's decided setting is no longer owned"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "\tskeletonNode?.decided && OWNED.set( node, owned );\n",
+		"replace": "",
+		"why": "the decided setting is not registered for the node's resolver calls"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "{ ...( skeletonNode?.decided || {} ), ...( OWNED.get( node ) ?? {} ) }",
+		"replace": "{ ...( OWNED.get( node ) ?? {} ), ...( skeletonNode?.decided || {} ) }",
+		"why": "the rule's decision overrides a content writer's"
+	}
+]

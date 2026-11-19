@@ -895,7 +895,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const plain = I.plain && read.every( ( x ) => ! x.svg ) ? { [ I.plain.setting ]: I.plain.value } : {};
 			const marks = [ ...new Set( read.map( ( x ) => x.marks || '' ) ) ];
 			const glyph = I.marksNote && 1 === marks.length && '' !== marks[ 0 ] ? { glyphNote: `${ I.marksNote }: the draft draws "${ marks[ 0 ] }" beside every item's words` } : {};
-			return v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: { [ I.setting ]: items, ...Object.fromEntries( ( I.clear || [] ).map( ( a ) => [ a, '' ] ) ), ...plain }, absorb: true, ...( Array.isArray( read[ 0 ].at ) ? { codeItem: read[ 0 ].at } : {} ), ...glyph } );
+			return v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: { [ I.setting ]: items, ...Object.fromEntries( ( I.clear || [] ).map( ( a ) => [ a, '' ] ) ), ...plain }, absorb: true, ...( Object.keys( plain ).length ? { decided: plain } : {} ), ...( Array.isArray( read[ 0 ].at ) ? { codeItem: read[ 0 ].at } : {} ), ...glyph } );
 		},
 		( { e, kidsB } ) => {
 			if ( ! loops( e ) || ! kidsB.length ) {

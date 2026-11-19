@@ -54,6 +54,14 @@ export function glyphEvidence( { cal, targets = [], readAt = () => null } ) {
 	return Object.fromEntries( paths.filter( ( p ) => glyph( p ) && ! named.has( LOOSE( p ) ) ).map( ( p ) => [ p, false ] ) );
 }
 
+// The settings a node's styling answers never change: what the skeleton's rule chose from the draft's structure (its
+// `decided`, a word-only item style) and what a content writer decided before (lib/fill-prop.mjs::OWNED). Registered on the node.
+export function ownedSettings( node, skeletonNode ) {
+	const owned = { ...( skeletonNode?.decided || {} ), ...( OWNED.get( node ) ?? {} ) };
+	skeletonNode?.decided && OWNED.set( node, owned );
+	return owned;
+}
+
 // Presence, words and links for one node's elements, and its declared handover (step 5).
 function fillContent( st, rec, ref, cal ) {
 	const node = st.flat[ rec.index ];
@@ -73,7 +81,7 @@ function fillContent( st, rec, ref, cal ) {
 	const local = [];
 	// The settings a content writer decided from the draft (an icon's source from its mark) are this node's own: no styling
 	// answer of the resolver may change them (lib/fill-prop.mjs::OWNED).
-	const owned = OWNED.get( node ) ?? {};
+	const owned = ownedSettings( node, skeletonNode );
 	const take = ( r ) => {
 		Object.assign( owned, r.decided || {} );
 		Object.keys( owned ).length && OWNED.set( node, owned );
