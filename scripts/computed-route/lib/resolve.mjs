@@ -319,6 +319,11 @@ export function defaultPaint( calibration, slot, prop, same = ( a, b ) => a === 
 	return out;
 }
 
+// The paint properties a discovered setting's value may answer only when it changes no layout (resolveDiscovered), and the layout
+// properties that mark a value as a layout mode.
+const PAINT_ROW = /^(?:color|background-color|background-image|box-shadow|text-shadow|outline-color|text-decoration-color|-webkit-text-stroke-color|border-(?:top|right|bottom|left)-(?:color|style|width))$/;
+const LAYOUT_EFFECTS = [ 'display', 'flex-direction', 'grid-template-columns', 'grid-template-rows' ];
+
 // A setting with no css_property that calibration showed paints `prop` on `slot` (calibration.discovered): the enum
 // value whose paint equals the draft at every width the row states. Discovery records a width only where the value changed
 // the paint (lib/calibrate.mjs::discoverEffects), so at an unrecorded width the value paints the element's default, which
@@ -367,6 +372,11 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 		}
 		for ( const [ value, values ] of Object.entries( d.values ) ) {
 			if ( owned && attr in owned && String( owned[ attr ] ) !== value ) {
+				continue;
+			}
+			// A colour, ground, border or shadow row is never answered by a value that also switches a layout mode on (an option
+			// picker's `tile` style draws a cocoa border and also turns its options into a one-column grid).
+			if ( PAINT_ROW.test( prop ) && LAYOUT_EFFECTS.some( ( l ) => props[ l ]?.values?.[ value ] ) ) {
 				continue;
 			}
 			if ( rowWidths.some( ( w ) => undefined !== values[ w ] ) && fits( values, perWidth, baseOf( prop ) ) ) {

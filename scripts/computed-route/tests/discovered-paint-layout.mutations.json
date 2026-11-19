@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/resolve.mjs",
+		"find": "if ( PAINT_ROW.test( prop ) && LAYOUT_EFFECTS.some( ( l ) => props[ l ]?.values?.[ value ] ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a paint row is answered by a value that also switches a layout mode on"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "const LAYOUT_EFFECTS = [ 'display', 'flex-direction', 'grid-template-columns', 'grid-template-rows' ];",
+		"replace": "const LAYOUT_EFFECTS = [];",
+		"why": "no recorded effect counts as a layout mode"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "if ( PAINT_ROW.test( prop ) && LAYOUT_EFFECTS",
+		"replace": "if ( ! PAINT_ROW.test( prop ) && LAYOUT_EFFECTS",
+		"why": "a layout row is refused its own layout value"
+	}
+]
