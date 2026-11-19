@@ -96,7 +96,7 @@ test( 'MUST FAIL: the inventory stage on a state-driven or form surface stops wh
 test( 'MUST FAIL: the command records not-run stages, returns the exit code, names no --skip-stages and fails a page with no recorded shell under --no-copies', () => {
 	assert.match( source, /note\( key, stage, true, 0, null, 'not in --stages' \);\n\t\t\treturn true;/ );
 	assert.match( source, /note\( key, 'apply', true, 0, null, 'not in --stages' \);/ );
-	assert.match( source, /const record = stageRecord\( \{ ok, ms, detail, skipped \} \);/ );
+	assert.match( source, /const record = stageRecord\( \{ ok, ms, detail, skipped, na \} \);/ );
 	assert.match( source, /return runExit\( status, \{ strict \} \);/ );
 	assert.match( source, /main\( process\.argv\.slice\( 2 \) \)\.then\( \( code \) => \{\n\t\tprocess\.exitCode = code;/ );
 	assert.match( source, /if \( missingInputs\.length \) \{\n\t\tthrow new Error\( missingInputs\.join\( '\\n' \) \);\n\t\}\n\tconst dir = path\.join/ );

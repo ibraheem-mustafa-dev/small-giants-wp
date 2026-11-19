@@ -1,8 +1,8 @@
 [
 	{
 		"file": "site-run.mjs",
-		"find": "\t\t? { ok: true, skipped, seconds: 0, ...( detail ? { detail } : {} ) }",
-		"replace": "\t\t? { ok: false, skipped, seconds: 0, ...( detail ? { detail } : {} ) }",
+		"find": "\t\t? { ok: true, skipped, seconds: 0, ...( na ? { notApplicable: true } : {} ), ...( detail ? { detail } : {} ) }",
+		"replace": "\t\t? { ok: false, skipped, seconds: 0, ...( na ? { notApplicable: true } : {} ), ...( detail ? { detail } : {} ) }",
 		"why": "a skipped stage fails the run"
 	},
 	{
@@ -31,7 +31,7 @@
 	},
 	{
 		"file": "site-run.mjs",
-		"find": "r.skipped && out.skipped.push(",
+		"find": "r.skipped && ! r.notApplicable && out.skipped.push(",
 		"replace": "false && out.skipped.push(",
 		"why": "not-run stages are not listed"
 	},
