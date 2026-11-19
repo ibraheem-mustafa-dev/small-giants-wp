@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/ledger.mjs", "find": "\t'draft-flaw': 'The draft itself is wrong here and live deliberately does better.',\n", "replace": "", "why": "a rule a client ledger uses is dropped from the list" },
+	{ "file": "lib/ledger.mjs", "find": "\t\tif ( 'rule' in x && ! RULES[ x.rule ] ) {", "replace": "\t\tif ( false ) {", "why": "an unknown rule name passes" }
+]

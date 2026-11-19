@@ -400,7 +400,7 @@
       768
     ],
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "At tablet the draft centres the footer logo but leaves the company text and social icons left-aligned, which looks off. The site centres the text and social icons under the logo at tablet instead.",
     "decided": "2026-11-02 Bean ruling (Indus round 2, R2-15)"
@@ -412,7 +412,7 @@
     "state": "*",
     "property": "content",
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "The draft's 'Photo on Unsplash' chips are the design tool's placeholder-photo credit. Neither they nor a footer 'Placeholder photography via Unsplash' credit are built, because the client's own photography replaces the placeholders.",
     "decided": "2026-11-02 Bean ruling (Indus round 2)"
@@ -424,7 +424,7 @@
     "state": "*",
     "property": "flex-wrap",
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "At 375 the draft wraps the secondary CTA link under the button (its 22px column gap and 15.5px link text overflow the 287px row by a few pixels); the live row fits both side by side. Bean prefers the live layout.",
     "decided": "2026-11-02 Bean ruling (Indus round 3, R3-05)"
@@ -438,7 +438,7 @@
     "state": "*",
     "property": "font-family",
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "The draft's desktop mega panel sets no font on these titles, so they fall back to the body font; its mobile drawer sets the same titles in Montserrat, as it does every other title on the site (about 66). Treated as a draft slip: the titles use the heading font on every screen size.",
     "decided": "2026-11-03 Bean ruling (Indus round 5)"
@@ -450,7 +450,7 @@
     "state": "*",
     "property": "pin, opacity, transform",
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "The draft pins the timeline and fades the side cards only at 1024px and wider, and is a plain swipe row below that. Bean prefers the pinned, focus-faded timeline on tablet too, so it keeps the desktop treatment from 768px.",
     "decided": "2026-11-04 Bean ruling (Indus round 6)"
@@ -462,7 +462,7 @@
     "state": "*",
     "property": "content",
     "expected": {
-      "rule": "draft-placeholder"
+      "rule": "draft-flaw"
     },
     "reason": "The draft's avatar is an empty image slot (placeholder 'logo') inside a 58px white ring: a design-tool placeholder, not a design. No avatar is shown until the client supplies photos.",
     "decided": "2026-11-04 (Indus round 6, Bean's rule that brief artefacts are not cloned)"
@@ -474,7 +474,7 @@
     "state": "*",
     "property": "content",
     "expected": {
-      "rule": "draft-placeholder"
+      "rule": "draft-flaw"
     },
     "reason": "The draft's copyright row carries a third item, '| Placeholder photograph', a credit for the draft's stock imagery; it is not cloned, so the bar is 23px shorter at 375 and 13px at 768.",
     "decided": "2026-11-04 (Indus round 6)"
@@ -486,7 +486,7 @@
     "state": "*",
     "property": "content",
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "The mega parent pages are the parent themselves, so the draft's middle crumb repeating the page is dropped (middleCrumbLabel and middleCrumbUrl cleared).",
     "decided": "2026-11-06 Bean ruling (Indus round 8 review)"
@@ -498,7 +498,7 @@
     "state": "*",
     "property": "display",
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "Bean finds the heading weak in the drawer variant; it is hidden on tablet and mobile and kept on desktop.",
     "decided": "2026-11-06 Bean ruling (Indus round 8 review)"
@@ -511,7 +511,7 @@
     "state": "*",
     "property": "color",
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "The draft's blue outline headings at tablet and mobile become solid gold.",
     "decided": "2026-11-06 Bean ruling (Indus round 8 review)"
@@ -525,7 +525,7 @@
     "state": "*",
     "property": "transition-duration",
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "Opening and closing run slightly slower than the draft's.",
     "decided": "2026-11-06 Bean ruling (Indus round 8 review)"
@@ -539,7 +539,7 @@
     "state": "selected",
     "property": "background-color",
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "The draft's black selected pill becomes the blue the site's buttons use.",
     "decided": "2026-11-06 Bean ruling (Indus round 8 review)"
@@ -552,7 +552,7 @@
     "state": "hover",
     "property": "background-color, translate, shine",
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "The draft darkens the green on hover, which makes the label hard to read; live keeps the green, rises on hover and carries the site's shine sweep.",
     "decided": "2026-11-06 Bean ruling (Indus round 8 review)"
@@ -566,7 +566,7 @@
     "state": "*",
     "property": "box-shadow",
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "Bean asked for the white border he saw; the draft's border is the same faint line as live, and the visible gap is the draft's second soft shadow, which live adds (not a divergence once built; recorded so the walker reads the shadow as the target).",
     "decided": "2026-11-06 Bean ruling (Indus round 8 review)"
@@ -579,7 +579,7 @@
     "state": "rest",
     "property": "tile count",
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "Live shows 10 brand logos, the draft 9 (ND18). Left at 10 because the client's real content will change the list. The tile height (64px, tileMinHeight at tablet and mobile) still follows the draft.",
     "decided": "2026-11-07 Bean ruling (Indus round 8 review)"
@@ -592,7 +592,7 @@
     "state": "hover",
     "property": "magnet engage, radius, pull, follow duration",
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "The draft's buttons (J-10) only move while the pointer is over them, which Bean finds broken; the round 5 proximity values (radius 120px, 14x10px, 600ms) were too wide and fast. Every button pulls gently from about 60px away, at most 5px across and 4px down, eased over about 350ms. Replaces the 2026-11-06 ruling that made the draft's over-only values the default.",
     "decided": "2026-11-07 Bean ruling (Indus round 8, homepage review item 1)",
@@ -612,7 +612,7 @@
     "state": "hover",
     "property": "color, scale",
     "expected": {
-      "rule": "bean-ruling"
+      "rule": "bean-choice"
     },
     "reason": "The draft darkens the text (#0A7EA8 to #075E80) and the clone also enlarged it; Bean ruled both stopped: the text colour stays the resting colour and the button does not scale on hover. The arrow gap nudge stays.",
     "decided": "2026-11-07 Bean ruling (Indus round 8, homepage review item 6)",
@@ -629,7 +629,7 @@
     "state": "rest",
     "property": "width, side padding",
     "expected": {
-      "rule": "draft"
+      "rule": "bean-choice"
     },
     "reason": "Bean's list item HP15 (stacked hero stuck left and squashed) measured equal to the draft at 375, 768 and 900 (same widths, 32px side padding). Bean: keep it as the draft; it was right from the start.",
     "decided": "2026-11-07 Bean ruling (Indus round 8 board)"
@@ -641,7 +641,7 @@
     "node": "the \"OUR BRANDS\" label above the brand tiles",
     "state": "*",
     "property": "presence",
-    "expected": { "rule": "bean-ruling" },
+    "expected": { "rule": "bean-choice" },
     "reason": "The draft's label above the brand tiles looked ugly, so Bean had it deleted; live has no label on purpose.",
     "decided": "2026-11-08 Bean ruling (Indus round 8 review)"
   },
@@ -652,7 +652,7 @@
     "node": "footer paragraph cr-ref-footer-24",
     "state": "rest",
     "property": "text-align",
-    "expected": { "rule": "bean-ruling" },
+    "expected": { "rule": "bean-choice" },
     "reason": "The draft's left-aligned paragraph looked ugly at these widths; live centres it on purpose.",
     "decided": "2026-11-08 Bean ruling (Indus round 8 review)"
   }
