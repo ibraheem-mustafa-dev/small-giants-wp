@@ -56,6 +56,16 @@ test( 'MUST FAIL: a surface whose template has no pieces, or that builds no temp
 	assert.equal( seen[ 0 ].handoffDir, null );
 } );
 
+test( 'MUST FAIL: a template whose pieces are only checked reads no fact record and is checked', async () => {
+	const { repo } = site( { target: { template: 'cart' } } );
+	const rule = { templates: { cart: { pieces: [ { id: 'basket', block: 'core/post-content', required: true, kind: 'rule', by: 'commerceRegion' } ] } } };
+	// The site holds no facts.json: reading it would throw.
+	const got = await placeSurfacePieces( { client: 'c', surface: 's', repo, data: rule } );
+	assert.deepEqual( got.placed, [] );
+	assert.match( got.problems[ 0 ], /^cart: the working piece "basket" is missing: no core\/post-content in the tree \(placed by commerceRegion\)$/ );
+	await assert.rejects( placeSurfacePieces( { client: 'c', surface: 's', repo, data: { templates: { cart: { pieces: [ { ...rule.templates.cart.pieces[ 0 ], kind: 'planted' } ] } } }, load } ), /facts\.json is missing/ );
+} );
+
 test( 'MUST FAIL: the stage line names the pieces placed and their problems, and fails only under strict', () => {
 	assert.equal( piecesDetail( null ), null );
 	assert.equal( piecesDetail( { key: 'order-confirmation', placed: [ 1, 2 ], problems: [] } ), '2 pieces placed for order-confirmation' );

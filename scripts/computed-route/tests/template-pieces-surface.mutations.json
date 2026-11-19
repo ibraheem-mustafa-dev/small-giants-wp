@@ -5,5 +5,7 @@
 	{"file": "lib/template-pieces-surface.mjs", "find": "rootComponent: entry?.draftIndex ? pageKeyOf( entry.draftIndex ) : null", "replace": "rootComponent: null", "why": "the served root's component is not named"},
 	{"file": "lib/template-pieces-surface.mjs", "find": "inventory: fs.existsSync( inventoryFile ) ? readJson( inventoryFile ) : null", "replace": "inventory: null", "why": "the inventory is not handed to the builders"},
 	{"file": "lib/template-pieces-surface.mjs", "find": "\tif ( strict ) {\n\t\tthrow new Error( said );\n\t}\n", "replace": "", "why": "strict does not fail the stage"},
-	{"file": "lib/template-pieces-surface.mjs", "find": "\tif ( ! r.problems.length ) {\n\t\treturn counts;\n\t}\n", "replace": "", "why": "a clean pass reports an empty problem list"}
+	{"file": "lib/template-pieces-surface.mjs", "find": "\tif ( ! r.problems.length ) {\n\t\treturn counts;\n\t}\n", "replace": "", "why": "a clean pass reports an empty problem list"},
+	{"file": "lib/template-pieces-surface.mjs", "find": "piecesFor( key, data ).some( ( p ) => ! CHECKED_ONLY.includes( p.kind ) ) ? loadFacts( client, { repo } ) : null", "replace": "loadFacts( client, { repo } )", "why": "a template whose pieces are only checked needs a fact record"},
+	{"file": "lib/template-pieces-surface.mjs", "find": "piecesFor( key, data ).some( ( p ) => ! CHECKED_ONLY.includes( p.kind ) ) ? loadFacts( client, { repo } ) : null", "replace": "null", "why": "a builder piece runs without the fact record"}
 ]

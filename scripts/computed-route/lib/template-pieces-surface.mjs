@@ -6,7 +6,7 @@
 // component the served inventory calls `Root` is the surface's own draft file (`draftIndex`, lib/key-space.mjs).
 import fs from 'fs';
 import path from 'path';
-import { applyTemplatePieces, loadPieces, piecesFor } from './template-pieces.mjs';
+import { CHECKED_ONLY, applyTemplatePieces, loadPieces, piecesFor } from './template-pieces.mjs';
 import { loadFacts } from './fact-record.mjs';
 import { pageKeyOf } from './manifest-build.mjs';
 import { skeletonDir } from './skeleton-finalise.mjs';
@@ -33,7 +33,8 @@ export async function placeSurfacePieces( { client, surface, repo = REPO, data =
 	const skeletonFile = path.join( dir, `${ surface }.skeleton.json` );
 	const inventoryFile = path.join( dir, `${ surface }.inventory.json` );
 	const tree = readJson( skeletonFile );
-	const factRecord = facts || loadFacts( client, { repo } );
+	// Only a piece with a builder reads the draft's facts; pieces an existing rule or the theme places are only checked.
+	const factRecord = facts || ( piecesFor( key, data ).some( ( p ) => ! CHECKED_ONLY.includes( p.kind ) ) ? loadFacts( client, { repo } ) : null );
 	const got = await placePieces( { key, tree, entry, factRecord, inventory: fs.existsSync( inventoryFile ) ? readJson( inventoryFile ) : null, repo, data, db, load } );
 	const file = path.join( dir, `${ surface }.pieces.json` );
 	fs.writeFileSync( skeletonFile, `${ JSON.stringify( got.tree, null, '\t' ) }\n` );
