@@ -15,6 +15,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { frameMarked } from './template-frame.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const THEME_TEMPLATES = path.resolve( HERE, '..', '..', '..', 'theme', 'sgs-theme', 'templates' );
@@ -154,6 +155,10 @@ function wrap( chain, inner ) {
 // A whole tree inside the frame: as it is when it already holds a template part, else in the theme's `<main>` between
 // the header and footer parts.
 export function framed( tree ) {
+	const marked = frameMarked( tree, { part: ( slug, tagName ) => ( { name: 'core/template-part', attributes: { slug, tagName } } ), main: MAIN } );
+	if ( marked ) {
+		return marked;
+	}
 	if ( tree.some( ( n ) => 'core/template-part' === n.name ) ) {
 		return tree;
 	}
