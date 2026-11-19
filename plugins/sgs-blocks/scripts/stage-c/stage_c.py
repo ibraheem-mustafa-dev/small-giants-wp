@@ -361,6 +361,8 @@ class Doc(HTMLParser):
         self._in_style = False
         self._skip = 0  # inside <template>/<noscript>/<svg>: styles there do not apply
 
+    UNRENDERED = {"script", "link", "meta", "title", "base"}  # never drawn: not compared, so adding one shifts nothing
+
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if tag in ("template", "noscript"):
@@ -368,6 +370,8 @@ class Doc(HTMLParser):
         if tag == "style" and not self._skip:
             self._in_style = True
             self.styles.append("")
+            return
+        if tag in self.UNRENDERED:
             return
         parent = self.stack[-1] if self.stack else -1
         counts = self.child_count[-1]
@@ -382,6 +386,8 @@ class Doc(HTMLParser):
     def handle_endtag(self, tag):
         if tag == "style":
             self._in_style = False
+            return
+        if tag in self.UNRENDERED:
             return
         if tag in ("template", "noscript"):
             self._skip = max(0, self._skip - 1)
@@ -614,6 +620,9 @@ def self_test(unplant: bool) -> int:
     flip = compare_html(html_before, html_flip)
     if not any("/div[2]" in d and "'blue' -> 'red'" in d for d in flip):
         fails.append(f"override pair with its order flipped was not caught: {flip}")
+
+    if compare_html(html_before, html_good.replace("<div class='s'>", "<script src='x.js'></script><div class='s'>", 1)):
+        fails.append("an added <script> (never drawn) reported as a difference")
 
     # 3. model sanity: media at three widths, child combinator, unread selectors left out on both sides
     h = "<style>.a>.b{margin:0}@media (min-width:768px){.a .b{margin:4px}}[data-x] .b{margin:9px}</style><div class='a'><p class='b'></p></div>"
