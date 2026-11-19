@@ -44,7 +44,7 @@ write_secrets() {
 }
 
 # A copy carries its source's application-password hashes, and the source's login file may hold a password that matches none
-# of them (local-eye-care's did on 2026-11-19: every REST upload to a copy answered 401 incorrect_password). So each copy gets
+# of them (every REST upload to the copy then answers 401 incorrect_password). So each copy gets
 # a fresh application password for the user its login file names, written into the copy's own login file under both key
 # spellings (quoted, since WordPress groups the password with spaces) and never printed. A password this script made before
 # is revoked first, so a rerun leaves one.

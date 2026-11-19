@@ -5,7 +5,7 @@
 //   - handoff: sites/<client>/handoff/MANIFEST.json exists.
 //   - divergences: sites/<client>/build/qa/divergences.json, when there is one, names only the rules lib/ledger.mjs::RULES holds.
 //   - disk: the drive the checkout sits on, and any named in SGS_FREE_SPACE_PATHS, holds at least MIN_FREE_GB free (a scratch copy, a plugin build
-//     and a calibration each grow the WSL disk and the worktree; the drive filled on 2026-11-19).
+//     and a calibration each grow the WSL disk and the worktree).
 //   - wsl: a WSL site's distribution answers a trivial command within the probe's time.
 //   - password: the site's secrets file names a user and an application password and the site's REST API accepts them.
 // `probes` are the injected readers (`freeBytes( dir )`, `wslAnswers( distro )`, `credentials( site )`, `restCheck( creds )`); `deep: false` (the
