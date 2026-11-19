@@ -2692,20 +2692,20 @@
         },
         "attributes": {
           "layerSource": null,
-          "width": {
+          "layerWidth": {
             "desktop": "120px"
           },
-          "height": {
+          "layerHeight": {
             "desktop": "120px"
           },
-          "borderWidth": {
+          "layerBorderWidth": {
             "top": "2px",
             "right": "2px",
             "bottom": "2px",
             "left": "2px"
           },
-          "borderStyle": "solid",
-          "borderColour": "#000000"
+          "layerBorderStyle": "solid",
+          "layerBorderColour": "#000000"
         },
         "inner": [],
         "props": [

@@ -128,6 +128,38 @@ test( 'every fixture variant names only attributes its block declares (or an ext
 	}
 } );
 
+// The decorative-image empty paint state named width, height and border attributes the block renamed to layer* on
+// 2026-11-11 (8565eeb4c), so the empty layer drew nothing, render.php returned no element and calibration reported the
+// state "not measured" on every run. A fixture's base attributes, and each paint state's attributes and `when` keys, name
+// only attributes the block declares.
+test( 'MUST FAIL (decorative-image empty state unread): every fixture\'s attributes and paint states name only attributes its block declares', () => {
+	const universal = new Set( [ 'metadata', 'lock' ] );
+	const problems = [];
+	for ( const [ block, fx ] of Object.entries( FX ) ) {
+		const file = path.join( REPO, 'plugins/sgs-blocks/src/blocks', block.replace( /^sgs\//, '' ), 'block.json' );
+		if ( ! fs.existsSync( file ) ) {
+			continue;
+		}
+		const declared = new Set( Object.keys( JSON.parse( fs.readFileSync( file, 'utf8' ) ).attributes || {} ) );
+		const check = ( k, where ) => declared.has( k ) || universal.has( k ) || /^sgs[A-Z]/.test( k ) || problems.push( `${ block } ${ where } names undeclared attribute ${ k }` );
+		Object.keys( fx.attributes || {} ).forEach( ( k ) => check( k, 'attributes' ) );
+		for ( const ps of fx.paintStates || [] ) {
+			Object.keys( ps.attributes || {} ).forEach( ( k ) => check( k, `paint state ${ ps.name }` ) );
+			[ ...( ps.when?.has || [] ), ...( ps.when?.lacks || [] ) ].forEach( ( k ) => check( k, `paint state ${ ps.name } when` ) );
+		}
+	}
+	assert.deepEqual( problems, [] );
+} );
+
+test( 'the decorative-image empty state draws a box, so render.php prints its element (a border width with a style other than none)', () => {
+	assert.match( render( 'decorative-image' ), /if \( ! \$has_media && ! \$has_content && ! \$sgs_di_paints_box \) \{\s*return;/ );
+	const empty = FX[ 'sgs/decorative-image' ].paintStates.find( ( ps ) => 'empty' === ps.name );
+	assert.equal( empty.attributes.layerSource, null );
+	assert.deepEqual( empty.inner, [] );
+	assert.ok( Object.values( empty.attributes.layerBorderWidth || {} ).some( ( w ) => parseFloat( w ) > 0 ), 'a border width at some edge' );
+	assert.notEqual( empty.attributes.layerBorderStyle ?? blockJson( 'decorative-image' ).attributes.layerBorderStyle.default, 'none' );
+} );
+
 test( 'MUST FAIL ON REVERT (hero splitMediaWidth gated): the hero calibrates width directly, with no precondition', () => {
 	assert.equal( FX[ 'sgs/hero' ].preconditions, undefined, 'hero width paints under every fit, so no gating attribute is needed' );
 	assert.doesNotMatch( render( 'hero' ), /'custom'\s*===\s*\$image_object_fit/ );
