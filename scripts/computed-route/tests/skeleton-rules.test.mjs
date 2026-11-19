@@ -281,6 +281,27 @@ test( 'brandImageLink: image links each to a different brand are the social icon
 	assert.deepEqual( settled( byTag( run( feed ), 'div' ) ), { block: 'sgs/gallery', action: null, rule: 'logoGrid' } );
 } );
 
+test( 'wrappedWords: the own words of a blockquote are the body child of its quote block, never its attribution; MUST FAIL without the entry', () => {
+	const words = 'Had a lovely experience taking my daughter here.';
+	const tree = section( [ E( 'figure', {}, [ E( 'span', { words: 'Anonymous M.' } ), E( 'blockquote', { words } ) ] ) ] );
+	const find = ( r ) => {
+		const out = [];
+		const walk = ( ns ) => ns.forEach( ( n ) => ( 'sgs/quote' === n.name && out.push( n ), walk( n.innerBlocks || [] ) ) );
+		walk( r.skeleton );
+		return out[ 0 ];
+	};
+	const quote = find( run( tree ) );
+	assert.ok( quote, 'the blockquote is the quote block' );
+	assert.equal( quote.attributes.attribution, undefined, 'the words are not the attribution' );
+	assert.deepEqual( quote.innerBlocks.map( ( n ) => [ n.name, n.attributes.text ] ), [ [ 'sgs/text', words ] ] );
+	const off = facts();
+	delete off.decisions.rules.wrappedWords;
+	assert.equal( find( run( tree, { facts: off } ) ).attributes.attribution, words, 'without the entry the old writing stands' );
+	// Negative control: a leaf block (a heading) keeps its words in its own text setting, with no body child.
+	const heading = byTag( run( section( [ E( 'h2', { words: 'What people say' } ) ] ) ), 'h2' );
+	assert.deepEqual( [ heading.block, heading.attributes ], [ 'sgs/heading', { content: 'What people say' } ] );
+} );
+
 test( 'clientBuiltSurface: every row of a surface the client built as a post names that post; MUST FAIL without the rule', () => {
 	const built = { site: 'canary', postType: 'sgs_drawer', postId: 1 };
 	const tree = E( 'div', {}, [ E( 'span', { words: 'Menu' } ) ] );

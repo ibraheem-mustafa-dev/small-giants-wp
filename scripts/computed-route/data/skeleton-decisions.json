@@ -453,6 +453,10 @@
 			"block": "sgs/heading",
 			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
 		},
+		"wrappedWords": {
+			"block": "sgs/text",
+			"reason": "an element's own words in a block that holds its body as inner blocks (it wraps a container, as sgs/quote) are one body child of this block, read at the same draft element; the block's first text setting names another part (the quote's attribution) and its empty body prints the editor placeholder"
+		},
 		"marquee": {
 			"logoBlock": "sgs/brand-strip",
 			"itemBlock": "sgs/trust-bar",
@@ -793,6 +797,7 @@
 			"id": "slider",
 			"blocks": [ { "block": "sgs/testimonial-slider", "roles": [ "quote", "author" ] } ],
 			"otherCapabilities": [ "carousel", "slider" ],
+			"classTrack": "a track the controls find by its class with a document query (document.querySelector('.rev-rail').scrollBy) is the slider track as a ref-bound one is",
 			"settings": { "arrows": "showArrows", "dots": "showDots", "autoplay": "autoplay", "speed": "autoplaySpeed" },
 			"taughtBy": {
 				"client": "mamas-munches-redesign",

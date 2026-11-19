@@ -23,7 +23,7 @@ import { flowNodes, settleFlowRows, canvasSiblings } from './skeleton-choice-flo
 import { detectReferences } from './references.mjs';
 import { makeRecorder } from './skeleton-write-record.mjs';
 import { makeUnits } from './skeleton-write-units.mjs';
-import { makeContent } from './skeleton-write-content.mjs';
+import { makeContent, skeletonSettings } from './skeleton-write-content.mjs';
 import { makeSlotRows } from './skeleton-write-slots.mjs';
 import { siteLinkResolver } from './draft-link.mjs';
 
@@ -149,7 +149,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	Object.assign( w, makeUnits( ctx ) );
 	Object.assign( w, makeContent( ctx ) );
 	Object.assign( w, makeSlotRows( ctx ) );
-	const { record, removeSubtree, absorbSubtree, absorbWidthKids, takeVariants, unitsOf, buildBrand, buildIcons, buildList, contentAttrs, carriedAttrs, buildHeaderRows, buildFooterRows, hostSlot } = w;
+	const { record, removeSubtree, absorbSubtree, absorbWidthKids, takeVariants, unitsOf, buildBrand, buildIcons, buildList, contentAttrs, carriedAttrs, wrappedBody, buildHeaderRows, buildFooterRows, hostSlot } = w;
 	Object.assign( w, { buildNode, buildChildren } );
 
 	function buildNode( e, parentBlock ) {
@@ -313,6 +313,14 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		}
 		hosts.push( { block, node, row } );
 		node.innerBlocks = e !== m.root ? buildChildren( e, block ) : R.headerSlots && block === R.headerSlots.block ? buildHeaderRows( e, block ) : R.footerSlots && block === R.footerSlots.block ? buildFooterRows( e, block ) : buildChildren( e, block );
+		// The element's own words in a block that holds its body as inner blocks (rules.wrappedWords): one body child holding them,
+		// read at the same draft element (a review's text inside sgs/quote, which would otherwise print its placeholder body).
+		if ( ! node.innerBlocks.length && wrappedBody( block, e ) ) {
+			const W = R.wrappedWords;
+			const text = skeletonSettings( facts, W.block ).text;
+			text && ( node.innerBlocks = [ base( e, W.block, { [ text ]: m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : m.words( e ) } ) ] );
+			text && ( row.rowNote = [ row.rowNote, `the words are its body: one ${ W.block } inside it` ].filter( Boolean ).join( '; ' ) );
+		}
 		hosts.pop();
 		// An accordion item the draft shows closed at rest holds the panel content read from the draft's data (rule accordion).
 		r.closedInner && ! node.innerBlocks.length && ( node.innerBlocks = r.closedInner );

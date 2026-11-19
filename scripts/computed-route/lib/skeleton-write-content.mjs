@@ -297,6 +297,11 @@ export function makeContent( ctx ) {
 	}
 
 	// The content settings of one element's block. Returns { a (attributes), handover }.
+	// Whether an element's own words go to a body child of `block` (rules.wrappedWords): the block wraps a container and the
+	// element has words and no block inside it.
+	function wrappedBody( block, e ) {
+		return !! facts.decisions.rules?.wrappedWords?.block && !! composition[ block ]?.wraps_block && !! m.words( e ) && ! m.blockKids( e ).length;
+	}
 	function contentAttrs( block, e, top ) {
 		const a = {};
 		const handover = [];
@@ -334,6 +339,12 @@ export function makeContent( ctx ) {
 			return { a, handover };
 		}
 		const { text: textAttr, link: linkAttr } = skeletonSettings( facts, block );
+		// A block that holds its body as inner blocks (it wraps a container: sgs/quote) keeps an element's own words in a body
+		// child (lib/skeleton-propose.mjs, rules.wrappedWords), never in its first text setting, which names another part (the
+		// quote's attribution).
+		if ( wrappedBody( block, e ) ) {
+			return { a: { ...a, ...( top.attributes || {} ) }, handover };
+		}
 		textAttr && t && ( a[ textAttr ] = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t );
 		// A wordless element with no block inside it writes its text setting empty, so the block's default words never print. Only
 		// a leaf block (the element is its text: button, heading, label) is that element's words: a composite block's first text
@@ -376,5 +387,5 @@ export function makeContent( ctx ) {
 		}
 		return out;
 	}
-	return { contentAttrs, carriedAttrs };
+	return { contentAttrs, carriedAttrs, wrappedBody };
 }

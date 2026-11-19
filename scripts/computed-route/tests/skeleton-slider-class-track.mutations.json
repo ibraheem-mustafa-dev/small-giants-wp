@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/skeleton-widgets.mjs", "find": "|| queried( fn ) ||", "replace": "||", "why": "the old code: only a ref-bound track is driven" },
+	{ "file": "lib/skeleton-widgets.mjs", "find": "( bound( tplOf( e )?.attrs?.ref ) || ( classTrack && classesOf( tplOf( e ) ).length ) )", "replace": "bound( tplOf( e )?.attrs?.ref )", "why": "a track with no ref is never looked at" },
+	{ "file": "lib/skeleton-widgets.mjs", "find": "const queried = ( fn ) => [ ...L.scrolledSelectors( fn ) ].some( ( sel ) => ownSelectors.has( sel ) );", "replace": "const queried = ( fn ) => L.scrolledSelectors( fn ).size > 0;", "why": "arrows scrolling any queried class drive every class track (the negative control)" },
+	{ "file": "lib/skeleton-widgets.mjs", "find": "'querySelector' === n.callee.property?.name && 'string' === typeof literal( n.arguments[ 0 ] ) )", "replace": "'querySelector' === n.callee.property?.name && 'Literal' === n.arguments[ 0 ]?.type )", "why": "the first draft of this fix: the Babel tree has no Literal node, so no selector is read" },
+	{ "file": "lib/skeleton-widgets.mjs", "find": "const classTrack = !! R.slider.classTrack;", "replace": "const classTrack = true;", "why": "the rule runs without its decisions entry" }
+]
