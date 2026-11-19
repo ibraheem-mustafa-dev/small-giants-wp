@@ -2,10 +2,9 @@
 /**
  * SGS → CSS Output settings page.
  *
- * Lets the operator choose how the consolidated per-instance block CSS
- * (Spec 32 §6.2 / FR-32-11) is delivered, and lists the recommended
- * optimisation plugins (+ the exact setting to switch on) so the site is never
- * locked to a single plugin.
+ * Two choices, both about delivery only (the same CSS reaches the page either way): where the page-specific
+ * per-instance CSS goes (Spec 32 FR-32-11, `sgs_css_output_mode`) and how the shared block, theme and plugin
+ * stylesheets arrive (FR-32-32, `sgs_css_shared_delivery`, printed by `class-sgs-css-delivery.php`).
  *
  * @package SGS\Blocks
  * @since   1.17.0
@@ -18,12 +17,13 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class Css_Output_Settings
  *
- * Registers the `sgs_css_output_mode` option + a submenu under the SGS menu.
+ * Registers the `sgs_css_output_mode` and `sgs_css_shared_delivery` options and a submenu under the SGS menu.
  */
 final class Css_Output_Settings {
 
-	const OPTION_KEY = 'sgs_css_output_mode';
-	const PAGE_SLUG  = 'sgs-css-output';
+	const OPTION_KEY    = 'sgs_css_output_mode';
+	const SHARED_OPTION = Css_Delivery::OPTION;
+	const PAGE_SLUG     = 'sgs-css-output';
 
 	/**
 	 * Wire hooks.
@@ -36,7 +36,7 @@ final class Css_Output_Settings {
 	}
 
 	/**
-	 * Register the option with a strict sanitiser.
+	 * Register both options with strict sanitisers.
 	 *
 	 * @return void
 	 */
@@ -47,19 +47,38 @@ final class Css_Output_Settings {
 			array(
 				'type'              => 'string',
 				'sanitize_callback' => array( __CLASS__, 'sanitise_mode' ),
-				'default'           => 'file',
+				'default'           => 'head',
+			)
+		);
+		\register_setting(
+			'sgs_css_output',
+			self::SHARED_OPTION,
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => array( __CLASS__, 'sanitise_shared' ),
+				'default'           => Css_Delivery::DEFAULT_MODE,
 			)
 		);
 	}
 
 	/**
-	 * Only 'file' or 'head' are valid; anything else falls back to the default.
+	 * Only 'file' or 'head' are valid; anything else is 'head'.
 	 *
 	 * @param mixed $value Submitted value.
 	 * @return string
 	 */
 	public static function sanitise_mode( $value ): string {
-		return ( 'head' === $value ) ? 'head' : 'file';
+		return ( 'file' === $value ) ? 'file' : 'head';
+	}
+
+	/**
+	 * Only the delivery modes Css_Delivery accepts; anything else is its default.
+	 *
+	 * @param mixed $value Submitted value.
+	 * @return string
+	 */
+	public static function sanitise_shared( $value ): string {
+		return \in_array( $value, Css_Delivery::MODES, true ) ? (string) $value : Css_Delivery::DEFAULT_MODE;
 	}
 
 	/**
@@ -79,6 +98,26 @@ final class Css_Output_Settings {
 	}
 
 	/**
+	 * Print one radio choice.
+	 *
+	 * @param string $name    Option name.
+	 * @param string $value   This choice's value.
+	 * @param string $current The saved value.
+	 * @param string $label   Bold label.
+	 * @param string $help    Explanation under the label.
+	 * @return void
+	 */
+	private static function choice( string $name, string $value, string $current, string $label, string $help ): void {
+		?>
+		<label style="display:block;margin-bottom:12px">
+			<input type="radio" name="<?php echo \esc_attr( $name ); ?>" value="<?php echo \esc_attr( $value ); ?>" <?php \checked( $value, $current ); ?> />
+			<strong><?php echo \esc_html( $label ); ?></strong><br>
+			<span style="margin-left:24px;display:block;max-width:44rem;color:#555"><?php echo \esc_html( $help ); ?></span>
+		</label>
+		<?php
+	}
+
+	/**
 	 * Render the settings page.
 	 *
 	 * @return void
@@ -87,13 +126,13 @@ final class Css_Output_Settings {
 		if ( ! \current_user_can( 'manage_options' ) ) {
 			\wp_die( \esc_html__( 'You do not have permission to access this page.', 'sgs-blocks' ), '', array( 'response' => 403 ) );
 		}
-		$mode = \get_option( self::OPTION_KEY, 'file' );
-		$mode = ( 'head' === $mode ) ? 'head' : 'file';
+		$mode   = self::sanitise_mode( \get_option( self::OPTION_KEY, 'head' ) );
+		$shared = self::sanitise_shared( \get_option( self::SHARED_OPTION, Css_Delivery::DEFAULT_MODE ) );
 		?>
 		<div class="wrap">
 			<h1><?php \esc_html_e( 'SGS — CSS Output', 'sgs-blocks' ); ?></h1>
 			<p style="max-width:46rem">
-				<?php \esc_html_e( 'SGS blocks style themselves with scoped CSS. Instead of scattering ~100 tiny <style> tags through the page, that CSS is consolidated into ONE stylesheet. Choose how it is delivered:', 'sgs-blocks' ); ?>
+				<?php \esc_html_e( 'These settings change only how the styling reaches the page, never how the page looks. The defaults give the fastest first paint without any optimisation plugin.', 'sgs-blocks' ); ?>
 			</p>
 
 			<form method="post" action="options.php">
@@ -101,23 +140,25 @@ final class Css_Output_Settings {
 				<table class="form-table" role="presentation">
 					<tbody>
 						<tr>
-							<th scope="row"><?php \esc_html_e( 'Delivery method', 'sgs-blocks' ); ?></th>
+							<th scope="row"><?php \esc_html_e( 'Page styling (this page’s block settings)', 'sgs-blocks' ); ?></th>
 							<td>
 								<fieldset>
-									<label style="display:block;margin-bottom:12px">
-										<input type="radio" name="<?php echo \esc_attr( self::OPTION_KEY ); ?>" value="file" <?php \checked( 'file', $mode ); ?> />
-										<strong><?php \esc_html_e( 'External file (recommended)', 'sgs-blocks' ); ?></strong><br>
-										<span style="margin-left:24px;display:block;max-width:44rem;color:#555">
-											<?php \esc_html_e( 'One cached .css file linked in the page head. Cleanest HTML, browser-cacheable, and an optimisation plugin can defer it for the best Core Web Vitals. Best choice when you run one of the optimisation plugins below.', 'sgs-blocks' ); ?>
-										</span>
-									</label>
-									<label style="display:block">
-										<input type="radio" name="<?php echo \esc_attr( self::OPTION_KEY ); ?>" value="head" <?php \checked( 'head', $mode ); ?> />
-										<strong><?php \esc_html_e( 'Inline in head (self-contained)', 'sgs-blocks' ); ?></strong><br>
-										<span style="margin-left:24px;display:block;max-width:44rem;color:#555">
-											<?php \esc_html_e( 'The CSS is written straight into the page head — no external file, no cache dependency, works with zero extra plugins. Choose this if you do NOT run a CSS-optimisation plugin.', 'sgs-blocks' ); ?>
-										</span>
-									</label>
+									<?php
+									self::choice( self::OPTION_KEY, 'head', $mode, \__( 'In the page (recommended)', 'sgs-blocks' ), \__( 'Written into the page head. It is different on every page, so a separate file would only add a request.', 'sgs-blocks' ) );
+									self::choice( self::OPTION_KEY, 'file', $mode, \__( 'Separate file', 'sgs-blocks' ), \__( 'One cached .css file per page, linked in the head. The browser waits for it before showing the page.', 'sgs-blocks' ) );
+									?>
+								</fieldset>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php \esc_html_e( 'Shared styling (blocks, theme and plugins)', 'sgs-blocks' ); ?></th>
+							<td>
+								<fieldset>
+									<?php
+									self::choice( self::SHARED_OPTION, 'inline', $shared, \__( 'In the page', 'sgs-blocks' ), \__( 'Every stylesheet the page uses is written into the page head in its usual order, so the page needs no stylesheet requests before it can show.', 'sgs-blocks' ) );
+									self::choice( self::SHARED_OPTION, 'bundle', $shared, \__( 'One combined file', 'sgs-blocks' ), \__( 'The stylesheets are combined, in their usual order, into one cached file: one request instead of one per stylesheet, reused by pages with the same blocks.', 'sgs-blocks' ) );
+									self::choice( self::SHARED_OPTION, 'links', $shared, \__( 'Separate files (WordPress default)', 'sgs-blocks' ), \__( 'One stylesheet link per block type and asset, exactly as WordPress prints them. Use only to compare, or when another plugin needs the separate files.', 'sgs-blocks' ) );
+									?>
 								</fieldset>
 							</td>
 						</tr>
@@ -126,44 +167,8 @@ final class Css_Output_Settings {
 				<?php \submit_button(); ?>
 			</form>
 
-			<hr>
-			<h2><?php \esc_html_e( 'Recommended optimisation plugins (for “External file” mode)', 'sgs-blocks' ); ?></h2>
 			<p style="max-width:46rem;color:#555">
-				<?php \esc_html_e( 'Any ONE of these will defer the external stylesheet and generate critical CSS for the fastest load. You are not tied to a single plugin — pick whichever suits the host. After installing, switch on the setting named below.', 'sgs-blocks' ); ?>
-			</p>
-			<table class="widefat striped" style="max-width:60rem">
-				<thead>
-					<tr>
-						<th><?php \esc_html_e( 'Plugin', 'sgs-blocks' ); ?></th>
-						<th><?php \esc_html_e( 'Setting to switch on', 'sgs-blocks' ); ?></th>
-						<th><?php \esc_html_e( 'Best for', 'sgs-blocks' ); ?></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td><strong>LiteSpeed Cache</strong></td>
-						<td><?php \esc_html_e( 'Page Optimization → CSS Settings → “Load CSS Asynchronously” + “Generate Critical CSS”', 'sgs-blocks' ); ?></td>
-						<td><?php \esc_html_e( 'LiteSpeed / Hostinger hosting (built-in, free)', 'sgs-blocks' ); ?></td>
-					</tr>
-					<tr>
-						<td><strong>Autoptimize</strong></td>
-						<td><?php \esc_html_e( 'CSS Options → “Inline and Defer CSS”', 'sgs-blocks' ); ?></td>
-						<td><?php \esc_html_e( 'Any host (Apache/Nginx), lightweight', 'sgs-blocks' ); ?></td>
-					</tr>
-					<tr>
-						<td><strong>WP Rocket</strong></td>
-						<td><?php \esc_html_e( 'File Optimization → “Optimize CSS delivery” (Remove Unused CSS or Load CSS Asynchronously)', 'sgs-blocks' ); ?></td>
-						<td><?php \esc_html_e( 'Premium, easiest setup', 'sgs-blocks' ); ?></td>
-					</tr>
-					<tr>
-						<td><strong>Perfmatters</strong></td>
-						<td><?php \esc_html_e( 'Assets → CSS → “Critical CSS” / “Defer CSS”', 'sgs-blocks' ); ?></td>
-						<td><?php \esc_html_e( 'Premium, granular control', 'sgs-blocks' ); ?></td>
-					</tr>
-				</tbody>
-			</table>
-			<p style="max-width:46rem;color:#555">
-				<em><?php \esc_html_e( 'No optimisation plugin? Choose “Inline in head” above — it needs nothing else and stays fast for first-time visitors.', 'sgs-blocks' ); ?></em>
+				<em><?php \esc_html_e( 'Do not switch on a plugin’s “load CSS asynchronously”, “critical CSS” or “remove unused CSS” setting on top of these: those settings delay or drop styling that menus, drawers and shop pages need, which shows as a flash of unstyled or broken layout.', 'sgs-blocks' ); ?></em>
 			</p>
 		</div>
 		<?php
