@@ -18,7 +18,8 @@ const node = ( o ) => find( run( strip( ...( o.args || [ PAINTED ] ) ), LOGIC, {
 
 test( 'MUST FAIL: a painted labelled tile makes the strip a name tile and its first tile is read at the tile settings', () => {
 	const n = node( {} );
-	assert.deepEqual( n.attributes, { brandDisplay: 'logo-else-text', brandTextTile: true } );
+	assert.deepEqual( n.attributes, { brandDisplay: 'logo-else-text', brandTextTile: true, logoLayout: 'tiles' }, 'the row layout draws no tile, so the rule sets the tile layout' );
+	assert.deepEqual( n.decided, { logoLayout: 'tiles' }, 'and owns it: a lone max-width read must never turn the layout to row' );
 	assert.deepEqual( Object.keys( n.draftSlots ), [ TILE ], 'the six tile settings share one calibrated slot, the first tile' );
 	assert.ok( n.draftSlots[ TILE ], 'the slot names the draft tile' );
 } );
@@ -26,6 +27,7 @@ test( 'MUST FAIL: a painted labelled tile makes the strip a name tile and its fi
 test( 'negative control: an unpainted tile, no calibrated tile slot, the rule removed and an unlabelled strip stay as before', () => {
 	assert.deepEqual( node( { args: [ 'display:block;border-radius:16px' ] } ).attributes, { brandDisplay: 'logo-else-text' }, 'a radius alone paints nothing' );
 	assert.equal( node( { args: [ 'display:block;border-radius:16px' ] } ).draftSlots, undefined );
+	assert.equal( node( { args: [ 'display:block;border-radius:16px' ] } ).decided, undefined, 'an unpainted strip owns no layout' );
 	assert.deepEqual( node( { args: [ 'display:block;background:transparent;border:0' ] } ).attributes, { brandDisplay: 'logo-else-text' }, 'a transparent background and no border paint nothing' );
 	assert.equal( node( { run: { calSettings: () => ( {} ) } } ).draftSlots, undefined, 'a block with no calibrated tile slot reads no tile' );
 	assert.deepEqual( node( { run: { off: [ 'marquee.labelledLogos' ] } } ).attributes, {} );
@@ -40,5 +42,7 @@ test( 'MUST FAIL: the rule names a setting of the logo block for the tile and fo
 	};
 	assert.deepEqual( bad( () => {} ), [] );
 	assert.equal( bad( ( m ) => ( m.labelledLogos.tile.setting = 'noSuchSetting' ) ).length, 1 );
+	assert.equal( bad( ( m ) => ( m.labelledLogos.tile.layout.value = 'sideways' ) ).length, 1, 'a layout value the setting lacks' );
+	assert.equal( bad( ( m ) => ( m.labelledLogos.tile.layout.setting = 'noSuchSetting' ) ).length, 1 );
 	assert.equal( bad( ( m ) => m.itemSlots.push( 'noSuchSetting' ) ).length, 1 );
 } );

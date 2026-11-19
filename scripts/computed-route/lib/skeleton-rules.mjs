@@ -930,11 +930,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const L = R.marquee?.labelledLogos;
 			const labelled = !! L && kidsB.length >= 2 && kidsB.every( ( k ) => '' !== String( k.attrs?.[ 'aria-label' ] ?? '' ).trim() );
 			// A labelled tile the draft paints (a declared background, border or shadow) is the block's name tile
-			// (`marquee.labelledLogos.tile`): the setting that draws each name as a tile, and the first tile is where Fill reads
-			// the tile's look (`firstItem`, `marquee.itemSlots`).
+			// (`marquee.labelledLogos.tile`): the setting that draws each name as a tile and the layout that draws tiles (the row layout
+			// draws none, so Fill may not choose it: `decided`), and the first tile is where Fill reads the tile's look (`firstItem`, `marquee.itemSlots`).
 			const T2 = L?.tile;
 			const painted = labelled && !! T2 && PAINT_DECL.test( String( kidsB[ 0 ].attrs?.style ?? '' ) );
-			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: labelled ? { ...L.attributes, ...( painted ? { [ T2.setting ]: true } : {} ) } : {}, absorb: true, ...( painted ? { firstItem: kidsB[ 0 ].key } : {} ), handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
+			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: labelled ? { ...L.attributes, ...( painted ? { [ T2.setting ]: true, [ T2.layout.setting ]: T2.layout.value } : {} ) } : {}, absorb: true, ...( painted ? { firstItem: kidsB[ 0 ].key, decided: { [ T2.layout.setting ]: T2.layout.value } } : {} ), handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
 		},
 		// A row of short non-interactive labels, each with at most a glyph, is a trust bar (its badges are its items).
 		( { e, kidsB } ) => {

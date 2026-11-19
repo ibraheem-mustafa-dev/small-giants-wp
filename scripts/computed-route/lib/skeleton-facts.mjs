@@ -167,6 +167,8 @@ export function decisionsProblems( facts ) {
 	// The name tile's setting is a setting of the logo block (the tile look read at the first tile is checked with every `itemSlots`).
 	const tileSetting = r.marquee?.labelledLogos?.tile?.setting;
 	tileSetting && ! facts.attr( r.marquee.logoBlock, tileSetting ) && problems.push( `rules.marquee.labelledLogos.tile.setting ${ tileSetting } must be a setting of ${ r.marquee.logoBlock }` );
+	const tileLayout = r.marquee?.labelledLogos?.tile?.layout;
+	tileLayout && ! facts.enumOf?.( r.marquee.logoBlock, tileLayout.setting )?.includes( tileLayout.value ) && problems.push( `rules.marquee.labelledLogos.tile.layout ${ tileLayout.setting } ${ tileLayout.value } must be a setting of ${ r.marquee.logoBlock } and one of its values` );
 	Object.keys( r.footerSlots?.stackedRow || {} ).filter( ( a ) => ! facts.attr( r.footerSlots.rowBlock, a ) || facts.attr( r.footerSlots.rowBlock, a ).css_property ).forEach( ( a ) => problems.push( `rules.footerSlots.stackedRow.${ a } must name a structural setting ${ r.footerSlots.rowBlock } has (no CSS property: a skeleton carries no style value)` ) );
 	// A commerce region's block: a core block only as a listed exception, WooCommerce's own block (outside the framework
 	// database), or a known SGS block; its money pattern compiles.

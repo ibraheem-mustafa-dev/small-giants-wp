@@ -490,7 +490,7 @@
 			},
 			"labelledLogos": {
 			"attributes": { "brandDisplay": "logo-else-text" },
-			"tile": { "setting": "brandTextTile", "reason": "a labelled tile the draft paints itself (an inline background, border or box shadow) is a name tile: the strip draws each name as a tile (brandTextTile), and the first tile's look is read at the block's tile settings (itemSlots) where the block's default shows the names bare" },
+			"tile": { "setting": "brandTextTile", "layout": { "setting": "logoLayout", "value": "tiles" }, "reason": "a labelled tile the draft paints itself (an inline background, border or box shadow) is a name tile: the strip draws each name as a tile (brandTextTile) in the tile layout (logoLayout tiles; the row layout draws no tile, and the rule owns the setting so Fill never answers it from a lone max-width read), and the first tile's look is read at the block's tile settings (itemSlots) where the block's default shows the names bare" },
 			"reason": "a looping strip of logo tiles that each name themselves (an aria-label) shows each name where its picture is not set yet and the picture once it is, so a strip of empty picture placeholders presents its brands by name and never as an empty band; Fill writes each tile's label as the item's name (lib/fill-list-items.mjs::holeField)"
 		},
 		"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7"
