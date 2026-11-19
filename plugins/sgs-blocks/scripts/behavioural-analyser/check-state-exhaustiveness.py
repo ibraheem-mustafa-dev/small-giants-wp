@@ -28,6 +28,7 @@ import sqlite3
 import subprocess
 import sys
 import tempfile
+import urllib.parse
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -82,7 +83,8 @@ def scan_live(url: str, vocab, slugs, published) -> list[se.Site]:
         vocab_file.write_bytes(json.dumps(vocab.sources).encode("utf-8"))
         # `sgs-css-delivery=links` asks for WordPress's per-file links (Spec 32 FR-32-32), so each rule keeps its
         # source file and the block it belongs to.
-        url = url + ("&" if "?" in url else "?") + "sgs-css-delivery=links"
+        parts = urllib.parse.urlsplit(url)
+        url = urllib.parse.urlunsplit(parts._replace(query=parts.query + ("&" if parts.query else "") + "sgs-css-delivery=links"))
         proc = subprocess.run(["node", str(LIVE_SCANNER), url, str(vocab_file)], capture_output=True, text=True, encoding="utf-8")
     if proc.returncode != 0:
         print(f"FAIL: live scan of {url}: {proc.stderr.strip()[:400]}", file=sys.stderr)

@@ -280,7 +280,7 @@ function font_fallback_preset_overrides( array $groups ): string {
 	}
 	$decls = array();
 	foreach ( $ordered as $family ) {
-		$slug  = trim( strtolower( (string) preg_replace( '/[^A-Za-z0-9]+/', '-', (string) ( $family['slug'] ?? '' ) ) ), '-' );
+		$slug  = font_fallback_kebab( (string) ( $family['slug'] ?? '' ) );
 		$stack = trim( (string) preg_replace( '/[;{}<>\\\\]/', '', (string) ( $family['fontFamily'] ?? '' ) ) );
 		if ( '' === $slug || '' === $stack ) {
 			continue;
@@ -296,6 +296,21 @@ function font_fallback_preset_overrides( array $groups ): string {
 		$decls[ $slug ] = '--wp--preset--font-family--' . $slug . ':' . implode( ', ', $parts );
 	}
 	return array() === $decls ? '' : ':root{' . implode( ';', $decls ) . '}';
+}
+
+/**
+ * A preset slug as WordPress names its custom property (`_wp_to_kebab_case`: `bodyFont` and `heading2` become
+ * `body-font` and `heading-2`), so an override lands on the variable the global styles print.
+ *
+ * @param string $slug Preset slug.
+ * @return string
+ */
+function font_fallback_kebab( string $slug ): string {
+	if ( function_exists( '_wp_to_kebab_case' ) ) {
+		return (string) _wp_to_kebab_case( $slug );
+	}
+	$slug = (string) preg_replace( '/([a-z])([A-Z0-9])|([0-9])([A-Za-z])/', '$1$3-$2$4', $slug );
+	return trim( strtolower( (string) preg_replace( '/[^A-Za-z0-9]+/', '-', $slug ) ), '-' );
 }
 
 /**

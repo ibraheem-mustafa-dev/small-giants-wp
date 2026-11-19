@@ -13,6 +13,7 @@
  *     its content, and leaves a one-file run alone;
  *   - a path that leaves ABSPATH and WP_CONTENT_DIR is refused;
  *   - `?sgs-css-delivery=links` and an invalid option fall back as documented.
+ *   - the merge is hooked to `wp_print_styles` at the last priority, so later head additions are inside the run.
  * Negative control: comment out Css_Delivery::apply()'s merge call and the run checks fail.
  *
  *   wp eval-file wp-eval-css-delivery.php
@@ -147,6 +148,12 @@ $filter = static fn() => 'nonsense';
 add_filter( 'sgs_css_shared_delivery', $filter );
 $check( 'invalid mode falls back to the default', Css_Delivery::DEFAULT_MODE === Css_Delivery::mode() );
 remove_filter( 'sgs_css_shared_delivery', $filter );
+
+// Timing: the merge runs on the wp_print_styles action at the last priority, after every later head addition.
+remove_all_actions( 'wp_print_styles' );
+Css_Delivery::register();
+$check( PHP_INT_MAX === has_action( 'wp_print_styles', array( Css_Delivery::class, 'run' ) ), 'merge hooked to wp_print_styles at the last priority' );
+$check( false === has_action( 'wp_head', array( Css_Delivery::class, 'run' ) ), 'no early wp_head merge left' );
 
 // Clean up.
 foreach ( array_merge( array_keys( $files ), array() ) as $name ) {

@@ -55,28 +55,44 @@ export function sumWeights(responses) {
   return out;
 }
 
-/** The CSS text of every <style> element in an HTML document, joined in document order. */
+/** HTML with the parts that never apply styles on load removed: comments, <noscript>, <template> and inline <svg>. */
+const appliedHtml = (html) => String(html || '').replace(/<!--[\s\S]*?-->|<(noscript|template|svg)\b[\s\S]*?<\/\1>/gi, '');
+
+/** The CSS text of every <style> element that applies on load, joined in document order. */
 export function inlineCssOf(html) {
   let out = '';
-  for (const m of String(html || '').matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)) out += m[1];
+  for (const m of appliedHtml(html).matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)) out += m[1];
   return out;
+}
+
+/** The value of one attribute in a tag, quoted or not. */
+const attrOf = (tag, n) => {
+  const a = tag.match(new RegExp(String.raw`\s${n}\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+))`, 'i'));
+  return a ? (a[1] ?? a[2] ?? a[3]) : null;
+};
+
+/** Every distinct media attribute value on the head's stylesheet links (to ask the browser which ones match). */
+export function linkMediaOf(html) {
+  const head = appliedHtml(html).split(/<\/head>/i)[0];
+  return [...new Set([...head.matchAll(/<link\b[^>]*>/gi)].map((m) => (attrOf(m[0], 'media') || 'all').trim().toLowerCase()))];
 }
 
 /** Gzip size in bytes of a string (the size it costs inside a compressed HTML response). */
 export const gzipBytes = (text) => (text ? zlib.gzipSync(Buffer.from(text, 'utf8'), { level: 6 }).length : 0);
 
-/** Render-blocking stylesheet links in the head whose href is on one of the own origins: rel=stylesheet, and media
- *  absent, `all` or `screen`. A link swapped in by an onload handler is not render-blocking. */
-export function blockingLinksOf(html, ownOrigins) {
-  const head = String(html || '').split(/<\/head>/i)[0];
+/** Render-blocking stylesheet links in the head whose href is on one of the own origins: rel=stylesheet, quoted or
+ *  not, whose media matches the measured window (`matches(media)`; by default media absent, `all` or `screen`). A link
+ *  swapped in by an onload handler is not render-blocking. */
+export function blockingLinksOf(html, ownOrigins, matches = (media) => ['all', 'screen', ''].includes(media)) {
+  const head = appliedHtml(html).split(/<\/head>/i)[0];
   const own = new Set(ownOrigins);
   const out = [];
   for (const m of head.matchAll(/<link\b[^>]*>/gi)) {
     const tag = m[0];
-    const attr = (n) => { const a = tag.match(new RegExp(String.raw`\s${n}\s*=\s*(["'])([^"']*)\1`, 'i')); return a ? a[2] : null; };
+    const attr = (n) => attrOf(tag, n);
     if (!/(^|\s)stylesheet(\s|$)/i.test(attr('rel') || '') || attr('onload')) continue;
     const media = (attr('media') || 'all').trim().toLowerCase();
-    if (!['all', 'screen', ''].includes(media)) continue;
+    if (!matches(media)) continue;
     const href = attr('href');
     if (!href) continue;
     let origin;
@@ -124,6 +140,10 @@ function selftest() {
   const head = `<head><link rel='stylesheet' id='a-css' href='https://s.test/a.css?ver=1' media='all' /><link rel="stylesheet" href="/b.css"><link rel='stylesheet' href='https://s.test/m.css' media='only screen and (max-width: 768px)' /><link rel='stylesheet' href='https://cdn.other/x.css' /><link rel="preload" as="style" href="/p.css"><link rel="stylesheet" href="/s.css" media="print" onload="this.media='all'"></head><body><link rel='stylesheet' href='/late.css'>`;
   eq('blocking links: own origin, all or no media, head only', blockingLinksOf(head, ['https://s.test']), ['/a.css?ver=1', '/b.css']);
   eq('blocking links: none when all inline', blockingLinksOf('<head><style>.a{}</style></head>', ['https://s.test']), []);
+  eq('blocking links: unquoted attributes count', blockingLinksOf('<head><link rel=stylesheet href=/x.css></head>', ['https://s.test']), ['/x.css']);
+  eq('blocking links: a matching media query counts', blockingLinksOf(`<head><link rel="stylesheet" href="/w.css" media="screen and (min-width:600px)"></head>`, ['https://s.test'], (m) => m === 'screen and (min-width:600px)'), ['/w.css']);
+  eq('link media listed once each', linkMediaOf(`<head><link rel=stylesheet href=/a.css><link rel="stylesheet" href="/b.css" media="print"><link rel="stylesheet" href="/c.css" media="print"></head>`), ['all', 'print']);
+  eq('inline css skips noscript, template, svg and comments', inlineCssOf('<style>.a{}</style><noscript><style>.n{}</style></noscript><template><style>.t{}</style></template><svg><style>.s{}</style></svg><!-- <style>.c{}</style> -->'), '.a{}');
   eq('ratchet lowers', ratchet(100, 80), 80);
   eq('ratchet seeds', ratchet(undefined, 80), 80);
   eq('median of three', median([3, 1, 2]), 2);
@@ -159,7 +179,10 @@ async function measure(chromium, url, width, assetOrigins = []) {
     const own = new Set([new URL(pg.url()).origin, ...assetOrigins]);
     const served = await doc.text().catch(() => '');
     const inlineCss = gzipBytes(inlineCssOf(served));
-    const blocking = blockingLinksOf(served, [...own]);
+    // Ask the browser which of the head's link media match this window, so a media-query sheet that applies here counts.
+    const media = linkMediaOf(served);
+    const matched = new Set(await pg.evaluate((list) => list.filter((m) => { try { return window.matchMedia(m).matches; } catch { return false; } }), media));
+    const blocking = blockingLinksOf(served, [...own], (m) => m === '' || matched.has(m));
     await pg.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
     // Scroll down a viewport at a time, then back, so scripts and styles that load as a section comes into view count.
     await pg.evaluate(async () => {
