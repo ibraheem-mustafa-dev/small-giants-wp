@@ -104,6 +104,30 @@ test( 'MUST FAIL: the first run uploads each image once, a second uploads nothin
 	assert.deepEqual( ( await run( third.map ) ).uploaded, [ 'sites/acme/assets/food/bread.jpg' ] );
 } );
 
+// MUST FAIL: an upload through a scratch copy (or a mirror) read and wrote the record under the copy's own name, found nothing
+// there and uploaded every file again into a record no reader opens, while every reader looks under the test site the copy
+// mirrors (lib/cache.mjs::recordSite; Eye Care, 2026-11-19: the wordmark never reached the record the logo check reads).
+const COPY_TARGETS = { 'acme-test': {}, 'local-acme': { mirrorOf: 'acme-test' }, 'local-mediatest-acme': { mirrorOf: 'acme-test', scratchOf: 'local-acme' } };
+test( 'MUST FAIL: an upload through a scratch copy checks and writes the record of the test site it copies, which every reader opens', async () => {
+	const repo = fixtureRepo();
+	const wp = fakeWordPress();
+	const creds = siteCredentials( repo, 'acme-test' );
+	const first = await uploadMedia( { repo, client: 'acme', site: 'acme-test', map: { sites: {} }, creds, fetchImpl: wp.fetchImpl, apply: true, targets: COPY_TARGETS } );
+	const viaCopy = await uploadMedia( { repo, client: 'acme', site: 'local-mediatest-acme', map: first.map, creds, fetchImpl: wp.fetchImpl, apply: true, targets: COPY_TARGETS } );
+	assert.deepEqual( [ viaCopy.uploaded.length, wp.calls.uploads ], [ 0, 3 ], 'nothing is uploaded again through the copy' );
+	assert.deepEqual( Object.keys( viaCopy.map.sites ), [ 'acme-test' ] );
+	const viaMirror = await uploadMedia( { repo, client: 'acme', site: 'local-acme', map: { sites: {} }, creds, fetchImpl: wp.fetchImpl, apply: true, targets: COPY_TARGETS } );
+	assert.deepEqual( Object.keys( viaMirror.map.sites ), [ 'acme-test' ], 'a fresh upload through a mirror lands in the record of the test site' );
+} );
+
+// Negative control: a site no targets file names as a copy keeps its own record.
+test( 'an upload to a site with no mirrorOf writes under its own name', async () => {
+	const repo = fixtureRepo();
+	const wp = fakeWordPress();
+	const r = await uploadMedia( { repo, client: 'acme', site: 'other-site', map: { sites: {} }, creds: siteCredentials( repo, 'acme-test' ), fetchImpl: wp.fetchImpl, apply: true, targets: COPY_TARGETS } );
+	assert.deepEqual( Object.keys( r.map.sites ), [ 'other-site' ] );
+} );
+
 test( 'MUST FAIL: two files with the same bytes share one attachment, on the first run and on a rerun', async () => {
 	const repo = fixtureRepo();
 	ship( repo, 'hero-copy.png', 'PNG-hero' );

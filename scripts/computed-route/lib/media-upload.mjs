@@ -13,6 +13,7 @@ import path from 'path';
 import { assertSiteContact } from './site-contact.mjs';
 import { secretsPath } from './site-targets.mjs';
 import { downloadStock, stockDownloadUrl, stockFileName, stockKey, stockSurvey } from './media-stock.mjs';
+import { recordSite } from './cache.mjs';
 
 export const IMAGE_TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.avif': 'image/avif', '.svg': 'image/svg+xml' };
 export const sha256 = ( buf ) => crypto.createHash( 'sha256' ).update( buf ).digest( 'hex' );
@@ -117,10 +118,14 @@ async function postMedia( fetchImpl, creds, label, name, type, bytes ) {
 // previews to carry (default: those the client's draft paints); `stockFound` returns their keys, `stockUnpainted` the
 // photo IDs the draft holds without painting (never uploaded) and `failed` the stock downloads that did not complete
 // (the run goes on without them).
-export async function uploadMedia( { repo, client, site, map, creds, fetchImpl = fetch, apply = false, log = () => {}, survey = stockSurvey( repo, client ), stock = survey.painted } ) {
+export async function uploadMedia( { repo, client, site, map, creds, fetchImpl = fetch, apply = false, log = () => {}, survey = stockSurvey( repo, client ), stock = survey.painted, targets = undefined } ) {
 	// The real fetch reaches the site; a caller's own fetchImpl (a test's fake, shop-fixtures' guarded one) is its own business.
 	fetchImpl === fetch && assertSiteContact( { site, readOnly: ! apply } );
-	const known = map.sites?.[ site ]?.files || [];
+	// A mirror or a scratch copy shares its test site's record (lib/cache.mjs::recordSite, through `mirrorOf` in either targets
+	// file): its database is a copy, so it holds the same attachment ids, and every reader (lib/fill-media.mjs, the skeleton's
+	// logo check) looks under the test site's name. An upload through any of them checks and writes that one record.
+	const key = recordSite( site, ...( targets ? [ targets ] : [] ) );
+	const known = map.sites?.[ key ]?.files || [];
 	const handoffPrefix = `sites/${ client }/handoff/`;
 	const manifest = manifestSums( repo, client );
 	const files = [];
@@ -201,10 +206,10 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 			await carryStock( row );
 		}
 	} catch ( e ) {
-		e.map = { ...map, sites: { ...( map.sites || {} ), [ site ]: { files: [ ...files, ...known.filter( ( k ) => ! files.some( ( f ) => f.asset === k.asset ) ) ] } } };
+		e.map = { ...map, sites: { ...( map.sites || {} ), [ key ]: { files: [ ...files, ...known.filter( ( k ) => ! files.some( ( f ) => f.asset === k.asset ) ) ] } } };
 		throw e;
 	}
-	return { map: { ...map, sites: { ...( map.sites || {} ), [ site ]: { files } } }, ...report };
+	return { map: { ...map, sites: { ...( map.sites || {} ), [ key ]: { files } } }, key, ...report };
 }
 
 // The asset a painted image URL shows on a site, through the map (FR-48-58's identity check): the attachment whose URL
