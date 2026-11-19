@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { openDb } from '../lib/db.mjs';
-import { resolve } from '../lib/resolve.mjs';
+import { resolve, drawnStyle } from '../lib/resolve.mjs';
 
 const db = openDb();
 const snapshot = { palette: [], spacing: [], fontSizes: [] };
@@ -107,4 +107,21 @@ test( 'a side of an edge box still writes its own side, in either spelling, and 
 	const gap = resolve( { block: 'sgs/container', slot: '', prop: 'row-gap', perWidth: { 1440: '16px' }, siblings: { 'row-gap': { 1440: '16px' }, 'column-gap': { 1440: '0px' } } },
 		{ db, snapshot, calibration: cal( { gap: setting( 'gap' ) } ) } );
 	assert.equal( gap.writes[ 0 ].attr, 'gap', 'the spacing-ownership rule (lib/fill-resolve-element.mjs) decides the gap pair, not the fold' );
+} );
+
+test( 'MUST FAIL: one border style for every side is written when the sides that draw agree, from whichever side the call is for; a none side draws nothing', () => {
+	const SIDES = [ 'top', 'right', 'bottom', 'left' ];
+	const styles = ( list ) => Object.fromEntries( SIDES.map( ( s, i ) => [ `border-${ s }-style`, widths( list[ i ] ) ] ) );
+	const run = ( list, side ) => resolve( { block: 'sgs/container', slot: '', prop: `border-${ side }-style`, perWidth: widths( list[ SIDES.indexOf( side ) ] ), siblings: styles( list ) }, { db, snapshot, calibration: cal( { borderStyle: setting( 'border-style' ) } ) } );
+	for ( const side of SIDES ) {
+		const r = run( [ 'none', 'none', 'dashed', 'none' ], side );
+		assert.equal( r.gap, undefined, `${ side }: ${ r.detail }` );
+		assert.equal( JSON.stringify( r.writes ).includes( 'dashed' ), true, side );
+		assert.equal( JSON.stringify( r.writes ).includes( 'none' ), false, `${ side }: a none side never writes none for every side` );
+	}
+	// Negative controls: two drawn styles stay a shape gap, and every side none has no drawn style to take.
+	assert.equal( run( [ 'solid', 'none', 'dashed', 'none' ], 'top' ).gap, 'shape' );
+	assert.equal( drawnStyle( 'border-style', { a: 'none', b: 'hidden' } ), null );
+	assert.equal( drawnStyle( 'border-color', { a: 'red', b: 'blue' } ), null, 'only the border style family' );
+	assert.equal( drawnStyle( 'border-style', { a: 'dashed', b: undefined } ), null, 'an unstated side is not judged' );
 } );

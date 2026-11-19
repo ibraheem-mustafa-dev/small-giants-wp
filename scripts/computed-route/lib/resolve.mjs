@@ -446,11 +446,26 @@ function foldFamily( { prop, perWidth, siblings = {}, row, attr, tiers } ) {
 				return { gap: 'shape', detail: fold.missing.length ? `${ attr } needs all ${ fam.members.length } corners and the draft states ${ fam.members.length - fold.missing.length } at ${ w }` : `${ attr } cannot hold an elliptical corner (${ Object.values( parts ).join( ', ' ) } at ${ w })` };
 			}
 			out[ tier ] = fold.css;
+		} else if ( ! fold.equal && drawnStyle( fam.short, parts ) ) {
+			// A side whose border style is none or hidden draws no border (its computed width is 0, which the block's per-side
+			// width writes), so one style for every side draws the draft when the drawn sides agree.
+			out[ tier ] = drawnStyle( fam.short, parts );
 		} else if ( ! fold.equal ) {
 			return { gap: 'shape', detail: `${ attr } holds one value for every ${ 'corner' === fam.kind ? 'corner' : ( 'side' === fam.kind ? 'side' : fam.short ) }; draft has ${ fam.members.map( ( m ) => `${ m } ${ parts[ m ] ?? '(unstated)' }` ).join( ', ' ) } at ${ w }` };
 		}
 	}
 	return { tiers: out };
+}
+
+// The one border style the drawn sides share, when at least one side draws (its style is neither none nor hidden) and the
+// drawn sides agree (an unstated side is a style of its own, so it never agrees); null otherwise, and for any family but
+// border-style.
+export function drawnStyle( short, parts ) {
+	if ( 'border-style' !== short ) {
+		return null;
+	}
+	const drawn = [ ...new Set( Object.values( parts ).map( ( v ) => String( v ).trim() ).filter( ( v ) => ! /^(none|hidden)$/.test( v ) ) ) ];
+	return 1 === drawn.length ? drawn[ 0 ] : null;
 }
 
 function radiusWrite( attr, tiers, def ) {

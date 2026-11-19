@@ -7,6 +7,7 @@ import { brandOwnsAddress } from './brand-registry.mjs';
 import { linkWrite } from './draft-link.mjs';
 import { isMarker } from './skeleton-rules.mjs';
 import { finish, W } from './skeleton-classify.mjs';
+import { itemSlots } from './skeleton-part-slots.mjs';
 
 export const LOGO_HANDOVER = { owner: 'site-info', kind: 'presence', detail: 'the logo image: a logo block\'s image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor' };
 
@@ -162,8 +163,13 @@ export function makeUnits( ctx ) {
 		const own = facts.tagMap.a?.core_block_slug;
 		own && ev( own, 'db', W.tag, `html_tag_to_core_block: a -> ${ own } (each link on its own)` );
 		const r = finish( C );
-		const node = base( els.find( ( l ) => ! removedBy( l ) ), slug, { ...( ( enumOf( slug, 'markerType' ) || [] ).includes( 'none' ) ? { markerType: 'none' } : {} ), items } );
+		const first = els.find( ( l ) => ! removedBy( l ) );
+		const node = base( first, slug, { ...( ( enumOf( slug, 'markerType' ) || [] ).includes( 'none' ) ? { markerType: 'none' } : {} ), items } );
 		handover.length && ( node.handover = handover );
+		// The node's draft element is its first link, which is also the block's link part: the settings calibrated on that part
+		// are read at the same link (decisions structural.linkList.itemSlots, lib/skeleton-part-slots.mjs::itemSlots).
+		const linkSlots = 'a' === first?.tag && node.draftRef && ctx.calSettings ? itemSlots( { finder: node.draftRef, settings: facts.decisions.structural?.linkList?.itemSlots, calibrated: ctx.calSettings( slug ) } ).slots : {};
+		Object.keys( linkSlots ).length && ( node.draftSlots = { ...node.draftSlots, ...linkSlots } );
 		els.forEach( ( l, i ) => {
 			if ( removedBy( l ) ) {
 				const o = overrides( l, m.words( l ) );
