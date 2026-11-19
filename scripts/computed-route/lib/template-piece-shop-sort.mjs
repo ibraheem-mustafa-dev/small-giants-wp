@@ -1,14 +1,18 @@
 // The shop listing's sorting and results count (Spec 48 FR-48-61, FR-48-87, FR-48-99): the draft's sort control and its
 // count of the listing become WooCommerce's working blocks, where the skeleton had built a form select and a static
-// text. Each is placed where it works, as the framework composes the shop (theme/sgs-theme/templates/archive-product.html):
-// inside the product collection, in the toolbar that holds the count and the sorting before the product template. The
-// toolbar, its settings and the order of its two blocks are read from that file, never written here; the draft's own
-// node is removed from where it stood.
+// text. Each replaces the draft's own node where it stands, inside the draft's own wrappers (whose draftRefs Fill reads
+// for their look), so no new node carries a style value (the skeleton lint, lint.mjs::lintSkeleton). Both work outside
+// the product collection on the shop's archive: the sorting navigates to `?orderby=` (WooCommerce's catalog-sorting view
+// script) and the count reads the main shop query (woocommerce_result_count through wc_get_loop_prop, which sets the loop
+// up from the main WC query), as the hand-built shop template has the sorting in its hero band.
 //
 // The sorting (`find.contains`): the element the shop parts record locates the part homed on that template block on
 // (surface `find.surface`; the record and the inventory must agree on it, lib/template-piece-draft.mjs::partAgrees), and
-// the skeleton node built from it (or the node that absorbed it). A label the draft shows beside the select sets the
-// setting `find.labelSetting`. Each of the draft's sort options is read in the logic: the option's value tested against
+// the skeleton node built from it (or the node that absorbed it). The draft's words beside the select (inside its
+// `label`) stay the draft's own text, so WooCommerce's own label is not drawn twice: when the skeleton absorbed them into
+// the node, the node becomes the draft's label element again (`find.labelBlock.wrapper`, its draftRef the label) holding
+// each word element as `find.labelBlock.text` (its words in `find.labelBlock.words`, its draftRef the element) and the
+// sorting, in the draft's order. Each of the draft's sort options is read in the logic: the option's value tested against
 // the select's state key guards a `.sort( ( a, b ) => … )` whose comparator orders by a record field. An option with no
 // guarded sort is the listing's own order (`find.orders.default`), one ordering by the product's price field upwards or
 // downwards is `find.orders.priceAsc` or `priceDesc`, and any other option is a missing-features note.
@@ -17,49 +21,14 @@
 // length of the list the listing's loop walks (`list.length + ' treats'` beside `<sc-for list="{{ list }}">`). A count of
 // anything else (the basket's lines) is not it. Not found is a note; found twice is a problem (never a guess).
 import { countBlocks } from './template-pieces.mjs';
-import { THEME_TEMPLATES, parseBlocks } from './template-copies.mjs';
 import { dcOf, declsOf, draftLogic, holesOf, inventoryIndex, locateParts, loopListOf, nodesWithin, openTag, recordSurface, refKey, treeNodes } from './template-piece-draft.mjs';
 import { valuesOf } from './shop-parts-logic.mjs';
 import { resolveName } from './intake-ast.mjs';
-import fs from 'node:fs';
-import path from 'node:path';
 
 const COLLECTION = 'woocommerce/product-collection';
 const CONTROLS = new Set( [ 'button', 'a', 'select', 'input', 'textarea' ] );
 const shown = ( e ) => Object.values( e?.visible || {} ).some( Boolean );
 const bare = ( expr ) => String( expr ?? '' ).replace( /^\{\{\s*|\s*\}\}$/g, '' ).trim();
-
-// The framework's toolbar inside its product collection: { toolbar (node), at (its index in the collection), order
-// (block names in the toolbar's order) }, or null.
-export function frameworkToolbar( block, dir = THEME_TEMPLATES ) {
-	const file = path.join( dir, 'archive-product.html' );
-	if ( ! fs.existsSync( file ) ) {
-		return null;
-	}
-	const collection = treeNodes( parseBlocks( fs.readFileSync( file, 'utf8' ) ) ).find( ( r ) => COLLECTION === r.node.name )?.node;
-	const at = ( collection?.innerBlocks || [] ).findIndex( ( n ) => countBlocks( [ n ], block ) );
-	if ( at < 0 ) {
-		return null;
-	}
-	const toolbar = collection.innerBlocks[ at ];
-	return { toolbar, at, order: treeNodes( toolbar.innerBlocks ).map( ( r ) => r.node.name ) };
-}
-
-// Puts `node` into the tree's product collection, in the framework's toolbar (made from the framework's when the
-// collection has none yet), before the first block the framework orders after it. Returns where, or null.
-function intoToolbar( collection, frame, node ) {
-	const same = ( n ) => n.name === frame.toolbar.name && ( n.attributes?.className ?? '' ) === ( frame.toolbar.attributes?.className ?? '' );
-	let bar = ( collection.innerBlocks || [] ).find( same );
-	if ( ! bar ) {
-		bar = { name: frame.toolbar.name, attributes: structuredClone( frame.toolbar.attributes || {} ), innerBlocks: [] };
-		collection.innerBlocks = collection.innerBlocks || [];
-		collection.innerBlocks.splice( Math.min( frame.at, collection.innerBlocks.length ), 0, bar );
-	}
-	const rank = ( n ) => frame.order.indexOf( n.name );
-	const after = bar.innerBlocks.findIndex( ( n ) => rank( n ) > rank( node ) );
-	bar.innerBlocks.splice( after < 0 ? bar.innerBlocks.length : after, 0, node );
-	return `the product collection's toolbar (${ bar.attributes?.className || bar.name }), position ${ bar.innerBlocks.indexOf( node ) }`;
-}
 
 // The one product collection of the tree and the list its listing loop walks (the loop of the draft element its
 // product card was read at): { collection, list } or { why }.
@@ -120,7 +89,7 @@ function orderOf( L, stateKey, value ) {
 	return comparatorOf( sorts[ 0 ].arguments[ 0 ] );
 }
 
-function placeSorting( ctx, piece, index, listing, frame ) {
+function placeSorting( ctx, piece, index ) {
 	const { key, tree } = ctx;
 	const refuse = ( why ) => ( { problems: [ `${ key }: piece "${ piece.id }" (${ piece.block }) is not placed: ${ why }` ] } );
 	const surface = recordSurface( ctx.shopParts, piece.find.surface );
@@ -142,11 +111,6 @@ function placeSorting( ctx, piece, index, listing, frame ) {
 	}
 	const select = index.elements.find( ( e ) => 'select' === e.tag && index.within( e.key, located[ 0 ] ) ) || index.elements.find( ( e ) => 'select' === e.tag && index.chain( located[ 0 ] ).includes( e.key ) );
 	const notes = [];
-	const attributes = {};
-	const label = select && index.chain( select.key ).map( ( k ) => index.byKey.get( k ) ).find( ( e ) => 'label' === e.tag );
-	if ( label && piece.find.labelSetting && index.elements.some( ( e ) => e.key !== select.key && index.within( e.key, label.key ) && ! index.within( e.key, select.key ) && String( e.words || '' ).trim() ) ) {
-		attributes[ piece.find.labelSetting ] = true;
-	}
 	const L = draftLogic( ctx.draftSource );
 	const stateKey = bare( /\svalue="([^"]*)"/.exec( openTag( select?.snippet ) )?.[ 1 ] ).split( '.' ).pop();
 	const options = select ? index.children( select.key ).map( ( k ) => index.byKey.get( k ) ).filter( ( e ) => 'option' === e.tag ) : [];
@@ -164,10 +128,24 @@ function placeSorting( ctx, piece, index, listing, frame ) {
 		}
 	}
 	options.length && notes.push( `${ key }: the draft's sort options WooCommerce offers: ${ offered.join( ', ' ) || 'none' }; WooCommerce's sorting also lists its own other options, which no block setting limits` );
-	const node = { name: piece.block, attributes, innerBlocks: [] };
-	at.list.splice( at.list.indexOf( at.node ), 1 );
-	const where = intoToolbar( listing.collection, frame, node );
-	return { tree, placed: [ { id: piece.id, block: piece.block, at: `${ where }, in place of ${ refKey( at.node ) } (${ at.node.name })` } ], notes };
+	const sorting = { name: piece.block, attributes: {}, innerBlocks: [] };
+	const label = select && index.chain( select.key ).map( ( k ) => index.byKey.get( k ) ).find( ( e ) => 'label' === e.tag );
+	const words = label ? index.elements.filter( ( e ) => index.within( e.key, label.key ) && ! index.within( e.key, select.key ) && String( e.words || '' ).trim() && ! index.children( e.key ).length ) : [];
+	const built = new Set( treeNodes( tree ).map( ( r ) => refKey( r.node ) ) );
+	const absorbed = words.filter( ( e ) => ! built.has( e.key ) );
+	const lb = piece.find.labelBlock || {};
+	let put = sorting;
+	if ( absorbed.length && lb.wrapper && lb.text && lb.words ) {
+		// The node stood for the whole label: it becomes the draft's label element again, its words and the sorting inside in the draft's order.
+		const inner = [ ...absorbed.map( ( e ) => ( { e, node: { name: lb.text, attributes: { [ lb.words ]: e.words }, innerBlocks: [], draftRef: { tpl: e.key } } } ) ), { e: select, node: sorting } ];
+		inner.sort( ( a, b ) => index.order( a.e.key ) - index.order( b.e.key ) );
+		put = { name: lb.wrapper, attributes: {}, innerBlocks: inner.map( ( x ) => x.node ), draftRef: { tpl: label.key } };
+	}
+	const where = at.list.indexOf( at.node );
+	at.list.splice( where, 1, put );
+	const holder = treeNodes( tree ).find( ( r ) => r.node.innerBlocks === at.list )?.node;
+	const inside = put === sorting ? '' : `, inside the draft's label ${ label.key } beside its words ${ absorbed.map( ( e ) => e.key ).join( ', ' ) }`;
+	return { tree, placed: [ { id: piece.id, block: piece.block, at: `${ holder ? refKey( holder ) || holder.name : 'the top' }, position ${ where }, in place of ${ refKey( at.node ) } (${ at.node.name })${ inside }` } ], notes };
 }
 
 // Whether a hole's values are the length of the list `list` (the listing's loop list) plus any words.
@@ -178,7 +156,7 @@ function countsList( L, hole, list ) {
 	return decls.size > 0 && values.length > 0 && values.every( ( v ) => lengths( v ).some( ( n ) => decls.has( resolveName( L, n.object )?.decl ) ) );
 }
 
-function placeCount( ctx, piece, index, listing, frame ) {
+function placeCount( ctx, piece, index, listing ) {
 	const { key, tree } = ctx;
 	const L = draftLogic( ctx.draftSource );
 	if ( ! L ) {
@@ -197,9 +175,10 @@ function placeCount( ctx, piece, index, listing, frame ) {
 	if ( ! at ) {
 		return { notes: [ `${ key }: piece "${ piece.id }": the listing's count ${ e.key } ("${ e.words }") has no node of its own in the skeleton, so it stays as built` ] };
 	}
-	at.list.splice( at.list.indexOf( at.node ), 1 );
-	const where = intoToolbar( listing.collection, frame, { name: piece.block, attributes: {}, innerBlocks: [] } );
-	return { tree, placed: [ { id: piece.id, block: piece.block, at: `${ where }, in place of ${ e.key } (${ at.node.name })` } ], notes: [ `${ key }: piece "${ piece.id }": WooCommerce words the count its own way; the draft's reads "${ String( e.srcOwnText ).trim() }" ("${ e.words }")` ] };
+	const where = at.list.indexOf( at.node );
+	at.list.splice( where, 1, { name: piece.block, attributes: {}, innerBlocks: [] } );
+	const holder = treeNodes( tree ).find( ( r ) => r.node.innerBlocks === at.list )?.node;
+	return { tree, placed: [ { id: piece.id, block: piece.block, at: `${ holder ? refKey( holder ) || holder.name : 'the top' }, position ${ where }, in place of ${ e.key } (${ at.node.name })` } ], notes: [ `${ key }: piece "${ piece.id }": WooCommerce words the count its own way; the draft's reads "${ String( e.srcOwnText ).trim() }" ("${ e.words }")` ] };
 }
 
 export function place( ctx, piece ) {
@@ -215,9 +194,5 @@ export function place( ctx, piece ) {
 	if ( ! listing.collection ) {
 		return { problems: [ `${ key }: piece "${ piece.id }" (${ piece.block }) is not placed: ${ listing.why }` ] };
 	}
-	const frame = frameworkToolbar( piece.block, ctx.themeDir );
-	if ( ! frame ) {
-		return { problems: [ `${ key }: piece "${ piece.id }" (${ piece.block }) is not placed: the framework's archive-product.html holds no ${ piece.block } inside its ${ COLLECTION }` ] };
-	}
-	return piece.find?.contains ? placeSorting( ctx, piece, index, listing, frame ) : placeCount( ctx, piece, index, listing, frame );
+	return piece.find?.contains ? placeSorting( ctx, piece, index ) : placeCount( ctx, piece, index, listing );
 }

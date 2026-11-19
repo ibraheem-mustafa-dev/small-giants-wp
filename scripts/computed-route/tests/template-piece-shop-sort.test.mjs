@@ -1,17 +1,16 @@
 // The shop listing's sorting and results count (Spec 48 FR-48-61, FR-48-87, FR-48-99; lib/template-piece-shop-sort.mjs):
-// the draft's sort control and its count of the listing become WooCommerce's catalog-sorting and product-results-count,
-// inside the product collection's toolbar as the framework's archive-product.html composes them. Tests marked MUST FAIL
-// fail without the code they name.
+// the draft's sort control and its count of the listing become WooCommerce's catalog-sorting and product-results-count
+// where the draft's own nodes stood, inside the draft's own wrappers, carrying no style value. Tests marked MUST FAIL fail
+// without the code they name.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
-import { frameworkToolbar, place } from '../lib/template-piece-shop-sort.mjs';
+import { place } from '../lib/template-piece-shop-sort.mjs';
 import { countBlocks } from '../lib/template-pieces.mjs';
+import { lintSkeleton } from '../lint.mjs';
+import { openDb } from '../lib/db.mjs';
 
 const ORDERS = { default: 'menu_order', priceAsc: 'price', priceDesc: 'price-desc' };
-const SORT = { id: 'sorting', block: 'woocommerce/catalog-sorting', required: false, kind: 'shop-sort', find: { surface: 'filter', contains: 'wp:woocommerce/catalog-sorting', labelSetting: 'useLabel', orders: ORDERS } };
+const SORT = { id: 'sorting', block: 'woocommerce/catalog-sorting', required: false, kind: 'shop-sort', find: { surface: 'filter', contains: 'wp:woocommerce/catalog-sorting', labelBlock: { wrapper: 'sgs/container', text: 'sgs/text', words: 'text' }, orders: ORDERS } };
 const COUNT = { id: 'results-count', block: 'woocommerce/product-results-count', required: false, kind: 'shop-sort', find: { count: 'listing' } };
 
 const SOURCE = `<x-dc><div></div></x-dc>
@@ -49,40 +48,42 @@ const RECORD = ( sample = 'select', locators = [ 'Shop/17' ] ) => ( { surfaces: 
 const ctx = ( over = {} ) => ( { key: 'archive-product', tree: TREE(), inventory: INVENTORY, shopParts: RECORD(), draftFile: 'Shop.dc.html', draftSource: SOURCE, productFields: { price: [ 'from' ] }, ...over } );
 const collection = ( tree ) => tree[ 0 ].innerBlocks[ 1 ].innerBlocks.find( ( x ) => 'woocommerce/product-collection' === x.name );
 
-test( 'the framework\'s toolbar is read from its own archive-product.html: inside the collection, count then sorting', () => {
-	const frame = frameworkToolbar( 'woocommerce/catalog-sorting' );
-	assert.equal( frame.toolbar.attributes.className, 'sgs-shop-toolbar' );
-	assert.deepEqual( frame.order, [ 'woocommerce/product-results-count', 'woocommerce/catalog-sorting' ] );
-	assert.equal( frame.at, 0 );
-	assert.equal( frameworkToolbar( 'woocommerce/no-such-block' ), null );
-} );
-
-test( 'MUST FAIL: the located sort control becomes WooCommerce\'s sorting in the collection\'s toolbar, with its label and options read', () => {
+test( 'MUST FAIL: the located sort control becomes WooCommerce\'s sorting where it stood, inside the draft\'s label beside its own words', () => {
 	const got = place( ctx(), SORT );
-	const bar = collection( got.tree ).innerBlocks[ 0 ];
-	assert.equal( bar.attributes.className, 'sgs-shop-toolbar' );
-	assert.deepEqual( bar.innerBlocks, [ { name: 'woocommerce/catalog-sorting', attributes: { useLabel: true }, innerBlocks: [] } ] );
-	assert.equal( collection( got.tree ).innerBlocks[ 1 ].name, 'woocommerce/product-template' );
-	assert.match( got.placed[ 0 ].at, /toolbar \(sgs-shop-toolbar\), position 0, in place of Root\/17#0 \(sgs\/form-field-select\)/ );
+	const hero = got.tree[ 0 ].innerBlocks[ 0 ].innerBlocks;
+	// The form field had absorbed the label: it is the draft's label element again, its words then the sorting, each read at its own element.
+	assert.deepEqual( hero[ 1 ], { name: 'sgs/container', attributes: {}, draftRef: { tpl: 'Root/15#0' }, innerBlocks: [
+		{ name: 'sgs/text', attributes: { text: 'Sort' }, innerBlocks: [], draftRef: { tpl: 'Root/16#0' } },
+		{ name: 'woocommerce/catalog-sorting', attributes: {}, innerBlocks: [] },
+	] } );
+	assert.match( got.placed[ 0 ].at, /^Root\/9#0, position 1, in place of Root\/17#0 \(sgs\/form-field-select\), inside the draft's label Root\/15#0 beside its words Root\/16#0$/ );
+	// The collection is untouched, and nothing placed carries a style value.
+	assert.deepEqual( collection( got.tree ), collection( TREE() ) );
+	assert.deepEqual( lintSkeleton( got.tree, openDb() ), [] );
 	// Negative control: a select that is not the listing's sort stays.
-	assert.deepEqual( got.tree[ 0 ].innerBlocks[ 0 ].innerBlocks.map( ( x ) => x.draftRef?.tpl ), [ 'Root/13#0', 'Root/22#0' ] );
+	assert.deepEqual( hero.map( ( x ) => x.draftRef?.tpl ), [ 'Root/13#0', 'Root/15#0', 'Root/22#0' ] );
 	const notes = got.notes.join( '\n' );
 	assert.match( notes, /"Featured" = menu_order, "Price: low to high" = price, "Price: high to low" = price-desc/ );
 	assert.match( notes, /missing feature: the draft's sort option "Biggest saving" \(save\) orders by saveRaw downwards/ );
 } );
 
-test( 'MUST FAIL: the listing\'s own count becomes WooCommerce\'s results count before the sorting; another count stays', () => {
+test( 'MUST FAIL: words beside the select that have their own node stay; the sorting alone takes the field\'s place', () => {
+	const tree = TREE();
+	tree[ 0 ].innerBlocks[ 0 ].innerBlocks.splice( 1, 0, { name: 'sgs/text', attributes: { text: 'Sort' }, innerBlocks: [], draftRef: { tpl: 'Root/16#0' } } );
+	const got = place( ctx( { tree } ), SORT );
+	assert.deepEqual( got.tree[ 0 ].innerBlocks[ 0 ].innerBlocks.map( ( x ) => x.name ), [ 'sgs/heading', 'sgs/text', 'woocommerce/catalog-sorting', 'sgs/form-field-select' ] );
+} );
+
+test( 'MUST FAIL: the listing\'s own count becomes WooCommerce\'s results count where it stood; another count stays', () => {
 	const sorted = place( ctx(), SORT ).tree;
 	const got = place( ctx( { tree: sorted } ), COUNT );
-	assert.deepEqual( collection( got.tree ).innerBlocks[ 0 ].innerBlocks.map( ( x ) => x.name ), [ 'woocommerce/product-results-count', 'woocommerce/catalog-sorting' ] );
-	assert.match( got.placed[ 0 ].at, /in place of Root\/27#0 \(sgs\/text\)/ );
-	assert.deepEqual( got.tree[ 0 ].innerBlocks[ 1 ].innerBlocks.map( ( x ) => x.name ), [ 'woocommerce/product-collection' ] );
+	assert.deepEqual( got.tree[ 0 ].innerBlocks[ 1 ].innerBlocks.map( ( x ) => x.name ), [ 'woocommerce/product-results-count', 'woocommerce/product-collection' ] );
+	assert.equal( got.placed[ 0 ].at, 'Root/26#0, position 0, in place of Root/27#0 (sgs/text)' );
+	assert.deepEqual( lintSkeleton( got.tree, openDb() ), [] );
 	// A second pass leaves a placed piece alone.
 	assert.match( place( ctx( { tree: got.tree } ), SORT ).notes[ 0 ], /already holds woocommerce\/catalog-sorting/ );
 	assert.equal( got.tree[ 0 ].innerBlocks[ 2 ].attributes.text, '0 in basket' );
 	assert.equal( countBlocks( got.tree, 'sgs/product-card' ), 1 );
-	// Alone, the count makes the toolbar itself.
-	assert.equal( collection( place( ctx(), COUNT ).tree ).innerBlocks[ 0 ].innerBlocks[ 0 ].name, 'woocommerce/product-results-count' );
 } );
 
 test( 'MUST FAIL: two counts of the listing are a problem; none, or one with no node of its own, a note', () => {
@@ -107,8 +108,4 @@ test( 'MUST FAIL: a sort record that disagrees with the inventory, or no collect
 	const two = TREE();
 	two[ 0 ].innerBlocks[ 1 ].innerBlocks.push( structuredClone( two[ 0 ].innerBlocks[ 1 ].innerBlocks[ 1 ] ) );
 	assert.match( place( ctx( { tree: two } ), SORT ).problems[ 0 ], /the tree holds 2 woocommerce\/product-collection/ );
-	// A theme folder without the framework's toolbar is a problem, never a made-up toolbar.
-	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'shop-sort-' ) );
-	fs.writeFileSync( path.join( dir, 'archive-product.html' ), '<!-- wp:woocommerce/product-collection --><!-- wp:woocommerce/product-template /--><!-- /wp:woocommerce/product-collection -->' );
-	assert.match( place( ctx( { themeDir: dir } ), SORT ).problems[ 0 ], /archive-product\.html holds no woocommerce\/catalog-sorting inside/ );
 } );

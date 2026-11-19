@@ -27,6 +27,8 @@ import * as buybox from './template-piece-buybox.mjs';
 import * as productField from './template-piece-product-field.mjs';
 import * as shopSort from './template-piece-shop-sort.mjs';
 import * as order from './template-piece-order.mjs';
+import { lintSkeleton } from '../lint.mjs';
+import { openDb } from './db.mjs';
 
 // The builders the pass runs, by piece kind.
 export const BUILDERS = { buybox, 'product-field': productField, 'shop-sort': shopSort, order };
@@ -78,14 +80,29 @@ export function pieceContext( { repo, client, entry, inventory, pieces = [], fac
 	};
 }
 
+// What the builders added that the skeleton lint (lint.mjs::lintSkeleton, rule R-47-10: a Fill skeleton carries no
+// attribute that paints a CSS property) refuses: its findings on `after` that `before` does not have, by message with
+// the node number left out. A setting that paints a property is Fill's to write, never a builder's.
+export function placedLint( before, after, db ) {
+	const bare = ( m ) => m.replace( /node \d+ /, '' );
+	const had = lintSkeleton( before, db ).map( bare );
+	return lintSkeleton( after, db ).map( bare ).filter( ( m ) => {
+		const i = had.indexOf( m );
+		return i < 0 || ! had.splice( i, 1 );
+	} );
+}
+
 // The pass over one proposed skeleton: { tree, placed, problems, notes, template }, the tree unchanged (and every list
 // empty) when the surface builds no template the map names a builder's piece for. A template whose pieces are all a
 // rule's or the theme's is not checked here: a theme piece arrives only when the template copy is made
-// (lib/template-copies.mjs::themeContent), so a skeleton never holds it.
-export function piecesPass( { repo, client, entry, tree, inventory, data = loadPieces(), builders = BUILDERS, facts = null } ) {
+// (lib/template-copies.mjs::themeContent), so a skeleton never holds it. Whatever a builder placed that the skeleton
+// lint refuses is a problem (placedLint), so Fill never meets it; `db` is the framework database (opened when not given).
+export function piecesPass( { repo, client, entry, tree, inventory, data = loadPieces(), builders = BUILDERS, facts = null, db = null } ) {
 	const template = entry?.target?.template || null;
 	if ( ! template || ! piecesFor( template, data ).some( ( p ) => ! CHECKED_ONLY.includes( p.kind ) ) ) {
 		return { tree, placed: [], problems: [], notes: [], template };
 	}
-	return { ...placePieces( { key: template, tree, data, ctx: pieceContext( { repo, client, entry, inventory, pieces: piecesFor( template, data ), facts } ), builders } ), template };
+	const got = placePieces( { key: template, tree, data, ctx: pieceContext( { repo, client, entry, inventory, pieces: piecesFor( template, data ), facts } ), builders } );
+	const lint = placedLint( tree, got.tree, db || openDb() ).map( ( m ) => `${ template }: a placed piece breaks the skeleton lint: ${ m }` );
+	return { ...got, problems: [ ...got.problems, ...lint ], template };
 }

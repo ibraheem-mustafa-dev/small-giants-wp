@@ -9,7 +9,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
-import { pieceContext, piecesPass, productFieldsOf } from '../lib/template-pieces-context.mjs';
+import { pieceContext, piecesPass, placedLint, productFieldsOf } from '../lib/template-pieces-context.mjs';
+import { openDb } from '../lib/db.mjs';
 import { checkPieces, countBlocks, loadPieces, piecesFor } from '../lib/template-pieces.mjs';
 import { proposeDetail } from '../site-run.mjs';
 import { inventoryIndex, refKey, treeNodes } from '../lib/template-piece-draft.mjs';
@@ -49,9 +50,11 @@ test( 'MUST FAIL: Mama\'s product skeleton gets one buy box, a bound title and d
 	const index = inventoryIndex( input.inventory );
 	assert.ok( gone.every( ( k ) => [ ...removed ].some( ( r ) => index.within( k, r ) ) ), gone.join( ', ' ) );
 	assert.ok( refs( got.tree ).includes( 'Root/109#0' ) && refs( got.tree ).includes( 'Root/128#0' ) );
+	// Nothing placed carries a style value (the lint Fill runs).
+	assert.deepEqual( placedLint( before, got.tree, openDb() ), [] );
 } );
 
-test( 'MUST FAIL: Mama\'s shop skeleton gets WooCommerce\'s sorting and results count in the collection, the collection otherwise untouched', () => {
+test( 'MUST FAIL: Mama\'s shop skeleton gets WooCommerce\'s sorting and results count where the draft draws them, the collection untouched', () => {
 	const input = read( MAMAS, 'shop' );
 	const got = piecesPass( input );
 	assert.deepEqual( got.problems, [] );
@@ -60,8 +63,12 @@ test( 'MUST FAIL: Mama\'s shop skeleton gets WooCommerce\'s sorting and results 
 	assert.equal( countBlocks( got.tree, 'woocommerce/product-results-count' ), 1 );
 	assert.equal( countBlocks( got.tree, 'sgs/form-field-select' ), 0 );
 	const col = ( t ) => treeNodes( t ).find( ( r ) => 'woocommerce/product-collection' === r.node.name ).node;
-	assert.deepEqual( col( got.tree ).innerBlocks.slice( 1 ), col( input.tree ).innerBlocks );
-	assert.deepEqual( col( got.tree ).attributes, col( input.tree ).attributes );
+	assert.deepEqual( col( got.tree ), col( input.tree ) );
+	// The sorting sits in the draft's label (Root/15) in the hero band, the count where the draft's count stood beside the collection.
+	const holder = ( name ) => treeNodes( got.tree ).find( ( r ) => ( r.node.innerBlocks || [] ).some( ( c ) => c.name === name ) ).node;
+	assert.equal( refKey( holder( 'woocommerce/catalog-sorting' ) ), 'Root/15#0' );
+	assert.equal( refKey( holder( 'woocommerce/product-results-count' ) ), 'Root/26#0' );
+	assert.deepEqual( placedLint( input.tree, got.tree, openDb() ), [] );
 	assert.match( got.notes.join( '\n' ), /"Featured" = menu_order, "Price: low to high" = price, "Price: high to low" = price-desc/ );
 	// Negative control: the category chips (the filter's, not the sort's) stay.
 	assert.equal( countBlocks( got.tree, 'sgs/option-picker' ), 1 );
@@ -106,6 +113,7 @@ test( 'MUST FAIL: Mama\'s order confirmation through the pass: one sgs/order-ite
 	const number = treeNodes( got.tree ).filter( ( r ) => Object.values( r.node.attributes?.metadata?.bindings || {} ).some( ( b ) => 'sgs/order' === b.source && 'number' === b.args?.key ) );
 	assert.equal( number.length, 1 );
 	assert.deepEqual( checkPieces( { key: 'order-confirmation', tree: got.tree, data: loadPieces() } ), [] );
+	assert.deepEqual( placedLint( tree, got.tree, openDb() ), [] );
 	// What no order key holds is a problem row, never a binding (as the order builder's own test proves).
 	assert.deepEqual( got.problems.map( ( p ) => /\{\{ ([\w.]+) \}\}/.exec( p )?.[ 1 ] ), [ 'arrive', 'bakeDate', 's.d', 'acctEyebrow' ] );
 } );
@@ -137,4 +145,19 @@ test( 'MUST FAIL: a piece problem joins the proposal\'s problems, which fail the
 	const src = fs.readFileSync( path.join( REPO, 'scripts', 'computed-route', 'skeleton.mjs' ), 'utf8' );
 	assert.match( src, /Object\.assign\( r, \{ skeleton: pieces\.tree, problems: \[ \.\.\.r\.problems, \.\.\.pieces\.problems \] \} \);/ );
 	assert.match( src, /r\.proposal\.templatePieces = \{ placed: pieces\.placed, problems: pieces\.problems, notes: pieces\.notes \};/ );
+} );
+
+test( 'MUST FAIL: whatever a builder places that the skeleton lint refuses is a problem of the pass', () => {
+	const input = read( MAMAS, 'shop' );
+	const planted = { place: ( ctx, piece ) => {
+		if ( 'sorting' !== piece.id ) {
+			return {};
+		}
+		ctx.tree[ 0 ].innerBlocks.push( { name: 'sgs/container', attributes: { justifyContent: 'center' }, innerBlocks: [] } );
+		return { tree: ctx.tree, placed: [ { id: 'sorting', block: 'sgs/container', at: 'end' } ] };
+	} };
+	const got = piecesPass( { ...input, builders: { 'shop-sort': planted } } );
+	assert.deepEqual( got.problems.filter( ( p ) => /skeleton lint/.test( p ) ), [ 'archive-product: a placed piece breaks the skeleton lint: skeleton (sgs/container) carries style value justifyContent' ] );
+	// A finding the skeleton already had is not the builder's.
+	assert.deepEqual( placedLint( got.tree, got.tree, openDb() ), [] );
 } );

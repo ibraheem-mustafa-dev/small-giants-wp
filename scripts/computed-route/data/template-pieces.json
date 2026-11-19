@@ -15,7 +15,7 @@
 			"pieces": [
 				{ "id": "listing", "block": "woocommerce/product-collection", "required": true, "kind": "rule", "by": "commerceRegion" },
 				{ "id": "listing-card", "block": "sgs/product-card", "required": true, "kind": "rule", "by": "commerceRegion" },
-				{ "id": "sorting", "block": "woocommerce/catalog-sorting", "required": false, "kind": "shop-sort", "find": { "surface": "filter", "contains": "wp:woocommerce/catalog-sorting", "labelSetting": "useLabel", "orders": { "default": "menu_order", "priceAsc": "price", "priceDesc": "price-desc" } } },
+				{ "id": "sorting", "block": "woocommerce/catalog-sorting", "required": false, "kind": "shop-sort", "find": { "surface": "filter", "contains": "wp:woocommerce/catalog-sorting", "labelBlock": { "wrapper": "sgs/container", "text": "sgs/text", "words": "text" }, "orders": { "default": "menu_order", "priceAsc": "price", "priceDesc": "price-desc" } } },
 				{ "id": "results-count", "block": "woocommerce/product-results-count", "required": false, "kind": "shop-sort", "find": { "count": "listing" } }
 			]
 		},
