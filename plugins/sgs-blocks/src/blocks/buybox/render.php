@@ -333,7 +333,7 @@ $unavailable_label = sanitize_text_field( $attributes['unavailableLabel'] ?? __(
 // FR-30-10 Step-10a (all-variation fix): build the gallery DATA-ISLAND from the
 // FULL combos (not the lean seed). Every combo with a >=2-image gallery is keyed
 // by its combo key; the island is emitted as an on-page JSON <script> inside the
-// .sgs-buybox wrapper (NOT subject to the 24 KB context cap), so EVERY variation's
+// .sgs-buybox wrapper (NOT subject to the builder data limit), so EVERY variation's
 // gallery is available to the store on swap, not just the few that fit the seed.
 $buybox_gallery_island = array();
 foreach ( $manifest['combos'] as $buybox_island_key => $buybox_island_combo ) {
@@ -344,12 +344,12 @@ foreach ( $manifest['combos'] as $buybox_island_key => $buybox_island_combo ) {
 	}
 }
 
-// Lean seed — 24 KB cap guard (mirrors product-card M-C9).
+// Lean seed for the builder data limit (mirrors product-card M-C9).
 // sgs_lean_seed_combos keeps gallery arrays when count >= 2, empties when < 2.
 $seed_combos = sgs_lean_seed_combos( $manifest['combos'] );
 
 // FR-30-10 Step-10a (all-variation fix): shrink the seed so it never trips the
-// 24 KB cap regardless of variation count. Only the DEFAULT combo keeps its
+// builder data limit regardless of variation count. Only the DEFAULT combo keeps its
 // gallery (for SSR/first-paint parity with gallery-col.php); every other combo's
 // gallery is emptied in the seed and comes from the data-island on swap instead.
 foreach ( $seed_combos as $buybox_seed_key => &$buybox_seed_combo ) {
@@ -507,7 +507,7 @@ $context = array(
 	'unavailableLabel'    => $unavailable_label,
 );
 
-/* ── 6. Hard cap: 24 KB max serialised context ───────────────────────────── */
+/* ── 6. Builder data limit: sgs_configurator_context_cap_bytes() (24 KB unless a site raises it per product) ── */
 
 if ( strlen( wp_json_encode( $context ) ) > sgs_configurator_context_cap_bytes( (int) $product->get_id() ) ) {
 	// Cap exceeded — fall back to core WC blocks.
@@ -916,9 +916,9 @@ if ( $buybox_picker_show_selected_value || $buybox_picker_has_link || ( $buybox_
 		$scoped_css[] = $sgs_bb_picker_value_typo_css;
 	}
 	// The picker-label link's colour, underline (its bottom border) and padding.
-	$sgs_bb_link_sel        = $root_sel . ' .sgs-buybox__picker-label-link';
-	$sgs_bb_link_colour     = sgs_colour_value( (string) ( $attributes['pickerLabelLinkColour'] ?? '' ) );
-	$sgs_bb_link_underline  = sgs_colour_value( (string) ( $attributes['pickerLabelLinkUnderlineColour'] ?? '' ) );
+	$sgs_bb_link_sel       = $root_sel . ' .sgs-buybox__picker-label-link';
+	$sgs_bb_link_colour    = sgs_colour_value( (string) ( $attributes['pickerLabelLinkColour'] ?? '' ) );
+	$sgs_bb_link_underline = sgs_colour_value( (string) ( $attributes['pickerLabelLinkUnderlineColour'] ?? '' ) );
 	if ( '' !== $sgs_bb_link_colour ) {
 		$scoped_css[] = $sgs_bb_link_sel . '{color:' . $sgs_bb_link_colour . ';}';
 	}
@@ -1021,7 +1021,7 @@ $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter',
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-compact', '', false, false, sgs_object_attr_keys( $block ) );
 // The status stock line and each meter step are flex rows as wide as their cell, so text-align
 // alone moves nothing there: justify-content places their content (a plain line follows text-align).
-$sgs_bb_justify_map = array(
+$sgs_bb_justify_map   = array(
 	'left'    => 'flex-start',
 	'start'   => 'flex-start',
 	'justify' => 'flex-start',
@@ -1062,7 +1062,7 @@ $buybox_stock_position = in_array( (string) ( $attributes['stockLinePosition'] ?
 	? (string) ( $attributes['stockLinePosition'] ?? 'below' )
 	: 'below';
 if ( 'above' === $buybox_stock_position && ! empty( $attributes['stockLineHairline'] ) ) {
-	$scoped_css[] = $root_sel . ' .sgs-buybox__stock-hairline{border-top:1px solid ' . sgs_colour_value( 'border' ) . ';margin:8px 0;}';
+	$scoped_css[]           = $root_sel . ' .sgs-buybox__stock-hairline{border-top:1px solid ' . sgs_colour_value( 'border' ) . ';margin:8px 0;}';
 	$sgs_bb_hairline_margin = sgs_box_object_longhands(
 		is_array( $attributes['stockLineHairlineMargin'] ?? null ) ? $attributes['stockLineHairlineMargin'] : array(),
 		'margin'
@@ -1088,7 +1088,16 @@ $sgs_bb_gallery_ratio = (float) ( $attributes['galleryColumnRatio'] ?? 0 );
 // A saved string is the one desktop-wide value; a {desktop,tablet,mobile} object is emitted per device through the
 // shared responsive emitter, inside the same side-by-side media query.
 $sgs_bb_gallery_gap_raw   = $attributes['galleryColumnGap'] ?? '';
-$sgs_bb_gallery_gap_tiers = is_array( $sgs_bb_gallery_gap_raw ) ? sgs_emit_responsive_css( $root_sel, array( array( 'value' => $sgs_bb_gallery_gap_raw, 'css' => 'gap', 'unit_default' => 'px' ) ) ) : '';
+$sgs_bb_gallery_gap_tiers = is_array( $sgs_bb_gallery_gap_raw ) ? sgs_emit_responsive_css(
+	$root_sel,
+	array(
+		array(
+			'value'        => $sgs_bb_gallery_gap_raw,
+			'css'          => 'gap',
+			'unit_default' => 'px',
+		),
+	)
+) : '';
 $sgs_bb_gallery_gap       = is_array( $sgs_bb_gallery_gap_raw ) ? '' : sgs_css_length_value( (string) $sgs_bb_gallery_gap_raw );
 if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_gallery_gap_tiers ) {
 	$sgs_bb_gallery_media = SGS_Breakpoints::media( 'tablet' === ( $attributes['stackBelow'] ?? 'mobile' ) ? 'desktop' : 'tablet-up' );
@@ -1508,7 +1517,18 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 			}
 
 			if ( $buybox_is_configurator ) {
-				$buybox_picker_attrs = sgs_buybox_configurator_picker_attrs( $buybox_picker_attrs, $attributes, $buybox_axis_style, $axis, $manifest, array( 'mode' => $tax_mode, 'suffix' => $price_suffix, 'pack_axis' => (string) ( $buybox_cfg_state['pack']['key'] ?? '' ) ) );
+				$buybox_picker_attrs = sgs_buybox_configurator_picker_attrs(
+					$buybox_picker_attrs,
+					$attributes,
+					$buybox_axis_style,
+					$axis,
+					$manifest,
+					array(
+						'mode'      => $tax_mode,
+						'suffix'    => $price_suffix,
+						'pack_axis' => (string) ( $buybox_cfg_state['pack']['key'] ?? '' ),
+					)
+				);
 			}
 
 			$buybox_picker_html = render_block(
@@ -1577,12 +1597,12 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 	?>
 
 <?php
-	// Pick a set with the button under the picture (pickSideButton): the CTA below is held, then put in the side column.
-	$buybox_side_cart = $buybox_is_configurator && ! empty( $attributes['pickSideButton'] );
-	if ( $buybox_side_cart ) {
-		ob_start();
-	}
-	?>
+// Pick a set with the button under the picture (pickSideButton): the CTA below is held, then put in the side column.
+$buybox_side_cart = $buybox_is_configurator && ! empty( $attributes['pickSideButton'] );
+if ( $buybox_side_cart ) {
+	ob_start();
+}
+?>
 	<?php if ( $add_to_cart_opens_modal ) : ?>
 		<?php
 		// ── 8d (modal mode). Spec 43 Phase 3/4 §5a — opens an sgs/modal instead
@@ -1618,7 +1638,13 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 		action="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
 		data-wp-on--submit="actions.addToCart"
 	>
-		<?php if ( $buybox_is_configurator ) { echo sgs_buybox_configurator_hidden_inputs( $buybox_post_id, (int) $def['variationId'], (array) $manifest['defaultAxes'] ); } // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside. ?><button
+		<?php
+		if ( $buybox_is_configurator ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside.
+			echo sgs_buybox_configurator_hidden_inputs( $buybox_post_id, (int) $def['variationId'], (array) $manifest['defaultAxes'] );
+		}
+		?>
+		<button
 			type="submit"
 			class="<?php echo esc_attr( $add_to_cart_button_classes ); ?>"
 			data-wp-bind--disabled="context.pending"
@@ -1646,14 +1672,17 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 			<?php endif; ?>
 		</button>
 	</form>
-<?php sgs_buybox_after_cart_form_action( $buybox_post_id, ! $buybox_is_guided && ! $add_to_cart_opens_modal, 'interaction' === ( $attributes['expressLoad'] ?? 'page' ) ); ?>
+<?php // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect -- flush left: indentation before a tag prints.
+		$buybox_express_on_interaction = 'interaction' === ( $attributes['expressLoad'] ?? 'page' );
+		sgs_buybox_after_cart_form_action( $buybox_post_id, ! $buybox_is_guided && ! $add_to_cart_opens_modal, $buybox_express_on_interaction );
+		?>
 	<?php endif; ?>
 <?php
-	if ( $buybox_side_cart ) {
-		$buybox_side_cart_html = ob_get_clean();
-		echo str_replace( SGS_BUYBOX_SIDE_CART_MARKER, $buybox_side_cart_html, (string) ob_get_clean() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the CTA's own escaped markup, placed in the configurator shell held since its opening.
-	}
-	?>
+if ( $buybox_side_cart ) {
+	$buybox_side_cart_html = ob_get_clean();
+	echo str_replace( SGS_BUYBOX_SIDE_CART_MARKER, $buybox_side_cart_html, (string) ob_get_clean() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the CTA's own escaped markup, placed in the configurator shell held since its opening.
+}
+?>
 
 	<?php // ── 8f. Availability live region — polite, visually hidden (mirrors card L900-906). ?>
 	<p
@@ -1698,7 +1727,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 	// All >=2-image variation galleries, keyed by combo key, emitted as JSON
 	// inside the .sgs-buybox wrapper so the product-card store (which registers
 	// this wrapper as its cardRef in initPillBridge) can read each variation's
-	// gallery on swap WITHOUT the 24 KB context-cap limit. The HEX flags neutralise
+	// gallery on swap WITHOUT the builder data limit. The HEX flags neutralise
 	// </script>, &, ', and " so the JSON cannot break out of the script element
 	// or inject markup (XSS-safe). wp_json_encode returns false on failure → {}.
 	$buybox_island_json = wp_json_encode(
@@ -1711,7 +1740,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 
 	// The main photo's sharp files, keyed by attachment id: `src` and `srcset` of each photo any variation can show,
 	// stored once per photo however many variations share it. It is a second script beside the gallery island, outside
-	// the 24 KB context cap. A swap (variation change or thumbnail click) writes the entry's pair to the main photo
+	// the builder data limit. A swap (variation change or thumbnail click) writes the entry's pair to the main photo
 	// together (product-card/photo-source.js). Printed only when the manifest has photos with attachment ids; a buy box
 	// without the script swaps to the thumbnail with an empty `srcset`, as before. Same JSON flags as above.
 	$buybox_images_json = ! empty( $manifest['images'] ) && is_array( $manifest['images'] )

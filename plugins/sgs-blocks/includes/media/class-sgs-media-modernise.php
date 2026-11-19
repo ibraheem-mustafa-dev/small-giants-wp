@@ -138,9 +138,15 @@ final class Sgs_Media_Modernise {
 				$out['missing'][] = (string) $name;
 			}
 		}
+		// The glob also finds another upload's copies when its name starts with this one's ("photo-2-300x200.jpg" for
+		// "photo.jpg"), so a file counts only when nothing but "<width>x<height>.<ext>" follows the name.
 		$pattern = addcslashes( wp_normalize_path( $dir . $base ), '[]*?' ) . '-*x*.*';
-		$known = array_map( 'wp_normalize_path', $out['empty'] );
+		$own     = '/^' . preg_quote( $base, '/' ) . '-\d+x\d+\.[a-z0-9]+$/i';
+		$known   = array_map( 'wp_normalize_path', $out['empty'] );
 		foreach ( (array) glob( $pattern ) as $path ) {
+			if ( 1 !== preg_match( $own, basename( (string) $path ) ) ) {
+				continue;
+			}
 			if ( is_file( $path ) && 0 === (int) filesize( $path ) && ! in_array( wp_normalize_path( $path ), $known, true ) ) {
 				$out['empty'][] = $path;
 			}
@@ -168,7 +174,8 @@ final class Sgs_Media_Modernise {
 		$ids   = array();
 		$last  = $after;
 		$chunk = max( 50, $limit * 5 );
-		while ( count( $ids ) < $limit ) {
+		$found = 0;
+		while ( $found < $limit ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$rows = $wpdb->get_col(
 				$wpdb->prepare(
@@ -185,7 +192,8 @@ final class Sgs_Media_Modernise {
 				$problem = self::repair_problems( $last );
 				if ( $problem['empty'] || $problem['missing'] ) {
 					$ids[] = $last;
-					if ( count( $ids ) >= $limit ) {
+					++$found;
+					if ( $found >= $limit ) {
 						break 2;
 					}
 				}

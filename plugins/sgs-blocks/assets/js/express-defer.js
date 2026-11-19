@@ -3,8 +3,9 @@
  *
  * `includes/woocommerce/express-defer.php` prints the payment plugin's front-end scripts, and the inline data that
  * belongs to them, as inert `<script type="text/plain" data-sgs-defer="<real type>">` tags in their normal places.
- * This script waits for the shopper's first scroll, pointer press, key press or touch, or for the wallet buttons to come
- * within one screen height of the viewport, whichever happens first. It then runs the held scripts once, in the order
+ * This script waits for the shopper's first scroll, pointer press, key press or touch. When the wallet buttons are already
+ * on screen as the page finishes loading it starts then instead, because the shopper can see them; buttons further down
+ * wait for the first interaction, however near they sit. It then runs the held scripts once, in the order
  * they sit in the page, each external file finishing before the next starts (the order a normal page load keeps). Only a
  * tag carrying `data-sgs-defer` is ever touched, so any script the server did not hold loads as it always did. When the
  * last held script has run it dispatches `sgs:express-loaded` on `window`, which the buy box listens for.
@@ -103,7 +104,7 @@
 						run();
 					}
 				},
-				{ rootMargin: '100% 0px 100% 0px' }
+				{ rootMargin: '0px' }
 			);
 			observer.observe( target );
 		}

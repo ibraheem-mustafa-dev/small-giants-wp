@@ -767,6 +767,11 @@
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox__note[hidden]",
+   "reason": "the note box leaves layout (display none) while the chosen option is out of stock; the hidden attribute is bound to the stock state, not a look, and the box's own display: flex would otherwise override it"
+  },
+  {
    "file": "plugins/sgs-blocks/src/blocks/card-grid/style.css",
    "selector": ".sgs-card-grid.sgs-has-grayscale .sgs-card-grid__item:hover .sgs-card-grid__image",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"

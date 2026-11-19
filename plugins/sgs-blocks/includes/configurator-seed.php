@@ -1,10 +1,10 @@
 <?php
 /**
- * Canonical lean-seed strip for the product-card 24 KB context cap.
+ * Canonical lean-seed strip for the product card's builder data limit (sgs_configurator_context_cap_bytes()).
  *
  * Provides sgs_lean_seed_combos() — THE single source of truth for removing
  * server-only fields from a manifest's combos array before the result is
- * serialised into data-wp-context or measured against the 24 KB cap.
+ * serialised into data-wp-context or measured against the builder data limit.
  *
  * Three callers (as of backlog #17):
  *   1. src/blocks/product-card/render.php   — seeds data-wp-context.
@@ -47,7 +47,7 @@ if ( ! function_exists( 'sgs_configurator_context_cap_bytes' ) ) {
 
 if ( ! function_exists( 'sgs_lean_seed_combos' ) ) {
 	/**
-	 * Strip server-only fields from a manifest combos array for the 24 KB lean-seed.
+	 * Strip server-only fields from a manifest combos array for the lean seed.
 	 *
 	 * Applies the canonical strip used by the product-card render.php before
 	 * seeding data-wp-context:

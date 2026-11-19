@@ -41,6 +41,33 @@
     <!-- ── WordPress environment config ────────────────────────────────── -->
     <config name="minimum_wp_version" value="6.5"/>
 
+    <!-- ── Capabilities core WordPress does not register ─────────────────── -->
+    <!-- WooCommerce's (manage_woocommerce, view_order, and the product post type's) and the SGS plugins' own. -->
+    <rule ref="WordPress.WP.Capabilities">
+        <properties>
+            <property name="custom_capabilities" type="array">
+                <element value="manage_woocommerce"/>
+                <element value="view_order"/>
+                <element value="edit_product"/>
+                <element value="edit_products"/>
+                <element value="edit_sgs_forms"/>
+                <element value="sgs_manage_notes"/>
+                <element value="sgs_create_notes"/>
+                <element value="sgs_view_own_notes"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- ── Escaping functions of the framework's own ─────────────────────── -->
+    <!-- sgs_rich_text_kses(): wp_kses() with the post allow-list less style attributes (includes/helpers-inline-formats.php). -->
+    <rule ref="WordPress.Security.EscapeOutput">
+        <properties>
+            <property name="customEscapingFunctions" type="array">
+                <element value="sgs_rich_text_kses"/>
+            </property>
+        </properties>
+    </rule>
+
     <!-- ── Text domain validation ───────────────────────────────────────── -->
     <rule ref="WordPress.WP.I18n">
         <properties>
@@ -79,6 +106,29 @@
     <rule ref="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound">
         <exclude-pattern>*/src/blocks/*/render\.php$</exclude-pattern>
     </rule>
+
+    <!-- ── Tests ────────────────────────────────────────────────────────── -->
+    <!--
+        PHP tests run without WordPress loaded. They stand in for WordPress and WooCommerce under the real, unprefixed
+        names (add_filter, WC_Order), several stand-ins to a file, often in braced namespaces; they read fixtures and run
+        PHP child processes with plain PHP functions, because the wp_* replacements do not exist there; and stand-ins
+        keep the real signatures, so some parameters go unused. These rules guard code that runs inside WordPress.
+    -->
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals"><exclude-pattern>*/tests/*</exclude-pattern></rule>
+    <rule ref="WordPress.WP.AlternativeFunctions"><exclude-pattern>*/tests/*</exclude-pattern></rule>
+    <rule ref="WordPress.WP.EnqueuedResources"><exclude-pattern>*/tests/*</exclude-pattern></rule>
+    <rule ref="WordPress.WP.GlobalVariablesOverride"><exclude-pattern>*/tests/*</exclude-pattern></rule>
+    <rule ref="WordPress.PHP.DevelopmentFunctions"><exclude-pattern>*/tests/*</exclude-pattern></rule>
+    <rule ref="WordPress.PHP.DiscouragedPHPFunctions"><exclude-pattern>*/tests/*</exclude-pattern></rule>
+    <rule ref="WordPress.Security.EscapeOutput"><exclude-pattern>*/tests/*</exclude-pattern></rule>
+    <rule ref="Generic.Files.OneObjectStructurePerFile"><exclude-pattern>*/tests/*</exclude-pattern></rule>
+    <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"><exclude-pattern>*/tests/*</exclude-pattern></rule>
+    <rule ref="Universal.Namespaces"><exclude-pattern>*/tests/*</exclude-pattern></rule>
+    <rule ref="Universal.Files.SeparateFunctionsFromOO"><exclude-pattern>*/tests/*</exclude-pattern></rule>
+    <!-- A test's name says what it proves; stand-ins mirror documented WordPress functions. -->
+    <rule ref="Squiz.Commenting.FunctionComment.Missing"><exclude-pattern>*/tests/*</exclude-pattern></rule>
+    <rule ref="Squiz.Commenting.ClassComment.Missing"><exclude-pattern>*/tests/*</exclude-pattern></rule>
+    <rule ref="Squiz.Commenting.VariableComment.Missing"><exclude-pattern>*/tests/*</exclude-pattern></rule>
 
     <!-- ── Performance ──────────────────────────────────────────────────── -->
     <arg name="parallel" value="8"/>

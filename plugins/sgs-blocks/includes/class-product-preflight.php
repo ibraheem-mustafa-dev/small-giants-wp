@@ -14,7 +14,7 @@
  *   zero_price           — at least one variation has price ≤ 0 (hard block)
  *   no_image             — at least one variation has no image (hard block)
  *   draft                — product is not published at check time (hard block)
- *   manifest_over_cap    — seeded manifest subset exceeds the 24 KB context cap (hard block)
+ *   manifest_over_cap    — seeded manifest subset exceeds the builder data limit, sgs_configurator_context_cap_bytes() (hard block)
  *   no_variesby          — no variation axis maps to a Google variesBy enum (hard block)
  *   invalid_jsonld       — Product_Schema emits an empty/invalid ProductGroup (hard block)
  *
@@ -53,14 +53,6 @@ final class Product_Preflight {
 
 	/** Cron hook name. */
 	const CRON_HOOK = 'sgs_preflight_health_check';
-
-	/**
-	 * Manifest byte cap (mirrors the product-card render.php 24 KB seed cap, M-C9).
-	 * The seeded subset omits server-only fields; we measure the lean subset here.
-	 *
-	 * @var int
-	 */
-	const MANIFEST_CAP_BYTES = 24576; // The default only: the check reads sgs_configurator_context_cap_bytes(), which a site may raise per product.
 
 	/**
 	 * Maximum number of variable products evaluated per health-cron run.
@@ -432,16 +424,20 @@ final class Product_Preflight {
 			);
 		}
 
-		// ── Check 5: Manifest over the 24 KB seed cap ────────────────────────────
+		// ── Check 5: Manifest over the builder data limit ─────────────────────────
+		// An estimate of what the shop card and buy box print (sgs_configurator_context_cap_bytes(), 24 KB unless a site
+		// raises it per product): the manifest without its images map, each combo trimmed by sgs_lean_seed_combos(). The
+		// buy box prints far less (only the default combo keeps its gallery: 15.8 KB against 30.5 KB measured here for a
+		// 30-option product); the shop card prints the trimmed combos without image ids plus its own labels, within a few
+		// hundred bytes of this figure either way. A product over the limit here is sent back to draft, so the estimate
+		// is not tightened further: a card that does overflow falls back to the plain "From" card and still sells.
 		$checked[] = 'manifest_cap';
 		$manifest  = Product_Manifest::build( $product_id );
 		if ( null !== $manifest ) {
-			// Mirror the lean-subset logic from render.php: strip server-only fields
-			// (sku / gtin / incMinor / saleEndDate / gallery > 1 image) before measuring.
 			$lean_manifest = self::lean_manifest_subset( $manifest );
 			$encoded       = \wp_json_encode( $lean_manifest );
 			$lean_bytes    = \strlen( false !== $encoded ? $encoded : '' );
-			$cap_bytes = \sgs_configurator_context_cap_bytes( $product_id );
+			$cap_bytes     = \sgs_configurator_context_cap_bytes( $product_id );
 			if ( $lean_bytes >= $cap_bytes ) {
 				$cap_msg = \sprintf(
 					/* translators: 1: measured bytes, 2: cap bytes */
@@ -671,7 +667,7 @@ final class Product_Preflight {
 	 *
 	 * Delegates the per-combo strip to sgs_lean_seed_combos() in
 	 * includes/configurator-seed.php, which is the single source of truth for the
-	 * 24 KB lean-seed strip. Any future change to the strip logic belongs there,
+	 * lean-seed strip. Any future change to the strip logic belongs there,
 	 * not here.
 	 *
 	 * @param array $manifest Full manifest from Product_Manifest::build().

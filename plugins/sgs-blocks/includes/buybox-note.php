@@ -36,7 +36,8 @@ if ( ! function_exists( 'sgs_buybox_note_config' ) ) {
 
 if ( ! function_exists( 'sgs_buybox_note_html' ) ) {
 	/**
-	 * The note field's markup, or '' when the note is off.
+	 * The note field's markup, or '' when the note is off. It hides with the Add to basket form while the chosen option
+	 * is out of stock (the same `inStock` context read).
 	 *
 	 * @param array{on:bool,label:string,hint:string,required:bool,max:int} $note       From sgs_buybox_note_config().
 	 * @param int                                                           $product_id The product the buy box shows (makes the ids unique).
@@ -51,7 +52,7 @@ if ( ! function_exists( 'sgs_buybox_note_html' ) ) {
 		$err_id  = $id . '-error';
 		/* translators: %d: how many characters the shopper has left in the note box. */
 		$left_message = __( '%d characters left', 'sgs-blocks' );
-		$html         = '<div class="sgs-buybox__note" data-sgs-note data-max="' . esc_attr( (string) $note['max'] ) . '" data-required="' . ( $note['required'] ? '1' : '0' ) . '" data-label="' . esc_attr( $note['label'] ) . '" data-required-message="' . esc_attr( __( 'Please fill this in before adding to your basket.', 'sgs-blocks' ) ) . '" data-left-message="' . esc_attr( $left_message ) . '">';
+		$html         = '<div class="sgs-buybox__note" data-wp-bind--hidden="!context.inStock" data-sgs-note data-max="' . esc_attr( (string) $note['max'] ) . '" data-required="' . ( $note['required'] ? '1' : '0' ) . '" data-label="' . esc_attr( $note['label'] ) . '" data-required-message="' . esc_attr( __( 'Please fill this in before adding to your basket.', 'sgs-blocks' ) ) . '" data-left-message="' . esc_attr( $left_message ) . '">';
 		$html        .= '<label class="sgs-buybox__note-label" for="' . esc_attr( $id ) . '">' . esc_html( $note['label'] );
 		if ( $note['required'] ) {
 			$html .= ' <span class="sgs-buybox__note-required" aria-hidden="true">*</span>';

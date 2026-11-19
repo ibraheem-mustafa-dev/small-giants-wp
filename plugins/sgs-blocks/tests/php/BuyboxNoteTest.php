@@ -83,18 +83,44 @@ namespace SGS\Blocks\Tests {
 			$this->assertStringContainsString( 'aria-describedby="sgs-buybox-note-7-hint sgs-buybox-note-7-error"', $html );
 			$this->assertStringContainsString( 'For example vegan, egg-free', $html );
 			$this->assertStringContainsString( 'role="status" aria-live="polite"', $html );
+			$this->assertStringContainsString( '<div class="sgs-buybox__note" data-wp-bind--hidden="!context.inStock"', $html, 'hidden with the Add to basket form when out of stock' );
 			$this->assertStringNotContainsString( 'style=', $html );
 		}
 
 		public function test_a_label_and_hint_are_escaped(): void {
-			$html = \sgs_buybox_note_html( \sgs_buybox_note_config( array( 'noteField' => true, 'noteLabel' => 'A "q" <b>x</b>', 'noteHint' => '"><script>' ) ), 1 );
+			$html = \sgs_buybox_note_html(
+				\sgs_buybox_note_config(
+					array(
+						'noteField' => true,
+						'noteLabel' => 'A "q" <b>x</b>',
+						'noteHint'  => '"><script>',
+					)
+				),
+				1
+			);
 			$this->assertStringNotContainsString( '<script>', $html );
 			$this->assertStringContainsString( 'data-label="A &quot;q&quot; x"', $html );
 		}
 
 		public function test_the_limit_never_passes_the_server_ceiling(): void {
-			$this->assertSame( 1000, \sgs_buybox_note_config( array( 'noteField' => true, 'noteMaxLength' => 99999 ) )['max'] );
-			$this->assertSame( 300, \sgs_buybox_note_config( array( 'noteField' => true, 'noteMaxLength' => -5 ) )['max'] );
+			$this->assertSame(
+				1000,
+				\sgs_buybox_note_config(
+					array(
+						'noteField'     => true,
+						'noteMaxLength' => 99999,
+					)
+				)['max']
+			);
+			$this->assertSame(
+				300,
+				\sgs_buybox_note_config(
+					array(
+						'noteField'     => true,
+						'noteMaxLength' => -5,
+					)
+				)['max']
+			);
 		}
 	}
 }

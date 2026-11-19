@@ -6,7 +6,8 @@
  * Stripe.js, Stripe's fraud check and Google Pay: about 3.5 MB and two seconds of phone CPU before the shopper can use a
  * wallet button. The buy box's `expressLoad` setting set to `interaction` prints those scripts, and the inline data that
  * belongs to them, as inert `type="text/plain"` tags in their normal places; `assets/js/express-defer.js` runs them in
- * order on the shopper's first scroll, press, key or touch (or when the buttons come within a screen of the viewport).
+ * order on the shopper's first scroll, press, key or touch, or at once when the buttons are on screen when the page
+ * finishes loading.
  *
  * Which scripts are held is worked out from `$wp_scripts` and never from a list of handles: every registered script whose
  * source sits under the payment plugin's folder or on js.stripe.com, plus every script that depends on one of those. A
@@ -79,21 +80,25 @@ function sgs_express_defer_is_payment_src( string $src ): bool {
 
 /**
  * The handles to hold: the payment plugin's scripts and, through `$wp_scripts` dependencies, everything that depends on
- * one of them. Worked out once per request, on the first script printed after the buy box armed the switch.
+ * one of them. Worked out again whenever more scripts have been registered since the last call, so a script registered
+ * after the head prints (for the footer) is held when it belongs to the set.
  *
  * @param bool $fresh Work the set out again (tests).
  * @return array<string, true> Handle => true.
  */
 function sgs_express_defer_held_handles( bool $fresh = false ): array {
 	static $held = null;
-	if ( null !== $held && ! $fresh ) {
-		return $held;
-	}
-	$held    = array();
-	$scripts = wp_scripts();
+	static $seen = -1;
+	$scripts     = wp_scripts();
 	if ( ! $scripts instanceof \WP_Scripts ) {
+		return array();
+	}
+	$count = count( $scripts->registered );
+	if ( null !== $held && ! $fresh && $count === $seen ) {
 		return $held;
 	}
+	$seen = $count;
+	$held = array();
 	foreach ( $scripts->registered as $handle => $item ) {
 		if ( is_string( $item->src ) && sgs_express_defer_is_payment_src( $item->src ) ) {
 			$held[ (string) $handle ] = true;
@@ -122,7 +127,11 @@ function sgs_express_defer_held_handles( bool $fresh = false ): array {
  * `script_loader_tag`: print a held handle's external script inert, with its real type kept in `data-sgs-defer`.
  * A tag that is not a plain classic script (a module, a JSON island) is left alone.
  *
- * @param mixed $tag    The script tag.
+ * WordPress passes the handle's translations and `before` inline scripts in the same string, ahead of the external tag,
+ * and its `after` script behind it (`WP_Scripts::do_item`); those are held by sgs_express_defer_hold_inline(). The
+ * external tag is the one carrying the id WordPress gives it, `<handle>-js`.
+ *
+ * @param mixed $tag    The script tag, with the handle's inline scripts around it.
  * @param mixed $handle The script's handle.
  * @return mixed
  */
@@ -130,18 +139,21 @@ function sgs_express_defer_hold_tag( $tag, $handle ) {
 	if ( ! is_string( $tag ) || ! is_string( $handle ) || ! sgs_express_defer_armed() || ! isset( sgs_express_defer_held_handles()[ $handle ] ) ) {
 		return $tag;
 	}
-	if ( 0 !== strpos( ltrim( $tag ), '<script' ) || ! preg_match( '/^\s*<script\b([^>]*)>/i', $tag, $open ) ) {
+	$id = preg_quote( $handle . '-js', '/' );
+	if ( ! preg_match( '/<script\b([^>]*\sid\s*=\s*(["\'])' . $id . '\2[^>]*)>/i', $tag, $open, PREG_OFFSET_CAPTURE ) ) {
 		return $tag;
 	}
-	$type = 'text/javascript';
-	if ( preg_match( '/\stype\s*=\s*(["\'])(.*?)\1/i', $open[1], $found ) ) {
+	$attrs = $open[1][0];
+	$type  = 'text/javascript';
+	if ( preg_match( '/\stype\s*=\s*(["\'])(.*?)\1/i', $attrs, $found ) ) {
 		$type = strtolower( trim( $found[2] ) );
 		if ( 'text/javascript' !== $type && 'application/javascript' !== $type ) {
 			return $tag;
 		}
 	}
-	$attrs = preg_replace( '/\stype\s*=\s*(["\']).*?\1/i', '', $open[1] );
-	return preg_replace( '/^\s*<script\b[^>]*>/i', '<script type="text/plain" data-sgs-defer="' . esc_attr( $type ) . '"' . $attrs . '>', $tag, 1 );
+	$attrs = (string) preg_replace( '/\stype\s*=\s*(["\']).*?\1/i', '', $attrs );
+	$held  = '<script type="text/plain" data-sgs-defer="' . esc_attr( $type ) . '"' . $attrs . '>';
+	return substr_replace( $tag, $held, $open[0][1], strlen( $open[0][0] ) );
 }
 
 /**
@@ -162,7 +174,7 @@ function sgs_express_defer_hold_inline( $attributes ) {
 	if ( 'text/javascript' !== $type && 'application/javascript' !== $type ) {
 		return $attributes;
 	}
-	$attributes['type']            = 'text/plain';
+	$attributes['type']           = 'text/plain';
 	$attributes['data-sgs-defer'] = $type;
 	return $attributes;
 }

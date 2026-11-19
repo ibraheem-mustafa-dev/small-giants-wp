@@ -6,8 +6,8 @@
  * `wc-stripe/v1/cart/item`, which adds the product to the shopper's real basket, and then `wc-stripe/v1/cart/checkout`,
  * which charges the whole basket. A cancelled wallet sheet sends DELETE `cart/item`; a failed payment or a failed
  * checkout validation sends nothing, so the product stays in the basket and the next tap adds it again. The plugin's
- * own de-duplication (`remove_cart_item( generate_cart_id(...) )`) misses a line that carries SGS picks, so a repeat
- * tap raised the quantity. A shopper meaning to buy one 40-pack was charged for two plus an earlier failed 20-pack.
+ * own de-duplication (`remove_cart_item( generate_cart_id(...) )`) misses a line that carries SGS picks, so without this
+ * class a repeat tap raises the quantity and the payment charges every line in the basket.
  *
  * This class gives the product-page payment its own basket:
  * 1. Before the plugin handles POST `cart/item` (`rest_pre_dispatch`, which also fires for the plugin's
@@ -16,7 +16,9 @@
  *    stash already there and only empties the basket again, so a failed attempt never accumulates.
  * 2. The stash is restored and cleared after DELETE `cart/item` (cancel), after a failed POST `cart/item`, once the
  *    order from POST `cart/checkout` (context `product`) exists (at `shutdown`, after the plugin has emptied the
- *    basket it just paid for), and on the next ordinary page request.
+ *    basket it just paid for), and on the next ordinary page request. The order-received page that follows leaves the
+ *    restored basket alone: WooCommerce's `wc_clear_cart_after_payment` empties a non-empty basket only when its hash
+ *    matches the order's cart hash (`WC_Order::has_cart_hash`), and the restored lines are not the lines just paid for.
  *
  * Product page versus cart and checkout page: only the product-page controller calls `cart/item`; the cart, mini-cart
  * and checkout wallet buttons call `cart/checkout` alone, with `context` `cart` or `checkout` (`context` `product`
@@ -46,10 +48,18 @@ final class Express_Basket_Isolation {
 	/** The plugin's pay route. */
 	public const CHECKOUT_ROUTE = '/wc-stripe/v1/cart/checkout';
 
-	/** True once the order for a product-page payment exists in this request: restore at shutdown. */
+	/**
+	 * True once the order for a product-page payment exists in this request: restore at shutdown.
+	 *
+	 * @var bool
+	 */
 	private static bool $restore_at_shutdown = false;
 
-	/** The `context` of the POST `cart/checkout` being handled (`product`, `cart` or `checkout`); empty otherwise. */
+	/**
+	 * The `context` of the POST `cart/checkout` being handled (`product`, `cart` or `checkout`); empty otherwise.
+	 *
+	 * @var string
+	 */
 	private static string $checkout_context = '';
 
 	/**
@@ -201,6 +211,8 @@ final class Express_Basket_Isolation {
 	}
 
 	/**
+	 * The request's HTTP method, upper case.
+	 *
 	 * @param \WP_REST_Request $request Request.
 	 */
 	private static function method( $request ): string {
@@ -208,6 +220,8 @@ final class Express_Basket_Isolation {
 	}
 
 	/**
+	 * Whether the request is for the given route (a trailing slash ignored).
+	 *
 	 * @param \WP_REST_Request $request Request.
 	 * @param string           $route   Route to match.
 	 */
@@ -216,6 +230,8 @@ final class Express_Basket_Isolation {
 	}
 
 	/**
+	 * Whether the REST result is an error (a WP_Error, or a response with an error status).
+	 *
 	 * @param mixed $response A REST response or a WP_Error.
 	 */
 	private static function is_error_response( $response ): bool {

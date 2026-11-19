@@ -163,6 +163,15 @@ final class MediaSaveFallbackTest extends TestCase {
 		$this->assertSame( array( 'empty' => array(), 'missing' => array() ), Sgs_Media_Modernise::repair_problems( 1 ) );
 	}
 
+	public function test_the_repair_selector_never_claims_another_photos_copies(): void {
+		$this->plant();
+		// Another upload whose name starts with this one's ("orph-2.png", "orph-new.png") leaves its own broken copies here.
+		file_put_contents( $this->dir . 'orph-2-600x633.avif', '' );
+		file_put_contents( $this->dir . 'orph-new-300x300.avif', '' );
+		$orph = Sgs_Media_Modernise::repair_problems( 3 );
+		$this->assertSame( array( wp_normalize_path( $this->dir . 'orph-600x633.avif' ) ), array_map( 'wp_normalize_path', $orph['empty'] ) );
+	}
+
 	public function test_the_repair_selector_respects_the_batch_limit(): void {
 		$this->plant();
 		$this->assertSame( array( 2 ), Sgs_Media_Modernise::repair_ids( 0, 1 ) );

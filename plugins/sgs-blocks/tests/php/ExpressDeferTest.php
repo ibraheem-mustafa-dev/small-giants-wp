@@ -97,6 +97,33 @@ PHP;
 		$this->assertStringNotContainsString( 'text/plain', $out['unrelated'] );
 	}
 
+	public function test_the_external_tag_is_held_when_the_handles_inline_scripts_lead_the_string(): void {
+		// WP_Scripts::do_item passes translations . before . external tag . after through script_loader_tag in one string;
+		// the inline tags arrive already held by wp_inline_script_attributes.
+		$out = $this->run_php(
+			'\SGS\Blocks\sgs_express_defer_armed( true );
+			$inline = function ( $id ) { return "<script type=\"text/plain\" data-sgs-defer=\"text/javascript\" id=\"" . $id . "\">x</script>\n"; };
+			$tag = $inline( "wc-stripe-actions-js-translations" ) . $inline( "wc-stripe-actions-js-before" ) . "<script id=\"wc-stripe-actions-js\" src=\"' . self::PLUGIN . 'actions.js\"></script>\n" . $inline( "wc-stripe-actions-js-after" );
+			$out = array( "in" => $tag, "out" => sgs_t_filter( "script_loader_tag", $tag, "wc-stripe-actions", "' . self::PLUGIN . 'actions.js" ) );'
+		);
+		$this->assertStringContainsString( '<script type="text/plain" data-sgs-defer="text/javascript" id="wc-stripe-actions-js" src="' . self::PLUGIN . 'actions.js"></script>', $out['out'], 'the external tag is held' );
+		$this->assertSame( 4, substr_count( $out['out'], 'type="text/plain"' ), 'the three inline tags stay held and nothing else changes' );
+		$this->assertSame( strlen( $out['in'] ) + strlen( ' type="text/plain" data-sgs-defer="text/javascript"' ), strlen( $out['out'] ) );
+	}
+
+	public function test_a_script_registered_after_the_first_check_is_still_held(): void {
+		$out = $this->run_php(
+			'\SGS\Blocks\sgs_express_defer_armed( true ); $first = sgs_t_tag( "wc-stripe-product", "' . self::PLUGIN . 'product.js" );
+			sgs_t_reg( "late-footer-addon", "https://shop.test/wp-content/plugins/other/late.js", array( "wc-stripe-product" ) );
+			sgs_t_reg( "late-stripe-file", "' . self::PLUGIN . 'late.js" );
+			$out = array( "first" => $first, "addon" => sgs_t_tag( "late-footer-addon", "https://shop.test/wp-content/plugins/other/late.js" ), "file" => sgs_t_tag( "late-stripe-file", "' . self::PLUGIN . 'late.js" ), "jquery" => sgs_t_tag( "jquery", "https://shop.test/jq.js" ) );'
+		);
+		$this->assertStringContainsString( 'text/plain', $out['first'] );
+		$this->assertStringContainsString( 'text/plain', $out['addon'], 'a dependant registered later is held' );
+		$this->assertStringContainsString( 'text/plain', $out['file'], 'a payment file registered later is held' );
+		$this->assertStringNotContainsString( 'text/plain', $out['jquery'] );
+	}
+
 	public function test_inline_data_of_a_held_handle_is_held_in_place_and_other_inline_data_is_not(): void {
 		$out = $this->run_php(
 			'\SGS\Blocks\sgs_express_defer_armed( true ); $f = function ( $id ) { return sgs_t_filter( "wp_inline_script_attributes", array( "id" => $id ), "x" ); };

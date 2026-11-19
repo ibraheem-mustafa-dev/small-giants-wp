@@ -190,13 +190,13 @@ if ( '' !== $card_max_width && ( 'none' === strtolower( $card_max_width ) || pre
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-press.php';
 
-$sgs_card_uid          = 'sgs-pc-' . wp_unique_id();
+$sgs_card_uid = 'sgs-pc-' . wp_unique_id();
 // Render-time key (not an attribute): the brand logo's scope class derives from it (includes/product-card-builtin-render.php).
 $attributes['_sgsCardUid'] = $sgs_card_uid;
-$sgs_title_colour      = sgs_colour_value( $attributes['titleColour'] ?? '' );
-$sgs_price_colour      = sgs_colour_value( $attributes['priceColour'] ?? '' );
-$sgs_desc_colour       = sgs_colour_value( $attributes['descColour'] ?? '' );
-$sgs_price_note_colour = sgs_colour_value( $attributes['priceNoteColour'] ?? '' );
+$sgs_title_colour          = sgs_colour_value( $attributes['titleColour'] ?? '' );
+$sgs_price_colour          = sgs_colour_value( $attributes['priceColour'] ?? '' );
+$sgs_desc_colour           = sgs_colour_value( $attributes['descColour'] ?? '' );
+$sgs_price_note_colour     = sgs_colour_value( $attributes['priceNoteColour'] ?? '' );
 if ( '' !== $sgs_title_colour ) {
 	$inline_styles[] = '--sgs-card-title-colour:' . $sgs_title_colour . ';';
 }
@@ -250,14 +250,26 @@ $sgs_card_typo_css .= sgs_typography_css_rule(
 	$attributes,
 	'desc',
 	'.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc',
-	'.' . $sgs_card_uid . ' .sgs-product-card__description' . $sgs_card_desc_para . ', .' . $sgs_card_uid . ' .product-desc' . $sgs_card_desc_para, false, false, sgs_object_attr_keys( $block )
+	'.' . $sgs_card_uid . ' .sgs-product-card__description' . $sgs_card_desc_para . ', .' . $sgs_card_uid . ' .product-desc' . $sgs_card_desc_para,
+	false,
+	false,
+	sgs_object_attr_keys( $block )
 );
 // 'pill' typography targets the option-picker pill (both typed + bound pack
 // pickers render sgs/option-picker).
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_card_uid . ' .sgs-option-picker__pill', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $sgs_card_uid . ' .sgs-product-card__price-note, .' . $sgs_card_uid . ' .price-note', '', false, false, sgs_object_attr_keys( $block ) );
 // The card rings itself inside its own border (focus.css, `.sgs-focus--inset`): a border the colour of the ring would otherwise hide it.
-$sgs_card_focus_edge = (string) ( sgs_border_element_decls( $attributes, '', '.' . $sgs_card_uid, array( 'colour_as_paint' => true, 'radius' => false, 'facts' => true ) )['facts']['edge'] ?? '' );
+$sgs_card_focus_edge = (string) ( sgs_border_element_decls(
+	$attributes,
+	'',
+	'.' . $sgs_card_uid,
+	array(
+		'colour_as_paint' => true,
+		'radius'          => false,
+		'facts'           => true,
+	)
+)['facts']['edge'] ?? '' );
 if ( '' !== $sgs_card_focus_edge ) {
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . '{--sgs-focus-edge:' . $sgs_card_focus_edge . ';}';
 }
@@ -354,7 +366,7 @@ $sgs_rating_justify_value = static function ( $raw ) {
 		'end'     => 'flex-end',
 	)[ is_string( $raw ) ? $raw : '' ] ?? '';
 };
-$sgs_card_typo_css .= sgs_emit_responsive_css(
+$sgs_card_typo_css       .= sgs_emit_responsive_css(
 	'.' . $sgs_card_uid . ' .sgs-product-card__rating',
 	array(
 		array(
@@ -364,7 +376,7 @@ $sgs_card_typo_css .= sgs_emit_responsive_css(
 		),
 	)
 );
-$sgs_brand_colour = sgs_colour_value( $attributes['brandColour'] ?? '' );
+$sgs_brand_colour         = sgs_colour_value( $attributes['brandColour'] ?? '' );
 if ( '' !== $sgs_brand_colour ) {
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .sgs-product-card__brand{color:' . $sgs_brand_colour . ';}';
 }
@@ -1083,12 +1095,12 @@ $sgs_resolved_img     = $sgs_img_override ? sgs_pcm_first_url( $attributes['imag
 // Badge: bound branches have no live badge — live value is '' (override OFF or
 // empty typed value = no badge, matching pre-override bound output).
 $sgs_badge_from_product = sgs_product_card_badge_from_product( $attributes );
-$sgs_badge_typed    = $sgs_badge_from_product
+$sgs_badge_typed        = $sgs_badge_from_product
 	? (string) ( $attributes['featuredTag'] ?? '' )
 	: ( 'trial' === $variant_style
 		? ( isset( $attributes['trialTag'] ) ? (string) $attributes['trialTag'] : '' )
 		: ( 'featured' === $variant_style ? ( isset( $attributes['featuredTag'] ) ? (string) $attributes['featuredTag'] : '' ) : '' ) );
-$sgs_resolved_badge = sgs_product_card_resolve_element( $attributes, 'badge', $sgs_badge_typed, '' );
+$sgs_resolved_badge     = sgs_product_card_resolve_element( $attributes, 'badge', $sgs_badge_typed, '' );
 
 // F7 (visual-polish): the FEATURED badge overlays the media area (overlay CSS is
 // scoped to the media containers); the TRIAL badge stays in-body (draft canon).
@@ -1113,7 +1125,17 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 	$ro_opts      = array_merge( $base_opts, array( 'extra_classes' => $ro_classes ) );
 
 	$ro_permalink = $data['wc_id'] ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
-	$sgs_ro_main = sgs_pcm_main_image( 'image', $attributes, $sgs_card_uid . '-image', $sgs_live_image, $sgs_img_override, array( 'block' => 'sgs/product-card', 'class' => $sgs_pc_main_class ) );
+	$sgs_ro_main  = sgs_pcm_main_image(
+		'image',
+		$attributes,
+		$sgs_card_uid . '-image',
+		$sgs_live_image,
+		$sgs_img_override,
+		array(
+			'block' => 'sgs/product-card',
+			'class' => $sgs_pc_main_class,
+		)
+	);
 
 	ob_start();
 	?>
@@ -1265,7 +1287,18 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				'alt'    => (string) $data['image_alt'],
 			)
 			: $sgs_live_image;
-		$sgs_var_main  = sgs_pcm_main_image( 'image', $attributes, $sgs_card_uid . '-image', $sgs_var_live, $sgs_img_override, array( 'block' => 'sgs/product-card', 'class' => $sgs_pc_main_class, 'bind' => true ) );
+		$sgs_var_main  = sgs_pcm_main_image(
+			'image',
+			$attributes,
+			$sgs_card_uid . '-image',
+			$sgs_var_live,
+			$sgs_img_override,
+			array(
+				'block' => 'sgs/product-card',
+				'class' => $sgs_pc_main_class,
+				'bind'  => true,
+			)
+		);
 
 		// B3: per-unit price note + cosmetic discount badge (FR-27-B3).
 		// SSR literals seeded into context so data-wp-text == initial span text
@@ -1301,7 +1334,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			$sgs_card_typo_tag  = '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>';
 		}
 
-		// Lean per-combo seed for the M-C9 24 KB context cap. The FULL manifest
+		// Lean per-combo seed for the M-C9 builder data limit. The FULL manifest
 		// (with the JSON-LD-only fields sku/gtin/incMinor/saleEndDate and a gallery
 		// per combo) stays server-side for the schema emitter; view.js needs none of
 		// those four fields, and only needs a combo's gallery when it has >=2 images
@@ -1383,8 +1416,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			'checkoutUrl'         => ( 'buy-now' === $sgs_cta_behaviour ) ? esc_url( wc_get_checkout_url() ) : '',
 		);
 
-		// M-C9 hard cap: 24 KB max serialised context — never trips for 48 SKUs
-		// (~6 KB), but guard is here to future-proof larger catalogues.
+		// M-C9 builder data limit: sgs_configurator_context_cap_bytes() (24 KB unless a site raises it per product).
+		// Over it, the card falls back to the plain "From" card.
 		if ( strlen( wp_json_encode( $context ) ) > sgs_configurator_context_cap_bytes( (int) $product_id ) ) {
 			// Cap exceeded — fall through to the existing non-interactive "From" card.
 			unset( $context, $manifest, $def );
@@ -1694,7 +1727,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<?php // ── 2c. Price slot — bound to seeded context literals (SSR-wipe-safe). ?>
 				<div class="price-row sgs-product-card__price-row" aria-live="polite">
 					<div class="sgs-product-card__price-group">
-<?php if ( sgs_product_card_from_lowest( $attributes, $data ) ) : // Flush left: indentation before a tag prints. ?>
+<?php if ( sgs_product_card_from_lowest( $attributes, $data ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect -- flush left: indentation before a tag prints. ?>
 					<span class="price price--from sgs-product-card__price">
 						<span class="price-from-label sgs-product-card__price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
 						<span class="price-from-amount"><?php echo wp_kses_post( $data['price_from_html'] ); ?></span>
@@ -1918,7 +1951,18 @@ $add_to_cart_id = absint( $data['wc_id'] );
 // Binding to seeded context keeps SSR correct AND stays client-reactive
 // (view.js mutates these same context keys on pill selection).
 // The photo prints through the media renderer; a typed override image is static (no swap bindings).
-$sgs_nv_main = sgs_pcm_main_image( 'image', $attributes, $sgs_card_uid . '-image', $sgs_live_image, $sgs_img_override, array( 'block' => 'sgs/product-card', 'class' => $sgs_pc_main_class, 'bind' => ! $sgs_img_override ) );
+$sgs_nv_main = sgs_pcm_main_image(
+	'image',
+	$attributes,
+	$sgs_card_uid . '-image',
+	$sgs_live_image,
+	$sgs_img_override,
+	array(
+		'block' => 'sgs/product-card',
+		'class' => $sgs_pc_main_class,
+		'bind'  => ! $sgs_img_override,
+	)
+);
 
 $context = array(
 	'productId'    => (string) $data['id'],

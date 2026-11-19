@@ -48,10 +48,13 @@ final class Flow_Fields_Cart {
 	 * @throws \Exception When the list is refused; WC_Cart::add_to_cart() turns it into a notice and a failed add.
 	 */
 	public static function add_cart_item_data( array $cart_item_data, int $product_id, int $variation_id ): array {
-		unset( $product_id, $variation_id );
+		unset( $variation_id );
 		// An express payment button sends the buy box note as plain request fields; it joins the list the proxy built.
-		$note = sgs_buybox_note_row_from_post();
+		// It belongs to the product the request names, once: another item added in the same request (a free gift a
+		// plugin adds alongside) never carries it.
+		$note = self::request_names_product( $product_id ) ? sgs_buybox_note_row_from_post() : null;
 		if ( null !== $note ) {
+			unset( $_POST['sgs_note'], $_POST['sgs_note_label'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- consumed, not read: the note attaches to one line only.
 			$list                            = isset( $cart_item_data[ self::RAW_KEY ] ) && \is_array( $cart_item_data[ self::RAW_KEY ] ) ? $cart_item_data[ self::RAW_KEY ] : array();
 			$cart_item_data[ self::RAW_KEY ] = \array_merge( $list, array( $note ) );
 		}
@@ -68,6 +71,21 @@ final class Flow_Fields_Cart {
 			$cart_item_data[ self::KEY ] = $accepted;
 		}
 		return $cart_item_data;
+	}
+
+	/**
+	 * Whether the add request names this product (the payment plugin's `product_id`, WooCommerce's `add-to-cart`), or
+	 * names none.
+	 *
+	 * @param int $product_id The product being added.
+	 */
+	private static function request_names_product( int $product_id ): bool {
+		foreach ( array( 'product_id', 'add-to-cart' ) as $field ) {
+			if ( isset( $_POST[ $field ] ) && \is_scalar( $_POST[ $field ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- read-only comparison with the product being added.
+				return \absint( $_POST[ $field ] ) === $product_id; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- as above.
+			}
+		}
+		return true;
 	}
 
 	/**
