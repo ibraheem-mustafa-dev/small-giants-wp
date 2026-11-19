@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/media/slots.mjs",
+		"find": "'background' === group ? [ 'background', 'element' ] :",
+		"replace": "'background' === group ? [ 'background' ] :",
+		"why": "a tile's photo layer would be a gap, the block having no Background slot (the 2026-11-19 Home run)"
+	},
+	{
+		"file": "lib/media/slots.mjs",
+		"find": "'background' === group ? [ 'background', 'element' ] :",
+		"replace": "'background' === group ? [ 'background', 'element', 'content' ] :",
+		"why": "a block with only a content slot would take a picture painted behind its siblings"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "if ( 'background-image' === prop && /url\\(/i.test( String( raw ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the picture would be written into the gradient string, which the plugin rejects, so the layer renders nothing"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "if ( 'background-image' === prop && /url\\(/i.test( String( raw ) ) ) {",
+		"replace": "if ( 'background-image' === prop ) {",
+		"why": "a real gradient would be refused as a picture"
+	}
+]

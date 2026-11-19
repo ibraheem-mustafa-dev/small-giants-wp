@@ -242,6 +242,11 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 		const m = String( raw ).match( /^url\(["']?([^"')]+)["']?\)$/ );
 		return m ? { value: { url: m[ 1 ] } } : { error: `${ raw } is not one image` };
 	}
+	if ( 'background-image' === prop && /url\(/i.test( String( raw ) ) ) {
+		// Every other background-image setting holds a gradient, and the plugin's sgs_css_gradient_value() rejects any value carrying url(): a
+		// picture is the media writer's (lib/fill-media.mjs), written to the block's Source, never as a gradient string.
+		return { error: `${ raw } is a picture, not a gradient: the media writer takes it` };
+	}
 	if ( 'backdrop-filter' === prop ) {
 		// A backdrop blur setting holds the radius (helpers-scrim.php paints blur(<length>)): one blur() is its length,
 		// none is no blur; any other filter list is not one radius.
