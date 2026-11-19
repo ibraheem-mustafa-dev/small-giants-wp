@@ -1,0 +1,7 @@
+[
+	{"file": "lib/fill-resolve-state.mjs", "find": "{ ...( s.layoutRect || s.rect ), inFlow: s.inFlow }", "replace": "{ ...s.rect, inFlow: s.inFlow }", "why": "spacing is judged between painted boxes a rotation enlarges"},
+	{"file": "lib/fill-read-collect.mjs", "find": "transform: none !important; rotate: none !important;", "replace": "rotate: none !important;", "why": "the layout read leaves transforms on"},
+	{"file": "lib/fill-read-collect.mjs", "find": "\tflat.remove();\n", "replace": "", "why": "the transforms stay off after the read"},
+	{"file": "lib/fill-read-collect.mjs", "find": "out[ j.id ].layoutRect = {", "replace": "out[ j.id ].layoutBox = {", "why": "no layout box is recorded"},
+	{"file": "lib/fill-read-collect.mjs", "find": "const calm = sheet( '*, *::before, *::after { transition: none !important; }' );", "replace": "const calm = sheet( '' );", "why": "transitions are not held, so the transforms animate back from none after the read"}
+]

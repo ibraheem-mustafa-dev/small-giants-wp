@@ -285,5 +285,28 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		}
 		out[ j.id ] = snap;
 	}
+	// Each read element's layout box (`layoutRect`, page coordinates): its border box with every transform switched off, as
+	// layout places it. Siblings are laid out (and their gap measured, lib/fill-resolve-state.mjs::planSpacing) between these
+	// boxes, whatever a rotation or a scroll entrance paints over them. Transitions are held off while the transforms switch,
+	// so nothing animates back afterwards.
+	const sheet = ( css ) => {
+		const tag = document.createElement( 'style' );
+		tag.textContent = css;
+		document.head.appendChild( tag );
+		document.documentElement.getBoundingClientRect();
+		return tag;
+	};
+	const calm = sheet( '*, *::before, *::after { transition: none !important; }' );
+	const flat = sheet( '*, *::before, *::after { transform: none !important; rotate: none !important; scale: none !important; translate: none !important; }' );
+	for ( const j of jobs ) {
+		const el = out[ j.id ] && ! out[ j.id ].missing ? resolve( j.finder ) : null;
+		if ( el ) {
+			const r = el.getBoundingClientRect();
+			out[ j.id ].layoutRect = { x: Math.round( r.x * 1000 ) / 1000, y: Math.round( ( r.y + window.scrollY ) * 1000 ) / 1000, w: Math.round( r.width * 1000 ) / 1000, h: Math.round( r.height * 1000 ) / 1000 };
+		}
+	}
+	flat.remove();
+	document.documentElement.getBoundingClientRect();
+	calm.remove();
 	return out;
 }

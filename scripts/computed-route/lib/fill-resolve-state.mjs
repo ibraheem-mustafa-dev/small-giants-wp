@@ -206,9 +206,10 @@ export const gapTarget = ( st, rec ) => {
 export const snapsOf = ( st, id ) => Object.fromEntries( READ_WIDTHS.map( ( w ) => [ w, st.reads.widths[ w ]?.[ id ] ] ).filter( ( [ , s ] ) => s && ! s.missing ) );
 export const draftOf = ( snaps, get ) => Object.fromEntries( Object.entries( snaps ).map( ( [ w, s ] ) => [ Number( w ), get( s ) ] ).filter( ( [ , v ] ) => undefined !== v && '' !== v ) );
 
-// Spacing ownership for one node's children, per tier (step 3): fills gapSet (the parent's gap per width) and margins
-// (the sides each child gives up), and logs the decision. A parent with no element of its own, or children without one,
-// decides nothing.
+// Spacing ownership for one node's children, per tier (step 3), from the children's layout boxes (each read's `layoutRect`:
+// its border box with transforms off, lib/fill-read-collect.mjs::collectMany; the painted box where a read has none): fills
+// gapSet (the parent's gap per width) and margins (the sides each child gives up), and logs the decision. A parent with no
+// element of its own, or children without one, decides nothing.
 export function planSpacing( st, rec ) {
 	const kids = rec.children;
 	if ( ! kids.length || ! rec.targets.length ) {
@@ -220,7 +221,7 @@ export function planSpacing( st, rec ) {
 	for ( const w of READ_WIDTHS ) {
 		const rects = measured.map( ( c ) => {
 			const s = st.reads.widths[ w ]?.[ `${ c }:` ];
-			return s && ! s.missing ? { ...s.rect, inFlow: s.inFlow } : null;
+			return s && ! s.missing ? { ...( s.layoutRect || s.rect ), inFlow: s.inFlow } : null;
 		} );
 		const ownership = spacingOwnership( rects, { unmeasured, declared: ( holder && st.reads.declared?.[ w ]?.[ holder.id ] ) || null } );
 		if ( 'unknown' === ownership.owner || ownership.decisions.length ) {
