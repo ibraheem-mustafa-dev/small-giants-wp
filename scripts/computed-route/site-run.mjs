@@ -44,6 +44,7 @@ import { fileURLToPath } from 'url';
 import { assertDraftPage, serveDraft } from './lib/draft.mjs';
 import { readInventory } from './lib/skeleton-inventory.mjs';
 import { handoffRecords } from './lib/skeleton-reveal.mjs';
+import { inventoryBranches } from './lib/skeleton-data-branches.mjs';
 import { permalinkOf } from './lib/fill-route.mjs';
 import { skeletonPaths, inventoryStrips, proposeSurface } from './skeleton.mjs';
 import { allowMissingPaintArg, allowMissingPaintArgs } from './lib/paint-gate.mjs';
@@ -423,7 +424,7 @@ export async function main( argv ) {
 				return `${ inv.elements.length } elements (intake's inventory${ stateOnly ? ' with the state open' : '' }, in the served key space)`;
 			}
 			// A page's closed states (an accordion's answer, a form's later step) are read too (lib/skeleton-reveal.mjs).
-			const inv = await readInventory( { url: draftUrl, root, shotsDir: p.shots, strips: inventoryStrips( { client, surface: key } ), reveal: 'page' === kind ? { records: handoffRecords( { repo: REPO, client } ) } : null } );
+			const inv = await readInventory( { url: draftUrl, root, shotsDir: p.shots, strips: inventoryStrips( { client, surface: key } ), reveal: 'page' === kind ? { records: handoffRecords( { repo: REPO, client } ) } : null, branches: 'page' === kind ? inventoryBranches( { repo: REPO, client, surface: key } ) : null } );
 			fs.mkdirSync( path.dirname( p.inventory ), { recursive: true } );
 			fs.writeFileSync( p.inventory, `${ JSON.stringify( inv, null, 2 ) }
 ` );

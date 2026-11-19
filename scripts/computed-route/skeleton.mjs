@@ -27,6 +27,7 @@ import { openDb } from './lib/db.mjs';
 import { assertDraftPage, serveDraft } from './lib/draft.mjs';
 import { readInventory } from './lib/skeleton-inventory.mjs';
 import { handoffRecords } from './lib/skeleton-reveal.mjs';
+import { inventoryBranches } from './lib/skeleton-data-branches.mjs';
 import { loadFacts, decisionsProblems, REPO } from './lib/skeleton-facts.mjs';
 import { proposeSkeleton } from './lib/skeleton-propose.mjs';
 import { loopingKeys } from './lib/skeleton-rerun.mjs';
@@ -178,7 +179,7 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 		const served = p.draftUrl ? null : await serveDraft( assertDraftPage( p.draftDir, p.draftIndex ), { index: p.draftIndex } );
 		let inv;
 		try {
-			inv = await read( { url: `${ served ? served.url : p.draftUrl }${ flag( '--route' ) ?? '' }`, root, shotsDir: p.shots, log, strips: inventoryStrips( { client, surface, repo } ), reveal: argv.includes( '--reveals' ) ? { records: handoffRecords( { repo, client } ) } : null } );
+			inv = await read( { url: `${ served ? served.url : p.draftUrl }${ flag( '--route' ) ?? '' }`, root, shotsDir: p.shots, log, strips: inventoryStrips( { client, surface, repo } ), reveal: argv.includes( '--reveals' ) ? { records: handoffRecords( { repo, client } ) } : null, branches: inventoryBranches( { repo, client, surface } ) } );
 		} finally {
 			served && await served.close();
 		}
