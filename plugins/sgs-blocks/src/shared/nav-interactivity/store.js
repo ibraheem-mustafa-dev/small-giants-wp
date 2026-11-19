@@ -83,6 +83,7 @@ import { queryWidth } from '../../utils/breakpoints';
 import { initDetachChips } from './detach-chip';
 import { announceDrawer, whenAnimationsSettle } from './drawer-lifecycle';
 import { carryCustomCssScope } from './custom-css-scope';
+import { keyBelongsToInnerDialog } from './inner-dialog';
 
 /**
  * Canonical focusable-element selector. `a[href]` plus `:not([disabled])` on
@@ -864,7 +865,13 @@ function openDrawerFor( ctx, trigger ) {
 		 * clickable header/burger controls — a WCAG 2.1.1 (Level A) keyboard
 		 * trap the moment the non-modal branch goes live.
 		 */
-		const onTab = ( e ) => trapTab( drawer, e );
+		// A key from a dialog opened inside the drawer (a gallery lightbox)
+		// belongs to that dialog: its own top-layer focus holds Tab.
+		const onTab = ( e ) => {
+			if ( ! keyBelongsToInnerDialog( e, drawer ) ) {
+				trapTab( drawer, e );
+			}
+		};
 		drawer.addEventListener( 'keydown', onTab );
 		bookkeeping.cleanup.push( () =>
 			drawer.removeEventListener( 'keydown', onTab )
@@ -878,7 +885,13 @@ function openDrawerFor( ctx, trigger ) {
 		drawer.show();
 		bookkeeping.frozen = freezeBackground( trigger, drawer, scrim );
 		const onEsc = ( e ) => {
-			if ( 'Escape' === e.key && drawer.open ) {
+			// An Escape from a dialog opened inside the drawer (a gallery
+			// lightbox) closes that dialog, not the drawer.
+			if (
+				'Escape' === e.key &&
+				drawer.open &&
+				! keyBelongsToInnerDialog( e, drawer )
+			) {
 				// stopPropagation: this listener is document-level with no
 				// containment check beyond `drawer.open`, so without it, an
 				// ESC press would also reach `mega-disclosure.js`'s own

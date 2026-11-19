@@ -50,6 +50,7 @@ import {
 } from './panel-bounds';
 import { carryCustomCssScope, dropCustomCssScope } from './custom-css-scope';
 import { focusInDecision, focusOutShouldClose } from './focus-open';
+import { keyBelongsToInnerDialog } from './inner-dialog';
 
 /** Focusable-elements selector — inlined (see file header). */
 const FOCUSABLE_SELECTOR =
@@ -1404,11 +1405,16 @@ const { state } = store( 'sgs/mega', {
 		/**
 		 * Keyboard inside the panel: Escape closes + returns focus; Tab off the
 		 * last (or Shift+Tab off the first) focusable closes and returns focus,
-		 * so the disclosure never traps (FR-36-10 — NOT a modal).
+		 * so the disclosure never traps (FR-36-10 — NOT a modal). A key pressed
+		 * in a dialog opened inside the panel (a gallery lightbox) belongs to
+		 * that dialog and is left alone (keyBelongsToInnerDialog).
 		 */
 		panelKeydown( event ) {
 			const ctx = getContext();
 			const { ref } = getElement();
+			if ( keyBelongsToInnerDialog( event, ref ) ) {
+				return;
+			}
 			const root = rootFor( ref );
 
 			if ( event.key === 'Escape' || event.key === 'Esc' ) {
