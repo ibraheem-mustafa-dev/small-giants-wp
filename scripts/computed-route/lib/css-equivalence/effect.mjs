@@ -10,6 +10,7 @@
 import { canonicalName, shorthandsOf, longhandsOf, physicalOf, expand } from '../css-families.mjs';
 import { attrsFor, listedProperties } from '../db.mjs';
 import { projectLonghand, sameCanonical } from './values.mjs';
+import { mayAnswer } from '../discovered-layout.mjs';
 
 export const WIDTHS = [ 375, 768, 1440 ];
 
@@ -119,7 +120,7 @@ export function discoveredWrite( calibration, { slot, prop, perWidth, state = nu
 				continue;
 			}
 			for ( const [ value, values ] of Object.entries( d.values || {} ) ) {
-				if ( owned && attr in owned && String( owned[ attr ] ) !== value ) {
+				if ( ( owned && attr in owned && String( owned[ attr ] ) !== value ) || ! mayAnswer( props, value, canon ) ) {
 					continue;
 				}
 				const ws = WIDTHS.filter( ( w ) => undefined !== perWidth[ w ] );

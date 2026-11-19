@@ -1,26 +1,33 @@
 [
 	{
 		"file": "lib/resolve.mjs",
-		"find": "if ( ! LAYOUT_ROW.test( prop ) && LAYOUT_EFFECTS.some( ( l ) => props[ l ]?.values?.[ value ] ) ) {",
+		"find": "if ( ! mayAnswer( props, value, prop ) ) {",
 		"replace": "if ( false ) {",
 		"why": "a paint or size row is answered by a value that also switches a layout mode on"
 	},
 	{
-		"file": "lib/resolve.mjs",
-		"find": "const LAYOUT_EFFECTS = [ 'display', 'flex-direction', 'grid-template-columns', 'grid-template-rows' ];",
-		"replace": "const LAYOUT_EFFECTS = [];",
+		"file": "lib/css-equivalence/effect.mjs",
+		"find": " || ! mayAnswer( props, value, canon ) ) {",
+		" replace": "",
+		"why": "the equivalence path answers a paint or size row with a layout-mode value",
+		"replace": " ) {"
+	},
+	{
+		"file": "lib/discovered-layout.mjs",
+		"find": "export const LAYOUT_EFFECTS = [ 'display', 'flex-direction', 'grid-template-columns', 'grid-template-rows' ];",
+		"replace": "export const LAYOUT_EFFECTS = [];",
 		"why": "no recorded effect counts as a layout mode"
 	},
 	{
-		"file": "lib/resolve.mjs",
-		"find": "if ( ! LAYOUT_ROW.test( prop ) && LAYOUT_EFFECTS",
-		"replace": "if ( LAYOUT_ROW.test( prop ) && LAYOUT_EFFECTS",
-		"why": "a layout row is refused its own layout value"
+		"file": "lib/discovered-layout.mjs",
+		"find": "export const LAYOUT_ROW = /^(?:display|",
+		"replace": "export const LAYOUT_ROW = /^(?:min-height|display|",
+		"why": "a size row is treated as a layout row"
 	},
 	{
-		"file": "lib/resolve.mjs",
-		"find": "const LAYOUT_ROW = /^(?:display|",
-		"replace": "const LAYOUT_ROW = /^(?:min-height|display|",
-		"why": "a size row is treated as a layout row"
+		"file": "lib/discovered-layout.mjs",
+		"find": "= ( props, value, prop ) => LAYOUT_ROW.test( prop ) ||",
+		"replace": "= ( props, value, prop ) => ! LAYOUT_ROW.test( prop ) &&",
+		"why": "a layout row is refused its own layout value"
 	}
 ]

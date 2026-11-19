@@ -2,6 +2,7 @@
 // sits on, a CSS property, a state and the measured draft value at each width, it returns the setting writes in the
 // block's storage shape, or a gap with its reason. Candidates come from the framework database (source 'sgs' only);
 // calibration decides which candidate paints that slot (R-47-6); values snap to the site's tokens (R-47-7).
+import { mayAnswer } from './discovered-layout.mjs';
 import { nearestHome } from './resolve-nearest.mjs';
 import { sideEffectFree } from './resolve-side-effects.mjs';
 import fs from 'fs';
@@ -319,11 +320,6 @@ export function defaultPaint( calibration, slot, prop, same = ( a, b ) => a === 
 	return out;
 }
 
-// A discovered setting's value that records a layout effect (LAYOUT_EFFECTS) is a layout mode: it answers a layout row (LAYOUT_ROW)
-// and no other (resolveDiscovered).
-const LAYOUT_ROW = /^(?:display|flex(?:-[a-z]+)?|grid(?:-[a-z]+)*|gap|row-gap|column-gap|justify-[a-z]+|align-[a-z]+|place-[a-z]+|order|position|float)$/;
-const LAYOUT_EFFECTS = [ 'display', 'flex-direction', 'grid-template-columns', 'grid-template-rows' ];
-
 // A setting with no css_property that calibration showed paints `prop` on `slot` (calibration.discovered): the enum
 // value whose paint equals the draft at every width the row states. Discovery records a width only where the value changed
 // the paint (lib/calibrate.mjs::discoverEffects), so at an unrecorded width the value paints the element's default, which
@@ -376,7 +372,7 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 			}
 			// A colour, ground, border, shadow or size row is never answered by a value that also switches a layout mode on (an option
 			// picker's `tile` style draws a cocoa border and a 44px minimum height and also turns its options into a one-column grid).
-			if ( ! LAYOUT_ROW.test( prop ) && LAYOUT_EFFECTS.some( ( l ) => props[ l ]?.values?.[ value ] ) ) {
+			if ( ! mayAnswer( props, value, prop ) ) {
 				continue;
 			}
 			if ( rowWidths.some( ( w ) => undefined !== values[ w ] ) && fits( values, perWidth, baseOf( prop ) ) ) {

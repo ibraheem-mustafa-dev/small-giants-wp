@@ -6,6 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { resolveDiscovered } from '../lib/resolve.mjs';
+import { discoveredWrite } from '../lib/css-equivalence/effect.mjs';
 
 const THREE = [ 375, 768, 1440 ];
 const every = ( v ) => Object.fromEntries( THREE.map( ( w ) => [ w, v ] ) );
@@ -32,4 +33,11 @@ test( 'negative controls: a value with no layout effect still answers a paint ro
 	assert.deepEqual( row( 'border-top-color', 'rgb(1, 2, 3)' ).writes, [ { attr: 'pillStyle', value: 'filled', merge: 'replace' } ] );
 	const layout = resolveDiscovered( { slot: '.o', prop: 'display', perWidth: every( 'grid' ), siblings: {} }, cal );
 	assert.deepEqual( layout.writes, [ { attr: 'pillStyle', value: 'tile', merge: 'replace' } ] );
+} );
+
+test( 'MUST FAIL: the equivalence path (discoveredWrite) refuses the same layout-mode value for a border colour and a size row', () => {
+	const w = ( prop, value ) => discoveredWrite( cal, { slot: PILL, prop, perWidth: every( value ) } );
+	assert.equal( w( 'border-top-color', 'rgb(58, 42, 34)' ), null );
+	assert.equal( w( 'min-height', '44px' ), null );
+	assert.equal( w( 'border-top-color', 'rgb(1, 2, 3)' ).value, 'filled', 'negative control: a value with no layout effect still answers' );
 } );
