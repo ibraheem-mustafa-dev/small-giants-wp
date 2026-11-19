@@ -21,10 +21,9 @@
  *     owner's open selector (`data-sgs-scrim-open`) and the shared
  *     `assets/js/scrim-state.js` sets `data-sgs-scrim-on` while it matches, so
  *     no block wires its own scrim. Every owner opens through script (a
- *     `<dialog>` `showModal()`, or a disclosure's `aria-expanded`). A CSS
- *     `:root:has(<open selector>)` did the same with no script but made the
- *     browser re-check the whole document on every style pass (Mama's product
- *     page: about 3.5 s of style work on a slowed phone, 2026-11-19);
+ *     `<dialog>` `showModal()`, or a disclosure's `aria-expanded`). The open
+ *     state is never a CSS `:root:has()`: a `:has()` on the document root
+ *     makes the browser re-check the whole page on every style pass;
  *   - the HTML is printed at `wp_footer` as a direct child of `<body>`, so no
  *     transformed or filtered ancestor (a blurred header, an animated
  *     container) can capture its `position:fixed`.
@@ -241,12 +240,13 @@ if ( ! function_exists( 'sgs_scrim_print_footer' ) ) {
 		}
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each entry built from esc_attr() values in sgs_scrim_render().
 		echo implode( '', $queue );
-		if ( defined( 'SGS_BLOCKS_URL' ) && defined( 'SGS_BLOCKS_PATH' ) && file_exists( SGS_BLOCKS_PATH . 'assets/js/scrim-state.js' ) ) {
+		if ( defined( 'SGS_BLOCKS_URL' ) && defined( 'SGS_BLOCKS_VERSION' ) ) {
+			// The ?ver is replaced by the file's own mtime (includes/asset-cache-busting.php::sgs_filemtime_asset_version).
 			wp_enqueue_script(
 				'sgs-scrim-state',
 				SGS_BLOCKS_URL . 'assets/js/scrim-state.js',
 				array(),
-				(string) filemtime( SGS_BLOCKS_PATH . 'assets/js/scrim-state.js' ),
+				SGS_BLOCKS_VERSION,
 				array(
 					'in_footer' => true,
 					'strategy'  => 'defer',
