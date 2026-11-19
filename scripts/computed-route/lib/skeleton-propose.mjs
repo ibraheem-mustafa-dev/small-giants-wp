@@ -15,6 +15,8 @@ import { collapsePoint, childSlots, unitSlots } from './skeleton-child-slots.mjs
 import { mediaSelfSlot, partSlots, placePart, codeItemSlots, drawnSvgParts, itemSlots } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
+import { scIfFields } from './form-scif-fields.mjs';
+import { handoffOf } from './draft-tokens.mjs';
 import { formHostNodes } from './skeleton-form-host.mjs';
 import { fieldInputSlot } from './skeleton-form-slots.mjs';
 import { linkedFormOf } from './skeleton-form-link.mjs';
@@ -377,6 +379,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		rootRow && cls.choiceFlow.notes.length && ( rootRow.slotNotes = [ ...( rootRow.slotNotes || [] ), ...cls.choiceFlow.notes ] );
 	}
 	const skeleton = flowNode ? [ ...flowSides.before, ...[].concat( rootNode || [] ), ...flowSides.after ] : formStepNodes( formHostNodes( [].concat( rootNode || [] ), { factRecord } ), { factRecord, surfaceKind, component: 'form' === surfaceKind ? view.recordOf( scope?.id )?.dc ?? null : null, ...formStepContext( { m, view, nodeOfKey, rowOf, rows, rules: R, attr: facts.attr } ) } );
+	// A form's fields shown only while another field holds one value wait on it, and those the page never rendered are built
+	// from the draft's template (lib/form-scif-fields.mjs); the form root's row names them.
+	const scIf = 'form' === surfaceKind ? scIfFields( skeleton, { factRecord, surfaceId: scope?.id, folder: handoffOf( facts ), rules: R, has: ( b, a ) => !! facts.attr?.( b, a ) } ) : null;
+	scIf?.notes.length && rowOf[ m.root.key ] && ( rowOf[ m.root.key ].slotNotes = [ ...( rowOf[ m.root.key ].slotNotes || [] ), ...scIf.notes ] );
 	// Each absorbed part element is its block node's draftSlots entry at the part's calibrated slot, with its children at
 	// the part's sub-part slots, and the block node stands in the part's wrapper beside the wrapper's other content, or
 	// the wrapper the part leaves empty is dropped (lib/skeleton-part-slots.mjs).
