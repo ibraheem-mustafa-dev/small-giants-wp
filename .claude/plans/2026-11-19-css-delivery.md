@@ -8,7 +8,7 @@ Google PageSpeed on phones (2026-11-19) scored Mama's Home 98 and Shop 86 to 90,
 
 ## Approach (research 2026-11-19, `~/.claude/memory/research/2026-11-19-css-delivery-architecture.md`)
 
-- **Shared stylesheets print as order-preserving runs** (`plugins/sgs-blocks/includes/class-sgs-css-delivery.php::Css_Delivery`): after core's own inliner and before printing, each run of consecutive own-origin, media-all handles is folded into its first handle, file content then inline additions, so the cascade is unchanged. Modes on SGS → CSS Output (`sgs_css_shared_delivery`): `inline` (default), `bundle` (one cached file per run), `links` (WordPress's own tags).
+- **Shared stylesheets print as order-preserving runs** (`plugins/sgs-blocks/includes/class-sgs-css-delivery.php::Css_Delivery`): after core's own inliner and before printing, each run of consecutive own-origin, media-all handles is folded into its first handle, file content then inline additions, so the cascade is unchanged. Modes on SGS → CSS Output (`sgs_css_shared_delivery`): `bundle` (default: one cached file per run), `inline`, `links` (WordPress's own tags).
 - **Page-specific CSS goes in the page** (`sgs_css_output_mode` default `head`).
 - **Nothing is deferred and no critical-CSS subset is extracted**: head CSS can delay paint, never flash. Ruled out: critical-CSS extraction (Beasties, LiteSpeed UCSS/CCSS, WP Rocket RUCSS break JS-added classes and WooCommerce), block-based fold splitting, media=print and preload swaps, Early Hints, compression dictionaries.
 - **Size-matched font fallback on every preset** (`theme/sgs-theme/inc/font-fallback.php::font_fallback_preset_overrides`). The faster paint showed a font-swap shift on the canary Shop (CLS 0 to 0.109 in PageSpeed). Its cause was older than this work: the fallback reached only theme-origin entries with their own face files, never role presets (`body`) or families saved in a site's global styles. Proven before the fix by holding fonts back 1.5 s, with the overrides injected in Playwright: Mama's Home 0.162 to 0.024, canary Shop 0.110 to 0.000.
@@ -24,7 +24,7 @@ PageSpeed API, mobile, median of three (`E:/sgs-tmp/cc-plan/psi.py`):
 | Mama's Home | 94 | after rollout | 1,550 ms → |
 | Mama's Shop | 82 | after rollout | 1,750 ms → |
 
-- **Mode choice, measured on the canary:** `inline` Home 98 / Shop 95 with 0 / 400 ms render-blocking; `bundle` Home 97 / Shop 94 with 250 / 1,000 ms. Within a point on score, but only `inline` meets the 300 ms render-blocking target, so `inline` is the default and `bundle` stays a per-site choice.
+- **Mode choice, measured on the canary:** `inline` Home 98 / Shop 95 with 0 / 400 ms render-blocking and HTML of 79 / 112 KB; `bundle` Home 97 / Shop 94 with 250 / 1,000 ms and HTML of 30 / 40 KB. Bean ruled `bundle` the default (2026-11-19): with `inline` every page is two to three times heavier, while the combined file is fetched once and kept for later pages. `inline` stays a per-site choice. Shop's 1,000 ms is mostly footer JavaScript (Open 3), not the file.
 - **Page weight:** inline CSS is counted at its gzip size; canary Home CSS fell from 73.8 to 62.1 KB (one block compresses better than 30 files), Shop 84.4 KB; no own-origin blocking stylesheet link on any measured page.
 - **No flash:** the first painted frame of Google's filmstrip is fully styled on canary Home and Shop.
 - **Saved settings:** only the canary had `sgs_css_output_mode = file` saved (deleted 2026-11-19 so it renders like the client sites); Mama's, Eye Care and Indus use the defaults.
