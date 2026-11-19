@@ -423,7 +423,7 @@ export async function main( argv ) {
 			return;
 		}
 		if ( ! await step( 'propose', async () => {
-			const r = proposeSurface( { client, surface: key, allowMissingPaint } );
+			const r = proposeSurface( { client, surface: key, allowMissingPaint, site } );
 			return proposeDetail( r, { strict } );
 		} ) ) {
 			return;
@@ -433,7 +433,7 @@ export async function main( argv ) {
 		let walkUrl = draftUrl;
 		if ( ! await step( 'fill', async () => {
 			const tail = await exec( 'fill', 'node', [ 'scripts/computed-route/fill.mjs', '--client', client, '--surface', key,
-				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, '--allow-external', '--out', path.relative( REPO, out ), ...allowMissingPaintArgs( allowMissingPaint ) ] );
+				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, '--site', site, '--allow-external', '--out', path.relative( REPO, out ), ...allowMissingPaintArgs( allowMissingPaint ) ] );
 			// A state that never rendered is an opener failure, not a Fill that happened to run.
 			const opened = path.join( out, 'opener.json' );
 			const o = fs.existsSync( opened ) ? readJson( opened ) : null;

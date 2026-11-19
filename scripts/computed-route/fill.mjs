@@ -3,7 +3,9 @@
 // element it copies) to a tree resolved root-down in one pass, before anything is built.
 //   node scripts/computed-route/fill.mjs --client <slug> --surface <name> --skeleton <file>
 //        (--draft-url <url> | --draft-dir <folder> [--draft-index <file>]) --live-url <url>
-//        [--out <dir>] [--open <regex>] [--cache <dir>] [--no-sweep] [--headed] [--allow-external] [--mirror <url> <file>]...
+//        [--site <target>] [--out <dir>] [--open <regex>] [--cache <dir>] [--no-sweep] [--headed] [--allow-external] [--mirror <url> <file>]...
+//   --site: the site the run is aimed at (site-run passes its own --site); the paint gate reads and names it. Default: the
+//   surface entry's site in surfaces.json.
 //   node scripts/computed-route/fill.mjs --serve <folder> [--draft-index <file>]    serve a draft folder until Ctrl-C
 // Reads sites/<client>/build/surfaces.json (the surface's walker states), sites/<client>/theme-snapshot.json and the
 // divergence ledger; writes into --out (and adds each width-threshold snap to that ledger as a `breakpoint-snap` entry): filled.tree.json, fill-report.md, fill-report.json, unmapped.json,
@@ -146,9 +148,11 @@ export async function fillSurface( o ) {
 	}
 	const skeleton = expandSiteInfoRows( authored );
 	// Every block of the skeleton has this site's default paint, or the run stops here, before any output (lib/paint-gate.mjs).
-	const calFor = calibrationLoader( entry.site, o.cache );
+	// The site the run is aimed at (--site, site-run passes its own), else the surface entry's: the paint gate reads and names it.
+	const site = o.site || entry.site;
+	const calFor = calibrationLoader( site, o.cache );
 	// A block named in o.allowMissingPaint (--allow-missing-paint) goes on without it, printed here and listed in the report.
-	const missingPaint = assertPaints( { blocks: treeBlocks( skeleton ), calFor, site: entry.site, client: o.client, what: `fill ${ o.surface }`, allow: o.allowMissingPaint || [], log: o.log || console.log } );
+	const missingPaint = assertPaints( { blocks: treeBlocks( skeleton ), calFor, site, client: o.client, what: `fill ${ o.surface }`, allow: o.allowMissingPaint || [], log: o.log || console.log } );
 	const outDir = path.resolve( o.out || path.join( buildDir, 'qa', 'fill', o.surface, stamp() ) );
 	fs.mkdirSync( outDir, { recursive: true } );
 	const tree = cleanTree( skeleton );
@@ -419,7 +423,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		} else {
 			const r = await fillSurface( {
 				client: flag( '--client' ), surface: flag( '--surface' ), skeleton: flag( '--skeleton' ), draftUrl: flag( '--draft-url' ), draftDir: flag( '--draft-dir' ), draftIndex: flag( '--draft-index' ),
-				liveUrl: flag( '--live-url' ), out: flag( '--out' ), open: flag( '--open' ), cache: flag( '--cache' ), sweep: ! argv.includes( '--no-sweep' ), headless: ! argv.includes( '--headed' ), external: argv.includes( '--allow-external' ), mirror: parseMirrors( argv ), allowMissingPaint: allowMissingPaintArg( argv ),
+				liveUrl: flag( '--live-url' ), site: flag( '--site' ), out: flag( '--out' ), open: flag( '--open' ), cache: flag( '--cache' ), sweep: ! argv.includes( '--no-sweep' ), headless: ! argv.includes( '--headed' ), external: argv.includes( '--allow-external' ), mirror: parseMirrors( argv ), allowMissingPaint: allowMissingPaintArg( argv ),
 				log: ( m ) => console.log( m ),
 			} );
 			console.log( `fill ${ r.surface }: ${ r.counts.writes } settings written, ${ r.counts.unmapped } UNMAPPED, ${ r.counts.handover } handover, ${ r.counts.fluid } fluid, ${ r.counts.breakpointSteps } breakpoint steps. Report: ${ path.join( r.outDir, 'fill-report.md' ) }` );
