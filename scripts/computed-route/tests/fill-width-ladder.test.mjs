@@ -275,3 +275,18 @@ test( 'MUST FAIL: a box write the resolver refuses is never written as a bare va
 	run( v, [ rowOf( { block: 'sgs/bar', property: 'justify-content', value: '{"375":"center","768":"flex-start","1440":"flex-start"}', code: ONE_VALUE_EVERY_WIDTH, reason: 'shape: x' } ) ], { calFor: () => ( { settings: { barJustify: { slot: '' } } } ), resolver: boxResolver( true ) } );
 	assert.deepEqual( attrs( v ).barJustify, { desktop: 'flex-start', mobile: 'center' } );
 } );
+
+test( 'MUST FAIL: a padding side read on the row\'s element, where the block pads an inner part the draft draws as its own element, is the sum of both paddings', () => {
+	const reads = readsOf( { '0:': {}, '0:.in': { 375: { 'padding-top': '0px' }, 768: { 'padding-top': '4px' }, 1440: { 'padding-top': '0px' } } } );
+	const row = { node: 'n0', slot: '', property: 'padding-top', value: JSON.stringify( { 375: '48px', 768: '64px', 1440: '80px' } ) };
+	assert.deepEqual( valuesAt( row, reads, ROOT, INNER ), { 375: '48px', 768: '68px', 1440: '80px' } );
+} );
+
+test( 'the padding sum does not fire for a margin, a value that is not px, or a row on the written element itself', () => {
+	const reads = readsOf( { '0:': {}, '0:.in': { 375: { 'margin-top': '0px', 'padding-left': '0px' }, 768: { 'margin-top': '0px', 'padding-left': '0px' }, 1440: { 'margin-top': '0px', 'padding-left': '0px' } } } );
+	const margin = { node: 'n0', slot: '', property: 'margin-top', value: '20px' };
+	assert.deepEqual( valuesAt( margin, reads, ROOT, INNER ), { 375: '0px', 768: '0px', 1440: '0px' }, 'a margin is outside the box: not summed' );
+	const em = { node: 'n0', slot: '', property: 'padding-left', value: '2.5rem' };
+	assert.deepEqual( valuesAt( em, reads, ROOT, INNER ), { 375: '2.5rem', 768: '2.5rem', 1440: '2.5rem' }, 'a declared form is kept, never summed' );
+	assert.deepEqual( valuesAt( { node: 'n0', slot: '', property: 'padding-left', value: '40px' }, reads, ROOT, ROOT ), { 375: '40px', 768: '40px', 1440: '40px' }, 'the row on the written element itself' );
+} );

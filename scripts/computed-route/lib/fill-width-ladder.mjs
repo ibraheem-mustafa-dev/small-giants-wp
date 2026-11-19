@@ -164,9 +164,19 @@ export function valuesAt( row, reads, target, home ) {
 	const out = {};
 	for ( const w of WIDTHS.filter( ( x ) => undefined !== homeAt( x ) ) ) {
 		out[ w ] = undefined !== own[ w ] && DECLARED_FORM.test( String( own[ w ] ) ) ? own[ w ] : homeAt( w );
+		// A padding side read on the row's element, where the block pads its inner part and the draft draws that part as an
+		// element of its own inside it (a painted band around a width wrapper): the space from the outer edge to the content is
+		// both paddings, so the part's padding is their sum (px only; any other form keeps the part's own value).
+		const a = PX.exec( String( own[ w ] ?? '' ).trim() );
+		const b = PX.exec( String( homeAt( w ) ).trim() );
+		if ( PADDING_SIDE.test( row.property ) && a && b ) {
+			out[ w ] = `${ Math.round( ( parseFloat( a[ 1 ] ) + parseFloat( b[ 1 ] ) ) * 100 ) / 100 }px`;
+		}
 	}
 	return out;
 }
+const PX = /^(-?\d*\.?\d+)px$/;
+const PADDING_SIDE = /^padding-(top|right|bottom|left)$/;
 
 export function widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped, calFor = () => null, snapshot = null, scope = '', entries = [], date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes(), resolver } ) {
 	const out = { writes: [], unmapped: [], answered: [], notes: [], ledger: [] };
