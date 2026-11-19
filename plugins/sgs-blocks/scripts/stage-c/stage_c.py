@@ -22,7 +22,8 @@ names the code that writes that CSS and how much of it repeats.
                                   of the page's `<style>` CSS (inline delivery prints every stylesheet in the page), must
                                   be the same before and after; exit 1 on any difference
   --mirror <client>=<mirror>[,..] with --survey/--fix/--check: render that client's pages on another mirror for this run
-                                  (a scratch copy made by scripts/local-wp/scratch-mirror.sh); its stage-c.json is not changed
+                                  (a scratch copy made by scripts/local-wp/scratch-mirror.sh, found through the gitignored
+                                  scripts/computed-route/calibration-targets.local.json); its stage-c.json is not changed
   --self-test                     plants a repeated body and an override pair and asserts both are caught; with
                                   --unplant the plants are removed and the self-test must fail (proves it can fail)
 
@@ -117,6 +118,11 @@ def secrets_dir() -> Path:
 
 def mirror(name: str) -> dict:
     targets = json.loads(TARGETS_FILE.read_text(encoding="utf-8"))
+    local = TARGETS_FILE.with_name("calibration-targets.local.json")  # gitignored: where scratch-mirror.sh records a scratch copy
+    if local.is_file():
+        targets.update(json.loads(local.read_text(encoding="utf-8")))
+    if name not in targets:
+        raise SystemExit(f"{name} is not in calibration-targets.json or calibration-targets.local.json")
     t = targets[name]
     docroot = t["pluginDir"].split("/wp-content/")[0]
     env = (secrets_dir() / Path(t["envFile"]).name).read_text(encoding="utf-8")
