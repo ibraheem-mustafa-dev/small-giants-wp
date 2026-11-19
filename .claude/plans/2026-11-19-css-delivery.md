@@ -33,7 +33,26 @@ Mama's on `inline` (PageSpeed API, phones, median of 5, 2026-11-19):
 | Home | 87 (87 to 97), TBT 382 ms, render-blocking 0 ms | **94** (86 to 98), TBT 168 ms, render-blocking 0 ms |
 | Shop | 81 (80 to 90), LCP 3.75 s, TBT 307 ms, render-blocking 100 ms | **87** (79 to 90), LCP 3.30 s, TBT 209 ms, render-blocking 50 ms |
 
-- **What still holds Shop's LCP:** the LCP element is the first product card's image (eager, `fetchpriority="high"`, 14 KB AVIF). It finishes downloading about 0.2 s in, then waits about 2.1 s to paint (element render delay). The largest main-thread cost is Style & Layout (about 0.7 s), the browser matching Mama's per-instance CSS (the page's HTML is about 1 MB raw with its CSS inline); the longest single tasks are Google's `gtag/js` (176 ms), `header-behaviours/view.js` (116 ms) and `gtm.js` (83 ms). Stage C is the lever for Shop 95.
+After the scrim fix (`b43b1ff18`, 2026-11-19; Stage C plan "What Task 1 found"), PageSpeed API, phones, median of 5:
+
+| Site | Page | Score | LCP | TBT |
+|---|---|---|---|---|
+| Mama's | Home | 94 | 1.55 s | 61 ms |
+| Mama's | Shop | 88 | 3.30 s | 260 ms |
+| Mama's | Product | 84 | 3.30 s | 172 ms |
+| Mama's | Basket | 33 | 15.24 s | 13,512 ms (hCaptcha via Stripe) |
+| Indus | Home | 88 | 2.78 s | 70 ms |
+| Indus | Wholesale | 92 | 2.49 s | 72 ms |
+| Indus | Brands | 95 | 2.18 s | 52 ms |
+| Indus | Catalogue | 94 | 2.40 s | 74 ms |
+| Indus | Contact | 72 | 7.13 s | 107 ms |
+| Eye Care | Home | 87 | 2.87 s | 92 ms |
+| Eye Care | Shop | 91 | 2.55 s | 16 ms |
+| Eye Care | Product | 72 | 2.85 s | 516 ms |
+| Eye Care | Prescription lenses | 99 | 1.27 s | 0 ms |
+| Eye Care | Contact | 97 | 1.95 s | 42 ms |
+
+- **What held Shop's LCP before the scrim fix:** the LCP element is the first product card's image (eager, `fetchpriority="high"`, 14 KB AVIF). It finished downloading about 0.2 s in, then waited about 2.1 s to paint (element render delay; about 0.2 s after the fix, the rest of the wait now being the image's late start behind the HTML). The largest main-thread cost is Style & Layout (about 0.7 s), the browser matching Mama's per-instance CSS (the page's HTML is about 1 MB raw with its CSS inline); the longest single tasks are Google's `gtag/js` (176 ms), `header-behaviours/view.js` (116 ms) and `gtm.js` (83 ms). Stage C is the lever for Shop 95.
 
 - **Why the modes split on Mama's:** a first visit downloads about the same total either way, but `inline` makes every page carry all of its styling. Mama's carries far more CSS than the canary (Home's per-page CSS alone is 415 KB raw), so on Mama's Home the heavier page cost more than the removed requests saved. Each page type (Home, Shop, product, basket) gets its own `bundle` file, so `bundle`'s saving shows on same-type pages and return visits.
 - **Mama's journey after the release:** shop, add to basket, basket, checkout, account sign-in and no script errors, 6 of 6 (`E:/sgs-tmp/cc-plan/probe/journey.mjs`, which uses the real Add to basket button because the box builder refuses Store API adds).
