@@ -44,6 +44,10 @@ Usage:
   python plugins/sgs-blocks/scripts/provision-site-info-from-draft.py --site indus-test \
       --intake sites/indus-foods/build/intake/intake.json --set maps_url=https://maps.app.goo.gl/...  # dry run
 
+--site also takes a local mirror or scratch copy named in scripts/computed-route/calibration-targets.json (or its local file),
+for example --site local-mediatest-acme: its wp-cli runs through WSL in the docroot its pluginDir sits in, and a target marked
+protected is refused.
+
 --apply first backs the whole option up to .claude/backups/<today>/<site>/sgs_site_info.json
 (md5 printed), writes each proposed key through Sgs_Site_Info::set() under `wp --user=Claude`
 (values travel base64-encoded on stdin-fed PHP's argument list, never interpolated into PHP),
@@ -520,8 +524,42 @@ echo wp_json_encode( (object) $out );
 """
 
 
+# A local mirror or scratch copy (an entry of scripts/computed-route/calibration-targets.json, or of the gitignored
+# calibration-targets.local.json beside it, whose `pluginDir` is a WSL path) is reached through WSL, never through the hosting
+# account: its docroot is the folder `pluginDir` sits in, the same place lib/calibration-refs.mjs::wpCommand runs wp-cli.
+WSL_PLUGIN_DIR = re.compile(r"^//wsl\.localhost/([^/]+)(/.+)/wp-content/plugins/sgs-blocks/?$")
+CALIBRATION_TARGETS = REPO_ROOT / "scripts" / "computed-route" / "calibration-targets.json"
+
+
+def read_calibration_targets(committed: Path = CALIBRATION_TARGETS) -> dict:
+    """The committed site targets merged with the machine's local ones (a scratch copy's entry); a local entry never replaces a committed one."""
+    out = json.loads(committed.read_text(encoding="utf-8")) if committed.is_file() else {}
+    local = committed.with_name("calibration-targets.local.json")
+    if local.is_file():
+        for name, entry in json.loads(local.read_text(encoding="utf-8")).items():
+            out.setdefault(name, entry)
+    return out
+
+
+def local_wp_command(target: str, targets: dict) -> list[str] | None:
+    """The wp-cli command prefix for a local mirror or scratch copy, or None when `target` is not one.
+
+    A protected target is refused: this script writes the site.
+    """
+    entry = targets.get(target)
+    match = WSL_PLUGIN_DIR.match(str((entry or {}).get("pluginDir", "")))
+    if not entry or not match:
+        return None
+    if entry.get("protected"):
+        raise SystemExit(f"ERROR: {target} is protected: {entry['protected']}")
+    return ["wsl", "-d", match.group(1), "-u", "root", "--", "wp", f"--path={match.group(2)}", "--allow-root"]
+
+
 class Site:
     def __init__(self, target: str):
+        self.local = local_wp_command(target, read_calibration_targets())
+        if self.local is not None:
+            return
         targets, ssh_fallback, user_host = load_targets()
         if target not in targets:
             sys.exit(f"ERROR: unknown site {target!r}; known: {', '.join(targets)}")
@@ -529,12 +567,18 @@ class Site:
         self.ssh = ["ssh", *ssh_fallback, "-o", "BatchMode=yes", user_host]
         self.cd = f"cd {shlex.quote(root)} && "
 
-    def php(self, code: str, *args: str, user: str = "") -> dict:
-        """Run PHP through `wp eval-file -`; the code echoes one JSON object."""
+    def command(self, args: tuple[str, ...], user: str = "") -> list[str]:
+        """The process that runs `wp eval-file - <args>` (as `user` when given): through WSL on a local copy, else over SSH."""
+        if self.local is not None:
+            return [*self.local, *([f"--user={user}"] if user else []), "eval-file", "-", *args]
         quoted = " ".join(shlex.quote(a) for a in args)
         flag = f"--user={shlex.quote(user)} " if user else ""
+        return [*self.ssh, self.cd + f"wp {flag}eval-file - {quoted}"]
+
+    def php(self, code: str, *args: str, user: str = "") -> dict:
+        """Run PHP through `wp eval-file -`; the code echoes one JSON object."""
         result = subprocess.run(
-            [*self.ssh, self.cd + f"wp {flag}eval-file - {quoted}"],
+            self.command(args, user),
             input=("<?php\n" + code).encode("utf-8"), capture_output=True, timeout=180,
         )
         stdout = result.stdout.decode("utf-8", "replace")
@@ -569,7 +613,7 @@ def main() -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("--site", "--target", dest="site", required=True, help="a build-deploy.py TARGETS key")
+    parser.add_argument("--site", "--target", dest="site", required=True, help="a build-deploy.py TARGETS key, or a local mirror or scratch copy named in calibration-targets.json")
     parser.add_argument("--handover", type=Path, action="append", default=[], nargs="+",
                         help="one or more handover.json paths")
     parser.add_argument("--intake", type=Path, help="intake.json: the confirmed siteInfo rows with Bean's review marks")
