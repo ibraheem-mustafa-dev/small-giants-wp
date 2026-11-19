@@ -373,7 +373,9 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 			// A kept intakeSurface naming a skeleton intake no longer holds (a record now read as one skeleton per tab panel)
 			// gives way to the generated link.
 			const stale = intakeSurface && Object.hasOwn( have, 'intakeSurface' ) && ! Object.hasOwn( intake.skeletons, have.intakeSurface );
-			entries[ key ] = { ...entry, ...have, ...( noDraft ? { noDraft } : {} ), ...( stale ? { intakeSurface } : {} ) };
+			// A template copy's source is generated truth, as it is for a copy that reads no draft: a copy once made from the page
+			// shell is Filled at its row once the row matches a record.
+			entries[ key ] = { ...entry, ...have, ...( isTemplate ? { copy: row.templateOf.copy } : {} ), ...( noDraft ? { noDraft } : {} ), ...( stale ? { intakeSurface } : {} ) };
 			noDraft || delete entries[ key ].noDraft;
 			// An existing entry's walker fields do not survive for a page the run never walks: a re-apply drops them.
 			walked || ( delete entries[ key ].walker, delete entries[ key ].walkerFull );
