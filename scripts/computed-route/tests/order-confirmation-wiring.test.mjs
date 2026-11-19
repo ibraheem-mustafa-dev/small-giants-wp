@@ -6,7 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { surfaceRoots } from '../lib/intake-skeletons.mjs';
-import { matchRecord, templateSurfaces } from '../lib/manifest-build.mjs';
+import { buildManifest, matchRecord, templateSurfaces } from '../lib/manifest-build.mjs';
 import { WHOLE_TREE, copySource } from '../lib/template-copies.mjs';
 import { copyTrees } from '../site-run.mjs';
 
@@ -48,4 +48,15 @@ test( "MUST FAIL: the confirmation's copy is the whole Filled tree in the theme'
 	assert.equal( out[ 'order-confirmation' ].shell, null );
 	assert.deepEqual( out[ 'order-confirmation' ].tree.map( ( n ) => n.name ), [ 'core/template-part', 'sgs/container', 'core/template-part' ] );
 	assert.ok( JSON.stringify( out[ 'order-confirmation' ].tree ).includes( 'sgs/order-items' ) );
+} );
+
+test( "MUST FAIL: a confirmation entry the manifest once made from the page shell is Filled at its row, with its draft named", () => {
+	const shop = { slug: 'shop', postType: 'shop', template: 'archive-product', route: 'Shop.dc.html', id: null };
+	const existing = { 'template-order-confirmation': { tree: 'trees/template/order-confirmation.json', target: { template: 'order-confirmation' }, canvas: true, copy: { from: 'page', unplayed: 'template:order-confirmation' }, states: { resting: null } } };
+	const out = buildManifest( { client: 'c', site: 's', rows: [ shop, ROW ], records: [ CONFIRMED ], target: { envFile: 'e', envKey: 'K' }, entryFiles: [ 'Home.dc.html', 'Confirmation.dc.html' ], existing, only: [ 'template-order-confirmation' ] } );
+	const e = out.entries[ 'template-order-confirmation' ];
+	assert.deepEqual( e.copy, { from: 'fill', row: 'template:order-confirmation' } );
+	assert.deepEqual( [ e.draftDir, e.draftIndex ], [ 'sites/c/handoff', 'Confirmation.dc.html' ] );
+	// A hand-set field the generator does not make is still kept.
+	assert.deepEqual( e.states, { resting: null } );
 } );
