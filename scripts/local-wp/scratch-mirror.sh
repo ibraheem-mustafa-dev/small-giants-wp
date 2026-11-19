@@ -58,7 +58,7 @@ secrets_dir() {
 
 create() {
   local src="$1" name="$2" port="$3"
-  [[ " $MIRRORS " == *" $src "* ]] || die "source must be one of: $MIRRORS"
+  [[ " $MIRRORS " == *" $src "* || "$src" =~ $NAME_RE ]] || die "source must be one of: $MIRRORS, or a scratch copy"
   [[ "$name" =~ $NAME_RE ]] || die "name must match $NAME_RE"
   [[ "$port" =~ ^[0-9]+$ ]] && (( port >= 8090 && port <= 8199 )) || die "port must be 8090-8199"
   local sdir="/var/www/$src" dir="/var/www/$name" db
@@ -78,7 +78,8 @@ create() {
   wp --path="$dir" --allow-root config set DB_NAME "$db" >/dev/null
   [ "$(wp --path="$dir" --allow-root db query 'SELECT DATABASE()' --skip-column-names)" = "$db" ] || die "database switch failed"
   wp --path="$dir" --allow-root search-replace "$src_url" "http://localhost:$port" --all-tables-with-prefix --skip-columns=guid --quiet
-  echo "$src" > "$dir/.scratch-source"
+  # A copy of a scratch copy keeps the mirror it came from (rsync brought its .scratch-source and any .scratch-target).
+  [[ " $MIRRORS " == *" $src "* ]] && echo "$src" > "$dir/.scratch-source"
   chown -R www-data:www-data "$dir"
 
   cat > "/etc/apache2/sites-available/$name.conf" <<EOF
@@ -133,6 +134,12 @@ case "${1:-}" in
     s_src="$(cat "/var/www/$2/.scratch-source")"
     write_secrets "$2" "$s_src" "$(wp --path="/var/www/$s_src" --allow-root option get siteurl)" "$(wp --path="/var/www/$2" --allow-root option get siteurl)"
     echo "wrote the login file for $2 from $s_src" ;;
+  target)
+    # The deploy target whose own database this copy holds (refreshed with refresh-from-remote.sh): sync-build.sh then
+    # gives it that target's theme.json instead of its source mirror's.
+    [ $# -eq 3 ] && [[ "$2" =~ $NAME_RE ]] && [ -f "/var/www/$2/.scratch-source" ] || die "usage: target <local-mediatest-name> <deploy target>"
+    echo "$3" > "/var/www/$2/.scratch-target"
+    echo "$2 now runs the theme.json deployed to $3" ;;
   list) list ;;
-  *) die "usage: create <source> <name> <port> | drop <name> | secrets <name> | list" ;;
+  *) die "usage: create <source> <name> <port> | drop <name> | secrets <name> | target <name> <deploy target> | list" ;;
 esac

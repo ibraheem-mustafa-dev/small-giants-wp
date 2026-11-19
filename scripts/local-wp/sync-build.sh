@@ -77,7 +77,12 @@ sync_site() {
   # A scratch copy (scratch-mirror.sh) runs the theme.json of the mirror it was copied from.
   local tj_site="$site"
   [ -f "$dir/.scratch-source" ] && tj_site="$(cat "$dir/.scratch-source")"
-  python3 "$REPO/scripts/local-wp/mirror_theme_json.py" "$tj_site" "$tj"
+  if [ -f "$dir/.scratch-target" ]; then
+    # A scratch copy that holds a test site's own database runs that site's theme.json (scratch-mirror.sh target).
+    python3 "$REPO/scripts/local-wp/mirror_theme_json.py" --target "$(cat "$dir/.scratch-target")" "$tj"
+  else
+    python3 "$REPO/scripts/local-wp/mirror_theme_json.py" "$tj_site" "$tj"
+  fi
   install -m 644 "$tj" "$dir/wp-content/themes/sgs-theme/theme.json"
   rm -f "$tj"
 

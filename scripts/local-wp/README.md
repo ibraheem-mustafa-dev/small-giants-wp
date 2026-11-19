@@ -44,6 +44,8 @@ Use `local-eye-care`, `local-sandybrown`, `local-indus` or `local-mamas` instead
 
 `scripts/local-wp/scratch-mirror.sh create <mirror> local-mediatest-<name> <port>` copies a mirror's database (as `wp_mediatest_<name>`), files and uploads to `/var/www/local-mediatest-<name>`, rewrites its URLs to `http://localhost:<port>` (8090 to 8199) and serves it from its own Apache site; `drop local-mediatest-<name>` removes the site, database, files and backups; `list` shows each copy, its port and source. A copy records its source in `.scratch-source`, and `sync-build.sh local-mediatest-<name>` syncs a build to it with the source mirror's `theme.json`. Logins are the source mirror's. Use a copy for work the four mirrors must not see (they serve other sessions on `main`'s code), such as migrating saved content for a branch build. Run it from PowerShell, or from Git Bash with `MSYS_NO_PATHCONV=1`.
 
+A copy can also be made from another scratch copy (`create local-mediatest-<a> local-mediatest-<b> <port>`); it keeps the original mirror as its source. `target local-mediatest-<name> <deploy target>` marks a copy that holds a test site's own database (refreshed with `refresh-from-remote.sh`): `sync-build.sh` then gives it the theme.json deployed to that target (`mirror_theme_json.py --target`) instead of its source mirror's. The before-and-after render check (`scripts/render-check/`) makes and drops its own pair of copies this way.
+
 ## Refresh the database and uploads from the test site
 
 The database is not kept in step with the test sites by itself. Before measuring on a mirror, refresh it (from Git Bash, which holds the SSH key):
