@@ -19,6 +19,7 @@ import { loadDraft, readBinding, propName } from './intake-ast.mjs';
 import { fnsNamed } from './intake-census-map.mjs';
 import { openingWrites, fnWrites } from './intake-pagemap-flow-openers.mjs';
 import { OPENABLE } from './intake-pagemap-openers.mjs';
+import { colourHex } from './tokens.mjs';
 
 const FALSY = new Set( [ 'false', 'null', '0', '""' ] );
 // Words with their runs of white space made one space.
@@ -131,6 +132,11 @@ export function frameLook( { S, parts, factRecord, settings = () => [] } ) {
 	return out;
 }
 
+// Whether a declared colour paints with no transparency, in any notation the route's colour reader knows (hex, rgb(), hsl(),
+// a named colour; lib/tokens.mjs::colourHex gives #RRGGBB for these and #RRGGBBAA below full alpha). A value it cannot
+// resolve (var(), a gradient) is not taken for opaque.
+const opaque = ( value ) => /^#[0-9A-F]{6}$/.test( colourHex( value ) ?? '' );
+
 // The frame node for a target: { node, look, notes }. The skeleton carries no style value, so the node holds the frame's
 // structure only: its anchor, no trigger, closing on a backdrop click when the draft's backdrop closes the surface, full screen
 // when the draft's backdrop is opaque, and a flow's linked flow; `look` is the draft's look for Fill (frameLook). A modal's
@@ -142,7 +148,7 @@ export function frameNode( { target, S, flowBlock, parts, factRecord, settings =
 	const look = frameLook( { S, parts, factRecord, settings } );
 	parts.closesOnBackdrop && has( F.block, F.closeOnOverlay ) && ( a[ F.closeOnOverlay ] = true );
 	const scrim = look.find( ( l ) => l.attr === F.scrim )?.value || '';
-	/^rgb\(/.test( scrim ) && Object.entries( F.fullscreen ).every( ( [ k ] ) => has( F.block, k ) ) && Object.assign( a, F.fullscreen );
+	opaque( scrim ) && Object.entries( F.fullscreen ).every( ( [ k ] ) => has( F.block, k ) ) && Object.assign( a, F.fullscreen );
 	const flow = 'flow' === target.kind ? [ { name: flowBlock, attributes: { [ S.flow.linked ]: true, [ S.flow.id ]: target.slug }, innerBlocks: [] } ] : [];
 	const node = { name: F.block, attributes: a, innerBlocks: flow };
 	if ( 'modal' === target.kind ) {

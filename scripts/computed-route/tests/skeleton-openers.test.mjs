@@ -71,6 +71,24 @@ test( 'MUST FAIL: the frame node carries structure only: anchor, no trigger, bac
 	assert.deepEqual( f.node, { name: 'sgs/modal', attributes: { anchor: FLOW, triggerStyle: 'none', size: 'fullscreen' }, innerBlocks: [ { name: 'sgs/choice-flow', attributes: { flowIsLinked: true, flowId: FLOW }, innerBlocks: [] } ] } );
 } );
 
+test( 'MUST FAIL: the frame goes full screen for any opaque backdrop colour, whatever its notation, and for no translucent or unknown one', () => {
+	const [ , flow ] = targets();
+	const parts = frameParts( { factRecord: FACTS, surfaceId: 'S-27', folder: FOLDER, opening: flow.writes } );
+	// The lens flow's backdrop (its root) declares the colour under test.
+	const sized = ( colour ) => {
+		const facts = JSON.parse( JSON.stringify( FACTS ) );
+		facts.elements[ 'Shop/18' ].template.style.static.find( ( [ k ] ) => 'background-color' === k )[ 1 ] = colour;
+		return 'fullscreen' === frameNode( { target: flow, S, flowBlock: R.choiceFlow.block, parts, factRecord: facts, settings, has } ).node.attributes.size;
+	};
+	for ( const opaque of [ 'rgb(250, 248, 245)', '#000', '#FAF8F5', '#faf8f5ff', 'black', 'White', 'rgba(0, 0, 0, 1)', 'rgb(0 0 0 / 100%)', 'hsl(30 40% 96%)' ] ) {
+		assert.equal( sized( opaque ), true, opaque );
+	}
+	// Negative controls: a translucent colour, in any notation, and a value the route cannot resolve are not opaque.
+	for ( const open of [ 'rgb(0 0 0 / 50%)', 'rgb(0, 0, 0, 0.5)', 'rgba(20, 20, 20, 0.5)', '#00000080', 'hsl(0 0% 0% / 0.4)', 'var(--scrim)', 'linear-gradient(#000, #fff)' ] ) {
+		assert.equal( sized( open ), false, open );
+	}
+} );
+
 test( 'MUST FAIL: the footer hosts a frame every page opens; a page hosts only what no footer or header opens', () => {
 	const rows = PAGE_MAP();
 	const [ modal, flow ] = targets();
