@@ -35,7 +35,10 @@ from collections import Counter, defaultdict
 
 from census_common import REPO, add_site_args, resolve
 
-DB = os.path.expanduser('~/.claude/skills/sgs-wp-engine/sgs-framework.db')
+sys.path.insert(0, os.path.join(REPO, 'plugins', 'sgs-blocks', 'scripts', 'lib'))
+from framework_db import framework_db_path  # noqa: E402
+
+DB = str(framework_db_path())
 SELECTORS = 'plugins/sgs-blocks/includes/woocommerce/commerce-look/selectors.json'
 COMMERCE = {'woocommerce/cart': 'cart', 'woocommerce/checkout': 'checkout'}   # plugins/sgs-blocks/includes/woocommerce/commerce-look/writer.php::SGS_COMMERCE_LOOK_BLOCKS
 TIER_WIDTHS = {768.0, 1024.0}   # Spec 32 FR-32-13; widened by whatever widths the emit map's settings print
