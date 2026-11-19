@@ -1,0 +1,22 @@
+[
+	{"file": "lib/template-piece-buybox.mjs", "find": "list.splice( first, nodes.length, box );", "replace": "", "why": "the buy box is never put in the tree"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "list.splice( first, nodes.length, box );", "replace": "list.splice( first, 0, box );", "why": "the imitation controls stay beside the buy box"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "if ( countBlocks( tree, piece.block ) ) {", "replace": "if ( false ) {", "why": "a tree that has a buy box gets a second one"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "if ( disagree.length ) {", "replace": "if ( false ) {", "why": "a record that disagrees with the inventory is trusted"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "if ( ctx.draftFile && dcOf( surface.file ) !== dcOf( ctx.draftFile ) ) {", "replace": "if ( false ) {", "why": "a record of another draft file is used"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "const own = surface.parts.filter( ( p ) => 'setting' === p.home?.type && p.home.block === piece.block );", "replace": "const own = surface.parts.filter( ( p ) => 'setting' === p.home?.type );", "why": "parts homed on another block's settings place the buy box"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "const located = all.filter( ( k ) => ! index.chain( k ).some( ( a ) => FIXED( index.byKey.get( a ) ) ) );", "replace": "const located = all;", "why": "a fixed bar stretches the buy box over the page"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "if ( h1.length || homedElsewhere.length ) {", "replace": "if ( false ) {", "why": "a run holding the h1 is swallowed into the buy box"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "if ( nodes.some( ( r ) => r.list !== list ) ) {", "replace": "if ( false ) {", "why": "nodes in two places are merged"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "\tif ( between.length ) {\n", "replace": "\tif ( false ) {\n", "why": "a node from outside the buy box between its nodes is swallowed"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "\tif ( ! located.includes( common ) && hit.length > 1 && hit.at( -1 ) - hit[ 0 ] + 1 < kids.length ) {", "replace": "\tif ( false ) {", "why": "the run is the whole common element, holding the title too"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "\t\tif ( ! index.byKey.has( up ) || 1 !== index.children( up ).length ) {", "replace": "\t\tif ( true ) {", "why": "a wrapper holding only the buy box is not climbed"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "\t\tbox.draftRef = { tpl: run[ 0 ] };", "replace": "", "why": "a one-element buy box gives Fill no root to read"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "\tif ( 1 === run.length ) {", "replace": "\tif ( true ) {", "why": "a buy box of several elements is read at only its first"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "\tif ( ! surface ) {", "replace": "\tif ( false ) {", "why": "no record surface is not refused"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "\tif ( ! located.length ) {", "replace": "\tif ( false ) {", "why": "no located element is not refused"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "missing.length && notes.push(", "replace": "false && notes.push(", "why": "the missing features inside the buy box are not named"},
+	{"file": "lib/template-piece-draft.mjs", "find": "return ! ( part.sample || [] ).length || part.sample.some( ( s ) => tokens( s ).length && tokens( s ).every( ( t ) => pool.has( t ) ) );", "replace": "return true;", "why": "every located part is taken to agree"},
+	{"file": "lib/template-piece-draft.mjs", "find": "\t\tconst host = m[ 1 ] === rootDc ? SERVED_ROOT : m[ 1 ];", "replace": "\t\tconst host = m[ 1 ];", "why": "the surface's own component is not the served root"},
+	{"file": "lib/template-piece-draft.mjs", "find": "\treturn all.filter( ( r ) => inside( r.node ) && ! ( r.parent && inside( r.parent ) ) );", "replace": "\treturn all.filter( ( r ) => inside( r.node ) );", "why": "a node inside another buy box node is counted twice"}
+]
