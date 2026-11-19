@@ -23,7 +23,38 @@ check_build() {
 # Windows side in seconds; the one archive crosses the bridge, unpacks under /tmp and is rsynced locally. A tree inside
 # WSL, or a machine without tar.exe, is rsynced directly as before. Usage: copy_tree SRC DEST [EXCLUDE...] where each
 # EXCLUDE is a top-level name (src, tests) or a name excluded anywhere (node_modules).
+#
+# tar.exe packs only what the checkout holds: the files git tracks, new files not yet committed (untracked and not
+# ignored) and the gitignored folders a site loads (KEEP_IGNORED). Everything else gitignored stays behind: in the
+# shared checkout that is hundreds of MB (a 270 MB reference plugin checkout in sgs-blocks/stackable, old
+# generative-background runs, caches), which once made one plugin sync take 16 minutes. A folder git cannot list is
+# packed whole, as before.
 WINTAR=/mnt/c/Windows/System32/tar.exe
+WINGIT="/mnt/c/Program Files/Git/cmd/git.exe"
+KEEP_IGNORED="build vendor styles"
+# Writes the NUL-separated list of paths to pack (relative to SRC) to LIST; fails when git cannot list SRC.
+pack_list() {
+  local src="$1" list="$2" winsrc p
+  [ -x "$WINGIT" ] || return 1
+  winsrc="$(wslpath -w "$src")"
+  local -A gone=()
+  local held
+  held="$(mktemp /tmp/sgs-sync-list.XXXXXX)"
+  "$WINGIT" -C "$winsrc" ls-files -z --cached --others --exclude-standard > "$held" || { rm -f "$held"; return 1; }
+  while IFS= read -r -d '' p; do gone["$p"]=1; done < <("$WINGIT" -C "$winsrc" ls-files -z --deleted)
+  # Built under /tmp and written to LIST once: LIST sits on the Windows drive, where each append crosses the bridge.
+  {
+    while IFS= read -r -d '' p; do
+      [ -n "${gone[$p]:-}" ] || printf '%s\0' "$p"
+    done < "$held"
+    for p in $KEEP_IGNORED; do
+      [ -e "$src/$p" ] && printf '%s\0' "$p"
+    done
+  } > "$held.out"
+  rm -f "$held"
+  [ -s "$held.out" ] || { rm -f "$held.out"; return 1; }
+  cp "$held.out" "$list" && rm -f "$held.out"
+}
 copy_tree() {
   local src="$1" dest="$2"; shift 2
   local rs=() tx=() name
@@ -34,19 +65,26 @@ copy_tree() {
     else rs+=(--exclude="/$name"); fi
   done
   if [[ "$src" == /mnt/* ]] && [ -x "$WINTAR" ]; then
-    local stage tarw tarl
+    local stage tarw tarl listl what=(.)
     stage="$(mktemp -d /tmp/sgs-sync.XXXXXX)"
     tarl="$(dirname "$src")/.sgs-sync-$$-$(basename "$src").tar"
     tarw="$(wslpath -w "$tarl")"
+    listl="$tarl.list"
+    if pack_list "$src" "$listl"; then
+      what=(--null -T "$(wslpath -w "$listl")")
+    else
+      rm -f "$listl"
+      echo "copy_tree: git could not list $src; packing the whole folder" >&2
+    fi
     # -h follows links: the deploy's isolated worktree links vendor/ packages from the shared checkout, and an unfollowed
     # link would arrive as nothing (the mirror then fatals on the autoloader's missing files).
-    if (cd "$src" && "$WINTAR" -chf "$tarw" "${tx[@]}" .) && tar -xf "$tarl" -C "$stage"; then
-      rm -f "$tarl"
+    if (cd "$src" && "$WINTAR" -chf "$tarw" "${tx[@]}" "${what[@]}") && tar -xf "$tarl" -C "$stage"; then
+      rm -f "$tarl" "$listl"
       rsync -a --delete "${rs[@]}" "$stage/" "$dest/"
       rm -rf "$stage"
       return
     fi
-    rm -f "$tarl"; rm -rf "$stage"
+    rm -f "$tarl" "$listl"; rm -rf "$stage"
     echo "copy_tree: tar.exe packing failed for $src; falling back to rsync over the file bridge" >&2
   fi
   rsync -a --delete "${rs[@]}" "$src/" "$dest/"
