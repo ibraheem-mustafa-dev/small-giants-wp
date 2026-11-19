@@ -1,0 +1,5 @@
+[
+ {"file":"lib/fill-resolve-element.mjs","find":"\t\t\t\tres.writes = [];\n\t\t\t}","replace":"\t\t\t}","why":"the part's value is still written on the reaching setting"},
+ {"file":"lib/fill-resolve-element.mjs","find":"const reachOnly = ! layer && target.scoped && INHERITED.includes( prop ) ?","replace":"const reachOnly = false ?","why":"no guard at all"},
+ {"file":"lib/fill-resolve-element.mjs","find":"return c && ! ( c.slots || [ c.slot ] ).some( ( p ) => LOOSE( p ) === LOOSE( target.slot ) );","replace":"return !! c;","why":"a setting calibrated on the part itself is refused too"}
+]

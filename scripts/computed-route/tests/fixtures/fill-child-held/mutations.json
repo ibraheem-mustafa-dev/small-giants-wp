@@ -1,0 +1,6 @@
+[
+ {"file":"lib/fill-child-held.mjs","find":"\t\t\t\tst.out.unmapped.splice( st.out.unmapped.indexOf( row ), 1 );\n","replace":"","why":"the parent row stays beside its settled copy"},
+ {"file":"lib/fill-child-held.mjs","find":" && met.has( u.property ) )","replace":" )","why":"a property the inner block never met is settled too"},
+ {"file":"lib/fill-child-held.mjs","find":"const OWN = /^(?:no-setting|unpaired-part)\\b/;","replace":"const OWN = /./;","why":"a conflict row is settled too"},
+ {"file":"lib/fill-child-held.mjs","find":"json( r.targets.find( ( x ) => '' === x.slot ).finder ) === json( t.finder )","replace":"true","why":"any inner block stands for any element"}
+]

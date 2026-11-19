@@ -21,6 +21,7 @@ import { fillElement, unmapped } from './fill-resolve-element.mjs';
 import { completePaint } from './css-families.mjs';
 import { makeSettle } from './fill-held.mjs';
 import { partWideWrites } from './fill-ancestor.mjs';
+import { childHeld } from './fill-child-held.mjs';
 import { calibrationForNode } from './paint-state.mjs';
 
 const PSEUDO_LAYERS = [ '::before', '::after' ];
@@ -194,6 +195,8 @@ export function fillTree( opts ) {
 	}
 	// A host block's setting that paints the same part on every instance of a child block is written once (FR-48-14b).
 	partWideWrites( st, opts.partWide );
+	// A parent's row at an element a block inside it reads itself is that block's (lib/fill-child-held.mjs).
+	childHeld( st );
 	const settleHeld = ( result ) => {
 		const r = settle( { unmapped: result.unmapped, writes: result.writes } );
 		return { unmapped: r.unmapped, alreadyHeld: [ ...( result.alreadyHeld || [] ), ...r.alreadyHeld ] };

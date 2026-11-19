@@ -1,7 +1,7 @@
 // Fill resolution of one element (FR-47-4 step 2): every property that differs from what the element already shows,
 // written through the resolver, with the not-plain, conflict and fluid records.
 import { PSEUDO_PROPS, CONTEXT_PROPS } from '../../parity/lib/collect.mjs';
-import { blockSchema, fluidForm } from './resolve.mjs';
+import { blockSchema, fluidForm, LOOSE } from './resolve.mjs';
 import { setAttr } from './tree.mjs';
 import { usedValueTarget } from './solve-rows.mjs';
 import { PROPS, READ_WIDTHS, TIE_PROPS } from './fill-read.mjs';
@@ -270,6 +270,18 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			if ( unpaired.length ) {
 				unpaired.forEach( ( x ) => unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: x.why } ) );
 				res.writes = res.writes.filter( ( w ) => ! unpaired.some( ( x ) => x.w === w ) );
+			}
+			// An inherited value read on one of the block's parts (a draftSlots element) is never written on a setting calibration
+			// shows only reaching that part from another element (the block's root typography): the setting would carry the
+			// part's value to every text of the block the draft styles otherwise (an accordion header's button font size onto
+			// its answers). The row names the setting.
+			const reachOnly = ! layer && target.scoped && INHERITED.includes( prop ) ? res.writes.filter( ( w ) => {
+				const c = cal?.settings?.[ w.attr ];
+				return c && ! ( c.slots || [ c.slot ] ).some( ( p ) => LOOSE( p ) === LOOSE( target.slot ) );
+			} ) : [];
+			if ( reachOnly.length ) {
+				unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `reach-only: ${ reachOnly.map( ( w ) => w.attr ).join( ', ' ) } is calibrated on another element of ${ rec.name } and only reaches "${ target.slot }"; a part's inherited value is never written on the whole block` } );
+				res.writes = [];
 			}
 			if ( ! res.writes.length ) {
 				continue;
