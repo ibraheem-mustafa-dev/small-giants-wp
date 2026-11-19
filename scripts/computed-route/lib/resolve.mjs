@@ -552,6 +552,13 @@ export function ownElementSetting( db, block, tied ) {
 	return 1 === rest.length && rest[ 0 ].css_element ? rest : tied;
 }
 
+// A setting the framework stores as a gradient BORDER control (`border-color-gradient`, `border-top-color-gradient`): its layer
+// paints the border box only, so it never gives a draft's `background-image`, whatever calibration measured it painting.
+export const borderGradientOnly = ( row ) => {
+	const listed = String( row.css_property ?? '' ).split( ',' ).map( ( p ) => p.trim() ).filter( Boolean );
+	return listed.length > 0 && listed.every( ( p ) => /^border(-[a-z]+)*-color-gradient$/.test( p ) );
+};
+
 export function resolve( input, ctx ) {
 	const { block, prop, state = null, perWidth, fontPx = {}, current = {} } = input;
 	// anyIndex (a setting of an enclosing block): calibration's fixture repeats the child at other positions, so paths
@@ -563,7 +570,8 @@ export function resolve( input, ctx ) {
 	const sameKind = ( p ) => ! input.anyIndex || ! input.tag || ! tagAt( p ) || tagAt( p ) === input.tag;
 	const { short, side } = splitProperty( prop );
 	const rows = [ ...candidates( ctx.db, block, short, state ), ...( short !== prop ? candidates( ctx.db, block, prop, state ) : [] ) ]
-		.filter( ( r, i, all ) => all.findIndex( ( x ) => x.attr_name === r.attr_name ) === i );
+		.filter( ( r, i, all ) => all.findIndex( ( x ) => x.attr_name === r.attr_name ) === i )
+		.filter( ( r ) => ! ( 'background-image' === short && borderGradientOnly( r ) ) );
 	if ( ! rows.length ) {
 		return resolveDiscovered( { ...input, state }, ctx.calibration ) || noSetting( { ...input, state }, ctx, 'display' === prop && ! state ? `no layout setting holds display:${ [ ...new Set( Object.values( perWidth ) ) ].join( ', ' ) } on ${ block } "${ slot }"` : `${ block } has no setting for ${ prop }${ state ? ' (' + state + ')' : '' }` );
 	}

@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/resolve.mjs",
+		"find": "\t\t.filter( ( r ) => ! ( 'background-image' === short && borderGradientOnly( r ) ) );",
+		"replace": "\t\t.filter( ( r ) => true );",
+		"why": "a border gradient setting is a candidate for a background-image again"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "\treturn listed.length > 0 && listed.every( ( p ) => /^border(-[a-z]+)*-color-gradient$/.test( p ) );",
+		"replace": "\treturn listed.length > 0 && listed.some( ( p ) => /^border(-[a-z]+)*-color-gradient$/.test( p ) );",
+		"why": "a setting that also paints a background is refused with the border ring"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "\treturn listed.length > 0 && listed.every( ( p ) => /^border(-[a-z]+)*-color-gradient$/.test( p ) );",
+		"replace": "\treturn listed.length > 0 && listed.every( ( p ) => /gradient$/.test( p ) );",
+		"why": "a text or background gradient setting is refused as a border ring"
+	}
+]
