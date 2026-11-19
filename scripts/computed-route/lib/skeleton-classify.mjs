@@ -119,7 +119,7 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 	const fromRule = ( r ) => {
 		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ), ...( r.handovers ? { handovers: r.handovers } : {} ), ...( r.inner ? { inner: r.inner, item: r.item } : {} ), ...( r.closedInner ? { closedInner: r.closedInner } : {} ) };
 		if ( r.action ) {
-			return { ...base, action: r.action, ...( r.into ? { into: r.into } : {} ), candidates: [] };
+			return { ...base, action: r.action, ...( r.into ? { into: r.into } : {} ), ...( r.hostSetting ? { hostSetting: r.hostSetting } : {} ), candidates: [] };
 		}
 		const C = {};
 		add( C, r.block, 'rule', W.rule, `rule ${ r.rule }: ${ r.reason }`, { attributes: r.attributes, ...( r.wordBound ? { wordBound: r.wordBound } : {} ) } );

@@ -846,7 +846,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			// wrapper: it stays, and the scoring proposes it (the multi-button for buttons, a container for labels).
 			// The row that holds the hero's image is the hero's own split (content beside media), which the hero lays out.
 			const row = kidsB.length > 1 && ! m.stacked( kidsB ) && ! desc( e ).some( isMedia );
-			return ! m.words( e ) && kidsB.length && ! row ? v( 'heroInner', { action: 'unwrap' } ) : null;
+			// The wrapper stacking two or more of the hero's items with no picture inside is the hero's content column: it is the
+			// draft element of the calibrated slot of the rule's `contentSetting` (lib/skeleton-write-slots.mjs::hostSlot), so Fill
+			// reads the column's gap, padding and ground there.
+			const column = kidsB.length > 1 && ! desc( e ).some( isMedia ) && R.heroInner?.contentSetting ? { hostSetting: R.heroInner.contentSetting } : {};
+			return ! m.words( e ) && kidsB.length && ! row ? v( 'heroInner', { action: 'unwrap', ...column } ) : null;
 		},
 	];
 

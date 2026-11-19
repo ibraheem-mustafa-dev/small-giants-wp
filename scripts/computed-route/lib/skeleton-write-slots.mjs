@@ -84,11 +84,12 @@ export function makeSlotRows( ctx ) {
 	}
 	const buildFooterRows = ( e, block ) => footerRowsOf( e, block, { R, m, inventory, contentAttrs, base, record, hosts, buildChildren: w.buildChildren, buildNode: w.buildNode, slotProblems, declared: declaredPosition, setStripRoots: ( keys ) => ( ctx.stripRoots = keys ), unwrap: ( x ) => unwrapThrough( x, block ) } );
 
-	// An element a rule unwraps whose rule names a hostSetting (widthWrapper: the block sets its own width) is the draft
-	// element of that setting's calibrated slot on the block it unwraps into, so Fill reads its width, layout and gaps
-	// there. The outermost such wrapper wins; a block whose setting paints its root gains no slot.
+	// An element a rule unwraps whose rule names a hostSetting (widthWrapper: the block sets its own width), or whose verdict
+	// names one (heroInner: the hero's content column), is the draft element of that setting's calibrated slot on the block it
+	// unwraps into, so Fill reads its width, layout and gaps there. The outermost such wrapper wins; a block whose setting
+	// paints its root gains no slot.
 	function hostSlot( e, r ) {
-		const setting = R[ r.rule ]?.hostSetting;
+		const setting = r.hostSetting ?? R[ r.rule ]?.hostSetting;
 		const host = hosts.at( -1 );
 		const slot = setting && host ? calSettings( host.block )?.[ setting ]?.slot : null;
 		if ( ! slot || host.node.draftSlots?.[ slot ] ) {

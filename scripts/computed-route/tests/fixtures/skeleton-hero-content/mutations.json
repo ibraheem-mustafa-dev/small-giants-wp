@@ -1,0 +1,7 @@
+[
+	{"file":"lib/skeleton-classify.mjs","find":"...( r.hostSetting ? { hostSetting: r.hostSetting } : {} ), ","replace":"","why":"the hero rule's content setting would never reach the host slot (the 2026-11-19 Contact run: contentGap Not read)"},
+	{"file":"lib/skeleton-write-slots.mjs","find":"const setting = r.hostSetting ?? R[ r.rule ]?.hostSetting;","replace":"const setting = R[ r.rule ]?.hostSetting;","why":"a verdict naming a host setting would give no slot"},
+	{"file":"lib/skeleton-rules.mjs","find":"const column = kidsB.length > 1 && ! desc( e ).some( isMedia ) &&","replace":"const column = ! desc( e ).some( isMedia ) &&","why":"a wrapper holding the column alone (the grid of a hero with no picture) would be read as the column"},
+	{"file":"lib/skeleton-rules.mjs","find":"const column = kidsB.length > 1 && ! desc( e ).some( isMedia ) &&","replace":"const column = kidsB.length > 1 &&","why":"the grid holding the picture beside the column would be read as the column"},
+	{"file":"lib/skeleton-rules.mjs","find":"&& R.heroInner?.contentSetting ? { hostSetting: R.heroInner.contentSetting } : {};","replace":"? { hostSetting: 'contentGap' } : {};","why":"a rule naming no content setting would still hand over a slot"}
+]
