@@ -32,8 +32,7 @@
   },
   "sgs/container": {
     "attributes": {
-      "tagName": "div",
-      "bgSvgContent": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"50\" cy=\"50\" r=\"40\" fill=\"currentColor\"/></svg>"
+      "tagName": "div"
     },
     "variants": [
       {},
@@ -61,6 +60,19 @@
         "name": "sgs/text",
         "attributes": {
           "text": "Second child."
+        }
+      }
+    ],
+    "paintStates": [
+      {
+        "name": "bg-svg",
+        "when": {
+          "has": [
+            "bgSvgContent"
+          ]
+        },
+        "attributes": {
+          "bgSvgContent": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"50\" cy=\"50\" r=\"40\" fill=\"currentColor\"/></svg>"
         }
       }
     ]

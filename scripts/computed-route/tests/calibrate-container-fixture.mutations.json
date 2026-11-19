@@ -1,0 +1,20 @@
+[
+	{
+		"file": "calibration-fixtures.json",
+		"find": "\"has\": [\n            \"bgSvgContent\"\n          ]",
+		"replace": "\"lacks\": [\n            \"bgSvgContent\"\n          ]",
+		"why": "the SVG state matches a node that does not carry the SVG"
+	},
+	{
+		"file": "calibration-fixtures.json",
+		"find": "\"name\": \"bg-svg\",",
+		"replace": "\"name\": \"bg-svg-gone\",",
+		"why": "the SVG state is renamed so the paint is not kept"
+	},
+	{
+		"file": "calibration-fixtures.json",
+		"find": "      \"tagName\": \"div\"\n    },\n    \"variants\": [\n      {},\n      {\n        \"flexWrap\": \"wrap\"",
+		"replace": "      \"tagName\": \"div\",\n      \"bgSvgContent\": \"<svg></svg>\"\n    },\n    \"variants\": [\n      {},\n      {\n        \"flexWrap\": \"wrap\"",
+		"why": "the base fixture carries the SVG again"
+	}
+]
