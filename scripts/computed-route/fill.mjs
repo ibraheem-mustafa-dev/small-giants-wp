@@ -49,6 +49,7 @@ import { widthGateWrites, maskHiddenVariants } from './lib/fill-width-gate.mjs';
 import { addDefectLooks } from './lib/fill-state-defect.mjs';
 import { draftDefectsFile, writeDraftDefects } from './lib/draft-defects-file.mjs';
 import { presetWrites, dropPresetMotion } from './lib/fill-preset.mjs';
+import { mountVersions, versionDefaults } from './lib/fill-mount-version.mjs';
 import { formWrites, formSources } from './lib/fill-form.mjs';
 import { formDraftFolder } from './lib/fill-form-behaviour.mjs';
 import { listContentWrites, logicReader, applyChildren, markItemChildren } from './lib/fill-list-content.mjs';
@@ -284,7 +285,9 @@ export async function fillSurface( o ) {
 		result.unmapped.push( ...gates.unmapped );
 		result.notes.push( ...gates.notes );
 		// FR-48-51: a button whose looks equal a theme button preset is written as that variant and nothing per instance.
-		const presets = presetWrites( { nodes, flat, refOf, reads, rawSnapshot, snapshot, writes: result.writes, db } );
+		// A mount that names a preset (FR-48A-17 `version`) takes it before any look is matched (lib/fill-mount-version.mjs).
+		const mounts = facts ? mountVersions( { nodes, facts, rootComponent: intakeParts.rootComponent, defaults: versionDefaults( o.draftDir || path.join( repo, entry.draftDir || path.join( 'sites', o.client, 'handoff' ) ) ) } ) : null;
+		const presets = presetWrites( { nodes, flat, refOf, reads, rawSnapshot, snapshot, writes: result.writes, db, mounts } );
 		result.writes = presets.writes;
 		result.notes.push( ...presets.notes );
 		// FR-48-57: each form field's settings from the draft's control and logic (lib/fill-form.mjs).

@@ -107,10 +107,28 @@ export function matchPreset( { presets, reads, id, snapshot } ) {
 			} );
 		} );
 		if ( ok ) {
-			return { variant, props: [ ...new Set( keys.flatMap( ( [ , props ] ) => props ) ) ], hover: keys.some( ( [ , , s ] ) => s ) };
+			const props = [ ...new Set( keys.flatMap( ( [ , props ] ) => props ) ) ];
+			return { variant, props, hoverProps: props, hover: keys.some( ( [ , , s ] ) => s ) };
 		}
 	}
 	return null;
+}
+
+// The preset a mount names, matched key by key: { variant, props, hoverProps, hover } where `props` are the CSS properties of
+// the resting keys whose value equals the draft's at every read width and `hoverProps` those of the hover keys. A key that
+// differs (or that the read did not return) is not in either list, so the button keeps its own value for it.
+export function matchNamed( { preset, variant, reads, id, snapshot } ) {
+	const rest = new Set();
+	const hover = new Set();
+	for ( const [ key, props, state ] of PRESET_KEYS.filter( ( [ k ] ) => undefined !== preset[ k ] ) ) {
+		const want = plain( preset[ key ], snapshot );
+		const same = null !== want && READ_WIDTHS.every( ( width ) => {
+			const got = drawn( { reads, width, id, key, props, state } );
+			return undefined !== got && equal( key, want, got, parseFloat( reads.widths?.[ width ]?.[ id ]?.styles?.[ 'font-size' ] ) || 16 );
+		} );
+		same && props.forEach( ( p ) => ( state ? hover : rest ).add( p ) );
+	}
+	return { variant, props: [ ...rest ], hoverProps: [ ...hover ], hover: hover.size > 0 };
 }
 
 // The default variant of a preset block: its `inheritStyle` setting's default, by framework-DB query.
@@ -142,10 +160,13 @@ function liftOf( { presets, variant, reads, id, snapshot } ) {
 
 // Writes the matched variant onto every preset block whose draft element matches, and drops the per-instance values the
 // resolver wrote for the properties the variant sets. nodes: skeletonNodes(); flat: tree nodes by index; refOf: tree node to
-// ref; reads: readDraft's result; rawSnapshot/snapshot: the client's theme snapshot (raw, normalised); writes: Fill's writes.
+// ref; reads: readDraft's result; rawSnapshot/snapshot: the client's theme snapshot (raw, normalised); writes: Fill's writes;
+// mounts: lib/fill-mount-version.mjs::mountVersions (the preset a draft mount names), which wins over matching the look: a node
+// mounted with a version the snapshot carries takes that preset and drops only the per-instance values equal to the preset's;
+// a version the snapshot does not carry is left unwritten and noted.
 // Returns { writes (the list without the dropped ones, plus the variant writes), notes, lifted (the nodes whose painted
 // variant holds the draft's hover transform: dropPresetMotion's input) }.
-export function presetWrites( { nodes, flat, refOf, reads, rawSnapshot, snapshot, writes, db } ) {
+export function presetWrites( { nodes, flat, refOf, reads, rawSnapshot, snapshot, writes, db, mounts = null } ) {
 	const presets = rawSnapshot?.settings?.custom?.buttonPresets;
 	const out = { writes, notes: [], lifted: [] };
 	if ( ! presets || ! Object.keys( presets ).length ) {
@@ -159,9 +180,13 @@ export function presetWrites( { nodes, flat, refOf, reads, rawSnapshot, snapshot
 			continue;
 		}
 		const held = Object.fromEntries( Object.entries( presets ).filter( ( [ v ] ) => blocks[ n.name ].variants.includes( v ) ) );
-		const m = matchPreset( { presets: held, reads, id: target.id, snapshot } );
 		const node = flat[ n.index ];
 		const ref = refOf( node );
+		const mount = mounts?.get( n.index ) ?? null;
+		if ( mount && ! held[ mount.version ] ) {
+			out.notes.push( `${ ref } ${ n.name }: the draft mounts ${ mount.component } with version ${ mount.version }, which the site's buttonPresets does not carry for this block, so no preset is written` );
+		}
+		const m = mount ? ( held[ mount.version ] ? matchNamed( { preset: held[ mount.version ], variant: mount.version, reads, id: target.id, snapshot } ) : null ) : matchPreset( { presets: held, reads, id: target.id, snapshot } );
 		// The variant the button paints: the one just matched, else the one it holds, else the block's default (a button that
 		// matches no variant still paints its default variant's hover lift).
 		const effective = m?.variant ?? node.attributes?.[ attr ] ?? presetDefault( db, n.name, attr );
@@ -171,14 +196,16 @@ export function presetWrites( { nodes, flat, refOf, reads, rawSnapshot, snapshot
 		if ( ! m ) {
 			continue;
 		}
-		const dropped = out.writes.filter( ( w ) => w.node === ref && '' === String( w.slot ?? '' ) && ( ! w.state || 'hover' === w.state ) && m.props.includes( w.prop ) );
+		const dropped = out.writes.filter( ( w ) => w.node === ref && '' === String( w.slot ?? '' ) && ( ! w.state || 'hover' === w.state ) && ( 'hover' === w.state ? m.hoverProps : m.props ).includes( w.prop ) );
 		// Several writes to one attribute each hold the value the one before left as their `before`: undoing them last to first ends on the first `before`.
 		for ( const w of [ ...dropped ].reverse() ) {
 			null === w.before ? delete node.attributes[ w.attr ] : ( node.attributes[ w.attr ] = w.before );
 		}
 		const { before, after } = setAttr( node, { attr, value: m.variant } );
 		out.writes = [ ...out.writes.filter( ( w ) => ! dropped.includes( w ) ), { node: ref, index: n.index, block: n.name, slot: '', prop: `preset ${ m.variant }`, attr, before, after, widths: [], how: 'preset' } ];
-		out.notes.push( `${ ref } ${ n.name }: its base${ m.hover ? ' and hover' : '' } looks equal the ${ m.variant } preset, so ${ attr } is ${ m.variant } and ${ dropped.length } per-instance value${ 1 === dropped.length ? '' : 's' } are not written` );
+		out.notes.push( mount
+			? `${ ref } ${ n.name }: the draft mounts ${ mount.component } as version ${ mount.version }, so ${ attr } is ${ m.variant } and ${ dropped.length } per-instance value${ 1 === dropped.length ? '' : 's' } equal to the preset are not written; the rest stay as the draft draws them`
+			: `${ ref } ${ n.name }: its base${ m.hover ? ' and hover' : '' } looks equal the ${ m.variant } preset, so ${ attr } is ${ m.variant } and ${ dropped.length } per-instance value${ 1 === dropped.length ? '' : 's' } are not written` );
 	}
 	return out;
 }

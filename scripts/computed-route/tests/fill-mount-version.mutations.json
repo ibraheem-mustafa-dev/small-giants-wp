@@ -1,0 +1,11 @@
+[
+	{ "file": "lib/fill-mount-version.mjs", "find": "[ 'a', 'button' ].includes( tag )", "replace": "true", "why": "any element (a non-control) takes the mount's version" },
+	{ "file": "lib/fill-mount-version.mjs", "find": "! Object.hasOwn( defaults || {}, mount.component )", "replace": "false", "why": "a component with no version enum counts as a button mount" },
+	{ "file": "lib/fill-mount-version.mjs", "find": "! raw.includes( '{{' )", "replace": "true", "why": "a bound version is written as a name" },
+	{ "file": "lib/fill-mount-version.mjs", "find": "undefined === raw && null !== defaults[ mount.component ]", "replace": "false", "why": "the declared default is ignored" },
+	{ "file": "lib/fill-mount-version.mjs", "find": "2 === p.chain.length ? rootComponent : p.chain[ p.chain.length - 2 ]", "replace": "rootComponent", "why": "a nested mount is looked for in the root draft" },
+	{ "file": "lib/fill-preset.mjs", "find": "const m = mount ? ( held[ mount.version ] ?", "replace": "const m = false ? ( held[ mount.version ] ?", "why": "the mount's version never wins over the look" },
+	{ "file": "lib/fill-preset.mjs", "find": "same && props.forEach( ( p ) => ( state ? hover : rest ).add( p ) );", "replace": "props.forEach( ( p ) => ( state ? hover : rest ).add( p ) );", "why": "a value that differs from the preset is dropped" },
+	{ "file": "lib/fill-preset.mjs", "find": "( 'hover' === w.state ? m.hoverProps : m.props ).includes( w.prop )", "replace": "false", "why": "nothing equal to the preset is dropped" },
+	{ "file": "lib/fill-preset.mjs", "find": "if ( mount && ! held[ mount.version ] ) {", "replace": "if ( false ) {", "why": "an unknown version is not noted" }
+]
