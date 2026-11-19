@@ -62,15 +62,22 @@ export async function discoverRequests( { folder, index, widths = [ 1440 ], visi
 
 const readHar = ( harPath ) => ( fs.existsSync( harPath ) ? JSON.parse( fs.readFileSync( harPath, 'utf8' ) ) : null );
 
+// How a recorded body is stored in the HAR: as text only when its content type is a text one AND the bytes are valid UTF-8
+// (they decode and encode back to the same bytes); anything else in base64. A server's content type is not proof: a font
+// file served as `text/html` stored as text is corrupted, the replayed font fails to load and every read's font check throws.
+export function bodyContent( mimeType, body ) {
+	const asText = /^(text\/|application\/(javascript|json))/.test( mimeType ) ? body.toString( 'utf8' ) : null;
+	return null !== asText && Buffer.from( asText, 'utf8' ).equals( body ) ? { text: asText } : { text: body.toString( 'base64' ), encoding: 'base64' };
+}
+
 function harEntry( url, reqHeaders, res, body ) {
 	const headers = [ ...res.headers ].filter( ( [ n ] ) => ! DROP_HEADERS.has( n.toLowerCase() ) ).map( ( [ name, value ] ) => ( { name, value } ) );
 	const mimeType = res.headers.get( 'content-type' ) || 'application/octet-stream';
-	const text = /^(text\/|application\/(javascript|json))/.test( mimeType );
 	const u = new URL( url );
 	return {
 		startedDateTime: new Date().toISOString(), time: 0,
 		request: { method: 'GET', url, httpVersion: 'HTTP/1.1', cookies: [], headers: Object.entries( reqHeaders ).map( ( [ name, value ] ) => ( { name, value } ) ), queryString: [ ...u.searchParams ].map( ( [ name, value ] ) => ( { name, value } ) ), headersSize: -1, bodySize: 0 },
-		response: { status: 200, statusText: 'OK', httpVersion: 'HTTP/1.1', cookies: [], headers, content: { size: body.length, mimeType, ...( text ? { text: body.toString( 'utf8' ) } : { text: body.toString( 'base64' ), encoding: 'base64' } ) }, redirectURL: '', headersSize: -1, bodySize: body.length },
+		response: { status: 200, statusText: 'OK', httpVersion: 'HTTP/1.1', cookies: [], headers, content: { size: body.length, mimeType, ...bodyContent( mimeType, body ) }, redirectURL: '', headersSize: -1, bodySize: body.length },
 		cache: {}, timings: { send: 0, wait: 0, receive: 0 },
 	};
 }

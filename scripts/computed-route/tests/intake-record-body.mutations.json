@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/intake-record.mjs",
+		"find": "null !== asText && Buffer.from( asText, 'utf8' ).equals( body ) ?",
+		"replace": "null !== asText ?",
+		"why": "a binary body served as text is stored as text and corrupted"
+	},
+	{
+		"file": "lib/intake-record.mjs",
+		"find": ".test( mimeType ) ? body.toString( 'utf8' ) : null;",
+		"replace": ".test( mimeType ) || true ? body.toString( 'utf8' ) : null;",
+		"why": "a body with a binary content type whose bytes are valid UTF-8 is stored as text"
+	},
+	{
+		"file": "lib/intake-record.mjs",
+		"find": "? { text: asText } : { text: body.toString( 'base64' ), encoding: 'base64' };",
+		"replace": "? { text: body.toString( 'base64' ), encoding: 'base64' } : { text: body.toString( 'base64' ), encoding: 'base64' };",
+		"why": "real text is stored in base64"
+	}
+]
