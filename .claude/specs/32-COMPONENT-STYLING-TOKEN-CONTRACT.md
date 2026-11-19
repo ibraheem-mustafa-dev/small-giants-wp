@@ -114,9 +114,9 @@ The design is a semantic BEM variant class consuming `--wp--custom--{component}-
 
 ### Filling and rendering presets
 
-`{component}Presets` are filled by the Spec 48 extractor for a cloned client, or by hand (or from a starter) otherwise.
+`{component}Presets` are filled by the Spec 48 extractor for a cloned client, or by hand (or from a starter) otherwise. For buttons the extractor writes each preset's whole look from the draft: the resting look, hover colours and `hover-transform`, `shadow`, `hover-shadow`, `active-transform`, `active-shadow`, `hover-transition`, `hover-easing`, `hover-easing-colour` and `hover-easing-shadow` (FR-32-19's keys), each only where the draft has it (Spec 48 FR-32-7).
 
-- **FR-32-8** — A block renders its preset as the semantic variant class (`.sgs-{block}--{variant}`) and emits NO inline colour/geometry style. *Done when:* a preset button renders only `sgs-button sgs-button--{variant}` (+ WP block class) and no `style` attribute. How the cloning route chooses the variant class (and leaves a naked link naked) is a Spec 48 requirement that cites this one. Status: BUILT (`audit-inline-styling.js --check` passes, above).
+- **FR-32-8** — A block renders its preset as the semantic variant class (`.sgs-{block}--{variant}`) and emits NO inline colour/geometry style. *Done when:* a preset button renders only `sgs-button sgs-button--{variant}` (+ WP block class) and no `style` attribute. How the cloning route chooses the variant class (and leaves a naked link naked) is a Spec 48 requirement that cites this one. Status: BUILT for `primary`, `secondary` and `outline` (`audit-inline-styling.js --check` passes, above). A button preset under a draft's own version name (Spec 48 FR-32-7: `buttonPresets.<name>`) has no variant class yet: the button block's style picker and allow-lists (`button/edit.js`, `button/render.php`), its stylesheet's per-variant blocks (`button/style.css` `.sgs-button--{variant}`), the press, focus and WooCommerce helpers (`helpers-button-press.php::SGS_BUTTON_PRESS_VARIANTS`, `helpers-button-focus.php::SGS_BUTTON_FOCUS_BORDERED_PRESETS`, `helpers-button-preset.php::sgs_button_preset_css`) and the product-card and buybox allow-lists name the three only.
 
 ### Naming Convention
 
@@ -687,7 +687,7 @@ Other `settings.custom` keys a snapshot carries:
 
 | Key | Holds | Consumer |
 |---|---|---|
-| `buttonPresets` | `primary`, `secondary`, `outline`, plus an optional `default` entry holding only `hover-transform` and `hover-transition` | `plugins/sgs-blocks/src/blocks/button/style.css` (FR-32-2) |
+| `buttonPresets` | `primary`, `secondary`, `outline`, plus an optional `default` entry holding only `hover-transform` and `hover-transition`; an extracted snapshot may also hold a draft button component's own version name (Spec 48 FR-32-7), which no renderer reads yet | `plugins/sgs-blocks/src/blocks/button/style.css` (FR-32-2) |
 | `borderRadius` | `small`, `medium`, `large`, `pill` | block stylesheets |
 | `presetTokens`, `defaultTokens` | `presetTokens.<fontSizes|spacing>.<slot>` is the draft token a picker slot carries; `defaultTokens` lists the draft tokens that became job defaults (FR-32-29; gate `plugins/sgs-blocks/scripts/check-snapshot-token-roster.py --check`, refused at push by `roster_guard`) | the clone's route, which writes a preset reference where an element uses a carried token |
 | `transition`, `duration`, `easing`, `distance`, `entrance`, `linkSweep`, `shadowHover`, `shadowColour` | motion and state tokens (`distance` and the `easing` springs per FR-32-21; `entrance` also holds `scale`, `start`, `staggerStep`, `staggerCap`, `staggerEvery` and the `reveal` rules per Spec 38A §8.1, written by `theme-extractor/reveal_tokens.py`) | theme and block stylesheets; the Spec 38A motion renderer |
