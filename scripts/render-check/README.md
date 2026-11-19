@@ -1,0 +1,44 @@
+# Render check
+
+Answers one question before a plugin or theme change reaches `main`: does it change what any page of a site renders? It runs the site's pages before and after on two scratch copies of the site's local mirror and exits non-zero on any difference nobody has accepted.
+
+```
+python scripts/render-check/render-check.py --from local-mamas --before <checkout|site> --after <checkout|site>
+python scripts/render-check/render-check.py --self-test
+```
+
+## What a run does
+
+1. Makes two scratch copies of the mirror (`scripts/local-wp/scratch-mirror.sh`): side a for the before build, side b for the after build. A build is a checkout holding a built plugin (`plugins/sgs-blocks/build/`), synced with that checkout's own `scripts/local-wp/sync-build.sh`; `site` keeps the mirror's own build.
+2. Seeds both copies alike (`seed.php`): a customer (`rc-customer`, fixed name, address and sign-up date), one saved item, one order dated 2026-01-15 with the order key `wc_order_rendercheck01`, and the product a basket holds (the first the shop accepts, tried server-side with no choices and then with the fewest picks each pick group asks for). Runs every `--seed-step` on both copies and every `--step` on side b, then snapshots each copy's database. Every pass starts from that snapshot.
+3. Lists the states (`states.php`): every published page, the front page, a missing page, an empty search, and on a shop the shop, a product, a category, a product search, the basket empty and filled, the checkout as a guest and signed in, the account signed out, every signed-in view in the account menu, both address editors, the order's view and its order confirmation. Opened parts are states of their own, found by structure: the phone menu (first loaded at 375), the basket drawer empty and filled, the coupon box on the basket and the checkout, the account block's address editor, and the product page scrolled to its middle (where a sticky basket bar shows). A page or width with no such control records that state as "not on this page" on both sides; a control on one side only is unreached. `sites/<client>/render-check.json` may add states (`{"states": [...], "product": <id>}`; a state takes `name`, `path`, `auth` guest or customer, `basket`, `assert`, `assertText`, `assertAbsent`, `actions`, `allowStatus`, `hashWidth`). Actions (`lib/actions.mjs`): `open` (the dialog a visible control's `aria-controls` names), `click` (with `ifPresent`), `waitFor`, `scroll` (pixels, `middle`, `end`), `wait`.
+4. Hash pass: each state once per side at 1440 (or its `hashWidth`); a state whose bytes differ is loaded once more, and bytes that match on either load pass. A state is reached only when its proof holds (its selectors shown, its text shown, the sign-in and basket made) and no WooCommerce loading placeholder is still shown when it is read (the coupon box appears before the order summary has loaded, so a state proved only by its own control could otherwise be read half-loaded on both sides and pass). Placeholders inside the payment areas are left out of that rule: the check blocks the payment providers' scripts, so those areas stay placeholders on both sides and are compared as such. Every same-origin response it loads (HTML, stylesheets, scripts, fonts, pictures and its own API calls) is hashed with the copy's address, asset versions, nonces and settings-hashed instance ids normalised out. Identical hashes pass.
+5. DOM pass, for each other state: at 375, 768, 1440 and the first width of every stylesheet band those miss, each element's key, own text, picture source (an inline icon: a fingerprint of its shapes), box and 91 computed properties with `::before` and `::after`, at rest with animations finished and fonts ready, and again under forced hover and forced focus on one element of each interactive kind (up to 30 per page). The two full-page screenshots are also compared pixel by pixel, leaving out pictures whose files did not change in the hash pass (which size of an unchanged picture the browser loads varies between loads), embedded frames and elements an endless animation moves (a parked marquee sits wherever its load-time measurements put it, a pixel either way; its readings are still compared), so a picture file changed under the same name, or anything else the readings miss, still shows.
+6. A difference counts only when a second DOM round, from a fresh restore, shows it again. A counted difference fails unless an entry in `sites/<client>/render-accepted.<target>.json` covers it.
+7. Drops both copies (unless `--keep`) and writes `report.md`, `report.json` and before-and-after crop pairs (`pairs/`) to the run folder (default `E:/sgs-tmp/render-check/runs/<time>-<mirror>`).
+
+Exit codes: 0 every state reached and none differs; 1 a difference nobody accepted; 2 a state not reached on either side (a failed sign-in, a basket that would not fill); 3 the run could not be made.
+
+## Accepting a difference
+
+`sites/<client>/render-accepted.<target>.json` (the target defaults to the mirror's deploy target in `plugins/sgs-blocks/scripts/deploy_common.py::TARGETS`):
+
+```json
+{ "entries": [ { "state": "account-saved-items", "width": 1440, "element": "sgs-wishlist-panel", "commit": "abc1234", "pair": "E:/sgs-tmp/render-check/runs/.../pairs/account-saved-items@1440-0.png", "note": "Bean saw the pair on 2026-11-19" } ] }
+```
+
+`state` is a pattern (`account-*`); `width` and `element` (a substring of the element key) narrow it. `commit` and `pair` are required: an entry names the change and the pair Bean saw.
+
+## Limits
+
+- Hover and focus are forced CSS states: a look a script draws on `mouseenter` is not probed.
+- Endless animations are parked at their start, and every screenshot is taken with animations stopped (Playwright's `animations: 'disabled'`), so an animation a script restarts after the page settles (a marquee that lays itself out again when pictures load or the window resizes) cannot move between the two screenshots. A slider a script advances on a timer can still differ between rounds, and the second round drops it.
+- A viewer (the signed-in customer, a filled basket) is made once per side; if making it throws (a sign-in click that times out on a busy machine) it is made once more before its states are reported unreached. The sign-in waits up to 60 s for its cookie and stops at once when the sign-in page shows its error, so a busy machine is not mistaken for a refused sign-in.
+- Third-party scripts (Stripe, tag managers) are blocked in every capture.
+- Fixed-position parts outside an open dialog (a sticky basket bar, a fixed header) are compared by their readings only: a full-page screenshot resizes the window for a moment, which moves them and can set off scroll-driven ones, so they are hidden for the pixel comparison.
+- Opened parts are the generic ones above; a pop-up, a mega-menu panel or a site's own drawer needs a state in `sites/<client>/render-check.json`.
+- Bytes identical on both sides pass without the element pass, so an opened state is compared element by element only when its page's bytes differ (a change that alters what opens also alters the bytes the page loads).
+
+## Self-test builds
+
+`--self-test` needs two checkouts. `--main-build` (default `E:/sgs-tmp/rc-build-main`): `git worktree add --detach <dir> <commit>`, copy `plugins/sgs-blocks/vendor` from the main checkout (copy, never link), and copy a gate-passed build of that commit from `~/.cache/sgs-deploy/<key>/build` (its `gate-pass.json` names the commit) into `plugins/sgs-blocks/build`. `--cards-build` (default `E:/sgs-tmp/rc-build-cards`): a second worktree at the same commit with `git checkout 9219e649c -- plugins/sgs-blocks/includes/wishlist/class-wishlist-cards-rest.php plugins/sgs-blocks/src/blocks/wishlist-panel` and `git checkout ba8d5d0ec -- plugins/sgs-blocks/src/blocks/wishlist-panel/components/WishlistLayoutPanel.js` (9219e649c's editor file does not parse), `npm ci` and `npx wp-scripts build --experimental-modules --webpack-copy-php --output-path=build` in `plugins/sgs-blocks`, then the postbuild transforms (`copy-built-styles.js`, `shadow-lift/run.js --build`, `hover-guard/run-transform.js`, `shadow-fallback/run.js --build`); finally replace its `build/` with the main build and put back only its own `build/blocks/wishlist-panel`, so the two builds differ in the wishlist panel alone. Remove the worktrees with the junction check first (`Get-ChildItem <dir> -Recurse -Force -Attributes ReparsePoint` prints nothing).
