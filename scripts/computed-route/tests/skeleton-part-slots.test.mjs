@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
+import { mediaSelfSlot } from '../lib/skeleton-part-slots.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -78,4 +79,28 @@ test( 'MUST FAIL (no calibration, no slot): a block with no calibrated burger ga
 	const r = run( [ ...HEADER, ...BARS ], () => ( {} ) );
 	assert.ok( ! Object.keys( slotsOf( r ) ).some( ( k ) => k.includes( 'burger' ) ) );
 	assert.ok( r.proposal.rows.find( ( x ) => 'Root/45#0' === x.key ).slotNotes.some( ( n ) => n.includes( 'no slot for the burger part' ) ) );
+} );
+
+// A draft element that is itself the media a block draws at one inner element of the same tag (lib/skeleton-part-slots.mjs::mediaSelfSlot).
+const LOGO_TAGS = { '': 'div', '.sgs-responsive-logo__link': 'a', '.sgs-responsive-logo__link > .sgs-responsive-logo__picture': 'span', '.sgs-responsive-logo__link > .sgs-responsive-logo__picture > .sgs-media-el': 'img' };
+const IMG_SLOT = '.sgs-responsive-logo__link > .sgs-responsive-logo__picture > .sgs-media-el';
+
+test( 'MUST FAIL: a draft <img> the block wraps in its own root, link and picture is the slot of the block\'s one inner <img> too', () => {
+	assert.equal( mediaSelfSlot( { tag: 'img', tags: LOGO_TAGS } ), IMG_SLOT );
+	assert.equal( mediaSelfSlot( { tag: 'IMG', tags: LOGO_TAGS } ), IMG_SLOT, 'the tag compares in lower case' );
+	const logo = [ el( 1, null, 'header', '', { depth: 0, box: at( 0, 0, 1000 ), display: 'flex' } ), el( 2, 1, 'a', '', { depth: 1, box: at( 0, 0, 200 ), attrs: { href: '/', 'aria-label': 'Home' } } ), el( 3, 2, 'img', '', { depth: 2, box: at( 0, 0, 200 ), attrs: { src: 'assets/logo.png', alt: 'Acme' } } ) ];
+	const r = proposeSkeleton( { inventory: inv( logo ), facts, surface: 'header', surfaceKind: 'header', surfaceName: 'Header', db, calTags: () => LOGO_TAGS } );
+	const img = nodes( r.skeleton ).find( ( n ) => 'Root/3#0' === n.draftRef?.tpl );
+	assert.ok( img, 'the image has a node of its own' );
+	assert.equal( img.draftSlots?.[ IMG_SLOT ]?.tpl, 'Root/3#0', JSON.stringify( img.draftSlots ) );
+	const none = proposeSkeleton( { inventory: inv( logo ), facts, surface: 'header', surfaceKind: 'header', surfaceName: 'Header', db } );
+	assert.equal( nodes( none.skeleton ).find( ( n ) => 'Root/3#0' === n.draftRef?.tpl )?.draftSlots?.[ IMG_SLOT ], undefined, 'no calibrated tags, no slot' );
+} );
+
+test( 'the media pairing does not fire for a block whose root is the image, one with two inner images, or a draft element that is not media', () => {
+	assert.equal( mediaSelfSlot( { tag: 'img', tags: { '': 'img', '.sgs-x > img': 'img' } } ), null, 'the root is the image: the draft element is already the root' );
+	assert.equal( mediaSelfSlot( { tag: 'img', tags: { ...LOGO_TAGS, '.sgs-responsive-logo__dark': 'img' } } ), null, 'two inner images: no single one to pair' );
+	assert.equal( mediaSelfSlot( { tag: 'div', tags: LOGO_TAGS } ), null );
+	assert.equal( mediaSelfSlot( { tag: 'svg', tags: { '': 'div', '.x > svg': 'svg' } } ), null, 'an inline svg is a part, paired by its own rule' );
+	assert.equal( mediaSelfSlot( { tag: 'img', tags: { '': 'div', '.x::before': 'img' } } ), null, 'a pseudo-element is never the media' );
 } );

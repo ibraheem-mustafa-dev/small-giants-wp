@@ -12,7 +12,7 @@ import { lintSkeleton } from '../lint.mjs';
 import { inventoryModel } from './skeleton-model.mjs';
 import { makeClassifier, overrideFor, W } from './skeleton-classify.mjs';
 import { collapsePoint, childSlots, unitSlots } from './skeleton-child-slots.mjs';
-import { partSlots, placePart } from './skeleton-part-slots.mjs';
+import { mediaSelfSlot, partSlots, placePart } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
 import { formHostNodes } from './skeleton-form-host.mjs';
@@ -107,7 +107,7 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 // draftLinks (lib/draft-link.mjs::draftLinksFor: the client's page map and routing that turn a draft link into a site address;
 // null resolves every draft route to no address), pageMap (the page-map rows: which surface is a choice flow or a block-owned
 // part, lib/skeleton-surface-role.mjs) and surfaceId (the surface's surfaces.json id; the record's matching surface when omitted) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null } ) {
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calTags = () => ( {} ), calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null } ) {
 	const m = inventoryModel( inventory );
 	const { composition } = facts;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
@@ -240,6 +240,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			const key = calKeys( block ).filter( ( c ) => new RegExp( `(^|> )svg$` ).test( c ) ).sort( ( x, y ) => x.length - y.length )[ 0 ];
 			key && ( slots[ key ] = finder( k ) );
 		} );
+		// A draft element that is itself the media the block draws at one inner element of the same tag (an <img> the block wraps
+		// in its own root, link and picture) is that element's slot too, so the image's own settings read it (lib/skeleton-part-slots.mjs::mediaSelfSlot).
+		const mediaSlot = mediaSelfSlot( { tag: e.tag, tags: calTags( block ) } );
+		mediaSlot && ! slots[ mediaSlot ] && ( slots[ mediaSlot ] = finder( e ) );
 		// A form field's draft control is the field's input part (lib/skeleton-form-slots.mjs).
 		const inputSlot = 'formControl' === r.rule && r.absorb ? fieldInputSlot( { db, rules: R.formControl, block, calSettings, calKeys } ) : null;
 		inputSlot && ( slots[ inputSlot ] = finder( e ) );

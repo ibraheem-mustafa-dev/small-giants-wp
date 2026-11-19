@@ -34,5 +34,41 @@
 		"find": "if ( null === home ) {",
 		"replace": "if ( false ) {",
 		"why": "a part with no calibrated slot is not reported"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "return 1 === inner.length ? inner[ 0 ][ 0 ] : null;",
+		"replace": "return inner.length ? inner[ 0 ][ 0 ] : null;",
+		"why": "a block with two inner images would pair the draft image with the first"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "if ( ! MEDIA_SELF_TAGS.has( t ) || t === tags[ '' ] ) {",
+		"replace": "if ( t === tags[ '' ] ) {",
+		"why": "a draft div or svg would be paired with an inner element of its tag"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "if ( ! MEDIA_SELF_TAGS.has( t ) || t === tags[ '' ] ) {",
+		"replace": "if ( ! MEDIA_SELF_TAGS.has( t ) ) {",
+		"why": "a block whose root is the image would pair an inner element too"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "'' !== k && ! k.includes( '::' ) && v === t",
+		"replace": "'' !== k && v === t",
+		"why": "a pseudo-element would be taken for the media"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "const t = String( tag ?? '' ).toLowerCase();",
+		"replace": "const t = String( tag ?? '' );",
+		"why": "an upper-case draft tag would not be paired"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "mediaSlot && ! slots[ mediaSlot ] && ( slots[ mediaSlot ] = finder( e ) );",
+		"replace": "void mediaSlot;",
+		"why": "the draft image would never reach the block's image settings"
 	}
 ]

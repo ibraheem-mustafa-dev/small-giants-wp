@@ -18,6 +18,11 @@
 //      that dimension when the draft's content fits inside it at every width (children's extents, plus the element's padding
 //      and border). When the content is taller or wider it is not written (the minimum would grow the box the draft overflows);
 //      the row stays, with that reason.
+//   2b. A declared height or width on a replaced image (img, picture, video, canvas) whose other dimension is not declared as a
+//      length, so it keeps its proportions, goes to the block's ceiling in that dimension (max-height, max-width) when a setting
+//      of that ceiling is calibrated on the element read and the block paints the element larger than the declared size at
+//      every width: the ceiling clamps the image to the declared size and the other dimension follows. A block that paints it
+//      smaller, or an element with both dimensions declared, is left to rule 2.
 //   3. An interactive element's written height or width is never below 24px (WCAG 2.2 AA target size, 2.5.8): a smaller draft
 //      value is written as 24px with a `touch-target` divergence-ledger entry.
 // Every size is formatted and checked by the generic resolver (lib/fill-prop.mjs::resolveProperty), so a value is written
@@ -43,6 +48,10 @@ export const sizeOf = ( prop ) => SIZE_FAMILY[ physical( prop ) ] ?? null;
 export const MIN_TARGET = 24;
 const NO_SIZE = new Set( [ 'auto', 'none', 'normal', '0', '0px', 'initial', 'unset', 'revert' ] );
 const INTERACTIVE_TAGS = new Set( [ 'a', 'button', 'input', 'select', 'textarea', 'summary' ] );
+const REPLACED_TAGS = new Set( [ 'img', 'picture', 'video', 'canvas' ] );
+
+// Whether a setting painting `prop` at rest is calibrated on `slot` of the block.
+export const calibratedAt = ( cal, slot, prop ) => Object.values( cal?.settings || {} ).some( ( s ) => s?.property === prop && ! s.state && [ s.slot, ...( s.slots || [] ) ].some( ( x ) => 'string' === typeof x && LOOSE( x ) === LOOSE( slot ) ) );
 const ONLY_GAPS = /^(shape|no-setting)\b/;
 const pxOf = ( v ) => ( /^-?\d+(\.\d+)?(px)?$/.test( String( v ).trim() ) ? parseFloat( v ) : null );
 
@@ -171,9 +180,10 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 		return px;
 	};
 	// check( res ): a reason the result must not be written, or null.
-	const settle = ( p, perWidth, why, check = null ) => {
-		const draft = Object.fromEntries( widths.map( ( w ) => [ w, `${ guard( Math.round( ( perWidth[ w ] + ( home?.extra[ w ] ?? 0 ) ) * 100 ) / 100, w, p ) }px` ] ) );
-		const res = ask( p, draft );
+	// here: ask on the element read itself (a setting calibrated on it), never on the root it may be the content box of.
+	const settle = ( p, perWidth, why, check = null, here = false ) => {
+		const draft = Object.fromEntries( widths.map( ( w ) => [ w, `${ guard( Math.round( ( perWidth[ w ] + ( here ? 0 : home?.extra[ w ] ?? 0 ) ) * 100 ) / 100, w, p ) }px` ] ) );
+		const res = here ? reresolve( { rec, node, target, slot, prop: p, draft, ctx, resolver } ) : ask( p, draft );
 		if ( 'written' !== res.status && 'equal' !== res.status ) {
 			return { raise: `the block has no setting that holds ${ p } ${ Object.values( draft ).join( ' / ' ) } (${ res.gap ?? 'gap' }: ${ res.detail ?? '' }); a framework setting is needed` };
 		}
@@ -225,6 +235,16 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 	}
 	if ( 'exact' === size.kind && widths.every( noSize ) ) {
 		return against( 'min', `min-${ prop }` );
+	}
+	// 2b: a declared size on a replaced image that keeps its proportions is the block's ceiling where the block paints it larger.
+	const replaced = widths.every( ( w ) => REPLACED_TAGS.has( String( reads.widths?.[ w ]?.[ target.id ]?.tag ?? '' ).toLowerCase() ) );
+	const other = 'h' === size.axis ? 'width' : 'height';
+	if ( 'exact' === size.kind && /^no-setting/.test( row.reason ) && replaced && calibratedAt( cal, slot, `max-${ prop }` ) && ! widths.some( ( w ) => null !== pxOf( reads.declared?.[ w ]?.[ target.id ]?.[ other ] ?? '' ) ) ) {
+		const declared = Object.fromEntries( widths.map( ( w ) => [ w, pxOf( declaredAt( w ) ?? given[ w ] ) ] ).filter( ( [ , v ] ) => null !== v ) );
+		const paint = blockPaint( { block: rec.name, slot, prop, cal } );
+		if ( Object.keys( declared ).length === widths.length && widths.every( ( w ) => undefined !== paint[ w ] && paint[ w ] > declared[ w ] + 0.5 ) ) {
+			return settle( `max-${ prop }`, declared, `the draft declares ${ prop } ${ widths.map( ( w ) => `${ declared[ w ] }px` ).join( ' / ' ) } on a replaced image that keeps its proportions (${ other } not declared), and the block paints it ${ widths.map( ( w ) => `${ Math.round( paint[ w ] * 100 ) / 100 }px` ).join( ' / ' ) }, so the block's max-${ prop } clamps it to the declared size`, null, true );
+		}
 	}
 	// 2: a declared size in a dimension with no setting of its own.
 	if ( 'exact' === size.kind && /^no-setting/.test( row.reason ) ) {

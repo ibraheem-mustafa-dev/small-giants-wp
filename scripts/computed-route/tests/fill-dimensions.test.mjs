@@ -7,8 +7,8 @@ import { dimensionWrites, sizeOf, physical } from '../lib/fill-dimensions.mjs';
 import { validate } from '../lib/ledger.mjs';
 
 const calls = [];
-const resolver = ( { prop, draft, block } ) => {
-	calls.push( { prop, draft, block } );
+const resolver = ( { prop, draft, block, slots } ) => {
+	calls.push( { prop, draft, block, slots } );
 	const attr = { 'min-height': 'minHeight', 'max-height': 'maxHeight', 'min-width': 'minWidth', 'max-width': 'maxWidth' }[ prop ];
 	if ( 'sgs/plain' === block || ! attr ) {
 		return { status: 'gap', gap: 'no-setting', detail: `no ${ prop } setting` };
@@ -157,4 +157,52 @@ test( 'MUST FAIL WITHOUT THE STYLESHEET FLOOR: with no calibration, the button\'
 	const r = run( w, [ rowOf( { property: 'min-height', value: 'auto' } ) ], { calFor: () => null } );
 	assert.deepEqual( attrs( w ).minHeight, { desktop: '34px' } );
 	assert.deepEqual( r.unmapped, [] );
+} );
+
+// A logo image: the draft declares height 60px (width auto) on the <img>; the block paints its inner image 1207.88px tall and
+// has a max-height setting calibrated on it (lib/fill-dimensions.mjs rule 2b).
+const IMG = '.link > .pic > .sgs-media-el';
+const LOGO_CAL = ( h = '1207.88px', prop = 'max-height', slot = IMG ) => ( { settings: { maxHeight: { slot, slots: [ slot ], property: prop } }, elements: { [ IMG ]: Object.fromEntries( [ 375, 768, 1440 ].map( ( x ) => [ x, { height: h } ] ) ) } } );
+const imgWorld = ( declared = { height: '60px', width: 'auto' } ) => world( { block: 'sgs/logo', own: { 375: 60, 768: 60, 1440: 60 }, tag: 'img', declared } );
+const imgRow = ( o = {} ) => rowOf( { block: 'sgs/logo', slot: IMG, property: 'height', value: '60px', reason: 'no-setting: sgs/logo has no setting for height', ...o } );
+const imgRun = ( w, cal = LOGO_CAL() ) => {
+	w.nodes[ 0 ].targets[ 0 ].slot = IMG;
+	return run( w, [ imgRow() ], { calFor: () => cal } );
+};
+
+test( 'MUST FAIL: a declared height on a replaced image that keeps its proportions is the block\'s maximum height where the block paints it taller', () => {
+	calls.length = 0;
+	const w = imgWorld();
+	const r = imgRun( w );
+	assert.deepEqual( r.unmapped, [] );
+	assert.deepEqual( attrs( w ).maxHeight, { desktop: '60px' } );
+	assert.equal( calls[ 0 ].prop, 'max-height' );
+	assert.match( r.notes[ 0 ], /replaced image that keeps its proportions .* clamps it to the declared size/ );
+} );
+
+test( 'the image ceiling does not fire for a block painting the image smaller, an image with both sides declared, an element that is not replaced, or a slot with no calibrated ceiling', () => {
+	const kept = ( w, cal ) => {
+		const r = imgRun( w, cal );
+		return [ attrs( w ).maxHeight, r.unmapped.length ];
+	};
+	assert.deepEqual( kept( imgWorld(), LOGO_CAL( '40px' ) ), [ undefined, 1 ], 'painted smaller: a ceiling would not give 60px' );
+	assert.deepEqual( kept( imgWorld( { height: '60px', width: '180px' } ), LOGO_CAL() ), [ undefined, 1 ], 'both sides declared: the draft sets the shape itself' );
+	assert.deepEqual( kept( imgWorld(), LOGO_CAL( '1207.88px', 'max-height', '' ) ), [ undefined, 1 ], 'no max-height calibrated on the element read' );
+	const div = world( { block: 'sgs/logo', own: { 375: 60, 768: 60, 1440: 60 }, tag: 'div', declared: { height: '60px' } } );
+	assert.deepEqual( kept( div, LOGO_CAL() ), [ undefined, 1 ], 'a div is not a replaced image' );
+} );
+
+test( 'MUST FAIL: an image that is also the content box of the root is asked on itself, where its ceiling is calibrated, with no root padding added', () => {
+	calls.length = 0;
+	const w = imgWorld();
+	w.nodes[ 0 ].targets = [ { id: '0:', index: 0, slot: '', finder: 'x' }, { id: '0:i', index: 0, slot: IMG, finder: 'y' } ];
+	for ( const x of [ 375, 768, 1440 ] ) {
+		w.reads.widths[ x ][ '0:i' ] = { ...w.reads.widths[ x ][ '0:' ] };
+		w.reads.declared[ x ][ '0:i' ] = { height: '60px', width: 'auto' };
+	}
+	const cal = LOGO_CAL();
+	cal.elements[ '' ] = cal.elements[ IMG ];
+	run( w, [ imgRow() ], { calFor: () => cal } );
+	assert.deepEqual( calls[ 0 ].slots, [ IMG ] );
+	assert.deepEqual( attrs( w ).maxHeight, { desktop: '60px' } );
 } );

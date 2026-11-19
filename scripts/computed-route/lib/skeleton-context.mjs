@@ -21,6 +21,9 @@ export const calibrationsAt = ( site, dir = CACHE ) => ( slug ) => loadCalibrati
 // The calibration cache's element keys for a block on a site (slot targets), or none when it has no default paint there.
 export const calKeysFor = ( site, dir = CACHE ) => ( slug ) => Object.keys( calibrationsAt( site, dir )( slug )?.elements || {} );
 
+// The tag of each element in a block's calibrated default paint on a site ({ slot: tag }, from the read's `_tag`), or {}.
+export const calTagsFor = ( site, dir = CACHE ) => ( slug ) => Object.fromEntries( Object.entries( calibrationsAt( site, dir )( slug )?.elements || {} ).map( ( [ k, byWidth ] ) => [ k, Object.values( byWidth || {} ).find( ( v ) => v?._tag )?._tag ?? null ] ) );
+
 // The calibration's settings (each with the slot it was measured on) for a block on a site.
 export const calSettingsFor = ( site, dir = CACHE ) => ( slug ) => calibrationsAt( site, dir )( slug )?.settings || {};
 
@@ -47,5 +50,5 @@ export function siteOf( { repo, client, slug } ) {
 // cache folder (the route's own by default).
 export function proposalContext( { repo, client, slug, id, breakpoints, site = siteOf( { repo, client, slug } ), cache = CACHE } ) {
 	const refs = detectReferences();
-	return { calKeys: calKeysFor( site, cache ), calSettings: calSettingsFor( site, cache ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ), formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client } ) };
+	return { calKeys: calKeysFor( site, cache ), calTags: calTagsFor( site, cache ), calSettings: calSettingsFor( site, cache ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ), formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client } ) };
 }

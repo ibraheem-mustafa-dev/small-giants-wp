@@ -7,5 +7,11 @@
 	{ "file": "lib/fill-dimensions.mjs", "find": "if ( 'max' === size.kind && widths.every( noSize ) ) {", "replace": "if ( false ) {", "why": "a ceiling below the draft would stay in force" },
 	{ "file": "lib/fill-dimensions.mjs", "find": "'min-block-size': 'min-height', ", "replace": "", "why": "the logical minimum would not be read as the physical one" },
 	{ "file": "lib/fill-dimensions.mjs", "find": "ONLY_GAPS.test( row.reason ?? '' ) && ! row.state ?", "replace": "ONLY_GAPS.test( row.reason ?? '' ) ?", "why": "a state row would be written as the resting size" },
-	{ "file": "lib/fill-dimensions.mjs", "find": "touched.length && ledger( p );", "replace": "", "why": "a raised touch target would leave no ledger entry" }
+	{ "file": "lib/fill-dimensions.mjs", "find": "touched.length && ledger( p );", "replace": "", "why": "a raised touch target would leave no ledger entry" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "&& replaced && calibratedAt( cal, slot, `max-${ prop }` ) &&", "replace": "&& calibratedAt( cal, slot, `max-${ prop }` ) &&", "why": "a declared height on a div would be written as the block's maximum height" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "&& replaced && calibratedAt( cal, slot, `max-${ prop }` ) &&", "replace": "&& replaced &&", "why": "an image read at an element with no ceiling setting would be written there" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "&& ! widths.some( ( w ) => null !== pxOf( reads.declared?.[ w ]?.[ target.id ]?.[ other ] ?? '' ) ) ) {", "replace": ") {", "why": "an image with both sides declared would lose its own shape to a ceiling" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "undefined !== paint[ w ] && paint[ w ] > declared[ w ] + 0.5 ) ) {", "replace": "true ) ) {", "why": "a ceiling would be written where the block paints the image smaller, which cannot give the declared size" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "return settle( `max-${ prop }`, declared, `the draft declares", "replace": "return settle( `min-${ prop }`, declared, `the draft declares", "why": "the image would get a minimum, which leaves the block's taller paint in force" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "so the block's max-${ prop } clamps it to the declared size`, null, true );", "replace": "so the block's max-${ prop } clamps it to the declared size`, null, false );", "why": "an image that is the root's content box would be asked on the root, where no ceiling is calibrated" }
 ]

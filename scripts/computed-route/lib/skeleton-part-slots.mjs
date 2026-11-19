@@ -137,3 +137,20 @@ export function placePart( { e, node, tree, nodeOfKey, m } ) {
 	list.splice( next < 0 ? list.length : next, 0, node );
 	return { placed: host.key, note: `${ node.name } stands in ${ host.key } where its ${ e.key } part is, beside the wrapper's other content` };
 }
+
+// The draft elements that are themselves media a block may draw at an inner element of the same tag.
+export const MEDIA_SELF_TAGS = new Set( [ 'img', 'picture', 'video' ] );
+
+// The calibrated slot of the one inner element a block draws its media at, when the draft's element is that media itself (an
+// <img> the block wraps in its own root, link and picture): the block's settings for the image (its maximum height) paint
+// that inner element, so the draft element is that slot's element too. tag: the draft element's tag; tags: { slot: tag }
+// from the block's calibrated default paint (lib/skeleton-context.mjs::calTagsFor). Null unless the root is another tag and
+// exactly one inner element (no pseudo-element) has this tag.
+export function mediaSelfSlot( { tag, tags = {} } ) {
+	const t = String( tag ?? '' ).toLowerCase();
+	if ( ! MEDIA_SELF_TAGS.has( t ) || t === tags[ '' ] ) {
+		return null;
+	}
+	const inner = Object.entries( tags ).filter( ( [ k, v ] ) => '' !== k && ! k.includes( '::' ) && v === t );
+	return 1 === inner.length ? inner[ 0 ][ 0 ] : null;
+}

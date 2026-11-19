@@ -32,7 +32,7 @@ import { proposeSkeleton } from './lib/skeleton-propose.mjs';
 import { loopingKeys } from './lib/skeleton-rerun.mjs';
 import { isServedInventory, servedDecisions, servedMotion } from './lib/key-space.mjs';
 import { reviewHtml } from './lib/skeleton-review.mjs';
-import { calKeysFor, calSettingsFor, statesOfRecord, thresholdsOf, assertSkeletonPaints } from './lib/skeleton-context.mjs';
+import { calKeysFor, calTagsFor, calSettingsFor, statesOfRecord, thresholdsOf, assertSkeletonPaints } from './lib/skeleton-context.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
 import { carriedIds } from './lib/skeleton-carried.mjs';
 import { formLinksFor } from './lib/skeleton-form-link.mjs';
@@ -138,7 +138,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	// and the shop's its filter rail from the draft catalogue's facets (lib/skeleton-filter-rail.mjs).
 	const commerce = commerceOf( readSurface( repo, client, surface ), readJson( path.join( repo, 'sites', client, 'build', 'page-map.json' ), [] ), loadCatalogue( repo, client ) );
 	const site = readSurface( repo, client, surface ).site;
-	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, built: ctx.built, carried: carriedIds( { repo, client, site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( site, cache ), calSettings: calSettingsFor( site, cache ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
+	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, built: ctx.built, carried: carriedIds( { repo, client, site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( site, cache ), calTags: calTagsFor( site, cache ), calSettings: calSettingsFor( site, cache ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
 	assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton propose ${ surface }`, cache } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
