@@ -11,11 +11,11 @@ import { enumValues, holdsValue, mapTiers } from '../lib/resolve-enum.mjs';
 const db = openDb();
 const snapshot = { palette: [], spacing: [], fontSizes: [] };
 const every = ( v ) => ( { 375: v, 768: v, 1440: v } );
-// Calibration of sgs/button as measured: both settings reach the root; the markers for `always`, `hover` and `sweep`
-// recorded what each painted there (`hover` and `sweep` paint no resting underline line).
+// Calibration of sgs/button as measured: both settings reach the root; only the `always` marker changed a resting
+// text-decoration-line (underline), so `linkUnderline` has readings and `textDecoration` has none.
 const paintOf = ( v ) => Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, v ] ) );
 const calibration = { settings: {
-	textDecoration: { slot: '', slots: [ '' ], property: 'text-decoration', enumReads: { overline: { 'text-decoration-line': paintOf( 'overline' ) }, 'line-through': { 'text-decoration-line': paintOf( 'line-through' ) } } },
+	textDecoration: { slot: '', slots: [ '' ], property: 'text-decoration' },
 	linkUnderline: { slot: '', slots: [ '' ], property: 'text-decoration', enumReads: { none: { 'text-decoration-line': paintOf( 'none' ) }, always: { 'text-decoration-line': paintOf( 'underline' ) } } },
 } };
 const draw = ( perWidth, cal = calibration ) => resolve( { block: 'sgs/button', slot: '', prop: 'text-decoration-line', perWidth }, { db, snapshot, calibration: cal } );
@@ -49,8 +49,10 @@ test( 'a keyword no value of the list paints is a shape gap, not a written guess
 test( 'enumValues, holdsValue and mapTiers read the list and the readings', () => {
 	const row = { attr_name: 'linkUnderline', enum_values: '["","none","always"]' };
 	assert.deepEqual( enumValues( row, undefined ), [ 'none', 'always' ] );
-	assert.equal( holdsValue( row, undefined, undefined, 'text-decoration-line', every( 'underline' ) ), true, 'no readings: nothing is disproved' );
+	assert.equal( holdsValue( row, undefined, undefined, 'text-decoration-line', every( 'none' ) ), true, 'a keyword the list names is held without readings' );
+	assert.equal( holdsValue( row, undefined, undefined, 'text-decoration-line', every( 'underline' ) ), false, 'no readings and not named' );
 	assert.equal( holdsValue( { attr_name: 'textDecoration', enum_values: '["","overline"]' }, undefined, calibration.settings.textDecoration, 'text-decoration-line', every( 'underline' ) ), false );
+	assert.equal( holdsValue( row, undefined, calibration.settings.linkUnderline, 'text-decoration-line', every( 'underline' ) ), true, 'a value recorded to paint it' );
 	assert.deepEqual( mapTiers( row, undefined, calibration.settings.linkUnderline, 'text-decoration-line', { desktop: 'underline', mobile: 'none' } ).tiers, { desktop: 'always', mobile: 'none' } );
 	assert.ok( mapTiers( row, undefined, calibration.settings.linkUnderline, 'text-decoration-line', { desktop: 'dotted' } ).error );
 } );

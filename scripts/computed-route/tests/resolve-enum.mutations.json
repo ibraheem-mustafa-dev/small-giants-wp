@@ -25,8 +25,8 @@
 	},
 	{
 		"file": "lib/resolve-enum.mjs",
-		"find": "if ( ! list.length || ! reads ) {\n\t\treturn true;",
-		"replace": "if ( ! list.length ) {\n\t\treturn true;",
+		"find": "calibrationSetting?.enumReads || {};",
+		"replace": "calibrationSetting?.enumReads;",
 		"why": "a setting with no readings is judged by a missing record and crashes"
 	},
 	{
@@ -34,5 +34,11 @@
 		"find": "\tif ( undefined === v ) {\n\t\t\treturn { error:",
 		"replace": "\tif ( undefined === v ) {\n\t\t\tout[ t ] = raw;\n\t\t\tcontinue;\n\t\t\treturn { error:",
 		"why": "a keyword no value paints is written as it stands"
+	},
+	{
+		"file": "lib/resolve-enum.mjs",
+		"find": "list.includes( String( raw ) ) || undefined !== valueFor( reads, prop, Number( w ), raw ) : true );\n}",
+		"replace": "undefined !== valueFor( reads, prop, Number( w ), raw ) : true );\n}",
+		"why": "a keyword the list names is held only if a reading says so"
 	}
 ]

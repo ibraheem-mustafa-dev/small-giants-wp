@@ -29,12 +29,13 @@ function valueFor( enumReads, prop, width, raw ) {
 	return Object.keys( enumReads ).find( ( v ) => undefined !== enumReads[ v ]?.[ prop ]?.[ width ] && same( enumReads[ v ][ prop ][ width ], raw ) );
 }
 
-// Whether the setting can give `perWidth` (the draft's computed `prop` per read width). A setting with no list, or one a
-// reading of its values cannot disprove, holds it.
+// Whether the setting can give `perWidth` (the draft's computed `prop` per read width): a setting with no list holds it; one
+// with a list holds a keyword the list names or a value of it is recorded to paint (a setting calibrated before `enumReads`
+// is judged by its names alone).
 export function holdsValue( row, def, calibrationSetting, prop, perWidth ) {
 	const list = enumValues( row, def );
-	const reads = calibrationSetting?.enumReads;
-	if ( ! list.length || ! reads ) {
+	const reads = calibrationSetting?.enumReads || {};
+	if ( ! list.length ) {
 		return true;
 	}
 	return Object.entries( perWidth ).every( ( [ w, raw ] ) => [ 375, 768, 1440 ].includes( Number( w ) ) ? list.includes( String( raw ) ) || undefined !== valueFor( reads, prop, Number( w ), raw ) : true );
