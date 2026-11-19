@@ -1,12 +1,12 @@
 {
-	"generatedAt": "2026-11-12T01:18:51.774Z",
-	"total": 15,
+	"generatedAt": "2026-11-19T22:15:32.658Z",
+	"total": 16,
 	"violations": 0,
 	"findings": [
 		{
 			"file": "src/blocks/account/edit.js",
 			"block": "sgs/account",
-			"line": 388,
+			"line": 390,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -139,9 +139,20 @@
 			]
 		},
 		{
+			"file": "src/blocks/order-items/edit.js",
+			"block": "sgs/order-items",
+			"line": 360,
+			"wrapped": true,
+			"ancestors": [
+				"",
+				"div",
+				"SsrPreviewGuard"
+			]
+		},
+		{
 			"file": "src/blocks/product-card/edit.js",
 			"block": "sgs/product-card",
-			"line": 3484,
+			"line": 3526,
 			"wrapped": true,
 			"ancestors": [
 				"",

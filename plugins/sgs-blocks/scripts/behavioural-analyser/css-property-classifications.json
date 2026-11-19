@@ -33216,6 +33216,22 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "dateRingBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "dateRing"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateRingBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "dateRing"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "dateTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
@@ -50156,6 +50172,72 @@
       "fields": {
         "css_property": "margin",
         "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateRingBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "dateRing"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateRingBackgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "dateRing"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateRingBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "dateRing"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateRingBorderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "dateRing"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateRingBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "dateRing"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateRingPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "dateRing"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateRingShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "dateRing"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateRingSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "dateRing"
       }
     },
     {
