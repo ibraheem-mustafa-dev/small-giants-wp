@@ -11,235 +11,238 @@
 <title>Mama's Munches · Handmade lactation cookies</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens/colors.css">
+<link rel="stylesheet" href="tokens/typography.css">
+<link rel="stylesheet" href="tokens/spacing.css">
 <script src="store.js"></script>
-<style>body{margin:0;background:#FBF3DC;color:#3A2A22;font-family:'Karla',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}*{box-sizing:border-box}a{color:#A8404F}a:hover{color:#3A2A22}button,input,select,textarea{font-family:inherit;color:inherit}img{display:block;max-width:100%}:focus-visible{outline:3px solid #3A2A22;outline-offset:3px}@keyframes mmMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}@media (prefers-reduced-motion:reduce){[data-marquee]{animation:none!important}}</style>
+<style>body{margin:0;background:var(--mm-cream);color:var(--mm-cocoa);font-family:var(--mm-font-body);-webkit-font-smoothing:antialiased;overflow-x:hidden}*{box-sizing:border-box}a{color:var(--mm-pink-dark)}a:hover{color:var(--mm-cocoa)}button,input,select,textarea{font-family:inherit;color:inherit}img{display:block;max-width:100%}:focus-visible{outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset)}@keyframes mmMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}@media (prefers-reduced-motion:reduce){[data-marquee]{animation:none!important}}</style>
 </helmet>
-<div ref="{{ rootRef }}" data-screen-label="Home" style="background:#FBF3DC;min-height:100vh">
+<div ref="{{ rootRef }}" data-screen-label="Home" style="background:var(--mm-cream);min-height:100vh">
 <dc-import name="SiteHeader" current="home" hint-size="100%,96px" style="position:sticky;top:-32px;z-index:50;display:block"></dc-import>
 <main>
 
-<section style="background:#F5C2C8;overflow:hidden">
-  <div style="max-width:1240px;margin:0 auto;padding:{{ L.heroPad }};display:grid;grid-template-columns:{{ L.heroCols }};gap:{{ L.gap }};align-items:center">
-    <div style="display:flex;flex-direction:column;gap:22px;min-width:0">
-      <div data-reveal="" style="font-family:'Caveat',cursive;font-size:{{ L.greet }};line-height:1;color:#8E3444;transform:rotate(-2deg);transform-origin:left;display:flex;align-items:center;gap:8px"><span data-twinkle="" style="color:#F9CF6E;font-family:Karla;-webkit-text-stroke:1px #3A2A22">✦</span>{{ greeting }}</div>
-      <h1 data-reveal="" style="isolation:isolate;margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1.02;letter-spacing:-0.025em">Made for the mum <span style="display:inline-block;vertical-align:middle;width:1.55em;height:.78em;border-radius:999px;overflow:hidden;border:3px solid #3A2A22;transform:rotate(-4deg);margin:0 .06em;background:#F9D5D3"><img src="assets/photo-pair-love.jpg" alt="" style="width:100%;height:100%;object-fit:cover"></span> who needs it <span style="position:relative;white-space:nowrap">most<span aria-hidden="true" style="position:absolute;left:-4%;right:-4%;bottom:.02em;height:.2em;background:#F9CF6E;border-radius:999px;z-index:-1;transform:rotate(-1.5deg)"></span></span></h1>
-      <p data-reveal="" style="margin:0;font-size:{{ L.lead }};line-height:1.55;color:#4E3C31;max-width:500px;text-wrap:pretty">Giant, filling lactation cookies with oats, brewer’s yeast, flaxseed and fenugreek. Built the way you like them and baked fresh in Birmingham the moment you order.</p>
-      <div data-reveal="" style="display:flex;flex-wrap:wrap;gap:14px">
-        <a href="#build" style="height:60px;padding:0 10px 0 28px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;gap:14px;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="background:#FFFAF0;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22" style-active="transform:translate(3px,3px);box-shadow:0 0 0 #3A2A22">Build your box<span aria-hidden="true" style="width:40px;height:40px;border-radius:999px;background:#3A2A22;color:#F9CF6E;display:flex;align-items:center;justify-content:center;font-size:18px">→</span></a>
-        <a href="#gifts" style="height:60px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="background:#F9CF6E;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22" style-active="transform:translate(3px,3px);box-shadow:0 0 0 #3A2A22">Send a gift</a>
+<section data-part="hero" style="background:var(--mm-pink-band);overflow:hidden">
+  <div style="max-width:var(--mm-max-width);margin:0 auto;padding:{{ L.heroPad }};display:grid;grid-template-columns:{{ L.heroCols }};gap:{{ L.gap }};align-items:center">
+    <div style="display:flex;flex-direction:column;gap:var(--mm-space-22);min-width:0">
+      <div data-reveal="" style="font-family:var(--mm-font-script);font-size:{{ L.greet }};line-height:var(--mm-leading-tight);color:var(--mm-script);transform:rotate(-2deg);transform-origin:left;display:flex;align-items:center;gap:var(--mm-space-8)"><span data-twinkle="" style="color:var(--mm-yellow);font-family:var(--mm-font-body);-webkit-text-stroke:1px var(--mm-cocoa)">✦</span>{{ greeting }}</div>
+      <h1 data-reveal="" style="isolation:isolate;margin:0;font-family:var(--mm-font-display);font-weight:var(--mm-weight-regular);font-size:{{ L.h1 }};line-height:var(--mm-leading-h1);letter-spacing:var(--mm-track-h1)">Made for the mum <span style="display:inline-block;vertical-align:middle;width:1.55em;height:.78em;border-radius:var(--mm-radius-pill);overflow:hidden;border:3px solid var(--mm-cocoa);transform:rotate(-4deg);margin:0 .06em;background:var(--mm-pink-soft)"><img src="assets/photo-pair-love.jpg" alt="" style="width:100%;height:100%;object-fit:cover"></span> who needs it <span style="position:relative;white-space:nowrap">most<span aria-hidden="true" style="position:absolute;left:-4%;right:-4%;bottom:.02em;height:.2em;background:var(--mm-yellow);border-radius:var(--mm-radius-pill);z-index:-1;transform:rotate(-1.5deg)"></span></span></h1>
+      <p data-reveal="" style="margin:0;font-size:{{ L.lead }};line-height:var(--mm-leading-body);color:var(--mm-body);max-width:500px;text-wrap:pretty">Giant, filling lactation cookies with oats, brewer’s yeast, flaxseed and fenugreek. Built the way you like them and baked fresh in Birmingham the moment you order.</p>
+      <div data-reveal="" style="display:flex;flex-wrap:wrap;gap:var(--mm-space-14)">
+        <dc-import name="Button" version="primary" href="#build" label="Build your box" data-part="hero-build-box"><span aria-hidden="true" style="width:40px;height:40px;border-radius:var(--mm-radius-pill);background:var(--mm-cocoa);color:var(--mm-yellow);display:flex;align-items:center;justify-content:center;font-size:var(--mm-size-18)">→</span></dc-import>
+        <dc-import name="Button" version="secondary" href="#gifts" label="Send a gift" data-part="hero-send-gift"></dc-import>
       </div>
-      <div data-reveal="" style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;font-size:15px;font-weight:700">
-        <a href="#reviews" style="color:#3A2A22;text-decoration:none;display:flex;align-items:center;gap:6px"><span style="color:#3A2A22;letter-spacing:1px">★★★★★</span> 4.3 on Trustpilot</a>
-        <a href="Product.dc.html?id=trial" style="color:#3A2A22">New? Taster Trio, 3 for £5 →</a>
+      <div data-reveal="" style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--mm-space-10) var(--mm-space-20);font-size:var(--mm-size-15);font-weight:var(--mm-weight-bold)">
+        <a href="#reviews" style="color:var(--mm-cocoa);text-decoration:none;display:flex;align-items:center;gap:var(--mm-space-6)"><span style="color:var(--mm-cocoa);letter-spacing:1px">★★★★★</span> 4.3 on Trustpilot</a>
+        <a href="Product.dc.html?id=trial" style="color:var(--mm-cocoa)">New? Taster Trio, 3 for £5 →</a>
       </div>
     </div>
     <div data-reveal="" style="position:relative;height:{{ L.stackH }};min-width:0">
-      <div style="position:absolute;left:2%;top:10%;width:46%;background:#FFFAF0;padding:8px 8px 34px;border:2px solid #3A2A22;border-radius:8px;transform:rotate(-9deg);transition:transform .45s cubic-bezier(.3,1.4,.5,1)" style-hover="transform:rotate(-3deg) translateY(-12px)"><img src="assets/photo-bun-case.jpg" alt="Zookies in paper cases" style="width:100%;aspect-ratio:4 / 5;object-fit:cover;border-radius:4px"><div style="position:absolute;left:0;right:0;bottom:4px;text-align:center;font-family:'Caveat',cursive;font-size:21px">fresh batch!</div></div>
-      <div style="position:absolute;right:0;top:4%;width:44%;background:#FFFAF0;padding:8px 8px 34px;border:2px solid #3A2A22;border-radius:8px;transform:rotate(8deg);transition:transform .45s cubic-bezier(.3,1.4,.5,1)" style-hover="transform:rotate(3deg) translateY(-12px)"><img src="assets/photo-gift-heart.jpg" alt="A gift box of Zookies" style="width:100%;aspect-ratio:4 / 5;object-fit:cover;border-radius:4px"><div style="position:absolute;left:0;right:0;bottom:4px;text-align:center;font-family:'Caveat',cursive;font-size:21px">for a new mum</div></div>
-      <div style="position:absolute;left:20%;bottom:0;width:58%;background:#FFFAF0;padding:10px 10px 40px;border:2px solid #3A2A22;border-radius:8px;transform:rotate(-1.5deg);box-shadow:8px 8px 0 #3A2A22;transition:transform .45s cubic-bezier(.3,1.4,.5,1)" style-hover="transform:rotate(1deg) translateY(-10px)"><img src="assets/photo-hero-mug.jpg" alt="Mama's Munches cookies beside a mug of coffee" style="width:100%;aspect-ratio:1 / 1;object-fit:cover;border-radius:4px"><div style="position:absolute;left:0;right:0;bottom:6px;text-align:center;font-family:'Caveat',cursive;font-size:24px">3am snack sorted ♥</div></div>
-      <div data-float="" style="position:absolute;right:2%;bottom:14%;width:{{ L.sticker }};height:{{ L.sticker }};border-radius:999px;background:#EE8088;border:2px solid #3A2A22;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transform:rotate(12deg);box-shadow:4px 4px 0 #3A2A22">
-        <span style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase">Baked</span>
-        <span style="font-family:'Young Serif',serif;font-size:{{ L.stickerBig }};line-height:1.1;margin-top:2px">to order</span>
+      <div style="position:absolute;left:2%;top:10%;width:46%;background:var(--mm-paper);padding:var(--mm-space-8) var(--mm-space-8) 34px;border:var(--mm-outline-style);border-radius:var(--mm-radius-8);transform:rotate(-9deg);transition:transform var(--mm-dur-polaroid) var(--mm-ease-spring-soft)" style-hover="transform:rotate(-3deg) translateY(-12px)"><img src="assets/photo-bun-case.jpg" alt="Zookies in paper cases" style="width:100%;aspect-ratio:4 / 5;object-fit:cover;border-radius:var(--mm-radius-4)"><div style="position:absolute;left:0;right:0;bottom:4px;text-align:center;font-family:var(--mm-font-script);font-size:21px">fresh batch!</div></div>
+      <div style="position:absolute;right:0;top:4%;width:44%;background:var(--mm-paper);padding:var(--mm-space-8) var(--mm-space-8) 34px;border:var(--mm-outline-style);border-radius:var(--mm-radius-8);transform:rotate(8deg);transition:transform var(--mm-dur-polaroid) var(--mm-ease-spring-soft)" style-hover="transform:rotate(3deg) translateY(-12px)"><img src="assets/photo-gift-heart.jpg" alt="A gift box of Zookies" style="width:100%;aspect-ratio:4 / 5;object-fit:cover;border-radius:var(--mm-radius-4)"><div style="position:absolute;left:0;right:0;bottom:4px;text-align:center;font-family:var(--mm-font-script);font-size:21px">for a new mum</div></div>
+      <div style="position:absolute;left:20%;bottom:0;width:58%;background:var(--mm-paper);padding:var(--mm-space-10) var(--mm-space-10) 40px;border:var(--mm-outline-style);border-radius:var(--mm-radius-8);transform:rotate(-1.5deg);box-shadow:var(--mm-shadow-8);transition:transform var(--mm-dur-polaroid) var(--mm-ease-spring-soft)" style-hover="transform:rotate(1deg) translateY(-10px)"><img src="assets/photo-hero-mug.jpg" alt="Mama's Munches cookies beside a mug of coffee" style="width:100%;aspect-ratio:1 / 1;object-fit:cover;border-radius:var(--mm-radius-4)"><div style="position:absolute;left:0;right:0;bottom:6px;text-align:center;font-family:var(--mm-font-script);font-size:var(--mm-size-24)">3am snack sorted ♥</div></div>
+      <div data-float="" style="position:absolute;right:2%;bottom:14%;width:{{ L.sticker }};height:{{ L.sticker }};border-radius:var(--mm-radius-pill);background:var(--mm-pink);border:var(--mm-outline-style);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transform:rotate(12deg);box-shadow:var(--mm-shadow-4)">
+        <span style="font-size:var(--mm-size-12);font-weight:var(--mm-weight-bold);letter-spacing:var(--mm-track-label);text-transform:uppercase">Baked</span>
+        <span style="font-family:var(--mm-font-display);font-size:{{ L.stickerBig }};line-height:1.1;margin-top:var(--mm-space-2)">to order</span>
       </div>
-      <div style="position:absolute;left:0;bottom:22%;background:#EE8088;border:2px solid #3A2A22;padding:8px 22px 8px 14px;clip-path:polygon(0 0,100% 0,88% 50%,100% 100%,0 100%);font-family:'Caveat',cursive;font-size:24px;transform:rotate(-6deg)">baked with love</div>
+      <div style="position:absolute;left:0;bottom:22%;background:var(--mm-pink);border:var(--mm-outline-style);padding:var(--mm-space-8) var(--mm-space-22) var(--mm-space-8) var(--mm-space-14);clip-path:polygon(0 0,100% 0,88% 50%,100% 100%,0 100%);font-family:var(--mm-font-script);font-size:var(--mm-size-24);transform:rotate(-6deg)">baked with love</div>
     </div>
   </div>
-  <div aria-label="Why Mama's Munches" style="border-top:2px dashed rgba(58,42,34,.28);overflow:hidden">{{ trustBar }}</div>
+  <div aria-label="Why Mama's Munches" data-part="trust-bar" style="border-top:2px dashed var(--mm-rule-soft);overflow:hidden">{{ trustBar }}</div>
 </section>
 
-<section style="padding:{{ L.secPad }}">
-  <div style="max-width:1240px;margin:0 auto">
-    <h2 data-reveal="" style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05;letter-spacing:-0.015em">Who are we baking for today?</h2>
-    <div style="display:grid;grid-template-columns:{{ L.two }};gap:20px;margin-top:28px">
-      <a data-reveal="" href="#build" style="position:relative;display:grid;grid-template-columns:{{ L.pathInner }};background:#F9D5D3;border:2px solid #3A2A22;border-radius:28px;overflow:hidden;text-decoration:none;color:#3A2A22;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s" style-hover="transform:translate(-4px,-4px) rotate(-.5deg);box-shadow:8px 8px 0 #3A2A22">
+<section data-part="paths" style="padding:{{ L.secPad }}">
+  <div style="max-width:var(--mm-max-width);margin:0 auto">
+    <h2 data-reveal="" style="margin:0;font-family:var(--mm-font-display);font-weight:var(--mm-weight-regular);font-size:{{ L.h2 }};line-height:var(--mm-leading-heading);letter-spacing:var(--mm-track-h2)">Who are we baking for today?</h2>
+    <div style="display:grid;grid-template-columns:{{ L.two }};gap:var(--mm-space-20);margin-top:var(--mm-space-28)">
+      <a data-reveal="" href="#build" style="position:relative;display:grid;grid-template-columns:{{ L.pathInner }};background:var(--mm-pink-soft);border:var(--mm-outline-style);border-radius:var(--mm-radius-28);overflow:hidden;text-decoration:none;color:var(--mm-cocoa);transition:transform var(--mm-dur-card) var(--mm-ease-spring-soft), box-shadow var(--mm-dur-card)" style-hover="transform:translate(-4px,-4px) rotate(-.5deg);box-shadow:var(--mm-shadow-8)">
         <img src="assets/photo-bags-pink.jpg" alt="Zookies in their bags" style="width:100%;height:100%;min-height:{{ L.pathImgH }};object-fit:cover">
-        <div style="padding:{{ L.pathPad }};display:flex;flex-direction:column;gap:8px;justify-content:center">
-          <span style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">for me ✦</span>
-          <span style="font-family:'Young Serif',serif;font-size:{{ L.h3 }};line-height:1.1">I’m feeding a little one</span>
-          <span style="font-size:16px;line-height:1.5;color:#4E3C31">Build your own box, or subscribe and save 10% on every one.</span>
-          <span style="font-weight:700;font-size:16px;margin-top:6px;display:flex;align-items:center;gap:8px">Build your box <span aria-hidden="true" style="width:32px;height:32px;border-radius:999px;background:#3A2A22;color:#F9D5D3;display:flex;align-items:center;justify-content:center">→</span></span>
+        <div style="padding:{{ L.pathPad }};display:flex;flex-direction:column;gap:var(--mm-space-8);justify-content:center">
+          <span style="font-family:var(--mm-font-script);font-size:var(--mm-size-28);color:var(--mm-script);line-height:var(--mm-leading-tight)">for me ✦</span>
+          <span style="font-family:var(--mm-font-display);font-size:{{ L.h3 }};line-height:1.1">I’m feeding a little one</span>
+          <span style="font-size:var(--mm-size-16);line-height:1.5;color:var(--mm-body)">Build your own box, or subscribe and save 10% on every one.</span>
+          <span style="font-weight:var(--mm-weight-bold);font-size:var(--mm-size-16);margin-top:var(--mm-space-6);display:flex;align-items:center;gap:var(--mm-space-8)">Build your box <span aria-hidden="true" style="width:32px;height:32px;border-radius:var(--mm-radius-pill);background:var(--mm-cocoa);color:var(--mm-pink-soft);display:flex;align-items:center;justify-content:center">→</span></span>
         </div>
       </a>
-      <a data-reveal="" href="#gifts" style="position:relative;display:grid;grid-template-columns:{{ L.pathInner }};background:#FCEBBE;border:2px solid #3A2A22;border-radius:28px;overflow:hidden;text-decoration:none;color:#3A2A22;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s" style-hover="transform:translate(-4px,-4px) rotate(.5deg);box-shadow:8px 8px 0 #3A2A22">
+      <a data-reveal="" href="#gifts" style="position:relative;display:grid;grid-template-columns:{{ L.pathInner }};background:var(--mm-yellow-soft);border:var(--mm-outline-style);border-radius:var(--mm-radius-28);overflow:hidden;text-decoration:none;color:var(--mm-cocoa);transition:transform var(--mm-dur-card) var(--mm-ease-spring-soft), box-shadow var(--mm-dur-card)" style-hover="transform:translate(-4px,-4px) rotate(.5deg);box-shadow:var(--mm-shadow-8)">
         <img src="assets/photo-gift-heart.jpg" alt="A gift box of Zookies with a heart" style="width:100%;height:100%;min-height:{{ L.pathImgH }};object-fit:cover">
-        <div style="padding:{{ L.pathPad }};display:flex;flex-direction:column;gap:8px;justify-content:center">
-          <span style="font-family:'Caveat',cursive;font-size:28px;color:#7A5A12;line-height:1">for her ♥</span>
-          <span style="font-family:'Young Serif',serif;font-size:{{ L.h3 }};line-height:1.1">I’m spoiling a new mum</span>
-          <span style="font-size:16px;line-height:1.5;color:#4E3C31">Gift boxes, gift cards and a note from you, with the prices left off.</span>
-          <span style="font-weight:700;font-size:16px;margin-top:6px;display:flex;align-items:center;gap:8px">Shop gifts <span aria-hidden="true" style="width:32px;height:32px;border-radius:999px;background:#3A2A22;color:#FCEBBE;display:flex;align-items:center;justify-content:center">→</span></span>
+        <div style="padding:{{ L.pathPad }};display:flex;flex-direction:column;gap:var(--mm-space-8);justify-content:center">
+          <span style="font-family:var(--mm-font-script);font-size:var(--mm-size-28);color:var(--mm-script-gold);line-height:var(--mm-leading-tight)">for her ♥</span>
+          <span style="font-family:var(--mm-font-display);font-size:{{ L.h3 }};line-height:1.1">I’m spoiling a new mum</span>
+          <span style="font-size:var(--mm-size-16);line-height:1.5;color:var(--mm-body)">Gift boxes, gift cards and a note from you, with the prices left off.</span>
+          <span style="font-weight:var(--mm-weight-bold);font-size:var(--mm-size-16);margin-top:var(--mm-space-6);display:flex;align-items:center;gap:var(--mm-space-8)">Shop gifts <span aria-hidden="true" style="width:32px;height:32px;border-radius:var(--mm-radius-pill);background:var(--mm-cocoa);color:var(--mm-yellow-soft);display:flex;align-items:center;justify-content:center">→</span></span>
         </div>
       </a>
     </div>
   </div>
 </section>
 
-<section id="build" style="padding:{{ L.secPadTop0 }};scroll-margin-top:72px">
-  <div data-reveal="" style="max-width:1240px;margin:0 auto;background:#F9D5D3;border:2px solid #3A2A22;border-radius:36px;padding:{{ L.boxPad }};display:grid;grid-template-columns:{{ L.buildCols }};gap:{{ L.gap }}">
-    <div style="display:flex;flex-direction:column;gap:22px;min-width:0">
+<section id="build" data-part="builder" style="padding:{{ L.secPadTop0 }};scroll-margin-top:72px">
+  <div data-reveal="" style="max-width:var(--mm-max-width);margin:0 auto;background:var(--mm-pink-soft);border:var(--mm-outline-style);border-radius:var(--mm-radius-36);padding:{{ L.boxPad }};display:grid;grid-template-columns:{{ L.buildCols }};gap:{{ L.gap }}">
+    <div style="display:flex;flex-direction:column;gap:var(--mm-space-22);min-width:0">
       <div>
-        <div style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">your cookie, your way</div>
-        <h2 style="margin:4px 0 8px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.02;letter-spacing:-0.015em">Build your Zookie</h2>
-        <p style="margin:0;font-size:17px;line-height:1.5;color:#4E3C31;max-width:520px">Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh.</p>
+        <div style="font-family:var(--mm-font-script);font-size:var(--mm-size-28);color:var(--mm-script);line-height:var(--mm-leading-tight)">your cookie, your way</div>
+        <h2 style="margin:var(--mm-space-4) 0 var(--mm-space-8);font-family:var(--mm-font-display);font-weight:var(--mm-weight-regular);font-size:{{ L.h2 }};line-height:var(--mm-leading-h1);letter-spacing:var(--mm-track-h2)">Build your Zookie</h2>
+        <p style="margin:0;font-size:var(--mm-size-17);line-height:1.5;color:var(--mm-body);max-width:520px">Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh.</p>
       </div>
-      <div><div style="font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">1 · Base</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ bases }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="min-height:48px;padding:0 18px 0 12px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)"><span style="width:22px;height:22px;border-radius:99px;background:{{ o.dot }};border:2px solid #3A2A22"></span>{{ o.name }}</button></sc-for></div></div>
-      <div><div style="font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">2 · Chips</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ chips }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="min-height:48px;padding:0 18px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)">{{ o.name }}</button></sc-for></div></div>
-      <div><div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:10px"><span style="font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase">3 · Flavours</span><span style="font-size:14px;color:#5E4A3D">Pick up to 3 and we’ll split your box between them</span></div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ flavs }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)"><span style="width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}">✓</span>{{ o.name }}</button></sc-for></div>
-        <div style="margin-top:10px;font-size:14px;font-weight:700">{{ split }}</div></div>
-      <div><div style="font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">4 · How many</div>
-        <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:10px;padding-top:6px"><sc-for list="{{ sizes }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="position:relative;min-height:84px;padding:12px 8px;border-radius:20px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)"><span style="font-family:'Young Serif',serif;font-size:26px;line-height:1">{{ o.n }}</span><span style="font-size:14px;font-weight:700">{{ o.priceTxt }}</span><span style="font-size:12px">{{ o.each }}</span><sc-if value="{{ o.tag }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-12px;background:#EE8088;border:2px solid #3A2A22;border-radius:999px;padding:1px 9px;font-size:11px;font-weight:700;white-space:nowrap">{{ o.tag }}</span></sc-if></button></sc-for></div></div>
+      <div><div style="font-size:var(--mm-size-14);font-weight:var(--mm-weight-bold);letter-spacing:var(--mm-track-label);text-transform:uppercase;margin-bottom:var(--mm-space-10)">1 · Base</div>
+        <div style="display:flex;flex-wrap:wrap;gap:var(--mm-space-8)"><sc-for list="{{ bases }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="min-height:48px;padding:0 var(--mm-space-18) 0 var(--mm-space-12);border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);background:{{ o.bg }};color:var(--mm-cocoa);font-size:var(--mm-size-16);font-weight:var(--mm-weight-bold);cursor:pointer;display:flex;align-items:center;gap:var(--mm-space-8);box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform var(--mm-dur-press) var(--mm-ease-spring), box-shadow var(--mm-dur-press), background var(--mm-dur-press)" style-hover="transform:translate(-2px,-2px)"><span style="width:22px;height:22px;border-radius:99px;background:{{ o.dot }};border:var(--mm-outline-style)"></span>{{ o.name }}</button></sc-for></div></div>
+      <div><div style="font-size:var(--mm-size-14);font-weight:var(--mm-weight-bold);letter-spacing:var(--mm-track-label);text-transform:uppercase;margin-bottom:var(--mm-space-10)">2 · Chips</div>
+        <div style="display:flex;flex-wrap:wrap;gap:var(--mm-space-8)"><sc-for list="{{ chips }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="min-height:48px;padding:0 var(--mm-space-18);border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);background:{{ o.bg }};color:var(--mm-cocoa);font-size:var(--mm-size-16);font-weight:var(--mm-weight-bold);cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform var(--mm-dur-press) var(--mm-ease-spring), box-shadow var(--mm-dur-press), background var(--mm-dur-press)" style-hover="transform:translate(-2px,-2px)">{{ o.name }}</button></sc-for></div></div>
+      <div><div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--mm-space-4) var(--mm-space-10);margin-bottom:var(--mm-space-10)"><span style="font-size:var(--mm-size-14);font-weight:var(--mm-weight-bold);letter-spacing:var(--mm-track-label);text-transform:uppercase">3 · Flavours</span><span style="font-size:var(--mm-size-14);color:var(--mm-muted)">Pick up to 3 and we’ll split your box between them</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:var(--mm-space-8)"><sc-for list="{{ flavs }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="min-height:48px;padding:0 var(--mm-space-16) 0 var(--mm-space-10);border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);background:{{ o.bg }};color:var(--mm-cocoa);font-size:var(--mm-size-16);font-weight:var(--mm-weight-bold);cursor:pointer;display:flex;align-items:center;gap:var(--mm-space-8);box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform var(--mm-dur-press) var(--mm-ease-spring), box-shadow var(--mm-dur-press), background var(--mm-dur-press)" style-hover="transform:translate(-2px,-2px)"><span style="width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:var(--mm-outline-style);display:flex;align-items:center;justify-content:center;font-size:var(--mm-size-12);color:{{ o.tick }}">✓</span>{{ o.name }}</button></sc-for></div>
+        <div style="margin-top:var(--mm-space-10);font-size:var(--mm-size-14);font-weight:var(--mm-weight-bold)">{{ split }}</div></div>
+      <div><div style="font-size:var(--mm-size-14);font-weight:var(--mm-weight-bold);letter-spacing:var(--mm-track-label);text-transform:uppercase;margin-bottom:var(--mm-space-10)">4 · How many</div>
+        <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:var(--mm-space-10);padding-top:var(--mm-space-6)"><sc-for list="{{ sizes }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="position:relative;min-height:84px;padding:var(--mm-space-12) var(--mm-space-8);border-radius:var(--mm-radius-20);border:var(--mm-outline-style);background:{{ o.bg }};color:var(--mm-cocoa);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--mm-space-2);box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform var(--mm-dur-press) var(--mm-ease-spring), box-shadow var(--mm-dur-press), background var(--mm-dur-press)" style-hover="transform:translate(-2px,-2px)"><span style="font-family:var(--mm-font-display);font-size:var(--mm-size-26);line-height:var(--mm-leading-tight)">{{ o.n }}</span><span style="font-size:var(--mm-size-14);font-weight:var(--mm-weight-bold)">{{ o.priceTxt }}</span><span style="font-size:var(--mm-size-12)">{{ o.each }}</span><sc-if value="{{ o.tag }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-12px;background:var(--mm-pink);border:var(--mm-outline-style);border-radius:var(--mm-radius-pill);padding:1px 9px;font-size:var(--mm-size-11);font-weight:var(--mm-weight-bold);white-space:nowrap">{{ o.tag }}</span></sc-if></button></sc-for></div></div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
-      <div style="position:relative;background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;padding:28px 20px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;overflow:hidden">
-        <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 42%, #FCEBBE 0 34%, transparent 35%)"></div>
-        <div ref="{{ cookieRef }}" role="img" aria-label="{{ summary }}" style="position:relative;width:{{ L.cookie }};height:{{ L.cookie }};border-radius:48% 52% 50% 50% / 52% 47% 53% 48%;background:{{ cookieBg }};border:2px solid #3A2A22;box-shadow:inset -10px -12px 0 rgba(58,42,34,.12), 6px 6px 0 #3A2A22">
+    <div style="display:flex;flex-direction:column;gap:var(--mm-space-16);min-width:0">
+      <div style="position:relative;background:var(--mm-paper);border:var(--mm-outline-style);border-radius:var(--mm-radius-28);padding:var(--mm-space-28) var(--mm-space-20) var(--mm-space-20);display:flex;flex-direction:column;align-items:center;gap:var(--mm-space-14);overflow:hidden">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 42%, var(--mm-yellow-soft) 0 34%, transparent 35%)"></div>
+        <div ref="{{ cookieRef }}" role="img" aria-label="{{ summary }}" style="position:relative;width:{{ L.cookie }};height:{{ L.cookie }};border-radius:48% 52% 50% 50% / 52% 47% 53% 48%;background:{{ cookieBg }};border:var(--mm-outline-style);box-shadow:inset -10px -12px 0 rgba(58,42,34,.12), var(--mm-shadow-6)">
           <sc-for list="{{ dots }}" as="d" hint-placeholder-count="0"><span style="position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)"></span></sc-for>
         </div>
-        <div style="position:relative;font-family:'Caveat',cursive;font-size:26px;text-align:center;line-height:1.1">{{ summary }}</div>
+        <div style="position:relative;font-family:var(--mm-font-script);font-size:var(--mm-size-26);text-align:center;line-height:1.1">{{ summary }}</div>
       </div>
-      <div style="display:grid;gap:10px">
-        <button onClick="{{ pickSub }}" aria-pressed="{{ isSub }}" style="min-height:72px;border-radius:20px;border:2px solid #3A2A22;background:{{ subOpt.bg }};box-shadow:{{ subOpt.shadow }};padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;text-align:left;transition:box-shadow .2s, background .2s"><span style="display:flex;flex-direction:column"><span style="font-weight:700;font-size:16px">Subscribe &amp; save 10%</span><span style="font-size:13px;color:#5E4A3D">Skip, swap or cancel any time</span></span><span style="display:flex;flex-direction:column;align-items:flex-end"><span style="font-family:'Young Serif',serif;font-size:22px">{{ subTxt }}</span><span style="font-size:13px;color:#6B5646;text-decoration:line-through">{{ onceTxt }}</span></span></button>
+      <div style="display:grid;gap:var(--mm-space-10)">
+        <button onClick="{{ pickSub }}" aria-pressed="{{ isSub }}" style="min-height:72px;border-radius:var(--mm-radius-20);border:var(--mm-outline-style);background:{{ subOpt.bg }};box-shadow:{{ subOpt.shadow }};padding:var(--mm-space-10) var(--mm-space-16);display:flex;justify-content:space-between;align-items:center;gap:var(--mm-space-12);cursor:pointer;text-align:left;transition:box-shadow var(--mm-dur-press), background var(--mm-dur-press)"><span style="display:flex;flex-direction:column"><span style="font-weight:var(--mm-weight-bold);font-size:var(--mm-size-16)">Subscribe &amp; save 10%</span><span style="font-size:var(--mm-size-13);color:var(--mm-muted)">Skip, swap or cancel any time</span></span><span style="display:flex;flex-direction:column;align-items:flex-end"><span style="font-family:var(--mm-font-display);font-size:var(--mm-size-22)">{{ subTxt }}</span><span style="font-size:var(--mm-size-13);color:var(--mm-muted-2);text-decoration:line-through">{{ onceTxt }}</span></span></button>
         <sc-if value="{{ isSub }}" hint-placeholder-val="{{ true }}">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><sc-for list="{{ freqs }}" as="f" hint-placeholder-count="2"><button onClick="{{ f.pick }}" style="min-height:44px;border-radius:999px;border:2px solid #3A2A22;background:{{ f.bg }};font-size:14px;font-weight:700;cursor:pointer;transition:background .2s">{{ f.label }}</button></sc-for></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--mm-space-8)"><sc-for list="{{ freqs }}" as="f" hint-placeholder-count="2"><button onClick="{{ f.pick }}" aria-pressed="{{ f.on }}" style="min-height:44px;border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);background:{{ f.bg }};font-size:var(--mm-size-14);font-weight:var(--mm-weight-bold);cursor:pointer;transition:background var(--mm-dur-press)">{{ f.label }}</button></sc-for></div>
         </sc-if>
-        <button onClick="{{ pickOnce }}" aria-pressed="{{ isOnce }}" style="min-height:60px;border-radius:20px;border:2px solid #3A2A22;background:{{ once.bg }};box-shadow:{{ once.shadow }};padding:10px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left;transition:box-shadow .2s, background .2s"><span style="font-weight:700;font-size:16px">One-off box</span><span style="font-family:'Young Serif',serif;font-size:22px">{{ onceTxt }}</span></button>
+        <button onClick="{{ pickOnce }}" aria-pressed="{{ isOnce }}" style="min-height:60px;border-radius:var(--mm-radius-20);border:var(--mm-outline-style);background:{{ once.bg }};box-shadow:{{ once.shadow }};padding:var(--mm-space-10) var(--mm-space-16);display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left;transition:box-shadow var(--mm-dur-press), background var(--mm-dur-press)"><span style="font-weight:var(--mm-weight-bold);font-size:var(--mm-size-16)">One-off box</span><span style="font-family:var(--mm-font-display);font-size:var(--mm-size-22)">{{ onceTxt }}</span></button>
       </div>
-      <button onClick="{{ add }}" style="height:64px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size:18px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="background:#FFFAF0;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22" style-active="transform:translate(3px,3px);box-shadow:0 0 0 #3A2A22">{{ addLabel }}</button>
-      <div style="font-size:14px;font-weight:600;text-align:center">Baked fresh for you · with you in 3–5 days · free UK delivery over £35</div>
+      <dc-import name="Button" version="primary" size="lg" onPress="{{ add }}" label="{{ addLabel }}" data-part="add-to-basket"></dc-import>
+      <div style="font-size:var(--mm-size-14);font-weight:var(--mm-weight-semibold);text-align:center">Baked fresh for you · with you in 3–5 days · free UK delivery over £35</div>
     </div>
   </div>
 </section>
 
-<section id="gifts" style="background:#F5C2C8;border-top:2px solid #3A2A22;border-bottom:2px solid #3A2A22;padding:{{ L.secPad }};scroll-margin-top:72px">
-  <div style="max-width:1240px;margin:0 auto">
-    <div data-reveal="" style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:28px">
+<section id="gifts" data-part="gifts" style="background:var(--mm-pink-band);border-top:var(--mm-outline-style);border-bottom:var(--mm-outline-style);padding:{{ L.secPad }};scroll-margin-top:72px">
+  <div style="max-width:var(--mm-max-width);margin:0 auto">
+    <div data-reveal="" style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--mm-space-12) var(--mm-space-24);margin-bottom:var(--mm-space-28)">
       <div>
-        <div style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">gifts for new mums</div>
-        <h2 style="margin:4px 0 0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.02;letter-spacing:-0.015em">A gift she’ll actually eat</h2>
+        <div style="font-family:var(--mm-font-script);font-size:var(--mm-size-28);color:var(--mm-script);line-height:var(--mm-leading-tight)">gifts for new mums</div>
+        <h2 style="margin:var(--mm-space-4) 0 0;font-family:var(--mm-font-display);font-weight:var(--mm-weight-regular);font-size:{{ L.h2 }};line-height:var(--mm-leading-h1);letter-spacing:var(--mm-track-h2)">A gift she’ll actually eat</h2>
       </div>
-      <a href="Gifts.dc.html" style="font-weight:700;font-size:16px;color:#3A2A22;min-height:44px;display:flex;align-items:center;gap:8px">All gifts <span aria-hidden="true">→</span></a>
+      <a href="Gifts.dc.html" data-part="all-gifts" style="font-weight:var(--mm-weight-bold);font-size:var(--mm-size-16);color:var(--mm-cocoa);min-height:44px;display:flex;align-items:center;gap:var(--mm-space-8)">All gifts <span aria-hidden="true">→</span></a>
     </div>
-    <div ref="{{ giftRef }}" onScroll="{{ onGift }}" onPointerDown="{{ gd.down }}" onPointerMove="{{ gd.move }}" onPointerUp="{{ gd.up }}" onPointerCancel="{{ gd.up }}" onClickCapture="{{ gd.click }}" onDragStart="{{ noDrag }}" style="display:grid;grid-auto-flow:{{ L.flow }};grid-auto-columns:{{ L.autoCols }};grid-template-columns:{{ L.tileCols }};gap:18px;overflow-x:{{ L.ovx }};scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;margin:{{ L.bleedM }};padding:{{ L.bleedP }};scroll-padding:0 20px;cursor:{{ L.grab }}">
+    <div ref="{{ giftRef }}" aria-roledescription="{{ giftCarousel.role }}" aria-label="{{ giftCarousel.label }}" onScroll="{{ onGift }}" onPointerDown="{{ gd.down }}" onPointerMove="{{ gd.move }}" onPointerUp="{{ gd.up }}" onPointerCancel="{{ gd.up }}" onClickCapture="{{ gd.click }}" onDragStart="{{ noDrag }}" style="display:grid;grid-auto-flow:{{ L.flow }};grid-auto-columns:{{ L.autoCols }};grid-template-columns:{{ L.tileCols }};gap:var(--mm-space-18);overflow-x:{{ L.ovx }};scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;margin:{{ L.bleedM }};padding:{{ L.bleedP }};scroll-padding:0 20px;cursor:{{ L.grab }}">
       <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="0">
-        <a data-reveal="" href="{{ t.href }}" style="scroll-snap-align:start;display:flex;flex-direction:column;background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;overflow:hidden;text-decoration:none;color:#3A2A22;transform:rotate({{ t.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s" style-hover="transform:rotate(0deg) translate(-4px,-6px);box-shadow:8px 8px 0 #3A2A22">
-          <div style="position:relative;aspect-ratio:4 / 3;background:{{ t.bg }};overflow:hidden;border-bottom:2px solid #3A2A22"><div style="width:100%;height:100%;background-image:{{ t.bgImg }};background-size:{{ t.size }};background-position:center;background-repeat:no-repeat"></div><span style="position:absolute;left:10px;top:10px;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700">{{ t.moment }}</span></div>
-          <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px;flex:1">
-            <span style="font-family:'Young Serif',serif;font-size:21px;line-height:1.15">{{ t.name }}</span>
-            <span style="font-size:15px;color:#5E4A3D;line-height:1.45">{{ t.line }}</span>
-            <span style="margin-top:auto;padding-top:8px;display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Young Serif',serif;font-size:20px">{{ t.price }}</span><span aria-hidden="true" style="width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center">→</span></span>
+        <a data-reveal="" href="{{ t.href }}" style="scroll-snap-align:start;display:flex;flex-direction:column;background:var(--mm-paper);border:var(--mm-outline-style);border-radius:var(--mm-radius-24);overflow:hidden;text-decoration:none;color:var(--mm-cocoa);transform:rotate({{ t.rot }});transition:transform var(--mm-dur-tilt) var(--mm-ease-spring-soft), box-shadow var(--mm-dur-tilt)" style-hover="transform:rotate(0deg) translate(-4px,-6px);box-shadow:var(--mm-shadow-8)">
+          <div style="position:relative;aspect-ratio:4 / 3;background:{{ t.bg }};overflow:hidden;border-bottom:var(--mm-outline-style)"><div style="width:100%;height:100%;background-image:{{ t.bgImg }};background-size:{{ t.size }};background-position:center;background-repeat:no-repeat"></div><span style="position:absolute;left:10px;top:10px;background:var(--mm-yellow);border:var(--mm-outline-style);border-radius:var(--mm-radius-pill);padding:3px var(--mm-space-10);font-size:var(--mm-size-12);font-weight:var(--mm-weight-bold)">{{ t.moment }}</span></div>
+          <div style="padding:var(--mm-space-16) var(--mm-space-18) var(--mm-space-18);display:flex;flex-direction:column;gap:var(--mm-space-6);flex:1">
+            <span style="font-family:var(--mm-font-display);font-size:21px;line-height:1.15">{{ t.name }}</span>
+            <span style="font-size:var(--mm-size-15);color:var(--mm-muted);line-height:1.45">{{ t.line }}</span>
+            <span style="margin-top:auto;padding-top:var(--mm-space-8);display:flex;justify-content:space-between;align-items:center"><span style="font-family:var(--mm-font-display);font-size:var(--mm-size-20)">{{ t.price }}</span><span aria-hidden="true" style="width:36px;height:36px;border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);display:flex;align-items:center;justify-content:center">→</span></span>
           </div>
         </a>
       </sc-for>
     </div>
     <sc-if value="{{ isM }}" hint-placeholder-val="{{ false }}">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:6px">
-        <div style="display:flex;gap:8px"><sc-for list="{{ giftDots }}" as="d" hint-placeholder-count="0"><button onClick="{{ d.go }}" aria-label="{{ d.label }}" style="width:{{ d.w }};height:12px;border-radius:999px;border:2px solid #3A2A22;background:{{ d.bg }};padding:0;cursor:pointer;transition:width .3s, background .3s"></button></sc-for></div>
-        <div style="display:flex;gap:10px">
-          <button onClick="{{ giftPrev }}" aria-label="Previous gift" style="width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-size:20px;cursor:pointer;box-shadow:3px 3px 0 #3A2A22">←</button>
-          <button onClick="{{ giftNext }}" aria-label="Next gift" style="width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-size:20px;cursor:pointer;box-shadow:3px 3px 0 #3A2A22">→</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--mm-space-12);margin-top:var(--mm-space-6)">
+        <div style="display:flex;gap:var(--mm-space-8)"><sc-for list="{{ giftDots }}" as="d" hint-placeholder-count="0"><button onClick="{{ d.go }}" aria-label="{{ d.label }}" aria-current="{{ d.cur }}" style="width:{{ d.w }};height:12px;border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);background:{{ d.bg }};padding:0;cursor:pointer;transition:width var(--mm-dur-card), background var(--mm-dur-card)"></button></sc-for></div>
+        <div style="display:flex;gap:var(--mm-space-10)">
+          <button onClick="{{ giftPrev }}" aria-label="Previous gift" style="width:48px;height:48px;border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);background:var(--mm-paper);font-size:var(--mm-size-20);cursor:pointer;box-shadow:var(--mm-shadow-3)">←</button>
+          <button onClick="{{ giftNext }}" aria-label="Next gift" style="width:48px;height:48px;border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);background:var(--mm-paper);font-size:var(--mm-size-20);cursor:pointer;box-shadow:var(--mm-shadow-3)">→</button>
         </div>
       </div>
     </sc-if>
-    <div style="margin-top:28px;display:grid;grid-template-columns:{{ L.giftStrip }};gap:18px;align-items:stretch">
-      <div data-reveal="" style="position:relative;background:#FFFAF0;border:2px solid #3A2A22;border-radius:6px;padding:26px 24px 22px;transform:rotate(-1deg);box-shadow:6px 6px 0 #3A2A22">
-        <span aria-hidden="true" style="position:absolute;top:-12px;left:50%;width:90px;height:24px;background:rgba(249,207,110,.85);transform:translateX(-50%) rotate(2deg)"></span>
-        <div style="font-family:'Caveat',cursive;font-size:{{ L.note }};line-height:1.15">“Congratulations, mama! One for the 3am feed. So proud of you. Sara x”</div>
-        <div style="font-size:15px;color:#5E4A3D;margin-top:8px">Your words go in the box. The prices stay out.</div>
+    <div style="margin-top:var(--mm-space-28);display:grid;grid-template-columns:{{ L.giftStrip }};gap:var(--mm-space-18);align-items:stretch">
+      <div data-reveal="" style="position:relative;background:var(--mm-paper);border:var(--mm-outline-style);border-radius:var(--mm-radius-6);padding:26px var(--mm-space-24) var(--mm-space-22);transform:rotate(-1deg);box-shadow:var(--mm-shadow-6)">
+        <span aria-hidden="true" style="position:absolute;top:-12px;left:50%;width:90px;height:24px;background:var(--mm-tape);transform:translateX(-50%) rotate(2deg)"></span>
+        <div style="font-family:var(--mm-font-script);font-size:{{ L.note }};line-height:1.15">“Congratulations, mama! One for the 3am feed. So proud of you. Sara x”</div>
+        <div style="font-size:var(--mm-size-15);color:var(--mm-muted);margin-top:var(--mm-space-8)">Your words go in the box. The prices stay out.</div>
       </div>
-      <a data-reveal="" href="Product.dc.html?id=giftcard" style="background:#FCEBBE;border:2px solid #3A2A22;border-radius:24px;padding:22px 24px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;text-decoration:none;color:#3A2A22;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s" style-hover="transform:translate(-4px,-4px);box-shadow:8px 8px 0 #3A2A22">
+      <a data-reveal="" href="Product.dc.html?id=giftcard" style="background:var(--mm-yellow-soft);border:var(--mm-outline-style);border-radius:var(--mm-radius-24);padding:var(--mm-space-22) var(--mm-space-24);display:grid;grid-template-columns:auto 1fr;gap:var(--mm-space-16);align-items:center;text-decoration:none;color:var(--mm-cocoa);transition:transform var(--mm-dur-card) var(--mm-ease-spring-soft), box-shadow var(--mm-dur-card)" style-hover="transform:translate(-4px,-4px);box-shadow:var(--mm-shadow-8)">
         <img src="assets/logo-round.png" alt="" style="width:84px;transform:rotate(-8deg)">
-        <div><div style="font-family:'Young Serif',serif;font-size:22px;line-height:1.15">Baby shower coming up?</div><div style="font-size:15px;color:#4E3C31;line-height:1.5;margin-top:4px">Give a gift card now. She redeems it once baby arrives, so every cookie is fresh.</div></div>
+        <div><div style="font-family:var(--mm-font-display);font-size:var(--mm-size-22);line-height:1.15">Baby shower coming up?</div><div style="font-size:var(--mm-size-15);color:var(--mm-body);line-height:1.5;margin-top:var(--mm-space-4)">Give a gift card now. She redeems it once baby arrives, so every cookie is fresh.</div></div>
       </a>
     </div>
   </div>
 </section>
 
-<section style="padding:{{ L.secPad }}">
-  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.recipeCols }};gap:{{ L.gap }};align-items:center">
-    <div data-reveal="" style="position:relative;background:#FFFAF0;border:2px solid #3A2A22;border-radius:10px;padding:{{ L.recipePad }};background-image:linear-gradient(90deg, transparent 38px, rgba(232,106,117,.45) 38px, rgba(232,106,117,.45) 40px, transparent 40px), repeating-linear-gradient(#FFFAF0 0 35px, #EFD9C6 35px 36px);transform:rotate(-1deg);box-shadow:8px 8px 0 #3A2A22">
+<section data-part="ingredients" style="padding:{{ L.secPad }}">
+  <div style="max-width:var(--mm-max-width);margin:0 auto;display:grid;grid-template-columns:{{ L.recipeCols }};gap:{{ L.gap }};align-items:center">
+    <div data-reveal="" style="position:relative;background:var(--mm-paper);border:var(--mm-outline-style);border-radius:10px;padding:{{ L.recipePad }};background-image:linear-gradient(90deg, transparent 38px, rgba(232,106,117,.45) 38px, rgba(232,106,117,.45) 40px, transparent 40px), repeating-linear-gradient(var(--mm-paper) 0 35px, #EFD9C6 35px 36px);transform:rotate(-1deg);box-shadow:var(--mm-shadow-8)">
       <span aria-hidden="true" style="position:absolute;top:-14px;right:40px;width:110px;height:26px;background:rgba(238,128,136,.7);transform:rotate(-4deg)"></span>
-      <div style="font-family:'Caveat',cursive;font-size:{{ L.recipeTitle }};line-height:1;padding-left:26px">Zainab’s Zookie recipe</div>
-      <div style="font-size:15px;color:#6B5646;padding-left:26px;margin:6px 0 18px">The four that go in every single one</div>
-      <div style="display:flex;flex-direction:column;gap:14px;padding-left:26px">
-        <div style="display:grid;grid-template-columns:36px 1fr;gap:12px"><span style="width:32px;height:32px;border-radius:999px;background:#F9CF6E;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span><div><div style="font-family:'Young Serif',serif;font-size:22px">Oats</div><div style="font-size:15px;line-height:1.5;color:#4E3C31">Rich in iron. Used in postpartum foods across cultures for centuries.</div></div></div>
-        <div style="display:grid;grid-template-columns:36px 1fr;gap:12px"><span style="width:32px;height:32px;border-radius:999px;background:#F9CF6E;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span><div><div style="font-family:'Young Serif',serif;font-size:22px">Brewer’s yeast</div><div style="font-size:15px;line-height:1.5;color:#4E3C31">B-vitamins and chromium. A traditional galactagogue used worldwide.</div></div></div>
-        <div style="display:grid;grid-template-columns:36px 1fr;gap:12px"><span style="width:32px;height:32px;border-radius:999px;background:#F9CF6E;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span><div><div style="font-family:'Young Serif',serif;font-size:22px">Flaxseed</div><div style="font-size:15px;line-height:1.5;color:#4E3C31">Omega-3 fatty acids. Good for mum and baby.</div></div></div>
-        <div style="display:grid;grid-template-columns:36px 1fr;gap:12px"><span style="width:32px;height:32px;border-radius:999px;background:#F9CF6E;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span><div><div style="font-family:'Young Serif',serif;font-size:22px">Fenugreek</div><div style="font-size:15px;line-height:1.5;color:#4E3C31">A traditional postpartum herb. If your baby has a sensitive tummy, ask your midwife first.</div></div></div>
-      </div>
+      <div style="font-family:var(--mm-font-script);font-size:{{ L.recipeTitle }};line-height:var(--mm-leading-tight);padding-left:26px">Zainab’s Zookie recipe</div>
+      <div style="font-size:var(--mm-size-15);color:var(--mm-muted-2);padding-left:26px;margin:var(--mm-space-6) 0 var(--mm-space-18)">The four that go in every single one</div>
+      <ul style="display:flex;flex-direction:column;gap:var(--mm-space-14);margin:0;padding-left:26px;list-style:none">
+        <li style="display:grid;grid-template-columns:36px 1fr;gap:var(--mm-space-12)"><span style="width:32px;height:32px;border-radius:var(--mm-radius-pill);background:var(--mm-yellow);border:var(--mm-outline-style);display:flex;align-items:center;justify-content:center;font-weight:var(--mm-weight-bold)">✓</span><div><div style="font-family:var(--mm-font-display);font-size:var(--mm-size-22)">Oats</div><div style="font-size:var(--mm-size-15);line-height:1.5;color:var(--mm-body)">Rich in iron. Used in postpartum foods across cultures for centuries.</div></div></li>
+        <li style="display:grid;grid-template-columns:36px 1fr;gap:var(--mm-space-12)"><span style="width:32px;height:32px;border-radius:var(--mm-radius-pill);background:var(--mm-yellow);border:var(--mm-outline-style);display:flex;align-items:center;justify-content:center;font-weight:var(--mm-weight-bold)">✓</span><div><div style="font-family:var(--mm-font-display);font-size:var(--mm-size-22)">Brewer’s yeast</div><div style="font-size:var(--mm-size-15);line-height:1.5;color:var(--mm-body)">B-vitamins and chromium. A traditional galactagogue used worldwide.</div></div></li>
+        <li style="display:grid;grid-template-columns:36px 1fr;gap:var(--mm-space-12)"><span style="width:32px;height:32px;border-radius:var(--mm-radius-pill);background:var(--mm-yellow);border:var(--mm-outline-style);display:flex;align-items:center;justify-content:center;font-weight:var(--mm-weight-bold)">✓</span><div><div style="font-family:var(--mm-font-display);font-size:var(--mm-size-22)">Flaxseed</div><div style="font-size:var(--mm-size-15);line-height:1.5;color:var(--mm-body)">Omega-3 fatty acids. Good for mum and baby.</div></div></li>
+        <li style="display:grid;grid-template-columns:36px 1fr;gap:var(--mm-space-12)"><span style="width:32px;height:32px;border-radius:var(--mm-radius-pill);background:var(--mm-yellow);border:var(--mm-outline-style);display:flex;align-items:center;justify-content:center;font-weight:var(--mm-weight-bold)">✓</span><div><div style="font-family:var(--mm-font-display);font-size:var(--mm-size-22)">Fenugreek</div><div style="font-size:var(--mm-size-15);line-height:1.5;color:var(--mm-body)">A traditional postpartum herb. If your baby has a sensitive tummy, ask your midwife first.</div></div></li>
+      </ul>
     </div>
-    <div style="display:flex;flex-direction:column;gap:18px">
-      <h2 data-reveal="" style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.02;letter-spacing:-0.015em">Proper ingredients, from generations of mums</h2>
-      <p data-reveal="" style="margin:0;font-size:17px;line-height:1.6;color:#4E3C31;max-width:520px">The same four have gone into postpartum food for generations, from Pakistan to West Africa. No shortcuts, no preservatives.</p>
-      <div data-reveal="" style="border:2px dashed #3A2A22;border-radius:20px;padding:18px 20px;font-size:15px;line-height:1.55;color:#4E3C31;max-width:540px">We make nourishing food, not medicine. If you’re worried about your supply, your midwife, health visitor or a lactation consultant (IBCLC) is the right person to talk to. <a href="Help.dc.html#allergens" style="font-weight:700;color:#3A2A22">Allergens →</a></div>
-    </div>
-  </div>
-</section>
-
-<section id="story" style="background:#F9D5D3;border-top:2px solid #3A2A22;border-bottom:2px solid #3A2A22;padding:{{ L.secPad }};scroll-margin-top:72px">
-  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.storyCols }};gap:{{ L.gap }};align-items:center">
-    <div data-reveal="" style="position:relative;background:#FFFAF0;padding:12px 12px 48px;border:2px solid #3A2A22;border-radius:8px;transform:rotate(-2.5deg);box-shadow:8px 8px 0 #3A2A22;max-width:520px;justify-self:center;width:100%;transition:transform .45s cubic-bezier(.3,1.4,.5,1)" style-hover="transform:rotate(0deg)">
-      <span aria-hidden="true" style="position:absolute;top:-14px;left:24px;width:100px;height:26px;background:rgba(249,207,110,.85);transform:rotate(-8deg)"></span>
-      <span aria-hidden="true" style="position:absolute;top:-14px;right:24px;width:100px;height:26px;background:rgba(249,207,110,.85);transform:rotate(7deg)"></span>
-      <img src="assets/photo-tray-love.jpg" alt="A tray of Zookies with a Baked With Love tag" style="width:100%;aspect-ratio:1 / 1;object-fit:cover;border-radius:4px">
-      <div style="position:absolute;left:0;right:0;bottom:8px;text-align:center;font-family:'Caveat',cursive;font-size:26px">where it all started</div>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:18px;max-width:620px">
-      <div data-reveal="" style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">our story</div>
-      <p data-reveal="" style="margin:0;font-family:'Young Serif',serif;font-size:{{ L.storyLead }};line-height:1.25;letter-spacing:-0.01em">“My story with lactation cookies started when my friend started struggling with breastfeeding her newborn.”</p>
-      <p data-reveal="" style="margin:0;font-size:17px;line-height:1.65;color:#4E3C31">At the time, we had no choice but to start making lactation cookies ourselves, praying that it would work for the sake of her baby and amazingly, it did! These cookies helped her milk supply almost immediately and I was so grateful to have been able to make her early motherhood days just a bit easier.</p>
-      <p data-reveal="" style="margin:0;font-size:17px;line-height:1.65;color:#4E3C31">Now I hope that I can do the same thing for you. Using natural, wholesome ingredients, everything is made with care and intention for breastfeeding mums and their new beautiful babies.</p>
-      <div data-reveal="" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
-        <div style="font-family:'Caveat',cursive;font-size:40px;line-height:1">Zainab x</div>
-      </div>
+    <div style="display:flex;flex-direction:column;gap:var(--mm-space-18)">
+      <h2 data-reveal="" style="margin:0;font-family:var(--mm-font-display);font-weight:var(--mm-weight-regular);font-size:{{ L.h2 }};line-height:var(--mm-leading-h1);letter-spacing:var(--mm-track-h2)">Proper ingredients, from generations of mums</h2>
+      <p data-reveal="" style="margin:0;font-size:var(--mm-size-17);line-height:var(--mm-leading-relaxed);color:var(--mm-body);max-width:520px">The same four have gone into postpartum food for generations, from Pakistan to West Africa. No shortcuts, no preservatives.</p>
+      <div data-reveal="" style="border:var(--mm-dashed);border-radius:var(--mm-radius-20);padding:var(--mm-space-18) var(--mm-space-20);font-size:var(--mm-size-15);line-height:var(--mm-leading-body);color:var(--mm-body);max-width:540px">We make nourishing food, not medicine. If you’re worried about your supply, your midwife, health visitor or a lactation consultant (IBCLC) is the right person to talk to. <a href="Help.dc.html#allergens" style="font-weight:var(--mm-weight-bold);color:var(--mm-cocoa)">Allergens →</a></div>
     </div>
   </div>
 </section>
 
-<section id="reviews" onFocus="{{ focusOn }}" onBlur="{{ focusOff }}" style="padding:{{ L.secPad }};scroll-margin-top:72px;overflow:hidden">
-  <div style="max-width:1240px;margin:0 auto">
-    <div data-reveal="" style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px 32px">
+<section id="story" data-part="story" style="background:var(--mm-pink-soft);border-top:var(--mm-outline-style);border-bottom:var(--mm-outline-style);padding:{{ L.secPad }};scroll-margin-top:72px">
+  <div style="max-width:var(--mm-max-width);margin:0 auto;display:grid;grid-template-columns:{{ L.storyCols }};gap:{{ L.gap }};align-items:center">
+    <div data-reveal="" style="position:relative;background:var(--mm-paper);padding:var(--mm-space-12) var(--mm-space-12) 48px;border:var(--mm-outline-style);border-radius:var(--mm-radius-8);transform:rotate(-2.5deg);box-shadow:var(--mm-shadow-8);max-width:520px;justify-self:center;width:100%;transition:transform var(--mm-dur-polaroid) var(--mm-ease-spring-soft)" style-hover="transform:rotate(0deg)">
+      <span aria-hidden="true" style="position:absolute;top:-14px;left:24px;width:100px;height:26px;background:var(--mm-tape);transform:rotate(-8deg)"></span>
+      <span aria-hidden="true" style="position:absolute;top:-14px;right:24px;width:100px;height:26px;background:var(--mm-tape);transform:rotate(7deg)"></span>
+      <img src="assets/photo-tray-love.jpg" alt="A tray of Zookies with a Baked With Love tag" style="width:100%;aspect-ratio:1 / 1;object-fit:cover;border-radius:var(--mm-radius-4)">
+      <div style="position:absolute;left:0;right:0;bottom:8px;text-align:center;font-family:var(--mm-font-script);font-size:var(--mm-size-26)">where it all started</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:var(--mm-space-18);max-width:620px">
+      <div data-reveal="" style="font-family:var(--mm-font-script);font-size:var(--mm-size-28);color:var(--mm-script);line-height:var(--mm-leading-tight)">our story</div>
+      <p data-reveal="" style="margin:0;font-family:var(--mm-font-display);font-size:{{ L.storyLead }};line-height:1.25;letter-spacing:-0.01em">“My story with lactation cookies started when my friend started struggling with breastfeeding her newborn.”</p>
+      <p data-reveal="" style="margin:0;font-size:var(--mm-size-17);line-height:1.65;color:var(--mm-body)">At the time, we had no choice but to start making lactation cookies ourselves, praying that it would work for the sake of her baby and amazingly, it did! These cookies helped her milk supply almost immediately and I was so grateful to have been able to make her early motherhood days just a bit easier.</p>
+      <p data-reveal="" style="margin:0;font-size:var(--mm-size-17);line-height:1.65;color:var(--mm-body)">Now I hope that I can do the same thing for you. Using natural, wholesome ingredients, everything is made with care and intention for breastfeeding mums and their new beautiful babies.</p>
+      <div data-reveal="" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--mm-space-12)">
+        <div style="font-family:var(--mm-font-script);font-size:40px;line-height:var(--mm-leading-tight)">Zainab x</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="reviews" data-part="reviews" aria-roledescription="carousel" aria-label="Customer reviews" onFocus="{{ focusOn }}" onBlur="{{ focusOff }}" style="padding:{{ L.secPad }};scroll-margin-top:72px;overflow:hidden">
+  <div style="max-width:var(--mm-max-width);margin:0 auto">
+    <div data-reveal="" style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--mm-space-18) 32px">
       <div>
-        <div style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">real mums, real words</div>
-        <h2 style="margin:4px 0 0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.02;letter-spacing:-0.015em;max-width:640px">Loved by mums, and the people who love them</h2>
+        <div style="font-family:var(--mm-font-script);font-size:var(--mm-size-28);color:var(--mm-script);line-height:var(--mm-leading-tight)">real mums, real words</div>
+        <h2 style="margin:var(--mm-space-4) 0 0;font-family:var(--mm-font-display);font-weight:var(--mm-weight-regular);font-size:{{ L.h2 }};line-height:var(--mm-leading-h1);letter-spacing:var(--mm-track-h2);max-width:640px">Loved by mums, and the people who love them</h2>
       </div>
-      <div style="display:flex;align-items:center;gap:18px">
-        <a href="https://uk.trustpilot.com/review/mamasmunches.com" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:#3A2A22"><span style="font-family:'Young Serif',serif;font-size:40px;line-height:1">4.3</span><span style="display:flex;flex-direction:column;font-size:13px;font-weight:700"><span style="letter-spacing:2px;font-size:16px">★★★★★</span>8 on Trustpilot ↗</span></a>
-        <div style="display:flex;gap:10px">
-          <button onClick="{{ prev }}" aria-label="Previous review" style="width:52px;height:52px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-size:20px;cursor:pointer;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s" style-hover="background:#F9CF6E;transform:translate(-2px,-2px);box-shadow:5px 5px 0 #3A2A22">←</button>
-          <button onClick="{{ next }}" aria-label="Next review" style="width:52px;height:52px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-size:20px;cursor:pointer;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s" style-hover="background:#F9CF6E;transform:translate(-2px,-2px);box-shadow:5px 5px 0 #3A2A22">→</button>
+      <div style="display:flex;align-items:center;gap:var(--mm-space-18)">
+        <a href="https://uk.trustpilot.com/review/mamasmunches.com" style="display:flex;align-items:center;gap:var(--mm-space-10);text-decoration:none;color:var(--mm-cocoa)"><span style="font-family:var(--mm-font-display);font-size:40px;line-height:var(--mm-leading-tight)">4.3</span><span style="display:flex;flex-direction:column;font-size:var(--mm-size-13);font-weight:var(--mm-weight-bold)"><span style="letter-spacing:var(--mm-track-stars);font-size:var(--mm-size-16)">★★★★★</span>8 on Trustpilot ↗</span></a>
+        <div style="display:flex;gap:var(--mm-space-10)">
+          <button onClick="{{ prev }}" aria-label="Previous review" style="width:52px;height:52px;border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);background:var(--mm-paper);font-size:var(--mm-size-20);cursor:pointer;box-shadow:var(--mm-shadow-3);transition:transform var(--mm-dur-press), box-shadow var(--mm-dur-press), background var(--mm-dur-press)" style-hover="background:var(--mm-yellow);transform:translate(-2px,-2px);box-shadow:var(--mm-shadow-5)">←</button>
+          <button onClick="{{ next }}" aria-label="Next review" style="width:52px;height:52px;border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);background:var(--mm-paper);font-size:var(--mm-size-20);cursor:pointer;box-shadow:var(--mm-shadow-3);transition:transform var(--mm-dur-press), box-shadow var(--mm-dur-press), background var(--mm-dur-press)" style-hover="background:var(--mm-yellow);transform:translate(-2px,-2px);box-shadow:var(--mm-shadow-5)">→</button>
         </div>
       </div>
     </div>
-    <div ref="{{ trackRef }}" onScroll="{{ onTrack }}" onMouseEnter="{{ hoverOn }}" onMouseLeave="{{ hoverOff }}" onTouchStart="{{ touchOn }}" onTouchEnd="{{ touchOff }}" onTouchCancel="{{ touchOff }}" onPointerDown="{{ rd.down }}" onPointerMove="{{ rd.move }}" onPointerUp="{{ rd.up }}" onPointerCancel="{{ rd.up }}" onClickCapture="{{ rd.click }}" onDragStart="{{ noDrag }}" style="cursor:grab;display:grid;grid-auto-flow:column;grid-auto-columns:{{ L.revW }};gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;margin:28px -20px 0;padding:14px 20px 24px;scroll-padding:0 20px">
+    <div ref="{{ trackRef }}" onScroll="{{ onTrack }}" onMouseEnter="{{ hoverOn }}" onMouseLeave="{{ hoverOff }}" onTouchStart="{{ touchOn }}" onTouchEnd="{{ touchOff }}" onTouchCancel="{{ touchOff }}" onPointerDown="{{ rd.down }}" onPointerMove="{{ rd.move }}" onPointerUp="{{ rd.up }}" onPointerCancel="{{ rd.up }}" onClickCapture="{{ rd.click }}" onDragStart="{{ noDrag }}" style="cursor:grab;display:grid;grid-auto-flow:column;grid-auto-columns:{{ L.revW }};gap:var(--mm-space-22);overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;margin:var(--mm-space-28) -20px 0;padding:var(--mm-space-14) var(--mm-space-20) var(--mm-space-24);scroll-padding:0 20px">
       <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="3">
-        <article style="scroll-snap-align:start;background:{{ r.bg }};border:2px solid #3A2A22;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:12px;min-width:0;transform:rotate({{ r.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s" style-hover="transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22">
-          <div style="display:flex;justify-content:space-between;align-items:center"><span style="letter-spacing:2px;font-size:18px">★★★★★</span><span style="font-family:'Young Serif',serif;font-size:48px;line-height:.6;color:#E86A75">“</span></div>
-          <h3 style="margin:0;font-family:'Young Serif',serif;font-weight:400;font-size:22px;line-height:1.2">{{ r.title }}</h3>
-          <p style="margin:0;font-size:16px;line-height:1.6;color:#3A2A22">{{ r.text }}</p>
-          <div style="margin-top:auto;padding-top:14px;border-top:2px dashed rgba(58,42,34,.3);display:flex;justify-content:space-between;gap:8px;font-size:14px"><b>{{ r.name }}</b><span>{{ r.date }} · Trustpilot</span></div>
+        <article role="group" aria-roledescription="slide" aria-label="{{ r.slideLabel }}" style="scroll-snap-align:start;background:{{ r.bg }};border:var(--mm-outline-style);border-radius:var(--mm-radius-24);padding:26px;display:flex;flex-direction:column;gap:var(--mm-space-12);min-width:0;transform:rotate({{ r.rot }});transition:transform var(--mm-dur-tilt) var(--mm-ease-spring-soft), box-shadow var(--mm-dur-tilt)" style-hover="transform:rotate(0deg) translateY(-4px);box-shadow:var(--mm-shadow-6)">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="letter-spacing:var(--mm-track-stars);font-size:var(--mm-size-18)">★★★★★</span><span style="font-family:var(--mm-font-display);font-size:48px;line-height:.6;color:var(--mm-sparkle)">“</span></div>
+          <h3 style="margin:0;font-family:var(--mm-font-display);font-weight:var(--mm-weight-regular);font-size:var(--mm-size-22);line-height:var(--mm-leading-snug)">{{ r.title }}</h3>
+          <p style="margin:0;font-size:var(--mm-size-16);line-height:var(--mm-leading-relaxed);color:var(--mm-cocoa)">{{ r.text }}</p>
+          <div style="margin-top:auto;padding-top:var(--mm-space-14);border-top:2px dashed var(--mm-rule);display:flex;justify-content:space-between;gap:var(--mm-space-8);font-size:var(--mm-size-14)"><b>{{ r.name }}</b><span>{{ r.date }} · Trustpilot</span></div>
         </article>
       </sc-for>
     </div>
-    <div style="display:flex;justify-content:center;gap:8px">
-      <sc-for list="{{ revDots }}" as="d" hint-placeholder-count="6"><button onClick="{{ d.go }}" aria-label="{{ d.label }}" style="width:{{ d.w }};height:12px;border-radius:999px;border:2px solid #3A2A22;background:{{ d.bg }};padding:0;cursor:pointer;transition:width .3s, background .3s"></button></sc-for>
+    <div style="display:flex;justify-content:center;gap:var(--mm-space-8)">
+      <sc-for list="{{ revDots }}" as="d" hint-placeholder-count="6"><button onClick="{{ d.go }}" aria-label="{{ d.label }}" aria-current="{{ d.cur }}" style="width:{{ d.w }};height:12px;border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);background:{{ d.bg }};padding:0;cursor:pointer;transition:width var(--mm-dur-card), background var(--mm-dur-card)"></button></sc-for>
     </div>
   </div>
 </section>
 
-<section style="padding:{{ L.secPadTop0 }}">
-  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.faqCols }};gap:{{ L.gap }}">
-    <div data-reveal="" style="display:flex;flex-direction:column;gap:12px">
-      <div style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">ask away</div>
-      <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.02;letter-spacing:-0.015em">Questions mums ask</h2>
-      <p style="margin:0;font-size:17px;line-height:1.55;color:#4E3C31">Can’t see yours? Message Zainab on WhatsApp, or read the full <a href="Help.dc.html" style="font-weight:700;color:#3A2A22">Help &amp; FAQs</a>.</p>
+<section data-part="faq" style="padding:{{ L.secPadTop0 }}">
+  <div style="max-width:var(--mm-max-width);margin:0 auto;display:grid;grid-template-columns:{{ L.faqCols }};gap:{{ L.gap }}">
+    <div data-reveal="" style="display:flex;flex-direction:column;gap:var(--mm-space-12)">
+      <div style="font-family:var(--mm-font-script);font-size:var(--mm-size-28);color:var(--mm-script);line-height:var(--mm-leading-tight)">ask away</div>
+      <h2 style="margin:0;font-family:var(--mm-font-display);font-weight:var(--mm-weight-regular);font-size:{{ L.h2 }};line-height:var(--mm-leading-h1);letter-spacing:var(--mm-track-h2)">Questions mums ask</h2>
+      <p style="margin:0;font-size:var(--mm-size-17);line-height:var(--mm-leading-body);color:var(--mm-body)">Can’t see yours? Message Zainab on WhatsApp, or read the full <a href="Help.dc.html" style="font-weight:var(--mm-weight-bold);color:var(--mm-cocoa)">Help &amp; FAQs</a>.</p>
     </div>
-    <div data-reveal="" style="display:flex;flex-direction:column;gap:12px">
+    <div data-reveal="" style="display:flex;flex-direction:column;gap:var(--mm-space-12)">
       <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="4">
-        <div style="border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s">
-          <button onClick="{{ f.toggle }}" aria-expanded="{{ f.open }}" style="width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer;font-family:'Young Serif',serif;font-size:19px;color:#3A2A22">{{ f.q }}<span aria-hidden="true" style="flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-family:Karla;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)">+</span></button>
-          <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:0 20px 20px;font-size:16px;line-height:1.6;color:#3A2A22;max-width:640px">{{ f.a }}</p></sc-if>
+        <div style="border:var(--mm-outline-style);border-radius:var(--mm-radius-22);background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background var(--mm-dur-accordion), box-shadow var(--mm-dur-accordion)">
+          <button onClick="{{ f.toggle }}" aria-expanded="{{ f.open }}" aria-controls="{{ f.pid }}" style="width:100%;min-height:68px;padding:var(--mm-space-16) var(--mm-space-20);border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:var(--mm-space-16);text-align:left;cursor:pointer;font-family:var(--mm-font-display);font-size:19px;color:var(--mm-cocoa)">{{ f.q }}<span aria-hidden="true" style="flex:none;width:36px;height:36px;border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);background:var(--mm-paper);display:flex;align-items:center;justify-content:center;font-family:var(--mm-font-body);font-size:var(--mm-size-22);transform:rotate({{ f.rot }});transition:transform var(--mm-dur-card) var(--mm-ease-spring)">+</span></button>
+          <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}"><p id="{{ f.pid }}" style="margin:0;padding:0 var(--mm-space-20) var(--mm-space-20);font-size:var(--mm-size-16);line-height:var(--mm-leading-relaxed);color:var(--mm-cocoa);max-width:640px">{{ f.a }}</p></sc-if>
         </div>
       </sc-for>
     </div>
@@ -303,7 +306,7 @@ class Component extends DCLogic {
     const S = this.state, m = S.bp === 'm', t = S.bp === 't', M = window.MM;
     const v = (a, b, c) => (m ? a : t ? b : c);
     const B = M ? M.builder : { bases: [], chips: [], flavours: [] };
-    const pill = on => ({ on, bg: on ? '#F9CF6E' : '#FFFAF0', shadow: on ? '3px 3px 0 #3A2A22' : '0 0 0 #3A2A22', tf: on ? 'translate(-2px,-2px)' : 'none' });
+    const pill = on => ({ on, bg: on ? 'var(--mm-yellow)' : 'var(--mm-paper)', shadow: on ? 'var(--mm-shadow-3)' : 'var(--mm-shadow-0)', tf: on ? 'translate(-2px,-2px)' : 'none' });
     const opt = (list, key) => list.map(o => ({ ...o, ...pill(S[key] === o.id), pick: () => this.setState({ [key]: o.id, added: false }) }));
     const money = n => '£' + n.toFixed(2);
     const sz = (M ? M.sizes : []).find(x => x.n === S.size) || { price: 21.5 };
@@ -313,7 +316,7 @@ class Component extends DCLogic {
     const each = fl.map((x, i) => Math.floor(S.size / fl.length) + (i < S.size % fl.length ? 1 : 0));
     const split = fl.length > 1 ? 'Your ' + S.size + ': ' + fl.map((x, i) => each[i] + ' ' + x.name.toLowerCase()).join(' · ') : 'All ' + S.size + ' ' + (fl[0] ? fl[0].name.toLowerCase() : '');
     const togFlav = id => { let f = S.flav.slice(); if (f.includes(id)) { if (f.length > 1) f = f.filter(x => x !== id); } else { f.push(id); if (f.length > 3) f.shift(); } this.setState({ flav: f, added: false }); };
-    const card = on => ({ bg: on ? '#FFFAF0' : 'rgba(255,250,240,.45)', shadow: on ? '4px 4px 0 #3A2A22' : '0 0 0 #3A2A22' });
+    const card = on => ({ bg: on ? 'var(--mm-paper)' : 'rgba(255,250,240,.45)', shadow: on ? 'var(--mm-shadow-4)' : 'var(--mm-shadow-0)' });
     const price = S.sub ? sz.price * 0.9 : sz.price;
     const hr = new Date().getHours();
     const greeting = hr < 5 ? 'up for a night feed? we see you, mama' : hr < 12 ? 'good morning, mama' : hr < 17 ? 'good afternoon, mama' : hr < 21 ? 'good evening, mama' : 'up late feeding? we see you, mama';
@@ -327,7 +330,7 @@ class Component extends DCLogic {
       ...(fl.length ? FP.map(([x, y], i) => ({ x: x + '%', y: y + '%', s: '17px', r: '50%', c: fl[i % fl.length].c, rot: '0deg' })) : [])
     ];
     const R = M ? M.reviews : [];
-    const bgs = ['#FFFAF0', '#F9D5D3', '#FCEBBE'], rots = ['-1deg', '1deg', '-.5deg', '1.2deg', '-1.2deg', '.6deg'];
+    const bgs = ['var(--mm-paper)', 'var(--mm-pink-soft)', 'var(--mm-yellow-soft)'], rots = ['-1deg', '1deg', '-.5deg', '1.2deg', '-1.2deg', '.6deg'];
     const perView = m ? 1 : t ? 2 : 3, pages = Math.max(1, R.length - perView + 1);
     const faqData = [
       ['When will my order arrive?', 'Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days.'],
@@ -338,38 +341,39 @@ class Component extends DCLogic {
     return {
       rootRef: this.rootRef, cookieRef: this.cookieRef, trackRef: this.trackRef,
       L: {
-        heroPad: v('28px 20px 40px', '44px 32px 52px', '64px 40px 72px'),
+        heroPad: v('var(--mm-space-28) var(--mm-gutter-m) 40px', '44px var(--mm-gutter-t) 52px', '64px var(--mm-gutter-d) 72px'),
         heroCols: v('1fr', '1.05fr 1fr', '1.1fr 1fr'),
         gap: v('32px', '40px', '64px'),
-        greet: v('26px', '28px', '32px'), h1: v('46px', '54px', '82px'), lead: v('17px', '18px', '20px'),
-        stackH: v('380px', '460px', '560px'), sticker: v('104px', '116px', '132px'), stickerBig: v('20px', '22px', '25px'),
-        secPad: v('64px 20px', '80px 32px', '112px 40px'), secPadTop0: v('0 20px 64px', '0 32px 80px', '0 40px 112px'),
-        h2: v('34px', '44px', '58px'), h3: v('26px', '28px', '32px'),
+        greet: v('var(--mm-size-26)', 'var(--mm-size-28)', '32px'), h1: v('var(--mm-h1-m)', 'var(--mm-h1-t)', 'var(--mm-h1-d)'), lead: v('var(--mm-lead-m)', 'var(--mm-lead-t)', 'var(--mm-lead-d)'),
+        stackH: v('380px', '460px', '560px'), sticker: v('104px', '116px', '132px'), stickerBig: v('var(--mm-size-20)', 'var(--mm-size-22)', '25px'),
+        secPad: v('var(--mm-section-m) var(--mm-gutter-m)', 'var(--mm-section-t) var(--mm-gutter-t)', 'var(--mm-section-d) var(--mm-gutter-d)'), secPadTop0: v('0 var(--mm-gutter-m) var(--mm-section-m)', '0 var(--mm-gutter-t) var(--mm-section-t)', '0 var(--mm-gutter-d) var(--mm-section-d)'),
+        h2: v('var(--mm-h2-m)', 'var(--mm-h2-t)', 'var(--mm-h2-d)'), h3: v('var(--mm-h3-m)', 'var(--mm-h3-t)', 'var(--mm-h3-d)'),
         two: v('1fr', '1fr 1fr', '1fr 1fr'),
-        pathInner: v('118px 1fr', '1fr', '0.85fr 1fr'), pathImgH: v('100%', '210px', '300px'), pathPad: v('18px 18px 20px', '22px 24px 26px', '34px'),
-        boxPad: v('26px 18px', '40px 36px', '56px'), buildCols: v('1fr', '1fr', '1.25fr 1fr'), cookie: v('180px', '220px', '240px'),
+        pathInner: v('118px 1fr', '1fr', '0.85fr 1fr'), pathImgH: v('100%', '210px', '300px'), pathPad: v('var(--mm-space-18) var(--mm-space-18) var(--mm-space-20)', 'var(--mm-space-22) var(--mm-space-24) 26px', '34px'),
+        boxPad: v('26px var(--mm-space-18)', '40px 36px', '56px'), buildCols: v('1fr', '1fr', '1.25fr 1fr'), cookie: v('180px', '220px', '240px'),
         flow: v('column', 'row', 'row'), autoCols: v('76%', 'auto', 'auto'),
         tileCols: v('none', 'repeat(2, minmax(0, 1fr))', 'repeat(4, minmax(0, 1fr))'),
-        ovx: v('auto', 'visible', 'visible'), grab: v('grab', 'auto', 'auto'), bleedM: v('0 -20px', '0', '0'), bleedP: v('8px 20px 16px', '0', '0'),
-        giftStrip: v('1fr', '1fr 1fr', '1.1fr 1fr'), note: v('26px', '28px', '32px'),
-        recipeCols: v('1fr', '1fr', '1.1fr 1fr'), recipePad: v('30px 18px 26px', '36px 30px 30px', '44px 40px 38px'), recipeTitle: v('40px', '46px', '54px'),
-        storyCols: v('1fr', '0.9fr 1fr', '0.9fr 1fr'), storyLead: v('26px', '30px', '36px'),
+        ovx: v('auto', 'visible', 'visible'), grab: v('grab', 'auto', 'auto'), bleedM: v('0 -20px', '0', '0'), bleedP: v('var(--mm-space-8) var(--mm-space-20) var(--mm-space-16)', '0', '0'),
+        giftStrip: v('1fr', '1fr 1fr', '1.1fr 1fr'), note: v('var(--mm-size-26)', 'var(--mm-size-28)', '32px'),
+        recipeCols: v('1fr', '1fr', '1.1fr 1fr'), recipePad: v('30px var(--mm-space-18) 26px', '36px 30px 30px', '44px 40px 38px'), recipeTitle: v('40px', '46px', '54px'),
+        storyCols: v('1fr', '0.9fr 1fr', '0.9fr 1fr'), storyLead: v('var(--mm-size-26)', 'var(--mm-size-30)', '36px'),
         revW: v('86%', 'calc(50% - 11px)', 'calc(33.333% - 15px)'),
         faqCols: v('1fr', '1fr', '0.8fr 1.2fr')
       },
       greeting,
       trustBar: this.trust(S.bp !== 'd'),
       bases: opt(B.bases, 'base'), chips: opt(B.chips, 'chip'),
-      flavs: B.flavours.map(o => { const on = S.flav.includes(o.id); return { ...o, ...pill(on), tick: on ? (['vanilla', 'coconut', 'banana'].includes(o.id) ? '#3A2A22' : '#FFFFFF') : 'transparent', pick: () => togFlav(o.id) }; }), split,
+      flavs: B.flavours.map(o => { const on = S.flav.includes(o.id); return { ...o, ...pill(on), tick: on ? (['vanilla', 'coconut', 'banana'].includes(o.id) ? 'var(--mm-cocoa)' : 'var(--mm-white)') : 'transparent', pick: () => togFlav(o.id) }; }), split,
       giftRef: this.giftRef, isM: m, gd: this.gd || (this.gd = this.drag(this.giftRef)), rd: this.rd || (this.rd = this.drag(this.trackRef)), noDrag: e => e.preventDefault(),
-      giftDots: [0, 1, 2, 3].map(i => ({ label: 'Go to gift ' + (i + 1), w: S.gift === i ? '34px' : '12px', bg: S.gift === i ? '#3A2A22' : 'transparent', go: () => { const g = this.giftRef.current; if (g && g.children[0]) g.scrollTo({ left: i * (g.children[0].getBoundingClientRect().width + 18) }); } })),
+      giftCarousel: m ? { role: 'carousel', label: 'Gift ideas' } : { role: null, label: null },
+      giftDots: [0, 1, 2, 3].map(i => ({ label: 'Go to gift ' + (i + 1), cur: S.gift === i ? 'true' : null, w: S.gift === i ? '34px' : '12px', bg: S.gift === i ? 'var(--mm-cocoa)' : 'transparent', go: () => { const g = this.giftRef.current; if (g && g.children[0]) g.scrollTo({ left: i * (g.children[0].getBoundingClientRect().width + 18) }); } })),
       onGift: e => { const g = e.currentTarget, c = g.children[0]; if (!c) return; const i = Math.round(g.scrollLeft / (c.getBoundingClientRect().width + 18)); if (i !== this.state.gift) this.setState({ gift: i }); },
       giftPrev: () => this.step(-1, false, this.giftRef), giftNext: () => this.step(1, true, this.giftRef),
       sizes: (M ? M.sizes : []).map(o => ({ ...o, priceTxt: money(o.price), ...pill(S.size === o.n), pick: () => this.setState({ size: o.n, added: false }) })),
       cookieBg: baseBg, dots,
       summary: S.size + ' × ' + parts.join(', '),
       isSub: S.sub, isOnce: !S.sub, once: card(!S.sub), subOpt: card(S.sub),
-      freqs: [2, 4].map(w => ({ label: 'Every ' + w + ' weeks', bg: S.freq === w ? '#F9CF6E' : '#FFFAF0', pick: () => this.setState({ freq: w }) })),
+      freqs: [2, 4].map(w => ({ label: 'Every ' + w + ' weeks', on: S.freq === w, bg: S.freq === w ? 'var(--mm-yellow)' : 'var(--mm-paper)', pick: () => this.setState({ freq: w }) })),
       pickOnce: () => this.setState({ sub: false, added: false }), pickSub: () => this.setState({ sub: true, added: false }),
       onceTxt: money(sz.price), subTxt: money(sz.price * 0.9),
       addLabel: S.added ? 'In your basket ✓' : (S.sub ? 'Subscribe · ' : 'Add to basket · ') + money(price),
@@ -381,32 +385,32 @@ class Component extends DCLogic {
       tiles: [
         { moment: 'Just had a baby', name: 'New Baby Gift Box', line: 'A mix of Zookies, gift-boxed with your note.', price: '£15', img: 'assets/photo-gift-heart.jpg', href: 'Product.dc.html?id=giftbox', rot: '-1deg' },
         { moment: 'First 40 days', name: '40-Day Care Bundle', line: 'Six weekly deliveries through the postnatal weeks.', price: '£42', img: 'assets/photo-hero-mug.jpg', href: 'Product.dc.html?id=care40', rot: '1deg' },
-        { moment: 'Baby shower', name: 'Gift card', line: 'She redeems it once baby arrives.', price: 'from £15', img: 'assets/logo-round.png', fit: 'contain', pad: '10%', bg: '#F9D5D3', href: 'Product.dc.html?id=giftcard', rot: '-.6deg' },
+        { moment: 'Baby shower', name: 'Gift card', line: 'She redeems it once baby arrives.', price: 'from £15', img: 'assets/logo-round.png', fit: 'contain', pad: '10%', bg: 'var(--mm-pink-soft)', href: 'Product.dc.html?id=giftcard', rot: '-.6deg' },
         { moment: 'Thinking of you', name: 'Taster Trio', line: '3 Zookies through the letterbox. No one needs to be in.', price: '£5', img: 'assets/photo-bun-case.jpg', href: 'Product.dc.html?id=trial', rot: '1.2deg' }
-      ].map(x => ({ bg: '#F3E6CC', ...x, bgImg: 'url(' + x.img + ')', size: x.fit === 'contain' ? '62%' : 'cover' })),
-      reviews: R.map((r, i) => ({ ...r, bg: bgs[i % 3], rot: rots[i % 6] })),
-      revDots: Array.from({ length: pages }, (_, i) => ({ label: 'Go to review ' + (i + 1), w: S.rev === i ? '34px' : '12px', bg: S.rev === i ? '#3A2A22' : 'transparent', go: () => { const tr = this.trackRef.current; if (tr && tr.children[0]) tr.scrollTo({ left: i * (tr.children[0].getBoundingClientRect().width + 22) }); } })),
+      ].map(x => ({ bg: 'var(--mm-image-bg)', ...x, bgImg: 'url(' + x.img + ')', size: x.fit === 'contain' ? '62%' : 'cover' })),
+      reviews: R.map((r, i) => ({ ...r, bg: bgs[i % 3], rot: rots[i % 6], slideLabel: (i + 1) + ' of ' + R.length })),
+      revDots: Array.from({ length: pages }, (_, i) => ({ label: 'Go to review ' + (i + 1), cur: S.rev === i ? 'true' : null, w: S.rev === i ? '34px' : '12px', bg: S.rev === i ? 'var(--mm-cocoa)' : 'transparent', go: () => { const tr = this.trackRef.current; if (tr && tr.children[0]) tr.scrollTo({ left: i * (tr.children[0].getBoundingClientRect().width + 22) }); } })),
       onTrack: e => { const tr = e.currentTarget; const w = tr.children[0] ? tr.children[0].getBoundingClientRect().width + 22 : 1; const i = Math.round(tr.scrollLeft / w); if (i !== this.state.rev) this.setState({ rev: i }); },
       prev: () => this.step(-1), next: () => this.step(1, true),
       hoverOn: () => { this.holds.hover = true; }, hoverOff: () => { this.holds.hover = false; },
       touchOn: () => { this.holds.touch = true; }, touchOff: () => { this.holds.touch = false; },
       focusOn: () => { this.holds.focus = true; }, focusOff: e => { if (!e.currentTarget.contains(e.relatedTarget)) this.holds.focus = false; },
-      faqs: faqData.map(([q, a], i) => { const open = S.faq === i; return { q, a, open, rot: open ? '45deg' : '0deg', bg: open ? '#FCEBBE' : '#FFFAF0', shadow: open ? '4px 4px 0 #3A2A22' : '0 0 0 #3A2A22', toggle: () => this.setState({ faq: open ? -1 : i }) }; })
+      faqs: faqData.map(([q, a], i) => { const open = S.faq === i; return { q, a, open, pid: 'home-faq-' + i, rot: open ? '45deg' : '0deg', bg: open ? 'var(--mm-yellow-soft)' : 'var(--mm-paper)', shadow: open ? 'var(--mm-shadow-4)' : 'var(--mm-shadow-0)', toggle: () => this.setState({ faq: open ? -1 : i }) }; })
     };
   }
   trust(moving) {
     const h = React.createElement;
-    const ic = paths => h('svg', { width: 20, height: 20, viewBox: '0 0 24 24', style: { fill: 'none', stroke: '#3A2A22', strokeWidth: 1.9, strokeLinecap: 'round', strokeLinejoin: 'round' } }, ...paths.map((d, i) => h('path', { key: i, d })));
+    const ic = paths => h('svg', { width: 20, height: 20, viewBox: '0 0 24 24', style: { fill: 'none', stroke: 'var(--mm-cocoa)', strokeWidth: 1.9, strokeLinecap: 'round', strokeLinejoin: 'round' } }, ...paths.map((d, i) => h('path', { key: i, d })));
     const items = [
       [['M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z', 'M12 7v5l3 2'], 'Baked fresh when you order'],
       [['m3 12 9-9 9 9', 'M5 10v10a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1V10'], 'Handmade in Birmingham'],
       [['M20 6 9 17l-5-5'], 'Registered food business'],
       [['M1 5h14v11H1z', 'M15 9h4l3 3v4h-7', 'M5.5 18a1.5 1.5 0 1 0 0 .01', 'M18.5 18a1.5 1.5 0 1 0 0 .01'], 'Free UK delivery over £35']
     ];
-    const one = (k, [p, tx]) => h('span', { key: k, style: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 12, padding: moving ? '0 26px' : '0', fontSize: 15, fontWeight: 700, whiteSpace: 'nowrap', color: '#3A2A22' } }, h('span', { style: { width: 40, height: 40, borderRadius: 999, background: '#FFFAF0', border: '2px solid #3A2A22', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none' } }, ic(p)), tx);
-    if (!moving) return h('div', { style: { maxWidth: 1240, margin: '0 auto', padding: '18px 40px', display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', alignItems: 'center' } }, items.map((it, i) => one('d' + i, it)));
+    const one = (k, [p, tx]) => h('li', { key: k, style: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--mm-space-12)', padding: moving ? '0 26px' : '0', fontSize: 'var(--mm-size-15)', fontWeight: 'var(--mm-weight-bold)', whiteSpace: 'nowrap', color: 'var(--mm-cocoa)' } }, h('span', { style: { width: 40, height: 40, borderRadius: 'var(--mm-radius-pill)', background: 'var(--mm-paper)', border: 'var(--mm-outline-style)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none' } }, ic(p)), tx);
+    if (!moving) return h('ul', { style: { listStyle: 'none', maxWidth: 'var(--mm-max-width)', margin: '0 auto', padding: 'var(--mm-space-18) 40px', display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', alignItems: 'center' } }, items.map((it, i) => one('d' + i, it)));
     const pause = s => e => { e.currentTarget.style.animationPlayState = s; };
-    return h('div', { 'data-marquee': '', onMouseEnter: pause('paused'), onMouseLeave: pause('running'), onTouchStart: pause('paused'), onTouchEnd: pause('running'), style: { display: 'inline-flex', padding: '14px 0', animation: 'mmMarquee 24s linear infinite' } }, [...items, ...items].map((it, i) => one('m' + i, it)));
+    return h('ul', { 'data-marquee': '', onMouseEnter: pause('paused'), onMouseLeave: pause('running'), onTouchStart: pause('paused'), onTouchEnd: pause('running'), style: { listStyle: 'none', margin: 0, display: 'inline-flex', padding: 'var(--mm-space-14) 0', animation: 'mmMarquee 24s linear infinite' } }, [...items, ...items].map((it, i) => one('m' + i, it)));
   }
 }
 </script>

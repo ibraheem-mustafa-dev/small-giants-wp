@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Field · Mama's Munches</title>
+<link rel="stylesheet" href="tokens/colors.css">
+<link rel="stylesheet" href="tokens/typography.css">
+<link rel="stylesheet" href="tokens/spacing.css">
+</helmet>
+<label data-part="{{ dataPart }}" style="display:flex;flex-direction:column;gap:var(--mm-space-6);font-weight:var(--mm-weight-bold);font-size:var(--mm-size-15)">{{ label }}<sc-if value="{{ isInput }}" hint-placeholder-val="{{ true }}"><input type="{{ type }}" name="{{ name }}" required="{{ required }}" autocomplete="{{ autocomplete }}" placeholder="{{ placeholder }}" inputmode="{{ inputmode }}" style="height:54px;border:var(--mm-outline-style);border-radius:var(--mm-radius-14);padding:0 var(--mm-space-16);font-size:var(--mm-size-16);background:var(--mm-paper);width:100%;min-width:0"></sc-if><sc-if value="{{ isText }}" hint-placeholder-val="{{ false }}"><textarea name="{{ name }}" required="{{ required }}" rows="{{ rows }}" placeholder="{{ placeholder }}" style="border:var(--mm-outline-style);border-radius:var(--mm-radius-14);padding:var(--mm-space-12) var(--mm-space-16);font-size:var(--mm-size-16);background:var(--mm-paper);resize:vertical"></textarea></sc-if></label>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;360px&quot;,&quot;height&quot;:&quot;110px&quot;},&quot;version&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;standard&quot;],&quot;default&quot;:&quot;standard&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;label&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;type&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;text&quot;,&quot;email&quot;,&quot;tel&quot;,&quot;date&quot;],&quot;default&quot;:&quot;text&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;multiline&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;boolean&quot;},&quot;rows&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;required&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;boolean&quot;},&quot;placeholder&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;autocomplete&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;inputmode&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;name&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+// A labelled form field: the label above a paper box with the cocoa outline. version: standard (the one field look
+// the forms use). multiline makes it a textarea (rows sets its height); otherwise an input of the given type.
+// Focus is the site-wide inset ring input boxes take automatically, so the field has no focus rule of its own.
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props;
+    return {
+      label: p.label || null, isText: !!p.multiline, isInput: !p.multiline,
+      type: p.type || null, name: p.name || null, required: p.required ? true : null,
+      autocomplete: p.autocomplete || null, placeholder: p.placeholder || null, inputmode: p.inputmode || null,
+      rows: p.rows || null, dataPart: p.dataPart || null
+    };
+  }
+}
+</script>
+</body>
+</html>

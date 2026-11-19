@@ -11,71 +11,74 @@
 <title>Help &amp; FAQs · Mama's Munches</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens/colors.css">
+<link rel="stylesheet" href="tokens/typography.css">
+<link rel="stylesheet" href="tokens/spacing.css">
 <script src="store.js"></script>
-<style>body{margin:0;background:#FBF3DC;color:#3A2A22;font-family:'Karla',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}*{box-sizing:border-box}a{color:#A8404F}a:hover{color:#3A2A22}button,input{font-family:inherit;color:inherit}img{display:block;max-width:100%}:focus-visible{outline:3px solid #3A2A22;outline-offset:3px}@keyframes mmMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}</style>
+<style>body{margin:0;background:var(--mm-cream);color:var(--mm-cocoa);font-family:var(--mm-font-body);-webkit-font-smoothing:antialiased;overflow-x:hidden}*{box-sizing:border-box}a{color:var(--mm-pink-dark)}a:hover{color:var(--mm-cocoa)}button,input{font-family:inherit;color:inherit}img{display:block;max-width:100%}:focus-visible{outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset)}@keyframes mmMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}</style>
 </helmet>
-<div data-screen-label="Help" style="background:#FBF3DC;min-height:100vh">
+<div data-screen-label="Help" style="background:var(--mm-cream);min-height:100vh">
 <dc-import name="SiteHeader" current="help" hint-size="100%,96px" style="position:sticky;top:-32px;z-index:50;display:block"></dc-import>
 <main>
-<section style="background:#F5C2C8;border-bottom:2px solid #3A2A22;padding:{{ L.heroPad }}">
-  <div style="max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:14px;align-items:{{ L.align }};text-align:{{ L.talign }}">
-    <div style="font-family:'Caveat',cursive;font-size:30px;color:#8E3444;line-height:1">ask us anything</div>
-    <h1 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.025em">Help &amp; FAQs</h1>
-    <label style="width:100%;max-width:640px;position:relative;display:block;margin-top:6px">
-      <span style="position:absolute;left:20px;top:50%;transform:translateY(-50%)"><svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:#3A2A22;stroke-width:2.2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg></span>
-      <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Search, e.g. fenugreek, delivery, gift" aria-label="Search FAQs" style="width:100%;height:62px;border:2px solid #3A2A22;border-radius:999px;padding:0 20px 0 52px;font-size:17px;background:#FFFAF0;box-shadow:4px 4px 0 #3A2A22">
+<section data-part="help-hero" style="background:var(--mm-pink-band);border-bottom:var(--mm-outline-style);padding:{{ L.heroPad }}">
+  <div style="max-width:var(--mm-max-width-narrow);margin:0 auto;display:flex;flex-direction:column;gap:var(--mm-space-14);align-items:{{ L.align }};text-align:{{ L.talign }}">
+    <div style="font-family:var(--mm-font-script);font-size:var(--mm-size-30);color:var(--mm-script);line-height:var(--mm-leading-tight)">ask us anything</div>
+    <h1 style="margin:0;font-family:var(--mm-font-display);font-weight:var(--mm-weight-regular);font-size:{{ L.h1 }};line-height:var(--mm-leading-tight);letter-spacing:var(--mm-track-h1)">Help &amp; FAQs</h1>
+    <label data-part="faq-search" style="width:100%;max-width:640px;position:relative;display:block;margin-top:var(--mm-space-6)">
+      <span style="position:absolute;left:20px;top:50%;transform:translateY(-50%)"><svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:var(--mm-cocoa);stroke-width:2.2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg></span>
+      <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Search, e.g. fenugreek, delivery, gift" aria-label="Search FAQs" style="width:100%;height:62px;border:var(--mm-outline-style);border-radius:var(--mm-radius-pill);padding:0 var(--mm-space-20) 0 52px;font-size:var(--mm-size-17);background:var(--mm-paper);box-shadow:var(--mm-shadow-4)">
     </label>
   </div>
-  <div style="max-width:900px;margin:18px auto 0;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;justify-content:{{ L.chipJust }};padding:2px 2px 6px">
-    <sc-for list="{{ cats }}" as="c" hint-placeholder-count="0"><button onClick="{{ c.pick }}" aria-pressed="{{ c.on }}" style="flex:none;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ c.bg }};font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:{{ c.shadow }};transform:{{ c.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)">{{ c.name }}</button></sc-for>
+  <div data-part="faq-filter" style="max-width:var(--mm-max-width-narrow);margin:var(--mm-space-18) auto 0;display:flex;gap:var(--mm-space-8);overflow-x:auto;scrollbar-width:none;justify-content:{{ L.chipJust }};padding:var(--mm-space-2) var(--mm-space-2) var(--mm-space-6)">
+    <sc-for list="{{ cats }}" as="c" hint-placeholder-count="0"><button onClick="{{ c.pick }}" aria-pressed="{{ c.on }}" style="flex:none;min-height:44px;padding:0 var(--mm-space-16);border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);background:{{ c.bg }};font-size:var(--mm-size-15);font-weight:var(--mm-weight-bold);cursor:pointer;white-space:nowrap;box-shadow:{{ c.shadow }};transform:{{ c.tf }};transition:transform var(--mm-dur-press) var(--mm-ease-spring), box-shadow var(--mm-dur-press), background var(--mm-dur-press)" style-hover="transform:translate(-2px,-2px)">{{ c.name }}</button></sc-for>
   </div>
 </section>
 
-<section style="padding:{{ L.secPad }}">
-  <div style="max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:12px">
-    <div style="font-size:15px;font-weight:700;margin-bottom:4px">{{ countText }}</div>
+<section data-part="faq-list" style="padding:{{ L.secPad }}">
+  <div style="max-width:var(--mm-max-width-narrow);margin:0 auto;display:flex;flex-direction:column;gap:var(--mm-space-12)">
+    <div style="font-size:var(--mm-size-15);font-weight:var(--mm-weight-bold);margin-bottom:var(--mm-space-4)">{{ countText }}</div>
     <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="0">
-      <div style="border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s">
-        <button onClick="{{ f.toggle }}" aria-expanded="{{ f.open }}" style="width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer"><span style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444">{{ f.cat }}</span><span style="font-family:'Young Serif',serif;font-size:19px">{{ f.q }}</span></span><span aria-hidden="true" style="flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)">+</span></button>
-        <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:0 20px 20px;font-size:16px;line-height:1.6;max-width:700px">{{ f.a }}</p></sc-if>
+      <div style="border:var(--mm-outline-style);border-radius:var(--mm-radius-22);background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background var(--mm-dur-accordion), box-shadow var(--mm-dur-accordion)">
+        <button onClick="{{ f.toggle }}" aria-expanded="{{ f.open }}" aria-controls="{{ f.pid }}" style="width:100%;min-height:68px;padding:var(--mm-space-16) var(--mm-space-20);border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:var(--mm-space-16);text-align:left;cursor:pointer"><span style="display:flex;flex-direction:column;gap:var(--mm-space-4)"><span style="font-size:var(--mm-size-12);font-weight:var(--mm-weight-bold);letter-spacing:var(--mm-track-label);text-transform:uppercase;color:var(--mm-script)">{{ f.cat }}</span><span style="font-family:var(--mm-font-display);font-size:19px">{{ f.q }}</span></span><span aria-hidden="true" style="flex:none;width:36px;height:36px;border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);background:var(--mm-paper);display:flex;align-items:center;justify-content:center;font-size:var(--mm-size-22);transform:rotate({{ f.rot }});transition:transform var(--mm-dur-card) var(--mm-ease-spring)">+</span></button>
+        <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}"><p id="{{ f.pid }}" style="margin:0;padding:0 var(--mm-space-20) var(--mm-space-20);font-size:var(--mm-size-16);line-height:var(--mm-leading-relaxed);max-width:700px">{{ f.a }}</p></sc-if>
       </div>
     </sc-for>
-    <sc-if value="{{ none }}" hint-placeholder-val="{{ false }}"><div style="border:2px dashed #3A2A22;border-radius:22px;padding:24px;text-align:center;font-size:17px">No answers for that yet. <a href="Contact.dc.html" style="font-weight:700;color:#3A2A22">Ask Zainab</a></div></sc-if>
+    <sc-if value="{{ none }}" hint-placeholder-val="{{ false }}"><div data-part="faq-none" style="border:var(--mm-dashed);border-radius:var(--mm-radius-22);padding:var(--mm-space-24);text-align:center;font-size:var(--mm-size-17)">No answers for that yet. <a href="Contact.dc.html" style="font-weight:var(--mm-weight-bold);color:var(--mm-cocoa)">Ask Zainab</a></div></sc-if>
   </div>
 </section>
 
-<section id="delivery" style="padding:{{ L.secPadTop0 }};scroll-margin-top:80px">
-  <div style="max-width:900px;margin:0 auto;background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.boxPad }}">
-    <div style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">getting it to you</div>
-    <h2 style="margin:4px 0 16px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">Delivery</h2>
-    <p style="margin:0 0 16px;font-size:16px;line-height:1.6">Every order is baked fresh when it comes in, then posted with Royal Mail Tracked. Most orders are with you in 3–5 days.</p>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <div style="display:grid;grid-template-columns:1fr auto;gap:12px;padding:14px 16px;border:2px solid #3A2A22;border-radius:16px;background:#FCEBBE"><span><b>Royal Mail Tracked 48</b><br><span style="font-size:14px">2–3 days after baking</span></span><b style="text-align:right">£3.95<br><span style="font-size:13px;font-weight:600">Free over £35</span></b></div>
-      <div style="display:grid;grid-template-columns:1fr auto;gap:12px;padding:14px 16px;border:2px solid #3A2A22;border-radius:16px;background:#FFFAF0"><span><b>Royal Mail Tracked 24</b><br><span style="font-size:14px">The day after baking</span></span><b>£5.45</b></div>
-      <div style="display:grid;grid-template-columns:1fr auto;gap:12px;padding:14px 16px;border:2px solid #3A2A22;border-radius:16px;background:#FFFAF0"><span><b>Taster Trio &amp; gift cards</b><br><span style="font-size:14px">Letterbox-sized</span></span><b>Included</b></div>
-    </div>
-    <div style="font-size:13px;margin-top:12px;color:#5E4A3D">Prices and timings to be confirmed by Zainab.</div>
+<section id="delivery" data-part="delivery" style="padding:{{ L.secPadTop0 }};scroll-margin-top:80px">
+  <div style="max-width:var(--mm-max-width-narrow);margin:0 auto;background:var(--mm-paper);border:var(--mm-outline-style);border-radius:var(--mm-radius-28);padding:{{ L.boxPad }}">
+    <div style="font-family:var(--mm-font-script);font-size:var(--mm-size-28);color:var(--mm-script);line-height:var(--mm-leading-tight)">getting it to you</div>
+    <h2 style="margin:var(--mm-space-4) 0 var(--mm-space-16);font-family:var(--mm-font-display);font-weight:var(--mm-weight-regular);font-size:{{ L.h2 }};line-height:var(--mm-leading-heading)">Delivery</h2>
+    <p style="margin:0 0 var(--mm-space-16);font-size:var(--mm-size-16);line-height:var(--mm-leading-relaxed)">Every order is baked fresh when it comes in, then posted with Royal Mail Tracked. Most orders are with you in 3–5 days.</p>
+    <ul style="display:flex;flex-direction:column;gap:var(--mm-space-10);margin:0;padding:0;list-style:none">
+      <li style="display:grid;grid-template-columns:1fr auto;gap:var(--mm-space-12);padding:var(--mm-space-14) var(--mm-space-16);border:var(--mm-outline-style);border-radius:var(--mm-radius-16);background:var(--mm-yellow-soft)"><span><b>Royal Mail Tracked 48</b><br><span style="font-size:var(--mm-size-14)">2–3 days after baking</span></span><b style="text-align:right">£3.95<br><span style="font-size:var(--mm-size-13);font-weight:var(--mm-weight-semibold)">Free over £35</span></b></li>
+      <li style="display:grid;grid-template-columns:1fr auto;gap:var(--mm-space-12);padding:var(--mm-space-14) var(--mm-space-16);border:var(--mm-outline-style);border-radius:var(--mm-radius-16);background:var(--mm-paper)"><span><b>Royal Mail Tracked 24</b><br><span style="font-size:var(--mm-size-14)">The day after baking</span></span><b>£5.45</b></li>
+      <li style="display:grid;grid-template-columns:1fr auto;gap:var(--mm-space-12);padding:var(--mm-space-14) var(--mm-space-16);border:var(--mm-outline-style);border-radius:var(--mm-radius-16);background:var(--mm-paper)"><span><b>Taster Trio &amp; gift cards</b><br><span style="font-size:var(--mm-size-14)">Letterbox-sized</span></span><b>Included</b></li>
+    </ul>
+    <div style="font-size:var(--mm-size-13);margin-top:var(--mm-space-12);color:var(--mm-muted)">Prices and timings to be confirmed by Zainab.</div>
   </div>
 </section>
 
-<section id="allergens" style="padding:{{ L.secPadTop0 }};scroll-margin-top:80px">
-  <div style="max-width:900px;margin:0 auto;background:#F9D5D3;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.boxPad }};box-shadow:8px 8px 0 #3A2A22">
-    <div style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">please read carefully</div>
-    <h2 style="margin:4px 0 16px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">Ingredients &amp; allergens</h2>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"><span style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:999px;padding:6px 14px;font-weight:700">Oats (gluten)</span><span style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:999px;padding:6px 14px;font-weight:700">Eggs</span><span style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:999px;padding:6px 14px;font-weight:700">Milk</span><span style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:999px;padding:6px 14px;font-weight:700">Fenugreek (legume)</span></div>
-    <p style="margin:0 0 10px;font-size:16px;line-height:1.6">Fenugreek may cross-react with peanut and soy allergies in sensitive people. Made in a kitchen that also handles tree nuts, so not suitable for anyone with a tree nut allergy.</p>
-    <p style="margin:0;font-size:16px;line-height:1.6"><b>Vegan base:</b> no eggs or dairy. Still contains oats, flaxseed and fenugreek, and the same tree nut advice applies. Some flavours and chips may add allergens; each is listed on the product page.</p>
+<section id="allergens" data-part="allergens" style="padding:{{ L.secPadTop0 }};scroll-margin-top:80px">
+  <div style="max-width:var(--mm-max-width-narrow);margin:0 auto;background:var(--mm-pink-soft);border:var(--mm-outline-style);border-radius:var(--mm-radius-28);padding:{{ L.boxPad }};box-shadow:var(--mm-shadow-8)">
+    <div style="font-family:var(--mm-font-script);font-size:var(--mm-size-28);color:var(--mm-script);line-height:var(--mm-leading-tight)">please read carefully</div>
+    <h2 style="margin:var(--mm-space-4) 0 var(--mm-space-16);font-family:var(--mm-font-display);font-weight:var(--mm-weight-regular);font-size:{{ L.h2 }};line-height:var(--mm-leading-heading)">Ingredients &amp; allergens</h2>
+    <ul aria-label="Allergens" style="display:flex;flex-wrap:wrap;gap:var(--mm-space-8);margin:0 0 var(--mm-space-14);padding:0;list-style:none"><li style="background:var(--mm-paper);border:var(--mm-outline-style);border-radius:var(--mm-radius-pill);padding:var(--mm-space-6) var(--mm-space-14);font-weight:var(--mm-weight-bold)">Oats (gluten)</li><li style="background:var(--mm-paper);border:var(--mm-outline-style);border-radius:var(--mm-radius-pill);padding:var(--mm-space-6) var(--mm-space-14);font-weight:var(--mm-weight-bold)">Eggs</li><li style="background:var(--mm-paper);border:var(--mm-outline-style);border-radius:var(--mm-radius-pill);padding:var(--mm-space-6) var(--mm-space-14);font-weight:var(--mm-weight-bold)">Milk</li><li style="background:var(--mm-paper);border:var(--mm-outline-style);border-radius:var(--mm-radius-pill);padding:var(--mm-space-6) var(--mm-space-14);font-weight:var(--mm-weight-bold)">Fenugreek (legume)</li></ul>
+    <p style="margin:0 0 var(--mm-space-10);font-size:var(--mm-size-16);line-height:var(--mm-leading-relaxed)">Fenugreek may cross-react with peanut and soy allergies in sensitive people. Made in a kitchen that also handles tree nuts, so not suitable for anyone with a tree nut allergy.</p>
+    <p style="margin:0;font-size:var(--mm-size-16);line-height:var(--mm-leading-relaxed)"><b>Vegan base:</b> no eggs or dairy. Still contains oats, flaxseed and fenugreek, and the same tree nut advice applies. Some flavours and chips may add allergens; each is listed on the product page.</p>
   </div>
 </section>
 
-<section id="legal" style="padding:{{ L.secPadTop0 }};scroll-margin-top:80px">
-  <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:{{ L.two }};gap:16px">
-    <div style="border:2px dashed #3A2A22;border-radius:22px;padding:20px"><b style="font-family:'Young Serif',serif;font-weight:400;font-size:20px">Privacy policy</b><p style="margin:6px 0 0;font-size:15px;line-height:1.55">Policy text to be supplied.</p></div>
-    <div style="border:2px dashed #3A2A22;border-radius:22px;padding:20px"><b style="font-family:'Young Serif',serif;font-weight:400;font-size:20px">Terms &amp; conditions</b><p style="margin:6px 0 0;font-size:15px;line-height:1.55">Terms text to be supplied.</p></div>
+<section id="legal" data-part="legal" style="padding:{{ L.secPadTop0 }};scroll-margin-top:80px">
+  <div style="max-width:var(--mm-max-width-narrow);margin:0 auto;display:grid;grid-template-columns:{{ L.two }};gap:var(--mm-space-16)">
+    <div style="border:var(--mm-dashed);border-radius:var(--mm-radius-22);padding:var(--mm-space-20)"><b style="font-family:var(--mm-font-display);font-weight:var(--mm-weight-regular);font-size:var(--mm-size-20)">Privacy policy</b><p style="margin:var(--mm-space-6) 0 0;font-size:var(--mm-size-15);line-height:var(--mm-leading-body)">Policy text to be supplied.</p></div>
+    <div style="border:var(--mm-dashed);border-radius:var(--mm-radius-22);padding:var(--mm-space-20)"><b style="font-family:var(--mm-font-display);font-weight:var(--mm-weight-regular);font-size:var(--mm-size-20)">Terms &amp; conditions</b><p style="margin:var(--mm-space-6) 0 0;font-size:var(--mm-size-15);line-height:var(--mm-leading-body)">Terms text to be supplied.</p></div>
   </div>
-  <a href="Contact.dc.html" style="max-width:900px;margin:24px auto 0;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:#FCEBBE;border:2px solid #3A2A22;border-radius:26px;padding:22px 24px;text-decoration:none;color:#3A2A22;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s" style-hover="transform:translate(-4px,-4px);box-shadow:8px 8px 0 #3A2A22">
-    <span><span style="font-family:'Caveat',cursive;font-size:26px;color:#7A5A12;display:block;line-height:1">still stuck?</span><span style="font-family:'Young Serif',serif;font-size:24px">Message Zainab</span></span>
-    <span aria-hidden="true" style="width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:20px">→</span>
+  <a href="Contact.dc.html" data-part="message-cta" style="max-width:var(--mm-max-width-narrow);margin:var(--mm-space-24) auto 0;display:flex;justify-content:space-between;align-items:center;gap:var(--mm-space-16);flex-wrap:wrap;background:var(--mm-yellow-soft);border:var(--mm-outline-style);border-radius:var(--mm-radius-26);padding:var(--mm-space-22) var(--mm-space-24);text-decoration:none;color:var(--mm-cocoa);transition:transform var(--mm-dur-card) var(--mm-ease-spring-soft), box-shadow var(--mm-dur-card)" style-hover="transform:translate(-4px,-4px);box-shadow:var(--mm-shadow-8)">
+    <span><span style="font-family:var(--mm-font-script);font-size:var(--mm-size-26);color:var(--mm-script-gold);display:block;line-height:var(--mm-leading-tight)">still stuck?</span><span style="font-family:var(--mm-font-display);font-size:var(--mm-size-24)">Message Zainab</span></span>
+    <span aria-hidden="true" style="width:48px;height:48px;border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);background:var(--mm-paper);display:flex;align-items:center;justify-content:center;font-size:var(--mm-size-20)">→</span>
   </a>
 </section>
 </main>
@@ -95,7 +98,7 @@ class Component extends DCLogic {
   renderVals() {
     const S = this.state, m = S.bp === 'm', t = S.bp === 't';
     const v = (a, b, c) => (m ? a : t ? b : c);
-    const pill = on => ({ on, bg: on ? '#F9CF6E' : '#FFFAF0', shadow: on ? '3px 3px 0 #3A2A22' : '0 0 0 #3A2A22', tf: on ? 'translate(-2px,-2px)' : 'none' });
+    const pill = on => ({ on, bg: on ? 'var(--mm-yellow)' : 'var(--mm-paper)', shadow: on ? 'var(--mm-shadow-3)' : 'var(--mm-shadow-0)', tf: on ? 'translate(-2px,-2px)' : 'none' });
     const C = { order: 'Ordering & delivery', ing: 'Ingredients & allergens', feed: 'Breastfeeding', gift: 'Gifting', sub: 'Subscriptions' };
     const all = [
       ['order', 'When will my order arrive?', 'Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days.'],
@@ -114,12 +117,12 @@ class Component extends DCLogic {
     const q = S.q.trim().toLowerCase();
     const list = all.filter(([c, qq, a]) => (S.cat === 'all' || c === S.cat) && (!q || (qq + ' ' + a).toLowerCase().includes(q)));
     return {
-      L: { heroPad: v('32px 20px 22px', '48px 32px 26px', '64px 40px 30px'), align: v('flex-start', 'center', 'center'), talign: v('left', 'center', 'center'), chipJust: v('flex-start', 'center', 'center'), h1: v('46px', '58px', '76px'), secPad: v('32px 20px 48px', '44px 32px 56px', '56px 40px 64px'), secPadTop0: v('0 20px 48px', '0 32px 56px', '0 40px 64px'), boxPad: v('22px 18px', '30px', '36px 40px'), h2: v('30px', '36px', '42px'), two: v('1fr', '1fr 1fr', '1fr 1fr') },
+      L: { heroPad: v('32px var(--mm-gutter-m) var(--mm-space-22)', '48px var(--mm-gutter-t) 26px', '64px var(--mm-gutter-d) 30px'), align: v('flex-start', 'center', 'center'), talign: v('left', 'center', 'center'), chipJust: v('flex-start', 'center', 'center'), h1: v('var(--mm-h1-m)', '58px', '76px'), secPad: v('32px var(--mm-gutter-m) 48px', '44px var(--mm-gutter-t) 56px', '56px var(--mm-gutter-d) 64px'), secPadTop0: v('0 var(--mm-gutter-m) 48px', '0 var(--mm-gutter-t) 56px', '0 var(--mm-gutter-d) 64px'), boxPad: v('var(--mm-space-22) var(--mm-space-18)', '30px', '36px 40px'), h2: v('30px', '36px', '42px'), two: v('1fr', '1fr 1fr', '1fr 1fr') },
       q: S.q, onQ: e => this.setState({ q: e.target.value, open: -1 }),
       cats: [['all', 'All'], ...Object.entries(C)].map(([id, name]) => ({ name, ...pill(S.cat === id), pick: () => this.setState({ cat: id, open: -1 }) })),
       countText: list.length + (list.length === 1 ? ' answer' : ' answers'),
       none: list.length === 0,
-      faqs: list.map(([c, qq, a], i) => { const open = S.open === i; return { cat: C[c], q: qq, a, open, rot: open ? '45deg' : '0deg', bg: open ? '#FCEBBE' : '#FFFAF0', shadow: open ? '4px 4px 0 #3A2A22' : '0 0 0 #3A2A22', toggle: () => this.setState({ open: open ? -1 : i }) }; })
+      faqs: list.map(([c, qq, a], i) => { const open = S.open === i; return { cat: C[c], q: qq, a, open, pid: 'help-faq-' + i, rot: open ? '45deg' : '0deg', bg: open ? 'var(--mm-yellow-soft)' : 'var(--mm-paper)', shadow: open ? 'var(--mm-shadow-4)' : 'var(--mm-shadow-0)', toggle: () => this.setState({ open: open ? -1 : i }) }; })
     };
   }
 }

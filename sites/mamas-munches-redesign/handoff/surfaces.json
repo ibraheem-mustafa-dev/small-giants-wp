@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "project": "Mama's Munches ecommerce",
-  "generated": "2026-11-01",
+  "generated": "2026-11-19",
   "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
   "records": [
     {
@@ -370,7 +370,7 @@
       "kind": "page",
       "name": "Home",
       "dc": "Home",
-      "template_tpl_id": "6",
+      "template_tpl_id": "9",
       "route": "Home.dc.html",
       "page_key": "Home",
       "blocks": [
@@ -431,7 +431,7 @@
       "kind": "form",
       "name": "Build your Zookie",
       "dc": "Home",
-      "template_tpl_id": "63",
+      "template_tpl_id": "66",
       "route": "Home.dc.html#build",
       "parent": "S-07",
       "opened_by": "Scroll, or a link to Home.dc.html#build",
@@ -461,7 +461,7 @@
             "sub": true
           },
           "sc_if_tpl_ids": [
-            "115"
+            "118"
           ],
           "how_to_reach": "dcLogic('Home').setState({ sub: true })"
         },
@@ -478,7 +478,7 @@
             "o.tag": "20 and 40"
           },
           "sc_if_tpl_ids": [
-            "98"
+            "101"
           ],
           "how_to_reach": "Content variant"
         },
@@ -500,7 +500,7 @@
       "kind": "panel",
       "name": "Gifts carousel",
       "dc": "Home",
-      "template_tpl_id": "132",
+      "template_tpl_id": "135",
       "route": "Home.dc.html#gifts",
       "parent": "S-07",
       "opened_by": "Scroll",
@@ -513,7 +513,7 @@
             "gift": "0–3"
           },
           "sc_if_tpl_ids": [
-            "144"
+            "147"
           ],
           "how_to_reach": "Below 768px; swipe, drag or dots",
           "animation_ids": [
@@ -542,7 +542,7 @@
       "kind": "panel",
       "name": "Review slider",
       "dc": "Home",
-      "template_tpl_id": "222",
+      "template_tpl_id": "225",
       "route": "Home.dc.html#reviews",
       "parent": "S-07",
       "opened_by": "Scroll",
@@ -586,7 +586,7 @@
       "name": "Home FAQ",
       "dc": "Home",
       "template_tpl_id": [
-        "248"
+        "251"
       ],
       "route": "Home.dc.html",
       "parent": "S-07",
@@ -599,7 +599,7 @@
             "faq": "0–3 (default 0)"
           },
           "sc_if_tpl_ids": [
-            "248"
+            "251"
           ],
           "how_to_reach": "dcLogic('Home').setState({ faq: i })",
           "animation_ids": [
@@ -1579,7 +1579,7 @@
       "kind": "page",
       "name": "Contact",
       "dc": "Contact",
-      "template_tpl_id": "6",
+      "template_tpl_id": "9",
       "route": "Contact.dc.html",
       "page_key": "Contact",
       "blocks": [
@@ -1630,7 +1630,7 @@
       "name": "Contact form",
       "dc": "Contact",
       "template_tpl_id": [
-        "43"
+        "46"
       ],
       "route": "Contact.dc.html",
       "parent": "S-33",
@@ -1643,7 +1643,7 @@
             "topic": "order"
           },
           "sc_if_tpl_ids": [
-            "56"
+            "57"
           ],
           "how_to_reach": "Default"
         },
@@ -1670,7 +1670,7 @@
             "sent": false
           },
           "sc_if_tpl_ids": [
-            "43"
+            "46"
           ],
           "how_to_reach": "Default"
         }
@@ -1686,7 +1686,7 @@
       "name": "Contact sent",
       "dc": "Contact",
       "template_tpl_id": [
-        "68"
+        "65"
       ],
       "route": "Contact.dc.html",
       "parent": "S-34",
@@ -1699,7 +1699,7 @@
             "sent": true
           },
           "sc_if_tpl_ids": [
-            "68"
+            "65"
           ],
           "how_to_reach": "dcLogic('Contact').setState({ sent: true })"
         }
@@ -1714,7 +1714,7 @@
       "kind": "page",
       "name": "Help",
       "dc": "Help",
-      "template_tpl_id": "6",
+      "template_tpl_id": "9",
       "route": "Help.dc.html",
       "page_key": "Help",
       "blocks": [
@@ -1766,7 +1766,7 @@
       "kind": "form",
       "name": "Help search + category chips",
       "dc": "Help",
-      "template_tpl_id": "18",
+      "template_tpl_id": "21",
       "route": "Help.dc.html",
       "parent": "S-36",
       "opened_by": "Load",
@@ -1792,7 +1792,7 @@
       "name": "Help FAQ list",
       "dc": "Help",
       "template_tpl_id": [
-        "32"
+        "35"
       ],
       "route": "Help.dc.html",
       "parent": "S-36",
@@ -1805,7 +1805,7 @@
             "open": "0 default"
           },
           "sc_if_tpl_ids": [
-            "32"
+            "35"
           ],
           "how_to_reach": "setState({ open: i })",
           "animation_ids": [
@@ -1824,7 +1824,7 @@
       "name": "Help no results",
       "dc": "Help",
       "template_tpl_id": [
-        "34"
+        "37"
       ],
       "route": "Help.dc.html",
       "parent": "S-36",
@@ -1837,7 +1837,7 @@
             "none": true
           },
           "sc_if_tpl_ids": [
-            "34"
+            "37"
           ],
           "how_to_reach": "setState({ q: \"zzz\" })"
         }
@@ -2622,7 +2622,7 @@
       "name": "Contact FAQ list",
       "dc": "Contact",
       "template_tpl_id": [
-        "78"
+        "75"
       ],
       "route": "Contact.dc.html",
       "parent": "S-33",
@@ -2635,7 +2635,7 @@
             "faq": "0–3 (default 0)"
           },
           "sc_if_tpl_ids": [
-            "84"
+            "81"
           ],
           "how_to_reach": "dcLogic('Contact').setState({ faq: i })",
           "animation_ids": [
@@ -2704,8 +2704,8 @@
       },
       "total": 59,
       "covered_by": {
-        "Home:115 isSub": "S-08",
-        "Home:248 f.open": "S-11",
+        "Home:118 isSub": "S-08",
+        "Home:251 f.open": "S-11",
         "Product:71 isSub": "S-15",
         "Product:99 giftOn": "S-16",
         "Product:121 a.open": "S-17",
@@ -2717,12 +2717,12 @@
         "Checkout:22 showSumTop": "S-31",
         "Checkout:78 isGift": "S-28",
         "Checkout:65 makeAcct": "S-27",
-        "Contact:43 notSent": "S-34",
-        "Contact:56 showOrder": "S-34",
+        "Contact:46 notSent": "S-34",
+        "Contact:57 showOrder": "S-34",
         "Contact:59 showBulk": "S-34",
-        "Contact:68 sent": "S-35",
-        "Help:32 f.open": "S-38",
-        "Help:34 none": "S-39",
+        "Contact:65 sent": "S-35",
+        "Help:35 f.open": "S-38",
+        "Help:37 none": "S-39",
         "SignIn:22 showTabs": "S-42",
         "SignIn:26 isSignin": "S-42",
         "SignIn:39 isRegister": "S-43",
@@ -2762,12 +2762,12 @@
         "SiteHeader:158 gift.on": "S-04",
         "SiteHeader:161 showUpsell": "S-04",
         "SiteHeader:175 isEmpty": "S-04",
-        "Contact:84 f.open": "S-59"
+        "Contact:81 f.open": "S-59"
       }
     },
     "other_sc_ifs": {
       "breakpoint": {
-        "Home:144": "isM",
+        "Home:147": "isM",
         "Product:140": "showBar",
         "Product:147": "showBar",
         "Checkout:18": "isM",
@@ -2784,7 +2784,7 @@
         "Product:103": "showQty"
       },
       "content": {
-        "Home:98": "o.tag",
+        "Home:101": "o.tag",
         "Product:18": "hasBadge",
         "Product:41": "o.tag",
         "Confirmation:41": "hasNote",
@@ -2798,7 +2798,13 @@
         "Account:13": "hasNextBake",
         "Account:49": "noOrders",
         "Account:138": "noSubs",
-        "Account:95": "od.hasNote"
+        "Account:95": "od.hasNote",
+        "Button:6": "primaryLink",
+        "Button:8": "primaryButton",
+        "Button:10": "secondaryLink",
+        "Button:12": "secondaryButton",
+        "Field:6": "isInput",
+        "Field:8": "isText"
       },
       "session": {
         "Checkout:44": "signedIn",
@@ -2813,11 +2819,11 @@
       "totals": {
         "breakpoint": 8,
         "route": 5,
-        "content": 15,
+        "content": 21,
         "session": 8
       },
-      "all_sc_ifs": 95,
-      "check": "59 toggling + 8 breakpoint + 5 route + 15 content + 8 session = 95",
+      "all_sc_ifs": 101,
+      "check": "59 toggling + 8 breakpoint + 5 route + 21 content + 8 session = 101",
       "note": "session = depends on whether the visitor is signed in (MM.account), set on another page; content = stored data variants."
     }
   },

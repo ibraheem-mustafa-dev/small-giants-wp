@@ -1,6 +1,6 @@
 # Reading and running a `.dc.html` draft
 
-Written against the `support.js` in this bundle (SHA-256 in `MANIFEST.md`). Section 7 says which parts are fixed and which are per-project choices.
+Written against the `support.js` in this bundle (SHA-256 in `MANIFEST.json`). Section 7 says which parts are fixed and which are per-project choices.
 
 ## 1. File architecture
 
@@ -9,7 +9,7 @@ Written against the `support.js` in this bundle (SHA-256 in `MANIFEST.md`). Sect
   <script src="./support.js"></script>          runtime
 </head><body>
 <x-dc>                                          template (everything up to the LAST </x-dc>)
-  <helmet> <title>, Google Fonts <link>, <script src="store.js">, <style> resets </helmet>
+  <helmet> <title>, Google Fonts <link>, token <link>s (Home, Contact, Help, Button, Field), <script src="store.js">, <style> resets </helmet>
   ...markup with {{ }} holes, sc-if, sc-for, dc-import...
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{...}'>   logic class (optional data-props JSON)
@@ -19,8 +19,8 @@ class Component extends DCLogic { ... }
 ```
 
 - `type="text/x-dc"` stops the browser running the logic; the runtime evaluates it.
-- `data-props` (optional) is JSON: `$preview` `{width,height}` for sized fragments, plus one entry per prop (`editor`, `default`, `tsType`, …). Defaults are passed to the root as props. The eleven pages have none. `SiteHeader` declares `$preview` and a `current` enum (`home, shop, gifts, sub, help, contact, account`); `SiteFooter` only `$preview`; `ProductCard` declares `$preview`, `product` (object) and `size` (`sm` | `md`).
-- The DC's **name** is the file basename without `.dc.html`, URL-decoded: `Home`, `Product`, `SignIn`, `Account`, `SiteHeader`, `ProductCard`.
+- `data-props` (optional) is JSON: `$preview` `{width,height}` for sized fragments, plus one entry per prop (`editor`, `default`, `tsType`, …). Defaults are passed to the root as props. The eleven pages have none. `SiteHeader` declares `$preview` and a `current` enum (`home, shop, gifts, sub, help, contact, account`); `SiteFooter` only `$preview`; `ProductCard` declares `$preview`, `product` (object) and `size` (`sm` | `md`). `Button` declares the enums `version` (`primary` | `secondary`), `size` (`md` | `lg`) and `type` (`button` | `submit`), plus `label`, `href`, `onPress`, `pressed` and `disabled`; `Field` declares the enums `version` (`standard`) and `type` (`text` | `email` | `tel` | `date`), plus `label`, `multiline`, `rows`, `required`, `placeholder`, `autocomplete`, `inputmode` and `name`.
+- The DC's **name** is the file basename without `.dc.html`, URL-decoded: `Home`, `Product`, `SignIn`, `Account`, `SiteHeader`, `ProductCard`, `Button`, `Field`.
 
 ### Boot sequence (support.js)
 
@@ -67,7 +67,7 @@ Use this to reach closed states (drawers, accordions, form steps, results) witho
 
 ## 2. Rendered DOM shape
 
-- Each DC renders as `<div class="sc-host" data-sc-name="Name">…</div>`. The root sits at `#dc-root > div.sc-host`. These wrappers are runtime-only. Don't port them, and allow for them in `>` selectors. The `SiteHeader` host receives the `style="position:sticky;top:-32px;z-index:50;display:block"` from its `dc-import` (only position/size/z-index/transform keys pass through).
+- Each DC renders as `<div class="sc-host" data-sc-name="Name">…</div>`. The root sits at `#dc-root > div.sc-host`. These wrappers are runtime-only. Don't port them, and allow for them in `>` selectors. The `SiteHeader` host receives the `style="position:sticky;top:-32px;z-index:50;display:block"` from its `dc-import` (only position/size/z-index/transform keys pass through). A `Button` or `Field` mount renders the same block-level host `div`, so the drafts mount them only inside flex or grid parents; `Button`'s own root is a `display:flex` row holding the one link or button its props choose, so the control keeps its own width inside a stretched host.
 - **Every template element carries `data-dc-tpl="N"`** in the rendered DOM. This is the reliable link from a rendered node back to its source element in `__dcAnnotatedTemplate`. Elements repeated by `sc-for` share one N.
 - Each text hole renders as `<span class="sc-interp">value</span>`. Text measured in the DOM therefore has extra spans that aren't in the source.
 - Pseudo-state attributes become generated classes `scp0`, `scp1`, … in one runtime `<style>`. These are the only classes on the page.
@@ -93,7 +93,7 @@ Nothing else is supported: no `+`, `&&`, `?:` or calls. Authoring guidance allow
 - `value`/`checked` that resolve to `undefined` become `""`/`false`, so inputs are always controlled. Inputs written with no `value` (Contact fields, Checkout mobile, card and password fields) are uncontrolled and their contents are never read. Forms that validate in the logic set `noValidate="{{ true }}"` (SignIn, Account); Checkout and Contact rely on browser `required` / `minLength`.
 - Any other attribute passes through as a React prop. That includes `ref`: `ref="{{ rootRef }}"` here is a `React.createRef()` object (not a callback); the logic reads `.current`.
 
-**`style-<pseudo>="decls"`.** Any suffix is accepted. It becomes the rule `.scpN:<pseudo>{decls !important}`, so `style-hover`, `style-focus`, `style-active`, `style-focus-visible`, `style-focus-within`, … all work. `style-before`/`style-after` become `::before`/`::after`, without `!important`. Because of `!important`, hover rules **beat inline styles and styles set from JS** while active. This project uses only `style-hover` and `style-active`; focus styling comes from the helmet rule `:focus-visible{outline:3px solid #3A2A22;outline-offset:3px}`.
+**`style-<pseudo>="decls"`.** Any suffix is accepted. It becomes the rule `.scpN:<pseudo>{decls !important}`, so `style-hover`, `style-focus`, `style-active`, `style-focus-visible`, `style-focus-within`, … all work. `style-before`/`style-after` become `::before`/`::after`, without `!important`. Because of `!important`, hover rules **beat inline styles and styles set from JS** while active. This project uses only `style-hover` and `style-active`; focus styling comes from the helmet rule `:focus-visible{outline:3px solid #3A2A22;outline-offset:3px}`, which Home, Contact and Help write from the three focus tokens (`outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset)`). A `style-*` rule's text is a fixed string that cannot hold a `{{ }}` hole, so `Button` draws one element per version, each with its own hover and pressed rule, and picks one with `sc-if`.
 
 **`<sc-if value="{{ x }}">`.** Renders its children when `x` is truthy. There is no else; the drafts use a second `sc-if` on a complementary flag (`isD` / `notD`, `hasItems` / `isEmpty`, `sent` / `notSent`, `hasNote` / `noNote`). No wrapper element is rendered.
 
@@ -111,17 +111,20 @@ Ignore all three when rebuilding.
 - Only `position, left, right, top, bottom, inset, width, height, z-index, transform` from `style` reach the host div.
 - Children are passed as `props.children`.
 - The child's template sees `{...props, ...renderVals()}`.
+- Home mounts `Button` three times (`primary` link "Build your box" with an arrow chip as children, `secondary` link "Send a gift", `primary` `lg` add-to-basket button with `onPress="{{ add }}"` and `label="{{ addLabel }}"`); Contact mounts `Button` once (`primary`, `type="submit"`) and `Field` six times (`version="standard"`; the Message field with `multiline`). A `data-part` written on a mount reaches the component as the prop `dataPart`, which it writes on its link, button or label. Every mount of a component shares the component's own `data-dc-tpl` ids, so the version (and size) a mount names is its preset.
 - Here: every page except Checkout mounts `SiteHeader` (with `current="home|shop|gifts|contact|help|account|"`, Product passes `{{ navKey }}`: `sub` with `?sub=1`, else `shop` or `gifts`) and `SiteFooter`; Shop, Gifts and Product mount `ProductCard` inside an `sc-for` with `product` and `size`.
 
 **`<x-import component|component-from-global-scope="…" from="./file.js">`.** Mounts an external React component or custom element. This project doesn't use it.
 
 **`<helmet>`.**
 - `<script>` is appended to `<head>` once per `src`/text (`store.js` is listed by every page and by `SiteHeader`; it loads once).
-- `<link>` and `<meta>` are added once.
+- `<link>` and `<meta>` are added once. Home, Contact, Help, Button and Field link `tokens/colors.css`, `tokens/typography.css` and `tokens/spacing.css` this way; `typography.css` begins with an `@import` of the Google Fonts URL.
 - `<style>` and other tags are kept in sync by position.
 - `<meta name="design_doc_mode" content="canvas">` switches the editor to canvas mode (not used here).
 
-**Other attributes you'll see.** `data-screen-label` exists only so editor comments can name screens. `data-dc-tpl` is added by the runtime and is never in the source.
+**Tokens by name.** Home, Contact, Help, Button and Field use the design tokens by name wherever a token's exact value is meant: `color:var(--mm-cocoa)`, `border:var(--mm-outline-style)`, `box-shadow:var(--mm-shadow-4)` in inline styles; `style-hover="box-shadow:var(--mm-shadow-8)"` in pseudo rules; `transition:transform var(--mm-dur-press) var(--mm-ease-spring)`; and in the logic, the values picked per width (`h1: v('var(--mm-h1-m)', 'var(--mm-h1-t)', 'var(--mm-h1-d)')`, `secPad: v('var(--mm-section-m) var(--mm-gutter-m)', …)`) and per state (`bg: on ? 'var(--mm-yellow)' : 'var(--mm-paper)'`). A value that matches no token stays a literal, so one width list can mix both (`v('var(--mm-h1-m)', '56px', '78px')` on Contact). The custom properties are declared on `:root` in `tokens/*.css`, so they resolve wherever they are used; `animations.json` records the value each token resolves to. Easings in `.animate()` options stay literal. The other drafts (header, footer, product card, shop pages) still write literal values.
+
+**Other attributes you'll see.** `data-screen-label` exists only so editor comments can name screens. `data-part="<id>"` names a meaningful element of the design (sections, forms, calls to action: `hero`, `builder`, `contact-form`, `send-message`, `faq-search`) on Home, Contact and Help. Widget roles and states on those pages: each FAQ header is a `button` with `aria-expanded` and `aria-controls` naming its answer's `id`; the Home review slider is a `section` with `aria-roledescription="carousel"` and a label, each review an `article` with `role="group"` and `aria-roledescription="slide"`, labelled arrow buttons, and dot buttons with `aria-current` on the current one; the gift strip carries the carousel role and label only below 768px, where it is a slider; option chips carry `aria-pressed`. Lists are `ul`/`li` (Home trust bar and recipe, Help delivery options and allergens). `data-dc-tpl` is added by the runtime and is never in the source.
 
 ## 4. The logic class
 
@@ -167,7 +170,7 @@ class Component extends DCLogic {
 
 Everything that can affect an element:
 
-1. **Inline `style`** in the template, including the holes resolved from `renderVals()`.
+1. **Inline `style`** in the template, including the holes resolved from `renderVals()` and the `var(--token)` references resolved from `tokens/*.css`.
 2. **`style-*` pseudo rules** on the same element.
 3. **Holes** in text and attributes. Trace the name into `renderVals()` (or `trust()` / `tagline()`).
 4. **Event attributes**, whose handlers are in the logic class.

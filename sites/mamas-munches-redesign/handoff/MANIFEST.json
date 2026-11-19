@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated": "2026-11-01",
+  "generated": "2026-11-19",
   "project": "Mama's Munches ecommerce",
   "entry_drafts": [
     "Home.dc.html",
@@ -28,6 +28,11 @@
       "sha256": "f4520e82997834a44f5c99b456e3b9ca4a9fcdab575314d4b266bb2c8945bb8e"
     },
     {
+      "path": "Button.dc.html",
+      "bytes": 6445,
+      "sha256": "1b3faedc249506f8823fd2081e46629c7404aa93323f68503f8752984dab99f8"
+    },
+    {
       "path": "Checkout.dc.html",
       "bytes": 22651,
       "sha256": "19b5c1fec140b77d22c72b5110d1a675f2aa985330b72803e5cd3a7570d8891b"
@@ -39,8 +44,13 @@
     },
     {
       "path": "Contact.dc.html",
-      "bytes": 16443,
-      "sha256": "bcb3e4bcc8e1fdddb9abf777afab9396c7d06f809ba7b9cbd64a722205607b85"
+      "bytes": 17371,
+      "sha256": "650157b45ce5ddb8f996a0da3b163a3af881e8683991755727bb7b81cbfb3636"
+    },
+    {
+      "path": "Field.dc.html",
+      "bytes": 3485,
+      "sha256": "900240fdc3798132b803e2e7efb1e9901dc617434f13f5d71a938a823c711cfc"
     },
     {
       "path": "Gifts.dc.html",
@@ -49,13 +59,13 @@
     },
     {
       "path": "Help.dc.html",
-      "bytes": 14556,
-      "sha256": "e705fc78ad76548eada464f2feee868d8ae5a40a8632c0e7f13a841f87bb55d6"
+      "bytes": 17858,
+      "sha256": "0c81033dce9770609ddc76a6f98dacfdf9e95413fa87ed5fbad74802e369aae9"
     },
     {
       "path": "Home.dc.html",
-      "bytes": 54671,
-      "sha256": "c25fa7cf4d35f8a68895902d7413f0534c7932cb3d8ca0bab692843bdf0282ca"
+      "bytes": 62247,
+      "sha256": "29532d53fa6eec782418a62274e56daa3a25367ed1eae37bfab070dde2a9de0d"
     },
     {
       "path": "Product.dc.html",
@@ -69,13 +79,13 @@
     },
     {
       "path": "READING-DC-FILES.md",
-      "bytes": 20969,
-      "sha256": "2d1f82f634856b5f2e5a8d49a4f61bc75fb07ac622c964a84eaa9c0ad9b63e0d"
+      "bytes": 24738,
+      "sha256": "32cb642ddda0343b72b606ed2e253ef16ccf254604a74601502623adc53b39b7"
     },
     {
       "path": "README.md",
-      "bytes": 31841,
-      "sha256": "09a85b34b22187e5be6458af75461cbd11e0536d95d868812d4ef7b247cd5163"
+      "bytes": 33713,
+      "sha256": "886445fe2857932fc2179f690661caaf1b5979f0eab7813454c691624f1636fb"
     },
     {
       "path": "Shop.dc.html",
@@ -99,8 +109,8 @@
     },
     {
       "path": "animations.json",
-      "bytes": 387763,
-      "sha256": "10cff8410cac5c7ab9d50558203278fc1ea3acd0d47744b254b24024aac2743f"
+      "bytes": 389873,
+      "sha256": "45405aa6e9743ad85d512ba91dfd5a745a8dd257d908bb1eb604ce0a660fd009"
     },
     {
       "path": "assets/logo-horizontal.png",
@@ -144,13 +154,13 @@
     },
     {
       "path": "handoff-schema/METHOD.md",
-      "bytes": 10989,
-      "sha256": "55c24d306cc86674d660db25603f24e17cf07911c11a904abbde43e747a12c2b"
+      "bytes": 13762,
+      "sha256": "01ba122ec4e3f9fa170e22c3d2139658f7aa451c0daa6264a3361c62ac0109b3"
     },
     {
       "path": "handoff-schema/READING-DC-FILES.example.md",
-      "bytes": 16262,
-      "sha256": "6c1e7aca3d954ec2c08fcad41ed9d6e29c25b78699126392d43f24f10d7142f2"
+      "bytes": 16602,
+      "sha256": "a14c2eb2011b4847dd35d20c20de4d78f1e2e97532df6fd7e32451da473834d7"
     },
     {
       "path": "handoff-schema/README.template.md",
@@ -169,8 +179,8 @@
     },
     {
       "path": "handoff-schema/surfaces.schema.json",
-      "bytes": 3969,
-      "sha256": "ed29da1e8076cb902967a8befeec4c2d25eded85d88197de36e0e17f6ae0943d"
+      "bytes": 6158,
+      "sha256": "6b8ea197ef44cbe770b6c750ef034a570aa1b050d6ee4fefa346b1e73e0d6e14"
     },
     {
       "path": "store.js",
@@ -184,8 +194,8 @@
     },
     {
       "path": "surfaces.json",
-      "bytes": 76468,
-      "sha256": "4d7d9f56be27fc79b9e498b285a8e8304ec7068899f10e78f0264a6cf354e9ab"
+      "bytes": 76681,
+      "sha256": "8d59f1e23631bc4cb4116ea7f9435e2b33461ad9c995e68e921526835d174969"
     },
     {
       "path": "tokens/colors.css",

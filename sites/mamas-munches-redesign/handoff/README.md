@@ -54,6 +54,12 @@ Mounted on every page except Checkout.
 ### Product card (`ProductCard.dc.html`)
 Paper card, 2px outline, radius 24px, slight per-product rotation; hover straightens, lifts (-4px, -6px) and adds an 8px shadow. Square image (photo cover, or the round logo at 66% on pink for the gift card), yellow badge top-left, Young Serif name, short description (`md` only), price + unit, full-width button. Simple products add to the basket ("Added ✓" for 1.6s, opens the drawer); Zookies and the gift card link to Product. Size `sm` is used on mobile.
 
+### Button (`Button.dc.html`)
+The site's call-to-action button, mounted where a button is one of its presets. `version`: **primary** (fill #F9CF6E; hover fill #FFFAF0) or **secondary** (fill #FFFAF0; hover fill #F9CF6E); both have the 2px cocoa outline, radius 999px, Karla 700, a 4px hard shadow, hover translate(-3px,-3px) with a 7px shadow, pressed translate(3px,3px) with no shadow, and the transition transform .2s spring, box-shadow .2s, background .2s. `size`: **md** (60px, 17px; padding 0 30px primary, 0 26px secondary; with an icon chip as children, 0 10px 0 28px and a 14px gap) or **lg** (64px, 18px, fills its row). `href` makes it a link; without it, a button calling `onPress` (`type` button or submit). Mounted on Home (Build your box, Send a gift, add to basket) and Contact (Send message); the other pages still draw their buttons by hand.
+
+### Field (`Field.dc.html`)
+A labelled form field: the label in 15px/700 above a 54px paper box with the 2px cocoa outline, radius 14px, padding 0 16px and 16px text; `multiline` makes it a textarea (padding 12px 16px, resizes vertically, `rows`). One look, `version="standard"`. Mounted six times on Contact (name, email, order number, cookie count, date, message); the other forms still draw their fields by hand.
+
 ## Pages
 
 **Home.** Pink hero, 2 columns from tablet: Caveat time-of-day greeting with a twinkling ✦; H1 "Made for the mum [pill photo] who needs it most" (82 / 54 / 46px) with a yellow highlighter under "most"; lead; "Build your box →" and "Send a gift" buttons; "★★★★★ 4.3 on Trustpilot" and "New? Taster Trio, 3 for £5 →". Right: three rotated polaroids, a floating "Baked to order" sticker and a "baked with love" ribbon. Trust bar beneath (4 items: Baked fresh when you order, Handmade in Birmingham, Registered food business, Free UK delivery over £35): a static 4-column row on desktop, a marquee below 1024px that pauses on hover/touch. Then "Who are we baking for today?" (two path cards), **Build your Zookie** (`#build`), gifts for new mums (`#gifts`: 4 tiles, mobile carousel with dots and arrows, gift-note sample and gift-card card), Zainab’s recipe card (oats, brewer’s yeast, flaxseed, fenugreek) with the "nourishing food, not medicine" note, story polaroid (`#story`), review slider (`#reviews`, 6 Trustpilot reviews, arrows, dots, drag, 6s autoplay), FAQ (4 questions, one open).
@@ -86,7 +92,7 @@ Paper card, 2px outline, radius 24px, slight per-product rotation; hover straigh
 - **Account details:** First name, Last name, Email, Mobile, marketing checkbox, "Save changes" ("Saved ✓" for 2.4s); Change password (current + new, 8+; "Password updated ✓").
 
 ## Signature components (exact values)
-- **Primary button:** height 60–66px, radius 999px, 2px solid #3A2A22, fill #F9CF6E, Karla 700 17–19px, shadow 4px 4px 0 #3A2A22. Hover: fill #FFFAF0, translate(-3px,-3px), shadow 7px 7px 0. Active: translate(3px,3px), shadow 0. Transition transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s. The hero variant ends in a 40px cocoa circle with a yellow →.
+- **Primary button:** height 60–66px, radius 999px, 2px solid #3A2A22, fill #F9CF6E, Karla 700 17–19px, shadow 4px 4px 0 #3A2A22. Hover: fill #FFFAF0, translate(-3px,-3px), shadow 7px 7px 0. Active: translate(3px,3px), shadow 0. Transition transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s. The hero variant ends in a 40px cocoa circle with a yellow →. Home and Contact mount it from `Button.dc.html`.
 - **Secondary button:** same with fill #FFFAF0; hover fill #F9CF6E.
 - **Option pill:** min-height 44–48px, radius 999px, 2px outline, 15–16px/700. Selected: fill #F9CF6E, shadow 3px 3px 0, translate(-2px,-2px). Hover translate(-2px,-2px). Flavour pills carry a 22px colour dot with ✓ when selected.
 - **Pack-size card:** 3-up grid, min-height 82–84px, radius 20px; Young Serif 26px count, 13–14px/700 price, 12px per cookie; tag chip #EE8088, 11px/700, at top -12px.
@@ -95,20 +101,20 @@ Paper card, 2px outline, radius 24px, slight per-product rotation; hover straigh
 - **Accordion row:** radius 20–22px; open fill #FCEBBE + 4px shadow; + icon rotates 45deg (.3s spring).
 - **Polaroid:** #FFFAF0, padding 8px 8px 34px, 2px outline, radius 8px, rotated (-9 / 8 / -1.5deg), Caveat caption 21–24px; hover straightens and lifts 10–12px over .45s.
 - **Handwritten eyebrow:** Caveat 28px, #8E3444 (on yellow #7A5A12), often rotate(-2deg).
-- **Inputs:** height 52–54px, 2px outline, radius 14px, 16px text, fill #FFFFFF (checkout) or #FFFAF0.
-- **Focus:** `:focus-visible { outline: 3px solid #3A2A22; outline-offset: 3px }` in every page helmet.
+- **Inputs:** height 52–54px, 2px outline, radius 14px, 16px text, fill #FFFFFF (checkout) or #FFFAF0. Contact mounts its fields from `Field.dc.html`.
+- **Focus:** `:focus-visible { outline: 3px solid #3A2A22; outline-offset: 3px }` in every page helmet; Home, Contact and Help write it from `--focus-width`, `--focus-color` and `--focus-offset`.
 
 ## Interactions and animation
 Every effect is inventoried in `animations.json` (196 records). In short:
 - **Web Animations (10 call sites):** nav drawer contents stagger in on open (see Header); scroll reveal on `[data-reveal]` (Home: opacity 0→1, translate 32px→0, 800ms, 90ms stagger capped at 4; Shop, Product, Gifts, Contact: 28px, 750ms; easing cubic-bezier(.2,.7,.2,1), IntersectionObserver ~0.1); hero ✦ twinkle (2.4s loop); sticker float (3.2s loop); builder cookie wobble on each option change (520ms spring); Confirmation ✓ pop (800ms).
 - **CSS transitions (139):** hover lifts and fills, drawer slides (transform .32s cubic-bezier(.2,.8,.2,1)), scrim fade (.25s), progress bars (width .4–.5s), accordion and carousel-dot changes, Product sticky bar (.3s).
-- **Pseudo rules (149 style-* attributes):** hover and active states; 31 of them include instant (non-transitioned) properties.
+- **Pseudo rules (148 style-* attributes):** hover and active states; 31 of them include instant (non-transitioned) properties.
 - **Marquees:** trust bar (24s, below 1024px, pauses on hover/touch) and footer tagline (32s, pauses on hover and keyboard focus).
 - **JS scroll and text:** Home carousels support mouse drag with snap, arrows, dots and review autoplay every 6s, held while the track is hovered or touched or focus is inside the reviews section, and resumed on release; Help scrolls to hash targets; My account scrolls to the top when an order opens; Product sets the tab title.
 - **Reduced motion:** reveals, twinkle, float, the nav drawer stagger, the cookie wobble, the Confirmation pop, review autoplay and both marquees are switched off. CSS transitions are left to the WordPress theme’s global reduced-motion rule.
 
 ## State
-Inventoried in `surfaces.json` (59 surfaces, 59 toggling sc-ifs, 95 sc-ifs in total). Prototype state to replace with WooCommerce/session:
+Inventoried in `surfaces.json` (59 surfaces, 59 toggling sc-ifs, 101 sc-ifs in total; six of them are Button's and Field's, which choose what a mount draws from its props). Prototype state to replace with WooCommerce/session:
 - `mm_cart_v2`: `[{ key, id, name, variant, price, qty, img }]`; the key encodes the configuration (`zookies-20-oat-milk-strawberry+mango-sub4`).
 - `mm_gift_v2`: `{ on, message, to, from, hide, wrap }`. The UI writes `on`, `message` and `to` (her name, at checkout).
 - `mm_order_v2` (last order): `{ no: 'MM-####', placed, status, bake: { date, dow, day, mon, orderBy, arrive, iso }, items, gift, total, delivery, method, email, address, account }`.
@@ -130,7 +136,7 @@ WooCommerce mapping: pack × base × chips as variations; flavours as a product 
 - Contact: `Zainab@mamasmunches.com`, Instagram `@mamasmunches`, WhatsApp number to be supplied.
 
 ## Design tokens
-`tokens/colors.css`, `tokens/typography.css`, `tokens/spacing.css` (brand palette, type, spacing, radii, shadows, motion). Apply them to `theme.json` first. Key values: cocoa #3A2A22 (text, outlines, shadows), cream #FBF3DC, paper #FFFAF0, pink #EE8088, pink-dark #A8404F, pink band #F5C2C8, pink soft #F9D5D3, yellow #F9CF6E, yellow soft #FCEBBE, body #4E3C31, muted #5E4A3D / #6B5646, script #8E3444 / #7A5A12. Fonts: Young Serif 400, Karla 400–700, Caveat 500–700 from Google Fonts. The theme caps at two font files per site, so either self-host a Latin one-weight Caveat subset or fall back to Young Serif italic.
+`tokens/colors.css`, `tokens/typography.css`, `tokens/spacing.css` (brand palette, type, spacing, radii, shadows, motion). Home, Contact, Help, Button and Field link all three in their helmet and use the tokens by name (`var(--mm-cocoa)`, `var(--mm-shadow-4)`, `v('var(--mm-h1-m)', …)`), so each use traces to its token; a value that matches no token stays a literal. The other drafts still write literal values. Apply the tokens to `theme.json` first. Key values: cocoa #3A2A22 (text, outlines, shadows), cream #FBF3DC, paper #FFFAF0, pink #EE8088, pink-dark #A8404F, pink band #F5C2C8, pink soft #F9D5D3, yellow #F9CF6E, yellow soft #FCEBBE, body #4E3C31, muted #5E4A3D / #6B5646, script #8E3444 / #7A5A12. Fonts: Young Serif 400, Karla 400–700, Caveat 500–700 from Google Fonts. The theme caps at two font files per site, so either self-host a Latin one-weight Caveat subset or fall back to Young Serif italic.
 
 ## Assets
 `assets/logo-horizontal.png`, `assets/logo-round.png` (client logos) and six product photos (`photo-bags-pink.jpg`, `photo-bun-case.jpg`, `photo-gift-heart.jpg`, `photo-hero-mug.jpg`, `photo-pair-love.jpg`, `photo-tray-love.jpg`), all the shop’s own. Icons are inline stroke SVGs in the drafts (basket, account/person, Instagram, WhatsApp, email, lock, search, trust-bar icons) plus glyphs ✦ ♥ ✓ → ★. No font files are bundled. In production, the Instagram strip should come from a feed plugin (e.g. Smash Balloon) and reviews from the Trustpilot sync.
@@ -164,6 +170,6 @@ Runtime-trap scan (CLAUDE.md): no hits in any draft.
 
 ## Files
 - Pages: `Home`, `Shop`, `Product`, `Gifts`, `Basket`, `Checkout`, `Confirmation`, `Contact`, `Help`, `SignIn`, `Account` (`.dc.html`)
-- Mounted by the pages: `SiteHeader`, `SiteFooter`, `ProductCard` (`.dc.html`)
+- Mounted by the pages: `SiteHeader`, `SiteFooter`, `ProductCard`, `Button`, `Field` (`.dc.html`)
 - Scripts: `support.js` (runtime), `store.js` (prototype data, loaded in every page helmet and SiteHeader)
-- `assets/`, `tokens/`, `animations.json`, `surfaces.json`, `READING-DC-FILES.md`, `handoff-schema/`, `MANIFEST.md`
+- `assets/`, `tokens/`, `animations.json`, `surfaces.json`, `READING-DC-FILES.md`, `handoff-schema/`, `MANIFEST.json`

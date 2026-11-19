@@ -15,11 +15,12 @@ The runtime trace is optional. It only confirms what the source already says.
 
 - SHA-256 every file you read: drafts, `support.js`, external scripts.
 - `support.js` has no version string, so its hash *is* the runtime version.
-- Put the hashes in the output files and in MANIFEST.md. A record is only valid for the revision whose hashes it carries.
+- Put the hashes in the output files and in MANIFEST.json. A record is only valid for the revision whose hashes it carries.
 
 ## 1. Find the inputs
 
-- **Drafts:** every `.dc.html` the handoff ships, plus every `dc-import name="X"` → `X.dc.html` they mount, recursively.
+- **Drafts:** every `.dc.html` the handoff ships, plus every `dc-import name="X"` → `X.dc.html` they mount, recursively. A button or field component (`Button.dc.html`, `Field.dc.html`) is a draft like any other: its `style-*` rules, transitions and handlers are recorded once, against the component's own file, however many times it is mounted.
+- **Token files:** every `tokens/*.css` a draft loads through a `<link>` in its `<helmet>`. A declaration's value may be a token reference (`var(--ink)`); in a record's values write the value the token resolves to, exactly as the token file declares it, so a record stays valid on its own.
 - **External scripts:** every `<script src>` in each `<helmet>` and every `x-import from=`. Read those that manipulate the DOM. `indus-logo.js` animates; `image-slot.js` only renders.
 - **Assets the code inlines:** SVGs fetched and injected. Their element ids are animation targets.
 
@@ -55,7 +56,7 @@ const React = { createElement: (...a) => ({ $el: a[0] }) };
 const C = new Function('DCLogic', 'React', js + ';return Component;')(DCLogic, React);
 const c = new C({});
 c.pages;                     // routes and content blocks
-for (const w of [375, 800, 1400]) { c.state = { ...c.state, w }; const v = c.renderVals(); /* v.R, v.items, flags */ }
+for (const w of [375, 768, 1440]) { c.state = { ...c.state, w }; const v = c.renderVals(); /* v.R, v.items, flags */ }
 ```
 
 - Getters (`pages`, menus, sections) give the full content model.
@@ -117,19 +118,24 @@ For every `.animate(` site, `transition`, pseudo rule, keyframe, media rule and 
 - Line numbers are file lines, not lines within the logic script.
 - `React.createElement` output in `renderVals()` (icons) has no `data-dc-tpl`. It is content, not effects, unless something animates it.
 - Rendered text holes are wrapped in `<span class="sc-interp">`. Never match records to measured text.
+- A mounted component renders inside a block-level wrapper `div` (`.sc-host`), and only position, size, `z-index` and `transform` from the mount's `style` reach it. An element inside a component has the component's own `data-dc-tpl` numbering, shared by every mount.
+- A hole whose value is `undefined` renders nothing and logs a warning (`{{ label }} never resolved`); it is not an effect.
 
 ## 7. Surfaces
 
 - **Routes** are the keys of the router's page map. Unknown hashes fall back to home.
 - **Classify every `sc-if` by what its value depends on.** Look up the hole in `renderVals()`:
   - **interactive state** (menu, drawer, accordion, form step, validation, result): one surface or state each;
-  - **breakpoint** (derived from `state.w`): a state on its parent surface;
+  - **breakpoint** (derived from `state.w`): a state on its parent surface, with its threshold written as a `breakpoint` (below);
   - **route** (`isHome`, current-section flags);
   - **input state** (a checked chip);
   - **content variant** (a block has an eyebrow).
 
   List all of them so the total reconciles.
-- **For each state**, give the state keys and a programmatic way to reach it: `setState({...})` on the live logic instance (see READING-DC-FILES §1 for how to get it) and the user action.
+- **For each state**, give the state keys and a programmatic way to reach it: `setState({...})` on the live logic instance (see READING-DC-FILES §1 for how to get it) and the user action. When a state exists only after the draft's own store holds something (a signed-in account, a basket with a gift note), also write the store call that puts it there, with literal arguments, exactly as the draft's code makes it (`MM.account.signIn()`, `MM.cart.setGift({ on: true })`): cloning runs only that call, on the draft's own store object, before it opens the surface.
+- **Structured way in (optional, beside the prose).** Write the same way as `how_to_reach_structured`: `{ "setState": { "lens": { "open": true } }, "storeCalls": [ { "path": "MM.account.signIn", "args": [] } ], "event": { "type": "click", "target": "<data-part id or data-dc-tpl>" } }`. `setState` is the state object passed to `setState`; `storeCalls` are the store calls with literal `args`; `event` is the user action that does it. Cloning reads `setState` and `storeCalls` before the prose, and the prose stays so the state remains readable. Leave out any part that does not apply.
+- **Where each state key lives (optional).** `state_key_sources` maps a state key to `state` (a key of the logic's `state`), `derived` (a value `renderVals()` computes from state, so it cannot be set) or `instance` (a field on the logic instance, not in `state`).
+- **Width thresholds in one form.** A state that exists only above or below a width carries `breakpoint`: `{ "basis": "state.w", "op": ">=", "value": 768 }`. `basis` is always `state.w`; `op` is `>=`, `<`, `<=` or `>`; `value` is the pixel width the draft's code compares against. Write the same threshold in the prose too.
 - **Time-dependent content.** Mark anything reading `Date`, `Math.random`, `localStorage`, intervals or timeouts.
 
 ## 8. Reconcile and validate
@@ -150,6 +156,6 @@ It cannot produce real `:hover`/`:focus` or emulate `prefers-reduced-motion`, an
 
 ## 10. What not to do
 
-- Don't change the draft while inventorying. Report bugs (unguarded motion, dead paths, effects that look unintended) in `unresolved` and ask before fixing.
-- After any fix, regenerate both files and MANIFEST.md.
+- Tidy a draft as `CLAUDE.md` says ("Changing a draft during a handoff"): by your own judgement where the change follows the design rules, said in the final reply, and as a question where it would alter the design or you cannot tell what was meant. Make those changes before inventorying, never during it. Report bugs (unguarded motion, dead paths, effects that look unintended) in `unresolved` and ask before fixing.
+- After any fix, regenerate both files and MANIFEST.json.
 - Don't rely on screenshots or measured layout for anything the code states.

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Button · Mama's Munches</title>
+<link rel="stylesheet" href="tokens/colors.css">
+<link rel="stylesheet" href="tokens/typography.css">
+<link rel="stylesheet" href="tokens/spacing.css">
+</helmet>
+<div style="display:flex">
+<sc-if value="{{ primaryLink }}" hint-placeholder-val="{{ true }}"><a href="{{ href }}" data-part="{{ dataPart }}" style="height:{{ h }};padding:{{ pad }};gap:{{ gap }};width:{{ width }};border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);color:var(--mm-cocoa);font-weight:var(--mm-weight-bold);font-size:{{ fs }};box-shadow:var(--mm-shadow-4);transition:transform var(--mm-dur-press) var(--mm-ease-spring), box-shadow var(--mm-dur-press), background var(--mm-dur-press);background:var(--mm-yellow);display:flex;align-items:center;text-decoration:none" style-hover="background:var(--mm-paper);transform:translate(-3px,-3px);box-shadow:var(--mm-shadow-7)" style-active="transform:translate(3px,3px);box-shadow:var(--mm-shadow-0)">{{ label }}{{ children }}</a></sc-if>
+<sc-if value="{{ primaryButton }}" hint-placeholder-val="{{ false }}"><button type="{{ type }}" onClick="{{ onPress }}" aria-pressed="{{ pressed }}" disabled="{{ disabled }}" data-part="{{ dataPart }}" style="height:{{ h }};padding:{{ pad }};gap:{{ gap }};width:{{ width }};border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);color:var(--mm-cocoa);font-weight:var(--mm-weight-bold);font-size:{{ fs }};box-shadow:var(--mm-shadow-4);transition:transform var(--mm-dur-press) var(--mm-ease-spring), box-shadow var(--mm-dur-press), background var(--mm-dur-press);background:var(--mm-yellow);cursor:pointer" style-hover="background:var(--mm-paper);transform:translate(-3px,-3px);box-shadow:var(--mm-shadow-7)" style-active="transform:translate(3px,3px);box-shadow:var(--mm-shadow-0)">{{ label }}{{ children }}</button></sc-if>
+<sc-if value="{{ secondaryLink }}" hint-placeholder-val="{{ false }}"><a href="{{ href }}" data-part="{{ dataPart }}" style="height:{{ h }};padding:{{ pad }};gap:{{ gap }};width:{{ width }};border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);color:var(--mm-cocoa);font-weight:var(--mm-weight-bold);font-size:{{ fs }};box-shadow:var(--mm-shadow-4);transition:transform var(--mm-dur-press) var(--mm-ease-spring), box-shadow var(--mm-dur-press), background var(--mm-dur-press);background:var(--mm-paper);display:flex;align-items:center;text-decoration:none" style-hover="background:var(--mm-yellow);transform:translate(-3px,-3px);box-shadow:var(--mm-shadow-7)" style-active="transform:translate(3px,3px);box-shadow:var(--mm-shadow-0)">{{ label }}{{ children }}</a></sc-if>
+<sc-if value="{{ secondaryButton }}" hint-placeholder-val="{{ false }}"><button type="{{ type }}" onClick="{{ onPress }}" aria-pressed="{{ pressed }}" disabled="{{ disabled }}" data-part="{{ dataPart }}" style="height:{{ h }};padding:{{ pad }};gap:{{ gap }};width:{{ width }};border-radius:var(--mm-radius-pill);border:var(--mm-outline-style);color:var(--mm-cocoa);font-weight:var(--mm-weight-bold);font-size:{{ fs }};box-shadow:var(--mm-shadow-4);transition:transform var(--mm-dur-press) var(--mm-ease-spring), box-shadow var(--mm-dur-press), background var(--mm-dur-press);background:var(--mm-paper);cursor:pointer" style-hover="background:var(--mm-yellow);transform:translate(-3px,-3px);box-shadow:var(--mm-shadow-7)" style-active="transform:translate(3px,3px);box-shadow:var(--mm-shadow-0)">{{ label }}{{ children }}</button></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;320px&quot;,&quot;height&quot;:&quot;90px&quot;},&quot;version&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;primary&quot;,&quot;secondary&quot;],&quot;default&quot;:&quot;primary&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;md&quot;,&quot;lg&quot;],&quot;default&quot;:&quot;md&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;label&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;href&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;type&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;button&quot;,&quot;submit&quot;],&quot;default&quot;:&quot;button&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onPress&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;function&quot;},&quot;pressed&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;boolean&quot;},&quot;disabled&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;boolean&quot;}}">
+// The site's call-to-action button. version: primary (yellow, paper on hover) or secondary (paper, yellow on hover);
+// size: md (60px, 17px text) or lg (64px, 18px text, fills its row: the add-to-basket button).
+// href makes it a link; without href it is a button that calls onPress. Children sit after the words (an icon chip),
+// and a button with an icon chip uses the tighter right padding the design draws around the chip.
+// Focus is the site-wide ring from the focus tokens; the design has no disabled look, so disabled only disables.
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props;
+    const version = p.version === 'secondary' ? 'secondary' : 'primary';
+    const lg = p.size === 'lg', link = !!p.href, icon = !!p.children;
+    return {
+      primaryLink: version === 'primary' && link, primaryButton: version === 'primary' && !link,
+      secondaryLink: version === 'secondary' && link, secondaryButton: version === 'secondary' && !link,
+      label: p.label || null, children: p.children || null, href: p.href || null,
+      type: p.type || 'button', onPress: p.onPress || null, disabled: p.disabled ? true : null,
+      pressed: p.pressed === undefined || p.pressed === null ? null : String(!!p.pressed),
+      dataPart: p.dataPart || null,
+      h: lg ? '64px' : '60px', fs: lg ? 'var(--mm-size-18)' : 'var(--mm-size-17)',
+      pad: lg ? null : icon ? '0 var(--mm-space-10) 0 var(--mm-space-28)' : version === 'secondary' ? '0 26px' : '0 30px',
+      gap: icon ? 'var(--mm-space-14)' : null, width: lg ? '100%' : null
+    };
+  }
+}
+</script>
+</body>
+</html>
