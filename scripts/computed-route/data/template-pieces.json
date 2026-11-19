@@ -14,7 +14,18 @@
 		"archive-product": {
 			"pieces": [
 				{ "id": "listing", "block": "woocommerce/product-collection", "required": true, "kind": "rule", "by": "commerceRegion" },
-				{ "id": "listing-card", "block": "sgs/product-card", "required": true, "kind": "rule", "by": "commerceRegion" }
+				{ "id": "listing-card", "block": "sgs/product-card", "required": true, "kind": "rule", "by": "commerceRegion" },
+				{ "id": "sorting", "block": "woocommerce/catalog-sorting", "required": false, "kind": "shop-sort", "find": { "surface": "filter", "contains": "wp:woocommerce/catalog-sorting", "labelSetting": "useLabel", "orders": { "default": "menu_order", "priceAsc": "price", "priceDesc": "price-desc" } } },
+				{ "id": "results-count", "block": "woocommerce/product-results-count", "required": false, "kind": "shop-sort", "find": { "count": "listing" } }
+			]
+		},
+		"single-product": {
+			"pieces": [
+				{ "id": "buy-box", "block": "sgs/buybox", "required": true, "kind": "buybox", "find": { "surface": "buybox" } },
+				{ "id": "title", "block": "sgs/heading", "required": true, "kind": "product-field", "find": { "surface": "buybox", "contains": "wp:post-title" }, "bind": { "source": "sgs-product/field", "key": "title" } },
+				{ "id": "price", "block": "sgs/text", "required": false, "kind": "product-field", "find": { "field": "price" }, "bind": { "source": "sgs-product/field", "key": "price" } },
+				{ "id": "description", "block": "sgs/text", "required": false, "kind": "product-field", "find": { "field": "description" }, "bind": { "source": "sgs-product/field", "key": "short_description" } },
+				{ "id": "gallery", "block": "sgs/buybox", "required": false, "kind": "product-field", "find": { "field": "image" } }
 			]
 		},
 		"product-search-results": {
