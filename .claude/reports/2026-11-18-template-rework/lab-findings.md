@@ -99,3 +99,24 @@ Built from blank for the seeded order 5998, viewed by its signed-in owner: `inta
 | The order number is not bold | A bound value is plain text | Framework gap, recorded |
 
 Not checked live yet: a gift order (the note card and "Dear <name>,"), a guest (the "Create an account" card) and a wrong order key (nothing shown).
+
+## Phone width (375), all eight surfaces (2026-11-19 evening)
+
+Every pair now exists at 375 beside its 1440 pair: `E:\sgs-tmp\template-rework\lab\shots\pair-<surface>-375-*.png` (draft or hand-finished copy on the left, the from-blank clone on the right; `.partN.png` files are the same picture cut into 1800px strips for reading). The basket was retaken in its current state (after part-look's second round, `pair-basket-375-route-round2.png`); the shop, product, 404 and search were taken now; the checkout pair is the shell rerun (`pair-checkout-375-round2.png`); the account and order confirmation pairs are from the first run. Most 1440 faults repeat at 375; the rows below are the ones that are new at phone width or worse there.
+
+| Surface | Fault at 375 | Proof | Owner |
+|---|---|---|---|
+| Basket | The line price runs past the card's right edge (`£9.50` clipped) | Picture; the item card is a grid whose price column does not shrink | Plugin (Task 3, the item-card look) |
+| Basket | The summary card has no "Summary" title at phone width, and the gap under the card is about 70px larger | Picture | Route: part-look's verify pass at 375 (it reads 1440 only) |
+| Checkout | WooCommerce's floating labels sit inside the fields where the draft puts the label above; "Country/Region" overlaps "United Kingdom (UK)" | Picture | Plugin or part-look: the field-label mode is not a setting part-look writes (open) |
+| Checkout | The delivery and payment radio dots overlap their labels ("Royal Mail" reads "yal Mail"), prices sit top right, no "Arrives…" line, the chosen option is not filled | Picture | Route: part-look locators for the shipping-option tile (the 1440 overlap fault, worse at 375) |
+| Checkout | "Who's it for?" tiles stack full width where the draft puts the two side by side; "for me" loses the script face | Picture | Route: the gift-choice tiles' layout and type are not read at 375 |
+| Checkout | The draft's phone "Show order summary" bar at the top is gone (the summary sits after the payment step), the slim header's "Secure checkout" wraps and is underlined where the draft has a lock and one word | Picture | Route (`woo-shell` builder: the toggle was rightly dropped as a static fake, nothing replaces it; the header link look) |
+| Checkout | The allergen note loses its dashed box and its line spacing breaks; the terms line is WooCommerce's bold sentence | Picture | Route: part-look has no locator for the note or terms |
+| Checkout | Postcode lookup ("Find address") and the mobile field are missing | The draft draws an address finder WooCommerce does not have | Framework gap (not a clone fault) |
+| Account (signed out) | Same as 1440 (WooCommerce's forms), and a 180px empty gap under the register card | Old run: the card builder landed after it | Route: rerun (Task 5) |
+| Order confirmation | Close at 375 as at 1440; the tick and step icons are ovals, not circles; the "With you" step shows a star where the draft has a heart; the line picture has no frame | Picture | Route (icon discs and icon choice, the general session) |
+| Shop | The filter chips wrap onto two rows (the draft scrolls one row sideways); a stray "Choose an option" label sits under the sort; the cards show option pickers, descriptions and the value ladder, so the page is 6,223px against the draft's 4,063 | Picture; the card faults are the 1440 ones (part-look round three is not yet written on this copy) | Route: Task 5 rerun for the cards; the chip row and the stray label are open |
+| Product | The title block comes before the gallery (the draft puts the gallery first at phone width); the draft's sticky "£21.50 · Add to basket" bar is missing | Picture | Route: the buy box's phone order and sticky bar are not read (open) |
+| Product | The reviews stay three columns at 375, one word a line, where the draft shows one card and a peek of the next | Picture | Route (Fill's responsive columns for the reviews section, the general session) |
+| 404 and search | The theme's fallback search field and button run edge to edge with no side gutter | Picture | Route: the page shell's fallback content gets no side padding; ruled to be replaced by the draft's own 404 and search |
