@@ -12,6 +12,7 @@ import { SCOPE_ATTR, scopeFinder, scopeSelector, finderKind } from './fill-skele
 import { contentType } from './draft.mjs';
 import { FLUID_WIDTHS, SWEEP_WIDTHS, LENGTH_PROPS } from './fill-values.mjs';
 import { readExtras, missingExtras, unreadDeclared } from './fill-declared.mjs';
+import { alternateJobs, mergeAlternates } from './fill-read-alternates.mjs';
 import { readStates } from './fill-state-read.mjs';
 import { readLogicStates } from './fill-logic-state.mjs';
 import { readCurrentItems } from './fill-current-item.mjs';
@@ -199,7 +200,8 @@ async function openPage( browser, devices, { url, open, opener = null, width, or
 export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], logicRows = [], currentGroups = [], opener = null, branches = [], log = () => {} } ) {
 	const { chromium, devices } = await loadChromium();
 	const origin = new URL( url ).origin;
-	const jobs = jobsFor( nodes );
+	// A node drawn from width alternatives reads each alternative's element too (lib/fill-read-alternates.mjs).
+	const jobs = [ ...jobsFor( nodes ), ...alternateJobs( nodes ) ];
 	// The read also stamps each stand-in block's element as its own (lib/region-stand-in.mjs), reading nothing there.
 	const stamped = [ ...jobs, ...standInJobs( nodes ) ];
 	const browser = await chromium.launch( { headless, args: [ '--hide-scrollbars' ] } );
@@ -337,5 +339,5 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 	} finally {
 		await browser.close();
 	}
-	return result;
+	return mergeAlternates( result, jobs );
 }

@@ -1,0 +1,74 @@
+[
+	{
+		"file": "lib/skeleton-write-slots.mjs",
+		"find": "keys.length && ( middle.widthAlternatives = keys );",
+		"replace": "",
+		"why": "the row would not list the other bars, so Fill would read the desktop bar only"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "const jobs = [ ...jobsFor( nodes ), ...alternateJobs( nodes ) ];",
+		"replace": "const jobs = jobsFor( nodes );",
+		"why": "the alternatives would never be read"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "return mergeAlternates( result, jobs );",
+		"replace": "return result;",
+		"why": "the alternatives would be read and never moved onto the row"
+	},
+	{
+		"file": "lib/fill-read-alternates.mjs",
+		"find": "'none' === v.styles?.display || ",
+		"replace": "",
+		"why": "a bar the draft hides with display none would count as drawn, so the row keeps reading it at the phone width"
+	},
+	{
+		"file": "lib/fill-read-alternates.mjs",
+		"find": "if ( ! isAbsent( byId[ root ] ) || isAbsent( byId[ j.id ] ) ) {",
+		"replace": "if ( isAbsent( byId[ j.id ] ) ) {",
+		"why": "the alternative would replace the row's own read at the widths its own bar is drawn"
+	},
+	{
+		"file": "lib/fill-read-alternates.mjs",
+		"find": "if ( ! isAbsent( byId[ root ] ) || isAbsent( byId[ j.id ] ) ) {",
+		"replace": "if ( ! isAbsent( byId[ root ] ) ) {",
+		"why": "an alternative that is not drawn there either would replace the row's read"
+	},
+	{
+		"file": "lib/fill-read-alternates.mjs",
+		"find": "result.declared?.[ w ] && result.declared[ w ][ j.id ] && ( result.declared[ w ][ root ] = result.declared[ w ][ j.id ] );",
+		"replace": "",
+		"why": "the declared grid tracks (1fr auto 1fr) would stay the hidden bar's"
+	},
+	{
+		"file": "lib/fill-read-alternates.mjs",
+		"find": "delete byId[ j.id ];",
+		"replace": "",
+		"why": "the alternatives' own reads would stay in the result as targets no node owns"
+	},
+	{
+		"file": "lib/fill-read-alternates.mjs",
+		"find": "take[ i ] && ( series[ i ] = { ...( mine[ prop ]?.[ i ] ?? entry ) } );",
+		"replace": "",
+		"why": "the swept series would keep reading the row absent at the widths its alternative is drawn"
+	},
+	{
+		"file": "lib/fill-read-alternates.mjs",
+		"find": "result.failures = ( result.failures || [] ).map( ( f ) => ( f.id === j.id ? { ...f, id: j.alt.of } : f ) );",
+		"replace": "",
+		"why": "a failed read of an alternative would name a target no node owns"
+	},
+	{
+		"file": "lib/fill-skeleton.mjs",
+		"find": "'draftFingerprint', 'widthAlternatives', 'handover'",
+		"replace": "'draftFingerprint', 'handover'",
+		"why": "the block tree Fill writes would carry the draft key"
+	},
+	{
+		"file": "lib/fill-skeleton.mjs",
+		"find": "|| ! a.shown.length ) ) ) {",
+		"replace": ") ) ) {",
+		"why": "an alternative with no widths would be accepted"
+	}
+]

@@ -102,6 +102,10 @@ export function makeSlotRows( ctx ) {
 			}
 			Object.keys( cols ).length && ( middle.attributes[ H.columnsSetting ] = cols );
 		}
+		// The row keeps the widest bar as its draft element; Fill reads each other bar's own layout at the widths that bar is
+		// drawn at (lib/fill-read.mjs::alternateJobs), so the row's per-device layout settings follow the bar drawn there.
+		const keys = ( alt?.others || [] ).filter( ( o ) => o.draftRef?.tpl ).map( ( o ) => ( { key: o.draftRef.tpl, shown: m.shownAt( elOf( o ) ) } ) );
+		keys.length && ( middle.widthAlternatives = keys );
 		alt?.others.forEach( ( o ) => ( middle.handover ||= [] ).push( { owner: 'behaviour', kind: 'behaviour', detail: `${ o.draftRef?.tpl }: the main bar's alternative shown at ${ m.shownAt( elOf( o ) ).join( ' and ' ) }px gives its children to the middle row; its own layout settings have no row to live on (the row reads ${ middle.draftRef?.tpl })` } ) );
 		return [ top || emptyRow( 'top' ), middle, bottom || emptyRow( 'bottom' ) ];
 	}
