@@ -241,7 +241,8 @@ test( 'MUST FAIL: place puts one sgs/order-items in place of the lines and the t
 		[ 'sgs/button', 'url:sgs/order:view_url:' ],
 	] );
 	const rules = all.filter( ( x ) => x.n.attributes?.sgsConditionLoggedIn ).map( ( x ) => [ x.n.name, x.n.attributes.sgsConditionLoggedIn ] );
-	assert.deepEqual( rules, [ [ 'sgs/text', 'order-viewable' ], [ 'sgs/text', 'order-viewable' ], [ 'sgs/container', 'order-has-gift' ], [ 'sgs/container', 'order-no-gift' ], [ 'sgs/container', 'order-owner' ], [ 'sgs/container', 'order-guest' ] ] );
+	// The card holding the lines and its title shows only while the visitor may view the order, so it is never an empty box.
+	assert.deepEqual( rules, [ [ 'sgs/text', 'order-viewable' ], [ 'sgs/container', 'order-viewable' ], [ 'sgs/text', 'order-viewable' ], [ 'sgs/container', 'order-has-gift' ], [ 'sgs/container', 'order-no-gift' ], [ 'sgs/container', 'order-owner' ], [ 'sgs/container', 'order-guest' ] ] );
 	// Negative control: the currency amount outside the order keeps its words and gets no binding or rule.
 	const free = all.find( ( x ) => /Free delivery/.test( x.n.attributes?.text || '' ) ).n;
 	assert.deepEqual( free.attributes, { text: 'Free delivery over £40.00' } );
@@ -249,6 +250,59 @@ test( 'MUST FAIL: place puts one sgs/order-items in place of the lines and the t
 	assert.equal( got.problems.filter( ( p ) => /bake\.date|chooses fixed words/.test( p ) ).length, 2 );
 	assert.deepEqual( checkPieces( { key: 'order-confirmation', tree: got.tree, data } ), [] );
 	assert.deepEqual( got.placed.filter( ( p ) => p.key ).map( ( p ) => p.key ), [ 'number', 'total', 'gift_to', 'gift_message', 'view_url' ] );
+} );
+
+// The values piece then the lines piece over one tree, as the route runs them (data/template-pieces.json order).
+function runBoth( { draft, record }, tree ) {
+	const base = { key: 'order-confirmation', factRecord: record, rootComponent: 'Page', draft, db: fakeDb(), plugin: PLUGIN, orderFacts: FACTS };
+	const values = place( { ...base, tree }, { id: 'order-number', find: 'order-values' } );
+	const lines = place( { ...base, tree: values.tree }, { id: 'order-items', block: 'sgs/order-items', find: 'order-lines' } );
+	return { ...lines, valuesPlaced: values.placed };
+}
+const nodesOf = ( tree ) => tree.flatMap( ( n ) => [ n, ...nodesOf( n.innerBlocks || [] ) ] );
+const cardOf = ( tree ) => nodesOf( tree ).find( ( n ) => ( n.innerBlocks || [] ).some( ( c ) => 'sgs/order-items' === c.name ) );
+
+test( 'MUST FAIL: the card holding sgs/order-items (and its title) or only bound values takes the viewable rule; a container with other content of its own does not', () => {
+	const planted = plant();
+	const { record } = planted;
+	// The card whose only content is the order lines and its title is an empty box when the order cannot be viewed: it takes the rule.
+	const got = runBoth( planted, plantedTree( record ) );
+	const card = cardOf( got.tree );
+	assert.equal( card.attributes.sgsConditionLoggedIn, 'order-viewable' );
+	assert.ok( got.placed.some( ( p ) => 'sgs/container' === p.block && /^Page\/\d+$/.test( p.at ) && 'order-viewable' === p.rule ), 'the card is reported as placed with the rule' );
+	// The tree the lines piece is given is not changed by the rule it adds.
+	const input = plantedTree( record );
+	const snapshot = structuredClone( input );
+	place( { key: 'order-confirmation', tree: input, factRecord: record, rootComponent: 'Page', draft: planted.draft, db: fakeDb(), plugin: PLUGIN, orderFacts: FACTS }, { id: 'order-items', block: 'sgs/order-items', find: 'order-lines' } );
+	assert.deepEqual( input, snapshot );
+	// Negative control: a button of its own beside the lines keeps the card visible, and the builder says so.
+	const withButton = plantedTree( record );
+	const pre = nodesOf( withButton ).find( ( n ) => ( n.innerBlocks || [] ).some( ( c ) => /Your items/.test( c.attributes?.text || '' ) ) );
+	pre.innerBlocks.push( { name: 'sgs/button', attributes: { label: 'Keep browsing', url: '/shop/' }, innerBlocks: [] } );
+	const kept = runBoth( planted, withButton );
+	assert.equal( cardOf( kept.tree ).attributes.sgsConditionLoggedIn, undefined );
+	assert.match( kept.notes.join( '\n' ), /the card around sgs\/order-items \(Page\/\d+\) also holds sgs\/button, so it stays visible when the order cannot be viewed/ );
+	// A card inside a block that already shows for an order rule is left alone (that block decides), and a card with its own
+	// Show-to value keeps it.
+	const ruledAbove = plantedTree( record );
+	ruledAbove[ 0 ].attributes.sgsConditionLoggedIn = 'order-owner';
+	assert.equal( cardOf( runBoth( planted, ruledAbove ).tree ).attributes.sgsConditionLoggedIn, undefined );
+	const own = plantedTree( record );
+	nodesOf( own ).find( ( n ) => ( n.innerBlocks || [] ).some( ( c ) => /Your items/.test( c.attributes?.text || '' ) ) ).attributes.sgsConditionLoggedIn = 'logged-in';
+	assert.equal( cardOf( runBoth( planted, own ).tree ).attributes.sgsConditionLoggedIn, 'logged-in' );
+	// A container whose only content is a bound value takes the rule too; one with a static text beside the bound value does not.
+	const alone = plantedTree( record );
+	const section = alone[ 0 ].innerBlocks[ 0 ];
+	section.innerBlocks.splice( 1, 1, { name: 'sgs/container', attributes: {}, innerBlocks: [ section.innerBlocks[ 1 ] ] } );
+	const wrapped = runBoth( planted, alone );
+	const wrapper = nodesOf( wrapped.tree ).find( ( n ) => 'sgs/container' === n.name && ! n.draftRef && n.innerBlocks?.[ 0 ]?.attributes?.metadata?.bindings );
+	assert.equal( wrapper.attributes.sgsConditionLoggedIn, 'order-viewable' );
+	assert.equal( nodesOf( wrapped.tree ).find( ( n ) => n.draftRef?.tpl === section.draftRef.tpl ).attributes.sgsConditionLoggedIn, undefined, 'the section with the static heading is not hidden' );
+	const mixed = plantedTree( record );
+	const sec = mixed[ 0 ].innerBlocks[ 0 ];
+	sec.innerBlocks.splice( 1, 2, { name: 'sgs/container', attributes: {}, innerBlocks: [ sec.innerBlocks[ 1 ], sec.innerBlocks[ 2 ] ] } );
+	const mixedGot = runBoth( planted, mixed );
+	assert.equal( nodesOf( mixedGot.tree ).find( ( n ) => 'sgs/container' === n.name && ! n.draftRef ).attributes.sgsConditionLoggedIn, undefined );
 } );
 
 test( 'MUST FAIL: a value whose block cannot hold it, or a branch the skeleton lacks, is a problem row and nothing is guessed', () => {
@@ -354,7 +408,10 @@ test( "Mama's confirmation: one sgs/order-items, the number, gift name, gift not
 	assert.equal( ( s.match( /"name":"sgs\/order-items"/g ) || [] ).length, 1 );
 	const binds = got.placed.filter( ( p ) => p.key ).map( ( p ) => `${ p.block } ${ p.attribute } ${ p.key } ${ p.format ?? '' }`.trim() );
 	assert.deepEqual( binds, [ 'sgs/text text number Order %s. We’ve emailed your receipt, and you’ll get a tracking link as soon as it’s posted.', 'sgs/text text gift_to Dear %s,', 'sgs/text text gift_message', 'sgs/button url view_url' ] );
-	assert.deepEqual( got.placed.filter( ( p ) => p.rule ).map( ( p ) => `${ p.at } ${ p.rule }` ), [ 'Confirmation/42 order-has-gift', 'Confirmation/49 order-no-gift', 'Confirmation/55 order-owner', 'Confirmation/61 order-guest', 'Confirmation/14 order-viewable' ] );
+	assert.deepEqual( got.placed.filter( ( p ) => p.rule ).map( ( p ) => `${ p.at } ${ p.rule }` ), [ 'Confirmation/42 order-has-gift', 'Confirmation/49 order-no-gift', 'Confirmation/55 order-owner', 'Confirmation/61 order-guest', 'Confirmation/14 order-viewable', 'Confirmation/29 order-viewable' ] );
+	// The "What’s coming" card (the title and the order lines) is the one container ruled for the lines: it is no empty box under a wrong key.
+	assert.equal( find( got.tree, 'Root/29#0' ).attributes.sgsConditionLoggedIn, 'order-viewable' );
+	assert.equal( find( got.tree, 'Root/28#0' ).attributes.sgsConditionLoggedIn, undefined );
 	assert.deepEqual( got.placed.find( ( p ) => 'sgs/order-items' === p.block ).attributes, { showThumbnail: true, showMeta: true, showSubtotal: false, showDelivery: false, showDiscount: false, showGiftCard: false, showTotal: true, totalLabel: 'Paid' } );
 	assert.deepEqual( checkPieces( { key: 'order-confirmation', tree: got.tree, data: loadPieces() } ), [] );
 	// What no key holds is named, never bound: the bake and arrival dates, the step that reads the bake date, the eyebrow chosen by createAccount.

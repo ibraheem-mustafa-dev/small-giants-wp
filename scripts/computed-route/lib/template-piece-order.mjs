@@ -45,6 +45,57 @@ function readsFor( ctx ) {
 	return { facts, plugin, db, draft, order, factProblems: orderFactsProblems( { facts, plugin, db } ) };
 }
 
+// The order Show-to rule a node already holds (`order-*`), or null.
+function orderRuleOn( db, node ) {
+	const attr = Object.keys( node.attributes || {} ).find( ( a ) => ruleAttr( db, node.name, node.attributes[ a ] ) && 'none' !== node.attributes[ a ] && 'string' === typeof node.attributes[ a ] && /^order-/.test( node.attributes[ a ] ) );
+	return attr ? node.attributes[ attr ] : null;
+}
+
+// Containers that would stand as empty boxes while the visitor may not view the order, each taking the `viewable` rule (the
+// plugin's Show-to setting holds one rule per block, so a container already ruled, or under a ruled block, is left to that rule):
+//   - a container whose every child is an order-bound block, an sgs/order-items or such a container (nothing static of its own);
+//   - the card directly holding an sgs/order-items, when its other content is only titles (sgs/heading or sgs/text with no
+//     binding and no blocks inside): the title names the lines and means nothing without them. A card with any other block of
+//     its own (a button, a picture, a container) keeps showing, and a note says so.
+// The tree is changed in place; returns { placed, notes }.
+function ruleOrderCards( { tree, r, rootComponent, piece } ) {
+	const { facts, plugin, db } = r;
+	const placed = [];
+	const notes = [];
+	const viewable = facts.viewable;
+	if ( ! viewable ) {
+		return { placed, notes };
+	}
+	const bound = ( n ) => Object.values( n.attributes?.metadata?.bindings || {} ).some( ( b ) => b?.source === plugin.source );
+	const lines = ( n ) => n.name === facts.items.block;
+	const onlyOrder = ( n ) => bound( n ) || lines( n ) || ( ( n.innerBlocks || [] ).length > 0 && n.innerBlocks.every( onlyOrder ) );
+	const title = ( n ) => [ 'sgs/heading', 'sgs/text' ].includes( n.name ) && ! bound( n ) && ! ( n.innerBlocks || [] ).length;
+	const visit = ( list ) => ( list || [] ).forEach( ( node ) => {
+		if ( orderRuleOn( db, node ) ) {
+			return;
+		}
+		const kids = node.innerBlocks || [];
+		const holdsLines = kids.some( lines );
+		const attr = ruleAttr( db, node.name, viewable );
+		const free = attr && ( ! node.attributes?.[ attr ] || 'none' === node.attributes[ attr ] );
+		const card = holdsLines && kids.every( ( c ) => lines( c ) || onlyOrder( c ) || title( c ) );
+		if ( ! bound( node ) && kids.length && ( onlyOrder( node ) || card ) ) {
+			if ( free ) {
+				node.attributes = { ...( node.attributes || {} ), [ attr ]: viewable };
+				placed.push( { id: piece.id, block: node.name, at: node.draftRef?.tpl ? templateKeyOf( node.draftRef.tpl, rootComponent ) : null, rule: viewable } );
+			}
+			return;
+		}
+		if ( holdsLines && free ) {
+			const other = kids.find( ( c ) => ! lines( c ) && ! onlyOrder( c ) && ! title( c ) );
+			notes.push( `the card around ${ facts.items.block } (${ node.draftRef?.tpl ? templateKeyOf( node.draftRef.tpl, rootComponent ) : node.name }) also holds ${ other.name }, so it stays visible when the order cannot be viewed` );
+		}
+		visit( kids );
+	} );
+	visit( tree );
+	return { placed, notes };
+}
+
 // The tree with every node `drop` names removed and `put` inserted where the first of them stood.
 function replaceNodes( tree, drop, put ) {
 	let placed = false;
@@ -100,7 +151,9 @@ function placeLines( ctx, piece, r ) {
 		holder.innerBlocks = [ ...( holder.innerBlocks || [] ).slice( 0, before ), put, ...( holder.innerBlocks || [] ).slice( before ) ];
 	}
 	const notes = [ at( `${ piece.block } stands for the order lines ${ order.lines.key }${ order.rows.length ? ` and the totals row${ order.rows.length > 1 ? 's' : '' } ${ order.rows.map( ( x ) => x.el ).join( ', ' ) }` : '' }; the look of its rows (thumbnail size and shape, item name and price type, row spacing) is not read from the draft, so the block shows its own until a look is set` ) ];
-	return { tree, placed: [ { id: piece.id, block: piece.block, at: order.lines.key, attributes } ], notes };
+	// Every block with blocks inside is a rebuilt copy (replaceNodes, or the clone above), so the cards' rule never reaches the caller's tree.
+	const cards = ruleOrderCards( { tree, r, rootComponent: ctx.rootComponent, piece } );
+	return { tree, placed: [ { id: piece.id, block: piece.block, at: order.lines.key, attributes }, ...cards.placed ], notes: [ ...notes, ...cards.notes.map( at ) ] };
 }
 
 // The order values piece: bindings on the blocks holding the order's values, Show-to rules on its branches.
@@ -121,10 +174,7 @@ function placeValues( ctx, piece, r ) {
 	const problems = [ ...factProblems, ...order.problems ];
 	const notes = [ ...order.notes ];
 	const placed = [];
-	const ruleOn = ( node ) => {
-		const attr = Object.keys( node.attributes || {} ).find( ( a ) => ruleAttr( db, node.name, node.attributes[ a ] ) && 'none' !== node.attributes[ a ] && 'string' === typeof node.attributes[ a ] && /^order-/.test( node.attributes[ a ] ) );
-		return attr ? node.attributes[ attr ] : null;
-	};
+	const ruleOn = ( node ) => orderRuleOn( db, node );
 
 	// Branch rules, on the top nodes of each branch's content.
 	for ( const b of order.branches ) {
@@ -231,7 +281,8 @@ function placeValues( ctx, piece, r ) {
 			problems.push( `${ node.name } (${ holder }) holds no setting with the Show-to rule ${ viewable }, so its sample order words show to a visitor who may not view the order` );
 		}
 	}
-	return { tree, placed, problems: [ ...new Set( problems ) ].map( at ), notes: [ ...new Set( notes ) ].map( at ) };
+	const cards = ruleOrderCards( { tree, r, rootComponent: ctx.rootComponent, piece } );
+	return { tree, placed: [ ...placed, ...cards.placed ], problems: [ ...new Set( problems ) ].map( at ), notes: [ ...new Set( [ ...notes, ...cards.notes ] ) ].map( at ) };
 }
 
 // Places one order piece (see the header). `ctx`: { key, tree, factRecord, rootComponent, handoffDir, db?, draft?,
