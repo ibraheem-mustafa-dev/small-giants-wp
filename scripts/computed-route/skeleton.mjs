@@ -43,6 +43,7 @@ import { savedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
 import { skeletonDir, readDecisions, readPicks, recordDecision, recordSiteName, finaliseRequest, applyPicks } from './lib/skeleton-finalise.mjs';
 import { commerceOf } from './lib/skeleton-commerce-region.mjs';
 import { loadCatalogue } from './lib/catalogue-read.mjs';
+import { piecesPass } from './lib/template-pieces-context.mjs';
 
 const FINALISER_PROMPT = 'scripts/computed-route/prompts/skeleton-finaliser.md';
 
@@ -143,6 +144,10 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const commerce = commerceOf( readSurface( repo, client, surface ), readJson( path.join( repo, 'sites', client, 'build', 'page-map.json' ), [] ), loadCatalogue( repo, client ) );
 	const site = readSurface( repo, client, surface ).site;
 	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, built: ctx.built, carried: carriedIds( { repo, client, site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( site, cache ), calTags: calTagsFor( site, cache ), calSettings: calSettingsFor( site, cache ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
+	// A template's working pieces (the buy box, the bound title, the shop's sorting) replace the draft's imitation of them (data/template-pieces.json).
+	const pieces = piecesPass( { repo, client, entry: readSurface( repo, client, surface ), tree: r.skeleton, inventory } );
+	Object.assign( r, { skeleton: pieces.tree, problems: [ ...r.problems, ...pieces.problems ] } );
+	r.proposal.templatePieces = { placed: pieces.placed, problems: pieces.problems, notes: pieces.notes };
 	assertSkeletonPaints( { skeleton: r.skeleton, site: runSite ?? site, client, what: `skeleton propose ${ surface }`, cache, allow: allowMissingPaint } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
