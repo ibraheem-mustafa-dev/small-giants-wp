@@ -30,5 +30,6 @@
 	{"file": "lib/template-piece-order.mjs", "find": "if ( holder !== h.el ) {", "replace": "if ( false ) {", "why": "lost inline formatting is not noted"},
 	{"file": "lib/template-piece-order-plugin.mjs", "find": ".find( ( a ) => ( supported[ block ] || [] ).includes( a ) ) ?? null;", "replace": ".find( () => true ) ?? null;", "why": "an attribute the bindings support does not list is bound"},
 	{"file": "lib/template-piece-order-plugin.mjs", "find": "return JSON.parse( r.enum_values ).includes( rule );", "replace": "return true;", "why": "any enum setting is taken for the Show-to setting"},
-	{"file": "lib/template-piece-order-plugin.mjs", "find": "plugin.keys.includes( key ) || out.push(", "replace": "true || out.push(", "why": "a key the plugin does not hold passes"}
+	{"file": "lib/template-piece-order-plugin.mjs", "find": "plugin.keys.includes( key ) || out.push(", "replace": "true || out.push(", "why": "a key the plugin does not hold passes"},
+	{"file": "lib/template-piece-order.mjs", "find": "${ readBranch( b.el ) ? 'the inventory read its elements and the proposal kept none of them' :", "replace": "${ false ? 'the inventory read its elements and the proposal kept none of them' :", "why": "a branch the inventory read and the proposal dropped is taken for one never read"}
 ]

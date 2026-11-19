@@ -210,7 +210,12 @@
 							}
 						]
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-hero__content": {
+						"tpl": "Root/10#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -1011,7 +1016,7 @@
 											{
 												"name": "sgs/text",
 												"attributes": {
-													"text": "Dear Sample to ,"
+													"text": "Dear giftTo ,"
 												},
 												"draftRef": {
 													"tpl": "Root/46#0"
@@ -1027,7 +1032,7 @@
 														"div",
 														"div"
 													],
-													"textHash": "416f23a6",
+													"textHash": "210f77dc",
 													"line": 44
 												},
 												"innerBlocks": []
@@ -1035,7 +1040,7 @@
 											{
 												"name": "sgs/text",
 												"attributes": {
-													"text": "Sample message"
+													"text": "note"
 												},
 												"draftRef": {
 													"tpl": "Root/47#0"
@@ -1051,7 +1056,7 @@
 														"div",
 														"div"
 													],
-													"textHash": "72a7a848",
+													"textHash": "7c724dd5",
 													"line": 45
 												},
 												"innerBlocks": []
@@ -1177,6 +1182,133 @@
 													"line": 53
 												},
 												"innerBlocks": []
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/55#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp0",
+									"styleHash": "35eccd9c",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 59
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/56#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "1505",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"a"
+											],
+											"textHash": "1505",
+											"line": 60
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "all in one place"
+												},
+												"draftRef": {
+													"tpl": "Root/57#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "7fc711a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"a",
+														"span"
+													],
+													"textHash": "acc0593c",
+													"line": 60
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Follow this order in your account"
+												},
+												"draftRef": {
+													"tpl": "Root/58#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe6d8d78",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"a",
+														"span"
+													],
+													"textHash": "9a4b8fab",
+													"line": 60
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/button",
+										"attributes": {
+											"label": "View order →",
+											"url": "/my-account/"
+										},
+										"draftRef": {
+											"tpl": "Root/59#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "718c7d8d",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"a"
+											],
+											"textHash": "e5f7a394",
+											"line": 61
+										},
+										"innerBlocks": [],
+										"handover": [
+											{
+												"owner": "behaviour",
+												"kind": "link",
+												"detail": "draft link \"Account.dc.html?order=MM-1042\" opens /my-account/; its draft query ?order=MM-1042 has no site address and is dropped"
 											}
 										]
 									}
@@ -1375,7 +1507,12 @@
 													"textHash": "1505",
 													"line": 72
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-icon__shape > .sgs-icon__glyph > svg": {
+														"tpl": "Root/69#0"
+													}
+												}
 											},
 											{
 												"name": "sgs/container",
@@ -1576,133 +1713,6 @@
 														"innerBlocks": []
 													}
 												]
-											}
-										]
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "flex"
-								},
-								"draftRef": {
-									"tpl": "Root/55#0"
-								},
-								"draftFingerprint": {
-									"tag": "a",
-									"cls": "scp0",
-									"styleHash": "35eccd9c",
-									"parentTags": [
-										"main",
-										"section",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 59
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/56#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "1505",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"a"
-											],
-											"textHash": "1505",
-											"line": 60
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/heading",
-												"attributes": {
-													"content": "all in one place"
-												},
-												"draftRef": {
-													"tpl": "Root/57#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "7fc711a",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"a",
-														"span"
-													],
-													"textHash": "acc0593c",
-													"line": 60
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "Follow this order in your account"
-												},
-												"draftRef": {
-													"tpl": "Root/58#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "fe6d8d78",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"a",
-														"span"
-													],
-													"textHash": "9a4b8fab",
-													"line": 60
-												},
-												"innerBlocks": []
-											}
-										]
-									},
-									{
-										"name": "sgs/button",
-										"attributes": {
-											"label": "View order →",
-											"url": "/my-account/"
-										},
-										"draftRef": {
-											"tpl": "Root/59#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "718c7d8d",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"a"
-											],
-											"textHash": "e5f7a394",
-											"line": 61
-										},
-										"innerBlocks": [],
-										"handover": [
-											{
-												"owner": "behaviour",
-												"kind": "link",
-												"detail": "draft link \"Account.dc.html?order=MM-1042\" opens /my-account/; its draft query ?order=MM-1042 has no site address and is dropped"
 											}
 										]
 									}

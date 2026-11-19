@@ -116,6 +116,8 @@ function placeValues( ctx, piece, r ) {
 		k && byKey.set( k, [ ...( byKey.get( k ) || [] ), w ] );
 	} );
 	const record = ctx.factRecord.elements;
+	// Whether the surface's inventory holds an element of a branch (the data branch reader marks them `branch`).
+	const readBranch = ( el ) => ( ctx.inventory?.elements || [] ).some( ( e ) => ( record[ templateKeyOf( e.key, ctx.rootComponent ) ]?.template?.membership?.scIf || [] ).some( ( s ) => s.key === el ) );
 	const problems = [ ...factProblems, ...order.problems ];
 	const notes = [ ...order.notes ];
 	const placed = [];
@@ -136,7 +138,7 @@ function placeValues( ctx, piece, r ) {
 		const mine = nodes.filter( ( w ) => ( record[ keyOf( w.node ) ]?.template?.membership?.scIf || [] ).some( ( s ) => s.key === b.el ) );
 		const tops = mine.filter( ( w ) => ! w.up.some( ( u ) => mine.some( ( x ) => x.node === u ) ) );
 		if ( ! tops.length ) {
-			problems.push( `the branch ${ b.el } ({{ ${ b.test } }}, ${ b.rule }) is not in the skeleton: the draft did not show it when it was read, so its blocks and their rule are missing` );
+			problems.push( `the branch ${ b.el } ({{ ${ b.test } }}, ${ b.rule }) is not in the skeleton: ${ readBranch( b.el ) ? 'the inventory read its elements and the proposal kept none of them' : 'the inventory holds none of its elements (no data branch read for it, lib/skeleton-data-branches.mjs)' }, so its blocks and their rule are missing` );
 			continue;
 		}
 		for ( const { node } of tops ) {

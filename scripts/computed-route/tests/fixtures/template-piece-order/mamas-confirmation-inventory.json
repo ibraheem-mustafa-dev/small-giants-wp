@@ -1,0 +1,548 @@
+{
+ "_about": "Mama's Confirmation inventory read by skeleton.mjs inventory with the data branch reader (lib/skeleton-data-branches.mjs) on 2026-11-19, keys, parents, tags, words and branch marks only, for tests/template-piece-order.test.mjs",
+ "elements": [
+  {
+   "key": "Root/8#0",
+   "parentKey": "Root/6#0",
+   "tag": "main",
+   "words": ""
+  },
+  {
+   "key": "Root/9#0",
+   "parentKey": "Root/8#0",
+   "tag": "section",
+   "words": ""
+  },
+  {
+   "key": "Root/10#0",
+   "parentKey": "Root/9#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/11#0",
+   "parentKey": "Root/10#0",
+   "tag": "div",
+   "words": "✓"
+  },
+  {
+   "key": "Root/12#0",
+   "parentKey": "Root/10#0",
+   "tag": "div",
+   "words": "thank you, lovely"
+  },
+  {
+   "key": "Root/13#0",
+   "parentKey": "Root/10#0",
+   "tag": "h1",
+   "words": "Your order’s in. Zainab’s warming the oven."
+  },
+  {
+   "key": "Root/14#0",
+   "parentKey": "Root/10#0",
+   "tag": "p",
+   "words": "Order . We’ve emailed your receipt, and you’ll get a tracking link as soon as it’s posted."
+  },
+  {
+   "key": "Root/15#0",
+   "parentKey": "Root/14#0",
+   "tag": "b",
+   "words": "MM-1042"
+  },
+  {
+   "key": "Root/16#0",
+   "parentKey": "Root/10#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/17#0",
+   "parentKey": "Root/16#0",
+   "tag": "span",
+   "words": "✦"
+  },
+  {
+   "key": "Root/18#0",
+   "parentKey": "Root/16#0",
+   "tag": "span",
+   "words": "Baking on · with you from Wed 25 Nov"
+  },
+  {
+   "key": "Root/19#0",
+   "parentKey": "Root/18#0",
+   "tag": "b",
+   "words": "Mon 23 Nov"
+  },
+  {
+   "key": "Root/20#0",
+   "parentKey": "Root/8#0",
+   "tag": "section",
+   "words": ""
+  },
+  {
+   "key": "Root/21#0",
+   "parentKey": "Root/20#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/22#0",
+   "parentKey": "Root/21#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/24#0",
+   "parentKey": "Root/22#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/25#0",
+   "parentKey": "Root/24#0",
+   "tag": "span",
+   "words": "✓"
+  },
+  {
+   "key": "Root/26#0",
+   "parentKey": "Root/24#0",
+   "tag": "b",
+   "words": "Order placed"
+  },
+  {
+   "key": "Root/27#0",
+   "parentKey": "Root/24#0",
+   "tag": "span",
+   "words": "Just now"
+  },
+  {
+   "key": "Root/24#1",
+   "parentKey": "Root/22#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/25#1",
+   "parentKey": "Root/24#1",
+   "tag": "span",
+   "words": "✦"
+  },
+  {
+   "key": "Root/26#1",
+   "parentKey": "Root/24#1",
+   "tag": "b",
+   "words": "Baking"
+  },
+  {
+   "key": "Root/27#1",
+   "parentKey": "Root/24#1",
+   "tag": "span",
+   "words": "Zainab bakes it fresh on Mon 23 Nov"
+  },
+  {
+   "key": "Root/24#2",
+   "parentKey": "Root/22#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/25#2",
+   "parentKey": "Root/24#2",
+   "tag": "span",
+   "words": "→"
+  },
+  {
+   "key": "Root/26#2",
+   "parentKey": "Root/24#2",
+   "tag": "b",
+   "words": "Posted"
+  },
+  {
+   "key": "Root/27#2",
+   "parentKey": "Root/24#2",
+   "tag": "span",
+   "words": "Royal Mail Tracked, link by email"
+  },
+  {
+   "key": "Root/24#3",
+   "parentKey": "Root/22#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/25#3",
+   "parentKey": "Root/24#3",
+   "tag": "span",
+   "words": "♥"
+  },
+  {
+   "key": "Root/26#3",
+   "parentKey": "Root/24#3",
+   "tag": "b",
+   "words": "With you"
+  },
+  {
+   "key": "Root/27#3",
+   "parentKey": "Root/24#3",
+   "tag": "span",
+   "words": "Usually in 3–5 days"
+  },
+  {
+   "key": "Root/28#0",
+   "parentKey": "Root/21#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/29#0",
+   "parentKey": "Root/28#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/30#0",
+   "parentKey": "Root/29#0",
+   "tag": "div",
+   "words": "What’s coming"
+  },
+  {
+   "key": "Root/32#0",
+   "parentKey": "Root/29#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/33#0",
+   "parentKey": "Root/32#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/34#0",
+   "parentKey": "Root/32#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/35#0",
+   "parentKey": "Root/34#0",
+   "tag": "div",
+   "words": "1 × Zookies · 20 pack"
+  },
+  {
+   "key": "Root/36#0",
+   "parentKey": "Root/34#0",
+   "tag": "div",
+   "words": "Classic oat · milk choc chips · strawberry"
+  },
+  {
+   "key": "Root/37#0",
+   "parentKey": "Root/32#0",
+   "tag": "b",
+   "words": "£21.50"
+  },
+  {
+   "key": "Root/38#0",
+   "parentKey": "Root/29#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/39#0",
+   "parentKey": "Root/38#0",
+   "tag": "b",
+   "words": "Paid"
+  },
+  {
+   "key": "Root/40#0",
+   "parentKey": "Root/38#0",
+   "tag": "span",
+   "words": "£21.50"
+  },
+  {
+   "key": "Root/42#0",
+   "parentKey": "Root/28#0",
+   "tag": "div",
+   "words": "",
+   "branch": {
+    "component": "Confirmation",
+    "keys": {
+     "giftTo": "giftTo",
+     "note": "note",
+     "hasNote": true,
+     "hasTo": true
+    }
+   }
+  },
+  {
+   "key": "Root/43#0",
+   "parentKey": "Root/42#0",
+   "tag": "span",
+   "words": "",
+   "branch": {
+    "component": "Confirmation",
+    "keys": {
+     "giftTo": "giftTo",
+     "note": "note",
+     "hasNote": true,
+     "hasTo": true
+    }
+   }
+  },
+  {
+   "key": "Root/44#0",
+   "parentKey": "Root/42#0",
+   "tag": "div",
+   "words": "Your note, going in the box",
+   "branch": {
+    "component": "Confirmation",
+    "keys": {
+     "giftTo": "giftTo",
+     "note": "note",
+     "hasNote": true,
+     "hasTo": true
+    }
+   }
+  },
+  {
+   "key": "Root/46#0",
+   "parentKey": "Root/42#0",
+   "tag": "div",
+   "words": "Dear giftTo ,",
+   "branch": {
+    "component": "Confirmation",
+    "keys": {
+     "giftTo": "giftTo",
+     "note": "note",
+     "hasNote": true,
+     "hasTo": true
+    }
+   }
+  },
+  {
+   "key": "Root/47#0",
+   "parentKey": "Root/42#0",
+   "tag": "div",
+   "words": "note",
+   "branch": {
+    "component": "Confirmation",
+    "keys": {
+     "giftTo": "giftTo",
+     "note": "note",
+     "hasNote": true,
+     "hasTo": true
+    }
+   }
+  },
+  {
+   "key": "Root/49#0",
+   "parentKey": "Root/28#0",
+   "tag": "a",
+   "words": ""
+  },
+  {
+   "key": "Root/50#0",
+   "parentKey": "Root/49#0",
+   "tag": "span",
+   "words": "know another new mum?"
+  },
+  {
+   "key": "Root/51#0",
+   "parentKey": "Root/49#0",
+   "tag": "span",
+   "words": "Send her a Taster Trio"
+  },
+  {
+   "key": "Root/52#0",
+   "parentKey": "Root/49#0",
+   "tag": "span",
+   "words": "3 Zookies through her letterbox for £5, postage included."
+  },
+  {
+   "key": "Root/53#0",
+   "parentKey": "Root/49#0",
+   "tag": "span",
+   "words": "Send one →"
+  },
+  {
+   "key": "Root/55#0",
+   "parentKey": "Root/21#0",
+   "tag": "a",
+   "words": "",
+   "branch": {
+    "component": "Confirmation",
+    "keys": {
+     "hasAcct": true
+    }
+   }
+  },
+  {
+   "key": "Root/56#0",
+   "parentKey": "Root/55#0",
+   "tag": "span",
+   "words": "",
+   "branch": {
+    "component": "Confirmation",
+    "keys": {
+     "hasAcct": true
+    }
+   }
+  },
+  {
+   "key": "Root/57#0",
+   "parentKey": "Root/56#0",
+   "tag": "span",
+   "words": "all in one place",
+   "branch": {
+    "component": "Confirmation",
+    "keys": {
+     "hasAcct": true
+    }
+   }
+  },
+  {
+   "key": "Root/58#0",
+   "parentKey": "Root/56#0",
+   "tag": "span",
+   "words": "Follow this order in your account",
+   "branch": {
+    "component": "Confirmation",
+    "keys": {
+     "hasAcct": true
+    }
+   }
+  },
+  {
+   "key": "Root/59#0",
+   "parentKey": "Root/55#0",
+   "tag": "span",
+   "words": "View order →",
+   "branch": {
+    "component": "Confirmation",
+    "keys": {
+     "hasAcct": true
+    }
+   }
+  },
+  {
+   "key": "Root/61#0",
+   "parentKey": "Root/21#0",
+   "tag": "a",
+   "words": ""
+  },
+  {
+   "key": "Root/62#0",
+   "parentKey": "Root/61#0",
+   "tag": "span",
+   "words": ""
+  },
+  {
+   "key": "Root/63#0",
+   "parentKey": "Root/62#0",
+   "tag": "span",
+   "words": "next time"
+  },
+  {
+   "key": "Root/64#0",
+   "parentKey": "Root/62#0",
+   "tag": "span",
+   "words": "Create an account to see bake dates and past orders"
+  },
+  {
+   "key": "Root/65#0",
+   "parentKey": "Root/61#0",
+   "tag": "span",
+   "words": "Create an account →"
+  },
+  {
+   "key": "Root/66#0",
+   "parentKey": "Root/21#0",
+   "tag": "div",
+   "words": ""
+  },
+  {
+   "key": "Root/67#0",
+   "parentKey": "Root/66#0",
+   "tag": "a",
+   "words": ""
+  },
+  {
+   "key": "Root/68#0",
+   "parentKey": "Root/67#0",
+   "tag": "span",
+   "words": ""
+  },
+  {
+   "key": "Root/69#0",
+   "parentKey": "Root/68#0",
+   "tag": "svg",
+   "words": ""
+  },
+  {
+   "key": "Root/70#0",
+   "parentKey": "Root/69#0",
+   "tag": "rect",
+   "words": ""
+  },
+  {
+   "key": "Root/71#0",
+   "parentKey": "Root/69#0",
+   "tag": "circle",
+   "words": ""
+  },
+  {
+   "key": "Root/72#0",
+   "parentKey": "Root/69#0",
+   "tag": "circle",
+   "words": ""
+  },
+  {
+   "key": "Root/73#0",
+   "parentKey": "Root/67#0",
+   "tag": "span",
+   "words": ""
+  },
+  {
+   "key": "Root/74#0",
+   "parentKey": "Root/73#0",
+   "tag": "b",
+   "words": "Watch it being baked"
+  },
+  {
+   "key": "Root/75#0",
+   "parentKey": "Root/73#0",
+   "tag": "span",
+   "words": "Follow @mamasmunches"
+  },
+  {
+   "key": "Root/76#0",
+   "parentKey": "Root/66#0",
+   "tag": "a",
+   "words": ""
+  },
+  {
+   "key": "Root/77#0",
+   "parentKey": "Root/76#0",
+   "tag": "span",
+   "words": "←"
+  },
+  {
+   "key": "Root/78#0",
+   "parentKey": "Root/76#0",
+   "tag": "span",
+   "words": ""
+  },
+  {
+   "key": "Root/79#0",
+   "parentKey": "Root/78#0",
+   "tag": "b",
+   "words": "Back to the kitchen"
+  },
+  {
+   "key": "Root/80#0",
+   "parentKey": "Root/78#0",
+   "tag": "span",
+   "words": "Keep browsing"
+  }
+ ]
+}

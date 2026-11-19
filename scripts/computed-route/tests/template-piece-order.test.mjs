@@ -269,7 +269,11 @@ test( 'MUST FAIL: a value whose block cannot hold it, or a branch the skeleton l
 	const lines = place( { key: 'order-confirmation', tree: plantedTree( record ), factRecord: record, rootComponent: 'Page', draft, db: fakeDb( ROWS.filter( ( r ) => 'showGiftCard' !== r.attr_name ) ), plugin: PLUGIN, orderFacts: FACTS }, { id: 'order-items', block: 'sgs/order-items', find: 'order-lines' } );
 	assert.equal( Object.hasOwn( lines.placed[ 0 ].attributes, 'showGiftCard' ), false );
 	assert.equal( lines.placed[ 0 ].attributes.showTotal, true );
-	assert.match( said, /the branch Page\/\d+ \(\{\{ hasNote \}\}, order-has-gift\) is not in the skeleton/ );
+	assert.match( said, /the branch Page\/\d+ \(\{\{ hasNote \}\}, order-has-gift\) is not in the skeleton: the inventory holds none of its elements \(no data branch read for it/ );
+	// When the inventory read the branch and the proposal dropped it, the row says so.
+	const giftEl = Object.keys( record.elements ).find( ( k ) => record.elements[ k ].template.words.includes( 'Your note' ) );
+	const read = place( { key: 'order-confirmation', tree, factRecord: record, inventory: { elements: [ { key: `Root/${ giftEl.split( '/' )[ 1 ] }#0`, branch: { component: 'Page', keys: { hasNote: true } } } ] }, rootComponent: 'Page', draft, db: fakeDb( rows ), plugin: PLUGIN, orderFacts: FACTS }, { id: 'order-number', find: 'order-values' } );
+	assert.match( read.problems.join( '\n' ), /hasNote \}\}, order-has-gift\) is not in the skeleton: the inventory read its elements and the proposal kept none of them/ );
 	assert.match( said, /the value \{\{ giftTo \}\} \(Page\/\d+, gift_to\) is not in the skeleton/ );
 	assert.match( said, /sgs\/heading \(Page\/\d+\) has no words setting a binding can write, so the order's number/ );
 	assert.ok( ! JSON.stringify( got.tree ).includes( '"key":"number"' ) );
@@ -310,14 +314,21 @@ test( 'MUST FAIL: the plugin facts are read from the plugin, and the order facts
 	] );
 } );
 
-// Mama's real inputs: the committed Confirmation draft, its fact record elements (fixture) and the skeleton the proposer made
-// from its inventory read with the order's gift and account parts revealed (fixture; the route's own inventory reads the
-// opening state only).
+// Mama's real inputs: the committed Confirmation draft, its fact record elements (fixture), and the inventory and skeleton the
+// route's own commands made from it (fixtures: skeleton.mjs inventory with the data branch reader, lib/skeleton-data-branches.mjs,
+// then proposeSurface), so the gift note and the view-order card are in the skeleton at their place in the draft.
 test( "Mama's confirmation: one sgs/order-items, the number, gift name, gift note and view-order link bound, each branch ruled", () => {
 	const handoff = path.join( REPO, 'sites', 'mamas-munches-redesign', 'handoff' );
 	const factRecord = JSON.parse( fs.readFileSync( path.join( FIX, 'mamas-confirmation-facts.json' ), 'utf8' ) );
 	const tree = JSON.parse( fs.readFileSync( path.join( FIX, 'mamas-confirmation-skeleton.json' ), 'utf8' ) );
-	const got = placePieces( { key: 'order-confirmation', tree, data: loadPieces(), ctx: { factRecord, rootComponent: 'Confirmation', handoffDir: handoff, db: openDb() }, builders: { order: { place } } } );
+	const inventory = JSON.parse( fs.readFileSync( path.join( FIX, 'mamas-confirmation-inventory.json' ), 'utf8' ) );
+	assert.deepEqual( inventory.elements.filter( ( e ) => e.branch ).map( ( e ) => e.key ), [ 'Root/42#0', 'Root/43#0', 'Root/44#0', 'Root/46#0', 'Root/47#0', 'Root/55#0', 'Root/56#0', 'Root/57#0', 'Root/58#0', 'Root/59#0' ] );
+	const got = placePieces( { key: 'order-confirmation', tree, data: loadPieces(), ctx: { factRecord, inventory, rootComponent: 'Confirmation', handoffDir: handoff, db: openDb() }, builders: { order: { place } } } );
+	// The view-order card stands where the draft puts it: after the items and note row, before the guest card and the two links.
+	const find = ( list, tpl ) => list.reduce( ( hit, n ) => hit || ( n.draftRef?.tpl === tpl ? n : find( n.innerBlocks || [], tpl ) ), null );
+	const kidsOf = ( list, tpl ) => find( list, tpl )?.innerBlocks.map( ( c ) => c.draftRef?.tpl ?? c.name );
+	assert.deepEqual( kidsOf( got.tree, 'Root/21#0' ), [ 'Root/22#0', 'Root/28#0', 'Root/55#0', 'Root/61#0', 'Root/66#0' ] );
+	assert.deepEqual( kidsOf( got.tree, 'Root/28#0' ), [ 'Root/29#0', 'Root/42#0', 'Root/49#0' ] );
 	const s = JSON.stringify( got.tree );
 	assert.equal( ( s.match( /"name":"sgs\/order-items"/g ) || [] ).length, 1 );
 	const binds = got.placed.filter( ( p ) => p.key ).map( ( p ) => `${ p.block } ${ p.attribute } ${ p.key } ${ p.format ?? '' }`.trim() );
