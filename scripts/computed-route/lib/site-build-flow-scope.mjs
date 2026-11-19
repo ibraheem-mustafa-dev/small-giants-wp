@@ -2,7 +2,7 @@
 // plans a `_sgs_choice_flow` link for each published product a product row covers; this narrows that plan:
 // - a product row links its flow only when the draft's buy box itself opens it: the row's `opens` entry for that flow carries
 //   `buyBox` (lib/intake-pagemap-openers.mjs). A flow drawn inline on a page (a home page's build-your-box section) or opened only from
-//   elsewhere links no product;
+//   elsewhere links no product. Only a live row covers products, so a static row's buy box links none (scopePlan);
 // - a product is linked only when it is a purchasable product of the types data/surface-openers.json `flowLinks.productTypes`
 //   names (never a gift card or any other product type), holds at least one variation attribute (never an option-less
 //   product), and holds every attribute the flow's priced questions resolve (the question block's `flowLinks.pricedSetting`
@@ -41,8 +41,10 @@ export function productRefusal( p, attrs = [] ) {
 // [attr] } }).
 export function scopePlan( plan, rows, state ) {
 	const byFlow = new Map();
-	for ( const row of rows.filter( ( r ) => 'product' === r.postType && r.opensFlow ) ) {
-		// A flow any of its rows opens from a buy box is allowed.
+	// Only a live row covers products (lib/site-build-flow-links.mjs::planFlowLinks; a static row's items are page content), so
+	// only a live row's buy box can justify a product's link.
+	for ( const row of rows.filter( ( r ) => 'product' === r.postType && 'live' === r.collection && r.opensFlow ) ) {
+		// A flow any of its live rows opens from a buy box is allowed (every live row covers the same products).
 		if ( ! byFlow.has( row.opensFlow ) || null !== byFlow.get( row.opensFlow ) ) {
 			byFlow.set( row.opensFlow, rowRefusal( row ) );
 		}

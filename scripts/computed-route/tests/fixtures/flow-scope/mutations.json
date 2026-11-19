@@ -9,6 +9,7 @@
  {"file":"lib/site-build-flow-scope.mjs","find":"\tif ( ! ( p.options || [] ).length ) {","replace":"\tif ( false ) {","why":"an option-less product takes a flow link"},
  {"file":"lib/site-build-flow-scope.mjs","find":"const missing = attrs.filter( ( a ) => ! p.options.includes( a ) );","replace":"const missing = [];","why":"a product lacking the priced attribute takes a flow link"},
  {"file":"lib/site-build-flow-scope.mjs","find":"\t\tif ( ! byFlow.has( row.opensFlow ) || null !== byFlow.get( row.opensFlow ) ) {","replace":"\t\tif ( true ) {","why":"the last row wins, so a row with no buy box hides one that has it"},
+ {"file":"lib/site-build-flow-scope.mjs","find":"'product' === r.postType && 'live' === r.collection && r.opensFlow","replace":"'product' === r.postType && r.opensFlow","why":"a static row's buy box, which covers no product, justifies the live row's link"},
  {"file":"lib/site-build-flow-scope.mjs","find":"\t\tif ( why && ! said.has( why ) ) {","replace":"\t\tif ( why ) {","why":"one refusal is noted once per product"},
  {"file":"data/surface-openers.json","find":"\"productTypes\": [ \"simple\", \"variable\" ],","replace":"\"productTypes\": [ \"simple\", \"variable\", \"sgs_gift_card\" ],","why":"the gift card type is listed as purchasable for flows"}
 ]

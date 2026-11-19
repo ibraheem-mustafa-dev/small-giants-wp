@@ -49,12 +49,30 @@ test( 'MUST FAIL: a flow no buy box opens (an inline flow, or a control elsewher
 		assert.equal( r.out.filter( ( l ) => /opens flow "choice-flow-add-lenses" from no buy box/.test( l ) ).length, 1, 'one note, however many products' );
 	}
 	assert.equal( rowRefusal( rows()[ 0 ] ), null );
-	// Two product rows on one flow: the flow is linked when either row's buy box opens it.
-	const two = [ ...rows( [] ), { slug: 'other', postType: 'product', collection: 'static', opensFlow: FLOW, opens: buyBox } ];
+	// Two live product rows on one flow cover the same products: the flow is linked when either row's buy box opens it.
+	const two = [ ...rows( [] ), { slug: 'other', postType: 'product', collection: 'live', opensFlow: FLOW, opens: buyBox } ];
 	const plan = scopePlan( { actions: [ { id: 10, title: 'Round', to: FLOW } ], notes: [], problems: [] }, two, site() );
 	assert.deepEqual( plan.actions.map( ( a ) => a.id ), [ 10 ] );
-	const back = [ { slug: 'other', postType: 'product', collection: 'static', opensFlow: FLOW, opens: buyBox }, ...rows( [] ) ];
+	const back = [ { slug: 'other', postType: 'product', collection: 'live', opensFlow: FLOW, opens: buyBox }, ...rows( [] ) ];
 	assert.deepEqual( scopePlan( { actions: [ { id: 10, title: 'Round', to: FLOW } ], notes: [], problems: [] }, back, site() ).actions.map( ( a ) => a.id ), [ 10 ], 'whichever row comes first' );
+} );
+
+test( 'MUST FAIL: a static product row covers no product, so its buy box does not justify the live row\'s link', () => {
+	const live = rows( [] );
+	const staticBox = { slug: 'hand-built', postType: 'product', collection: 'static', opensFlow: FLOW, opens: buyBox };
+	const asked = { actions: [ { id: 10, title: 'Round', to: FLOW } ], notes: [], problems: [] };
+	for ( const set of [ [ ...live, staticBox ], [ staticBox, ...live ] ] ) {
+		const plan = scopePlan( asked, set, site() );
+		assert.deepEqual( plan.actions, [], 'the live row opens the flow from no buy box' );
+		assert.ok( plan.notes.some( ( n ) => /product row "product" opens flow "choice-flow-add-lenses" from no buy box/.test( n ) ), 'the note names the live row' );
+	}
+	// Negative control: the live row's own buy box links, whatever static rows say.
+	const noBox = { ...staticBox, opens: [] };
+	assert.deepEqual( scopePlan( asked, [ ...rows(), noBox ], site() ).actions.map( ( a ) => a.id ), [ 10 ] );
+	assert.deepEqual( scopePlan( asked, [ noBox, ...rows() ], site() ).actions.map( ( a ) => a.id ), [ 10 ] );
+	// The whole run agrees: the static row's buy box links no product.
+	const r = run( [ ...live, staticBox ], site() );
+	assert.deepEqual( r.planned, [] );
 } );
 
 test( 'negative control: the unscoped plan would link every product', () => {
