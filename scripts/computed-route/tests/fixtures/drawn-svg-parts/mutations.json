@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "isPart( k ) && 'svg' === k.tag && Object.values( k.visible || {} ).some( Boolean )", "replace": "isPart( k ) && 'svg' === k.tag && k.visible[ 1440 ]", "why": "a phone bar's icon (hidden at 1440) would get no glyph slot" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "isPart( k ) && 'svg' === k.tag && Object.values( k.visible || {} ).some( Boolean )", "replace": "isPart( k ) && 'svg' === k.tag", "why": "an SVG drawn at no width would be read" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "isPart( k ) && 'svg' === k.tag && Object.values", "replace": "'svg' === k.tag && Object.values", "why": "an SVG that is not a part would be read" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "'string' === typeof slot && '' !== slot && ! slot.includes( '::' ) ?", "replace": "'string' === typeof slot ?", "why": "a pseudo slot would be given a finder" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "if ( ! Array.isArray( at ) || ! at.length || ! at.every( ( i ) => Number.isInteger( i ) && i >= 0 ) ) {", "replace": "if ( ! Array.isArray( at ) ) {", "why": "a negative index would give a finder" }
+]
