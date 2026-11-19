@@ -148,6 +148,20 @@ export function ownPaint( cal, slot, w, prop, fs ) {
 	return 'line-height' === prop && fs && base && ! Number.isNaN( px ) ? `${ Math.round( ( px / base ) * fs * 100 ) / 100 }px` : v;
 }
 
+// The block's own paint of an inherited property on the nearest part that holds the slot's element and sets one (a glyph inside
+// an icon's shape inherits the shape's colour, not the colour the block's root shows). The root is not a part here: what the
+// root shows is the node's shown value. Undefined where no part between the root and the slot sets one.
+export function partOwnPaint( cal, slot, w, prop, fs ) {
+	const steps = String( slot ?? '' ).split( /\s*>\s*/ ).filter( Boolean );
+	for ( let i = steps.length - 1; i >= 1; i-- ) {
+		const v = ownPaint( cal, steps.slice( 0, i ).join( ' > ' ), w, prop, fs );
+		if ( undefined !== v ) {
+			return v;
+		}
+	}
+	return undefined;
+}
+
 // What the node shows at a slot with nothing written. A non-inherited property shows its calibrated default paint. An
 // inherited one (R-47-5) shows the block's own paint of it where its stylesheet sets one (ownPaint), else what its parent
 // shows, or at the top of the surface what the theme gives the page; a theme element style (a heading's family and
@@ -157,7 +171,7 @@ export function baselineFn( st, rec, cal, prop, ownFontPx = () => undefined ) {
 	return ( slot, w ) => {
 		if ( INHERITED.includes( prop ) && ! slot.includes( '::' ) ) {
 			const fs = ownFontPx( w );
-			const own = ownPaint( cal, slot, w, prop, fs );
+			const own = ownPaint( cal, slot, w, prop, fs ) ?? partOwnPaint( cal, slot, w, prop, fs );
 			if ( undefined !== own ) {
 				return own;
 			}

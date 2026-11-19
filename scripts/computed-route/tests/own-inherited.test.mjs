@@ -12,7 +12,7 @@ import { createHash } from 'crypto';
 import { readInstancesInPage } from '../lib/calibrate-read.mjs';
 import { READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, INHERITED, OWN_INHERITED, READ_KEY } from '../lib/calibrate-props.mjs';
 import { slotFor } from '../lib/calibrate.mjs';
-import { baselineFn, ownPaint } from '../lib/fill-resolve-state.mjs';
+import { baselineFn, ownPaint, partOwnPaint } from '../lib/fill-resolve-state.mjs';
 import { ownerKeeps, recordOwner, clashes } from '../lib/fill-resolve-element.mjs';
 import { stateLook } from '../lib/calibrate-instances.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
@@ -135,4 +135,35 @@ test( 'MUST FAIL (nav link hover equal to the fixture\'s resting colour): a stat
 	const look = stateLook( hover, [ '' ], [ 'background-color' ] );
 	assert.deepEqual( look[ '' ].color, { 375: PRIMARY } );
 	assert.equal( look[ '' ][ 'background-color' ], undefined, 'the setting\'s own marker is not its look' );
+} );
+
+// An icon's shape paints its own colour (the block's stylesheet), and the glyph svg inside it inherits that colour, not the colour the
+// block's root inherits from its parent. A draft icon in a cocoa link has a cocoa glyph; the root shows cocoa too, so the glyph read
+// was judged "equal" against the root's value and no icon colour was written: the clone's glyph drew in the shape's own yellow on a
+// yellow disc (2026-11-19).
+const GLYPH = '.sgs-icon__shape > .sgs-icon__glyph > svg';
+const ICON = ( shape = { '_own:color': 'rgb(249, 207, 110)', _fs: '16px' } ) => ( { elements: { '': { 1440: {} }, '.sgs-icon__shape': { 1440: shape }, '.sgs-icon__shape > .sgs-icon__glyph': { 1440: {} }, [ GLYPH ]: { 1440: {} } } } );
+const iconState = () => ( { ...state(), shown: new Map( [ [ '0|color', { 1440: 'rgb(58, 42, 34)' } ], [ '1|color', { 1440: 'rgb(58, 42, 34)' } ] ] ) } );
+
+test( 'MUST FAIL: a glyph inside a part that paints its own colour has that colour as its baseline, not the root\'s', () => {
+	const st = iconState();
+	const rec = st.nodes[ 1 ];
+	assert.equal( baselineFn( st, rec, ICON(), 'color' )( GLYPH, 1440 ), 'rgb(249, 207, 110)', 'the glyph inherits the shape\'s colour' );
+	assert.equal( baselineFn( st, rec, ICON(), 'color' )( '.sgs-icon__shape > .sgs-icon__glyph', 1440 ), 'rgb(249, 207, 110)' );
+	assert.equal( partOwnPaint( ICON(), GLYPH, 1440, 'color' ), 'rgb(249, 207, 110)' );
+} );
+
+test( 'negative controls: no part paints a colour, the root is not a part, and the part itself reads its own paint', () => {
+	const st = iconState();
+	const rec = st.nodes[ 1 ];
+	assert.equal( baselineFn( st, rec, ICON( {} ), 'color' )( GLYPH, 1440 ), 'rgb(58, 42, 34)', 'with no part paint the glyph shows what the node shows' );
+	const rootOwn = { elements: { '': { 1440: { '_own:color': 'rgb(1, 2, 3)', _fs: '16px' } }, '.label': { 1440: {} } } };
+	assert.equal( partOwnPaint( rootOwn, '.label', 1440, 'color' ), undefined, 'a slot one step below the root has no part between' );
+	assert.equal( baselineFn( st, rec, ICON(), 'color' )( '.sgs-icon__shape', 1440 ), 'rgb(249, 207, 110)' );
+} );
+
+test( 'MUST FAIL: the nearest part that paints the property wins over an outer one', () => {
+	const cal = { elements: { '': { 1440: {} }, '.a': { 1440: { '_own:color': 'rgb(1, 1, 1)', _fs: '16px' } }, '.a > .b': { 1440: { '_own:color': 'rgb(2, 2, 2)', _fs: '16px' } }, '.a > .b > .c': { 1440: {} } } };
+	assert.equal( partOwnPaint( cal, '.a > .b > .c', 1440, 'color' ), 'rgb(2, 2, 2)' );
+	assert.equal( partOwnPaint( cal, '.a > .c', 1440, 'color' ), 'rgb(1, 1, 1)' );
 } );

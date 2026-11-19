@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "const own = ownPaint( cal, slot, w, prop, fs ) ?? partOwnPaint( cal, slot, w, prop, fs );",
+		"replace": "const own = ownPaint( cal, slot, w, prop, fs );",
+		"why": "a glyph inside a part that paints its own colour is judged against the root's colour"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "for ( let i = steps.length - 1; i >= 1; i-- ) {",
+		"replace": "for ( let i = steps.length - 1; i >= 0; i-- ) {",
+		"why": "the root is taken as a part, so its own paint reaches every slot below it"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "for ( let i = steps.length - 1; i >= 1; i-- ) {",
+		"replace": "for ( let i = 1; i >= 1 && i < steps.length; i++ ) {",
+		"why": "only the outermost part is consulted, not the nearest"
+	}
+]
