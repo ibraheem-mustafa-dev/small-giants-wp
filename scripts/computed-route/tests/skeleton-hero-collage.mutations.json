@@ -64,5 +64,23 @@
 		"find": " && ! collage.layerOf.has( p.key ) && ! inHeading( p ) );",
 		"replace": " && ! collage.layerOf.has( p.key ) );",
 		"why": "a photo set inline in the heading would be the hero's split media"
+	},
+	{
+		"file": "lib/skeleton-hero-collage.mjs",
+		"find": "if ( kids.length >= 2 && ! m.stacked( kids ) ) {",
+		"replace": "if ( kids.length >= 2 ) {",
+		"why": "a wrapper stacking the words above the stage would be kept as the row"
+	},
+	{
+		"file": "lib/skeleton-hero-collage.mjs",
+		"find": ".forEach( ( k ) => rows.add( k.key ) );",
+		"replace": ".forEach( () => {} );",
+		"why": "the column of words beside the stage would be unwrapped into the grid's cells"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "if ( collage.rows.has( e.key ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the wrapper laying the stage beside the words would be unwrapped"
 	}
 ]

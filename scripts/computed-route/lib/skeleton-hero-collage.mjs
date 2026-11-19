@@ -7,16 +7,20 @@
 // The widest width of the inventory the hero shows at, or null.
 const widthOf = ( hero ) => [ 1440, 768, 375 ].find( ( x ) => hero?.visible?.[ x ] ) ?? null;
 
-// The collage stages of `hero`: { stages: Map<stageKey, layerKeys[]>, layerOf: Map<elementKey, layerKey> }. `layerOf` maps every
-// element at or below a layer to that layer, so a rule can tell that an element sits in a collage.
-// m: the inventory model (byKey, blockKids, words), desc: an element's descendants, isMedia: whether an element is a picture,
-// minPictureLayers: how many absolutely placed children must hold a picture for the stage to be a collage.
+// The collage stages of `hero`: { stages: Map<stageKey, layerKeys[]>, layerOf: Map<elementKey, layerKey>, rows: Set<elementKey> }.
+// `layerOf` maps every element at or below a layer to that layer, so a rule can tell that an element sits in a collage. `rows`
+// holds the wrappers that set the stage beside the hero's words (the stage's ancestors below the hero that lay two or more
+// children side by side, and each other child of such a wrapper that holds two or more blocks of its own: the content column);
+// a hero with a split media lays its columns out itself, but a hero holding a collage does not, so these stay containers.
+// m: the inventory model (byKey, blockKids, words, stacked), desc: an element's descendants, isMedia: whether an element is a
+// picture, minPictureLayers: how many absolutely placed children must hold a picture for the stage to be a collage.
 export function heroCollage( { hero, m, desc, isMedia, minPictureLayers = 2 } ) {
 	const stages = new Map();
 	const layerOf = new Map();
+	const rows = new Set();
 	const w = widthOf( hero );
 	if ( null === w ) {
-		return { stages, layerOf };
+		return { stages, layerOf, rows };
 	}
 	const placed = ( x ) => 'absolute' === x.position?.[ w ];
 	for ( const s of desc( hero ) ) {
@@ -29,9 +33,16 @@ export function heroCollage( { hero, m, desc, isMedia, minPictureLayers = 2 } ) 
 			continue;
 		}
 		stages.set( s.key, layers.map( ( k ) => k.key ) );
+		for ( let up = m.byKey[ s.parentKey ], on = s; up && up !== hero; on = up, up = m.byKey[ up.parentKey ] ) {
+			const kids = m.blockKids( up );
+			if ( kids.length >= 2 && ! m.stacked( kids ) ) {
+				rows.add( up.key );
+				kids.filter( ( k ) => k !== on && ! isMedia( k ) && m.blockKids( k ).length >= 2 ).forEach( ( k ) => rows.add( k.key ) );
+			}
+		}
 		for ( const l of layers ) {
 			[ l, ...desc( l ) ].forEach( ( k ) => layerOf.set( k.key, l.key ) );
 		}
 	}
-	return { stages, layerOf };
+	return { stages, layerOf, rows };
 }

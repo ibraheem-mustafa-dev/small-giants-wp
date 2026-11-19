@@ -688,7 +688,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const collages = new Map();
 	const collageOf = ( hero ) => {
 		if ( ! collages.has( hero.key ) ) {
-			collages.set( hero.key, R.heroCollage ? heroCollage( { hero, m, desc, isMedia, minPictureLayers: R.heroCollage.minPictureLayers } ) : { stages: new Map(), layerOf: new Map() } );
+			collages.set( hero.key, R.heroCollage ? heroCollage( { hero, m, desc, isMedia, minPictureLayers: R.heroCollage.minPictureLayers } ) : { stages: new Map(), layerOf: new Map(), rows: new Set() } );
 		}
 		return collages.get( hero.key );
 	};
@@ -1026,6 +1026,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			}
 			if ( collage.layerOf.has( e.key ) ) {
 				return collage.layerOf.get( e.key ) === e.key ? v( 'heroCollageLayer', { block: R.heroCollageLayer?.block } ) : null;
+			}
+			if ( collage.rows.has( e.key ) ) {
+				return v( 'heroCollageRow', { block: R.heroCollageRow?.block } );
 			}
 			if ( isMedia( e ) ) {
 				// A picture laid behind the hero's content is its background (rules.heroBackdrop), not a part of its split media.

@@ -523,6 +523,10 @@
 			"block": "sgs/decorative-image",
 			"reason": "each absolutely placed child of a hero's collage wrapper is a decorative image layer at its own position, size, rotation and order, holding what the draft puts in it (the photo and its caption); a hero with one picture beside its content has no collage and stays a split hero"
 		},
+		"heroCollageRow": {
+			"block": "sgs/container",
+			"reason": "a hero's own layout holds one split media, so a hero whose collage stage sits beside its words keeps the wrapper that lays them side by side, and the column of words beside the stage, as containers: they are the grid the hero does not draw (lib/skeleton-hero-collage.mjs)"
+		},
 		"heroBackdrop": {
 			"reason": "a picture the draft lays behind the hero's content (an absolutely placed layer covering the hero's whole box, with no words of its own) is the hero's background picture, read at the hero's background setting; the hero stays a full-width hero and no split media part is read from it (lib/skeleton-hero-background.mjs::behindContent)"
 		},

@@ -92,6 +92,32 @@ test( 'MUST FAIL: the pictures and captions inside the layers are blocks of thei
 	assert.ok( all( [ nodeOf( r, 7 ) ] ).includes( nodeOf( r, 8 ) ), 'the picture sits inside its layer' );
 } );
 
+// The wrapper that sets the stage beside the hero's words: the hero holds a collage, so it does not lay out the columns.
+const wrapped = ( colHeight ) => [
+	[ 2, 1, 'section', '', 'display:block', HERO ], [ 20, 2, 'div', '', 'display:grid', { w: 1240, h: 600 } ],
+	[ 3, 20, 'div', '', 'display:flex;flex-direction:column', { w: 700, h: colHeight } ], [ 4, 3, 'h1', 'Made for the mum who needs it most' ], [ 5, 3, 'p', 'Giant, filling cookies baked fresh.' ],
+	[ 6, 20, 'div', '', 'position:relative;height:560px', { ...REL, w: 520, h: 560 } ], ...PILE,
+];
+
+test( 'MUST FAIL: the wrapper laying the stage beside the words, and the column of words, stay containers in a collage hero', () => {
+	const r = run( wrapped( 400 ) );
+	for ( const id of [ 20, 3 ] ) {
+		assert.equal( rowOf( r, id ).block, 'sgs/container', `element ${ id } stays a container` );
+		assert.equal( rowOf( r, id ).rule, 'heroCollageRow' );
+	}
+	assert.deepEqual( nodeOf( r, 20 ).innerBlocks.map( ( n ) => n.draftRef.tpl ), [ 'Root/3#0', 'Root/6#0' ], 'the grid holds the column then the stage' );
+	assert.deepEqual( nodeOf( r, 3 ).innerBlocks.map( ( n ) => n.name ), [ 'sgs/heading', 'sgs/text' ] );
+	assert.equal( rowOf( r, 6 ).rule, 'heroCollage' );
+	assert.notEqual( heroOf( r ).attributes.variant, 'split' );
+} );
+
+test( 'a wrapper that stacks the words above the stage is not a row: it is unwrapped as before', () => {
+	const r = run( wrapped( 20 ) );
+	assert.notEqual( rowOf( r, 20 ).rule, 'heroCollageRow' );
+	assert.equal( rowOf( r, 20 ).action, 'unwrap' );
+	assert.equal( rowOf( r, 6 ).rule, 'heroCollage', 'the stage is still a collage' );
+} );
+
 // The heading's inline photo (a chip of a picture set among the words) is part of the heading, never the hero's media.
 const INLINE = [ 15, 4, 'img', '', 'height:1em', { w: 60, h: 50 } ];
 
@@ -149,6 +175,7 @@ test( 'heroCollage reads the widest shown box of the hero and finds each stage o
 	assert.equal( c.layerOf.get( 'Root/8#0' ), 'Root/7#0' );
 	assert.equal( c.layerOf.get( 'Root/14#0' ), 'Root/13#0' );
 	assert.equal( c.layerOf.has( 'Root/6#0' ), false, 'the stage is not under a layer' );
+	assert.equal( c.rows.size, 0, 'no wrapper stands between the stage and the hero' );
 	assert.equal( heroCollage( { hero: { ...byKey[ 'Root/2#0' ], visible: {} }, m, desc, isMedia } ).stages.size, 0, 'a hero shown at no width has no box to read' );
 	assert.equal( heroCollage( { hero: byKey[ 'Root/2#0' ], m, desc, isMedia, minPictureLayers: 3 } ).stages.size, 0, 'two picture layers are fewer than three' );
 } );
