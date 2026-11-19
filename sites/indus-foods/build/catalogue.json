@@ -3,6 +3,7 @@
   "client": "indus-foods",
   "productBase": "product",
   "source": null,
+  "facets": [],
   "products": [],
   "gaps": []
 }
