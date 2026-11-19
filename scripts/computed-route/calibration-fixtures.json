@@ -1502,6 +1502,19 @@
           "content": "The same designer shades. A good deal less."
         }
       }
+    ],
+    "paintStates": [
+      {
+        "name": "split",
+        "when": { "equals": { "variant": "split" } },
+        "attributes": {
+          "variant": "split",
+          "backgroundSource": null,
+          "splitSource": {
+            "desktop": { "kind": "image", "id": "{{image}}", "url": "{{image.url}}" }
+          }
+        }
+      }
     ]
   },
   "sgs/icon-list": {

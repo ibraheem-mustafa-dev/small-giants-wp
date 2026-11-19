@@ -1,0 +1,13 @@
+[
+	{ "file": "lib/skeleton-rules.mjs", "find": "...( order.value ? { [ R.hero.splitOrder.setting ]: order.value } : {} ), ", "replace": "", "why": "the order is computed but never written" },
+	{ "file": "data/skeleton-decisions.json", "find": "\"part\": \"split-media\",", "replace": "", "why": "the absorbed picture is no part, so it gets no media slot" },
+	{ "file": "lib/skeleton-hero-order.mjs", "find": "return sideBySide ? media.x + media.w / 2 < words.x + words.w / 2 : media.y < words.y;", "replace": "return media.y < words.y;", "why": "side by side is judged by height, so a picture beside the words higher up reads as first" },
+	{ "file": "lib/skeleton-hero-order.mjs", "find": "const sideBySide = media.y < words.y + words.h && words.y < media.y + media.h;", "replace": "const sideBySide = true;", "why": "stacked is judged by left edge, so a picture under the words reads as first" },
+	{ "file": "lib/skeleton-hero-order.mjs", "find": "if ( Array.isArray( allowed ) && ! allowed.includes( v ) ) {", "replace": "if ( false ) {", "why": "a value the setting does not store is written" },
+	{ "file": "lib/skeleton-hero-order.mjs", "find": "const mb = media.visible?.[ w ] ? media.box?.[ w ] : null;", "replace": "const mb = media.box?.[ w ];", "why": "a hidden picture still decides that device's order" },
+	{ "file": "lib/skeleton-hero-order.mjs", "find": "if ( undefined === v || '' === v ) {", "replace": "if ( undefined === v ) {", "why": "desktop's empty value is written instead of left out" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "words: desc( e ).filter( ( k ) => m.words( k ) && ! m.blockKids( k ).length && ! isMedia( k ) && ! inPicture( k ) ),", "replace": "words: desc( e ).filter( ( k ) => ! m.blockKids( k ).length ),", "why": "the picture counts among the words, so their box always holds it" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "...( align ? { [ R.hero.splitAlignment.setting ]: align } : {} )", "replace": "", "why": "the picture's alignment is read but never written" },
+	{ "file": "lib/skeleton-hero-order.mjs", "find": "( 4 === margins.length && 'auto' === margins[ 1 ] && 'auto' === margins[ 3 ] )", "replace": "( 4 === margins.length && 'auto' === margins[ 1 ] )", "why": "one auto side reads as centred" },
+	{ "file": "lib/skeleton-hero-order.mjs", "find": "|| ( autoSides ? 'center' : '' );", "replace": "|| '';", "why": "auto side margins are not read as centring" }
+]

@@ -24,6 +24,7 @@ import { makeFieldGroups } from './skeleton-field-groups.mjs';
 import { widgetModel } from './skeleton-widgets.mjs';
 import { keptSvg } from './fill-icon.mjs';
 import { draftTokenLookup, handoffOf, resolvedOrRaw } from './draft-tokens.mjs';
+import { heroSplitOrder, heroMediaAlignment } from './skeleton-hero-order.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -898,8 +899,23 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( 1 !== e.depth && ! ( parent && wrapperOfPage( parent ) && m.blockKids( parent ).length >= 2 && m.blockKids( parent ).find( holdsH1 ) === e ) ) {
 				return null;
 			}
-			const media = desc( e ).some( isMedia );
-			return v( 'hero', { block: R.hero?.block, attributes: media ? { variant: 'split' } : {}, ...( media ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s split media setting' } } : {} ) } );
+			const pictures = desc( e ).filter( isMedia );
+			const media = pictures.length > 0;
+			// A split hero's order per device is the draft's (lib/skeleton-hero-order.mjs): its picture against every worded
+			// element outside a picture, at each device's width.
+			const inPicture = ( k ) => pictures.some( ( p ) => desc( p ).includes( k ) );
+			const order = media ? heroSplitOrder( {
+				media: pictures.find( ( p ) => Object.values( p.visible || {} ).some( Boolean ) ) || pictures[ 0 ],
+				words: desc( e ).filter( ( k ) => m.words( k ) && ! m.blockKids( k ).length && ! isMedia( k ) && ! inPicture( k ) ),
+				rule: R.hero?.splitOrder,
+				allowed: R.hero?.splitOrder?.setting ? facts.enumOf?.( R.hero.block, R.hero.splitOrder.setting ) ?? null : null,
+			} ) : { value: null, problems: [] };
+			// Its picture's own alignment in its column: the draft's declared justify-self or auto side margins.
+			const align = media ? heroMediaAlignment( { style: declared( pictures.find( ( p ) => Object.values( p.visible || {} ).some( Boolean ) ) || pictures[ 0 ], tokens ), rule: R.hero?.splitAlignment } ) : null;
+			const attributes = media ? { variant: 'split', ...( order.value ? { [ R.hero.splitOrder.setting ]: order.value } : {} ), ...( align ? { [ R.hero.splitAlignment.setting ]: align } : {} ) } : {};
+			const verdict = v( 'hero', { block: R.hero?.block, attributes, ...( media ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s split media setting' } } : {} ) } );
+			verdict && order.problems.length && ( verdict.reason = `${ verdict.reason }; ${ order.problems.join( '; ' ) }` );
+			return verdict;
 		},
 		// The frame that only clips or fades a marquee track goes: the strip draws its own overflow and edge fade.
 		( { e, kidsB } ) => ( ! m.words( e ) && 1 === kidsB.length && loops( kidsB[ 0 ] ) && desc( kidsB[ 0 ] ).some( isMedia ) ? v( 'marqueeFrame', { action: 'unwrap' } ) : null ),

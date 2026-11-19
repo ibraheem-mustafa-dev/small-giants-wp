@@ -5,8 +5,9 @@
 // node that matches a state against that state's paint.
 //
 // A state's `when`: { inner (true: the node holds inner blocks; false: it holds none), has: [ attributes of which at least
-// one is set ], lacks: [ attributes of which none is set ] }; a key left out is not tested. The first state that matches
-// wins.
+// one is set ], lacks: [ attributes of which none is set ], equals: { attribute: value each must hold } }; a key left out
+// is not tested. `equals` names a way a block's variant setting draws it (a split hero, `{ variant: 'split' }`), whose
+// resting paint differs from the default variant's on the elements both draw. The first state that matches wins.
 
 const isSet = ( v ) => ! ( null === v || undefined === v || '' === v || ( Array.isArray( v ) && ! v.length ) || ( 'object' === typeof v && ! Array.isArray( v ) && ! Object.keys( v ).length ) );
 
@@ -18,6 +19,9 @@ export function matchesPaintState( when = {}, node = {} ) {
 		return false;
 	}
 	if ( Array.isArray( when.has ) && ! when.has.some( ( a ) => isSet( attrs[ a ] ) ) ) {
+		return false;
+	}
+	if ( when.equals && Object.entries( when.equals ).some( ( [ a, v ] ) => JSON.stringify( attrs[ a ] ) !== JSON.stringify( v ) ) ) {
 		return false;
 	}
 	return ! ( Array.isArray( when.lacks ) && when.lacks.some( ( a ) => isSet( attrs[ a ] ) ) );
