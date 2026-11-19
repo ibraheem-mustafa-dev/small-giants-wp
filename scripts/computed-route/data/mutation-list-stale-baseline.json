@@ -52,10 +52,6 @@
 	"tests/fixtures/fill-not-painted-rows/mutations.json": [
 		"\t\tsettled( st, rec, ref, { slot, property: p, value: String( valueAt( snaps[ w ], p ) ), reason: 'not-painted'"
 	],
-	"tests/fixtures/fill-prop-tiers/mutations.json": [
-		"const shown = painted ? painted.value : baseline( w );",
-		"( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ), contextOf );"
-	],
 	"tests/fixtures/fill-read-child-size/mutations.json": [
 		"null !== kw && null !== kh && Math.abs( kr.width - r.width ) <= 1 && Math.abs( kr.height - r.height ) <= 1 ?",
 		"( /^\\d+(\\.\\d+)?(px)?$/.test("

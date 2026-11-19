@@ -15,8 +15,9 @@
 // alternative are nodes of the skeleton, each hidden on the other's widths. A condition whose width part is only part of the
 // condition (`partial`) hides only where its width part is false.
 
-import { setAttr } from './tree.mjs';
+import { setAttr, refOf } from './tree.mjs';
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import { templateKeyOf, templateKeyOfSelector } from './fact-key.mjs';
 import { DECISIONS_FILE } from './skeleton-facts.mjs';
 
@@ -137,6 +138,16 @@ export function mediaRule( [ lo, hi ], body = '& { display: none; }' ) {
 	return `@media ${ cond } { ${ body } }`;
 }
 
+// The scope key of a node's Additional CSS (`sgsCustomCssId`; includes/custom-css.php::sgs_custom_css_uid prints it as the
+// class `sgs-c-<key>` and accepts 4 to 16 lowercase letters and digits). A page draws several surfaces at once (the header,
+// the footer, a drawer and the page itself), so a key made from a node's position in its own tree repeats across them and
+// one surface's rule lands on another's element: the key is a hash of the node's own ref (`cr-ref-<surface>-<n>`,
+// lib/tree.mjs::addRefs), which no other node of the site carries. A node with no ref keeps `fallback`.
+export function scopeKeyOf( node, fallback ) {
+	const ref = refOf( node );
+	return ref ? `c${ createHash( 'sha1' ).update( ref ).digest( 'hex' ).slice( 0, 11 ) }` : String( fallback ).slice( 0, 16 );
+}
+
 // The three settings that hold a scoped rule on a node (Additional CSS, its scope key and its label): [ { attr, value, prop } ]
 // to write, appending to what the node holds; empty when the node already holds the rule text. Every writer of a scoped
 // rule (the width gate, the width ladder) goes through this one function.
@@ -147,7 +158,7 @@ export function scopedCssPuts( node, { css, label, index, why } ) {
 	}
 	return [
 		{ attr: 'sgsCustomCss', value: [ had( 'sgsCustomCss' ), css ].filter( Boolean ).join( ' ' ), prop: `${ why }: scoped @media rule` },
-		{ attr: 'sgsCustomCssId', value: had( 'sgsCustomCssId' ) || `wgate${ index }`.slice( 0, 16 ), prop: `${ why }: scope key` },
+		{ attr: 'sgsCustomCssId', value: had( 'sgsCustomCssId' ) || scopeKeyOf( node, `wgate${ index }` ), prop: `${ why }: scope key` },
 		{ attr: 'sgsCustomCssNote', value: [ had( 'sgsCustomCssNote' ), label ].filter( Boolean ).join( '; ' ), prop: `${ why }: label` },
 	];
 }

@@ -115,8 +115,8 @@
 	},
 	{
 		"file": "lib/fill-prop.mjs",
-		"find": "if ( ! samePaint( prop, draft[ w ], shown, contextAt( w ) ) ) {",
-		"replace": "if ( ! samePaint( prop, draft[ w ], shown ) ) {",
+		"find": "if ( ! samePaint( prop, draft[ w ], shown, contextAt( w ) ) || ! carried ) {",
+		"replace": "if ( ! samePaint( prop, draft[ w ], shown ) || ! carried ) {",
 		"why": "Fill's tier comparison ignores the element's context"
 	},
 	{
