@@ -34,10 +34,12 @@ const sides = ( top, right, bottom, left, widths ) => ( {
 } );
 
 test( 'MUST FAIL WITHOUT THE NORMAL KEYWORDS: letter-spacing normal is 0px; line-height normal is the measured line box', () => {
-	const snaps = perW( { normalLineHeight: 23.4 } );
+	const snaps = perW( { normalLineHeight: 23.4, styles: { 'font-size': '18px' } } );
 	assert.deepEqual( normalKeywords( 'letter-spacing', perW( 'normal' ), { snaps } ).draft, perW( '0px' ) );
 	assert.deepEqual( normalKeywords( 'line-height', perW( 'normal' ), { snaps } ).draft, perW( '23.4px' ) );
 	assert.equal( normalKeywords( 'line-height', perW( 'normal' ), { snaps } ).changed.length, 3 );
+	assert.deepEqual( normalKeywords( 'line-height', perW( 'normal' ), { snaps } ).declared, perW( '1.3' ), 'declared as the unitless ratio, which inherits as normal does' );
+	assert.deepEqual( normalKeywords( 'letter-spacing', perW( 'normal' ), { snaps } ).declared, {} );
 } );
 
 test( 'negative control: a block already painting normal, an unmeasured line, another value or property stay as read', () => {
@@ -50,6 +52,20 @@ test( 'negative control: a block already painting normal, an unmeasured line, an
 test( 'MUST FAIL WITHOUT THE BARE-SIDE FOLD: a bottom border alone is one solid style, the other sides having no width', () => {
 	const r = resolve( { block: 'sgs/box', slot: '', prop: 'border-bottom-style', perWidth: perW( 'solid' ), siblings: sides( 'none', 'none', 'solid', 'none', [ '0px', '0px', '2px', '0px' ] ) }, ctx );
 	assert.deepEqual( r.writes?.map( ( x ) => [ x.attr, x.value ] ), [ [ 'borderStyle', 'solid' ] ], JSON.stringify( r ) );
+} );
+
+test( 'MUST FAIL WITHOUT THE UNITLESS FORM: a line height declared as a ratio switches an em unit setting to unitless', () => {
+	const unitDb = openDb( fixtureDb( {
+		blocks: [ { slug: 'sgs/text', title: 'Text', category: 'sgs', type: 'dynamic' } ],
+		block_attributes: [
+			{ block_slug: 'sgs/text', attr_name: 'lineHeight', attr_type: 'object', css_property: 'line-height', role: 'typography', source: 'sgs-ext', tier_shape: 'tier_object', is_responsive: 1 },
+			{ block_slug: 'sgs/text', attr_name: 'lineHeightUnit', attr_type: 'string', role: 'typography', source: 'sgs-ext', default_value: '"em"' },
+		],
+	} ) );
+	const c = { settings: { lineHeight: { slot: '', slots: [ '' ], property: 'line-height', state: null, reachedAt: W, effects: [] } }, elements: { '': perW( { 'line-height': '25.6px' } ) } };
+	const nk = normalKeywords( 'line-height', { 1440: 'normal' }, { snaps: { 1440: { normalLineHeight: 19.008, styles: { 'font-size': '16px' } } } } );
+	const r = resolve( { block: 'sgs/text', slot: '', prop: 'line-height', perWidth: nk.draft, fontPx: { 1440: 16 }, current: {}, declaredForm: nk.declared }, { ...ctx, db: unitDb, calibration: c } );
+	assert.deepEqual( r.writes?.map( ( x ) => [ x.attr, x.value ] ), [ [ 'lineHeight', { desktop: 1.188 } ], [ 'lineHeightUnit', '' ] ], JSON.stringify( r ) );
 } );
 
 test( 'negative control: two painted sides of different styles stay a shape gap', () => {

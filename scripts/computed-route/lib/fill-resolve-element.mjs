@@ -258,14 +258,18 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 				continue;
 			}
 		}
-		// A `normal` letter-spacing or line-height is written as the value it renders (lib/fill-normal-keywords.mjs).
+		// A `normal` letter-spacing or line-height is written as the value it renders (lib/fill-normal-keywords.mjs), a line
+		// height with its unitless declared form.
+		let normalDeclared = {};
 		if ( ! layer ) {
 			const base = baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] );
-			draft = normalKeywords( prop, draft, { snaps, base: ( w ) => base( slot, w ) } ).draft;
+			const nk = normalKeywords( prop, draft, { snaps, base: ( w ) => base( slot, w ) } );
+			draft = nk.draft;
+			normalDeclared = nk.declared;
 		}
 		const fluid = fluidSamples( st, target, layer, prop );
 		const alternates = layer ? [] : alternateSlots( cal, prop, draft, rec.targets.map( ( t ) => t.slot ), target.slot );
-		const input = { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...alternates.filter( ( s ) => s !== slot ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ), contextAt };
+		const input = { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...alternates.filter( ( s ) => s !== slot ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : { ...agreedDeclared( st, target, prop, draft, fontPx ), ...normalDeclared }, contextAt };
 		// A path the block's fixture renders in a state at rest (target.state: the open unit's, lib/skeleton-child-slots.mjs::
 		// unitSlots) is resolved in that state first, so a setting of the state painting that path itself takes the read (an
 		// accordion's open shadow); otherwise (no setting of the state, or one that only reaches the path, such as the open
