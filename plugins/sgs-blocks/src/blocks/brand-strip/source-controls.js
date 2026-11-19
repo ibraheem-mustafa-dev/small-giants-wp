@@ -158,6 +158,18 @@ export function BrandTextStylePanel( { attributes, setAttributes } ) {
 
 	return (
 		<PanelBody title={ __( 'Brand text style', 'sgs-blocks' ) } initialOpen={ false }>
+			{ 'row' !== attributes.logoLayout && (
+				<ToggleControl
+					label={ __( 'Draw each name as a tile', 'sgs-blocks' ) }
+					help={ __(
+						'Gives a name the same tile as a logo: the tile size, padding, background, border, corner radius and shadow set in the Tile panels, with the name centred inside in the colour and type below. Off keeps a name as a plain label.',
+						'sgs-blocks'
+					) }
+					checked={ !! attributes.brandTextTile }
+					onChange={ ( val ) => setAttributes( { brandTextTile: val } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
 			<TypographyControls
 				attributes={ attributes }
 				setAttributes={ setAttributes }

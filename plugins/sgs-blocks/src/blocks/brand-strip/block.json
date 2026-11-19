@@ -109,7 +109,7 @@
 					},
 					"_note_shadow_hover": "tileShadowHover added 2026-09-07 (hover SHAPE capability, Bean's shape+colour-per-state ruling) — sibling of the pre-existing tileShadowColourHover. Composed together by sgs_shadow_decls() in render.php (map key 'hover'), mirroring sgs/button's boxShadow/boxShadowHover pair.",
 					"absentIn": [ "logos", "text" ],
-					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none."
+					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none unless brandTextTile draws each name as a tile."
 				},
 				"logo": {
 					"surface": true,
@@ -144,7 +144,7 @@
 						"css:-webkit-text-stroke-color": "nameTextStrokeColour"
 					},
 					"absentIn": [ "logos", "text" ],
-					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none.",
+					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none unless brandTextTile draws each name as a tile.",
 					"states": {
 						"hover": {
 							"attrMap": {
@@ -169,7 +169,7 @@
 					},
 					"_note_hover": "Hover colour declared 2026-09-05. Was previously a bare `color:` in the root $root_hover_decls bucket, colliding with textColourHover's own `color:` in the same rule and never reaching this element (which sets its own explicit resting colour). render.php now emits an ancestor-hover rule on this element's selector, so the declaration is truthful.",
 					"absentIn": [ "logos", "text" ],
-					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none."
+					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none unless brandTextTile draws each name as a tile."
 				},
 				"item": {
 					"label": "Each logo tile (the whole tile when names are off)",
@@ -416,6 +416,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Text-only display: minimum width of each brand item (CSS length). Empty sizes to the text."
+		},
+		"brandTextTile": {
+			"type": "boolean",
+			"default": false,
+			"description": "Draw each brand that shows as text (Display: Text only, or Logo, else text for an item with no logo) as a tile, with the tile settings a logo tile takes: the same square size, padding, background colour or gradient, border, corner radius and shadow, and the name centred inside in its own Brand text colour and type. Off keeps a text brand as a plain label with no tile. Not used by the row layout."
 		},
 		"brandTextFontSize": {
 			"type": "number",

@@ -305,6 +305,35 @@
 	max-width: none;
 }
 
+/* ===== Text tile (brandTextTile) =====
+ * Each name is drawn as a tile like a logo tile: the same square size, padding, background (colour or gradient), border,
+ * radius and shadow (the tile settings), with the name centred inside in its own Brand text colour and type. The shadow
+ * and the border colour and width print from the scoped rules in render.php, which already reach a text item; this restores
+ * the settings the text item above switches off. :where() keeps the specificity at one class pair, so the tile shape
+ * (circle, none) and the hover rules below still win. */
+.sgs-brand-strip--text-tile:where(:not(.sgs-brand-strip--layout-row)) .sgs-brand-strip__item--text {
+	width: var(--sgs-tile-size);
+	height: var(--sgs-tile-size);
+	min-width: 0;
+	min-height: 0;
+	padding: var(--sgs-tile-padding, 0px);
+	background-color: var(--sgs-tile-bg, transparent);
+	background-image: var(--sgs-tile-bg-gradient, none);
+	border-width: var(--sgs-tile-border-thickness, 0px);
+	border-radius: var(--sgs-tile-radius, 16px);
+}
+
+/* A name inside a tile wraps and centres rather than running on one line past the tile edge. */
+.sgs-brand-strip--text-tile:where(:not(.sgs-brand-strip--layout-row)) .sgs-brand-strip__brand-text {
+	max-width: 100%;
+	min-width: 0;
+	white-space: normal;
+	overflow-wrap: anywhere;
+	text-align: center;
+	/* The tile's own link or box already clips to its rounded shape; a clip on the wrapped name would trim a glyph's overhang. */
+	overflow: visible;
+}
+
 .sgs-brand-strip__brand-text {
 	/* 0.9375rem = the brandTextFontSize block.json default (15px) restated as
 	 * a plain fallback -- no `--sgs-brand-text-font-size` custom property is

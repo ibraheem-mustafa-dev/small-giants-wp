@@ -211,6 +211,11 @@ $logo_layout_row = 'row' === ( $attributes['logoLayout'] ?? 'tiles' );
 if ( $logo_layout_row ) {
 	$classes[] = 'sgs-brand-strip--layout-row';
 }
+// Text tiles: each name is drawn as a tile with the tile settings a logo tile takes (style.css). The row layout sizes
+// every brand by its content, so it has no tile to draw.
+if ( ! empty( $attributes['brandTextTile'] ) && ! $logo_layout_row && 'logos' !== $brand_display ) {
+	$classes[] = 'sgs-brand-strip--text-tile';
+}
 if ( 'none' !== $safe_image_effect ) {
 	$classes[] = 'sgs-brand-strip--effect-' . esc_attr( $safe_image_effect );
 }
@@ -289,7 +294,13 @@ $css_vars[] = '--sgs-logo-gap:' . $logo_gap;
 // never collide with it, contract §B3).
 // ---------------------------------------------------------------------------
 
-$uid      = 'sgs-brandstrip-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+// The text tile setting stays out of the scope hash while off, so a strip that leaves it off keeps the class suffix it had
+// before it existed.
+$hash_attrs = $attributes;
+if ( empty( $hash_attrs['brandTextTile'] ) ) {
+	unset( $hash_attrs['brandTextTile'] );
+}
+$uid      = 'sgs-brandstrip-' . substr( md5( wp_json_encode( $hash_attrs ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-brand-strip';
 
 $scoped_css = array();
