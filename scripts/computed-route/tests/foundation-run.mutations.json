@@ -1,0 +1,80 @@
+[
+	{
+		"file": "lib/foundation-run.mjs",
+		"find": "\tconst blocker = ( step.deps ?? [] ).find( ( d ) => failed.has( d ) );",
+		"replace": "\tconst blocker = undefined;",
+		"why": "a step runs after its dependency failed"
+	},
+	{
+		"file": "lib/foundation-run.mjs",
+		"find": "\t\t\tfailed.set( step.id, 'stop' );\n",
+		"replace": "",
+		"why": "a step behind a stopped step runs"
+	},
+	{
+		"file": "lib/foundation-run.mjs",
+		"find": "\t\t\tfailed.set( step.id, 'failed' );\n",
+		"replace": "",
+		"why": "a failure stops nothing"
+	},
+	{
+		"file": "lib/foundation-run.mjs",
+		"find": "\t\tif ( na ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "a step with nothing to do runs"
+	},
+	{
+		"file": "lib/foundation-run.mjs",
+		"find": "force.includes( step.id ) ? null : await step.holds?.() ?? null;",
+		"replace": "await step.holds?.() ?? null;",
+		"why": "--force is ignored"
+	},
+	{
+		"file": "lib/foundation-run.mjs",
+		"find": "\t\tif ( held ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "a held step runs again"
+	},
+	{
+		"file": "lib/foundation-run.mjs",
+		"find": "\t\tif ( plan ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "a plan runs the steps"
+	},
+	{
+		"file": "lib/foundation-run.mjs",
+		"find": "after: await step.fingerprint?.() ?? null,",
+		"replace": "after: null,",
+		"why": "a success records no fingerprint"
+	},
+	{
+		"file": "lib/foundation-run.mjs",
+		"find": "\t\t\tfile && writeState( file, state );\n",
+		"replace": "",
+		"why": "the state is never saved"
+	},
+	{
+		"file": "lib/foundation-run.mjs",
+		"find": " ...( step.record?.() ?? {} ) };",
+		"replace": " };",
+		"why": "a step's extras are not recorded"
+	},
+	{
+		"file": "lib/foundation-run.mjs",
+		"find": "Boolean( fingerprint ) && state.steps?.[ id ]?.after === fingerprint",
+		"replace": "state.steps?.[ id ]?.after !== fingerprint",
+		"why": "a changed input is taken as current"
+	},
+	{
+		"file": "lib/foundation-run.mjs",
+		"find": "Boolean( fingerprint ) && state.steps?.[ id ]?.after === fingerprint",
+		"replace": "state.steps?.[ id ]?.after === fingerprint",
+		"why": "a step with no fingerprint is held"
+	},
+	{
+		"file": "lib/foundation-run.mjs",
+		"find": "'stop' === failed.get( blocker ) ? 'did not run' : 'failed'",
+		"replace": "'failed'",
+		"why": "a stopped step is said to have failed"
+	}
+]
