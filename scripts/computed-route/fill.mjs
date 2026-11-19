@@ -57,7 +57,7 @@ import { loadMotionSchema } from './lib/motion-schema.mjs';
 import { sweepSteps } from './lib/fill-values.mjs';
 import { walkerConfigs, WALK_WIDTHS } from './lib/fill-config.mjs';
 import { walkerStates, walkRefusalRows } from './lib/walker-states.mjs';
-import { fillReport, unmappedList, readFailureRows, passSettled } from './lib/fill-report.mjs';
+import { fillReport, unmappedList, readFailureRows, emptyPictureRows, passSettled } from './lib/fill-report.mjs';
 import { calibrationFor } from './solve.mjs';
 import { assertPaints, treeBlocks, allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { motionSettled, motionRejudged, transitionListOutcomes } from './lib/fill-motion-settle.mjs';
@@ -361,6 +361,8 @@ export async function fillSurface( o ) {
 		result.residualCss = { rules: residual.rules, refused: residual.refused, classes: residual.classes, causes: residual.causes, bytes: residual.bytes, gaps: residual.backlog };
 		// R7: a declared read that failed is an UNMAPPED row with its reason, never only a log line.
 		result.unmapped.push( ...readFailureRows( { reads, nodes, flat, refOf } ) );
+		// Image placeholders the draft shows empty: listed, never given a picture.
+		result.emptyPictures = emptyPictureRows( { reads, nodes, flat, refOf } );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
 		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension', PASS_RESIDUAL ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor } );
