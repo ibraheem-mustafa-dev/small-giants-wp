@@ -216,3 +216,30 @@ test( 'the icon list calibrates its link settings on linked items (render.php pr
 	assert.deepEqual( preconditionsFor( { attr_name: 'textColour', css_property: 'color' }, schema, {}, ctx ).items, undefined );
 	assert.match( render( 'icon-list' ), /item-link/ );
 } );
+
+// Every rule that writes a plain-variant setting on its block (`items.plain`): the variant's resting paint is not the default
+// instance's, so the block's fixture measures it as a paint state or Fill judges the draft against the wrong baseline.
+const DECISIONS = JSON.parse( fs.readFileSync( path.join( HERE, '../data/skeleton-decisions.json' ), 'utf8' ) );
+const plainRules = [];
+( function find( o ) {
+	if ( o && 'object' === typeof o ) {
+		if ( o.block && o.items?.plain?.setting ) {
+			plainRules.push( o );
+		}
+		Object.values( o ).forEach( find );
+	}
+} )( DECISIONS );
+
+test( 'MUST FAIL (marquee strip drawn as pills): the plain-variant setting a skeleton rule writes is a paint state of its block', () => {
+	assert.ok( plainRules.length >= 1, 'the trust bar marquee rule writes a plain variant' );
+	for ( const rule of plainRules ) {
+		const { setting, value } = rule.items.plain;
+		const states = FX[ rule.block ]?.paintStates || [];
+		const node = { attributes: { [ setting ]: value } };
+		const state = states.find( ( s ) => matchesPaintState( s.when, node ) );
+		assert.ok( state, `${ rule.block } has no paint state for ${ setting }=${ value }: the draft's plain items were judged against the default (icon) badge paint and the stylesheet's pill stayed` );
+		assert.equal( state.attributes[ setting ], value, 'the state is measured on the variant it matches' );
+		assert.equal( matchesPaintState( state.when, { attributes: { [ setting ]: 'icon-circle' } } ), false, 'negative control: the default variant keeps the default paint' );
+		assert.ok( blockJson( rule.block.replace( 'sgs/', '' ) ).attributes[ setting ], `${ rule.block } declares ${ setting }` );
+	}
+} );

@@ -28,5 +28,23 @@
 		"find": "        \"attributes\": {\n          \"triggerStyle\": \"pill\",\n          \"pillCountStyle\": \"bubble\"\n        }\n      }\n    ],",
 		"replace": "        \"attributes\": {\n          \"triggerStyle\": \"icon\",\n          \"pillCountStyle\": \"bubble\"\n        }\n      }\n    ],",
 		"why": "the cart's pill state is measured on an icon trigger"
+	},
+	{
+		"file": "calibration-fixtures.json",
+		"find": "    \"paintStates\": [\n      {\n        \"name\": \"text-only\",\n        \"when\": {\n          \"equals\": {\n            \"badgeStyle\": \"text-only\"\n          }\n        },\n        \"attributes\": {\n          \"badgeStyle\": \"text-only\"\n        }\n      }\n    ]\n",
+		"replace": "",
+		"why": "the trust bar's text-only badge has no paint state again (the draft's plain items are judged against the icon badge paint)"
+	},
+	{
+		"file": "calibration-fixtures.json",
+		"find": "          \"equals\": {\n            \"badgeStyle\": \"text-only\"\n          }",
+		"replace": "          \"equals\": {\n            \"badgeStyle\": \"icon-bare\"\n          }",
+		"why": "the trust bar's paint state matches another badge style"
+	},
+	{
+		"file": "calibration-fixtures.json",
+		"find": "        \"attributes\": {\n          \"badgeStyle\": \"text-only\"\n        }",
+		"replace": "        \"attributes\": {\n          \"badgeStyle\": \"icon-bare\"\n        }",
+		"why": "the trust bar's paint state is measured on the wrong badge style"
 	}
 ]

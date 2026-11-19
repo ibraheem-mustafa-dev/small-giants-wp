@@ -2647,6 +2647,19 @@
       {
         "badgeStyle": "icon-bare"
       }
+    ],
+    "paintStates": [
+      {
+        "name": "text-only",
+        "when": {
+          "equals": {
+            "badgeStyle": "text-only"
+          }
+        },
+        "attributes": {
+          "badgeStyle": "text-only"
+        }
+      }
     ]
   },
   "sgs/whatsapp-cta": {
