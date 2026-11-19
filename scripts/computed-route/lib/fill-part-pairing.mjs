@@ -2,11 +2,13 @@
 // (css_element other than `wrapper`: the burger, a label, a shape) is written only from the draft element paired to
 // that part. A read taken from another element lands on the setting only by the accident that calibration also measured
 // the setting at that element's slot (a burger height calibrated at the nav root reads the nav root's `height: 100%`).
-// A part is paired when the element read is the part's own element (the slot its other settings are calibrated at), or
-// when calibration measured the read element and the part's element as the same box on this property at every width.
+// A part is paired when the element read is the part's own element (the slot its other settings are calibrated at), when
+// calibration measured the read element and the part's element as the same box on this property at every width, or when
+// the draft's element is the block's root and the part at once (rootIsPart).
 import { attrsFor } from './db.mjs';
 import { LOOSE } from './resolve.mjs';
 import { defaultPaint, INHERITED } from './fill-prop.mjs';
+import { longhands } from './calibrate-props.mjs';
 
 const WIDTHS = [ 375, 768, 1440 ];
 
@@ -80,6 +82,10 @@ export function unpairedPart( { db, block, cal, attr, readSlot, prop, value, tar
 	if ( CHILD_LAYOUT.includes( prop ) && laysOutPart( { readSlot, home, targets, readAt } ) ) {
 		return null;
 	}
+	// The draft's one element is the block's root and this part at once.
+	if ( rootIsPart( { db, block, cal, attr, readSlot, prop, value, home, targets } ) ) {
+		return null;
+	}
 	// The same box: equal default paint at every width where both elements render. At a width where either element, or an
 	// ancestor in the block, is display:none, its computed value is the declared one (a bar's `100%`), not a measurement.
 	const at = ( slot ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, defaultPaint( cal, slot, w, prop ) ] ) );
@@ -90,6 +96,49 @@ export function unpairedPart( { db, block, cal, attr, readSlot, prop, value, tar
 		return null;
 	}
 	return `unpaired-part: ${ attr } paints the ${ element } part (calibrated at "${ home }"), but ${ prop } ${ value } was read from "${ readSlot }", an element the draft does not pair to that part (calibration measured a different ${ prop } on each); a value from another box, a percentage included, is never written`;
+}
+
+// A slot path's steps, each without a pseudo-element (an element's ::after lies in that element).
+const stepsOf = ( slot ) => LOOSE( slot ).split( ' > ' ).map( ( s ) => s.replace( /::[a-z-]+$/, '' ) );
+
+// Whether the draft element read at `readSlot` is the block's root and the part at `home` (the slot the part's other
+// settings are calibrated at) at once, so a value read there is the part's. All of:
+//   - the element read is the block's root, and the draft has no element of its own at the part (no target at `home`);
+//   - no other setting of the block paints `prop` on the root (its css_property covers it, lib/calibrate-props.mjs::longhands):
+//     none calibration measured at the root, and none of the root's own DB rows (no css_element, or `wrapper`) that
+//     calibration did not measure (one it measured elsewhere, a gradient on the root's ::before ring, paints that box), so
+//     the root's value has no other owner;
+//   - the value holds no percentage (it resolves against another containing block on each box);
+//   - calibration shows the part as the root's own box or the box holding its content: it measured `attr` itself painting
+//     the root (a part the block renders only in some modes leaves the setting on the root in the others), or every
+//     element it measured in the block (the default paint's elements and each resting setting's slot) lies in a copy of
+//     the part or on the path from the root to one, so nothing the block draws sits beside the part. A pseudo-element
+//     layer of the root is not shown by nesting: calibration records no box for it.
+export function rootIsPart( { db, block, cal, attr, readSlot, prop, value, home, targets = [] } ) {
+	if ( '' !== LOOSE( readSlot ) || ! home || /%/.test( String( value ?? '' ) ) || targets.some( ( t ) => LOOSE( t.slot ?? '' ) === home ) ) {
+		return false;
+	}
+	const rows = attrsFor( db, block ).filter( ( r ) => ! r.css_state );
+	const slotOf = ( name ) => ( 'string' === typeof cal?.settings?.[ name ]?.slot ? LOOSE( cal.settings[ name ].slot ) : null );
+	const paints = ( r ) => !! r.css_property && ( r.css_property.split( ',' ).map( ( p ) => p.trim() ).includes( prop ) || longhands( r.css_property ).includes( prop ) );
+	const onRoot = ( r ) => ( null === slotOf( r.attr_name ) ? ! r.css_element || 'wrapper' === r.css_element : '' === slotOf( r.attr_name ) );
+	if ( rows.some( ( r ) => r.attr_name !== attr && paints( r ) && onRoot( r ) ) ) {
+		return false;
+	}
+	if ( '' === slotOf( attr ) ) {
+		return true;
+	}
+	const measured = [ ...Object.keys( cal?.elements || {} ).map( LOOSE ), ...rows.map( ( r ) => slotOf( r.attr_name ) ).filter( ( s ) => null !== s ) ].filter( ( s ) => '' !== s );
+	// A pseudo-element of the root is a layer of the root's box, not a box holding its content: nesting cannot show what it covers.
+	const part = stepsOf( home );
+	if ( '' === part.join( '' ) ) {
+		return false;
+	}
+	const inPart = ( s ) => {
+		const steps = stepsOf( s );
+		return steps.some( ( _, i ) => part.every( ( step, j ) => steps[ i + j ] === step ) );
+	};
+	return measured.length > 0 && measured.every( ( s ) => inPart( s ) || measured.some( ( d ) => d.startsWith( `${ s } > ` ) && inPart( d ) ) );
 }
 
 // Whether the element at `slot` renders at width `w` on the calibration page: neither it nor an ancestor in the block is

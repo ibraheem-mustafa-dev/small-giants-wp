@@ -1,0 +1,16 @@
+[
+	{"file":"lib/fill-part-pairing.mjs","find":"if ( rootIsPart( { db, block, cal, attr, readSlot, prop, value, home, targets } ) ) {","replace":"if ( false ) {","why":"the hero padding and the icon disc colour would stay refused"},
+	{"file":"lib/fill-part-pairing.mjs","find":"if ( '' !== LOOSE( readSlot ) || ! home ||","replace":"if ( ! home ||","why":"a value read from another box (the hero content, the glyph's svg) would be paired"},
+	{"file":"lib/fill-part-pairing.mjs","find":"|| /%/.test( String( value ?? '' ) ) ||","replace":"||","why":"a percentage would be written"},
+	{"file":"lib/fill-part-pairing.mjs","find":"/%/.test( String( value ?? '' ) ) || targets.some( ( t ) => LOOSE( t.slot ?? '' ) === home ) ) {","replace":"/%/.test( String( value ?? '' ) ) ) {","why":"a draft with its own element at the part would still be read from the root"},
+	{"file":"lib/fill-part-pairing.mjs","find":"if ( rows.some( ( r ) => r.attr_name !== attr && paints( r ) && onRoot( r ) ) ) {","replace":"if ( false ) {","why":"a root with its own setting for the property would lose its value to the part"},
+	{"file":"lib/fill-part-pairing.mjs","find":"? ! r.css_element || 'wrapper' === r.css_element :","replace":"? false :","why":"an uncalibrated root setting would not own the root's value (the burger height)"},
+	{"file":"lib/fill-part-pairing.mjs","find":": '' === slotOf( r.attr_name ) );","replace":": true );","why":"a setting measured on another box (a ::before ring) would count as the root's"},
+	{"file":"lib/fill-part-pairing.mjs","find":"if ( '' === slotOf( attr ) ) {","replace":"if ( false ) {","why":"a setting measured on the root itself would not be paired"},
+	{"file":"lib/fill-part-pairing.mjs","find":"if ( '' === part.join( '' ) ) {","replace":"if ( false ) {","why":"a pseudo layer of the root would hold everything by nesting"},
+	{"file":"lib/fill-part-pairing.mjs","find":"return measured.length > 0 && measured.every(","replace":"return measured.some(","why":"a part beside other parts would be paired"},
+	{"file":"lib/fill-part-pairing.mjs","find":"measured.length > 0 && measured","replace":"measured","why":"nothing measured would pair"},
+	{"file":"lib/fill-part-pairing.mjs","find":" || measured.some( ( d ) => d.startsWith( `${ s } > ` ) && inPart( d ) ) );","replace":" );","why":"a wrapper on the path to a copy of the part would count as beside it"},
+	{"file":"lib/fill-part-pairing.mjs","find":".map( ( s ) => s.replace( /::[a-z-]+$/, '' ) );","replace":";","why":"a pseudo-element of an element in the part would count as beside it"},
+	{"file":"lib/fill-part-pairing.mjs","find":"r.css_property.split( ',' ).map( ( p ) => p.trim() ).includes( prop ) || longhands( r.css_property ).includes( prop )","replace":"r.css_property.split( ',' ).map( ( p ) => p.trim() ).includes( prop )","why":"a root setting covering the property through a shorthand would be missed"}
+]
