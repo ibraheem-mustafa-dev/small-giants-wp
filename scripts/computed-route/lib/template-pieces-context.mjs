@@ -10,7 +10,9 @@
 //     kind in FACT_KINDS (the file is large and gitignored), else null;
 //   - `rootComponent` and `handoffDir`: the component the served inventory calls `Root` (the draft file's page key,
 //     lib/manifest-build.mjs::pageKeyOf, null when the entry names no draft file) and the handoff folder. A builder that
-//     reads the framework database opens its own (`db` is left to the builder's default).
+//     reads the framework database opens its own (`db` is left to the builder's default);
+//   - `commerce`: the surface's commerce role (lib/skeleton-commerce-region.mjs::commerceOf over sites/<client>/build/page-map.json),
+//     null for a surface that is no WooCommerce page.
 // The pass's placed rows, problems and notes are saved in the surface's proposal (`proposal.templatePieces`, written by
 // skeleton.mjs::proposeSurface); its problems join the proposal's, which fail the propose stage under --strict
 // (site-run.mjs::proposeDetail).
@@ -28,13 +30,17 @@ import * as productField from './template-piece-product-field.mjs';
 import * as shopSort from './template-piece-shop-sort.mjs';
 import * as order from './template-piece-order.mjs';
 import * as gift from './template-piece-gift.mjs';
+import * as wooLayout from './template-piece-woo-layout.mjs';
+import * as frame from './template-piece-frame.mjs';
+import { commerceOf } from './skeleton-commerce-region.mjs';
 import { lintSkeleton } from '../lint.mjs';
 import { openDb } from './db.mjs';
 
 // The builders the pass runs, by piece kind.
-export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order };
-// The kinds whose builder reads the client's fact record (lib/template-piece-order.mjs::place reads ctx.factRecord).
-export const FACT_KINDS = [ 'order' ];
+export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame };
+// The kinds whose builder reads the client's fact record (lib/template-piece-order.mjs::place, lib/template-piece-woo-layout.mjs::place
+// and lib/template-piece-frame.mjs::place read ctx.factRecord).
+export const FACT_KINDS = [ 'order', 'woo-layout', 'frame' ];
 
 // The fields of the draft's product records, by role: { name, price, description, image } (each a list of field names,
 // over every record list the catalogue reader finds: lib/catalogue-records.mjs::recordLists, ::imageFields,
@@ -78,7 +84,17 @@ export function pieceContext( { repo, client, entry, inventory, pieces = [], fac
 		factRecord: pieces.some( ( p ) => FACT_KINDS.includes( p.kind ) ) ? facts || loadFacts( client, { repo } ) : null,
 		rootComponent: draftFile ? pageKeyOf( draftFile ) : null,
 		handoffDir: folder,
+		commerce: commerceOf( entry, readRows( path.join( buildDir, 'page-map.json' ) ) ),
 	};
+}
+
+// The page-map rows of a client's page-map.json ([] when absent; the file is an array of rows or `{ rows }`).
+function readRows( file ) {
+	if ( ! fs.existsSync( file ) ) {
+		return [];
+	}
+	const data = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+	return Array.isArray( data ) ? data : data.rows || [];
 }
 
 // What the builders added that the skeleton lint (lint.mjs::lintSkeleton, rule R-47-10: a Fill skeleton carries no

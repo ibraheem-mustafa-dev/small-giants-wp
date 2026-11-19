@@ -1,0 +1,20 @@
+[
+	{"file":"lib/template-frame.mjs","find":"\tif ( record.dc === component ) {","replace":"\tif ( false ) {","why":"a single-file draft's header on every route is not taken as mounted"},
+	{"file":"lib/template-frame.mjs","find":"'dc-import' === e.template.tag && e.template.attrs?.name === record.dc );","replace":"'dc-import' === e.template.tag );","why":"any import counts as the shared part"},
+	{"file":"lib/template-frame.mjs","find":"const headerOn = ! header || mounts( facts, component, header );","replace":"const headerOn = !! header && mounts( facts, component, header );","why":"a handoff with no shared header record drops the site's header"},
+	{"file":"lib/template-frame.mjs","find":"&& nOf( t.key ) < nOf( main.key ) );","replace":"&& true );","why":"the main itself and what follows it count as the bar"},
+	{"file":"lib/template-frame.mjs","find":"return { header: headerOn ? 'shared' : bar ? 'own' : 'none',","replace":"return { header: headerOn ? 'shared' : 'own',","why":"a page with no bar still names its own part"},
+	{"file":"lib/template-frame.mjs","find":"return 'own' === frame.header ? `[data-dc-tpl=","replace":"return true ? `[data-dc-tpl=","why":"every page's inventory is read from its wrapper"},
+	{"file":"lib/template-frame.mjs","find":".some( ( p ) => 'frame' === p.kind )","replace":".some( ( p ) => true )","why":"a template no frame piece takes the bar out of is read with its bar"},
+	{"file":"lib/template-frame.mjs","find":"|| 'main' !== skel?.root?.tag ) {","replace":"|| false ) {","why":"a surface rooted at another element is re-rooted"},
+	{"file":"lib/template-frame.mjs","find":"const partTag = ( node ) => ( 'header' === node?.attributes?.tagName ? 'div' : 'header' );","replace":"const partTag = ( node ) => 'div';","why":"a bar that is no header element loses its banner landmark"},
+	{"file":"lib/template-frame.mjs","find":"...( footer ? [ make.part( footer, 'footer' ) ] : [] )","replace":"make.part( 'footer', 'footer' )","why":"a page with no footer gets the shared one"},
+	{"file":"lib/template-frame.mjs","find":"const head = own.length ? own.map( ( n ) => make.part( n.templatePart, partTag( n ) ) ) : header ? [ make.part( header, 'header' ) ] : [];","replace":"const head = header ? [ make.part( header, 'header' ) ] : [];","why":"the page's own part is printed as a header element round the bar's own header"},
+	{"file":"lib/template-frame.mjs","find":"export const FRAME_KEYS = [ 'templatePart', 'templateFrame', 'draftStandsFor' ];","replace":"export const FRAME_KEYS = [ 'templatePart', 'draftStandsFor' ];","why":"the frame mark reaches the built template"},
+	{"file":"lib/template-frame.mjs","find":"path.join( buildDir, 'trees', 'template-part', `${ part.slug }.json` )","replace":"path.join( buildDir, 'trees', 'template', `${ part.slug }.json` )","why":"the part is written among the template copies"},
+	{"file":"lib/template-copies.mjs","find":"\tif ( marked ) {","replace":"\tif ( false ) {","why":"the copy ignores the frame marks and frames the page with the shared parts"},
+	{"file":"lib/template-piece-frame.mjs","find":"if ( 'shared' === frame.header && 'shared' === frame.footer ) {","replace":"if ( true ) {","why":"the frame is never marked"},
+	{"file":"lib/template-piece-frame.mjs","find":"if ( ! mainNode || ( 'own' === frame.header && ! barNode ) ) {","replace":"if ( ! mainNode ) {","why":"a tree read without its bar loses the shared header"},
+	{"file":"lib/template-piece-frame.mjs","find":"const top = tree.length === 1 && keyOf( tree[ 0 ] ) === root.key && root !== mainEl ? tree[ 0 ].innerBlocks || [] : tree;","replace":"const top = tree;","why":"the page wrapper is not looked into for the bar and the main"},
+	{"file":"lib/template-piece-frame.mjs","find":"{ ...barNode, templatePart: slug }","replace":"{ ...barNode }","why":"the bar is not marked as the template's part"}
+]

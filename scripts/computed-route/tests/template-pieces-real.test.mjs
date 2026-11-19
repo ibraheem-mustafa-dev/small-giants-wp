@@ -100,7 +100,7 @@ test( 'a surface that builds no template the map names, or a page, passes throug
 
 test( 'MUST FAIL: a template whose pieces are only a rule\'s or the theme\'s is not checked at the skeleton (the 404\'s search field arrives with the copy)', () => {
 	const input = read( MAMAS, 'product' );
-	for ( const template of [ '404', 'cart' ] ) {
+	for ( const template of [ '404', 'search' ] ) {
 		const got = piecesPass( { ...input, entry: { ...input.entry, target: { template } } } );
 		assert.equal( got.tree, input.tree );
 		assert.deepEqual( got.problems, [], template );

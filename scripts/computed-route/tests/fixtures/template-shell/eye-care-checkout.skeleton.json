@@ -1,0 +1,46 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "main"
+		},
+		"draftRef": {
+			"tpl": "Root/737#0"
+		},
+		"draftFingerprint": {
+			"tag": "main",
+			"cls": "sgs-page-checkout",
+			"styleHash": "f7366782",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 1522
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Checkout"
+				},
+				"draftRef": {
+					"tpl": "Root/738#0"
+				},
+				"draftFingerprint": {
+					"tag": "h1",
+					"cls": "",
+					"styleHash": "7be91d87",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "5609b82d",
+					"line": 1523
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "core/post-content",
+				"attributes": {},
+				"innerBlocks": []
+			}
+		]
+	}
+]

@@ -1,0 +1,7 @@
+[
+	{"file":"lib/region-stand-in.mjs","find":".filter( ( n ) => n?.node?.draftStandsFor )","replace":".filter( ( n ) => false )","why":"no stand-in is stamped"},
+	{"file":"lib/region-stand-in.mjs","find":"stampOnly: true","replace":"stampOnly: false","why":"the stand-in's element is read into the block"},
+	{"file":"lib/region-stand-in.mjs","find":"owner: n.index,","replace":"owner: 0,","why":"the element is stamped as the wrapper's own"},
+	{"file":"lib/fill-read-collect.mjs","find":"for ( const j of jobs.filter( ( x ) => ! x.stampOnly ) ) {","replace":"for ( const j of jobs ) {","why":"a stamp-only job is read as a target"},
+	{"file":"lib/fill-read-collect.mjs","find":"\t\tresolve( j.finder )?.setAttribute( 'data-fill-owner', String( j.owner ) );","replace":"","why":"no element is stamped with its owner"}
+]
