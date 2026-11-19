@@ -230,6 +230,27 @@ export function maskHiddenVariants( reads, nodes, facts, rootComponent = null ) 
 	return reads;
 }
 
+// The widths a node's own element is drawn at, from the draft's live read, for an element the draft's script draws at some read
+// widths and not at others with no sc-if to say so (a list whose length the code computes from the width: a top bar's claims,
+// four on a wide screen, two on a tablet, eight in a phone's loop). Null when the node has no root target read, is drawn at every
+// width read, is drawn at none, or sits on a surface read through a state opener (a state's surface renders only at some widths
+// by design, and every node of it would read as gated). reads: lib/fill-read.mjs::readDraft's result.
+export function shownByRead( node, reads ) {
+	if ( ! reads?.widths || reads.opener ) {
+		return null;
+	}
+	const roots = ( node.targets || [] ).filter( ( t ) => '' === ( t.slot ?? '' ) );
+	if ( ! roots.length ) {
+		return null;
+	}
+	const drawn = [ 375, 768, 1440 ].filter( ( w ) => reads.widths[ w ] && roots.some( ( t ) => reads.widths[ w ][ t.id ] && ! reads.widths[ w ][ t.id ].missing ) );
+	const read = [ 375, 768, 1440 ].filter( ( w ) => reads.widths[ w ] );
+	if ( ! drawn.length || drawn.length === read.length ) {
+		return null;
+	}
+	return { shown: tierRanges( drawn ), via: [ `the draft draws its element at ${ drawn.join( ' and ' ) }px of ${ read.join( ', ' ) }px` ] };
+}
+
 // The union of two lists of ranges.
 export const unite = ( a, b ) => complement( intersect( complement( a ), complement( b ) ) );
 
@@ -240,17 +261,27 @@ export const unite = ( a, b ) => complement( intersect( complement( a ), complem
 // child whose element key does not resolve changes nothing. A range widened to every width drops the gate. A child that relied
 // on the wrapper's own gate (one inside the wrapper's element, or with no element key) and has no gate of its own takes the
 // wrapper's original gate when the wrapper is widened, so it stays hidden where the draft hides it.
-export function placedChildWidening( nodes, facts, rootComponent = null ) {
+export function placedChildWidening( nodes, facts, rootComponent = null, reads = null ) {
 	const kids = new Map();
 	nodes.forEach( ( n ) => null !== n.parent && kids.set( n.parent, [ ...( kids.get( n.parent ) || [] ), n ] ) );
 	const keyOf = ( n ) => ( facts ? tplKey( n.node.draftRef, rootComponent ) : null );
+	// A node under one the draft's logic or read already gates is hidden with it, so the read gates only the topmost node it finds.
+	const byIndex = new Map( nodes.map( ( n ) => [ n.index, n ] ) );
+	const gatedAbove = ( n ) => {
+		for ( let p = byIndex.get( n.parent ); p; p = byIndex.get( p.parent ) ) {
+			if ( shownOfNode( p.node, facts, rootComponent ) || shownByRead( p, reads ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
 	const memo = new Map();
 	const kept = new Map();
 	const effective = ( n ) => {
 		if ( memo.has( n.index ) ) {
 			return memo.get( n.index );
 		}
-		const own = shownOfNode( n.node, facts, rootComponent );
+		const own = shownOfNode( n.node, facts, rootComponent ) ?? ( gatedAbove( n ) ? null : shownByRead( n, reads ) );
 		let at = own;
 		const key = keyOf( n );
 		const placed = [];
@@ -268,7 +299,7 @@ export function placedChildWidening( nodes, facts, rootComponent = null ) {
 		}
 		at && at.shown.length === 1 && 0 === at.shown[ 0 ][ 0 ] && Infinity === at.shown[ 0 ][ 1 ] && ( at = null );
 		if ( at !== own ) {
-			for ( const c of ( kids.get( n.index ) || [] ).filter( ( k ) => ! placed.includes( k ) && ! shownOfNode( k.node, facts, rootComponent ) ) ) {
+			for ( const c of ( kids.get( n.index ) || [] ).filter( ( k ) => ! placed.includes( k ) && ! shownOfNode( k.node, facts, rootComponent ) && ! shownByRead( k, reads ) ) ) {
 				kept.set( c.index, { shown: own.shown, via: [ ...own.via, `the gate of ${ n.name }, which was widened to hold a placed block` ] } );
 			}
 		}
@@ -288,12 +319,12 @@ export function placedChildWidening( nodes, facts, rootComponent = null ) {
 // ref; facts: the fact record (null: nothing written); db: the framework DB; scope: the surface; entries: the ledger's
 // entries (the snap entries continue its numbering). Returns { writes, unmapped, notes, ledger } in the shapes
 // lib/fill-resolve.mjs uses; `ledger` holds the new snap entries.
-export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, entries = [], rootComponent = null, date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes() } ) {
+export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, reads = null, entries = [], rootComponent = null, date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes() } ) {
 	const out = { writes: [], unmapped: [], notes: [], ledger: [] };
-	if ( ! facts && ! nodes.some( ( n ) => n.node.widthShown || n.node.widthVariants ) ) {
+	if ( ! facts && ! reads && ! nodes.some( ( n ) => n.node.widthShown || n.node.widthVariants ) ) {
 		return out;
 	}
-	const gate = placedChildWidening( nodes, facts, rootComponent );
+	const gate = placedChildWidening( nodes, facts, rootComponent, reads );
 	for ( const n of nodes ) {
 		const at = gate.get( n.index );
 		const up = null === n.parent ? null : gate.get( n.parent );

@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-width-gate.mjs",
+		"find": "?? ( gatedAbove( n ) ? null : shownByRead( n, reads ) );",
+		"replace": "?? null;",
+		"why": "the live read is never consulted, so an element drawn at some widths shows at all of them"
+	},
+	{
+		"file": "lib/fill-width-gate.mjs",
+		"find": "if ( ! reads?.widths || reads.opener ) {",
+		"replace": "if ( ! reads?.widths ) {",
+		"why": "a state-opened surface's nodes are gated by the widths its state renders at"
+	},
+	{
+		"file": "lib/fill-width-gate.mjs",
+		"find": "if ( ! drawn.length || drawn.length === read.length ) {",
+		"replace": "if ( drawn.length === read.length ) {",
+		"why": "an element drawn at no width is gated to nothing and listed"
+	},
+	{
+		"file": "lib/fill-width-gate.mjs",
+		"find": "if ( shownOfNode( p.node, facts, rootComponent ) || shownByRead( p, reads ) ) {",
+		"replace": "if ( shownOfNode( p.node, facts, rootComponent ) ) {",
+		"why": "a child of a read-gated element is gated again"
+	},
+	{
+		"file": "fill.mjs",
+		"find": "scope: o.surface, reads, entries:",
+		"replace": "scope: o.surface, entries:",
+		"why": "Fill never hands its read to the width gate"
+	}
+]

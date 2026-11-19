@@ -13,8 +13,8 @@
 	},
 	{
 		"file": "lib/fill-width-gate.mjs",
-		"find": "if ( ! facts && ! nodes.some( ( n ) => n.node.widthShown || n.node.widthVariants ) ) {",
-		"replace": "if ( ! facts ) {",
+		"find": "if ( ! facts && ! reads && ! nodes.some( ( n ) => n.node.widthShown || n.node.widthVariants ) ) {",
+		"replace": "if ( ! facts && ! reads ) {",
 		"why": "variants would be ignored without a fact record"
 	},
 	{

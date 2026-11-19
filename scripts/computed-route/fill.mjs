@@ -277,7 +277,7 @@ export async function fillSurface( o ) {
 		result.customCssGaps = stepRungs.gaps;
 		// FR-48-50: content the draft's logic shows or hides by width, written as hiding settings (lib/fill-width-gate.mjs); a snapped
 		// threshold's `breakpoint-snap` entry is added to the client's divergence ledger (the file Fill reads), once.
-		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );
+		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, reads, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );
 		addEntries( ledgerFile, gates.ledger );
 		result.writes.push( ...gates.writes );
 		result.unmapped.push( ...gates.unmapped );
