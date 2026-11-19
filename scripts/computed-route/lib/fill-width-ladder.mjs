@@ -12,7 +12,10 @@
 //   3. The block's own breakpoint setting: a block that draws its own narrow alternative under a width (the navigation's
 //      collapse point) takes the wide value; the narrow one is that alternative.
 //   4. A scoped `sgsCustomCss` @media rule on the instance (lib/fill-width-gate.mjs::scopedCssPuts), one rule per width
-//      range, labelled in `sgsCustomCssNote`. Where the draft's width threshold (read by the sweep) lies within 5% of a tier
+//      range, labelled in `sgsCustomCssNote`. Where the block paints nothing of this property by default (its calibrated
+//      paint is the property's initial value at every width: a layer's empty ground, which a block can fail to render at
+//      all) and a setting holds the widest read width's value, that value is written to the setting and the rules cover
+//      only the other ranges (`restingHeld`). Where the draft's width threshold (read by the sweep) lies within 5% of a tier
 //      (768, 1024) it snaps to the tier, with a `breakpoint-snap` divergence-ledger entry.
 // Which blocks and settings take part comes from the framework DB and the block's calibration, never from a list.
 // A row naming several nodes (`nodes`) is judged and written on each. Returns { writes, unmapped (the rows left), answered
@@ -25,6 +28,8 @@ import { WIDTHS, TIER_OF, rowTarget, rowValues, reresolve, commit, perNode, regr
 import { layoutHome } from './fill-same-box.mjs';
 import { defaultPaint } from './fill-prop.mjs';
 import { sizeOf } from './fill-dimensions.mjs';
+import { initialOf } from './css-families.mjs';
+import { sameCanonical } from './css-equivalence/values.mjs';
 
 // The gap rows this pass reads: the one-value-every-width shape gap, a value the setting's enum does not hold, a keyword a
 // tier-shaped setting's object shape cannot take ("shape: row cannot be held" on a per-device setting), and a property no
@@ -108,12 +113,14 @@ export const SAFE_SLOT = /^[\w\s.#>:()+~[\]="'*-]*$/;
 export const safeCss = ( prop, slot, values ) => /^[a-z-]+$/.test( prop ) && SAFE_SLOT.test( slot ) && values.every( ( v ) => ! /url\(|expression|javascript|@import/i.test( v ) && SAFE_VALUE.test( v ) );
 
 // Rung 4: the scoped @media rules. Returns { ranges, css, snaps } or null when the value cannot be written as safe CSS.
-function cssRules( { prop, slot, state, widths, values, series } ) {
+function cssRules( { prop, slot, state, widths, values, series, skip = null } ) {
 	const pseudo = state ? STATE_PSEUDO[ state ] : '';
 	if ( undefined === pseudo || ! safeCss( prop, slot, widths.map( ( w ) => values[ w ] ) ) ) {
 		return null;
 	}
-	const { ranges: merged, snaps } = widthSpans( { widths, values, series } );
+	const { ranges: all, snaps } = widthSpans( { widths, values, series } );
+	// The range whose value a setting already holds is not repeated as a rule (`skip`, lib/fill-width-ladder.mjs::restingHeld).
+	const merged = null === skip ? all : all.filter( ( s ) => s.value !== skip );
 	const sel = `&${ slot ? ` ${ slot }` : '' }${ pseudo || '' }`;
 	return { ranges: merged, css: merged.map( ( s ) => mediaRule( s.range, `${ sel } { ${ prop }: ${ s.value }; }` ) ).join( ' ' ), snaps };
 }
@@ -187,6 +194,22 @@ export function valuesAt( row, reads, target, home ) {
 }
 const PX = /^(-?\d*\.?\d+)px$/;
 const PADDING_SIDE = /^padding-(top|right|bottom|left)$/;
+
+// Whether a setting should hold the widest width's value of a property whose per-width values need @media rules: the property
+// is no state's, a setting of the block paints it, the block's calibrated paint of it is known at every width and is the
+// property's initial value there (it paints nothing of its own), and the draft's value at the widest width is not that
+// initial value. `base( w )`: the block's calibrated paint at a width.
+export function restingHeld( { widths, prop, state, base, hasSetting, raw = null } ) {
+	if ( state || ! hasSetting ) {
+		return false;
+	}
+	const initial = initialOf( prop );
+	if ( null === initial || undefined === initial ) {
+		return false;
+	}
+	const paints = widths.map( ( w ) => base( w ) );
+	return paints.every( ( b ) => undefined !== b && sameCanonical( prop, b, initial ) ) && ( null === raw || ! sameCanonical( prop, raw, initial ) );
+}
 
 export function widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped, calFor = () => null, snapshot = null, scope = '', entries = [], date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes(), resolver } ) {
 	const out = { writes: [], unmapped: [], answered: [], notes: [], ledger: [] };
@@ -302,11 +325,19 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 			}
 		}
 	}
-	// Rung 4: a scoped @media rule.
+	// Rung 4: a scoped @media rule. A block that paints nothing of this property by default may not render at all without a
+	// resting value, so the setting takes the widest read width's value and the rules cover the other ranges only.
 	const series = reads.sweep?.[ home.id ]?.[ prop ];
-	const css = cssRules( { prop, slot, state, widths, values, series } );
+	const widest = widths.at( -1 );
+	const resting = restingHeld( { widths, prop, state, raw: raw[ widest ], base: ( w ) => defaultPaint( cal, slot, w, prop ), hasSetting: hasOwn || candidates( db, rec.name, prop, state ).length > 0 } );
+	const held = resting ? ask( Object.fromEntries( widths.map( ( w ) => [ w, raw[ widest ] ] ) ) ) : null;
+	const holds = held && 'written' === held.status;
+	const css = cssRules( { prop, slot, state, widths, values, series, skip: holds ? values[ widest ] : null } );
 	if ( ! css ) {
 		return false;
+	}
+	if ( holds ) {
+		commit( out, { rec, node, row, prop, res: held, how: 'width-ladder', note: `the block paints no ${ prop } by default, so the setting holds the widest width's ${ raw[ widest ] } and the @media rules cover the other widths` } );
 	}
 	for ( const s of css.snaps ) {
 		const e = snapEntry( { scope, ref: row.node, snap: s, entries: [ ...entries, ...out.ledger ], date } );
@@ -320,6 +351,6 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 		// `state` the look it holds and `widths` the read widths it holds.
 		out.writes.push( { node: row.node, index: rec.index, block: rec.name, slot: '', ...( row.slot ? { readSlot: row.slot } : {} ), prop: x.prop, covers: prop, ...( state ? { state } : {} ), attr: x.attr, before, after, widths: [ ...widths ], how: 'width-gate' } );
 	}
-	out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ prop }: no setting holds ${ widths.map( ( w ) => `${ raw[ w ] } at ${ w }` ).join( ', ' ) }; written as a scoped @media rule in Additional CSS (${ css.ranges.map( ( s ) => `${ rangeText( s.range ) } ${ s.value }` ).join( ', ' ) })` );
+	out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ prop }: no setting holds ${ widths.map( ( w ) => `${ raw[ w ] } at ${ w }` ).join( ', ' ) }; written as ${ holds ? `the setting at ${ widest }px and ` : '' }a scoped @media rule in Additional CSS (${ css.ranges.map( ( s ) => `${ rangeText( s.range ) } ${ s.value }` ).join( ', ' ) })` );
 	return widths;
 }
