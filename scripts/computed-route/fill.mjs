@@ -69,6 +69,7 @@ import { readMediaMap } from './lib/fill-media.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
 import { rootDraftOf } from './lib/key-space.mjs';
 import { resolveDraftLink, draftLinksFor } from './lib/draft-link.mjs';
+import { branchesShown } from './lib/fill-data-branches.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -212,7 +213,7 @@ export async function fillSurface( o ) {
 		// from it) and the place of each slot's draft element (a part drawn outside its block's).
 		const invFile = o.skeleton.replace( /\.skeleton\.json$/, '.inventory.json' );
 		const inventory = invFile !== o.skeleton && fs.existsSync( invFile ) ? JSON.parse( fs.readFileSync( invFile, 'utf8' ) ) : null;
-		const reads = await readDraft( { url: readUrl, nodes, open: o.open || null, opener, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, log } );
+		const reads = await readDraft( { url: readUrl, nodes, open: o.open || null, opener, branches: branchesShown( inventory ), headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, log } );
 		// FR-48-69: a state declaration the draft never paints (intake.json `draftDefects`) is built from the code value, as a code look.
 		maskHiddenVariants( reads, nodes, facts, intakeParts.rootComponent );
 		const defectLooks = addDefectLooks( { reads, jobs: nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) ), facts, draftDefects: intakeParts.draftDefects, rootComponent: intakeParts.rootComponent } );

@@ -18,6 +18,7 @@ import { readCurrentItems } from './fill-current-item.mjs';
 import { collectMany } from './fill-read-collect.mjs';
 import { openState } from './fill-open.mjs';
 import { fireScrollReveals } from './scroll-reveals.mjs';
+import { showBranches } from './fill-data-branches.mjs';
 
 const RESOLVE = resolveFinder.toString();
 const COLLECT = collectPair.toString();
@@ -149,7 +150,7 @@ export function applyFlexItems( widths, jobs, items ) {
 // Opens one page on the draft at a width (a phone at 375, as the walker reads it), runs the draft's open step (a click
 // on the text of a navigation link in a single-page draft), applies the surface's state opener when it has one
 // (lib/fill-open.mjs::openState: `opened` is its verdict, null without one) and waits for its animations to finish.
-async function openPage( browser, devices, { url, open, opener = null, width, origin, external, mirror, aborted } ) {
+async function openPage( browser, devices, { url, open, opener = null, width, origin, external, mirror, aborted, branches = [] } ) {
 	const phone = width < 500 ? devices[ 'iPhone 13' ] : {};
 	const ctx = await browser.newContext( { ...phone, viewport: { width, height: width < 500 ? 812 : 900 } } );
 	await routeDraft( ctx, { origin, external, mirror, aborted } );
@@ -165,6 +166,8 @@ async function openPage( browser, devices, { url, open, opener = null, width, or
 	// The runtime has mounted its components by now: a state is set on a live instance, never before it exists.
 	const opened = opener?.state ? await openState( page, opener, width ) : null;
 	opened && await settleAnimations( page, { floor: 300 } );
+	// The data branches the surface's inventory read show for this read too (lib/fill-data-branches.mjs).
+	await showBranches( page, branches ) && await settleAnimations( page, { floor: 300 } );
 	return { ctx, page, h, opened };
 }
 
@@ -188,8 +191,9 @@ async function openPage( browser, devices, { url, open, opener = null, width, or
 //   failures              [{ id, owner (the node index), width, read: 'declared', reason }] each declared read that threw,
 //                         so nothing about that target's declared values there is judged (lib/fill-report.mjs::readFailureRows).
 // nodes: lib/fill-skeleton.mjs::skeletonNodes. open: the regex source of the text to click first. external: allow the
-// draft to load anything beyond its own origin (off by default, so a read is the same offline).
-export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], logicRows = [], currentGroups = [], opener = null, log = () => {} } ) {
+// draft to load anything beyond its own origin (off by default, so a read is the same offline). branches: the data branches
+// the surface's inventory read (lib/fill-data-branches.mjs::branchesShown), shown on every page before it is read.
+export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], logicRows = [], currentGroups = [], opener = null, branches = [], log = () => {} } ) {
 	const { chromium, devices } = await loadChromium();
 	const origin = new URL( url ).origin;
 	const jobs = jobsFor( nodes );
@@ -203,7 +207,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 			const full = READ_WIDTHS.includes( width );
 			// A state with no usable key is refused before any page opens (lib/fill-open.mjs::stateOpener's `refused`).
 			const refusedAll = opener && ! opener.state;
-			const { ctx, page, opened } = refusedAll ? { ctx: null, page: null, opened: { reached: 0, rendered: 0, expected: 0, ok: false, reason: 'no usable state key' } } : await openPage( browser, devices, { url, open, opener, width, origin, external, mirror, aborted } );
+			const { ctx, page, opened } = refusedAll ? { ctx: null, page: null, opened: { reached: 0, rendered: 0, expected: 0, ok: false, reason: 'no usable state key' } } : await openPage( browser, devices, { url, open, opener, width, origin, external, mirror, aborted, branches } );
 			if ( opener ) {
 				result.opener.widths[ width ] = opened;
 				if ( ! opened.ok ) {
@@ -293,7 +297,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 		// (a default, or another declaration) is known and one width's value is never carried to the rest.
 		const missing = missingExtras( result, PROPS, READ_WIDTHS );
 		if ( Object.keys( missing ).length && ! ( opener && ! opener.state ) ) {
-			const { ctx, page } = await openPage( browser, devices, { url, open, opener, width: 1440, origin, external, mirror } );
+			const { ctx, page } = await openPage( browser, devices, { url, open, opener, width: 1440, origin, external, mirror, branches } );
 			for ( const width of READ_WIDTHS ) {
 				await page.setViewportSize( { width, height: 900 } );
 				await page.waitForTimeout( 80 );
@@ -309,7 +313,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 			applyFlexItems( result.widths[ width ], jobs, flexItems[ width ] );
 		}
 		if ( sweep && ! ( opener && ! opener.state ) ) {
-			const { ctx, page } = await openPage( browser, devices, { url, open, opener, width: 1440, origin, external, mirror } );
+			const { ctx, page } = await openPage( browser, devices, { url, open, opener, width: 1440, origin, external, mirror, branches } );
 			for ( const width of SWEEP_WIDTHS ) {
 				await page.setViewportSize( { width, height: 900 } );
 				await page.waitForTimeout( 80 );
