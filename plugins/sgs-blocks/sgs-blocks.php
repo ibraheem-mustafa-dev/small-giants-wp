@@ -352,8 +352,13 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-button-hover-parts.php';
 // (priority 10) runs before this collector's lift filter (priority 99).
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-css-registry.php';
 
-// SGS → CSS Output settings page (choose file vs inline-head delivery + the
-// recommended optimisation-plugin guidance).
+// Shared stylesheets print as order-preserving runs, inline or one cached file per
+// run, instead of one render-blocking link each (Spec 32 FR-32-32).
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-css-delivery.php';
+Css_Delivery::register();
+
+// SGS → CSS Output settings page: where the page-specific CSS and the shared
+// stylesheets are delivered.
 require_once SGS_BLOCKS_PATH . 'includes/class-css-output-settings.php';
 Css_Output_Settings::register();
 

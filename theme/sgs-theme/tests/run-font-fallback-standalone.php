@@ -65,6 +65,38 @@ namespace SGS\Theme {
 	$check( 'https://example.test/wp-content/themes/sgs-theme/assets/fonts/other/b.woff2' === font_fallback_preload_url( $family( 'file:./assets/fonts/other/b.woff2' ) ), 'a theme face with no metrics still preloads' );
 	$check( '' === font_fallback_preload_url( $family( 'https://example.test/x.ttf' ) ), 'a non-woff2 face is not preloaded' );
 
+	// Preset overrides from the merged settings (role presets and the custom origin).
+	$face  = $family( 'file:./assets/fonts/ok/ok.woff2' );
+	$alias = static fn( string $slug, string $stack ): array => array(
+		'slug'       => $slug,
+		'fontFamily' => $stack,
+	);
+	$css   = font_fallback_preset_overrides(
+		array(
+			'theme'  => array( $alias( 'body', 'Test, sans-serif' ), $alias( 'mono', 'Courier, monospace' ) ),
+			'custom' => array( $face ),
+		)
+	);
+	$check( false !== strpos( $css, '--wp--preset--font-family--body:Test, "Test Fallback", sans-serif' ), 'a role preset that only names the font gets the fallback from a face in another origin' );
+	$check( false !== strpos( $css, '--wp--preset--font-family--test:"Test", "Test Fallback", sans-serif' ), 'a custom-origin family with its own face gets the fallback' );
+	$check( false === strpos( $css, 'font-family--mono' ), 'a preset whose font has no metrics is left alone' );
+	$check( 0 === strpos( $css, ':root{' ) && '}' === substr( $css, -1 ), 'the overrides are one :root rule' );
+	$css = font_fallback_preset_overrides(
+		array(
+			'theme'  => array( $alias( 'body', 'Test, sans-serif' ), $face ),
+			'custom' => array( $alias( 'body', 'Test, "Test Fallback", sans-serif' ) ),
+		)
+	);
+	$check( false === strpos( $css, 'font-family--body' ), 'a later origin whose stack already holds the fallback wins with no override' );
+	$css = font_fallback_preset_overrides(
+		array(
+			'theme'  => array( $face ),
+			'custom' => array( $alias( 'body', 'Other, serif' ), $alias( 'h', 'Test, sans-serif;}body{color:red' ) ),
+		)
+	);
+	$check( false === strpos( $css, 'font-family--body' ) && false === strpos( $css, 'color:red;' ) && false === strpos( $css, '}body{' ), 'a stack cannot close the rule, and a preset of another font gets nothing' );
+	$check( '' === font_fallback_preset_overrides( array( 'theme' => array( $alias( 'body', 'Test, sans-serif' ) ) ) ), 'no face with metrics anywhere gives no rule' );
+
 	echo "{$pass} passed, {$fail} failed\n";
 	exit( $fail > 0 ? 1 : 0 );
 }

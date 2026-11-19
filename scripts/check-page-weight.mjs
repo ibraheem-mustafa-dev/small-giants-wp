@@ -5,6 +5,10 @@
 //   node scripts/check-page-weight.mjs --selftest
 // Sums the transferred (compressed) bytes of every CSS and JS response from the site's own origin that a cold page
 // load makes, including late loads after a scroll to network idle, and takes the median of --runs loads per page.
+// CSS printed inside the HTML (every <style> element of the document as served) counts too, at its gzip size, so
+// moving a stylesheet into the page (Spec 32 FR-32-32) never hides it from the budget. It also counts the
+// render-blocking own-origin stylesheet links in the head (`blockingCss`: rel=stylesheet, media absent, `all` or
+// `screen`), judged against `blockingCssMax` in the data file when that is set.
 // Third-party files (payment forms, captchas) are reported beside the verdict but never judged. "Own" means the
 // origin the page finally loaded from (after redirects) plus any `assetOrigins` the site lists (a CDN host).
 // A page that answers 400 or above is not measured: the run stops with exit code 2.
@@ -13,6 +17,7 @@
 // Data: scripts/data/page-weight.json. Runs strictly one load at a time.
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -50,6 +55,37 @@ export function sumWeights(responses) {
   return out;
 }
 
+/** The CSS text of every <style> element in an HTML document, joined in document order. */
+export function inlineCssOf(html) {
+  let out = '';
+  for (const m of String(html || '').matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)) out += m[1];
+  return out;
+}
+
+/** Gzip size in bytes of a string (the size it costs inside a compressed HTML response). */
+export const gzipBytes = (text) => (text ? zlib.gzipSync(Buffer.from(text, 'utf8'), { level: 6 }).length : 0);
+
+/** Render-blocking stylesheet links in the head whose href is on one of the own origins: rel=stylesheet, and media
+ *  absent, `all` or `screen`. A link swapped in by an onload handler is not render-blocking. */
+export function blockingLinksOf(html, ownOrigins) {
+  const head = String(html || '').split(/<\/head>/i)[0];
+  const own = new Set(ownOrigins);
+  const out = [];
+  for (const m of head.matchAll(/<link\b[^>]*>/gi)) {
+    const tag = m[0];
+    const attr = (n) => { const a = tag.match(new RegExp(String.raw`\s${n}\s*=\s*(["'])([^"']*)\1`, 'i')); return a ? a[2] : null; };
+    if (!/(^|\s)stylesheet(\s|$)/i.test(attr('rel') || '') || attr('onload')) continue;
+    const media = (attr('media') || 'all').trim().toLowerCase();
+    if (!['all', 'screen', ''].includes(media)) continue;
+    const href = attr('href');
+    if (!href) continue;
+    let origin;
+    try { origin = new URL(href.replace(/&#0?38;/g, '&'), [...own][0]).origin; } catch { continue; }
+    if (own.has(origin)) out.push(href.replace(/^https?:\/\/[^/]+/, ''));
+  }
+  return out;
+}
+
 /** Verdict for one measured value (bytes) against the budget (bytes), its baseline (bytes or undefined) and the tolerance. */
 export function judge(value, budget, baseline, tolerance) {
   if (value <= budget) return { ok: true, why: 'under budget' };
@@ -81,6 +117,13 @@ function selftest() {
   eq('over budget, no baseline fails', judge(120 * KB, 100 * KB, undefined, 3 * KB).ok, false);
   eq('once under budget, going over fails', judge(101 * KB, 100 * KB, 95 * KB, 3 * KB).ok, false);
   eq('ratchet never raises', ratchet(100, 120), 100);
+  eq('inline css joins every style element', inlineCssOf('<head><style id="a">.a{}</style><style>.b{}</style></head><body><style>.c{}</style>'), '.a{}.b{}.c{}');
+  eq('no style elements is empty', inlineCssOf('<p>x</p>'), '');
+  eq('gzip of empty is 0', gzipBytes(''), 0);
+  eq('gzip counts bytes', gzipBytes('.a{color:red}'.repeat(50)) > 0 && gzipBytes('.a{color:red}'.repeat(50)) < 650, true);
+  const head = `<head><link rel='stylesheet' id='a-css' href='https://s.test/a.css?ver=1' media='all' /><link rel="stylesheet" href="/b.css"><link rel='stylesheet' href='https://s.test/m.css' media='only screen and (max-width: 768px)' /><link rel='stylesheet' href='https://cdn.other/x.css' /><link rel="preload" as="style" href="/p.css"><link rel="stylesheet" href="/s.css" media="print" onload="this.media='all'"></head><body><link rel='stylesheet' href='/late.css'>`;
+  eq('blocking links: own origin, all or no media, head only', blockingLinksOf(head, ['https://s.test']), ['/a.css?ver=1', '/b.css']);
+  eq('blocking links: none when all inline', blockingLinksOf('<head><style>.a{}</style></head>', ['https://s.test']), []);
   eq('ratchet lowers', ratchet(100, 80), 80);
   eq('ratchet seeds', ratchet(undefined, 80), 80);
   eq('median of three', median([3, 1, 2]), 2);
@@ -114,6 +157,9 @@ async function measure(chromium, url, width, assetOrigins = []) {
     // An error page, a 404 or a bot challenge is light and would pass (or ratchet a baseline down): refuse it.
     if (!doc || doc.status() >= 400) throw new Error(`${url} answered ${doc ? doc.status() : 'nothing'}; not measured`);
     const own = new Set([new URL(pg.url()).origin, ...assetOrigins]);
+    const served = await doc.text().catch(() => '');
+    const inlineCss = gzipBytes(inlineCssOf(served));
+    const blocking = blockingLinksOf(served, [...own]);
     await pg.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
     // Scroll down a viewport at a time, then back, so scripts and styles that load as a section comes into view count.
     await pg.evaluate(async () => {
@@ -124,7 +170,9 @@ async function measure(chromium, url, width, assetOrigins = []) {
     await pg.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
     await Promise.all(pending);
     for (const r of responses) r.thirdParty = !own.has(r.origin);
-    return { ...sumWeights(responses), files: responses.map((r) => ({ kind: r.kind, kb: +(r.bytes / KB).toFixed(1), thirdParty: !!r.thirdParty, url: r.thirdParty ? r.url : r.url.replace(/^https?:\/\/[^/]+/, '') })) };
+    const sums = sumWeights(responses);
+    sums.css += inlineCss;
+    return { ...sums, inlineCss, blockingCss: blocking.length, blocking, files: responses.map((r) => ({ kind: r.kind, kb: +(r.bytes / KB).toFixed(1), thirdParty: !!r.thirdParty, url: r.thirdParty ? r.url : r.url.replace(/^https?:\/\/[^/]+/, '') })) };
   } finally { await ctx.close(); await br.close(); }
 }
 
@@ -152,16 +200,20 @@ async function main() {
     for (let i = 0; i < RUNS; i++) runs.push(await measure(chromium, site.url + p, WIDTH, site.assetOrigins || []));
     const css = median(runs.map((r) => r.css)), js = median(runs.map((r) => r.js));
     const last = runs[runs.length - 1];
-    const row = { css, js, cssFiles: last.cssFiles, jsFiles: last.jsFiles, thirdPartyKb: +((median(runs.map((r) => r.thirdPartyCss + r.thirdPartyJs))) / KB).toFixed(1), files: last.files.sort((a, b) => b.kb - a.kb) };
+    const row = { css, js, cssFiles: last.cssFiles, jsFiles: last.jsFiles, inlineCssKb: +(median(runs.map((r) => r.inlineCss)) / KB).toFixed(1), blockingCss: last.blockingCss, blocking: last.blocking, thirdPartyKb: +((median(runs.map((r) => r.thirdPartyCss + r.thirdPartyJs))) / KB).toFixed(1), files: last.files.sort((a, b) => b.kb - a.kb) };
     for (const kind of ['css', 'js']) {
       const b = base[p] ? base[p][kind] : undefined;
       const v = judge(row[kind], budget[kind], b, tol);
       row[kind + 'Verdict'] = v;
       if (!v.ok) failed++;
     }
+    if (typeof data.blockingCssMax === 'number' && row.blockingCss > data.blockingCssMax) {
+      row.blockingVerdict = { ok: false, why: `${row.blockingCss} render-blocking own stylesheets (max ${data.blockingCssMax})` };
+      failed++;
+    }
     report.pages[p] = row;
     const fmt = (k) => `${k.toUpperCase()} ${(row[k] / KB).toFixed(1).padStart(6)} KB (${row[k + 'Files']} files) ${row[k + 'Verdict'].ok ? 'ok  ' : 'FAIL'} ${row[k + 'Verdict'].why}`;
-    console.log(`  ${p.padEnd(42)} ${fmt('css')}  |  ${fmt('js')}  |  third-party ${row.thirdPartyKb} KB (not judged)`);
+    console.log(`  ${p.padEnd(42)} ${fmt('css')} (${row.inlineCssKb} KB of it in the page)  |  ${fmt('js')}  |  blocking CSS links ${row.blockingCss}${row.blockingVerdict ? ' FAIL ' + row.blockingVerdict.why : ''}  |  third-party ${row.thirdPartyKb} KB (not judged)`);
     if (UPDATE) base[p] = { css: ratchet(base[p]?.css, css), js: ratchet(base[p]?.js, js), date: new Date().toISOString().slice(0, 10) };
   }
   if (opt('json')) fs.writeFileSync(String(opt('json')), JSON.stringify(report, null, 2));

@@ -245,7 +245,9 @@ python plugins/sgs-blocks/scripts/migrate-media-system/cli.py check --mirror med
 python plugins/sgs-blocks/scripts/migrate-media-system/cli.py restore --mirror mediatest-<name> --backup <file>
 ```
 
-To prove a build or step changes nothing a site renders, run `python scripts/render-check/render-check.py --from <mirror> --before <checkout> --after <checkout>` (`scripts/render-check/README.md`): it makes and drops its own scratch copies.
+`sync-build.sh` packs the checkout it runs from, so sync from a clean worktree under `E:\sgs-tmp`, not from the shared checkout: from the shared checkout it took 16 minutes (about 450 MB of other gitignored files), from a clean worktree under a minute. It packs only what the checkout holds (tracked files, untracked files not ignored, and the gitignored `build/`, `vendor/` and theme `styles/`).
+
+To find which pages a plugin or theme change can alter, run `python scripts/render-scope/render-scope.py --before <checkout> --after <checkout> --mirrors local-mamas,local-indus,local-eye-care` first (seconds; `scripts/render-scope/README.md`). To prove a build or step changes nothing a site renders, run `python scripts/render-check/render-check.py --from <mirror> --before <checkout> --after <checkout>` (`scripts/render-check/README.md`): it makes and drops its own scratch copies. It takes about half an hour a site, so run it only when the change's risk and reach warrant it (Bean, 2026-11-19): shared code, the theme, a changed default, or anything on the live shop's basket, checkout or account; its pixel pass can differ where no element, box or computed style does, so read those diffs first.
 
 ---
 

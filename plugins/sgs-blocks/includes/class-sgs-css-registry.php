@@ -9,7 +9,7 @@
  * them: a single late `render_block` filter lifts every SGS block's `<style>` tag
  * out of its rendered output into a per-request buffer, and ONE output-buffer
  * callback places the consolidated CSS in the `<head>` — as an inline `<style>`
- * ('head' mode) or a cached external `<link>` ('file' mode, the default). See
+ * ('head' mode, the default) or a cached external `<link>` ('file' mode). See
  * §6.2(b). The mode is operator-selectable (SGS → CSS Output settings).
  *
  * WHY a render_block chokepoint, not ~60 per-block emit-site edits: the /qc-council
@@ -141,8 +141,8 @@ function sgs_lift_block_css( string $block_content, array $block ): string {
  * Head-placement + output modes. Spec 32 §6.2(b).
  *
  * ONE output buffer (template_redirect) places the consolidated CSS into the
- * `<head>` on EVERY front-end render — inline `<style>` ('head' mode) or a
- * cached content-hashed external `<link>` ('file' mode, default), injected right
+ * `<head>` on EVERY front-end render — inline `<style>` ('head' mode, default) or a
+ * cached content-hashed external `<link>` ('file' mode), injected right
  * before `</head>` so it follows the block style.css handles (per-instance
  * overrides win by source order). Placing it every render makes the output
  * self-consistent under full-page caching (the cached HTML always carries the
@@ -161,23 +161,21 @@ function sgs_lift_block_css( string $block_content, array $block ): string {
  */
 
 /**
- * Output mode (admin-selectable via the SGS → CSS Output settings page, still
- * filterable):
- *   'file' — DEFAULT — one cached external stylesheet `<link>` in the head.
- *            Optimal WITH a CSS-optimisation plugin (LiteSpeed/Autoptimize/…)
- *            that defers/critical-splits it; browser-cacheable per page.
- *   'head' — one inline `<style>` injected into the `<head>` via our own output
- *            buffer. Fully self-contained (no plugin/cache dependency), matches
- *            the source draft's model; best when no optimisation plugin is run.
+ * Output mode for the page-specific CSS (admin-selectable on SGS → CSS Output,
+ * still filterable):
+ *   'head' — DEFAULT — one inline `<style>` before `</head>`. The CSS differs on
+ *            every page, so a file would gain no caching and cost one
+ *            render-blocking request (Spec 32 FR-32-32).
+ *   'file' — one cached, content-hashed external stylesheet `<link>`.
  * Filter: `sgs_css_output_mode`.
  *
  * @return string
  */
 function sgs_css_output_mode(): string {
-	$mode = \get_option( 'sgs_css_output_mode', 'file' );
+	$mode = \get_option( 'sgs_css_output_mode', 'head' );
 	$mode = \apply_filters( 'sgs_css_output_mode', $mode );
 	// 'inline' is a legacy alias for 'head'.
-	return \in_array( $mode, array( 'head', 'inline' ), true ) ? 'head' : 'file';
+	return 'file' === $mode ? 'file' : 'head';
 }
 
 /**

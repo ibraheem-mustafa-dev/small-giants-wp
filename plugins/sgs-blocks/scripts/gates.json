@@ -2303,5 +2303,14 @@
     "added_commit": null,
     "budget_ms": 300,
     "order": 265
+  },
+  {
+    "id": "font-fallback-standalone",
+    "cmd": "php ../../theme/sgs-theme/tests/run-font-fallback-standalone.php",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 200,
+    "order": 266
   }
 ]

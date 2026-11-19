@@ -246,6 +246,73 @@ function font_fallback_filter_stacks( $theme_json ) {
 add_filter( 'wp_theme_json_data_theme', __NAMESPACE__ . '\font_fallback_filter_stacks', 30 );
 
 /**
+ * Preset variable overrides that give every font preset its family's size-matched fallback.
+ *
+ * The stack filter above sees only theme-origin entries that carry their own face files. A role preset that only
+ * names a font (`body`: `Inter, sans-serif`) and a family saved in the site's own global styles (the custom origin)
+ * keep a stack without the fallback, so their text reflows when the web font arrives. This works from the merged
+ * settings instead: the fallback rules come from every entry with a face that has metrics, keyed by the font's name,
+ * and each preset whose first font has a rule and whose stack lacks it is declared again with the fallback inserted
+ * after that font. Origins are read in WordPress's order, so the stack given the fallback is the one that wins in
+ * the global styles.
+ *
+ * @param array<string,mixed> $groups `typography.fontFamilies` of the merged settings, keyed by origin.
+ * @return string `:root{…}` rule, or '' when no preset needs one.
+ */
+function font_fallback_preset_overrides( array $groups ): string {
+	$ordered = array();
+	foreach ( array( 'default', 'blocks', 'theme', 'custom' ) as $origin ) {
+		foreach ( (array) ( $groups[ $origin ] ?? array() ) as $family ) {
+			if ( is_array( $family ) ) {
+				$ordered[] = $family;
+			}
+		}
+	}
+	$rules = array();
+	foreach ( $ordered as $family ) {
+		$rule = font_fallback_for_family( $family );
+		if ( null !== $rule && ! isset( $rules[ strtolower( $rule['primary'] ) ] ) ) {
+			$rules[ strtolower( $rule['primary'] ) ] = $rule;
+		}
+	}
+	if ( array() === $rules ) {
+		return '';
+	}
+	$decls = array();
+	foreach ( $ordered as $family ) {
+		$slug  = trim( strtolower( (string) preg_replace( '/[^A-Za-z0-9]+/', '-', (string) ( $family['slug'] ?? '' ) ) ), '-' );
+		$stack = trim( (string) preg_replace( '/[;{}<>\\\\]/', '', (string) ( $family['fontFamily'] ?? '' ) ) );
+		if ( '' === $slug || '' === $stack ) {
+			continue;
+		}
+		list( $primary ) = font_fallback_split_stack( $stack );
+		$rule            = $rules[ strtolower( $primary ) ] ?? null;
+		if ( null === $rule || false !== strpos( $stack, $rule['name'] ) ) {
+			unset( $decls[ $slug ] ); // This origin's stack wins and needs no override.
+			continue;
+		}
+		$parts = array_map( 'trim', explode( ',', $stack ) );
+		array_splice( $parts, 1, 0, '"' . $rule['name'] . '"' );
+		$decls[ $slug ] = '--wp--preset--font-family--' . $slug . ':' . implode( ', ', $parts );
+	}
+	return array() === $decls ? '' : ':root{' . implode( ';', $decls ) . '}';
+}
+
+/**
+ * Attach the preset overrides after the global styles, so they win by source order at the same specificity.
+ */
+function enqueue_font_fallback_preset_overrides(): void {
+	if ( ! wp_style_is( 'global-styles', 'registered' ) ) {
+		return;
+	}
+	$css = font_fallback_preset_overrides( (array) wp_get_global_settings( array( 'typography', 'fontFamilies' ) ) );
+	if ( '' !== $css ) {
+		wp_add_inline_style( 'global-styles', $css );
+	}
+}
+add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_font_fallback_preset_overrides', 20 );
+
+/**
  * Font preset slug a global-styles font-family value points at.
  *
  * @param mixed $value Style value (`var:preset|font-family|x` or `var(--wp--preset--font-family--x)`).

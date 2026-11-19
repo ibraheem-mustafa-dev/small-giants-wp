@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 1
-spec_version: 1.7.0
+spec_version: 1.8.0
 project: small-giants-wp
 title: SGS Theme
 status: shipped
@@ -237,6 +237,7 @@ The `sgs_typography_css_rule()` PHP helper (auto-loaded via `render-helpers.php`
 - **Variable fonts** where available (single file for all weights)
 - **Preload critical fonts** via `<link rel="preload">`, printed on `wp_head` by `theme/sgs-theme/inc/font-fallback.php::preload_first_paint_fonts`
 - **font-display: swap** to prevent FOIT
+- **Size-matched fallback on every font preset** so text does not reflow when the web font arrives: `theme/sgs-theme/inc/font-fallback.php::print_font_fallback_css` prints an `@font-face` "<Family> Fallback" (a local system font with `size-adjust` and ascent, descent and line-gap overrides from `assets/fonts/fallback-metrics.json`), and `font_fallback_preset_overrides` re-declares each `--wp--preset--font-family--<slug>` whose first font has such a face, from any origin (a role preset such as `body` that only names the font, or a family saved in the site's global styles), with the fallback inserted after the font, attached after the global styles. Measured 2026-11-19 with fonts held back 1.5 s: Mama's Home layout shift 0.162 to 0.024, the canary Shop 0.110 to 0.000. Test: `php theme/sgs-theme/tests/run-font-fallback-standalone.php` (fast gate `font-fallback-standalone`)
 
 ---
 

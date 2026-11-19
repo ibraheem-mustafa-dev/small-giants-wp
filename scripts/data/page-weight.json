@@ -1,10 +1,11 @@
 {
-  "_note": "Data for scripts/check-page-weight.mjs. Budgets are transferred (compressed) bytes per page (project CLAUDE.md Non-negotiables). A page over budget fails above its baseline + toleranceKb; a page under budget fails when it goes over. Baselines are bytes and only ever lowered by --update-baseline. A baseline may be raised only by hand, for a deliberate change, with a 'raised' line giving the reason.",
+  "_note": "Data for scripts/check-page-weight.mjs. Budgets are transferred (compressed) bytes per page (project CLAUDE.md Non-negotiables). A page over budget fails above its baseline + toleranceKb; a page under budget fails when it goes over. Baselines are bytes and only ever lowered by --update-baseline. A baseline may be raised only by hand, for a deliberate change, with a 'raised' line giving the reason. CSS printed inside the page counts at its gzip size; blockingCssMax caps the render-blocking own-origin stylesheet links in a page's head (Spec 32 FR-32-32: none with inline delivery, the default; one per run with bundle delivery, where a shop page has two runs because WooCommerce's small-screen sheet splits them).",
   "budgetKb": {
     "css": 100,
     "js": 50
   },
   "toleranceKb": 3,
+  "blockingCssMax": 2,
   "width": 1440,
   "sites": {
     "sandybrown": {
