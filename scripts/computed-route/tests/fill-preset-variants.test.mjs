@@ -1,12 +1,16 @@
 // The preset variants Fill matches are the snapshot's buttonPresets names that the block's `inheritStyle` values hold in the
 // framework DB (lib/fill-preset.mjs::presetVariants), never a hand-written list (FP-1): a client's `link` variant is matched,
-// and a snapshot key no block value names (`default`, a typo) is not.
+// and a snapshot key no block value names (`default`, a typo) is not. The DB here is the enum shape in memory, so the test holds
+// after the button's setting loses its enum (tests/fill-preset-open-variants.test.mjs covers the open shape).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { presetWrites, presetVariants } from '../lib/fill-preset.mjs';
-import { openDb } from '../lib/db.mjs';
+import { DatabaseSync } from 'node:sqlite';
 
-const db = openDb();
+const db = new DatabaseSync( ':memory:' );
+db.exec( 'CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, attr_type TEXT, default_value TEXT, enum_values TEXT)' );
+db.prepare( 'INSERT INTO block_attributes VALUES (?, ?, ?, ?, ?)' ).run( 'sgs/button', 'inheritStyle', 'string', '"primary"', '["primary", "secondary", "outline", "link", "custom"]' );
+db.prepare( 'INSERT INTO block_attributes VALUES (?, ?, ?, ?, ?)' ).run( 'sgs/heading', 'inheritStyle', 'boolean', 'false', null );
 const enumOf = ( block ) => JSON.parse( db.prepare( "SELECT enum_values FROM block_attributes WHERE block_slug = ? AND attr_name = 'inheritStyle'" ).get( block ).enum_values );
 const LINK = { background: 'transparent', text: '#0a7ea8', 'border-width': '0px', padding: '0px 0px 0px 0px', 'font-size': '15px', 'font-weight': '600' };
 const STYLES = { 'background-color': 'transparent', color: 'rgb(10, 126, 168)', 'border-top-width': '0px', 'padding-top': '0px', 'padding-right': '0px', 'padding-bottom': '0px', 'padding-left': '0px', 'font-size': '15px', 'font-weight': '600' };

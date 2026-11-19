@@ -36,12 +36,19 @@ export const TRANSFORM_CHANNELS = new Set( [ 'translate(1px, 1px) scale(2) rotat
 // The preset key whose property a motion channel also paints (the hover transform).
 const LIFT_KEY = PRESET_KEYS.find( ( [ , props, state ] ) => state && props.some( ( p ) => MOTION_STATE_PROPS.includes( p ) ) );
 
+// The names a button's `inheritStyle` takes for something other than a site preset: the site-wide `default` token group, the
+// plain link look and the preset-less look.
+export const RESERVED_STYLES = [ 'default', 'link', 'custom' ];
+
 // The preset variants each block can hold, by framework-DB query: { block: { attr, variants } } for every block with an
-// `inheritStyle` setting, its variants the snapshot's preset names (Object.keys of buttonPresets) that setting's values
-// include. A block whose values hold none of them is still listed: it paints its default variant's hover lift.
+// `inheritStyle` setting. A setting with an enum holds the snapshot's preset names (Object.keys of buttonPresets) that enum
+// includes. A string setting with no enum is open (a site names its own presets, `namedButtonPresets`): it holds every
+// snapshot preset name except RESERVED_STYLES. A block whose values hold none of the names is still listed: it paints its
+// default variant's hover lift.
 export function presetVariants( db, presets ) {
-	const rows = db.prepare( "SELECT block_slug, attr_name, enum_values FROM block_attributes WHERE attr_name = 'inheritStyle' AND enum_values IS NOT NULL" ).all();
-	return Object.fromEntries( rows.map( ( r ) => [ r.block_slug, { attr: r.attr_name, variants: Object.keys( presets || {} ).filter( ( v ) => JSON.parse( r.enum_values ).includes( v ) ) } ] ) );
+	const rows = db.prepare( "SELECT block_slug, attr_name, attr_type, enum_values FROM block_attributes WHERE attr_name = 'inheritStyle' AND ( enum_values IS NOT NULL OR attr_type = 'string' )" ).all();
+	const names = Object.keys( presets || {} );
+	return Object.fromEntries( rows.map( ( r ) => [ r.block_slug, { attr: r.attr_name, variants: names.filter( ( v ) => ( null === r.enum_values ? ! RESERVED_STYLES.includes( v ) : JSON.parse( r.enum_values ).includes( v ) ) ) } ] ) );
 }
 
 // The block settings that hold every one of the named preset variants: { block: attr }.

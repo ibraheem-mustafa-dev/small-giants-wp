@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/fill-preset.mjs", "find": "null === r.enum_values ? ! RESERVED_STYLES.includes( v ) : JSON.parse( r.enum_values ).includes( v )", "replace": "JSON.parse( r.enum_values ?? '[]' ).includes( v )", "why": "an open setting holds nothing" },
+	{ "file": "lib/fill-preset.mjs", "find": "null === r.enum_values ? ! RESERVED_STYLES.includes( v ) : JSON.parse( r.enum_values ).includes( v )", "replace": "null === r.enum_values ? true : JSON.parse( r.enum_values ).includes( v )", "why": "an open setting holds the reserved names too" },
+	{ "file": "lib/fill-preset.mjs", "find": "null === r.enum_values ? ! RESERVED_STYLES.includes( v ) : JSON.parse( r.enum_values ).includes( v )", "replace": "null === r.enum_values ? ! RESERVED_STYLES.includes( v ) : true", "why": "an enum no longer filters" },
+	{ "file": "lib/fill-preset.mjs", "find": "( enum_values IS NOT NULL OR attr_type = 'string' )", "replace": "enum_values IS NOT NULL", "why": "an open row is not read" },
+	{ "file": "lib/fill-preset.mjs", "find": "( enum_values IS NOT NULL OR attr_type = 'string' )", "replace": "( enum_values IS NOT NULL OR attr_name = 'inheritStyle' )", "why": "a boolean inheritStyle (heading) becomes a preset block" }
+]
