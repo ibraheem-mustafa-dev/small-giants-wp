@@ -267,6 +267,20 @@ test( 'onceOfLoop reads a list rendered twice once, and leaves any other list wh
 	assert.deepEqual( onceOfLoop( [ 'a', 'b', 'c' ] ), [ 'a', 'b', 'c' ] );
 } );
 
+test( 'brandImageLink: image links each to a different brand are the social icons row, not a gallery; image links all to one brand stay a gallery; MUST FAIL without the entry', () => {
+	const icon = ( href, label ) => E( 'a', { attrs: { href, 'aria-label': label } }, [ E( 'img', { attrs: { src: `assets/${ label.toLowerCase() }.svg` } } ) ] );
+	// Eye Care's footer: Instagram, Google and WhatsApp profile links, each holding the brand's glyph as an <img>.
+	const socials = section( [ E( 'div', {}, [ icon( 'https://www.instagram.com/eyecare.birmingham/', 'Instagram' ), icon( 'https://share.google/abc', 'Google Business profile' ), icon( 'https://wa.me/4479605978', 'WhatsApp' ) ] ) ] );
+	const row = byTag( run( socials ), 'div' );
+	assert.equal( row.block, 'sgs/social-icons' );
+	assert.notEqual( row.rule, 'logoGrid' );
+	assert.equal( byTag( run( socials, { facts: facts( 'structural.brandImageLink' ) } ), 'div' ).block, 'sgs/gallery', 'without the entry the run is a logo wall again' );
+	// Negative control: photos that each link to an Instagram post (Mama's feed tiles) are one brand's links: still a gallery.
+	const post = ( n ) => E( 'a', { attrs: { href: `https://www.instagram.com/p/${ n }/` } }, [ E( 'img', { attrs: { src: `assets/feed-${ n }.jpg` } } ) ] );
+	const feed = section( [ E( 'div', { display: 'grid' }, [ post( 1 ), post( 2 ), post( 3 ) ] ) ] );
+	assert.deepEqual( settled( byTag( run( feed ), 'div' ) ), { block: 'sgs/gallery', action: null, rule: 'logoGrid' } );
+} );
+
 test( 'clientBuiltSurface: every row of a surface the client built as a post names that post; MUST FAIL without the rule', () => {
 	const built = { site: 'canary', postType: 'sgs_drawer', postId: 1 };
 	const tree = E( 'div', {}, [ E( 'span', { words: 'Menu' } ) ] );

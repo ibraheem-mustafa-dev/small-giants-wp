@@ -210,6 +210,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return !! col && sibs[ 0 ] === e && sibs.length > 1 && ( R.columnHeading?.rowBlocks || [] ).includes( hooks.blockOfKey?.( col.parentKey ) );
 	};
 	// A link holding nothing but one image (an <img> or an image placeholder element).
+	// Links each to a different brand of the registry (hooks.brandOf), with brandImageLink on.
+	const brandIconRun = ( ks ) => {
+		const brands = ks.map( ( k ) => hooks.brandOf?.( k ) ?? null );
+		return !! facts.decisions.structural?.brandImageLink && brands.every( Boolean ) && new Set( brands ).size === brands.length;
+	};
 	const imageLink = ( k ) => {
 		const inner = m.blockKids( k );
 		return 'a' === k.tag && ! String( k.allText ?? '' ).trim() && 1 === inner.length && ! m.blockKids( inner[ 0 ] ).length && ( 'img' === inner[ 0 ].tag || !! specHit( R.mediaElement, inner[ 0 ].tag ) );
@@ -510,7 +515,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A custom element the draft uses as an image placeholder (<image-slot>) is the media block.
 		( { e } ) => ( e.tag.includes( '-' ) && specHit( R.mediaElement, e.tag ) ? v( 'mediaElement', { block: R.mediaElement?.block } ) : null ),
 		// A group of links that each hold only an image is a logo wall: a gallery whose items are the links.
-		( { e, kidsB } ) => ( ! m.words( e ) && kidsB.length >= ( R.logoGrid?.minItems ?? 3 ) && kidsB.every( imageLink ) ? v( 'logoGrid', { block: R.logoGrid?.block, absorb: true, firstItem: kidsB[ 0 ].key } ) : null ),
+		// A run of image links each to a different brand (Instagram, Google, WhatsApp: social profile icons) is no logo wall but
+		// a row of brand icons (decisions structural.brandImageLink); links that all go to one brand (a grid of Instagram posts) stay one.
+		( { e, kidsB } ) => ( ! m.words( e ) && kidsB.length >= ( R.logoGrid?.minItems ?? 3 ) && kidsB.every( imageLink ) && ! brandIconRun( kidsB ) ? v( 'logoGrid', { block: R.logoGrid?.block, absorb: true, firstItem: kidsB[ 0 ].key } ) : null ),
 		// The link around a logo goes: the logo block links home itself.
 		// Its children are one or more logos (a mark and a wordmark side by side).
 		( { e, kidsB } ) => ( 'a' === e.tag && specHit( R.homeLink, e.attrs?.href || '' ) && kidsB.length && kidsB.every( logoish ) ? v( 'homeLink', { action: 'unwrap' } ) : null ),

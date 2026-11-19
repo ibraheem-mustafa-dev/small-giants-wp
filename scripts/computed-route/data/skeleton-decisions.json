@@ -1,6 +1,9 @@
 {
 	"doc": "Standing, client-free decisions of the skeleton writer (Spec 48 §3.4). Everything a draft element can be asked that the framework database cannot answer: which text patterns are Site Info, which lines exist only because of the designer's brief, which structural shapes are a column label or a link list. A block named here must exist in the framework database (checked on every load by lib/skeleton-facts.mjs::decisionsProblems). Client-specific choices live in sites/<client>/build/skeleton/decisions.json, written by `skeleton.mjs decide`.",
 	"structural": {
+		"brandImageLink": {
+			"reason": "a link holding only one image whose address or label a brand of the registry owns is that brand's icon link, as one holding an svg is, so a run of them becomes the social icons row; a run of image links each to a different brand is no logo wall (logoGrid), while image links that all go to one brand (a grid of Instagram posts) stay one"
+		},
 		"columnLabel": {
 			"block": "sgs/heading",
 			"reason": "the first text child of a wrapper whose other children are a run of links is the column heading"
