@@ -11,6 +11,8 @@ const db = new DatabaseSync( ':memory:' );
 db.exec( 'CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, attr_type TEXT, default_value TEXT, enum_values TEXT)' );
 db.prepare( 'INSERT INTO block_attributes VALUES (?, ?, ?, ?, ?)' ).run( 'sgs/button', 'inheritStyle', 'string', '"primary"', '["primary", "secondary", "outline", "link", "custom"]' );
 db.prepare( 'INSERT INTO block_attributes VALUES (?, ?, ?, ?, ?)' ).run( 'sgs/heading', 'inheritStyle', 'boolean', 'false', null );
+// The block.json this test models: the button's inheritStyle declares the enum the DB row lists.
+const schemaOf = ( block ) => ( 'sgs/button' === block ? { inheritStyle: { type: 'string', enum: [ 'primary', 'secondary', 'outline', 'link', 'custom' ] } } : { inheritStyle: { type: 'boolean' } } );
 const enumOf = ( block ) => JSON.parse( db.prepare( "SELECT enum_values FROM block_attributes WHERE block_slug = ? AND attr_name = 'inheritStyle'" ).get( block ).enum_values );
 const LINK = { background: 'transparent', text: '#0a7ea8', 'border-width': '0px', padding: '0px 0px 0px 0px', 'font-size': '15px', 'font-weight': '600' };
 const STYLES = { 'background-color': 'transparent', color: 'rgb(10, 126, 168)', 'border-top-width': '0px', 'padding-top': '0px', 'padding-right': '0px', 'padding-bottom': '0px', 'padding-left': '0px', 'font-size': '15px', 'font-weight': '600' };
@@ -18,7 +20,7 @@ const reads = { widths: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w
 const run = ( presets ) => {
 	const flat = [ { name: 'sgs/button', attributes: {}, ref: 'r0' } ];
 	const nodes = [ { index: 0, name: 'sgs/button', targets: [ { id: '0:', slot: '' } ] } ];
-	return { flat, ...presetWrites( { nodes, flat, refOf: ( n ) => n.ref, reads, rawSnapshot: { settings: { custom: { buttonPresets: presets } } }, snapshot: { palette: [], spacing: [], fontSizes: [] }, writes: [], db } ) };
+	return { flat, ...presetWrites( { nodes, flat, refOf: ( n ) => n.ref, reads, rawSnapshot: { settings: { custom: { buttonPresets: presets } } }, snapshot: { palette: [], spacing: [], fontSizes: [] }, writes: [], db, schemaOf } ) };
 };
 
 test( 'MUST FAIL: a client variant the block\'s inheritStyle values hold beyond primary, secondary and outline is matched', () => {
@@ -27,10 +29,10 @@ test( 'MUST FAIL: a client variant the block\'s inheritStyle values hold beyond 
 } );
 
 test( 'presetVariants is the snapshot names intersected with each block\'s DB values', () => {
-	const v = presetVariants( db, { primary: {}, link: {}, default: {}, ghosty: {} } );
+	const v = presetVariants( db, { primary: {}, link: {}, default: {}, ghosty: {} }, schemaOf );
 	assert.deepEqual( v[ 'sgs/button' ], { attr: 'inheritStyle', variants: [ 'primary', 'link' ] } );
 	assert.equal( v[ 'sgs/heading' ], undefined, 'a block whose inheritStyle holds no variants is not a preset block' );
-	assert.deepEqual( presetVariants( db, { ghosty: {} } )[ 'sgs/button' ], { attr: 'inheritStyle', variants: [] }, 'a button still paints its default variant' );
+	assert.deepEqual( presetVariants( db, { ghosty: {} }, schemaOf )[ 'sgs/button' ], { attr: 'inheritStyle', variants: [] }, 'a button still paints its default variant' );
 } );
 
 test( 'a snapshot key no inheritStyle value names is never written, whatever it matches (negative control)', () => {
