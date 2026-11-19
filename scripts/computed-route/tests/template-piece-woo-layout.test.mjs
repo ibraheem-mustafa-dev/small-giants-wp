@@ -11,7 +11,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { place } from '../lib/template-piece-woo-layout.mjs';
-import { BUILDERS, piecesPass } from '../lib/template-pieces-context.mjs';
+import { BUILDERS, piecesPass, placedLint } from '../lib/template-pieces-context.mjs';
+import { openDb } from '../lib/db.mjs';
 import { checkPieces, countBlocks, loadPieces, placePieces } from '../lib/template-pieces.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -236,6 +237,15 @@ test( 'MUST FAIL: the pieces pass reads the commerce role from the page map and 
 	assert.deepEqual( got.problems, [] );
 	assert.deepEqual( nodes( got.tree ).find( ( n ) => 'core/post-content' === n.name ).draftStandsFor, { tpl: 'Root/17#0' } );
 	assert.deepEqual( got.placed.map( ( p ) => p.id ), [ 'layout' ] );
+} );
+
+test( 'what the layout and frame pieces place passes the skeleton lint the pass guards with (placedLint): the stand-in mark, the kept heading and the marked bar', () => {
+	const tree = json( path.join( FIX, 'mamas-checkout-pageroot.skeleton.json' ) );
+	const entry = json( path.join( REPO, 'sites', MAMAS, 'build', 'surfaces.json' ) )[ 'template-checkout' ];
+	const got = piecesPass( { repo: REPO, client: MAMAS, entry, tree, inventory: json( path.join( FIX, 'mamas-checkout-pageroot.inventory.json' ) ), facts: json( path.join( FIX, 'mamas-facts.json' ) ) } );
+	assert.deepEqual( got.placed.map( ( p ) => p.id ), [ 'layout', 'frame' ] );
+	assert.deepEqual( got.problems, [] );
+	assert.deepEqual( placedLint( tree, got.tree, openDb() ), [] );
 } );
 
 test( 'Mama\'s basket: the Cart block stands in for the grid of lines and summary; the heading above it and the shared frame stay', () => {

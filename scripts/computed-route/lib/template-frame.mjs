@@ -127,6 +127,13 @@ export function writePart( buildDir, part ) {
 	return file;
 }
 
+// The site's own parts a copy tree prints that the run wrote (writePart): [ { slug, tree } ] for every top-level
+// `core/template-part` whose sites/<client>/build/trees/template-part/<slug>.json exists, so the site build builds each one
+// before the template that prints it. The shared header and footer are posts of their own and have no such file.
+export function ownParts( buildDir, tree ) {
+	return ( tree || [] ).filter( ( n ) => 'core/template-part' === n?.name && n.attributes?.slug ).map( ( n ) => ( { slug: n.attributes.slug, file: path.join( buildDir, 'trees', 'template-part', `${ n.attributes.slug }.json` ) } ) ).filter( ( p ) => fs.existsSync( p.file ) ).map( ( p ) => ( { slug: p.slug, tree: JSON.parse( fs.readFileSync( p.file, 'utf8' ) ) } ) );
+}
+
 // The fact key of a served inventory key (`Root/16#0` -> `Checkout/16`).
 export const factKey = ( key, rootComponent ) => templateKeyOf( key, rootComponent );
 // The served key of a page-component fact key's first copy (`Checkout/16` -> `Root/16#0`).

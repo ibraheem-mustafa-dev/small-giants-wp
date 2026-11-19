@@ -1,0 +1,8 @@
+[
+	{"file":"lib/template-frame.mjs","find":".filter( ( p ) => fs.existsSync( p.file ) )","replace":"","why":"the shared header and footer, which have no part file, are read as the copy's own parts"},
+	{"file":"lib/template-frame.mjs","find":"'core/template-part' === n?.name && n.attributes?.slug","replace":"false","why":"no part is found"},
+	{"file":"lib/site-build-plan.mjs","find":"const hash = treeHash( parts.length ? [ pick.tree, parts ] : pick.tree );","replace":"const hash = treeHash( pick.tree );","why":"a changed part does not rebuild its template"},
+	{"file":"lib/site-build-plan.mjs","find":"template: slug, tree: pick.tree, parts, hash,","replace":"template: slug, tree: pick.tree, hash,","why":"the action carries no part"},
+	{"file":"lib/site-build-apply.mjs","find":"\t\t\t\t( a.parts || [] ).forEach( ( p ) => build( { templatePart: p.slug }, p.tree ) );\n","replace":"","why":"the part is never built"},
+	{"file":"lib/site-build-apply.mjs","find":"\t\t\t\t( a.parts || [] ).forEach( ( p ) => build( { templatePart: p.slug }, p.tree ) );\n\t\t\t\tbuild( { template: a.template }, a.tree );","replace":"\t\t\t\tbuild( { template: a.template }, a.tree );\n\t\t\t\t( a.parts || [] ).forEach( ( p ) => build( { templatePart: p.slug }, p.tree ) );","why":"the template is built before the part it prints"}
+]
