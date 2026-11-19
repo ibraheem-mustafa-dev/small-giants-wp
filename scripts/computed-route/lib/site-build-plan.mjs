@@ -17,6 +17,7 @@ import { addressOf, desiredMenus, menuLocation } from './site-build-menus.mjs';
 import { readSurfaces } from './site-build-labels.mjs';
 import { comingSoonAction, COMING_SOON_OPTION } from './site-build-store-visible.mjs';
 import { withFlowProduct } from './site-build-flow-product.mjs';
+import { ownParts } from './template-frame.mjs';
 import { CONTENT_META, MENU_META, ROW_META, TEMPLATE_OPTION, WOO_ROLE, isWooDefaultContent } from './site-build-state.mjs';
 
 export const PERMALINKS = '/%postname%/';
@@ -246,7 +247,9 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	}
 	let hashes = { ...( state.templateHashes || {} ) };
 	for ( const [ slug, pick ] of builders ) {
-		const hash = treeHash( pick.tree );
+		// The site's own parts the copy prints (lib/template-frame.mjs::ownParts) are built with it, and a changed part rebuilds it.
+		const parts = ownParts( buildDir, pick.tree );
+		const hash = treeHash( parts.length ? [ pick.tree, parts ] : pick.tree );
 		const saved = ( state.customTemplates || [] ).includes( slug );
 		// A recorded hash with no saved copy is a build that stopped before it saved: built again.
 		if ( hashes[ slug ] === hash && saved ) {
@@ -264,7 +267,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		const verb = hashes[ slug ] ? 'rebuild' : 'build';
 		const previous = hashes;
 		hashes = { ...hashes, [ slug ]: hash };
-		actions.push( { phase: 'posts', type: 'template', key: pick.row ? rowKey( pick.row ) : `template:${ slug }`, template: slug, tree: pick.tree, hash, hashes, previous, say: `${ pick.row ? `${ rowKey( pick.row ) }: ` : '' }${ verb } the site's own ${ slug } template from ${ pick.source }` } );
+		actions.push( { phase: 'posts', type: 'template', key: pick.row ? rowKey( pick.row ) : `template:${ slug }`, template: slug, tree: pick.tree, parts, hash, hashes, previous, say: `${ pick.row ? `${ rowKey( pick.row ) }: ` : '' }${ verb } the site's own ${ slug } template from ${ pick.source }` } );
 	}
 
 	// Section pages (Spec 36 FR-36-5): each mega panel links its menu items to the page on its menu slot.

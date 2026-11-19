@@ -23,7 +23,7 @@ export function wpBuildPage( repo, site ) {
 		const file = path.join( os.tmpdir(), `site-build-${ process.pid }-${ Date.now() }.tree.json` );
 		fs.writeFileSync( file, JSON.stringify( tree ) );
 		const args = [ path.join( repo, 'scripts', 'wp-build-page.js' ), '--env-file', secretsPath( path.join( '.claude', 'secrets', `${ site }.env` ), repo ), '--env-key', envKey, '--tree', file,
-			...( target.template ? [ '--template', target.template ] : target.postId ? [ '--post-id', String( target.postId ) ] : [ '--create', target.create, '--title', target.title, '--slug', target.slug ] ), '--status', 'publish', '--editor-timeout', String( EDITOR_TIMEOUT ) ];
+			...( target.template ? [ '--template', target.template ] : target.templatePart ? [ '--template-part', target.templatePart ] : target.postId ? [ '--post-id', String( target.postId ) ] : [ '--create', target.create, '--title', target.title, '--slug', target.slug ] ), '--status', 'publish', '--editor-timeout', String( EDITOR_TIMEOUT ) ];
 		let out = '';
 		try {
 			out = execFileSync( process.execPath, args, { encoding: 'utf8', timeout: 600000, stdio: [ 'ignore', 'pipe', 'pipe' ] } );
@@ -35,8 +35,8 @@ export function wpBuildPage( repo, site ) {
 			fs.rmSync( file, { force: true } );
 		}
 		const result = lastJson( out );
-		// A template save answers with its `<theme>//<slug>` id, not a post id.
-		if ( target.template && result?.ok ) {
+		// A template or template part save answers with its `<theme>//<slug>` id, not a post id.
+		if ( ( target.template || target.templatePart ) && result?.ok ) {
 			return result.id;
 		}
 		if ( ! result?.ok || ! Number.isInteger( result.id ) ) {
@@ -213,6 +213,7 @@ update_post_meta( ${ Number( id ) }, '${ CONTENT_META }', hash( 'sha256', get_po
 			const record = ( hashes ) => again( () => wp( [ 'option', 'update', TEMPLATE_OPTION, JSON.stringify( hashes ), '--format=json' ] ) );
 			record( a.hashes );
 			try {
+				( a.parts || [] ).forEach( ( p ) => build( { templatePart: p.slug }, p.tree ) );
 				build( { template: a.template }, a.tree );
 			} catch ( e ) {
 				try {
