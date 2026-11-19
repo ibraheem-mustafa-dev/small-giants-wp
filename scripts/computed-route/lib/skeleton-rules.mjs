@@ -1017,5 +1017,5 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return null;
 	};
 
-	return { ruleFor, drawsChildren, declared, widgets: () => ( R.accordion || R.slider || R.tabs ? widgets() : null ), iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, choiceFlow: flow };
+	return { ruleFor, drawsChildren, declared, widgets: () => ( R.accordion || R.slider || R.tabs ? widgets() : null ), accordionRun: ( md ) => ( { attributes: accordionSettings( md ), notes: widgets().toggleIcon( md ).notes, units: { units: md.units, open: md.open } } ), iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, choiceFlow: flow };
 }

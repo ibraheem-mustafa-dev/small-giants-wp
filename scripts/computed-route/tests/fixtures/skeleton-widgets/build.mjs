@@ -21,7 +21,7 @@ export const facts = ( repo, off = [] ) => {
 	return { ...f, repo };
 };
 
-// N( tag, o, kids ): o { row (the copies of a loop sit side by side in one row, each `box` wide, not one under another), words, attrs, style (a string, or a function of the copy for a per-copy style), box ([w, h], default [100, 20]), display (the computed display, when the style does not give it), loop: { list, as, copies }, ifOn ('{{ f.open }}'), shownIn ([copy]),
+// N( tag, o, kids ): o { row (the copies of a loop sit side by side in one row, each `box` wide, not one under another), recordStyle ([[property, value]]: the declarations the fact record holds for the element, which paint and padding are read from), words, attrs, style (a string, or a function of the copy for a per-copy style), box ([w, h], default [100, 20]), display (the computed display, when the style does not give it), loop: { list, as, copies }, ifOn ('{{ f.open }}'), shownIn ([copy]),
 // click ('f.toggle'), ref ('trackRef'), text ('f.a': the element prints that field), events ([[name, expr]]), parts (the
 // template source in order: strings and child indexes) }.
 export const N = ( tag, o = {}, kids = [] ) => ( { tag, o, kids } );
@@ -76,7 +76,7 @@ export function build( root ) {
 		node.o.ifOn && ( recs[ `Root/i${ node.id }` ] = entry( `Root/i${ node.id }`, 'sc-if', { value: node.o.ifOn }, node.o.loop ? `Root/f${ node.id }` : ctx.parent, node.o.loop ? [ `Root/f${ node.id }`, ...ctx.chain ] : ctx.chain, { scIf: ctx.scIf, scFor } ) );
 		const events = [ ...( node.o.click ? [ { name: 'onClick', expr: node.o.click } ] : [] ), ...( node.o.events || [] ).map( ( [ name, expr ] ) => ( { name, expr } ) ) ];
 		const holes = node.o.text ? [ { id: 'text#0', where: 'text', expr: node.o.text, path: node.o.text, whole: false } ] : [];
-		recs[ tk ] = entry( tk, node.tag, { ...( node.o.attrs || {} ), ...( node.o.ref ? { ref: `{{ ${ node.o.ref } }}` } : {} ), ...( node.o.click ? { onClick: `{{ ${ node.o.click } }}` } : {} ) }, parent, chain, { scIf, scFor }, { events, holes, n: String( node.id ) } );
+		recs[ tk ] = entry( tk, node.tag, { ...( node.o.attrs || {} ), ...( node.o.ref ? { ref: `{{ ${ node.o.ref } }}` } : {} ), ...( node.o.click ? { onClick: `{{ ${ node.o.click } }}` } : {} ) }, parent, chain, { scIf, scFor }, { events, holes, n: String( node.id ), style: node.o.recordStyle } );
 		node.kids.forEach( ( k ) => record( k, { scFor, scIf, parent: tk, chain: [ tk, ...chain ] } ) );
 	};
 	record( root, { scFor: [], scIf: [], parent: null, chain: [] } );
@@ -107,7 +107,7 @@ export function build( root ) {
 }
 function entry( key, realTag, attrs, parent, chain, membership, extra = {} ) {
 	return {
-		template: { key, component: 'Root', n: extra.n ?? key.split( '/' ).pop(), tag: realTag, realTag, attrs, style: { static: [], holes: [] }, pseudo: {}, holes: extra.holes || [], parent, realParent: parent, parentChain: chain,
+		template: { key, component: 'Root', n: extra.n ?? key.split( '/' ).pop(), tag: realTag, realTag, attrs, style: { static: extra.style || [], holes: [] }, pseudo: {}, holes: extra.holes || [], parent, realParent: parent, parentChain: chain,
 			membership: { scIf: membership.scIf, scFor: membership.scFor, dcImport: [] }, own: {}, inHelmet: false, inFor: !! membership.scFor.length, ref: null, hooks: {}, events: extra.events || [], words: '', srcLine: 1 },
 		logic: { holes: {} }, surfaces: [], instances: [], fingerprint: {},
 	};

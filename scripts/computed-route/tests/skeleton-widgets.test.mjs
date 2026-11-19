@@ -120,13 +120,13 @@ test( 'accordion: a keyed map of open items lets several open, and each item ope
 	assert.deepEqual( [ 0, 1, 2 ].map( ( c ) => row( r, `Root/3#${ c }` ).attributes.isOpen ?? false ), [ true, false, true ] );
 } );
 
-test( 'accordion: units beside other content in their parent are one accordion with no draft element of its own; the parent keeps its block', () => {
+test( 'accordion: units beside other content in their parent are one accordion with no element of its own and the parent box as its draft element; the parent keeps its block', () => {
 	const r = run( faqPage( { before: [ N( 'div', { words: '3 answers' } ) ] } ), FAQ_LOGIC() );
 	assert.notEqual( row( r, 'Root/2#0' ).block, 'sgs/accordion' );
 	const acc = find( r.skeleton, ( x ) => 'sgs/accordion' === x.name );
 	assert.equal( acc.length, 1 );
-	assert.equal( acc[ 0 ].draftRef, undefined );
-	assert.deepEqual( [ acc[ 0 ].attributes, acc[ 0 ].innerBlocks.length ], [ { defaultOpen: 0 }, 3 ] );
+	assert.equal( acc[ 0 ].draftRef.tpl, 'Root/2#0', 'a bare parent is the box the items sit in: the accordion reads it (tests/skeleton-accordion-run.test.mjs)' );
+	assert.deepEqual( [ acc[ 0 ].attributes.defaultOpen, acc[ 0 ].innerBlocks.length ], [ 0, 3 ] );
 	const parent = find( r.skeleton, ( x ) => x.draftRef?.tpl === 'Root/2#0' )[ 0 ];
 	assert.deepEqual( parent.innerBlocks.map( ( x ) => x.name ), [ 'sgs/text', 'sgs/accordion' ], 'the count line stays beside the accordion' );
 } );

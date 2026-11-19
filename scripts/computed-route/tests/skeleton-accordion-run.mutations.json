@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const boxed = bareBox( md.parent );",
+		"replace": "const boxed = true;",
+		"why": "a painted parent is read as the accordion's own box too, so its paint is drawn twice"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const node = boxed ? base( md.parent, D.block, run.attributes ) : { name: D.block, attributes: run.attributes };",
+		"replace": "const node = { name: D.block, attributes: run.attributes };",
+		"why": "the accordion made from a run has no draft element again, so Fill reads nothing for it"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const node = boxed ? base( md.parent, D.block, run.attributes ) : { name: D.block, attributes: run.attributes };",
+		"replace": "const node = boxed ? base( md.parent, D.block, {} ) : { name: D.block, attributes: {} };",
+		"why": "the run's category-line and toggle-icon settings are dropped"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const us = boxed && D.childSlots ? unitSlots(",
+		"replace": "const us = false ? unitSlots(",
+		"why": "the items' parts are never read for the accordion"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const bareBox = ( e ) => ! view?.ownPaint?.( e ) && [",
+		"replace": "const bareBox = ( e ) => [",
+		"why": "a parent that paints itself counts as a bare box"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "String( view?.declared?.( e )?.[ `padding-${ side }` ] ?? '' ).trim() ) );",
+		"replace": "'' ) );",
+		"why": "a padded parent counts as a bare box"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "accordionRun: ( md ) => ( { attributes: accordionSettings( md ),",
+		"replace": "accordionRun: ( md ) => ( { attributes: {},",
+		"why": "the run's settings are empty"
+	}
+]

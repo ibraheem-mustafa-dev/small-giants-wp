@@ -8,6 +8,7 @@ import { linkWrite } from './draft-link.mjs';
 import { isMarker } from './skeleton-rules.mjs';
 import { finish, W } from './skeleton-classify.mjs';
 import { itemSlots } from './skeleton-part-slots.mjs';
+import { unitSlots } from './skeleton-child-slots.mjs';
 
 export const LOGO_HANDOVER = { owner: 'site-info', kind: 'presence', detail: 'the logo image: a logo block\'s image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor' };
 
@@ -189,15 +190,31 @@ export function makeUnits( ctx ) {
 		return node;
 	}
 	// The accordion a run of items makes when their parent holds other content (accordionRun): a node with no draft element
-	// of its own, its settings the accordion's (the first item's row notes it), each item built as its own element.
+	// of its own, each item built as its own element. Its settings are the rule's (several open, the open item, the category
+	// lines, the toggle icon: skeleton-rules.mjs::accordionRun). Its look is read from the box the items sit in, which is
+	// its draft element, and from the items' parts at the calibrated children's paths (lib/skeleton-child-slots.mjs::unitSlots),
+	// as an accordion with a wrapper of its own reads them. A parent that paints or pads itself is the container's own look
+	// and is never read twice, so such an accordion keeps the settings and no draft element.
+	const bareBox = ( e ) => ! view?.ownPaint?.( e ) && [ 'top', 'right', 'bottom', 'left' ].every( ( side ) => /^(?:|0|0px|0%|0r?em|auto|initial|inherit|unset|normal|none)$/.test( String( view?.declared?.( e )?.[ `padding-${ side }` ] ?? '' ).trim() ) );
 	function buildAccordion( els ) {
 		const D = R.accordion;
 		const md = cls.widgets().of( els[ 0 ] ).model;
-		const S = D.settings || {};
-		const attributes = { ...( md.multiple && S.several ? { [ S.several ]: true } : {} ), ...( ! md.multiple && 1 === md.open.length && S.openAtRest ? { [ S.openAtRest ]: md.open[ 0 ] } : {} ) };
-		const node = { name: D.block, attributes, innerBlocks: els.flatMap( ( k ) => [].concat( w.buildNode( k, D.block ) || [] ) ) };
+		const run = cls.accordionRun( md );
+		const boxed = bareBox( md.parent );
+		const node = boxed ? base( md.parent, D.block, run.attributes ) : { name: D.block, attributes: run.attributes };
+		const us = boxed && D.childSlots ? unitSlots( { cfg: D.childSlots, units: run.units.units, open: run.units.open, m, finder, settings: ctx.calSettings( D.block ) } ) : null;
+		if ( us && Object.keys( us.slots ).length ) {
+			node.draftSlots = us.slots;
+			Object.keys( us.states ).length && ( node.draftSlotStates = us.states );
+		}
+		node.innerBlocks = els.flatMap( ( k ) => [].concat( w.buildNode( k, D.block ) || [] ) );
 		const row = ctx.rowOf[ els[ 0 ].key ];
-		row && ( row.unitNote = `the ${ els.length } items are one ${ D.block } with no draft element of its own (their parent ${ md.parent.key } holds other content too), settings ${ JSON.stringify( attributes ) }` );
+		const where = boxed ? `read at their parent ${ md.parent.key }, the box they sit in` : `their parent ${ md.parent.key } paints or pads itself, so it keeps its own look and the accordion has no draft element`;
+		if ( row ) {
+			row.unitNote = `the ${ els.length } items are one ${ D.block } with no draft element of its own (their parent ${ md.parent.key } holds other content too), settings ${ JSON.stringify( run.attributes ) }; its look is ${ where }`;
+			const notes = [ ...run.notes, ...( us?.notes || [] ) ];
+			notes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...notes ] );
+		}
 		return node;
 	}
 	return { unitsOf, removedBy, buildBrand, buildIcons, buildList, buildAccordion };
