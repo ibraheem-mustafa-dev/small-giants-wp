@@ -29,8 +29,22 @@ test( 'where calibration did not measure the property at every tier width nothin
 	assert.deepEqual( tiersDiffering( 'column-gap', { 1440: '10px', 768: '10px', 375: '10px' }, () => '0px', ( w ) => ( 375 === w ? undefined : '0px' ) ), { 1440: '10px' } );
 } );
 
-test( 'a narrower tier the block\'s fallback already paints at the draft value stays unwritten', () => {
-	assert.deepEqual( tiersDiffering( 'column-gap', { 1440: '10px', 768: '10px', 375: '8px' }, fallback, fallback ), { 1440: '10px' } );
+test( 'with no wider tier written, a narrower tier the block\'s fallback already paints at the draft value stays unwritten', () => {
+	assert.deepEqual( tiersDiffering( 'column-gap', { 1440: '12px', 768: '12px', 375: '8px' }, fallback, fallback ), {} );
+} );
+
+// A split hero's default paint is two columns at 768 and one at 375 (the hero's own phone rule), but the shared wrapper
+// carries a written tablet column template down over that rule, so the clone's phone hero stood in two columns while the
+// draft stacks. Once a wider tier is written, the block's fallback no longer decides the narrower one.
+test( 'MUST FAIL: under a written wider tier, a narrower draft value differing from it is written though the fallback paints it', () => {
+	assert.deepEqual( tiersDiffering( 'column-gap', { 1440: '10px', 768: '10px', 375: '8px' }, fallback, fallback ), { 1440: '10px', 375: '8px' } );
+	const twoUp = ( w ) => ( w < 768 ? '335px' : '620px 620px' );
+	assert.deepEqual( tiersDiffering( 'grid-template-columns', { 1440: '952px 240px', 768: '472px 200px', 375: '335px' }, twoUp, twoUp ), { 1440: '952px 240px', 768: '472px 200px', 375: '335px' }, 'the phone hero stacks' );
+} );
+
+test( 'negative control: under a written wider tier, a narrower draft value equal to it is left to carry', () => {
+	const twoUp = ( w ) => ( w < 768 ? '335px' : '620px 620px' );
+	assert.deepEqual( tiersDiffering( 'grid-template-columns', { 1440: '952px 240px', 768: '335px', 375: '335px' }, twoUp, twoUp ), { 1440: '952px 240px', 768: '335px' } );
 } );
 
 test( 'where the default paint is the same at both widths the wider value carries and the narrower tier is not written', () => {

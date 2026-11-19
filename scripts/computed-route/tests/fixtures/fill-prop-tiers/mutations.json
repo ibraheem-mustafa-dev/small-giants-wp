@@ -1,14 +1,14 @@
 [
 	{
 		"file": "lib/fill-prop.mjs",
-		"find": "const shown = painted ? painted.value : baseline( w );",
-		"replace": "const shown = Object.keys( out ).length ? Object.values( out ).at( -1 ) : baseline( w );",
+		"find": "const shown = painted ? painted.value : inOwnContext( prop, baseline( w ), baselineContextAt( w ) );",
+		"replace": "const shown = Object.keys( out ).length ? Object.values( out ).at( -1 ) : inOwnContext( prop, baseline( w ), baselineContextAt( w ) );",
 		"why": "a written wider tier would be assumed to carry down whatever the block's own fallback paints"
 	},
 	{
 		"file": "lib/fill-prop.mjs",
-		"find": "( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ), contextOf );",
-		"replace": "( w ) => baseline( slot, w ), undefined, contextOf );",
+		"find": "( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ), contextOf, baselineContext );",
+		"replace": "( w ) => baseline( slot, w ), undefined, contextOf, baselineContext );",
 		"why": "resolveProperty would judge the carry by the inherited baseline, not the block's calibrated paint"
 	},
 	{
@@ -28,5 +28,23 @@
 		"find": "return same( prop, defaultAt( x ), defaultAt( WIDTH_OF[ wider ] ) ) ? { value: w.after[ wider ] } : null;",
 		"replace": "return { value: w.after[ wider ] };",
 		"why": "an empty tier would always show the wider value"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "if ( ! samePaint( prop, draft[ w ], shown, contextAt( w ) ) || ! carried ) {",
+		"replace": "if ( ! samePaint( prop, draft[ w ], shown, contextAt( w ) ) ) {",
+		"why": "under a written wider tier the block's fallback still decides the narrower tier, so a phone hero stays in two columns"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "const carried = undefined === wider || samePaint( prop, draft[ w ], out[ wider ], contextAt( w ) );",
+		"replace": "const carried = undefined === wider;",
+		"why": "every narrower tier under a written wider one is written, even one equal to the wider value"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "const wider = TIER_WIDTHS.filter( ( x ) => x > w && x in out ).sort( ( a, b ) => a - b )[ 0 ];",
+		"replace": "const wider = TIER_WIDTHS.filter( ( x ) => x > w && x in out ).sort( ( a, b ) => b - a )[ 0 ];",
+		"why": "the narrower value is compared with the widest written tier, not the nearest"
 	}
 ]

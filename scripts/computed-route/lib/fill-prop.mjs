@@ -259,7 +259,8 @@ export function inOwnContext( prop, v, ctx ) {
 // The tiers whose draft value differs from what the node shows there: its baseline, or what the tiers already chosen paint
 // there, judged as the held side judges a write (lib/fill-held.mjs::paintedAt): an empty tier shows the nearest wider
 // chosen tier only where the block's default paint of the property is the same at both widths, and otherwise the block's
-// own fallback (its baseline), so a 10px desktop gap over a block whose mobile default is 8px writes the mobile tier too.
+// own fallback (its baseline), so a 10px desktop gap over a block whose mobile default is 8px writes the mobile tier too;
+// a narrower draft value differing from the nearest written wider value is written even where the fallback paints it.
 // A property calibration did not measure at every tier width gives no evidence of a fallback, so there the wider value
 // carries down. baseline( width ) is the node's value with nothing written; defaultAt( width ) the block's calibrated
 // default paint of the property (the baseline when not given); contextAt( width ) the element's context there for canon()
@@ -275,7 +276,13 @@ export function tiersDiffering( prop, draft, baseline, defaultAt = baseline, con
 		}
 		const painted = paintedAt( { after: Object.fromEntries( Object.entries( out ).map( ( [ x, v ] ) => [ TIER_OF[ x ], v ] ) ) }, w, prop, fallbackAt );
 		const shown = painted ? painted.value : inOwnContext( prop, baseline( w ), baselineContextAt( w ) );
-		if ( ! samePaint( prop, draft[ w ], shown, contextAt( w ) ) ) {
+		// The block's own fallback is what an empty tier shows only while no wider tier of the setting is written: once one
+		// is, the emitter may carry it down instead (the shared wrapper fills a split hero's empty phone column template from
+		// the tablet one, over the hero's own one-column phone rule). Calibration records no carry-down per setting, so a
+		// narrower draft value that differs from the nearest written wider value is written; one equal to it is not.
+		const wider = TIER_WIDTHS.filter( ( x ) => x > w && x in out ).sort( ( a, b ) => a - b )[ 0 ];
+		const carried = undefined === wider || samePaint( prop, draft[ w ], out[ wider ], contextAt( w ) );
+		if ( ! samePaint( prop, draft[ w ], shown, contextAt( w ) ) || ! carried ) {
 			out[ w ] = draft[ w ];
 		}
 	}
