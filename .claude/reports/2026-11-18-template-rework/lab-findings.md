@@ -54,7 +54,7 @@ Right from blank: the page band and heading; the working account block is placed
 |---|---|---|
 | WooCommerce's sign-in and register forms show where the draft has a "Sign in to see your orders" card with two buttons | The account block's signed-out card and its words are settings of the block; the route places the block (`lib/skeleton-commerce-region.mjs`) and writes none of them. Part-look writes looks, not modes or words | Route: not started. The same shape as the basket drawer's parts in `shop-parts.json` (a part's literal words written to the block's settings) |
 
-The signed-in views were not photographed (the seed makes the customer `rc-customer`; the draft's signed-in state needs its own read).
+The signed-in views (orders, an order's detail, addresses, details, saved items) are not cloned or photographed, and they are where most of the account hand work sat: the hand-finished block held 139 hand-set settings and about 19,000 characters of Custom CSS, and part-look, reading only the signed-out draft, matches 28 of about 105. Counting the account among the surfaces built from blank means the signed-out page only.
 
 ## 404 and search (`pair-404-1440-hand-vs-blank.png`, `pair-search-1440-hand-vs-blank.png`)
 
