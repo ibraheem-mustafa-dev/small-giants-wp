@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { brandRegistry } from './brand-registry.mjs';
+import { UNIT_PARTS } from './skeleton-child-slots.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const REPO = path.resolve( HERE, '../../..' );
@@ -100,6 +101,12 @@ export function decisionsProblems( facts ) {
 		Object.entries( settings || {} ).forEach( ( [ k, attr ] ) => ! facts.attr( onChild.includes( k ) ? child[ 0 ] : block, attr ) && problems.push( `${ where }.settings.${ k } names ${ attr }, which ${ onChild.includes( k ) ? child[ 0 ] : block } does not have` ) );
 	};
 	widget( 'rules.accordion', r.accordion?.block, r.accordion?.settings, [ 'itemOpen', 'title', 'category' ] );
+	// The accordion's unit slots name settings of the accordion itself, each part one lib/skeleton-child-slots.mjs::unitSlots reads.
+	const cs = r.accordion?.childSlots;
+	cs && [ [ 'resting', cs.resting ], [ 'current', cs.current ], ...( cs.parts || [] ).map( ( p, i ) => [ `parts[${ i }]`, p.setting ] ) ]
+		.filter( ( [ , attr ] ) => ! facts.attr( r.accordion.block, attr ) ).forEach( ( [ k, attr ] ) => problems.push( `rules.accordion.childSlots.${ k } names ${ attr }, which ${ r.accordion.block } does not have` ) );
+	( cs?.parts || [] ).filter( ( p ) => ! UNIT_PARTS.includes( p.part ) || ! [ 'resting', 'current' ].includes( p.child ) )
+		.forEach( ( p ) => problems.push( `rules.accordion.childSlots part ${ JSON.stringify( p ) } must name a part of ${ UNIT_PARTS.join( ', ' ) } and a child of resting or current` ) );
 	( r.slider?.blocks || [] ).forEach( ( b, i ) => widget( `rules.slider.blocks[${ i }]`, b.block, r.slider.settings ) );
 	widget( 'rules.tabs', r.tabs?.block, r.tabs?.settings, [ 'label' ] );
 	// A block-owned part's trigger names settings its owning block has (the control that opens the part writes them).

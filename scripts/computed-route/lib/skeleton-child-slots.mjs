@@ -42,6 +42,72 @@ export function childSlots( { cfg, items, m, finder, settings = {}, states = [] 
 	return out;
 }
 
+// The first step of a calibrated path (the fixture child it sits under), and the path's other steps.
+const stepsOf = ( p ) => String( p ?? '' ).split( /\s*>\s*/ ).filter( Boolean );
+
+// A unit's part as a draft element: the row is the unit, the header its control, the icon the ring its control draws (a
+// wordless square inside it), the answer its one rendered panel. Null when the unit has no such element.
+const PARTS = {
+	row: ( u ) => u.el,
+	header: ( u ) => u.control,
+	icon: ( u, m ) => withinTree( m, u.control ).slice( 1 ).find( isRing ) ?? null,
+	answer: ( u ) => ( 1 === ( u.rendered || [] ).length ? u.rendered[ 0 ] : null ),
+};
+// The parts a widget rule's `childSlots` may name (checked by lib/skeleton-facts.mjs::decisionsProblems).
+export const UNIT_PARTS = Object.keys( PARTS );
+
+// draftSlots for a block whose children are the draft's repeated units and which keeps their parts' look as its own
+// settings (an accordion's header padding, icon ring and answer padding: Spec 48 FR-48-6). `cfg` is the widget rule's
+// `childSlots`: { resting: <setting>, current: <setting>, parts: [ { part, child, setting } ] }. The fixture's resting
+// child is the first step of the `resting` setting's calibrated slot (a setting calibration measured on a closed child
+// only), its current child that of `current` (measured on the open child only). A part's path is the entry of its
+// setting's calibrated slots under that child; its draft element is that part of the first unit the draft shows closed
+// (`resting`) or of the unit it shows open (`current`). Resting parts are listed first: a setting calibrated on both
+// children is then written from the closed unit's read, and an open unit's other value is a conflict row
+// (lib/fill-resolve-element.mjs::ownerKeeps keeps the first), never a mix of the two.
+// units: [{ el, control, rendered }]; open: the indices of the units shown open. Returns { slots, notes }.
+export function unitSlots( { cfg, units = [], open = [], m, finder, settings = {} } ) {
+	const out = { slots: {}, notes: [] };
+	if ( ! cfg ) {
+		return out;
+	}
+	const stepOf = ( name ) => stepsOf( settings[ name ]?.slot )[ 0 ] ?? null;
+	const child = { resting: stepOf( cfg.resting ), current: stepOf( cfg.current ) };
+	const unit = { resting: units.find( ( u, i ) => ! open.includes( i ) ) ?? null, current: units.find( ( u, i ) => open.includes( i ) ) ?? null };
+	const said = new Set();
+	const say = ( text ) => said.has( text ) || ( said.add( text ), out.notes.push( text ) );
+	for ( const which of [ 'resting', 'current' ] ) {
+		for ( const p of ( cfg.parts || [] ).filter( ( x ) => x.child === which ) ) {
+			if ( ! child[ which ] ) {
+				say( `the calibration has no slot for ${ cfg[ which ] }, so no ${ which } child's parts` );
+				continue;
+			}
+			if ( ! unit[ which ] ) {
+				say( `the draft shows no ${ 'resting' === which ? 'closed' : 'open' } unit, so no ${ which } child's parts` );
+				continue;
+			}
+			const path = ( settings[ p.setting ]?.slots || [ settings[ p.setting ]?.slot ] ).find( ( s ) => undefined !== s && stepsOf( s )[ 0 ] === child[ which ] );
+			const el = PARTS[ p.part ]?.( unit[ which ], m ) ?? null;
+			if ( undefined === path ) {
+				say( `the calibration measured ${ p.setting } on no ${ which } child, so no ${ which } ${ p.part } slot` );
+			} else if ( ! el ) {
+				say( `the ${ 'resting' === which ? 'closed' : 'open' } unit holds no ${ p.part } element, so no ${ which } ${ p.part } slot` );
+			} else {
+				out.slots[ path ] = finder( el );
+			}
+		}
+	}
+	return out;
+}
+
+// An icon ring: an element drawn at the widest read width as a square, holding no letter or digit (a typed `+`, an icon
+// hole or an svg).
+const isRing = ( x ) => {
+	const b = x.box?.[ 1440 ];
+	const words = `${ x.words ?? '' }${ String( x.srcOwnText ?? '' ).replace( /\{\{[^}]*\}\}/g, '' ) }`;
+	return !! b && b.w > 0 && Math.abs( b.w - b.h ) <= 1 && false !== x.visible?.[ 1440 ] && ! /[\p{L}\p{N}]/u.test( words );
+};
+
 // A glyph: an element drawn at the widest read width as a small square (at most 48px), with no words of its own (an icon
 // placeholder hole or an svg), or an svg.
 const isGlyph = ( x ) => {

@@ -688,7 +688,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return v( md.kind, { action: 'absorbed', into: hit.into } );
 		}
 		if ( 'slider' === hit.rule ) {
-			return v( 'slider', { block: md.block, absorb: true, attributes: md.attributes, reason: `${ R.slider.reason }; ${ md.slides.length } slides, ${ md.arrows } arrow and ${ md.dots } dot controls${ md.timer ? ', a timer' : '' }${ md.drag ? ', drag' : '' }; no handoff record kind names a slider` } );
+			// The slides travel with the verdict: each is one child the slider draws, read for its card's look at its own slide.
+			return v( 'slider', { block: md.block, absorb: true, attributes: md.attributes, slides: md.slides, reason: `${ R.slider.reason }; ${ md.slides.length } slides, ${ md.arrows } arrow and ${ md.dots } dot controls${ md.timer ? ', a timer' : '' }${ md.drag ? ', drag' : '' }; no handoff record kind names a slider` } );
 		}
 		if ( 'tabs' === hit.rule ) {
 			return v( 'tabs', { block: R.tabs.block } );
@@ -700,7 +701,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const S = R.accordion.settings || {};
 		const why = `${ R.accordion.reason }; ${ md.units.length } items on state key ${ md.key } (${ md.multiple ? 'several open at once' : 'one open at a time' }); ${ md.record ? `agrees with handoff record ${ md.record }` : 'no handoff record of kind accordion names it' }`;
 		if ( 'accordion' === hit.rule ) {
-			return v( 'accordion', { block: R.accordion.block, attributes: accordionSettings( md ), reason: why } );
+			// The units travel with the verdict: the accordion keeps its rows' parts' look as its own settings, read from them
+			// (lib/skeleton-child-slots.mjs::unitSlots, rules.accordion.childSlots).
+			return v( 'accordion', { block: R.accordion.block, attributes: accordionSettings( md ), reason: why, units: { units: md.units, open: md.open } } );
 		}
 		const words = widgets().itemWords( md.units[ hit.index ] );
 		const closed = md.units[ hit.index ].rendered.length ? { inner: [], handover: [] } : widgets().closedPanel( md, hit.index, m.tplFinder );

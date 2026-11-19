@@ -693,6 +693,18 @@
 			"block": "sgs/accordion",
 			"recordKind": "accordion",
 			"settings": { "several": "allowMultiple", "openAtRest": "defaultOpen", "itemOpen": "isOpen", "title": "title", "category": "category" },
+			"childSlots": {
+				"reason": "the accordion keeps its rows' look as its own settings, calibrated on the fixture's open first item and closed second item: the resting child is the one headerFontWeight is measured on, the current child the one itemBackgroundOpen is; a closed unit's row, header and icon ring and the open unit's row and answer are read at those children's paths (lib/skeleton-child-slots.mjs::unitSlots), the resting parts first so a setting on both children takes the closed row's value",
+				"resting": "headerFontWeight",
+				"current": "itemBackgroundOpen",
+				"parts": [
+					{ "part": "row", "child": "resting", "setting": "itemShadow" },
+					{ "part": "header", "child": "resting", "setting": "headerPadding" },
+					{ "part": "icon", "child": "resting", "setting": "iconCircleBorderWidth" },
+					{ "part": "row", "child": "current", "setting": "itemBackgroundOpen" },
+					{ "part": "answer", "child": "current", "setting": "contentPadding" }
+				]
+			},
 			"taughtBy": {
 				"client": "mamas-munches-redesign",
 				"key": "Contact/78, Help/26, Home/245 and Product/118 (handoff records S-59, S-38, S-11 and S-17)",

@@ -54,6 +54,25 @@ test( 'accordion: a run of units, each a control whose handler writes the key it
 	assert.ok( ! off.proposal.rows.some( ( x ) => 'accordion' === x.rule ) );
 } );
 
+test( 'accordion: the host reads a closed unit\'s row and header and the open unit\'s row and answer at the calibrated children\'s paths (rules.accordion.childSlots); MUST FAIL without the units on the verdict', () => {
+	const ONE = '.c:nth-of-type(1)';
+	const TWO = '.c:nth-of-type(2)';
+	const cal = {
+		headerFontWeight: { slot: `${ TWO } > .h` },
+		itemBackgroundOpen: { slot: ONE, slots: [ ONE ] },
+		itemShadow: { slot: ONE, slots: [ ONE, TWO ] },
+		headerPadding: { slot: `${ ONE } > .h`, slots: [ `${ ONE } > .h`, `${ TWO } > .h` ] },
+		iconCircleBorderWidth: { slot: `${ ONE } > .h > .i`, slots: [ `${ ONE } > .h > .i`, `${ TWO } > .h > .i` ] },
+		contentPadding: { slot: `${ ONE } > .a`, slots: [ `${ ONE } > .a`, `${ TWO } > .a` ] },
+	};
+	const r = run( faqPage(), FAQ_LOGIC(), { calSettings: ( slug ) => ( 'sgs/accordion' === slug ? cal : {} ) } );
+	const acc = find( r.skeleton, ( x ) => 'sgs/accordion' === x.name )[ 0 ];
+	assert.deepEqual( acc.draftSlots, { [ TWO ]: { tpl: 'Root/3#1' }, [ `${ TWO } > .h` ]: { tpl: 'Root/4#1' }, [ ONE ]: { tpl: 'Root/3#0' }, [ `${ ONE } > .a` ]: { tpl: 'Root/8#0' } } );
+	assert.match( row( r, 'Root/2#0' ).slotNotes.join( ' ' ), /closed unit holds no icon element/, 'the fixture\'s glyph is not square, so no ring slot, and it is said' );
+	const bare = run( faqPage(), FAQ_LOGIC() );
+	assert.equal( undefined, find( bare.skeleton, ( x ) => 'sgs/accordion' === x.name )[ 0 ].draftSlots, 'negative: with no calibration there is no slot' );
+} );
+
 test( 'accordion: a keyed map of open items lets several open, and each item open at rest is marked open', () => {
 	const r = run( faqPage( { shownIn: [ 0, 2 ] } ), FAQ_LOGIC( { open: '!! S.open[ i ]', write: '{ open: { ...S.open, [ i ]: ! S.open[ i ] } }' } ) );
 	assert.equal( row( r, 'Root/2#0' ).attributes.allowMultiple, true );
@@ -134,6 +153,8 @@ test( 'slider: a ref\'d track of loop copies that controls scroll is sgs/testimo
 	assert.equal( row( r, 'Root/3#0' ).action, null, 'the heading beside the arrows stays' );
 	assert.equal( row( r, 'Root/11#0' ).action, 'absorbed', 'the dots\' wrapper' );
 	assert.ok( [ 0, 1, 2 ].every( ( c ) => 'absorbed' === row( r, `Root/8#${ c }` ).action ), 'the slides are drawn by the slider (Fill writes them from the loop)' );
+	const slider = find( r.skeleton, ( x ) => 'sgs/testimonial-slider' === x.name )[ 0 ];
+	assert.deepEqual( slider.innerBlocks.map( ( k ) => [ k.name, k.draftRef ] ), [ 0, 1, 2 ].map( ( c ) => [ 'sgs/testimonial', { tpl: `Root/8#${ c }` } ] ), 'MUST FAIL: each slide is one child read at its own card, so the card\'s look is not lost' );
 	assert.equal( find( r.skeleton, ( x ) => 'sgs/button' === x.name ).length, 0, 'MUST FAIL: no wordless control becomes a button' );
 	const off = run( sliderPage(), SLIDER_LOGIC(), { off: [ 'slider' ] } );
 	assert.notEqual( row( off, 'Root/7#0' ).block, 'sgs/testimonial-slider' );
@@ -204,6 +225,12 @@ test( 'the decisions data names known blocks and settings they have for the widg
 	assert.deepEqual( decisionsProblems( f ), [] );
 	f.decisions.rules.accordion = { ...f.decisions.rules.accordion, settings: { ...f.decisions.rules.accordion.settings, title: 'nope' } };
 	assert.ok( decisionsProblems( f ).some( ( p ) => /rules\.accordion\.settings\.title names nope/.test( p ) ), 'MUST FAIL: a setting the block lacks is refused' );
+	const g = facts( REPO );
+	const cs = g.decisions.rules.accordion.childSlots;
+	g.decisions.rules.accordion = { ...g.decisions.rules.accordion, childSlots: { ...cs, resting: 'nope', parts: [ ...cs.parts, { part: 'lid', child: 'resting', setting: cs.parts[ 0 ].setting } ] } };
+	const said = decisionsProblems( g ).join( '\n' );
+	assert.match( said, /rules\.accordion\.childSlots\.resting names nope/, 'MUST FAIL: a child slot setting the accordion lacks is refused' );
+	assert.match( said, /must name a part of row, header, icon, answer/, 'a part unitSlots cannot read is refused' );
 } );
 
 test( 'the logic reader resolves a field destructured from an array row (`([ cat, q, a ], i) => …`), so a closed item\'s answer is read from the data', () => {

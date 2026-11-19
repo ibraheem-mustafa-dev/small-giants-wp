@@ -1,0 +1,9 @@
+[
+ {"file": "lib/skeleton-child-slots.mjs", "find": "\t\t\t\tout.slots[ path ] = finder( el );\n\t\t\t}\n\t\t}\n\t}\n\treturn out;", "replace": "\t\t\t}\n\t\t}\n\t}\n\treturn out;", "why": "no unit part is read"},
+ {"file": "lib/skeleton-child-slots.mjs", "find": "for ( const which of [ 'resting', 'current' ] ) {", "replace": "for ( const which of [ 'current', 'resting' ] ) {", "why": "the open unit's parts come first, so a setting on both children keeps the open row's value"},
+ {"file": "lib/skeleton-child-slots.mjs", "find": "&& ! /[\\p{L}\\p{N}]/u.test( words );", "replace": ";", "why": "a square holding letters is taken as the icon ring"},
+ {"file": "lib/skeleton-child-slots.mjs", "find": "b.w > 0 && Math.abs( b.w - b.h ) <= 1 && false", "replace": "b.w > 0 && false", "why": "any wordless element is the ring, a text group included"},
+ {"file": "lib/skeleton-child-slots.mjs", "find": "resting: units.find( ( u, i ) => ! open.includes( i ) ) ?? null", "replace": "resting: units[ 0 ] ?? null", "why": "the first unit is the resting one even when the draft shows it open"},
+ {"file": "lib/skeleton-child-slots.mjs", "find": ".find( ( s ) => undefined !== s && stepsOf( s )[ 0 ] === child[ which ] );", "replace": ".find( ( s ) => undefined !== s );", "why": "a part's path is the setting's first slot whatever child it sits under"},
+ {"file": "lib/skeleton-child-slots.mjs", "find": "answer: ( u ) => ( 1 === ( u.rendered || [] ).length ? u.rendered[ 0 ] : null ),", "replace": "answer: ( u ) => u.el,", "why": "the answer is read on the row"}
+]

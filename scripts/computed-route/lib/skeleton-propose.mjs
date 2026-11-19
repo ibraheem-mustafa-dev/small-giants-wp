@@ -11,7 +11,7 @@ import { skeletonProblems, expandSiteInfoRows } from './fill-skeleton.mjs';
 import { lintSkeleton } from '../lint.mjs';
 import { inventoryModel } from './skeleton-model.mjs';
 import { makeClassifier, overrideFor, W } from './skeleton-classify.mjs';
-import { collapsePoint, childSlots } from './skeleton-child-slots.mjs';
+import { collapsePoint, childSlots, unitSlots } from './skeleton-child-slots.mjs';
 import { partSlots, placePart } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
@@ -243,6 +243,12 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// A form field's draft control is the field's input part (lib/skeleton-form-slots.mjs).
 		const inputSlot = 'formControl' === r.rule && r.absorb ? fieldInputSlot( { db, rules: R.formControl, block, calSettings, calKeys } ) : null;
 		inputSlot && ( slots[ inputSlot ] = finder( e ) );
+		// A block whose children are the draft's repeated units keeps their parts' look as its own settings: a closed and an
+		// open unit's row, header, icon and answer are read at the calibrated children's paths (lib/skeleton-child-slots.mjs::unitSlots).
+		const unitCfg = r.units ? R[ r.rule ]?.childSlots : null;
+		const us = unitCfg ? unitSlots( { cfg: unitCfg, units: r.units.units, open: r.units.open, m, finder, settings: calSettings( block ) } ) : null;
+		us && Object.assign( slots, us.slots );
+		us?.notes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...us.notes ] );
 		if ( Object.keys( slots ).length ) {
 			node.draftSlots = slots;
 			row.slots = slots;
@@ -255,6 +261,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			const notes = [ ...cs.notes, ...( collapse?.note ? [ collapse.note ] : [] ) ];
 			notes.length && ( row.slotNotes = notes );
 			absorbSubtree( e, { block, key: e.key, wordBound: top.wordBound }, drawn, r.rule || 'drawsChildren', node, parentBlock );
+			// A slider draws its slides as its one child block, one per slide: each child reads its card's look at its own
+			// draft slide, and Fill writes each child's words from the loop (lib/fill-list-content.mjs::listDecisions).
+			const slideBlock = r.slides ? composition[ block ]?.accepts?.[ 0 ] : null;
+			slideBlock && ( node.innerBlocks = r.slides.map( ( s ) => base( s, slideBlock, {} ) ) );
 			return [ node, ...takeVariants( node ) ];
 		}
 		if ( ! m.blockKids( e ).length && m.widthKids( e ).length && 'leaf' === composition[ block ]?.composition_role ) {
