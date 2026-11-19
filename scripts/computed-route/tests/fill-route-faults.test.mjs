@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import { normalKeywords } from '../lib/fill-normal-keywords.mjs';
 import { resolve } from '../lib/resolve.mjs';
 import { alignmentCanon } from '../lib/css-equivalence/keywords.mjs';
+import { motionSettled, restPoseGives } from '../lib/fill-motion-settle.mjs';
 import { openDb } from '../lib/db.mjs';
 import { fixtureDb } from './fixtures/framework-db.mjs';
 
@@ -81,4 +82,27 @@ test( 'MUST FAIL WITHOUT THE DIRECTION RULE: text-align start is left in ltr and
 	assert.equal( alignmentCanon( 'text-align', 'end', { direction: 'ltr' } ), 'right' );
 	const unread = resolve( { block: 'sgs/box', slot: '', prop: 'text-align', perWidth: perW( 'start' ), siblings: {} }, ctx );
 	assert.equal( unread.gap, 'shape', 'no direction read: start is no edge the enum names' );
+} );
+
+// A tilted card: the motion pass writes its resting rotation as the hover state's restRotate (sgsMotion), and the draft's
+// computed resting transform is that rotation's matrix.
+const tilt = ( values, row ) => motionSettled( {
+	unmapped: [ row ], nodes: [ { index: 0, name: 'sgs/card', targets: [ { id: '0:', slot: '' } ] } ], flat: [ { ref: 'n0' } ], refOf: ( x ) => x.ref,
+	writes: [ { node: 'n0', attr: 'sgsMotion', how: 'motion', after: { v: 1, elements: { root: { hover: { state: { values } } } } } } ],
+	mdb: { targetsOf: () => [ { target: 'root', cssElement: 'root', kind: 'root' } ] }, db, calFor: () => null, reads: null, rawSnapshot: {},
+} );
+const tiltRow = ( value ) => ( { node: 'n0', block: 'sgs/card', slot: '', property: 'transform', value, state: null, reason: 'no-setting: sgs/card has no setting for transform' } );
+
+test( 'MUST FAIL WITHOUT THE REST POSE: the resting transform of a root that the written hover state restRotate gives is settled by the motion pass', () => {
+	const r = tilt( { restRotate: -1, rotate: 0 }, tiltRow( 'matrix(0.999848, -0.0174524, 0.0174524, 0.999848, 0, 0)' ) );
+	assert.deepEqual( r.unmapped, [] );
+	assert.deepEqual( r.answered.map( ( a ) => a.property ), [ 'transform' ] );
+	assert.equal( restPoseGives( 'none', {} ), true, 'no rest rotation: none' );
+} );
+
+test( 'negative control: another rotation, a translation, a 3D rest pose and a hover row stay raised', () => {
+	assert.equal( tilt( { restRotate: 2 }, tiltRow( 'matrix(0.999848, -0.0174524, 0.0174524, 0.999848, 0, 0)' ) ).unmapped.length, 1 );
+	assert.equal( tilt( { restRotate: -1 }, tiltRow( 'matrix(0.999848, -0.0174524, 0.0174524, 0.999848, 0, -12)' ) ).unmapped.length, 1 );
+	assert.equal( tilt( { restRotate: -1, restRotateX: 10 }, tiltRow( 'matrix(0.999848, -0.0174524, 0.0174524, 0.999848, 0, 0)' ) ).unmapped.length, 1 );
+	assert.equal( tilt( { restRotate: -1 }, { ...tiltRow( 'matrix(0.999848, -0.0174524, 0.0174524, 0.999848, 0, 0)' ), state: 'hover' } ).unmapped.length, 1 );
 } );
