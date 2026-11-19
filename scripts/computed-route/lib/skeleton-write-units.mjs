@@ -12,7 +12,7 @@ import { itemSlots } from './skeleton-part-slots.mjs';
 export const LOGO_HANDOVER = { owner: 'site-info', kind: 'presence', detail: 'the logo image: a logo block\'s image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor' };
 
 export function makeUnits( ctx ) {
-	const { m, facts, cls, R, view, overrides, base, rootOf, w, siteLink } = ctx;
+	const { m, facts, cls, R, view, overrides, base, finder, rootOf, w, siteLink } = ctx;
 	const { record, absorbSubtree } = w;
 	const { capsOf, enumOf } = facts;
 	const minLinks = facts.decisions.structural?.linkList?.minLinks ?? 2;
@@ -137,7 +137,9 @@ export function makeUnits( ctx ) {
 		const kinds = [ ...cls.siteInfoKinds( l ) ].filter( ( [ k ] ) => facts.listItem.kinds.includes( k ) ).sort( ( a, b ) => b[ 1 ].w - a[ 1 ].w );
 		return kinds[ 0 ]?.[ 0 ] || null;
 	};
-	function buildList( els ) {
+	// host: the bare wrapper the list block is (rule listWrapper), whose own box (its grid columns, its gaps) the list's own
+	// settings read; the first link stays the draft element of the link part's settings. Without a host the first link is both.
+	function buildList( els, host = null ) {
 		const slug = facts.listSlug;
 		const li = facts.listItem;
 		const handover = [];
@@ -167,11 +169,11 @@ export function makeUnits( ctx ) {
 		own && ev( own, 'db', W.tag, `html_tag_to_core_block: a -> ${ own } (each link on its own)` );
 		const r = finish( C );
 		const first = els.find( ( l ) => ! removedBy( l ) );
-		const node = base( first, slug, { ...( ( enumOf( slug, 'markerType' ) || [] ).includes( 'none' ) ? { markerType: 'none' } : {} ), items } );
+		const node = base( host ?? first, slug, { ...( ( enumOf( slug, 'markerType' ) || [] ).includes( 'none' ) ? { markerType: 'none' } : {} ), items } );
 		handover.length && ( node.handover = handover );
 		// The node's draft element is its first link, which is also the block's link part: the settings calibrated on that part
 		// are read at the same link (decisions structural.linkList.itemSlots, lib/skeleton-part-slots.mjs::itemSlots).
-		const linkSlots = 'a' === first?.tag && node.draftRef && ctx.calSettings ? itemSlots( { finder: node.draftRef, settings: facts.decisions.structural?.linkList?.itemSlots, calibrated: ctx.calSettings( slug ) } ).slots : {};
+		const linkSlots = 'a' === first?.tag && node.draftRef && ctx.calSettings ? itemSlots( { finder: finder( first ), settings: facts.decisions.structural?.linkList?.itemSlots, calibrated: ctx.calSettings( slug ) } ).slots : {};
 		Object.keys( linkSlots ).length && ( node.draftSlots = { ...node.draftSlots, ...linkSlots } );
 		els.forEach( ( l, i ) => {
 			if ( removedBy( l ) ) {

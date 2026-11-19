@@ -159,7 +159,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const units = m.words( e ) || 'client decision' === overrides( e, '' )?.source || ( r.rule && r.absorb ) ? [] : unitsOf( e );
 		if ( R.listWrapper && 1 === units.length && 'list' === units[ 0 ].type && units[ 0 ].els.length === m.blockKids( e ).length ) {
 			record( e, { action: 'unwrap', rule: 'listWrapper', source: 'rule listWrapper', reason: R.listWrapper.reason, confidence: 1, candidates: [] } );
-			return [ buildList( units[ 0 ].els ) ];
+			return [ buildList( units[ 0 ].els, e ) ];
 		}
 		if ( 'remove' === r.action ) {
 			record( e, r );
