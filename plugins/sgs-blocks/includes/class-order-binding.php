@@ -7,7 +7,11 @@
  * `{ "source": "sgs/order", "args": { "key": "number" } }`. Keys: `number`, `email` (billing email),
  * `delivery_method` (shipping method title or titles), `total` (formatted total), `date` (order date in the site's
  * date format), `view_url` (the account's view-order link, for the order's owner only), `gift_to` and `gift_message`
- * (the gift note saved by sgs/gift-order) and `item_count` (items bought). A fact the order does not have is ''.
+ * (the gift note saved by sgs/gift-order), `item_count` (items bought), `shipping_name` and `shipping_address` (who
+ * the order goes to and where, shown as WooCommerce's own shipping address block shows them: only when the order needs
+ * delivery and has a shipping address), `billing_name` and `billing_address`, `phone` (billing phone, else shipping)
+ * and `payment_method` (the payment method's title). An address is one line in the format of its country, its parts
+ * joined by a comma, without the name. A fact the order does not have is ''.
  *
  * The order is read the way WooCommerce's own order-confirmation blocks read it
  * (AbstractOrderConfirmationBlock::get_view_order_permissions): the order id from
@@ -31,7 +35,7 @@ defined( 'ABSPATH' ) || exit;
 final class Order_Binding {
 
 	/** Keys the source resolves. */
-	const KEYS = array( 'number', 'email', 'delivery_method', 'total', 'date', 'view_url', 'gift_to', 'gift_message', 'item_count' );
+	const KEYS = array( 'number', 'email', 'delivery_method', 'total', 'date', 'view_url', 'gift_to', 'gift_message', 'item_count', 'shipping_name', 'shipping_address', 'billing_name', 'billing_address', 'phone', 'payment_method' );
 
 	/**
 	 * Wire hooks.
@@ -119,9 +123,53 @@ final class Order_Binding {
 				return null === $gift ? '' : \sanitize_text_field( \html_entity_decode( (string) $gift['gift_to' === $key ? 'to' : 'message'], ENT_QUOTES, 'UTF-8' ) );
 			case 'item_count':
 				return (string) (int) $order->get_item_count();
+			case 'shipping_name':
+				return self::has_address( $order, 'shipping' ) ? \sanitize_text_field( (string) $order->get_formatted_shipping_full_name() ) : '';
+			case 'billing_name':
+				return self::has_address( $order, 'billing' ) ? \sanitize_text_field( (string) $order->get_formatted_billing_full_name() ) : '';
+			case 'shipping_address':
+				return self::address_line( $order, 'shipping' );
+			case 'billing_address':
+				return self::address_line( $order, 'billing' );
+			case 'phone':
+				$phone = (string) $order->get_billing_phone();
+				return \sanitize_text_field( '' !== $phone ? $phone : (string) $order->get_shipping_phone() );
+			case 'payment_method':
+				return \sanitize_text_field( \html_entity_decode( (string) $order->get_payment_method_title(), ENT_QUOTES, 'UTF-8' ) );
 			default:
 				return \sanitize_text_field( (string) $order->get_order_number() );
 		}
+	}
+
+	/**
+	 * Whether the order shows an address of this kind, by WooCommerce's own order-confirmation rule: a shipping address
+	 * only on an order that needs delivery and has one, a billing address only when it has one.
+	 *
+	 * @param \WC_Order $order The viewable order.
+	 * @param string    $type  'shipping' or 'billing'.
+	 * @return bool
+	 */
+	private static function has_address( \WC_Order $order, string $type ): bool {
+		return 'shipping' === $type ? $order->needs_shipping_address() && $order->has_shipping_address() : $order->has_billing_address();
+	}
+
+	/**
+	 * One address on a single line: WooCommerce's format for the address's country, without the name, parts joined by
+	 * a comma ('' when the order shows no address of this kind).
+	 *
+	 * @param \WC_Order $order The viewable order.
+	 * @param string    $type  'shipping' or 'billing'.
+	 * @return string
+	 */
+	private static function address_line( \WC_Order $order, string $type ): string {
+		$countries = \function_exists( 'WC' ) ? ( \WC()->countries ?? null ) : null;
+		if ( ! self::has_address( $order, $type ) || ! \is_object( $countries ) ) {
+			return '';
+		}
+		$address = (array) $order->get_address( $type );
+		unset( $address['first_name'], $address['last_name'] );
+		$parts = \array_map( 'sanitize_text_field', \explode( "\n", (string) $countries->get_formatted_address( $address, "\n" ) ) );
+		return \implode( ', ', \array_values( \array_filter( $parts, 'strlen' ) ) );
 	}
 
 	/**
