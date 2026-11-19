@@ -49,8 +49,12 @@
 		} );
 	}
 
-	// Run on load.
-	document.addEventListener( 'DOMContentLoaded', updateNavAccessibility );
+	// Run once the page is parsed; a script that runs after that (a late enqueue or a delayed loader) runs it at once.
+	if ( 'loading' === document.readyState ) {
+		document.addEventListener( 'DOMContentLoaded', updateNavAccessibility );
+	} else {
+		updateNavAccessibility();
+	}
 
 	// Re-run on resize with debounce to avoid excessive calls.
 	var resizeTimer;

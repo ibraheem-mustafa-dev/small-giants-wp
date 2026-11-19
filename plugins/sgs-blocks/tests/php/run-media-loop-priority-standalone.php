@@ -8,8 +8,9 @@
  * Runs the shipped `Sgs_Motion_Loop_Delays::enter_template` and `leave_template` with the shipped
  * `SGS_Media_Priority`, and asserts: inside a `woocommerce/product-template` the first three products' images are
  * eager and the fourth to sixth are lazy; a second template on the page restarts at its first item; a template nested
- * inside the first does not restart the outer count; a block that is not a template opens no loop; once a template
- * ends, a slot outside it is eager again. Exits 1 on any failure.
+ * inside the first counts its own items and spends none of the outer loop's eager places; a template render another
+ * filter short-circuited opens nothing; a block that is not a template opens no loop; once a template ends, a slot
+ * outside it is eager again. Exits 1 on any failure.
  *
  * @package SGS\Blocks\Tests
  */
@@ -67,17 +68,25 @@ $second = array_map( $slot, array( 11, 12, 13, 14 ) );
 Sgs_Motion_Loop_Delays::leave_template( '', $posts );
 $check( array( 'eager', 'eager', 'eager', 'lazy' ) === $second, 'a second template restarts its count: ' . implode( ',', $second ) );
 
-// 3. A template nested in a template does not restart the outer count.
+// 3. A template nested in a template counts its own items and spends none of the outer loop's eager places.
 SGS_Media_Priority::reset();
 Sgs_Motion_Loop_Delays::enter_template( null, $products );
 $slot( 21 );
 $slot( 22 );
 Sgs_Motion_Loop_Delays::enter_template( null, $posts );
-$slot( 23 );
+$nested = array_map( $slot, array( 51, 52, 53, 54 ) );
 Sgs_Motion_Loop_Delays::leave_template( '', $posts );
-$after = $slot( 24 );
+$third  = $slot( 24 );
+$fourth = $slot( 25 );
 Sgs_Motion_Loop_Delays::leave_template( '', $products );
-$check( 'lazy' === $after, 'a nested template keeps the outer count (fourth item lazy)' );
+$check( array( 'eager', 'eager', 'eager', 'lazy' ) === $nested, 'a nested template counts its own items: ' . implode( ',', $nested ) );
+$check( 'eager' === $third && 'lazy' === $fourth, "the outer loop's third item stays eager and its fourth is lazy after a nested template: $third,$fourth" );
+
+// 3b. A template render another filter short-circuited opens no loop (render_block never fires to close it).
+SGS_Media_Priority::reset();
+Sgs_Motion_Loop_Delays::enter_template( 'cached html', $products );
+$check( false === Sgs_Motion_Loop_Delays::in_template_item(), 'a short-circuited template render opens nothing' );
+$check( array_fill( 0, 5, 'eager' ) === array_map( $slot, array( 61, 62, 63, 64, 65 ) ), 'slots after a short-circuited template are not held back' );
 
 // 4. A block that is not a template opens no loop.
 SGS_Media_Priority::reset();

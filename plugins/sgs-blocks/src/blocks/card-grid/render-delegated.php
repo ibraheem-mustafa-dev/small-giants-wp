@@ -6,7 +6,7 @@
  * local scope (required once per block instance).
  *
  * Reads: $attributes, $block (its template sgs/product-card inner block), $source, $uid, $columns, $columns_tablet, $columns_mobile, $gap, $hover_scale, $hover_shadow, $hover_shadow_colour, $card_grid_native_style_tag, $card_grid_preset_classes.
- * Writes: the $collection_*, $wc_*, $card_grid_card_*, $card_grid_template_attrs, $empty_message, $empty_html and $pagination_html working locals; it always echoes the finished markup and ends in return, so render.php returns straight after the require.
+ * Writes: the $collection_*, $wc_*, $card_grid_card_*, $card_grid_template_attrs, $sgs_media_loop, $empty_message, $empty_html and $pagination_html working locals; it always echoes the finished markup and ends in return, so render.php returns straight after the require.
  *
  * @package SGS\Blocks
  */
@@ -128,72 +128,76 @@ defined( 'ABSPATH' ) || exit;
 	ob_start();
 	// The cards are one loop for image loading (Spec 49 §7.7): the first few load eagerly, the rest lazily. Each card
 	// names its product, because the global post is the page.
-	if ( class_exists( 'SGS_Media_Priority' ) ) {
+	$sgs_media_loop = class_exists( 'SGS_Media_Priority' );
+	if ( $sgs_media_loop ) {
 		SGS_Media_Priority::begin_loop();
 	}
+	// The loop closes even when a card throws, so later images on the page are not counted as its items.
+	try {
 
-	if ( $is_cpt_collection ) {
-		/*
-		 * Source mode is resolved PER ITEM (FP-9 — universal, no hardcoded
-		 * per-type dict), exactly as content-collection did:
-		 *   - a WooCommerce `product` post, on a site where WC is active → 'wc-product'
-		 *   - everything else (including sgs_product)                    → 'sgs-cpt'
-		 * On a site WITHOUT WooCommerce every item resolves to 'sgs-cpt', which
-		 * is the whole point of this path.
-		 */
-		$collection_has_woocommerce = function_exists( 'WC' );
+		if ( $is_cpt_collection ) {
+			/*
+			 * Source mode is resolved PER ITEM (FP-9 — universal, no hardcoded
+			 * per-type dict), exactly as content-collection did:
+			 *   - a WooCommerce `product` post, on a site where WC is active → 'wc-product'
+			 *   - everything else (including sgs_product)                    → 'sgs-cpt'
+			 * On a site WITHOUT WooCommerce every item resolves to 'sgs-cpt', which
+			 * is the whole point of this path.
+			 */
+			$collection_has_woocommerce = function_exists( 'WC' );
 
-		foreach ( $collection_posts as $collection_post ) :
-			$collection_post_id   = absint( $collection_post->ID );
-			$collection_post_type = $collection_post->post_type;
+			foreach ( $collection_posts as $collection_post ) :
+				$collection_post_id   = absint( $collection_post->ID );
+				$collection_post_type = $collection_post->post_type;
 
-			$item_source_mode = ( $collection_has_woocommerce && 'product' === $collection_post_type )
-				? 'wc-product'
-				: 'sgs-cpt';
+				$item_source_mode = ( $collection_has_woocommerce && 'product' === $collection_post_type )
+					? 'wc-product'
+					: 'sgs-cpt';
 
-			if ( class_exists( 'SGS_Media_Priority' ) ) {
-				SGS_Media_Priority::loop_item( $collection_post_id );
-			}
-			$card_attrs = \SGS\Blocks\Card_Grid_Template::card_attrs(
-				$card_grid_template_attrs,
-				array(
-					'sourceMode' => $item_source_mode,
-					'productId'  => $collection_post_id,
-				) + $card_grid_card_own
-			);
+				if ( class_exists( 'SGS_Media_Priority' ) ) {
+					SGS_Media_Priority::loop_item( $collection_post_id );
+				}
+				$card_attrs = \SGS\Blocks\Card_Grid_Template::card_attrs(
+					$card_grid_template_attrs,
+					array(
+						'sourceMode' => $item_source_mode,
+						'productId'  => $collection_post_id,
+					) + $card_grid_card_own
+				);
 
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
-			echo render_block(
-				array(
-					'blockName' => 'sgs/product-card',
-					'attrs'     => $card_attrs,
-				)
-			);
-		endforeach;
-	} else {
-		foreach ( $product_ids as $wc_product_id ) :
-			if ( class_exists( 'SGS_Media_Priority' ) ) {
-				SGS_Media_Priority::loop_item( absint( $wc_product_id ) );
-			}
-			$card_attrs = \SGS\Blocks\Card_Grid_Template::card_attrs(
-				$card_grid_template_attrs,
-				array(
-					'sourceMode' => 'wc-product',
-					'productId'  => absint( $wc_product_id ),
-				) + $card_grid_card_own
-			);
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
-			echo render_block(
-				array(
-					'blockName' => 'sgs/product-card',
-					'attrs'     => $card_attrs,
-				)
-			);
-		endforeach;
-	}
-
-	if ( class_exists( 'SGS_Media_Priority' ) ) {
-		SGS_Media_Priority::end_loop();
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
+				echo render_block(
+					array(
+						'blockName' => 'sgs/product-card',
+						'attrs'     => $card_attrs,
+					)
+				);
+			endforeach;
+		} else {
+			foreach ( $product_ids as $wc_product_id ) :
+				if ( class_exists( 'SGS_Media_Priority' ) ) {
+					SGS_Media_Priority::loop_item( absint( $wc_product_id ) );
+				}
+				$card_attrs = \SGS\Blocks\Card_Grid_Template::card_attrs(
+					$card_grid_template_attrs,
+					array(
+						'sourceMode' => 'wc-product',
+						'productId'  => absint( $wc_product_id ),
+					) + $card_grid_card_own
+				);
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
+				echo render_block(
+					array(
+						'blockName' => 'sgs/product-card',
+						'attrs'     => $card_attrs,
+					)
+				);
+			endforeach;
+		}
+	} finally {
+		if ( $sgs_media_loop ) {
+			SGS_Media_Priority::end_loop();
+		}
 	}
 
 	// The cards share one motion scope (the template's motion), so the editor preview prints its style tag once.

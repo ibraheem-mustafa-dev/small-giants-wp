@@ -106,20 +106,28 @@ echo (string) $sgs_pg_loop_style; // phpcs:ignore WordPress.Security.EscapeOutpu
 if ( $query->have_posts() ) {
 	$card_index = 0;
 	// The cards are one loop for image loading (Spec 49 §7.7): the first few load eagerly, the rest lazily.
-	if ( class_exists( 'SGS_Media_Priority' ) ) {
+	$sgs_media_loop = class_exists( 'SGS_Media_Priority' );
+	if ( $sgs_media_loop ) {
 		SGS_Media_Priority::begin_loop();
 	}
-	while ( $query->have_posts() ) {
-		$query->the_post();
-		$card_html                  = \SGS\Blocks\Post_Grid_REST::render_card( get_the_ID(), $card_params );
-		if ( null !== $sgs_pg_loop_style ) {
-			$card_html = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_item( $card_html, $card_index );
+	try {
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			if ( $sgs_media_loop ) {
+				// Name the item before the card renders, so a lookup inside the card that moves the global post cannot split it.
+				SGS_Media_Priority::loop_item( get_the_ID() );
+			}
+			$card_html                  = \SGS\Blocks\Post_Grid_REST::render_card( get_the_ID(), $card_params );
+			if ( null !== $sgs_pg_loop_style ) {
+				$card_html = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_item( $card_html, $card_index );
+			}
+			echo $card_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — render_card() escapes all output internally.
+			++$card_index;
 		}
-		echo $card_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — render_card() escapes all output internally.
-		++$card_index;
-	}
-	if ( class_exists( 'SGS_Media_Priority' ) ) {
-		SGS_Media_Priority::end_loop();
+	} finally {
+		if ( $sgs_media_loop ) {
+			SGS_Media_Priority::end_loop();
+		}
 	}
 	wp_reset_postdata();
 } else {

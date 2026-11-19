@@ -79,7 +79,8 @@ final class Sgs_Motion_Loop_Delays {
 	public static function register(): void {
 		add_filter( 'render_block_data', array( self::class, 'capture_context' ), 20, 3 );
 		add_filter( 'render_block', array( self::class, 'filter' ), 25, 2 );
-		add_filter( 'pre_render_block', array( self::class, 'enter_template' ), 1, 2 );
+		// Last priority, so a filter that short-circuits the render (and so skips `render_block`) has already had its say.
+		add_filter( 'pre_render_block', array( self::class, 'enter_template' ), PHP_INT_MAX, 2 );
 		add_filter( 'render_block', array( self::class, 'leave_template' ), 1, 2 );
 	}
 
@@ -96,16 +97,18 @@ final class Sgs_Motion_Loop_Delays {
 	}
 
 	/**
-	 * Note that a template block starts rendering.
+	 * Note that a template block starts rendering. A render another filter short-circuited (`$pre` not null) never
+	 * reaches `render_block`, so it opens nothing that `leave_template` would have to close.
 	 *
 	 * @param mixed $pre          Pre-render value, passed through.
 	 * @param mixed $parsed_block Parsed block.
 	 * @return mixed The pre-render value.
 	 */
 	public static function enter_template( $pre, $parsed_block = null ) {
-		if ( is_array( $parsed_block ) && in_array( $parsed_block['blockName'] ?? '', self::TEMPLATE_BLOCKS, true ) ) {
-			if ( 0 === self::$template_depth && class_exists( \SGS_Media_Priority::class ) ) {
-				// The outermost template is one loop for image loading: its first items load eagerly, the rest lazily.
+		if ( null === $pre && is_array( $parsed_block ) && in_array( $parsed_block['blockName'] ?? '', self::TEMPLATE_BLOCKS, true ) ) {
+			if ( class_exists( \SGS_Media_Priority::class ) ) {
+				// Each template is one loop for image loading: its first items load eagerly, the rest lazily. A nested
+				// template counts its own items, so it never spends the outer loop's eager places.
 				\SGS_Media_Priority::begin_loop();
 			}
 			++self::$template_depth;
@@ -123,7 +126,7 @@ final class Sgs_Motion_Loop_Delays {
 	public static function leave_template( $block_content, $parsed_block = null ) {
 		if ( self::$template_depth > 0 && is_array( $parsed_block ) && in_array( $parsed_block['blockName'] ?? '', self::TEMPLATE_BLOCKS, true ) ) {
 			--self::$template_depth;
-			if ( 0 === self::$template_depth && class_exists( \SGS_Media_Priority::class ) ) {
+			if ( class_exists( \SGS_Media_Priority::class ) ) {
 				\SGS_Media_Priority::end_loop();
 			}
 		}
