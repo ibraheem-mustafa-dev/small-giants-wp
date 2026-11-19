@@ -6,6 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { resolveFinder } from '../../parity/lib/collect.mjs';
 import { uidsIn, mapUids, ruleDiff, selfCheck, untriable, withWrite, judgeTrial, anchorTops, savedBlock } from './trial.mjs';
+import { secretsPath } from './site-targets.mjs';
 import { readEnv, adminSession, renderBlock, styleOf, rootClassOf, rulesInPage, parseInPage, cssOf, applyTrialInPage, undoTrialInPage, measureInPage, scopeInPage, anchorInPage } from './trial-page.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
@@ -141,7 +142,7 @@ async function tryOne( { cand, attrs, session, pageOf, finders, widths, draft } 
 // live page in each device profile it needs (both changed with the last build), tries each candidate and returns
 // [ { ref, block, attr, group, ms, verdict, ... } ]; close() ends it.
 export async function openTrial( { envFile, envKey, walkerCfg, target, log = console.log } ) {
-	const env = readEnv( path.join( REPO, envFile ) );
+	const env = readEnv( secretsPath( envFile, REPO ) );
 	const finders = Object.fromEntries( walkerCfg.pairs.filter( ( p ) => p?.name && p.live && 'function' !== typeof p.live ).map( ( p ) => [ p.name, p.live ] ) );
 	const { chromium, devices } = await import( 'playwright' );
 	const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED, args: [ '--hide-scrollbars' ] } );

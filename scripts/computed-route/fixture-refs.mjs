@@ -11,10 +11,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { survey, tally, transform, checkFixtureRefs, unexplainedWide, NOT_REFS, WIDE_OK } from './lib/fixture-refs.mjs';
 import { refsFor, resolveFixture } from './lib/calibration-refs.mjs';
+import { readTargets } from './lib/site-targets.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const FIXTURES = path.join( HERE, 'calibration-fixtures.json' );
-const TARGETS = path.join( HERE, 'calibration-targets.json' );
 const readJson = ( f ) => JSON.parse( fs.readFileSync( f, 'utf8' ) );
 
 // The cases the detector must get right, each on its own fixtures. Returns the failures (empty when all pass).
@@ -79,7 +79,7 @@ export function main( argv ) {
 	}
 	if ( flag( '--fix' ) ) {
 		const home = value( '--home' ) || 'eye-care-test';
-		const { fixtures: next, changes, unrecognised } = transform( fixtures, refsFor( readJson( TARGETS ), home ) );
+		const { fixtures: next, changes, unrecognised } = transform( fixtures, refsFor( readTargets(), home ) );
 		console.log( changes.length ? diff( changes ) : 'nothing to fix' );
 		unrecognised.forEach( ( f ) => console.log( `unrecognised ${ f.block } ${ f.path.join( '.' ) } = ${ JSON.stringify( f.value ) } (no role of ${ home } holds that id)` ) );
 		if ( flag( '--apply' ) && changes.length ) {

@@ -40,6 +40,7 @@ import { PHASES, planBuild, tally } from './lib/site-build-plan.mjs';
 import { promoteSiteOptions, withSiteOptions } from './lib/site-build-options.mjs';
 import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
 import { openDetachedSession, readEnv } from './lib/wp-run-session.mjs';
+import { assertUnprotected, readTargets } from './lib/site-targets.mjs';
 import { runFlowLinks } from './lib/site-build-flow-links.mjs';
 import { runCatalogue } from './lib/site-build-catalogue.mjs';
 import { runStoreVisible } from './lib/site-build-store-visible.mjs';
@@ -75,8 +76,16 @@ const mapFile = path.join( repo, 'sites', client, 'build', 'page-map.json' );
 const apply = args.includes( '--apply' );
 // The site's calibration target: a local mirror's names its WSL docroot (`pluginDir`), so its wp-cli runs there instead
 // of over SSH; a site with no target entry runs over SSH.
-const targetsFile = path.join( repo, 'scripts', 'computed-route', 'calibration-targets.json' );
-const target = ( fs.existsSync( targetsFile ) ? JSON.parse( fs.readFileSync( targetsFile, 'utf8' ) )[ site ] : null ) || {};
+const targets = readTargets( { repo } );
+const target = targets[ site ] || {};
+if ( apply ) {
+	try {
+		assertUnprotected( site, targets );
+	} catch ( e ) {
+		console.error( `FAILED: ${ e.message }` );
+		process.exit( 2 );
+	}
+}
 if ( args.includes( '--catalogue' ) ) {
 	try {
 		process.exit( runCatalogue( { repo, client, site, runPhp: wpEvalRunner( target, site, repo ), apply } ) );

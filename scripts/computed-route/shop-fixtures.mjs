@@ -4,7 +4,7 @@
 // `--apply` creates it, then reads each product back. A rerun creates nothing twice. Test sites only.
 //   node scripts/computed-route/shop-fixtures.mjs <client> --site <secrets name> [--apply] [--repo <root>]
 // Exit 0 done, 1 failure, 2 usage.
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { siteCredentials } from './lib/media-upload.mjs';
@@ -12,6 +12,7 @@ import { wpCommand } from './lib/calibration-refs.mjs';
 import { ShopFixturesError, applyFixtures, imageChoice, planFixtureVariesBy, planFixtures } from './lib/shop-fixtures.mjs';
 import { VariesByError } from './lib/shop-fixtures-variesby.mjs';
 import { wpFetch } from './lib/shop-fixtures-wp.mjs';
+import { assertUnprotected, readTargets } from './lib/site-targets.mjs';
 
 // The sites the fixtures may be written to: fresh test sites that hold no client content.
 export const FIXTURE_SITES = [ 'eye-care-clone-test', 'local-mamas', 'local-eye-care' ];
@@ -42,8 +43,16 @@ const secretsRepo = opt( '--secrets' ) || ( () => {
 // The site's calibration target: a local mirror's names its WSL docroot (`pluginDir`), so wp-cli runs there instead of over
 // SSH. A mirror keeps no application password, so its REST requests are dispatched in-process through wp-cli; a hosted test
 // site is reached over REST with its application password.
-const targetsFile = path.join( repo, 'scripts', 'computed-route', 'calibration-targets.json' );
-const target = ( existsSync( targetsFile ) ? JSON.parse( readFileSync( targetsFile, 'utf8' ) )[ site ] : null ) || {};
+const targets = readTargets( { repo } );
+const target = targets[ site ] || {};
+if ( args.includes( '--apply' ) ) {
+	try {
+		assertUnprotected( site, targets );
+	} catch ( e ) {
+		console.error( e.message );
+		process.exit( 2 );
+	}
+}
 const wp = wpCommand( target, site, repo );
 const mirror = /^\/\/wsl\.localhost\//.test( target.pluginDir || '' );
 

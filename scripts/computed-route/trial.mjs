@@ -15,6 +15,7 @@ import { fileURLToPath, pathToFileURL } from 'url';
 import { retargetLive } from '../parity/lib/helpers.mjs';
 import { candidatesOf } from './lib/trial.mjs';
 import { readEnv } from './lib/trial-page.mjs';
+import { readTargets, secretsPath, surfaceOnSite } from './lib/site-targets.mjs';
 import { openTrial, draftBoxes } from './lib/trial-run.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -31,8 +32,11 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const outDir = path.resolve( REPO, flag( '--out' ) || path.join( runDir, `trial-round-${ round }` ) );
 	const buildDir = path.join( REPO, 'sites', client, 'build' );
 	const s = JSON.parse( fs.readFileSync( path.join( buildDir, 'surfaces.json' ), 'utf8' ) )[ surface ];
-	const target = flag( '--site' ) ? JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) )[ flag( '--site' ) ] : { envFile: s.envFile, envKey: s.envKey };
-	const origin = readEnv( path.join( REPO, target.envFile ) )[ `WP_URL_${ target.envKey }` ].replace( /\/+$/, '' );
+	// --site moves the surface to another copy of its site (the same guard as Solve's: a site that does not share the surface's post ids is refused).
+	const targets = readTargets();
+	const { envFile, envKey } = surfaceOnSite( s, flag( '--site' ), targets );
+	const target = { envFile, envKey };
+	const origin = readEnv( secretsPath( target.envFile, REPO ) )[ `WP_URL_${ target.envKey }` ].replace( /\/+$/, '' );
 	const walkerCfg = retargetLive( ( await import( pathToFileURL( path.join( buildDir, s.walkerFull || s.walker ) ).href ) ).default, origin );
 	const report = JSON.parse( fs.readFileSync( path.join( runDir, 'solve-report.json' ), 'utf8' ) );
 	const trial = await openTrial( { envFile: target.envFile, envKey: target.envKey, walkerCfg, target: s.target } );

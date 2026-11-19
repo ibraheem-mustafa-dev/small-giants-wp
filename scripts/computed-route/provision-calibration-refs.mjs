@@ -16,10 +16,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { ROLES, refsFor, checkRefsExist, wpCommand } from './lib/calibration-refs.mjs';
 import { statePhp, planProvision, applyPhp, refsFromResult } from './lib/provision-refs.mjs';
+import { TARGETS_FILE, assertUnprotected, readTargets } from './lib/site-targets.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
-const TARGETS = path.join( HERE, 'calibration-targets.json' );
 const USAGE = 'usage: node scripts/computed-route/provision-calibration-refs.mjs --site <test site> [--image <file>] [--logo <file>] [--dry-run]';
 const MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif' };
 
@@ -67,11 +67,21 @@ function run( argv ) {
 		console.error( USAGE );
 		return 2;
 	}
-	const targets = JSON.parse( fs.readFileSync( TARGETS, 'utf8' ) );
+	// The committed file alone: the refs written below go back into it, never into the local file's entries.
+	const targets = readTargets( { local: false } );
 	const target = targets[ o.site ];
 	if ( ! target ) {
 		console.error( `${ o.site } is not in calibration-targets.json (${ Object.keys( targets ).join( ', ' ) })` );
 		return 2;
+	}
+	// A dry run reads the site; the run proper writes its calibration objects and refs.
+	if ( ! o.dryRun ) {
+		try {
+			assertUnprotected( o.site, targets );
+		} catch ( e ) {
+			console.error( e.message );
+			return 2;
+		}
 	}
 	if ( target.mirrorOf || target.pluginDir ) {
 		console.error( `${ o.site } is a local mirror: provision ${ target.mirrorOf || 'its test site' }, then refresh the mirror; it inherits the refs` );
@@ -113,9 +123,9 @@ function run( argv ) {
 	}
 	const written = refsFromResult( plan, result );
 	targets[ o.site ].refs = written;
-	const tmp = `${ TARGETS }.tmp`;
+	const tmp = `${ TARGETS_FILE }.tmp`;
 	fs.writeFileSync( tmp, `${ JSON.stringify( targets, null, 2 ) }\n` );
-	fs.renameSync( tmp, TARGETS );
+	fs.renameSync( tmp, TARGETS_FILE );
 	console.log( `${ o.site } refs written to calibration-targets.json: ${ JSON.stringify( written ) }` );
 	return 0;
 }

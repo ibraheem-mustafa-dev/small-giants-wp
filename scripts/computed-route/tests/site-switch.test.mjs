@@ -35,7 +35,8 @@ test( 'negative control: no origin given leaves the config as it is', () => {
 
 const targets = {
 	'remote-test': { envFile: '.claude/secrets/remote-test.env', envKey: 'REMOTETEST', postId: 668 },
-	'local-mirror': { envFile: '.claude/secrets/local-mirror.env', envKey: 'LOCALMIRROR', postId: 668, pluginDir: '//wsl.localhost/x/sgs-blocks' },
+	'local-mirror': { envFile: '.claude/secrets/local-mirror.env', envKey: 'LOCALMIRROR', mirrorOf: 'remote-test', postId: 668, pluginDir: '//wsl.localhost/x/sgs-blocks' },
+	'local-other': { envFile: '.claude/secrets/local-other.env', envKey: 'LOCALOTHER', mirrorOf: 'other-test', postId: 12, pluginDir: '//wsl.localhost/x/other/sgs-blocks' },
 };
 const surface = { tree: 'home.tree.json', envFile: '.claude/secrets/remote-test.env', envKey: 'REMOTETEST', site: 'remote-test', target: { postId: 208 } };
 const readUrl = ( file, key ) => ( { 'LOCALMIRROR': 'http://localhost:8081', 'REMOTETEST': REMOTE }[ key ] );
@@ -54,6 +55,10 @@ test( 'negative control: no --site keeps the surface, the host check and the con
 	assert.equal( o.surface, surface );
 	assert.equal( o.sshArgs, undefined );
 	assert.equal( o.liveOrigin, null );
+} );
+
+test( 'MUST FAIL: a copy of another site is refused (its post ids are not the surface\'s)', () => {
+	assert.throws( () => siteOverride( surface, 'local-other', targets, readUrl ), /does not share post ids/ );
 } );
 
 test( 'an unknown site is refused', () => {

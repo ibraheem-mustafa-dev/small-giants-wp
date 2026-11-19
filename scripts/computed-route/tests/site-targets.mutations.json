@@ -1,0 +1,260 @@
+[
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( Object.hasOwn( committed, site ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a local entry replaces a committed one"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( ! localFile || ! fs.existsSync( localFile ) ) {",
+		"replace": "if ( ! localFile ) {",
+		"why": "an absent local file throws"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "return { ...committed, ...extra };",
+		"replace": "return committed;",
+		"why": "the local entries are never added"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "repo ? path.join( repo,",
+		"replace": "false ? path.join( repo,",
+		"why": "--repo is ignored"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( ! site || ! Object.hasOwn( targets, site ) ) {",
+		"replace": "if ( ! site ) {",
+		"why": "an unknown site is returned as undefined"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "targets[ site ]?.mirrorOf || site;",
+		"replace": "site;",
+		"why": "a mirror holds its own ids"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( ! site || site === entry.site ) {",
+		"replace": "if ( ! site ) {",
+		"why": "the entry's own site is rebuilt, not returned as it is"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( ! site || site === entry.site ) {",
+		"replace": "if ( false ) {",
+		"why": "no site is retargeted"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( ! entry.site ) {",
+		"replace": "if ( false ) {",
+		"why": "a surface naming no site is matched by accident"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( ! sharesIds( entry.site, site, targets ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a site with other post ids is accepted"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "return { ...entry, envFile: t.envFile, envKey: t.envKey, site };",
+		"replace": "return { ...entry, site };",
+		"why": "the copy's login is not taken"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( 'string' === typeof why && why ) {",
+		"replace": "if ( false ) {",
+		"why": "a protected site is written"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "process.env.SGS_SECRETS_ROOT || repo, envFile",
+		"replace": "repo, envFile",
+		"why": "a worktree reads its own, empty, secrets folder"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( ! fs.existsSync( file ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a missing secrets file reports a raw read error"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( ! url ) {",
+		"replace": "if ( false ) {",
+		"why": "a missing address is returned as an empty string"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": ".replace( /\\/+$/, '' ) : '';",
+		"replace": " : '';",
+		"why": "the address keeps its trailing slash"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( ! SCRATCH_NAME.test( String( site ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "every site is refused in a main checkout"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( fs.existsSync( git ) && fs.statSync( git ).isDirectory() ) {",
+		"replace": "if ( fs.existsSync( git ) ) {",
+		"why": "a worktree (.git a file) is refused too"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( fs.existsSync( git ) && fs.statSync( git ).isDirectory() ) {",
+		"replace": "if ( false ) {",
+		"why": "a scratch run is allowed in a main checkout"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( ! SCRATCH_NAME.test( String( name ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a name that is not a scratch name is recorded"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( ! /^http:\\/\\/localhost:\\d+$/.test( String( url ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a bad address is recorded"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( ! /^local-/.test( String( source ) ) || SCRATCH_NAME.test( String( source ) ) || ! from ) {",
+		"replace": "if ( ! from ) {",
+		"why": "a test site is taken as the source"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( ! from.mirrorOf || ! from.pluginDir ) {",
+		"replace": "if ( false ) {",
+		"why": "a local entry that is not a mirror is taken as the source"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "return v.replace( /http:\\/\\/localhost:\\d+/g, url );",
+		"replace": "return v;",
+		"why": "the source's addresses are kept"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( pluginDir === from.pluginDir ) {",
+		"replace": "if ( false ) {",
+		"why": "the copy's plugin folder may be the source's"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "envKey: name.toUpperCase().replace( /-/g, '' ),",
+		"replace": "envKey: name.toUpperCase(),",
+		"why": "the key keeps its hyphens"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "scratchOf: source,",
+		"replace": "scratchOf: name,",
+		"why": "the copy records itself as its source"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "if ( ! Object.hasOwn( out, remove ) ) {",
+		"replace": "if ( false ) {",
+		"why": "removing an absent copy passes"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "delete out[ remove ];",
+		"replace": "",
+		"why": "a removed copy stays"
+	},
+	{
+		"file": "tools/scratch-target.mjs",
+		"find": "if ( Object.hasOwn( committed, name ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a committed name is overwritten"
+	},
+	{
+		"file": "lint.mjs",
+		"find": "if ( TARGETS_READER !== f && ! f.startsWith( 'tests/' ) && readsTargetsFile( src ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the rule never fires"
+	},
+	{
+		"file": "lint.mjs",
+		"find": "TARGETS_READER !== f && ",
+		"replace": "",
+		"why": "the reader itself is refused"
+	},
+	{
+		"file": "lint.mjs",
+		"find": "! f.startsWith( 'tests/' ) && ",
+		"replace": "",
+		"why": "the tests are refused"
+	},
+	{
+		"file": "lint.mjs",
+		"find": "(?:[^'\"`\\r\\n]*[\\\\/])?calibration",
+		"replace": "(?:[^'\"`\\r\\n]*[\\\\/])calibration",
+		"why": "a bare 'calibration-targets.json' literal passes"
+	},
+	{
+		"file": "lint.mjs",
+		"find": "(?:[^'\"`\\r\\n]*[\\\\/])?calibration",
+		"replace": "(?:[^'\"`\\r\\n]*)?calibration",
+		"why": "a message naming the file is refused"
+	},
+	{
+		"file": "lint.mjs",
+		"find": ".replace( /\\/\\*[\\s\\S]*?\\*\\//g, '' )",
+		"replace": "",
+		"why": "a block comment naming the file is refused"
+	},
+	{
+		"file": "lint.mjs",
+		"find": ".replace( /^\\s*\\/\\/.*$/gm, '' )",
+		"replace": "",
+		"why": "a comment line naming the file is refused"
+	},
+	{
+		"file": "lint.mjs",
+		"find": ".replace( /([;{}),])\\s*\\/\\/.*$/gm, '$1' )",
+		"replace": "",
+		"why": "a trailing comment naming the file is refused"
+	},
+	{
+		"file": "content-sync.mjs",
+		"find": "assertUnprotected( to, targets );",
+		"replace": "",
+		"why": "a protected site is written by content-sync --apply"
+	},
+	{
+		"file": "provision-calibration-refs.mjs",
+		"find": "assertUnprotected( o.site, targets );",
+		"replace": "",
+		"why": "a protected site is provisioned"
+	},
+	{
+		"file": "site-build.mjs",
+		"find": "assertUnprotected( site, targets );",
+		"replace": "",
+		"why": "a protected site is built by site-build --apply"
+	},
+	{
+		"file": "calibrate.mjs",
+		"find": "assertUnprotected( site, targets );",
+		"replace": "",
+		"why": "a protected site is calibrated"
+	},
+	{
+		"file": "solve.mjs",
+		"find": "assertUnprotected( s.site, targets );",
+		"replace": "",
+		"why": "a protected site is built by solve"
+	}
+]

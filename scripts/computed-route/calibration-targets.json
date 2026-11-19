@@ -1,6 +1,7 @@
 {
   "eye-care-test": {
     "envFile": ".claude/secrets/eye-care-test.env",
+    "protected": "the hand-built site Bean presents: no route step, push or calibration ever writes to it (Spec 48 §12)",
     "envKey": "EYECARETEST",
     "postId": 668,
     "image": {
@@ -113,6 +114,7 @@
   },
   "mamas-test": {
     "envFile": ".claude/secrets/mamas-test.env",
+    "protected": "the live shop, serving customers on its own domain: a route run never writes to it",
     "envKey": "MAMASTEST",
     "postId": 115,
     "image": {

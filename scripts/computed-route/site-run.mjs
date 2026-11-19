@@ -45,6 +45,7 @@ import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
 import { TOP_N, writeRanking } from './lib/site-run-rank.mjs';
+import { readTargets } from './lib/site-targets.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
@@ -425,8 +426,7 @@ export async function main( argv ) {
 
 	// The site's wp-cli for recording template copies and setting the active layouts (a local mirror's runs in WSL,
 	// calibration-targets.json `pluginDir`).
-	const targetsFile = path.join( REPO, 'scripts', 'computed-route', 'calibration-targets.json' );
-	const target = ( fs.existsSync( targetsFile ) ? readJson( targetsFile )[ site ] : null ) || {};
+	const target = readTargets()[ site ] || {};
 	const runPhp = wpEvalRunner( target, site, REPO );
 	const wp = wpCommand( target, site, REPO );
 	const recordTemplate = ( slug, hash ) => runPhp( templateRecordPhp( slug, hash ) );

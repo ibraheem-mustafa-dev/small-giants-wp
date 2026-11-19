@@ -1,17 +1,15 @@
 #!/usr/bin/env node
 // The sgs-blocks build check before a mirror is pushed to its test site (scripts/local-wp/push-to-remote.sh runs it).
 //   node scripts/computed-route/build-compare.mjs --local <local-site> --target <test-site>
-// <local-site> is a calibration-targets.json key with a `pluginDir` (a WSL mirror); <test-site> a deploy_common.py::TARGETS
+// <local-site> is a calibration-targets.json (or calibration-targets.local.json) key with a `pluginDir` (a WSL mirror); <test-site> a deploy_common.py::TARGETS
 // key. Reads the mirror's build/blocks folder and the test site's over one ssh call and compares every block's front-end
 // files (lib/build-compare.mjs). Exit 0 the builds match, 1 they differ (the fix is printed), 2 usage or a build that cannot be read.
-import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { compareBuilds, localFiles, refusal, remoteFiles } from './lib/build-compare.mjs';
+import { readTargets } from './lib/site-targets.mjs';
 
-const HERE = path.dirname( fileURLToPath( import.meta.url ) );
-
-export function main( argv, { local = localFiles, remote = remoteFiles, targets = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) ), log = console.log, error = console.error } = {} ) {
+export function main( argv, { local = localFiles, remote = remoteFiles, targets = readTargets(), log = console.log, error = console.error } = {} ) {
 	const flag = ( n ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : null );
 	const site = flag( '--local' );
 	const target = flag( '--target' );

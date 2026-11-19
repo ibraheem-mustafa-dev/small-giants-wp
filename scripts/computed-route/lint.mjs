@@ -5,6 +5,9 @@
 // Fails (exit 1) when:
 //   - a file or an exported name under the route folder is missing from its README.md (R-47-1);
 //   - a route file imports from plugins/sgs-blocks/scripts/ (the converter; its db_lookup.py migrates the shared DB);
+//   - a route file other than lib/site-targets.mjs and the tests names calibration-targets.json as a path in code (comments and
+//     messages are fine): the site targets are read through lib/site-targets.mjs::readTargets, which adds the local scratch
+//     entries and the protected rule (a direct read would see neither);
 //   - a route file (tests included) names the plugin's node_modules folder; the route imports its third-party packages
 //     from its own pinned install (FR-48-75);
 //   - a --tree carries a core `style` attribute or a native_wp setting (both serialise as inline style, Spec 32), or a
@@ -34,6 +37,18 @@ const REPO = path.resolve( HERE, '../..' );
 const IGNORED = [ 'cache', 'node_modules' ];
 // FR-48-75: the plugin's node_modules, written as a path or as path.join() pieces.
 const PLUGIN_MODULES = /plugins[\\/'"`,\s]+sgs-blocks[\\/'"`,\s]+node_modules/;
+
+// The one module that may name the site targets file; the tests may plant it.
+const TARGETS_READER = 'lib/site-targets.mjs';
+// A quoted path ending in calibration-targets.json: 'calibration-targets.json', `${ dir }/calibration-targets.json`. A sentence that
+// merely mentions the file (a message or a comment) has no slash before the name inside its quotes.
+const TARGETS_PATH = /(['"`])(?:[^'"`\r\n]*[\\/])?calibration-targets\.json\1/;
+
+// Whether a source file names the committed site targets file as a path in its code (comments dropped first).
+export function readsTargetsFile( src ) {
+	const code = src.replace( /\/\*[\s\S]*?\*\//g, '' ).replace( /^\s*\/\/.*$/gm, '' ).replace( /([;{}),])\s*\/\/.*$/gm, '$1' );
+	return TARGETS_PATH.test( code );
+}
 
 // Every file under the route folder, relative and with forward slashes.
 export function routeFiles( root ) {
@@ -81,6 +96,9 @@ export function lintFolder( root ) {
 		const src = fs.readFileSync( path.join( root, f ), 'utf8' );
 		if ( PLUGIN_MODULES.test( src ) ) {
 			problems.push( `${ f } names the plugin's node_modules folder (FR-48-75: import third-party packages from scripts/computed-route/node_modules)` );
+		}
+		if ( TARGETS_READER !== f && ! f.startsWith( 'tests/' ) && readsTargetsFile( src ) ) {
+			problems.push( `${ f } names calibration-targets.json as a path: read the site targets with lib/site-targets.mjs::readTargets (it adds the local scratch entries and the protected rule)` );
 		}
 		for ( const name of exportsOf( src ) ) {
 			// Listed as `name` or `name(...)`.

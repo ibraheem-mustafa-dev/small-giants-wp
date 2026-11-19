@@ -39,6 +39,7 @@ import { calibrateBlock } from './lib/calibrate-block.mjs';
 import { build } from './lib/calibrate-pages.mjs';
 import { refsFor, refGate, checkRefsExist, fixtureRoles, resolveFixture, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
+import { assertUnprotected, readTargets, targetOf } from './lib/site-targets.mjs';
 
 export { statePaint, missingPaintStates } from './lib/calibrate-block.mjs';
 export { remotePlugin, EDITOR_ONLY, BUNDLE_TEXT, normaliseBundle, TEXT_FILE, lfText, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
@@ -73,8 +74,16 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		console.error( 'Usage: calibrate.mjs --site <site> --client <client slug> --blocks sgs/a,sgs/b [--recalibrate] [--slot-map-only] [--allow-loss sgs/a:setting,...]' );
 		process.exit( 2 );
 	}
-	const targets = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) );
-	const target = targets[ site ];
+	const targets = readTargets();
+	// Calibration writes the site's calibration page: a protected site is refused, an unknown one named.
+	let target;
+	try {
+		target = targetOf( site, targets );
+		assertUnprotected( site, targets );
+	} catch ( e ) {
+		console.error( e.message );
+		process.exit( 2 );
+	}
 	const surfacesFile = path.join( REPO, 'sites', client, 'build', 'surfaces.json' );
 	const surfaces = fs.existsSync( surfacesFile ) ? JSON.parse( fs.readFileSync( surfacesFile, 'utf8' ) ) : {};
 	assertWritable( { postId: target.postId }, { calibrationTargets: targets, surfaces } );

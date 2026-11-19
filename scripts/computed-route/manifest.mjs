@@ -11,6 +11,7 @@ import { buildManifest, surfaceKey, templateSurfaces } from './lib/manifest-buil
 import { openDb } from './lib/db.mjs';
 import { builtTemplate, readPageMap } from './lib/site-build-map.mjs';
 import { stateRows } from './lib/state-vocab.mjs';
+import { readTargets } from './lib/site-targets.mjs';
 
 const USAGE = 'usage: node manifest.mjs <client> --site <site> [--apply] [--repo <root>] [--db <file>] [--only <key,key>]';
 const usage = ( why ) => {
@@ -52,9 +53,9 @@ const readJson = ( file ) => JSON.parse( fs.readFileSync( file, 'utf8' ) );
 const optional = ( file ) => ( fs.existsSync( file ) ? readJson( file ) : null );
 
 try {
-	const target = readJson( path.join( here, 'calibration-targets.json' ) )[ site ];
+	const target = readTargets()[ site ];
 	if ( ! target?.envFile || ! target?.envKey ) {
-		throw new Error( `calibration-targets.json has no envFile and envKey for ${ site }` );
+		throw new Error( `${ site } has no envFile and envKey in the site targets (calibration-targets.json or calibration-targets.local.json)` );
 	}
 	const drafts = readJson( path.join( dir, 'handoff', 'MANIFEST.json' ) ).entry_drafts || [];
 	if ( ! drafts.length ) {
