@@ -23,6 +23,8 @@
 // parentOfAnchor, holdsAnchor (an anchor's elements: the match is inside, outside, the parent of, or holds one),
 // followsAnchor (the match comes after an anchor's element in the same row or parent), lacksAnchor (holds none of an anchor's elements),
 // ariaExpanded (has an aria-expanded attribute: a disclosure's button), ariaOn (aria-pressed, aria-checked or aria-selected is true),
+// ariaCurrent (carries aria-current, other than "false": a menu's current item), pill (a fill of its own with corners rounded to at
+// least 40% of its height: a status chip),
 // shopPart (an element the client's shop parts record locates for that part id: `spec.shopParts` maps an id to { dc, tpl } template
 // keys, and `spec.rootName` is the served page's own component), onlyChild (the only element in its parent), hasAmount (its text holds an
 // amount, whole or inside a sentence), minSiblings,
@@ -93,6 +95,16 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 			return true;
 		}
 		return ( drawn( el, 'Top' ) || drawn( el, 'Bottom' ) ) && ! ( drawn( el, 'Top' ) && drawn( el, 'Right' ) && drawn( el, 'Bottom' ) && drawn( el, 'Left' ) );
+	};
+	// A pill: a fill of its own (a background colour that is not transparent) with corners rounded to at least 40% of its height.
+	const isPill = ( el ) => {
+		const s = styleOf( el );
+		const bg = s.backgroundColor;
+		if ( ! bg || 'transparent' === bg || /^rgba\([^)]*,\s*0\)$/.test( bg ) ) {
+			return false;
+		}
+		const h = box( el ).height;
+		return h > 0 && parseFloat( s.borderTopLeftRadius ) >= 0.4 * h;
 	};
 	const signature = ( el ) => `${ el.tagName }|${ [ ...el.children ].map( ( c ) => c.tagName ).join( ',' ) }`;
 	const repeats = ( el ) => !! el.parentElement && [ ...el.parentElement.children ].some( ( s ) => s !== el && signature( s ) === signature( el ) );
@@ -215,6 +227,12 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 			return false;
 		}
 		if ( undefined !== m.ariaOn && [ 'aria-pressed', 'aria-checked', 'aria-selected' ].some( ( a ) => 'true' === el.getAttribute( a ) ) !== m.ariaOn ) {
+			return false;
+		}
+		if ( undefined !== m.ariaCurrent && ( el.hasAttribute( 'aria-current' ) && 'false' !== el.getAttribute( 'aria-current' ) ) !== m.ariaCurrent ) {
+			return false;
+		}
+		if ( undefined !== m.pill && isPill( el ) !== m.pill ) {
 			return false;
 		}
 		if ( m.allChildren && ! [ ...el.children ].every( ( k ) => test( k, m.allChildren ) ) ) {
