@@ -1,0 +1,11 @@
+[
+	{"file":"lib/fill-resolve-state.mjs","find":"( BOX_PAINT.test( prop ) || BOX_SIZE.test( prop ) )","replace":"BOX_PAINT.test( prop )","why":"the disc's size read on the root would find no setting (the 2026-11-19 Contact run)"},
+	{"file":"lib/fill-resolve-state.mjs","find":"const BOX_SIZE = /^(width|height)$/;","replace":"const BOX_SIZE = /^(width|height|padding-top)$/;","why":"padding would move from the root to a part"},
+	{"file":"lib/fill-resolve-state.mjs","find":"( carried || ! ( s.slots || [ s.slot ] ).some( othersRead ) )","replace":"true","why":"the glyph's size setting, measured on the svg the draft reads, would take the disc's width"},
+	{"file":"lib/fill-resolve-state.mjs","find":"&& ! othersRead( p ) &&","replace":"&&","why":"a slot inside another target's element (the glyph inside the draft's own shape) would take the root's size"},
+	{"file":"lib/fill-resolve-state.mjs","find":"String( p ?? '' ) === t || String( p ?? '' ).startsWith( `${ t } > ` )","replace":"String( p ?? '' ) === t","why":"a slot inside another target's element would count as the root's own box"},
+	{"file":"lib/fill-fixture.mjs","find":"const [ t ] = Object.keys( gatingToggle( attr, schema || {}, attributes ) );","replace":"const [ t ] = [];","why":"the disc's ground would be written with its switch off (an empty ring)"},
+	{"file":"lib/fill-fixture.mjs","find":"if ( ! measured || measured.state || attrRow( st.db, block, attr )?.css_state ) {","replace":"if ( ! measured ) {","why":"a hover ground would switch the resting ground on"},
+	{"file":"lib/fill-fixture.mjs","find":"if ( ! measured || measured.state ||","replace":"if ( measured.state ||","why":"a setting calibration never measured would carry a switch"},
+	{"file":"lib/fill-fixture.mjs","find":"return t && undefined === attributes[ t ] ? t : null;","replace":"return t || null;","why":"a switch the node already holds off would be overwritten"}
+]

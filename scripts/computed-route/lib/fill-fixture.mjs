@@ -6,6 +6,7 @@
 // fixture turned on for it. Scaffolding (brand names, links, words, inner blocks) is never a precondition.
 import { attrRow } from './db.mjs';
 import { types } from './calibrate-markers.mjs';
+import { gatingToggle } from './calibrate-instances.mjs';
 import { LOOSE } from './resolve.mjs';
 
 const json = ( v ) => JSON.stringify( v ?? null );
@@ -113,15 +114,22 @@ export function unstyledBaseline( st, block, cal, schema, slot, prop ) {
 	return set && [ ...set ].some( ( p ) => covers( p, prop ) ) ? unstyled( prop ) : undefined;
 }
 
-// The switch a written setting needs: a fixture-precondition switch gating `attr` that the node does not hold, or null.
+// The switch a written setting needs, or null: a fixture-precondition switch gating `attr`, else the switch calibration
+// turned on to measure `attr` (lib/calibrate-instances.mjs::gatingToggle: showBackground for backgroundColour), the node
+// holding neither. Only a resting setting calibration measured carries the second: its measured paint is the switch's, while
+// a state setting (a hover background) paints without it, and switching the rest on would paint the block's default ground.
 export function gateFor( st, block, cal, schema, attr, attributes = {} ) {
-	if ( ! st.fixtures ) {
-		return null;
-	}
-	for ( const t of viewOf( st, block, cal, schema ).toggles ) {
-		if ( undefined === attributes[ t ] && attr !== t && attr.startsWith( toggleStem( t, schema[ t ] ) ) ) {
-			return t;
+	if ( st.fixtures ) {
+		for ( const t of viewOf( st, block, cal, schema ).toggles ) {
+			if ( undefined === attributes[ t ] && attr !== t && attr.startsWith( toggleStem( t, schema[ t ] ) ) ) {
+				return t;
+			}
 		}
 	}
-	return null;
+	const measured = cal?.settings?.[ attr ];
+	if ( ! measured || measured.state || attrRow( st.db, block, attr )?.css_state ) {
+		return null;
+	}
+	const [ t ] = Object.keys( gatingToggle( attr, schema || {}, attributes ) );
+	return t && undefined === attributes[ t ] ? t : null;
 }

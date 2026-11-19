@@ -74,8 +74,9 @@ export function stateTarget( block, row ) {
 }
 
 // A boolean "show/enable/has/use X" setting that is off by default and gates the element a setting styles: the
-// longest stem the setting's name starts with (showBadge gates badgeColour, badgeTextColour).
-function gatingToggle( attr, schema, current ) {
+// longest stem the setting's name starts with (showBadge gates badgeColour, badgeTextColour). Fill writes the same switch
+// beside a setting it writes (lib/fill-fixture.mjs::gateFor), since calibration measured the setting with it on.
+export function gatingToggle( attr, schema, current ) {
 	let best = null;
 	for ( const [ name, def ] of Object.entries( schema ) ) {
 		const m = name.match( /^(show|enable|has|use)([A-Z]\w*)$/ );

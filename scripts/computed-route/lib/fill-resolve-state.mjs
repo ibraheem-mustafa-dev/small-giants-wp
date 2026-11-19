@@ -29,6 +29,9 @@ export const reachesChildBlock = ( slot ) => String( slot ?? '' ).split( /\s*>\s
 // The box and paint properties a block's settings paint on a part of the element's own box: the border family, radius
 // corners, background, box-shadow, opacity and overflow.
 const BOX_PAINT = /^(background-.+|border-.+|box-shadow|opacity|overflow(-[xy])?)$/;
+// The size of the element's own box: a part calibration measured as the same box at every width holds it as well (a disc the
+// draft draws as one element, which the block draws as its root around a shape).
+const BOX_SIZE = /^(width|height)$/;
 
 // Whether `part` is a paint layer of the element at `own` (its `::before` or `::after`) or a part calibration measured as the
 // same box (lib/fill-same-box.mjs::calSameBox): the places a setting can paint the element's own box. A part that is a
@@ -37,10 +40,12 @@ const ownBox = ( cal, own, part ) => part === `${ own }::before` || part === `${
 
 // The slots other than the element's own where a setting for a property could paint it, from calibration (the slot truth,
 // R-47-6), except those that paint a nested block's element. A carried property (text, gap, alignment: read on the root,
-// painted on an inner element) tries every such slot. A box or paint property (BOX_PAINT) tries those of the element's own
-// box (ownBox) when the caller names `apart`, the slots the node's other targets read and `own` the slot being read: a slot
-// another target reads is that element's own business (its own reading finds the setting), and a part of its own box with
-// no element of its own in the draft (a label's `::after` layer, an icon's shape) is not. Any other property tries none.
+// painted on an inner element) tries every such slot. A box or paint property (BOX_PAINT) or the box's size (BOX_SIZE) tries
+// those of the element's own box (ownBox) when the caller names `apart`, the slots the node's other targets read and `own`
+// the slot being read: a setting painting a slot another target reads, or a slot inside that target's element, is that
+// element's own business (its own reading finds the setting: the glyph's size setting, measured on the glyph and the svg the
+// draft reads, is never the disc's), and a part of its own box with no element of its own in the draft (a label's `::after`
+// layer, an icon's shape) is not. Any other property tries none.
 export function alternateSlots( cal, prop, draft = {}, apart = null, own = '' ) {
 	// A layout setting calibration discovered painting display sits on the element laying out the children. A hide
 	// (display:none at any width) stays on the element's own slot: the layout element is not the one the draft hides.
@@ -51,12 +56,15 @@ export function alternateSlots( cal, prop, draft = {}, apart = null, own = '' ) 
 		return Object.values( cal?.discovered || {} ).flatMap( ( d ) => d.display?.slots || [] );
 	}
 	const carried = CARRIED.includes( prop );
-	if ( ! carried && ! ( apart && BOX_PAINT.test( prop ) ) ) {
+	if ( ! carried && ! ( apart && ( BOX_PAINT.test( prop ) || BOX_SIZE.test( prop ) ) ) ) {
 		return [];
 	}
 	const names = new Set( [ prop, prop.replace( /^(row|column)-gap$/, 'gap' ), splitProperty( prop ).short ] );
 	const taken = new Set( ( apart || [] ).map( ( p ) => String( p ?? '' ) ) );
-	return Object.values( cal?.settings || {} ).filter( ( s ) => names.has( s.property ) && ! s.state ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] ).filter( ( p ) => ! reachesChildBlock( p ) && ( carried || ( ! taken.has( String( p ?? '' ) ) && ownBox( cal, own, String( p ?? '' ) ) ) ) );
+	// A slot another target reads, or one inside such a target's element: that element's own business.
+	const others = [ ...taken ].filter( ( t ) => t !== String( own ?? '' ) );
+	const othersRead = ( p ) => others.some( ( t ) => String( p ?? '' ) === t || String( p ?? '' ).startsWith( `${ t } > ` ) );
+	return Object.values( cal?.settings || {} ).filter( ( s ) => names.has( s.property ) && ! s.state && ( carried || ! ( s.slots || [ s.slot ] ).some( othersRead ) ) ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] ).filter( ( p ) => ! reachesChildBlock( p ) && ( carried || ( ! taken.has( String( p ?? '' ) ) && ! othersRead( p ) && ownBox( cal, own, String( p ?? '' ) ) ) ) );
 }
 
 export const RADIUS_CORNERS = [ 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius' ];
