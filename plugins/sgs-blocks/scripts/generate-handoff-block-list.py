@@ -26,7 +26,10 @@ import sqlite3
 import sys
 from pathlib import Path
 
-DB = os.path.expanduser("~/.claude/skills/sgs-wp-engine/sgs-framework.db")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+
+DB = str(framework_db_path())
 HERE = Path(__file__).resolve().parent
 WORDS = HERE / "data" / "handoff-block-list.words.json"
 OUT = HERE.parents[2] / ".claude" / "claude-design-handoff" / "WHAT-WE-BUILD.md"
