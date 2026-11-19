@@ -136,7 +136,7 @@ if ( ! function_exists( 'sgs_choice_flow_variation_seed_attr' ) ) {
 		}
 
 		$json = wp_json_encode( $seed );
-		if ( ! is_string( $json ) || strlen( $json ) > 24576 ) {
+		if ( ! is_string( $json ) || strlen( $json ) > sgs_configurator_context_cap_bytes( $product_id ) ) {
 			return '';
 		}
 

@@ -508,7 +508,7 @@ $context = array(
 
 /* ── 6. Hard cap: 24 KB max serialised context ───────────────────────────── */
 
-if ( strlen( wp_json_encode( $context ) ) > 24576 ) {
+if ( strlen( wp_json_encode( $context ) ) > sgs_configurator_context_cap_bytes( (int) $product->get_id() ) ) {
 	// Cap exceeded — fall back to core WC blocks.
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo do_blocks( $buybox_core_fallback );

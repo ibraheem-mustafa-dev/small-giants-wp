@@ -23,6 +23,28 @@
  * @since   1.8.1
  */
 
+if ( ! function_exists( 'sgs_configurator_context_cap_bytes' ) ) {
+	/**
+	 * The byte cap on a product's serialised builder context (the M-C9 cap).
+	 *
+	 * 24,576 bytes unless the site raises it for a product through the
+	 * `sgs_configurator_context_cap_bytes` filter (arguments: the cap, the product id). The buy box, the product
+	 * card, the choice flow's variation seed and the publish preflight all read this one value, so a raised cap
+	 * never lets a product publish whose page would then fall back. A filtered value is held between 8 KB and
+	 * 128 KB. Without WordPress loaded (the standalone tests) the default stands.
+	 *
+	 * @param int $product_id The product the context belongs to (0 when unknown).
+	 * @return int The cap in bytes.
+	 */
+	function sgs_configurator_context_cap_bytes( int $product_id = 0 ): int {
+		$cap = 24576;
+		if ( function_exists( 'apply_filters' ) ) {
+			$cap = (int) apply_filters( 'sgs_configurator_context_cap_bytes', $cap, $product_id );
+		}
+		return max( 8192, min( 131072, $cap ) );
+	}
+}
+
 if ( ! function_exists( 'sgs_lean_seed_combos' ) ) {
 	/**
 	 * Strip server-only fields from a manifest combos array for the 24 KB lean-seed.

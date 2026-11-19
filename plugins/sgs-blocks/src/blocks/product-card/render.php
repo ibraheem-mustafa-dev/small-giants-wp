@@ -1385,7 +1385,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 
 		// M-C9 hard cap: 24 KB max serialised context — never trips for 48 SKUs
 		// (~6 KB), but guard is here to future-proof larger catalogues.
-		if ( strlen( wp_json_encode( $context ) ) > 24576 ) {
+		if ( strlen( wp_json_encode( $context ) ) > sgs_configurator_context_cap_bytes( (int) $product_id ) ) {
 			// Cap exceeded — fall through to the existing non-interactive "From" card.
 			unset( $context, $manifest, $def );
 		} else {

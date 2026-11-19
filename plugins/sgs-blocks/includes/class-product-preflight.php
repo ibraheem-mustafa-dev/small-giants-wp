@@ -60,7 +60,7 @@ final class Product_Preflight {
 	 *
 	 * @var int
 	 */
-	const MANIFEST_CAP_BYTES = 24576;
+	const MANIFEST_CAP_BYTES = 24576; // The default only: the check reads sgs_configurator_context_cap_bytes(), which a site may raise per product.
 
 	/**
 	 * Maximum number of variable products evaluated per health-cron run.
@@ -441,12 +441,13 @@ final class Product_Preflight {
 			$lean_manifest = self::lean_manifest_subset( $manifest );
 			$encoded       = \wp_json_encode( $lean_manifest );
 			$lean_bytes    = \strlen( false !== $encoded ? $encoded : '' );
-			if ( $lean_bytes >= self::MANIFEST_CAP_BYTES ) {
+			$cap_bytes = \sgs_configurator_context_cap_bytes( $product_id );
+			if ( $lean_bytes >= $cap_bytes ) {
 				$cap_msg = \sprintf(
 					/* translators: 1: measured bytes, 2: cap bytes */
 					\__( 'The product manifest is %1$d bytes — over the %2$d byte context cap. Reduce the number of variations.', 'sgs-blocks' ),
 					$lean_bytes,
-					self::MANIFEST_CAP_BYTES
+					$cap_bytes
 				);
 				$issues[] = array(
 					'code'     => 'manifest_over_cap',

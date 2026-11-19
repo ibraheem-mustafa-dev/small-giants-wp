@@ -500,7 +500,7 @@ Each FR carries a holistic test strategy. Status is a plain word: built, or NOT 
 
 ### Non-functional requirements
 
-- Budgets: less than 100 KB CSS; at most 150 KB JS/page; context manifest at most 24 KB; JSON-LD at most 48 KB; lab INP at most 200 ms; LCP at most 2.5 s; CLS at most 0.1.
+- Budgets: less than 100 KB CSS; at most 150 KB JS/page; context manifest at most 24 KB by default (one value, `includes/configurator-seed.php::sgs_configurator_context_cap_bytes`, read by the buy box, the product card, the choice flow seed and the publish preflight; a site raises it for a named product through the `sgs_configurator_context_cap_bytes` filter, held between 8 and 128 KB; Mama's Munches raises it to 40 KB for its 30-combination product); JSON-LD at most 48 KB; lab INP at most 200 ms; LCP at most 2.5 s; CLS at most 0.1.
 - WC-optional; minimum WC 9.8 with defined degradation; single-currency per request (multi-currency is a sibling spec).
 - UK English in all code, comments and user-facing text.
 - Selection presets resolve server-side; result counts capped (default 12, max configurable).
