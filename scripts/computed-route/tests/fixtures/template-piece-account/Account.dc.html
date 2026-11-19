@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body>
+<x-dc>
+<main>
+  <section><h1>My account</h1></section>
+  <section>
+    <div>
+      <sc-if value="{{ notSigned }}">
+        <div>
+          <h2>Sign in to see your bakes</h2>
+          <p>Your bakes live here.</p>
+          <div>
+            <a href="SignIn.dc.html">Go on in</a>
+            <a href="SignIn.dc.html?mode=register">Start an account</a>
+            <a href="Shop.dc.html">Browse the shop</a>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ signed }}">
+        <div>
+          <nav aria-label="My account">
+            <sc-for list="{{ tabs }}" as="t"><button onClick="{{ t.pick }}">{{ t.name }}</button></sc-for>
+            <button onClick="{{ signOut }}">Leave</button>
+          </nav>
+          <div>
+            <sc-if value="{{ showOrders }}">
+              <h2>Past bakes</h2>
+              <sc-for list="{{ orders }}" as="o"><div>{{ o.no }}</div></sc-for>
+            </sc-if>
+            <sc-if value="{{ showAddr }}">
+              <h2>Where we deliver</h2>
+              <form onSubmit="{{ saveAddress }}">
+                <label>Line one<input autocomplete="address-line1" value="{{ form.line1 }}"></label>
+                <label>Postcode<input autocomplete="postal-code" value="{{ form.postcode }}"></label>
+                <button type="submit">Save</button>
+              </form>
+            </sc-if>
+            <sc-if value="{{ showDetails }}">
+              <h2>About you</h2>
+              <form onSubmit="{{ saveDetails }}">
+                <label>Email<input type="email" autocomplete="email" value="{{ det.email }}"></label>
+                <button type="submit">Save</button>
+              </form>
+              <form onSubmit="{{ savePw }}">
+                <h3>Change password</h3>
+                <label>Current<input type="password" autocomplete="current-password" value="{{ pwCur }}"></label>
+                <label>New<input type="password" autocomplete="new-password" value="{{ pwNew }}"></label>
+                <button type="submit">Update</button>
+              </form>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </section>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() { return { notSigned: true, signed: false }; }
+}
+</script>
+</body>
+</html>

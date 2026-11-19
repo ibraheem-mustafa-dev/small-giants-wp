@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body>
+<x-dc>
+<div data-screen-label="Sign in">
+  <h1>{{ title }}</h1>
+  <sc-if value="{{ showTabs }}">
+    <div role="tablist">
+      <button role="tab" onClick="{{ toSignin }}" aria-selected="{{ isSignin }}">Log on</button>
+      <button role="tab" onClick="{{ toRegister }}" aria-selected="{{ isRegister }}">Join us</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{ isSignin }}">
+    <form onSubmit="{{ doSignin }}">
+      <label>Your email<input type="email" autocomplete="email" value="{{ email }}"></label>
+      <label>Secret<input type="password" autocomplete="current-password" value="{{ pw }}"></label>
+      <button type="submit">Let me in</button>
+      <button type="button" onClick="{{ toForgot }}">Lost it?</button>
+    </form>
+  </sc-if>
+  <sc-if value="{{ isRegister }}">
+    <form onSubmit="{{ doRegister }}">
+      <label>Given name<input autocomplete="given-name" value="{{ first }}"></label>
+      <label>New email<input type="email" autocomplete="email" value="{{ email }}"></label>
+      <label>Pick a password<input type="password" autocomplete="new-password" placeholder="Eight or more" value="{{ pw }}"><span>At least eight</span></label>
+      <label><input type="checkbox" checked="{{ news }}">Send me news</label>
+      <button type="submit">Make my account</button>
+    </form>
+  </sc-if>
+  <sc-if value="{{ isForgot }}">
+    <form onSubmit="{{ doForgot }}">
+      <label>Email<input type="email" autocomplete="email" value="{{ email }}"></label>
+      <button type="submit">Send link</button>
+    </form>
+  </sc-if>
+  <sc-if value="{{ isReset }}">
+    <form onSubmit="{{ doReset }}">
+      <label>New password<input type="password" autocomplete="new-password" value="{{ pw }}"></label>
+      <label>Again<input type="password" autocomplete="new-password" value="{{ pw2 }}"></label>
+      <button type="submit">Save</button>
+    </form>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { mode: 'signin' };
+  renderVals() {
+    const S = this.state;
+    return { isSignin: S.mode === 'signin', isRegister: S.mode === 'register', isForgot: S.mode === 'forgot', isReset: S.mode === 'reset', showTabs: true };
+  }
+}
+</script>
+</body>
+</html>
