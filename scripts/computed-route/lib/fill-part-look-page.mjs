@@ -21,6 +21,11 @@
 // direct children, in order: 'words', 'currency', 'count', 'none', 'any'), maxChildren, type (the type attribute of a
 // button or input), has, hasAll, hasMany ({ match, atLeast }), lacks, inside, notInside, inAnchor, notInAnchor,
 // parentOfAnchor, holdsAnchor (an anchor's elements: the match is inside, outside, the parent of, or holds one),
+// followsAnchor (the match comes after an anchor's element in the same row or parent), lacksAnchor (holds none of an anchor's elements),
+// ariaExpanded (has an aria-expanded attribute: a disclosure's button), ariaOn (aria-pressed, aria-checked or aria-selected is true),
+// precedesAnchor (the match comes before an anchor's element in the same row or the same parent: the column labels above a
+// loop of lines), allChildren (a matcher every direct child satisfies), rule (a line the draft draws: an hr, an empty strip
+// under 4px tall, or an element with a top or bottom border but not a border on every side, so a boxed card is not a rule),
 // linksTo (a link whose file is the page named for that role, or any of several roles, in `pages`), control (a button, link, input, select or
 // textarea), scope ('page' outside the header, footer and any fixed panel, 'overlay' inside a fixed panel or dialog, 'any').
 export function findPartsInPage( { spec, names, props, pages } ) {
@@ -73,6 +78,17 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 	const isControl = ( el ) => {
 		const tag = el.tagName.toLowerCase();
 		return 'button' === tag || 'input' === tag || 'select' === tag || 'textarea' === tag || ( 'a' === tag && el.hasAttribute( 'href' ) ) || 'button' === el.getAttribute( 'role' );
+	};
+	const drawn = ( el, side ) => parseFloat( styleOf( el )[ `border${ side }Width` ] ) > 0 && ! [ 'none', 'hidden' ].includes( styleOf( el )[ `border${ side }Style` ] );
+	const isRule = ( el ) => {
+		if ( 'hr' === el.tagName.toLowerCase() ) {
+			return true;
+		}
+		const r = box( el );
+		if ( ! textOf( el ) && ! el.children.length && r.height <= 3 && r.width > 40 ) {
+			return true;
+		}
+		return ( drawn( el, 'Top' ) || drawn( el, 'Bottom' ) ) && ! ( drawn( el, 'Top' ) && drawn( el, 'Right' ) && drawn( el, 'Bottom' ) && drawn( el, 'Left' ) );
 	};
 	const signature = ( el ) => `${ el.tagName }|${ [ ...el.children ].map( ( c ) => c.tagName ).join( ',' ) }`;
 	const repeats = ( el ) => !! el.parentElement && [ ...el.parentElement.children ].some( ( s ) => s !== el && signature( s ) === signature( el ) );
@@ -166,6 +182,27 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 			return false;
 		}
 		if ( m.type && ! m.type.includes( ( el.getAttribute( 'type' ) || '' ).toLowerCase() ) ) {
+			return false;
+		}
+		if ( m.precedesAnchor && ! anchorEls( m.precedesAnchor ).some( ( a ) => a !== el && ( a.parentElement === el.parentElement || a.parentElement?.parentElement === el.parentElement?.parentElement ) && ( el.compareDocumentPosition( a ) & Node.DOCUMENT_POSITION_FOLLOWING ) && ! el.contains( a ) ) ) {
+			return false;
+		}
+		if ( m.followsAnchor && ! anchorEls( m.followsAnchor ).some( ( a ) => a !== el && ( a.parentElement === el.parentElement || a.parentElement?.parentElement === el.parentElement ) && ( el.compareDocumentPosition( a ) & Node.DOCUMENT_POSITION_PRECEDING ) && ! a.contains( el ) ) ) {
+			return false;
+		}
+		if ( m.lacksAnchor && anchorEls( m.lacksAnchor ).some( ( a ) => el.contains( a ) ) ) {
+			return false;
+		}
+		if ( undefined !== m.ariaExpanded && el.hasAttribute( 'aria-expanded' ) !== m.ariaExpanded ) {
+			return false;
+		}
+		if ( undefined !== m.ariaOn && [ 'aria-pressed', 'aria-checked', 'aria-selected' ].some( ( a ) => 'true' === el.getAttribute( a ) ) !== m.ariaOn ) {
+			return false;
+		}
+		if ( m.allChildren && ! [ ...el.children ].every( ( k ) => test( k, m.allChildren ) ) ) {
+			return false;
+		}
+		if ( undefined !== m.rule && isRule( el ) !== m.rule ) {
 			return false;
 		}
 		if ( m.inAnchor && ! anchorEls( m.inAnchor ).some( ( a ) => a.contains( el ) ) ) {
@@ -355,7 +392,7 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		}
 		return '';
 	};
-	const SIZES = [ 'width', 'height', 'min-width', 'min-height', 'max-width' ];
+	const SIZES = [ 'width', 'height', 'min-width', 'min-height', 'max-width', 'flex-basis' ];
 	const pathOf = ( el ) => {
 		const parts = [];
 		for ( let e = el; e && e !== document.body; e = e.parentElement ) {

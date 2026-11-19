@@ -61,6 +61,8 @@ export function openersFor( facts ) {
 
 // A value the cascade treats as unset.
 const UNSET = new Set( [ '', 'initial', 'unset', 'inherit', 'revert', 'none' ] );
+// Drawn border sides that make a painted box (lib/skeleton-record.mjs::ownPaint).
+const BOX_SIDES = 2;
 const NO_COLOUR = new Set( [ '', 'initial', 'transparent', 'rgba(0, 0, 0, 0)', 'currentcolor' ] );
 const zeroWidth = ( v ) => UNSET.has( String( v ?? '' ).trim() ) || /^0(?:\.0+)?(?:px|rem|em)?$/.test( String( v ?? '' ).trim() );
 
@@ -184,7 +186,8 @@ export function recordView( record, { openers = {}, rootComponent = null } = {} 
 		if ( ! NO_COLOUR.has( String( st[ 'background-color' ] ?? '' ).toLowerCase() ) || ! UNSET.has( st[ 'background-image' ] ?? '' ) || ! [ NO_COLOUR, UNSET ].some( ( set ) => set.has( String( st.background ?? '' ).toLowerCase() ) ) || ! UNSET.has( st[ 'box-shadow' ] ?? '' ) ) {
 			return true;
 		}
-		return [ 'top', 'right', 'bottom', 'left' ].some( ( side ) => ! zeroWidth( st[ `border-${ side }-width` ] ) && ! UNSET.has( st[ `border-${ side }-style` ] ?? '' ) );
+		// A border on one side is a rule or underline (a link row's hairline divider), not a box; a box has two or more.
+		return [ 'top', 'right', 'bottom', 'left' ].filter( ( side ) => ! zeroWidth( st[ `border-${ side }-width` ] ) && ! UNSET.has( st[ `border-${ side }-style` ] ?? '' ) ).length >= BOX_SIDES;
 	};
 	const parentsOf = ( e ) => {
 		const rec = entry( e );

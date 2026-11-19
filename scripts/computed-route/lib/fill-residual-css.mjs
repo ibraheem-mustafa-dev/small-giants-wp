@@ -15,8 +15,8 @@
 //              state look the block paints and the draft lacks.
 // Only `residual` rows reach the writer, which also refuses (and lists, each with its reason): a block with no Custom CSS
 // setting (framework DB); `display`, and a `position` that takes the element out of flow, with the offsets and transform
-// that place it (the block's own markup decides its structure, and an out-of-flow element is placed against an ancestor
-// the clone does not share); a layout property the draft does not state at every read width; a state with no CSS pseudo
+// that place it (the block's own markup decides its structure, and an absolute or sticky element is placed against an ancestor
+// the clone does not share; a fixed one is placed against the screen and is written); a layout property the draft does not state at every read width; a state with no CSS pseudo
 // class; a part path naming one copy of a repeated element; a value or element path that is not safe CSS; and anything past
 // the page's byte cap.
 // Two parts of one block that read one draft element (the same box at every read width) take a property once, on the inner
@@ -61,8 +61,9 @@ export function restPose( db ) {
 }
 // Properties that lay out the element's children.
 const CONTAINER = /^(justify-content|justify-items|align-items|align-content|place-(content|items)|gap|row-gap|column-gap|flex-direction|flex-wrap|flex-flow|grid-template(-.+)?|grid-auto(-.+)?)$/;
-// Out-of-flow positions, and the properties that only place an element that is positioned.
-const OUT_OF_FLOW = /^(absolute|fixed|sticky)$/;
+// Out-of-flow positions placed against an ancestor, and the properties that only place an element that is positioned. A
+// fixed position is placed against the screen, which the clone shares, so it is written with its offsets.
+const OUT_OF_FLOW = /^(absolute|sticky)$/;
 const PLACED_BY_POSITION = /^(top|right|bottom|left|inset(-.+)?|transform|translate|z-index)$/;
 
 const holdsAttr = ( db, block, attr ) => !! db?.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );

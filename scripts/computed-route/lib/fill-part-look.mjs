@@ -48,10 +48,12 @@ const FAMILY = {
 	'box-shadow': 'shadow',
 };
 const SIZES = new Set( [ 'width', 'height', 'min-width', 'min-height', 'max-width' ] );
+// A column's width the draft states as a flex basis counts as stated.
+const statedSize = ( property, s ) => s( `decl:${ property }` ) || ( 'width' === property ? s( 'decl:flex-basis' ) : '' );
 const BORDER_SIDE = { border: 'top', 'border-top': 'top', 'border-bottom': 'bottom', 'border-top-style': 'top' };
 
 // A value that paints nothing (the CSS initial of a look): never written.
-const INITIAL = { 'font-style': 'normal', 'text-transform': 'none', 'text-decoration': 'none', 'text-align': 'start', 'box-shadow': 'none' };
+const INITIAL = { 'font-style': 'normal', 'text-transform': 'none', 'text-decoration': 'none', 'text-align': 'left', 'box-shadow': 'none' };
 
 const px = ( v ) => {
 	const l = parseLength( v );
@@ -63,30 +65,37 @@ const clean = ( v ) => String( v ?? '' ).trim();
 
 // One computed-style reading of a part's element as the plain value its setting's property holds, or null when the look paints
 // nothing, or undefined when it cannot be read. `row` carries css_property and attr_type.
-export function primitive( property, styles, row = {} ) {
+export function primitive( property, styles, row = {}, keep = false ) {
 	const s = ( p ) => clean( styles[ p ] );
 	switch ( FAMILY[ property ] ) {
 		case 'colour': {
 			const side = 'border-color' === property ? s( 'border-top-style' ) : 'drawn';
 			if ( 'none' === side || 'hidden' === side || ( 'border-color' === property && isZero( px( s( 'border-top-width' ) ) ) ) ) {
-				return null;
+				return keep ? 'transparent' : null;
 			}
 			const c = parseColour( s( 'border-color' === property ? 'border-top-color' : property ) );
-			return c && c.a > 0 ? toHex( c ) : null;
+			return c && c.a > 0 ? toHex( c ) : ( keep && c ? 'transparent' : null );
 		}
 		case 'keyword': {
 			if ( 'text-decoration' === property ) {
 				const v = s( 'text-decoration-line' );
-				return 'none' === v ? null : v;
+				return 'none' === v && ! keep ? null : v;
 			}
 			if ( 'border-style' === property ) {
 				return s( 'border-top-style' ) || undefined;
 			}
-			const v = s( property );
+			let v = s( property );
+			if ( 'text-align' === property ) {
+				v = { start: 'left', end: 'right' }[ v ] || v;
+			}
+			if ( keep ) {
+				return '' === v ? undefined : v;
+			}
 			return '' === v || INITIAL[ property ] === v || 'normal' === v || ( 'auto' === v && 'align-self' === property ) || ( '0' === v && 'flex-grow' === property ) ? null : v;
 		}
 		case 'font': {
-			const v = s( 'font-family' );
+			// The first family of the stack: the fallbacks after it differ between a draft and a theme without changing the look.
+			const v = s( 'font-family' ).split( ',' )[ 0 ].trim().replace( /^["']|["']$/g, '' );
 			return v || undefined;
 		}
 		case 'number': {
@@ -96,15 +105,15 @@ export function primitive( property, styles, row = {} ) {
 			if ( 'line-height' === property ) {
 				const size = px( s( 'font-size' ) );
 				const lh = px( s( 'line-height' ) );
-				return null === lh || ! size ? null : round( lh / size );
+				return null === lh || ! size ? ( keep ? 'normal' : null ) : round( lh / size );
 			}
 			const ls = px( s( 'letter-spacing' ) );
-			return null === ls || 0 === ls ? null : ls;
+			return keep ? ( null === ls ? 0 : ls ) : ( null === ls || 0 === ls ? null : ls );
 		}
 		case 'length': {
 			// A size is the draft's look only where the draft states it: an undeclared width or height is the layout's.
 			if ( SIZES.has( property ) ) {
-				const stated = s( `decl:${ property }` );
+				const stated = statedSize( property, s );
 				if ( ! stated ) {
 					return null;
 				}
@@ -182,7 +191,7 @@ export function samePrimitive( a, b ) {
 
 // A part's reading at each width as { 1440: value, 768: value, 375: value } plus the instance conflicts:
 // `instances` is { width: [ { key, styles } ] }. A width with no element gives undefined for the part.
-export function readPart( property, instances, row ) {
+export function readPart( property, instances, row, keep = false ) {
 	const perWidth = {};
 	const conflicts = [];
 	for ( const w of WIDTHS ) {
@@ -191,7 +200,7 @@ export function readPart( property, instances, row ) {
 			perWidth[ w ] = undefined;
 			continue;
 		}
-		const values = list.map( ( i ) => primitive( property, i.styles, row ) );
+		const values = list.map( ( i ) => primitive( property, i.styles, row, keep ) );
 		const first = values[ 0 ];
 		if ( values.every( ( v ) => samePrimitive( v, first ) ) ) {
 			perWidth[ w ] = first;
@@ -230,6 +239,9 @@ export function toSetting( row, value, ctx ) {
 			return { value: preset || String( value ).split( ',' )[ 0 ].trim().replace( /^["']|["']$/g, '' ) };
 		}
 		case 'number': {
+			if ( 'number' !== typeof value ) {
+				return { why: `the draft's ${ row.css_property } is ${ value }, which no number holds` };
+			}
 			const unit = unitCompanion( row.attr_name, names );
 			const extra = unit ? { [ unit ]: 'line-height' === row.css_property ? '' : 'px' } : {};
 			return { value: round( value ), extra };
@@ -324,7 +336,7 @@ function tiersFor( row, perWidth ) {
 //   reads ({ part: { width: [ instance ] } }), snapshot, selectorOf( part ) (the look table's selector or null),
 //   faultOf( attr ) (a known-fault reason or null), partRows (the look table's parts present on this block).
 // Returns { writes, settings, unpaired, noLocator, noSetting, conflicts, unsupported, widthVaries, counts }.
-export function buildLook( { block, rows, names, locators, reads, snapshot = null, selectorOf = () => null, faultOf = () => null, tableParts = [] } ) {
+export function buildLook( { block, rows, names, locators, reads, snapshot = null, selectorOf = () => null, faultOf = () => null, tableParts = [], switches = null, force = null } ) {
 	const out = { block, writes: [], settings: {}, unpaired: [], noLocator: [], noSetting: [], conflicts: [], unsupported: {}, widthVaries: [], atInitial: [], log: [] };
 	const nameSet = names instanceof Set ? names : new Set( names );
 	const look = rows.filter( ( r ) => r.css_element && r.css_property && ! r.css_state );
@@ -346,19 +358,49 @@ export function buildLook( { block, rows, names, locators, reads, snapshot = nul
 			continue;
 		}
 		const instances = reads[ part ] || {};
-		if ( ! WIDTHS.some( ( w ) => ( instances[ w ] || [] ).length ) ) {
-			out.unpaired.push( { part, settings: partRows.length, tableRow: tableParts.includes( part ) } );
-			partRows.forEach( ( r ) => mark( r, 'not-written', 'the draft has no element for this part', { code: 'unpaired' } ) );
+		const found = ( name ) => WIDTHS.some( ( w ) => ( ( 'string' === typeof name ? reads[ name ] : instances )?.[ w ] || [] ).length );
+		// A visibility switch hides its part when the draft draws no such element at any width, and only where the part's
+		// neighbours are found (a failed read never hides anything). Which value hides comes from the data file, never the name.
+		const isSwitch = ( r ) => 'boolean' === r.attr_type && ( 'boolean-visibility' === r.role || undefined !== switches?.roles?.[ r.role ]?.[ r.css_property ]?.setWhenDrawn );
+		for ( const row of partRows.filter( isSwitch ) ) {
+			const hides = switches?.roles?.[ row.role ]?.[ row.css_property ];
+			const draft = Object.fromEntries( WIDTHS.map( ( w ) => [ w, ( instances[ w ] || [] ).length ? 'drawn' : 'absent' ] ) );
+			if ( ! hides ) {
+				mark( row, 'not-written', 'the database does not say which value hides this part and the switches data names none', { code: 'switchDirection' } );
+			} else if ( hides.setWhenDrawn ) {
+				if ( found() && ( loc.neighbours || [] ).every( found ) ) {
+					const fault = faultOf( row.attr_name );
+					out.writes.push( { attr: row.attr_name, value: true, part, property: row.css_property, draft, visibility: false, structure: true, ...( fault ? { knownFault: fault } : {} ) } );
+					mark( row, 'written', null, { code: 'drawn' } );
+				} else {
+					mark( row, 'not-written', 'the draft does not draw this part (or its neighbours are not found), so the switch stays off', { code: 'notDrawn' } );
+				}
+			} else if ( found() ) {
+				mark( row, 'not-written', 'the draft draws this part, so it stays', { code: 'drawn' } );
+			} else if ( ! ( loc.neighbours || [] ).length || ! loc.neighbours.every( found ) ) {
+				mark( row, 'not-written', 'the neighbours of the part are not found in the draft, so nothing is hidden', { code: 'neighboursNotFound' } );
+			} else {
+				const fault = faultOf( row.attr_name );
+				out.writes.push( { attr: row.attr_name, value: hides.hideWhen, part, property: row.css_property, draft, visibility: true, ...( fault ? { knownFault: fault } : {} ) } );
+				mark( row, 'written', null, { code: 'hidden' } );
+			}
+		}
+		const partLook = partRows.filter( ( r ) => ! isSwitch( r ) );
+		if ( ! found() ) {
+			if ( partLook.length ) {
+				out.unpaired.push( { part, settings: partLook.length, tableRow: tableParts.includes( part ) } );
+				partLook.forEach( ( r ) => mark( r, 'not-written', 'the draft has no element for this part', { code: 'unpaired' } ) );
+			}
 			continue;
 		}
-		for ( const row of partRows ) {
+		for ( const row of partLook ) {
 			const fam = FAMILY[ row.css_property ];
 			if ( ! fam || 'boolean' === row.attr_type ) {
 				out.unsupported[ row.css_property ] = ( out.unsupported[ row.css_property ] || 0 ) + 1;
 				mark( row, 'not-written', `${ row.css_property } is not a look the route reads`, { code: 'unsupported' } );
 				continue;
 			}
-			const { perWidth, conflicts } = readPart( row.css_property, instances, row );
+			const { perWidth, conflicts } = readPart( row.css_property, instances, row, !! force?.has( row.attr_name ) );
 			if ( conflicts.length ) {
 				out.conflicts.push( { part, attr: row.attr_name, property: row.css_property, conflicts } );
 				mark( row, 'not-written', 'the part\'s instances differ', { code: 'conflict' } );
@@ -420,15 +462,16 @@ export function buildLook( { block, rows, names, locators, reads, snapshot = nul
 // The looks a located element carries that no rest-state setting of its part holds. Each is { block, part, selector, property,
 // draft: { width: value }, state: 'rest' }, the draft's computed value at each width, for a Custom CSS writer that does not
 // re-read the draft. A look that paints nothing (the CSS initial) is left out; so are sizes the layout decides (width, height).
-const LOOKS = [
+export const LOOKS = [
 	[ 'color', 'colour' ], [ 'background-color', 'colour' ], [ 'font-family', 'font' ], [ 'font-size', 'number' ], [ 'font-weight', 'keyword' ], [ 'font-style', 'keyword' ], [ 'line-height', 'number' ],
 	[ 'letter-spacing', 'number' ], [ 'text-transform', 'keyword' ], [ 'text-decoration', 'keyword' ], [ 'text-align', 'keyword' ], [ 'border-radius', 'radius' ], [ 'border-width', 'box' ],
 	[ 'border-style', 'keyword' ], [ 'border-color', 'colour' ], [ 'box-shadow', 'shadow' ], [ 'padding', 'box' ], [ 'margin', 'box' ],
 ];
-const COVERS = { 'border-width': [ 'border-width', 'border', 'border-top', 'border-bottom', 'border-top-style' ], 'border-style': [ 'border-style', 'border', 'border-top', 'border-bottom', 'border-top-style' ], 'border-color': [ 'border-color', 'border', 'border-top', 'border-bottom', 'border-top-style' ], padding: [ 'padding', 'padding-top' ], margin: [ 'margin', 'margin-top', 'margin-bottom' ] };
+export const COVERS = { 'border-width': [ 'border-width', 'border', 'border-top', 'border-bottom', 'border-top-style' ], 'border-style': [ 'border-style', 'border', 'border-top', 'border-bottom', 'border-top-style' ], 'border-color': [ 'border-color', 'border', 'border-top', 'border-bottom', 'border-top-style' ], padding: [ 'padding', 'padding-top' ], margin: [ 'margin', 'margin-top', 'margin-bottom' ] };
 const ZERO_BOX = ( v ) => v && 'object' === typeof v && SIDES.every( ( s ) => isZero( v[ s ] ) );
 
 export function noSettingFor( { block, part, partRows, instances, selector } ) {
+	// (verify.mjs reads the live page for each of these and drops the ones that already match)
 	const held = new Set( partRows.flatMap( ( r ) => String( r.css_property ).split( ',' ) ) );
 	const out = [];
 	for ( const [ property ] of LOOKS ) {

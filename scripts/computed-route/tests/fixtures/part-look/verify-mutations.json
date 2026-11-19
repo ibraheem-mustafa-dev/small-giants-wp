@@ -1,0 +1,56 @@
+[
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "if ( undefined !== saved0[ w.attr ] && sameSetting( w.value, saved0[ w.attr ] ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a setting that already holds the value is written again"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "undefined === saved0[ attr ] ? revertUnset.push( attr ) : ( revertSet[ attr ] = saved0[ attr ] );",
+		"replace": "revertUnset.push( attr );",
+		"why": "a taken-back write removes the setting instead of restoring its old value"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "if ( cand && stillDiffers.has( `${ cand.part }|${ cand.property }` ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a write that changed nothing is kept"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "if ( cmp1.matched.has( key ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a no-setting row that already matches is kept"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "noSetting.push( { ...n, live: diffMap.get( key ).live } );",
+		"replace": "noSetting.push( { ...n } );",
+		"why": "a no-setting row loses its live value"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "if ( same ) {\n\t\t\tsame.part",
+		"replace": "if ( false ) {\n\t\t\tsame.part",
+		"why": "two parts one selector finds are two rows"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "'line-height' === property && 'normal' === d[ 0 ] &&",
+		"replace": "false &&",
+		"why": "a draft line height of normal never matches"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "const rowId = map?.parts?.[ part ] || part.replace( /-/g, '_' );",
+		"replace": "const rowId = map?.parts?.[ part ] || part;",
+		"why": "a part is not found through its row id"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "selectors[ part ] = elements[ part ].selector || `.sgs-${ short }__${ part }`;",
+		"replace": "selectors[ part ] = elements[ part ].selector;",
+		"why": "an element with no selector of its own has none"
+	}
+]

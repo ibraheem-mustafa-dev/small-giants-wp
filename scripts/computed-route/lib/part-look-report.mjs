@@ -70,7 +70,15 @@ export function reportMarkdown( { client, site, compare, generated, surfaces, to
 		lines.push( '### Unpaired (a locator, no draft element)', '', b.unpaired.length ? b.unpaired.map( ( u ) => `- ${ u.part } (${ u.settings } settings${ u.tableRow ? ', look-table row' : '' })` ).join( '\n' ) : 'None.', '' );
 		lines.push( '### No locator', '', b.noLocator.length ? b.noLocator.map( ( u ) => `- ${ u.part } (${ u.settings } settings${ u.tableRow ? ', look-table row' : '' })` ).join( '\n' ) : 'None.', '' );
 		lines.push( '### Instance conflicts (nothing written)', '', b.conflicts.length ? b.conflicts.map( ( c ) => `- ${ c.part } ${ c.attr }: ${ c.conflicts.map( ( x ) => `${ x.width }px ${ [ ...new Set( x.values.map( ( v ) => json( v.value ) ) ) ].join( ' vs ' ) }` ).join( '; ' ) }` ).join( '\n' ) : 'None.', '' );
-		lines.push( '### No setting (a look the draft element carries and no setting of its part holds)', '', b.noSetting.length ? table( [ 'Part', 'Selector', 'Property', 'Draft value per width' ], b.noSetting.map( ( n ) => [ n.part, n.selector ?? 'no look-table row', n.property, draftText( n.draft ) ] ) ) : 'None.', '' );
+		if ( s.verify ) {
+			const v = s.verify;
+			lines.push( '### Verified on the live page', '', `Compared ${ v.counts.compared } part and property pairs at 1440, 768 and 375: ${ v.counts.matched } match, ${ v.counts.differs } still differ. The pass wrote ${ v.counts.written } settings the live page differed on (${ v.kept.join( ', ' ) || 'none' }), took back ${ v.counts.takenBack } that changed nothing${ v.takenBack.length ? ` (${ v.takenBack.map( ( t ) => t.attr ).join( ', ' ) })` : '' }, and dropped ${ v.droppedNoSetting } of ${ v.counts.noSettingBefore } no-setting rows that already match.`, '' );
+			lines.push( '### Still differs', '', v.stillDiffers.length ? table( [ 'Part', 'Property', 'Draft', 'Live', 'Why' ], v.stillDiffers.map( ( d ) => [ d.part, d.property, WIDTHS.filter( ( w ) => undefined !== d.draft?.[ w ] ).map( ( w ) => `${ w }: ${ json( d.draft[ w ] ) }` ).join( '; ' ), WIDTHS.filter( ( w ) => undefined !== d.live?.[ w ] ).map( ( w ) => `${ w }: ${ json( d.live[ w ] ) }` ).join( '; ' ), d.why ] ) ) : 'Nothing differs.', '' );
+			const nv = Object.entries( v.notVerified || {} );
+			nv.length && lines.push( '### Not verified (no live selector)', '', nv.map( ( [ part, why ] ) => `- ${ part }: ${ why }` ).join( '\n' ), '' );
+		}
+		const noSet = s.verify ? s.verify.noSetting : b.noSetting;
+		lines.push( '### No setting (a look the draft element carries and no setting of its part holds)', '', noSet.length ? table( [ 'Part', 'Selector', 'Property', 'Draft value per width', ...( s.verify ? [ 'Live value per width' ] : [] ) ], noSet.map( ( n ) => [ n.part, n.selector ?? 'no look-table row', n.property, draftText( n.draft ), ...( s.verify ? [ false === n.liveRead ? 'not read' : draftText( n.live ) ] : [] ) ] ) ) : 'None.', '' );
 	}
 	return `${ lines.join( '\n' ) }\n`;
 }

@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "} else if ( ! ( loc.neighbours || [] ).length || ! loc.neighbours.every( found ) ) {",
+		"replace": "} else if ( false ) {",
+		"why": "a part is hidden where its neighbours were not found"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "} else if ( found() ) {\n\t\t\t\tmark( row, 'not-written', 'the draft draws this part, so it stays'",
+		"replace": "} else if ( false ) {\n\t\t\t\tmark( row, 'not-written', 'the draft draws this part, so it stays'",
+		"why": "a part the draft draws is hidden"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( ! hides ) {",
+		"replace": "if ( false ) {",
+		"why": "a switch with no stated direction is written"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( found() && ( loc.neighbours || [] ).every( found ) ) {",
+		"replace": "if ( true ) {",
+		"why": "a wrapping switch is set though the draft does not draw the part"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "value: hides.hideWhen,",
+		"replace": "value: true,",
+		"why": "the hiding value is assumed, not read from the data"
+	}
+]

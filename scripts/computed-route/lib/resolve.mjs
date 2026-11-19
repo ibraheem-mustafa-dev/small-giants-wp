@@ -13,6 +13,8 @@ import { applyClamp } from './fill-values.mjs';
 import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy, canonicalName } from './css-families.mjs';
 import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword, isSizeProperty } from './resolve-declared.mjs';
 import { consult } from './css-equivalence/index.mjs';
+import { valueBlind } from './css-equivalence/effect.mjs';
+export { valueBlind };
 import { sameAlignment } from './css-equivalence/keywords.mjs';
 
 export const COVERAGE_WRITES = [
@@ -358,6 +360,9 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 			if ( w ) {
 				return w;
 			}
+			continue;
+		}
+		if ( valueBlind( d ) ) {
 			continue;
 		}
 		for ( const [ value, values ] of Object.entries( d.values ) ) {

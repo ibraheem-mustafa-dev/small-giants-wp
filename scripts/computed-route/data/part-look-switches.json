@@ -1,0 +1,18 @@
+{
+	"_comment": "Which value of a visibility switch hides its part. The framework database marks a setting as a visibility switch (role boolean-visibility) on a part and a CSS property (display, border-top-width) but does not say which value hides, and the look table has no column for it. The writer, plugins/sgs-blocks/includes/woocommerce/commerce-look/line-items.php::sgs_commerce_look_line_items_css, hides the part when the switch is true. A switch whose role and property are not listed here is never written (reported as a gap). Keyed by role and CSS property, never by attribute name. A boolean of role visual on background-color (the summary wraps its button) is set when the draft draws the part: the card holds the checkout button (plugins/sgs-blocks/includes/woocommerce/commerce-look/cards.php::sgs_commerce_look_cards_css paints the card on the cart side column, which holds the button, when it is true).",
+	"roles": {
+		"boolean-visibility": {
+			"display": {
+				"hideWhen": true
+			},
+			"border-top-width": {
+				"hideWhen": true
+			}
+		},
+		"visual": {
+			"background-color": {
+				"setWhenDrawn": true
+			}
+		}
+	}
+}

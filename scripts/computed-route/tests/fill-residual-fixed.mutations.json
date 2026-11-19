@@ -1,0 +1,5 @@
+[
+	{"file": "lib/fill-residual-css.mjs", "find": "const OUT_OF_FLOW = /^(absolute|sticky)$/;", "replace": "const OUT_OF_FLOW = /^(absolute|fixed|sticky)$/;", "why": "a fixed position is refused with the others"},
+	{"file": "lib/fill-residual-css.mjs", "find": "const OUT_OF_FLOW = /^(absolute|sticky)$/;", "replace": "const OUT_OF_FLOW = /^(sticky)$/;", "why": "an absolute position is written"},
+	{"file": "lib/fill-residual-css.mjs", "find": "const OUT_OF_FLOW = /^(absolute|sticky)$/;", "replace": "const OUT_OF_FLOW = /^(absolute)$/;", "why": "a sticky position is written"}
+]

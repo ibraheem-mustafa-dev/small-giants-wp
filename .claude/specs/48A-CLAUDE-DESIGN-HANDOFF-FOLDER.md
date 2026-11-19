@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 48A
-spec_version: "1.4"
+spec_version: "1.5"
 title: The Claude Design handoff folder
 project: small-giants-wp
 status: active
@@ -114,7 +114,8 @@ Status: schema, method, prompt and `CLAUDE.md` updated 2026-10-29. The route rea
 - Status: the reader is built (`lib/handoff.mjs::checkHandoff`). The step that writes the snapshot's focus values from these tokens is not built: the values are copied by hand when a client is set up.
 
 ### FR-48A-16 -- A draft covers every page and state a visitor reaches, within what a shop does
-- The producer's `CLAUDE.md` lists the pages and states to design: for every site the page-not-found page, search results with and without results, each form's sent and error states and the open menu drawer; for a blog the post list and one post; for a shop the listing (with filters, and empty), a product (with options, sold out), the basket page and drawer (filled, empty), the checkout (guest, signed in, a field error), the order confirmation, sign in, create account, lost password, each account view and one notice of each kind. It also lists what a WooCommerce shop does and does not do, so a draft promises nothing the shop cannot deliver (Mama's Munches' draft showed an address book, tracking links and a bake date, and had no page-not-found, search or account sub-view designs; each cost a ruling or a hand-built page, `.claude/reports/2026-11-18-template-rework/inventory.md`).
+- The producer's `CLAUDE.md` lists the pages and states to design: for every site the page-not-found page, each form's sent and error states and the open menu drawer; for a site with a search box the search results page with and without results (Bean, 2026-11-19: every draft draws its own 404, and its own search results only when the site has search); for a blog the post list and one post; for a shop the listing (with filters, and empty), a product (with options, sold out), the basket page and drawer (filled, empty), the checkout (guest, signed in, a field error), the order confirmation, sign in, create account, lost password, each account view and one notice of each kind. It also lists what a WooCommerce shop does and does not do, so a draft promises nothing the shop cannot deliver (Mama's Munches' draft showed an address book, tracking links and a bake date, and had no page-not-found, search or account sub-view designs; each cost a ruling or a hand-built page, `.claude/reports/2026-11-18-template-rework/inventory.md`).
+- The producer's `CLAUDE.md` also says that a page showing an order reads every detail of it from the draft's sample order data (a detail typed as fixed words, such as an order number in a heading, cannot be made live), and that pieces placed over one another (overlapping photos, a sticker, a badge) sit inside one box that sets their space, each placed and sized relative to it, which is the shape the route reads a positioned group from.
 - At handoff the prompt compares the drafts with that list and reports each missing page or state, and each feature a shop does not do, as an unresolved item; it draws nothing new.
 - Status: `CLAUDE.md` and `PROMPT.txt` updated 2026-11-18 (version 1.3). Not built: `handoff-check.mjs` warning on a missing surface (the three existing exports predate this and would only warn; it belongs to the general cloning work, which owns `handoff-check.mjs`), and the route composing a surface the draft lacks from the site's own designed parts (`.claude/plans/2026-11-18-template-rework.md`, Task 7).
 
