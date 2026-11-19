@@ -105,10 +105,11 @@ function startProbe( [ jobs, resolveSrc, windowMs, sweep ] ) {
 			} );
 			// A stamped element with no endless animation of its own also owns those of the elements the draft's code builds
 			// inside it (no stamped element between them: no other target can name them), each with the moving element's own
-			// box, which a percentage travel is measured against (a marquee track the code builds inside its strip).
+			// box, which a percentage travel is measured against (a marquee track the code builds inside its strip). An unstamped
+			// element owns none: the filter keeps only elements whose nearest stamped ancestor is `el`.
 			const loopsOf = ( el ) => {
 				const own = endless( el );
-				if ( own.length || ! el.hasAttribute?.( 'data-dc-tpl' ) ) {
+				if ( own.length ) {
 					return own;
 				}
 				return [ ...el.querySelectorAll( '*' ) ].filter( ( x ) => ! x.hasAttribute( 'data-dc-tpl' ) && x.parentElement.closest( '[data-dc-tpl]' ) === el ).flatMap( ( x ) => endless( x ).map( ( l ) => ( { ...l, box: { width: x.offsetWidth, height: x.offsetHeight } } ) ) );
