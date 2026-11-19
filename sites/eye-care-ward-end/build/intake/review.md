@@ -1,6 +1,6 @@
 # Intake review: eye-care-ward-end
 
-Taken by default: 517 rows had no mark from Bean and took their proposal (intake.mjs --apply-review --go-through; the Mark cell of such a row stays blank, and a mark Bean writes there overrides the default); rows with no proposal to take are listed in go-through-open.json.
+Taken by default: 522 rows had no mark from Bean and took their proposal (intake.mjs --apply-review --go-through; the Mark cell of such a row stays blank, and a mark Bean writes there overrides the default); rows with no proposal to take are listed in go-through-open.json.
 
 Taken on 2026-11-19T07:39:14.866Z; manifest 1.0, files hash bf9020a144d89e0d.
 

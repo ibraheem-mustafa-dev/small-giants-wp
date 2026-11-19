@@ -139003,17 +139003,19 @@
    "rowId": "palette:--social-linkedin",
    "rowType": "palette-role",
    "contentHash": "b3d2e65664acd2e97083c0e8062e5e2e5cd72824e35dc62944f4a75032b85373",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
+   "mark": "accept",
+   "markedOn": "2026-11-19",
+   "carriedFrom": null,
+   "by": "go-through"
   },
   {
    "rowId": "palette:--social-facebook",
    "rowType": "palette-role",
    "contentHash": "8b66c8e8be28d45c93e8d026e2f0256dffec07ddb64956c6a0e13183fa6d9c21",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
+   "mark": "accept",
+   "markedOn": "2026-11-19",
+   "carriedFrom": null,
+   "by": "go-through"
   },
   {
    "rowId": "palette:--social-google",
@@ -139027,9 +139029,10 @@
    "rowId": "palette:--whatsapp-green",
    "rowType": "palette-role",
    "contentHash": "5419b1b709677db8fc319badde334e53b5ab742c264447b5b7be854d23d78845",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
+   "mark": "accept",
+   "markedOn": "2026-11-19",
+   "carriedFrom": null,
+   "by": "go-through"
   },
   {
    "rowId": "palette:--text-heading",
@@ -139131,9 +139134,10 @@
    "rowId": "palette:--focus-color",
    "rowType": "palette-role",
    "contentHash": "9435ceb99c098850279db1b5c4241ada6c7429cc3d9a608decc36ba92d4f8dce",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
+   "mark": "accept",
+   "markedOn": "2026-11-19",
+   "carriedFrom": null,
+   "by": "go-through"
   },
   {
    "rowId": "siteinfo:phone",

@@ -143816,9 +143816,10 @@
    "rowId": "palette:--wa",
    "rowType": "palette-role",
    "contentHash": "ceecdc08ca8d69629f16fd1eef6d62ca511cdeaf0618ecebda3ccc8f78eedc04",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
+   "mark": "accept",
+   "markedOn": "2026-11-19",
+   "carriedFrom": null,
+   "by": "go-through"
   },
   {
    "rowId": "palette:--wa-hover",
@@ -143832,33 +143833,37 @@
    "rowId": "palette:--wa-ink",
    "rowType": "palette-role",
    "contentHash": "740e8c492b8b48fdf4f1311c33c9e3f8bd8bff27f365ba41eb0e981ee77a6bb5",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
+   "mark": "accept",
+   "markedOn": "2026-11-19",
+   "carriedFrom": null,
+   "by": "go-through"
   },
   {
    "rowId": "palette:--wa-ink-deep",
    "rowType": "palette-role",
    "contentHash": "dbafd2dd04975dbebab0036e5ebc9d42ae3900f9e6549290ba4da7943cffcc70",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
+   "mark": "accept",
+   "markedOn": "2026-11-19",
+   "carriedFrom": null,
+   "by": "go-through"
   },
   {
    "rowId": "palette:--wa-soft",
    "rowType": "palette-role",
    "contentHash": "5976b4040a7eb87f9f586abc20fdddb69ebf1b186c70030585cecfaba0ab983a",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
+   "mark": "accept",
+   "markedOn": "2026-11-19",
+   "carriedFrom": null,
+   "by": "go-through"
   },
   {
    "rowId": "palette:--wa-border",
    "rowType": "palette-role",
    "contentHash": "d89e61e02dcef0d5651c3ce6be56d2820e74f1891f08332042b71b966fea6a37",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
+   "mark": "accept",
+   "markedOn": "2026-11-19",
+   "carriedFrom": null,
+   "by": "go-through"
   },
   {
    "rowId": "palette:--success",

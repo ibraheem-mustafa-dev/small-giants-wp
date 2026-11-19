@@ -1,6 +1,6 @@
 # Intake review: indus-foods
 
-Taken by default: 27 rows had no mark from Bean and took their proposal (intake.mjs --apply-review --go-through; the Mark cell of such a row stays blank, and a mark Bean writes there overrides the default); rows with no proposal to take are listed in go-through-open.json.
+Taken by default: 31 rows had no mark from Bean and took their proposal (intake.mjs --apply-review --go-through; the Mark cell of such a row stays blank, and a mark Bean writes there overrides the default); rows with no proposal to take are listed in go-through-open.json.
 
 Taken on 2026-11-19T06:19:28.565Z; manifest 1.0, files hash f2d909d8605ef2cb.
 
