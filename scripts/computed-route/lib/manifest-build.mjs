@@ -97,7 +97,8 @@ export function matchRecord( row, records ) {
 	if ( ! kind ) {
 		return { reason: `no record kind for post type ${ row.postType }` };
 	}
-	let mine = records.filter( ( r ) => r.kind === kind );
+	// A template row (the order confirmation) is played by its route's page or by a result record that is a page of its own.
+	let mine = records.filter( ( r ) => r.kind === kind || ( 'template' === row.postType && 'result' === r.kind ) );
 	if ( 'page' === kind ) {
 		mine = mine.filter( ( r ) => null != row.route && r.page_key === pageKeyOf( row.route ) );
 	} else if ( 'form' === kind ) {
