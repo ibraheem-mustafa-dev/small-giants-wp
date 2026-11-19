@@ -61,6 +61,7 @@ import { pointAfterBuild } from './lib/site-run-layout.mjs';
 import { TOP_N, writeRanking } from './lib/site-run-rank.mjs';
 import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath, siteUrl, surfacesOnSite, targetOf } from './lib/site-targets.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
+import { inventoryRootFor, partsOf, writePart } from './lib/template-frame.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
 const ALL_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'apply', 'walk' ];
@@ -410,7 +411,7 @@ export async function main( argv ) {
 		// A state-driven surface and a form (read on its page, with no root selector of its own) take the inventory intake saved.
 		const stateOnly = !! skel.root?.viaState;
 		const fromSaved = stateOnly || 'form' === kind;
-		const root = fromSaved ? null : skel.root?.tag;
+		const root = fromSaved ? null : ( inventoryRootFor( { repo: REPO, client, entry, skel } ) ?? skel.root?.tag );
 		if ( ! root && ! ( fromSaved && fs.existsSync( saved ) ) && ! fs.existsSync( p.inventory ) ) {
 			return note( key, 'inventory', false, 0, fromSaved ? `no saved intake inventory for the ${ stateOnly ? 'state-driven ' : '' }${ kind } surface (${ path.relative( REPO, saved ) })` : `the intake record names no root element for a ${ kind } surface` );
 		}
@@ -507,6 +508,10 @@ export async function main( argv ) {
 		const builder = [ 'scripts/wp-build-page.js', '--env-file', secretsPath( entry.envFile, REPO ), '--env-key', entry.envKey, '--tree', tree, ...( slug ? [ '--template', slug ] : [ '--post-id', String( entry.target.postId ) ] ) ];
 		if ( ! await step( 'build', () => exclusive( async () => {
 			await exec( 'dry', 'node', [ ...builder, '--dry-run' ] );
+			// A template's own parts (lib/template-frame.mjs::partsOf: the page's own top bar) are built first, as wp_template_part.
+			for ( const part of slug ? partsOf( ctx.filled ) : [] ) {
+				await exec( 'build', 'node', [ ...builder.slice( 0, 5 ), '--tree', path.relative( REPO, writePart( build, part ) ), '--template-part', part.slug ] );
+			}
 			const said = await exec( 'build', 'node', builder );
 			// Recorded as the site build records its own copies, so a later site build sees it as built from this tree.
 			slug && recordTemplate( slug, treeHash( readJson( path.join( REPO, tree ) ) ) );
