@@ -187,3 +187,50 @@ test( 'a setting on an element the stylesheet already centres reads alive throug
 	assert.deepEqual( acc.settings.textAlign.slots, [ '' ] );
 	assert.deepEqual( [ ...new Set( acc.dead ) ].filter( ( n ) => ! acc.settings[ n ] ), [] );
 } );
+
+// The header row's grid, read live: the default render is one 335px track at 375 and three equal tracks at 768 and 1440,
+// so the three-track probe changes the element at 375 only and leaves 768 and 1440 as they were.
+const HELD_DEFAULT = Object.fromEntries( [ [ 375, '335px' ], [ 768, '224.969px 224.969px 224.969px' ], [ 1440, '402.656px 402.672px 402.672px' ] ].map( ( [ w, v ] ) => [ w, { '': { 'grid-template-columns': v } } ] ) );
+const TEMPLATE_PLAIN = { tiers: { 375: '335px', 768: '224.969px 224.969px 224.969px', 1440: '402.656px 402.672px 402.672px' } };
+function foldHeld( defaults, probe ) {
+	const r = row( TEMPLATE );
+	const acc = fresh();
+	const plain = mk( TEMPLATE, CONTAINER ).filter( ( m ) => ! m.probe );
+	for ( const m of plain ) {
+		foldReading( acc, { key: `gridTemplateColumns-${ m.label }-v0`, row: r, marker: m, variant: 0 }, slotFor( r, m, defaults, defaults ) );
+	}
+	const m = byLabel( mk( TEMPLATE, CONTAINER ), 'repeat' );
+	foldReading( acc, { key: 'gridTemplateColumns-repeat-v0', row: r, marker: m, variant: 0 }, slotFor( r, m, defaults, reads( 'grid-template-columns', probe ) ) );
+	return acc;
+}
+
+test( 'MUST FAIL TO RECORD: a template setting whose default render already shows three tracks at two widths records repeat and is not dead', () => {
+	const acc = foldHeld( HELD_DEFAULT, { 375: '105.656px 105.656px 105.656px', 768: HELD_DEFAULT[ 768 ][ '' ][ 'grid-template-columns' ], 1440: HELD_DEFAULT[ 1440 ][ '' ][ 'grid-template-columns' ] } );
+	assert.deepEqual( acc.dead, [ 'gridTemplateColumns' ], 'the dead count marker still lists it until calibrate.mjs drops located settings' );
+	assert.deepEqual( acc.settings.gridTemplateColumns.forms, [ 'repeat' ] );
+	assert.deepEqual( acc.settings.gridTemplateColumns.reachedAt, WIDTHS, 'the widths that already showed the tracks count as reached' );
+	assert.deepEqual( acc.oneWidth, [] );
+} );
+
+test( 'NEGATIVE CONTROL: a width that keeps a track list other than three leaves the probe unaccepted', () => {
+	// The tablet width computes two tracks before and after: the block ignored the template there.
+	const defaults = { ...HELD_DEFAULT, 768: { '': { 'grid-template-columns': '340px 340px' } } };
+	const acc = foldHeld( defaults, { 375: '105.656px 105.656px 105.656px', 768: '340px 340px', 1440: HELD_DEFAULT[ 1440 ][ '' ][ 'grid-template-columns' ] } );
+	assert.equal( acc.settings.gridTemplateColumns, undefined );
+	const m = byLabel( mk( TEMPLATE, CONTAINER ), 'repeat' );
+	const s = slotFor( row( TEMPLATE ), m, defaults, reads( 'grid-template-columns', { 375: '105.656px 105.656px 105.656px', 768: '340px 340px', 1440: HELD_DEFAULT[ 1440 ][ '' ][ 'grid-template-columns' ] } ) );
+	assert.deepEqual( s.reachedAt, [ 375 ], 'a width kept by an unaccepted probe is not reached' );
+} );
+
+test( 'NEGATIVE CONTROL: a probe that changes nothing at any width, whatever the default shows, records nothing', () => {
+	const acc = foldHeld( { ...HELD_DEFAULT, 375: { '': { 'grid-template-columns': '100px 100px 100px' } } }, { 375: '100px 100px 100px', 768: HELD_DEFAULT[ 768 ][ '' ][ 'grid-template-columns' ], 1440: HELD_DEFAULT[ 1440 ][ '' ][ 'grid-template-columns' ] } );
+	assert.equal( acc.settings.gridTemplateColumns, undefined, 'an unchanged element proves the setting nothing' );
+} );
+
+test( 'a column count keeps its own acceptance: a width already at the count does not widen reachedAt', () => {
+	const r = row( COUNT );
+	const defaults = Object.fromEntries( WIDTHS.map( ( w ) => [ w, { '': { 'grid-template-columns': tracksOf( 2 ) } } ] ) );
+	const m = mk( COUNT, CONTAINER ).find( ( x ) => 'count' === x.form );
+	const s = slotFor( r, m, defaults, reads( 'grid-template-columns', { 375: tracksOf( 2 ), 768: tracksOf( 3 ), 1440: tracksOf( 5 ) } ) );
+	assert.deepEqual( s.reachedAt, [ 768, 1440 ] );
+} );

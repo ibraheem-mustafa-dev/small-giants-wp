@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/calibrate.mjs",
+		"find": "\t\t\t\t\t\theld.push( { w, path: p } );\n",
+		"replace": "",
+		"why": "the template probe never remembers a width the default already shows"
+	},
+	{
+		"file": "lib/calibrate.mjs",
+		"find": " || held.some( ( h ) => h.path === p && h.w === w ) ) );",
+		"replace": " ) );",
+		"why": "the acceptance ignores a width that already carries the tracks"
+	},
+	{
+		"file": "lib/calibrate.mjs",
+		"find": "marker.tracks && 'every-width' === FORM_ACCEPT[ marker.form ] && props.includes",
+		"replace": "marker.tracks && props.includes",
+		"why": "a column count's reached widths also grow from the held ones"
+	},
+	{
+		"file": "lib/calibrate.mjs",
+		"find": "held.filter( ( h ) => h.path === best.path ).map( ( h ) => h.w )",
+		"replace": "[]",
+		"why": "the held widths are left out of the reached widths"
+	},
+	{
+		"file": "lib/calibrate.mjs",
+		"find": " && hitOf( prop, v, marker, w ) ) {\n\t\t\t\t\t\theld.push",
+		"replace": " ) {\n\t\t\t\t\t\theld.push",
+		"why": "an unchanged width counts as held whatever tracks it computes"
+	},
+	{
+		"file": "lib/calibrate.mjs",
+		"find": "accepted.formAccepted ? held.filter",
+		"replace": "true ? held.filter",
+		"why": "the held widths count as reached though the form was not accepted"
+	}
+]

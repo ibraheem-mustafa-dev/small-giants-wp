@@ -76,11 +76,13 @@ function hitOf( prop, value, marker, w ) {
 export const FORM_ACCEPT = { clamp: 'every-width', vw: 'every-width', repeat: 'every-width', count: 'changed-widths' };
 
 // Whether a strict form marker's changes prove its form (FORM_ACCEPT).
-function formAccepted( marker, changes ) {
+function formAccepted( marker, changes, held = [] ) {
 	const rule = FORM_ACCEPT[ marker.form ];
 	const paths = [ ...new Set( changes.map( ( c ) => c.path ) ) ];
 	if ( 'every-width' === rule ) {
-		return paths.some( ( p ) => WIDTHS.every( ( w ) => changes.some( ( c ) => c.path === p && c.w === w && c.hit ) ) );
+		// A width where the default render already computes the marker's tracks (slotFor's `held`) counts as carrying it, on
+		// an element the marker changed at another width.
+		return paths.some( ( p ) => WIDTHS.every( ( w ) => changes.some( ( c ) => c.path === p && c.w === w && c.hit ) || held.some( ( h ) => h.path === p && h.w === w ) ) );
 	}
 	return paths.some( ( p ) => {
 		const tracked = changes.filter( ( c ) => c.path === p && 'grid-template-columns' === c.prop );
@@ -99,6 +101,7 @@ function formAccepted( marker, changes ) {
 export function slotFor( row, marker, defReads, markReads, { containerQuery = false, own = null } = {} ) {
 	const props = longhands( row.css_property );
 	const changes = [];
+	const held = [];
 	const side = new Set();
 	for ( const w of WIDTHS ) {
 		const d = defReads[ w ] || {};
@@ -106,6 +109,11 @@ export function slotFor( row, marker, defReads, markReads, { containerQuery = fa
 		for ( const [ p, styles ] of Object.entries( m ) ) {
 			for ( const [ prop, v ] of Object.entries( styles ) ) {
 				if ( sameFor( prop, v, d[ p ]?.[ prop ] ) ) {
+					// A template marker whose tracks the default render already computes at this width leaves the element
+					// unchanged there; the width is kept in `held` so the template still counts as reaching it.
+					if ( marker.tracks && 'every-width' === FORM_ACCEPT[ marker.form ] && props.includes( prop ) && hitOf( prop, v, marker, w ) ) {
+						held.push( { w, path: p } );
+					}
 					continue;
 				}
 				if ( props.includes( prop ) ) {
@@ -129,7 +137,10 @@ export function slotFor( row, marker, defReads, markReads, { containerQuery = fa
 	// A marker that no read equals (the block turns the value into a formula of it) is reached wherever its element changed.
 	const transforming = !! marker.expect && ! best.hit;
 	const at = changes.filter( ( c ) => c.path === best.path && ( ! marker.expect || c.hit || transforming ) );
-	const reachedAt = [ ...new Set( at.map( ( c ) => c.w ) ) ].sort( ( a, b ) => a - b );
+	const accepted = FORM_ACCEPT[ marker.form ] ? { formAccepted: formAccepted( marker, changes, held ) } : {};
+	// A width the default render already shows the marker's tracks at still carries the setting when the form is accepted.
+	const heldAt = accepted.formAccepted ? held.filter( ( h ) => h.path === best.path ).map( ( h ) => h.w ) : [];
+	const reachedAt = [ ...new Set( [ ...at.map( ( c ) => c.w ), ...heldAt ] ) ].sort( ( a, b ) => a - b );
 	const transform = transforming ? Object.fromEntries( changes.filter( ( c ) => c.path === best.path ).map( ( c ) => [ c.w, c.value ] ) ) : null;
 	// An inherited property also records every element the marker reached (a link's label inheriting the root's
 	// colour); a descendant whose own rule overrides the value never changes, so it is never among them.
@@ -141,8 +152,7 @@ export function slotFor( row, marker, defReads, markReads, { containerQuery = fa
 	// another variant only follows a size there (a root hugging its glyph), so mergeSetting drops it from the slots.
 	const hitPaths = new Set( pool.filter( ( c ) => c.hit ).map( ( c ) => c.path ) );
 	const misses = marker.expect && hitPaths.size ? [ ...new Set( changes.filter( ( c ) => ! hitPaths.has( c.path ) ).map( ( c ) => c.path ) ) ] : [];
-	// formAccepted: only for a marker whose form has an acceptance rule (FORM_ACCEPT).
-	const accepted = FORM_ACCEPT[ marker.form ] ? { formAccepted: formAccepted( marker, changes ) } : {};
+	// formAccepted (above): only for a marker whose form has an acceptance rule (FORM_ACCEPT).
 	const look = row.css_state ? stateLook( markReads, slots, props ) : null;
 	return { slot: best.path, slots, ...( look && Object.keys( look ).length ? { look } : {} ), ...accepted, ...( misses.length ? { misses } : {} ), ...( reaches ? { reaches } : {} ), ...( overriddenBy.length ? { overriddenBy } : {} ), property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: ! containerQuery && 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, ...( containerQuery && reachedAt.length < WIDTHS.length ? { containerTier: true } : {} ), effects };
 }
