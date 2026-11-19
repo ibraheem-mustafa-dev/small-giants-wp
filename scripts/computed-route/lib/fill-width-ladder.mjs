@@ -35,7 +35,7 @@ const PAINTS_OTHER = /^no-setting: no .+ setting on .+ paints "/;
 export const isLadderRow = ( row ) => ONE_VALUE_EVERY_WIDTH === row.code || / is not one of /.test( row.reason ?? '' ) ||
 	( ! sizeOf( row.property ?? '' ) && ( CANNOT_HOLD.test( row.reason ?? '' ) || PAINTS_OTHER.test( row.reason ?? '' ) ) );
 
-const STATE_PSEUDO = { hover: ':hover', focus: ':focus-visible', 'focus-visible': ':focus-visible', active: ':active', 'focus-within': ':focus-within' };
+export const STATE_PSEUDO = { hover: ':hover', focus: ':focus-visible', 'focus-visible': ':focus-visible', active: ':active', 'focus-within': ':focus-within' };
 const BOX = /(flex|grid)$/;
 const norm = ( v ) => String( v ).trim().toLowerCase().replace( /\s+/g, ' ' );
 
@@ -102,15 +102,26 @@ function thresholdBetween( series, a, b ) {
 	return a < 768 ? 768 : 1024;
 }
 
-const SAFE_VALUE = /^[\w\s#%.,()+/"'-]*$/;
-const SAFE_SLOT = /^[\w\s.#>:()+~[\]="'*-]*$/;
+export const SAFE_VALUE = /^[\w\s#%.,()+/"'-]*$/;
+export const SAFE_SLOT = /^[\w\s.#>:()+~[\]="'*-]*$/;
+// Whether a property, an element path and its values can be written as safe CSS.
+export const safeCss = ( prop, slot, values ) => /^[a-z-]+$/.test( prop ) && SAFE_SLOT.test( slot ) && values.every( ( v ) => ! /url\(|expression|javascript|@import/i.test( v ) && SAFE_VALUE.test( v ) );
 
 // Rung 4: the scoped @media rules. Returns { ranges, css, snaps } or null when the value cannot be written as safe CSS.
 function cssRules( { prop, slot, state, widths, values, series } ) {
 	const pseudo = state ? STATE_PSEUDO[ state ] : '';
-	if ( undefined === pseudo || ! /^[a-z-]+$/.test( prop ) || ! SAFE_SLOT.test( slot ) || widths.some( ( w ) => /url\(|expression|javascript|@import/i.test( values[ w ] ) || ! SAFE_VALUE.test( values[ w ] ) ) ) {
+	if ( undefined === pseudo || ! safeCss( prop, slot, widths.map( ( w ) => values[ w ] ) ) ) {
 		return null;
 	}
+	const { ranges: merged, snaps } = widthSpans( { widths, values, series } );
+	const sel = `&${ slot ? ` ${ slot }` : '' }${ pseudo || '' }`;
+	return { ranges: merged, css: merged.map( ( s ) => mediaRule( s.range, `${ sel } { ${ prop }: ${ s.value }; }` ) ).join( ' ' ), snaps };
+}
+
+// The width ranges a per-width value holds over: each read width's value runs from the change below it (the sweep's first
+// step after the lower read width, else the tier boundary between them, snapped to a tier within 5%) to the change above
+// it; neighbouring ranges with one value merge. Returns { ranges: [ { range: [ lo, hi ), value } ], snaps }.
+export function widthSpans( { widths, values, series } ) {
 	const snaps = [];
 	const cuts = widths.slice( 1 ).map( ( w, i ) => {
 		const raw = thresholdBetween( series, widths[ i ], w );
@@ -120,9 +131,8 @@ function cssRules( { prop, slot, state, widths, values, series } ) {
 	} );
 	const edges = [ 0, ...cuts, Infinity ];
 	const spans = widths.map( ( w, i ) => ( { range: [ edges[ i ], edges[ i + 1 ] ], value: values[ w ] } ) ).filter( ( s ) => s.range[ 0 ] < s.range[ 1 ] );
-	const merged = spans.reduce( ( out, s ) => ( out.length && out.at( -1 ).value === s.value && out.at( -1 ).range[ 1 ] === s.range[ 0 ] ? ( out.at( -1 ).range[ 1 ] = s.range[ 1 ], out ) : [ ...out, { range: [ ...s.range ], value: s.value } ] ), [] );
-	const sel = `&${ slot ? ` ${ slot }` : '' }${ pseudo || '' }`;
-	return { ranges: merged, css: merged.map( ( s ) => mediaRule( s.range, `${ sel } { ${ prop }: ${ s.value }; }` ) ).join( ' ' ), snaps };
+	const ranges = spans.reduce( ( out, s ) => ( out.length && out.at( -1 ).value === s.value && out.at( -1 ).range[ 1 ] === s.range[ 0 ] ? ( out.at( -1 ).range[ 1 ] = s.range[ 1 ], out ) : [ ...out, { range: [ ...s.range ], value: s.value } ] ), [] );
+	return { ranges, snaps };
 }
 
 const rangeText = ( [ lo, hi ] ) => ( Infinity === hi ? `${ lo }px and up` : `${ lo }-${ hi - 1 }px` );

@@ -31,8 +31,8 @@
  },
  {
   "file": "lib/fill-width-ladder.mjs",
-  "find": "! SAFE_VALUE.test( values[ w ] )",
-  "replace": "false",
+  "find": "&& SAFE_VALUE.test( v ) );",
+  "replace": "&& true );",
   "why": "a value carrying CSS syntax would be written into the rule"
  },
  {
