@@ -98,7 +98,7 @@ test( 'negative control: held, inert-zero, initial-value, timing and non-style r
 	const rows = [
 		row( { property: 'padding-left', value: '16px', code: 'held:default' } ),
 		row( { property: 'box-shadow', value: 'rgb(58, 42, 34) 0px 0px 0px 0px' } ),
-		row( { property: 'text-transform', value: 'none' } ),
+		row( { property: 'transform', value: 'none' } ),
 		row( { property: 'transition-duration', value: '0.2s' } ),
 		row( { property: 'aria-label', value: 'Search', reason: 'no setting of the block holds the aria-label' } ),
 		row( { property: 'border-top-style', value: 'solid', reason: 'shape: borderStyle holds one value for every side' } ),
@@ -107,6 +107,11 @@ test( 'negative control: held, inert-zero, initial-value, timing and non-style r
 	assert.equal( css( w ), undefined );
 	assert.deepEqual( r.classes, { residual: 0, route: 1, unneeded: 3, outside: 2 } );
 	assert.equal( r.unmapped.length, rows.length );
+} );
+
+test( 'MUST FAIL WITHOUT THE INHERITED RULE: an inherited property\'s initial value is no proof of nothing to paint (the parent passes its own)', () => {
+	assert.equal( classifyRow( row( { property: 'line-height', value: 'normal' } ), { calFor, db } ).cls, 'residual' );
+	assert.equal( classifyRow( row( { property: 'transform', value: 'none' } ), { calFor, db } ).cls, 'unneeded', 'not inherited: the initial value with nothing measured' );
 } );
 
 test( 'MUST FAIL WITHOUT THE PER-WIDTH RANGES: a value that changes by width is one @media rule per range; hover is its own rule', () => {

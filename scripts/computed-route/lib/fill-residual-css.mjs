@@ -9,8 +9,8 @@
 //   route      a setting of the block paints or reaches the property there, or one paints the same box, or the row is a
 //              setting's shape, pairing, reach or conflict verdict: the route's or the setting's fault, never Custom CSS,
 //              which would fight that setting when someone changes it in the editor (class b);
-//   unneeded   held as the block's default paint, inert, or the property's initial value where calibration measured no
-//              other paint: nothing the page needs (class c);
+//   unneeded   held as the block's default paint, inert, a shadow of zero lengths, or a non-inherited property's initial
+//              value where calibration measured no other paint: nothing the page needs (class c);
 //   outside    not a style row (content, a motion record, a walker state), a timing longhand the motion pass owns, or a
 //              state look the block paints and the draft lacks.
 // Only `residual` rows reach the writer, which also refuses (and lists, each with its reason): a block with no Custom CSS
@@ -24,7 +24,7 @@
 // Values per width follow the width ladder's ranges (lib/fill-width-ladder.mjs::widthSpans: the sweep's threshold, snapped to
 // a tier); a value the snapshot carries as a token is written as that token's reference (a palette colour, a font family, a
 // font size or spacing preset of the same px).
-import { isCssProperty, canonicalName, initialOf } from './css-families.mjs';
+import { isCssProperty, canonicalName, initialOf, isInherited } from './css-families.mjs';
 import { measuredHomes, paintAt } from './css-equivalence/effect.mjs';
 import { sameCanonical } from './css-equivalence/values.mjs';
 import { candidates } from './db.mjs';
@@ -120,7 +120,8 @@ export function classifyRow( row, { calFor, db } ) {
 		return { cls: 'unneeded', cause: 'a shadow whose offsets, blur and spread are all 0 paints nothing, and the block paints no shadow there' };
 	}
 	const initial = initialOf( canon );
-	if ( null !== initial && values.length && values.every( ( [ w, v ] ) => sameCanonical( canon, v, initial ) && undefined === paintAt( cal, slot, canon, Number( w ) )?.value ) ) {
+	// An inherited property takes its parent's value, not its initial one, so an unmeasured paint proves nothing there.
+	if ( null !== initial && ! isInherited( canon ) && values.length && values.every( ( [ w, v ] ) => sameCanonical( canon, v, initial ) && undefined === paintAt( cal, slot, canon, Number( w ) )?.value ) ) {
 		return { cls: 'unneeded', cause: `the initial value ${ initial }, where calibration measured no other paint` };
 	}
 	return { cls: 'residual', cause: 'all five equivalence layers failed and no setting of the block paints it on this part' };
