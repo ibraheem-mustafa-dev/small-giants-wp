@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { PIECES_FILE, applyTemplatePieces, checkPieces, countBlocks, loadPieces, pieceMapProblems, piecesFor } from '../lib/template-pieces.mjs';
+import { PIECES_FILE, checkPieces, countBlocks, countPiece, loadPieces, pieceMapProblems, piecesFor, placePieces } from '../lib/template-pieces.mjs';
 
 const node = ( name, innerBlocks = [] ) => ( { name, attributes: {}, innerBlocks } );
 const DATA = {
@@ -28,12 +28,7 @@ const planted = { place: ( { tree, draws = [] }, piece ) => {
 	tree[ 0 ].innerBlocks.push( node( piece.block ) );
 	return { tree, placed: [ { id: piece.id, block: piece.block, at: 'end' } ] };
 } };
-const load = async ( kind ) => {
-	if ( 'planted' !== kind ) {
-		throw new Error( `Cannot find module template-piece-${ kind }.mjs` );
-	}
-	return planted;
-};
+const BUILDERS = { planted };
 
 test( 'the committed map loads and names a working piece for every WooCommerce template the route builds', () => {
 	const data = loadPieces();
@@ -89,9 +84,9 @@ test( 'MUST FAIL: a working piece placed twice is a problem, unless the map lets
 	assert.deepEqual( checkPieces( { key: 'cart', tree: twice, data: repeats } ), [] );
 } );
 
-test( 'MUST FAIL: applyTemplatePieces hands each piece to its builder in order and checks the result', async () => {
+test( 'MUST FAIL: placePieces hands each piece to its builder in order and checks the result', () => {
 	const tree = structuredClone( SHELL );
-	const got = await applyTemplatePieces( { key: 'single-product', tree, data: DATA, ctx: { draws: [ 'buy-box', 'gallery' ] }, load } );
+	const got = placePieces( { key: 'single-product', tree, data: DATA, ctx: { draws: [ 'buy-box', 'gallery' ] }, builders: BUILDERS } );
 	assert.deepEqual( got.placed.map( ( p ) => p.id ), [ 'buy-box', 'gallery' ] );
 	assert.deepEqual( got.tree[ 0 ].innerBlocks.map( ( n ) => n.name ).slice( -2 ), [ 'sgs/buybox', 'sgs/gallery' ] );
 	assert.deepEqual( got.problems, [] );
@@ -102,30 +97,32 @@ test( 'MUST FAIL: applyTemplatePieces hands each piece to its builder in order a
 		t[ 0 ].innerBlocks.push( node( 'sgs/buybox' ) );
 		return {};
 	} };
-	const kept = await applyTemplatePieces( { key: 'single-product', tree, data: DATA, load: async () => careless } );
+	const kept = placePieces( { key: 'single-product', tree, data: DATA, builders: { planted: careless } } );
 	assert.deepEqual( kept.tree, SHELL );
 	assert.deepEqual( tree, SHELL );
 	assert.match( kept.problems[ 0 ], /"buy-box" is missing/ );
 } );
 
-test( 'MUST FAIL: a builder that places nothing leaves the required piece missing, and an optional one only a note', async () => {
-	const got = await applyTemplatePieces( { key: 'single-product', tree: SHELL, data: DATA, ctx: { draws: [] }, load } );
+test( 'MUST FAIL: a builder that places nothing leaves the required piece missing, and an optional one only a note', () => {
+	const got = placePieces( { key: 'single-product', tree: SHELL, data: DATA, ctx: { draws: [] }, builders: BUILDERS } );
 	assert.deepEqual( got.placed, [] );
 	assert.equal( got.problems.length, 1 );
 	assert.match( got.problems[ 0 ], /"buy-box" is missing/ );
 	assert.deepEqual( got.notes, [ 'buy-box: the draft draws none', 'gallery: the draft draws none' ] );
 } );
 
-test( 'MUST FAIL: a kind with no builder is a problem, never a silent skip; rule and theme pieces load no builder', async () => {
+test( 'MUST FAIL: a kind with no builder is a problem, never a silent skip; rule and theme pieces ask for no builder', () => {
 	const data = { templates: { 'single-product': { pieces: [ { id: 'buy-box', block: 'sgs/buybox', required: true, kind: 'absent' } ] } } };
-	const got = await applyTemplatePieces( { key: 'single-product', tree: SHELL, data, load } );
+	const got = placePieces( { key: 'single-product', tree: SHELL, data, builders: BUILDERS } );
 	assert.equal( got.problems.length, 2 );
-	assert.match( got.problems[ 0 ], /piece "buy-box" names kind "absent", which has no builder \(template-piece-absent\.mjs/ );
+	assert.match( got.problems[ 0 ], /piece "buy-box" names kind "absent", which has no builder \(template-piece-absent\.mjs is not among the builders handed in\)$/ );
+	assert.match( placePieces( { key: 'single-product', tree: SHELL, data: DATA } ).problems[ 0 ], /names kind "planted", which has no builder/ );
 	const asked = [];
-	const cart = await applyTemplatePieces( { key: 'cart', tree: [ node( 'core/post-content' ) ], data: DATA, load: async ( k ) => {
+	const builders = new Proxy( {}, { get: ( t, k ) => {
 		asked.push( k );
 		return planted;
 	} } );
+	const cart = placePieces( { key: 'cart', tree: [ node( 'core/post-content' ) ], data: DATA, builders } );
 	assert.deepEqual( asked, [] );
 	assert.deepEqual( cart.problems, [] );
 } );
@@ -149,4 +146,21 @@ test( 'MUST FAIL: a piece named by its binding counts the blocks bound to that s
 	// The committed map's order confirmation names the bound number and the order items.
 	const committed = piecesFor( 'order-confirmation', loadPieces() );
 	assert.deepEqual( committed.map( ( p ) => [ p.id, p.block ?? null, p.binds?.key ?? null, p.required ] ), [ [ 'order-number', null, 'number', true ], [ 'order-items', 'sgs/order-items', null, false ] ] );
+} );
+
+test( 'the committed map names the product page\'s buy box and bound title and the shop\'s sorting and count, each with its builder', () => {
+	const data = loadPieces();
+	const product = piecesFor( 'single-product', data );
+	assert.deepEqual( product.map( ( p ) => [ p.id, p.block ?? null, p.binds?.key ?? null, p.kind, p.required ] ), [
+		[ 'buy-box', 'sgs/buybox', null, 'buybox', true ], [ 'title', 'sgs/heading', 'title', 'product-field', true ], [ 'price', null, 'price', 'product-field', false ],
+		[ 'description', null, 'short_description', 'product-field', false ], [ 'gallery', 'sgs/buybox', null, 'product-field', false ],
+	] );
+	assert.ok( product.filter( ( p ) => p.binds ).every( ( p ) => 'sgs-product/field' === p.binds.source ) );
+	const title = { name: 'sgs/heading', attributes: { metadata: { bindings: { content: { source: 'sgs-product/field', args: { key: 'title' } } } } }, innerBlocks: [] };
+	assert.equal( countPiece( [ node( 'sgs/heading' ), title ], product[ 1 ] ), 1 );
+	const shop = piecesFor( 'archive-product', data ).filter( ( p ) => 'shop-sort' === p.kind );
+	assert.deepEqual( shop.map( ( p ) => p.block ), [ 'woocommerce/catalog-sorting', 'woocommerce/product-results-count' ] );
+	for ( const kind of [ 'buybox', 'product-field', 'shop-sort', 'order' ] ) {
+		assert.ok( fs.existsSync( path.join( path.dirname( PIECES_FILE ), '..', 'lib', `template-piece-${ kind }.mjs` ) ), kind );
+	}
 } );

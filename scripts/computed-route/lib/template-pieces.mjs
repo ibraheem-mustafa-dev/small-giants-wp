@@ -6,9 +6,9 @@
 //
 // A piece of kind `rule` (an existing skeleton rule places it) or `theme` (it comes with the theme template's own
 // content) is only checked. Any other kind names a builder module beside this file, `template-piece-<kind>.mjs`, whose
-// `place( ctx, piece )` returns `{ tree, placed, problems, notes }` (each optional): the tree with the piece in it, one
+// `place( ctx, piece )` returns, at once, `{ tree, placed, problems, notes }` (each optional): the tree with the piece in it, one
 // `placed` row per piece put in (`{ id, block, at }`), and what it could not do. A builder never changes a tree it was
-// not handed: `applyTemplatePieces` gives each one a copy.
+// not handed: `placePieces` gives each one a copy. The caller hands the builders in (lib/template-pieces-context.mjs::BUILDERS).
 //
 // A piece names its block, a binding (`binds: { source, key }`: a block whose `metadata.bindings` binds an attribute to
 // that source and key, since a bound text has no block name of its own), or both; a node is the piece when it matches
@@ -106,8 +106,9 @@ export function checkPieces( { key, tree, data } ) {
 
 // Places every piece of `key` that has a builder, in the map's order, then checks the tree. `ctx` is handed to each
 // builder with the tree so far (the surface's inventory, fact record, shop parts, catalogue: whatever the caller read).
-// `load( kind )` resolves a builder module; a kind with no module is a problem, never a silent skip.
-export async function applyTemplatePieces( { key, tree, data = loadPieces(), ctx = {}, load = ( kind ) => import( `./template-piece-${ kind }.mjs` ) } ) {
+// `builders` maps a kind to its module, whose `place` returns its result at once; a kind absent from it is a problem,
+// never a silent skip.
+export function placePieces( { key, tree, data = loadPieces(), ctx = {}, builders = {} } ) {
 	let out = tree || [];
 	const placed = [];
 	const problems = [];
@@ -116,14 +117,12 @@ export async function applyTemplatePieces( { key, tree, data = loadPieces(), ctx
 		if ( CHECKED_ONLY.includes( piece.kind ) ) {
 			continue;
 		}
-		let builder;
-		try {
-			builder = await load( piece.kind );
-		} catch ( e ) {
-			problems.push( `${ key }: piece "${ piece.id }" names kind "${ piece.kind }", which has no builder (template-piece-${ piece.kind }.mjs: ${ e.message.split( '\n' )[ 0 ] })` );
+		const builder = builders[ piece.kind ];
+		if ( ! builder ) {
+			problems.push( `${ key }: piece "${ piece.id }" names kind "${ piece.kind }", which has no builder (template-piece-${ piece.kind }.mjs is not among the builders handed in)` );
 			continue;
 		}
-		const got = ( await builder.place( { ...ctx, key, tree: structuredClone( out ) }, piece ) ) || {};
+		const got = builder.place( { ...ctx, key, tree: structuredClone( out ) }, piece ) || {};
 		out = got.tree || out;
 		placed.push( ...( got.placed || [] ) );
 		problems.push( ...( got.problems || [] ) );
