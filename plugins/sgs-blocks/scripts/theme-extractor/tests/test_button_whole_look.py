@@ -175,7 +175,7 @@ def test_component_versions_are_presets_under_their_own_names():
     rows = {t["slot"]: t for t in trace if t["kind"] == "preset"}
     assert rows["buttonPresets.primary"]["variant_from"] == "component version"
     gaps = [t for t in trace if t["kind"] == "gap"]
-    assert any(t["what"] == "buttonPresets.quiet" and "no framework slot holds this name" in t["reason"] for t in gaps)
+    assert not any(t["what"] == "buttonPresets.quiet" and "no framework slot" in t["reason"] for t in gaps)
     assert any(t["what"] == "buttonPresets" and "drawn where it stands" in t["reason"] and t["count"] == 3
                for t in gaps)
 
@@ -274,4 +274,4 @@ def test_live_component_versions_are_measured_from_the_component(tmp_path):
     assert got["primary"]["background"] == "#ffcc00" and got["primary"]["hover-background"] == "#ffffff"
     assert got["primary"]["active-transform"] == SINK and got["secondary"]["active-transform"] == SINK
     assert "shadow" not in got["quiet"] and "active-transform" not in got["quiet"]
-    assert any(t["kind"] == "gap" and t["what"] == "buttonPresets.quiet" for t in trace)
+    assert not any(t["kind"] == "gap" and t["what"] == "buttonPresets.quiet" for t in trace)   # a name beyond the three is a preset, not a gap

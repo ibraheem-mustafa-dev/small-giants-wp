@@ -13,7 +13,9 @@ import re
 from colour import parse_colour
 from palette_vocab import brand_colours
 
-# Map a draft button-variant class → the theme preset slot.
+# Map a CLASSIC draft's button-variant class word → the theme preset slot (a draft with class-bearing buttons and no button
+# component). The classic path can only name the three framework slots; a draft built under Spec 48A FR-48A-17 names its
+# presets itself, as the versions of its Button component (`_component_presets`), and is not limited to these words.
 _VARIANT_SLOT = [
     ("primary", "primary"),
     ("secondary", "secondary"),
@@ -134,9 +136,19 @@ def _hover_diff(entry: dict, rest: dict, hover: dict) -> None:
         entry["hover-transform"] = tform
 
 
-# The preset names the framework's renderers read (button/style.css `.sgs-button--{name}`, helpers-button-press.php
-# SGS_BUTTON_PRESS_VARIANTS). A draft's own version name beyond these is still written, and logged as unslotted.
+# The three preset names the classic path maps to and the renderers always carry. Any other name in `buttonPresets` is a
+# preset the renderers read only on a site that carries the switch `settings.custom.namedButtonPresets`, which
+# `named_presets` finds and extract.py writes.
 FRAMEWORK_SLOTS = ("primary", "secondary", "outline")
+# Keys of `buttonPresets` that are not preset names: the site-wide `default` look and the block's own `link` and `custom` styles.
+RESERVED_PRESET_KEYS = ("default", "link", "custom")
+# The snapshot token that turns on presets under any name (the per-site switch; absent or false is off).
+NAMED_PRESETS_SWITCH = "namedButtonPresets"
+
+
+def named_presets(presets: dict | None) -> list:
+    """The preset names beyond the three framework slots (reserved keys are not names), in the snapshot's order."""
+    return [k for k in (presets or {}) if k not in FRAMEWORK_SLOTS and k not in RESERVED_PRESET_KEYS]
 
 # Transition property -> the part of a button's hover look it moves, matching the renderers' three easings:
 # hover-easing (movement), hover-easing-colour and hover-easing-shadow.
@@ -382,10 +394,6 @@ def _component_presets(facts: dict, trace: list) -> dict:
                       + (f" and size '{c['size']}'" if c.get("size") else "")
                       + f" as a {c.get('form', 'button')} ({c.get('mounts', 0)} mount(s); sizes {c.get('sizes') or {}})"
                       + ", read at rest, on hover and pressed"})
-        if name not in FRAMEWORK_SLOTS:
-            _gap(trace, f"buttonPresets.{name}", look, c.get("mounts", 0),
-                 f"written as buttonPresets.{name}, but no framework slot holds this name: the renderers read only "
-                 + ", ".join(FRAMEWORK_SLOTS))
     return presets
 
 

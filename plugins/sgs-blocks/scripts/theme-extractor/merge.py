@@ -10,7 +10,7 @@ import copy
 
 # settings.custom keys build_snapshot derives from the draft (button presets, declared radius, accent
 # sets); every other custom key belongs to the client snapshot and survives a merge.
-EXTRACTOR_OWNED_CUSTOM = frozenset({"buttonPresets", "borderRadius", "accentSets"})
+EXTRACTOR_OWNED_CUSTOM = frozenset({"buttonPresets", "borderRadius", "accentSets", "namedButtonPresets"})
 # The top-level styles keys build_snapshot writes (styles.css and styles.blocks merge on their own).
 EXTRACTOR_OWNED_STYLES = frozenset({"typography", "color", "elements"})
 

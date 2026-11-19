@@ -577,6 +577,14 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
                                     "whole (a wholesale replace would delete them from the live site)",
                           "preserved_slots": ",".join(sorted(untouched))})
 
+    # A name beyond the three framework slots is read by the renderers only on a site that carries the switch.
+    named = presets_mod.named_presets(settings.get("custom", {}).get("buttonPresets"))
+    if named:
+        settings["custom"][presets_mod.NAMED_PRESETS_SWITCH] = True
+        trace.append({"kind": "merge", "what": f"custom.{presets_mod.NAMED_PRESETS_SWITCH}",
+                      "reason": "buttonPresets holds names beyond the framework slots; the switch makes the renderers read them",
+                      "names": ",".join(named)})
+
     # A measured button colour that equals a palette colour references its slug, for every draft.
     if bp:
         palette_refs.tokenise_button_presets(snap, trace, bp)
