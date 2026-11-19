@@ -58,7 +58,7 @@ The signed-in views were not photographed (the seed makes the customer `rc-custo
 
 ## 404 and search (`pair-404-1440-hand-vs-blank.png`, `pair-search-1440-hand-vs-blank.png`)
 
-Mama's draft draws neither page. From blank the route gives the theme's own content inside the site's page shell: it works and it is plain. The hand-finished versions added a pink band, a styled search field and buttons by hand. Bean's choice: have each draft draw a 404 and a search results page (the route already builds a template from a surface that plays it, Spec 48 FR-48-56), or have the route dress the derived templates in the band the draft's ordinary pages share.
+Mama's draft draws neither page. From blank the route gives the theme's own content inside the site's page shell: it works and it is plain. The hand-finished versions added a pink band, a styled search field and buttons by hand. Bean ruled on 2026-11-19: every draft draws its own 404 page, and its own search results page only when the site has search; the route already builds a template from the surface that plays it (Spec 48 FR-48-56), so the plain version is only the fallback for a draft made before the ruling.
 
 ## Product page and order confirmation (offline results, not run live)
 
