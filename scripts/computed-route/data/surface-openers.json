@@ -1,0 +1,8 @@
+{
+	"about": "Which page-map rows a draft control can open (Spec 48 FR-48-95): the post type of each openable row and the kind the page map records in a row's `opens` entry (lib/intake-pagemap-openers.mjs). A row of any other post type is never an opener's target.",
+	"kinds": {
+		"sgs_modal": "modal",
+		"sgs_choice_flow": "flow",
+		"sgs_form": "form"
+	}
+}
