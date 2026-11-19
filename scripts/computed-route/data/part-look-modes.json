@@ -87,6 +87,39 @@
 					"whenFound": "add-to-cart"
 				}
 			]
+		},
+		"sgs/account": {
+			"_comment": "The signed-in account views (surface my-account-in). Each switch turns on the block's own view the draft draws: its orders as a list of cards (not a table), each card's thumbnails, an order's own page, and the details form's phone field and marketing tick. The menu's per-tab counts are not decided here: which tab is the orders tab would be read from its words.",
+			"rules": [
+				{
+					"setting": "ordersRowList",
+					"value": true,
+					"whenFound": "ordersRows"
+				},
+				{
+					"setting": "ordersRowThumbs",
+					"value": true,
+					"whenFound": "order-row-thumbs",
+					"neighbours": [
+						"ordersRows"
+					]
+				},
+				{
+					"setting": "orderDetailLook",
+					"value": true,
+					"whenFound": "od-placed"
+				},
+				{
+					"setting": "accountShowMobile",
+					"value": true,
+					"whenFound": "detailsPhone"
+				},
+				{
+					"setting": "accountShowMarketingOptIn",
+					"value": true,
+					"whenFound": "detailsOptIn"
+				}
+			]
 		}
 	}
 }

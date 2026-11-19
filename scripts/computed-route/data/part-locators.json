@@ -19,6 +19,14 @@
 				"signin"
 			]
 		},
+		"my-account-in": {
+			"_comment": "The account's signed-in views (lib/part-look-signed-in.mjs): the draft is signed in on its sign-in page and read view by view; the client's my-account surface names the draft and the post.",
+			"group": "accountIn",
+			"block": "sgs/account",
+			"pageRole": "account",
+			"entryOf": "my-account",
+			"signedIn": true
+		},
 		"header": {
 			"group": "drawer",
 			"block": "sgs/cart",
@@ -1939,6 +1947,397 @@
 						"hasAmount": true
 					},
 					"perRoot": true
+				}
+			}
+		},
+		"accountIn": {
+			"_comment": "The account signed in, read view by view (lib/part-look-signed-in.mjs). A part with view \"detail\" is read only on an item's own page (opened from the first listed item); every other part on the tabs the account menu opens. Address cards are read only in a view that lists no amount (the orders and a subscription list amounts; an address card never does). The parts the signed-out group already reads (the fields, their labels, the page header) are not repeated here, so the two surfaces never write one setting twice.",
+			"anchors": {
+				"menu": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"nav"
+						],
+						"hasMany": {
+							"match": {
+								"control": true,
+								"repeats": true
+							},
+							"atLeast": 2
+						}
+					},
+					"pick": "first"
+				},
+				"menuControls": {
+					"from": "menu",
+					"match": {
+						"control": true,
+						"repeats": true
+					}
+				},
+				"content": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"div",
+							"section"
+						],
+						"followsAnchor": "menu",
+						"lacksAnchor": "menu"
+					},
+					"pick": "first"
+				},
+				"plainContent": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"div",
+							"section"
+						],
+						"followsAnchor": "menu",
+						"lacksAnchor": "menu",
+						"hasAmount": false
+					},
+					"pick": "first"
+				},
+				"orderCards": {
+					"from": "content",
+					"match": {
+						"tag": [
+							"div",
+							"li",
+							"article",
+							"section"
+						],
+						"repeats": true,
+						"hasAmount": true,
+						"has": {
+							"control": true
+						}
+					},
+					"smallest": true
+				},
+				"addressCards": {
+					"from": "plainContent",
+					"match": {
+						"tag": [
+							"div",
+							"li",
+							"article",
+							"section"
+						],
+						"hasAll": [
+							{
+								"control": true
+							},
+							{
+								"ownText": true,
+								"control": false
+							}
+						],
+						"lacks": {
+							"tag": [
+								"input",
+								"select",
+								"textarea"
+							]
+						}
+					},
+					"smallest": true
+				},
+				"detailsForm": {
+					"from": "content",
+					"match": {
+						"tag": [
+							"form"
+						],
+						"has": {
+							"autocomplete": [
+								"given-name",
+								"family-name",
+								"name"
+							]
+						}
+					},
+					"pick": "first"
+				},
+				"passwordForm": {
+					"from": "content",
+					"match": {
+						"tag": [
+							"form"
+						],
+						"has": {
+							"autocomplete": [
+								"new-password"
+							]
+						}
+					},
+					"pick": "first"
+				},
+				"detailHead": {
+					"from": "content",
+					"match": {
+						"has": {
+							"tag": [
+								"h1",
+								"h2",
+								"h3"
+							]
+						}
+					},
+					"pick": "first"
+				}
+			},
+			"parts": {
+				"menuItem": {
+					"sameAs": "menuControls"
+				},
+				"menuLink": {
+					"from": "menu",
+					"match": {
+						"control": true,
+						"repeats": true,
+						"ariaCurrent": false
+					}
+				},
+				"menuActive": {
+					"from": "menu",
+					"match": {
+						"control": true,
+						"repeats": true,
+						"ariaCurrent": true
+					}
+				},
+				"menuCount": {
+					"from": "menuControls",
+					"match": {
+						"text": "count"
+					},
+					"smallest": true
+				},
+				"menu-count": {
+					"sameAs": "menuCount"
+				},
+				"menuList": {
+					"sameAs": "menu"
+				},
+				"menuNav": {
+					"sameAs": "menu"
+				},
+				"heading": {
+					"from": "content",
+					"match": {
+						"tag": [
+							"h1",
+							"h2"
+						]
+					},
+					"pick": "first"
+				},
+				"ordersRows": {
+					"sameAs": "orderCards"
+				},
+				"cardBox": {
+					"sameAs": "orderCards"
+				},
+				"order-number": {
+					"from": "orderCards",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false,
+						"pill": false,
+						"lacks": {
+							"pill": true
+						}
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"ordersNumber": {
+					"sameAs": "order-number"
+				},
+				"order-status": {
+					"from": "orderCards",
+					"match": {
+						"pill": true
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"ordersPill": {
+					"sameAs": "order-status"
+				},
+				"order-date": {
+					"from": "orderCards",
+					"match": {
+						"ownText": true,
+						"minChildren": 1,
+						"control": false,
+						"hasAmount": false
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"ordersDate": {
+					"sameAs": "order-date"
+				},
+				"order-total": {
+					"from": "orderCards",
+					"match": {
+						"text": "currency"
+					},
+					"smallest": true,
+					"perRoot": true
+				},
+				"ordersTotal": {
+					"sameAs": "order-total"
+				},
+				"order-row-thumbs": {
+					"from": "orderCards",
+					"match": {
+						"minChildren": 1,
+						"allChildren": {
+							"paint": "image"
+						}
+					},
+					"smallest": true,
+					"perRoot": true
+				},
+				"addressCard": {
+					"sameAs": "addressCards"
+				},
+				"accountForm": {
+					"from": "detailsForm",
+					"match": {
+						"minChildren": 2,
+						"allChildren": {
+							"tag": [
+								"label",
+								"p",
+								"div"
+							],
+							"has": {
+								"tag": [
+									"input"
+								]
+							}
+						}
+					},
+					"pick": "first"
+				},
+				"accountSave": {
+					"from": "detailsForm",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"type": [
+							"submit"
+						]
+					},
+					"pick": "last"
+				},
+				"accountSection": {
+					"from": "passwordForm",
+					"match": {
+						"ownText": true,
+						"control": false,
+						"tag": [
+							"legend",
+							"h2",
+							"h3",
+							"h4",
+							"div",
+							"p"
+						],
+						"lacks": {
+							"tag": [
+								"input"
+							]
+						},
+						"notInside": {
+							"tag": [
+								"label"
+							]
+						}
+					},
+					"pick": "first"
+				},
+				"detailsPhone": {
+					"from": "detailsForm",
+					"match": {
+						"tag": [
+							"input"
+						],
+						"autocomplete": [
+							"tel"
+						]
+					}
+				},
+				"detailsOptIn": {
+					"from": "detailsForm",
+					"match": {
+						"tag": [
+							"input"
+						],
+						"inputType": [
+							"checkbox"
+						]
+					}
+				},
+				"od-back": {
+					"from": "content",
+					"match": {
+						"control": true,
+						"precedesAnchor": "detailHead"
+					},
+					"pick": "first",
+					"view": "detail"
+				},
+				"od-placed": {
+					"from": "content",
+					"match": {
+						"ownText": true,
+						"followsAnchor": "detailHead"
+					},
+					"pick": "first",
+					"view": "detail"
+				},
+				"chip": {
+					"from": "detailHead",
+					"match": {
+						"pill": true
+					},
+					"pick": "first",
+					"view": "detail"
+				},
+				"od-row": {
+					"from": "content",
+					"match": {
+						"text": "currency"
+					},
+					"smallest": true,
+					"pick": "last",
+					"view": "detail"
+				},
+				"od-text": {
+					"from": "content",
+					"match": {
+						"tag": [
+							"div",
+							"p"
+						],
+						"ownText": true,
+						"repeats": true,
+						"control": false,
+						"hasAmount": false
+					},
+					"smallest": true,
+					"pick": "last",
+					"view": "detail"
 				}
 			}
 		}

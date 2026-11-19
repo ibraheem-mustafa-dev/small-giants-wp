@@ -1,5 +1,5 @@
 {
-	"_comment": "For a Cart or Checkout part whose settings are older than the look table, the look-table row (selectors.json rows) whose selector finds that part on the live page. A part whose name is a row's id with hyphens for underscores needs no entry. The verify pass (lib/part-look-verify.mjs) reads the live page through these selectors; a part with neither a row nor an entry is not verified and says so.",
+	"_comment": "For a Cart or Checkout part whose settings are older than the look table, the look-table row (selectors.json rows) whose selector finds that part on the live page. A part whose name is a row's id with hyphens for underscores needs no entry. The verify pass (lib/part-look-verify.mjs) reads the live page through these selectors; a part with neither a row nor an entry is not verified and says so. `blocks` names, per block, the live selector of a part of the block's own whose block.json element has no selector or prints another selector in the mode the route writes: the signed-in account views, read with ordersRowList and orderDetailLook on (plugins/sgs-blocks/includes/account/helpers-account-orders-list.php::sgs_account_orders_list_html, helpers-account-order-detail.php::sgs_account_order_detail_html), where the orders are a list of rows and an order has its own page.",
 	"parts": {
 		"line-item": "item",
 		"line-item-image": "item_image_img",
@@ -23,5 +23,24 @@
 		"express-divider": "express_rule",
 		"express-divider-line": "express_rule_line",
 		"field-text-input": "field_input"
+	},
+	"blocks": {
+		"sgs/account": {
+			"ordersRows": ".sgs-account__orders-list .sgs-account__order",
+			"order-number": ".sgs-account__orders-list .sgs-account__order-number",
+			"ordersNumber": ".sgs-account__orders-list .sgs-account__order-number",
+			"order-date": ".sgs-account__orders-list .sgs-account__order-date",
+			"ordersDate": ".sgs-account__orders-list .sgs-account__order-date",
+			"order-total": ".sgs-account__orders-list .sgs-account__order-total",
+			"ordersTotal": ".sgs-account__orders-list .sgs-account__order-total",
+			"order-status": ".sgs-account__orders-list .sgs-account__order-status",
+			"ordersPill": ".sgs-account__orders-list .sgs-account__order-status",
+			"menu-count": ".sgs-account__menu-count",
+			"menuActive": "nav.woocommerce-MyAccount-navigation li.is-active > a",
+			"od-back": ".sgs-account__od-back",
+			"od-placed": ".sgs-account__od-placed",
+			"od-row": ".sgs-account__od-row--total > span:last-child",
+			"od-text": ".sgs-account__od-text"
+		}
 	}
 }
