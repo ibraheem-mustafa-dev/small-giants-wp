@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "\t\t\tif ( inner.some( paintsPicture ) ) {\n\t\t\t\treturn null;\n\t\t\t}\n",
+		"replace": "",
+		"why": "a tile holding a photo is read as a pill again and absorbs its photo"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "'img' === e.attrs?.role && paintsPicture( e ) ? v( 'backgroundPicture'",
+		"replace": "false ? v( 'backgroundPicture'",
+		"why": "an empty role=img element painting a url() is left unresolved"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "'img' === e.attrs?.role && paintsPicture( e )",
+		"replace": "'img' === e.attrs?.role",
+		"why": "a role=img element that paints no url() becomes a media block"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "'img' === k.tag || /background(?:-image)?\\s*:[^;]*url\\(/i.test( String( k.attrs?.style ?? '' ) )",
+		"replace": "'img' === k.tag",
+		"why": "a background url() is not a painted picture"
+	}
+]

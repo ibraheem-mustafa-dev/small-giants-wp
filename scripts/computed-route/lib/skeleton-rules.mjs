@@ -160,6 +160,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	const hasSvg = ( e ) => m.kids( e ).some( ( k ) => 'svg' === k.tag );
 	const bare = ( e ) => ! m.words( e ) && ! m.blockKids( e ).length;
+	// An element that paints a picture: an <img>, or one whose own style paints a url() as its background (a tile photo, a role="img" div).
+	const paintsPicture = ( k ) => 'img' === k.tag || /background(?:-image)?\s*:[^;]*url\(/i.test( String( k.attrs?.style ?? '' ) );
 	// A mount's host (the element the runtime stamps for a `dc-import`) or a mounted component's root (the host's child)
 	// that is layout-neutral: no words, one child, no declared style beyond R.mountWrapper.properties, and at every read
 	// width where both are drawn the same box as that child (so it paints, sizes and places nothing of its own).
@@ -468,6 +470,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A full-width bar a few pixels tall, fixed to the viewport, drawing only a fill: the Floating UI reading progress
 		// setting.
 		( { e, st } ) => ( bare( e ) && ! hasSvg( e ) && 'fixed' === st.position && ( px( st.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) && /^100(?:%|vw)$/.test( st.width || '' ) ? v( 'readingProgress', { action: 'remove', handover: { owner: 'behaviour', kind: 'behaviour', detail: R.readingProgress?.handover || 'reading progress bar' } } ) : null ),
+		// A picture drawn as a background: an empty role="img" element painting a url() is a media block (its alt is the element's label).
+		( { e } ) => ( R.backgroundPicture && bare( e ) && ! hasSvg( e ) && 'img' === e.attrs?.role && paintsPicture( e ) ? v( 'backgroundPicture', { block: R.backgroundPicture.block } ) : null ),
 		// A layer that holds nothing: a ring, glow, bar or blob is a decorative image at its own position, size, radius and fill
 		// (Bean, 2026-11-07), except a layer something else already delivers: the pointer glare (the motion layer), the hero's
 		// animated SVG and a line the owning block draws itself, each removed with a handover naming its owner.
@@ -588,6 +592,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			}
 			// One action with one label (and a glyph): a pill. A toggle or a slider arrow is not; nor is a link with no words.
 			if ( 1 !== texts.length || disclosure( e ) ) {
+				return null;
+			}
+			// A link or button that holds a picture is a tile, never a pill: absorbing it would drop the picture.
+			if ( inner.some( paintsPicture ) ) {
 				return null;
 			}
 			return v( 'pillButton', { block: R.pillButton?.block, absorb: true, attributes: { label: text, ...( lk ? { linkSource: lk.source } : {} ), ...( lk && wordsAreValue( e, lk.kind ) ? { labelFromSiteInfo: true } : {} ) }, ...wordBound( lk ) } );

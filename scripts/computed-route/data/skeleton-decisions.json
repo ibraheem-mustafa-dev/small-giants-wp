@@ -265,6 +265,10 @@
 			"sectionAnchorBlocks": [ "sgs/hero" ],
 			"reason": "a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)"
 		},
+		"backgroundPicture": {
+			"block": "sgs/media",
+			"reason": "an empty element marked role=\"img\" that paints a picture as its background is a media block: the picture and its alt are read from it, never dropped as an unplaced element"
+		},
 		"decorationDelivered": {
 			"kinds": [
 				{
