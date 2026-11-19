@@ -222,6 +222,21 @@ export function stageProblems( status ) {
 	return out;
 }
 
+// The propose stage's result line. A proposal problem (a part no block fits, a handoff record no mechanism matches) is
+// reported and the surface goes on with the proposal as it stands (Spec 48 section 8: a clone goes through by default);
+// with --strict (`strict`) it fails the stage.
+export function proposeDetail( r, { strict = false } = {} ) {
+	const counts = `${ r.proposal.counts.skeletonNodes } nodes, ${ r.proposal.counts.low } low`;
+	if ( ! r.problems.length ) {
+		return counts;
+	}
+	const said = `${ r.problems.length } proposal problem${ 1 === r.problems.length ? '' : 's' }: ${ r.problems.join( '; ' ) }`.slice( 0, 500 );
+	if ( strict ) {
+		throw new Error( said );
+	}
+	return `${ counts }; ${ said }`;
+}
+
 // The process exit code of a finished run: 1 when any stage failed, and with --strict (`strict`) when any stage did not run.
 export function runExit( status, { strict = false } = {} ) {
 	const { failed, skipped } = stageProblems( status );
@@ -392,10 +407,7 @@ export async function main( argv ) {
 		}
 		if ( ! await step( 'propose', async () => {
 			const r = proposeSurface( { client, surface: key } );
-			if ( r.problems.length ) {
-				throw new Error( r.problems.join( '; ' ).slice( 0, 500 ) );
-			}
-			return `${ r.proposal.counts.skeletonNodes } nodes, ${ r.proposal.counts.low } low`;
+			return proposeDetail( r, { strict } );
 		} ) ) {
 			return;
 		}
