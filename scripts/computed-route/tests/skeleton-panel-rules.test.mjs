@@ -283,7 +283,7 @@ test( 'recordView.describe carries every field the rules read; the parent chain 
 test( 'lint: the rule modules read no literal pixel value, author logic key or client name, and no snippet read of aria or required', () => {
 	const lib = path.join( HERE, '..', 'lib' );
 	const strip = ( t ) => t.replace( /\/\*[\s\S]*?\*\//g, '' ).replace( /(^|[^:])\/\/.*$/gm, '$1' );
-	for ( const f of [ 'skeleton-rules.mjs', 'skeleton-panel-rules.mjs', 'skeleton-record.mjs' ] ) {
+	for ( const f of [ 'skeleton-rules.mjs', 'skeleton-panel-rules.mjs', 'skeleton-record.mjs', 'skeleton-widgets.mjs' ] ) {
 		const code = strip( fs.readFileSync( path.join( lib, f ), 'utf8' ) );
 		assert.equal( /\b\d+(?:\.\d+)?\s*px\b/.test( code ), false, `${ f } holds a literal pixel value` );
 		assert.equal( /\b(?:_menus|activePanel|activeMenu|showHeaderCta|logoH|isSimple|isM|accOpen|faqOpen)\b|item\.current|cur\.shop/.test( code ), false, `${ f } names an author logic key` );

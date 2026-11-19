@@ -686,6 +686,48 @@
 			"scope": "the surface the page map holds as an sgs_choice_flow row (its draftId names the surface's surfaces.json record), read from the fact record (lib/skeleton-choice-flow.mjs): a question is a loop whose item holds a button its handler binds to the loop item, its words the text in the loop's container (or the text just before it), its options the loop's recorded values; a conditional panel after a question's options is a step it opens underneath; the summary is the flow's aside; close, skip, add to bag, continue and back are buttons named by their handler or words; then two or more pressable buttons under one parent are a question whose revealing option opens what its condition shows, a live line naming two questions' picks is the summary, the one text after the last control the stage note, and every other worded element with no control a block of the flow post beside the flow (lib/skeleton-choice-flow-canvas.mjs)",
 			"gapReason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
 			"reason": "a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow the words the flow holds no setting for are ordinary blocks beside it in its post (the linked flow renders every top-level block, FR-43-6), and only a control none of these holds is a gap row"
+		},
+		"accordion": {
+			"id": "accordion",
+			"block": "sgs/accordion",
+			"recordKind": "accordion",
+			"settings": { "several": "allowMultiple", "openAtRest": "defaultOpen", "itemOpen": "isOpen", "title": "title", "category": "category" },
+			"taughtBy": {
+				"client": "mamas-munches-redesign",
+				"key": "Contact/78, Help/26, Home/245 and Product/118 (handoff records S-59, S-38, S-11 and S-17)",
+				"runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe"
+			},
+			"scope": "two or more sibling units (copies of one loop template, or siblings each holding one control) whose every unit holds exactly one control (an element with a click handler, read from the fact record's events) and a panel template inside the unit that renders under an sc-if whose condition reads a state key that control's handler writes (this.setState, followed through the component's own methods; lib/skeleton-widgets.mjs). The units' parent is the accordion when it holds nothing else, else the run is one accordion with no draft element of its own beside the parent's other children; each unit is an item whose title is the control's largest declared text and whose category is its other text; the control and its glyph are absorbed; a closed item's panel content is read from the loop's data in the draft's logic. A keyed map of open items lets several open; the one item shown open at rest is the one open by default. Not an accordion: a run inside a nav, units whose panels hold only links (a navigation disclosure), a control whose panel is outside its unit (a drawer, modal, form step or show-more opener), chips with no panel (an option picker or filter) and a single toggle. The handoff record of kind accordion is a cross-check: agreement is named in the reason, and a record shown on the surface with no mechanism is a proposal problem",
+			"clients": [ "mamas-munches-redesign" ],
+			"reason": "a run of disclosure units, each a control that opens its own panel, is the accordion (2026-11-18 clone audit G-1: an accordion is never a static container)"
+		},
+		"slider": {
+			"id": "slider",
+			"blocks": [ { "block": "sgs/testimonial-slider", "roles": [ "quote", "author" ] } ],
+			"otherCapabilities": [ "carousel", "slider" ],
+			"settings": { "arrows": "showArrows", "dots": "showDots", "autoplay": "autoplay", "speed": "autoplaySpeed" },
+			"taughtBy": {
+				"client": "mamas-munches-redesign",
+				"key": "Home/222 (the review track) with Home/220, Home/221 and Home/235",
+				"runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe"
+			},
+			"scope": "an element bound to a ref whose block children are all copies of one loop template (two or more), with controls outside it whose click handlers scroll that ref (scrollTo, scrollBy, scrollIntoView or a scrollLeft write, followed through the component's own methods) or write a state key the track's own style reads; a timer doing the same is autoplay (its delay the speed); drag handlers on the track are noted only, the draggable setting being a motion value Fill writes. The slides' item fields are matched to each listed block's child settings by name and role (lib/fill-list-content.mjs::matchFields): the first block whose listed roles are all taken is the slider and draws its slides (Fill writes them from the loop); the controls and the wrappers holding only controls are absorbed. Slides no listed block takes keep their proposal, and the track's row is a missing-features row and a proposal problem naming the blocks with the listed capabilities",
+			"clients": [ "mamas-munches-redesign" ],
+			"reason": "a track of slides that controls scroll is a slider: slides holding a quote and an author are the testimonial slider, which draws its own arrows and dots (Bean: a review card in the client's own style is sgs/testimonial-slider; a wordless control is drawn by the block, never a button reading \"Click Here\")"
+		},
+		"tabs": {
+			"id": "tabs",
+			"block": "sgs/tabs",
+			"settings": { "label": "label" },
+			"refuseSurfaceKinds": [ "header", "menu", "panel", "drawer", "form", "form-step" ],
+			"taughtBy": {
+				"client": "fixture",
+				"key": "tests/skeleton-widgets.test.mjs (no saved inventory of the three clients holds a tab set)",
+				"runtime_sha256": "none"
+			},
+			"scope": "two or more sibling controls, each writing one state key to its own value without reading it (not a toggle), and exactly one rendered panel outside them under an sc-if comparing that key with a value one control writes; the tabs block is the nearest element holding the controls and that panel and nothing else; each control is a tab labelled with its words, the shown panel's content is its tab's, and the others are empty tabs with a handover. Not tabs: links with a real address (route navigation), a choice that narrows a rendered list (optionSetFilter), chips with a pressed or checked state (optionSet, decided first), and anything on a header, menu, panel, drawer, form or form-step surface (mega-menu panels and form steps have their own rules)",
+			"clients": [],
+			"reason": "controls that each choose one panel by one state key are tabs"
 		}
 	}
 }

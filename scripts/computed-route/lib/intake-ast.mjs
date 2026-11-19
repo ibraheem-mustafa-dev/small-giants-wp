@@ -192,6 +192,16 @@ const patternHas = ( pat, name ) => {
 			}
 		}
 	}
+	// An array pattern's element names the value at its position (`([cat, q, a], i) => …` over rows of three): the key
+	// is the index, which the resolver reads as an array element.
+	if ( 'ArrayPattern' === pat.type ) {
+		for ( let i = 0; i < pat.elements.length; i++ ) {
+			const el = pat.elements[ i ];
+			if ( el && 'RestElement' !== el.type && patternHas( el, name ) ) {
+				return { pat, key: String( i ) };
+			}
+		}
+	}
 	return null;
 };
 
