@@ -132,7 +132,7 @@ test( 'MUST FAIL: the commands pass the named site to every child and read secre
 	assert.match( run, /const \{ surfaces, base, target \} = prepareSite\(/ );
 	const gate = source( 'gate-chain.mjs' );
 	assert.match( gate, /surfacesOnSite\( JSON\.parse\( fs\.readFileSync\( surfacesFile, 'utf8' \) \), site, targets \)/ );
-	assert.match( gate, /process\.env\.SGS_LIVE_ORIGIN = siteUrl\( targetOf\( site, targets \), REPO \)/ );
+	assert.match( gate, /process\.env\.SGS_LIVE_ORIGIN = liveOrigin\( site, targets \)/ );
 	assert.match( gate, /readEnv\( secretsPath\( s\.envFile, REPO \) \), s\.envKey \)/ );
 	assert.match( source( 'apply.mjs' ), /const \{ site, surfaces \} = applySite\( \{ surfaces: loaded\.surfaces, named: flag\( '--site' \)/ );
 	assert.match( source( 'lib/trial-run.mjs' ), /readEnv\( secretsPath\( envFile, REPO \) \)/ );

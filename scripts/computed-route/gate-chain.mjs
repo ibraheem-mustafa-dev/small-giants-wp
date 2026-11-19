@@ -42,6 +42,12 @@ const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 // SGS_REPO_ROOT points the reads (sites, the calibration cache, the build) at another checkout of the repository.
 const REPO = process.env.SGS_REPO_ROOT ? path.resolve( process.env.SGS_REPO_ROOT ) : path.resolve( HERE, '..', '..' );
 
+// The address the walker measures for `--site`: SGS_LIVE_ORIGIN when the caller already set it (site-run.mjs passes its
+// `--live-base` there), else the site's own address from its secrets file. `env` and `urlOf` are for tests.
+export function liveOrigin( site, targets, env = process.env, urlOf = ( t ) => siteUrl( t, REPO ) ) {
+	return env.SGS_LIVE_ORIGIN || urlOf( targetOf( site, targets ) );
+}
+
 // The newest walker report beside a Solve report: the highest round-N/report.json.
 export function finalWalk( dir ) {
 	const rounds = fs.readdirSync( dir ).map( ( d ) => /^round-(\d+)$/.exec( d ) ).filter( Boolean ).map( ( m ) => Number( m[ 1 ] ) ).sort( ( a, b ) => b - a );
@@ -214,7 +220,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const site = flag( '--site' );
 	const targets = site ? readTargets() : null;
 	const surfaces = surfacesFile ? surfacesOnSite( JSON.parse( fs.readFileSync( surfacesFile, 'utf8' ) ), site, targets ) : null;
-	site && ( process.env.SGS_LIVE_ORIGIN = siteUrl( targetOf( site, targets ), REPO ) );
+	site && ( process.env.SGS_LIVE_ORIGIN = liveOrigin( site, targets ) );
 	const ctx = buildContext( { report, walk, surfaces, surface: report.surface, client, probes, installed: await installedVersions(), db: openDb(), intakeFile: client ? path.join( REPO, 'sites', client, 'build', 'intake', 'intake.json' ) : null } );
 	const out = [];
 	for ( const issue of issuesOf( report, report.surface ) ) {

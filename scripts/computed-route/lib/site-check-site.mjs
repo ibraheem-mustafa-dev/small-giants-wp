@@ -5,6 +5,7 @@ import path from 'path';
 import { candidateRoots, parseEnv } from '../../parity/flows/lib/browser.mjs';
 import { flowsOutRoot } from '../../parity/flows/lib/flow.mjs';
 import { hasPost, rowKey, readIdsSite, readPageMap, rowsForSite } from './site-build-map.mjs';
+import { assertSiteContact } from './site-contact.mjs';
 
 // The calibration target of `site` (calibration-targets.json: envFile, envKey, mirrorOf, pluginDir), else the plain
 // `.claude/secrets/<site>.env` convention (the key is the site name upper-cased without punctuation). null when neither.
@@ -33,6 +34,19 @@ export function siteBase( target, roots ) {
 }
 
 export { candidateRoots };
+
+// The site-contact rule of a site check, called before its browser opens (lib/site-contact.mjs): the kill switch stops the run;
+// on a protected site the checks that write are refused (the forms check submits each form once, --with-cart adds a basket line),
+// naming the fix, while every page load stays allowed (it only reads). `ids` are the checks the run was asked for; `env` is for tests.
+export function assertCheckContact( { site, target, ids, withCart = false, env = process.env } ) {
+	assertSiteContact( { site, target, readOnly: true, env } );
+	const writes = [ ids.includes( 'forms' ) && 'the forms check (one submission per form)', withCart && '--with-cart (one basket line)' ].filter( Boolean );
+	try {
+		writes.length && assertSiteContact( { site, target, env } );
+	} catch ( e ) {
+		throw new Error( `${ e.message }. Refused: ${ writes.join( ' and ' ) }; run the read-only checks with --only ${ ids.filter( ( id ) => 'forms' !== id ).join( ',' ) || 'pages' }${ withCart ? ' and without --with-cart' : '' }` );
+	}
+}
 
 // The post types a visitor opens as a page of their own.
 const PAGE_TYPES = { page: 'page_id', shop: 'page_id', post: 'p' };

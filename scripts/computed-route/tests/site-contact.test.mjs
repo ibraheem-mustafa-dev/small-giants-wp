@@ -131,9 +131,9 @@ test( 'MUST FAIL: every other entry that reaches a site opens with the guard (re
 	assert.match( lib( 'media-upload.mjs' ), /\) \{\n\t\/\/[^\n]*\n\tfetchImpl === fetch && assertSiteContact\( \{ site, readOnly: ! apply \} \);\n\tconst known/, 'uploadMedia' );
 	assert.ok( opensWith( source( ROUTE, 'apply.mjs' ), 'readBlocks', 'assertSiteContact(' ), 'apply.mjs readBlocks' );
 	assert.ok( opensWith( source( ROUTE, 'apply.mjs' ), 'patch', 'assertSiteContact(' ), 'apply.mjs patch' );
-	assert.ok( opensWith( source( ROUTE, 'shop-load-more-check.mjs' ), 'ssh', 'assertSiteContact(' ), 'shop-load-more-check ssh' );
+	assert.ok( opensWith( source( ROUTE, 'shop-load-more-check.mjs' ), 'ssh', 'assertSiteContact( { site, target, readOnly } )' ), 'shop-load-more-check ssh names its site' );
 	assert.match( source( ROUTE, 'apply-options.mjs' ), /const wp = \( site, args \) => assertSiteContact\( \{ site \} \) \?\? spawnSync\(/ );
-	assert.match( source( ROUTE, 'form-submit-check.mjs' ), /const wp = \( \.\.\.a \) => assertSiteContact\(\) \?\? execFileSync\(/ );
+	assert.match( source( ROUTE, 'form-submit-check.mjs' ), /const wp = \( \.\.\.a \) => assertSiteContact\( \{ site: target, readOnly: true \} \) \?\? execFileSync\(/ );
 	assert.match( source( ROUTE, 'refresh-pairs.mjs' ), /assertSiteContact\( \{ site: surface\.site, readOnly: true \} \);\s+const r = spawnSync/ );
 	assert.match( source( ROUTE, 'head-check.mjs' ), /assertSiteContact\( \{ readOnly: true \} \);\s+const res = await fetch\(/ );
 } );

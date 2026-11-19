@@ -6,8 +6,10 @@
 // The functions that call it: lib/calibration-refs.mjs::wpCommand (and wpEvalRunner), lib/wp-run-session.mjs::openRunSession and
 // ::openDetachedSession, lib/trial-page.mjs::adminSession, lib/deploy-hash.mjs::remoteBlockHash, lib/build-compare.mjs::remoteFiles,
 // lib/tree.mjs::assertQuiet, lib/media-upload.mjs::uploadMedia, apply.mjs, apply-options.mjs, refresh-pairs.mjs, head-check.mjs,
-// form-submit-check.mjs, shop-load-more-check.mjs and shop-fixtures.mjs's REST calls; scripts/wp-build-page.js and
-// scripts/lib/wp-session.js call scripts/lib/no-site.js themselves.
+// form-submit-check.mjs (its reads, and its one form submission as a write), shop-load-more-check.mjs (each ssh call, a write
+// unless it reads), site-check.mjs (lib/site-check-site.mjs::assertCheckContact before its browser opens: the kill switch, and on
+// a protected site its forms check and --with-cart refused) and shop-fixtures.mjs's REST calls; scripts/wp-build-page.js and
+// scripts/lib/wp-session.js call scripts/lib/no-site.js themselves. Each caller that knows its site names it.
 import { createRequire } from 'module';
 import { readTargets } from './site-targets.mjs';
 

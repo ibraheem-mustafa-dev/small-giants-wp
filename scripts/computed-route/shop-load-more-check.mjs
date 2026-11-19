@@ -2,22 +2,27 @@
 /**
  * Live proof for the shop "Load more" mode (FR-30-3b, plan .claude/plans/archive/2026-11-02-shop-load-more.md Batch 2).
  *
- *   node scripts/computed-route/shop-load-more-check.mjs --target eye-care-test --case <name|all> [--headed] [--no-mods]
+ *   node scripts/computed-route/shop-load-more-check.mjs --target <site> --case <name|all> [--headed] [--no-mods]
  *
  * Cases: first-mobile first-desktop click last back filter nojs a11y perf all.
+ * `--target` is a calibration-targets.json key; its address comes from its secrets file (lib/site-targets.mjs::siteUrl) and its
+ * hosting folder from plugins/sgs-blocks/scripts/deploy_common.py::TARGETS.
  * Sets sgs_shop_pagination_mode=load_more, sgs_shop_batch_size=4, sgs_shop_desktop_first_load=8 over ssh, and restores
- * the originals in one finally block (LiteSpeed purged after each change). Each failed case prints the measured value
- * and the process exits 1.
+ * the originals in one finally block (LiteSpeed purged after each change). A protected target is refused before anything
+ * runs unless --no-mods is given (the run then only reads over ssh). Each failed case prints the measured value and the
+ * process exits 1.
  */
 import { readFileSync } from 'node:fs';
 import { assertSiteContact } from './lib/site-contact.mjs';
+import { readTargets, siteUrl } from './lib/site-targets.mjs';
+import { targetSite } from './lib/form-submit-run.mjs';
+import { loadChromium } from './lib/fill-read.mjs';
 import { spawnSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname( fileURLToPath( import.meta.url ) );
 const root = resolve( here, '..', '..' );
-const { chromium } = await import( 'file:///C:/Users/Bean/Projects/small-giants-wp/scripts/computed-route/node_modules/playwright/index.mjs' );
 
 const args = process.argv.slice( 2 );
 const flag = ( name ) => args.includes( '--' + name );
@@ -26,29 +31,27 @@ const opt = ( name, fallback ) => {
 	return i >= 0 ? args[ i + 1 ] : fallback;
 };
 
-const TARGETS = {
-	'eye-care-test': {
-		env: '.claude/secrets/eye-care-test.env',
-		urlKey: 'WP_URL_EYECARETEST',
-		path: '~/domains/darkcyan-grouse-898606.hostingersite.com/public_html',
-	},
-};
-const target = TARGETS[ opt( 'target', 'eye-care-test' ) ];
+const site = opt( 'target', null );
+const target = site ? readTargets()[ site ] : null;
 if ( ! target ) {
-	console.error( 'Unknown --target. Known: ' + Object.keys( TARGETS ).join( ', ' ) );
-	process.exit(2);
+	console.error( `${ site ? `${ site } is not in calibration-targets.json` : '--target <site> is required' }. Known: ${ Object.keys( readTargets() ).join( ', ' ) }` );
+	process.exit( 2 );
 }
-const env = Object.fromEntries(
-	readFileSync( resolve( root, target.env ), 'utf8' )
-		.split( /\r?\n/ )
-		.filter( ( l ) => l.includes( '=' ) && ! l.startsWith( '#' ) )
-		.map( ( l ) => [ l.slice( 0, l.indexOf( '=' ) ).trim(), l.slice( l.indexOf( '=' ) + 1 ).trim().replace( /^["']|["']$/g, '' ) ] )
-);
-const BASE = ( env[ target.urlKey ] || '' ).replace( /\/$/, '' );
-if ( ! BASE ) {
-	console.error( target.urlKey + ' missing from ' + target.env );
-	process.exit(2);
+const folder = targetSite( readFileSync( resolve( root, 'plugins', 'sgs-blocks', 'scripts', 'deploy_common.py' ), 'utf8' ), site )?.root;
+if ( ! folder ) {
+	console.error( `${ site } has no host and wp_content in deploy_common.py::TARGETS, so its hosting folder is unknown` );
+	process.exit( 2 );
 }
+let BASE;
+try {
+	// A run that sets the theme mods writes the site: a protected target is refused here, before any ssh call or browser.
+	flag( 'no-mods' ) ? assertSiteContact( { site, target, readOnly: true } ) : assertSiteContact( { site, target } );
+	BASE = siteUrl( target, root );
+} catch ( e ) {
+	console.error( e.message );
+	process.exit( 2 );
+}
+const { chromium } = await loadChromium();
 const SHOP = BASE + '/shop/';
 const BATCH = 4;
 const MODS = { sgs_shop_pagination_mode: 'load_more', sgs_shop_batch_size: String( BATCH ), sgs_shop_desktop_first_load: '8' };
@@ -58,9 +61,11 @@ const BUTTON = '.sgs-shop-load-more__button';
 const COUNT = '.sgs-shop-load-more__count';
 const ANNOUNCER = '.sgs-shop-load-more__announcer';
 
-function ssh( command ) {
-	assertSiteContact();
-	const r = spawnSync( 'ssh', [ 'hd', 'cd ' + target.path + ' && ' + command ], { encoding: 'utf8' } );
+// One command in the site's hosting folder over ssh. Only a call that reads passes `readOnly`; any other is a write and is refused on
+// a protected target.
+function ssh( command, { readOnly = false } = {} ) {
+	assertSiteContact( { site, target, readOnly } );
+	const r = spawnSync( 'ssh', [ 'hd', 'cd ' + folder + ' && ' + command ], { encoding: 'utf8' } );
 	return { code: r.status, out: ( r.stdout || '' ).trim(), err: ( r.stderr || '' ).trim() };
 }
 const purge = () => ssh( 'wp litespeed-purge all' );
@@ -310,7 +315,7 @@ let browser;
 try {
 	if ( ! flag( 'no-mods' ) ) {
 		for ( const key of Object.keys( MODS ) ) {
-			const r = ssh( `wp theme mod get ${ key } --format=json` );
+			const r = ssh( `wp theme mod get ${ key } --format=json`, { readOnly: true } );
 			let value = null;
 			try {
 				const rows = JSON.parse( r.out );
@@ -329,7 +334,7 @@ try {
 		}
 		purge();
 	}
-	const count = ssh( 'wp post list --post_type=product --post_status=publish --format=count' );
+	const count = ssh( 'wp post list --post_type=product --post_status=publish --format=count', { readOnly: true } );
 	TOTAL = parseInt( count.out, 10 );
 	if ( ! TOTAL ) {
 		throw new Error( 'could not count published products over ssh: ' + count.err );

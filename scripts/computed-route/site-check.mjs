@@ -10,7 +10,8 @@
 // working forms. Before them the home page is loaded as a visitor: when WooCommerce's coming-soon holding page stands in
 // place of the site (lib/site-check-coming-soon.mjs), the run reports that one failure with the fix command and marks
 // every other check n-a with the reason. A failed check never stops the run. The only write to the site is one submission per form (and, with
-// --with-cart, one basket line in this run's own WooCommerce session).
+// --with-cart, one basket line in this run's own WooCommerce session): on a site calibration-targets.json marks protected both are
+// refused, and SGS_NO_SITE stops the whole run, before the browser opens (lib/site-check-site.mjs::assertCheckContact).
 // `--site` is a calibration-targets.json key (a local-* mirror and its test site share page-map ids through `mirrorOf`)
 // or any `.claude/secrets/<site>.env`; only its WP_URL_* is read.
 // Output: sites/<client>/build/qa/site-check/<stamp>/ (or --out): result.json, result.md and the screenshots.
@@ -19,7 +20,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { CHECKS, parseOnly, checkRecord, skippedRecord, exitCodeOf, renderMarkdown } from './lib/site-check-report.mjs';
-import { targetOf, siteBase, candidateRoots, pageTargets, readRows, flowsClient } from './lib/site-check-site.mjs';
+import { targetOf, siteBase, candidateRoots, pageTargets, readRows, flowsClient, assertCheckContact } from './lib/site-check-site.mjs';
 import { MARK, readHeaderLinksInPage, readDraftLinksInPage, menuItems, headerRowsOf, megaItems, markMegaInPage, drawerItem, pathKey } from './lib/site-check-nav.mjs';
 import { menuLinksOf } from './lib/site-build-menu-links.mjs';
 import { readPartsInPage, modalItem, flowItem, formItem, wooItem, addOneLine, missingFlowRows } from './lib/site-check-parts.mjs';
@@ -83,6 +84,13 @@ async function main() {
 	const target = targetOf( args.site, targets, roots );
 	if ( ! target ) {
 		console.error( `${ args.site } is neither a calibration-targets.json key nor a .claude/secrets/${ args.site }.env\n${ USAGE }` );
+		return 2;
+	}
+	// Before anything reaches the site: the kill switch, and on a protected site no check that writes.
+	try {
+		assertCheckContact( { site: args.site, target, ids: only.ids, withCart: args.withCart } );
+	} catch ( e ) {
+		console.error( `STOP ${ e.message }` );
 		return 2;
 	}
 	const base = siteBase( target, roots );

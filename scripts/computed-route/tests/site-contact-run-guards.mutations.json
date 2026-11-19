@@ -1,0 +1,104 @@
+[
+	{
+		"file": "shop-load-more-check.mjs",
+		"find": "\tassertSiteContact( { site, target, readOnly } );",
+		"replace": "\tassertSiteContact( { readOnly } );",
+		"why": "the ssh guard names no site, so a protected target's writes go through"
+	},
+	{
+		"file": "shop-load-more-check.mjs",
+		"find": "flag( 'no-mods' ) ? assertSiteContact( { site, target, readOnly: true } ) : assertSiteContact( { site, target } );",
+		"replace": "assertSiteContact( { site, target, readOnly: true } );",
+		"why": "a run that sets theme mods is not refused up front on a protected target"
+	},
+	{
+		"file": "shop-load-more-check.mjs",
+		"find": "const r = ssh( `wp theme mod set ${ key } ${ value }` );",
+		"replace": "const r = ssh( `wp theme mod set ${ key } ${ value }`, { readOnly: true } );",
+		"why": "a theme-mod write is marked as a read"
+	},
+	{
+		"file": "shop-load-more-check.mjs",
+		"find": "const site = opt( 'target', null );",
+		"replace": "const site = opt( 'target', 'eye-care-test' );",
+		"why": "a protected site is the default target again"
+	},
+	{
+		"file": "form-submit-check.mjs",
+		"find": "\tassertSiteContact( { site: target } );\n",
+		"replace": "\tassertSiteContact( { site: target, readOnly: true } );\n",
+		"why": "the form submission counts as a read"
+	},
+	{
+		"file": "form-submit-check.mjs",
+		"find": "assertSiteContact( { site: target, readOnly: true } ) ?? execFileSync(",
+		"replace": "assertSiteContact() ?? execFileSync(",
+		"why": "the wp reads name no site"
+	},
+	{
+		"file": "lib/site-check-site.mjs",
+		"find": "\tassertSiteContact( { site, target, readOnly: true, env } );\n",
+		"replace": "",
+		"why": "the kill switch is not checked when no check writes"
+	},
+	{
+		"file": "lib/site-check-site.mjs",
+		"find": "writes.length && assertSiteContact( { site, target, env } );",
+		"replace": "false && assertSiteContact( { site, target, env } );",
+		"why": "a protected site's writing checks are never refused"
+	},
+	{
+		"file": "lib/site-check-site.mjs",
+		"find": "ids.includes( 'forms' ) && 'the forms check (one submission per form)'",
+		"replace": "false",
+		"why": "the forms check is not counted as a write"
+	},
+	{
+		"file": "lib/site-check-site.mjs",
+		"find": "withCart && '--with-cart (one basket line)'",
+		"replace": "false",
+		"why": "--with-cart is not counted as a write"
+	},
+	{
+		"file": "site-check.mjs",
+		"find": "\t\tassertCheckContact( { site: args.site, target, ids: only.ids, withCart: args.withCart } );\n",
+		"replace": "",
+		"why": "the site check opens its browser unguarded"
+	},
+	{
+		"file": "site-build.mjs",
+		"find": "\t\tassertScratchRunPlace( site, repo );\n",
+		"replace": "",
+		"why": "a scratch-copy build writes the main checkout's page map"
+	},
+	{
+		"file": "site-build.mjs",
+		"find": "readEnv( secretsPath( path.join( '.claude', 'secrets', `${ site }.env` ), repo ), site.toUpperCase().replace( /[^A-Z0-9]/g, '' ) )",
+		"replace": "readEnv( path.join( '.claude', 'secrets', `${ site }.env` ), site.toUpperCase().replace( /[^A-Z0-9]/g, '' ), repo )",
+		"why": "the build session reads secrets from the repo, which a worktree lacks"
+	},
+	{
+		"file": "lib/site-build-apply.mjs",
+		"find": "'--env-file', secretsPath( path.join( '.claude', 'secrets', `${ site }.env` ), repo ),",
+		"replace": "'--env-file', path.join( repo, '.claude', 'secrets', `${ site }.env` ),",
+		"why": "the page builder reads secrets from the repo, which a worktree lacks"
+	},
+	{
+		"file": "lib/media-upload.mjs",
+		"find": "const file = secretsPath( path.join( '.claude', 'secrets', `${ site }.env` ), repo );",
+		"replace": "const file = path.join( repo, '.claude', 'secrets', `${ site }.env` );",
+		"why": "the media credentials ignore SGS_SECRETS_ROOT"
+	},
+	{
+		"file": "gate-chain.mjs",
+		"find": "return env.SGS_LIVE_ORIGIN || urlOf( targetOf( site, targets ) );",
+		"replace": "return urlOf( targetOf( site, targets ) );",
+		"why": "gate-chain discards the address site-run.mjs passed"
+	},
+	{
+		"file": "gate-chain.mjs",
+		"find": "site && ( process.env.SGS_LIVE_ORIGIN = liveOrigin( site, targets ) );",
+		"replace": "site && ( process.env.SGS_LIVE_ORIGIN = siteUrl( targetOf( site, targets ), REPO ) );",
+		"why": "gate-chain overwrites the caller's address in its main"
+	}
+]

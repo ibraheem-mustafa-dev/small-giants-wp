@@ -9,19 +9,20 @@ import { execFileSync } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import { secretsPath } from './site-targets.mjs';
 import { CONTENT_META, MENU_META, ROW_META, SECTION_META, TEMPLATE_CONTENT_OPTION, TEMPLATE_OPTION, TREE_META } from './site-build-state.mjs';
 
 // How long each editor load and save may take: twice wp-build-page.js's 60 s default, since a shared host can stall an
 // admin page past it; a run stopped by a stall resumes from the posts already made.
 const EDITOR_TIMEOUT = 120000;
 
-// A build runner over wp-build-page.js for one site's secrets file: ({ create, title, slug } | { postId }, tree) -> id.
+// A build runner over wp-build-page.js for one site's secrets file (under SGS_SECRETS_ROOT, else `repo`: lib/site-targets.mjs::secretsPath): ({ create, title, slug } | { postId }, tree) -> id.
 export function wpBuildPage( repo, site ) {
 	const envKey = site.toUpperCase().replace( /[^A-Z0-9]/g, '' );
 	return ( target, tree ) => {
 		const file = path.join( os.tmpdir(), `site-build-${ process.pid }-${ Date.now() }.tree.json` );
 		fs.writeFileSync( file, JSON.stringify( tree ) );
-		const args = [ path.join( repo, 'scripts', 'wp-build-page.js' ), '--env-file', path.join( repo, '.claude', 'secrets', `${ site }.env` ), '--env-key', envKey, '--tree', file,
+		const args = [ path.join( repo, 'scripts', 'wp-build-page.js' ), '--env-file', secretsPath( path.join( '.claude', 'secrets', `${ site }.env` ), repo ), '--env-key', envKey, '--tree', file,
 			...( target.template ? [ '--template', target.template ] : target.postId ? [ '--post-id', String( target.postId ) ] : [ '--create', target.create, '--title', target.title, '--slug', target.slug ] ), '--status', 'publish', '--editor-timeout', String( EDITOR_TIMEOUT ) ];
 		let out = '';
 		try {

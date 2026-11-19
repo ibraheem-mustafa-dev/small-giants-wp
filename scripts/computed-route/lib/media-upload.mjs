@@ -11,6 +11,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { assertSiteContact } from './site-contact.mjs';
+import { secretsPath } from './site-targets.mjs';
 import { downloadStock, stockDownloadUrl, stockFileName, stockKey, stockSurvey } from './media-stock.mjs';
 
 export const IMAGE_TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.avif': 'image/avif', '.svg': 'image/svg+xml' };
@@ -37,11 +38,11 @@ export function safeSiteUrl( url ) {
 	return 'https:' === u.protocol || ( 'http:' === u.protocol && [ 'localhost', '127.0.0.1', '[::1]' ].includes( u.hostname ) );
 }
 
-// A site's REST credentials from `.claude/secrets/<site>.env` (WP_URL_<SITE>, WP_USER_<SITE>, WP_APP_PWD_<SITE>, the
+// A site's REST credentials from `.claude/secrets/<site>.env` under SGS_SECRETS_ROOT, else `repo` (lib/site-targets.mjs::secretsPath; WP_URL_<SITE>, WP_USER_<SITE>, WP_APP_PWD_<SITE>, the
 // suffix being the site name upper-cased without its punctuation). A URL that is neither https nor loopback http is
 // refused, since the application password travels as Basic auth.
 export function siteCredentials( repo, site ) {
-	const file = path.join( repo, '.claude', 'secrets', `${ site }.env` );
+	const file = secretsPath( path.join( '.claude', 'secrets', `${ site }.env` ), repo );
 	if ( ! fs.existsSync( file ) ) {
 		throw new Error( `no secrets file for ${ site } (.claude/secrets/${ site }.env)` );
 	}

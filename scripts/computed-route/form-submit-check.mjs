@@ -4,7 +4,8 @@
 // checks: the success state matches the form's `successMessage` / `successRedirect`; a stored submission row exists; the owner
 // email's original recipient equals `Sgs_Mailer::owner_recipient`'s answer. Then submits again with the first required field empty
 // and checks the field shows its `msgRequired` (or any error line) and nothing is stored or sent. The site is read over SSH with
-// `wp` (no write); the submission itself is one real form post, so run it only on a test site whose mail is redirected. Prints each
+// `wp` (no write); the submission itself is one real form post, so run it only on a test site whose mail is redirected (a site calibration-targets.json marks protected is refused before the browser
+// opens; lib/site-contact.mjs). Prints each
 // check; exits 1 when one fails, 2 on a usage or reach problem. A placeholder post with no fields is reported, not failed.
 import fs from 'fs';
 import path from 'path';
@@ -43,9 +44,10 @@ if ( ! endpoint ) {
 	process.exit( 2 );
 }
 const SSH = [ '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=20', '-i', path.join( process.env.HOME || process.env.USERPROFILE, '.ssh', 'id_ed25519' ), '-p', endpoint.port, endpoint.userHost ];
-// One `wp` command on the site; each argument is single-quoted for the remote shell.
+// One `wp` command on the site, a read (the form submission below is the run's only write); each argument is single-quoted for the
+// remote shell.
 const quote = ( x ) => `'${ String( x ).replace( /'/g, `'\\''` ) }'`;
-const wp = ( ...a ) => assertSiteContact() ?? execFileSync( 'ssh', [ ...SSH, `cd ${ site.root } && wp ${ a.map( quote ).join( ' ' ) }` ], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 } ).trim();
+const wp = ( ...a ) => assertSiteContact( { site: target, readOnly: true } ) ?? execFileSync( 'ssh', [ ...SSH, `cd ${ site.root } && wp ${ a.map( quote ).join( ' ' ) }` ], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 } ).trim();
 const sql = ( q ) => wp( 'db', 'query', q, '--skip-column-names' );
 // A site value as a PHP single-quoted literal: only `\` and `'` are special there, so nothing in it runs as PHP.
 const phpLiteral = ( v ) => `'${ String( v ?? '' ).replace( /\\/g, '\\\\' ).replace( /'/g, "\\'" ) }'`;
@@ -77,6 +79,13 @@ console.log( `form ${ slug }: post ${ postId }, ${ fields.length } fields (${ fi
 const maxId = ( table ) => Number( sql( `SELECT COALESCE(MAX(id),0) FROM ${ prefix }${ table }` ) || 0 );
 const countAfter = ( table, after, where = '1=1' ) => Number( sql( `SELECT COUNT(*) FROM ${ prefix }${ table } WHERE id > ${ after } AND ${ where }` ) || 0 );
 
+// The submission is a write (stored and emailed), so a protected site is refused before the browser opens.
+try {
+	assertSiteContact( { site: target } );
+} catch ( e ) {
+	console.error( e.message );
+	process.exit( 2 );
+}
 const browser = await chromium.launch( { headless: true } );
 try {
 	// Positive path.

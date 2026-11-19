@@ -40,7 +40,7 @@ import { PHASES, planBuild, tally } from './lib/site-build-plan.mjs';
 import { promoteSiteOptions, withSiteOptions } from './lib/site-build-options.mjs';
 import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
 import { openDetachedSession, readEnv } from './lib/wp-run-session.mjs';
-import { assertUnprotected, readTargets } from './lib/site-targets.mjs';
+import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath } from './lib/site-targets.mjs';
 import { runFlowLinks } from './lib/site-build-flow-links.mjs';
 import { runCatalogue } from './lib/site-build-catalogue.mjs';
 import { runStoreVisible } from './lib/site-build-store-visible.mjs';
@@ -78,9 +78,12 @@ const apply = args.includes( '--apply' );
 // of over SSH; a site with no target entry runs over SSH.
 const targets = readTargets( { repo } );
 const target = targets[ site ] || {};
+// A run that writes refuses a protected site, and a scratch copy's run refuses the main checkout (it writes page-map.json ids,
+// page-map.site, menu-map.json and catalogue.json under sites/<client>/build).
 if ( apply ) {
 	try {
 		assertUnprotected( site, targets );
+		assertScratchRunPlace( site, repo );
 	} catch ( e ) {
 		console.error( `FAILED: ${ e.message }` );
 		process.exit( 2 );
@@ -189,7 +192,7 @@ try {
 	// One logged-in browser for every page the run builds, as its own process because the builds below run synchronously
 	// (lib/wp-run-session.mjs::openDetachedSession): each wp-build-page.js child attaches through SGS_CDP_URL instead of
 	// launching and logging in on its own.
-	const session = await openDetachedSession( site, readEnv( path.join( '.claude', 'secrets', `${ site }.env` ), site.toUpperCase().replace( /[^A-Z0-9]/g, '' ), repo ) );
+	const session = await openDetachedSession( site, readEnv( secretsPath( path.join( '.claude', 'secrets', `${ site }.env` ), repo ), site.toUpperCase().replace( /[^A-Z0-9]/g, '' ) ) );
 	writeIdsSite( mapFile, site );
 	const onId = ( key, id ) => {
 		ids[ key ] = id;

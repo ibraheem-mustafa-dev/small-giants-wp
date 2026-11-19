@@ -67,7 +67,7 @@
 	},
 	{
 		"file": "gate-chain.mjs",
-		"find": "site && ( process.env.SGS_LIVE_ORIGIN = siteUrl( targetOf( site, targets ), REPO ) );",
+		"find": "site && ( process.env.SGS_LIVE_ORIGIN = liveOrigin( site, targets ) );",
 		"replace": "",
 		"why": "gate-chain probes the config's live site"
 	},
