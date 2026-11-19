@@ -1,0 +1,6 @@
+[
+	{"file": "lib/resolve.mjs", "find": "\t\tif ( valueBlind( d ) ) {\n\t\t\tcontinue;\n\t\t}\n", "replace": "", "why": "a property every layout value paints alike answers a row with a tie-broken layout value"},
+	{"file": "lib/resolve.mjs", "find": "const BLIND_VALUES = 3;", "replace": "const BLIND_VALUES = 1;", "why": "a property one value alone paints (flex-direction under stack) is treated as value-blind"},
+	{"file": "lib/resolve.mjs", "find": "records.length >= BLIND_VALUES && records.every( ( r ) => JSON.stringify( r ) === JSON.stringify( records[ 0 ] ) )", "replace": "records.length >= BLIND_VALUES", "why": "records that differ between values count as blind"},
+	{"file": "lib/resolve.mjs", "find": "records.length >= BLIND_VALUES && records.every(", "replace": "records.length >= BLIND_VALUES && records.some(", "why": "one matching record makes the property blind"}
+]
