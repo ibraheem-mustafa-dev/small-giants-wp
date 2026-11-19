@@ -8,9 +8,9 @@ import { place } from '../lib/template-piece-product-field.mjs';
 import { countBlocks } from '../lib/template-pieces.mjs';
 
 const BIND = ( key ) => ( { source: 'sgs-product/field', key } );
-const TITLE = { id: 'title', block: 'sgs/heading', required: true, kind: 'product-field', find: { surface: 'buybox', contains: 'wp:post-title' }, bind: BIND( 'title' ) };
-const PRICE = { id: 'price', block: 'sgs/text', required: false, kind: 'product-field', find: { field: 'price' }, bind: BIND( 'price' ) };
-const DESC = { id: 'description', block: 'sgs/text', required: false, kind: 'product-field', find: { field: 'description' }, bind: BIND( 'short_description' ) };
+const TITLE = { id: 'title', block: 'sgs/heading', required: true, kind: 'product-field', find: { surface: 'buybox', contains: 'wp:post-title' }, binds: BIND( 'title' ) };
+const PRICE = { id: 'price', binds: BIND( 'price' ), required: false, kind: 'product-field', find: { field: 'price' } };
+const DESC = { id: 'description', binds: BIND( 'short_description' ), required: false, kind: 'product-field', find: { field: 'description' } };
 const GALLERY = { id: 'gallery', block: 'sgs/buybox', required: false, kind: 'product-field', find: { field: 'image' } };
 const FIELDS = { name: [ 'name' ], price: [ 'from' ], description: [ 'short' ], image: [ 'img', 'gallery' ] };
 

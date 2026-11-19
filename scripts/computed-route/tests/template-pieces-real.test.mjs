@@ -8,8 +8,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { piecesPass, productFieldsOf } from '../lib/template-pieces-context.mjs';
-import { checkPieces, countBlocks, loadPieces } from '../lib/template-pieces.mjs';
+import os from 'node:os';
+import { pieceContext, piecesPass, productFieldsOf } from '../lib/template-pieces-context.mjs';
+import { checkPieces, countBlocks, loadPieces, piecesFor } from '../lib/template-pieces.mjs';
+import { proposeDetail } from '../site-run.mjs';
 import { inventoryIndex, refKey, treeNodes } from '../lib/template-piece-draft.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..', '..' );
@@ -92,4 +94,47 @@ test( 'MUST FAIL: a template whose pieces are only a rule\'s or the theme\'s is 
 		assert.equal( got.tree, input.tree );
 		assert.deepEqual( got.problems, [], template );
 	}
+} );
+
+test( 'MUST FAIL: Mama\'s order confirmation through the pass: one sgs/order-items and the order number bound, the fact record handed to the order builder', () => {
+	const FIX = path.join( REPO, 'scripts', 'computed-route', 'tests', 'fixtures', 'template-piece-order' );
+	const facts = JSON.parse( fs.readFileSync( path.join( FIX, 'mamas-confirmation-facts.json' ), 'utf8' ) );
+	const tree = JSON.parse( fs.readFileSync( path.join( FIX, 'mamas-confirmation-skeleton.json' ), 'utf8' ) );
+	const entry = { target: { template: 'order-confirmation' }, draftDir: `sites/${ MAMAS }/handoff`, draftIndex: 'Confirmation.dc.html' };
+	const got = piecesPass( { repo: REPO, client: MAMAS, entry, tree, inventory: null, facts } );
+	assert.equal( countBlocks( got.tree, 'sgs/order-items' ), 1 );
+	const number = treeNodes( got.tree ).filter( ( r ) => Object.values( r.node.attributes?.metadata?.bindings || {} ).some( ( b ) => 'sgs/order' === b.source && 'number' === b.args?.key ) );
+	assert.equal( number.length, 1 );
+	assert.deepEqual( checkPieces( { key: 'order-confirmation', tree: got.tree, data: loadPieces() } ), [] );
+	// What no order key holds is a problem row, never a binding (as the order builder's own test proves).
+	assert.deepEqual( got.problems.map( ( p ) => /\{\{ ([\w.]+) \}\}/.exec( p )?.[ 1 ] ), [ 'arrive', 'bakeDate', 's.d', 'acctEyebrow' ] );
+} );
+
+test( 'MUST FAIL: the fact record is read only for a template with a piece whose builder reads it, and the draft file names the root component', () => {
+	const input = read( MAMAS, 'product' );
+	// The product page's builders read no fact record, so a site without facts.json still runs.
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'pieces-ctx-' ) );
+	fs.mkdirSync( path.join( repo, 'sites', 'c', 'build' ), { recursive: true } );
+	const none = pieceContext( { repo, client: 'c', entry: input.entry, inventory: null, pieces: piecesFor( 'single-product', loadPieces() ) } );
+	assert.equal( none.factRecord, null );
+	assert.equal( none.rootComponent, 'Product' );
+	assert.equal( none.handoffDir, path.resolve( repo, input.entry.draftDir ) );
+	// An order piece reads it, and a site without it is refused by name.
+	assert.throws( () => pieceContext( { repo, client: 'c', entry: {}, inventory: null, pieces: piecesFor( 'order-confirmation', loadPieces() ) } ), /facts\.json is missing/ );
+	const facts = { elements: {} };
+	const given = pieceContext( { repo, client: 'c', entry: {}, inventory: null, pieces: piecesFor( 'order-confirmation', loadPieces() ), facts } );
+	assert.equal( given.factRecord, facts );
+	assert.equal( given.rootComponent, null );
+} );
+
+test( 'MUST FAIL: a piece problem joins the proposal\'s problems, which fail the propose stage only under strict', () => {
+	const input = read( EYE, 'product' );
+	const pieces = piecesPass( input );
+	const r = { proposal: { counts: { skeletonNodes: 1, low: 0 } }, problems: [ ...pieces.problems ] };
+	assert.match( proposeDetail( r ), /proposal problems: single-product: piece "buy-box"/ );
+	assert.throws( () => proposeDetail( r, { strict: true } ), /single-product: piece "buy-box" \(sgs\/buybox\) is not placed/ );
+	// The wiring in skeleton.mjs::proposeSurface is what puts them there.
+	const src = fs.readFileSync( path.join( REPO, 'scripts', 'computed-route', 'skeleton.mjs' ), 'utf8' );
+	assert.match( src, /Object\.assign\( r, \{ skeleton: pieces\.tree, problems: \[ \.\.\.r\.problems, \.\.\.pieces\.problems \] \} \);/ );
+	assert.match( src, /r\.proposal\.templatePieces = \{ placed: pieces\.placed, problems: pieces\.problems, notes: pieces\.notes \};/ );
 } );

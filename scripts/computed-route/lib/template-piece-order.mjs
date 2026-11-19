@@ -10,7 +10,7 @@
 //     branch takes the `viewable` rule, so the draft's sample order never shows to a visitor who may not view the order.
 // What cannot be done right is a problem row naming the draft element (a value no key fits, a block with no attribute a
 // binding can write, a branch the skeleton does not hold); what is lost on the way is a note (inline formatting a bound
-// plain value cannot keep). The tree comes in as a copy (lib/template-pieces.mjs::applyTemplatePieces) and its nodes name
+// plain value cannot keep). The tree comes in as a copy (lib/template-pieces.mjs::placePieces) and its nodes name
 // their draft element in `draftRef.tpl`.
 import { templateKeyOf } from './fact-key.mjs';
 import { openDb } from './db.mjs';

@@ -5,7 +5,15 @@
 //   - `inventory`: the surface's skeleton inventory (the draft as a tree of elements);
 //   - `shopParts`: sites/<client>/build/shop-parts.json (lib/fill-shop-parts.mjs::loadShopParts), null when absent;
 //   - `draftFile` and `draftSource`: the surface's draft file (surfaces.json `draftIndex`) and its text, for the logic;
-//   - `productFields`: the fields of the draft's product records the catalogue reader finds (productFieldsOf).
+//   - `productFields`: the fields of the draft's product records the catalogue reader finds (productFieldsOf);
+//   - `factRecord`: the client's fact record (lib/fact-record.mjs::loadFacts), read only when the template has a piece of a
+//     kind in FACT_KINDS (the file is large and gitignored), else null;
+//   - `rootComponent` and `handoffDir`: the component the served inventory calls `Root` (the draft file's page key,
+//     lib/manifest-build.mjs::pageKeyOf, null when the entry names no draft file) and the handoff folder. A builder that
+//     reads the framework database opens its own (`db` is left to the builder's default).
+// The pass's placed rows, problems and notes are saved in the surface's proposal (`proposal.templatePieces`, written by
+// skeleton.mjs::proposeSurface); its problems join the proposal's, which fail the propose stage under --strict
+// (site-run.mjs::proposeDetail).
 // A surface whose entry builds no template, or a template the map names no builder's piece for, is returned unchanged.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -13,12 +21,17 @@ import { loadShopParts } from './fill-shop-parts.mjs';
 import { CHECKED_ONLY, loadPieces, piecesFor, placePieces } from './template-pieces.mjs';
 import { catalogueSources } from './catalogue-source.mjs';
 import { descriptionField, imageFields, recordLists } from './catalogue-records.mjs';
+import { loadFacts } from './fact-record.mjs';
+import { pageKeyOf } from './manifest-build.mjs';
 import * as buybox from './template-piece-buybox.mjs';
 import * as productField from './template-piece-product-field.mjs';
 import * as shopSort from './template-piece-shop-sort.mjs';
+import * as order from './template-piece-order.mjs';
 
 // The builders the pass runs, by piece kind.
-export const BUILDERS = { buybox, 'product-field': productField, 'shop-sort': shopSort };
+export const BUILDERS = { buybox, 'product-field': productField, 'shop-sort': shopSort, order };
+// The kinds whose builder reads the client's fact record (lib/template-piece-order.mjs::place reads ctx.factRecord).
+export const FACT_KINDS = [ 'order' ];
 
 // The fields of the draft's product records, by role: { name, price, description, image } (each a list of field names,
 // over every record list the catalogue reader finds: lib/catalogue-records.mjs::recordLists, ::imageFields,
@@ -46,8 +59,9 @@ export function productFieldsOf( folder ) {
 	return out;
 }
 
-// What the builders read for one surface of a client (see the header).
-export function pieceContext( { repo, client, entry, inventory } ) {
+// What the builders read for one surface of a client (see the header). `pieces`: the template's pieces, which decide
+// whether the fact record is read; `facts`: a fact record already read, used in place of the client's file.
+export function pieceContext( { repo, client, entry, inventory, pieces = [], facts = null } ) {
 	const buildDir = path.join( repo, 'sites', client, 'build' );
 	const folder = entry?.draftDir ? path.resolve( repo, entry.draftDir ) : path.join( repo, 'sites', client, 'handoff' );
 	const draftFile = entry?.draftIndex || null;
@@ -58,6 +72,9 @@ export function pieceContext( { repo, client, entry, inventory } ) {
 		draftFile,
 		draftSource: draftPath && fs.existsSync( draftPath ) ? fs.readFileSync( draftPath, 'utf8' ) : null,
 		productFields: productFieldsOf( folder ),
+		factRecord: pieces.some( ( p ) => FACT_KINDS.includes( p.kind ) ) ? facts || loadFacts( client, { repo } ) : null,
+		rootComponent: draftFile ? pageKeyOf( draftFile ) : null,
+		handoffDir: folder,
 	};
 }
 
@@ -65,10 +82,10 @@ export function pieceContext( { repo, client, entry, inventory } ) {
 // empty) when the surface builds no template the map names a builder's piece for. A template whose pieces are all a
 // rule's or the theme's is not checked here: a theme piece arrives only when the template copy is made
 // (lib/template-copies.mjs::themeContent), so a skeleton never holds it.
-export function piecesPass( { repo, client, entry, tree, inventory, data = loadPieces(), builders = BUILDERS } ) {
+export function piecesPass( { repo, client, entry, tree, inventory, data = loadPieces(), builders = BUILDERS, facts = null } ) {
 	const template = entry?.target?.template || null;
 	if ( ! template || ! piecesFor( template, data ).some( ( p ) => ! CHECKED_ONLY.includes( p.kind ) ) ) {
 		return { tree, placed: [], problems: [], notes: [], template };
 	}
-	return { ...placePieces( { key: template, tree, data, ctx: pieceContext( { repo, client, entry, inventory } ), builders } ), template };
+	return { ...placePieces( { key: template, tree, data, ctx: pieceContext( { repo, client, entry, inventory, pieces: piecesFor( template, data ), facts } ), builders } ), template };
 }

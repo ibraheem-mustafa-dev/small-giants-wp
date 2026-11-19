@@ -4,7 +4,7 @@
 //
 // `piece.find.field` names the product record field the area shows, a role of `ctx.productFields` (the field names the
 // catalogue reader finds in the draft's records, lib/template-pieces-context.mjs::productFieldsOf: `name`, `price`,
-// `description`, `image`). `piece.bind` is the binding the area's block gets ({ source, key }).
+// `description`, `image`). `piece.binds` is the binding the area's block gets ({ source, key }), the binding lib/template-pieces.mjs::countPiece checks.
 //   - The title (`find.contains`): the element the shop parts record locates the part homed on that template block on
 //     (`wp:post-title`); it must be the page's h1, and the skeleton node built from it is bound.
 //   - The price and the description: the one element of the surface's own markup whose own text is a single hole the
@@ -34,7 +34,7 @@ function pageH1( index ) {
 // The node built from an element, or null.
 const nodeOf = ( tree, key ) => treeNodes( tree ).find( ( r ) => refKey( r.node ) === key ) || null;
 
-// Binds a node's words setting to `bind`. Returns the bound setting, or null when the node has no single words setting.
+// Binds a node's words setting to `binds` ({ source, key }). Returns the bound setting, or null when the node has no single words setting.
 function bindNode( node, element, bind ) {
 	const attr = wordsSetting( node, element );
 	if ( ! attr ) {
@@ -74,11 +74,11 @@ function placeTitle( ctx, piece, index ) {
 	if ( ! at || at.node.name !== piece.block ) {
 		return { problems: [ `${ key }: piece "${ piece.id }" is not placed: the page's h1 ${ h1.key } was built ${ at ? `as ${ at.node.name }` : 'as no node of its own' }, not as ${ piece.block }` ] };
 	}
-	const attr = bindNode( at.node, h1, piece.bind );
+	const attr = bindNode( at.node, h1, piece.binds );
 	if ( ! attr ) {
 		return { problems: [ `${ key }: piece "${ piece.id }" is not placed: ${ piece.block } at ${ h1.key } holds no single setting with the h1's words` ] };
 	}
-	return { tree, placed: [ { id: piece.id, block: piece.block, at: h1.key, bind: `${ attr } <- ${ piece.bind.source } ${ piece.bind.key }` } ] };
+	return { tree, placed: [ { id: piece.id, block: piece.block, at: h1.key, bind: `${ attr } <- ${ piece.binds.source } ${ piece.binds.key }` } ] };
 }
 
 function placeHole( ctx, piece, index, L ) {
@@ -105,11 +105,11 @@ function placeHole( ctx, piece, index, L ) {
 	if ( 1 !== holesOf( e.srcOwnText ).length || String( e.srcOwnText ).replace( /\{\{[^}]*\}\}/g, '' ).trim() ) {
 		return note( `${ e.key } shows the ${ piece.find.field } among other words ("${ String( e.srcOwnText ).trim() }"), which a binding would replace` );
 	}
-	const attr = bindNode( at.node, e, piece.bind );
+	const attr = bindNode( at.node, e, piece.binds );
 	if ( ! attr ) {
 		return note( `${ at.node.name } at ${ e.key } holds no single setting with the element's words` );
 	}
-	return { tree, placed: [ { id: piece.id, block: at.node.name, at: e.key, bind: `${ attr } <- ${ piece.bind.source } ${ piece.bind.key }` } ] };
+	return { tree, placed: [ { id: piece.id, block: at.node.name, at: e.key, bind: `${ attr } <- ${ piece.binds.source } ${ piece.binds.key }` } ] };
 }
 
 function placeGallery( ctx, piece, index, L ) {

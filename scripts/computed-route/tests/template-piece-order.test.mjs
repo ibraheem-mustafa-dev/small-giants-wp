@@ -13,7 +13,7 @@ import { loadDraft } from '../lib/intake-ast.mjs';
 import { readOrder, sourceText } from '../lib/template-piece-order-read.mjs';
 import { place } from '../lib/template-piece-order.mjs';
 import { bindingSourceOf, boundAttr, loadOrderFacts, orderFactsProblems, pluginFacts, supportedAttributesOf } from '../lib/template-piece-order-plugin.mjs';
-import { applyTemplatePieces, checkPieces, loadPieces } from '../lib/template-pieces.mjs';
+import { checkPieces, loadPieces, placePieces } from '../lib/template-pieces.mjs';
 import { openDb } from '../lib/db.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -211,7 +211,7 @@ test( 'MUST FAIL: a branch testing the order takes the Show-to rule of the part 
 	assert.match( r.notes.join( '\n' ), /only hides an order value its own content binds/ );
 } );
 
-test( 'MUST FAIL: place puts one sgs/order-items in place of the lines and the total row, and binds and rules the rest', async () => {
+test( 'MUST FAIL: place puts one sgs/order-items in place of the lines and the total row, and binds and rules the rest', () => {
 	const { draft, record } = plant();
 	const tree = plantedTree( record );
 	const ctx = { factRecord: record, rootComponent: 'Page', draft, db: fakeDb(), plugin: PLUGIN, orderFacts: FACTS };
@@ -219,7 +219,7 @@ test( 'MUST FAIL: place puts one sgs/order-items in place of the lines and the t
 		{ id: 'order-number', binds: { source: 'sgs/order', key: 'number' }, required: true, once: false, kind: 'order', find: 'order-values' },
 		{ id: 'order-items', block: 'sgs/order-items', required: false, kind: 'order', find: 'order-lines' },
 	] } } };
-	const got = await applyTemplatePieces( { key: 'order-confirmation', tree, data, ctx, load: async () => ( { place } ) } );
+	const got = placePieces( { key: 'order-confirmation', tree, data, ctx, builders: { order: { place } } } );
 	const all = [];
 	const visit = ( list, up = [] ) => ( list || [] ).forEach( ( n ) => {
 		all.push( { n, up } );
@@ -313,11 +313,11 @@ test( 'MUST FAIL: the plugin facts are read from the plugin, and the order facts
 // Mama's real inputs: the committed Confirmation draft, its fact record elements (fixture) and the skeleton the proposer made
 // from its inventory read with the order's gift and account parts revealed (fixture; the route's own inventory reads the
 // opening state only).
-test( "Mama's confirmation: one sgs/order-items, the number, gift name, gift note and view-order link bound, each branch ruled", async () => {
+test( "Mama's confirmation: one sgs/order-items, the number, gift name, gift note and view-order link bound, each branch ruled", () => {
 	const handoff = path.join( REPO, 'sites', 'mamas-munches-redesign', 'handoff' );
 	const factRecord = JSON.parse( fs.readFileSync( path.join( FIX, 'mamas-confirmation-facts.json' ), 'utf8' ) );
 	const tree = JSON.parse( fs.readFileSync( path.join( FIX, 'mamas-confirmation-skeleton.json' ), 'utf8' ) );
-	const got = await applyTemplatePieces( { key: 'order-confirmation', tree, data: loadPieces(), ctx: { factRecord, rootComponent: 'Confirmation', handoffDir: handoff, db: openDb() } } );
+	const got = placePieces( { key: 'order-confirmation', tree, data: loadPieces(), ctx: { factRecord, rootComponent: 'Confirmation', handoffDir: handoff, db: openDb() }, builders: { order: { place } } } );
 	const s = JSON.stringify( got.tree );
 	assert.equal( ( s.match( /"name":"sgs\/order-items"/g ) || [] ).length, 1 );
 	const binds = got.placed.filter( ( p ) => p.key ).map( ( p ) => `${ p.block } ${ p.attribute } ${ p.key } ${ p.format ?? '' }`.trim() );
@@ -333,10 +333,10 @@ test( "Mama's confirmation: one sgs/order-items, the number, gift name, gift not
 	assert.equal( refs( got.tree ).length, refs( tree ).length - 8 );
 } );
 
-test( "Eye Care's confirmation: the reference is fixed words, so the number is a problem row and no binding is guessed", async () => {
+test( "Eye Care's confirmation: the reference is fixed words, so the number is a problem row and no binding is guessed", () => {
 	const factRecord = JSON.parse( fs.readFileSync( path.join( FIX, 'eye-care-done-facts.json' ), 'utf8' ) );
 	const tree = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', 'eye-care-ward-end', 'build', 'skeleton', 'template-order-confirmation.skeleton.json' ), 'utf8' ) );
-	const got = await applyTemplatePieces( { key: 'order-confirmation', tree, data: loadPieces(), ctx: { factRecord, rootComponent: 'Eye Care Birmingham', handoffDir: path.join( REPO, 'sites', 'eye-care-ward-end', 'handoff' ), db: openDb() } } );
+	const got = placePieces( { key: 'order-confirmation', tree, data: loadPieces(), ctx: { factRecord, rootComponent: 'Eye Care Birmingham', handoffDir: path.join( REPO, 'sites', 'eye-care-ward-end', 'handoff' ), db: openDb() }, builders: { order: { place } } } );
 	assert.deepEqual( got.placed, [] );
 	assert.match( got.problems[ 0 ], /the draft writes the order reference "EC-10482" as fixed words in <h1> Eye Care Birmingham\/845/ );
 	assert.match( got.problems.at( -1 ), /the working piece "order-number" is missing: no block bound to sgs\/order number/ );
