@@ -82,6 +82,14 @@ function fillContent( st, rec, ref, cal ) {
 	// The settings a content writer decided from the draft (an icon's source from its mark) are this node's own: no styling
 	// answer of the resolver may change them (lib/fill-prop.mjs::OWNED).
 	const owned = ownedSettings( node, skeletonNode );
+	// A setting the skeleton's rule decided that paints a CSS property cannot sit among the skeleton's attributes (R-47-10,
+	// lint.mjs::lintSkeleton), so it is written here, as the content settings are.
+	for ( const [ attr, value ] of Object.entries( skeletonNode?.decided || {} ) ) {
+		if ( json( value ) !== json( node.attributes?.[ attr ] ) ) {
+			const { before, after } = setAttr( node, { attr, value, merge: 'replace' } );
+			st.out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: '', prop: '(decided)', attr, before, after, widths: [], how: 'decided' } );
+		}
+	}
 	const take = ( r ) => {
 		Object.assign( owned, r.decided || {} );
 		Object.keys( owned ).length && OWNED.set( node, owned );

@@ -313,7 +313,9 @@
 				"^(?:#?/?|#/|\\./?|index\\.html?)$"
 			],
 			"flags": "i",
-			"reason": "the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself"
+			"groupBlock": "sgs/container",
+			"groupMinLogos": 2,
+			"reason": "the link around a logo goes: the logo block links home itself. A link around two or more logos (a mark and a wordmark) is kept as a plain container holding them, so the pair stays one item of the row it sits in (a grid or flex row places one cell for it) and keeps the link's own gap and alignment"
 		},
 		"widthWrapper": {
 			"hostSetting": "contentWidth",
@@ -503,7 +505,14 @@
 				"setting": "splitAlignment",
 				"keywords": { "center": "center", "start": "start", "self-start": "start", "flex-start": "start", "left": "start", "end": "end", "self-end": "end", "flex-end": "end", "right": "end" }
 			},
-			"reason": "the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero); a split hero's order at each device is the draft's: its picture before or after its words where the draft draws them at that device's width (splitOrder: the value the setting takes per device for each order; desktop's empty value is the content column first); its picture's alignment in its column is the draft's declared justify-self, or centred under auto side margins (splitAlignment: the setting's value for each CSS keyword)"
+			"verticalAlignment": {
+				"setting": "verticalAlignment",
+				"values": {
+					"bottom": "bottom",
+					"top": "top"
+				}
+			},
+			"reason": "the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero); a hero whose content block the draft places absolutely against the hero's bottom or top edge takes that side as its vertical alignment (verticalAlignment: the setting's value for each side; lib/skeleton-hero-background.mjs::contentAnchor); a split hero's order at each device is the draft's: its picture before or after its words where the draft draws them at that device's width (splitOrder: the value the setting takes per device for each order; desktop's empty value is the content column first); its picture's alignment in its column is the draft's declared justify-self, or centred under auto side margins (splitAlignment: the setting's value for each CSS keyword)"
 		},
 		"heroInner": {
 			"part": "split-media",

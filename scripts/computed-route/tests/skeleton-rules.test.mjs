@@ -420,12 +420,22 @@ test( 'alignWrapper: a wrapper that only aligns or pads its content goes; one th
 } );
 
 // ---------- what the rules must NOT do (QC council, 2026-10-13) ----------
-test( 'a link holding two logo images and no words is never a pill button: the home link goes and both logos stay', () => {
+test( 'a link holding two logo images and no words is never a pill button: the home link stays as the container of the pair and both logos stay in it', () => {
 	const tree = section( [ E( 'a', { attrs: { href: '/', 'aria-label': 'Home' } }, [ E( 'img', { attrs: { srcBasename: 'logo-mark.svg', alt: 'Acme' } } ), E( 'img', { attrs: { srcBasename: 'logo-wordmark.svg', alt: 'Acme' } } ) ] ) ] );
 	const r = run( tree );
-	assert.deepEqual( settled( byTag( r, 'a' ) ), { block: null, action: 'unwrap', rule: 'homeLink' } );
+	assert.deepEqual( settled( byTag( r, 'a' ) ), { block: 'sgs/container', action: null, rule: 'homeLink' } );
 	assert.equal( r.proposal.rows.filter( ( x ) => 'img' === x.tag && 'absorbed' !== x.action ).length, 2, 'both logos are kept' );
+	const group = r.skeleton[ 0 ].innerBlocks.find( ( n ) => 'sgs/container' === n.name );
+	assert.equal( group.innerBlocks.length, 2, 'the pair is one container of the row' );
+	assert.deepEqual( group.innerBlocks.map( ( n ) => n.name ), Array( 2 ).fill( facts().logoBlocks[ 0 ] ) );
 	assert.notEqual( byTag( run( section( [ E( 'a', { attrs: { href: '/shop' } }, [ E( 'img' ), E( 'img' ) ] ) ] ) ), 'a' ).block, 'sgs/button', 'no words, no pill' );
+	// Negative controls: one logo still goes with its link; with the rule's group setting off, two logos go too.
+	const one = run( section( [ E( 'a', { attrs: { href: '/', 'aria-label': 'Home' } }, [ E( 'img', { attrs: { srcBasename: 'logo.svg', alt: 'Acme' } } ) ] ) ] ) );
+	assert.deepEqual( settled( byTag( one, 'a' ) ), { block: null, action: 'unwrap', rule: 'homeLink' } );
+	const f = facts();
+	f.decisions = structuredClone( f.decisions );
+	delete f.decisions.rules.homeLink.groupBlock;
+	assert.deepEqual( settled( byTag( run( tree, { facts: f } ), 'a' ) ), { block: null, action: 'unwrap', rule: 'homeLink' } );
 } );
 
 test( 'a control the visitor operates is never a label, a toggle or slider arrow is never a pill, and a bare number is never a label or title', () => {

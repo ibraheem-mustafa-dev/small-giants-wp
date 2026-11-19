@@ -25,7 +25,7 @@ import { widgetModel } from './skeleton-widgets.mjs';
 import { keptSvg } from './fill-icon.mjs';
 import { draftTokenLookup, handoffOf, resolvedOrRaw } from './draft-tokens.mjs';
 import { heroSplitOrder, heroMediaAlignment } from './skeleton-hero-order.mjs';
-import { behindContent } from './skeleton-hero-background.mjs';
+import { behindContent, contentAnchor } from './skeleton-hero-background.mjs';
 import { heroCollage } from './skeleton-hero-collage.mjs';
 import { openerTargets, controlWrites, openedBy, openerAttributes } from './skeleton-openers.mjs';
 
@@ -525,9 +525,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A run of image links each to a different brand (Instagram, Google, WhatsApp: social profile icons) is no logo wall but
 		// a row of brand icons (decisions structural.brandImageLink); links that all go to one brand (a grid of Instagram posts) stay one.
 		( { e, kidsB } ) => ( ! m.words( e ) && kidsB.length >= ( R.logoGrid?.minItems ?? 3 ) && kidsB.every( imageLink ) && ! brandIconRun( kidsB ) ? v( 'logoGrid', { block: R.logoGrid?.block, absorb: true, firstItem: kidsB[ 0 ].key } ) : null ),
-		// The link around a logo goes: the logo block links home itself.
-		// Its children are one or more logos (a mark and a wordmark side by side).
-		( { e, kidsB } ) => ( 'a' === e.tag && specHit( R.homeLink, e.attrs?.href || '' ) && kidsB.length && kidsB.every( logoish ) ? v( 'homeLink', { action: 'unwrap' } ) : null ),
+		// The link around a logo goes: the logo block links home itself. Its children are one or more logos (a mark and a
+		// wordmark side by side); a link around several stays as the container holding them (R.homeLink.groupBlock), so the
+		// pair is one item of the row it sits in.
+		( { e, kidsB } ) => ( 'a' === e.tag && specHit( R.homeLink, e.attrs?.href || '' ) && kidsB.length && kidsB.every( logoish ) ? ( R.homeLink.groupBlock && kidsB.length >= ( R.homeLink.groupMinLogos ?? 2 ) ? v( 'homeLink', { block: R.homeLink.groupBlock } ) : v( 'homeLink', { action: 'unwrap' } ) ) : null ),
 		// A centring width wrapper inside a block that sets its own width (a header or footer, their rows, a section).
 		// Directly under a section root it goes only when it lays nothing out itself: a centred grid or flex there is the
 		// row the root accepts.
@@ -984,6 +985,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			} ) : { value: null, problems: [] };
 			// Its picture's own alignment in its column: the draft's declared justify-self or auto side margins.
 			const align = media ? heroMediaAlignment( { style: declared( pictures.find( ( p ) => Object.values( p.visible || {} ).some( Boolean ) ) || pictures[ 0 ], tokens ), rule: R.hero?.splitAlignment } ) : null;
+			// The side an absolutely placed content block is anchored to is the hero's vertical alignment (rules.hero.verticalAlignment): a
+			// setting that paints CSS, so the verdict carries it as `decided` and Fill writes it (lib/fill-resolve.mjs::fillContent).
+			const V = R.hero?.verticalAlignment;
+			const anchor = ! media && V?.setting ? contentAnchor( { hero: e, m, desc, isMedia } ) : null;
+			const vertical = anchor && V.values?.[ anchor ] && ( facts.enumOf?.( R.hero.block, V.setting ) || [] ).includes( V.values[ anchor ] ) ? { [ V.setting ]: V.values[ anchor ] } : {};
 			const attributes = media ? { variant: 'split', ...( order.value ? { [ R.hero.splitOrder.setting ]: order.value } : {} ), ...( align ? { [ R.hero.splitAlignment.setting ]: align } : {} ) } : {};
 			// The wrapper framing the picture: the outermost element above it that holds the picture alone (each a lone block child on
 			// the way up to the hero's own columns) and declares a paint of its own (rules.heroInner.frame.properties).
@@ -993,7 +999,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			for ( let up = picture ? m.byKey[ picture.parentKey ] : null; up && up !== e && 1 === m.blockKids( up ).length; up = m.byKey[ up.parentKey ] ) {
 				Object.keys( declared( up, tokens ) ).some( ( p ) => framing.has( p ) ) && ( frame = up );
 			}
-			const verdict = v( 'hero', { block: R.hero?.block, attributes, ...( frame ? { mediaFrame: frame.key } : {} ), ...( media ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s split media setting' } } : backdrop.length ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s background setting' } } : {} ) } );
+			const verdict = v( 'hero', { block: R.hero?.block, attributes, ...( Object.keys( vertical ).length ? { decided: vertical } : {} ), ...( frame ? { mediaFrame: frame.key } : {} ), ...( media ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s split media setting' } } : backdrop.length ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s background setting' } } : {} ) } );
 			verdict && order.problems.length && ( verdict.reason = `${ verdict.reason }; ${ order.problems.join( '; ' ) }` );
 			return verdict;
 		},

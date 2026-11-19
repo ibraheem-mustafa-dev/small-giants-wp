@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/skeleton-hero-background.mjs",
+		"find": "return Math.abs( below ) <= 1 && above > 1 ? 'bottom' : Math.abs( above ) <= 1 && below > 1 ? 'top' : null;",
+		"replace": "return above > 1 ? 'bottom' : null;",
+		"why": "a block floating inside the hero, or one filling it, would be bottom-aligned"
+	},
+	{
+		"file": "lib/skeleton-hero-background.mjs",
+		"find": "if ( 'absolute' !== column.position?.[ w ] || ! h || ! c ) {",
+		"replace": "if ( ! h || ! c ) {",
+		"why": "an in-flow block, which the hero's own alignment places, would be decided here"
+	},
+	{
+		"file": "lib/skeleton-hero-background.mjs",
+		"find": "sides.every( ( x ) => x && x === sides[ 0 ] )",
+		"replace": "sides.every( ( x ) => x )",
+		"why": "a block anchored to different sides at different widths would take the first width's side"
+	},
+	{
+		"file": "lib/skeleton-hero-background.mjs",
+		"find": ".sort( ( a, b ) => a.depth - b.depth )[ 0 ]",
+		"replace": ".sort( ( a, b ) => b.depth - a.depth )[ 0 ]",
+		"why": "the innermost holder of the words, not the block placed against the hero, would be judged"
+	},
+	{
+		"file": "lib/skeleton-hero-background.mjs",
+		"find": "if ( ! leaves.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a hero with no words would anchor to an empty block"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const anchor = ! media && V?.setting ? contentAnchor(",
+		"replace": "const anchor = V?.setting ? contentAnchor(",
+		"why": "a split hero would be decided by its content block"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "( facts.enumOf?.( R.hero.block, V.setting ) || [] ).includes( V.values[ anchor ] )",
+		"replace": "true",
+		"why": "a value the setting does not hold would be written"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "...( Object.keys( vertical ).length ? { decided: vertical } : {} ),",
+		"replace": "",
+		"why": "a later writer's reading of the hero's own justify-content would replace the decided side"
+	}
+]
