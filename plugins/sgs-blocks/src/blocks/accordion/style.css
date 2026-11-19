@@ -74,6 +74,23 @@
 	flex: 1;
 }
 
+/* The item's category line stacked over its heading (sgs/accordion-item showCategoryEyebrow). The line's look is the
+ * default inside :where() so the accordion's categoryEyebrow settings, printed from its own scoped rule, always win. */
+.sgs-accordion-item__heading {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	min-width: 0;
+	flex: 1 1 auto;
+}
+
+:where(.sgs-accordion-item__eyebrow) {
+	font-size: 0.75em;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
 /* ─── ICON ─── */
 
 /*

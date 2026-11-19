@@ -172,8 +172,10 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 
 
 	const filterOn = !! context[ 'sgs/accordionFilterEnabled' ];
+	// The category line prints with the filter on, or always when the accordion says so (render.php does the same).
+	const categoryOn = filterOn || !! context[ 'sgs/accordionCategoryEyebrowAlways' ];
 	const { category, showCategoryEyebrow } = attributes;
-	const showEyebrow = filterOn && '' !== ( category ?? '' ).trim() && !! showCategoryEyebrow;
+	const showEyebrow = categoryOn && '' !== ( category ?? '' ).trim() && !! showCategoryEyebrow;
 	const titleField = (
 		<RichText
 			tagName="span"
@@ -252,11 +254,13 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
-				{ filterOn && (
+				{ categoryOn && (
 					<PanelBody title={ __( 'Category', 'sgs-blocks' ) } initialOpen>
 						<TextControl
 							label={ __( 'Category', 'sgs-blocks' ) }
-							help={ __( 'The topic chip this item belongs to. Items with the same category share a chip.', 'sgs-blocks' ) }
+							help={ filterOn
+								? __( 'The topic chip this item belongs to. Items with the same category share a chip.', 'sgs-blocks' )
+								: __( 'The topic this item belongs to, printed as a small line above the heading.', 'sgs-blocks' ) }
 							value={ category ?? '' }
 							onChange={ ( value ) => setAttributes( { category: value } ) }
 							__nextHasNoMarginBottom

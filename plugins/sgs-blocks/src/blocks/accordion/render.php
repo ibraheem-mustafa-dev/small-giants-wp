@@ -67,6 +67,12 @@ foreach ( array( 'panelDuration', 'panelEasing', 'panelEasingCustom' ) as $hash_
 		unset( $hash_attrs[ $hash_key ] );
 	}
 }
+// The item category line and item heading settings stay out of the hash while unset, for the same reason.
+foreach ( array_keys( $hash_attrs ) as $hash_key ) {
+	if ( preg_match( '/^(categoryEyebrow|itemTitle)/', (string) $hash_key ) && in_array( $hash_attrs[ $hash_key ], array( '', false, array(), null ), true ) ) {
+		unset( $hash_attrs[ $hash_key ] );
+	}
+}
 $uid      = 'sgs-accordion-' . substr( md5( wp_json_encode( $hash_attrs ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-accordion';
 
@@ -130,6 +136,12 @@ if ( $border['mobile'] ) {
 // mechanism. Text indent follows core's convention: every paragraph that
 // follows another paragraph inside the accordion.
 $responsive_css .= sgs_typography_css_rule( $attributes, '', $root_sel, $root_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)', false, false, sgs_object_attr_keys( $block ) );
+
+// Every item's category line and heading text, from the accordion's own settings (the items print the elements).
+// Unset members print nothing, so style.css's line and the inherited heading font stay.
+$responsive_css .= sgs_text_states_css( $root_sel . ' .sgs-accordion-item__eyebrow', $attributes, array( 'base' => 'categoryEyebrowColour' ) );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'categoryEyebrow', $root_sel . ' .sgs-accordion-item__eyebrow', '', false, false, sgs_object_attr_keys( $block ) );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'itemTitle', $root_sel . ' .sgs-accordion-item__title', '', false, false, sgs_object_attr_keys( $block ) );
 
 // Answer slide timing: the same `::details-content` transition style.css declares, with the block's own speed and
 // curve; an unset one keeps the theme token. Reduced motion still wins (style.css forces 0.01ms with !important).

@@ -1,4 +1,4 @@
-/* sgs/accordion filter bar: search, topic chips, count, empty message and the item eyebrow. Loaded only by an accordion with its filter on. */
+/* sgs/accordion filter bar: search, topic chips, count and empty message. Loaded only by an accordion with its filter on. The item category line is in the accordion's style.css, because it also prints with the filter off. */
 
 .sgs-accordion__filter,
 .sgs-accordion__empty,
@@ -108,21 +108,6 @@
 .sgs-accordion__count--below:not([hidden]) {
 	grid-column: 1 / -1;
 	margin-block-end: 1rem;
-}
-
-.sgs-accordion-item__heading {
-	display: flex;
-	flex-direction: column;
-	gap: 0.25rem;
-	min-width: 0;
-	flex: 1 1 auto;
-}
-
-.sgs-accordion-item__eyebrow {
-	font-size: 0.75em;
-	font-weight: 700;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
 }
 
 @media (prefers-reduced-motion: reduce) {

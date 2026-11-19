@@ -272,6 +272,31 @@
           },
           "_note": "Each item's title + body content is rendered by the child `sgs/accordion-item` block, which owns its own typography controls — this element documents that ownership, mirroring sgs/quote's quote-body."
         },
+        "eyebrow": {
+          "selector": ".sgs-accordion-item__eyebrow",
+          "motion": false,
+          "label": "Item category line",
+          "order": 3.5,
+          "clusters": [
+            "text"
+          ],
+          "prefix": "categoryEyebrow",
+          "attrMap": {
+            "css:color": "categoryEyebrowColour"
+          },
+          "_note": "The small line above each item's heading that prints the item's category (sgs/accordion-item showCategoryEyebrow; categoryEyebrowAlways prints it with the filter off). Painted by this block's own scoped rule on its items' lines: colour plus the categoryEyebrow typography family through sgs_typography_css_rule(). Unset members keep style.css's 0.75em, 700, 0.06em uppercase line."
+        },
+        "item-title": {
+          "selector": ".sgs-accordion-item__title",
+          "motion": false,
+          "label": "Item heading",
+          "order": 3.6,
+          "clusters": [
+            "text"
+          ],
+          "prefix": "itemTitle",
+          "_note": "The heading text of each item. Its font family, size, line height and letter spacing are the itemTitle typography family, painted by this block's own scoped rule through sgs_typography_css_rule(); unset members inherit the accordion's Typography panel. Weight and colour stay on the header element (headerFontWeight, headerColour) so the open-state weight keeps working."
+        },
         "filterbar": {
           "selector": ".sgs-accordion__filter",
           "motion": false,
@@ -807,6 +832,71 @@
       "default": "",
       "description": "Colour of itemShadowOpen (palette slug or any colour)."
     },
+    "categoryEyebrowAlways": {
+      "type": "boolean",
+      "default": false,
+      "description": "Print each item's category line (the item's Show the category above the heading) whether or not the filter is on. Off: the line prints only while the filter is on."
+    },
+    "categoryEyebrowColour": {
+      "type": "string",
+      "default": "",
+      "description": "Text colour of every item's category line (palette slug or any colour). Empty inherits the header's text colour."
+    },
+    "categoryEyebrowFontSize": {
+      "type": "object"
+    },
+    "categoryEyebrowFontSizeUnit": {
+      "type": "string"
+    },
+    "categoryEyebrowFontFamily": {
+      "type": "string"
+    },
+    "categoryEyebrowFontWeight": {
+      "type": "string"
+    },
+    "categoryEyebrowLineHeight": {
+      "type": "object"
+    },
+    "categoryEyebrowLineHeightUnit": {
+      "type": "string"
+    },
+    "categoryEyebrowLetterSpacing": {
+      "type": "object"
+    },
+    "categoryEyebrowLetterSpacingUnit": {
+      "type": "string"
+    },
+    "categoryEyebrowTextTransform": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ]
+    },
+    "itemTitleFontSize": {
+      "type": "object"
+    },
+    "itemTitleFontSizeUnit": {
+      "type": "string"
+    },
+    "itemTitleFontFamily": {
+      "type": "string"
+    },
+    "itemTitleLineHeight": {
+      "type": "object"
+    },
+    "itemTitleLineHeightUnit": {
+      "type": "string"
+    },
+    "itemTitleLetterSpacing": {
+      "type": "object"
+    },
+    "itemTitleLetterSpacingUnit": {
+      "type": "string"
+    },
     "headerFontWeightOpen": {
       "type": "string",
       "default": "700",
@@ -1180,7 +1270,8 @@
     "sgs/accordionIconCircleBorderColourOpen": "iconCircleBorderColourOpen",
     "sgs/accordionIconCircleBackgroundOpen": "iconCircleBackgroundOpen",
     "sgs/accordionMotion": "sgsMotion",
-    "sgs/accordionFilterEnabled": "filterEnabled"
+    "sgs/accordionFilterEnabled": "filterEnabled",
+    "sgs/accordionCategoryEyebrowAlways": "categoryEyebrowAlways"
   },
   "allowedBlocks": [
     "sgs/accordion-item"

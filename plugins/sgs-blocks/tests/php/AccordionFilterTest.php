@@ -450,4 +450,63 @@ final class AccordionFilterTest extends TestCase {
 			$this->assertStringNotContainsString( 'sgs-accordion-item__eyebrow', $off );
 		}
 	}
+
+	public function test_the_accordions_always_switch_prints_the_category_line_with_the_filter_off(): void {
+		$root   = dirname( __DIR__, 2 );
+		$item   = array( 'title' => 'Q', 'category' => 'Delivery', 'showCategoryEyebrow' => true );
+		$always = array( 'sgs/accordionFilterEnabled' => false, 'sgs/accordionCategoryEyebrowAlways' => true );
+		$on     = $this->render( $root, 'sgs/accordion-item', $item, $always, '<p>A</p>' );
+		$this->assertStringContainsString( '<span class="sgs-accordion-item__heading"><span class="sgs-accordion-item__eyebrow">Delivery</span>', $on );
+		// The switch prints no filter: no data-category, which only the filter reads.
+		$this->assertStringNotContainsString( 'data-category', $on );
+		// The item's own setting and its category are still needed.
+		foreach ( array( array( 'showCategoryEyebrow' => false ), array( 'category' => '' ) ) as $case ) {
+			$this->assertStringNotContainsString( 'sgs-accordion-item__eyebrow', $this->render( $root, 'sgs/accordion-item', array_merge( $item, $case ), $always, '<p>A</p>' ) );
+		}
+		// Off (the default) keeps today's output byte for byte: the same scope class and no line.
+		$before = $this->render( $root, 'sgs/accordion-item', $item, array( 'sgs/accordionFilterEnabled' => false ), '<p>A</p>' );
+		$off    = $this->render( $root, 'sgs/accordion-item', $item, array( 'sgs/accordionFilterEnabled' => false, 'sgs/accordionCategoryEyebrowAlways' => false ), '<p>A</p>' );
+		$this->assertSame( $before, $off );
+		$this->assertStringNotContainsString( 'sgs-accordion-item__eyebrow', $off );
+	}
+
+	public function test_the_category_line_and_item_heading_settings_print_scoped_rules_and_nothing_while_unset(): void {
+		$root  = dirname( __DIR__, 2 );
+		$base  = $this->render( $root, 'sgs/accordion', array(), array(), '' );
+		$unset = $this->render(
+			$root,
+			'sgs/accordion',
+			array(
+				'categoryEyebrowAlways' => false,
+				'categoryEyebrowColour' => '',
+				'categoryEyebrowFontSize' => array(),
+				'itemTitleFontFamily'   => '',
+			),
+			array(),
+			''
+		);
+		$this->assertSame( $base, $unset, 'unset category line and heading settings change nothing, the scope class included' );
+		$html = $this->render(
+			$root,
+			'sgs/accordion',
+			array(
+				'categoryEyebrowAlways'        => true,
+				'categoryEyebrowColour'        => '#8e3444',
+				'categoryEyebrowFontSize'      => array( 'desktop' => 12 ),
+				'categoryEyebrowFontSizeUnit'  => 'px',
+				'categoryEyebrowTextTransform' => 'uppercase',
+				'itemTitleFontFamily'          => 'Georgia, serif',
+				'itemTitleFontSize'            => array( 'desktop' => 19 ),
+				'itemTitleFontSizeUnit'        => 'px',
+			),
+			array(),
+			''
+		);
+		$this->assertMatchesRegularExpression( '/\.wp-block-sgs-accordion \.sgs-accordion-item__eyebrow\{color:#8e3444;?\}/', $html );
+		$this->assertMatchesRegularExpression( '/\.wp-block-sgs-accordion \.sgs-accordion-item__eyebrow\{[^}]*font-size:12px/', $html );
+		$this->assertMatchesRegularExpression( '/\.wp-block-sgs-accordion \.sgs-accordion-item__eyebrow\{[^}]*text-transform:uppercase/', $html );
+		$this->assertMatchesRegularExpression( '/\.wp-block-sgs-accordion \.sgs-accordion-item__title\{[^}]*font-family:Georgia, serif/', $html );
+		$this->assertMatchesRegularExpression( '/\.wp-block-sgs-accordion \.sgs-accordion-item__title\{[^}]*font-size:19px/', $html );
+		$this->assertStringNotContainsString( ' style="', $html );
+	}
 }
