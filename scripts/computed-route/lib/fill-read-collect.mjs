@@ -277,7 +277,9 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		snap.childSize = kid && null !== kw && null !== kh && Math.abs( kr.width - r.width ) <= 1 && Math.abs( kr.height - r.height ) <= 1 ? { width: `${ kw }px`, height: `${ kh }px`, tag: kid.localName } : null;
 		snap.role = el.getAttribute( 'role' );
 		snap.className = String( el.getAttribute( 'class' ) || '' );
-		if ( j.own ) {
+		// An element with words of its own (a text node directly inside it) paints its own text, whatever its first text is:
+		// `<p><b>Lead:</b> the rest</p>` is the paragraph's look, never the bold lead-in's.
+		if ( j.own || [ ...el.childNodes ].some( ( c ) => 3 === c.nodeType && '' !== c.textContent.trim() ) ) {
 			const cs = getComputedStyle( el );
 			for ( const p of props.filter( ( x ) => [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow' ].includes( x ) ) ) {
 				const v = cs.getPropertyValue( p ).trim();

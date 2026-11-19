@@ -1,0 +1,20 @@
+[
+ {
+  "file": "lib/fill-read-collect.mjs",
+  "find": "if ( j.own || [ ...el.childNodes ].some( ( c ) => 3 === c.nodeType && '' !== c.textContent.trim() ) ) {",
+  "replace": "if ( j.own ) {",
+  "why": "a paragraph beside a bold lead-in takes the lead-in's weight"
+ },
+ {
+  "file": "lib/fill-read-collect.mjs",
+  "find": "if ( j.own || [ ...el.childNodes ].some( ( c ) => 3 === c.nodeType && '' !== c.textContent.trim() ) ) {",
+  "replace": "if ( j.own || [ ...el.childNodes ].some( ( c ) => 3 === c.nodeType ) ) {",
+  "why": "whitespace between child elements counts as words of its own"
+ },
+ {
+  "file": "lib/fill-read-collect.mjs",
+  "find": "if ( j.own || [ ...el.childNodes ].some( ( c ) => 3 === c.nodeType && '' !== c.textContent.trim() ) ) {",
+  "replace": "if ( true ) {",
+  "why": "every element reads its own look, a link wrapping a styled label too"
+ }
+]
