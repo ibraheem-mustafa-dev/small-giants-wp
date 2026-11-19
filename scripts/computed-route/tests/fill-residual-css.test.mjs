@@ -179,6 +179,24 @@ test( 'MUST FAIL WITHOUT THE COPY RULE: a part path naming one copy of a repeate
 	assert.equal( css( w ), '& .f__input { outline-style: solid; }' );
 } );
 
+test( 'MUST FAIL WITHOUT THE LEAK RULE: an inherited property is refused where a block inside renders another value, written where every one renders it', () => {
+	const make = ( kidValue ) => {
+		const w = world();
+		w.flat.push( { name: 'sgs/field', attributes: {}, ref: 'n1' } );
+		w.nodes[ 0 ].children = [ 1 ];
+		w.nodes.push( { index: 1, name: 'sgs/field', parent: 0, node: w.flat[ 1 ], children: [], targets: [ { id: '1:', index: 1, slot: '', finder: 'k' } ] } );
+		W.forEach( ( x ) => ( w.reads.widths[ x ][ '1:' ] = { rect: { x: 0, y: 200, w: 300, h: 40 }, styles: { 'line-height': kidValue } } ) );
+		return w;
+	};
+	const leak = make( '24px' );
+	const r = run( leak, [ row( { property: 'line-height', value: 'normal', slot: '' } ) ] );
+	assert.match( r.refused[ 0 ].reason, /inherited and would pass to the blocks inside/ );
+	assert.equal( css( leak ), undefined );
+	const same = make( 'normal' );
+	run( same, [ row( { property: 'line-height', value: 'normal', slot: '' } ) ] );
+	assert.equal( css( same ), '& { line-height: normal; }' );
+} );
+
 test( 'MUST FAIL WITHOUT THE CAP: past the page cap a rule is refused and listed, and the bytes are counted', () => {
 	const w = world();
 	const r = run( w, [ row( { property: 'font-size', value: '17px' } ) ], { cap: 10 } );

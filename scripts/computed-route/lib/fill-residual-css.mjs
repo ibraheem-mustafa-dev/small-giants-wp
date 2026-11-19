@@ -268,6 +268,22 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 				refuse( r, `${ prop } is a layout property and the draft states it only at ${ widths.join( ', ' ) }` );
 				continue;
 			}
+			// An inherited property written on a block passes to the blocks inside it: written only where each child block's
+			// own draft element renders the same value at every width (a child read without it proves nothing).
+			if ( isInherited( prop ) ) {
+				const leaks = ( rec.children || [] ).flatMap( ( i ) => {
+					const kid = nodes.find( ( n ) => n.index === i );
+					const t = kid?.targets.find( ( x ) => '' === ( x.slot ?? '' ) );
+					return t ? widths.filter( ( w ) => {
+						const at = reads.widths?.[ w ]?.[ t.id ];
+						return at && ! at.missing && String( at.styles?.[ prop ] ?? '(unread)' ) !== String( all[ w ] );
+					} ).map( ( w ) => `${ kid.name } renders ${ reads.widths[ w ][ t.id ].styles?.[ prop ] ?? '(unread)' } at ${ w }` ) : [];
+				} );
+				if ( leaks.length ) {
+					refuse( r, `${ prop } is inherited and would pass to the blocks inside this one, whose draft elements differ (${ leaks.slice( 0, 3 ).join( '; ' ) })` );
+					continue;
+				}
+			}
 			// A property that lays out the element's children acts only where the block's part lays them out as the draft's
 			// element does: the same display (and flex direction) at every width, by calibration's default paint.
 			if ( CONTAINER.test( prop ) ) {
