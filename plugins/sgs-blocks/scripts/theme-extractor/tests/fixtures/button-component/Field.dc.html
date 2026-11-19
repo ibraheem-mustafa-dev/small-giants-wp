@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Field</title>
+</helmet>
+<label style="display:flex;flex-direction:column">{{ label }}<input type="text" style="padding:8px;border:2px solid #222222"></label>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;version&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;standard&quot;], &quot;default&quot;: &quot;standard&quot;, &quot;tsType&quot;: &quot;string&quot;}, &quot;label&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;tsType&quot;: &quot;string&quot;}}">
+class Component extends DCLogic { renderVals() { return { label: this.props.label || null }; } }
+</script>
+</body>
+</html>

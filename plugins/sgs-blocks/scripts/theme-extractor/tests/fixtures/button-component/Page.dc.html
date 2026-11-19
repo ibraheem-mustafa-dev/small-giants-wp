@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Page</title>
+</helmet>
+<main style="display:flex;flex-direction:column;gap:24px;padding:24px">
+<div style="display:flex;gap:12px"><dc-import name="Button" version="primary" href="#a" label="Build a box"></dc-import><dc-import name="Button" version="secondary" href="#b" label="Send a gift"></dc-import></div>
+<div style="display:flex"><dc-import name="Button" version="primary" size="lg" label="Add to basket"></dc-import></div>
+<div style="display:flex"><dc-import name="Button" version="primary" size="md" label="Send message"></dc-import></div>
+<div style="display:flex"><dc-import name="Field" version="standard" label="Your name"></dc-import></div>
+<div style="display:flex"><a href="#c" style="padding:14px 28px;background:#7744aa;color:#ffffff;border-radius:4px">Drawn by hand</a></div>
+</main>
+</x-dc>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Button press fixture</title>
+<style>
+  body { margin: 0; font-family: sans-serif; background: #fffaf0; color: #222222; }
+  main { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; padding: 40px; }
+  /* A shadowed button that lifts on hover and sinks when pressed. */
+  #lift { display: inline-flex; padding: 16px 30px; border: 2px solid #222222; border-radius: 999px; background: #ffcc00;
+          color: #222222; font-weight: 700; text-decoration: none; box-shadow: 4px 4px 0 #222222;
+          transition: transform .2s cubic-bezier(.3, 1.6, .5, 1), box-shadow .25s, background .2s; }
+  #lift:hover { background: #ffffff; transform: translate(-3px, -3px); box-shadow: 7px 7px 0 #222222; }
+  #lift:active { transform: translate(3px, 3px); box-shadow: 0 0 0 #222222; }
+  /* A pressed rule that sits BEFORE the hover rule: while both match the hover rule wins. */
+  #quirk { display: inline-flex; padding: 16px 30px; border: 2px solid #222222; border-radius: 999px; background: #ffffff;
+           color: #222222; font-weight: 700; text-decoration: none; box-shadow: 4px 4px 0 #222222; }
+  #quirk:active { transform: translate(3px, 3px); box-shadow: 0 0 0 #222222; }
+  #quirk:hover { background: #ffcc00; transform: translate(-3px, -3px); box-shadow: 7px 7px 0 #222222; }
+  /* A flat button: no shadow, no transition, no pressed look. */
+  #flat { display: inline-flex; padding: 14px 28px; border: 2px solid #333333; border-radius: 4px; background: transparent;
+          color: #333333; font-weight: 600; text-decoration: none; }
+  #flat:hover { background: #eeeeee; }
+</style>
+</head>
+<body>
+<main>
+  <a id="lift" href="#one">Build a box</a>
+  <a id="quirk" href="#three">Send a gift</a>
+  <a id="flat" href="#four">Read the story</a>
+  <a href="#five">A plain text link</a>
+</main>
+</body>
+</html>

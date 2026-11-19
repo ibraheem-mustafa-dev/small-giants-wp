@@ -6,6 +6,8 @@ references. Vocabulary is DATA at the top of the module; nothing here names a cl
 """
 from __future__ import annotations
 
+import re
+
 from declared_sources import HEX_RE, normalise_hex
 
 # The slugs whose job each page role is, in preference order, when one hex serves several slugs.
@@ -16,7 +18,11 @@ BUTTON_KEY_GROUP = {"background": "fill", "hover-background": "fill", "text": "t
                     "hover-text": "text", "border": "edge", "hover-border": "edge"}
 BUTTON_SLUG_PREFERENCE = {"fill": ("primary", "accent", "surface", "surface-alt"),
                           "text": ("primary-text", "text", "text-inverse"),
-                          "edge": ("primary", "border", "accent", "primary-text", "text")}
+                          "edge": ("primary", "border", "accent", "primary-text", "text"),
+                          "shadow": ("text", "border", "primary-text", "text-inverse", "primary", "accent")}
+# Button preset keys whose value is a shadow (lengths then a colour): the colour inside is referenced, not the value.
+BUTTON_SHADOW_KEYS = ("shadow", "hover-shadow", "active-shadow")
+_HEX_IN_TEXT = re.compile(r"#[0-9a-fA-F]{6}(?![0-9a-fA-F])")
 
 
 def slug_for_role(palette: list, hexv: str | None, preference: tuple) -> str | None:
@@ -32,7 +38,8 @@ def slug_for_role(palette: list, hexv: str | None, preference: tuple) -> str | N
 
 def tokenise_button_presets(snap: dict, trace: list, derived: dict) -> None:
     """Rewrite MEASURED button preset hex values that equal the colour of a slug fit for the key (its group's
-    ``BUTTON_SLUG_PREFERENCE``) into that slug's variable reference; any other hex stays as measured.
+    ``BUTTON_SLUG_PREFERENCE``) into that slug's variable reference; any other hex stays as measured. A shadow key's
+    colour is rewritten inside the shadow (``4px 4px 0 #3a2a22`` -> ``4px 4px 0 var(--wp--preset--color--text)``).
 
     ``derived`` is the button-preset dict measured in this run (slot -> key -> value). Only those slots
     and keys are rewritten: a value that came from the framework baseline for a slot or key the draft
@@ -49,6 +56,12 @@ def tokenise_button_presets(snap: dict, trace: list, derived: dict) -> None:
         changed = []
         for key in sorted(measured):
             value = preset.get(key)
+            if key in BUTTON_SHADOW_KEYS and isinstance(value, str):
+                refd = _HEX_IN_TEXT.sub(lambda m: _shadow_ref(m.group(0), by_slug), value)
+                if refd != value:
+                    preset[key] = refd
+                    changed.append(f"{key}={refd}")
+                continue
             group = BUTTON_KEY_GROUP.get(key)
             if group is None or not isinstance(value, str) or not HEX_RE.fullmatch(value):
                 continue
@@ -61,3 +74,11 @@ def tokenise_button_presets(snap: dict, trace: list, derived: dict) -> None:
         if changed:
             trace.append({"kind": "overlay", "what": f"buttonPresets.{slot}", "value": ",".join(changed),
                           "reason": "preset hex values that equal a palette colour now reference it"})
+
+
+def _shadow_ref(hexv: str, by_slug: dict) -> str:
+    """A shadow's colour as the reference of the first ``shadow`` slug holding it (a shadow drawn in the text colour
+    references ``text``), else the hex as measured."""
+    wanted = hexv.lower()
+    slug = next((s for s in BUTTON_SLUG_PREFERENCE["shadow"] if by_slug.get(s) == wanted), None)
+    return f"var(--wp--preset--color--{slug})" if slug else hexv

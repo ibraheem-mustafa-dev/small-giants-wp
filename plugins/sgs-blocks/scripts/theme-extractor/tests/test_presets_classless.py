@@ -68,8 +68,11 @@ def test_classless_buttons_fill_primary_and_outline_with_hover_keys():
     assert outline["border-width"] == "1px"
     for key, rest_key in (("hover-background", "background"), ("hover-text", "text"), ("hover-border", "border")):
         assert outline.get(key, outline[rest_key]) == outline[rest_key]  # hover identical to rest
-    reasons = [t["reason"] for t in trace]
-    assert len(trace) == 2 and all("inferred from an unclassed style signature" in r for r in reasons)
+    reasons = [t["reason"] for t in trace if t["kind"] == "preset"]
+    assert len(reasons) == 2 and all("inferred from an unclassed style signature" in r for r in reasons)
+    # These facts carry no pressed reading, and each written preset says so in a gap row.
+    gaps = [t for t in trace if t["kind"] == "gap"]
+    assert len(gaps) == 2 and all("no pressed reading" in t["reason"] for t in gaps)
 
 
 def test_second_opaque_signature_becomes_secondary_and_transparent_borderless_is_ignored():

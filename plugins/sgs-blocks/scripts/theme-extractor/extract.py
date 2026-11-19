@@ -51,6 +51,7 @@ def _is_allowed_https_url(url: str, allowed_hosts: set[str]) -> bool:
 import confirmed_palette
 import declared_sources
 import derive as derive_mod
+import button_components
 import entry_buttons
 import font_weights
 import heading_weight
@@ -101,12 +102,17 @@ def _repo_root(arg: str | None) -> pathlib.Path:
     return HERE.parents[3]
 
 
-def run_measure(draft: pathlib.Path) -> dict:
+def run_measure(draft: pathlib.Path, components: list | None = None) -> dict:
+    """measure.js's computed facts for ``draft``; ``components`` (button_components.probes) adds the reading of each
+    named version of the draft's button component (``facts["componentButtons"]``)."""
+    cmd = ["node", str(HERE / "measure.js"), "--draft", str(draft)]
+    if components:
+        cmd += ["--components", json.dumps(components)]
     # Explicit UTF-8: node writes UTF-8, and text=True alone decodes with the console code page
     # (cp1252 on Windows), which kills the reader thread and leaves stdout as None.
     out = subprocess.run(
-        ["node", str(HERE / "measure.js"), "--draft", str(draft)],
-        capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
+        cmd,
+        capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180,
     )
     if out.returncode != 0:
         raise RuntimeError(f"measure.js failed (exit {out.returncode}): {(out.stderr or '')[:500]}")
@@ -806,9 +812,17 @@ def main(argv=None) -> int:
                       f"'{draft.name}' the source draft.", file=sys.stderr)
                 return 6
 
+    component_probes = button_components.probes(draft.parent)
     facts = json.loads(pathlib.Path(args.facts).read_text(encoding="utf-8")) if args.facts \
-        else run_measure(draft)
+        else run_measure(draft, component_probes)
     entry_trace: list = []
+    if component_probes and "componentButtons" not in facts:
+        entry_trace.append({"kind": "gap", "what": "buttonPresets", "_source": "declared",
+                            "look": ", ".join(f"{p['component']}.{p['meta']['version']}" for p in component_probes),
+                            "count": sum(p["meta"]["mounts"] for p in component_probes),
+                            "reason": "the draft's button component names these versions, but the cached facts carry "
+                                      "no reading of them (re-run without --facts to measure them); the presets come "
+                                      "from the page's buttons instead"})
     others = [] if args.facts else entry_buttons.other_entry_drafts(draft.parent, draft.name)
     if others:
         with ThreadPoolExecutor(max_workers=4) as pool:

@@ -134,27 +134,294 @@ def _hover_diff(entry: dict, rest: dict, hover: dict) -> None:
         entry["hover-transform"] = tform
 
 
+# The preset names the framework's renderers read (button/style.css `.sgs-button--{name}`, helpers-button-press.php
+# SGS_BUTTON_PRESS_VARIANTS). A draft's own version name beyond these is still written, and logged as unslotted.
+FRAMEWORK_SLOTS = ("primary", "secondary", "outline")
+
+# Transition property -> the part of a button's hover look it moves, matching the renderers' three easings:
+# hover-easing (movement), hover-easing-colour and hover-easing-shadow.
+_MOVEMENT_PROPS = ("transform", "translate", "scale", "rotate")
+_GROUP_ORDER = ("movement", "colour", "shadow")
+
+
+def _split_top(value) -> list:
+    """A computed comma list split at its top-level commas (a cubic-bezier() or rgb() keeps its own)."""
+    out, depth, cur = [], 0, ""
+    for ch in str(value or ""):
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+        if ch == "," and depth == 0:
+            out.append(cur.strip())
+            cur = ""
+        else:
+            cur += ch
+    if cur.strip():
+        out.append(cur.strip())
+    return out
+
+
+def _groups_of(prop: str) -> tuple:
+    prop = prop.strip().lower()
+    if prop == "all":
+        return _GROUP_ORDER
+    if prop in _MOVEMENT_PROPS:
+        return ("movement",)
+    if prop == "box-shadow":
+        return ("shadow",)
+    if prop == "color" or prop.startswith("background") or (prop.startswith("border") and (
+            prop.endswith("color") or prop in ("border", "border-top", "border-right", "border-bottom", "border-left"))):
+        return ("colour",)
+    return ()
+
+
+def _seconds(value) -> float:
+    m = re.match(r"^\s*(-?\d*\.?\d+)\s*(ms|s)\s*$", str(value or ""))
+    if not m:
+        return 0.0
+    return float(m.group(1)) / (1000.0 if m.group(2) == "ms" else 1.0)
+
+
+def _transition_groups(rest: dict) -> dict:
+    """{group: (duration, easing, delay)} for each part of the look the resting transition animates (a zero-length
+    entry animates nothing). A later entry for the same part wins, as in CSS; shorter lists repeat."""
+    props = _split_top(rest.get("transitionProperty"))
+    durs = _split_top(rest.get("transitionDuration")) or ["0s"]
+    eases = _split_top(rest.get("transitionTimingFunction")) or ["ease"]
+    delays = _split_top(rest.get("transitionDelay")) or ["0s"]
+    out: dict = {}
+    for i, prop in enumerate(props):
+        dur, ease, delay = durs[i % len(durs)], eases[i % len(eases)], delays[i % len(delays)]
+        for group in _groups_of(prop):
+            out[group] = (dur, ease, delay)
+    return {g: v for g, v in out.items() if _seconds(v[0]) > 0}
+
+
+def _num_text(n: str) -> str:
+    """A number as a person writes it in an easing: no leading zero, no trailing zeros ('0.30' -> '.3')."""
+    v = float(n)
+    text = f"{v:.4f}".rstrip("0").rstrip(".") if v != int(v) else str(int(v))
+    return text.replace("0.", ".", 1) if text.startswith(("0.", "-0.")) else text
+
+
+def _easing_text(value: str) -> str:
+    """A computed easing in its written form: ``cubic-bezier(0.3, 1.6, 0.5, 1)`` -> ``cubic-bezier(.3,1.6,.5,1)``
+    (the form the snapshot's easing tokens use); any other easing as computed."""
+    value = str(value or "").strip()
+    m = re.fullmatch(r"cubic-bezier\(([^)]*)\)", value)
+    if not m:
+        return value
+    nums = [p.strip() for p in m.group(1).split(",")]
+    try:
+        return "cubic-bezier(" + ",".join(_num_text(n) for n in nums) + ")"
+    except ValueError:
+        return value
+
+
+_SHADOW_COLOUR_RE = re.compile(r"(rgba?\([^)]*\)|hsla?\([^)]*\)|#[0-9a-fA-F]{3,8})")
+_LENGTH_RE = re.compile(r"^-?\d*\.?\d+(px|em|rem)?$")
+
+
+def _length_text(v: str) -> str:
+    return "0" if _num(v) == 0 else v
+
+
+def shadow_text(value) -> str | None:
+    """A computed box-shadow written the way a person writes one: ``rgb(58, 42, 34) 4px 4px 0px 0px`` ->
+    ``4px 4px 0 #3a2a22`` (zero lengths as 0, a zero spread left out, the colour last, alpha kept). ``none`` and
+    an empty value give None; a layer that is not lengths plus one colour is kept exactly as computed."""
+    if not value or str(value).strip() == "none":
+        return None
+    layers = []
+    for layer in _split_top(value):
+        m = _SHADOW_COLOUR_RE.search(layer)
+        colour = _HEXME(m.group(1)) if m else None
+        words = (layer[:m.start()] + " " + layer[m.end():] if m else layer).split()
+        inset = "inset" in words
+        lengths = [w for w in words if w != "inset"]
+        if colour is None or not 2 <= len(lengths) <= 4 or not all(_LENGTH_RE.match(w) for w in lengths):
+            return str(value)
+        lengths = [_length_text(w) for w in lengths]
+        if len(lengths) == 4 and lengths[3] == "0":
+            lengths = lengths[:3]
+        layers.append(" ".join((["inset"] if inset else []) + lengths + [colour]))
+    return ", ".join(layers)
+
+
+def _look(b: dict) -> str:
+    """A short description of a button reading's look, for a trace row."""
+    rest = b.get("rest", {}) or {}
+    return (f"{_HEXME(rest.get('backgroundColor', '')) or '?'} fill, {_HEXME(rest.get('color', '')) or '?'} text, "
+            f"{rest.get('borderTopWidth', '?')} {_HEXME(rest.get('borderTopColor', '')) or '?'} border, "
+            f"radius {rest.get('borderTopLeftRadius', '?')}, {rest.get('fontSize', '?')}")
+
+
+def _gap(trace: list, what: str, look: str, count, reason: str) -> None:
+    trace.append({"kind": "gap", "what": what, "_source": "declared", "look": look, "count": int(count or 1),
+                  "reason": reason})
+
+
+def _changes_on_hover(entry: dict, rest: dict, hover: dict) -> set:
+    """The parts of the look (``_GROUP_ORDER``) that the hover reading changes."""
+    changed = set()
+    for key in ("backgroundColor", "color", "borderTopColor"):
+        if hover.get(key) and hover.get(key) != rest.get(key):
+            changed.add("colour")
+    if "hover-transform" in entry:
+        changed.add("movement")
+    if "hover-shadow" in entry:
+        changed.add("shadow")
+    return changed
+
+
+def _pressed(states: dict, prop: str) -> str | None:
+    """The pressed value of ``prop`` when pressing changes it, else None.
+
+    A mouse press is ``:hover`` with ``:active`` (``pressed``); where that equals the hover look the draft's pressed
+    rule may still declare a change that its own hover rule outranks in the sheet (measure-node.js readStates), so
+    ``:active`` alone against the resting look decides, and its value is the pressed look the draft declares."""
+    if states["pressed"].get(prop) != states["hover"].get(prop):
+        return states["pressed"].get(prop) or ""
+    if states["active"].get(prop) != states["rest"].get(prop):
+        return states["active"].get(prop) or ""
+    return None
+
+
+def _whole_look(entry: dict, b: dict, slot: str, trace: list) -> None:
+    """Add the shadows, the pressed look and the hover timing to ``entry`` (Spec 32 FR-32-19 key names).
+
+    * ``shadow`` the resting shadow, ``hover-shadow`` the hover shadow when hovering changes it (``none`` when it
+      goes), each written as lengths and a colour (``shadow_text``).
+    * ``active-transform`` / ``active-shadow``: the pressed look (measure.js ``states``, read with transitions off)
+      where pressing changes it (``_pressed``).
+    * ``hover-transition``: the transition's duration; ``hover-easing`` the movement's easing (or the first part
+      that eases when nothing moves), ``hover-easing-colour`` and ``hover-easing-shadow`` the colour and shadow
+      easings, each where the draft's transition names that part.
+
+    What the renderers cannot hold is a ``gap`` row naming the look: a pressed state that could not be read, a
+    pressed colour change, a second duration or a delay, and a part that changes on hover with no transition while
+    another part eases."""
+    rest, hover = b.get("rest", {}) or {}, b.get("hover", {}) or {}
+    what, look, count = f"buttonPresets.{slot}", _look(b), b.get("count", 1)
+    shadow = shadow_text(rest.get("boxShadow"))
+    if shadow:
+        entry["shadow"] = shadow
+    if hover.get("boxShadow") and hover.get("boxShadow") != rest.get("boxShadow"):
+        entry["hover-shadow"] = shadow_text(hover["boxShadow"]) or "none"
+    if "states" not in b:
+        _gap(trace, what, look, count, "the facts carry no pressed reading (measured before measure.js read "
+                                       "states), so no active-transform or active-shadow is written")
+    elif not isinstance(b.get("states"), dict) or not all(
+            isinstance(b["states"].get(s), dict) for s in ("rest", "hover", "active", "pressed")):
+        _gap(trace, what, look, count, "the pressed state could not be forced on this button, so no "
+                                       "active-transform or active-shadow is written")
+    else:
+        transform, shadow_now = _pressed(b["states"], "transform"), _pressed(b["states"], "boxShadow")
+        if transform is not None:
+            entry["active-transform"] = transform or "none"
+        if shadow_now is not None:
+            entry["active-shadow"] = shadow_text(shadow_now) or "none"
+        moved = [k for k in ("backgroundColor", "color", "borderTopColor") if _pressed(b["states"], k) is not None]
+        if moved:
+            _gap(trace, what, look, count, f"pressing changes {', '.join(moved)}; no button preset key holds a "
+                                           "pressed colour, so the pressed button keeps its hover colours")
+    groups = _transition_groups(rest)
+    if not groups:
+        return
+    order = [g for g in _GROUP_ORDER if g in groups]
+    durations = [groups[g][0] for g in order]
+    duration = groups["movement"][0] if "movement" in groups else max(durations, key=durations.count)
+    entry["hover-transition"] = duration
+    entry["hover-easing"] = _easing_text(groups[order[0]][1])
+    if "colour" in groups:
+        entry["hover-easing-colour"] = _easing_text(groups["colour"][1])
+    if "shadow" in groups:
+        entry["hover-easing-shadow"] = _easing_text(groups["shadow"][1])
+    for g in order:
+        if _seconds(groups[g][0]) != _seconds(duration):
+            _gap(trace, what, look, count, f"the {g} transition lasts {groups[g][0]}; the renderers run every part "
+                                           f"for one duration, so hover-transition is {duration}")
+        if _seconds(groups[g][2]) != 0:
+            _gap(trace, what, look, count, f"the {g} transition waits {groups[g][2]} before it starts; no button "
+                                           "preset key holds a delay")
+    for g in sorted(_changes_on_hover(entry, rest, hover) - set(groups)):
+        _gap(trace, what, look, count, f"the {g} change snaps in the draft (its transition leaves it out); the "
+                                       "renderers ease it over hover-transition")
+
+
+def _write_preset(presets: dict, slot: str, b: dict, trace: list, row: dict, paddings=None) -> None:
+    rest, hover = b.get("rest", {}) or {}, b.get("hover", {}) or {}
+    entry = _rest_entry(rest, paddings)
+    _hover_diff(entry, rest, hover)
+    _whole_look(entry, b, slot, trace)
+    presets[slot] = entry
+    trace.append(dict({"kind": "preset", "slot": f"buttonPresets.{slot}"}, **row, keys=",".join(entry.keys())))
+
+
+def _component_presets(facts: dict, trace: list) -> dict:
+    """One preset per named version of the draft's button component (measure.js ``componentButtons``), under the
+    version's own name, read whole from the component itself in the size most of that version's mounts use."""
+    presets: dict = {}
+    for c in facts.get("componentButtons") or []:
+        name = str(c.get("version") or "")
+        look = f"{c.get('component', '?')} version '{name}'"
+        if not c.get("painted"):
+            _gap(trace, f"buttonPresets.{name}", look, c.get("mounts", 0),
+                 "the component drew no button when mounted with this version"
+                 + (f" ({c['error']})" if c.get("error") else "") + ", so no preset is written")
+            continue
+        if not name or name in presets:
+            _gap(trace, f"buttonPresets.{name}", look, c.get("mounts", 0),
+                 "a second button component names the same version; the first one's look is the preset")
+            continue
+        b = dict(c, count=c.get("mounts", 0))
+        _write_preset(presets, name, b, trace, {
+            "_source": "declared", "variant_from": "component version",
+            "reason": f"{c.get('component')} mounted with version '{name}'"
+                      + (f" and size '{c['size']}'" if c.get("size") else "")
+                      + f" as a {c.get('form', 'button')} ({c.get('mounts', 0)} mount(s); sizes {c.get('sizes') or {}})"
+                      + ", read at rest, on hover and pressed"})
+        if name not in FRAMEWORK_SLOTS:
+            _gap(trace, f"buttonPresets.{name}", look, c.get("mounts", 0),
+                 f"written as buttonPresets.{name}, but no framework slot holds this name: the renderers read only "
+                 + ", ".join(FRAMEWORK_SLOTS))
+    return presets
+
+
 def build_button_presets(facts: dict, trace: list, palette: list | None = None) -> dict:
-    """Build ``settings.custom.buttonPresets`` from computed rest + hover button facts.
+    """Build ``settings.custom.buttonPresets`` from computed rest + hover + pressed button facts.
+
+    A draft with a button component (``facts["componentButtons"]``) takes its presets from it, one per named
+    version; the page's other buttons are drawn with their own styles and logged as gaps. Otherwise the presets
+    come from the page's buttons: class-bearing ones by their variant word, then classless ones by look.
 
     ``palette`` (optional, the site palette built so far) only steers CLASSLESS slot inference; it never
     touches a class-bearing button."""
-    presets: dict = {}
+    presets = _component_presets(facts, trace)
+    if presets:
+        for b in facts.get("buttons", []) or []:
+            _gap(trace, "buttonPresets", _look(b), b.get("count", 1),
+                 "drawn where it stands with its own styles: a draft with a button component takes its presets "
+                 "from the component's versions only")
+        return presets
     for b in facts.get("buttons", []):
         slot = _slot_for_button(b)
-        if not slot or slot in presets:
+        if not slot:
+            if b.get("classes"):
+                _gap(trace, "buttonPresets", _look(b), b.get("count", 1),
+                     f"class-bearing button ({' '.join(b.get('classes', []))}) with no variant word")
             continue
-        rest, hover = b.get("rest", {}) or {}, b.get("hover", {}) or {}
-        entry = _rest_entry(rest, b.get("paddings"))
-        _hover_diff(entry, rest, hover)
-        presets[slot] = entry
-        trace.append({"kind": "preset", "slot": f"buttonPresets.{slot}", "_source": "declared",
-                      "reason": f"computed rest+hover diff on the PAINTING element "
-                                f"<{b.get('path', '?').split('>')[-1]} class="
-                                f"'{' '.join(b.get('classes', []))}'>",
-                      "variant_from": "own classes" if _slot_for(b.get("classes", []) or [])
-                                      else "ancestor wrapper context",
-                      "keys": ",".join(entry.keys())})
+        if slot in presets:
+            _gap(trace, f"buttonPresets.{slot}", _look(b), b.get("count", 1),
+                 f"a further look named {slot}; the first one met is the preset")
+            continue
+        _write_preset(presets, slot, b, trace, {
+            "_source": "declared",
+            "reason": f"computed rest+hover diff on the PAINTING element "
+                      f"<{b.get('path', '?').split('>')[-1]} class='{' '.join(b.get('classes', []))}'>",
+            "variant_from": "own classes" if _slot_for(b.get("classes", []) or []) else "ancestor wrapper context"},
+            b.get("paddings"))
     _add_classless_presets(facts, presets, trace, *_palette_hints(palette))
     return presets
 
@@ -238,8 +505,14 @@ def _add_classless_presets(facts: dict, presets: dict, trace: list, primary_hint
     ``primary`` slot ahead of the ranking (two equally frequent signatures cannot otherwise be told
     apart), and a signature painted in a brand/status colour (``NON_VARIANT_SLUGS``) is skipped.
     """
-    cands = [b for b in facts.get("buttons", []) if not b.get("classes") and _slot_for_button(b) is None
-             and not b.get("external") and not b.get("inChrome") and _is_real_button(b)]
+    classless = [b for b in facts.get("buttons", []) if not b.get("classes") and _slot_for_button(b) is None]
+    cands = []
+    for b in classless:
+        why = _not_a_candidate(b)
+        if why:
+            _gap(trace, "buttonPresets", _look(b), b.get("count", 1), why)
+        else:
+            cands.append(b)
     cands.sort(key=lambda b: (-int(b.get("count", 1) or 1), -int(b.get("textLen", 0) or 0),
                               str(b.get("classKey", ""))))
     opaque, outline = [], []
@@ -250,24 +523,53 @@ def _add_classless_presets(facts: dict, presets: dict, trace: list, primary_hint
             opaque.append(b)
         elif bg == "transparent" and _is_visible_border(rest):
             outline.append(b)
+        elif bg and bg.startswith("#"):
+            _gap(trace, "buttonPresets", _look(b), b.get("count", 1),
+                 "painted in a brand or status colour (a WhatsApp, success or error button), never a site preset")
+        else:
+            _gap(trace, "buttonPresets", _look(b), b.get("count", 1),
+                 "neither an opaque fill nor a transparent fill with a visible border, so no slot fits its look")
     opaque.sort(key=lambda b: _HEXME(b["rest"].get("backgroundColor", "")) != primary_hint)  # stable
     chosen = ([("primary", opaque[0])] if opaque else []) + (
         [("secondary", _secondary_for(opaque[0], opaque[1:]))] if len(opaque) > 1 else [])
     chosen = [(slot, b) for slot, b in chosen if b is not None] + list(zip(("outline",), outline))
+    written = set()
     for slot, b in chosen:
         if slot in presets:
+            _gap(trace, f"buttonPresets.{slot}", _look(b), b.get("count", 1),
+                 f"a class-bearing button already defined {slot}, so this unclassed look is not written")
             continue
-        rest, hover = b.get("rest", {}) or {}, b.get("hover", {}) or {}
-        entry = _rest_entry(rest, b.get("paddings"))
-        _hover_diff(entry, rest, hover)
-        presets[slot] = entry
-        trace.append({"kind": "preset", "slot": f"buttonPresets.{slot}", "_source": "derived",
-                      "reason": f"slot inferred from an unclassed style signature "
-                                f"({b.get('classKey', '')}), {int(b.get('count', 1) or 1)} "
-                                f"occurrence(s), on the PAINTING element "
-                                f"<{b.get('path', '?').split('>')[-1]}>",
-                      "variant_from": "unclassed style signature",
-                      "keys": ",".join(entry.keys())})
+        written.add(id(b))
+        _write_preset(presets, slot, b, trace, {
+            "_source": "derived",
+            "reason": f"slot inferred from an unclassed style signature ({b.get('classKey', '')}), "
+                      f"{int(b.get('count', 1) or 1)} occurrence(s), on the PAINTING element "
+                      f"<{b.get('path', '?').split('>')[-1]}>",
+            "variant_from": "unclassed style signature"}, b.get("paddings"))
+    ground = _HEXME((opaque[0].get("rest", {}) or {}).get("backgroundColor", "")) if opaque else None
+    for b in opaque + outline:
+        if id(b) in written or any(b is c for _s, c in chosen):
+            continue
+        if b in opaque and _HEXME((b.get("rest", {}) or {}).get("backgroundColor", "")) == ground:
+            why = "another shade or size of the primary's fill; the most used one is the primary preset"
+        elif b in opaque:
+            why = "a further filled look: primary and secondary are taken and no framework slot is left for it"
+        else:
+            why = "a further outlined look: outline is taken and no framework slot is left for it"
+        _gap(trace, "buttonPresets", _look(b), b.get("count", 1), why)
+
+
+def _not_a_candidate(b: dict) -> str | None:
+    """Why a classless button reading never stands for a preset, or None when it is a candidate."""
+    if b.get("external"):
+        return "a link to another site wears that site's look, not the draft's"
+    if b.get("inChrome"):
+        return "site chrome (in the page's own header, footer or nav), not a call to action"
+    if b.get("stateControl"):
+        return "a control that holds a state (a chip, tab or toggle): its paint is a selected look, not a button style"
+    if not _is_real_button(b):
+        return "icon-only, a swatch, a circle or a card-sized link, not a labelled call to action"
+    return None
 
 
 def _secondary_for(primary: dict, rest_opaque: list) -> dict | None:

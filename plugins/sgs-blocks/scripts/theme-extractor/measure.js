@@ -20,7 +20,17 @@
 
 const { chromium } = require('playwright');
 const fs = require('fs');
-const { GENERATED_CLASS_RE, toURL, parseArgs, readHover } = require('./measure-node');
+const path = require('path');
+const { GENERATED_CLASS_RE, toURL, parseArgs, readHover, readStates, openStateSession,
+  measureComponents } = require('./measure-node');
+
+// The resting properties a button reading records: CAPTURE_SRC's BOX list (passed into the page, which cannot share
+// Node scope) and the component probe's.
+const BUTTON_REST_PROPS = ['backgroundColor', 'backgroundImage', 'color', 'borderTopColor',
+  'borderTopWidth', 'borderTopStyle', 'borderTopLeftRadius', 'paddingTop', 'paddingRight',
+  'paddingBottom', 'paddingLeft', 'fontFamily', 'fontSize', 'fontWeight', 'minHeight',
+  'letterSpacing', 'textTransform', 'boxShadow', 'transform',
+  'transitionProperty', 'transitionDuration', 'transitionTimingFunction', 'transitionDelay'];
 const { FONT_USAGE_SRC } = require('./font-usage');
 const { LAYOUT_CENSUS_SRC } = require('./layout-census');
 
@@ -30,16 +40,12 @@ const LAYOUT_CENSUS_VIEWPORTS = [1440, 1920];
 // Reads getComputedStyle on the representative nodes + enough structural signal for the Python
 // layer to pick the MAIN-CONTENT-FLOW representative <p> (FR-33-3) and the widest content-
 // containing ancestor for the background (FR-33-6). Returns raw computed values only.
-const CAPTURE_SRC = function (generatedClassSrc) {
+const CAPTURE_SRC = function (generatedClassSrc, boxProps) {
   const GENERATED = new RegExp(generatedClassSrc);
   const meaningful = (cls) => (cls ? cls.split(/\s+/) : []).filter((t) => !GENERATED.test(t));
   const TYPO = ['fontFamily', 'fontSize', 'lineHeight', 'fontWeight', 'fontStyle',
     'letterSpacing', 'color', 'textTransform'];
-  const BOX = ['backgroundColor', 'backgroundImage', 'color', 'borderTopColor',
-    'borderTopWidth', 'borderTopStyle', 'borderTopLeftRadius', 'paddingTop', 'paddingRight',
-    'paddingBottom', 'paddingLeft', 'fontFamily', 'fontSize', 'fontWeight', 'minHeight',
-    'letterSpacing', 'textTransform',
-    'boxShadow', 'transform'];
+  const BOX = boxProps;
 
   const pick = (el, props) => {
     const cs = getComputedStyle(el);
@@ -324,7 +330,7 @@ async function main() {
     await page.goto(url, { waitUntil: 'networkidle', timeout: 45000 }).catch(() => {});
     await page.waitForTimeout(400);
 
-    const facts = await page.evaluate('(' + CAPTURE_SRC.toString() + ')(' + JSON.stringify(GENERATED_CLASS_RE.source) + ')');
+    const facts = await page.evaluate('(' + CAPTURE_SRC.toString() + ')(' + JSON.stringify(GENERATED_CLASS_RE.source) + ', ' + JSON.stringify(BUTTON_REST_PROPS) + ')');
 
     // FR-33-18 font census, read once every face the page needs has settled (see font-usage.js).
     await page.evaluate('document.fonts.ready.then(() => true)').catch(() => {});
@@ -339,6 +345,32 @@ async function main() {
         await page.mouse.move(0, 0);
       } catch (e) {
         btn.hover = null;
+      }
+    }
+
+    // Third pass: each button's hover and pressed looks with its transitions off (measure-node.js readStates), so
+    // the pressed shadow and movement a draft declares (a `style-active` rule or an `:active` CSS rule) are read.
+    // null when the state could not be forced; the Python layer logs that as a gap.
+    let cdp = null;
+    try { cdp = await openStateSession(page); } catch (e) { cdp = null; }
+    for (const btn of facts.buttons) {
+      try {
+        btn.states = cdp ? await readStates(page, cdp, '[data-sgs-btn-idx="' + btn.idx + '"]') : null;
+      } catch (e) {
+        btn.states = null;
+      }
+    }
+
+    // A draft's button component (`--components`, listed by the Python layer from the export's own files): each
+    // named version is mounted on a page of its own, served over HTTP so the runtime can fetch it, and read whole.
+    if (args.components) {
+      const probes = JSON.parse(args.components);
+      const folder = path.dirname(path.resolve(args.draft));
+      try {
+        facts.componentButtons = await measureComponents(browser, folder, probes, BUTTON_REST_PROPS);
+      } catch (e) {
+        facts.componentButtons = probes.map((p) => Object.assign({}, p.meta || {}, { component: p.component,
+          attrs: p.attrs, painted: false, error: String(e && e.message || e).slice(0, 200) }));
       }
     }
 
