@@ -66,3 +66,5 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --targe
 | Cloning (Spec 48) | the computed route in `scripts/computed-route` (LEDGER Front H); `/sgs-update` after framework changes |
 | DB and schema questions | `/sgs-db`, `python ~/.claude/hooks/wp-blocks.py dump` |
 | Pages built with banned core blocks | `plugins/sgs-blocks/scripts/migrate-core-blocks/` (see its README) |
+| Does a build or step change what a site renders? (before any plugin or theme change that could reach Mama's, Indus or Eye Care) | `python scripts/render-check/render-check.py --from <mirror> --before <checkout> --after <checkout>` (README; accepted differences in `sites/<client>/render-accepted.<target>.json`) |
+| Custom CSS census and the "a setting already holds this" detector | `scripts/render-check/census/` (README) |

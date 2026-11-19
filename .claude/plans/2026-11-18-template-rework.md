@@ -6,7 +6,7 @@ created: 2026-11-18
 
 # Template rework: shop surfaces the cloning route fills without hand-tuning
 
-Status (2026-11-18, end of day): planned, reviewed twice by councils, and re-cut on Bean's rulings. Nothing is built: all nine tasks are open. This plan covers the shop surfaces and the before-and-after check. The general cloning work has its own brief, `.claude/prompts/2026-11-18-route-regular-pages.md`, for a second session.
+Status (2026-11-19): Task 1 is done (the render check and its self-test). Task 2 has its groundwork and Task 5 step (a) is written in a worktree; every other task is open. This plan covers the shop surfaces and the before-and-after check. The general cloning work has its own brief, `.claude/prompts/2026-11-18-route-regular-pages.md`, for a second session.
 
 ## Goal and why
 
@@ -43,7 +43,7 @@ Read this plan, `council-report.md` and `git log --oneline -15`. Find the first 
 
 ## First action
 
-`git worktree add --detach E:\sgs-tmp\wt-render-check main` and start Task 1.
+Task 2: create `local-mediatest-eyeref` as its Status says, then run the render check of `419b4cb6a` against `main` on it and on `local-indus`.
 
 ### Task 1: Before-and-after render check
 - Why: on 2026-11-18 a change for Mama's would have altered Eye Care's saved frames, caught only by a side agent reading code. Read first: `.claude/reports/2026-11-18-template-rework/checks.md`; the prototype `E:\sgs-tmp\template-rework\checks\capture.mjs` and `compare.py` and the hardened copy `E:\sgs-tmp\template-rework\class-a\checks\`; `scripts/parity/draft-live-walk.mjs`; `scripts/computed-route/lib/site-check-nav.mjs`; `scripts/local-wp/README.md` ("Scratch copies of a mirror")
@@ -51,7 +51,7 @@ Read this plan, `council-report.md` and `git log --oneline -15`. Find the first 
 - Touches: scratch mirrors only
 - Done when: `python scripts/render-check/render-check.py --self-test` proves on a scratch copy that the same build twice passes; the `cards` layout drawn as commit `9219e649c` drew it fails on the signed-in saved-items view; a failed sign-in exits 2; and the report names every signed-in view, the filled basket, the checkout and an order confirmation as reached
 - Depends on: none
-- Status: not started
+- Status: done 2026-11-19. `python scripts/render-check/render-check.py --self-test --jobs 4` passes all five cases on the committed code (reports `E:\sgs-tmp\render-check\selftest\20261119-073407`): the same build twice exits 0 with all 36 states reached; every signed-in view, the filled basket, the checkout and the order confirmation are reached on both sides; the `9219e649c` cards drawing exits 1 with only `account-saved-items` differing; a failed sign-in exits 2; a picture inverted under the same name exits 1 on pixels. Earlier runs on a machine at full load found four faults in the check itself, each fixed and covered by that run: a sign-in that timed out was not retried, a sign-in slower than 20 s was taken for a refused one (it now waits up to 60 s for the cookie and stops at once on the sign-in page's error), a marquee's resting position moved the screenshot by a pixel (elements an endless animation moves are left out of the pixel comparison and still compared by their readings), and the checkout coupon state was read with the order summary still loading on both sides (a state is now unreached while a WooCommerce loading placeholder shows outside the payment areas). As built (`scripts/render-check/README.md`): two scratch copies per run (before and after) instead of one copy swapped, so a difference can be re-captured on both sides; a hash pass of every same-origin response (bytes identical on either of two loads pass), then for the rest an element pass at 375, 768, 1440 and each uncovered stylesheet band, at rest and under forced hover and focus, plus a pixel comparison of the screenshots (pictures whose files did not change, embedded frames and fixed parts outside an open dialog left out); a difference counts only when a second round shows it. Opened states are generic (phone menu, basket drawer empty and filled, both coupon boxes, the account's address editor, the scrolled product page). The seed tries each product server-side until the shop accepts one in a basket (Mama's needs a flavour pick). The self-test has a fifth case beyond the four above (side agent's catch): a picture file changed under the same name fails on pixels. Mama's own saved-items view uses `product-cards`, so the self-test sets the account block's `wishlistLayout` to `cards` on both copies (Eye Care's setting) to exercise the `9219e649c` drawing. The census scripts and the detector are in `scripts/render-check/census/` and reproduce the class A figures on `local-mediatest-classa` (70,092 characters in 70 attributes; detector 71 confirmed, 57 likely).
 
 ### Task 2: What `main` holds for Indus and Eye Care
 - Why: both run `419b4cb6a`, `main` is 143 plugin and theme commits ahead, and a first comparison found four unwanted changes waiting. Read first: `checks.md`; `scripts/local-wp/refresh-from-remote.sh` (it only reads the server); `plugins/sgs-blocks/scripts/deploy_common.py::TARGETS`
@@ -59,7 +59,7 @@ Read this plan, `council-report.md` and `git log --oneline -15`. Find the first 
 - Touches: scratch mirrors; read-only SSH
 - Done when: `backlog.md` lists every difference on both sites with a cause commit, including the four in `checks.md`
 - Depends on: 1
-- Status: not started
+- Status: not started; groundwork done 2026-11-19. Both sites run `419b4cb6a` (four sampled files hash-identical on the server). A built checkout of `419b4cb6a` is at `E:\sgs-tmp\rc-build-419b` (worktree, own `npm ci`, webpack plus the post-build transforms; no links); main's gate-passed build of `066264f10` at `E:\sgs-tmp\rc-build-main`. `scratch-mirror.sh` can now copy a scratch copy and `scratch-mirror.sh target <copy> eye-care-test` makes `sync-build.sh` use that target's own theme.json. `eye-care-test` runs four plugins the Eye Care mirror may lack (FluentSMTP, Hostinger AI assistant, MailPoet, WooCommerce Stripe gateway). Next: create `local-mediatest-eyeref` from `local-eye-care`, mark its target, refresh it with `refresh-from-remote.sh local-mediatest-eyeref eye-care-test`, copy those plugin folders read-only from the server, then `render-check.py --from local-mediatest-eyeref --target eye-care-test --before E:\sgs-tmp\rc-build-419b --after <main checkout>` and the same `--from local-indus`. The `419b4cb6a` checkout's own `sync-build.sh` does not know `.scratch-target`, so the run may need this repo's script pointed at that build
 
 ### Task 3: Faults in the settings that exist
 - Why: seven were found by setting them on a scratch copy (`class-a-results.md`), and Bean's first batch of small items is still open. Read first: `class-a-results.md` "Settings that do not work or lose"; Spec 32 FR-32-31; Spec 02 FR-2-26; `plugins/sgs-blocks/includes/woocommerce/commerce-look/selectors.json`
@@ -83,7 +83,7 @@ Read this plan, `council-report.md` and `git log --oneline -15`. Find the first 
 - Touches: plugin, reseeds, Spec 27, Spec 32
 - Done when: the editor settings payload on `local-mamas` falls from 15,413,644 bytes; a fill and hover fill on the coupon Apply row and on one new host paint at three widths and in the editor; unset, the render check passes on every site copy
 - Depends on: 1
-- Status: not started
+- Status: step (a) written, not committed or tested, held in the worktree `E:\sgs-tmp\rc-build-5a` (main's build of `066264f10` plus the change; patch `task5a.patch` there), never in the shared folder. The detector `plugins/sgs-blocks/scripts/check-named-extension-scope.py --site <copy>` (probe `named-extension-scope-probe.php`) reads the roster and the site's live block registry: on `local-mediatest-classa` it exits 1 with 15,413,644 bytes and 277,541 named-extension attributes on 388 block types not named for them. The change: `generate-extension-attributes.js` also writes `includes/extension-attributes-scope.generated.php` (719 attributes of `named` extensions in 6 groups, each with its blocks; the main schema file is unchanged, since about ten scripts read it), and `extension-attrs-rest-register.php::sgs_extension_attribute_schema_for` leaves a group's attributes off every block it does not name. Next: run the detector on a copy with that build (expect exit 0 and a much smaller payload), open the Cart, Checkout and a page in the editor with no block-recovery prompt, run the render check (`--before E:\sgs-tmp\rc-build-main --after E:\sgs-tmp\rc-build-5a`), then commit the detector, the generator and the filter as three commits (FP-5)
 
 ### Task 6: A setting for every reusable look, each proved first
 - Why: Bean's ruling. Read first: `by-missing-setting.md`, `class-a-results.md`, Task 4's report
