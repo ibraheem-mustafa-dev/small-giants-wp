@@ -904,7 +904,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( ! logos && ! pageSection( e, R.marquee?.itemBlock ) ) {
 				return null;
 			}
-			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
+			// Logo tiles that each name themselves (an aria-label) show that name where no picture is set yet: a strip of empty
+			// picture placeholders is never an empty band, and a logo added later replaces its name (`marquee.labelledLogos`).
+			const L = R.marquee?.labelledLogos;
+			const labelled = !! L && kidsB.length >= 2 && kidsB.every( ( k ) => '' !== String( k.attrs?.[ 'aria-label' ] ?? '' ).trim() );
+			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: labelled ? { ...L.attributes } : {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
 		},
 		// A row of short non-interactive labels, each with at most a glyph, is a trust bar (its badges are its items).
 		( { e, kidsB } ) => {

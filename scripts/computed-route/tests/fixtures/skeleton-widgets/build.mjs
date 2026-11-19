@@ -126,7 +126,7 @@ export const run = ( root, logic, o = {} ) => {
 	const b = build( root );
 	const draft = draftRepo( b.html, logic );
 	const rec = { schema: '1', client: 'fixture-client', elements: b.recs, surfaces: o.surfaces || {}, sources: { files: { 'Root.dc.html': draft.hash } } };
-	return proposeSkeleton( { inventory: b.inventory, facts: facts( draft.repo, o.off || [] ), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: 'Fixture', motion: new Set(), db, factRecord: rec, openers: {}, carried: o.carried ?? null, ...( o.calSettings ? { calSettings: o.calSettings } : {} ), ...( o.clientDecisions ? { clientDecisions: o.clientDecisions } : {} ) } );
+	return proposeSkeleton( { inventory: b.inventory, facts: facts( draft.repo, o.off || [] ), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: 'Fixture', motion: o.motion ?? new Set(), db, factRecord: rec, openers: {}, carried: o.carried ?? null, ...( o.calSettings ? { calSettings: o.calSettings } : {} ), ...( o.clientDecisions ? { clientDecisions: o.clientDecisions } : {} ) } );
 };
 export const row = ( r, key ) => r.proposal.rows.find( ( x ) => x.key === key );
 export const find = ( nodes, f, out = [] ) => {

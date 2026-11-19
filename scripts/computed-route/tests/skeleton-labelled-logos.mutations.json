@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "attributes: labelled ? { ...L.attributes } : {}, absorb: true",
+		"replace": "attributes: {}, absorb: true",
+		"why": "the strip is never given the display"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const labelled = !! L && kidsB.length >= 2 &&",
+		"replace": "const labelled = !! L && kidsB.length >= 1 &&",
+		"why": "a single tile is a strip of names"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "kidsB.every( ( k ) => '' !== String( k.attrs?.[ 'aria-label' ] ?? '' ).trim() );",
+		"replace": "kidsB.some( ( k ) => '' !== String( k.attrs?.[ 'aria-label' ] ?? '' ).trim() );",
+		"why": "one labelled tile is enough"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const labelled = !! L && kidsB.length",
+		"replace": "const labelled = kidsB.length",
+		"why": "the rule's absence is not honoured"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "\"attributes\": { \"brandDisplay\": \"logo-else-text\" },",
+		"replace": "\"attributes\": { \"brandDisplay\": \"text\" },",
+		"why": "the strip shows names and never a picture"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": "filter( ( [ a, val ] ) => ! facts.enumOf?.( r.marquee.logoBlock, a )?.includes( val ) )",
+		"replace": "filter( ( [ a, val ] ) => false )",
+		"why": "a value the setting lacks passes the check"
+	}
+]
