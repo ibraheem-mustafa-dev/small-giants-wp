@@ -90,15 +90,16 @@ export function draftIdOfKey( key ) {
 
 const attrsOf = ( row ) => ( Array.isArray( row.attrs ) ? Object.fromEntries( row.attrs ) : row.attrs || {} );
 
-// Rule 1: the skeleton rows no block fits.
+// Rule 1: the skeleton rows no block fits, and the rows whose element does something no block holds (`missingFeature`: a
+// slider whose slides no slider block takes, lib/skeleton-widgets.mjs), which keep their proposed block.
 export function skeletonMissing( skeletonRows ) {
-	return skeletonRows.filter( ( r ) => ! [ 'remove', 'absorbed' ].includes( r.action ) && ( 'unresolved' === r.action || ( ! r.action && ! r.block && ! r.candidates?.length ) ) ).map( ( r ) => {
+	return skeletonRows.filter( ( r ) => r.missingFeature || ( ! [ 'remove', 'absorbed' ].includes( r.action ) && ( 'unresolved' === r.action || ( ! r.action && ! r.block && ! r.candidates?.length ) ) ) ).map( ( r ) => {
 		const draftId = r.draftId || draftIdOfKey( r.key ) || r.key;
 		const words = String( r.words || '' ).trim();
 		return {
 			rowId: `missing:${ draftId }`, draftId, construct: `element <${ r.tag }>`, from: 'skeleton', key: r.key,
-			line: `<${ r.tag }>${ words ? ` "${ words.slice( 0, 60 ) }"` : '' }: no SGS block fits it`,
-			mainFlow: mainFlowOf( { tag: r.tag, words, attrs: attrsOf( r ) } ), why: r.reason || 'the skeleton proposal has no block candidate for this element',
+			line: `<${ r.tag }>${ words ? ` "${ words.slice( 0, 60 ) }"` : '' }: ${ r.missingFeature ? 'no SGS block holds what it does' : 'no SGS block fits it' }`,
+			mainFlow: mainFlowOf( { tag: r.tag, words, attrs: attrsOf( r ) } ), why: r.missingFeature || r.reason || 'the skeleton proposal has no block candidate for this element',
 		};
 	} );
 }

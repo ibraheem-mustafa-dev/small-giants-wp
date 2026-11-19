@@ -85,6 +85,23 @@ export function decisionsProblems( facts ) {
 		...( r.drawsChildren?.blocks || [] ).map( ( x ) => [ `rules.drawsChildren ${ x.block }`, x.block ] ),
 		...[ 'block', 'step', 'question', 'result' ].map( ( k ) => [ `rules.choiceFlow.${ k }`, r.choiceFlow?.[ k ] ] ),
 		...Object.entries( r.blockOwnedPart?.byTemplate || {} ).map( ( [ k, x ] ) => [ `rules.blockOwnedPart.byTemplate.${ k }`, x.block ] ) ].forEach( ( [ where, slug ] ) => known( slug, where ) );
+	// The widget rules (lib/skeleton-widgets.mjs): each block is known and accepts exactly one child block, and each setting
+	// they write is one that block (or its child) has.
+	const widget = ( where, block, settings, onChild = [] ) => {
+		if ( ! block ) {
+			return;
+		}
+		known( block, where );
+		const child = facts.composition[ block ]?.accepts;
+		if ( 1 !== child?.length ) {
+			problems.push( `${ where } names ${ block }, which does not accept exactly one child block` );
+			return;
+		}
+		Object.entries( settings || {} ).forEach( ( [ k, attr ] ) => ! facts.attr( onChild.includes( k ) ? child[ 0 ] : block, attr ) && problems.push( `${ where }.settings.${ k } names ${ attr }, which ${ onChild.includes( k ) ? child[ 0 ] : block } does not have` ) );
+	};
+	widget( 'rules.accordion', r.accordion?.block, r.accordion?.settings, [ 'itemOpen', 'title', 'category' ] );
+	( r.slider?.blocks || [] ).forEach( ( b, i ) => widget( `rules.slider.blocks[${ i }]`, b.block, r.slider.settings ) );
+	widget( 'rules.tabs', r.tabs?.block, r.tabs?.settings, [ 'label' ] );
 	// A block-owned part's trigger names settings its owning block has (the control that opens the part writes them).
 	for ( const [ k, x ] of Object.entries( r.blockOwnedPart?.byTemplate || {} ) ) {
 		[ 'style', 'label', 'countStyle', 'showZero', 'ariaLabel' ].filter( ( f ) => x.trigger && ! ( x.trigger[ f ] && facts.attr( x.block, x.trigger[ f ] ) ) )

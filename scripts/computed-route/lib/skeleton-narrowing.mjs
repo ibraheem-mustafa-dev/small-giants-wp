@@ -86,7 +86,10 @@ function build( draft ) {
 	return { idx, method, values, whole, named };
 }
 
-// The state keys read anywhere inside `node`.
+// The state keys read anywhere inside `node` (`d` as draftLogicOf returns it).
+export function stateReads( d, node ) {
+	return reads( d, node );
+}
 function reads( d, node ) {
 	const out = new Set();
 	for ( const n of subtree( d.idx, node ) ) {

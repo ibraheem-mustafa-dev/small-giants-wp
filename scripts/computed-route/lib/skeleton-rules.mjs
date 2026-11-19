@@ -21,6 +21,7 @@ import { choiceFlowModel } from './skeleton-choice-flow.mjs';
 import { blockPartSurfaces } from './skeleton-surface-role.mjs';
 import { handlerOpens, opensOn } from './skeleton-handler-opens.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
+import { widgetModel } from './skeleton-widgets.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -672,6 +673,46 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
 	const role = surface.role ?? null;
 	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: view.entry( m.root )?.template.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [] } ) : null;
+	// The surface's accordions, sliders and tabs, recognised by what the draft's code does (lib/skeleton-widgets.mjs), read
+	// once on first use.
+	let widgetsRead = null;
+	const widgets = () => ( widgetsRead ||= widgetModel( { m, view, facts, R, surface, declared, topBlock: hooks.topBlock, narrows: ( c ) => !! R.optionSetFilter && narrowsList( c ) } ) );
+	// The verdict an accordion, slider or tabs part takes, or null. A handoff record that agrees is named in the reason.
+	const widgetVerdict = ( e ) => {
+		const hit = R.accordion || R.slider || R.tabs ? widgets().of( e ) : null;
+		const md = hit?.model;
+		if ( ! hit ) {
+			return null;
+		}
+		if ( 'accordionControl' === hit.rule || 'sliderControl' === hit.rule || 'tabsList' === hit.rule ) {
+			return v( md.kind, { action: 'absorbed', into: hit.into } );
+		}
+		if ( 'slider' === hit.rule ) {
+			return v( 'slider', { block: md.block, absorb: true, attributes: md.attributes, reason: `${ R.slider.reason }; ${ md.slides.length } slides, ${ md.arrows } arrow and ${ md.dots } dot controls${ md.timer ? ', a timer' : '' }${ md.drag ? ', drag' : '' }; no handoff record kind names a slider` } );
+		}
+		if ( 'tabs' === hit.rule ) {
+			return v( 'tabs', { block: R.tabs.block } );
+		}
+		if ( 'tab' === hit.rule ) {
+			const tab = facts.composition[ R.tabs.block ]?.accepts?.[ 0 ];
+			return v( 'tabs', { block: tab, attributes: R.tabs.settings?.label ? { [ R.tabs.settings.label ]: md.tabs[ hit.index ].label } : {} } );
+		}
+		const S = R.accordion.settings || {};
+		const why = `${ R.accordion.reason }; ${ md.units.length } items on state key ${ md.key } (${ md.multiple ? 'several open at once' : 'one open at a time' }); ${ md.record ? `agrees with handoff record ${ md.record }` : 'no handoff record of kind accordion names it' }`;
+		if ( 'accordion' === hit.rule ) {
+			return v( 'accordion', { block: R.accordion.block, attributes: accordionSettings( md ), reason: why } );
+		}
+		const words = widgets().itemWords( md.units[ hit.index ] );
+		const closed = md.units[ hit.index ].rendered.length ? { inner: [], handover: [] } : widgets().closedPanel( md, hit.index, m.tplFinder );
+		const open = md.multiple && md.open.includes( hit.index ) && S.itemOpen ? { [ S.itemOpen ]: true } : {};
+		const handover = [ ...words.handover, ...closed.handover ];
+		return v( 'accordion', { block: md.item, attributes: { ...words.attributes, ...open }, reason: why, ...( closed.inner.length ? { closedInner: closed.inner } : {} ), ...( handover.length ? { handover: handover[ 0 ], handovers: handover } : {} ) } );
+	};
+	// An accordion's own settings: several open at once for a keyed map of open items, and the one item open at rest.
+	const accordionSettings = ( md ) => {
+		const S = R.accordion.settings || {};
+		return { ...( md.multiple && S.several ? { [ S.several ]: true } : {} ), ...( ! md.multiple && 1 === md.open.length && S.openAtRest ? { [ S.openAtRest ]: md.open[ 0 ] } : {} ) };
+	};
 	const STRUCTURES = [
 		// A choice flow's root is sgs/choice-flow, whatever its surfaces.json kind (a modal, a form): the flow draws its frame, and
 		// its steps are composed from the record (lib/skeleton-choice-flow-tree.mjs), so the draft elements are absorbed.
@@ -707,6 +748,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const hit = panel.panelChild( e );
 			return hit ? v( hit.rule, { block: hit.block } ) : null;
 		},
+		// An accordion (its host, items and their controls), a slider (its track and its controls) and tabs (the host, the tab
+		// list and the shown panel), read by what the draft's code does (lib/skeleton-widgets.mjs).
+		( { e } ) => widgetVerdict( e ),
 		// A group whose block children are all buttons carrying a pressed or checked state (a loop of chips, or two or more) is
 		// a choice the visitor makes: inside a form element it is that form's tiles field (`optionSetForm`); anywhere else it is
 		// an option picker, which draws its own options, and when the chips' handlers write a state key another list on the
@@ -818,5 +862,5 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return null;
 	};
 
-	return { ruleFor, drawsChildren, declared, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, choiceFlow: flow };
+	return { ruleFor, drawsChildren, declared, widgets: () => ( R.accordion || R.slider || R.tabs ? widgets() : null ), iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, choiceFlow: flow };
 }

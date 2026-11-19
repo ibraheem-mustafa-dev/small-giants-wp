@@ -51,9 +51,29 @@ export function makeUnits( ctx ) {
 		const gridList = 'grid' === parent?.display && span.length === list.length;
 		return links.length >= minLinks && ( m.stacked( links ) || gridList ) && ! removedBy( span[ 0 ] ) ? span : [];
 	};
+	// A run of accordion items (rule accordion) whose parent holds other content too: one accordion with no draft element of
+	// its own holds them, beside the parent's other children.
+	const accordionRun = ( list, i ) => {
+		const at = ( k ) => cls.widgets?.()?.of( k );
+		const first = at( list[ i ] );
+		if ( 'accordionItem' !== first?.rule || first.model.host ) {
+			return [];
+		}
+		let j = i;
+		while ( j < list.length && at( list[ j ] )?.model === first.model && 'accordionItem' === at( list[ j ] ).rule ) {
+			j++;
+		}
+		return list.slice( i, j );
+	};
 	const unitsOf = ( e, list = m.blockKids( e ) ) => {
 		const out = [];
 		for ( let i = 0; i < list.length; ) {
+			const acc = accordionRun( list, i );
+			if ( acc.length ) {
+				out.push( { type: 'accordion', els: acc } );
+				i += acc.length;
+				continue;
+			}
 			const brand = typedBrandRun( list, i );
 			const icons = brand ? [] : cls.iconRun( list, i, e );
 			const run = brand || icons.length ? [] : linkRun( list, i, e );
@@ -157,5 +177,17 @@ export function makeUnits( ctx ) {
 		} );
 		return node;
 	}
-	return { unitsOf, removedBy, buildBrand, buildIcons, buildList };
+	// The accordion a run of items makes when their parent holds other content (accordionRun): a node with no draft element
+	// of its own, its settings the accordion's (the first item's row notes it), each item built as its own element.
+	function buildAccordion( els ) {
+		const D = R.accordion;
+		const md = cls.widgets().of( els[ 0 ] ).model;
+		const S = D.settings || {};
+		const attributes = { ...( md.multiple && S.several ? { [ S.several ]: true } : {} ), ...( ! md.multiple && 1 === md.open.length && S.openAtRest ? { [ S.openAtRest ]: md.open[ 0 ] } : {} ) };
+		const node = { name: D.block, attributes, innerBlocks: els.flatMap( ( k ) => [].concat( w.buildNode( k, D.block ) || [] ) ) };
+		const row = ctx.rowOf[ els[ 0 ].key ];
+		row && ( row.unitNote = `the ${ els.length } items are one ${ D.block } with no draft element of its own (their parent ${ md.parent.key } holds other content too), settings ${ JSON.stringify( attributes ) }` );
+		return node;
+	}
+	return { unitsOf, removedBy, buildBrand, buildIcons, buildList, buildAccordion };
 }

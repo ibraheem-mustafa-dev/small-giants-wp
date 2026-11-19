@@ -198,7 +198,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		carryProblems.push( ...missing );
 		Object.assign( a, carry, null != collapse?.value ? { [ collapseAttr ]: collapse.value } : {}, top.attributes || {}, carry );
 		const clash = Object.keys( carry ).filter( ( k ) => undefined !== top.attributes?.[ k ] && shown( top.attributes[ k ] ) !== shown( carry[ k ] ) );
-		r.handover && handover.push( r.handover );
+		r.handovers ? handover.push( ...r.handovers ) : r.handover && handover.push( r.handover );
 		const node = base( e, block, a );
 		// A linked form reads nothing from the draft: the saved form's own surface holds its look (Spec 48 §2). Nor does a
 		// commerce region's WooCommerce piece, which draws the region from WooCommerce; the product card inside the shop's
@@ -284,6 +284,8 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		hosts.push( { block, node, row } );
 		node.innerBlocks = e !== m.root ? buildChildren( e, block ) : R.headerSlots && block === R.headerSlots.block ? buildHeaderRows( e, block ) : R.footerSlots && block === R.footerSlots.block ? buildFooterRows( e, block ) : buildChildren( e, block );
 		hosts.pop();
+		// An accordion item the draft shows closed at rest holds the panel content read from the draft's data (rule accordion).
+		r.closedInner && ! node.innerBlocks.length && ( node.innerBlocks = r.closedInner );
 		return node;
 	}
 
@@ -291,7 +293,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// sibling it follows in the document, so Fill's width gate can hide each branch on the other's widths.
 	function buildChildren( e, parentBlock, list = undefined, withWide = ! list ) {
 		const units = unitsOf( e, list );
-		const build = ( u ) => ( 'brand' === u.type ? buildBrand( u.els ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) );
+		const build = ( u ) => ( 'accordion' === u.type ? w.buildAccordion( u.els ) : 'brand' === u.type ? buildBrand( u.els ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) );
 		const wide = withWide ? m.widthKids( e ) : [];
 		if ( ! wide.length ) {
 			return units.flatMap( build ).filter( Boolean );
@@ -359,13 +361,30 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		}
 		made.notes.length && ( rowOf[ p.into ].slotNotes = [ ...( rowOf[ p.into ].slotNotes || [] ), ...made.notes ] );
 	} );
+	// The surface's widgets (lib/skeleton-widgets.mjs): each tabs block holds one tab per control in the controls' order (the
+	// draft renders only the chosen panel, so the others are empty tabs with a handover); a slider no listed block takes keeps
+	// its proposal and its track's row is a missing-features row; every widget problem is a proposal problem.
+	const widgets = cls.widgets?.() ?? null;
+	for ( const t of widgets?.tabs ?? [] ) {
+		const node = nodeOfKey[ t.host.key ];
+		const shown = nodeOfKey[ t.panel.key ];
+		const S = R.tabs.settings || {};
+		const tab = facts.composition[ R.tabs.block ]?.accepts?.[ 0 ];
+		if ( ! node || ! shown ) {
+			continue;
+		}
+		node.innerBlocks = t.tabs.map( ( x, i ) => ( i === t.shown ? shown : { name: tab, attributes: S.label ? { [ S.label ]: x.label } : {}, innerBlocks: [], handover: [ { owner: 'content-page', kind: 'presence', detail: `tab "${ x.label }": the draft shows its panel only when it is chosen, so its content is not in the read page: add it in the tab` } ] } ) );
+	}
+	for ( const sl of widgets?.sliders ?? [] ) {
+		sl.missing && rowOf[ sl.track.key ] && ( rowOf[ sl.track.key ].missingFeature = sl.missing );
+	}
 	// A surface the client already built as a post: that post's block tree is the skeleton, so every row is settled by it.
 	rows.forEach( ( x ) => {
 		const top = rootOf( m.byKey[ x.key ] );
 		top !== m.root && ( x.strip = top.key );
 	} );
 	built && R.clientBuiltSurface && rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface', builtPost: built, low: false }, 'unresolved' === x.action ? { action: null } : {} ) );
-	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ) ];
+	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...( widgets?.problems ?? [] ), ...( db ? lintSkeleton( skeleton, db ) : [] ) ];
 	const proposal = {
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], stripRoots: ctx.stripRoots, recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
 		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),
