@@ -417,8 +417,10 @@ export function widgetModel( { m, view, facts, R, surface = {}, declared = () =>
 			// The slides' item fields (the loop variable's paths their elements print), matched to each listed block's child
 			// settings by name and role (lib/fill-list-content.mjs::matchFields): a block fits when its listed roles are taken.
 			const loop = loopOf( slides[ 0 ] );
+			// The template element that prints each item field (the first), so a slide's own copy of it can be found.
+			const fieldElement = new Map();
 			const fields = [ ...new Map( templates( t.component ).filter( ( x ) => ( x.membership?.scFor || [] ).some( ( f ) => f.key === loop.key ) )
-				.flatMap( ( x ) => ( x.holes || [] ).map( ( h ) => holeField( h, x.realTag || x.tag ) ).filter( ( f ) => f && f.head === loop.as ) ).map( ( f ) => [ f.name, { name: f.name, image: f.image } ] ) ).values() ];
+				.flatMap( ( x ) => ( x.holes || [] ).map( ( h ) => holeField( h, x.realTag || x.tag ) ).filter( ( f ) => f && f.head === loop.as ).map( ( f ) => ( fieldElement.has( f.name ) || fieldElement.set( f.name, x.key ), f ) ) ).map( ( f ) => [ f.name, { name: f.name, image: f.image } ] ) ).values() ];
 			const childKeys = ( child ) => facts.q( "SELECT attr_name, attr_type, role FROM block_attributes WHERE block_slug = ? AND role IN ( 'text-content', 'content', 'image-object' ) AND ( css_property IS NULL OR css_property = '' ) ORDER BY rowid", child ).map( ( r ) => ( { key: r.attr_name, type: r.attr_type, role: r.role } ) );
 			const fit = ( R.slider.blocks || [] ).find( ( b ) => {
 				const child = facts.composition[ b.block ]?.accepts?.[ 0 ];
@@ -427,6 +429,10 @@ export function widgetModel( { m, view, facts, R, surface = {}, declared = () =>
 				const taken = Object.values( map ).map( ( k ) => keys.find( ( x ) => x.key === k ) ).filter( Boolean );
 				return child && ( b.roles || [] ).every( ( role ) => taken.some( ( k ) => keyRoles( k )[ 0 ] === role ) );
 			} ) ?? null;
+			// The slide block's content settings the loop's fields fill, each with the template element that prints it: what a slide's
+			// parts are read from (lib/skeleton-child-slots.mjs::slideSlots).
+			const slideChild = fit ? facts.composition[ fit.block ]?.accepts?.[ 0 ] : null;
+			const slideFields = slideChild ? Object.entries( matchFields( fields, childKeys( slideChild ) ).map ).filter( ( [ name ] ) => fieldElement.has( name ) ).map( ( [ name, key ] ) => ( { key, element: fieldElement.get( name ) } ) ) : [];
 			// The controls and the wrappers that hold nothing but controls go into the slider, which draws its own arrows and dots.
 			const controlsOnly = ( x ) => controls.includes( x ) || ( ! m.words( x ) && m.blockKids( x ).length > 0 && m.blockKids( x ).every( controlsOnly ) );
 			const parts = new Set( controls.map( ( c ) => {
@@ -437,7 +443,7 @@ export function widgetModel( { m, view, facts, R, surface = {}, declared = () =>
 				return top;
 			} ) );
 			const S = R.slider.settings || {};
-			const model = { kind: 'slider', track, slides, controls, parts: [ ...parts ], arrows: arrows.length, dots: dots.length, timer, drag, fields: fields.map( ( f ) => f.name ), block: fit?.block ?? null };
+			const model = { kind: 'slider', track, slides, slideFields, controls, parts: [ ...parts ], arrows: arrows.length, dots: dots.length, timer, drag, fields: fields.map( ( f ) => f.name ), block: fit?.block ?? null };
 			if ( fit ) {
 				const has = ( a ) => a && facts.attr( fit.block, a );
 				const speed = timer && Number.isFinite( timer.delay ) ? timer.delay : undefined;

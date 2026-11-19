@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "Object.keys( parts.slots ).length && ( slide.draftSlots = parts.slots );",
+		"replace": "",
+		"why": "a slide's parts are computed and dropped"
+	},
+	{
+		"file": "lib/skeleton-widgets.mjs",
+		"find": "const slideFields = slideChild ? Object.entries(",
+		"replace": "const slideFields = false ? Object.entries(",
+		"why": "the slider model carries no field-to-element pairs"
+	},
+	{
+		"file": "lib/skeleton-child-slots.mjs",
+		"find": "entry( e )?.template?.key === f.element );",
+		"replace": "true );",
+		"why": "every part is read at the slide's own box"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "fields: r.slideFields, slide: s, m,",
+		"replace": "fields: r.slideFields, slide: r.slides[ 0 ], m,",
+		"why": "every slide reads the first slide's elements"
+	},
+	{
+		"file": "lib/skeleton-classify.mjs",
+		"find": "{ slides: r.slides, slideFields: r.slideFields }",
+		"replace": "{ slides: r.slides }",
+		"why": "the verdict's field pairs never reach the proposal"
+	}
+]

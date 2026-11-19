@@ -134,3 +134,27 @@ export function collapsePoint( { e, states = [], thresholds = [] } ) {
 	}
 	return 1 === found.size ? { value: [ ...found ][ 0 ] } : { note: `${ found.size } width thresholds show this navigation, so no collapse point` };
 }
+
+// draftSlots for one slide of a slider: the slide block's parts read at the elements that print the loop's fields in this slide's
+// own copy (a review's quote and reviewer name), so each part's look (size, colour) is the draft's, never the block's default.
+// cfg: the slider rule's `slideSlots`, { <content setting the slide block holds>: <a setting calibrated on that part> }; fields:
+// [ { key: the content setting a loop field fills, element: the fact record's template key of the element printing it } ];
+// settings: the slide block's calibrated settings with their slots; entry( e ): the fact record's entry of an inventory element.
+// Returns { slots: { <path>: finder }, notes }.
+export function slideSlots( { cfg, fields = [], slide, m, entry, finder, settings = {} } ) {
+	const out = { slots: {}, notes: [] };
+	for ( const f of fields ) {
+		const setting = cfg?.[ f.key ];
+		const slot = setting ? settings[ setting ]?.slot : null;
+		if ( ! setting ) {
+			continue;
+		}
+		if ( 'string' !== typeof slot || '' === slot || slot.includes( '::' ) ) {
+			out.notes.push( `the calibration has no element slot for ${ setting }, so the slide's ${ f.key } is not read` );
+			continue;
+		}
+		const el = withinTree( m, slide ).find( ( e ) => entry( e )?.template?.key === f.element );
+		el ? out.slots[ slot ] = finder( el ) : out.notes.push( `the slide holds no element printing ${ f.key }, so its look is not read` );
+	}
+	return out;
+}

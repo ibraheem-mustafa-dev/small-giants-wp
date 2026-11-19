@@ -12,7 +12,7 @@ import { lintSkeleton } from '../lint.mjs';
 import { inventoryModel } from './skeleton-model.mjs';
 import { listArrangement } from './skeleton-arrangement.mjs';
 import { makeClassifier, overrideFor, W } from './skeleton-classify.mjs';
-import { collapsePoint, childSlots, unitSlots } from './skeleton-child-slots.mjs';
+import { collapsePoint, childSlots, unitSlots, slideSlots } from './skeleton-child-slots.mjs';
 import { mediaSelfSlot, partSlots, placePart, codeItemSlots, drawnSvgParts, itemSlots, chipSlots } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
@@ -297,7 +297,13 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			// A slider draws its slides as its one child block, one per slide: each child reads its card's look at its own
 			// draft slide, and Fill writes each child's words from the loop (lib/fill-list-content.mjs::listDecisions).
 			const slideBlock = r.slides ? composition[ block ]?.accepts?.[ 0 ] : null;
-			slideBlock && ( node.innerBlocks = r.slides.map( ( s ) => base( s, slideBlock, {} ) ) );
+			slideBlock && ( node.innerBlocks = r.slides.map( ( s ) => {
+				const slide = base( s, slideBlock, {} );
+				// Each slide's parts are read at the elements that print the loop's fields (rules.slider.slideSlots).
+				const parts = slideSlots( { cfg: R.slider?.slideSlots, fields: r.slideFields, slide: s, m, entry: ( x ) => view.entry( x ), finder, settings: calSettings( slideBlock ) } );
+				Object.keys( parts.slots ).length && ( slide.draftSlots = parts.slots );
+				return slide;
+			} ) );
 			return [ node, ...takeVariants( node ) ];
 		}
 		if ( ! m.blockKids( e ).length && m.widthKids( e ).length && 'leaf' === composition[ block ]?.composition_role ) {

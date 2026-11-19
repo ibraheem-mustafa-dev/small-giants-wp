@@ -774,7 +774,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		}
 		if ( 'slider' === hit.rule ) {
 			// The slides travel with the verdict: each is one child the slider draws, read for its card's look at its own slide.
-			return v( 'slider', { block: md.block, absorb: true, attributes: md.attributes, slides: md.slides, reason: `${ R.slider.reason }; ${ md.slides.length } slides, ${ md.arrows } arrow and ${ md.dots } dot controls${ md.timer ? ', a timer' : '' }${ md.drag ? ', drag' : '' }; no handoff record kind names a slider` } );
+			return v( 'slider', { block: md.block, absorb: true, attributes: md.attributes, slides: md.slides, slideFields: md.slideFields, reason: `${ R.slider.reason }; ${ md.slides.length } slides, ${ md.arrows } arrow and ${ md.dots } dot controls${ md.timer ? ', a timer' : '' }${ md.drag ? ', drag' : '' }; no handoff record kind names a slider` } );
 		}
 		if ( 'tabs' === hit.rule ) {
 			return v( 'tabs', { block: R.tabs.block } );
