@@ -164,6 +164,9 @@ ALLOW_RUNTIME = {
         ("the fixture builder reads `<prop>Unit` only when the block's own declared attributes (blk['attrs']) carry it",
          ("if f'{prop}Unit' in blk['attrs']:", "f'numeric (sibling {prop}Unit attr supplies the CSS unit)'",
           "unit_attr = f'{prop}Unit'")),
+    'scripts/computed-route/lib/fill-part-look.mjs':
+        ("the part-look pairing returns `<attr>Unit` only when the block's own attribute names (buildLook's `names`) carry it",
+         ('names.has( `${ attr }Unit` ) ? `${ attr }Unit` : null',)),
     'plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js':
         ("the gate looks `<attr>Unit` up in the block's own attributes and composes a default only when the block declares it",
          ('allAttrs[ `${ attrName }Unit` ]',)),
