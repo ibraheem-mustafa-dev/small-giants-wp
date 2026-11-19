@@ -24,6 +24,28 @@ function opening( d, node ) {
 	return out;
 }
 
+// The state keys the setState calls inside `node` write with a closing value (a falsy literal).
+function closing( d, node ) {
+	const out = new Set();
+	for ( const n of subtree( d.idx, node ) ) {
+		if ( 'CallExpression' !== n.type || ! isThisMember( n.callee, 'setState' ) ) {
+			continue;
+		}
+		const arg = n.arguments[ 0 ];
+		const obj = 'ObjectExpression' === arg?.type ? arg : isFn( arg ) && 'ObjectExpression' === arg.body?.type ? arg.body : null;
+		( obj?.properties || [] ).filter( ( p ) => 'ObjectProperty' === p.type && ! p.computed && keyName( p ) && falsy( p.value ) ).forEach( ( p ) => out.add( keyName( p ) ) );
+	}
+	return out;
+}
+
+// The state keys a component's renderVals handler `handler` writes with a closing value: the handler that shuts a surface
+// open on one of them. o: { folder, record, component, handler }.
+export function handlerCloses( { folder, record, component, handler } ) {
+	const d = draftLogicOf( { folder, record, component } );
+	const value = d?.values.get( handler );
+	return value ? closing( d, value ) : new Set();
+}
+
 // The state keys a component's renderVals handler `handler` writes with an opening value (an empty Set when the record
 // names no draft file for the component or the handler is not a renderVals key). o: { folder, record, component, handler }.
 export function handlerOpens( { folder, record, component, handler } ) {

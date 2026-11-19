@@ -199,7 +199,11 @@
 				},
 				{
 					"block": "sgs/nav-drawer-menu",
-					"reason": "draws its items, numbers and carets from a WordPress menu"
+					"reason": "draws its items, numbers and carets from a WordPress menu",
+					"childSlots": {
+						"resting": "itemColour",
+						"current": "itemColourCurrent"
+					}
 				}
 			]
 		},
@@ -362,6 +366,13 @@
 			"clients": [ "indus-foods" ],
 			"part": "burger",
 			"reason": "a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)"
+		},
+		"drawerClose": {
+			"part": "close",
+			"taughtBy": { "client": "mamas-munches-redesign", "key": "SiteHeader/59", "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe" },
+			"clients": [ "mamas-munches-redesign" ],
+			"scope": "a button with no letter or digit in its words, on a drawer surface, whose click handler writes a closing value (a falsy literal) to a state key one of the record's drawer surfaces holds at true when open",
+			"reason": "the drawer block draws its own close button, so the draft's close button is the drawer's close part: absorbed into the drawer root, its look read at the close part's calibrated slot (lib/skeleton-part-slots.mjs::partSlots); a worded button or link that also shuts the drawer (a menu link) stays its own block"
 		},
 		"pillButton": {
 			"block": "sgs/button",

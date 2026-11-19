@@ -19,7 +19,7 @@ import { filterRail } from './skeleton-filter-rail.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
 import { blockPartSurfaces } from './skeleton-surface-role.mjs';
-import { handlerOpens, opensOn } from './skeleton-handler-opens.mjs';
+import { handlerOpens, handlerCloses, opensOn } from './skeleton-handler-opens.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
 import { widgetModel } from './skeleton-widgets.mjs';
 import { keptSvg } from './fill-icon.mjs';
@@ -667,6 +667,16 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const handlerKeys = ( e ) => ( [ 'a', 'button' ].includes( e.tag ) && facts.repo && facts.client
 		? handlerOpens( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } )
 		: new Set() );
+	// A glyph-only button (no letter or digit in its words) on a drawer surface whose click handler writes a closing value to a
+	// key one of the record's drawer surfaces opens on: the drawer block's own close button (rules.drawerClose).
+	const closesDrawer = ( e ) => {
+		const h = 'button' === e.tag && facts.repo && facts.client ? handlerOf( e ) : null;
+		if ( ! h || /[\p{L}\p{N}]/u.test( m.words( e ) || '' ) ) {
+			return false;
+		}
+		const keys = handlerCloses( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: h } );
+		return Object.values( view.surfaces ).some( ( s ) => 'drawer' === s.kind && opensOn( s, keys ) );
+	};
 	// A button or link that opens a drawer surface: its click handler writes a state key one of the drawer's surfaces.json
 	// states holds at true, or the handler is named in the drawer's recorded opener words.
 	const opensDrawer = ( e ) => {
@@ -789,6 +799,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const nav = R.drawerOpener && 'nav' !== e.tag && opensDrawer( e ) ? burgerNav() : null;
 			return nav && nav.key !== e.key ? v( 'drawerOpener', { action: 'absorbed', into: nav.key } ) : null;
 		},
+		// The drawer's own close button: the drawer block draws it (its close part), so it is absorbed there.
+		( { e } ) => ( R.drawerClose && 'drawer' === surface.kind && e !== m.root && closesDrawer( e ) ? v( 'drawerClose', { action: 'absorbed', into: m.root.key } ) : null ),
 		// A direct child of a header's disclosure panel, told apart by its declared sizing, own paint and a loop of links:
 		// a growing child holding a run of links is a mega group, a fixed or ratio-sized painted box without links an aside,
 		// and any other growing child a plain container (lib/skeleton-panel-rules.mjs).

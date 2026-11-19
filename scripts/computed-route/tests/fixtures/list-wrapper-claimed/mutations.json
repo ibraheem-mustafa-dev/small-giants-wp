@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/skeleton-propose.mjs", "find": " || ( r.rule && r.absorb ) ? [] : unitsOf( e );", "replace": " ? [] : unitsOf( e );", "why": "a drawer's nav would be unwrapped as a bare list wrapper before the navigation rule makes it the drawer menu" },
+	{ "file": "lib/skeleton-propose.mjs", "find": " || ( r.rule && r.absorb ) ? [] : unitsOf( e );", "replace": " || r.rule || ! r.rule ? [] : unitsOf( e );", "why": "every bare list wrapper would be kept" }
+]

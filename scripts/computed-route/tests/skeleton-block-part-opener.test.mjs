@@ -15,7 +15,7 @@ import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
-import { handlerOpens, opensOn } from '../lib/skeleton-handler-opens.mjs';
+import { handlerOpens, handlerCloses, opensOn } from '../lib/skeleton-handler-opens.mjs';
 import { blockPartSurfaces } from '../lib/skeleton-surface-role.mjs';
 import { narrowedLists } from '../lib/skeleton-narrowing.mjs';
 
@@ -200,6 +200,47 @@ test( 'decisionsProblems refuses a block-owned part trigger naming a setting its
 	const bad = decisionsProblems( facts( REPO, ( R ) => ( R.blockOwnedPart.byTemplate.cart.trigger.label = 'noSuchSetting' ) ) );
 	assert.ok( bad.some( ( p ) => /blockOwnedPart\.byTemplate\.cart\.trigger\.label/.test( p ) ) );
 	assert.ok( decisionsProblems( facts( REPO, ( R ) => delete R.blockOwnedPart.byTemplate.cart.trigger.style ) ).some( ( p ) => /trigger\.style/.test( p ) ) );
+} );
+
+// A drawer surface: its top row holds the logo and a close button; its body a worded link.
+const DRAWER = ( close = {} ) => [
+	[ 30, null, 'aside', '', { depth: 0, attrs: { 'aria-label': 'Menu' } } ],
+	[ 31, 30, 'div', '', { display: 'flex' } ],
+	[ 32, 31, 'img', '', { depth: 2, attrs: { src: 'logo.png', alt: 'Logo' } } ],
+	[ 33, 31, 'button', close.words ?? '×', { depth: 2, click: close.click ?? 'closeMenu', attrs: { 'aria-label': 'Close menu' } } ],
+	[ 34, 30, 'a', 'Shop all', { click: 'closeMenu', attrs: { href: '/shop/' } } ],
+];
+function runDrawer( o = {} ) {
+	const list = DRAWER( o.close );
+	const draft = draftRepo( LOGIC( `${ VALS }, closeMenu: () => this.setState( { menu: false } ), noop: () => this.setState( { seen: true } )` ) );
+	const elements = Object.fromEntries( list.map( ( [ n, p, tag, , x ] ) => [ `Root/${ n }`, rec( n, p, tag, x, chainOf( list, n ) ) ] ) );
+	const factRecord = { schema: '1', client: 'fixture-client', elements, surfaces: SURFACES(), sources: { files: { 'Root.dc.html': draft.hash } } };
+	const inventory = { checks: {}, source: 'fixture', root: 'aside', generated: 'fixture', elements: list.map( ( [ n, p, tag, words, x ] ) => el( n, p, tag, words, x ) ) };
+	return proposeSkeleton( { inventory, facts: facts( draft.repo, o.edit ), surface: 'drawer-menu', surfaceKind: o.kind ?? 'drawer', surfaceName: 'Menu', db, factRecord, openers: { 'S-05': 'Menu button (toggleMenu)' }, pageMap: [] } );
+}
+
+test( 'MUST FAIL: a drawer\'s glyph-only button whose handler closes the drawer is the drawer block\'s own close part, absorbed into the drawer root', () => {
+	const row = rowOf( runDrawer(), 'Root/33#0' );
+	assert.deepEqual( [ row.action, row.rule, row.into ], [ 'absorbed', 'drawerClose', 'Root/30#0' ] );
+} );
+
+test( 'NEGATIVE: a worded link that also shuts the drawer, a button whose handler opens nothing it closes, a header\'s close and the rule removed keep the control as its own block', () => {
+	assert.notEqual( rowOf( runDrawer(), 'Root/34#0' ).rule, 'drawerClose', 'a menu link that closes the drawer as it navigates is a link' );
+	assert.notEqual( rowOf( runDrawer( { close: { click: 'noop' } } ), 'Root/33#0' ).rule, 'drawerClose', 'a handler writing an opening value closes nothing' );
+	assert.notEqual( rowOf( runDrawer( { close: { words: 'Close' } } ), 'Root/33#0' ).rule, 'drawerClose', 'a worded button is a button' );
+	assert.notEqual( rowOf( runDrawer( { kind: 'page' } ), 'Root/33#0' ).rule, 'drawerClose', 'only on a drawer surface' );
+	assert.notEqual( rowOf( runDrawer( { edit: ( R ) => delete R.drawerClose } ), 'Root/33#0' ).rule, 'drawerClose', 'the rule removed' );
+	const f = facts( REPO );
+	assert.deepEqual( decisionsProblems( f ), [], 'the decisions file stays sound' );
+} );
+
+test( 'handlerCloses reads the keys a handler writes with a falsy literal, never names', () => {
+	const { repo, hash } = draftRepo( LOGIC( `${ VALS }, clear: () => this.setState( { a: 0, b: '', c: undefined, d: null, e: true } )` ) );
+	const at = ( handler ) => [ ...handlerCloses( { folder: path.join( repo, 'sites', 'fixture-client', 'handoff' ), record: { sources: { files: { 'Root.dc.html': hash } } }, component: 'Root', handler } ) ].sort();
+	assert.deepEqual( at( 'closeBag' ), [ 'bag', 'toast' ] );
+	assert.deepEqual( at( 'openBag' ), [], 'an opening value closes nothing' );
+	assert.deepEqual( at( 'clear' ), [ 'a', 'b', 'c', 'd' ] );
+	assert.deepEqual( at( 'missing' ), [] );
 } );
 
 test( 'MUST FAIL: the basket control that is the cart block is read at the cart’s trigger part (its pill padding, border and radius); with no calibrated trigger, or the rule’s selfPart removed, no slot', () => {

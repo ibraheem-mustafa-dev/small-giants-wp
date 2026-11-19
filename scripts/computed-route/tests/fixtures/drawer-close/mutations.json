@@ -1,0 +1,6 @@
+[
+	{ "file": "lib/skeleton-rules.mjs", "find": "( { e } ) => ( R.drawerClose && 'drawer' === surface.kind && e !== m.root && closesDrawer( e ) ? v( 'drawerClose', { action: 'absorbed', into: m.root.key } ) : null ),", "replace": "", "why": "the draft's close button would stay a button beside the drawer's own close" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "( { e } ) => ( R.drawerClose && 'drawer' === surface.kind && e !== m.root", "replace": "( { e } ) => ( R.drawerClose && e !== m.root", "why": "a close button on a page would be absorbed" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "if ( ! h || /[\\p{L}\\p{N}]/u.test( m.words( e ) || '' ) ) {", "replace": "if ( ! h ) {", "why": "a worded button that shuts the drawer would be absorbed" },
+	{ "file": "lib/skeleton-handler-opens.mjs", "find": "keyName( p ) && falsy( p.value ) ).forEach", "replace": "keyName( p ) ).forEach", "why": "a handler writing an opening value would count as closing" }
+]
