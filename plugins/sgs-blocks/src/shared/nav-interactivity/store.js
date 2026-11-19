@@ -959,8 +959,9 @@ function openDrawerFor( ctx, trigger ) {
 	);
 
 	// The shared scrim's own click listener (click-to-close). Its VISIBILITY is
-	// CSS-driven (`:root:has(.{uid}[open])`, includes/helpers-scrim.php), not
-	// toggled here — this store only wires the click; the `e.target === dialog`
+	// script-driven by the shared assets/js/scrim-state.js (it sets
+	// `data-sgs-scrim-on` while the drawer is open; includes/helpers-scrim.php),
+	// not toggled here — this store only wires the click; the `e.target === dialog`
 	// (`::backdrop`) idiom silently stops working with `.show()`, which is why a
 	// real element is still needed for the non-modal path (and works the same
 	// way for modal).
