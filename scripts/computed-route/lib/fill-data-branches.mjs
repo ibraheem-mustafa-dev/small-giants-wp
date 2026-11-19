@@ -6,6 +6,7 @@
 // its opposite stays as it is, so they never displace each other. A surface whose inventory marks no branch is read at rest,
 // exactly as before.
 import { forceRenderVals } from './skeleton-data-branches.mjs';
+import { SERVED_ROOT } from './key-space.mjs';
 
 // The patches to force for one surface's inventory: [ { hosts, keys } ], one per host list, with the keys of every branch the
 // inventory read on those hosts. None when the inventory marks no element.
@@ -16,7 +17,9 @@ export function branchesShown( inventory ) {
 		if ( ! b?.keys ) {
 			continue;
 		}
-		const hosts = b.hosts?.length ? b.hosts : [ b.component ];
+		// A mark saved before marks named their hosts holds the component alone: it is forced where the inventory's hosts rule
+		// forces it (lib/skeleton-data-branches.mjs::inventoryBranches), the component and the served root.
+		const hosts = b.hosts?.length ? b.hosts : [ b.component, SERVED_ROOT ];
 		const id = JSON.stringify( hosts );
 		out.has( id ) || out.set( id, { hosts, keys: {} } );
 		Object.assign( out.get( id ).keys, b.keys );

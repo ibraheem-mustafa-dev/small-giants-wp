@@ -72,11 +72,32 @@ const INVENTORY = { elements: [ { key: 'Root/0#0' }, { key: 'Root/1#0' }, { key:
 
 test( 'MUST FAIL: the patches to force come from the inventory\'s branch marks, merged per host list', () => {
 	assert.deepEqual( branchesShown( INVENTORY ), [ { hosts: [ 'Page', 'Root' ], keys: { note: 'note', hasNote: true } } ] );
-	const two = { elements: [ ...INVENTORY.elements, { key: 'Root/9#0', branch: { component: 'Page', hosts: [ 'Page', 'Root' ], keys: { hasAcct: true } } }, { key: 'Root/2#0', branch: { component: 'Card', keys: { open: true } } } ] };
+	const two = { elements: [ ...INVENTORY.elements, { key: 'Root/9#0', branch: { component: 'Page', hosts: [ 'Page', 'Root' ], keys: { hasAcct: true } } }, { key: 'Root/2#0', branch: { component: 'Card', hosts: [ 'Card' ], keys: { open: true } } } ] };
 	assert.deepEqual( branchesShown( two ), [ { hosts: [ 'Page', 'Root' ], keys: { note: 'note', hasNote: true, hasAcct: true } }, { hosts: [ 'Card' ], keys: { open: true } } ] );
 	assert.deepEqual( branchesShown( { elements: [ { key: 'Root/1#0' } ] } ), [] );
 	assert.deepEqual( branchesShown( null ), [] );
 	assert.deepEqual( branchesShown( { elements: [ { key: 'Root/4#0', branch: { component: 'Page' } } ] } ), [] );
+} );
+
+test( 'MUST FAIL: a mark with no hosts (an inventory saved before the marks named them) is forced on the component and the served root host', async () => {
+	// Mama's confirmation inventory as it was saved before the marks named their hosts: a mark holds the component and keys only.
+	const saved = JSON.parse( fs.readFileSync( path.join( HERE, 'fixtures', 'template-piece-order', 'mamas-confirmation-inventory.json' ), 'utf8' ) );
+	const marks = saved.elements.filter( ( e ) => e.branch );
+	assert.ok( marks.length && marks.every( ( e ) => undefined === e.branch.hosts ), 'the fixture is an inventory whose marks name no hosts' );
+	const patches = branchesShown( saved );
+	assert.deepEqual( patches.map( ( p ) => p.hosts ), [ [ 'Confirmation', 'Root' ] ] );
+	// The served draft's page is the host named Root: that mounted logic gets the patch.
+	const logic = { renderVals: () => ( { hasNote: false } ), setState() {} };
+	globalThis.document = { querySelectorAll: () => [ { dataset: { scName: 'Root' }, __reactFiber$x: { stateNode: { logic, __name: 'Root' }, return: null } } ] };
+	try {
+		assert.equal( await showBranches( { evaluate: async ( fn, arg ) => fn( arg ) }, patches ), 1 );
+		assert.equal( logic.renderVals().hasNote, true );
+	} finally {
+		delete globalThis.document;
+	}
+	// Negative control: a mark that names its hosts keeps exactly them.
+	const named = { elements: [ { key: 'Root/2#0', branch: { component: 'Card', hosts: [ 'Card' ], keys: { open: true } } } ] };
+	assert.deepEqual( branchesShown( named ), [ { hosts: [ 'Card' ], keys: { open: true } } ] );
 } );
 
 test( 'MUST FAIL: Fill reads a forced branch\'s element with its own computed style; with no branch the resting read is unchanged', async ( t ) => {
