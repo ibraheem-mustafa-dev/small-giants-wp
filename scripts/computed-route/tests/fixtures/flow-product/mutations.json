@@ -1,0 +1,10 @@
+[
+ {"file":"lib/site-build-plan.mjs","find":"\t\tconst tree = withFlowProduct( built, row, flowProducts );\n","replace":"\t\tconst tree = built;\n","why":"the site build never writes the flow's product (data-flow-product-id stays 0)"},
+ {"file":"lib/site-build-flow-product.mjs","find":"const BASKET_CALLS = new Set( [ 'add', 'push', 'unshift' ] );","replace":"const BASKET_CALLS = new Set( [ 'push', 'unshift' ] );","why":"a cart.add call names no product"},
+ {"file":"lib/site-build-flow-product.mjs","find":"( n ) => 'StringLiteral' === n.type && known.has( n.value )","replace":"( n ) => 'StringLiteral' === n.type","why":"any string in a basket call is taken for a product"},
+ {"file":"lib/site-build-flow-product.mjs","find":"\t\tif ( 1 !== named.length ) {","replace":"\t\tif ( ! named.length ) {","why":"a flow naming two products takes the first"},
+ {"file":"lib/site-build-flow-product.mjs","find":"\t\tif ( ! Number.isInteger( id ) ) {\n\t\t\tnotes.push(","replace":"\t\tif ( false ) {\n\t\t\tnotes.push(","why":"a product the site lacks writes an empty id"},
+ {"file":"lib/site-build-flow-product.mjs","find":"const id = 'sgs_choice_flow' === row?.postType ? ids[ row.slug ] : undefined;","replace":"const id = ids[ row.slug ];","why":"a page row sharing a flow's slug gets a product id"},
+ {"file":"lib/site-build-flow-product.mjs","find":"return tree.map( ( n ) => ( FLOW_BLOCK === n.name ? { ...n, attributes: { ...( n.attributes || {} ), [ SETTING ]: id } } : n ) );","replace":"tree.forEach( ( n ) => { n.attributes = { ...( n.attributes || {} ), [ SETTING ]: id }; } );\n\treturn tree;","why":"the stored tree is changed in place and every root block takes the id"},
+ {"file":"lib/site-build-flow-product.mjs","find":"( r ) => 'sgs_choice_flow' === r.postType && /^surfaces","replace":"( r ) => /^surfaces","why":"a non-flow row is read for a flow product"}
+]

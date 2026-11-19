@@ -1,0 +1,19 @@
+<!doctype html>
+<html><head><meta charset="utf-8"></head><body>
+<x-dc>
+<section id="build"><h2>Build your box</h2><button onClick="{{ addBox }}">Add to basket</button><button onClick="{{ addTrial }}">Try the trio</button></section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { size: 20, base: 'oat' };
+  renderVals() {
+    const S = this.state;
+    const cart = window.MM.cart;
+    return {
+      addBox: () => cart.add({ key: ['box', S.size, S.base].join('-'), id: 'box', name: 'Box · ' + S.size, qty: 1 }),
+      addTrial: () => window.track('trio'),
+    };
+  }
+}
+</script>
+</body></html>

@@ -1,0 +1,4 @@
+{ "schema_version": "1.0", "records": [
+  { "id": "S-08", "kind": "form", "name": "Build your box", "dc": "Home", "route": "home" },
+  { "id": "S-09", "kind": "modal", "name": "Add lenses", "dc": "Lenses", "route": "*" }
+] }
