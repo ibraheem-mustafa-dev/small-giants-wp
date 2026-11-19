@@ -1,9 +1,14 @@
-// Bean's one batched intake review (Spec 48 FR-48-17, Appendix C "Intake record" `review` and "Review marks").
+// The intake review (Spec 48 FR-48-17, Appendix C "Intake record" `review` and "Review marks"), optional for Bean.
 // review.md is generated from intake.json; Bean ticks a section's "Accept all" box and writes a mark only in the Mark
 // cell of a row he wants changed. A row's own mark beats Accept all; a flag row left blank is `accept-flagged` and a
 // not-a-defect row left blank is `not-a-defect` (Appendix C calls each "the default"); every other row needs Accept all
-// or its own mark, notices included: Appendix C gives notices the one value `noted`, so a notice is acknowledged,
-// never defaulted.
+// or its own mark, notices included (Appendix C gives notices the one value `noted`), unless the apply runs with
+// `--go-through`.
+//
+// `--go-through` (applyReview `goThrough`, Bean 2026-11-18: "a clone goes through by default"): a row with no mark of
+// its own and no Accept all takes its proposal as its mark, the value its section's Accept all would give it, recorded
+// as `by: 'go-through'` so a report lists the defaults apart from Bean's marks. A row with nothing to take (`open`) is
+// not marked and does not block: it is listed with what the route does with it downstream.
 //
 // Content hash: SHA-256 of a canonical (sorted-key) JSON of HASH_FIELDS[rowType] plus `draftId`, so a mark carries
 // across an identical re-export and is dropped when what the row shows changes. Proposal noise (confidence, scores,
@@ -73,6 +78,32 @@ export const MARKS = {
 
 // Row types whose blank Mark cell takes the first value (Appendix C calls it "the default" for both).
 export const DEFAULTED = [ 'flag', 'not-a-defect' ];
+
+// Rows with no proposal to take, by cause: why nothing could be taken and what each later stage does with the row
+// (the downstream text is read from those stages' code: lib/skeleton-propose.mjs, lib/intake-missing.mjs,
+// theme-extractor/confirmed_palette.py, plugins/sgs-blocks/scripts/site_info_intake.py).
+export const OPEN_CAUSES = {
+	'skeleton-unresolved': {
+		why: 'no block fits this element and no finaliser pick answered it',
+		downstream: 'the skeleton writer builds nothing for this element or anything inside it (lib/skeleton-propose.mjs::proposeSkeleton returns no node and records the row as unresolved), so the built page lacks it; the same element is a missing-feature row (lib/intake-missing.mjs), which is only a record; no later stage refuses a run for it, and a finaliser pick or a block:<slug> mark in a later apply builds it',
+	},
+	'palette-no-role': {
+		why: 'the draft colour has no proposed palette role (a header, selection or social colour, a brand colour or a shade with no slug)',
+		downstream: 'confirmed_palette.py::effective_marks treats a row with no mark as accepted and ::_mark_slugs gives an accepted row with no role no slug, so the colour fills no palette slot and no custom colour: it stays a hex value wherever a block paints it (what the one-off mark gives)',
+	},
+	'site-info-empty': {
+		why: 'the draft gave this Site Info key no value',
+		downstream: 'site_info_intake.py::read_intake refuses a row that is unmarked or holds no text (reasons "not marked in review", "row holds no text value") and provision-site-info-from-draft.py prints it as not applied, so nothing is written for this key and it keeps the value the site already holds',
+	},
+	'site-info-refused': {
+		why: 'intake refused the proposed Site Info value (it failed its shape check)',
+		downstream: 'site_info_intake.py::_value_for refuses a row with `valid: false` even when it is marked accept (reason "intake refused it"), so the value is never written and provision-site-info-from-draft.py prints the row as not applied; the key keeps the value the site already holds',
+	},
+	'missing-no-block': {
+		why: 'no SGS block or tracked gap is proposed for this missing feature',
+		downstream: 'no stage reads a missing-feature mark: the row stays in intake.json missingFeatures and review.md as a record and nothing is built for it (a row that came from a skeleton element is the unresolved skeleton row of that element, whose subtree the skeleton leaves out)',
+	},
+};
 
 export const markShapes =( rowType ) => MARKS[ rowType ].map( ( m ) => m.value ?? m.shape );
 
@@ -205,8 +236,9 @@ export function reviewRows( intake ) {
 	// FR-48-92: one row per draft catalogue product and one per catalogue gap.
 	( intake.catalogue?.products || [] ).forEach( ( r ) => add( 'catalogue', { ...r, rowId: `catalogue:${ r.draftId }` }, r.draftId, `${ r.name } (${ r.type }, from £${ r.price }${ r.variations ? `, ${ r.variations } variations` : '' }${ r.image ? '' : ', no image' })`, r.address ) );
 	( intake.catalogue?.gaps || [] ).forEach( ( g, i ) => add( 'catalogue', { ...g, rowId: `catalogue-gap:${ g.draftId }:${ g.kind }:${ i + 1 }` }, g.draftId, `gap (${ g.kind }) ${ g.draftId }`, 'recorded, not built', g.detail ) );
-	( intake.palette?.rows || [] ).forEach( ( r ) => add( 'palette-role', r, r.token, `${ r.token } ${ r.hex }`, r.roles?.length > 1 ? `role:${ r.roles.join( ',' ) }` : r.role ? `role:${ r.role }` : 'no slug (one-off)', [ r.confidence, r.why ].filter( Boolean ).join( ': ' ) ) );
-	( intake.siteInfo?.rows || [] ).forEach( ( r ) => add( 'site-info', r, r.key, `${ r.key }: ${ text( r.value ) }`, text( r.normalised ), ( r.sources || [] ).map( ( s ) => s.draftId || s.location ).filter( Boolean ).join( ', ' ) ) );
+	( intake.palette?.rows || [] ).forEach( ( r ) => add( 'palette-role', r, r.token, `${ r.token } ${ r.hex }`, r.roles?.length > 1 ? `role:${ r.roles.join( ',' ) }` : r.role ? `role:${ r.role }` : 'no slug (one-off)', [ r.confidence, r.why ].filter( Boolean ).join( ': ' ), undefined, undefined, r.roles?.length || r.role ? {} : { open: OPEN_CAUSES[ 'palette-no-role' ] } ) );
+	( intake.siteInfo?.rows || [] ).forEach( ( r ) => add( 'site-info', r, r.key, `${ r.key }: ${ text( r.value ) }`, text( r.normalised ), ( r.sources || [] ).map( ( s ) => s.draftId || s.location ).filter( Boolean ).join( ', ' ), undefined, undefined,
+		! text( r.value ).trim() ? { open: OPEN_CAUSES[ 'site-info-empty' ] } : false === r.valid ? { open: { ...OPEN_CAUSES[ 'site-info-refused' ], why: `${ OPEN_CAUSES[ 'site-info-refused' ].why }: ${ r.reason || 'failed shape validation' }` } } : {} ) );
 	( intake.flags || [] ).forEach( ( r ) => add( 'flag', r, r.draftId, `${ r.kind }: ${ r.text ?? r.url ?? '' }`, 'accept-flagged', r.why || '' ) );
 	( intake.draftDefects || [] ).forEach( ( r ) => add( 'draft-defect', r, r.draftId, describe( r ), text( r.proposed ?? r.intent ?? 'build the code\'s intent' ), text( r.why ?? r.reason ) ) );
 	unwiredRows( intake ).forEach( ( r ) => add( 'not-a-defect', r, r.draftId, `${ r.censusId ?? r.draftId } ${ text( r.note ) }`, 'not-a-defect', UNWIRED_NOTE ) );
@@ -225,14 +257,14 @@ export function reviewRows( intake ) {
 		// one the map does not hold is read.
 		const tracked = [ 'coverage', 'head' ].includes( r.from ) ? ( r.wave ? `gap:${ r.wave }` : r.excluded ? 'difference' : null ) : null;
 		const acceptAll = tracked ?? ( block && BLOCK.test( block ) ? `map:${ block }` : null );
-		add( 'missing-feature', r, r.draftId, describe( r ), tracked ?? ( block ? `map:${ block }` : 'no block proposed' ), text( r.why ?? r.reason ), acceptAll, r.mainFlow ? 'main-flow' : acceptAll ? null : 'no-block' );
+		add( 'missing-feature', r, r.draftId, describe( r ), tracked ?? ( block ? `map:${ block }` : 'no block proposed' ), text( r.why ?? r.reason ), acceptAll, r.mainFlow ? 'main-flow' : acceptAll ? null : 'no-block', acceptAll ? {} : { open: OPEN_CAUSES[ 'missing-no-block' ] } );
 	} );
 	// FR-48-77: one row per script-driven effect the recogniser maps to an SGS effect, and one per script effect no SGS effect expresses.
 	effectRows( intake.inventory?.animations?.records ).forEach( ( r ) => add( 'effect', r, r.draftId, r.text, r.unmapped ? 'difference' : 'accept', r.unmapped ? 'a Spec 38 gap: ' + r.unmapped : '', r.unmapped ? 'difference' : 'accept' ) );
 	const sk = intake.skeletons || {};
 	( Array.isArray( sk ) ? sk : Object.entries( sk ).map( ( [ surface, s ] ) => ( { surface, ...s } ) ) ).forEach( ( s ) => ( s.rows || [] ).forEach( ( r ) => add( 'skeleton-block',
 		{ surface: s.surface, ...r, action: r.action && 'unresolved' !== r.action ? r.action : undefined, rowId: r.rowId || `skeleton:${ s.surface }:${ r.key }` }, r.key,
-		`${ s.surface } ${ r.key } <${ r.tag ?? '?' }>${ r.words ? ` "${ text( r.words ) }"` : '' }`, proposalText( r ), skeletonNote( r ), MARKS[ 'skeleton-block' ][ 0 ].value, skeletonNeeds( r ), causeOf( r ) ) ) );
+		`${ s.surface } ${ r.key } <${ r.tag ?? '?' }>${ r.words ? ` "${ text( r.words ) }"` : '' }`, proposalText( r ), skeletonNote( r ), MARKS[ 'skeleton-block' ][ 0 ].value, skeletonNeeds( r ), { ...causeOf( r ), ...( ! r.block && ( ! r.action || 'unresolved' === r.action ) ? { open: OPEN_CAUSES[ 'skeleton-unresolved' ] } : {} ) } ) ) );
 	( intake.inventory?.diff || [] ).forEach( ( r ) => add( 'inventory-diff', { ...r, rowId: r.rowId || `inventory:${ r.draftId }` }, r.draftId, describe( r ), 'ours', text( r.why ?? r.reason ) ) );
 	( intake.notices?.prose || [] ).forEach( ( r ) => add( 'notice', { kind: 'prose', file: r.file, text: r.text, rowId: `notice:${ r.rowId }` }, `${ r.file }:${ r.line }`, `${ r.file }:${ r.line } ${ r.text }`, 'noted', r.why || '' ) );
 	const hosts = new Map();
@@ -302,6 +334,29 @@ const TABLE_HEAD = [ '| Row | Shows | Proposed | Confidence or reason | Mark |',
 const readingLine = ( c ) => `Rows: ${ c.total }; ${ c.read } need reading, ${ c.confident } are confident proposals that Accept all covers (skeleton block choices ${ c.skeleton }, missing features ${ c.missing }).`;
 const manifestHash = ( m ) => sha( canonical( m?.files || {} ) ).slice( 0, 16 );
 
+// The marks written as go-through defaults (`by: 'go-through'`) that still belong to a row of the record.
+export const GO_THROUGH = 'go-through';
+const defaultedCount = ( intake, rows = reviewRows( intake ) ) => {
+	const live = new Set( rows.map( ( r ) => r.rowId ) );
+	return ( intake.review || [] ).filter( ( e ) => GO_THROUGH === e.by && null !== e.mark && live.has( e.rowId ) ).length;
+};
+export const defaultsLine = ( n ) => `Taken by default: ${ n } row${ 1 === n ? '' : 's' } had no mark from Bean and took ${ 1 === n ? 'its' : 'their' } proposal (intake.mjs --apply-review --go-through; the Mark cell of such a row stays blank, and a mark Bean writes there overrides the default); rows with no proposal to take are listed in go-through-open.json.`;
+
+// review.md's text with its one "Taken by default" line set to the record's count (removed when the count is 0), put
+// after the title as renderReview puts it; nothing else in the file changes, so Bean's ticks and marks stay.
+export function withDefaultsLine( markdown, intake ) {
+	const eol = markdown.includes( '\r\n' ) ? '\r\n' : '\n';
+	const lines = markdown.split( /\r?\n/ );
+	const at = lines.findIndex( ( l ) => l.startsWith( 'Taken by default:' ) );
+	at >= 0 && lines.splice( at, '' === lines[ at + 1 ] ? 2 : 1 );
+	const n = defaultedCount( intake );
+	if ( n ) {
+		const top = lines[ 0 ]?.startsWith( '# ' ) ? ( '' === lines[ 1 ] ? 2 : 1 ) : 0;
+		lines.splice( top, 0, defaultsLine( n ), '' );
+	}
+	return lines.join( eol );
+}
+
 // The Markdown of review.md. `changed` is the rowIds changed since the previous export (by default the review rows
 // carryOver set `changed: true` on); they are listed first in their section (and surface) with a **changed** marker.
 // The skeleton section is grouped by cause (byCause: the rows needing judgement by need and proposed block, then each
@@ -314,7 +369,8 @@ export function renderReview( intake, { changed = ( intake.review || [] ).filter
 	const ch = new Set( changed );
 	const marks = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r ] ) );
 	const rows = reviewRows( intake );
-	const out = [ `# Intake review: ${ intake.client }`, '', `Taken on ${ intake.takenOn }; manifest ${ intake.manifest?.schema_version ?? '?' }, files hash ${ manifestHash( intake.manifest ) }.`, '',
+	const taken = defaultedCount( intake, rows );
+	const out = [ `# Intake review: ${ intake.client }`, '', ...( taken ? [ defaultsLine( taken ), '' ] : [] ), `Taken on ${ intake.takenOn }; manifest ${ intake.manifest?.schema_version ?? '?' }, files hash ${ manifestHash( intake.manifest ) }.`, '',
 		'How to mark: put x in a section\'s `Accept all: [ ]` box to give every row the section\'s first mark; to mark one row differently, write its mark in that row\'s Mark cell (a row\'s own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review ' + intake.client + '`.', '',
 		readingLine( readingCounts( intake, changed ) ), '',
 		notDefectLine( intake ), '',
@@ -322,7 +378,8 @@ export function renderReview( intake, { changed = ( intake.review || [] ).filter
 	ROW_TYPES.forEach( ( t ) => out.push( `- ${ SECTION_TITLES[ t ] }: ${ markShapes( t ).map( ( s ) => `\`${ s }\`` ).join( ', ' ) }` ) );
 	const line = ( r ) => {
 		const prior = marks.get( r.rowId );
-		const mark = prior && prior.contentHash === r.contentHash && ! ch.has( r.rowId ) ? prior.mark : null;
+		// A default mark (`by`) is not shown: the Mark cell holds only marks Bean wrote, so one he writes there always wins.
+		const mark = prior && prior.contentHash === r.contentHash && ! ch.has( r.rowId ) && ! prior.by ? prior.mark : null;
 		return `| \`${ r.rowId }\` | ${ ch.has( r.rowId ) ? '**changed** ' : '' }${ cell( r.shows ) } | ${ cell( r.proposed ) } | ${ cell( r.note ) } | ${ cell( mark ) } |`;
 	};
 	for ( const t of ROW_TYPES ) {
@@ -441,10 +498,14 @@ export const isoDay = () => new Date().toISOString().slice( 0, 10 );
 // Applies Bean's marks to the intake record. Per row: its own Mark cell, else the section's Accept all (the first
 // value), else the first value for a DEFAULTED row type (flag, not-a-defect), else no mark. A mark kept unchanged on a row with an unchanged hash
 // keeps its markedOn and carriedFrom; any other new mark is dated `today`. Returns { intake (review rebuilt from the
-// record's rows), problems, missing: [{ rowId, rowType, why }] }; non-empty problems or missing means the review fails.
+// record's rows), problems, missing: [{ rowId, rowType, why }], open, taken }; non-empty problems or missing means the review fails.
 // `sections` (row types) limits the check and the marks to those sections: every other row keeps its intake.json
 // review entry as it was, and review.md's other sections are not read for marks.
-export function applyReview( intake, markdown, { today = isoDay(), sections = null } = {} ) {
+// `goThrough`: a row left with no mark takes, in this order, Bean's earlier mark on it (same content hash, not a
+// default), else its section's Accept all value recorded as `by: 'go-through'`; a row with no proposal to take (`open`)
+// stays unmarked and is returned in `open` ({ rowId, rowType, why, downstream }) instead of `missing`. `taken` lists the
+// row IDs that took a default. A mark Bean wrote, a refused mark and a ticked Accept all are never replaced by a default.
+export function applyReview( intake, markdown, { today = isoDay(), sections = null, goThrough = false } = {} ) {
 	const inScope = ( t ) => ! sections || sections.includes( t );
 	const all = reviewRows( intake );
 	const rows = all.filter( ( r ) => inScope( r.rowType ) );
@@ -461,17 +522,23 @@ export function applyReview( intake, markdown, { today = isoDay(), sections = nu
 	}
 	const review = ( intake.review || [] ).filter( ( r ) => ! inScope( r.rowType ) );
 	const missing = [];
+	const open = [];
+	const taken = [];
 	for ( const r of rows ) {
 		if ( ! ( r.rowId in parsed.rowSection ) ) {
 			problems.push( `row ${ r.rowId } is not in review.md; regenerate it from intake.json` );
 		}
+		const old = prior.get( r.rowId );
 		let mark = parsed.rowMarks[ r.rowId ] ?? null;
 		let why = 'no mark of its own and its section is not accepted';
+		let by = null;
+		let refused = false;
 		if ( null !== mark ) {
 			const bad = markProblem( r.rowType, mark );
 			if ( bad ) {
 				problems.push( `row ${ r.rowId }: mark "${ mark }" refused: ${ bad }` );
 				mark = null;
+				refused = true;
 				why = 'its mark was refused';
 			}
 		} else if ( parsed.sections[ r.rowType ]?.acceptAll ) {
@@ -479,15 +546,27 @@ export function applyReview( intake, markdown, { today = isoDay(), sections = nu
 			why = 'Accept all cannot mark it: it proposes no block and no tracked gap; mark map:<block>, difference, build or gap:<wave>';
 		} else if ( DEFAULTED.includes( r.rowType ) ) {
 			mark = MARKS[ r.rowType ][ 0 ].value;
+		} else if ( goThrough ) {
+			if ( old && old.contentHash === r.contentHash && null !== old.mark && ! old.by ) {
+				mark = old.mark;
+			} else if ( ! r.open && null !== r.acceptAll ) {
+				mark = r.acceptAll;
+				by = GO_THROUGH;
+			}
 		}
-		const old = prior.get( r.rowId );
 		const keep = old && old.contentHash === r.contentHash && null !== mark && old.mark === mark;
 		review.push( { rowId: r.rowId, rowType: r.rowType, contentHash: r.contentHash, mark, markedOn: null === mark ? null : keep ? old.markedOn : today, carriedFrom: keep ? old.carriedFrom ?? null : null,
+			...( by ? { by } : {} ),
 			...( old?.changed && old.contentHash === r.contentHash ? { changed: true } : {} ),
 			// The row ID the element had before a re-export moved it (lib/intake-review-carry.mjs::carryOver) stays while the row holds.
 			...( old?.realignedFrom && old.contentHash === r.contentHash ? { realignedFrom: old.realignedFrom } : {} ) } );
+		by && taken.push( r.rowId );
 		if ( null === mark ) {
-			missing.push( { rowId: r.rowId, rowType: r.rowType, why } );
+			if ( goThrough && ! refused && r.open ) {
+				open.push( { rowId: r.rowId, rowType: r.rowType, why: r.open.why, downstream: r.open.downstream } );
+			} else {
+				missing.push( { rowId: r.rowId, rowType: r.rowType, why } );
+			}
 		}
 	}
 	const order = new Map( all.map( ( r, i ) => [ r.rowId, i ] ) );
@@ -502,7 +581,7 @@ export function applyReview( intake, markdown, { today = isoDay(), sections = nu
 		}
 	} );
 	const at = ( r ) => order.get( r.rowId ) ?? all.length;
-	return { intake: { ...intake, review: sections ? review.sort( ( a, b ) => at( a ) - at( b ) ) : review }, problems, missing };
+	return { intake: { ...intake, review: sections ? review.sort( ( a, b ) => at( a ) - at( b ) ) : review }, problems, missing, open, taken };
 }
 
 // Carrying marks across a re-run lives in lib/intake-review-carry.mjs (by row ID and content, then by the element's content).

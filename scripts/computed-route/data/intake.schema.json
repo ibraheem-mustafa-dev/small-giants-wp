@@ -592,6 +592,10 @@
           "changed": {
             "type": "boolean"
           },
+          "by": {
+            "description": "Present only on a mark `intake.mjs --apply-review --go-through` wrote as a default (lib/intake-review.mjs::applyReview `goThrough`); a mark Bean wrote has no `by`.",
+            "const": "go-through"
+          },
           "realignedFrom": {
             "description": "Every earlier row ID the row's element had, earliest first (lib/intake-review-carry.mjs::earlierIds); a record written before the list holds the single ID.",
             "oneOf": [

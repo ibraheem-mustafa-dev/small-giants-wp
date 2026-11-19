@@ -1,0 +1,158 @@
+[
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "} else if ( goThrough ) {",
+		"replace": "} else if ( false ) {",
+		"why": "the flag would do nothing: every unmarked row would still fail the apply"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "\t\t\t\tby = GO_THROUGH;\n",
+		"replace": "",
+		"why": "a default mark would not be recorded as a default"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "} else if ( ! r.open && null !== r.acceptAll ) {",
+		"replace": "} else if ( null !== r.acceptAll ) {",
+		"why": "a row with no proposal would be marked with Accept all's blind value instead of left open"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "if ( old && old.contentHash === r.contentHash && null !== old.mark && ! old.by ) {",
+		"replace": "if ( false ) {",
+		"why": "a default would replace Bean's earlier mark when its cell is blank"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "null !== old.mark && ! old.by ) {",
+		"replace": "null !== old.mark ) {",
+		"why": "an earlier default would be taken for Bean's mark and lose its by"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "if ( goThrough && ! refused && r.open ) {",
+		"replace": "if ( goThrough && r.open ) {",
+		"why": "a refused mark on a row with no proposal would be called open, not a failure"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "\t\tby && taken.push( r.rowId );\n",
+		"replace": "",
+		"why": "the apply would not report which rows took a default"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "...( by ? { by } : {} ),",
+		"replace": "",
+		"why": "the saved entry would not carry by"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "&& ! prior.by ? prior.mark : null;",
+		"replace": "? prior.mark : null;",
+		"why": "review.md would show a default in Bean's Mark cell, where a later plain apply reads it as his"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "GO_THROUGH === e.by && null !== e.mark && live.has( e.rowId )",
+		"replace": "GO_THROUGH === e.by && null !== e.mark",
+		"why": "the line would count a default whose row is gone"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "at >= 0 && lines.splice( at, '' === lines[ at + 1 ] ? 2 : 1 );",
+		"replace": "",
+		"why": "setting the line again would add a second one"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "false === r.valid ? {",
+		"replace": "false ? {",
+		"why": "a Site Info value intake refused would be marked as if it had a proposal"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "! r.block && ( ! r.action || 'unresolved' === r.action ) ? { open",
+		"replace": "! r.block ? { open",
+		"why": "an absorbed or removed skeleton row (a proposal) would be listed as open"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "r.roles?.length || r.role ? {} : { open: OPEN_CAUSES[ 'palette-no-role' ] }",
+		"replace": "{}",
+		"why": "a colour with no role would be marked, not listed"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "acceptAll ? {} : { open: OPEN_CAUSES[ 'missing-no-block' ] }",
+		"replace": "{}",
+		"why": "a missing feature with no block would fail the apply with go-through"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "! text( r.value ).trim() ? { open: OPEN_CAUSES[ 'site-info-empty' ] }",
+		"replace": "false ? { open: OPEN_CAUSES[ 'site-info-empty' ] }",
+		"why": "an empty Site Info value would be marked accept"
+	},
+	{
+		"file": "lib/intake-review-carry.mjs",
+		"find": "...( old.by ? { by: old.by } : {} ), ",
+		"replace": "",
+		"why": "a re-export would turn a default into a mark that looks like Bean's"
+	},
+	{
+		"file": "lib/intake-palette-into.mjs",
+		"find": ", ...( prior?.mark === mark && prior.by ? { by: prior.by } : {} ) };",
+		"replace": " };",
+		"why": "a palette-only regeneration would turn a default into a mark that looks like Bean's"
+	},
+	{
+		"file": "lib/intake-run-finalise.mjs",
+		"find": "const defaulted = byDefault.has( r.rowId || `skeleton:${ surface }:${ r.key }` );",
+		"replace": "const defaulted = false;",
+		"why": "a finaliser pick taken by default would be saved as Bean's acceptance"
+	},
+	{
+		"file": "lib/intake-run.mjs",
+		"find": "{ today, sections: o.sections, goThrough: o.goThrough }",
+		"replace": "{ today, sections: o.sections }",
+		"why": "--go-through would be parsed and ignored"
+	},
+	{
+		"file": "lib/intake-run.mjs",
+		"find": "if ( o.goThrough && 'apply' !== o.mode ) {",
+		"replace": "if ( false ) {",
+		"why": "--go-through would be accepted on every other mode"
+	},
+	{
+		"file": "lib/intake-run.mjs",
+		"find": "as it was` );\n\t\to.goThrough && writeGoThrough( at, res, o, today, say );",
+		"replace": "as it was` );",
+		"why": "a sectioned go-through apply would write no open list and no review.md line"
+	},
+	{
+		"file": "lib/intake-run.mjs",
+		"find": "kept = ( readJson( at.goThroughOpen ).rows || [] ).filter( ( r ) => ! o.sections.includes( r.rowType ) );",
+		"replace": "kept = [];",
+		"why": "a sectioned apply would drop the other sections' open rows from the list"
+	},
+	{
+		"file": "lib/intake-run.mjs",
+		"find": "fs.writeFileSync( at.goThroughOpen, `${ JSON.stringify( file, null, 1 ) }\n` );",
+		"replace": "",
+		"why": "the open list would not be written"
+	},
+	{
+		"file": "lib/intake-run.mjs",
+		"find": "fs.writeFileSync( at.review, withDefaultsLine( fs.readFileSync( at.review, 'utf8' ), res.intake ) );",
+		"replace": "",
+		"why": "review.md would not gain its line"
+	},
+	{
+		"file": "lib/intake-run.mjs",
+		"find": "o.goThrough && writeGoThrough( at, res, o, today, say );\n\treturn 0;",
+		"replace": "return 0;",
+		"why": "a full go-through apply would write no open list and no review.md line"
+	}
+]

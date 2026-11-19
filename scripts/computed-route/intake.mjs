@@ -1,15 +1,20 @@
 #!/usr/bin/env node
-// Stage 1 of a client build (Spec 48 FR-48-17): intake, closed by Bean's one batched review.
+// Stage 1 of a client build (Spec 48 FR-48-17): intake, closed by the review (Bean's marks are optional: --go-through).
 //   node scripts/computed-route/intake.mjs <client> [--record] [--widths 375,768,1440] [--surfaces a,b] [--repo <path>]
 //     reads sites/<client>/handoff/ and writes sites/<client>/build/intake/{intake.json,review.md} and
 //     sites/<client>/build/page-map.json. --record (re)records the replay file; without it a missing one is an error.
 //     --widths sets the replay check, runtime census, recording and draft-defect widths (the skeleton inventory always
 //     reads 375, 768 and 1440); --surfaces limits the skeleton step to those surface slugs or surfaces.json ids.
-//   node scripts/computed-route/intake.mjs --apply-review <client> [--section <row type>[,...]] [--repo <path>]
+//   node scripts/computed-route/intake.mjs --apply-review <client> [--section <row type>[,...]] [--go-through] [--repo <path>]
 //     reads review.md back, writes the dated marks into intake.json and the confirmed page-map.json, and saves Bean's
 //     block:<slug> marks and accepted finaliser picks to sites/<client>/build/skeleton/decisions.json. --section
 //     checks and writes the marks of the named review sections only (not page-map or skeleton-block), leaving every
-//     other row and its mark as it was.
+//     other row and its mark as it was. --go-through (Bean, 2026-11-18: a clone goes through by default) gives every row
+//     with no mark of its own and no ticked Accept all the mark that section's Accept all would give it, saved with
+//     `by: 'go-through'` (Bean's own marks always win); a row with no proposal to take (a skeleton row no block fits, a
+//     palette colour with no role, a Site Info key with no value, a missing feature with no block) stays unmarked, does
+//     not stop the apply and is listed with what the route does with it in build/intake/go-through-open.json; review.md
+//     gains one "Taken by default" line at the top. Without the flag an unmarked row fails the apply.
 //   node scripts/computed-route/intake.mjs --finalise <client>      writes build/intake/finalise-request.json (the
 //     low-confidence and unresolved skeleton rows) for an agent run with prompts/skeleton-finaliser.md.
 //   node scripts/computed-route/intake.mjs --apply-picks <client>   applies that agent's finalise-picks.json to

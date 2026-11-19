@@ -15,7 +15,7 @@ import { recheckManifest } from './intake-sandbox.mjs';
 import { runIsolated } from './intake-process.mjs';
 import { loadAjv, schemaProblems } from './handoff.mjs';
 import { pageMapProblems } from './intake-pagemap.mjs';
-import { renderReview, applyReview, carryOver, reviewRows, isoDay, ROW_TYPES } from './intake-review.mjs';
+import { renderReview, applyReview, carryOver, reviewRows, isoDay, withDefaultsLine, ROW_TYPES } from './intake-review.mjs';
 import { withUnappliedMarks, writeProposedPageMap, writeConfirmedPageMap } from './intake-review-carry.mjs';
 import { carryIds, lostIds } from './intake-pagemap-regen.mjs';
 import { mergeBlocked } from './intake-run-collapse.mjs';
@@ -32,7 +32,7 @@ const WORKER = path.join( HERE, 'intake-run-worker.mjs' );
 const WIDTHS = [ 375, 768, 1440 ];
 export const USAGE = [
 	'usage: node scripts/computed-route/intake.mjs <client> [--record] [--widths 375,768,1440] [--surfaces a,b] [--repo <path>]',
-	'       node scripts/computed-route/intake.mjs --apply-review <client> [--section <row type>[,<row type>...]] [--repo <path>]',
+	'       node scripts/computed-route/intake.mjs --apply-review <client> [--section <row type>[,<row type>...]] [--go-through] [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --finalise <client> | --apply-picks <client> | --render <client> | --rerun-skeletons <client> | --facts <client> | --page-map <client> | --catalogue <client> [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --palette-only <client> [--record] [--into-intake] [--repo <path>]',
 ].join( '\n' );
@@ -42,7 +42,7 @@ const MODES = { '--apply-review': 'apply', '--finalise': 'finalise', '--apply-pi
 // argv (after the script) to { mode: 'run'|'apply'|'finalise'|'apply-picks'|'render'|'rerun-skeletons'|'facts'|'page-map'|'palette-only', client, record, widths, surfaces,
 // repo } or { error }.
 export function parseArgs( argv ) {
-	const o = { mode: 'run', client: null, record: false, intoIntake: false, sections: null, widths: WIDTHS, surfaces: null, repo: REPO };
+	const o = { mode: 'run', client: null, record: false, intoIntake: false, sections: null, goThrough: false, widths: WIDTHS, surfaces: null, repo: REPO };
 	for ( let i = 0; i < argv.length; i++ ) {
 		const a = argv[ i ];
 		const value = () => ( i + 1 < argv.length && ! argv[ i + 1 ].startsWith( '--' ) ? argv[ ++i ] : null );
@@ -50,6 +50,8 @@ export function parseArgs( argv ) {
 			o.record = true;
 		} else if ( '--into-intake' === a ) {
 			o.intoIntake = true;
+		} else if ( '--go-through' === a ) {
+			o.goThrough = true;
 		} else if ( '--section' === a ) {
 			const v = value();
 			o.sections = v ? v.split( ',' ).map( ( s ) => s.trim() ).filter( Boolean ) : [];
@@ -94,6 +96,9 @@ export function parseArgs( argv ) {
 	if ( o.sections && 'apply' !== o.mode ) {
 		return { error: '--section goes with --apply-review only' };
 	}
+	if ( o.goThrough && 'apply' !== o.mode ) {
+		return { error: '--go-through goes with --apply-review only' };
+	}
 	if ( o.intoIntake && 'palette-only' !== o.mode ) {
 		return { error: '--into-intake goes with --palette-only only' };
 	}
@@ -107,7 +112,7 @@ export function parseArgs( argv ) {
 export function pathsFor( repo, client ) {
 	const build = path.join( repo, 'sites', client, 'build' );
 	const dir = path.join( build, 'intake' );
-	return { folder: path.join( repo, 'sites', client, 'handoff' ), dir, intake: path.join( dir, 'intake.json' ), prev: path.join( dir, 'intake.prev.json' ), review: path.join( dir, 'review.md' ), inventories: path.join( dir, 'inventories' ), facts: path.join( dir, 'facts.json' ), pageMap: path.join( build, 'page-map.json' ), confirmed: path.join( dir, 'page-map.confirmed.json' ), replay: ( hash ) => path.join( dir, 'replay', `${ hash }.har` ) };
+	return { folder: path.join( repo, 'sites', client, 'handoff' ), dir, intake: path.join( dir, 'intake.json' ), prev: path.join( dir, 'intake.prev.json' ), review: path.join( dir, 'review.md' ), inventories: path.join( dir, 'inventories' ), facts: path.join( dir, 'facts.json' ), pageMap: path.join( build, 'page-map.json' ), goThroughOpen: path.join( dir, 'go-through-open.json' ), confirmed: path.join( dir, 'page-map.confirmed.json' ), replay: ( hash ) => path.join( dir, 'replay', `${ hash }.har` ) };
 }
 
 const secs = ( ms ) => `${ ( ms / 1000 ).toFixed( 1 ) }s`;
@@ -301,6 +306,33 @@ export function confirmedPageMap( intake ) {
 	} );
 }
 
+// --apply-review --go-through, after intake.json is written: lists the rows with no proposal to take in
+// build/intake/go-through-open.json (a sectioned apply replaces its own sections' entries and keeps the other
+// sections' as they were), sets review.md's "Taken by default" line (nothing else in the file changes) and says how
+// many rows took a default and how many are open.
+function writeGoThrough( at, res, o, today, say ) {
+	let kept = [];
+	if ( o.sections && fs.existsSync( at.goThroughOpen ) ) {
+		try {
+			kept = ( readJson( at.goThroughOpen ).rows || [] ).filter( ( r ) => ! o.sections.includes( r.rowType ) );
+		} catch {
+			kept = [];
+		}
+	}
+	const rows = [ ...kept, ...res.open ];
+	const file = {
+		client: o.client, writtenOn: today,
+		note: '--apply-review --go-through marked every other row with its proposal (review entries with by: "go-through"); these rows had no proposal to take, so they carry no mark and the run did not stop for them. `downstream` is what the route does with each today. Mark a row in review.md and apply again to settle it.',
+		count: rows.length, rows,
+	};
+	fs.writeFileSync( at.goThroughOpen, `${ JSON.stringify( file, null, 1 ) }
+` );
+	fs.writeFileSync( at.review, withDefaultsLine( fs.readFileSync( at.review, 'utf8' ), res.intake ) );
+	const byType = ( list ) => [ ...list.reduce( ( m, r ) => m.set( r.rowType, ( m.get( r.rowType ) || 0 ) + 1 ), new Map() ) ].map( ( [ t, n ] ) => `${ t } ${ n }` ).join( ', ' );
+	const types = new Map( res.intake.review.map( ( r ) => [ r.rowId, r.rowType ] ) );
+	say( `go-through: ${ res.taken.length } rows took their proposal as a default mark (by: go-through${ res.taken.length ? `; ${ byType( res.taken.map( ( id ) => ( { rowType: types.get( id ) } ) ) ) }` : '' }); ${ res.open.length } rows had no proposal to take and are open${ res.open.length ? ` (${ byType( res.open ) })` : '' }, listed in ${ path.relative( o.repo, at.goThroughOpen ) } (${ rows.length } in the file)` );
+}
+
 // --apply-review. Returns the exit code. Bean's confirmed skeleton choices (intake-run-finalise.mjs::reviewDecisions)
 // go into sites/<client>/build/skeleton/decisions.json; `knownBlock` (default: the framework DB, read-only) must know
 // every block they name, or nothing is written.
@@ -313,7 +345,7 @@ export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${
 			return 1;
 		}
 	}
-	const res = applyReview( readJson( at.intake ), fs.readFileSync( at.review, 'utf8' ), { today, sections: o.sections } );
+	const res = applyReview( readJson( at.intake ), fs.readFileSync( at.review, 'utf8' ), { today, sections: o.sections, goThrough: o.goThrough } );
 	if ( res.problems.length || res.missing.length ) {
 		say( `review.md is not complete, nothing written:\n${ [ ...res.problems, ...res.missing.map( ( r ) => `row ${ r.rowId } (${ r.rowType }) needs a mark: ${ r.why }` ) ].map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
 		return 1;
@@ -332,13 +364,15 @@ export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${
 			return 1;
 		}
 		fs.writeFileSync( at.intake, `${ JSON.stringify( res.intake, null, 1 ) }\n` );
-		const n = res.intake.review.filter( ( r ) => o.sections.includes( r.rowType ) ).length;
+		const n = res.intake.review.filter( ( r ) => o.sections.includes( r.rowType ) && null !== r.mark ).length;
 		say( `${ o.client }: ${ n } rows of ${ o.sections.join( ', ' ) } marked (dated ${ today }); every other row and its mark is as it was` );
+		o.goThrough && writeGoThrough( at, res, o, today, say );
 		return 0;
 	}
 	if ( res.intake.paletteOnly ) {
 		fs.writeFileSync( at.intake, `${ JSON.stringify( res.intake, null, 1 ) }\n` );
-		say( `${ o.client }: ${ res.intake.review.length } palette rows marked (dated ${ today }); the record is palette-only, so no page map or skeleton choices are written` );
+		say( `${ o.client }: ${ res.intake.review.filter( ( r ) => null !== r.mark ).length } palette rows marked (dated ${ today }); the record is palette-only, so no page map or skeleton choices are written` );
+		o.goThrough && writeGoThrough( at, res, o, today, say );
 		return 0;
 	}
 	// The confirmed map keeps each row's WordPress id the site build wrote into the current page-map.json (by row key,
@@ -368,6 +402,7 @@ export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${
 	const saved = recordReviewDecisions( decisions, file );
 	writeConfirmedPageMap( at, `${ JSON.stringify( pageMap, null, 2 ) }\n`, today );
 	const dropped = res.intake.pageMap.length - pageMap.length;
-	say( `${ o.client }: ${ res.intake.review.length } rows marked (dated ${ today }); page-map.json confirmed with ${ pageMap.length } rows${ dropped ? ` (${ dropped } dropped)` : '' }; ${ saved } skeleton choices saved to ${ path.relative( o.repo, file ) } (block:<slug> marks and accepted finaliser picks)` );
+	say( `${ o.client }: ${ res.intake.review.filter( ( r ) => null !== r.mark ).length } rows marked (dated ${ today }); page-map.json confirmed with ${ pageMap.length } rows${ dropped ? ` (${ dropped } dropped)` : '' }; ${ saved } skeleton choices saved to ${ path.relative( o.repo, file ) } (block:<slug> marks and accepted finaliser picks)` );
+	o.goThrough && writeGoThrough( at, res, o, today, say );
 	return 0;
 }

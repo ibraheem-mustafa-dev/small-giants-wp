@@ -42,7 +42,7 @@ export const earlierIds = ( row, movedFrom = null ) => [ ...new Set( [ ...[ row?
 // The new intake's review rows after a re-run. A mark follows its element, never its number: a skeleton row is paired
 // with the previous row that is the same element (skeletonMoves), and any other row with the previous row of the same row
 // ID. A paired row whose content hash (for a moved skeleton row: its tag, words and proposal) is unchanged keeps the mark,
-// markedOn and carriedFrom (the previous takenOn, or the date it was first carried from); a moved row adds the ID it
+// markedOn, carriedFrom (the previous takenOn, or the date it was first carried from) and `by` (a go-through default stays a default); a moved row adds the ID it
 // had to `realignedFrom`, the list of every earlier ID it was given (earlierIds), kept while the row holds. A paired row
 // whose content changed gets `changed: true` and no mark.
 // Every previous mark that reaches no row is listed with why. Returns { review, changed: [rowId], realigned: [ 'old ->
@@ -74,7 +74,7 @@ export function carryOver( previousIntake, intake ) {
 		}
 		moved && realigned.push( `${ fromId } -> ${ r.rowId }` );
 		const alias = earlierIds( old, moved ? fromId : null ).filter( ( id ) => id !== r.rowId );
-		return { ...base, mark: old.mark, markedOn: old.markedOn, carriedFrom: old.carriedFrom ?? previousIntake.takenOn, ...( alias.length ? { realignedFrom: alias } : {} ) };
+		return { ...base, mark: old.mark, markedOn: old.markedOn, carriedFrom: old.carriedFrom ?? previousIntake.takenOn, ...( old.by ? { by: old.by } : {} ), ...( alias.length ? { realignedFrom: alias } : {} ) };
 	} );
 	( previousIntake?.review || [] ).filter( ( o ) => null !== o.mark && ! reached.has( o.rowId ) ).forEach( ( o ) => refused.push( `${ o.rowId }: mark "${ o.mark }" not carried (${ moves.why.get( o.rowId ) || 'the row is not in the new export' })` ) );
 	return { review, changed, realigned, refused };

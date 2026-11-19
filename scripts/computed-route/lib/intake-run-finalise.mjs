@@ -147,13 +147,14 @@ export function applyIntakePicks( intake, picks ) {
 }
 
 // The skeleton choices --apply-review saves in the client decisions file (§3.4 step 4): a row Bean marked
-// `block:<slug>` (his correction), and a finaliser pick he accepted. A confident writer proposal he accepted is not
+// `block:<slug>` (his correction), and a finaliser pick he accepted or that `--apply-review --go-through` took by default (its reason says which). A confident writer proposal he accepted is not
 // saved: it already follows from the framework DB, so a decision would add no evidence the next run lacks. Each copy of
 // a collapsed row is saved under its own element key when the copies share one text; otherwise only the first copy
 // (the element signature is tag and words, so a copy with other words would read as stale). Returns
 // [ { surface, element: { key, tag, words }, choice, reason } ].
 export function reviewDecisions( intake, today ) {
 	const marks = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r.mark ] ) );
+	const byDefault = new Set( ( intake.review || [] ).filter( ( r ) => r.by ).map( ( r ) => r.rowId ) );
 	const out = [];
 	for ( const [ surface, s ] of Object.entries( intake.skeletons || {} ) ) {
 		for ( const r of s.rows || [] ) {
@@ -165,7 +166,8 @@ export function reviewDecisions( intake, today ) {
 				continue;
 			}
 			const choice = own ? { block: own } : removed || 'remove' === r.action ? { remove: true } : { block: r.block, ...( r.attributes ? { attributes: r.attributes } : {} ) };
-			const reason = own ? `Bean marked block:${ own } in the intake review on ${ today }` : removed ? `Bean marked remove in the intake review on ${ today }: the element is absorbed into its parent block` : `Bean accepted the finaliser's pick in the intake review on ${ today }: ${ r.reason || '' }`.trim();
+			const defaulted = byDefault.has( r.rowId || `skeleton:${ surface }:${ r.key }` );
+			const reason = own ? `Bean marked block:${ own } in the intake review on ${ today }` : removed ? `Bean marked remove in the intake review on ${ today }: the element is absorbed into its parent block` : `${ defaulted ? `Taken by default (--go-through), not Bean's mark, in the intake review on` : `Bean accepted the finaliser's pick in the intake review on` } ${ today }: ${ r.reason || '' }`.trim();
 			const one = Boolean( r.distinctWords && r.distinctWords > 1 );
 			const homes = [ { surface, keys: r.keys || [ r.key ] }, ...( one ? [] : r.alsoIn || [] ) ];
 			for ( const h of homes ) {

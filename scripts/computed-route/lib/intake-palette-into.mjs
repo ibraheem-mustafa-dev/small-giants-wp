@@ -73,7 +73,7 @@ export function intoIntake( { intake = null, reviewMd = null, palette, client, t
 		}
 		kept.push( rr.rowId );
 		const prior = applied.get( rr.rowId );
-		const entry = { rowId: rr.rowId, rowType: 'palette-role', contentHash: rr.contentHash, mark };
+		const entry = { rowId: rr.rowId, rowType: 'palette-role', contentHash: rr.contentHash, mark, ...( prior?.mark === mark && prior.by ? { by: prior.by } : {} ) };
 		if ( prior?.mark === mark ) {
 			review.push( { ...entry, markedOn: prior.markedOn ?? null, carriedFrom: prior.carriedFrom ?? null } );
 		}
