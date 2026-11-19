@@ -31,8 +31,11 @@ export function makeUnits( ctx ) {
 		return null;
 	};
 	// A list item link: words of its own, or one piece of text beside bare decorations only (a marker dot, a glyph), which
-	// the list block draws as its marker. One such link alone is a pill button; two or more stacked are a list.
-	const listLink = ( e ) => m.isTextLink( e ) || ( 'a' === e.tag && !! String( e.allText ?? '' ).trim() && m.blockKids( e ).every( ( k ) => ! m.blockKids( k ).length ) && m.blockKids( e ).filter( ( k ) => m.words( k ) ).length <= 1 ) || markerRow( e );
+	// the list block draws as its marker. One such link alone is a pill button; two or more stacked are a list. A link that
+	// paints its own box (a background, a border: a pill) is a button wherever it stands, never a list item (Indus's two
+	// stacked call-to-action pills became one link list).
+	const listLink = ( e ) => ! ( 'a' === e.tag && view?.ownPaint?.( e ) ) && listItemLike( e );
+	const listItemLike = ( e ) => m.isTextLink( e ) || ( 'a' === e.tag && !! String( e.allText ?? '' ).trim() && m.blockKids( e ).every( ( k ) => ! m.blockKids( k ).length ) && m.blockKids( e ).filter( ( k ) => m.words( k ) ).length <= 1 ) || markerRow( e );
 	// A bullet row that is not a link: a marker (rules.dotMarker) beside one piece of text and nothing else.
 	const markerRow = ( e ) => {
 		const kids = m.blockKids( e );
