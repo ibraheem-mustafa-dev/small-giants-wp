@@ -141,9 +141,12 @@ test( 'MUST FAIL, end to end: a code value its render overrides is written as re
 	}
 } );
 
+// The rows a read named: UNMAPPED, or written as residual Custom CSS (lib/fill-residual-css.mjs, a settled row carrying the value).
+const named = () => [ ...result.unmapped, ...result.settled.filter( ( s ) => 'residual-css' === s.reason ).map( ( s ) => ( { ...s, reason: s.detail } ) ) ];
+
 test( 'MUST FAIL, end to end: properties the code declares beyond Fill\'s list are read and named, a height from its declared value, never dropped', () => {
-	const noteNode = result.unmapped.find( ( u ) => 'cursor' === u.property )?.node;
-	const note = result.unmapped.filter( ( u ) => u.node === noteNode );
+	const noteNode = named().find( ( u ) => 'cursor' === u.property )?.node;
+	const note = named().filter( ( u ) => u.node === noteNode );
 	const by = Object.fromEntries( note.map( ( u ) => [ u.property, u ] ) );
 	assert.ok( by.position && /relative/.test( JSON.stringify( by.position.value ) ), JSON.stringify( note.map( ( u ) => u.property ) ) );
 	assert.ok( by.cursor && /pointer/.test( JSON.stringify( by.cursor.value ) ) );
@@ -154,8 +157,8 @@ test( 'MUST FAIL, end to end: properties the code declares beyond Fill\'s list a
 } );
 
 test( 'MUST FAIL, end to end: an offset is the declared percentage, not laid-out pixels; a row track list is named; a property declared at one width is read at every width', () => {
-	const tagNode = result.unmapped.find( ( u ) => 'top' === u.property )?.node;
-	const tag = Object.fromEntries( result.unmapped.filter( ( u ) => u.node === tagNode ).map( ( u ) => [ `${ u.property }|${ /^not-plain/.test( u.reason ) ? 'np' : 'v' }`, u ] ) );
+	const tagNode = named().find( ( u ) => 'top' === u.property )?.node;
+	const tag = Object.fromEntries( named().filter( ( u ) => u.node === tagNode ).map( ( u ) => [ `${ u.property }|${ /^not-plain/.test( u.reason ) ? 'np' : 'v' }`, u ] ) );
 	assert.ok( tag[ 'top|v' ] && ! /px/.test( JSON.stringify( tag[ 'top|v' ].value ) ) && /10%/.test( JSON.stringify( tag[ 'top|v' ].value ) ), `top is the declared 10%: ${ JSON.stringify( tag[ 'top|v' ]?.value ) }` );
 	assert.ok( tag[ 'grid-template-rows|np' ], 'a track list is named, not written as pixels or dropped' );
 	const ox = tag[ 'overflow-x|v' ];

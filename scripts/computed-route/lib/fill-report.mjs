@@ -8,12 +8,12 @@ import { HELD_REASONS, heldCounts } from './fill-held.mjs';
 // layout result the code does not declare as a length (an auto margin, an undeclared width or height); `not-painted`, the
 // value paints nothing there; `row-held`, a generated icon's value the icon row's shared setting holds
 // (lib/fill-row-lift.mjs::liftChildren); `child-held`, a parent's read of an element a block inside it reads as its own
-// root, the property that block met (lib/fill-child-held.mjs::childHeld); `logo-size`, `width-ladder`, `dimension` and `motion`, an UNMAPPED row that pass
+// root, the property that block met (lib/fill-child-held.mjs::childHeld); `logo-size`, `width-ladder`, `dimension`, `motion` and `residual-css`, an UNMAPPED row that pass
 // wrote or settled (passSettled).
-export const SETTLED = [ 'equal', 'already-set', 'used-size', 'not-painted', 'row-held', 'child-held', 'logo-size', 'width-ladder', 'dimension', 'motion' ];
+export const SETTLED = [ 'equal', 'already-set', 'used-size', 'not-painted', 'row-held', 'child-held', 'logo-size', 'width-ladder', 'dimension', 'motion', 'residual-css' ];
 
 // The file of each pass a settled row names.
-const PASS_FILE = { 'logo-size': 'fill-logo-size.mjs', 'width-ladder': 'fill-width-ladder.mjs', dimension: 'fill-dimensions.mjs', motion: 'fill-motion-settle.mjs' };
+const PASS_FILE = { 'logo-size': 'fill-logo-size.mjs', 'width-ladder': 'fill-width-ladder.mjs', dimension: 'fill-dimensions.mjs', motion: 'fill-motion-settle.mjs', 'residual-css': 'fill-residual-css.mjs' };
 const sameRead = ( u, a ) => ( u.node === a.node || ( u.nodes || [] ).includes( a.node ) ) && ( u.slot ?? '' ) === a.slot && u.property === a.property && String( u.value ) === String( a.value ) && ( u.state ?? null ) === ( a.state ?? null );
 
 // The UNMAPPED rows a later Fill pass (lib/fill-logo-size.mjs, lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs) wrote
@@ -94,6 +94,7 @@ export function fillReport( r ) {
 	const writes = r.writes.map( ( w, i ) => ( replaced.has( i ) ? { ...w, supersededBy: replaced.get( i ) } : w ) );
 	const live = writes.length - replaced.size;
 	const gaps = r.customCssGaps || [];
+	const residual = r.residualCss || { rules: [], refused: [], classes: {}, causes: {}, bytes: 0, gaps: [] };
 	const counts = handoverCounts( r.handover );
 	const held = r.alreadyHeld || [];
 	const heldBy = heldCounts( held );
@@ -103,8 +104,8 @@ export function fillReport( r ) {
 	const missingPaint = r.missingPaint || [];
 	const json = {
 		client: r.client, surface: r.surface, draft: r.draft, nodes: r.nodes, targets: r.targets, missingPaint,
-		counts: { writes: live, superseded: replaced.size, customCssGaps: gaps.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, alreadyHeld: { total: held.length, ...heldBy }, patchKeys: ( r.snapshotPatch?.entries || [] ).length, unread: ( r.unread || [] ).length, settled: { total: settled.length, ...settledBy }, confirm: ( r.confirm || [] ).length, tokenRefs: ( r.tokenRefs || [] ).filter( ( t ) => 'ref' === t.status ).length },
-		writes, customCssGaps: gaps, unmapped: unmappedList( r.unmapped ), alreadyHeld: held.map( ( h ) => ( { property: h.property, value: h.value, node: h.node, block: h.block, slot: h.slot ?? '', state: h.state ?? null, reason: h.heldReason, detail: h.heldDetail } ) ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, snapshotPatch: r.snapshotPatch || { file: null, entries: [] }, unread: r.unread || [], settled, confirm: r.confirm || [], tokenRefs: r.tokenRefs || [],
+		counts: { writes: live, superseded: replaced.size, customCssGaps: gaps.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, alreadyHeld: { total: held.length, ...heldBy }, patchKeys: ( r.snapshotPatch?.entries || [] ).length, unread: ( r.unread || [] ).length, settled: { total: settled.length, ...settledBy }, confirm: ( r.confirm || [] ).length, tokenRefs: ( r.tokenRefs || [] ).filter( ( t ) => 'ref' === t.status ).length, residualCss: { rules: residual.rules.length, bytes: residual.bytes, refused: residual.refused.length, gapRows: residual.gaps.length } },
+		writes, customCssGaps: gaps, residualCss: residual, unmapped: unmappedList( r.unmapped ), alreadyHeld: held.map( ( h ) => ( { property: h.property, value: h.value, node: h.node, block: h.block, slot: h.slot ?? '', state: h.state ?? null, reason: h.heldReason, detail: h.heldDetail } ) ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, snapshotPatch: r.snapshotPatch || { file: null, entries: [] }, unread: r.unread || [], settled, confirm: r.confirm || [], tokenRefs: r.tokenRefs || [],
 	};
 	const L = [
 		`# Fill: ${ r.surface }`, '',
@@ -113,6 +114,7 @@ export function fillReport( r ) {
 		'| What | Count |', '|---|---|',
 		`| Settings written | ${ live } (and ${ replaced.size } a later write on the same setting replaced, marked \`supersededBy\`) |`,
 		`| Custom-CSS rules with a gaps row (the native control each could become) | ${ gaps.length } |`,
+		`| Residual Custom CSS (what no setting holds, FR-48-109) | ${ residual.rules.length } rules, ${ residual.bytes } bytes; ${ residual.refused.length } declarations refused; ${ residual.gaps.length } gap rows |`,
 		`| UNMAPPED (framework work, known before the first build) | ${ r.unmapped.length } |`,
 		`| Handover (content outside the tree) | ${ r.handover.length } (${ HANDOVER_OWNERS.map( ( o ) => `${ o } ${ counts[ o ] }` ).join( ', ' ) }) |`,
 		`| Fluid sizes found | ${ r.fluid.length } (${ r.fluid.filter( ( f ) => 'clamp' === f.written ).length } written as clamp()) |`,
@@ -138,6 +140,14 @@ export function fillReport( r ) {
 		...table( [ 'Owner', 'Kind', 'Node', 'Element', 'Evidence', 'Reason' ], r.handover.map( ( h ) => [ h.owner, h.kind, h.node, h.slot, h.evidence, h.reason ] ) ),
 		'## Settings written', '',
 		...table( [ 'Node', 'Block', 'Element', 'Property', 'Setting', 'Before', 'After', 'Tiers', 'How' ], writes.map( ( w, i ) => [ w.node, w.block, w.slot, w.prop, w.attr, w.before, w.after, w.widths.join( ',' ), `${ w.read ? `${ w.how } (read ${ w.read }: the render did not confirm it)` : w.how }${ replaced.has( i ) ? ` (superseded by write ${ replaced.get( i ) })` : '' }` ] ) ),
+		'## Residual Custom CSS', '',
+		`What every pass left was classified (lib/fill-residual-css.mjs::classifyRow): residual ${ residual.classes.residual ?? 0 }, route ${ residual.classes.route ?? 0 } (a setting is named for it: never Custom CSS), unneeded ${ residual.classes.unneeded ?? 0 }, outside ${ residual.classes.outside ?? 0 } (content, motion, walker rows). Causes: ${ Object.entries( residual.causes || {} ).map( ( [ k, v ] ) => `${ k } ${ v }` ).join( '; ' ) || 'none' }.`, '',
+		'Each rule below is in its block\'s Additional CSS (`sgsCustomCss`, scoped to the instance): no setting of the block paints the property on that part.', '',
+		...table( [ 'Node', 'Block', 'Part', 'State', 'Widths', 'Declarations', 'Bytes', 'Tokens' ], residual.rules.map( ( x ) => [ x.node, x.block, x.part || '(root)', x.state ?? '', x.range, x.declarations.join( '; ' ), x.bytes, ( x.tokens || [] ).join( '; ' ) ] ) ),
+		'### Refused (left UNMAPPED)', '',
+		...table( [ 'Node', 'Block', 'Part', 'Property', 'State', 'Value', 'Why not written' ], residual.refused.map( ( x ) => [ x.node, x.block, x.slot || '(root)', x.property, x.state ?? '', x.value, x.reason ] ) ),
+		'### Gap rows (the setting the framework could add)', '',
+		...table( [ 'Block', 'Part', 'Property', 'State', 'Instances' ], residual.gaps.map( ( g ) => [ g.block, g.part || '(root)', g.property, g.state ?? '', g.instances.length ] ) ),
 			'## Custom-CSS gaps', '',
 			...table( [ 'Node', 'Block', 'Element', 'Properties', 'Native control', 'Rule' ], gaps.map( ( g ) => [ g.node, g.block, g.slot, g.properties.join( ', ' ), g.control, g.css ] ) ),
 		'## Theme snapshot patch', '',

@@ -34,6 +34,7 @@ import { confirmRecords, defectIndex } from './lib/fill-confirm.mjs';
 import { imageRecords } from './lib/fill-media.mjs';
 import { logoSizeWrites } from './lib/fill-logo-size.mjs';
 import { widthLadderWrites } from './lib/fill-width-ladder.mjs';
+import { residualCssWrites, PASS as PASS_RESIDUAL } from './lib/fill-residual-css.mjs';
 import { stepRungWrites } from './lib/fill-step-rungs.mjs';
 import { dimensionWrites } from './lib/fill-dimensions.mjs';
 import { scrollbarPatch, mergePatch } from './lib/fill-scrollbar.mjs';
@@ -348,11 +349,21 @@ export async function fillSurface( o ) {
 		result.notes.push( ...bound.groups.map( ( g ) => `binding ${ g.binding } sets ${ g.attr } to ${ JSON.stringify( g.value ) } on ${ g.members.length } elements in ${ g.sections } sections: one shared setting` ), ...bound.split.map( ( x ) => `binding ${ x.binding } sets ${ x.attr } to ${ x.values.length } different values: not grouped` ) );
 		// Rows the element already renders (lib/fill-held.mjs) leave UNMAPPED and are listed under their reason in the report.
 		Object.assign( result, result.settleHeld( result ) );
+		// FR-48-109: what every pass left that no setting can hold is written as scoped Custom CSS on its block, listed rule by
+		// rule, and each distinct block, part and property is a gap row for the framework (lib/fill-residual-css.mjs).
+		const residual = residualCssWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped, calFor, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
+		addEntries( ledgerFile, residual.ledger );
+		result.writes.push( ...residual.writes );
+		result.settled.push( ...passSettled( result.unmapped, residual.unmapped, PASS_RESIDUAL, residual.answered ) );
+		result.unmapped = residual.unmapped;
+		result.notes.push( ...residual.notes );
+		result.customCssGaps = [ ...( result.customCssGaps || [] ), ...residual.gaps ];
+		result.residualCss = { rules: residual.rules, refused: residual.refused, classes: residual.classes, causes: residual.causes, bytes: residual.bytes, gaps: residual.backlog };
 		// R7: a declared read that failed is an UNMAPPED row with its reason, never only a log line.
 		result.unmapped.push( ...readFailureRows( { reads, nodes, flat, refOf } ) );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
-		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension' ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor } );
+		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension', PASS_RESIDUAL ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor } );
 		// FR-48-8: a declaration that asks the device safe-area inset is named once per element and property.
 		result.notes.push( ...[ ...new Set( result.confirm.filter( ( r ) => r.safeArea ).map( ( r ) => `${ r.node } ${ r.block } ${ r.property }: ${ r.safeArea.note }` ) ) ] );
 		result.confirm.push( ...imageRecords( { images: result.images } ) );
