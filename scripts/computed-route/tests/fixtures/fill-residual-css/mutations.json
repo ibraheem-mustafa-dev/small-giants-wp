@@ -12,5 +12,7 @@
 	{"file":"lib/fill-residual-css.mjs","find":"if ( out.bytes + bytes > cap ) {","replace":"if ( false ) {","why":"the page cap would not hold"},
 	{"file":"lib/fill-residual-css.mjs","find":"const spans = widthSpans( { widths, values, series } );","replace":"const spans = { ranges: [ { range: [ 0, Infinity ], value: values[ widths.at( -1 ) ] } ], snaps: [] };","why":"a per-width value would be written as the widest one at every width"},
 	{"file":"lib/fill-residual-css.mjs","find":"JSON.stringify( [ g.block, g.part, property, g.state ?? null ] )","replace":"JSON.stringify( [ g.block, g.part, g.range, property, g.state ?? null ] )","why":"a gap row would repeat per width range"},
-	{"file":"lib/fill-residual-css.mjs","find":"\tif ( same ) {","replace":"\tif ( false ) {","why":"a setting painting the same box on another part would be written over"}
+	{"file":"lib/fill-residual-css.mjs","find":"\tif ( same ) {","replace":"\tif ( false ) {","why":"a setting painting the same box on another part would be written over"},
+	{"file":"lib/fill-residual-css.mjs","find":"if ( /:nth-of-type\\(/.test( target.slot ) ) {","replace":"if ( false ) {","why":"one copy of a repeated part would be styled alone"},
+	{"file":"lib/fill-residual-css.mjs","find":"list.some( ( x ) => x.prop === d.prop ) || list.push(","replace":"list.push(","why":"a property would be declared twice in one rule"}
 ]

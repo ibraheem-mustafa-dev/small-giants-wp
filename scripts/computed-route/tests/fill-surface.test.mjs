@@ -113,10 +113,12 @@ test( 'a fluid size is a clamp() where calibration lists clamp, and the stepped 
 	assert.deepEqual( [ find( 0, 3 ).attributes.margin.desktop.top, find( 0, 3 ).attributes.margin.mobile.top, find( 0, 3 ).attributes.margin.tablet ], [ '30px', '10px', undefined ], 'the card margin is 30px from the tablet boundary up (tablet shows the desktop value) and 10px on a phone' );
 } );
 
-test( 'UNMAPPED holds what no setting can paint, the declared handover is listed with its owner, the entrance is measured and listed', () => {
-	const shadow = result.unmapped.find( ( u ) => 'box-shadow' === u.property );
+test( 'what no setting can paint is written as residual Custom CSS (FR-48-109), the declared handover is listed with its owner, the entrance is measured and listed', () => {
+	const shadow = result.settled.find( ( s ) => 'box-shadow' === s.property && 'residual-css' === s.reason );
 	assert.equal( shadow.node, 'cr-ref-home-3' );
-	assert.match( shadow.reason, /^no-setting: / );
+	assert.match( shadow.detail, /was: no-setting: / );
+	assert.ok( result.residualCss.rules.some( ( r ) => 'cr-ref-home-3' === r.node && r.declarations.some( ( d ) => d.startsWith( 'box-shadow:' ) ) ), 'the rule is listed' );
+	assert.ok( ! result.unmapped.some( ( u ) => 'box-shadow' === u.property && 'cr-ref-home-3' === u.node ), 'a written row leaves UNMAPPED' );
 	assert.ok( result.unmapped.every( ( u ) => u.property && undefined !== u.value && u.node && u.reason ), 'every row has property, value, node and reason' );
 	assert.deepEqual( result.handover.map( ( h ) => [ h.owner, h.kind, h.node, h.slot, h.evidence.draft ] ), [ [ 'content-page', 'link', 'cr-ref-home-3', '.sgs-text__a', '/shop/' ] ] );
 	const e = result.entrances.find( ( x ) => 'cr-ref-home-2' === x.node );

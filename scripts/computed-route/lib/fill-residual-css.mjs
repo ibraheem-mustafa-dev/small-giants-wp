@@ -17,7 +17,8 @@
 // setting (framework DB); `display`, and a `position` that takes the element out of flow, with the offsets and transform
 // that place it (the block's own markup decides its structure, and an out-of-flow element is placed against an ancestor
 // the clone does not share); a layout property the draft does not state at every read width; a state with no CSS pseudo
-// class; a value or element path that is not safe CSS; and anything past the page's byte cap.
+// class; a part path naming one copy of a repeated element; a value or element path that is not safe CSS; and anything past
+// the page's byte cap.
 // Two parts of one block that read one draft element (the same box at every read width) take a property once, on the inner
 // part (then on the one more of the block's own settings paint); the other row is settled as written there.
 // Values per width follow the width ladder's ranges (lib/fill-width-ladder.mjs::widthSpans: the sweep's threshold, snapped to
@@ -244,6 +245,12 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 				refuse( r, `${ prop } places an element whose out-of-flow position is not written` );
 				continue;
 			}
+			// A part path naming one copy of a repeated element (`:nth-of-type`) would style that copy alone, while the draft's
+			// copies share the look; the copies' shared look is the loop's to write, not one instance's.
+			if ( /:nth-of-type\(/.test( target.slot ) ) {
+				refuse( r, `${ target.slot } names one copy of a repeated part; a rule there would style that copy alone` );
+				continue;
+			}
 			if ( undefined === pseudo ) {
 				refuse( r, `the state ${ state } has no CSS pseudo-class` );
 				continue;
@@ -300,7 +307,9 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 			for ( const s of d.ranges ) {
 				const k = JSON.stringify( [ d.slot, d.pseudo, s.range ] );
 				groups.has( k ) || groups.set( k, { slot: d.slot, pseudo: d.pseudo, state: d.state, range: s.range, decls: [] } );
-				groups.get( k ).decls.push( { prop: d.prop, value: s.value, d } );
+				const list = groups.get( k ).decls;
+				// One declaration per property in a rule: two rows for one property (twins the box test did not join) keep the first.
+				list.some( ( x ) => x.prop === d.prop ) || list.push( { prop: d.prop, value: s.value, d } );
 			}
 		}
 		// Rules at every width first, then the @media rules from the narrowest range up; resting before a state.

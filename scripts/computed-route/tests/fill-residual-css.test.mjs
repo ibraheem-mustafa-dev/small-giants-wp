@@ -165,6 +165,15 @@ test( 'negative control: a container property on the same layout is written; a v
 	assert.equal( classifyRow( row( { property: 'display', value: 'none', slot: '' } ), { calFor, db } ).cls, 'route' );
 } );
 
+test( 'MUST FAIL WITHOUT THE COPY RULE: a part path naming one copy of a repeated element is refused; one property is declared once per rule', () => {
+	const w = world();
+	w.nodes[ 0 ].targets.push( { id: '0:.f__item:nth-of-type(2) > .f__head', index: 0, slot: '.f__item:nth-of-type(2) > .f__head', finder: 'c' } );
+	W.forEach( ( x ) => ( w.reads.widths[ x ][ '0:.f__item:nth-of-type(2) > .f__head' ] = { rect: { x: 0, y: 100, w: 300, h: 68 }, styles: {} } ) );
+	const r = run( w, [ row( { property: 'min-height', value: '68px', slot: '.f__item:nth-of-type(2) > .f__head' } ), row( { property: 'outline-style', value: 'solid' } ), { ...row( { property: 'outline-style', value: 'solid' } ), reason: `${ gapReason( 'outline-style' ) } (again)` } ] );
+	assert.match( r.refused[ 0 ].reason, /names one copy of a repeated part/ );
+	assert.equal( css( w ), '& .f__input { outline-style: solid; }' );
+} );
+
 test( 'MUST FAIL WITHOUT THE CAP: past the page cap a rule is refused and listed, and the bytes are counted', () => {
 	const w = world();
 	const r = run( w, [ row( { property: 'font-size', value: '17px' } ) ], { cap: 10 } );
