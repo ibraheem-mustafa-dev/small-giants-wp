@@ -234,3 +234,30 @@ test( 'a column count keeps its own acceptance: a width already at the count doe
 	const s = slotFor( r, m, defaults, reads( 'grid-template-columns', { 375: tracksOf( 2 ), 768: tracksOf( 3 ), 1440: tracksOf( 5 ) } ) );
 	assert.deepEqual( s.reachedAt, [ 768, 1440 ] );
 } );
+
+// An enum setting whose values are not CSS keywords (sgs/button's link underline: none, always, hover, sweep): each enum
+// marker's reading is kept as `enumReads`, so the resolver can write the value that paints the draft's computed keyword.
+const UNDERLINE = { attr_name: 'linkUnderline', css_property: 'text-decoration-line', tier_shape: null };
+const UNDERLINE_SCHEMA = { linkUnderline: { type: 'string', enum: [ '', 'none', 'always', 'hover' ], default: '' } };
+test( 'MUST FAIL TO RECORD: each enum marker\'s reading on the element it reached is kept as the setting\'s enumReads', () => {
+	const r = row( UNDERLINE );
+	const acc = fresh();
+	const rest = reads( 'text-decoration-line', same( 'none' ) );
+	const ms = markersFor( r, UNDERLINE_SCHEMA, SNAP, {} );
+	assert.deepEqual( ms.map( ( m ) => m.enumValue ), [ 'none', 'always', 'hover' ] );
+	for ( const m of ms ) {
+		const seen = 'always' === m.enumValue ? same( 'underline' ) : 'hover' === m.enumValue ? same( 'dotted' ) : same( 'none' );
+		foldReading( acc, { key: `linkUnderline-${ m.label }-v0`, row: r, marker: m, variant: 0 }, slotFor( r, m, rest, reads( 'text-decoration-line', seen ) ) );
+	}
+	assert.deepEqual( acc.settings.linkUnderline.enumReads, { always: { 'text-decoration-line': { 375: 'underline', 768: 'underline', 1440: 'underline' } }, hover: { 'text-decoration-line': { 375: 'dotted', 768: 'dotted', 1440: 'dotted' } } } );
+} );
+
+test( 'NEGATIVE CONTROL: a state setting and a setting with no enum keep no enumReads', () => {
+	const hover = row( { ...UNDERLINE, css_state: 'hover' } );
+	const m = markersFor( hover, UNDERLINE_SCHEMA, SNAP, {} ).find( ( x ) => 'always' === x.enumValue );
+	const s = slotFor( hover, m, reads( 'text-decoration-line', same( 'none' ) ), reads( 'text-decoration-line', same( 'underline' ) ) );
+	assert.equal( s.valueAt, undefined );
+	const plain = row( { attr_name: 'fontWeight', css_property: 'font-weight' } );
+	const pm = markersFor( plain, { fontWeight: { type: 'string', default: '' } }, SNAP, {} )[ 0 ];
+	assert.equal( slotFor( plain, pm, reads( 'font-weight', same( '400' ) ), reads( 'font-weight', same( '700' ) ) ).valueAt, undefined );
+} );

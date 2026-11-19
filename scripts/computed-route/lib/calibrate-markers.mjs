@@ -328,7 +328,7 @@ function plainMarkers( row, schema, snapshot, current, ctx ) {
 		// against a baseline instance carrying the same width (`base`), never against the plain default.
 		const pair = 'border-style' === prop ? companionWidth( row.attr_name, schema ) : null;
 		const extra = pair ? pair.attrs : {};
-		return def.enum.filter( ( v ) => '' !== v && v !== def.default ).map( ( v ) => ( { label: `enum-${ v }`, attrs: { ...set( v ), ...extra }, expect: null, ...( pair ? { base: pair.attrs } : {} ) } ) );
+		return def.enum.filter( ( v ) => '' !== v && v !== def.default ).map( ( v ) => ( { label: `enum-${ v }`, enumValue: v, attrs: { ...set( v ), ...extra }, expect: null, ...( pair ? { base: pair.attrs } : {} ) } ) );
 	}
 	// Transition timing: only a setting whose value is a time or an easing (transitionMarker's two-fact gate); a setting
 	// that merely triggers a transition has no time to write, so it gets no marker. An enum setting returned above.

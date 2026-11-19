@@ -90,6 +90,16 @@ function formAccepted( marker, changes, held = [] ) {
 	} );
 }
 
+// The values an enum marker's reading shows on the element it reached: { longhand: { width: value } }, or null when it
+// changed nothing there.
+function enumValueAt( changes, path ) {
+	const out = {};
+	for ( const c of changes.filter( ( x ) => x.path === path ) ) {
+		( out[ c.prop ] ??= {} )[ c.w ] = c.value;
+	}
+	return Object.keys( out ).length ? out : null;
+}
+
 // Works out one setting's slot from the default and marked readings ({ width: { path: { prop: value } } }).
 // Returns { slot, slots, property, transform, reachedAt, oneWidth, effects, look? } or { dead }. containerQuery: the block's
 // tiers follow its container's width (an @container rule), so a tier reached at fewer page widths is expected, not oneWidth.
@@ -154,7 +164,9 @@ export function slotFor( row, marker, defReads, markReads, { containerQuery = fa
 	const misses = marker.expect && hitPaths.size ? [ ...new Set( changes.filter( ( c ) => ! hitPaths.has( c.path ) ).map( ( c ) => c.path ) ) ] : [];
 	// formAccepted (above): only for a marker whose form has an acceptance rule (FORM_ACCEPT).
 	const look = row.css_state ? stateLook( markReads, slots, props ) : null;
-	return { slot: best.path, slots, ...( look && Object.keys( look ).length ? { look } : {} ), ...accepted, ...( misses.length ? { misses } : {} ), ...( reaches ? { reaches } : {} ), ...( overriddenBy.length ? { overriddenBy } : {} ), property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: ! containerQuery && 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, ...( containerQuery && reachedAt.length < WIDTHS.length ? { containerTier: true } : {} ), effects };
+	// What an enum value paints on the element it reached, per longhand and width (foldReading keeps it as `enumReads`).
+	const valueAt = undefined !== marker.enumValue && ! row.css_state ? enumValueAt( changes, best.path ) : null;
+	return { slot: best.path, slots, ...( valueAt ? { valueAt } : {} ), ...( look && Object.keys( look ).length ? { look } : {} ), ...accepted, ...( misses.length ? { misses } : {} ), ...( reaches ? { reaches } : {} ), ...( overriddenBy.length ? { overriddenBy } : {} ), property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: ! containerQuery && 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, ...( containerQuery && reachedAt.length < WIDTHS.length ? { containerTier: true } : {} ), effects };
 }
 
 // The setting's own element (`own`: the selector its css_element names, null for the wrapper) when the marker reached
@@ -266,6 +278,12 @@ export function foldReading( acc, inst, s ) {
 		return acc;
 	}
 	acc.settings[ name ] = mergeSetting( prev, s, { state: inst.row.css_state, form, variant: inst.variant } );
+	// What each enum value paints (resolve.mjs reads it for a setting whose values are not the CSS keywords): kept across the
+	// setting's markers and variants.
+	const enumReads = { ...( prev?.enumReads || {} ), ...( undefined !== marker.enumValue && s.valueAt ? { [ marker.enumValue ]: s.valueAt } : {} ) };
+	if ( Object.keys( enumReads ).length ) {
+		acc.settings[ name ].enumReads = enumReads;
+	}
 	if ( s.oneWidth ) {
 		acc.oneWidth.push( { key: inst.key, reachedAt: s.reachedAt } );
 	}

@@ -34,5 +34,29 @@
 		"find": "accepted.formAccepted ? held.filter",
 		"replace": "true ? held.filter",
 		"why": "the held widths count as reached though the form was not accepted"
+	},
+	{
+		"file": "lib/calibrate-markers.mjs",
+		"find": "label: `enum-${ v }`, enumValue: v, ",
+		"replace": "label: `enum-${ v }`, ",
+		"why": "an enum marker no longer says which value it carries"
+	},
+	{
+		"file": "lib/calibrate.mjs",
+		"find": "undefined !== marker.enumValue && ! row.css_state ? enumValueAt",
+		"replace": "undefined !== marker.enumValue ? enumValueAt",
+		"why": "a state setting keeps its enum readings"
+	},
+	{
+		"file": "lib/calibrate.mjs",
+		"find": "{ ...( prev?.enumReads || {} ), ...(",
+		"replace": "{ ...(",
+		"why": "a later marker drops the earlier markers' enum readings"
+	},
+	{
+		"file": "lib/calibrate.mjs",
+		"find": "( out[ c.prop ] ??= {} )[ c.w ] = c.value;",
+		"replace": "( out[ c.prop ] ??= {} )[ c.w ] = c.value;\n\t\tbreak;",
+		"why": "only the first width's reading is kept"
 	}
 ]
