@@ -1,0 +1,26 @@
+[
+ {
+  "file": "lib/tree.mjs",
+  "find": "return /^(?:build-deploy\\.py|sgs-update[\\w-]*\\.py|seed[-_][\\w-]*\\.py)$/.test( name );",
+  "replace": "return /build-deploy|sgs-update|seed-/.test( l );",
+  "why": "a word anywhere in the command line counts (the --seed-step false alarm)"
+ },
+ {
+  "file": "lib/tree.mjs",
+  "find": "return /^(?:build-deploy\\.py|sgs-update[\\w-]*\\.py|seed[-_][\\w-]*\\.py)$/.test( name );",
+  "replace": "return /^(?:build-deploy\\.py|sgs-update[\\w-]*\\.py)$/.test( name );",
+  "why": "a reseed script is not seen"
+ },
+ {
+  "file": "lib/tree.mjs",
+  "find": "return /^(?:build-deploy\\.py|sgs-update[\\w-]*\\.py|seed[-_][\\w-]*\\.py)$/.test( name );",
+  "replace": "return /(?:build-deploy\\.py|sgs-update[\\w-]*\\.py|seed[-_][\\w-]*\\.py)$/.test( name );",
+  "why": "a script whose name only ends in a reseed name counts"
+ },
+ {
+  "file": "lib/tree.mjs",
+  "find": "const name = String( script.exec( l )?.[ 1 ] || '' ).split( /[\\\\/]/ ).pop().toLowerCase();",
+  "replace": "const name = String( script.exec( l )?.[ 1 ] || '' ).toLowerCase();",
+  "why": "the script's folder is read as its name"
+ }
+]

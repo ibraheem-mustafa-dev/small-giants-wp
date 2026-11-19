@@ -146,6 +146,17 @@ export function assertWritable( target, manifests ) {
 	throw new Error( `R-47-11: target ${ JSON.stringify( target ) } is in neither manifest` );
 }
 
+// The command lines among `lines` that run a deploy or a framework reseed: a Python process whose script (the first
+// argument after the interpreter) is build-deploy.py, sgs-update*.py or a seed-/seed_ script. A word in another script's
+// arguments (render-check.py's `--seed-step`) is no reseed.
+export function busyCommands( lines ) {
+	const script = /^"?[^"\s]*python[^"\s]*"?\s+"?([^"\s]+)/i;
+	return String( lines || '' ).split( /\r?\n/ ).map( ( l ) => l.trim() ).filter( ( l ) => {
+		const name = String( script.exec( l )?.[ 1 ] || '' ).split( /[\\/]/ ).pop().toLowerCase();
+		return /^(?:build-deploy\.py|sgs-update[\w-]*\.py|seed[-_][\w-]*\.py)$/.test( name );
+	} );
+}
+
 // R-47-11: no deploy or reseed running on the host. build-deploy.py keeps no lock file, so this reads the host's
 // process list for its tar/rsync/wp steps and the local one for a running build-deploy.py or framework reseed.
 export function assertQuiet( sshArgs = [ '-i', path.join( process.env.HOME || process.env.USERPROFILE, '.ssh', 'id_ed25519' ), '-p', '65002', '-o', 'ConnectTimeout=20', 'u945238940@141.136.39.73' ], run = execFileSync ) {
@@ -155,10 +166,10 @@ export function assertQuiet( sshArgs = [ '-i', path.join( process.env.HOME || pr
 	if ( remote ) {
 		throw new Error( `R-47-11: the host is busy (a deploy is unpacking):\n${ remote }` );
 	}
-	const local = process.platform === 'win32'
+	const local = busyCommands( process.platform === 'win32'
 		// Full path: a Git Bash parent leaves PowerShell off PATH.
-		? execFileSync( path.join( process.env.SystemRoot || 'C:\\Windows', 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe' ), [ '-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match '^\"?[^ ]*python[^ ]*\"? .*(build-deploy\\.py|sgs-update|seed-)' } | ForEach-Object { $_.CommandLine }" ], { encoding: 'utf8', timeout: 60000 } ).trim()
-		: execFileSync( 'sh', [ '-c', "ps -eo args | grep -E 'build-deploy\\.py|sgs-update|seed-' | grep -v grep || true" ], { encoding: 'utf8' } ).trim();
+		? execFileSync( path.join( process.env.SystemRoot || 'C:\\Windows', 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe' ), [ '-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'python' } | ForEach-Object { $_.CommandLine }" ], { encoding: 'utf8', timeout: 60000 } )
+		: execFileSync( 'sh', [ '-c', "ps -eo args | grep -i python | grep -v grep || true" ], { encoding: 'utf8' } ) ).join( '\n' );
 	if ( local ) {
 		throw new Error( `R-47-11: a deploy or reseed is running on this machine:\n${ local }` );
 	}
