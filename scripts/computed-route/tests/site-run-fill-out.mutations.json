@@ -22,5 +22,11 @@
 		"find": "fills: stages.includes( 'fill' ), fresh: stamp() } )",
 		"replace": "fills: true, fresh: stamp() } )",
 		"why": "the run never reads an earlier Fill"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "\t\tif ( ! stages.includes( 'build' ) ) {\n\t\t\ttree = null;\n\t\t} else if ( slug ) {",
+		"replace": "\t\tif ( slug ) {",
+		"why": "a run without build fails on the tree it would have built"
 	}
 ]

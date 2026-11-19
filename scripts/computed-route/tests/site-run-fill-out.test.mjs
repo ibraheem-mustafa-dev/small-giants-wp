@@ -32,3 +32,7 @@ test( 'a run without fill and no earlier Fill gets null, so the build names the 
 test( 'MUST FAIL: the run wires fillOutDir with whether fill is among its stages', () => {
 	assert.match( source, /const out = fillOutDir\( \{ fillRoot, fills: stages\.includes\( 'fill' \), fresh: stamp\(\) \} \)/ );
 } );
+
+test( 'MUST FAIL: a run without build makes no build tree, so a recorded shell that no longer matches cannot fail it', () => {
+	assert.ok( source.includes( "\t\tif ( ! stages.includes( 'build' ) ) {\n\t\t\ttree = null;\n\t\t} else if ( slug ) {" ) );
+} );

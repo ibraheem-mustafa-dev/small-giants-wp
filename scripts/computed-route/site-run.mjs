@@ -467,7 +467,11 @@ export async function main( argv ) {
 		const exec = ctx.exec || execFor( key );
 		const slug = entry.target?.template;
 		let tree;
-		if ( slug ) {
+		// The build's tree is made only when the run builds: a run without build (an inventory, propose or Fill run) never fails
+		// on the tree it would have built, now that a run without fill reads the surface's newest Fill (fillOutDir).
+		if ( ! stages.includes( 'build' ) ) {
+			tree = null;
+		} else if ( slug ) {
 			if ( ! copies[ slug ] ) {
 				return note( key, 'build', false, 0, `no ${ slug } copy was made: ${ { pages: 'none of its pages has a Filled tree', page: 'the page copy has no recorded shell', fill: 'its Fill wrote no tree', whole: 'its Fill wrote no tree' }[ entry.copy?.from ] || 'it names no copy source' }` );
 			}
