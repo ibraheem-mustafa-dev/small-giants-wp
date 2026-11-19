@@ -117,14 +117,18 @@ def run(a) -> int:
     meta = {"source": a.source, "target": target, "client": client, "before": build_label(a.before), "after": build_label(a.after),
             "copies": names, "steps": a.step, "seed_steps": a.seed_step, "accepted_file": str(accepted_file) if accepted_file and accepted_file.exists() else None,
             "dropped": False, "motion": a.motion}
-    created = []
+    # Both names are cleaned up whatever happens: a create that dies part-way can leave a database, folder or Apache
+    # site behind, and the finally block drops whichever of the two exists.
+    created = list(names.values())
     try:
-        ports = dict(zip("ab", site.free_ports(2)))
+        # One after the other: each create edits Apache's ports.conf and sites, tests the config and reloads Apache,
+        # and two at once can read each other's half-written config. Side b is copied from side a, not from the
+        # mirror, so both hold the same snapshot even while another session writes to the mirror. Each copy's port is
+        # chosen as its create starts, so a port taken by another run during side a's minutes is never reused.
+        ports = {"a": site.create(a.source, names["a"])}
+        ports["b"] = site.create(names["a"], names["b"])
         print(f"render-check: copies {names['a']} :{ports['a']} (before) and {names['b']} :{ports['b']} (after) in {run_dir}", flush=True)
         with ThreadPoolExecutor(2) as ex:
-            for s, f in [(s, ex.submit(site.create, a.source, names[s], ports[s])) for s in "ab"]:
-                f.result()
-                created.append(names[s])
             jobs = [ex.submit(site.sync_build, Path(b), names[s]) for s, b in (("a", a.before), ("b", a.after)) if b != "site"]
             for f in jobs:
                 f.result()
@@ -143,8 +147,15 @@ def run(a) -> int:
         for cmd in a.step:
             run_step(cmd, names["b"], ports["b"])
         states = site.states(names["a"], seed_file) + extra.get("states", [])
+        seen = [s["name"] for s in states]
+        twice = sorted({n for n in seen if seen.count(n) > 1})
+        if twice:
+            raise site.SiteError(f"state names used twice (states.php and {extra_file.name} must not share a name): {', '.join(twice)}")
         if a.only:
-            keep = set(a.only.split(","))
+            keep = {n.strip() for n in a.only.split(",") if n.strip()}
+            unknown = sorted(keep - set(seen))
+            if unknown:
+                raise site.SiteError(f"--only names no such state on this site: {', '.join(unknown)} (states: {', '.join(seen)})")
             states = [s for s in states if s["name"] in keep]
         for s in "ab":
             site.snapshot(names[s])
@@ -227,9 +238,19 @@ def run(a) -> int:
                 restore()
                 jobs2 = [dict(j, shots=True, probeShots=sorted({x["probe"] for x in d if "probe" in x})) for j, d in r1.values()]
                 capture(dict(base, mode="dom", domJobs=jobs2), run_dir / "dom-r2")
+                fails2 = json.loads((run_dir / "dom-r2" / "_fails.json").read_text(encoding="utf-8"))
+                absent2 = json.loads((run_dir / "dom-r2" / "_absent.json").read_text(encoding="utf-8"))
                 for key, (j, d1) in r1.items():
                     p2 = [run_dir / "dom-r2" / s / f"{key}.json" for s in "ab"]
-                    if not all(p.exists() for p in p2):
+                    why = {s: fails2.get(f"{s}|{key}", []) + ([absent2[f"{s}|{key}"]] if f"{s}|{key}" in absent2 else []) for s in "ab"}
+                    if not all(p.exists() for p in p2) or why["a"] or why["b"]:
+                        # Round one found a difference that round two could not look at: the state is unreached,
+                        # never passed, since the difference may be real.
+                        res = results[j["state"]]
+                        res["verdict"] = "unreached"
+                        for s, p in zip("ab", p2):
+                            reasons = why[s] or ([] if p.exists() else ["no capture"])
+                            res["fails"][s] += [f"at {j['width']}, round two: {x}" for x in reasons]
                         continue
                     d2, o, nn = dom_diffs(run_dir / "dom-r2", key, results[j["state"]]["response_diffs"])
                     conf, flap = cmp.confirmed(d1, d2)
@@ -256,18 +277,24 @@ def run(a) -> int:
                            else f"all {len(results)} states reached and render the same")
         meta["viewer_errors"] = sorted({f for r in results.values() for s in "ab" for f in r["fails"][s] if f.startswith(("sign-in failed", "basket not filled", "viewer "))})
         return code
-    except site.SiteError as e:
+    except (site.SiteError, OSError, ValueError) as e:
+        # OSError and ValueError: a capture file missing or unreadable (json.JSONDecodeError is a ValueError).
         print(f"render-check: {e}", file=sys.stderr)
         meta["exit"], meta["verdict"] = 3, f"run could not be made: {str(e)[:300]}"
         return 3
     finally:
         if not a.keep:
+            left = []
             for n in created:
                 try:
-                    site.drop(n)
+                    if site.exists(n):
+                        site.drop(n)
+                    if site.exists(n):
+                        left.append(n)
                 except site.SiteError as e:
+                    left.append(n)
                     print(f"render-check: could not drop {n}: {e}", file=sys.stderr)
-            meta["dropped"] = bool(created) and not any(site.exists(n) for n in created)
+            meta["dropped"] = not left
         rc_report.write(run_dir, meta, locals().get("results", {}))
         print(f"render-check: exit {meta.get('exit')}: {meta.get('verdict')}\n  report {run_dir / 'report.md'}", flush=True)
 
@@ -298,7 +325,11 @@ def main() -> int:
         return self_test(a)
     if not a.source:
         ap.error("--from is required")
-    return run(a)
+    try:
+        return run(a)
+    except Exception as e:  # noqa: BLE001 - exit 1 means "a difference", so anything unexpected must exit 3
+        print(f"render-check: run could not be made: {type(e).__name__}: {e}", file=sys.stderr)
+        return 3
 
 
 if __name__ == "__main__":

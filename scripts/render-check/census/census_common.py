@@ -11,10 +11,8 @@ REPO = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 OUT_ROOT = 'E:/sgs-tmp/render-check/census'
 
 
-def to_wsl(path):
-    """Convert a Windows path such as C:/x/y to its WSL path /mnt/c/x/y."""
-    p = os.path.abspath(path).replace(os.sep, '/')
-    return '/mnt/' + p[0].lower() + p[2:]
+sys.path.insert(0, os.path.dirname(HERE))
+from rc_site import to_wsl  # noqa: E402 - the render check's converter (refuses a path that is not on a drive)
 
 
 def add_site_args(ap, site_required=True):

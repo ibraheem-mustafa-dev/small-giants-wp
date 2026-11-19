@@ -48,7 +48,10 @@ def payload_for_target(test_site: str) -> tuple[bytes | None, str]:
 
 
 def main(argv: list[str]) -> int:
-    if len(argv) == 3 and argv[0] == "--target":
+    if argv and argv[0] == "--target":
+        if len(argv) != 3:
+            print(__doc__.split("\n\n")[1], file=sys.stderr)
+            return 2
         data, label = payload_for_target(argv[1])
         argv = argv[1:]
     elif len(argv) == 2:

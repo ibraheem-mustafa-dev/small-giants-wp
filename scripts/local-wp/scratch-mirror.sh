@@ -65,8 +65,24 @@ create() {
   db="$(db_of "$name")"
   [ -f "$sdir/wp-config.php" ] || die "missing $sdir"
   [ ! -e "$dir" ] || die "$dir exists: drop it first"
+  # The port is claimed at once, under a lock every create and drop takes for Apache's files: the copy's site file is
+  # written now (not enabled until the copy is ready), so a create started meanwhile sees the port as taken. Without
+  # it two creates minutes apart both passed the check and served two copies on one port.
+  exec 9>/var/lock/scratch-mirror.lock
+  flock 9
   ! grep -q "^Listen $port\$" /etc/apache2/ports.conf || die "port $port is already listened on"
   ! ss -ltn | grep -q ":$port " || die "port $port is in use"
+  ! grep -qs "\*:$port>" /etc/apache2/sites-available/*.conf || die "port $port is claimed by another copy"
+  cat > "/etc/apache2/sites-available/$name.conf" <<EOF
+<VirtualHost *:$port>
+  DocumentRoot $dir
+  <Directory $dir>
+    AllowOverride All
+    Require all granted
+  </Directory>
+</VirtualHost>
+EOF
+  flock -u 9
 
   local user src_url
   user="$(wp --path="$sdir" --allow-root config get DB_USER)"
@@ -82,19 +98,12 @@ create() {
   [[ " $MIRRORS " == *" $src "* ]] && echo "$src" > "$dir/.scratch-source"
   chown -R www-data:www-data "$dir"
 
-  cat > "/etc/apache2/sites-available/$name.conf" <<EOF
-<VirtualHost *:$port>
-  DocumentRoot $dir
-  <Directory $dir>
-    AllowOverride All
-    Require all granted
-  </Directory>
-</VirtualHost>
-EOF
+  flock 9
   echo "Listen $port" >> /etc/apache2/ports.conf
   a2ensite -q "$name" >/dev/null
   apache2ctl configtest 2>/dev/null || die "apache config test failed"
   service apache2 reload >/dev/null
+  flock -u 9
   sudo -u www-data wp --path="$dir" cache flush >/dev/null
   write_secrets "$name" "$src" "$src_url" "http://localhost:$port"
   echo "created $name from $src: http://localhost:$port (database $db)"
@@ -104,6 +113,8 @@ drop() {
   local name="$1" dir="/var/www/$1" db port
   [[ "$name" =~ $NAME_RE ]] || die "name must match $NAME_RE"
   db="$(db_of "$name")"
+  exec 9>/var/lock/scratch-mirror.lock
+  flock 9
   if [ -f "/etc/apache2/sites-available/$name.conf" ]; then
     port="$(grep -oE '\*:[0-9]+' "/etc/apache2/sites-available/$name.conf" | cut -d: -f2)"
     a2dissite -q "$name" >/dev/null || true
@@ -111,6 +122,7 @@ drop() {
     [ -n "$port" ] && sed -i "/^Listen $port\$/d" /etc/apache2/ports.conf
     service apache2 reload >/dev/null
   fi
+  flock -u 9
   mysql -e "DROP DATABASE IF EXISTS \`$db\`"
   rm -rf "$dir" "$dir-backups"
   local secrets
@@ -138,6 +150,10 @@ case "${1:-}" in
     # The deploy target whose own database this copy holds (refreshed with refresh-from-remote.sh): sync-build.sh then
     # gives it that target's theme.json instead of its source mirror's.
     [ $# -eq 3 ] && [[ "$2" =~ $NAME_RE ]] && [ -f "/var/www/$2/.scratch-source" ] || die "usage: target <local-mediatest-name> <deploy target>"
+    # Refuse a name that is not a deploy target with a theme.json now, not at the next sync-build.sh.
+    t_check="$(mktemp)"
+    python3 "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/mirror_theme_json.py" --target "$3" "$t_check" >/dev/null || { rm -f "$t_check"; die "$3 has no theme.json to give $2 (not a deploy target?)"; }
+    rm -f "$t_check"
     echo "$3" > "/var/www/$2/.scratch-target"
     echo "$2 now runs the theme.json deployed to $3" ;;
   list) list ;;

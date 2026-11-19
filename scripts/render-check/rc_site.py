@@ -42,14 +42,27 @@ def wp(name: str, args: str, timeout: int = 600) -> str:
 def free_ports(n: int) -> list[int]:
     used = set(int(p) for p in re.findall(r":(\d+)\s", wsl("ss -ltn")))
     used |= set(int(p) for p in re.findall(r"^Listen (\d+)", wsl("cat /etc/apache2/ports.conf"), re.M))
+    # Ports claimed by a copy still being made (scratch-mirror.sh writes its site file first, enables it last).
+    used |= set(int(p) for p in re.findall(r"\*:(\d+)>", wsl("cat /etc/apache2/sites-available/*.conf 2>/dev/null || true")))
     free = [p for p in range(8150, 8200) if p not in used] + [p for p in range(8104, 8150) if p not in used]
     if len(free) < n:
         raise SiteError("no free scratch ports between 8104 and 8199")
     return free[:n]
 
 
-def create(source: str, name: str, port: int) -> None:
-    wsl(f"bash {to_wsl(REPO / 'scripts/local-wp/scratch-mirror.sh')} create {source} {name} {port}", 1200)
+def create(source: str, name: str) -> int:
+    """Make a copy on a free port and return the port. The port is chosen just before scratch-mirror.sh claims it under
+    its lock, and a port another session claimed in between is skipped, up to three tries."""
+    for attempt in range(3):
+        port = free_ports(1)[0]
+        try:
+            wsl(f"bash {to_wsl(REPO / 'scripts/local-wp/scratch-mirror.sh')} create {source} {name} {port}", 1200)
+            return port
+        except SiteError as e:
+            taken = re.search(r"port \d+ (is claimed by another copy|is in use|is already listened on)", str(e))
+            if not taken or attempt == 2:
+                raise
+    raise SiteError("unreachable")
 
 
 def drop(name: str) -> None:

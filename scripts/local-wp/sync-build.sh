@@ -57,6 +57,21 @@ sync_site() {
   [ -d "$dir/wp-content" ] || { echo "Missing $dir" >&2; exit 1; }
   echo "== $site"
 
+  # The theme.json its test site runs: the client snapshot a deploy ships there, so default paint measured here
+  # carries that snapshot's paint key (mirror_theme_json.py).
+  # Worked out before anything is copied: a theme.json that cannot be resolved stops the sync with the copy untouched.
+  local tj
+  tj="$(mktemp)"
+  # A scratch copy (scratch-mirror.sh) runs the theme.json of the mirror it was copied from.
+  local tj_site="$site"
+  [ -f "$dir/.scratch-source" ] && tj_site="$(cat "$dir/.scratch-source")"
+  if [ -f "$dir/.scratch-target" ]; then
+    # A scratch copy that holds a test site's own database runs that site's theme.json (scratch-mirror.sh target).
+    python3 "$REPO/scripts/local-wp/mirror_theme_json.py" --target "$(cat "$dir/.scratch-target")" "$tj"
+  else
+    python3 "$REPO/scripts/local-wp/mirror_theme_json.py" "$tj_site" "$tj"
+  fi
+
   # sgs-blocks: the built plugin without sources, tests or dev dependencies.
   copy_tree "$REPO/plugins/sgs-blocks" "$dir/wp-content/plugins/sgs-blocks" node_modules src tests .phpunit.cache
 
@@ -70,19 +85,6 @@ sync_site() {
   done
 
   copy_tree "$REPO/theme/sgs-theme" "$dir/wp-content/themes/sgs-theme" node_modules
-  # The theme.json its test site runs: the client snapshot a deploy ships there, so default paint measured here
-  # carries that snapshot's paint key (mirror_theme_json.py).
-  local tj
-  tj="$(mktemp)"
-  # A scratch copy (scratch-mirror.sh) runs the theme.json of the mirror it was copied from.
-  local tj_site="$site"
-  [ -f "$dir/.scratch-source" ] && tj_site="$(cat "$dir/.scratch-source")"
-  if [ -f "$dir/.scratch-target" ]; then
-    # A scratch copy that holds a test site's own database runs that site's theme.json (scratch-mirror.sh target).
-    python3 "$REPO/scripts/local-wp/mirror_theme_json.py" --target "$(cat "$dir/.scratch-target")" "$tj"
-  else
-    python3 "$REPO/scripts/local-wp/mirror_theme_json.py" "$tj_site" "$tj"
-  fi
   install -m 644 "$tj" "$dir/wp-content/themes/sgs-theme/theme.json"
   rm -f "$tj"
 
