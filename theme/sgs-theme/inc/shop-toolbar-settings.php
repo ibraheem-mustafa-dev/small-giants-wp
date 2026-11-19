@@ -275,7 +275,10 @@ function enqueue_shop_filter_groups(): void {
 		get_theme_file_uri( 'assets/js/sgs-shop-filters-groups.js' ),
 		array( 'sgs-shop-filters' ),
 		asset_version( 'assets/js/sgs-shop-filters-groups.js', wp_get_theme()->get( 'Version' ) ),
-		true
+		array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		)
 	);
 	$extra = array(
 		'segmentedAllLabel' => __( 'All', 'sgs-theme' ),
