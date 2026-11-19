@@ -271,6 +271,10 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/flow-fields/load.php';
 		// Buy box "Pick a set" mode: pick groups, the pick rules and the cart row they produce.
 		require_once SGS_BLOCKS_PATH . 'includes/configurator-picks/load.php';
+		// A product-page Apple Pay or Google Pay payment (Payment Plugins for Stripe) charges only the product shown,
+		// never the shopper's basket (Spec 27 FR-27-EXPRESS). Hooks nothing unless that plugin runs.
+		require_once SGS_BLOCKS_PATH . 'includes/class-express-basket-isolation.php';
+		Express_Basket_Isolation::register();
 		// ONE server-built summary per cart line, replacing the two row
 		// families above on every customer-facing surface — the bag drawer,
 		// the cart page, the checkout and the order email all read the same
