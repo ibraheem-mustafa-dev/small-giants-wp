@@ -231,6 +231,9 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		// The one inline SVG this element is or holds, as XML with the paint the draft's CSS gave each drawing element written onto it
 		// (fill, stroke and stroke width, a colour equal to the SVG's own colour as currentColor), for the icon writer.
 		const svgs = el.matches( 'svg' ) ? [ el ] : [ ...el.querySelectorAll( 'svg' ) ];
+		// How many glyphs (inline svgs, light DOM) the element is or holds: none is the draft's evidence that a block's own icon
+		// part is absent (lib/fill-resolve.mjs::glyphEvidence).
+		snap.glyphs = svgs.length;
 		snap.svg = null;
 		if ( 1 === svgs.length ) {
 			const [ from ] = svgs;
