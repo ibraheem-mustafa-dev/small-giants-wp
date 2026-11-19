@@ -1,0 +1,12 @@
+[
+	{ "file": "lib/template-live-address.mjs", "find": "[ [ 'archive-product', facts?.shop ], [ 'single-product', facts?.product ] ]", "replace": "[ [ 'archive-product', facts?.product ], [ 'single-product', facts?.shop ] ]", "why": "the shop and product addresses are swapped" },
+	{ "file": "lib/template-live-address.mjs", "find": ".filter( ( [ , a ] ) => a ) );", "replace": ".filter( () => true ) );", "why": "a template the site has no address for is given a null address" },
+	{ "file": "lib/template-live-address.mjs", "find": "return 'checkout' === template && facts?.basket ?", "replace": "return facts?.basket ?", "why": "every surface is primed, not only the checkout" },
+	{ "file": "lib/template-live-address.mjs", "find": "[ { url: facts.basket.path, form: facts.basket.fields } ]", "replace": "[ facts.basket.path ]", "why": "the basket product is loaded as a page instead of posted with its picks" },
+	{ "file": "lib/template-live-address.mjs", "find": ".reverse().find( ( l ) => l.trim().startsWith( '{' ) );", "replace": ".find( ( l ) => l.trim().startsWith( '{' ) );", "why": "the first JSON line is read instead of the last" },
+	{ "file": "lib/template-live-address.mjs", "find": "basket: f.basket?.path && f.basket?.fields ? f.basket : null", "replace": "basket: f.basket ?? null", "why": "a basket with no fields is kept" },
+	{ "file": "lib/template-live-address.mjs", "find": "id && ! out.includes( id ) && out.push( id );", "replace": "id && out.push( id );", "why": "a product named twice is listed twice" },
+	{ "file": "lib/template-live-address.mjs", "find": "const q = String( r ?? '' ).split( '?' )[ 1 ];", "replace": "const q = String( r ?? '' ).split( '?' )[ 0 ];", "why": "the draft route's query is not read" },
+	{ "file": "lib/template-live-address.mjs", "find": "\t\t\tWC()->cart->empty_cart();", "replace": "", "why": "the basket a product is tried in is not emptied" },
+	{ "file": "lib/template-live-address.mjs", "find": "${ productSlugs.map( phpString ).join( ', ' ) }", "replace": "${ productSlugs.map( ( s ) => `'${ s }'` ).join( ', ' ) }", "why": "a product slug is not escaped" }
+]

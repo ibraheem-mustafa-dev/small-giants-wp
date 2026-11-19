@@ -1,0 +1,6 @@
+[
+	{ "file": "../parity/lib/prime.mjs", "find": "{ url: new URL( p, origin ).href, form: null }", "replace": "{ url: String( p ), form: null }", "why": "a relative prime URL is not resolved against the live origin" },
+	{ "file": "../parity/lib/prime.mjs", "find": "if ( t.form ) {", "replace": "if ( false ) {", "why": "a form entry is loaded as a page instead of posted" },
+	{ "file": "../parity/lib/prime.mjs", "find": "if ( r.status() >= 400 ) {", "replace": "if ( false ) {", "why": "a refused prime post is read as primed" },
+	{ "file": "../parity/lib/prime.mjs", "find": "( Array.isArray( prime ) ? prime : [] )", "replace": "( Array.isArray( prime ) ? prime.slice( 0, 1 ) : [] )", "why": "only the first prime entry is sent" }
+]
