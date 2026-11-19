@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/skeleton-write-content.mjs", "find": "textAttr && ! t && ! m.blockKids( e ).length && 'leaf' === composition[ block ]?.composition_role && printsDefaultText( facts, block, textAttr ) && ( a[ textAttr ] = '' );", "replace": "", "why": "a wordless control keeps the block's default words" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "textAttr && ! t && ! m.blockKids( e ).length && 'leaf'", "replace": "textAttr && ! t && 'leaf'", "why": "an element holding a block is written empty too" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "'leaf' === composition[ block ]?.composition_role && printsDefaultText( facts, block, textAttr )", "replace": "'leaf' === composition[ block ]?.composition_role", "why": "every wordless leaf is written empty, whatever the default" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "! m.blockKids( e ).length && 'leaf' === composition[ block ]?.composition_role && printsDefaultText", "replace": "! m.blockKids( e ).length && printsDefaultText", "why": "a composite block's text setting (the cart's panel heading) is written empty by a wordless trigger" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "return 'string' === typeof value && '' !== value.trim();", "replace": "return true;", "why": "a non-string or blank default counts as words" }
+]
