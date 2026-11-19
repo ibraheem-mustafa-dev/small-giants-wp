@@ -64,10 +64,10 @@ async function readBar( { origin, width, tpl, browser = null } ) {
 }
 
 // The option step the applier runs with its own pass: reads the draft's bar and sets each option on the mirror (`write`), or reports
-// it. Returns the rows [ { name, value, have, status } ]. `read` and `run` are the page read and the wp-cli call (replaceable in tests).
-export async function applyOptions( { repo = REPO, client, origin = 'http://127.0.0.1:5181', width = 1440, write = false, browser = null, say = console.log, read = readBar, run = wp } ) {
+// it. `site` is the copy the applier was named on (--site), else the first surface's own. Returns the rows [ { name, value, have, status } ]. `read` and `run` are the page read and the wp-cli call (replaceable in tests).
+export async function applyOptions( { repo = REPO, client, site: named = null, origin = 'http://127.0.0.1:5181', width = 1440, write = false, browser = null, say = console.log, read = readBar, run = wp } ) {
 	const surfaces = JSON.parse( fs.readFileSync( path.join( repo, 'sites', client, 'build', 'surfaces.json' ), 'utf8' ) );
-	const site = Object.values( surfaces ).find( ( s ) => s.site )?.site;
+	const site = named ?? Object.values( surfaces ).find( ( s ) => s.site )?.site;
 	if ( ! /^local-[a-z0-9-]+$/.test( site ?? '' ) ) {
 		throw new Error( `${ site } is not a local mirror` );
 	}

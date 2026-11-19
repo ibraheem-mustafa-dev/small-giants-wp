@@ -11,6 +11,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { prepareSite } from '../site-run.mjs';
 import { applySite } from '../apply.mjs';
+import { applyOptions } from '../apply-options.mjs';
 import { scratchEntry, surfacesOnSite } from '../lib/site-targets.mjs';
 
 const ROUTE = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
@@ -136,4 +137,15 @@ test( 'MUST FAIL: the commands pass the named site to every child and read secre
 	assert.match( source( 'apply.mjs' ), /const \{ site, surfaces \} = applySite\( \{ surfaces: loaded\.surfaces, named: flag\( '--site' \)/ );
 	assert.match( source( 'lib/trial-run.mjs' ), /readEnv\( secretsPath\( envFile, REPO \) \)/ );
 	assert.match( source( 'solve.mjs' ), /const f = secretsPath\( file, REPO \);/ );
+} );
+
+test( 'MUST FAIL: the applier site options go to the site it was named on, never to the first surface own', async () => {
+	const calls = [];
+	const run = ( site, args ) => ( calls.push( [ site, args ] ), { status: 0, stdout: args.startsWith( 'option get' ) ? 'old' : '', stderr: '' } );
+	const bar = { position: 'fixed', height: '3px', backgroundImage: 'linear-gradient(90deg, rgb(1, 2, 3) 0%, rgb(4, 5, 6) 100%)', backgroundColor: 'rgba(0, 0, 0, 0)' };
+	const rows = await applyOptions( { repo: path.resolve( ROUTE, '..', '..' ), client: 'indus-foods', site: 'local-mediatest-x', write: true, say: () => {}, read: async () => bar, run } );
+	assert.ok( rows.length > 0 && calls.length > 0 );
+	assert.ok( calls.every( ( [ site ] ) => 'local-mediatest-x' === site ), 'every option read and write names the copy' );
+	assert.ok( calls.some( ( [ , args ] ) => args.startsWith( 'option update' ) ), 'it did write' );
+	assert.match( source( 'apply.mjs' ), /applyOptions\( \{ repo: REPO, client, site, origin: draftOrigin, write \} \)/ );
 } );

@@ -124,5 +124,17 @@
 		"find": "const f = secretsPath( file, REPO );",
 		"replace": "const f = path.join( REPO, file );",
 		"why": "solve reads a site's address from the repo"
+	},
+	{
+		"file": "apply-options.mjs",
+		"find": "const site = named ?? Object.values( surfaces ).find( ( s ) => s.site )?.site;",
+		"replace": "const site = Object.values( surfaces ).find( ( s ) => s.site )?.site;",
+		"why": "the applier's options go to the first surface's own site"
+	},
+	{
+		"file": "apply.mjs",
+		"find": "await applyOptions( { repo: REPO, client, site, origin: draftOrigin, write } )",
+		"replace": "await applyOptions( { repo: REPO, client, origin: draftOrigin, write } )",
+		"why": "the applier does not tell its option step the site"
 	}
 ]

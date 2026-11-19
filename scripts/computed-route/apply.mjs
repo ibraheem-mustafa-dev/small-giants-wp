@@ -491,7 +491,7 @@ async function main() {
 		db.close?.();
 	}
 	// The site options the draft states (the reading progress bar's gradient, colour and height) go with a whole run.
-	const optionRows = only || wanted || has( '--no-options' ) ? [] : await applyOptions( { repo: REPO, client, origin: draftOrigin, write } );
+	const optionRows = only || wanted || has( '--no-options' ) ? [] : await applyOptions( { repo: REPO, client, site, origin: draftOrigin, write } );
 	const text = `# Applier ${ write ? 'write' : 'dry run' }: ${ client }\n\n${ summary( allRows ) }\n${ optionRows.map( ( o ) => `option ${ o.status } ${ o.name }` ).join( '\n' ) }\n`;
 	fs.writeFileSync( path.join( outDir, 'summary.md' ), text );
 	console.log( text );
