@@ -6,6 +6,7 @@
 // stylesheet-name stability. Data: scripts/data/first-paint.json. Runs strictly one load at a time.
 import { chromium } from './computed-route/node_modules/playwright/index.mjs';
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -98,9 +99,12 @@ function lateCss(html) {
 }
 
 // ---------- Stylesheet name ----------
+// The page-specific CSS's identity: the collected file's name ('file' mode), or `inline:` plus a hash of the collected
+// <style>'s text ('head' mode, the default since Spec 32 FR-32-32). Two uncached fetches must agree either way.
 const collectedName = (html) => {
   for (const m of html.matchAll(/<link\b[^>]*>/gi)) if (/id=["']sgs-blocks-collected-css["']/.test(m[0])) { const h = m[0].match(/href=["']([^"']+)["']/); return h ? h[1].split('/').pop().split('?')[0] : null; }
-  return null;
+  const st = html.match(/<style\b[^>]*id=["']sgs-blocks-collected["'][^>]*>([\s\S]*?)<\/style>/i);
+  return st ? 'inline:' + createHash('md5').update(st[1]).digest('hex').slice(0, 12) : null;
 };
 
 async function rawHtml(ctx, ua, url) {
@@ -164,7 +168,8 @@ if (args.includes('--selftest')) {
   expect('window: capped at 5s', +largestWindow([0, 900, 1800, 2700, 3600, 4500, 5400].map((t) => ({ t, v: 0.1 }))).toFixed(2), 0.6);
   expect('collected name', collectedName('<link rel="stylesheet" id="sgs-blocks-collected-css" href="https://x/sgs-css/sgs-1-abc.css?v=2">'), 'sgs-1-abc.css');
   expect('collected name absent', collectedName('<p>'), null);
-  console.log(bad.length ? ['SELFTEST FAIL', ...bad].join(String.fromCharCode(10)) : 'selftest pass (10 cases)');
+  expect('collected name inline', collectedName('<style id="sgs-blocks-collected">.a{}</style>'), 'inline:' + createHash('md5').update('.a{}').digest('hex').slice(0, 12));
+  console.log(bad.length ? ['SELFTEST FAIL', ...bad].join(String.fromCharCode(10)) : 'selftest pass (11 cases)');
   process.exit(bad.length ? 1 : 0);
 }
 
