@@ -104,6 +104,10 @@ final class Sgs_Motion_Loop_Delays {
 	 */
 	public static function enter_template( $pre, $parsed_block = null ) {
 		if ( is_array( $parsed_block ) && in_array( $parsed_block['blockName'] ?? '', self::TEMPLATE_BLOCKS, true ) ) {
+			if ( 0 === self::$template_depth && class_exists( \SGS_Media_Priority::class ) ) {
+				// The outermost template is one loop for image loading: its first items load eagerly, the rest lazily.
+				\SGS_Media_Priority::begin_loop();
+			}
 			++self::$template_depth;
 		}
 		return $pre;
@@ -119,6 +123,9 @@ final class Sgs_Motion_Loop_Delays {
 	public static function leave_template( $block_content, $parsed_block = null ) {
 		if ( self::$template_depth > 0 && is_array( $parsed_block ) && in_array( $parsed_block['blockName'] ?? '', self::TEMPLATE_BLOCKS, true ) ) {
 			--self::$template_depth;
+			if ( 0 === self::$template_depth && class_exists( \SGS_Media_Priority::class ) ) {
+				\SGS_Media_Priority::end_loop();
+			}
 		}
 		return $block_content;
 	}

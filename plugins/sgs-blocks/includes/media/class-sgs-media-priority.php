@@ -7,12 +7,21 @@
  *   1. Inside a hidden surface: lazy, claims nothing.
  *   2. No page around it (REST, or the motion renderer not armed): lazy, never high.
  *   3. Load priority "first": eager, a lead candidate. "later": lazy.
- *   4. Above the fold (`Sgs_Motion_Fold::is_above_fold` with the page's `Sgs_Fold_Scan::section_count`): eager, at most
+ *   4. Inside a loop (a post or product template, or a block that loops over posts or products itself) and not among
+ *      the loop's first `wp_omit_loading_attr_threshold` (3) items: lazy, claims nothing.
+ *   5. Above the fold (`Sgs_Motion_Fold::is_above_fold` with the page's `Sgs_Fold_Scan::section_count`): eager, at most
  *      `sgs_eager_image_limit` (16) per page.
- *   5. Otherwise lazy.
+ *   6. Otherwise lazy.
  * The lead is the first eager image that is not a `logo`, `layer` or `brand-strip` and has at least
  * `wp_min_priority_img_pixels` (50,000) square pixels. One lead per page, taken through a per-request claim.
  * A slot with different images per device is one image: the caller resolves it once.
+ *
+ * A loop is a frame opened by `begin_loop()` and closed by `end_loop()`: `Sgs_Motion_Loop_Delays` opens one when the
+ * outermost `core/post-template` or `woocommerce/product-template` starts rendering, and `sgs/card-grid`'s product and
+ * collection modes open their own. An item is a distinct post ID (`get_the_ID()`, or the key a block names with
+ * `loop_item()`), counted in the order its first slot resolves; a second loop on the page starts again at item 0. The
+ * page-wide eager cap and the single lead still count across loops, and Load priority "first" still wins over rule 4. A
+ * slot whose item has no ID is not in a loop for this rule.
  *
  * @package SGS\Blocks
  */
@@ -38,6 +47,9 @@ final class SGS_Media_Priority {
 
 	/** Default for the `sgs_eager_image_limit` filter. */
 	private const EAGER_LIMIT = 16;
+
+	/** WordPress's `wp_omit_loading_attr_threshold` default: items of a loop that may load eagerly. */
+	private const LOOP_THRESHOLD = 3;
 
 	/**
 	 * Eager images granted so far this request.
@@ -68,6 +80,20 @@ final class SGS_Media_Priority {
 	private static $limit = null;
 
 	/**
+	 * The loop item threshold, read once per request.
+	 *
+	 * @var int|null
+	 */
+	private static $loop_threshold = null;
+
+	/**
+	 * Open loops, innermost last: the item keys seen so far, and the key a block named for the item rendering now.
+	 *
+	 * @var array<int,array{seen:array<int,string>,key:string}>
+	 */
+	private static $loops = array();
+
+	/**
 	 * Resolve one slot's loading.
 	 *
 	 * `$context` keys: `hidden` (bool, inside a hidden surface), `load` ('first', 'later' or '' for automatic),
@@ -96,12 +122,13 @@ final class SGS_Media_Priority {
 			return $lazy;
 		}
 
+		$item = self::loop_item_position();
 		$load = (string) ( $context['load'] ?? '' );
 		if ( 'later' === $load ) {
 			return $lazy;
 		}
 		if ( 'first' !== $load ) {
-			if ( ! self::above_fold( $facts ) || self::$eager_count >= self::eager_limit() ) {
+			if ( ( null !== $item && $item >= self::loop_threshold() ) || ! self::above_fold( $facts ) || self::$eager_count >= self::eager_limit() ) {
 				return $lazy;
 			}
 		}
@@ -128,6 +155,71 @@ final class SGS_Media_Priority {
 		self::$lead_claimed   = false;
 		self::$section_counts = array();
 		self::$limit          = null;
+		self::$loop_threshold = null;
+		self::$loops          = array();
+	}
+
+	/**
+	 * Open a loop: its items are counted from 0, whatever loops opened before it.
+	 *
+	 * @return void
+	 */
+	public static function begin_loop(): void {
+		self::$loops[] = array(
+			'seen' => array(),
+			'key'  => '',
+		);
+	}
+
+	/**
+	 * Close the innermost loop. Closing with none open does nothing.
+	 *
+	 * @return void
+	 */
+	public static function end_loop(): void {
+		array_pop( self::$loops );
+	}
+
+	/**
+	 * Name the item the innermost loop renders now, for a block whose items are not the global post.
+	 *
+	 * @param int|string $key The item's ID.
+	 * @return void
+	 */
+	public static function loop_item( $key ): void {
+		$last = count( self::$loops ) - 1;
+		if ( $last >= 0 ) {
+			self::$loops[ $last ]['key'] = (string) $key;
+		}
+	}
+
+	/**
+	 * The position of the item being rendered among the innermost loop's items, from 0.
+	 *
+	 * The item is the key named by `loop_item()`, else the global post's ID. An item with no ID cannot be told from its
+	 * neighbours, so it is not counted.
+	 *
+	 * @return int|null Null outside a loop, or when the item has no ID.
+	 */
+	private static function loop_item_position(): ?int {
+		$last = count( self::$loops ) - 1;
+		if ( $last < 0 ) {
+			return null;
+		}
+		$key = self::$loops[ $last ]['key'];
+		if ( '' === $key ) {
+			$id  = function_exists( 'get_the_ID' ) ? (int) get_the_ID() : 0;
+			$key = $id > 0 ? (string) $id : '';
+		}
+		if ( '' === $key || '0' === $key ) {
+			return null;
+		}
+		$position = array_search( $key, self::$loops[ $last ]['seen'], true );
+		if ( false === $position ) {
+			self::$loops[ $last ]['seen'][] = $key;
+			return count( self::$loops[ $last ]['seen'] ) - 1;
+		}
+		return (int) $position;
 	}
 
 	/**
@@ -196,6 +288,18 @@ final class SGS_Media_Priority {
 			return (bool) $facts['armed'];
 		}
 		return class_exists( Sgs_Motion_Renderer::class ) && Sgs_Motion_Renderer::is_armed();
+	}
+
+	/**
+	 * How many items of a loop may load eagerly: core's `wp_omit_loading_attr_threshold`, read once per request.
+	 *
+	 * @return int
+	 */
+	private static function loop_threshold(): int {
+		if ( null === self::$loop_threshold ) {
+			self::$loop_threshold = max( 0, (int) apply_filters( 'wp_omit_loading_attr_threshold', self::LOOP_THRESHOLD ) );
+		}
+		return self::$loop_threshold;
 	}
 
 	/**
