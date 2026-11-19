@@ -1643,8 +1643,10 @@ if ( $buybox_side_cart ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside.
 			echo sgs_buybox_configurator_hidden_inputs( $buybox_post_id, (int) $def['variationId'], (array) $manifest['defaultAxes'] );
 		}
+		// The button follows the closing tag at the start of the next line: PHP drops that one newline, so nothing prints
+		// between the hidden inputs and the button.
 		?>
-		<button
+<button
 			type="submit"
 			class="<?php echo esc_attr( $add_to_cart_button_classes ); ?>"
 			data-wp-bind--disabled="context.pending"

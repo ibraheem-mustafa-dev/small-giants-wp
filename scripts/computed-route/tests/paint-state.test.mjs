@@ -63,6 +63,19 @@ test( 'a paint state matches on inner blocks and on attributes set or unset', ()
 	assert.equal( matchesPaintState( {}, { attributes: {} } ), true, 'an empty condition matches every node' );
 } );
 
+// A split hero renders its content column with the split variant's padding, while the default instance is the standard
+// variant, whose content column has none: judged against the default, the draft's unpadded column read as already
+// matching, so the clone kept the split padding and stood about 28px taller than the draft at 1440 (Mama's Contact page).
+test( 'MUST FAIL: a state can name the value a setting holds, so a split hero is judged against the split paint', () => {
+	const split = { equals: { variant: 'split' } };
+	assert.equal( matchesPaintState( split, { attributes: { variant: 'split' } } ), true );
+	assert.equal( matchesPaintState( split, { attributes: { variant: 'standard' } } ), false );
+	assert.equal( matchesPaintState( split, { attributes: {} } ), false, 'an unset variant is the default, not split' );
+	const c = { block: 'sgs/hero', elements: { '.sgs-hero__content': tiers( { 'padding-top': '0px' } ) }, settings: {}, discovered: {}, paintStates: { split: { when: split, elements: { '.sgs-hero__content': tiers( { 'padding-top': '14px' } ) } } } };
+	assert.equal( calibrationForNode( c, { attributes: { variant: 'split' } } ).elements[ '.sgs-hero__content' ][ 1440 ][ 'padding-top' ], '14px' );
+	assert.equal( calibrationForNode( c, { attributes: {} } ), c );
+} );
+
 test( 'the node view lays the state over the default paint once, and a node no state matches keeps the calibration', () => {
 	const c = cal( true );
 	const empty = calibrationForNode( c, { attributes: {}, innerBlocks: [] } );

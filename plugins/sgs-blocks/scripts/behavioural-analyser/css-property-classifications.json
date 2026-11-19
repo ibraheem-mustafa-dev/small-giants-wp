@@ -40,6 +40,63 @@
     },
     {
       "slug": "sgs/accordion",
+      "attr": "categoryEyebrowColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "categoryEyebrowFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "categoryEyebrowFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "categoryEyebrowFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "categoryEyebrowLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "categoryEyebrowLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "categoryEyebrowTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns:count",
@@ -203,6 +260,38 @@
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
         "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "itemTitleFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "item-title"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "itemTitleFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "item-title"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "itemTitleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "item-title"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "itemTitleLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "item-title"
       }
     },
     {
@@ -42497,6 +42586,15 @@
       "attr": "splitRatio",
       "fields": {
         "css_property": "aspect-ratio",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitWidth",
+      "fields": {
+        "css_property": "width",
         "css_layer": "GRID_AREA",
         "css_element": "split-media"
       }

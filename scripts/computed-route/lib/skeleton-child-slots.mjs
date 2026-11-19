@@ -46,12 +46,15 @@ export function childSlots( { cfg, items, m, finder, settings = {}, states = [] 
 const stepsOf = ( p ) => String( p ?? '' ).split( /\s*>\s*/ ).filter( Boolean );
 
 // A unit's part as a draft element: the row is the unit, the header its control, the icon the ring its control draws (a
-// wordless square inside it), the answer its one rendered panel. Null when the unit has no such element.
+// wordless square inside it), the answer its one rendered panel, the title and category the control's title and category
+// texts (lib/skeleton-widgets.mjs::wordParts). Null when the unit has no such element.
 const PARTS = {
 	row: ( u ) => u.el,
 	header: ( u ) => u.control,
 	icon: ( u, m ) => withinTree( m, u.control ).slice( 1 ).find( isRing ) ?? null,
 	answer: ( u ) => ( 1 === ( u.rendered || [] ).length ? u.rendered[ 0 ] : null ),
+	title: ( u ) => u.title ?? null,
+	category: ( u ) => u.category ?? null,
 };
 // The parts a widget rule's `childSlots` may name (checked by lib/skeleton-facts.mjs::decisionsProblems).
 export const UNIT_PARTS = Object.keys( PARTS );
@@ -64,10 +67,12 @@ export const UNIT_PARTS = Object.keys( PARTS );
 // setting's calibrated slots under that child; its draft element is that part of the first unit the draft shows closed
 // (`resting`) or of the unit it shows open (`current`). Resting parts are listed first: a setting calibrated on both
 // children is then written from the closed unit's read, and an open unit's other value is a conflict row
-// (lib/fill-resolve-element.mjs::ownerKeeps keeps the first), never a mix of the two.
-// units: [{ el, control, rendered }]; open: the indices of the units shown open. Returns { slots, notes }.
+// (lib/fill-resolve-element.mjs::ownerKeeps keeps the first), never a mix of the two. The current child renders a state at
+// rest (`currentState`, the fixture's item saved open): each current path is that state's (`states`), so a setting of that
+// state calibrated there takes the open unit's read ahead of the resting setting (lib/fill-resolve-element.mjs::fillElement).
+// units: [{ el, control, rendered, title, category }]; open: the indices of the units shown open. Returns { slots, states, notes }.
 export function unitSlots( { cfg, units = [], open = [], m, finder, settings = {} } ) {
-	const out = { slots: {}, notes: [] };
+	const out = { slots: {}, states: {}, notes: [] };
 	if ( ! cfg ) {
 		return out;
 	}
@@ -94,6 +99,7 @@ export function unitSlots( { cfg, units = [], open = [], m, finder, settings = {
 				say( `the ${ 'resting' === which ? 'closed' : 'open' } unit holds no ${ p.part } element, so no ${ which } ${ p.part } slot` );
 			} else {
 				out.slots[ path ] = finder( el );
+				'current' === which && cfg.currentState && ( out.states[ path ] = cfg.currentState );
 			}
 		}
 	}
@@ -102,7 +108,7 @@ export function unitSlots( { cfg, units = [], open = [], m, finder, settings = {
 
 // An icon ring: an element drawn at the widest read width as a square, holding no letter or digit (a typed `+`, an icon
 // hole or an svg).
-const isRing = ( x ) => {
+export const isRing = ( x ) => {
 	const b = x.box?.[ 1440 ];
 	const words = `${ x.words ?? '' }${ String( x.srcOwnText ?? '' ).replace( /\{\{[^}]*\}\}/g, '' ) }`;
 	return !! b && b.w > 0 && Math.abs( b.w - b.h ) <= 1 && false !== x.visible?.[ 1440 ] && ! /[\p{L}\p{N}]/u.test( words );

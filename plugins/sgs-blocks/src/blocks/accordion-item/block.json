@@ -135,6 +135,7 @@
 		"sgs/accordionIconCircleBorderColourOpen",
 		"sgs/accordionIconCircleBackgroundOpen",
 		"sgs/accordionFilterEnabled",
+		"sgs/accordionCategoryEyebrowAlways",
 		"sgs/accordionMotion"
 	],
 	"attributes": {
@@ -155,7 +156,7 @@
 		"showCategoryEyebrow": {
 			"type": "boolean",
 			"default": false,
-			"description": "Print the category as a small line above the heading. Only prints while the accordion's filter is on."
+			"description": "Print the category as a small line above the heading. Prints while the accordion's filter is on, or always when the accordion's categoryEyebrowAlways is on."
 		},
 		"contentWidth": {
 			"type": "object",

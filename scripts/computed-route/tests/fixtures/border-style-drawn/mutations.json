@@ -1,7 +1,7 @@
 [
-	{ "file": "lib/resolve.mjs", "find": "} else if ( ! fold.equal && drawnStyle( fam.short, parts ) ) {", "replace": "} else if ( false ) {", "why": "a dashed rule on one side would stay a shape gap and draw solid" },
-	{ "file": "lib/resolve.mjs", "find": "\t\t\tout[ tier ] = drawnStyle( fam.short, parts );", "replace": "", "why": "a none side's call would write none for every side" },
-	{ "file": "lib/resolve.mjs", "find": "filter( ( v ) => ! /^(none|hidden)$/.test( v ) )", "replace": "filter( ( v ) => v )", "why": "a none side would count as a drawn style" },
+	{ "file": "lib/resolve.mjs", "find": "} else if ( ! fold.equal && drawnStyle( fam.short, parts, widths ) ) {", "replace": "} else if ( false ) {", "why": "a dashed rule on one side would stay a shape gap and draw solid" },
+	{ "file": "lib/resolve.mjs", "find": "\t\t\tout[ tier ] = drawnStyle( fam.short, parts, widths );", "replace": "", "why": "a none side's call would write none for every side" },
+	{ "file": "lib/resolve.mjs", "find": "const draws = ( [ m, v ] ) => ! /^(none|hidden)$/.test( String( v ).trim() ) && 0 !== widths[ m ];", "replace": "const draws = ( [ m ] ) => 0 !== widths[ m ];", "why": "a none side would count as a drawn style" },
 	{ "file": "lib/resolve.mjs", "find": "if ( 'border-style' !== short ) {", "replace": "if ( false ) {", "why": "another family (colour) would be folded the same way" },
 	{ "file": "lib/resolve.mjs", "find": "return 1 === drawn.length ? drawn[ 0 ] : null;", "replace": "return drawn[ 0 ] ?? null;", "why": "two drawn styles would write the first" }
 ]

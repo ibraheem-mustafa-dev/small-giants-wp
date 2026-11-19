@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/paint-state.mjs", "find": "if ( when.equals && Object.entries( when.equals ).some( ( [ a, v ] ) => JSON.stringify( attrs[ a ] ) !== JSON.stringify( v ) ) ) {", "replace": "if ( false ) {", "why": "a state naming a value matches every node, so a standard hero is judged against the split paint" },
+	{ "file": "lib/paint-state.mjs", "find": "JSON.stringify( attrs[ a ] ) !== JSON.stringify( v )", "replace": "undefined === attrs[ a ]", "why": "any value of the setting matches, so a standard hero set explicitly is judged as split" }
+]

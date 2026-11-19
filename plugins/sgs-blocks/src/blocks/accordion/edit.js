@@ -581,6 +581,58 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						prefix=""
 					/>
 				</PanelBody>
+				{ /* Every item's heading text: font, size, line height and letter spacing (weight and colour are the
+				   header's own settings). render.php paints it through sgs_typography_css_rule( 'itemTitle' ). */ }
+				<PanelBody
+					title={ __( 'Item heading', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TypographyControls
+						fontSizePresets
+						showFontFamily
+						showWeight={ false }
+						showStyle={ false }
+						showLetterSpacing
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="itemTitle"
+					/>
+				</PanelBody>
+				{ /* Every item's category line (the small line over the heading). render.php paints it through
+				   sgs_typography_css_rule( 'categoryEyebrow' ) and categoryEyebrowColour. */ }
+				<PanelBody
+					title={ __( 'Item category line', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToggleControl
+						label={ __( 'Show category lines with the filter off', 'sgs-blocks' ) }
+						help={ __(
+							'Each item whose "Show the category above the heading" is on prints its category over its heading, whether or not the filter is on.',
+							'sgs-blocks'
+						) }
+						checked={ !! attributes.categoryEyebrowAlways }
+						onChange={ ( val ) =>
+							setAttributes( { categoryEyebrowAlways: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<DesignTokenPicker
+						label={ __( 'Category line colour', 'sgs-blocks' ) }
+						value={ attributes.categoryEyebrowColour }
+						onChange={ ( val ) =>
+							setAttributes( { categoryEyebrowColour: val ?? '' } )
+						}
+					/>
+					<TypographyControls
+						showFontFamily
+						showStyle={ false }
+						showTransform
+						showLetterSpacing
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="categoryEyebrow"
+					/>
+				</PanelBody>
 				{ /* Responsive spacing (padding + margin) — box-object interface contract
             (.claude/plans/2026-07-09-box-object-interface-contract.md §5). `padding`
             and `margin` are each ONE tier-of-boxes object attr {desktop,tablet,mobile},

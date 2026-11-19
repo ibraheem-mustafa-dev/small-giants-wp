@@ -248,14 +248,17 @@
       "allowMultiple": false,
       "defaultOpen": 0,
       "openIcon": "plus",
-      "closeIcon": "x"
+      "closeIcon": "x",
+      "categoryEyebrowAlways": true
     },
     "inner": [
       {
         "name": "sgs/accordion-item",
         "attributes": {
           "title": "Open question",
-          "isOpen": true
+          "isOpen": true,
+          "category": "Open topic",
+          "showCategoryEyebrow": true
         },
         "innerBlocks": [
           {
@@ -269,7 +272,9 @@
       {
         "name": "sgs/accordion-item",
         "attributes": {
-          "title": "Closed question"
+          "title": "Closed question",
+          "category": "Closed topic",
+          "showCategoryEyebrow": true
         },
         "innerBlocks": [
           {
@@ -1500,6 +1505,19 @@
         "attributes": {
           "level": "h1",
           "content": "The same designer shades. A good deal less."
+        }
+      }
+    ],
+    "paintStates": [
+      {
+        "name": "split",
+        "when": { "equals": { "variant": "split" } },
+        "attributes": {
+          "variant": "split",
+          "backgroundSource": null,
+          "splitSource": {
+            "desktop": { "kind": "image", "id": "{{image}}", "url": "{{image.url}}" }
+          }
         }
       }
     ]

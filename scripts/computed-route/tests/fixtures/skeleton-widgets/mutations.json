@@ -27,5 +27,14 @@
  {"file":"lib/skeleton-rules.mjs","find":", units: { units: md.units, open: md.open } } );","replace":" } );","why":"the accordion verdict carries no units, so no part of a row is read"},
  {"file":"lib/skeleton-classify.mjs","find":", ...( r.units ? { units: r.units } : {} )","replace":"","why":"the classifier drops the units on the way to the proposal"},
  {"file":"lib/skeleton-propose.mjs","find":"slideBlock && ( node.innerBlocks = r.slides.map( ( s ) => base( s, slideBlock, {} ) ) );","replace":"","why":"the slider holds no child per slide, so no card look is read"},
- {"file":"lib/skeleton-facts.mjs","find":".filter( ( [ , attr ] ) => ! facts.attr( r.accordion.block, attr ) )","replace":".filter( () => false )","why":"a childSlots setting the accordion lacks is accepted"}
+ {"file":"lib/skeleton-facts.mjs","find":".filter( ( [ , attr ] ) => ! facts.attr( r.accordion.block, attr ) )","replace":".filter( () => false )","why":"a childSlots setting the accordion lacks is accepted"},
+ {"file":"lib/skeleton-widgets.mjs","find":"S.categoryShown && ( attributes[ S.categoryShown ] = true );","replace":"","why":"an item with a category never shows it over its title"},
+ {"file":"lib/skeleton-rules.mjs","find":"...( lines ? { [ S.categoryAlways ]: true } : {} ), ","replace":"","why":"the accordion prints its items' category lines only with a filter"},
+ {"file":"lib/skeleton-rules.mjs","find":"...widgets().toggleIcon( md ).attributes };","replace":"};","why":"the accordion keeps its chevron whatever the draft draws"},
+ {"file":"lib/skeleton-widgets.mjs","find":"const icon = shut ? T.glyphs[ glyphOf( shut ) ] : null;","replace":"const icon = shut ? 'plus' : null;","why":"any glyph is a plus"},
+ {"file":"lib/skeleton-widgets.mjs","find":"return t ? Number( t[ 1 ] ) : 0;","replace":"return 0;","why":"the open ring's turn is never read"},
+ {"file":"lib/skeleton-widgets.mjs","find":"const as = 0 === turn ? icon : ( T.turns || [] ).find( ( t ) => t.icon === icon && ( t.by || [] ).includes( turn ) )?.is;","replace":"const as = icon;","why":"a turned glyph stays the same icon when open"},
+ {"file":"lib/skeleton-widgets.mjs","find":"} else if ( glyphOf( shown ) !== glyphOf( shut ) ) {","replace":"} else if ( false ) {","why":"a different open glyph is ignored"},
+ {"file":"lib/skeleton-widgets.mjs","find":"title: words.title, category: words.rest[ 0 ] ?? null };","replace":"title: null, category: null };","why":"the unit carries no title or category part"},
+ {"file":"lib/skeleton-propose.mjs","find":"Object.keys( slotStates ).length && ( node.draftSlotStates = slotStates );","replace":"","why":"the open unit's paths reach Fill with no state"}
 ]

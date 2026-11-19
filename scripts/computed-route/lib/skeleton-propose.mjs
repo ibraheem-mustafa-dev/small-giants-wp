@@ -270,6 +270,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			node.draftSlots = slots;
 			row.slots = slots;
 		}
+		// The open unit's paths are read in the state the fixture's current child renders at rest (lib/fill-skeleton.mjs::skeletonNodes).
+		const slotStates = Object.fromEntries( Object.entries( us?.states || {} ).filter( ( [ p ] ) => node.draftSlots?.[ p ] ) );
+		Object.keys( slotStates ).length && ( node.draftSlotStates = slotStates );
 		if ( drawn ) {
 			// The calibrated child slots of a block that draws its children (a nav's resting and current item link).
 			const cfg = ( R.drawsChildren?.blocks || [] ).find( ( d ) => d.block === block )?.childSlots;

@@ -23,6 +23,7 @@ import { propRefs, elementsOf, oneString } from './intake-ast-eval.mjs';
 import { rootData, holeField } from './fill-list-items.mjs';
 import { matchFields, keyRoles } from './fill-list-content.mjs';
 import { mountBinding } from './mount-handler.mjs';
+import { isRing } from './skeleton-child-slots.mjs';
 
 const MAX_DEPTH = 4;
 const SCROLL_CALLS = new Set( [ 'scrollTo', 'scrollBy', 'scrollIntoView' ] );
@@ -171,11 +172,11 @@ export function logicReadings( d ) {
 // o: { m (lib/skeleton-model.mjs), view (lib/skeleton-record.mjs::recordView), facts, R (decisions rules), surface,
 // declared (an element's declared style), topBlock (the block an element's plain scoring proposes), narrows (whether a
 // control's choice narrows a rendered list, rule optionSetFilter) }. Returns { of( e ) -> { rule, model, ... } | null,
-// accordions, sliders, tabs, problems, notes, closedPanel, itemWords }.
+// accordions, sliders, tabs, problems, notes, closedPanel, itemWords, toggleIcon }.
 export function widgetModel( { m, view, facts, R, surface = {}, declared = () => ( {} ), topBlock = () => null, narrows = () => false } ) {
 	const out = { accordions: [], sliders: [], tabs: [], problems: [], notes: [] };
 	const at = new Map();
-	const none = { ...out, of: () => null, closedPanel: () => ( { inner: [], handover: [] } ), itemWords: () => ( { attributes: {}, handover: [] } ) };
+	const none = { ...out, of: () => null, closedPanel: () => ( { inner: [], handover: [] } ), itemWords: () => ( { attributes: {}, handover: [] } ), toggleIcon: () => ( { attributes: {}, notes: [] } ) };
 	if ( ! ( R.accordion || R.slider || R.tabs ) || ! facts.repo || ! facts.client || ! view.sources ) {
 		return none;
 	}
@@ -256,6 +257,16 @@ export function widgetModel( { m, view, facts, R, surface = {}, declared = () =>
 	};
 	// The words a control shows: each element's own words that hold a letter or a digit, unless hidden from assistive technology.
 	const controlTexts = ( c ) => [ c, ...desc( c ) ].filter( ( k ) => letters( m.words( k ) ) && 'true' !== String( view.attr( k, 'aria-hidden' ) ?? '' ) );
+	// A control's title (its largest declared text, else its last) and its other texts, the first of them its category.
+	const wordParts = ( c ) => {
+		const texts = controlTexts( c );
+		if ( ! texts.length ) {
+			return { title: null, rest: [] };
+		}
+		const sizes = texts.map( sizePx );
+		const ti = sizes.every( ( s ) => null != s ) ? sizes.lastIndexOf( Math.max( ...sizes ) ) : texts.length - 1;
+		return { title: texts[ ti ], rest: texts.filter( ( x, i ) => i !== ti ) };
+	};
 	// Whether an element sits in a link, up to (not including) `stop`.
 	const inLink = ( k, stop ) => {
 		for ( let y = k; y && y !== stop; y = m.byKey[ y.parentKey ] ) {
@@ -316,7 +327,9 @@ export function widgetModel( { m, view, facts, R, surface = {}, declared = () =>
 			if ( desc( u ).some( ( k ) => k !== control && ! within( k, control ) && ! inPanel( k ) && letters( m.words( k ) ) && 'true' !== String( view.attr( k, 'aria-hidden' ) ?? '' ) ) ) {
 				return null;
 			}
-			return { el: u, control, panels, rendered, key, keyed: writes.some( ( w ) => w.key === key && w.keyed ), linksOnly };
+			// The control's title and category elements are the unit's title and category parts (lib/skeleton-child-slots.mjs::unitSlots).
+			const words = wordParts( control );
+			return { el: u, control, panels, rendered, key, keyed: writes.some( ( w ) => w.key === key && w.keyed ), linksOnly, title: words.title, category: words.rest[ 0 ] ?? null };
 		};
 		for ( const p of m.els.filter( ( e ) => ! m.isPart( e ) && m.blockKids( e ).length >= 2 ) ) {
 			const comp = tplOf( p )?.component;
@@ -513,20 +526,63 @@ export function widgetModel( { m, view, facts, R, surface = {}, declared = () =>
 	};
 
 	// The title and category an item's control shows: the largest declared text is the title, another single text the
-	// category; any further text is a handover. The setting names are the decisions entry's (rules.accordion.settings).
+	// category, which the item also shows over its title (categoryShown); any further text is a handover. The setting
+	// names are the decisions entry's (rules.accordion.settings).
 	const itemWords = ( u ) => {
 		const S = R.accordion?.settings || {};
-		const texts = controlTexts( u.control );
-		if ( ! texts.length || ! S.title ) {
+		const { title, rest } = wordParts( u.control );
+		if ( ! title || ! S.title ) {
 			return { attributes: {}, handover: [] };
 		}
-		const sizes = texts.map( sizePx );
-		const ti = sizes.every( ( s ) => null != s ) ? sizes.lastIndexOf( Math.max( ...sizes ) ) : texts.length - 1;
-		const rest = texts.filter( ( x, i ) => i !== ti );
-		const attributes = { [ S.title ]: m.words( texts[ ti ] ) };
-		rest.length && S.category && ( attributes[ S.category ] = m.words( rest[ 0 ] ) );
+		const attributes = { [ S.title ]: m.words( title ) };
+		if ( rest.length && S.category ) {
+			attributes[ S.category ] = m.words( rest[ 0 ] );
+			S.categoryShown && ( attributes[ S.categoryShown ] = true );
+		}
 		return { attributes, handover: rest.slice( S.category ? 1 : 0 ).map( ( x ) => ( { owner: 'content-page', kind: 'text', detail: `the item's control also shows "${ m.words( x ) }", which the item has no setting for` } ) ) };
 	};
 
-	return { ...out, of: ( e ) => at.get( e.key ) ?? null, closedPanel, itemWords };
+	// The accordion's toggle icon from what its units' controls draw (rules.accordion.toggle): the glyph typed in a closed
+	// unit's icon ring is the open icon, by the entry's glyph list; in the open unit's ring, a different glyph is the close
+	// icon, and the same glyph turned further (its declared rotate) is the close icon of the shape the turn ends on (turns). A
+	// glyph or turn the lists do not name, or no ring, writes nothing and is said. Returns { attributes, notes }.
+	const toggleIcon = ( model ) => {
+		const T = R.accordion?.toggle;
+		const none = { attributes: {}, notes: [] };
+		if ( ! T?.glyphs || ! T.settings ) {
+			return none;
+		}
+		const ringOf = ( u ) => ( u ? [ u.control, ...desc( u.control ) ].find( isRing ) ?? null : null );
+		const glyphOf = ( r ) => String( r?.words ?? '' ).trim();
+		const turnOf = ( r ) => {
+			const d = declared( r );
+			const t = /rotate\(\s*(-?[\d.]+)deg\s*\)/.exec( String( d.transform ?? '' ) ) ?? /^(-?[\d.]+)deg$/.exec( String( d.rotate ?? '' ).trim() );
+			return t ? Number( t[ 1 ] ) : 0;
+		};
+		const shut = ringOf( model.units.find( ( u, i ) => ! model.open.includes( i ) ) );
+		const shown = ringOf( model.units.find( ( u, i ) => model.open.includes( i ) ) );
+		const icon = shut ? T.glyphs[ glyphOf( shut ) ] : null;
+		if ( ! icon ) {
+			return { attributes: {}, notes: [ shut ? `the closed unit's icon ring draws "${ glyphOf( shut ) }", which rules.accordion.toggle.glyphs names no icon for: the accordion keeps its toggle icon` : 'no closed unit draws an icon ring: the accordion keeps its toggle icon' ] };
+		}
+		const attributes = { [ T.settings.open ]: icon };
+		const notes = [];
+		if ( ! shown ) {
+			notes.push( 'the draft shows no open unit, so what the toggle becomes when open is not read: the close icon stays' );
+		} else if ( glyphOf( shown ) !== glyphOf( shut ) ) {
+			const close = T.glyphs[ glyphOf( shown ) ];
+			close ? ( attributes[ T.settings.close ] = close ) : notes.push( `the open unit's icon ring draws "${ glyphOf( shown ) }", which rules.accordion.toggle.glyphs names no icon for: the close icon stays` );
+		} else {
+			const turn = ( ( ( turnOf( shown ) - turnOf( shut ) ) % 360 ) + 360 ) % 360;
+			// The same glyph unturned stays the same icon when open; turned, the close icon is the shape the turn ends on
+			// (rules.accordion.toggle.turns: a plus turned 45 degrees is a cross). The turn itself is a style value, never a skeleton's:
+			// the clone cross-fades the two icons, and the draft's turning transition is the motion route's.
+			const as = 0 === turn ? icon : ( T.turns || [] ).find( ( t ) => t.icon === icon && ( t.by || [] ).includes( turn ) )?.is;
+			as ? ( attributes[ T.settings.close ] = as ) : notes.push( `the open unit's icon ring turns "${ glyphOf( shut ) }" by ${ turn } degrees, which rules.accordion.toggle.turns names no icon for: the close icon stays` );
+			turn > 0 && as && notes.push( `the close icon is ${ as }, the shape the draft's ${ turn }-degree turn ends on; the clone cross-fades the two icons` );
+		}
+		return { attributes, notes };
+	};
+
+	return { ...out, of: ( e ) => at.get( e.key ) ?? null, closedPanel, itemWords, toggleIcon };
 }

@@ -145,7 +145,7 @@ test( 'MUST FAIL (decorative-image empty state unread): every fixture\'s attribu
 		Object.keys( fx.attributes || {} ).forEach( ( k ) => check( k, 'attributes' ) );
 		for ( const ps of fx.paintStates || [] ) {
 			Object.keys( ps.attributes || {} ).forEach( ( k ) => check( k, `paint state ${ ps.name }` ) );
-			[ ...( ps.when?.has || [] ), ...( ps.when?.lacks || [] ) ].forEach( ( k ) => check( k, `paint state ${ ps.name } when` ) );
+			[ ...( ps.when?.has || [] ), ...( ps.when?.lacks || [] ), ...Object.keys( ps.when?.equals || {} ) ].forEach( ( k ) => check( k, `paint state ${ ps.name } when` ) );
 		}
 	}
 	assert.deepEqual( problems, [] );

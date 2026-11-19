@@ -16,7 +16,14 @@ import { elementContext } from './fill-held.mjs';
 import { samePaint } from './css-equivalence/tolerance.mjs';
 import { fillLayerBox } from './fill-layer-box.mjs';
 import { tokenWrites } from './fill-token-ref.mjs';
+import { normalKeywords } from './fill-normal-keywords.mjs';
 import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, ledgerView, gapTarget, draftOf } from './fill-resolve-state.mjs';
+
+// Whether a resolver result writes only settings calibration measured painting `slot` itself (not ones that only reach it).
+const writesOwnSlot = ( res, cal, slot ) => 'written' === res?.status && res.writes.length > 0 && res.writes.every( ( w ) => {
+	const c = cal?.settings?.[ w.attr ];
+	return !! c && ( c.slots || [ c.slot ] ).some( ( p ) => 'string' === typeof p && LOOSE( p ) === LOOSE( slot ) );
+} );
 
 // Writes one resolver result into the node, recording each change. Returns the number of settings changed. `slot` is the
 // element the setting sits on; `res.readSlot`, when it differs, the element the value was read on (a property read on the
@@ -251,9 +258,24 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 				continue;
 			}
 		}
+		// A `normal` letter-spacing or line-height is written as the value it renders (lib/fill-normal-keywords.mjs), a line
+		// height with its unitless declared form.
+		let normalDeclared = {};
+		if ( ! layer ) {
+			const base = baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] );
+			const nk = normalKeywords( prop, draft, { snaps, base: ( w ) => base( slot, w ) } );
+			draft = nk.draft;
+			normalDeclared = nk.declared;
+		}
 		const fluid = fluidSamples( st, target, layer, prop );
 		const alternates = layer ? [] : alternateSlots( cal, prop, draft, rec.targets.map( ( t ) => t.slot ), target.slot );
-		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...alternates.filter( ( s ) => s !== slot ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ), contextAt } );
+		const input = { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...alternates.filter( ( s ) => s !== slot ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : { ...agreedDeclared( st, target, prop, draft, fontPx ), ...normalDeclared }, contextAt };
+		// A path the block's fixture renders in a state at rest (target.state: the open unit's, lib/skeleton-child-slots.mjs::
+		// unitSlots) is resolved in that state first, so a setting of the state painting that path itself takes the read (an
+		// accordion's open shadow); otherwise (no setting of the state, or one that only reaches the path, such as the open
+		// header colour at a category line inside the header) the resting settings do (its open fill, the line's colour).
+		const inState = target.state && ! layer ? resolveProperty( { ...input, state: target.state } ) : null;
+		const res = writesOwnSlot( inState, cal, target.slot ) ? inState : resolveProperty( input );
 		const eq = 'gap' === res.status && 'no-setting' === res.gap && ! layer ? fillEquivalent( st, rec, target, prop, draft, { baselineFn, apply } ) : null;
 		notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
 		if ( 'equal' === res.status || 'equal' === eq?.status ) {

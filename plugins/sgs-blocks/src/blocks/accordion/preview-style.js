@@ -4,7 +4,8 @@
  * layer (layout, gap, grid rows, max width, content band, border and corner
  * radius, through the shared containerWrapperPreview()), the base spacing, and
  * the root typography sgs_typography_css_rule() emits with its text-indent
- * sibling rule.
+ * sibling rule, and the items' category line (categoryEyebrow) and heading
+ * text (itemTitle) rules.
  *
  * @package SGS\Blocks
  */
@@ -14,7 +15,9 @@ import {
 	spacingPreview,
 	typographyPreviewStyle,
 	textIndentPreviewCss,
+	typographyPreviewCss,
 } from '../../utils';
+import { resolveColourToken } from '../../components/DesignTokenPicker';
 
 /**
  * @param {Object} attributes Block attributes.
@@ -32,8 +35,23 @@ export function accordionWrapperPreview( attributes, tier, palette, scope ) {
 		spacingPreview( { margin: attributes.margin }, tier ),
 		typographyPreviewStyle( attributes, '', tier )
 	);
+	// The items' category line and heading text, as render.php paints them from the accordion's own settings.
+	const eyebrowColour = attributes.categoryEyebrowColour
+		? resolveColourToken( attributes.categoryEyebrowColour, palette )
+		: '';
+	const eyebrowColourCss =
+		scope && eyebrowColour && ! /[{};<>]/.test( eyebrowColour )
+			? `${ scope } .sgs-accordion-item__eyebrow{color:${ eyebrowColour }}`
+			: '';
 	return {
 		...wrapper,
-		css: textIndentPreviewCss( attributes, '', scope, tier ),
+		css: [
+			textIndentPreviewCss( attributes, '', scope, tier ),
+			typographyPreviewCss( attributes, 'categoryEyebrow', scope ? `${ scope } .sgs-accordion-item__eyebrow` : '', tier ),
+			typographyPreviewCss( attributes, 'itemTitle', scope ? `${ scope } .sgs-accordion-item__title` : '', tier ),
+			eyebrowColourCss,
+		]
+			.filter( Boolean )
+			.join( '' ),
 	};
 }

@@ -18,6 +18,7 @@ import { openWords } from './motion-states.mjs';
 import { setRecord } from './motion-set.mjs';
 import { stateRows } from './state-vocab.mjs';
 import { setAttr } from './tree.mjs';
+import { scopeKeyOf } from './fill-width-gate.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
 import { staggerPlans, applyStagger } from './fill-motion-stagger.mjs';
 import { positionsByTemplate } from './motion-behaviour-settings.mjs';
@@ -214,7 +215,8 @@ function writeLoopCss( n, items, { flat, ref, out } ) {
 	const css = [ had( 'sgsCustomCss' ), ...fresh.map( ( i ) => i.css ) ].filter( Boolean ).join( ' ' );
 	const note = [ had( 'sgsCustomCssNote' ), ...fresh.map( ( i ) => `Loop ${ i.record.id }: ${ i.record.name }` ) ].filter( Boolean ).join( '; ' );
 	// The scope key includes/custom-css.php::sgs_custom_css_uid accepts: 4 to 16 lowercase letters and digits.
-	const id = `loop${ String( fresh[ 0 ].record.id ).toLowerCase().replace( /[^a-z0-9]/g, '' ) }`.slice( 0, 16 );
+	// From the node's own ref, so two boxes holding the same record, or two surfaces on one page, never share a key.
+	const id = scopeKeyOf( node, `loop${ String( fresh[ 0 ].record.id ).toLowerCase().replace( /[^a-z0-9]/g, '' ) }` );
 	const values = { sgsCustomCss: css, sgsCustomCssId: had( 'sgsCustomCssId' ) || id, sgsCustomCssNote: note };
 	for ( const [ attr, value ] of Object.entries( values ) ) {
 		const { before, after } = setAttr( node, { attr, value } );

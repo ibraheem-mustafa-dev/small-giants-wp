@@ -24,6 +24,7 @@ import { makeFieldGroups } from './skeleton-field-groups.mjs';
 import { widgetModel } from './skeleton-widgets.mjs';
 import { keptSvg } from './fill-icon.mjs';
 import { draftTokenLookup, handoffOf, resolvedOrRaw } from './draft-tokens.mjs';
+import { heroSplitOrder, heroMediaAlignment } from './skeleton-hero-order.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -758,7 +759,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		if ( 'accordion' === hit.rule ) {
 			// The units travel with the verdict: the accordion keeps its rows' parts' look as its own settings, read from them
 			// (lib/skeleton-child-slots.mjs::unitSlots, rules.accordion.childSlots).
-			return v( 'accordion', { block: R.accordion.block, attributes: accordionSettings( md ), reason: why, units: { units: md.units, open: md.open } } );
+			return v( 'accordion', { block: R.accordion.block, attributes: accordionSettings( md ), reason: [ why, ...widgets().toggleIcon( md ).notes ].join( '; ' ), units: { units: md.units, open: md.open } } );
 		}
 		const words = widgets().itemWords( md.units[ hit.index ] );
 		const closed = md.units[ hit.index ].rendered.length ? { inner: [], handover: [] } : widgets().closedPanel( md, hit.index, m.tplFinder );
@@ -766,10 +767,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const handover = [ ...words.handover, ...closed.handover ];
 		return v( 'accordion', { block: md.item, attributes: { ...words.attributes, ...open }, reason: why, ...( closed.inner.length ? { closedInner: closed.inner } : {} ), ...( handover.length ? { handover: handover[ 0 ], handovers: handover } : {} ) } );
 	};
-	// An accordion's own settings: several open at once for a keyed map of open items, and the one item open at rest.
+	// An accordion's own settings: several open at once for a keyed map of open items, the one item open at rest, the items'
+	// category lines printed with no filter when a unit's control shows a category, and the toggle icon its units draw.
 	const accordionSettings = ( md ) => {
 		const S = R.accordion.settings || {};
-		return { ...( md.multiple && S.several ? { [ S.several ]: true } : {} ), ...( ! md.multiple && 1 === md.open.length && S.openAtRest ? { [ S.openAtRest ]: md.open[ 0 ] } : {} ) };
+		const lines = S.categoryShown && S.categoryAlways && md.units.some( ( u ) => S.category in widgets().itemWords( u ).attributes );
+		return { ...( md.multiple && S.several ? { [ S.several ]: true } : {} ), ...( ! md.multiple && 1 === md.open.length && S.openAtRest ? { [ S.openAtRest ]: md.open[ 0 ] } : {} ), ...( lines ? { [ S.categoryAlways ]: true } : {} ), ...widgets().toggleIcon( md ).attributes };
 	};
 	const STRUCTURES = [
 		// A choice flow's root is sgs/choice-flow, whatever its surfaces.json kind (a modal, a form): the flow draws its frame, and
@@ -898,8 +901,23 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( 1 !== e.depth && ! ( parent && wrapperOfPage( parent ) && m.blockKids( parent ).length >= 2 && m.blockKids( parent ).find( holdsH1 ) === e ) ) {
 				return null;
 			}
-			const media = desc( e ).some( isMedia );
-			return v( 'hero', { block: R.hero?.block, attributes: media ? { variant: 'split' } : {}, ...( media ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s split media setting' } } : {} ) } );
+			const pictures = desc( e ).filter( isMedia );
+			const media = pictures.length > 0;
+			// A split hero's order per device is the draft's (lib/skeleton-hero-order.mjs): its picture against every worded
+			// element outside a picture, at each device's width.
+			const inPicture = ( k ) => pictures.some( ( p ) => desc( p ).includes( k ) );
+			const order = media ? heroSplitOrder( {
+				media: pictures.find( ( p ) => Object.values( p.visible || {} ).some( Boolean ) ) || pictures[ 0 ],
+				words: desc( e ).filter( ( k ) => m.words( k ) && ! m.blockKids( k ).length && ! isMedia( k ) && ! inPicture( k ) ),
+				rule: R.hero?.splitOrder,
+				allowed: R.hero?.splitOrder?.setting ? facts.enumOf?.( R.hero.block, R.hero.splitOrder.setting ) ?? null : null,
+			} ) : { value: null, problems: [] };
+			// Its picture's own alignment in its column: the draft's declared justify-self or auto side margins.
+			const align = media ? heroMediaAlignment( { style: declared( pictures.find( ( p ) => Object.values( p.visible || {} ).some( Boolean ) ) || pictures[ 0 ], tokens ), rule: R.hero?.splitAlignment } ) : null;
+			const attributes = media ? { variant: 'split', ...( order.value ? { [ R.hero.splitOrder.setting ]: order.value } : {} ), ...( align ? { [ R.hero.splitAlignment.setting ]: align } : {} ) } : {};
+			const verdict = v( 'hero', { block: R.hero?.block, attributes, ...( media ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s split media setting' } } : {} ) } );
+			verdict && order.problems.length && ( verdict.reason = `${ verdict.reason }; ${ order.problems.join( '; ' ) }` );
+			return verdict;
 		},
 		// The frame that only clips or fades a marquee track goes: the strip draws its own overflow and edge fade.
 		( { e, kidsB } ) => ( ! m.words( e ) && 1 === kidsB.length && loops( kidsB[ 0 ] ) && desc( kidsB[ 0 ] ).some( isMedia ) ? v( 'marqueeFrame', { action: 'unwrap' } ) : null ),

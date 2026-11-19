@@ -3,7 +3,9 @@
 // §5.1). In a grid container the `flex-*` values behave as `start` and `end`. In a flex container a cross-axis value
 // (align-items, align-content) differs only under `flex-wrap: wrap-reverse`, which swaps cross-start and cross-end, and a
 // main-axis value (justify-content) only under a `*-reverse` flex-direction, which swaps main-start and main-end; where the
-// context that decides it is unread, the two stay different. ctx: { display, 'flex-wrap', 'flex-direction' } of the
+// context that decides it is unread, the two stay different. `text-align` start and end are the line's start and end edge
+// in the element's inline direction (CSS Text 3 §6.1): left and right where `direction` is ltr, the reverse where it is
+// rtl, and themselves where the direction is unread. ctx: { display, 'flex-wrap', 'flex-direction', direction } of the
 // element the value is declared on, each a computed value.
 const CROSS = [ 'align-items', 'align-content' ];
 const MAIN = [ 'justify-content' ];
@@ -13,6 +15,11 @@ const FLEX_SIDE = { 'flex-start': 'start', 'flex-end': 'end' };
 // else the value itself.
 export function alignmentCanon( prop, value, ctx = {} ) {
 	const v = String( value ?? '' ).trim().toLowerCase();
+	if ( 'text-align' === prop ) {
+		const dir = String( ctx.direction ?? '' ).trim();
+		const edges = { ltr: { start: 'left', end: 'right' }, rtl: { start: 'right', end: 'left' } }[ dir ];
+		return edges?.[ v ] ?? v;
+	}
 	const side = FLEX_SIDE[ v ];
 	if ( ! side || ! [ ...CROSS, ...MAIN ].includes( prop ) ) {
 		return v;

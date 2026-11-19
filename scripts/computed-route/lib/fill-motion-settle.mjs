@@ -45,13 +45,36 @@ function carries( prop, raw, values, tok ) {
 		const e = easingOf( tok( values.easing ) );
 		return null !== e && LIST( raw ).every( ( x ) => easingOf( x ) === e );
 	}
+	if ( 'transform' === prop ) {
+		return restPoseGives( raw, values );
+	}
 	if ( 'width' === prop ) {
 		return undefined !== values.restWidth && parseFloat( values.restWidth ) === parseFloat( raw ) && /px$/.test( String( values.restWidth ) ) && /px$/.test( String( raw ) );
 	}
 	return false;
 }
 
-const PROPS = [ 'transition-duration', 'transition-delay', 'transition-timing-function', 'width' ];
+const PROPS = [ 'transition-duration', 'transition-delay', 'transition-timing-function', 'width', 'transform' ];
+
+// Whether the hover state's resting pose gives a computed resting transform: the pose is rotate(restRotate) (the motion
+// layer's rest fields, motion_fields of state rest), so a 2D matrix equal to that rotation within 0.001 per term and 0.5px
+// of translation, or none with no rest rotation, is what the layer paints. A 3D rest rotation (restRotateX/Y) or a
+// perspective is not judged here, and the row stays raised.
+export function restPoseGives( raw, values ) {
+	if ( [ values.restRotateX, values.restRotateY ].some( ( v ) => undefined !== v && 0 !== Number( v ) ) || values.perspectiveOn ) {
+		return false;
+	}
+	const deg = Number( values.restRotate ?? 0 );
+	if ( ! Number.isFinite( deg ) ) {
+		return false;
+	}
+	const v = String( raw ).trim();
+	const m = /^matrix\(([^)]+)\)$/.exec( v );
+	const got = 'none' === v ? [ 1, 0, 0, 1, 0, 0 ] : m ? m[ 1 ].split( ',' ).map( Number ) : null;
+	const rad = ( deg * Math.PI ) / 180;
+	const want = [ Math.cos( rad ), Math.sin( rad ), -Math.sin( rad ), Math.cos( rad ), 0, 0 ];
+	return !! got && 6 === got.length && got.every( ( x, i ) => Math.abs( x - want[ i ] ) <= ( i < 4 ? 1e-3 : 0.5 ) );
+}
 
 // opts: { unmapped, writes (the motion pass's writes), nodes, flat, refOf, mdb, db, calFor, reads, rawSnapshot }.
 // Returns { unmapped (the rows still raised), answered ([ row + { widths } ], for passSettled) }. A resting timing the state
@@ -69,7 +92,8 @@ export function motionSettled( { unmapped, writes, nodes, flat, refOf, mdb, db, 
 		answered.push( { ...row, slot: row.slot ?? '', widths: Object.keys( perWidth( row, declaredAt.length ? declaredAt : READ_WIDTHS ) ).map( Number ), settledDetail: `lib/fill-timing.mjs: the state pass's ${ String( twin.reason ).split( ':' )[ 0 ] } row for the same ${ row.property } (${ twin.value }) holds it per property` } );
 	}
 	for ( const row of dup.unmapped ) {
-		const n = row.slot && PROPS.includes( row.property ) && ! row.state ? nodes.find( ( x ) => refOf( flat[ x.index ] ) === row.node ) : null;
+		// A part's rows, and the root's resting transform (the hover state's rest pose is the root's own).
+		const n = ( row.slot || 'transform' === row.property ) && PROPS.includes( row.property ) && ! row.state ? nodes.find( ( x ) => refOf( flat[ x.index ] ) === row.node ) : null;
 		const t = n?.targets.find( ( x ) => x.slot === ( row.slot ?? '' ) );
 		const doc = t ? writes.find( ( w ) => w.node === row.node && 'motion' === w.how && 'sgsMotion' === w.attr )?.after : null;
 		if ( ! doc ) {
