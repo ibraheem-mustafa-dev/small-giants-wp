@@ -17,14 +17,13 @@ import {
 	slotClaims,
 } from '../extensions/motion/layers/refusal-match';
 import { isCssGradient } from '../../utils/background-preview';
+import { presetNames } from './preset-names';
 
 export const FOCUS_STYLE_CLASSES = Object.freeze( {
 	duotone: 'sgs-focus--duotone',
 	signature: 'sgs-focus--signature',
 } );
 
-// The presets whose stylesheet rule gives the button a border (style.css `.sgs-button--<preset>`).
-const BORDERED_PRESETS = Object.freeze( [ 'primary', 'secondary', 'outline' ] );
 
 // Set on the sgs/multi-button canvas wrapper (multi-button/edit.js) from the group's default border.
 export const GROUP_HOST_BORDER_PROPERTY =
@@ -186,7 +185,8 @@ export function focusHostBorder( { borderWidth, borderStyle, inheritStyle } ) {
 			? distinct[ 0 ]
 			: `max(${ sides.join( ',' ) })`;
 	}
-	if ( BORDERED_PRESETS.includes( inheritStyle ) ) {
+	// Every preset's stylesheet rule gives the button a border (style.css `.sgs-button--<preset>`).
+	if ( presetNames().includes( inheritStyle ) ) {
 		return `var(--wp--custom--button-presets--${ inheritStyle }--border-width,2px)`;
 	}
 	// A preset-less button with no border of its own paints its sgs/multi-button group's default border, which the

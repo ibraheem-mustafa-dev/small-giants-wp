@@ -34,6 +34,7 @@ import ItemSlotPicture from '../../components/media/ItemSlotPicture.js';
 import { hasFile } from '../../components/media/mediaSlotWrites.js';
 import { QUERY_DESKTOP, QUERY_TABLET_UP } from '../../utils/breakpoints';
 import { composeShadow } from '../../utils/shadow-layers';
+import { presetNames } from '../button/preset-names';
 import { galleryStickerPreviewCss, stickerCorner } from './gallery-sticker-preview';
 const PICKER_STYLES = [ 'outlined', 'filled', 'ghost', 'tile' ];
 const BADGE_POSITIONS = [
@@ -1236,9 +1237,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sg
 			? { minHeight: attributes.addToCartMinHeight }
 			: {} ),
 	};
-	const cartVariant = [ 'primary', 'secondary', 'outline' ].includes(
-		attributes.addToCartStyle
-	)
+	const cartVariant = presetNames().includes( attributes.addToCartStyle )
 		? ` buybox__add-to-cart--${ attributes.addToCartStyle }`
 		: '';
 	// Pick a set can move the add-to-basket button into the side column (pickSideButton), as render.php does.

@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { presetOptions } from '../button/preset-names';
 import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import { SgsLengthControl, TypographyControls } from '../../components';
 import {
@@ -433,18 +434,17 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 						value="default"
 						label={ __( "Today's look", 'sgs-blocks' ) }
 					/>
-					<ToggleGroupControlOption
-						value="primary"
-						label={ __( 'Primary', 'sgs-blocks' ) }
-					/>
-					<ToggleGroupControlOption
-						value="secondary"
-						label={ __( 'Secondary', 'sgs-blocks' ) }
-					/>
-					<ToggleGroupControlOption
-						value="outline"
-						label={ __( 'Outline', 'sgs-blocks' ) }
-					/>
+					{ presetOptions( {
+						primary: __( 'Primary', 'sgs-blocks' ),
+						secondary: __( 'Secondary', 'sgs-blocks' ),
+						outline: __( 'Outline', 'sgs-blocks' ),
+					} ).map( ( option ) => (
+						<ToggleGroupControlOption
+							key={ option.value }
+							value={ option.value }
+							label={ option.label }
+						/>
+					) ) }
 				</ToggleGroupControl>
 				<ToggleControl
 					label={ __( 'Show the price on the button', 'sgs-blocks' ) }

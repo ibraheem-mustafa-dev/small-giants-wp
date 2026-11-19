@@ -54,12 +54,13 @@ import {
 	GROUP_HOST_BORDER_PROPERTY,
 	groupFocusHostBorder,
 } from '../button/focus-style';
+import { presetOptions } from '../button/preset-names';
 
-const CHILD_PRESET_OPTIONS = [
-	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
-	{ label: __( 'Secondary', 'sgs-blocks' ), value: 'secondary' },
-	{ label: __( 'Outline', 'sgs-blocks' ), value: 'outline' },
-];
+const CHILD_PRESET_LABELS = {
+	primary: __( 'Primary', 'sgs-blocks' ),
+	secondary: __( 'Secondary', 'sgs-blocks' ),
+	outline: __( 'Outline', 'sgs-blocks' ),
+};
 
 const TEMPLATE = [
 	[ 'sgs/button', { inheritStyle: 'primary', label: 'Primary Action' } ],
@@ -439,7 +440,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					<SelectControl
 						label={ __( 'Style preset', 'sgs-blocks' ) }
 						value={ groupPreset }
-						options={ CHILD_PRESET_OPTIONS }
+						options={ presetOptions( CHILD_PRESET_LABELS ) }
 						onChange={ setGroupPreset }
 						help={ __(
 							'Apply a preset style to every button in this group at once.',

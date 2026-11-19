@@ -19,6 +19,7 @@ import {
 	MediaElementPanel,
 	SsrPreviewGuard, ResponsiveOverride, SgsBoxControl, LinkUnderlineControl, ShadowControl } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
+import { presetNames, presetOptions } from '../button/preset-names';
 import { LINK_SOURCES_NO_TOP } from '../../shared/link-source-options';
 import { ListingContentPanel, ListingShapePanel, ListingDotsPanel, ListingRowsPanel, ListingOverlaysPanel } from './listing-panels';
 import { cardPartColourRows } from './card-part-rows';
@@ -81,11 +82,11 @@ const CTA_BEHAVIOUR_OPTIONS = [
 ];
 
 /** Allowed CTA style options — mirrors btn-* vocabulary in style.css. */
-const CTA_STYLE_OPTIONS = [
-	{ value: 'primary', label: __( 'Primary', 'sgs-blocks' ) },
-	{ value: 'secondary', label: __( 'Secondary', 'sgs-blocks' ) },
-	{ value: 'outline', label: __( 'Outline', 'sgs-blocks' ) },
-];
+const CTA_STYLE_LABELS = {
+	primary: __( 'Primary', 'sgs-blocks' ),
+	secondary: __( 'Secondary', 'sgs-blocks' ),
+	outline: __( 'Outline', 'sgs-blocks' ),
+};
 
 /** CTA text alignment: empty keeps the stylesheet's centred default. */
 const CTA_TEXT_ALIGN_OPTIONS = [
@@ -868,7 +869,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 
 	// Q3: allowlist the style slugs before interpolating into className —
 	// a stale/imported attribute value must not inject an arbitrary class.
-	const ctaStyleSlugs = CTA_STYLE_OPTIONS.map( ( o ) => o.value );
+	const ctaStyleSlugs = presetNames();
 	const safeCtaStyle = ctaStyleSlugs.includes( ctaStyle )
 		? ctaStyle
 		: 'primary';
@@ -2909,7 +2910,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					<SelectControl
 						label={ __( 'Primary button style', 'sgs-blocks' ) }
 						value={ ctaStyle || 'primary' }
-						options={ CTA_STYLE_OPTIONS }
+						options={ presetOptions( CTA_STYLE_LABELS ) }
 						onChange={ ( v ) => {
 							/*
 							 * ctaStyle is now the SINGLE style attribute driving the
@@ -3259,7 +3260,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 									'sgs-blocks'
 								) }
 								value={ cta2Style || 'secondary' }
-								options={ CTA_STYLE_OPTIONS }
+								options={ presetOptions( CTA_STYLE_LABELS ) }
 								onChange={ ( v ) =>
 									setAttributes( { cta2Style: v } )
 								}

@@ -71,6 +71,7 @@ import {
 import { buttonFocusState, focusHostBorder } from './focus-style';
 import { useFocusPreview } from './components/FocusPreviewToggle';
 import { RICH_TEXT_EMPHASIS } from '../../utils/rich-text-formats';
+import { presetNames } from './preset-names';
 
 import AuthoredText from '../../components/AuthoredText';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -248,9 +249,7 @@ export default function Edit( {
 	// ignored every preset while the frontend honoured it. A 'custom'/unknown
 	// value emits NO modifier, exactly as render.php does.
 	const blockClasses = [ 'sgs-button' ];
-	if (
-		[ 'primary', 'secondary', 'outline', 'link' ].includes( inheritStyle )
-	) {
+	if ( [ ...presetNames(), 'link' ].includes( inheritStyle ) ) {
 		blockClasses.push( `sgs-button--${ inheritStyle }` );
 	}
 	if ( widthType?.desktop === 'full' ) {
