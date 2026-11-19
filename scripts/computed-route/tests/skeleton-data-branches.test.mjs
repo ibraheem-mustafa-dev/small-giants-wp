@@ -183,6 +183,8 @@ test( 'MUST FAIL: one read per branch, each with its branch forced and put back 
 		{ component: 'Page', el: 'Page/7', test: 'hasAcct', keys: { hasAcct: true } },
 	] } );
 	assert.deepEqual( out.map( ( r ) => r.key ), [ 'Root/1#0', 'Root/5#0', 'Root/7#0' ] );
+	// Each new element names the page's hosts its keys were forced on, for Fill's read (lib/fill-data-branches.mjs).
+	assert.deepEqual( out.find( ( r ) => 'Root/5#0' === r.key ).branch, { component: 'Page', hosts: [ 'Page', 'Root' ], keys: { hasNote: true } } );
 	// Each read forces its own branch only.
 	assert.deepEqual( seen, [ { hasNote: true }, { hasNote: false, hasAcct: true } ] );
 	assert.deepEqual( logic.renderVals(), { hasNote: false } );

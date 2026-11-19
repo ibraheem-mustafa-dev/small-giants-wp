@@ -1,0 +1,7 @@
+[
+	{"file": "lib/fill-read.mjs", "find": "\tawait showBranches( page, branches ) && await settleAnimations( page, { floor: 300 } );\n", "replace": "", "why": "Fill reads the draft at rest, so a forced branch's element has no look"},
+	{"file": "lib/fill-data-branches.mjs", "find": "\t\treached += await page.evaluate( forceRenderVals, { hosts: b.hosts, patch: b.keys } );\n", "replace": "", "why": "nothing is forced on the page"},
+	{"file": "lib/fill-data-branches.mjs", "find": "Object.assign( out.get( id ).keys, b.keys );", "replace": "", "why": "the inventory's keys never reach the patch"},
+	{"file": "lib/fill-data-branches.mjs", "find": "const hosts = b.hosts?.length ? b.hosts : [ b.component ];", "replace": "const hosts = [ b.component ];", "why": "the served root's host name is lost, so the root component is never forced"},
+	{"file": "lib/fill-data-branches.mjs", "find": "\t\tif ( ! b?.keys ) {\n\t\t\tcontinue;\n\t\t}\n", "replace": "\t\tif ( ! b ) {\n\t\t\tcontinue;\n\t\t}\n", "why": "a mark with no keys makes an empty patch"}
+]

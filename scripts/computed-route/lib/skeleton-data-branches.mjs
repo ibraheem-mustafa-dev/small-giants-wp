@@ -23,7 +23,8 @@
 // Bounds: one read per branch hidden at rest at each inventory width, as the reveal reader reads a state. A data branch nested directly inside it is forced in the same read (one level);
 // a data branch nested deeper is not forced and is named in a note. A branch's opposite (`noNote` beside `hasNote`) is not
 // touched: it keeps its resting value, so its elements stay as the opening read has them. Only elements the opening read does
-// not hold are kept from a forced read, each marked `branch: { component, keys }` (the values that show it) and placed in the
+// not hold are kept from a forced read, each marked `branch: { component, hosts, keys }` (the component, the page's hosts of
+// it and the values that show it; lib/fill-data-branches.mjs forces the same for Fill's read) and placed in the
 // opening records at its document position: before its first later sibling in the template (same host, higher template
 // number or copy), else after the last element under its parent.
 import fs from 'fs';
@@ -239,7 +240,7 @@ export async function readDataBranches( { page, branches, read, base, settle = (
 			continue;
 		}
 		await settle();
-		reads.push( { branch: { component: b.component, keys: b.keys }, records: await read() } );
+		reads.push( { branch: { component: b.component, hosts: names, keys: b.keys }, records: await read() } );
 		await page.evaluate( forceRenderVals, { hosts: names, patch: null } );
 		await settle();
 	}
