@@ -1,0 +1,49 @@
+{
+	"_comment": "The working piece of each template and WooCommerce page a site serves (Spec 48 FR-48-56, FR-48-87, FR-48-96, FR-48-99): the block that must really work there, so a clone never ships a static imitation of a basket, a checkout, a buy box, a product list or an order. Read by lib/template-pieces.mjs. `templates` is keyed by template slug, `pages` by the commerce role of an ordinary page (lib/skeleton-commerce-region.mjs::commerceOf). Each piece: `id`; `block`, the block that must be in the built tree; `required` (true: the tree fails the check without it; false: placed only where the draft draws it); `once` (default true: more than one fails the check); `kind`, who places it. Kind `rule` is placed by an existing skeleton rule named in `by`, and kind `theme` comes with the theme template's own content (lib/template-copies.mjs::themeContent); neither is built here, both are checked. Any other kind names a builder, lib/template-piece-<kind>.mjs, whose `place( ctx, piece )` puts the piece into the tree; `find` and `bind` are that builder's own inputs (how the draft region is found by structure, and what is bound to live data).",
+	"templates": {
+		"cart": {
+			"pieces": [
+				{ "id": "basket", "block": "core/post-content", "required": true, "kind": "rule", "by": "commerceRegion" }
+			]
+		},
+		"checkout": {
+			"pieces": [
+				{ "id": "checkout", "block": "core/post-content", "required": true, "kind": "rule", "by": "commerceRegion" }
+			]
+		},
+		"archive-product": {
+			"pieces": [
+				{ "id": "listing", "block": "woocommerce/product-collection", "required": true, "kind": "rule", "by": "commerceRegion" },
+				{ "id": "listing-card", "block": "sgs/product-card", "required": true, "kind": "rule", "by": "commerceRegion" }
+			]
+		},
+		"product-search-results": {
+			"pieces": [
+				{ "id": "listing", "block": "woocommerce/product-collection", "required": true, "kind": "theme" }
+			]
+		},
+		"taxonomy-product_attribute": {
+			"pieces": [
+				{ "id": "listing", "block": "woocommerce/product-collection", "required": true, "kind": "theme" }
+			]
+		},
+		"search": {
+			"pieces": [
+				{ "id": "results", "block": "core/query", "required": true, "kind": "theme" },
+				{ "id": "search-field", "block": "core/search", "required": true, "kind": "theme" }
+			]
+		},
+		"404": {
+			"pieces": [
+				{ "id": "search-field", "block": "core/search", "required": true, "kind": "theme" }
+			]
+		}
+	},
+	"pages": {
+		"account": {
+			"pieces": [
+				{ "id": "account", "block": "sgs/account", "required": true, "kind": "rule", "by": "commerceRegion" }
+			]
+		}
+	}
+}
