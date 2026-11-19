@@ -155,8 +155,8 @@ final class Css_Output_Settings {
 							<td>
 								<fieldset>
 									<?php
-									self::choice( self::SHARED_OPTION, 'inline', $shared, \__( 'In the page', 'sgs-blocks' ), \__( 'Every stylesheet the page uses is written into the page head in its usual order, so the page needs no stylesheet requests, but every page carries all of it again (about three times the HTML).', 'sgs-blocks' ) );
-									self::choice( self::SHARED_OPTION, 'bundle', $shared, \__( 'One combined file (recommended)', 'sgs-blocks' ), \__( 'The stylesheets are combined, in their usual order, into one cached file: one request instead of one per stylesheet, reused by pages with the same blocks.', 'sgs-blocks' ) );
+									self::choice( self::SHARED_OPTION, 'inline', $shared, \__( 'In the page (recommended)', 'sgs-blocks' ), \__( 'Every stylesheet the page uses is written into the page head in its usual order, so nothing but the page itself has to load before it shows.', 'sgs-blocks' ) );
+									self::choice( self::SHARED_OPTION, 'bundle', $shared, \__( 'One combined file', 'sgs-blocks' ), \__( 'The stylesheets are combined, in their usual order, into one cached file: one request instead of one per stylesheet. Each page is smaller, but a first visit waits for the file, which is reused only by pages with the same blocks.', 'sgs-blocks' ) );
 									self::choice( self::SHARED_OPTION, 'links', $shared, \__( 'Separate files (WordPress default)', 'sgs-blocks' ), \__( 'One stylesheet link per block type and asset, exactly as WordPress prints them. Use only to compare, or when another plugin needs the separate files.', 'sgs-blocks' ) );
 									?>
 								</fieldset>

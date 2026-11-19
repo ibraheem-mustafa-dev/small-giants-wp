@@ -7,11 +7,12 @@
  * priority 1) and before anything prints (`wp_print_styles` at `wp_head` priority 8, late styles in the footer). It
  * walks the style queue in print order and merges each run of consecutive mergeable handles into the run's first
  * handle, file content first and its inline additions after, so every rule keeps its place in the cascade:
- *   - `bundle` (default): the run is written once to a content-hashed file in `uploads/sgs-css/` (immutable cache headers,
- *     garbage-collected by the CSS epoch) and prints as one `<link>`. The browser keeps it for every later page with
- *     the same stylesheets, so each page's HTML stays about a third the size of `inline` (canary 2026-11-19: Home 30 KB
- *     against 79 KB, Shop 40 KB against 112 KB).
- *   - `inline`: the run prints as one `<style>`, so the page makes no stylesheet request for it.
+ *   - `inline` (default): the run prints as one `<style>`, so nothing blocks the first paint but the page itself.
+ *   - `bundle`: the run is written once to a content-hashed file in `uploads/sgs-css/` (immutable cache headers,
+ *     garbage-collected by the CSS epoch) and prints as one `<link>`. The page's HTML is about a third the size, but a
+ *     first visit downloads about the same total and waits for the file (canary 2026-11-19: Shop about 0.6 s longer),
+ *     and the file is reused only by pages with the same stylesheets (one page type), so it pays off mainly for
+ *     returning visitors.
  *   - `links`: WordPress prints its own tags, untouched.
  * A handle is mergeable when it is a `.css` file of this site under ABSPATH or WP_CONTENT_DIR, or has no file and only
  * inline CSS, and it applies to every medium (`media` all). A media query, `conditional`, `alt` or `title` data, an RTL
@@ -39,7 +40,7 @@ final class Css_Delivery {
 	const MODES = array( 'inline', 'bundle', 'links' );
 
 	/** Mode used when the option is unset or invalid. */
-	const DEFAULT_MODE = 'bundle';
+	const DEFAULT_MODE = 'inline';
 
 	/**
 	 * Query flag that asks for WordPress's own per-file links on one request. Analysis tools (the live pass of
