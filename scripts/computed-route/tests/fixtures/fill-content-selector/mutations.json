@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/fill-prop.mjs", "find": "const owned = Object.keys( selectors ).length ? { ...selectors, ...( given || {} ) } : given;", "replace": "const owned = given;", "why": "the resolver may turn the skeleton's email row into an address row" },
+	{ "file": "lib/fill-content-selector.mjs", "find": "AND role = 'select-from-enum' AND css_property IS NULL", "replace": "AND css_property IS NULL", "why": "every enum with no CSS property is held, layout enums included" },
+	{ "file": "lib/fill-content-selector.mjs", "find": "AND css_property IS NULL AND enum_values", "replace": "AND enum_values", "why": "an enum that paints a CSS property is held" },
+	{ "file": "lib/fill-content-selector.mjs", "find": "&& presence.some( ( k ) => k.startsWith( `${ attr }=` ) )", "replace": "", "why": "a setting whose values change no part is held" },
+	{ "file": "lib/fill-content-selector.mjs", "find": "undefined !== attributes?.[ attr ] &&", "replace": "", "why": "a node with no value for the setting is held at undefined" },
+	{ "file": "lib/fill-content-selector.mjs", "find": "if ( ! db?.prepare || ! block || ! calibration?.presence ) {", "replace": "if ( false ) {", "why": "no handle, block or calibration is no guard" }
+]
