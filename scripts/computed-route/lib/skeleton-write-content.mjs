@@ -296,12 +296,12 @@ export function makeContent( ctx ) {
 		return { html: escText( words ), handover: [ ...cut, ...pieceRows( e, IH, words ), ...said, ...imgs.map( ( img ) => ( { owner: 'content-page', kind: 'presence', detail: `the inline photo ${ img.attrs?.srcBasename || img.attrs?.src || '' } in the ${ noun( e ) } "${ words }": its place among the words is not readable from the draft's source; insert it with the Inline photo format` } ) ) ] };
 	}
 
-	// The content settings of one element's block. Returns { a (attributes), handover }.
 	// Whether an element's own words go to a body child of `block` (rules.wrappedWords): the block wraps a container and the
 	// element has words and no block inside it.
 	function wrappedBody( block, e ) {
 		return !! facts.decisions.rules?.wrappedWords?.block && !! composition[ block ]?.wraps_block && !! m.words( e ) && ! m.blockKids( e ).length;
 	}
+	// The content settings of one element's block. Returns { a (attributes), handover }.
 	function contentAttrs( block, e, top ) {
 		const a = {};
 		const handover = [];

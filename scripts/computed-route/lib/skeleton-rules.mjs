@@ -209,12 +209,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const sibs = col ? m.blockKids( col ) : [];
 		return !! col && sibs[ 0 ] === e && sibs.length > 1 && ( R.columnHeading?.rowBlocks || [] ).includes( hooks.blockOfKey?.( col.parentKey ) );
 	};
-	// A link holding nothing but one image (an <img> or an image placeholder element).
 	// Links each to a different brand of the registry (hooks.brandOf), with brandImageLink on.
 	const brandIconRun = ( ks ) => {
 		const brands = ks.map( ( k ) => hooks.brandOf?.( k ) ?? null );
 		return !! facts.decisions.structural?.brandImageLink && brands.every( Boolean ) && new Set( brands ).size === brands.length;
 	};
+	// A link holding nothing but one image (an <img> or an image placeholder element).
 	const imageLink = ( k ) => {
 		const inner = m.blockKids( k );
 		return 'a' === k.tag && ! String( k.allText ?? '' ).trim() && 1 === inner.length && ! m.blockKids( inner[ 0 ] ).length && ( 'img' === inner[ 0 ].tag || !! specHit( R.mediaElement, inner[ 0 ].tag ) );

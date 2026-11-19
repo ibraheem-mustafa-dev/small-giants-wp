@@ -53,7 +53,6 @@ const NO_SIZE = new Set( [ 'auto', 'none', 'normal', '0', '0px', 'initial', 'uns
 const INTERACTIVE_TAGS = new Set( [ 'a', 'button', 'input', 'select', 'textarea', 'summary' ] );
 const REPLACED_TAGS = new Set( [ 'img', 'picture', 'video', 'canvas' ] );
 
-// Whether a setting painting `prop` at rest is calibrated on `slot` of the block.
 // The block's one inner image element (calibrated default paint `_tag` img), or null when it has none or several.
 export function innerImageSlot( cal ) {
 	const imgs = Object.entries( cal?.elements || {} ).filter( ( [ k, byWidth ] ) => '' !== k && ! k.includes( '::' ) && Object.values( byWidth || {} ).some( ( r ) => 'img' === String( r?._tag ?? '' ).toLowerCase() ) );
@@ -63,6 +62,7 @@ export function innerImageSlot( cal ) {
 // A size declared as an expression (clamp(), min(), max(), calc()): its value is a layout result, the rendered size.
 const FLUID = /^(clamp|min|max|calc)\(/i;
 
+// Whether a setting painting `prop` at rest is calibrated on `slot` of the block.
 export const calibratedAt = ( cal, slot, prop ) => Object.values( cal?.settings || {} ).some( ( s ) => s?.property === prop && ! s.state && [ s.slot, ...( s.slots || [] ) ].some( ( x ) => 'string' === typeof x && LOOSE( x ) === LOOSE( slot ) ) );
 const ONLY_GAPS = /^(shape|no-setting)\b/;
 const pxOf = ( v ) => ( /^-?\d+(\.\d+)?(px)?$/.test( String( v ).trim() ) ? parseFloat( v ) : null );
