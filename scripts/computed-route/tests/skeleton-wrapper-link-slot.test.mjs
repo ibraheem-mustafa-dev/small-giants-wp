@@ -27,8 +27,15 @@ test( 'negative control: no rule entry, no calibrated link slot, and a link roun
 	assert.equal( nodes( page(), { off: [ 'homeLink' ] } )[ 0 ]?.draftSlots, undefined );
 	assert.equal( nodes( page(), { calSettings: () => ( { width: { slot: '', slots: [ '' ] } } ) } )[ 0 ].draftSlots, undefined, 'a block whose width calibration never reached the link reads nothing' );
 	assert.ok( nodes( page( 2 ) ).every( ( n ) => ! n.draftSlots?.[ LINK ] ), 'two logos in one link: the link sizes neither alone' );
+	// A link round two logos is not dissolved at all: rules.homeLink.groupBlock keeps it as the container of the pair.
 	const r = run( page( 2 ), 'class Component {}', { calSettings: ( b ) => ( b === logoBlock ? CAL : {} ) } );
-	assert.ok( r.proposal.rows.find( ( x ) => 'homeLink' === x.rule ).slotNotes.some( ( t ) => /holds 2 sgs\/responsive-logo blocks/.test( t ) ) );
+	const row = r.proposal.rows.find( ( x ) => 'homeLink' === x.rule );
+	assert.equal( row?.slotNotes, undefined, 'a kept link is no dissolved link, so it gives no link slot' );
+	// Called on a dissolved link that held two logos, the writer reads the link for neither and says so.
+	const two = [ { name: logoBlock }, { name: logoBlock } ];
+	const res = wrapperLinkSlot( { rule: { linkSlots: [ { block: logoBlock, setting: 'width', slot: LINK } ] }, e: {}, built: two, calSettings: () => CAL, finder: () => 'F' } );
+	assert.ok( two.every( ( n ) => undefined === n.draftSlots ), 'two logos in one link: neither takes the link' );
+	assert.ok( res.notes.some( ( t ) => /holds 2 sgs\/responsive-logo blocks/.test( t ) ) );
 } );
 
 test( 'wrapperLinkSlot: other blocks built under the link are untouched, and an absent rule changes nothing', () => {
