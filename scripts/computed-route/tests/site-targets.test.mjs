@@ -236,7 +236,7 @@ test( 'MUST FAIL: scratch-target refuses a bad name, a non-mirror source, a comm
 
 // Every command that writes a site calls assertUnprotected before its first step that reaches a site (a wp-cli or SSH call, a login,
 // a build). Read from the source, never by running the command: a run would reach the site if the call were missing.
-const WRITERS = [ 'content-sync.mjs', 'provision-calibration-refs.mjs', 'site-build.mjs', 'calibrate.mjs', 'solve.mjs' ];
+const WRITERS = [ 'content-sync.mjs', 'provision-calibration-refs.mjs', 'site-build.mjs', 'calibrate.mjs', 'solve.mjs', 'site-run.mjs', 'apply.mjs' ];
 const REACHES_A_SITE = [ 'wpCommand( ', 'wpEvalRunner( ', 'wpBuildPage( ', 'remoteBlockHash( ', 'openRunSession( ', 'openDetachedSession( ', 'openBrowser( ', 'openTrial( ', 'spawn' + 'Sync( ' ];
 
 test( 'MUST FAIL: every command that writes a site calls assertUnprotected before its first step that reaches a site', () => {

@@ -2,7 +2,7 @@
 // a site named with `--site`: a run named on a site reads and writes that site and no other.
 //   - readTargets: the committed file merged with the gitignored calibration-targets.local.json beside it, where a scratch
 //     copy of a mirror is recorded (tools/scratch-target.mjs). A local entry never replaces a committed one.
-//   - surfaceOnSite: a surface entry of surfaces.json retargeted to another copy of its site (same post ids), or a refusal.
+//   - surfaceOnSite, surfacesOnSite: a surface entry (or every entry) of surfaces.json retargeted to another copy of its site (same post ids), or a refusal.
 //   - assertUnprotected: a site whose target carries `protected` is never written by a route run.
 //   - secretsPath, siteUrl: a secrets file resolves against SGS_SECRETS_ROOT when set (a worktree holds no secrets), else the repo.
 //   - assertScratchRunPlace: a scratch-copy run writes files under sites/<client>/build, so it runs from a git worktree.
@@ -67,6 +67,12 @@ export function surfaceOnSite( entry, site, targets ) {
 		throw new Error( `--site ${ site } does not share post ids with ${ entry.site }: this surface's post ids belong to ${ entry.site }, so a build on ${ site } would write other posts. Name a copy of ${ entry.site }` );
 	}
 	return { ...entry, envFile: t.envFile, envKey: t.envKey, site };
+}
+
+// Every entry of a surfaces.json object on `site` (surfaceOnSite each): the whole manifest of a run, so no stage reads an entry's old site.
+// No site returns the object as it is; one entry that cannot be matched to the site's post ids throws before any stage runs.
+export function surfacesOnSite( surfaces, site, targets ) {
+	return site ? Object.fromEntries( Object.entries( surfaces ).map( ( [ key, entry ] ) => [ key, surfaceOnSite( entry, site, targets ) ] ) ) : surfaces;
 }
 
 // A run that writes `site` stops when its target carries a `protected` reason. A site with no target carries none.
