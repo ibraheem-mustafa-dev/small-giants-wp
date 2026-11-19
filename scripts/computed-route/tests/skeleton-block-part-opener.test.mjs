@@ -91,7 +91,7 @@ function run( o = {} ) {
 	] );
 	const factRecord = { schema: '1', client: 'fixture-client', elements, surfaces: o.surfaces ?? SURFACES(), sources: { files: { 'Root.dc.html': draft.hash } } };
 	const inventory = { checks: {}, source: 'fixture', root: 'header', generated: 'fixture', elements: list.map( ( [ n, p, tag, words, x ] ) => el( n, p, tag, words, x ) ) };
-	return proposeSkeleton( { inventory, facts: facts( draft.repo, o.edit ), surface: 'header', surfaceKind: o.kind ?? 'header', surfaceName: 'Header', db, factRecord, openers: o.openers ?? { 'S-05': 'Menu button (toggleMenu)', 'S-24': 'Bag button' }, pageMap: o.pageMap ?? [ CART() ] } );
+	return proposeSkeleton( { inventory, facts: facts( draft.repo, o.edit ), surface: 'header', surfaceKind: o.kind ?? 'header', surfaceName: 'Header', db, factRecord, openers: o.openers ?? { 'S-05': 'Menu button (toggleMenu)', 'S-24': 'Bag button' }, pageMap: o.pageMap ?? [ CART() ], ...( o.calSettings ? { calSettings: o.calSettings } : {} ) } );
 }
 const all = ( l ) => l.flatMap( ( n ) => [ n, ...all( n.innerBlocks || [] ) ] );
 const nodeOf = ( r, k ) => all( r.skeleton ).find( ( n ) => n.draftRef?.tpl === k );
@@ -200,4 +200,12 @@ test( 'decisionsProblems refuses a block-owned part trigger naming a setting its
 	const bad = decisionsProblems( facts( REPO, ( R ) => ( R.blockOwnedPart.byTemplate.cart.trigger.label = 'noSuchSetting' ) ) );
 	assert.ok( bad.some( ( p ) => /blockOwnedPart\.byTemplate\.cart\.trigger\.label/.test( p ) ) );
 	assert.ok( decisionsProblems( facts( REPO, ( R ) => delete R.blockOwnedPart.byTemplate.cart.trigger.style ) ).some( ( p ) => /trigger\.style/.test( p ) ) );
+} );
+
+test( 'MUST FAIL: the basket control that is the cart block is read at the cart’s trigger part (its pill padding, border and radius); with no calibrated trigger, or the rule’s selfPart removed, no slot', () => {
+	const CAL = { pillPadding: { slot: '.sgs-cart__trigger' }, pillBorderRadius: { slot: '.sgs-cart__trigger' }, iconBg: { slot: '.sgs-cart__trigger::after' } };
+	const cart = nodeOf( run( { calSettings: ( b ) => ( 'sgs/cart' === b ? CAL : {} ) } ), 'Root/6#0' );
+	assert.deepEqual( cart.draftSlots?.[ '.sgs-cart__trigger' ], { tpl: 'Root/6#0' }, 'the control itself is the trigger' );
+	assert.equal( nodeOf( run(), 'Root/6#0' ).draftSlots?.[ '.sgs-cart__trigger' ], undefined, 'negative control: no calibration, no slot' );
+	assert.equal( nodeOf( run( { calSettings: ( b ) => ( 'sgs/cart' === b ? CAL : {} ), edit: ( R ) => delete R.blockPartOpener.selfPart } ), 'Root/6#0' ).draftSlots?.[ '.sgs-cart__trigger' ], undefined, 'the selfPart entry removed' );
 } );

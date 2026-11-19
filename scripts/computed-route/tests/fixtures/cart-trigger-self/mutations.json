@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/skeleton-propose.mjs", "find": "self && Object.assign( slots, self.slots );", "replace": "", "why": "the basket button's pill look would never be read" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "const self = R[ r.rule ]?.selfPart && db && ! r.action ?", "replace": "const self = db && ! r.action ?", "why": "every rule's block would read its control at a part named by nothing" }
+]
