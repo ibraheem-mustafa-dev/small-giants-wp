@@ -17,6 +17,7 @@ import { readLogicStates } from './fill-logic-state.mjs';
 import { readCurrentItems } from './fill-current-item.mjs';
 import { collectMany } from './fill-read-collect.mjs';
 import { openState } from './fill-open.mjs';
+import { fireScrollReveals } from './scroll-reveals.mjs';
 
 const RESOLVE = resolveFinder.toString();
 const COLLECT = collectPair.toString();
@@ -159,6 +160,8 @@ async function openPage( browser, devices, { url, open, opener = null, width, or
 		await h.clickText( open, { wait: 900 } );
 	}
 	await settleAnimations( page, { floor: 900 } );
+	// A section the draft's script holds hidden until it scrolls into view is read after its reveal ran (lib/scroll-reveals.mjs).
+	await fireScrollReveals( page );
 	// The runtime has mounted its components by now: a state is set on a live instance, never before it exists.
 	const opened = opener?.state ? await openState( page, opener, width ) : null;
 	opened && await settleAnimations( page, { floor: 300 } );

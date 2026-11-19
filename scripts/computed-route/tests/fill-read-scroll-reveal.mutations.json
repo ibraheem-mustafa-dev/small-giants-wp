@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "\tawait fireScrollReveals( page );\n",
+		"replace": "",
+		"why": "the page read never scrolls, so a scroll reveal's held opacity 0 is read as the section's paint"
+	},
+	{
+		"file": "lib/scroll-reveals.mjs",
+		"find": "for ( let y = 0; y < total() - window.innerHeight; y += step ) {",
+		"replace": "for ( let y = 0; y < 0; y += step ) {",
+		"why": "the page jumps to its end, so the sections between are never on screen and never revealed"
+	},
+	{
+		"file": "lib/scroll-reveals.mjs",
+		"find": "const STEP_PAUSE_MS = 120;",
+		"replace": "const STEP_PAUSE_MS = 0;",
+		"why": "no time at each step for the observers to fire"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "import { fireScrollReveals } from './scroll-reveals.mjs';",
+		"replace": "import { fireScrollReveals as fireScrollRevealsUnused } from './scroll-reveals.mjs';\nconst fireScrollReveals = async () => {};",
+		"why": "the scroll helper is imported but replaced by a no-op"
+	}
+]
