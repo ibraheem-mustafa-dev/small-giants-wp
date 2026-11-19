@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "( { e, st, kidsB } ) => ( mountWrapper( e, st, kidsB ) ?",
+		"replace": "( { e, st, kidsB } ) => ( false && mountWrapper( e, st, kidsB ) ?",
+		"why": "the rule is off"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const inMountChain = ( e ) => isMountHost( e ) || isMountHost( m.byKey[ e.parentKey ] );",
+		"replace": "const inMountChain = ( e ) => isMountHost( e );",
+		"why": "the component root inside a host stays a block"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return widths.length > 0 && widths.every( ( w ) => sameBox( e.box[ w ], kidsB[ 0 ].box[ w ] ) );",
+		"replace": "return widths.length > 0;",
+		"why": "a root wider than its child goes too"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "if ( ! Object.keys( st ).every( ( p ) => allowed.has( p ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a host declaring position goes too"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const isMountHost = ( e ) => 'dc-import' === e?.srcTag;",
+		"replace": "const isMountHost = ( e ) => !! e;",
+		"why": "any wrapper counts as a mount's"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "[ 'x', 'y', 'w', 'h' ].every( ( k ) => Math.abs( a[ k ] - b[ k ] ) <= 1 )",
+		"replace": "[ 'x', 'y', 'h' ].every( ( k ) => Math.abs( a[ k ] - b[ k ] ) <= 1 )",
+		"why": "the width is not compared"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "|| 1 !== m.kids( e ).length || ! mountsControl( e ) ) {",
+		"replace": "|| 1 !== m.kids( e ).length ) {",
+		"why": "a mounted form or card loses its wrappers too"
+	}
+]

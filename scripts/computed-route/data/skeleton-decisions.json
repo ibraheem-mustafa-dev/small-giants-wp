@@ -458,6 +458,20 @@
 		"marqueeFrame": {
 			"reason": "the frame that only clips or fades a marquee track goes: sgs/brand-strip draws its own overflow, and a masked edge fade belongs to its marquee motion (Bean, 2026-10-13)"
 		},
+		"mountWrapper": {
+			"properties": [
+				"display"
+			],
+			"controls": [
+				"a",
+				"button",
+				"label",
+				"input",
+				"select",
+				"textarea"
+			],
+			"reason": "a mounted component's wrapper (the host element the runtime stamps for a dc-import, or the component's own root inside it) that holds one child, no words and no declared style but display, leads down to one control (a link, button or field: `controls`), and draws the same box as that child at every read width, goes: it sizes, places and paints nothing, so a button or field built once and mounted (Spec 48A FR-48A-17) is the block it would be if drawn where it stands (2026-11-19)"
+		},
 		"alignWrapper": {
 			"properties": [
 				"text-align",

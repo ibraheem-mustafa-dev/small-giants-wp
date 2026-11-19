@@ -145,6 +145,33 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	const hasSvg = ( e ) => m.kids( e ).some( ( k ) => 'svg' === k.tag );
 	const bare = ( e ) => ! m.words( e ) && ! m.blockKids( e ).length;
+	// A mount's host (the element the runtime stamps for a `dc-import`) or a mounted component's root (the host's child)
+	// that is layout-neutral: no words, one child, no declared style beyond R.mountWrapper.properties, and at every read
+	// width where both are drawn the same box as that child (so it paints, sizes and places nothing of its own).
+	// Only a mount of one control is unwrapped: following single children down from the wrapper, through the other mount
+	// wrapper, reaches a tag of R.mountWrapper.controls (a link, button or field), so a mounted form, card or section keeps
+	// its wrappers as before.
+	const isMountHost = ( e ) => 'dc-import' === e?.srcTag;
+	const inMountChain = ( e ) => isMountHost( e ) || isMountHost( m.byKey[ e.parentKey ] );
+	const sameBox = ( a, b ) => [ 'x', 'y', 'w', 'h' ].every( ( k ) => Math.abs( a[ k ] - b[ k ] ) <= 1 );
+	const mountsControl = ( e ) => {
+		let x = m.blockKids( e )[ 0 ];
+		while ( x && inMountChain( x ) && ! m.words( x ) && 1 === m.blockKids( x ).length ) {
+			x = m.blockKids( x )[ 0 ];
+		}
+		return !! x && ( R.mountWrapper.controls || [] ).includes( view.realTag( x ) || x.tag );
+	};
+	const mountWrapper = ( e, st, kidsB ) => {
+		if ( ! R.mountWrapper || ! inMountChain( e ) || m.words( e ) || 1 !== kidsB.length || 1 !== m.kids( e ).length || ! mountsControl( e ) ) {
+			return false;
+		}
+		const allowed = new Set( R.mountWrapper.properties || [] );
+		if ( ! Object.keys( st ).every( ( p ) => allowed.has( p ) ) ) {
+			return false;
+		}
+		const widths = Object.keys( e.box || {} ).filter( ( w ) => e.box[ w ] && kidsB[ 0 ].box?.[ w ] );
+		return widths.length > 0 && widths.every( ( w ) => sameBox( e.box[ w ], kidsB[ 0 ].box[ w ] ) );
+	};
 	const iconOnly = ( e ) => bare( e ) && hasSvg( e );
 	const emojiOnly = ( e ) => ! m.blockKids( e ).length && EMOJI.test( m.words( e ).replace( /\s+/g, '' ) );
 	const desc = ( e ) => m.blockKids( e ).flatMap( ( k ) => [ k, ...desc( k ) ] );
@@ -457,6 +484,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			}
 			return fieldText( e ) ? v( 'formControl', { action: 'remove', reason: R.formControl.fieldTextReason } ) : null;
 		},
+		// The wrappers a mounted component adds (Spec 48A FR-48A-17: a button or field built once and mounted through
+		// dc-import): the mount's host element, and the component's own root inside it, go when they are layout-neutral, so
+		// a mounted button or field is the block it would be if drawn where it stands.
+		( { e, st, kidsB } ) => ( mountWrapper( e, st, kidsB ) ? v( 'mountWrapper', { action: 'unwrap' } ) : null ),
 		// A small dot or short bar beside text is the marker of the block that holds the text (a label's dot, a list
 		// item's marker, the separator between a row's items): it gets no block of its own.
 		( { e } ) => ( markerShape( e ) ? v( 'dotMarker', { action: 'remove' } ) : null ),
