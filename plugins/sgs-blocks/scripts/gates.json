@@ -2312,5 +2312,32 @@
     "added_commit": null,
     "budget_ms": 200,
     "order": 266
+  },
+  {
+    "id": "check-script-strategy",
+    "cmd": "python scripts/check-script-strategy.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 800,
+    "order": 267
+  },
+  {
+    "id": "check-script-strategy-selftest",
+    "cmd": "python scripts/check-script-strategy.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 900,
+    "order": 268
+  },
+  {
+    "id": "stage-c-css-selftest",
+    "cmd": "python scripts/stage-c/stage_c.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 500,
+    "order": 269
   }
 ]
