@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "if ( props.includes( 'text-decoration-line' ) ) {\n\t\t\t\tlet from = el;",
+		"replace": "if ( false ) {\n\t\t\t\tlet from = el;",
+		"why": "a wrapper keeps the underline of the first link inside it"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "while ( from && 'none' === getComputedStyle( from ).textDecorationLine ) {",
+		"replace": "while ( false ) {",
+		"why": "an ancestor's decoration never reaches the wrapper it paints"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "snap.styles[ 'text-decoration-line' ] = dc ? dc.textDecorationLine : 'none';",
+		"replace": "snap.styles[ 'text-decoration-line' ] = 'none';",
+		"why": "no wrapper reads a decoration, drawn or inherited"
+	}
+]

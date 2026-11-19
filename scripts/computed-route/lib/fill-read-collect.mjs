@@ -318,6 +318,19 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 				const v = cs.getPropertyValue( p ).trim();
 				snap.styles[ p ] = /color$/.test( p ) ? srgb( v ) : v;
 			}
+			// A decoration paints down, never up: this element shows the one it or an ancestor draws, not the underline of a link
+			// somewhere inside it (the collector's first-text carrier). A wrapper around a breadcrumb of underlined links is not underlined.
+			if ( props.includes( 'text-decoration-line' ) ) {
+				let from = el;
+				while ( from && 'none' === getComputedStyle( from ).textDecorationLine ) {
+					from = from.parentElement;
+				}
+				const dc = from ? getComputedStyle( from ) : null;
+				snap.styles[ 'text-decoration-line' ] = dc ? dc.textDecorationLine : 'none';
+				snap.styles[ 'text-decoration-color' ] = dc ? srgb( dc.textDecorationColor ) : 'none';
+				snap.styles[ 'text-decoration-thickness' ] = dc ? dc.textDecorationThickness : 'none';
+				snap.styles[ 'text-underline-offset' ] = dc ? dc.textUnderlineOffset : 'none';
+			}
 		}
 		// collectPair reads a text colour off the element painting the first text; an element with no text (an icon-only link)
 		// keeps its own, which a glyph drawn in currentColor paints and lib/fill-state.mjs::holdDefaults holds with its ground.
