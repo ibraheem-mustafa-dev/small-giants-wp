@@ -194,3 +194,68 @@ test( 'terms follow the place order button and carry a link; the disclosure butt
 	const without = await locate( html.replace( ' aria-expanded="false"', '' ) );
 	assert.deepEqual( without[ 'coupon-label' ], [] );
 } );
+
+// ---- the product page and the shop listing ----------------------------------------------------------------------------------
+
+async function locateIn( html, group, extra = {} ) {
+	await page.setContent( html );
+	const g = LOCATORS.groups[ group ];
+	return page.evaluate( findPartsInPage, { spec: { anchors: g.anchors, parts: g.parts, ...extra }, names: Object.keys( g.parts ), props: READ_PROPS, pages: {} } );
+}
+
+const CARD = ( title, tag, desc, price, note, cta ) => `<div class="w"><div class="c" style="width:300px;border:2px solid #000"><a href="p.html" style="display:block;width:280px;height:280px;background-image:url(data:image/gif;base64,R0lGODlhAQABAAAAACw=)"><span class="tg"><span>${ tag }</span></span></a><div><a href="p.html"><span>${ title }</span></a><p><span>${ desc }</span></p><div class="pr"><span><span>${ price }</span></span><span><span>${ note }</span></span></div><button type="button"><span>${ cta }</span></button></div></div></div>`;
+const SHOP = ( ...cards ) => `<!doctype html><body style="margin:0"><main><section>${ cards.join( '' ) }</section></main></body>`;
+
+test( 'a shop card is the smallest box holding a square picture link, an amount and a button, and its parts are found by structure', async () => {
+	const r = await locateIn( SHOP( CARD( 'Trio', 'New', 'Three cookies', 'from £9.50', '£1.19 each', 'Add to basket' ), CARD( 'Box', 'Gift', 'A gift box', '£15', 'boxed', 'Build your box' ) ), 'productcard' );
+	assert.equal( r.wrapper.length, 2 );
+	assert.deepEqual( r.title.map( ( i ) => i.text ), [ 'Trio', 'Box' ] );
+	assert.deepEqual( r.tag.map( ( i ) => i.text ), [ 'New', 'Gift' ] );
+	assert.deepEqual( r.price.map( ( i ) => i.text ), [ 'from £9.50', '£15' ] );
+	assert.deepEqual( r[ 'price-note' ].map( ( i ) => i.text ), [ '£1.19 each', 'boxed' ] );
+	assert.deepEqual( r.cta.map( ( i ) => i.text ), [ 'Add to basket', 'Build your box' ] );
+	assert.deepEqual( r.cta2, [] );
+	assert.deepEqual( r.cardPicker, [] );
+} );
+
+test( 'negative control: a block with no button, or no amount, is not a card', async () => {
+	const noButton = await locateIn( SHOP( CARD( 'Trio', 'New', 'x', '£5', 'n', 'Go' ).replace( /<button[^]*?<\/button>/, '' ) ), 'productcard' );
+	assert.deepEqual( noButton.wrapper, [] );
+	const noAmount = await locateIn( SHOP( CARD( 'Trio', 'New', 'x', 'free', 'n', 'Go' ) ), 'productcard' );
+	assert.deepEqual( noAmount.wrapper, [] );
+} );
+
+test( 'repeated option buttons inside a card are a picker the card draws', async () => {
+	const withPills = SHOP( CARD( 'Trio', 'New', 'x', '£5', 'n', 'Go' ).replace( '<button type="button"><span>Go</span></button>', '<button type="button">Small</button><button type="button">Large</button><button type="button"><span>Go</span></button>' ) );
+	assert.deepEqual( ( await locateIn( withPills, 'productcard' ) ).cardPicker.map( ( i ) => i.text ), [ 'Small', 'Large' ] );
+} );
+
+const BUY = ( inner ) => `<!doctype html><body style="margin:0"><main><div data-sc-name="Root"><div style="width:600px">${ inner }</div></div></main></body>`;
+
+test( 'a part the client\'s shop parts record names is the element with that template key in the page\'s own component', async () => {
+	const html = BUY( '<button data-dc-tpl="108" type="button">Add to basket · £5</button><div data-sc-name="SiteHeader"><button data-dc-tpl="108" type="button">Other</button></div>' );
+	const extra = { shopParts: { 'buybox-add-to-basket': [ { dc: 'Product', tpl: '108' } ] }, rootName: 'Product' };
+	const r = await locateIn( html, 'buybox', extra );
+	assert.deepEqual( r[ 'add-to-cart' ].map( ( i ) => i.text ), [ 'Add to basket · £5' ] );
+	const other = await locateIn( html, 'buybox', { ...extra, shopParts: { 'buybox-add-to-basket': [ { dc: 'Product', tpl: '999' } ] } } );
+	assert.deepEqual( other[ 'add-to-cart' ], [] );
+} );
+
+test( 'the gallery frame is the square before the thumbnail strip, and the strip is the parent of repeated empty square buttons', async () => {
+	const thumb = '<button type="button" style="display:block;width:80px;height:80px" aria-label="Photo"></button>';
+	const html = BUY( `<div><div style="width:500px;height:500px"><span><span>Build your own</span></span></div><div style="display:flex">${ thumb }${ thumb }${ thumb }</div></div>` );
+	const r = await locateIn( html, 'buybox', { shopParts: {}, rootName: 'Product' } );
+	assert.equal( r[ 'gallery-thumb' ].length, 3 );
+	assert.equal( r.thumbs.length, 1 );
+	assert.equal( r[ 'main-photo-frame' ].length, 1 );
+	assert.equal( r[ 'gallery-sticker' ][ 0 ].text, 'Build your own' );
+	const none = await locateIn( BUY( '<div><div style="width:500px;height:500px"></div></div>' ), 'buybox', { shopParts: {}, rootName: 'Product' } );
+	assert.deepEqual( none[ 'main-photo-frame' ], [] );
+} );
+
+test( 'a picker\'s label is the element before the group of repeated option buttons', async () => {
+	const pill = ( t ) => `<button type="button">${ t }</button>`;
+	const html = BUY( `<div><div>1 · How many</div><div>${ pill( 'Eight' ) }${ pill( 'Twenty' ) }</div></div>` );
+	const r = await locateIn( html, 'buybox', { shopParts: {}, rootName: 'Product' } );
+	assert.deepEqual( r[ 'picker-label-text' ].map( ( i ) => i.text ), [ '1 · How many' ] );
+} );

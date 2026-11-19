@@ -23,12 +23,16 @@
 // parentOfAnchor, holdsAnchor (an anchor's elements: the match is inside, outside, the parent of, or holds one),
 // followsAnchor (the match comes after an anchor's element in the same row or parent), lacksAnchor (holds none of an anchor's elements),
 // ariaExpanded (has an aria-expanded attribute: a disclosure's button), ariaOn (aria-pressed, aria-checked or aria-selected is true),
+// shopPart (an element the client's shop parts record locates for that part id: `spec.shopParts` maps an id to { dc, tpl } template
+// keys, and `spec.rootName` is the served page's own component), onlyChild (the only element in its parent), hasAmount (its text holds an
+// amount, whole or inside a sentence), minSiblings,
 // precedesAnchor (the match comes before an anchor's element in the same row or the same parent: the column labels above a
 // loop of lines), allChildren (a matcher every direct child satisfies), rule (a line the draft draws: an hr, an empty strip
 // under 4px tall, or an element with a top or bottom border but not a border on every side, so a boxed card is not a rule),
 // linksTo (a link whose file is the page named for that role, or any of several roles, in `pages`), control (a button, link, input, select or
 // textarea), scope ('page' outside the header, footer and any fixed panel, 'overlay' inside a fixed panel or dialog, 'any').
 export function findPartsInPage( { spec, names, props, pages } ) {
+	const AMOUNT = /[£$€]\s?\d|\d\s?[£$€]/;
 	// An amount on its own ("£21.50", "-£3", "12,50€"); a sentence that mentions one is words.
 	const CURRENCY = /^[-−+]?\s?([£$€]\s?\d[\d.,]*|\d[\d.,]*\s?[£$€])$/;
 	const norm = ( s ) => String( s || '' ).replace( /\s+/g, ' ' ).trim();
@@ -182,6 +186,20 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 			return false;
 		}
 		if ( m.type && ! m.type.includes( ( el.getAttribute( 'type' ) || '' ).toLowerCase() ) ) {
+			return false;
+		}
+		if ( m.shopPart ) {
+			const keys = [ ...[].concat( m.shopPart ).flatMap( ( id ) => spec.shopParts?.[ id ] || [] ) ];
+			const tpl = el.getAttribute( 'data-dc-tpl' );
+			const host = el.closest( '[data-sc-name]' )?.getAttribute( 'data-sc-name' );
+			if ( ! tpl || ! keys.some( ( k ) => String( k.tpl ) === tpl && ( k.dc === spec.rootName ? [ 'Root', spec.rootName ].includes( host ) : k.dc === host ) ) ) {
+				return false;
+			}
+		}
+		if ( undefined !== m.onlyChild && ( 1 === el.parentElement?.children.length ) !== m.onlyChild ) {
+			return false;
+		}
+		if ( undefined !== m.hasAmount && AMOUNT.test( textOf( el ) ) !== m.hasAmount ) {
 			return false;
 		}
 		if ( m.precedesAnchor && ! anchorEls( m.precedesAnchor ).some( ( a ) => a !== el && ( a.parentElement === el.parentElement || a.parentElement?.parentElement === el.parentElement?.parentElement ) && ( el.compareDocumentPosition( a ) & Node.DOCUMENT_POSITION_FOLLOWING ) && ! el.contains( a ) ) ) {

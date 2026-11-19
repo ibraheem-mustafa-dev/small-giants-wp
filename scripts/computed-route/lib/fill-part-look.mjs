@@ -191,9 +191,12 @@ export function samePrimitive( a, b ) {
 
 // A part's reading at each width as { 1440: value, 768: value, 375: value } plus the instance conflicts:
 // `instances` is { width: [ { key, styles } ] }. A width with no element gives undefined for the part.
-export function readPart( property, instances, row, keep = false ) {
+// `policy` 'majority' (a surface whose block holds one value for every instance, a card template): the value most instances hold is
+// the part's, when exactly one value has the most, and the instances that differ are reported as `minority`, never averaged in.
+export function readPart( property, instances, row, keep = false, policy = null ) {
 	const perWidth = {};
 	const conflicts = [];
+	const minority = [];
 	for ( const w of WIDTHS ) {
 		const list = instances[ w ] || [];
 		if ( ! list.length ) {
@@ -205,11 +208,22 @@ export function readPart( property, instances, row, keep = false ) {
 		if ( values.every( ( v ) => samePrimitive( v, first ) ) ) {
 			perWidth[ w ] = first;
 		} else {
-			perWidth[ w ] = undefined;
-			conflicts.push( { width: w, values: list.map( ( i, n ) => ( { instance: i.text || i.key, value: values[ n ] } ) ) } );
+			const groups = [];
+			values.forEach( ( v, n ) => {
+				const g = groups.find( ( x ) => samePrimitive( x.value, v ) );
+				g ? g.at.push( n ) : groups.push( { value: v, at: [ n ] } );
+			} );
+			groups.sort( ( a, b ) => b.at.length - a.at.length );
+			if ( 'majority' === policy && groups[ 0 ].at.length > groups[ 1 ].at.length && undefined !== groups[ 0 ].value ) {
+				perWidth[ w ] = groups[ 0 ].value;
+				groups.slice( 1 ).forEach( ( g ) => g.at.forEach( ( n ) => minority.push( { width: w, instance: list[ n ].text || list[ n ].key, value: g.value } ) ) );
+			} else {
+				perWidth[ w ] = undefined;
+				conflicts.push( { width: w, values: list.map( ( i, n ) => ( { instance: i.text || i.key, value: values[ n ] } ) ) } );
+			}
 		}
 	}
-	return { perWidth, conflicts };
+	return { perWidth, conflicts, minority };
 }
 
 const unitCompanion = ( attr, names ) => ( names.has( `${ attr }Unit` ) ? `${ attr }Unit` : null );
@@ -223,6 +237,9 @@ export function toSetting( row, value, ctx ) {
 		const hit = ctx.snapshot ? snapColour( c, ctx.snapshot, { log, where } ) : null;
 		return hit ? hit.value : c;
 	};
+	if ( row.enum_values && 'keyword' !== fam && 'font' !== fam && 'string' === row.attr_type ) {
+		return { why: `${ row.attr_name } takes named values (${ String( row.enum_values ).replace( /[\[\]"]/g, '' ) }) and the route has no rule to name the draft's ${ row.css_property }` };
+	}
 	switch ( fam ) {
 		case 'colour':
 			return { value: slug( value, row.attr_name ) };
@@ -336,8 +353,8 @@ function tiersFor( row, perWidth ) {
 //   reads ({ part: { width: [ instance ] } }), snapshot, selectorOf( part ) (the look table's selector or null),
 //   faultOf( attr ) (a known-fault reason or null), partRows (the look table's parts present on this block).
 // Returns { writes, settings, unpaired, noLocator, noSetting, conflicts, unsupported, widthVaries, counts }.
-export function buildLook( { block, rows, names, locators, reads, snapshot = null, selectorOf = () => null, faultOf = () => null, tableParts = [], switches = null, force = null } ) {
-	const out = { block, writes: [], settings: {}, unpaired: [], noLocator: [], noSetting: [], conflicts: [], unsupported: {}, widthVaries: [], atInitial: [], log: [] };
+export function buildLook( { block, rows, names, locators, reads, snapshot = null, selectorOf = () => null, faultOf = () => null, tableParts = [], switches = null, force = null, policy = null } ) {
+	const out = { block, writes: [], settings: {}, unpaired: [], noLocator: [], noSetting: [], conflicts: [], minority: [], gaps: [], unsupported: {}, widthVaries: [], atInitial: [], log: [] };
 	const nameSet = names instanceof Set ? names : new Set( names );
 	const look = rows.filter( ( r ) => r.css_element && r.css_property && ! r.css_state );
 	const stateful = rows.filter( ( r ) => r.css_element && r.css_property && r.css_state );
@@ -400,7 +417,8 @@ export function buildLook( { block, rows, names, locators, reads, snapshot = nul
 				mark( row, 'not-written', `${ row.css_property } is not a look the route reads`, { code: 'unsupported' } );
 				continue;
 			}
-			const { perWidth, conflicts } = readPart( row.css_property, instances, row, !! force?.has( row.attr_name ) );
+			const { perWidth, conflicts, minority } = readPart( row.css_property, instances, row, !! force?.has( row.attr_name ), policy );
+			minority.length && out.minority.push( { part, attr: row.attr_name, property: row.css_property, minority } );
 			if ( conflicts.length ) {
 				out.conflicts.push( { part, attr: row.attr_name, property: row.css_property, conflicts } );
 				mark( row, 'not-written', 'the part\'s instances differ', { code: 'conflict' } );

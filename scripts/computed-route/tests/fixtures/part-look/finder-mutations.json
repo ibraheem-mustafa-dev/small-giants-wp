@@ -88,5 +88,23 @@
 		"find": "el.hasAttribute( 'aria-expanded' ) !== m.ariaExpanded",
 		"replace": "false",
 		"why": "any button is a disclosure button"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "String( k.tpl ) === tpl &&",
+		"replace": "true &&",
+		"why": "any template key of the component locates the part"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "[ 'Root', spec.rootName ].includes( host ) : k.dc === host",
+		"replace": "true : k.dc === host",
+		"why": "an element in an imported component matches a key of the page's own"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "AMOUNT.test( textOf( el ) ) !== m.hasAmount",
+		"replace": "false",
+		"why": "a card needs no amount"
 	}
 ]

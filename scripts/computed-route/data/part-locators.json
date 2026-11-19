@@ -23,6 +23,21 @@
 			"group": "drawer",
 			"block": "sgs/cart",
 			"pageRole": "cart"
+		},
+		"product": {
+			"group": "buybox",
+			"block": "sgs/buybox",
+			"pageRole": "product",
+			"template": "single-product",
+			"basket": false
+		},
+		"shop": {
+			"group": "productcard",
+			"block": "sgs/product-card",
+			"pageRole": "shop",
+			"template": "archive-product",
+			"basket": false,
+			"instances": "majority"
 		}
 	},
 	"groups": {
@@ -1609,6 +1624,321 @@
 				},
 				"icon": {
 					"sameAs": "iconTrigger"
+				}
+			}
+		},
+		"buybox": {
+			"anchors": {
+				"thumbs": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"repeats": true,
+						"square": true,
+						"text": "none"
+					}
+				},
+				"thumbStrip": {
+					"from": "page",
+					"match": {
+						"parentOfAnchor": "thumbs"
+					},
+					"smallest": true
+				},
+				"galleryFrame": {
+					"from": "page",
+					"match": {
+						"precedesAnchor": "thumbStrip",
+						"square": true
+					}
+				},
+				"pickButtons": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"repeats": true,
+						"text": "words"
+					}
+				},
+				"pickGroups": {
+					"from": "page",
+					"match": {
+						"parentOfAnchor": "pickButtons"
+					}
+				}
+			},
+			"parts": {
+				"gallery-thumb": {
+					"sameAs": "thumbs"
+				},
+				"thumbs": {
+					"sameAs": "thumbStrip"
+				},
+				"main-photo-frame": {
+					"sameAs": "galleryFrame"
+				},
+				"main-photo": {
+					"sameAs": "galleryFrame"
+				},
+				"gallery-sticker": {
+					"from": "galleryFrame",
+					"match": {
+						"tag": [
+							"span"
+						],
+						"ownText": false,
+						"text": "words",
+						"minChildren": 1,
+						"maxChildren": 1
+					},
+					"pick": "first"
+				},
+				"add-to-cart": {
+					"from": "page",
+					"match": {
+						"shopPart": "buybox-add-to-basket"
+					}
+				},
+				"sticky-bar": {
+					"from": "page",
+					"match": {
+						"shopPart": "buybox-sticky-bar",
+						"tag": [
+							"div",
+							"aside",
+							"section"
+						]
+					},
+					"pick": "first"
+				},
+				"picker-label-text": {
+					"from": "pickGroups",
+					"self": true,
+					"match": {},
+					"rel": {
+						"sibling": -1
+					}
+				},
+				"pick-dot": {
+					"from": "pickButtons",
+					"match": {
+						"tag": [
+							"span"
+						],
+						"square": true,
+						"text": "none"
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"pick-heading": {
+					"sameAs": "picker-label-text"
+				}
+			}
+		},
+		"productcard": {
+			"anchors": {
+				"cards": {
+					"from": "page",
+					"match": {
+						"hasAll": [
+							{
+								"tag": [
+									"a"
+								],
+								"square": true
+							},
+							{
+								"hasAmount": true,
+								"ownText": true
+							},
+							{
+								"tag": [
+									"button"
+								]
+							}
+						]
+					},
+					"smallest": true
+				},
+				"priceRow": {
+					"from": "cards",
+					"match": {
+						"tag": [
+							"div"
+						],
+						"hasAll": [
+							{
+								"hasAmount": true,
+								"ownText": true
+							}
+						],
+						"hasMany": {
+							"match": {
+								"ownText": true
+							},
+							"atLeast": 2
+						}
+					},
+					"smallest": true,
+					"perRoot": true
+				}
+			},
+			"parts": {
+				"wrapper": {
+					"sameAs": "cards"
+				},
+				"box": {
+					"sameAs": "cards"
+				},
+				"image": {
+					"from": "cards",
+					"match": {
+						"tag": [
+							"a"
+						],
+						"square": true
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"media-wrap": {
+					"sameAs": "image"
+				},
+				"tag": {
+					"from": "cards",
+					"match": {
+						"tag": [
+							"span"
+						],
+						"ownText": false,
+						"text": "words",
+						"minChildren": 1,
+						"maxChildren": 1,
+						"inside": {
+							"tag": [
+								"a"
+							],
+							"square": true
+						}
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"title": {
+					"from": "cards",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"inside": {
+							"tag": [
+								"a"
+							]
+						},
+						"notInside": {
+							"tag": [
+								"a"
+							],
+							"square": true
+						}
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"desc": {
+					"from": "cards",
+					"match": {
+						"tag": [
+							"p"
+						]
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"description": {
+					"sameAs": "desc"
+				},
+				"price": {
+					"from": "priceRow",
+					"match": {
+						"ownText": true,
+						"hasAmount": true
+					},
+					"perRoot": true,
+					"pick": {
+						"index": 0
+					}
+				},
+				"price-note": {
+					"from": "priceRow",
+					"match": {
+						"ownText": true
+					},
+					"perRoot": true,
+					"pick": {
+						"index": 1
+					}
+				},
+				"priceRow": {
+					"sameAs": "priceRow"
+				},
+				"price-row": {
+					"sameAs": "priceRow"
+				},
+				"price-group": {
+					"sameAs": "priceRow"
+				},
+				"cta": {
+					"from": "cards",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"text": "words"
+					},
+					"perRoot": true,
+					"pick": {
+						"index": 0
+					}
+				},
+				"cta2": {
+					"from": "cards",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"text": "words"
+					},
+					"perRoot": true,
+					"pick": {
+						"index": 1
+					}
+				},
+				"cardPicker": {
+					"from": "cards",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"repeats": true,
+						"text": "words"
+					},
+					"perRoot": true
+				},
+				"valueLadder": {
+					"from": "cards",
+					"match": {
+						"tag": [
+							"li"
+						],
+						"repeats": true,
+						"hasAmount": true
+					},
+					"perRoot": true
 				}
 			}
 		}
