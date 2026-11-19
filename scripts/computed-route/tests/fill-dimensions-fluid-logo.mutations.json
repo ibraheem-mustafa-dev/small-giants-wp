@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "const gapRow = ONLY_GAPS.test( row.reason ?? '' ) || ( 'exact' === size?.kind && /^not-plain\\b/.test( row.reason ?? '' ) );",
+		"replace": "const gapRow = ONLY_GAPS.test( row.reason ?? '' );",
+		"why": "a fluid size row never reaches the dimension pass"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "const replaced = custom || widths.every(",
+		"replace": "const replaced = widths.every(",
+		"why": "a custom element's picture is not treated as an image"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "const inner = '' === slot && replaced ? innerImageSlot( cal ) : null;",
+		"replace": "const inner = null;",
+		"why": "the ceiling is never moved to the block's inner image"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "return pxOf( v ) ?? ( FLUID.test( String( v ?? '' ).trim() ) ? rendered[ w ] : null );",
+		"replace": "return pxOf( v );",
+		"why": "a fluid size is not read as its rendered value"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "\treturn 1 === imgs.length ? imgs[ 0 ][ 0 ] : null;",
+		"replace": "\treturn imgs.length ? imgs[ 0 ][ 0 ] : null;",
+		"why": "the first of several inner images is taken"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "( null !== inner && calibratedAt( cal, inner, `max-${ prop }` ) ? inner : null )",
+		"replace": "inner",
+		"why": "an inner image with no calibrated ceiling is written to"
+	}
+]
