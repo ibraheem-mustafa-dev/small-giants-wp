@@ -15,6 +15,9 @@
 //   --verify   after the writes, opens the scratch copy's own page with the basket filled (--seed <seed.php output>), reads each paired part on the
 //              live page at the three widths, writes the settings whose live value differs from the draft's (and takes back a write that changed
 //              nothing) and reports what still differs. It needs a `local-mediatest-*` --site; set SGS_SECRETS_ROOT in a worktree.
+//   my-account-in  the account's signed-in views (orders, an order's page, addresses, details): the draft is signed in on its own
+//              sign-in page and read view by view (lib/part-look-signed-in.mjs); --verify reads the copy signed in as --login <user:pass>
+//              (the seeded customer) on every view its menu links to and the seed's order page.
 // A client may name a surface's opening steps in sites/<client>/build/part-look.json: { surfaces: { <surface>: { file, route, init } } }.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -29,9 +32,10 @@ import { blockElementsOf, liveSelectorsFor, readLiveSurface, seedOf, shootLiveSu
 import { READ_PROPS } from './lib/fill-part-look.mjs';
 import { evaluateModes } from './lib/part-look-modes.mjs';
 import { readTargets, siteUrl, targetOf } from './lib/site-targets.mjs';
+import { readLiveSignedIn, readSignedInParts, shootLiveSignedIn, signedInSeedOf } from './lib/part-look-signed-in.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
-const SURFACES = [ 'cart', 'checkout', 'my-account', 'header', 'product', 'shop' ];
+const SURFACES = [ 'cart', 'checkout', 'my-account', 'header', 'product', 'shop', 'my-account-in' ];
 const readJson = ( file ) => JSON.parse( fs.readFileSync( file, 'utf8' ) );
 const SELECTOR_TABLE = path.join( REPO, 'plugins', 'sgs-blocks', 'includes', 'woocommerce', 'commerce-look', 'selectors.json' );
 
@@ -45,7 +49,7 @@ export function pagesOf( { rows, surfaces } ) {
 	return Object.fromEntries( Object.entries( { cart: route( 'cart' ), checkout: route( 'checkout' ), account, signin } ).filter( ( [ , v ] ) => v ) );
 }
 
-export async function runPartLook( { client, surfaces: wanted = SURFACES, site = null, compare = false, write = false, verify = false, seed = null, shots = true, only = null, dryRun = false, out = null, headed = false, log = ( m ) => console.log( m ) } ) {
+export async function runPartLook( { client, surfaces: wanted = SURFACES, site = null, compare = false, write = false, verify = false, seed = null, login = null, shots = true, only = null, dryRun = false, out = null, headed = false, log = ( m ) => console.log( m ) } ) {
 	if ( ( compare || write || verify ) && ! site ) {
 		throw new Error( `${ verify ? '--verify' : ( write ? '--write' : '--compare' ) } needs --site <scratch copy>` );
 	}
@@ -80,7 +84,8 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	const notes = snapshotNote ? [ snapshotNote ] : [];
 	for ( const surface of wanted ) {
 		const loc = locators.surfaces[ surface ];
-		const entry = manifest[ surface ];
+		// A surface may read another's manifest entry (the signed-in account views live on the account's post and draft).
+		const entry = manifest[ loc?.entryOf || surface ];
 		if ( ! loc || ! entry ) {
 			notes.push( `${ surface }: the client's surfaces.json has no such surface; skipped` );
 			continue;
@@ -102,7 +107,18 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		const tableParts = blockKey ? Object.entries( table.rows ).filter( ( [ , r ] ) => r[ blockKey ] && ( r.columns || [] ).length ).map( ( [ id ] ) => id.replace( /_/g, '-' ) ) : [];
 		const noDraft = entry.noDraft ? String( entry.noDraft ) : null;
 		log( `${ surface }: ${ noDraft ? `no draft page (${ noDraft })` : `reading ${ mainFile }${ also.length ? ` and ${ also.join( ', ' ) }` : '' }` }` );
-		const { reads } = noDraft ? { reads: {} } : await readParts( { draftDir: path.resolve( REPO, entry.draftDir ), files: [ mainFile, ...also ], spec, names: Object.keys( group.parts ), pages, config: cfg.route || cfg.init ? cfg : null, headed, log } );
+		let reads = {};
+		if ( noDraft ) {
+			reads = {};
+		} else if ( loc.signedIn && ! pages.signin ) {
+			notes.push( `${ surface }: the client's page map names no sign-in page, so the draft cannot be signed in and nothing is read` );
+		} else if ( loc.signedIn ) {
+			const signed = await readSignedInParts( { draftDir: path.resolve( REPO, entry.draftDir ), mainFile, signinFile: pages.signin, spec, parts: group.parts, pages, headed, log } );
+			reads = signed.reads;
+			notes.push( ...signed.notes.map( ( n ) => `${ surface }: ${ n }` ) );
+		} else {
+			( { reads } = await readParts( { draftDir: path.resolve( REPO, entry.draftDir ), files: [ mainFile, ...also ], spec, names: Object.keys( group.parts ), pages, config: cfg.route || cfg.init ? cfg : null, headed, log } ) );
+		}
 		const build = buildLook( {
 			block: loc.block, rows: blockRowsOf, names, locators: spec, reads, snapshot,
 			selectorOf: ( part ) => ( blockKey ? tableSelector( table, part, blockKey ) : null ),
@@ -139,6 +155,9 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		}
 		const base0 = verify || shots ? ( site ? siteUrl( targetOf( site, readTargets() ), REPO ) : null ) : null;
 		const pagePathOf = () => {
+			if ( loc.signedIn ) {
+				return `/?page_id=${ result.postId }`;
+			}
 			if ( loc.basket === false && 'product' === loc.pageRole ) {
 				return seed ? seedOf( fs.readFileSync( seed, 'utf8' ) ).path : '/shop/';
 			}
@@ -149,7 +168,14 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 			}
 			return row?.id ? `/?page_id=${ row.id }` : ( 'header' === surface ? `/?page_id=${ manifest.cart?.target?.postId }` : `/?page_id=${ result.postId }` );
 		};
-		if ( verify && shots && base0 ) {
+		// The signed-in views: the seeded customer signs in (--login) and the seed names the order whose page is read.
+		const signedIn = loc.signedIn && ( verify || shots ) && base0 ? { login, orderView: seed ? signedInSeedOf( fs.readFileSync( seed, 'utf8' ) ).orderView : null } : null;
+		if ( loc.signedIn && verify && ! login ) {
+			throw new Error( `--verify on ${ surface } needs --login <user:pass> (the seeded customer)` );
+		}
+		if ( verify && shots && base0 && signedIn?.login ) {
+			result.shots = { before: await shootLiveSignedIn( { base: base0, pagePath: pagePathOf(), login: signedIn.login, orderView: signedIn.orderView, dir: outDir, prefix: `${ surface }-before` } ) };
+		} else if ( verify && shots && base0 && ! loc.signedIn ) {
 			result.shots = { before: path.join( outDir, `${ surface }-before-1440.png` ) };
 			await shootLiveSurface( { base: base0, pagePath: pagePathOf(), product: false === loc.basket || ! seed ? null : seedOf( fs.readFileSync( seed, 'utf8' ) ), file: result.shots.before } );
 		}
@@ -159,19 +185,21 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		}
 		if ( verify ) {
 			const short = loc.block.split( '/' )[ 1 ];
-			const live = liveSelectorsFor( { parts: partNames, blockKey, table, map: liveMap, elements: blockKey ? null : blockElementsOf( REPO, short ), short } );
+			const live = liveSelectorsFor( { parts: partNames, blockKey, table, map: liveMap, elements: blockKey ? null : blockElementsOf( REPO, short ), short, block: loc.block } );
 			const base = siteUrl( targetOf( site, readTargets() ), REPO );
-			const product = seed && false !== loc.basket ? seedOf( fs.readFileSync( seed, 'utf8' ) ) : null;
+			const product = seed && false !== loc.basket && ! loc.signedIn ? seedOf( fs.readFileSync( seed, 'utf8' ) ) : null;
 			let n = 0;
 			result.verify = await verifySurface( {
 				buildInputs: { block: loc.block, rows: blockRowsOf, names, locators: spec, reads, snapshot, selectorOf: ( part ) => ( blockKey ? tableSelector( table, part, blockKey ) : null ), faultOf: faultsOf( { block: loc.block, blockKey, table, listed } ), tableParts, switches, policy: loc.instances || null },
 				built: build,
-				readLive: () => readLiveSurface( { base, pagePath: pagePathOf(), selectors: live.selectors, props: READ_PROPS, product, openDrawer: 'header' === surface, headed } ),
+				readLive: () => ( loc.signedIn ? readLiveSignedIn( { base, pagePath: pagePathOf(), login: signedIn.login, orderView: signedIn.orderView, selectors: live.selectors, props: READ_PROPS, headed } ) : readLiveSurface( { base, pagePath: pagePathOf(), selectors: live.selectors, props: READ_PROPS, product, openDrawer: 'header' === surface, headed } ) ),
 				patch: async ( { set, unset } ) => patchBlock( { site, postId: result.postId, block: loc.block, set, unset, file: path.join( outDir, `patch-verify-${ surface }-${ ++n }.json` ) } ),
 				readSaved: async () => readSavedBlock( { site, postId: result.postId, block: loc.block } ).attrs,
 				selectorsNone: live.none, selectors: live.selectors, log,
 			} );
-			if ( shots ) {
+			if ( shots && loc.signedIn ) {
+				result.shots = { ...( result.shots || {} ), after: await shootLiveSignedIn( { base, pagePath: pagePathOf(), login: signedIn.login, orderView: signedIn.orderView, dir: outDir, prefix: `${ surface }-after` } ) };
+			} else if ( shots ) {
 				result.shots = { ...( result.shots || {} ), after: path.join( outDir, `${ surface }-after-1440.png` ) };
 				await shootLiveSurface( { base, pagePath: pagePathOf(), product, file: result.shots.after } );
 			}
@@ -185,19 +213,31 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	return { outDir, totals, report };
 }
 
+// `--login user:pass`: the seeded customer the signed-in views are read as ({ user, pass }); the password may hold a colon.
+export function loginOf( text ) {
+	if ( ! text ) {
+		return null;
+	}
+	const at = String( text ).indexOf( ':' );
+	if ( at < 1 || at === String( text ).length - 1 ) {
+		throw new Error( '--login takes <user:pass>' );
+	}
+	return { user: text.slice( 0, at ), pass: text.slice( at + 1 ) };
+}
+
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
 	const argv = process.argv.slice( 2 );
 	const flag = ( n ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : null );
 	try {
 		const client = flag( '--client' );
 		if ( ! client ) {
-			throw new Error( 'usage: part-look.mjs --client <slug> [--surface cart|checkout|my-account|header] [--site <scratch copy>] [--compare] [--write [--only <attr,attr>] [--dry-run]] [--verify --seed <seed-out.json>] [--out <dir>] [--headed]' );
+			throw new Error( 'usage: part-look.mjs --client <slug> [--surface cart|checkout|my-account|header|product|shop|my-account-in] [--site <scratch copy>] [--compare] [--write [--only <attr,attr>] [--dry-run]] [--verify --seed <seed-out.json> [--login <user:pass>]] [--out <dir>] [--headed]' );
 		}
 		const surface = flag( '--surface' );
 		if ( surface && ! SURFACES.includes( surface ) ) {
 			throw new Error( `--surface must be one of ${ SURFACES.join( ', ' ) }` );
 		}
-		const r = await runPartLook( { client, surfaces: surface ? [ surface ] : SURFACES, site: flag( '--site' ), compare: argv.includes( '--compare' ), write: argv.includes( '--write' ), verify: argv.includes( '--verify' ), shots: ! argv.includes( '--no-shots' ), seed: flag( '--seed' ), only: flag( '--only' ) ? flag( '--only' ).split( ',' ) : null, dryRun: argv.includes( '--dry-run' ), out: flag( '--out' ), headed: argv.includes( '--headed' ) } );
+		const r = await runPartLook( { client, surfaces: surface ? [ surface ] : SURFACES, site: flag( '--site' ), compare: argv.includes( '--compare' ), write: argv.includes( '--write' ), verify: argv.includes( '--verify' ), shots: ! argv.includes( '--no-shots' ), seed: flag( '--seed' ), login: loginOf( flag( '--login' ) ), only: flag( '--only' ) ? flag( '--only' ).split( ',' ) : null, dryRun: argv.includes( '--dry-run' ), out: flag( '--out' ), headed: argv.includes( '--headed' ) } );
 		for ( const [ block, t ] of Object.entries( r.totals ) ) {
 			console.log( `${ block }: ${ t.written } values to write (${ t.knownFaultWrites } known not to paint), table rows paired ${ t.tableRowsPaired}/${ t.tableRowsPresent }, parts paired ${ t.partsPaired }/${ t.partsWithSettings }, ${ t.unpaired } unpaired, ${ t.noLocator } no locator, ${ t.noSetting } no setting${ t.compare ? `; compare: equal ${ t.compare.equal }, differs ${ t.compare.differs }, hand-set only ${ t.compare.handSetOnly }, route only ${ t.compare.routeOnly }` : '' }` );
 		}
