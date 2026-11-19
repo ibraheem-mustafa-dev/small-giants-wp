@@ -5,7 +5,9 @@
 // The one block it adds is a bare decorative layer the draft paints and the post lacks (the layers family, lib/apply-family-layers.mjs):
 // an `sgs/decorative-image` inserted beside its draft siblings by an insert op of patch-block-attrs.php, rolled back by removing it.
 //   node scripts/computed-route/apply.mjs <client> [--surfaces a,b] [--families x,y] [--widths 1440,768,375]
-//        [--draft http://127.0.0.1:5181] [--jobs 4] [--fresh] [--retry] [--write]
+//        [--draft http://127.0.0.1:5181] [--site <local mirror or scratch copy>] [--jobs 4] [--fresh] [--retry] [--write]
+// --site names the copy of the surfaces' site to read and write (it must share their post ids; default: the first surface's own);
+// a --write run on a scratch copy (`local-mediatest*`) runs from a git worktree.
 // Output in sites/<client>/build/qa/apply/: <surface>.plan.json (every target's outcome), summary.md, and with --write
 // verify.json (read by delivery-map.mjs) and no-effect.json (writes rolled back after their re-read; --retry tries them again). Every instance ends written, unchecked (written, no automatic re-read), equal, ledger,
 // no-setting, unpaired or no-effect. A whole run fails while a no-setting row names something the block has a setting for
@@ -18,6 +20,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { assertSiteContact } from './lib/site-contact.mjs';
+import { assertScratchRunPlace, assertUnprotected, readTargets, siteUrl, surfaceOnSite, targetOf } from './lib/site-targets.mjs';
+import { retargetLive } from '../parity/lib/helpers.mjs';
 import { FAMILIES, familyProps } from './lib/apply-families.mjs';
 import { ledgerIndex, ledgerMatch, surfaceNames } from './lib/apply-ledger.mjs';
 import { gateRows } from './lib/apply-gate.mjs';
@@ -285,10 +289,29 @@ function summary( rows ) {
 	return lines.join( '\n' );
 }
 
+// The site an apply run reads and writes, and its surfaces on it. `named` is --site (another copy of the surfaces' site that shares
+// their post ids: surfaceOnSite refuses any other), else the first surface's own. It must be a local mirror or scratch copy and not
+// protected; a --write run on a scratch copy needs a worktree. With `named`, each walker config's live address moves to that site's
+// (the apply reads the live page there). Returns { site, surfaces }.
+export function applySite( { surfaces, named = null, targets, repo, write = false } ) {
+	const site = named ?? surfaces[ 0 ].site;
+	if ( ! /^local-/.test( site ) ) {
+		throw new Error( `${ site } is not a local mirror` );
+	}
+	assertUnprotected( site, targets );
+	write && assertScratchRunPlace( site, repo );
+	if ( ! named ) {
+		return { site, surfaces };
+	}
+	const moved = surfaces.map( ( s ) => surfaceOnSite( s, named, targets ) );
+	const origin = siteUrl( targetOf( named, targets ), repo );
+	return { site, surfaces: moved.map( ( s, i ) => ( { ...s, cfg: surfaces[ i ].cfg?.live?.url ? retargetLive( surfaces[ i ].cfg, origin ) : surfaces[ i ].cfg } ) ) };
+}
+
 async function main() {
 	const client = process.argv[ 2 ];
 	if ( ! client || client.startsWith( '--' ) ) {
-		console.error( 'usage: node scripts/computed-route/apply.mjs <client> [--surfaces a,b] [--families x,y] [--widths 1440,768,375] [--draft <origin>] [--jobs 4] [--fresh] [--write]' );
+		console.error( 'usage: node scripts/computed-route/apply.mjs <client> [--surfaces a,b] [--families x,y] [--widths 1440,768,375] [--draft <origin>] [--site <local mirror or scratch copy>] [--jobs 4] [--fresh] [--write]' );
 		process.exit( 2 );
 	}
 	const write = has( '--write' );
@@ -299,17 +322,16 @@ async function main() {
 	const draftOrigin = flag( '--draft', 'http://127.0.0.1:5181' );
 	const outDir = flag( '--out', path.join( REPO, 'sites', client, 'build', 'qa', 'apply' ) );
 	const tmp = path.join( os.tmpdir(), 'sgs-apply', client );
-	fs.mkdirSync( outDir, { recursive: true } );
-	fs.mkdirSync( tmp, { recursive: true } );
 
-	const { surfaces, skipped } = await loadSurfaces( { repo: REPO, client, only, draftOrigin } );
-	if ( ! surfaces.length ) {
+	const loaded = await loadSurfaces( { repo: REPO, client, only, draftOrigin } );
+	const { skipped } = loaded;
+	if ( ! loaded.surfaces.length ) {
 		throw new Error( 'no surface to work on' );
 	}
-	const site = surfaces[ 0 ].site;
-	if ( ! /^local-/.test( site ) ) {
-		throw new Error( `${ site } is not a local mirror` );
-	}
+	// The site this run reads and writes (--site, else the first surface's): checked before anything is written.
+	const { site, surfaces } = applySite( { surfaces: loaded.surfaces, named: flag( '--site' ), targets: readTargets(), repo: REPO, write } );
+	fs.mkdirSync( outDir, { recursive: true } );
+	fs.mkdirSync( tmp, { recursive: true } );
 	const ledgerFile = path.join( REPO, 'sites', client, 'build', 'qa', 'divergences.json' );
 	const ledger = ledgerIndex( fs.existsSync( ledgerFile ) ? JSON.parse( fs.readFileSync( ledgerFile, 'utf8' ) ) : [], { surfaces: surfaceNames( path.join( REPO, 'sites', client, 'build' ) ) } );
 	const recordsFile = path.join( REPO, 'sites', client, 'handoff', 'animations.json' );

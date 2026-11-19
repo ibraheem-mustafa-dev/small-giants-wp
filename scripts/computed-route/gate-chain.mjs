@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // Gate chain command (Spec 48 FR-48-64, FR-48-66): runs G0 to G7 (lib/gate-chain.mjs) on every distinct open issue of a
 // Solve report, prints each row's first failing gate, class and evidence, and writes gaps.json.
-//   node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--probes <module.mjs>] [--out <file>] [--debt-out <file>] [--gaps-out <file>]
-// With --client the surface's tree, state map and site come from sites/<client>/build/surfaces.json (the block of each row
-// is read from the tree; without it G0 fails every row, the block being unknown). The final walk is the highest
+//   node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--site <target>] [--probes <module.mjs>] [--out <file>] [--debt-out <file>] [--gaps-out <file>]
+// With --client the surface's tree, state map and site come from sites/<client>/build/surfaces.json; --site names another copy of the
+// site, one that shares its post ids, whose login, address and calibration cache are used instead. The block of each row
+// is read from the tree; without --client G0 fails every row, the block being unknown. The final walk is the highest
 // round-N/report.json beside the report. The live gates G5 to G7 run lib/gate-probes.mjs against the surface's live site
 // (the walker config's live url, or SGS_LIVE_ORIGIN) and a fresh walk of the draft served from the surface's draftDir; a
 // module given with --probes replaces them (its default export is { measure(row, setting), probe(row, kind), recheck(row) }).
@@ -35,6 +36,7 @@ import { debtRows, debtPath, knownRows, staleSlotMaps, unroutedKnown, writeDebt 
 import { READ_KEY } from './lib/calibrate-props.mjs';
 import { serveDraft } from './lib/draft.mjs';
 import { adminSession, readEnv, renderBlock } from './lib/trial-page.mjs';
+import { readTargets, secretsPath, siteUrl, surfacesOnSite, targetOf } from './lib/site-targets.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 // SGS_REPO_ROOT points the reads (sites, the calibration cache, the build) at another checkout of the repository.
@@ -89,7 +91,7 @@ export async function defaultProbes( { s, client, db, surface = null, tmp = fs.m
 		},
 		renderBlock: async ( block, attrs ) => {
 			const { chromium } = await import( 'playwright' );
-			session ||= await adminSession( await ( await chromium.launch( { headless: ! process.env.SGS_HEADED } ) ).newContext(), readEnv( path.join( REPO, s.envFile ) ), s.envKey );
+			session ||= await adminSession( await ( await chromium.launch( { headless: ! process.env.SGS_HEADED } ) ).newContext(), readEnv( secretsPath( s.envFile, REPO ) ), s.envKey );
 			return renderBlock( session, block, attrs );
 		},
 	} );
@@ -199,7 +201,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	};
 	const reportFile = argv.find( ( a, i ) => ! a.startsWith( '--' ) && ( 0 === i || ! argv[ i - 1 ].startsWith( '--' ) ) );
 	if ( ! reportFile ) {
-		console.error( 'usage: node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--probes <module.mjs>] [--out <file>] [--debt-out <file>] [--gaps-out <file>]' );
+		console.error( 'usage: node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--site <target>] [--probes <module.mjs>] [--out <file>] [--debt-out <file>] [--gaps-out <file>]' );
 		process.exit( 2 );
 	}
 	const report = JSON.parse( fs.readFileSync( reportFile, 'utf8' ) );
@@ -207,7 +209,12 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const walk = finalWalk( path.dirname( path.resolve( reportFile ) ) );
 	const surfacesFile = client ? path.join( REPO, 'sites', client, 'build', 'surfaces.json' ) : null;
 	const probes = flag( '--probes' ) ? ( await import( pathToFileURL( path.resolve( flag( '--probes' ) ) ).href ) ).default : null;
-	const surfaces = surfacesFile ? JSON.parse( fs.readFileSync( surfacesFile, 'utf8' ) ) : null;
+	// --site: the surface is judged on that copy of its site (it must share the surface's post ids): its login for the block renderer
+	// and its address for the live probes, which SGS_LIVE_ORIGIN carries to the walker.
+	const site = flag( '--site' );
+	const targets = site ? readTargets() : null;
+	const surfaces = surfacesFile ? surfacesOnSite( JSON.parse( fs.readFileSync( surfacesFile, 'utf8' ) ), site, targets ) : null;
+	site && ( process.env.SGS_LIVE_ORIGIN = siteUrl( targetOf( site, targets ), REPO ) );
 	const ctx = buildContext( { report, walk, surfaces, surface: report.surface, client, probes, installed: await installedVersions(), db: openDb(), intakeFile: client ? path.join( REPO, 'sites', client, 'build', 'intake', 'intake.json' ) : null } );
 	const out = [];
 	for ( const issue of issuesOf( report, report.surface ) ) {

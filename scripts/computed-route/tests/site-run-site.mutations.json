@@ -1,0 +1,128 @@
+[
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "return site ? Object.fromEntries(",
+		"replace": "return true ? Object.fromEntries(",
+		"why": "a run with no site rebuilds the manifest"
+	},
+	{
+		"file": "lib/site-targets.mjs",
+		"find": "return site ? Object.fromEntries(",
+		"replace": "return false ? Object.fromEntries(",
+		"why": "a run on a named site keeps every entry's old site"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "\tassertUnprotected( site, targets );\n\tassertScratchRunPlace( site, repo );",
+		"replace": "\tassertScratchRunPlace( site, repo );",
+		"why": "a protected site is run"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "\tassertScratchRunPlace( site, repo );\n\treturn {",
+		"replace": "\treturn {",
+		"why": "a scratch copy runs in a main checkout"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "surfaces: surfacesOnSite( surfaces, site, targets ),",
+		"replace": "surfaces,",
+		"why": "the entries keep their old site"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "'--env-file', secretsPath( entry.envFile, REPO ), '--env-key'",
+		"replace": "'--env-file', entry.envFile, '--env-key'",
+		"why": "the build reads secrets from the repo, not SGS_SECRETS_ROOT"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "'--draft', origin, '--site', site, '--write'",
+		"replace": "'--draft', origin, '--write'",
+		"why": "the applier is not told the site"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "SGS_LIVE_ORIGIN: new URL( base ).origin, NODE_EXTRA_CA_CERTS: certs",
+		"replace": "NODE_EXTRA_CA_CERTS: certs",
+		"why": "the walker measures the config's old site"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "'--client', client, '--site', site ], { logFile",
+		"replace": "'--client', client ], { logFile",
+		"why": "gate-chain is not told the site"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "env: { SGS_LIVE_ORIGIN: new URL( base ).origin } } );",
+		"replace": "} );",
+		"why": "gate-chain probes the old site"
+	},
+	{
+		"file": "gate-chain.mjs",
+		"find": "surfacesFile ? surfacesOnSite( JSON.parse( fs.readFileSync( surfacesFile, 'utf8' ) ), site, targets ) : null",
+		"replace": "surfacesFile ? JSON.parse( fs.readFileSync( surfacesFile, 'utf8' ) ) : null",
+		"why": "gate-chain ignores --site"
+	},
+	{
+		"file": "gate-chain.mjs",
+		"find": "site && ( process.env.SGS_LIVE_ORIGIN = siteUrl( targetOf( site, targets ), REPO ) );",
+		"replace": "",
+		"why": "gate-chain probes the config's live site"
+	},
+	{
+		"file": "gate-chain.mjs",
+		"find": "readEnv( secretsPath( s.envFile, REPO ) ), s.envKey )",
+		"replace": "readEnv( path.join( REPO, s.envFile ) ), s.envKey )",
+		"why": "gate-chain reads secrets from the repo"
+	},
+	{
+		"file": "apply.mjs",
+		"find": "\twrite && assertScratchRunPlace( site, repo );\n",
+		"replace": "",
+		"why": "a scratch write runs in a main checkout"
+	},
+	{
+		"file": "apply.mjs",
+		"find": "\tassertUnprotected( site, targets );\n\twrite &&",
+		"replace": "\twrite &&",
+		"why": "a protected site is applied"
+	},
+	{
+		"file": "apply.mjs",
+		"find": "\tif ( ! /^local-/.test( site ) ) {\n\t\tthrow new Error( `${ site } is not a local mirror` );\n\t}\n\tassertUnprotected",
+		"replace": "\tassertUnprotected",
+		"why": "a hosted site is applied"
+	},
+	{
+		"file": "apply.mjs",
+		"find": "const moved = surfaces.map( ( s ) => surfaceOnSite( s, named, targets ) );",
+		"replace": "const moved = surfaces;",
+		"why": "a site with other post ids is applied"
+	},
+	{
+		"file": "apply.mjs",
+		"find": "retargetLive( surfaces[ i ].cfg, origin )",
+		"replace": "surfaces[ i ].cfg",
+		"why": "the apply reads the config's old live site"
+	},
+	{
+		"file": "apply.mjs",
+		"find": "const { site, surfaces } = applySite( { surfaces: loaded.surfaces, named: flag( '--site' )",
+		"replace": "const { site, surfaces } = applySite( { surfaces: loaded.surfaces, named: null",
+		"why": "--site is ignored"
+	},
+	{
+		"file": "lib/trial-run.mjs",
+		"find": "readEnv( secretsPath( envFile, REPO ) )",
+		"replace": "readEnv( path.join( REPO, envFile ) )",
+		"why": "the trial reads secrets from the repo"
+	},
+	{
+		"file": "solve.mjs",
+		"find": "const f = secretsPath( file, REPO );",
+		"replace": "const f = path.join( REPO, file );",
+		"why": "solve reads a site's address from the repo"
+	}
+]

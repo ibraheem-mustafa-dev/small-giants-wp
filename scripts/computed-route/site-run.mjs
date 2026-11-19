@@ -45,7 +45,7 @@ import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
 import { TOP_N, writeRanking } from './lib/site-run-rank.mjs';
-import { readTargets } from './lib/site-targets.mjs';
+import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath, siteUrl, surfacesOnSite, targetOf } from './lib/site-targets.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
@@ -98,15 +98,9 @@ const exclusive = ( task ) => {
 	return result;
 };
 
-// The envFile value of a surface (never read for its secrets: only the site's address).
 // The walker's browser: headless, or visible with SGS_HEADED=1 as the other host tools take it (a Hostinger test site
 // answers a headless browser with a 403 bot challenge, so a walk of one with `--live-base` and SGS_LIVE_ORIGIN needs it).
 const headlessFlag = ( env = process.env ) => ( env.SGS_HEADED && '0' !== env.SGS_HEADED ? [] : [ '--headless' ] );
-
-function liveBase( envFile, envKey ) {
-	const line = fs.readFileSync( path.join( REPO, envFile ), 'utf8' ).split( /\r?\n/ ).find( ( l ) => l.startsWith( `WP_URL_${ envKey }=` ) );
-	return line.slice( line.indexOf( '=' ) + 1 ).trim().replace( /^["']|["']$/g, '' ).replace( /\/+$/, '' );
-}
 
 // Where one surface is read: the draft route it opens at, the page-map row whose permalink is its live address, and why it is
 // skipped (a content-only post surface runs only with `--with-content`). The route is the entry's `draftRoute` (a form's
@@ -190,6 +184,21 @@ export function copyTrees( { surfaces, keys, filled, buildDir } ) {
 	return out;
 }
 
+// What a run on `site` reads and writes, before any stage: the named site is the only one. It must be a target and not protected,
+// a scratch copy runs only from a worktree, and every surface entry moves onto the site (a site with other post ids throws).
+// Returns { surfaces, base, target }: the retargeted manifest, the live address of every page read or built (the site's own,
+// unless `liveOverride` is given) and the site's target.
+export function prepareSite( { site, surfaces, targets, repo, liveOverride = null } ) {
+	const target = targetOf( site, targets );
+	assertUnprotected( site, targets );
+	assertScratchRunPlace( site, repo );
+	return {
+		surfaces: surfacesOnSite( surfaces, site, targets ),
+		base: liveOverride ? liveOverride.replace( /\/+$/, '' ) : siteUrl( target, repo ),
+		target,
+	};
+}
+
 export async function main( argv ) {
 	const client = argv[ 0 ];
 	const flag = ( n, d = null ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : d );
@@ -204,7 +213,7 @@ export async function main( argv ) {
 	const liveOverride = flag( '--live-base' );
 	const withContent = argv.includes( '--with-content' );
 	const build = path.join( REPO, 'sites', client, 'build' );
-	const surfaces = readJson( path.join( build, 'surfaces.json' ) );
+	const { surfaces, base, target } = prepareSite( { site, surfaces: readJson( path.join( build, 'surfaces.json' ) ), targets: readTargets(), repo: REPO, liveOverride } );
 	const rows = readJson( path.join( build, 'page-map.json' ) );
 	const intake = readJson( path.join( build, 'intake', 'intake.json' ) );
 	const keys = runKeys( surfaces, only );
@@ -275,7 +284,6 @@ export async function main( argv ) {
 		// WooCommerce's own cart and checkout pages keep WooCommerce's content (lib/site-build-plan.mjs::keepsWooContent): they
 		// are never Filled or built over; a template copy read at one of them is. The account page is Filled like any page.
 		const wooPage = isUnwalkedWooPage( entry.target, row ) ? wooContentRole( row ) : null;
-		const base = liveOverride ? liveOverride.replace( /\/+$/, '' ) : liveBase( entry.envFile, entry.envKey );
 		const address = liveAddress( row, rows, shown );
 		const liveUrl = `${ base }${ address ?? '/' }`;
 		const step = stepper( key, wooPage );
@@ -376,7 +384,7 @@ export async function main( argv ) {
 		} else {
 			tree = path.relative( REPO, path.join( ctx.out, 'filled.tree.json' ) );
 		}
-		const builder = [ 'scripts/wp-build-page.js', '--env-file', entry.envFile, '--env-key', entry.envKey, '--tree', tree, ...( slug ? [ '--template', slug ] : [ '--post-id', String( entry.target.postId ) ] ) ];
+		const builder = [ 'scripts/wp-build-page.js', '--env-file', secretsPath( entry.envFile, REPO ), '--env-key', entry.envKey, '--tree', tree, ...( slug ? [ '--template', slug ] : [ '--post-id', String( entry.target.postId ) ] ) ];
 		if ( ! await step( 'build', () => exclusive( async () => {
 			await exec( 'dry', 'node', [ ...builder, '--dry-run' ] );
 			const said = await exec( 'build', 'node', builder );
@@ -398,7 +406,7 @@ export async function main( argv ) {
 		}
 		const parity = path.join( build, 'qa', 'parity' );
 		await step( 'walk', () => exec( 'walk', 'node', [ 'scripts/parity/draft-live-walk.mjs', path.join( parity, path.basename( entry.walkerFull ) ),
-			'--out', path.join( parity, 'out', key ), '--widths', widths, ...headlessFlag(), '--no-review' ], { SGS_DRAFT_URL: ctx.walkUrl, NODE_EXTRA_CA_CERTS: certs } ).catch( ( e ) => {
+			'--out', path.join( parity, 'out', key ), '--widths', widths, ...headlessFlag(), '--no-review' ], { SGS_DRAFT_URL: ctx.walkUrl, SGS_LIVE_ORIGIN: new URL( base ).origin, NODE_EXTRA_CA_CERTS: certs } ).catch( ( e ) => {
 			// The walker exits 1 for open differences; the report is what counts.
 			if ( fs.existsSync( path.join( parity, 'out', key, 'report.json' ) ) ) {
 				return `report written (${ String( e.message ).slice( 0, 200 ) })`;
@@ -419,14 +427,13 @@ export async function main( argv ) {
 		}
 		return step( 'apply', () => exclusive( async () => {
 			const origin = new URL( ( await serverFor( entry ) ).url ).origin;
-			const said = await exec( 'apply', 'node', [ 'scripts/computed-route/apply.mjs', client, '--surfaces', key, '--draft', origin, '--write' ] );
+			const said = await exec( 'apply', 'node', [ 'scripts/computed-route/apply.mjs', client, '--surfaces', key, '--draft', origin, '--site', site, '--write' ] );
 			return applyDetail( path.join( dir, `${ key }.apply.log` ), said );
 		} ) );
 	}
 
 	// The site's wp-cli for recording template copies and setting the active layouts (a local mirror's runs in WSL,
 	// calibration-targets.json `pluginDir`).
-	const target = readTargets()[ site ] || {};
 	const runPhp = wpEvalRunner( target, site, REPO );
 	const wp = wpCommand( target, site, REPO );
 	const recordTemplate = ( slug, hash ) => runPhp( templateRecordPhp( slug, hash ) );
@@ -483,7 +490,7 @@ export async function main( argv ) {
 		console.log( `ranking: ${ ranking.total } open rows in ${ ranking.causes } causes, top ${ ranking.ranked.length } written to ${ ranking.file }` );
 		for ( const s of ranking.surfaces ) {
 			const g = path.join( dir, 'gate', s );
-			const r = await run( 'node', [ 'scripts/computed-route/gate-chain.mjs', path.join( g, 'solve-report.json' ), '--client', client ], { logFile: path.join( dir, `${ s }.gate-chain.log` ) } );
+			const r = await run( 'node', [ 'scripts/computed-route/gate-chain.mjs', path.join( g, 'solve-report.json' ), '--client', client, '--site', site ], { logFile: path.join( dir, `${ s }.gate-chain.log` ), env: { SGS_LIVE_ORIGIN: new URL( base ).origin } } );
 			note( s, 'gate-chain', 0 === r.code, 0, r.tail );
 		}
 		const fb = await run( 'node', [ 'scripts/computed-route/framework-backlog.mjs' ], { logFile: path.join( dir, 'framework-backlog.log' ) } );
