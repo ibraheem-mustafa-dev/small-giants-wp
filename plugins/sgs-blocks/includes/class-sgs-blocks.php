@@ -184,6 +184,8 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/stripe-appearance.php';
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/checkout-mobile-field.php';
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/checkout-payment-loading.php';
+		// Late start for the payment plugin's wallet-button scripts on a product page (buy box `expressLoad`).
+		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/express-defer.php';
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/checkout-delivery-cards.php';
 
 		// Product Collection "Minimum card width" -- `woocommerce/product-collection`

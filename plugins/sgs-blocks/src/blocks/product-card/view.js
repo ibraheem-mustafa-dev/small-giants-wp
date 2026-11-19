@@ -1200,6 +1200,9 @@ store( 'sgs/product-card', {
 				}
 			};
 			wait();
+			// With the buy box's `expressLoad` set to `interaction` the payment plugin's scripts arrive after the first
+			// scroll, press, key or touch, usually after the ten seconds above: the loader announces when it is done.
+			window.addEventListener( 'sgs:express-loaded', () => applyExpress( ctx, ref ), { once: true } );
 		},
 	},
 	actions: {

@@ -1982,6 +1982,15 @@
 			"default": "",
 			"description": "The link's destination (e.g. \"#size-guide\"). Empty = no link, even when pickerLabelLinkAxis is set."
 		},
+		"expressLoad": {
+			"type": "string",
+			"default": "page",
+			"enum": [
+				"page",
+				"interaction"
+			],
+			"description": "When the Apple Pay and Google Pay buttons' scripts load on a product page. page (default): with the page, as the payment plugin does. interaction: on the shopper's first scroll, tap or key press (or when the buttons come within a screen of the viewport), which keeps Stripe's scripts out of the page's first load and lifts the page speed score; the buttons appear a moment after that first interaction."
+		},
 		"pickerVariationSwatch": {
 			"type": "boolean",
 			"default": true,

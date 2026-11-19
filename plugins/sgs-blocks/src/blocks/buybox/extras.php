@@ -525,9 +525,12 @@ if ( ! function_exists( 'sgs_buybox_after_cart_form_action' ) ) {
 	 *
 	 * @param int  $product_id The product the buy box shows.
 	 * @param bool $plain_flow True when the buy box's button adds straight to the basket (no guided flow, no modal).
+	 * @param bool $defer_express True when the block's `expressLoad` is `interaction`: when the express buttons print, the
+	 *                            payment plugin's scripts are held until the shopper's first scroll, press, key or touch
+	 *                            (`includes/woocommerce/express-defer.php`).
 	 * @return void
 	 */
-	function sgs_buybox_after_cart_form_action( int $product_id, bool $plain_flow = false ): void {
+	function sgs_buybox_after_cart_form_action( int $product_id, bool $plain_flow = false, bool $defer_express = false ): void {
 		static $fired = array();
 		if ( $product_id <= 0 || isset( $fired[ $product_id ] ) || ! function_exists( 'wc_get_product' ) || ! is_singular( 'product' ) || get_queried_object_id() !== $product_id || ! ( has_action( 'woocommerce_after_add_to_cart_form' ) || has_action( 'woocommerce_before_add_to_cart_form' ) || has_action( 'woocommerce_after_add_to_cart_button' ) ) ) {
 			return;
@@ -556,6 +559,9 @@ if ( ! function_exists( 'sgs_buybox_after_cart_form_action' ) ) {
 					echo '<span hidden data-wp-init="callbacks.initExpress" data-wp-watch="callbacks.syncExpress"></span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed markup.
 					echo '<p class="sgs-buybox__express-note sgs-sr-only">' . esc_html__( 'Express payment buttons become available once the options above are chosen.', 'sgs-blocks' ) . '</p>';
 					echo '<div class="sgs-buybox__express" data-state="unavailable" inert>' . $express . '<input type="hidden" name="quantity" value="1" /></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the payment plugin's own escaped markup.
+					if ( $defer_express && function_exists( 'SGS\Blocks\sgs_express_defer_armed' ) ) {
+						\SGS\Blocks\sgs_express_defer_armed( true );
+					}
 				}
 			}
 			do_action( 'woocommerce_after_add_to_cart_form' );

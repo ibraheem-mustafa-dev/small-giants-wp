@@ -1646,7 +1646,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 			<?php endif; ?>
 		</button>
 	</form>
-<?php sgs_buybox_after_cart_form_action( $buybox_post_id, ! $buybox_is_guided && ! $add_to_cart_opens_modal ); ?>
+<?php sgs_buybox_after_cart_form_action( $buybox_post_id, ! $buybox_is_guided && ! $add_to_cart_opens_modal, 'interaction' === ( $attributes['expressLoad'] ?? 'page' ) ); ?>
 	<?php endif; ?>
 <?php
 	if ( $buybox_side_cart ) {
