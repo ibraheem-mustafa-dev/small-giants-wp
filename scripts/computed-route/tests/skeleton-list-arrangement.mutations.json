@@ -1,0 +1,56 @@
+[
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "Object.assign( a, arranged, carry,",
+		"replace": "Object.assign( a, carry,",
+		"why": "the arrangement is never written"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "top.attributes || {}, carry );\n\t\tconst clash",
+		"replace": "top.attributes || {}, carry, arranged );\n\t\tconst clash",
+		"why": "the arrangement overrides a decision's own value"
+	},
+	{
+		"file": "lib/skeleton-arrangement.mjs",
+		"find": "boxes.length >= 2 && boxes.every( Boolean ) &&",
+		"replace": "boxes.length >= 2 &&",
+		"why": "a unit with no box is placed"
+	},
+	{
+		"file": "lib/skeleton-arrangement.mjs",
+		"find": "( ! i || b.x >= boxes[ i - 1 ].x + boxes[ i - 1 ].w - 1 )",
+		"replace": "( ! i || true )",
+		"why": "units that overlap or stack count as a row"
+	},
+	{
+		"file": "lib/skeleton-arrangement.mjs",
+		"find": "&& b.y < boxes[ 0 ].y + boxes[ 0 ].h && boxes[ 0 ].y < b.y + b.h );",
+		"replace": "&& true );",
+		"why": "a staircase counts as a row"
+	},
+	{
+		"file": "lib/skeleton-arrangement.mjs",
+		"find": "return boxes.length >= 2 &&",
+		"replace": "return boxes.length >= 1 &&",
+		"why": "a single unit counts as a row"
+	},
+	{
+		"file": "lib/skeleton-arrangement.mjs",
+		"find": "find( ( b ) => b.block === block );",
+		"replace": "find( ( b ) => true );",
+		"why": "a block the rule does not list is given the setting"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "\"setting\": \"orientation\", \"value\": \"horizontal\"",
+		"replace": "\"setting\": \"orientation\", \"value\": \"vertical\"",
+		"why": "the rule writes another value"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": "! values?.includes( x.value ) && problems.push(",
+		"replace": "false && problems.push(",
+		"why": "a rule with a value the setting lacks passes the check"
+	}
+]

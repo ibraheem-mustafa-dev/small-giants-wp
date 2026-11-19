@@ -10,6 +10,7 @@
 import { skeletonProblems, expandSiteInfoRows } from './fill-skeleton.mjs';
 import { lintSkeleton } from '../lint.mjs';
 import { inventoryModel } from './skeleton-model.mjs';
+import { listArrangement } from './skeleton-arrangement.mjs';
 import { makeClassifier, overrideFor, W } from './skeleton-classify.mjs';
 import { collapsePoint, childSlots, unitSlots } from './skeleton-child-slots.mjs';
 import { mediaSelfSlot, partSlots, placePart, codeItemSlots, drawnSvgParts, itemSlots } from './skeleton-part-slots.mjs';
@@ -200,7 +201,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// decision value is never applied and the row's stale note reports it. A carry the build could not make is reported.
 		const { attrs: carry, said, missing } = carriedAttrs( block, e );
 		carryProblems.push( ...missing );
-		Object.assign( a, carry, null != collapse?.value ? { [ collapseAttr ]: collapse.value } : {}, top.attributes || {}, carry );
+		// How the draft lays out the units the block draws (a timeline's entries in one row): the block's own setting, under the decision's.
+		const arranged = listArrangement( { rule: R.listArrangement, block, items: m.blockKids( e ), box: m.box } );
+		Object.assign( a, arranged, carry, null != collapse?.value ? { [ collapseAttr ]: collapse.value } : {}, top.attributes || {}, carry );
 		const clash = Object.keys( carry ).filter( ( k ) => undefined !== top.attributes?.[ k ] && shown( top.attributes[ k ] ) !== shown( carry[ k ] ) );
 		r.handovers ? handover.push( ...r.handovers ) : r.handover && handover.push( r.handover );
 		const node = base( e, block, a );

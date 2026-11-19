@@ -134,6 +134,12 @@ export function decisionsProblems( facts ) {
 	if ( ci && ( ! facts.attr( r.marqueeCodeItems.block, ci.setting ) || [ ...( ci.clear || [] ), ...( ci.slots || [] ), ...( ci.plain ? [ ci.plain.setting ] : [] ) ].some( ( a ) => ! facts.attr( r.marqueeCodeItems.block, a ) ) ) ) {
 		problems.push( `rules.marqueeCodeItems.items must name an items setting and cleared settings ${ r.marqueeCodeItems.block } has` );
 	}
+	// A list arrangement names a setting its block has, and one of that setting's values.
+	( r.listArrangement?.blocks || [] ).forEach( ( x, i ) => {
+		known( x.block, `rules.listArrangement.blocks[${ i }]` );
+		const values = facts.enumOf?.( x.block, x.setting ) ?? null;
+		! values?.includes( x.value ) && problems.push( `rules.listArrangement.blocks[${ i }] must name a setting ${ x.block } has and one of its values (${ x.setting } ${ x.value })` );
+	} );
 	const ti = r.marquee?.textItems;
 	if ( ti && [ ti.items?.setting, ...Object.keys( ti.attributes || {} ) ].some( ( a ) => ! a || ! facts.attr( r.marquee.logoBlock, a ) ) ) {
 		problems.push( `rules.marquee.textItems must name an items setting and settings ${ r.marquee.logoBlock } has` );

@@ -21,7 +21,7 @@ export const facts = ( repo, off = [] ) => {
 	return { ...f, repo };
 };
 
-// N( tag, o, kids ): o { words, attrs, style (a string, or a function of the copy for a per-copy style), box ([w, h], default [100, 20]), display (the computed display, when the style does not give it), loop: { list, as, copies }, ifOn ('{{ f.open }}'), shownIn ([copy]),
+// N( tag, o, kids ): o { row (the copies of a loop sit side by side in one row, each `box` wide, not one under another), words, attrs, style (a string, or a function of the copy for a per-copy style), box ([w, h], default [100, 20]), display (the computed display, when the style does not give it), loop: { list, as, copies }, ifOn ('{{ f.open }}'), shownIn ([copy]),
 // click ('f.toggle'), ref ('trackRef'), text ('f.a': the element prints that field), events ([[name, expr]]), parts (the
 // template source in order: strings and child indexes) }.
 export const N = ( tag, o = {}, kids = [] ) => ( { tag, o, kids } );
@@ -92,7 +92,7 @@ export function build( root ) {
 			const words = 'function' === typeof node.o.words ? node.o.words( at ) : node.o.words || '';
 			const m2 = [ ...mem, ...( node.o.loop ? [ { kind: 'sc-for', list: `{{ ${ node.o.loop.list } }}`, as: node.o.loop.as, tpl: `f${ node.id }` } ] : [] ), ...( node.o.ifOn ? [ { kind: 'sc-if', value: node.o.ifOn, tpl: `i${ node.id }` } ] : [] ) ];
 			const el = { key, parentKey, depth, tag: node.tag, template: 'Root', tpl: node.id, attrs: { ...( node.o.attrs || {} ), ...( style( node, at ) ? { style: style( node, at ) } : {} ) }, words, allText: words, membership: m2, srcTag: node.tag, srcOwnText: words, snippet: `<${ node.tag } data-dc-tpl="${ node.id }">${ words }</${ node.tag }>`,
-				box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: 0, y: ( y += 30 ), w: node.o.box?.[ 0 ] ?? 100, h: node.o.box?.[ 1 ] ?? 20 } ] ) ), visible: { 375: true, 768: true, 1440: true }, display: displayOf( node ), position: decl( node ).position || 'static', flexDirection: 'row', screenshots: {} };
+				box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: node.o.row ? at * ( node.o.box?.[ 0 ] ?? 100 ) : 0, y: node.o.row ? 100 : ( y += 30 ), w: node.o.box?.[ 0 ] ?? 100, h: node.o.box?.[ 1 ] ?? 20 } ] ) ), visible: { 375: true, 768: true, 1440: true }, display: displayOf( node ), position: decl( node ).position || 'static', flexDirection: 'row', screenshots: {} };
 			elements.push( el );
 			const kidTexts = node.kids.map( ( k ) => walk( k, key, depth + 1, at, m2 ) );
 			const texts = kidTexts.flat();
@@ -126,7 +126,7 @@ export const run = ( root, logic, o = {} ) => {
 	const b = build( root );
 	const draft = draftRepo( b.html, logic );
 	const rec = { schema: '1', client: 'fixture-client', elements: b.recs, surfaces: o.surfaces || {}, sources: { files: { 'Root.dc.html': draft.hash } } };
-	return proposeSkeleton( { inventory: b.inventory, facts: facts( draft.repo, o.off || [] ), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: 'Fixture', motion: new Set(), db, factRecord: rec, openers: {}, carried: o.carried ?? null, ...( o.calSettings ? { calSettings: o.calSettings } : {} ) } );
+	return proposeSkeleton( { inventory: b.inventory, facts: facts( draft.repo, o.off || [] ), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: 'Fixture', motion: new Set(), db, factRecord: rec, openers: {}, carried: o.carried ?? null, ...( o.calSettings ? { calSettings: o.calSettings } : {} ), ...( o.clientDecisions ? { clientDecisions: o.clientDecisions } : {} ) } );
 };
 export const row = ( r, key ) => r.proposal.rows.find( ( x ) => x.key === key );
 export const find = ( nodes, f, out = [] ) => {
