@@ -20,11 +20,13 @@ A shared file whose only loaders are known blocks can be named with `--used-by <
 
 ## What to do with the answer
 
+The render check runs only when a change's risk and reach warrant it (Bean, 2026-11-19): this script gives the reach, and the session judges the risk. A block-scoped change that is provably additive (new settings that are off by default, with a test showing an unset block renders byte for byte as before) needs no slow check; say in the commit message which level was chosen and why. One mirror's clean result can stand for the same mechanism on the others.
+
 | Exit | Meaning | Before the change reaches `main` |
 |---|---|---|
 | 0 | no visitor's page can change | nothing more |
-| 1 | only pages holding the named blocks can change | per mirror, the line the script prints: nothing where no saved post holds them; `render-check.py --only <pages>` where only pages do; the whole check where a template, header, footer, pattern or other site-wide post does |
-| 2 | any page can change | the render check on every mirror |
+| 1 | only pages holding the named blocks can change | where the change is not provably additive, per mirror, the line the script prints: nothing where no saved post holds them; `render-check.py --only <pages>` where only pages do; the whole check where a template, header, footer, pattern or other site-wide post does |
+| 2 | any page can change | the render check, on the live shop's mirror at least and on every mirror for a change to how existing settings render |
 | 3 | a checkout has no build | build it |
 
 With `--mirrors`, each mirror is asked read only (`posts-holding.php`, wp-cli in WSL) which published or private posts hold the blocks. The front page is the render check's `home` state and any other page `page-<slug>`.
