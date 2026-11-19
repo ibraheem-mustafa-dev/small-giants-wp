@@ -1,0 +1,1688 @@
+{
+	"sgs/hero": {
+		"block": "sgs/hero",
+		"elements": {
+			"": {
+				"375": {
+					"display": "flex",
+					"padding-top": "12px",
+					"padding-right": "8px",
+					"padding-bottom": "12px",
+					"padding-left": "8px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "linear-gradient(135deg, rgb(255, 250, 240) 0px, rgb(249, 207, 110) 100%)",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "flex",
+					"padding-top": "14px",
+					"padding-right": "10px",
+					"padding-bottom": "14px",
+					"padding-left": "10px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "linear-gradient(135deg, rgb(255, 250, 240) 0px, rgb(249, 207, 110) 100%)",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "flex",
+					"padding-top": "14px",
+					"padding-right": "10px",
+					"padding-bottom": "14px",
+					"padding-left": "10px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "linear-gradient(135deg, rgb(255, 250, 240) 0px, rgb(249, 207, 110) 100%)",
+					"stroke": "none"
+				}
+			},
+			".sgs-bg-media": {
+				"375": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			},
+			".sgs-bg-media > .sgs-media-stack": {
+				"375": {
+					"display": "grid",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "grid",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "grid",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			},
+			".sgs-bg-media > .sgs-media-stack > .sgs-media-el": {
+				"375": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			},
+			".sgs-bg-media > .sgs-media-stack > .sgs-media-el > source": {
+				"375": {
+					"display": "inline",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "inline",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "inline",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			},
+			".sgs-hero__content": {
+				"375": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			},
+			".sgs-hero__content > span": {
+				"375": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			},
+			".sgs-hero__content > h1": {
+				"375": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			}
+		},
+		"settings": {
+			"minHeight": {
+				"slot": ""
+			},
+			"backgroundColourHover": {
+				"slot": ""
+			},
+			"textColourHover": {
+				"slot": ""
+			},
+			"borderColourHover": {
+				"slot": ""
+			},
+			"transitionDuration": {
+				"slot": ""
+			},
+			"transitionEasing": {
+				"slot": ""
+			},
+			"contentPadding": {
+				"slot": ".sgs-hero__content"
+			},
+			"contentBackground": {
+				"slot": ".sgs-hero__content"
+			},
+			"alignContent": {
+				"slot": ""
+			},
+			"justifyContent": {
+				"slot": ""
+			},
+			"flexDirection": {
+				"slot": ""
+			},
+			"flexWrap": {
+				"slot": ""
+			},
+			"contentWidth": {
+				"slot": ".sgs-container__inner"
+			},
+			"gap": {
+				"slot": ""
+			},
+			"gridTemplateColumns": {
+				"slot": ""
+			},
+			"shadow": {
+				"slot": ""
+			},
+			"contentBackgroundGradient": {
+				"slot": ".sgs-hero__content"
+			},
+			"alignItems": {
+				"slot": ""
+			},
+			"borderColourHoverGradient": {
+				"slot": "::before"
+			},
+			"shadowColour": {
+				"slot": ""
+			},
+			"backgroundColour": {
+				"slot": ""
+			},
+			"backgroundColourGradient": {
+				"slot": ""
+			},
+			"backgroundColourHoverGradient": {
+				"slot": ""
+			},
+			"textColour": {
+				"slot": ""
+			},
+			"textColourGradient": {
+				"slot": ""
+			},
+			"textColourHoverGradient": {
+				"slot": ""
+			},
+			"borderColourGradient": {
+				"slot": "::before"
+			},
+			"padding": {
+				"slot": ""
+			},
+			"margin": {
+				"slot": ""
+			},
+			"borderWidth": {
+				"slot": ""
+			},
+			"borderStyle": {
+				"slot": ""
+			},
+			"borderColour": {
+				"slot": ""
+			},
+			"borderRadius": {
+				"slot": ""
+			},
+			"textAlign": {
+				"slot": ".sgs-bg-media"
+			},
+			"fontSize": {
+				"slot": ""
+			},
+			"fontWeight": {
+				"slot": ""
+			},
+			"fontStyle": {
+				"slot": ""
+			},
+			"lineHeight": {
+				"slot": ""
+			},
+			"letterSpacing": {
+				"slot": ""
+			},
+			"textTransform": {
+				"slot": ""
+			},
+			"fontFamily": {
+				"slot": ""
+			},
+			"textDecoration": {
+				"slot": ""
+			},
+			"textWrap": {
+				"slot": ""
+			},
+			"textColumns": {
+				"slot": ""
+			},
+			"writingMode": {
+				"slot": ""
+			},
+			"sgsHideOnDesktop": {
+				"slot": ""
+			},
+			"sgsHideOnMobile": {
+				"slot": ""
+			},
+			"sgsHideOnTablet": {
+				"slot": ""
+			},
+			"textStrokeWidth": {
+				"slot": ""
+			},
+			"textStrokeColour": {
+				"slot": ""
+			},
+			"textStrokeColourHover": {
+				"slot": ""
+			},
+			"contentGap": {
+				"slot": ".sgs-hero__content"
+			},
+			"splitBorderColourGradient": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			},
+			"splitFit": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			},
+			"splitBackground": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			},
+			"splitBoxShadow": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			},
+			"splitBoxShadowColour": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			},
+			"splitBoxShadowColourHover": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			},
+			"splitRatio": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			},
+			"splitHeight": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			},
+			"splitMaxWidth": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			},
+			"splitMaxHeight": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			},
+			"splitRadius": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			},
+			"splitBorderWidth": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			},
+			"splitBorderStyle": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			},
+			"splitBorderColour": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			},
+			"splitBorderColourHover": {
+				"slot": ".sgs-hero__media > .sgs-media-el"
+			}
+		}
+	},
+	"sgs/icon": {
+		"block": "sgs/icon",
+		"elements": {
+			"": {
+				"375": {
+					"display": "inline-flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "inline-flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "inline-flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			},
+			".sgs-icon__shape": {
+				"375": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			},
+			".sgs-icon__shape > .sgs-icon__glyph": {
+				"375": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			},
+			".sgs-icon__shape > .sgs-icon__glyph > svg": {
+				"375": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "rgb(249, 207, 110)"
+				},
+				"768": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "rgb(249, 207, 110)"
+				},
+				"1440": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "rgb(249, 207, 110)"
+				}
+			},
+			".sgs-icon__shape > .sgs-icon__glyph > svg > path": {
+				"375": {
+					"display": "inline",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "rgb(249, 207, 110)"
+				},
+				"768": {
+					"display": "inline",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "rgb(249, 207, 110)"
+				},
+				"1440": {
+					"display": "inline",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "rgb(249, 207, 110)"
+				}
+			},
+			".sgs-icon__link": {
+				"375": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			},
+			".sgs-icon__link > .sgs-icon__shape": {
+				"375": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			},
+			".sgs-icon__link > .sgs-icon__shape > .sgs-icon__glyph": {
+				"375": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "flex",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			},
+			".sgs-icon__link > .sgs-icon__shape > .sgs-icon__glyph > svg": {
+				"375": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "rgb(249, 207, 110)"
+				},
+				"768": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "rgb(249, 207, 110)"
+				},
+				"1440": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "rgb(249, 207, 110)"
+				}
+			},
+			".sgs-icon__link > .sgs-icon__shape > .sgs-icon__glyph > svg > path": {
+				"375": {
+					"display": "inline",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "rgb(249, 207, 110)"
+				},
+				"768": {
+					"display": "inline",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "rgb(249, 207, 110)"
+				},
+				"1440": {
+					"display": "inline",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "rgb(249, 207, 110)"
+				}
+			}
+		},
+		"settings": {
+			"iconSize": {
+				"slot": ".sgs-icon__shape > .sgs-icon__glyph"
+			},
+			"iconColour": {
+				"slot": ".sgs-icon__shape"
+			},
+			"backgroundColour": {
+				"slot": ".sgs-icon__shape"
+			},
+			"iconColourGradient": {
+				"slot": ".sgs-icon__shape > .sgs-icon__glyph > svg"
+			},
+			"iconColourHoverGradient": {
+				"slot": ".sgs-icon__shape > .sgs-icon__glyph > svg > defs"
+			},
+			"textAlign": {
+				"slot": ".sgs-icon__shape"
+			},
+			"backgroundColourGradient": {
+				"slot": ".sgs-icon__shape"
+			},
+			"iconRotate": {
+				"slot": ".sgs-icon__shape"
+			},
+			"sgsHideOnDesktop": {
+				"slot": ""
+			},
+			"sgsHideOnMobile": {
+				"slot": ""
+			},
+			"sgsHideOnTablet": {
+				"slot": ""
+			},
+			"shapeSize": {
+				"slot": ".sgs-icon__shape"
+			},
+			"borderWidth": {
+				"slot": ".sgs-icon__shape"
+			},
+			"borderStyle": {
+				"slot": ".sgs-icon__shape"
+			},
+			"borderColour": {
+				"slot": ".sgs-icon__shape"
+			},
+			"borderColourGradient": {
+				"slot": ".sgs-icon__shape::before"
+			},
+			"borderColourHoverGradient": {
+				"slot": ".sgs-icon__shape::before"
+			},
+			"borderRadius": {
+				"slot": ".sgs-icon__shape"
+			},
+			"boxShadow": {
+				"slot": ".sgs-icon__shape"
+			},
+			"signedInDotColour": {
+				"slot": ".sgs-icon__shape > .sgs-icon__dot"
+			},
+			"signedInDotSize": {
+				"slot": ".sgs-icon__shape > .sgs-icon__dot"
+			},
+			"signedInDotTop": {
+				"slot": ".sgs-icon__shape > .sgs-icon__dot"
+			},
+			"signedInDotRight": {
+				"slot": ".sgs-icon__shape > .sgs-icon__dot"
+			},
+			"signedInDotRingColour": {
+				"slot": ".sgs-icon__shape > .sgs-icon__dot"
+			},
+			"iconColourHover": {
+				"slot": ".sgs-icon__link > .sgs-icon__shape"
+			},
+			"backgroundColourHover": {
+				"slot": ".sgs-icon__link > .sgs-icon__shape"
+			},
+			"backgroundColourHoverGradient": {
+				"slot": ".sgs-icon__link > .sgs-icon__shape"
+			},
+			"borderColourHover": {
+				"slot": ".sgs-icon__link > .sgs-icon__shape"
+			},
+			"boxShadowHover": {
+				"slot": ".sgs-icon__link > .sgs-icon__shape"
+			}
+		}
+	},
+	"sgs/business-info": {
+		"block": "sgs/business-info",
+		"elements": {},
+		"settings": {
+			"iconColour": {
+				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon"
+			},
+			"textColour": {
+				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon"
+			},
+			"iconColourGradient": {
+				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg"
+			},
+			"textColourGradient": {
+				"slot": ""
+			},
+			"fontSize": {
+				"slot": ""
+			},
+			"fontFamily": {
+				"slot": ""
+			},
+			"fontWeight": {
+				"slot": ""
+			},
+			"fontStyle": {
+				"slot": ""
+			},
+			"lineHeight": {
+				"slot": ""
+			},
+			"iconColourHover": {
+				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon"
+			},
+			"iconColourHoverGradient": {
+				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg"
+			},
+			"textColourHover": {
+				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon"
+			},
+			"textColourHoverGradient": {
+				"slot": ""
+			},
+			"padding": {
+				"slot": ""
+			},
+			"margin": {
+				"slot": ""
+			},
+			"borderColour": {
+				"slot": ""
+			},
+			"borderColourGradient": {
+				"slot": "::before"
+			},
+			"borderColourHover": {
+				"slot": ""
+			},
+			"borderColourHoverGradient": {
+				"slot": "::before"
+			},
+			"borderStyle": {
+				"slot": ""
+			},
+			"borderWidth": {
+				"slot": ""
+			},
+			"borderRadius": {
+				"slot": ""
+			},
+			"textTransform": {
+				"slot": ""
+			},
+			"textDecoration": {
+				"slot": ""
+			},
+			"letterSpacing": {
+				"slot": ""
+			},
+			"textAlign": {
+				"slot": ""
+			},
+			"textWrap": {
+				"slot": ""
+			},
+			"textColumns": {
+				"slot": ""
+			},
+			"writingMode": {
+				"slot": ""
+			},
+			"iconSize": {
+				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon"
+			},
+			"iconGap": {
+				"slot": ".sgs-business-info"
+			},
+			"linkMinHeight": {
+				"slot": ".sgs-business-info > .sgs-business-info__link"
+			},
+			"sgsHideOnDesktop": {
+				"slot": ""
+			},
+			"sgsHideOnMobile": {
+				"slot": ""
+			},
+			"sgsHideOnTablet": {
+				"slot": ""
+			},
+			"linkUnderline": {
+				"slot": ".sgs-business-info > .sgs-business-info__link"
+			},
+			"textStrokeWidth": {
+				"slot": ""
+			},
+			"textStrokeColour": {
+				"slot": ""
+			},
+			"textStrokeColourHover": {
+				"slot": ""
+			},
+			"labelColour": {
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day"
+			},
+			"labelColourGradient": {
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day"
+			},
+			"labelFontWeight": {
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day"
+			},
+			"hoursRowPadding": {
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)"
+			},
+			"hoursRowJustify": {
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)"
+			},
+			"hoursTodayBackground": {
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)"
+			}
+		}
+	},
+	"sgs/trust-bar": {
+		"block": "sgs/trust-bar",
+		"elements": {},
+		"settings": {
+			"titleColour": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleFontSize": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleFontWeight": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleFontStyle": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleLineHeight": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"labelFontSize": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"labelFontWeight": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"labelFontStyle": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"iconCircleSize": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle"
+			},
+			"iconCircleBackground": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle"
+			},
+			"iconColour": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle > svg"
+			},
+			"iconCircleBorderRadius": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle"
+			},
+			"iconCircleShadow": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle"
+			},
+			"textColour": {
+				"slot": ""
+			},
+			"gap": {
+				"slot": ""
+			},
+			"gridTemplateColumns": {
+				"slot": ""
+			},
+			"backgroundOverlayColour": {
+				"slot": ".sgs-bg-overlay"
+			},
+			"shadow": {
+				"slot": ""
+			},
+			"maxWidth": {
+				"slot": ""
+			},
+			"minHeight": {
+				"slot": ""
+			},
+			"gridAutoRows": {
+				"slot": ""
+			},
+			"justifyItems": {
+				"slot": ""
+			},
+			"alignContent": {
+				"slot": ""
+			},
+			"justifyContent": {
+				"slot": ""
+			},
+			"flexDirection": {
+				"slot": ""
+			},
+			"flexWrap": {
+				"slot": ""
+			},
+			"contentWidth": {
+				"slot": ".sgs-container__inner"
+			},
+			"alignItems": {
+				"slot": ""
+			},
+			"iconCircleShadowColour": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle"
+			},
+			"iconColourGradient": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle > svg"
+			},
+			"textColourGradient": {
+				"slot": ""
+			},
+			"textColourHover": {
+				"slot": ""
+			},
+			"textColourHoverGradient": {
+				"slot": ""
+			},
+			"backgroundColour": {
+				"slot": ""
+			},
+			"backgroundColourGradient": {
+				"slot": ""
+			},
+			"backgroundColourHover": {
+				"slot": ""
+			},
+			"backgroundColourHoverGradient": {
+				"slot": ""
+			},
+			"padding": {
+				"slot": ".sgs-container__inner"
+			},
+			"margin": {
+				"slot": ""
+			},
+			"iconColourHover": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle"
+			},
+			"borderWidth": {
+				"slot": ""
+			},
+			"borderStyle": {
+				"slot": ""
+			},
+			"borderColour": {
+				"slot": ""
+			},
+			"borderColourGradient": {
+				"slot": "::before"
+			},
+			"borderRadius": {
+				"slot": ""
+			},
+			"titleColourGradient": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"iconCircleBackgroundGradient": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle"
+			},
+			"iconColourHoverGradient": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle > svg"
+			},
+			"iconCircleBackgroundHover": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle"
+			},
+			"iconCircleBackgroundHoverGradient": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle"
+			},
+			"labelFontFamily": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"labelTextTransform": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"labelTextDecoration": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"labelLineHeight": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"labelLetterSpacing": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"labelTextAlign": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"labelTextWrap": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"labelTextColumns": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"labelWritingMode": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"titleFontFamily": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleTextTransform": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleTextDecoration": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleLetterSpacing": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleTextAlign": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleTextWrap": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleTextColumns": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleWritingMode": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleColourHover": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleColourHoverGradient": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"iconCircleBorderWidth": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle"
+			},
+			"iconCircleBorderStyle": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle"
+			},
+			"iconCircleBorderColour": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle"
+			},
+			"iconBareSize": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__icon"
+			},
+			"iconStrokeWidth": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle > svg"
+			},
+			"itemGap": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1)"
+			},
+			"itemPadding": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1)"
+			},
+			"sgsHideOnDesktop": {
+				"slot": ""
+			},
+			"sgsHideOnMobile": {
+				"slot": ""
+			},
+			"sgsHideOnTablet": {
+				"slot": ""
+			},
+			"labelTextStrokeWidth": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"labelTextStrokeColour": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"labelTextStrokeColourHover": {
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
+			},
+			"titleTextStrokeWidth": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleTextStrokeColour": {
+				"slot": ".sgs-trust-bar__title"
+			},
+			"titleTextStrokeColourHover": {
+				"slot": ".sgs-trust-bar__title"
+			}
+		}
+	},
+	"sgs/text": {
+		"block": "sgs/text",
+		"elements": {
+			"": {
+				"375": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			},
+			"a": {
+				"375": {
+					"display": "inline",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "inline",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "inline",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			},
+			"a::after": {
+				"375": {
+					"background-color": "rgb(168, 64, 79)",
+					"background-image": "none"
+				},
+				"768": {
+					"background-color": "rgb(168, 64, 79)",
+					"background-image": "none"
+				},
+				"1440": {
+					"background-color": "rgb(168, 64, 79)",
+					"background-image": "none"
+				}
+			}
+		},
+		"settings": {
+			"textColour": {
+				"slot": ""
+			},
+			"fontSize": {
+				"slot": ""
+			},
+			"fontWeight": {
+				"slot": ""
+			},
+			"lineHeight": {
+				"slot": ""
+			},
+			"letterSpacing": {
+				"slot": ""
+			},
+			"fontStyle": {
+				"slot": ""
+			},
+			"textDecoration": {
+				"slot": ""
+			},
+			"textTransform": {
+				"slot": ""
+			},
+			"fontFamily": {
+				"slot": ""
+			},
+			"textAlign": {
+				"slot": ""
+			},
+			"maxWidth": {
+				"slot": ""
+			},
+			"firstLetterColour": {
+				"slot": "::first-letter"
+			},
+			"firstLetterFontSize": {
+				"slot": "::first-letter"
+			},
+			"firstLetterFontWeight": {
+				"slot": "::first-letter"
+			},
+			"backgroundColour": {
+				"slot": "::after"
+			},
+			"borderWidth": {
+				"slot": ""
+			},
+			"borderStyle": {
+				"slot": ""
+			},
+			"borderColour": {
+				"slot": ""
+			},
+			"boxShadow": {
+				"slot": ""
+			},
+			"boxShadowHover": {
+				"slot": ""
+			},
+			"textColourHover": {
+				"slot": ""
+			},
+			"backgroundColourHover": {
+				"slot": "::after"
+			},
+			"customWidth": {
+				"slot": ""
+			},
+			"textColourGradient": {
+				"slot": ""
+			},
+			"backgroundColourGradient": {
+				"slot": "::after"
+			},
+			"borderColourGradient": {
+				"slot": "::before"
+			},
+			"textColourHoverGradient": {
+				"slot": ""
+			},
+			"backgroundColourHoverGradient": {
+				"slot": "::after"
+			},
+			"borderColourHover": {
+				"slot": ""
+			},
+			"firstLetterColourHover": {
+				"slot": "::first-letter"
+			},
+			"borderRadius": {
+				"slot": ""
+			},
+			"boxShadowColour": {
+				"slot": ""
+			},
+			"padding": {
+				"slot": ""
+			},
+			"margin": {
+				"slot": ""
+			},
+			"textWrap": {
+				"slot": ""
+			},
+			"textColumns": {
+				"slot": ""
+			},
+			"writingMode": {
+				"slot": ""
+			},
+			"linkColour": {
+				"slot": "a"
+			},
+			"linkColourGradient": {
+				"slot": "a"
+			},
+			"boxShadowColourHover": {
+				"slot": ""
+			},
+			"sgsHideOnDesktop": {
+				"slot": ""
+			},
+			"sgsHideOnMobile": {
+				"slot": ""
+			},
+			"sgsHideOnTablet": {
+				"slot": ""
+			},
+			"linkUnderlineColourHover": {
+				"slot": "a"
+			},
+			"textStrokeColour": {
+				"slot": ""
+			},
+			"textStrokeWidth": {
+				"slot": ""
+			},
+			"textStrokeColourHover": {
+				"slot": ""
+			},
+			"fontVariantNumeric": {
+				"slot": ""
+			},
+			"textShadow": {
+				"slot": ""
+			},
+			"textShadowColour": {
+				"slot": ""
+			},
+			"textShadowColourHover": {
+				"slot": ""
+			}
+		}
+	},
+	"sgs/label": {
+		"block": "sgs/label",
+		"elements": {
+			"": {
+				"375": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"768": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				},
+				"1440": {
+					"display": "block",
+					"padding-top": "0px",
+					"padding-right": "0px",
+					"padding-bottom": "0px",
+					"padding-left": "0px",
+					"background-color": "rgba(0, 0, 0, 0)",
+					"background-image": "none",
+					"stroke": "none"
+				}
+			}
+		},
+		"settings": {
+			"textColour": {
+				"slot": ""
+			},
+			"backgroundColour": {
+				"slot": "::after"
+			},
+			"fontFamily": {
+				"slot": ""
+			},
+			"fontSize": {
+				"slot": ""
+			},
+			"fontWeight": {
+				"slot": ""
+			},
+			"lineHeight": {
+				"slot": ""
+			},
+			"letterSpacing": {
+				"slot": ""
+			},
+			"textTransform": {
+				"slot": ""
+			},
+			"fontStyle": {
+				"slot": ""
+			},
+			"textDecoration": {
+				"slot": ""
+			},
+			"textAlign": {
+				"slot": ""
+			},
+			"padding": {
+				"slot": ""
+			},
+			"borderRadius": {
+				"slot": ""
+			},
+			"textColourGradient": {
+				"slot": ""
+			},
+			"backgroundColourGradient": {
+				"slot": "::after"
+			},
+			"textWrap": {
+				"slot": ""
+			},
+			"textColumns": {
+				"slot": ""
+			},
+			"writingMode": {
+				"slot": ""
+			},
+			"textColourHover": {
+				"slot": ""
+			},
+			"textColourHoverGradient": {
+				"slot": ""
+			},
+			"margin": {
+				"slot": ""
+			},
+			"sgsHideOnDesktop": {
+				"slot": ""
+			},
+			"sgsHideOnMobile": {
+				"slot": ""
+			},
+			"sgsHideOnTablet": {
+				"slot": ""
+			},
+			"linkUnderline": {
+				"slot": "a"
+			},
+			"linkUnderlineThickness": {
+				"slot": "a"
+			},
+			"dotColour": {
+				"slot": "::before"
+			},
+			"dotColourGradient": {
+				"slot": "::before"
+			},
+			"dotSize": {
+				"slot": ""
+			},
+			"borderWidth": {
+				"slot": ""
+			},
+			"borderStyle": {
+				"slot": ""
+			},
+			"borderColour": {
+				"slot": ""
+			},
+			"borderColourGradient": {
+				"slot": "::before"
+			},
+			"linkUnderlineColour": {
+				"slot": "a"
+			},
+			"linkUnderlineOffset": {
+				"slot": "a"
+			},
+			"textStrokeWidth": {
+				"slot": ""
+			},
+			"textStrokeColour": {
+				"slot": ""
+			},
+			"textStrokeColourHover": {
+				"slot": ""
+			},
+			"fontVariantNumeric": {
+				"slot": ""
+			},
+			"textShadow": {
+				"slot": ""
+			},
+			"textShadowColour": {
+				"slot": ""
+			},
+			"textShadowColourHover": {
+				"slot": ""
+			},
+			"markerIcon": {
+				"slot": "::before"
+			}
+		}
+	}
+}
