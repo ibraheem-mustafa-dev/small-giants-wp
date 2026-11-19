@@ -1,5 +1,6 @@
 [
  {"file": "lib/fill-resolve-element.mjs", "find": "const inState = target.state && ! layer ? resolveProperty( { ...input, state: target.state } ) : null;", "replace": "const inState = null;", "why": "a stated path is read at rest, so the open shadow goes to the closed setting"},
- {"file": "lib/fill-resolve-element.mjs", "find": "const STATE_FALLBACK = [ 'no-setting', 'uncalibrated' ];", "replace": "const STATE_FALLBACK = [];", "why": "a property no open setting paints is lost instead of falling back to the resting setting"},
- {"file": "lib/fill-skeleton.mjs", "find": "state: node.draftSlotStates?.[ slot ] ?? null } );", "replace": "state: null } );", "why": "the node's slot states never reach the targets"}
+ {"file": "lib/fill-skeleton.mjs", "find": "state: node.draftSlotStates?.[ slot ] ?? null } );", "replace": "state: null } );", "why": "the node's slot states never reach the targets"},
+ {"file": "lib/fill-resolve-element.mjs", "find": "return !! c && ( c.slots || [ c.slot ] ).some( ( p ) => 'string' === typeof p && LOOSE( p ) === LOOSE( slot ) );", "replace": "return !! c;", "why": "an open-state setting that only reaches the path takes the read"},
+ {"file": "lib/fill-resolve-element.mjs", "find": "const writesOwnSlot = ( res, cal, slot ) => 'written' === res?.status && res.writes.length > 0 &&", "replace": "const writesOwnSlot = ( res, cal, slot ) => !! res &&", "why": "a state read that writes nothing still wins, so the open fill is lost"}
 ]

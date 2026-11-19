@@ -33,7 +33,7 @@
  {"file":"lib/skeleton-rules.mjs","find":"...widgets().toggleIcon( md ).attributes };","replace":"};","why":"the accordion keeps its chevron whatever the draft draws"},
  {"file":"lib/skeleton-widgets.mjs","find":"const icon = shut ? T.glyphs[ glyphOf( shut ) ] : null;","replace":"const icon = shut ? 'plus' : null;","why":"any glyph is a plus"},
  {"file":"lib/skeleton-widgets.mjs","find":"return t ? Number( t[ 1 ] ) : 0;","replace":"return 0;","why":"the open ring's turn is never read"},
- {"file":"lib/skeleton-widgets.mjs","find":"turn > 0 ? ( attributes[ T.settings.turn ] = turn ) : ( attributes[ T.settings.close ] = icon );","replace":"attributes[ T.settings.close ] = icon;","why":"a turning glyph is a cross-fade to the same icon"},
+ {"file":"lib/skeleton-widgets.mjs","find":"const as = 0 === turn ? icon : ( T.turns || [] ).find( ( t ) => t.icon === icon && ( t.by || [] ).includes( turn ) )?.is;","replace":"const as = icon;","why":"a turned glyph stays the same icon when open"},
  {"file":"lib/skeleton-widgets.mjs","find":"} else if ( glyphOf( shown ) !== glyphOf( shut ) ) {","replace":"} else if ( false ) {","why":"a different open glyph is ignored"},
  {"file":"lib/skeleton-widgets.mjs","find":"title: words.title, category: words.rest[ 0 ] ?? null };","replace":"title: null, category: null };","why":"the unit carries no title or category part"},
  {"file":"lib/skeleton-propose.mjs","find":"Object.keys( slotStates ).length && ( node.draftSlotStates = slotStates );","replace":"","why":"the open unit's paths reach Fill with no state"}

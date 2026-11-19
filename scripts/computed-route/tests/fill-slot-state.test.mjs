@@ -15,18 +15,23 @@ const db = openDb();
 const THREE = [ 375, 768, 1440 ];
 const OPEN = '.sgs-container:nth-of-type(1)';
 const CLOSED = '.sgs-container:nth-of-type(2)';
+const HEADER = `${ OPEN } > .sgs-accordion-item__header`;
 const paint = ( styles ) => Object.fromEntries( THREE.map( ( w ) => [ w, { display: 'block', ...styles } ] ) );
 const at = ( slots, property, state = null, forms = [], transform = null ) => ( { slot: slots[ 0 ], slots, property, state, forms, transform, reachedAt: THREE, effects: [], variants: [ 0 ] } );
 const MARK = Object.fromEntries( THREE.map( ( w ) => [ w, 'rgb(232, 106, 117) 0px 4px 12px 0px' ] ) );
 const CAL = {
 	block: 'sgs/accordion',
-	elements: { '': paint( {} ), [ OPEN ]: paint( { 'box-shadow': 'none', 'background-color': 'rgba(0, 0, 0, 0)' } ), [ CLOSED ]: paint( { 'box-shadow': 'none' } ) },
+	elements: { '': paint( {} ), [ OPEN ]: paint( { 'box-shadow': 'none', 'background-color': 'rgba(0, 0, 0, 0)', color: 'rgb(0, 0, 0)' } ), [ HEADER ]: paint( { color: 'rgb(0, 0, 0)' } ), [ CLOSED ]: paint( { 'box-shadow': 'none' } ) },
 	settings: {
 		itemShadow: at( [ OPEN, CLOSED ], 'box-shadow' ),
 		itemShadowColour: at( [ OPEN, CLOSED ], 'box-shadow', null, [ 'hex', 'slug' ], MARK ),
 		itemShadowOpen: at( [ OPEN ], 'box-shadow', 'open' ),
 		itemShadowOpenColour: at( [ OPEN ], 'box-shadow', 'open', [ 'hex', 'slug' ], MARK ),
 		itemBackgroundOpen: at( [ OPEN ], 'background-color', null, [ 'hex', 'slug' ] ),
+		// The open header colour paints the header and only reaches the row; the resting header colour is (synthetically)
+		// calibrated on the row itself, as a category line's own colour is on the line.
+		headerColourOpen: { ...at( [ HEADER ], 'color', 'open', [ 'hex', 'slug' ] ), reaches: [ HEADER, OPEN ] },
+		headerColour: at( [ OPEN ], 'color', null, [ 'hex', 'slug' ] ),
 	},
 	discovered: {},
 };
@@ -39,7 +44,7 @@ function run( { stated = true } = {} ) {
 	addRefs( tree, 'ss' );
 	const widths = Object.fromEntries( [ 375, 768, 1024, 1440, 1920 ].map( ( w ) => [ w, {
 		'0:': snap( {} ),
-		[ `0:${ OPEN }` ]: snap( { 'box-shadow': 'rgb(58, 42, 34) 4px 4px 0px 0px', 'background-color': 'rgb(252, 235, 190)' } ),
+		[ `0:${ OPEN }` ]: snap( { 'box-shadow': 'rgb(58, 42, 34) 4px 4px 0px 0px', 'background-color': 'rgb(252, 235, 190)', color: 'rgb(142, 52, 68)' } ),
 	} ] ) );
 	const reads = { widths, declared: Object.fromEntries( Object.keys( widths ).map( ( w ) => [ w, {} ] ) ), sweep: {}, origin: 'http://127.0.0.1:1' };
 	const out = fillTree( { tree, nodes, reads, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, rawSnapshot: {}, calFor: () => CAL, ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
@@ -61,4 +66,11 @@ test( 'negative control: with no slot state the row is read at rest, as before (
 	const { attrs } = run( { stated: false } );
 	assert.equal( attrs.itemShadowOpen, undefined );
 	assert.ok( attrs.itemShadow, 'read at rest, the resting shadow setting takes it' );
+} );
+
+test( 'MUST FAIL WITHOUT THE OWN-SLOT TEST: an open-state setting that only reaches the path never takes the read; the resting setting on the path does', () => {
+	const { attrs, out } = run();
+	assert.ok( attrs.headerColour, `the setting calibrated on the path takes its colour (attributes: ${ JSON.stringify( attrs ) })` );
+	assert.equal( attrs.headerColourOpen, undefined );
+	assert.ok( ! out.unmapped.some( ( u ) => 'color' === u.property && /^reach-only/.test( String( u.reason ) ) ), 'no reach-only row for the colour' );
 } );

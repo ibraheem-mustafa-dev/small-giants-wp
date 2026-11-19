@@ -544,8 +544,8 @@ export function widgetModel( { m, view, facts, R, surface = {}, declared = () =>
 
 	// The accordion's toggle icon from what its units' controls draw (rules.accordion.toggle): the glyph typed in a closed
 	// unit's icon ring is the open icon, by the entry's glyph list; in the open unit's ring, a different glyph is the close
-	// icon, and the same glyph turned further (its declared rotate) is the open icon's turn. A glyph the list does not name, or
-	// no ring, writes nothing and is said. Returns { attributes, notes }.
+	// icon, and the same glyph turned further (its declared rotate) is the close icon of the shape the turn ends on (turns). A
+	// glyph or turn the lists do not name, or no ring, writes nothing and is said. Returns { attributes, notes }.
 	const toggleIcon = ( model ) => {
 		const T = R.accordion?.toggle;
 		const none = { attributes: {}, notes: [] };
@@ -574,8 +574,12 @@ export function widgetModel( { m, view, facts, R, surface = {}, declared = () =>
 			close ? ( attributes[ T.settings.close ] = close ) : notes.push( `the open unit's icon ring draws "${ glyphOf( shown ) }", which rules.accordion.toggle.glyphs names no icon for: the close icon stays` );
 		} else {
 			const turn = ( ( ( turnOf( shown ) - turnOf( shut ) ) % 360 ) + 360 ) % 360;
-			// The same glyph unturned stays the same icon when open; turned, the one icon turns.
-			turn > 0 ? ( attributes[ T.settings.turn ] = turn ) : ( attributes[ T.settings.close ] = icon );
+			// The same glyph unturned stays the same icon when open; turned, the close icon is the shape the turn ends on
+			// (rules.accordion.toggle.turns: a plus turned 45 degrees is a cross). The turn itself is a style value, never a skeleton's:
+			// the clone cross-fades the two icons, and the draft's turning transition is the motion route's.
+			const as = 0 === turn ? icon : ( T.turns || [] ).find( ( t ) => t.icon === icon && ( t.by || [] ).includes( turn ) )?.is;
+			as ? ( attributes[ T.settings.close ] = as ) : notes.push( `the open unit's icon ring turns "${ glyphOf( shut ) }" by ${ turn } degrees, which rules.accordion.toggle.turns names no icon for: the close icon stays` );
+			turn > 0 && as && notes.push( `the close icon is ${ as }, the shape the draft's ${ turn }-degree turn ends on; the clone cross-fades the two icons` );
 		}
 		return { attributes, notes };
 	};

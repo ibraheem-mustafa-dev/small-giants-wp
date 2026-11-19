@@ -70,8 +70,8 @@ test( 'accordion: the host reads a closed unit\'s row and header and the open un
 	};
 	const r = run( faqPage(), FAQ_LOGIC(), { calSettings: ( slug ) => ( 'sgs/accordion' === slug ? cal : {} ) } );
 	const acc = find( r.skeleton, ( x ) => 'sgs/accordion' === x.name )[ 0 ];
-	assert.deepEqual( acc.draftSlots, { [ TWO ]: { tpl: 'Root/3#1' }, [ `${ TWO } > .h` ]: { tpl: 'Root/4#1' }, [ `${ TWO } > .h > .t` ]: { tpl: 'Root/6#1' }, [ `${ TWO } > .h > .e` ]: { tpl: 'Root/5#1' }, [ ONE ]: { tpl: 'Root/3#0' }, [ `${ ONE } > .a` ]: { tpl: 'Root/8#0' } }, 'MUST FAIL: the closed unit\'s question and category texts are its title and category parts' );
-	assert.deepEqual( acc.draftSlotStates, { [ ONE ]: 'open', [ `${ ONE } > .a` ]: 'open' }, 'MUST FAIL: the open unit\'s paths are read in the open state (childSlots.currentState)' );
+	assert.deepEqual( acc.draftSlots, { [ TWO ]: { tpl: 'Root/3#1' }, [ `${ TWO } > .h` ]: { tpl: 'Root/4#1' }, [ ONE ]: { tpl: 'Root/3#0' }, [ `${ ONE } > .a` ]: { tpl: 'Root/8#0' }, [ `${ ONE } > .h > .t` ]: { tpl: 'Root/6#0' }, [ `${ ONE } > .h > .e` ]: { tpl: 'Root/5#0' } }, 'MUST FAIL: the open unit\'s question and category texts are its title and category parts' );
+	assert.deepEqual( acc.draftSlotStates, { [ ONE ]: 'open', [ `${ ONE } > .a` ]: 'open', [ `${ ONE } > .h > .t` ]: 'open', [ `${ ONE } > .h > .e` ]: 'open' }, 'MUST FAIL: the open unit\'s paths are read in the open state (childSlots.currentState)' );
 	assert.match( row( r, 'Root/2#0' ).slotNotes.join( ' ' ), /closed unit holds no icon element/, 'the fixture\'s glyph is not square, so no ring slot, and it is said' );
 	const bare = run( faqPage(), FAQ_LOGIC() );
 	assert.equal( undefined, find( bare.skeleton, ( x ) => 'sgs/accordion' === x.name )[ 0 ].draftSlots, 'negative: with no calibration there is no slot' );
@@ -82,11 +82,14 @@ test( 'accordion: the host reads a closed unit\'s row and header and the open un
 const ring = ( o = {} ) => N( 'span', { attrs: { 'aria-hidden': 'true' }, box: [ 36, 36 ], words: o.words ?? '+', style: o.style ?? ( ( c ) => `width:36px;height:36px;transform:rotate(${ 0 === c ? 45 : 0 }deg)` ) } );
 const hostOf = ( o ) => row( run( faqPage( { ring: ring( o ) } ), FAQ_LOGIC() ), 'Root/2#0' );
 
-test( 'accordion: the closed unit\'s ring glyph is the open icon, and the open unit\'s further turn is the icon\'s turn (rules.accordion.toggle); MUST FAIL without the toggle read', () => {
+test( 'accordion: the closed unit\'s ring glyph is the open icon, and the shape the open unit\'s further turn ends on is the close icon (rules.accordion.toggle); MUST FAIL without the toggle read', () => {
 	const host = hostOf();
 	assert.equal( host.attributes.openIcon, 'plus', 'MUST FAIL: the typed plus is the Lucide plus' );
-	assert.equal( host.attributes.iconRotation, 45, 'MUST FAIL: the open ring turns 45 degrees further' );
-	assert.equal( host.attributes.closeIcon, undefined, 'a turning icon prints only the open icon' );
+	assert.equal( host.attributes.closeIcon, 'x', 'MUST FAIL: a plus turned 45 degrees is a cross' );
+	assert.equal( host.attributes.iconRotation, undefined, 'the turn is a style value no skeleton carries (R-47-10)' );
+	const odd = hostOf( { style: ( c ) => `width:36px;height:36px;transform:rotate(${ 0 === c ? 30 : 0 }deg)` } );
+	assert.deepEqual( [ odd.attributes.openIcon, odd.attributes.closeIcon ], [ 'plus', undefined ], 'a turn the list does not name keeps the close icon' );
+	assert.match( odd.reason, /turns "\+" by 30 degrees, which rules\.accordion\.toggle\.turns names no icon for/ );
 } );
 
 test( 'accordion: a different glyph in the open ring is the close icon; the same glyph unturned stays the same icon', () => {

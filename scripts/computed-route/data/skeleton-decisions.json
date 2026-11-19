@@ -751,12 +751,13 @@
 			"recordKind": "accordion",
 			"settings": { "several": "allowMultiple", "openAtRest": "defaultOpen", "itemOpen": "isOpen", "title": "title", "category": "category", "categoryShown": "showCategoryEyebrow", "categoryAlways": "categoryEyebrowAlways" },
 			"toggle": {
-				"settings": { "open": "openIcon", "close": "closeIcon", "turn": "iconRotation" },
+				"settings": { "open": "openIcon", "close": "closeIcon" },
+				"turns": [ { "icon": "plus", "by": [ 45, 135, 225, 315 ], "is": "x" }, { "icon": "plus", "by": [ 90, 180, 270 ], "is": "plus" }, { "icon": "x", "by": [ 45, 135, 225, 315 ], "is": "plus" }, { "icon": "minus", "by": [ 180 ], "is": "minus" }, { "icon": "minus", "by": [ 90, 270 ], "is": "plus" }, { "icon": "chevron-down", "by": [ 180 ], "is": "chevron-up" }, { "icon": "chevron-up", "by": [ 180 ], "is": "chevron-down" }, { "icon": "chevron-right", "by": [ 90 ], "is": "chevron-down" }, { "icon": "chevron-right", "by": [ 270 ], "is": "chevron-up" } ],
 				"glyphs": { "+": "plus", "＋": "plus", "−": "minus", "-": "minus", "×": "x", "✕": "x", "✖": "x", "⌄": "chevron-down", "˅": "chevron-down", "▾": "chevron-down", "▼": "chevron-down", "▴": "chevron-up", "▲": "chevron-up", "›": "chevron-right", "→": "arrow-right" },
-				"reason": "a typed glyph in the toggle's icon ring is drawn by the accordion as the Lucide icon of the same shape (lib/skeleton-widgets.mjs::toggleIcon): the closed unit's glyph is the open icon, a different glyph in the open unit's ring the close icon, and the same glyph turned further when open the open icon's turn (iconRotation, which prints the one icon and turns it)"
+				"reason": "a typed glyph in the toggle's icon ring is drawn by the accordion as the Lucide icon of the same shape (lib/skeleton-widgets.mjs::toggleIcon): the closed unit's glyph is the open icon, a different glyph in the open unit's ring the close icon, and the same glyph turned further when open the shape the turn ends on (turns: a plus turned 45 degrees is a cross) as the close icon, so the clone cross-fades the two icons; the turn itself (iconRotation) is a style value no skeleton carries (R-47-10), and the draft's turning transition is the motion route's"
 			},
 			"childSlots": {
-				"reason": "the accordion keeps its rows' look as its own settings, calibrated on the fixture's open first item and closed second item: the resting child is the one headerFontWeight is measured on, the current child the one itemBackgroundOpen is; a closed unit's row, header, icon ring, title and category line and the open unit's row and answer are read at those children's paths (lib/skeleton-child-slots.mjs::unitSlots), the resting parts first so a setting on both children takes the closed row's value; the current child is saved open, so its paths are read in the open state first (currentState) and an open-state setting there (the open shadow) takes the open unit's value",
+				"reason": "the accordion keeps its rows' look as its own settings, calibrated on the fixture's open first item and closed second item: the resting child is the one headerFontWeight is measured on, the current child the one itemBackgroundOpen is; a closed unit's row, header and icon ring and the open unit's row, answer, title and category line are read at those children's paths (the title and category settings paint every item's text, and calibration lists only the open child's as their own slot, the closed child's as reached) (lib/skeleton-child-slots.mjs::unitSlots), the resting parts first so a setting on both children takes the closed row's value; the current child is saved open, so its paths are read in the open state first (currentState) and an open-state setting there (the open shadow) takes the open unit's value",
 				"currentState": "open",
 				"resting": "headerFontWeight",
 				"current": "itemBackgroundOpen",
@@ -764,8 +765,8 @@
 					{ "part": "row", "child": "resting", "setting": "itemShadow" },
 					{ "part": "header", "child": "resting", "setting": "headerPadding" },
 					{ "part": "icon", "child": "resting", "setting": "iconCircleBorderWidth" },
-					{ "part": "title", "child": "resting", "setting": "itemTitleFontFamily" },
-					{ "part": "category", "child": "resting", "setting": "categoryEyebrowColour" },
+					{ "part": "title", "child": "current", "setting": "itemTitleFontFamily" },
+					{ "part": "category", "child": "current", "setting": "categoryEyebrowColour" },
 					{ "part": "row", "child": "current", "setting": "itemBackgroundOpen" },
 					{ "part": "answer", "child": "current", "setting": "contentPadding" }
 				]
