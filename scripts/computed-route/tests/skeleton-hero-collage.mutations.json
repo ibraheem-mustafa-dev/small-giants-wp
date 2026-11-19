@@ -1,0 +1,62 @@
+[
+	{
+		"file": "lib/skeleton-hero-collage.mjs",
+		"find": "pictured.length < minPictureLayers || ",
+		"replace": "pictured.length < 1 || ",
+		"why": "a stage with one picture frame (a split hero's framed picture with a badge) would be a collage"
+	},
+	{
+		"file": "lib/skeleton-hero-collage.mjs",
+		"find": "|| 'static' === s.position[ w ]",
+		"replace": "",
+		"why": "a stage that is not positioned would be a collage"
+	},
+	{
+		"file": "lib/skeleton-hero-collage.mjs",
+		"find": "const placed = ( x ) => 'absolute' === x.position?.[ w ];",
+		"replace": "const placed = ( x ) => true;",
+		"why": "frames in the flow (a gallery) would be a pile of layers"
+	},
+	{
+		"file": "lib/skeleton-hero-collage.mjs",
+		"find": "|| desc( s ).some( ( k ) => 'h1' === k.tag )",
+		"replace": "",
+		"why": "the wrapper holding the hero's heading would be a stage"
+	},
+	{
+		"file": "lib/skeleton-hero-collage.mjs",
+		"find": "const w = widthOf( hero );",
+		"replace": "const w = 375;",
+		"why": "the stage would be read at the narrowest width, not the hero's widest shown one"
+	},
+	{
+		"file": "lib/skeleton-hero-collage.mjs",
+		"find": "[ l, ...desc( l ) ].forEach( ( k ) => layerOf.set( k.key, l.key ) );",
+		"replace": "layerOf.set( l.key, l.key );",
+		"why": "what sits inside a layer (its picture) would not be known as under a layer and would be absorbed"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": " && ! collage.layerOf.has( p.key ) );",
+		"replace": " );",
+		"why": "a picture in a layer would still be the hero's split media"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return collage.layerOf.get( e.key ) === e.key ? v( 'heroCollageLayer', { block: R.heroCollageLayer?.block } ) : null;",
+		"replace": "return v( 'heroCollageLayer', { block: R.heroCollageLayer?.block } );",
+		"why": "every element under a layer, its picture among them, would be a layer too"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return v( 'heroCollage', { block: R.heroCollage.block } );",
+		"replace": "return null;",
+		"why": "the stage would be unwrapped as a hero layout wrapper"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "minPictureLayers: R.heroCollage.minPictureLayers",
+		"replace": "minPictureLayers: 1",
+		"why": "the decisions' picture count would not be read"
+	}
+]

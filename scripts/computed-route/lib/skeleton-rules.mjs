@@ -26,6 +26,7 @@ import { keptSvg } from './fill-icon.mjs';
 import { draftTokenLookup, handoffOf, resolvedOrRaw } from './draft-tokens.mjs';
 import { heroSplitOrder, heroMediaAlignment } from './skeleton-hero-order.mjs';
 import { behindContent } from './skeleton-hero-background.mjs';
+import { heroCollage } from './skeleton-hero-collage.mjs';
 import { openerTargets, controlWrites, openedBy, openerAttributes } from './skeleton-openers.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
@@ -683,6 +684,14 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// wrapper itself). Badges inside a section are labels.
 	const pageSection = ( e, block ) => 'section' !== facts.composition[ block ]?.container_kind || ( 'page' === surface.kind && ! pageWrapper( e ) && ( 1 === e.depth || ( !! m.byKey[ e.parentKey ] && wrapperOfPage( m.byKey[ e.parentKey ] ) ) ) );
 	const isMedia = ( k ) => 'img' === k.tag || ( k.tag.includes( '-' ) && !! specHit( R.mediaElement, k.tag ) );
+	// A hero's collage stages and their layers (lib/skeleton-hero-collage.mjs), read once per hero.
+	const collages = new Map();
+	const collageOf = ( hero ) => {
+		if ( ! collages.has( hero.key ) ) {
+			collages.set( hero.key, R.heroCollage ? heroCollage( { hero, m, desc, isMedia, minPictureLayers: R.heroCollage.minPictureLayers } ) : { stages: new Map(), layerOf: new Map() } );
+		}
+		return collages.get( hero.key );
+	};
 	// The element's own animation loops a translate for ever (the inventory's motion record): a marquee track.
 	const loops = ( e ) => motion.has( String( e.key ).replace( /#\d+$/, '' ) );
 
@@ -951,7 +960,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			// A picture laid behind the content (lib/skeleton-hero-background.mjs) is the hero's background: only a picture beside
 			// the content makes it the split hero.
 			const backdrop = desc( e ).filter( isMedia ).filter( ( p ) => behindContent( { hero: e, picture: p, m, desc } ) );
-			const pictures = desc( e ).filter( isMedia ).filter( ( p ) => ! backdrop.includes( p ) );
+			// A picture inside a collage layer is that layer's own, never the hero's split media.
+			const collage = collageOf( e );
+			const pictures = desc( e ).filter( isMedia ).filter( ( p ) => ! backdrop.includes( p ) && ! collage.layerOf.has( p.key ) );
 			const media = pictures.length > 0;
 			// A split hero's order per device is the draft's (lib/skeleton-hero-order.mjs): its picture against every worded
 			// element outside a picture, at each device's width.
@@ -997,6 +1008,15 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const hero = ancestorBlocks( e ).find( ( a ) => a.block === R.hero?.block );
 			if ( ! hero ) {
 				return null;
+			}
+			// A collage keeps its stage as a container and each absolutely placed child as a decorative image layer; what sits
+			// inside a layer is classified as anywhere else (the pictures are media blocks, not the hero's split media).
+			const collage = collageOf( m.byKey[ hero.key ] );
+			if ( collage.stages.has( e.key ) ) {
+				return v( 'heroCollage', { block: R.heroCollage.block } );
+			}
+			if ( collage.layerOf.has( e.key ) ) {
+				return collage.layerOf.get( e.key ) === e.key ? v( 'heroCollageLayer', { block: R.heroCollageLayer?.block } ) : null;
 			}
 			if ( isMedia( e ) ) {
 				// A picture laid behind the hero's content is its background (rules.heroBackdrop), not a part of its split media.
