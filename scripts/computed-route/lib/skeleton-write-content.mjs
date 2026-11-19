@@ -34,6 +34,19 @@ export const copyrightPrefixOf = ( text, siteName = null ) => copyrightPrefixPar
 // A logo block's Source setting: its one content media slot that takes an image (lib/media/slots.mjs), as a list.
 const logoSource = ( block ) => blockMediaSlots( block ).filter( ( m ) => 'content' === m.context && m.kinds.includes( 'image' ) ).slice( 0, 1 ).map( ( m ) => m.source );
 
+// Whether a block's text setting prints words of its own when it holds none: a setting whose framework-database
+// default is not empty (`sgs/button` `label` prints "Click Here", `sgs/form` `submitLabel` "Submit"). Such a setting left
+// unwritten on a wordless draft element (a slider dot, a swatch) puts the default on the page (FR-48-97).
+export function printsDefaultText( facts, block, attr ) {
+	let value = attr ? facts.attr( block, attr )?.default_value : undefined;
+	try {
+		value = JSON.parse( value );
+	} catch {
+		// A default that is no JSON is the literal string.
+	}
+	return 'string' === typeof value && '' !== value.trim();
+}
+
 export function skeletonSettings( facts, block ) {
 	const has = ( name ) => !! facts.attr( block, name );
 	const out = { text: null, link: null, others: [] };
@@ -97,6 +110,10 @@ export function makeContent( ctx ) {
 		}
 		const { text: textAttr, link: linkAttr } = skeletonSettings( facts, block );
 		textAttr && t && ( a[ textAttr ] = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t );
+		// A wordless element with no block inside it writes its text setting empty, so the block's default words never print. Only
+		// a leaf block (the element is its text: button, heading, label) is that element's words: a composite block's first text
+		// setting is another part's (sgs/cart's `panelHeading`), which a wordless trigger says nothing about.
+		textAttr && ! t && ! m.blockKids( e ).length && 'leaf' === composition[ block ]?.composition_role && printsDefaultText( facts, block, textAttr ) && ( a[ textAttr ] = '' );
 		top.linkSource && ( a.linkSource = top.linkSource );
 		const href = e.attrs?.href;
 		if ( linkAttr && href ) {
