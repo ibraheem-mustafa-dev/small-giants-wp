@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "return BACKGROUND_LAYER === attrsFor( db, block ).find( ( r ) => r.attr_name === attr )?.css_element && [ 'width', 'height' ].every(",
+		"replace": "return [ 'width', 'height' ].every(",
+		"why": "any root pseudo layer with a box is the background"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "[ 'width', 'height' ].every(",
+		"replace": "[ 'width', 'height' ].some(",
+		"why": "a layer with half a box counts"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "[ 'width', 'height' ].every( ( d ) => effects.includes( `${ home }|${ d }` ) )",
+		"replace": "true",
+		"why": "a layer calibration never gave a box counts"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "const BACKGROUND_LAYER = 'background';",
+		"replace": "const BACKGROUND_LAYER = 'no-such-part';",
+		"why": "the background layer is never recognised"
+	}
+]

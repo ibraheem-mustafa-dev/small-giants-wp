@@ -76,6 +76,31 @@ test( 'negative control: a background on a pseudo-element layer of the root is r
 	assert.match( ask( 'sgs/label', 'backgroundColour', 'background-color', 'rgb(249, 207, 110)', { cal: layers } ), /^unpaired-part/ );
 } );
 
+// The block's own background layer (css_element `background`: the root's ::after at inset 0, includes/helpers-tokens.php::
+// sgs_block_background_layer_css) covers the root's box, so a background the draft paints on its one element is that setting's.
+// Calibration records the layer's width and height among the setting's effects when the marker draws it. Real case: Indus's
+// trust chips and card tags (sgs/label) lost their pill backgrounds (rgba(255, 255, 255, 0.6) read from the root was 'unpaired').
+const LAYER_EFFECTS = [ '::after|content', '::after|background-image', '::after|width', '::after|height' ];
+const layers = ( effects ) => ( { block: 'sgs/label', elements: { '': {} }, settings: { backgroundColour: { slot: '::after', effects }, backgroundColourGradient: { slot: '::after', effects }, dotColour: { slot: '::before', effects: [ '::before|width', '::before|height' ] }, dotColourGradient: { slot: '::before', effects: [ '::before|width', '::before|height' ] } } } );
+
+test( 'MUST FAIL: the own background layer of a block, measured with a box, is the background of its root', () => {
+	const cal = layers( LAYER_EFFECTS );
+	assert.equal( ask( 'sgs/label', 'backgroundColour', 'background-color', 'rgba(255, 255, 255, 0.6)', { cal } ), null );
+	// A gradient is another matter: the text gradient also paints background-image on the root, so it stays refused.
+	assert.match( ask( 'sgs/label', 'backgroundColourGradient', 'background-image', 'linear-gradient(red, blue)', { cal } ), /^unpaired-part/ );
+	for ( const block of [ 'sgs/text', 'sgs/heading' ] ) {
+		assert.equal( ask( block, 'backgroundColour', 'background-color', 'rgb(249, 207, 110)', { cal: { ...layers( LAYER_EFFECTS ), block } } ), null, block );
+	}
+} );
+
+test( 'negative control: a layer measured with no box, another layer of the root, or another read element keeps the refusal', () => {
+	assert.match( ask( 'sgs/label', 'backgroundColour', 'background-color', 'red', { cal: layers( [ '::after|content' ] ) } ), /^unpaired-part/, 'no width and height measured' );
+	assert.match( ask( 'sgs/label', 'backgroundColour', 'background-color', 'red', { cal: layers( [ '::after|width' ] ) } ), /^unpaired-part/, 'no height measured' );
+	assert.match( ask( 'sgs/label', 'dotColour', 'background-color', 'red', { cal: layers( LAYER_EFFECTS ) } ), /^unpaired-part/, 'the dot is a layer of the root the framework does not call the background' );
+	assert.match( ask( 'sgs/label', 'backgroundColour', 'background-color', 'red', { cal: layers( LAYER_EFFECTS ), readSlot: '.sgs-label__text' } ), /^unpaired-part/, 'a background of another element is not that of the root' );
+	assert.match( ask( 'sgs/label', 'backgroundColour', 'background-color', 'red', { cal: layers( LAYER_EFFECTS ), targets: [ ...ROOT, { id: '0:after', slot: '::after' } ] } ), /^unpaired-part/, 'a draft with an element of its own for the layer' );
+} );
+
 test( 'rootIsPart: nothing measured shows nothing', () => {
 	assert.equal( rootIsPart( { db, block: 'sgs/icon', cal: { elements: {}, settings: {} }, attr: 'iconColour', readSlot: '', prop: 'color', value: 'red', home: '.sgs-icon__shape' } ), false );
 	assert.equal( rootIsPart( { db, block: 'sgs/icon', cal: CAL[ 'sgs/icon' ], attr: 'iconColour', readSlot: '', prop: 'color', value: 'red', home: null } ), false );

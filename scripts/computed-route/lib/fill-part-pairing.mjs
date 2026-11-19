@@ -12,6 +12,9 @@ import { longhands } from './calibrate-props.mjs';
 
 const WIDTHS = [ 375, 768, 1440 ];
 
+// The framework's name for a block's own background layer: a root pseudo-element that paints only the background.
+const BACKGROUND_LAYER = 'background';
+
 // The slot most of a part's resting settings are calibrated at, or null when the part has none. The slot compares
 // without its :nth-of-type steps; exactHome keeps them, so each of a block's repeated parts (Bars 1 to 3) has its own.
 export function partHome( db, block, cal, element, except, key = LOOSE ) {
@@ -113,7 +116,8 @@ const stepsOf = ( slot ) => LOOSE( slot ).split( ' > ' ).map( ( s ) => s.replace
 //     the root (a part the block renders only in some modes leaves the setting on the root in the others), or every
 //     element it measured in the block (the default paint's elements and each resting setting's slot) lies in a copy of
 //     the part or on the path from the root to one, so nothing the block draws sits beside the part. A pseudo-element
-//     layer of the root is not shown by nesting: calibration records no box for it.
+//     layer of the root is not shown by nesting: calibration records no box for it; the block's own background layer is the
+//     one exception (BACKGROUND_LAYER).
 export function rootIsPart( { db, block, cal, attr, readSlot, prop, value, home, targets = [] } ) {
 	if ( '' !== LOOSE( readSlot ) || ! home || /%/.test( String( value ?? '' ) ) || targets.some( ( t ) => LOOSE( t.slot ?? '' ) === home ) ) {
 		return false;
@@ -130,9 +134,13 @@ export function rootIsPart( { db, block, cal, attr, readSlot, prop, value, home,
 	}
 	const measured = [ ...Object.keys( cal?.elements || {} ).map( LOOSE ), ...rows.map( ( r ) => slotOf( r.attr_name ) ).filter( ( s ) => null !== s ) ].filter( ( s ) => '' !== s );
 	// A pseudo-element of the root is a layer of the root's box, not a box holding its content: nesting cannot show what it covers.
+	// The block's own background layer is the one layer known to cover the root: the framework names it `background`
+	// (includes/helpers-tokens.php::sgs_block_background_layer_css paints it as the root's `::after` at inset 0 behind its
+	// content, so a text gradient on the root cannot clip it), and calibration measured the layer's size when the setting was set.
 	const part = stepsOf( home );
 	if ( '' === part.join( '' ) ) {
-		return false;
+		const effects = ( cal?.settings?.[ attr ]?.effects || [] ).map( String );
+		return BACKGROUND_LAYER === attrsFor( db, block ).find( ( r ) => r.attr_name === attr )?.css_element && [ 'width', 'height' ].every( ( d ) => effects.includes( `${ home }|${ d }` ) );
 	}
 	const inPart = ( s ) => {
 		const steps = stepsOf( s );
