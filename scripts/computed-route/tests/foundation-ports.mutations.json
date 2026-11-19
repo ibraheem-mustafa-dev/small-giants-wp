@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/foundation-ports.mjs",
+		"find": "\t\t\t\tassertSiteContact( { site, target } );\n\t\t\t} catch",
+		"replace": "\t\t\t\tvoid 0;\n\t\t\t} catch",
+		"why": "a command starts under the kill switch or on a protected site"
+	},
+	{
+		"file": "lib/foundation-ports.mjs",
+		"find": "\t\t\tassertSiteContact( { site, target, readOnly: true } );\n\t\t\ttry {",
+		"replace": "\t\t\ttry {",
+		"why": "the REST check ignores the kill switch"
+	},
+	{
+		"file": "lib/foundation-ports.mjs",
+		"find": "return { present: built > 0, stale: built > 0 && newestMtime( path.join( plugin, 'src' ) ) > built };",
+		"replace": "return { present: built > 0, stale: false };",
+		"why": "a stale build is current"
+	},
+	{
+		"file": "lib/foundation-ports.mjs",
+		"find": "const differ = here.filter( ( [ name, dir ] ) => ! there.has( name ) || localBlockHash( dir ) !== localBlockHash( there.get( name ) ) )",
+		"replace": "const differ = here.filter( ( [ name, dir ] ) => ! there.has( name ) )",
+		"why": "a changed block is not seen"
+	},
+	{
+		"file": "lib/foundation-ports.mjs",
+		"find": "return { differs: ! here.length || differ.length > 0,",
+		"replace": "return { differs: differ.length > 0,",
+		"why": "a checkout with no build equals any site"
+	},
+	{
+		"file": "lib/foundation-ports.mjs",
+		"find": "\t\tbuildDigest: async () => sha( blockDirs( plugin ).map( ( [ name, dir ] ) => `${ name }:${ localBlockHash( dir ) }` ).join( '\\n' ) ),",
+		"replace": "\t\tbuildDigest: async () => sha( 'same' ),",
+		"why": "a changed block leaves the digest alone"
+	},
+	{
+		"file": "lib/foundation-ports.mjs",
+		"find": "\t\t\tif ( env.SGS_INTAKE_SOURCE ) {\n\t\t\t\treturn env.SGS_INTAKE_SOURCE;\n\t\t\t}",
+		"replace": "",
+		"why": "the intake source override is ignored"
+	},
+	{
+		"file": "lib/foundation-ports.mjs",
+		"find": "\t\t\tf.isDirectory() ? go( p ) : ( newest = Math.max( newest, stat( p ) ) );",
+		"replace": "\t\t\tf.isDirectory() ? go( p ) : ( newest = stat( p ) );",
+		"why": "the last file read, not the newest, is taken"
+	}
+]

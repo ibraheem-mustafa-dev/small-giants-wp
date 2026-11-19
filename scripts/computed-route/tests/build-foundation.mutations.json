@@ -1,0 +1,32 @@
+[
+	{
+		"file": "build-foundation.mjs",
+		"find": "\t\tconst unknown = forced.filter( ( id ) => ! STEP_IDS.includes( id ) );",
+		"replace": "\t\tconst unknown = [];",
+		"why": "an unknown --force step is accepted"
+	},
+	{
+		"file": "build-foundation.mjs",
+		"find": "file: plan ? null : file,",
+		"replace": "file,",
+		"why": "a plan records state"
+	},
+	{
+		"file": "build-foundation.mjs",
+		"find": "\t\treturn run.ok ? 0 : 1;",
+		"replace": "\t\treturn 0;",
+		"why": "a failed run exits 0"
+	},
+	{
+		"file": "build-foundation.mjs",
+		"find": "\tif ( ! client || ! site ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a missing site is not a usage error"
+	},
+	{
+		"file": "build-foundation.mjs",
+		"find": "${ count( 'stop' ) } stopped${ bad.length ?",
+		"replace": "${ count( 'stop' ) } stopped${ false ?",
+		"why": "the first step to fix is not named"
+	}
+]

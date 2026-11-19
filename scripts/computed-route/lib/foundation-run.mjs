@@ -6,6 +6,7 @@
 //   - holds() returns a reason when the step's result is already current (its outputs exist for these inputs, or the state records say nothing
 //     it reads has changed since it last succeeded), else null; the step is then `skip`. `--force` runs a step whatever holds() says.
 //   - run() does the work and resolves a one-line detail; a throw is the failure, and an error's `next` names what to do about it.
+//   - always: true makes the step run even under `plan` (the preflight, whose plan-mode checks probe nothing).
 //   - fingerprint() is a string of the step's inputs and outputs after it ran, recorded in the state file with the detail (and what record()
 //     returns); heldByState says whether a record still matches it.
 // A run's report is one line per step: `ok   <id> <seconds>s - <detail>`, `skip <id> - <reason>`, `FAIL <id> <seconds>s - <detail>; next: <action>`
@@ -75,7 +76,7 @@ export async function runFoundation( { steps, state = { steps: {} }, file = null
 			say( { id: step.id, status: 'skip', reason: held } );
 			continue;
 		}
-		if ( plan ) {
+		if ( plan && ! step.always ) {
 			say( { id: step.id, status: 'plan', reason: `would run${ force.includes( step.id ) ? ' (--force)' : '' }: ${ step.title ?? step.id }` } );
 			continue;
 		}

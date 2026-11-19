@@ -114,6 +114,14 @@ test( 'MUST FAIL: a plan runs nothing and says what each step would do or why it
 	assert.equal( r.ok, true );
 } );
 
+test( 'MUST FAIL: a step marked always runs under a plan (the preflight does), the others do not', async () => {
+	const { steps, calls } = make( [ 'pre', 'b' ] );
+	steps[ 0 ].always = true;
+	const r = await run( steps, { plan: true } );
+	assert.deepEqual( calls, [ 'pre' ] );
+	assert.deepEqual( r.lines, [ 'ok   pre 2s - pre done', 'plan b - would run: do b' ] );
+} );
+
 test( 'the printed line of each result', () => {
 	assert.equal( resultLine( { id: 'x', status: 'ok', seconds: 5, detail: '' } ), 'ok   x 5s' );
 	assert.equal( resultLine( { id: 'x', status: 'fail', seconds: 5, detail: 'bad', next: null } ), 'FAIL x 5s - bad' );

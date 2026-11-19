@@ -37,7 +37,7 @@
 	},
 	{
 		"file": "lib/foundation-run.mjs",
-		"find": "\t\tif ( plan ) {",
+		"find": "\t\tif ( plan && ! step.always ) {",
 		"replace": "\t\tif ( false ) {",
 		"why": "a plan runs the steps"
 	},
@@ -76,5 +76,11 @@
 		"find": "'stop' === failed.get( blocker ) ? 'did not run' : 'failed'",
 		"replace": "'failed'",
 		"why": "a stopped step is said to have failed"
+	},
+	{
+		"file": "lib/foundation-run.mjs",
+		"find": "\t\tif ( plan && ! step.always ) {",
+		"replace": "\t\tif ( plan ) {",
+		"why": "an always-step is skipped by a plan"
 	}
 ]
