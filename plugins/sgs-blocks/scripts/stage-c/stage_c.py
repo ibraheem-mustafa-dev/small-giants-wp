@@ -21,6 +21,8 @@ names the code that writes that CSS and how much of it repeats.
                                   every element ends up with for every property, at 375, 768 and 1440 px, read from ALL
                                   of the page's `<style>` CSS (inline delivery prints every stylesheet in the page), must
                                   be the same before and after; exit 1 on any difference
+  --mirror <client>=<mirror>[,..] with --survey/--fix/--check: render that client's pages on another mirror for this run
+                                  (a scratch copy made by scripts/local-wp/scratch-mirror.sh); its stage-c.json is not changed
   --self-test                     plants a repeated body and an override pair and asserts both are caught; with
                                   --unplant the plants are removed and the self-test must fail (proves it can fail)
 
@@ -62,13 +64,32 @@ def site_files() -> list[Path]:
     return sorted(SITES.glob(f"*/{SITE_FILE}"))
 
 
+# Client folder -> mirror for this run, from --mirror; a client not named here uses its stage-c.json mirror.
+MIRROR_OVERRIDE: dict[str, str] = {}
+
+
+def parse_mirror_override(spec: str) -> dict[str, str]:
+    """'<client folder>=<mirror>[,...]' -> {client folder: mirror}; refuses a client with no stage-c.json."""
+    known = {f.parent.name for f in site_files()}
+    out = {}
+    for part in filter(None, (p.strip() for p in spec.split(","))):
+        client, sep, name = part.partition("=")
+        if not sep or not client or not name:
+            raise SystemExit(f"--mirror: '{part}' is not <client folder>=<mirror>")
+        if client not in known:
+            raise SystemExit(f"--mirror: no sites/{client}/{SITE_FILE} (known: {', '.join(sorted(known))})")
+        out[client] = name
+    return out
+
+
 def pages() -> list[tuple[str, str, str, Path]]:
     """(label, mirror, path, site file) for every page every client lists; the label is '<client folder>/<page>'."""
     out = []
     for f in site_files():
         d = json.loads(f.read_text(encoding="utf-8"))
+        name = MIRROR_OVERRIDE.get(f.parent.name, d["mirror"])
         for label, path in d["pages"].items():
-            out.append((f"{f.parent.name}/{label}", d["mirror"], path, f))
+            out.append((f"{f.parent.name}/{label}", name, path, f))
     return out
 
 
@@ -686,7 +707,10 @@ def main() -> int:
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--snapshot", type=Path, help="with --survey: save each page's HTML here (for --compare)")
     ap.add_argument("--pages", help="comma-separated client folders or <client>/<page> labels (default: all)")
+    ap.add_argument("--mirror", help="<client folder>=<mirror>[,...]: render that client's pages on another mirror (a scratch copy) this run")
     args = ap.parse_args()
+    if args.mirror:
+        MIRROR_OVERRIDE.update(parse_mirror_override(args.mirror))
 
     if args.self_test:
         return self_test(args.unplant)
