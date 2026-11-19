@@ -16,6 +16,7 @@ import { commonChain, copyFile, copySource, copyTree, pageTemplateOf, readShell,
 import { addressOf, desiredMenus, menuLocation } from './site-build-menus.mjs';
 import { readSurfaces } from './site-build-labels.mjs';
 import { comingSoonAction, COMING_SOON_OPTION } from './site-build-store-visible.mjs';
+import { withFlowProduct } from './site-build-flow-product.mjs';
 import { CONTENT_META, MENU_META, ROW_META, TEMPLATE_OPTION, WOO_ROLE, isWooDefaultContent } from './site-build-state.mjs';
 
 export const PERMALINKS = '/%postname%/';
@@ -69,7 +70,7 @@ function wooRoles( rows ) {
 	];
 }
 
-export function planBuild( { rows, state, repo, client, frontRoute = 'home', linkText = {}, menuLinks } ) {
+export function planBuild( { rows, state, repo, client, frontRoute = 'home', linkText = {}, menuLinks, flowProducts = {} } ) {
 	const problems = [];
 	const notes = [];
 	const actions = [];
@@ -169,7 +170,9 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			problems.push( `${ key }: template "${ row.template }" is not one the theme registers for a ${ row.postType }` );
 			continue;
 		}
-		const { tree, source } = pageTreeFor( repo, client, row, menuIds );
+		// A choice flow's tree holds the catalogue product it adds (lib/site-build-flow-product.mjs).
+		const { tree: built, source } = pageTreeFor( repo, client, row, menuIds );
+		const tree = withFlowProduct( built, row, flowProducts );
 		const hash = treeHash( tree );
 		const binds = LAYOUT_TYPES[ row.postType ] && boundMenu( LAYOUT_TYPES[ row.postType ], Object.keys( menuIds ) );
 		const unbound = 'placeholder' === source && [ 'header', 'drawer' ].includes( LAYOUT_TYPES[ row.postType ] ) && wanted.menus[ binds ] && ! menuIds[ binds ];

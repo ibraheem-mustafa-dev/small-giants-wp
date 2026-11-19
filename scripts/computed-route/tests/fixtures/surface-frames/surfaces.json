@@ -1,0 +1,10 @@
+{ "schema_version": "1.0", "records": [
+  { "id": "S-06", "kind": "footer", "name": "Footer", "dc": "Shop", "route": "*" },
+  { "id": "S-10", "kind": "page", "name": "Product", "dc": "Shop", "route": "product" },
+  { "id": "S-25", "kind": "modal", "name": "Size guide", "dc": "Shop", "route": "*", "states": [
+    { "name": "open", "state_keys": { "modal": "size" }, "how_to_reach": "L.setState({modal:'size'})" }
+  ] },
+  { "id": "S-27", "kind": "modal", "name": "Lens configurator", "dc": "Shop", "route": "*", "states": [
+    { "name": "open", "state_keys": { "lens": "{open:true}" }, "how_to_reach": "L.setState({lens:{...L.state.lens, open:true}})" }
+  ] }
+] }

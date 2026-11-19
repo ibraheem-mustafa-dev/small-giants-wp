@@ -20,7 +20,7 @@
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"'product' === r.postType && r.route && opened.has( r.route )","replace":"r.route && opened.has( r.route )","why":"a non-product row could name a flow"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"if ( 1 === slugs.length ) {","replace":"if ( slugs.length ) {","why":"two flows on one product page record the first"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"'sgs_choice_flow' === r.postType && r.draftId","replace":"r.draftId","why":"a modal row counts as a flow"},
- {"file":"lib/intake-pagemap-regen.mjs","find":"'draftId', 'opensFlow', 'id'","replace":"'draftId', 'id'","why":"a page-map regeneration hides an opensFlow change"},
+ {"file":"lib/intake-pagemap-regen.mjs","find":"'draftId', 'opensFlow', 'opens', 'id'","replace":"'draftId', 'opens', 'id'","why":"a page-map regeneration hides an opensFlow change"},
  {"file":"data/page-map.schema.json","find":"\"opensFlow\": {\n        \"type\": \"string\",\n        \"pattern\": \"^[a-z0-9-]+$\"\n      },","replace":"\"opensFlow\": {\n        \"type\": \"string\"\n      },","why":"the schema takes any string as a flow slug"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"if ( 'var' === decl?.kind && ! decl.key ) {","replace":"if ( false ) {","why":"a const object a handler passes is not followed to its declaration"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"[ 'member', 'local', 'key' ]","replace":"[ 'local' ]","why":"class members and object keys holding a function are not found by name"},

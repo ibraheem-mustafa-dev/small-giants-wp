@@ -1,0 +1,15 @@
+[
+ {"file":"lib/skeleton-propose.mjs","find":"\tconst scIf = 'form' === surfaceKind ? scIfFields(","replace":"\tconst scIf = false ? scIfFields(","why":"the proposer never reads a form's sc-if conditions (the skeleton before this rule)"},
+ {"file":"lib/form-scif-fields.mjs","find":"if ( ! IDENT.test( field ) || ! [ 'string', 'number', 'boolean' ].includes( typeof raw ) || isDescription( raw ) || /\\|/.test( String( raw ) ) ) {","replace":"if ( ! IDENT.test( field ) ) {","why":"an either-or or described value is taken for one value"},
+ {"file":"lib/form-scif-fields.mjs","find":"out.push( { scIf, field, raw, value: pairedLabel( idx, raw ) ?? String( raw ) } );","replace":"out.push( { scIf, field, raw, value: String( raw ) } );","why":"the condition waits on the state value, which no tile submits"},
+ {"file":"lib/form-scif-fields.mjs","find":"\t\tif ( ! watched ) {\n\t\t\tcontinue;\n\t\t}","replace":"","why":"a key no field writes (the sent state) becomes a condition"},
+ {"file":"lib/form-scif-fields.mjs","find":"\t\tif ( ! watched.n.attributes?.fieldName && put( watched.n, 'fieldName', c.field ) ) {","replace":"\t\tif ( put( watched.n, 'fieldName', c.field ) ) {","why":"a field's own name is overwritten"},
+ {"file":"lib/form-scif-fields.mjs","find":"\t\tif ( undefined !== start && ! watched.n.attributes?.defaultValue ) {","replace":"\t\tif ( false ) {","why":"the watched field starts empty, so the draft's starting branch stays hidden"},
+ {"file":"lib/form-scif-fields.mjs","find":"\t\tunder.forEach( ( x ) => {\n\t\t\twait( x.n, c );","replace":"\t\tunder.forEach( ( x ) => {\n\t\t\tvoid c;","why":"a rendered field under the sc-if always shows (Mama's order number)"},
+ {"file":"lib/form-scif-fields.mjs","find":"\t\t\twait( built.node, c );\n","replace":"","why":"a built field always shows"},
+ {"file":"lib/form-scif-fields.mjs","find":"\t\tlist.splice( before < 0 ? list.length : before, 0, ...made.map( ( x ) => x.node ) );","replace":"\t\tlist.push( ...made.map( ( x ) => x.node ) );","why":"built fields land after the submit button"},
+ {"file":"lib/form-scif-fields.mjs","find":"\t\t\t[ 'inputmode', 'placeholder' ].forEach(","replace":"\t\t\t[].forEach(","why":"a built field loses its input mode"},
+ {"file":"lib/form-scif-fields.mjs","find":"const put = ( n, attr, value ) => has( n.name, attr ) && ( n.attributes ??= {} ) && ( n.attributes[ attr ] = value );","replace":"const put = ( n, attr, value ) => ( n.attributes ??= {} ) && ( n.attributes[ attr ] = value );","why":"a setting the block lacks is written"},
+ {"file":"lib/form-scif-fields.mjs","find":"\treturn m ? templateKey( { dc: 'Root' === m[ 1 ] ? rootComponent : m[ 1 ], tpl: m[ 2 ] } ) : null;","replace":"\treturn m ? templateKey( { dc: rootComponent, tpl: m[ 2 ] } ) : null;","why":"an imported component's element is keyed under the root component"},
+ {"file":"lib/form-scif-fields.mjs","find":"\tif ( ! rec?.dc || ! folder || ! fs.existsSync( path.join( folder, `${ rec.dc }.dc.html` ) ) ) {","replace":"\tif ( ! rec?.dc || ! folder ) {","why":"a client whose form component has no draft file stops the proposer"}
+]

@@ -50,6 +50,7 @@ import { addDefectLooks } from './lib/fill-state-defect.mjs';
 import { draftDefectsFile, writeDraftDefects } from './lib/draft-defects-file.mjs';
 import { presetWrites, dropPresetMotion } from './lib/fill-preset.mjs';
 import { formWrites, formSources } from './lib/fill-form.mjs';
+import { formDraftFolder } from './lib/fill-form-behaviour.mjs';
 import { listContentWrites, logicReader, applyChildren } from './lib/fill-list-content.mjs';
 import { loadShopParts, shopPartWrites } from './lib/fill-shop-parts.mjs';
 import { shopPartTargets } from './lib/fill-shop-targets.mjs';
@@ -287,8 +288,9 @@ export async function fillSurface( o ) {
 		// FR-48-57: each form field's settings from the draft's control and logic (lib/fill-form.mjs).
 		// The draft's logic, read from the draft folder (--draft-dir, else the surface's `draftDir`, else the client's handoff folder),
 		// also when the draft is served by URL: the form's button words and the list items read it.
-		const idxFor = logicReader( o.draftDir || path.join( repo, entry.draftDir || path.join( 'sites', o.client, 'handoff' ) ) );
-		const forms = formWrites( { nodes, flat, refOf, reads, facts, flags: intakeParts.flags, db, component: intakeParts.rootComponent, sources: formSources( o.draftDir, facts, intakeParts.rootComponent ), idxFor } );
+		const draftFolder = formDraftFolder( { draftDir: o.draftDir, repo, entryDraftDir: entry.draftDir, client: o.client } );
+		const idxFor = logicReader( draftFolder );
+		const forms = formWrites( { nodes, flat, refOf, reads, facts, flags: intakeParts.flags, db, component: intakeParts.rootComponent, sources: formSources( draftFolder, facts, intakeParts.rootComponent ), idxFor, folder: draftFolder } );
 		result.writes.push( ...forms.writes );
 		result.unmapped.push( ...forms.unmapped );
 		result.settled.push( ...forms.settled );

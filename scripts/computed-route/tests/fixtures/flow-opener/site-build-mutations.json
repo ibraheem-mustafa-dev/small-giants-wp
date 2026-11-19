@@ -17,5 +17,5 @@
 	{ "file": "lib/site-build-flow-links.mjs", "find": "\tif ( plan.problems.length ) {", "replace": "\tif ( false ) {", "why": "problems never stop the run" },
 	{ "file": "lib/site-build-flow-links.mjs", "find": "\tif ( ! apply ) {\n\t\tlog( `${ plan.actions.length }", "replace": "\tif ( false ) {\n\t\tlog( `${ plan.actions.length }", "why": "a dry run writes" },
 	{ "file": "lib/site-build-flow-links.mjs", "find": "if ( done.wrong.length || again.actions.length || again.problems.length ) {", "replace": "if ( again.problems.length ) {", "why": "a read-back mismatch passes" },
-	{ "file": "lib/site-build-flow-links.mjs", "find": "\tconst again = planFlowLinks( rows, readFlowState( runPhp, slugs ) );", "replace": "\tconst again = { actions: [], problems: [] };", "why": "no fresh read after the write" }
+	{ "file": "lib/site-build-flow-links.mjs", "find": "\tconst after = readFlowState( runPhp, slugs );\n\tconst again = scopePlan( planFlowLinks( rows, after ), rows, after );", "replace": "\tconst again = { actions: [], problems: [] };", "why": "no fresh read after the write" }
 ]

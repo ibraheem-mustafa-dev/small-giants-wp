@@ -1,0 +1,14 @@
+{
+	"about": "Which page-map rows a draft control can open (Spec 48 FR-48-95): the post type of each openable row and the kind the page map records in a row's `opens` entry (lib/intake-pagemap-openers.mjs). A row of any other post type is never an opener's target.",
+	"kinds": {
+		"sgs_modal": "modal",
+		"sgs_choice_flow": "flow",
+		"sgs_form": "form"
+	},
+	"flowLinks": {
+		"about": "Which products a choice flow's product link may reach (Spec 48 FR-48-95, Spec 43 FR-43-25; lib/site-build-flow-scope.mjs): a purchasable product of these WooCommerce types holding at least one variation attribute and every attribute the flow's priced questions resolve (the question block's `pricedSetting`); `productSetting` is the flow block's setting the site build fills with the catalogue product a flow adds to the basket (lib/site-build-flow-product.mjs).",
+		"productTypes": [ "simple", "variable" ],
+		"pricedSetting": "productAttribute",
+		"productSetting": "flowProductId"
+	}
+}

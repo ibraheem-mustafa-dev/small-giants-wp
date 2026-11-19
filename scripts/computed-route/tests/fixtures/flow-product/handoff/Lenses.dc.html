@@ -1,0 +1,15 @@
+<!doctype html>
+<html><head><meta charset="utf-8"></head><body>
+<x-dc>
+<div role="dialog" aria-label="Add lenses"><button onClick="{{ add }}">Add to bag</button></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { bag: [], pid: 5, lens: { use: 'distance' } };
+  renderVals() {
+    const S = this.state;
+    return { add: () => this.setState(s => ({ bag: s.bag.concat([{ pid: S.pid, lens: S.lens }]) })) };
+  }
+}
+</script>
+</body></html>

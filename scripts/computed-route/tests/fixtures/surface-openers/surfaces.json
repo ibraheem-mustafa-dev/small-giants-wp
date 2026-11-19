@@ -1,0 +1,18 @@
+{ "schema_version": "1.0", "records": [
+  { "id": "S-01", "kind": "header", "name": "Header", "dc": "Store", "route": "*" },
+  { "id": "S-02", "kind": "drawer", "name": "Bag drawer", "dc": "Store", "route": "*", "states": [
+    { "name": "closed", "state_keys": { "bagOpen": false }, "how_to_reach": "L.setState({bagOpen:false})" },
+    { "name": "open", "state_keys": { "bagOpen": true }, "how_to_reach": "L.setState({bagOpen:true})" }
+  ] },
+  { "id": "S-03", "kind": "modal", "name": "Size guide", "dc": "Store", "route": "*", "states": [
+    { "name": "open", "state_keys": { "modal": "size" }, "how_to_reach": "L.setState({modal:'size'})" }
+  ] },
+  { "id": "S-04", "kind": "modal", "name": "Lens configurator", "dc": "Store", "route": "*", "states": [
+    { "name": "closed", "state_keys": { "lens": "{open:false}" }, "how_to_reach": "L.setState({lens:{...L.state.lens, open:false}})" },
+    { "name": "open", "state_keys": { "lens": "{open:true}" }, "how_to_reach": "L.setState({lens:{...L.state.lens, open:true, step:0}})" }
+  ] },
+  { "id": "S-05", "kind": "form", "name": "Contact form", "dc": "Store", "route": "contact", "states": [
+    { "name": "editing", "state_keys": { "topic": "order" }, "how_to_reach": "Default" },
+    { "name": "topic: event", "state_keys": { "topic": "event" }, "how_to_reach": "L.setState({topic:'event'})" }
+  ] }
+] }

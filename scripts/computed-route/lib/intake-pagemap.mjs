@@ -18,6 +18,7 @@ import { wooSlugs, shopTitle, orderConfirmations, wooPages, ownedSurfaces } from
 import { commerceFacts, commerceKinds, declaredKind } from './intake-pagemap-commerce.mjs';
 import { frontRoute, routerFallbacks, surfaceTemplates, genericTemplates } from './intake-pagemap-templates.mjs';
 import { flowOpeners } from './intake-pagemap-flow-openers.mjs';
+import { surfaceOpeners } from './intake-pagemap-openers.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const PAGE_MAP_SCHEMA = path.join( HERE, '..', 'data', 'page-map.schema.json' );
@@ -303,6 +304,8 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	} );
 	// A product page whose control opens a choice flow names it (`opensFlow`), for the product's flow link (Spec 43 FR-43-25).
 	gaps.push( ...flowOpeners( { exp, rows, hint, pageOfTag: code.pageOfTag } ) );
+	// Every control opening a modal, flow or form row is recorded on the row holding it (`opens`, Spec 48 FR-48-95).
+	gaps.push( ...surfaceOpeners( { exp, rows, hint, pageOfTag: code.pageOfTag, surfaces: checked.surfaces } ).gaps );
 	const bySlug = new Map( rows.map( ( r ) => [ r.slug, r ] ) );
 	const rowOf = ( href, file ) => {
 		const k = routeOfHref( href, file, routeSlug, home );

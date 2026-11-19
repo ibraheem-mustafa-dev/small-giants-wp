@@ -5,7 +5,10 @@
 // use the one single-product template); a `static` row's items are content written into the page, so it covers none.
 // The run changes only what it would make: a product holding another flow's slug (a person's choice) is reported and
 // left, a calibration reference product (`_sgs_cr_fixture`, lib/provision-product.mjs) keeps the framework's own buybox
-// the calibration reads, and a flow slug that resolves to no published flow stops the run before any write.
+// the calibration reads, and a flow slug that resolves to no published flow stops the run before any write. The plan is
+// narrowed to the buy box and the products the flow prices (lib/site-build-flow-scope.mjs::scopePlan).
+import { scopePlan, shapePhp, flowAttributesPhp } from './site-build-flow-scope.mjs';
+
 export const FLOW_META = '_sgs_choice_flow';
 const SLUG = /^[a-z0-9-]+$/;
 
@@ -29,15 +32,19 @@ export function flowStatePhp( slugs ) {
 	const list = Buffer.from( JSON.stringify( slugs.filter( ( s ) => SLUG.test( s ) ) ) ).toString( 'base64' );
 	return `$slugs = json_decode( base64_decode( '${ list }' ), true );
 $flows = array();
+$flow_attributes = array();
 foreach ( $slugs as $slug ) {
 	$post = class_exists( '\\SGS\\Blocks\\Sgs_Block_CPTs' ) ? \\SGS\\Blocks\\Sgs_Block_CPTs::resolve_choice_flow( $slug ) : null;
 	$flows[ $slug ] = ( $post && 'publish' === $post->post_status ) ? (int) $post->ID : null;
+	if ( $flows[ $slug ] ) {
+${ flowAttributesPhp( '$post', '$slug' ) }
+	}
 }
 $products = array();
 foreach ( post_type_exists( 'product' ) ? get_posts( array( 'post_type' => 'product', 'post_status' => 'publish', 'numberposts' => -1, 'orderby' => 'ID', 'order' => 'ASC', 'suppress_filters' => true ) ) : array() as $p ) {
-	$products[] = array( 'id' => (int) $p->ID, 'title' => $p->post_title, 'flow' => (string) get_post_meta( $p->ID, '${ FLOW_META }', true ), 'calibration' => '' !== (string) get_post_meta( $p->ID, '_sgs_cr_fixture', true ) );
+	$products[] = array( 'id' => (int) $p->ID, 'title' => $p->post_title, 'flow' => (string) get_post_meta( $p->ID, '${ FLOW_META }', true ), 'calibration' => '' !== (string) get_post_meta( $p->ID, '_sgs_cr_fixture', true ), ${ shapePhp( '$p' ) } );
 }
-echo wp_json_encode( array( 'flows' => $flows, 'products' => $products ) );`;
+echo wp_json_encode( array( 'flows' => $flows, 'products' => $products, 'flowAttributes' => $flow_attributes ) );`;
 }
 
 const parseJson = ( text, what ) => {
@@ -117,7 +124,8 @@ export function runFlowLinks( { rows, runPhp, apply, pending = false, log = cons
 		log( 'flow links: no product row of the page map opens a choice flow; nothing to link' );
 		return 0;
 	}
-	const plan = planFlowLinks( rows, readFlowState( runPhp, slugs ), { pending: pending && ! apply } );
+	const state = readFlowState( runPhp, slugs );
+	const plan = scopePlan( planFlowLinks( rows, state, { pending: pending && ! apply } ), rows, state );
 	plan.notes.forEach( ( n ) => log( `note: ${ n }` ) );
 	if ( plan.problems.length ) {
 		plan.problems.forEach( ( p ) => error( `STOP ${ p }` ) );
@@ -131,7 +139,8 @@ export function runFlowLinks( { rows, runPhp, apply, pending = false, log = cons
 		return 0;
 	}
 	const done = parseJson( runPhp( flowApplyPhp( plan.actions ) ), 'the flow-link write' );
-	const again = planFlowLinks( rows, readFlowState( runPhp, slugs ) );
+	const after = readFlowState( runPhp, slugs );
+	const again = scopePlan( planFlowLinks( rows, after ), rows, after );
 	if ( done.wrong.length || again.actions.length || again.problems.length ) {
 		error( `FAILED: ${ done.set } set; read back wrong ${ JSON.stringify( done.wrong ) }; a fresh read still plans ${ again.actions.length }` );
 		return 1;

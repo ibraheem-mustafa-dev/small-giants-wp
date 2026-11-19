@@ -27,6 +27,7 @@ import { parseTplKey } from './fill-skeleton.mjs';
 import { detectReferences, referenceOf } from './references.mjs';
 import { walk } from './tree.mjs';
 import { stepButtonLabels, stepButtonWrites, stepRules } from './fill-form-buttons.mjs';
+import { successWrites, requiredFromCopy } from './fill-form-behaviour.mjs';
 
 export const COVERAGE_WRITES = [
 	'aria-role:checkbox',
@@ -242,7 +243,8 @@ export function componentOf( target, candidates ) {
 // idxFor( component ): the parsed logic of a draft component (lib/fill-list-content.mjs::logicReader); buttonRules: rules.formSteps.
 // Returns { writes, unmapped, notes, settled }: `settled` is one row (reason `row-held`) for each node on or inside a linked
 // reference block that the draft read, naming the linked form that holds its settings, so no read there ends silent.
-export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, sources = {}, readback = formReadback, component = null, refs = detectReferences(), idxFor = () => null, buttonRules = null } ) {
+export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, sources = {}, readback = formReadback, component = null, refs = detectReferences(), idxFor = () => null, buttonRules = null, folder = null } ) {
+	const has = ( block, attr ) => !! attrDef( db, block, attr );
 	const out = { writes: [], unmapped: [], notes: [], settled: [] };
 	// The nodes of every linked reference block and the blocks inside it, each with the form its reference names.
 	const linked = new Map();
@@ -274,6 +276,8 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 			out.unmapped.push( ...r.unmapped.map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
 			out.notes.push( ...r.notes.map( ( n ) => `${ ref } ${ rec.name }: ${ n }` ) );
 		};
+		// The form's sent message and a field's required flag from the draft's validation (lib/fill-form-behaviour.mjs).
+		'sgs/form' === rec.name && folder && take( successWrites( { node: { ...node, draftRef: node.draftRef || { tpl: target?.finder?.tpl } }, block: rec.name, factRecord: facts, component, folder, has } ) );
 		// A field the page never rendered (a later step's, built from the schema by lib/skeleton-form-steps.mjs) is the schema
 		// field its `fieldName` names, and the control it stands for is read from that field (schemaControl).
 		const built = isFormFieldBlock( rec.name ) && ! el ? schemaFieldByName( schema, node.attributes?.fieldName ) : null;
@@ -283,6 +287,7 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 			const copy = copyFor( copies[ componentOf( target, Object.keys( copies ) ) || schema?.component ], [ control.name, control.id, hit?.field?.name ], hit?.field || null );
 			const made = formFieldWrites( { db, block: rec.name, attributes: node.attributes || {}, el: control, field: hit, params, condition: hit ? conditions[ hit.field.name ] || null : null, copy } );
 			take( made );
+			take( requiredFromCopy( { block: rec.name, attributes: node.attributes || {}, copy, has } ) );
 			// The read-back: every value written must be the draft fact it came from; a disagreement is a named problem in the report.
 			out.unmapped.push( ...readback( { writes: made.writes, el: control, field: hit, copy } ).map( ( reason ) => ( { node: ref, block: rec.name, property: 'form read-back', value: '', slot: '', reason } ) ) );
 		} else if ( 'sgs/button' === rec.name && el && 'button' === el.tag && 'submit' === el.type && attrDef( db, 'sgs/button', 'isSubmit' ) ) {

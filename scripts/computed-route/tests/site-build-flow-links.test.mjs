@@ -8,14 +8,14 @@ import { flowLinkRows, planFlowLinks, runFlowLinks, flowStatePhp, flowApplyPhp, 
 
 const FLOW = 'choice-flow-add-lenses';
 const rows = ( extra = {} ) => [
-	{ route: 'product', slug: 'product', title: 'Product', postType: 'product', collection: 'live', id: null, opensFlow: FLOW, ...extra },
+	{ route: 'product', slug: 'product', title: 'Product', postType: 'product', collection: 'live', id: null, opensFlow: FLOW, opens: [ { kind: 'flow', slug: FLOW, buyBox: true } ], ...extra },
 	{ slug: FLOW, title: 'Add lenses', postType: 'sgs_choice_flow', collection: 'static', id: 120 },
 ];
 const products = () => [
-	{ id: 10, title: 'Round', flow: '', calibration: false },
-	{ id: 11, title: 'Square', flow: FLOW, calibration: false },
-	{ id: 12, title: 'Oval', flow: 'another-flow', calibration: false },
-	{ id: 13, title: 'Calibration', flow: '', calibration: true },
+	{ id: 10, title: 'Round', flow: '', calibration: false, type: 'variable', options: [ 'size' ] },
+	{ id: 11, title: 'Square', flow: FLOW, calibration: false, type: 'variable', options: [ 'size' ] },
+	{ id: 12, title: 'Oval', flow: 'another-flow', calibration: false, type: 'variable', options: [ 'size' ] },
+	{ id: 13, title: 'Calibration', flow: '', calibration: true, type: 'variable', options: [ 'size' ] },
 ];
 
 // A fake site: the state read answers from `site`, the write applies each link (unless `broken`) and reports read-backs.

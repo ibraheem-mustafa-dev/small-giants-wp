@@ -52,6 +52,7 @@ import { isStatePage, stateRouteHash } from './lib/state-route.mjs';
 import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
 import { isContentOnlySurface, isUnwalkedWooPage, wooContentRole } from './lib/site-build-plan.mjs';
+import { walkChecked } from './lib/site-check-openers.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
 import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
@@ -523,14 +524,15 @@ export async function main( argv ) {
 			return note( key, 'walk', true, 0, null, 'pages' === entry.copy?.from ? `walked with its pages (${ entry.copy.surfaces.join( ', ' ) })` : 'page' === entry.copy?.from ? 'no draft surface plays it' : `the ${ slug } template shows only at a WooCommerce endpoint`, true );
 		}
 		const parity = path.join( build, 'qa', 'parity' );
-		await step( 'walk', () => exec( 'walk', 'node', [ 'scripts/parity/draft-live-walk.mjs', path.join( parity, path.basename( entry.walkerFull ) ),
+		// A walk whose live element is absent fails instead of passing (lib/site-check-openers.mjs::walkAbsent).
+		await step( 'walk', async () => walkChecked( path.join( parity, 'out', key, 'report.json' ), await exec( 'walk', 'node', [ 'scripts/parity/draft-live-walk.mjs', path.join( parity, path.basename( entry.walkerFull ) ),
 			'--out', path.join( parity, 'out', key ), '--widths', widths, ...headlessFlag(), '--no-review' ], { SGS_DRAFT_URL: ctx.walkUrl, SGS_LIVE_ORIGIN: new URL( base ).origin, NODE_EXTRA_CA_CERTS: certs } ).catch( ( e ) => {
 			// The walker exits 1 for open differences; the report is what counts.
 			if ( fs.existsSync( path.join( parity, 'out', key, 'report.json' ) ) ) {
 				return `report written (${ String( e.message ).slice( 0, 200 ) })`;
 			}
 			throw e;
-		} ) );
+		} ) ) );
 	}
 
 	// The apply stage of one surface: apply.mjs --surfaces <key> --write. A template copy has no post of its own and a non-local

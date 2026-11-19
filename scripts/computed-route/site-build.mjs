@@ -42,6 +42,7 @@ import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
 import { openDetachedSession, readEnv } from './lib/wp-run-session.mjs';
 import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath } from './lib/site-targets.mjs';
 import { runFlowLinks } from './lib/site-build-flow-links.mjs';
+import { flowProductIdsFor } from './lib/site-build-flow-product.mjs';
 import { runCatalogue } from './lib/site-build-catalogue.mjs';
 import { runStoreVisible } from './lib/site-build-store-visible.mjs';
 import { runMenus, supersededItems } from './lib/site-build-menus-step.mjs';
@@ -121,7 +122,7 @@ if ( args.includes( '--menus' ) ) {
 			const link = readLinkTextReport( { repo, client } );
 			const state = readState( runPhp, rows );
 			const menuLinks = menuLinksOf( { repo, client, site, rows } );
-			const plan = planBuild( { rows, state, repo, client, linkText: link.text, menuLinks } );
+			const plan = planBuild( { rows, state, repo, client, linkText: link.text, menuLinks, flowProducts: flowProductIdsFor( { repo, client, site, rows } ).ids } );
 			plan.notes.push( ...link.conflicts );
 			return { plan, superseded: supersededItems( rows, state, link.text, readSurfaces( repo, client ), menuLinks ), state };
 		};
@@ -169,7 +170,7 @@ try {
 	let rows = original;
 	const plan = () => {
 		const link = readLinkTextReport( { repo, client } );
-		const p = planBuild( { rows, state: readState( runPhp, rows ), repo, client, linkText: link.text, menuLinks: menuLinksOf( { repo, client, site, rows } ) } );
+		const p = planBuild( { rows, state: readState( runPhp, rows ), repo, client, linkText: link.text, menuLinks: menuLinksOf( { repo, client, site, rows } ), flowProducts: flowProductIdsFor( { repo, client, site, rows } ).ids } );
 		p.notes.push( ...link.conflicts );
 		if ( p.problems.length ) {
 			p.problems.forEach( ( m ) => console.error( `STOP ${ m }` ) );

@@ -1,0 +1,856 @@
+{
+ "surfaces": {
+  "S-34": {
+   "id": "S-34",
+   "kind": "form",
+   "name": "Contact form",
+   "dc": "Contact",
+   "parent": "S-33",
+   "roots": [
+    "Contact/43"
+   ],
+   "parts": [
+    {
+     "id": "S-35",
+     "kind": "result",
+     "roots": [
+      "Contact/68"
+     ]
+    }
+   ],
+   "states": [
+    {
+     "name": "topic: My order",
+     "state_keys": {
+      "topic": "order"
+     },
+     "sc_if_tpl_ids": [
+      "56"
+     ],
+     "animation_ids": []
+    },
+    {
+     "name": "topic: Baby shower or event",
+     "state_keys": {
+      "topic": "bulk"
+     },
+     "sc_if_tpl_ids": [
+      "59"
+     ],
+     "animation_ids": []
+    },
+    {
+     "name": "other topics",
+     "state_keys": {
+      "topic": "gift|allergens|other"
+     },
+     "sc_if_tpl_ids": [],
+     "animation_ids": []
+    },
+    {
+     "name": "editing",
+     "state_keys": {
+      "sent": false
+     },
+     "sc_if_tpl_ids": [
+      "43"
+     ],
+     "animation_ids": []
+    }
+   ],
+   "closed_by": "Submit → sent",
+   "time_dependent": {
+    "value": false,
+    "reason": "Reads no clock, random value, storage or timer."
+   },
+   "unresolved": null
+  },
+  "S-35": {
+   "id": "S-35",
+   "kind": "result",
+   "name": "Contact sent",
+   "dc": "Contact",
+   "parent": "S-34",
+   "roots": [
+    "Contact/68"
+   ],
+   "parts": [],
+   "states": [
+    {
+     "name": "sent",
+     "state_keys": {
+      "sent": true
+     },
+     "sc_if_tpl_ids": [
+      "68"
+     ],
+     "animation_ids": []
+    }
+   ],
+   "closed_by": "\"Send another\"",
+   "time_dependent": {
+    "value": false,
+    "reason": "Reads no clock, random value, storage or timer."
+   },
+   "unresolved": null
+  }
+ },
+ "elements": {
+  "Contact/41": {
+   "template": {
+    "key": "Contact/41",
+    "component": "Contact",
+    "n": "41",
+    "tag": "div",
+    "attrs": {},
+    "words": "",
+    "parentChain": [
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/42": {
+   "template": {
+    "key": "Contact/42",
+    "component": "Contact",
+    "n": "42",
+    "tag": "div",
+    "attrs": {
+     "data-reveal": ""
+    },
+    "words": "",
+    "parentChain": [
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/43": {
+   "template": {
+    "key": "Contact/43",
+    "component": "Contact",
+    "n": "43",
+    "tag": "sc-if",
+    "attrs": {
+     "value": "{{ notSent }}",
+     "hint-placeholder-val": "{{ true }}"
+    },
+    "words": "",
+    "parentChain": [
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/44": {
+   "template": {
+    "key": "Contact/44",
+    "component": "Contact",
+    "n": "44",
+    "tag": "form",
+    "attrs": {
+     "onSubmit": "{{ send }}"
+    },
+    "words": "",
+    "parentChain": [
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/45": {
+   "template": {
+    "key": "Contact/45",
+    "component": "Contact",
+    "n": "45",
+    "tag": "h2",
+    "attrs": {},
+    "words": "Send a message",
+    "parentChain": [
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/46": {
+   "template": {
+    "key": "Contact/46",
+    "component": "Contact",
+    "n": "46",
+    "tag": "div",
+    "attrs": {},
+    "words": "",
+    "parentChain": [
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/47": {
+   "template": {
+    "key": "Contact/47",
+    "component": "Contact",
+    "n": "47",
+    "tag": "div",
+    "attrs": {},
+    "words": "What’s it about?",
+    "parentChain": [
+     "Contact/46",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/48": {
+   "template": {
+    "key": "Contact/48",
+    "component": "Contact",
+    "n": "48",
+    "tag": "div",
+    "attrs": {},
+    "words": "",
+    "parentChain": [
+     "Contact/46",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/49": {
+   "template": {
+    "key": "Contact/49",
+    "component": "Contact",
+    "n": "49",
+    "tag": "sc-for",
+    "attrs": {
+     "list": "{{ topics }}",
+     "as": "o",
+     "hint-placeholder-count": "0"
+    },
+    "words": "",
+    "parentChain": [
+     "Contact/48",
+     "Contact/46",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/50": {
+   "template": {
+    "key": "Contact/50",
+    "component": "Contact",
+    "n": "50",
+    "tag": "button",
+    "attrs": {
+     "type": "button",
+     "onClick": "{{ o.pick }}",
+     "aria-pressed": "{{ o.on }}"
+    },
+    "words": "{{ o.name }}",
+    "parentChain": [
+     "Contact/49",
+     "Contact/48",
+     "Contact/46",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/51": {
+   "template": {
+    "key": "Contact/51",
+    "component": "Contact",
+    "n": "51",
+    "tag": "div",
+    "attrs": {},
+    "words": "",
+    "parentChain": [
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/52": {
+   "template": {
+    "key": "Contact/52",
+    "component": "Contact",
+    "n": "52",
+    "tag": "label",
+    "attrs": {},
+    "words": "Your name",
+    "parentChain": [
+     "Contact/51",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/53": {
+   "template": {
+    "key": "Contact/53",
+    "component": "Contact",
+    "n": "53",
+    "tag": "input",
+    "attrs": {
+     "required": "{{ true }}",
+     "autocomplete": "name"
+    },
+    "words": "",
+    "parentChain": [
+     "Contact/52",
+     "Contact/51",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/54": {
+   "template": {
+    "key": "Contact/54",
+    "component": "Contact",
+    "n": "54",
+    "tag": "label",
+    "attrs": {},
+    "words": "Email",
+    "parentChain": [
+     "Contact/51",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/55": {
+   "template": {
+    "key": "Contact/55",
+    "component": "Contact",
+    "n": "55",
+    "tag": "input",
+    "attrs": {
+     "type": "email",
+     "required": "{{ true }}",
+     "autocomplete": "email"
+    },
+    "words": "",
+    "parentChain": [
+     "Contact/54",
+     "Contact/51",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/56": {
+   "template": {
+    "key": "Contact/56",
+    "component": "Contact",
+    "n": "56",
+    "tag": "sc-if",
+    "attrs": {
+     "value": "{{ showOrder }}",
+     "hint-placeholder-val": "{{ false }}"
+    },
+    "words": "",
+    "parentChain": [
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/57": {
+   "template": {
+    "key": "Contact/57",
+    "component": "Contact",
+    "n": "57",
+    "tag": "label",
+    "attrs": {},
+    "words": "Order number (if you have it)",
+    "parentChain": [
+     "Contact/56",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/58": {
+   "template": {
+    "key": "Contact/58",
+    "component": "Contact",
+    "n": "58",
+    "tag": "input",
+    "attrs": {
+     "placeholder": "MM-1042"
+    },
+    "words": "",
+    "parentChain": [
+     "Contact/57",
+     "Contact/56",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/59": {
+   "template": {
+    "key": "Contact/59",
+    "component": "Contact",
+    "n": "59",
+    "tag": "sc-if",
+    "attrs": {
+     "value": "{{ showBulk }}",
+     "hint-placeholder-val": "{{ false }}"
+    },
+    "words": "",
+    "parentChain": [
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/60": {
+   "template": {
+    "key": "Contact/60",
+    "component": "Contact",
+    "n": "60",
+    "tag": "div",
+    "attrs": {},
+    "words": "",
+    "parentChain": [
+     "Contact/59",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/61": {
+   "template": {
+    "key": "Contact/61",
+    "component": "Contact",
+    "n": "61",
+    "tag": "label",
+    "attrs": {},
+    "words": "How many cookies, roughly?",
+    "parentChain": [
+     "Contact/60",
+     "Contact/59",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/62": {
+   "template": {
+    "key": "Contact/62",
+    "component": "Contact",
+    "n": "62",
+    "tag": "input",
+    "attrs": {
+     "inputmode": "numeric"
+    },
+    "words": "",
+    "parentChain": [
+     "Contact/61",
+     "Contact/60",
+     "Contact/59",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/63": {
+   "template": {
+    "key": "Contact/63",
+    "component": "Contact",
+    "n": "63",
+    "tag": "label",
+    "attrs": {},
+    "words": "Date needed",
+    "parentChain": [
+     "Contact/60",
+     "Contact/59",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/64": {
+   "template": {
+    "key": "Contact/64",
+    "component": "Contact",
+    "n": "64",
+    "tag": "input",
+    "attrs": {
+     "type": "date"
+    },
+    "words": "",
+    "parentChain": [
+     "Contact/63",
+     "Contact/60",
+     "Contact/59",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/65": {
+   "template": {
+    "key": "Contact/65",
+    "component": "Contact",
+    "n": "65",
+    "tag": "label",
+    "attrs": {},
+    "words": "Message",
+    "parentChain": [
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/66": {
+   "template": {
+    "key": "Contact/66",
+    "component": "Contact",
+    "n": "66",
+    "tag": "textarea",
+    "attrs": {
+     "required": "{{ true }}",
+     "rows": "5"
+    },
+    "words": "",
+    "parentChain": [
+     "Contact/65",
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/67": {
+   "template": {
+    "key": "Contact/67",
+    "component": "Contact",
+    "n": "67",
+    "tag": "button",
+    "attrs": {
+     "type": "submit"
+    },
+    "words": "Send message →",
+    "parentChain": [
+     "Contact/44",
+     "Contact/43",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/68": {
+   "template": {
+    "key": "Contact/68",
+    "component": "Contact",
+    "n": "68",
+    "tag": "sc-if",
+    "attrs": {
+     "value": "{{ sent }}",
+     "hint-placeholder-val": "{{ false }}"
+    },
+    "words": "",
+    "parentChain": [
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/69": {
+   "template": {
+    "key": "Contact/69",
+    "component": "Contact",
+    "n": "69",
+    "tag": "div",
+    "attrs": {},
+    "words": "",
+    "parentChain": [
+     "Contact/68",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/70": {
+   "template": {
+    "key": "Contact/70",
+    "component": "Contact",
+    "n": "70",
+    "tag": "div",
+    "attrs": {},
+    "words": "✓",
+    "parentChain": [
+     "Contact/69",
+     "Contact/68",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/71": {
+   "template": {
+    "key": "Contact/71",
+    "component": "Contact",
+    "n": "71",
+    "tag": "div",
+    "attrs": {},
+    "words": "message received",
+    "parentChain": [
+     "Contact/69",
+     "Contact/68",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/72": {
+   "template": {
+    "key": "Contact/72",
+    "component": "Contact",
+    "n": "72",
+    "tag": "div",
+    "attrs": {},
+    "words": "Thank you! Zainab will be in touch soon.",
+    "parentChain": [
+     "Contact/69",
+     "Contact/68",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/73": {
+   "template": {
+    "key": "Contact/73",
+    "component": "Contact",
+    "n": "73",
+    "tag": "button",
+    "attrs": {
+     "onClick": "{{ reset }}"
+    },
+    "words": "Send another",
+    "parentChain": [
+     "Contact/69",
+     "Contact/68",
+     "Contact/42",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/74": {
+   "template": {
+    "key": "Contact/74",
+    "component": "Contact",
+    "n": "74",
+    "tag": "div",
+    "attrs": {},
+    "words": "",
+    "parentChain": [
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  },
+  "Contact/75": {
+   "template": {
+    "key": "Contact/75",
+    "component": "Contact",
+    "n": "75",
+    "tag": "div",
+    "attrs": {
+     "data-reveal": ""
+    },
+    "words": "quick answers",
+    "parentChain": [
+     "Contact/74",
+     "Contact/41",
+     "Contact/17",
+     "Contact/16",
+     "Contact/8",
+     "Contact/6"
+    ]
+   }
+  }
+ }
+}

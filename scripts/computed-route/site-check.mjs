@@ -24,6 +24,7 @@ import { targetOf, siteBase, candidateRoots, pageTargets, readRows, flowsClient,
 import { MARK, readHeaderLinksInPage, readDraftLinksInPage, menuItems, headerRowsOf, megaItems, markMegaInPage, drawerItem, pathKey } from './lib/site-check-nav.mjs';
 import { menuLinksOf } from './lib/site-build-menu-links.mjs';
 import { readPartsInPage, modalItem, flowItem, formItem, wooItem, addOneLine, missingFlowRows } from './lib/site-check-parts.mjs';
+import { openersInPage, missingModalRows, deadOpeners } from './lib/site-check-openers.mjs';
 import { COMING_SOON_ROOT, comingSoonChecks, comingSoonInPage } from './lib/site-check-coming-soon.mjs';
 import { isAccountRow } from './lib/site-build-map.mjs';
 import { commerceLookDrift } from './lib/site-check-commerce-look.mjs';
@@ -185,7 +186,8 @@ async function main() {
 			const content = failed ? null : await sweep.page.evaluate( contentInPage ).catch( () => null );
 			const parts = failed ? { modals: [], flows: [], forms: [] } : await sweep.page.evaluate( readPartsInPage, MARK ).catch( () => ( { modals: [], flows: [], forms: [] } ) );
 			const draftLinks = failed ? [] : await sweep.page.evaluate( readDraftLinksInPage ).catch( () => [] );
-			loaded.push( { ...p, finalUrl: failed ? null : sweep.page.url(), status: failed ? null : res?.status() ?? null, error: failed ? res.message.split( '\n' )[ 0 ] : null, content, parts, draftLinks, errors: [ ...errors ], screenshot: failed ? null : await sweep.shoot( `page-${ p.slug }` ) } );
+			const openers = failed ? null : await sweep.page.evaluate( openersInPage ).catch( () => null );
+			loaded.push( { ...p, finalUrl: failed ? null : sweep.page.url(), status: failed ? null : res?.status() ?? null, error: failed ? res.message.split( '\n' )[ 0 ] : null, content, parts, openers, draftLinks, errors: [ ...errors ], screenshot: failed ? null : await sweep.shoot( `page-${ p.slug }` ) } );
 			sweep.page.off( 'pageerror', onError );
 		}
 		await sweep.context.close();
@@ -265,6 +267,11 @@ async function main() {
 			for ( const r of missingFlowRows( rows, seenFlows ) ) {
 				items.push( { status: 'fail', subject: `page-map choice flow ${ r.slug } ("${ r.title }")`, error: `no checked page renders the choice flow ${ r.slug } (data-flow-slug) or one labelled "${ r.title }" (${ loaded.length } pages checked)` } );
 			}
+			// Every modal row is rendered with its post, and every link to a modal or flow row's anchor finds its frame (FR-48-95).
+			for ( const r of missingModalRows( rows, loaded.flatMap( ( x ) => x.parts.modals ) ) ) {
+				items.push( { status: 'fail', subject: `page-map modal ${ r.slug } ("${ r.title }")`, error: `no checked page renders the modal ${ r.slug } as a frame anchored #${ r.slug } and named "${ r.title }" by its post (${ loaded.length } pages checked)` } );
+			}
+			loaded.filter( ( x ) => x.openers ).forEach( ( x ) => items.push( ...deadOpeners( rows, { key: x.key, url: x.finalUrl, ...x.openers } ) ) );
 			return checkRecord( 'modals', items, 'no checked page renders a modal or a choice flow, and the page map names no choice flow' );
 		} );
 
