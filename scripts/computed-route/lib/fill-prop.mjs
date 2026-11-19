@@ -212,6 +212,13 @@ export function gapPaintsNothing( prop, styles, snap ) {
 		const multicol = 'row-gap' !== prop && ( isSet( styles[ 'column-count' ] ) || isSet( styles[ 'column-width' ] ) );
 		return multicol ? null : `${ prop } on a ${ display } box, which lays out no flex or grid items`;
 	}
+	// A grid whose resolved track list (the computed grid-template-rows or -columns, implicit tracks included) holds one track
+	// has no second track on that axis to separate. (A flex container's gaps are left to Fill's spacing ownership,
+	// lib/fill-spacing.mjs, which reads the rendered gaps between the children.)
+	const axis = { 'row-gap': 'grid-template-rows', 'column-gap': 'grid-template-columns' }[ prop ];
+	if ( grid && axis && 1 === trackCount( styles[ axis ] ) ) {
+		return `${ prop } on a grid with one ${ 'row-gap' === prop ? 'row' : 'column' } track (${ styles[ axis ] }), which has no second track to separate`;
+	}
 	if ( ! Number.isInteger( children ) || children >= 2 ) {
 		return null;
 	}

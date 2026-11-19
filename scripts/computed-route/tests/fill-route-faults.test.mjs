@@ -9,6 +9,7 @@ import { normalKeywords } from '../lib/fill-normal-keywords.mjs';
 import { resolve } from '../lib/resolve.mjs';
 import { alignmentCanon } from '../lib/css-equivalence/keywords.mjs';
 import { motionSettled, restPoseGives } from '../lib/fill-motion-settle.mjs';
+import { gapPaintsNothing } from '../lib/fill-prop.mjs';
 import { openDb } from '../lib/db.mjs';
 import { fixtureDb } from './fixtures/framework-db.mjs';
 
@@ -105,4 +106,17 @@ test( 'negative control: another rotation, a translation, a 3D rest pose and a h
 	assert.equal( tilt( { restRotate: -1 }, tiltRow( 'matrix(0.999848, -0.0174524, 0.0174524, 0.999848, 0, -12)' ) ).unmapped.length, 1 );
 	assert.equal( tilt( { restRotate: -1, restRotateX: 10 }, tiltRow( 'matrix(0.999848, -0.0174524, 0.0174524, 0.999848, 0, 0)' ) ).unmapped.length, 1 );
 	assert.equal( tilt( { restRotate: -1 }, { ...tiltRow( 'matrix(0.999848, -0.0174524, 0.0174524, 0.999848, 0, 0)' ), state: 'hover' } ).unmapped.length, 1 );
+} );
+
+test( 'MUST FAIL WITHOUT THE ONE-TRACK GAP RULE: a grid row gap with one resolved row track, and a column gap with one column track, paint nothing', () => {
+	const snap = ( n ) => ( { layoutDisplay: 'grid', layoutChildren: n } );
+	assert.match( gapPaintsNothing( 'row-gap', { 'grid-template-rows': '120px', 'grid-template-columns': '100px 300px' }, snap( 2 ) ), /one row track/ );
+	assert.match( gapPaintsNothing( 'column-gap', { 'grid-template-rows': '120px 80px 60px', 'grid-template-columns': '300px' }, snap( 3 ) ), /one column track/ );
+} );
+
+test( 'negative control: a grid of two rows keeps its row gap; a flex container is left to spacing ownership', () => {
+	const snap = ( display, n = 4 ) => ( { layoutDisplay: display, layoutChildren: n } );
+	assert.equal( gapPaintsNothing( 'row-gap', { 'grid-template-rows': '120px 80px', 'grid-template-columns': '100px 300px' }, snap( 'grid' ) ), null );
+	assert.equal( gapPaintsNothing( 'column-gap', { 'grid-template-rows': '120px', 'grid-template-columns': '100px 300px' }, snap( 'grid', 2 ) ), null );
+	assert.equal( gapPaintsNothing( 'row-gap', { 'flex-direction': 'row', 'flex-wrap': 'nowrap' }, snap( 'flex' ) ), null );
 } );
