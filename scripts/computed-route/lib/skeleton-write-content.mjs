@@ -10,6 +10,7 @@ import { elementHandler, handlerOf, linkWrite } from './draft-link.mjs';
 import fs from 'fs';
 import path from 'path';
 import { decodeEntities, loadDraft } from './intake-ast.mjs';
+import { declared } from './skeleton-rules.mjs';
 
 // The words a draft's copyright line prints before its © mark (sgs/business-info prints `{copyrightPrefix} © {year} {line}`):
 // "Copyright © 2026 Acme" gives "Copyright", "© 2026 Acme" gives "" (the block then omits the word). A line with no mark
@@ -155,14 +156,37 @@ export function makeContent( ctx ) {
 	};
 	const wordless = ( k ) => ! String( k.allText ?? m.words( k ) ).trim() && 'img' !== k.tag && ! m.kids( k ).some( ( x ) => 'img' === x.tag || ! wordless( x ) );
 	const positioned = ( k ) => /(?:^|;)\s*position\s*:\s*(?:absolute|fixed)/i.test( k.attrs?.style || '' );
-	// A worded child set apart from the words beside it (its own margin or padding, or a flex or grid parent's gap): a space
-	// keeps the two apart in the rich text, where its box is gone.
-	const apart = ( k, parent ) => /(?:^|;)\s*(?:margin|padding)[\w-]*\s*:\s*(?!0(?:px)?\s*(?:;|$))/i.test( k.attrs?.style || '' ) || /(?:^|;)\s*display\s*:\s*(?:inline-)?(?:flex|grid)/i.test( parent.attrs?.style || '' );
+	// A worded child set apart from the words beside it (its own margin or padding, a box of its own, or a flex or grid
+	// parent's gap, the box read from the inventory's computed display): a space keeps the two apart in the rich text, where its box
+	// is gone, so an element boundary between words never joins them.
+	const boxDisplays = () => facts.decisions.structural?.inlineHeading?.boxDisplays || [];
+	const ownBox = ( k ) => boxDisplays().includes( k.display );
+	const apart = ( k, parent ) => /(?:^|;)\s*(?:margin|padding)[\w-]*\s*:\s*(?!0(?:px)?\s*(?:;|$))/i.test( k.attrs?.style || '' ) || ownBox( k ) || /^(?:inline-)?(?:flex|grid)$/.test( parent.display || '' ) || /(?:^|;)\s*display\s*:\s*(?:inline-)?(?:flex|grid)/i.test( parent.attrs?.style || '' );
 	const join = ( a, b ) => ( a && b && ! /\s$/.test( a ) && ! /^\s/.test( b ) ? `${ a } ${ b }` : a + b );
+	// The worded pieces of an inline heading its rich text cannot carry: a descendant that renders as a box of its own (the
+	// inventory's computed display is one of IH.boxDisplays) or declares its own font size, weight or colour (IH.ownTypeProps)
+	// other than the heading's, such as an eyebrow inside the heading. Each is a handover row naming what it loses (the heading
+	// keeps its words; the piece is split off or restyled by hand). An inherited value is the heading's.
+	const ownValue = ( v ) => null != v && ! /^(?:inherit|unset|currentcolor)$/i.test( v );
+	const pieceRows = ( e, IH, words ) => {
+		const out = [];
+		const visit = ( x ) => m.kids( x ).forEach( ( k ) => {
+			const text = String( k.allText ?? m.words( k ) ).replace( /\s+/g, ' ' ).trim();
+			const own = ( IH.ownTypeProps || [] ).filter( ( p ) => ownValue( declared( k )[ p ] ) && declared( k )[ p ] !== declared( e )[ p ] ).map( ( p ) => `${ p } ${ declared( k )[ p ] }` );
+			const lost = [ ...( ( IH.boxDisplays || [] ).includes( k.display ) ? [ `its own ${ k.display } line` ] : [] ), ...own ];
+			if ( text && lost.length ) {
+				out.push( { owner: 'content-page', kind: 'text', detail: `the heading "${ words }" holds "${ text }" as a piece of its own (${ lost.join( ', ' ) }), which the heading's rich text cannot carry: split it into its own block or restyle it` } );
+				return;
+			}
+			visit( k );
+		} );
+		visit( e );
+		return out;
+	};
 	function inlineContent( e ) {
 		const IH = facts.decisions.structural?.inlineHeading || {};
-		const handover = [];
 		const words = String( e.allText ?? m.words( e ) ).replace( /\s+/g, ' ' ).trim();
+		const handover = [];
 		const filled = [];
 		const photoOf = ( img ) => {
 			const hit = carried?.logo( img, view ) ?? null;
@@ -223,7 +247,7 @@ export function makeContent( ctx ) {
 		const plain = ( h ) => decodeEntities( String( h ).replace( /<br>/g, ' ' ).replace( /<[^>]+>/g, '' ) ).replace( /\s+/g, ' ' ).trim();
 		if ( null !== html && plain( html ).replace( /\s/g, '' ) === words.replace( /\s/g, '' ) ) {
 			filled.length && handover.unshift( { owner: 'content-page', kind: 'text', detail: `the heading "${ words }" holds words the draft's code fills (${ filled.join( ', ' ) }): its rendered words are written` } );
-			return { html: html.replace( /\s+/g, ' ' ).trim(), handover };
+			return { html: html.replace( /\s+/g, ' ' ).trim(), handover: [ ...pieceRows( e, IH, plain( html ) ), ...handover ] };
 		}
 		const imgs = [];
 		const walk = ( x ) => m.kids( x ).forEach( ( k ) => ( 'img' === k.tag ? imgs.push( k ) : walk( k ) ) );
@@ -232,7 +256,7 @@ export function makeContent( ctx ) {
 		const holes = ( x ) => [ ...( view?.entry( x )?.template.holes || [] ).filter( ( h ) => 'text' === h.where ).map( ( h ) => `{{ ${ h.expr } }}` ), ...m.kids( x ).flatMap( holes ) ];
 		const bound = [ ...new Set( holes( e ) ) ];
 		const said = bound.length ? [ { owner: 'content-page', kind: 'text', detail: `the heading "${ words }" holds words the draft's code fills (${ bound.join( ', ' ) }): its rendered words are written` } ] : [];
-		return { html: escText( words ), handover: [ ...said, ...imgs.map( ( img ) => ( { owner: 'content-page', kind: 'presence', detail: `the inline photo ${ img.attrs?.srcBasename || img.attrs?.src || '' } in the heading "${ words }": its place among the words is not readable from the draft's source; insert it with the Inline photo format` } ) ) ] };
+		return { html: escText( words ), handover: [ ...pieceRows( e, IH, words ), ...said, ...imgs.map( ( img ) => ( { owner: 'content-page', kind: 'presence', detail: `the inline photo ${ img.attrs?.srcBasename || img.attrs?.src || '' } in the heading "${ words }": its place among the words is not readable from the draft's source; insert it with the Inline photo format` } ) ) ] };
 	}
 
 	// The content settings of one element's block. Returns { a (attributes), handover }.

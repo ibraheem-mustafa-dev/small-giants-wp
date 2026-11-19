@@ -20,10 +20,25 @@ export const facts = ( repo, off = [] ) => {
 	return { ...f, repo };
 };
 
-// N( tag, o, kids ): o { words, attrs, style, loop: { list, as, copies }, ifOn ('{{ f.open }}'), shownIn ([copy]),
+// N( tag, o, kids ): o { words, attrs, style, display (the computed display, when the style does not give it), loop: { list, as, copies }, ifOn ('{{ f.open }}'), shownIn ([copy]),
 // click ('f.toggle'), ref ('trackRef'), text ('f.a': the element prints that field), events ([[name, expr]]), parts (the
 // template source in order: strings and child indexes) }.
 export const N = ( tag, o = {}, kids = [] ) => ( { tag, o, kids } );
+
+// An element's declared inline style, and its computed display as a browser gives it: `o.display`, else the declared display, else
+// block for an absolutely or fixed positioned element, inline for a phrasing tag, block for any other.
+const decl = ( node ) => Object.fromEntries( String( node.o.style || '' ).split( ';' ).map( ( x ) => x.split( ':' ).map( ( y ) => y.trim() ) ).filter( ( [ k, v ] ) => k && v ) );
+const INLINE = new Set( [ 'a', 'b', 'em', 'i', 'img', 'small', 'span', 'strong', 'sub', 'sup' ] );
+function displayOf( node ) {
+	const d = decl( node );
+	if ( node.o.display || d.display ) {
+		return node.o.display || d.display;
+	}
+	if ( [ 'absolute', 'fixed' ].includes( d.position ) ) {
+		return 'block';
+	}
+	return INLINE.has( node.tag ) ? 'inline' : 'block';
+}
 
 // The inventory (copies of a loop stamped, an sc-if child only in the copies it shows in), its fact record and the template
 // HTML whose n-th start tag is template n (a pad tag holds place 0).
@@ -75,10 +90,13 @@ export function build( root ) {
 			const words = 'function' === typeof node.o.words ? node.o.words( at ) : node.o.words || '';
 			const m2 = [ ...mem, ...( node.o.loop ? [ { kind: 'sc-for', list: `{{ ${ node.o.loop.list } }}`, as: node.o.loop.as, tpl: `f${ node.id }` } ] : [] ), ...( node.o.ifOn ? [ { kind: 'sc-if', value: node.o.ifOn, tpl: `i${ node.id }` } ] : [] ) ];
 			const el = { key, parentKey, depth, tag: node.tag, template: 'Root', tpl: node.id, attrs: { ...( node.o.attrs || {} ), ...( style( node ) ? { style: style( node ) } : {} ) }, words, allText: words, membership: m2, srcTag: node.tag, srcOwnText: words, snippet: `<${ node.tag } data-dc-tpl="${ node.id }">${ words }</${ node.tag }>`,
-				box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: 0, y: ( y += 30 ), w: 100, h: 20 } ] ) ), visible: { 375: true, 768: true, 1440: true }, display: 'block', flexDirection: 'row', screenshots: {} };
+				box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: 0, y: ( y += 30 ), w: 100, h: 20 } ] ) ), visible: { 375: true, 768: true, 1440: true }, display: displayOf( node ), position: decl( node ).position || 'static', flexDirection: 'row', screenshots: {} };
 			elements.push( el );
-			const texts = node.kids.map( ( k ) => walk( k, key, depth + 1, at, m2 ) ).flat();
-			el.allText = 'img' === node.tag ? '' : [ words, ...texts ].filter( Boolean ).join( ' ' );
+			const kidTexts = node.kids.map( ( k ) => walk( k, key, depth + 1, at, m2 ) );
+			const texts = kidTexts.flat();
+			// A node whose source order is given (`parts` with no binding) reads its text in that order, as textContent does.
+			const ordered = node.o.parts && ! node.o.parts.some( ( q ) => 'string' === typeof q && /\{\{/.test( q ) );
+			el.allText = 'img' === node.tag ? '' : ordered ? node.o.parts.map( ( q ) => ( 'number' === typeof q ? kidTexts[ q ].join( ' ' ) : q ) ).join( '' ).replace( /\s+/g, ' ' ).trim() : [ words, ...texts ].filter( Boolean ).join( ' ' );
 		}
 		return elements.filter( ( e ) => e.parentKey === parentKey && e.tpl === node.id ).map( ( e ) => e.allText );
 	};

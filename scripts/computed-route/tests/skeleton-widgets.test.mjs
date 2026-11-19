@@ -23,7 +23,7 @@ const FAQ_LOGIC = ( o = {} ) => `class Component {
 				return { cat: c, q: qq, a, open, toggle: () => this.setState( ${ o.write ?? '{ faq: open ? -1 : i }' } ) };
 			} ),
 			drawerOpen: S.drawer,
-			openDrawer: () => this.setState( { drawer: true } ),
+			openDrawer: () => this.setState( { drawer: ! S.drawer } ),
 		};
 	}
 }`;
@@ -73,6 +73,11 @@ test( 'accordion: the host reads a closed unit\'s row and header and the open un
 	assert.equal( undefined, find( bare.skeleton, ( x ) => 'sgs/accordion' === x.name )[ 0 ].draftSlots, 'negative: with no calibration there is no slot' );
 } );
 
+test( 'accordion: a panel whose condition also reads a key the control never writes is still read by the key the control toggles', () => {
+	const r = run( faqPage(), FAQ_LOGIC( { open: "S.lang !== 'cy' && S.faq === i" } ) );
+	assert.equal( row( r, 'Root/2#0' ).block, 'sgs/accordion' );
+} );
+
 test( 'accordion: a keyed map of open items lets several open, and each item open at rest is marked open', () => {
 	const r = run( faqPage( { shownIn: [ 0, 2 ] } ), FAQ_LOGIC( { open: '!! S.open[ i ]', write: '{ open: { ...S.open, [ i ]: ! S.open[ i ] } }' } ) );
 	assert.equal( row( r, 'Root/2#0' ).attributes.allowMultiple, true );
@@ -112,7 +117,7 @@ test( 'NEGATIVE accordion: a single toggle, a drawer opener, a show-more opening
 	assert.equal( any( run( links, FAQ_LOGIC() ) ), false, 'panels of links are a navigation disclosure' );
 	assert.equal( any( run( N( 'nav', {}, [ N( 'div', {}, [ unit() ] ) ] ), FAQ_LOGIC() ) ), false, 'a run inside a nav' );
 	const chips = N( 'section', {}, [ N( 'div', {}, [ N( 'button', { loop: { list: 'faqs', as: 'f', copies: 3 }, click: 'f.toggle', attrs: { 'aria-pressed': 'false' }, words: 'Chip' } ) ] ) ] );
-	const twoControls = faqPage( { panel: N( 'div', {}, [ N( 'button', { click: 'f.toggle', words: 'Edit' } ), N( 'p', { ifOn: '{{ f.open }}', shownIn: [ 0 ], words: 'Answer', text: 'f.a' } ) ] ) } );
+	const twoControls = faqPage( { panel: N( 'div', {}, [ N( 'button', { click: 'f.toggle', attrs: { 'aria-label': 'Edit' } } ), N( 'p', { ifOn: '{{ f.open }}', shownIn: [ 0 ], words: 'Answer', text: 'f.a' } ) ] ) } );
 	assert.equal( any( run( twoControls, FAQ_LOGIC() ) ), false, 'a unit holding two controls is no disclosure unit' );
 	assert.equal( any( run( chips, FAQ_LOGIC() ) ), false, 'chips with no panel are an option picker' );
 } );

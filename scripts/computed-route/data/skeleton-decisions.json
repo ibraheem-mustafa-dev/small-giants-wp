@@ -7,9 +7,11 @@
 		},
 		"inlineHeading": {
 			"phrasingTags": [ "a", "abbr", "b", "bdi", "bdo", "br", "cite", "code", "data", "del", "dfn", "em", "i", "img", "ins", "kbd", "mark", "q", "s", "samp", "small", "span", "strong", "sub", "sup", "time", "u", "var", "wbr" ],
+			"boxDisplays": [ "block", "flex", "grid", "table", "list-item", "flow-root" ],
+			"ownTypeProps": [ "font-size", "font-weight", "color" ],
 			"photoClass": "sgs-inline-photo",
 			"highlightClass": "sgs-highlight",
-			"reason": "a heading holding only inline content (words, an inline photo, a decorated word) stays the heading block at its level with its words in order; an inline image is the Inline photo format (Spec 02 FR-2-5, `<img class=\"sgs-inline-photo wp-image-N\">`, resolved through the media map), a word underlined by a bare positioned layer the Highlight format (Spec 02 FR-2-4); the photo frame's border, radius and tilt are the snapshot's settings.custom.inlinePhoto tokens (2026-11-18 clone audit G-2)"
+			"reason": "a heading holding only inline content (words, an inline photo, a decorated word) stays the heading block at its level with its words in order; an inline image is the Inline photo format (Spec 02 FR-2-5, `<img class=\"sgs-inline-photo wp-image-N\">`, resolved through the media map), a word underlined by a bare positioned layer the Highlight format (Spec 02 FR-2-4); the photo frame's border, radius and tilt are the snapshot's settings.custom.inlinePhoto tokens (2026-11-18 clone audit G-2). A worded child that renders as a box of its own (its computed display in boxDisplays) or declares its own type (an ownTypeProps value other than the heading's) is a separate piece, such as an eyebrow inside the heading: the heading keeps its words in order (a space where the piece's box ends) and each such piece is a handover row naming the line and type it loses (2026-11-19 review F6: refusing the heading would drop its own words and level)"
 		},
 		"linkList": {
 			"minLinks": 2,

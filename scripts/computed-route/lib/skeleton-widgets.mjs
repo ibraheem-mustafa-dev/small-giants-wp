@@ -4,8 +4,9 @@
 // (lib/skeleton-narrowing.mjs::draftLogicOf), never run:
 //   - an accordion is two or more sibling units (copies of one loop template, or siblings each holding a control) where
 //     each unit holds one control (an element with a click handler) and a panel that renders only under a condition whose
-//     value reads a state key that control's handler writes. A write whose value is an object with a computed key (a keyed
-//     map) lets several open at once; any other write opens one at a time.
+//     value reads a state key that control's handler toggles (the written value flips on that key's prior value, or the handler
+//     both sets and clears it), and the unit's words outside its panel are all its control's. A write whose value is an object
+//     with a computed key (a keyed map) lets several open at once; any other write opens one at a time.
 //   - a slider is a track (an element bound to a `ref`) holding two or more copies of one loop template, with controls
 //     whose click handlers scroll that ref (scrollTo, scrollBy, scrollIntoView, or a scrollLeft write, followed through the
 //     component's own methods), or write a state key the track's own style reads; a timer that does the same is autoplay.
@@ -152,7 +153,18 @@ export function logicReadings( d ) {
 		const id = 'Identifier' === node?.type ? resolveName( d.idx, node ) : null;
 		return 'var' === id?.kind && id.init ? comparedValue( id.init, key ) : undefined;
 	};
-	return { d, valueOf, fnOf, reach, writesOf, readsOf, scrolledRefs, timers, listElements, itemField, comparedValue };
+	// Whether `writes` (a handler's writesOf) toggle `key`: a value (or, in a keyed map, an item's value) that flips on the key's own
+	// prior value (`! S.open[ i ]`, `open ? -1 : i` with `open` reading the key), or two writes of the key, one clearing it (null,
+	// false, -1, undefined or '') and one not. An add that only grows the key (a basket count) never toggles.
+	const reads = ( n, key ) => readsOf( n ).has( key ) || subtree( d.idx, n ).some( ( x ) => 'MemberExpression' === x.type && ! x.computed && key === x.property?.name );
+	const flips = ( v, key ) => ( 'UnaryExpression' === v?.type && '!' === v.operator && reads( v.argument, key ) ) || ( 'ConditionalExpression' === v?.type && reads( v.test, key ) );
+	const clears = ( v ) => [ 'NullLiteral' ].includes( v?.type ) || ( 'Identifier' === v?.type && 'undefined' === v.name ) || ( 'UnaryExpression' === v?.type && '-' === v.operator && 1 === literal( v.argument ) ) || false === literal( v ) || '' === literal( v );
+	const toggles = ( writes, key ) => {
+		const mine = writes.filter( ( w ) => w.key === key );
+		const values = mine.flatMap( ( w ) => ( w.keyed ? w.value.properties.filter( ( q ) => q.computed ).map( ( q ) => q.value ) : [ w.value ] ) );
+		return values.some( ( v ) => flips( v, key ) ) || ( values.some( clears ) && values.some( ( v ) => ! clears( v ) ) );
+	};
+	return { d, valueOf, fnOf, reach, writesOf, readsOf, scrolledRefs, timers, listElements, itemField, comparedValue, toggles };
 }
 
 // o: { m (lib/skeleton-model.mjs), view (lib/skeleton-record.mjs::recordView), facts, R (decisions rules), surface,
@@ -258,6 +270,24 @@ export function widgetModel( { m, view, facts, R, surface = {}, declared = () =>
 				return worded.length > 0 && worded.every( ( k ) => inLink( k, m.byKey[ p.parentKey ] ) );
 			} );
 			const key = reading( panels[ 0 ] )[ 0 ];
+			// A disclosure's control toggles the very key its panel reads; a control that only sets it (an add to basket whose
+			// "In basket" note reads the basket) opens nothing.
+			if ( ! L.toggles( writes, key ) ) {
+				return null;
+			}
+			// A question-and-answer row's words outside its panel are its control's (the question): a unit with other words of its
+			// own (a product card's name and price beside its button) is a card, never an accordion item.
+			const inPanel = ( k ) => {
+				for ( let x = k; x && x !== u; x = m.byKey[ x.parentKey ] ) {
+					if ( panelKeys.has( tkOf( x ) ) ) {
+						return true;
+					}
+				}
+				return false;
+			};
+			if ( desc( u ).some( ( k ) => k !== control && ! within( k, control ) && ! inPanel( k ) && letters( m.words( k ) ) && 'true' !== String( view.attr( k, 'aria-hidden' ) ?? '' ) ) ) {
+				return null;
+			}
 			return { el: u, control, panels, rendered, key, keyed: writes.some( ( w ) => w.key === key && w.keyed ), linksOnly };
 		};
 		for ( const p of m.els.filter( ( e ) => ! m.isPart( e ) && m.blockKids( e ).length >= 2 ) ) {

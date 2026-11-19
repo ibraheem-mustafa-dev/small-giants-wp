@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/skeleton-widgets.mjs",
+		"find": "\t\t\tif ( ! L.toggles( writes, key ) ) {\n\t\t\t\treturn null;\n\t\t\t}\n",
+		"replace": "",
+		"why": "a control that only sets the key its panel reads is a disclosure"
+	},
+	{
+		"file": "lib/skeleton-widgets.mjs",
+		"find": "if ( desc( u ).some( ( k ) => k !== control && ! within( k, control ) && ! inPanel( k ) &&",
+		"replace": "if ( false && desc( u ).some( ( k ) => k !== control && ! within( k, control ) && ! inPanel( k ) &&",
+		"why": "a unit with words of its own beside its control (a card) is an accordion item"
+	},
+	{
+		"file": "lib/skeleton-widgets.mjs",
+		"find": "const flips = ( v, key ) => ( 'UnaryExpression' === v?.type && '!' === v.operator && reads( v.argument, key ) ) ||",
+		"replace": "const flips = ( v, key ) => true ||",
+		"why": "any write of the key counts as a toggle"
+	},
+	{
+		"file": "lib/skeleton-widgets.mjs",
+		"find": "return values.some( ( v ) => flips( v, key ) ) || ( values.some( clears ) && values.some( ( v ) => ! clears( v ) ) );",
+		"replace": "return values.some( ( v ) => flips( v, key ) );",
+		"why": "a handler that sets and clears the key in two writes is no toggle"
+	},
+	{
+		"file": "lib/skeleton-widgets.mjs",
+		"find": "const values = mine.flatMap( ( w ) => ( w.keyed ? w.value.properties.filter( ( q ) => q.computed ).map( ( q ) => q.value ) : [ w.value ] ) );",
+		"replace": "const values = mine.map( ( w ) => w.value );",
+		"why": "a keyed map's item value is never read, so a keyed toggle is refused"
+	},
+	{
+		"file": "lib/skeleton-widgets.mjs",
+		"find": "\t\t\t\t\tif ( panelKeys.has( tkOf( x ) ) ) {",
+		"replace": "\t\t\t\t\tif ( false ) {",
+		"why": "a disclosure's own panel words count as words beside its control"
+	}
+]

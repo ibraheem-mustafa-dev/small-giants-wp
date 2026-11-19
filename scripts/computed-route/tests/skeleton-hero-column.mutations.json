@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const column = kidsB.length > 1 && ! desc( e ).some( isMedia ) && holdsContent && R.heroInner?.contentSetting",
+		"replace": "const column = kidsB.length > 1 && ! desc( e ).some( isMedia ) && R.heroInner?.contentSetting",
+		"why": "any stacked wrapper of the hero's items (a sub-list) is the content column"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": ".every( ( k ) => mine.has( k ) );",
+		"replace": ".some( ( k ) => mine.has( k ) );",
+		"why": "a wrapper holding some of the words (the eyebrow and heading) is the column"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "m.words( k ) && ! isMedia( k ) && ! underMedia( k ) ).every(",
+		"replace": "m.words( k ) ).every(",
+		"why": "words under the media count, so no column holds them all"
+	}
+]

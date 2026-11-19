@@ -1,0 +1,62 @@
+[
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "handover: [ ...pieceRows( e, IH, plain( html ) ), ...handover ] };",
+		"replace": "handover };",
+		"why": "a separate piece is merged with no handover"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "const lost = [ ...( ( IH.boxDisplays || [] ).includes( k.display ) ? [ `its own ${ k.display } line` ] : [] ), ...own ];",
+		"replace": "const lost = own;",
+		"why": "a child on its own block line is no piece"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "const lost = [ ...( ( IH.boxDisplays || [] ).includes( k.display ) ? [ `its own ${ k.display } line` ] : [] ), ...own ];",
+		"replace": "const lost = ( IH.boxDisplays || [] ).includes( k.display ) ? [ `its own ${ k.display } line` ] : [];",
+		"why": "a child with its own size, weight or colour is no piece"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "const ownValue = ( v ) => null != v && ! /^(?:inherit|unset|currentcolor)$/i.test( v );",
+		"replace": "const ownValue = ( v ) => null != v;",
+		"why": "an inherited type counts as the child's own"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "if ( text && lost.length ) {",
+		"replace": "if ( lost.length ) {",
+		"why": "a wordless positioned layer (a highlight's drawing) is a piece"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "&& declared( k )[ p ] !== declared( e )[ p ] )",
+		"replace": "&& true )",
+		"why": "a child repeating the heading's own type is a piece"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "\"boxDisplays\": [ \"block\", \"flex\", \"grid\", \"table\", \"list-item\", \"flow-root\" ],",
+		"replace": "\"boxDisplays\": [],",
+		"why": "the decisions entry names no box display"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "|| ownBox( k ) ||",
+		"replace": "||",
+		"why": "a child that renders as its own box joins the next words"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "|| /^(?:inline-)?(?:flex|grid)$/.test( parent.display || '' ) ||",
+		"replace": "||",
+		"why": "a flex heading's item joins the next words when the flex comes from a stylesheet"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "const ownBox = ( k ) => boxDisplays().includes( k.display );",
+		"replace": "const ownBox = () => true;",
+		"why": "every inline child is set apart"
+	}
+]
