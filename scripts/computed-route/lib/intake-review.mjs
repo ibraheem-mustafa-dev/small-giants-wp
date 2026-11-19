@@ -87,10 +87,6 @@ export const OPEN_CAUSES = {
 		why: 'no block fits this element and no finaliser pick answered it',
 		downstream: 'the skeleton writer builds nothing for this element or anything inside it (lib/skeleton-propose.mjs::proposeSkeleton returns no node and records the row as unresolved), so the built page lacks it; the same element is a missing-feature row (lib/intake-missing.mjs), which is only a record; no later stage refuses a run for it, and a finaliser pick or a block:<slug> mark in a later apply builds it',
 	},
-	'palette-no-role': {
-		why: 'the draft colour has no proposed palette role (a header, selection or social colour, a brand colour or a shade with no slug)',
-		downstream: 'confirmed_palette.py::effective_marks treats a row with no mark as accepted and ::_mark_slugs gives an accepted row with no role no slug, so the colour fills no palette slot and no custom colour: it stays a hex value wherever a block paints it (what the one-off mark gives)',
-	},
 	'site-info-empty': {
 		why: 'the draft gave this Site Info key no value',
 		downstream: 'site_info_intake.py::read_intake refuses a row that is unmarked or holds no text (reasons "not marked in review", "row holds no text value") and provision-site-info-from-draft.py prints it as not applied, so nothing is written for this key and it keeps the value the site already holds',
@@ -236,7 +232,7 @@ export function reviewRows( intake ) {
 	// FR-48-92: one row per draft catalogue product and one per catalogue gap.
 	( intake.catalogue?.products || [] ).forEach( ( r ) => add( 'catalogue', { ...r, rowId: `catalogue:${ r.draftId }` }, r.draftId, `${ r.name } (${ r.type }, from £${ r.price }${ r.variations ? `, ${ r.variations } variations` : '' }${ r.image ? '' : ', no image' })`, r.address ) );
 	( intake.catalogue?.gaps || [] ).forEach( ( g, i ) => add( 'catalogue', { ...g, rowId: `catalogue-gap:${ g.draftId }:${ g.kind }:${ i + 1 }` }, g.draftId, `gap (${ g.kind }) ${ g.draftId }`, 'recorded, not built', g.detail ) );
-	( intake.palette?.rows || [] ).forEach( ( r ) => add( 'palette-role', r, r.token, `${ r.token } ${ r.hex }`, r.roles?.length > 1 ? `role:${ r.roles.join( ',' ) }` : r.role ? `role:${ r.role }` : 'no slug (one-off)', [ r.confidence, r.why ].filter( Boolean ).join( ': ' ), undefined, undefined, r.roles?.length || r.role ? {} : { open: OPEN_CAUSES[ 'palette-no-role' ] } ) );
+	( intake.palette?.rows || [] ).forEach( ( r ) => add( 'palette-role', r, r.token, `${ r.token } ${ r.hex }`, r.roles?.length > 1 ? `role:${ r.roles.join( ',' ) }` : r.role ? `role:${ r.role }` : 'no slug (one-off)', [ r.confidence, r.why ].filter( Boolean ).join( ': ' ) ) );
 	( intake.siteInfo?.rows || [] ).forEach( ( r ) => add( 'site-info', r, r.key, `${ r.key }: ${ text( r.value ) }`, text( r.normalised ), ( r.sources || [] ).map( ( s ) => s.draftId || s.location ).filter( Boolean ).join( ', ' ), undefined, undefined,
 		! text( r.value ).trim() ? { open: OPEN_CAUSES[ 'site-info-empty' ] } : false === r.valid ? { open: { ...OPEN_CAUSES[ 'site-info-refused' ], why: `${ OPEN_CAUSES[ 'site-info-refused' ].why }: ${ r.reason || 'failed shape validation' }` } } : {} ) );
 	( intake.flags || [] ).forEach( ( r ) => add( 'flag', r, r.draftId, `${ r.kind }: ${ r.text ?? r.url ?? '' }`, 'accept-flagged', r.why || '' ) );
@@ -501,8 +497,9 @@ export const isoDay = () => new Date().toISOString().slice( 0, 10 );
 // record's rows), problems, missing: [{ rowId, rowType, why }], open, taken }; non-empty problems or missing means the review fails.
 // `sections` (row types) limits the check and the marks to those sections: every other row keeps its intake.json
 // review entry as it was, and review.md's other sections are not read for marks.
-// `goThrough`: a row left with no mark takes, in this order, Bean's earlier mark on it (same content hash, not a
-// default), else its section's Accept all value recorded as `by: 'go-through'`; a row with no proposal to take (`open`)
+// A default saved by an earlier go-through apply (`by`) stays the row's mark on any later apply, flag or not, while its
+// content hash holds. `goThrough`: a row left with no mark takes, in this order, its earlier mark in intake.json (same
+// content hash), else its section's Accept all value recorded as `by: 'go-through'`; a row with no proposal to take (`open`)
 // stays unmarked and is returned in `open` ({ rowId, rowType, why, downstream }) instead of `missing`. `taken` lists the
 // row IDs that took a default. A mark Bean wrote, a refused mark and a ticked Accept all are never replaced by a default.
 export function applyReview( intake, markdown, { today = isoDay(), sections = null, goThrough = false } = {} ) {
@@ -546,13 +543,15 @@ export function applyReview( intake, markdown, { today = isoDay(), sections = nu
 			why = 'Accept all cannot mark it: it proposes no block and no tracked gap; mark map:<block>, difference, build or gap:<wave>';
 		} else if ( DEFAULTED.includes( r.rowType ) ) {
 			mark = MARKS[ r.rowType ][ 0 ].value;
-		} else if ( goThrough ) {
-			if ( old && old.contentHash === r.contentHash && null !== old.mark && ! old.by ) {
-				mark = old.mark;
-			} else if ( ! r.open && null !== r.acceptAll ) {
-				mark = r.acceptAll;
-				by = GO_THROUGH;
-			}
+		} else if ( old && old.contentHash === r.contentHash && null !== old.mark && ( old.by || goThrough ) ) {
+			// A default saved by an earlier go-through apply stays the row's mark on any later apply while its hash holds
+			// (its Mark cell is blank, so the cell cannot carry it); Bean's own earlier mark in intake.json counts the
+			// same way under --go-through.
+			mark = old.mark;
+			by = old.by ?? null;
+		} else if ( goThrough && ! r.open && null !== r.acceptAll ) {
+			mark = r.acceptAll;
+			by = GO_THROUGH;
 		}
 		const keep = old && old.contentHash === r.contentHash && null !== mark && old.mark === mark;
 		review.push( { rowId: r.rowId, rowType: r.rowType, contentHash: r.contentHash, mark, markedOn: null === mark ? null : keep ? old.markedOn : today, carriedFrom: keep ? old.carriedFrom ?? null : null,

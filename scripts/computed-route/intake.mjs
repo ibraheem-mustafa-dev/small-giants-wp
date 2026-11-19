@@ -11,8 +11,9 @@
 //     checks and writes the marks of the named review sections only (not page-map or skeleton-block), leaving every
 //     other row and its mark as it was. --go-through (Bean, 2026-11-18: a clone goes through by default) gives every row
 //     with no mark of its own and no ticked Accept all the mark that section's Accept all would give it, saved with
-//     `by: 'go-through'` (Bean's own marks always win); a row with no proposal to take (a skeleton row no block fits, a
-//     palette colour with no role, a Site Info key with no value, a missing feature with no block) stays unmarked, does
+//     `by: 'go-through'` (Bean's own marks always win; a saved default stays the row's mark on later applies while its
+//     hash holds; a colour with no role takes accept); a row with no proposal to take (a skeleton row no block fits, a
+//     Site Info key with no value, a missing feature with no block) stays unmarked, does
 //     not stop the apply and is listed with what the route does with it in build/intake/go-through-open.json; review.md
 //     gains one "Taken by default" line at the top. Without the flag an unmarked row fails the apply.
 //   node scripts/computed-route/intake.mjs --finalise <client>      writes build/intake/finalise-request.json (the

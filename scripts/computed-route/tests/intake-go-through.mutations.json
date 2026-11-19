@@ -1,33 +1,21 @@
 [
 	{
 		"file": "lib/intake-review.mjs",
-		"find": "} else if ( goThrough ) {",
+		"find": "} else if ( goThrough && ! r.open && null !== r.acceptAll ) {",
 		"replace": "} else if ( false ) {",
 		"why": "the flag would do nothing: every unmarked row would still fail the apply"
 	},
 	{
 		"file": "lib/intake-review.mjs",
-		"find": "\t\t\t\tby = GO_THROUGH;\n",
-		"replace": "",
+		"find": "\t\t\tmark = r.acceptAll;\n\t\t\tby = GO_THROUGH;\n",
+		"replace": "\t\t\tmark = r.acceptAll;\n",
 		"why": "a default mark would not be recorded as a default"
 	},
 	{
 		"file": "lib/intake-review.mjs",
-		"find": "} else if ( ! r.open && null !== r.acceptAll ) {",
-		"replace": "} else if ( null !== r.acceptAll ) {",
+		"find": "} else if ( goThrough && ! r.open && null !== r.acceptAll ) {",
+		"replace": "} else if ( goThrough && null !== r.acceptAll ) {",
 		"why": "a row with no proposal would be marked with Accept all's blind value instead of left open"
-	},
-	{
-		"file": "lib/intake-review.mjs",
-		"find": "if ( old && old.contentHash === r.contentHash && null !== old.mark && ! old.by ) {",
-		"replace": "if ( false ) {",
-		"why": "a default would replace Bean's earlier mark when its cell is blank"
-	},
-	{
-		"file": "lib/intake-review.mjs",
-		"find": "null !== old.mark && ! old.by ) {",
-		"replace": "null !== old.mark ) {",
-		"why": "an earlier default would be taken for Bean's mark and lose its by"
 	},
 	{
 		"file": "lib/intake-review.mjs",
@@ -76,12 +64,6 @@
 		"find": "! r.block && ( ! r.action || 'unresolved' === r.action ) ? { open",
 		"replace": "! r.block ? { open",
 		"why": "an absorbed or removed skeleton row (a proposal) would be listed as open"
-	},
-	{
-		"file": "lib/intake-review.mjs",
-		"find": "r.roles?.length || r.role ? {} : { open: OPEN_CAUSES[ 'palette-no-role' ] }",
-		"replace": "{}",
-		"why": "a colour with no role would be marked, not listed"
 	},
 	{
 		"file": "lib/intake-review.mjs",
@@ -154,5 +136,41 @@
 		"find": "o.goThrough && writeGoThrough( at, res, o, today, say );\n\treturn 0;",
 		"replace": "return 0;",
 		"why": "a full go-through apply would write no open list and no review.md line"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "( old.by || goThrough ) ) {",
+		"replace": "( goThrough ) ) {",
+		"why": "a default saved by an earlier apply would stop counting on a later plain apply"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "( old.by || goThrough ) ) {",
+		"replace": "( old.by ) ) {",
+		"why": "Bean's earlier mark in intake.json would count without the flag"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "mark = old.mark;\n\t\t\tby = old.by ?? null;",
+		"replace": "mark = old.mark;\n\t\t\tby = null;",
+		"why": "a saved default would turn into a mark that looks like Bean's on the next apply"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "null !== old.mark && ( old.by",
+		"replace": "true && ( old.by",
+		"why": "a saved default would be read as marked whatever its hash"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "old && old.contentHash === r.contentHash && null !== old.mark && ( old.by",
+		"replace": "old && null !== old.mark && ( old.by",
+		"why": "a row whose hash changed would keep its saved default"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "[ r.confidence, r.why ].filter( Boolean ).join( ': ' ) ) );",
+		"replace": "[ r.confidence, r.why ].filter( Boolean ).join( ': ' ), undefined, undefined, { open: OPEN_CAUSES[ 'site-info-empty' ] } ) );",
+		"why": "a palette colour would be listed open instead of taking accept"
 	}
 ]

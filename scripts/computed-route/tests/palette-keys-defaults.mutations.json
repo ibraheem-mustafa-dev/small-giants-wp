@@ -1,0 +1,14 @@
+[
+	{
+		"file": "tools/palette-keys.mjs",
+		"find": "const mark = cells[ 5 ] || entry?.mark || '';",
+		"replace": "const mark = cells[ 5 ] || '';",
+		"why": "a go-through default with a blank Mark cell would make the key refuse the record"
+	},
+	{
+		"file": "tools/palette-keys.mjs",
+		"find": "! cells[ 5 ] && entry && 'go-through' === entry.by && defaulted.push( m[ 1 ] );",
+		"replace": "",
+		"why": "the key would not say which tokens restate the proposal"
+	}
+]

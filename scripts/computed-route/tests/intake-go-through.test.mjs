@@ -64,7 +64,7 @@ const fixture = () => {
 };
 
 const ALL = reviewRows( fixture() );
-const OPEN_IDS = [ 'palette:social', 'siteinfo:email', 'siteinfo:vat', 'missing:Quiz:1', 'skeleton:header:unresolved' ];
+const OPEN_IDS = [ 'siteinfo:email', 'siteinfo:vat', 'missing:Quiz:1', 'skeleton:header:unresolved' ];
 const byId = ( review ) => Object.fromEntries( review.map( ( r ) => [ r.rowId, r ] ) );
 const tick = ( md, types ) => types.reduce( ( m, t ) => m.replace( new RegExp( `(\\(${ t }\\)\\n\\nAccept all: )\\[ \\]` ), '$1[x]' ), md );
 const cellMark = ( md, id, mark ) => md.split( '\n' ).map( ( l ) => ( l.startsWith( `| \`${ id }\` |` ) ? l.replace( /\|[^|]*\|$/, `| ${ mark } |` ) : l ) ).join( '\n' );
@@ -105,6 +105,7 @@ test( 'MUST FAIL: a defaulted row gets exactly the mark Accept all gives it, dat
 		assert.equal( got[ row.rowId ].contentHash, row.contentHash, 'the hash is the row\'s own: carry-over is unchanged' );
 	}
 	assert.equal( got[ 'missing:Map:1' ].mark, 'map:sgs/container' );
+	assert.deepEqual( [ got[ 'palette:social' ].mark, got[ 'palette:social' ].by ], [ 'accept', 'go-through' ], 'a colour with no proposed role takes accept, as Accept all gives it' );
 	assert.equal( got[ 'skeleton:header:picked' ].mark, 'accept' );
 	for ( const row of ALL.filter( ( x ) => DEFAULTED.includes( x.rowType ) ) ) {
 		assert.ok( got[ row.rowId ].mark, row.rowId );
@@ -171,7 +172,7 @@ test( 'MUST FAIL: a row with no proposal is open: listed with why and downstream
 		assert.ok( ! r.taken.includes( o.rowId ) );
 	}
 	assert.match( r.open.find( ( o ) => 'siteinfo:vat' === o.rowId ).why, /not nine digits/, 'a refused Site Info value names intake\'s reason' );
-	assert.deepEqual( Object.values( OPEN_CAUSES ).map( ( c ) => c.why ).length, 5 );
+	assert.deepEqual( Object.keys( OPEN_CAUSES ).sort(), [ 'missing-no-block', 'site-info-empty', 'site-info-refused', 'skeleton-unresolved' ], 'a palette colour with no role is not a cause: it takes accept' );
 	const plain = applyReview( fixture(), renderReview( fixture() ), { today: TODAY } );
 	OPEN_IDS.forEach( ( id ) => assert.ok( plain.missing.some( ( m ) => m.rowId === id ), `${ id } fails a plain apply` ) );
 	// Bean marks an open row: it is no longer open.
@@ -199,7 +200,7 @@ test( 'MUST FAIL: the downstream text is true of the consumers: an unmarked pale
 		assert.fail( `the python consumers did not run: ${ run.error?.message || run.stderr }` );
 	}
 	const out = JSON.parse( run.stdout );
-	assert.deepEqual( out.slugs, { brand: [ 'primary' ], social: [] }, 'the open palette row fills no slot; the defaulted row fills its proposed role' );
+	assert.deepEqual( out.slugs, { brand: [ 'primary' ], social: [] }, 'the accepted colour with no role fills no slot; the defaulted row fills its proposed role' );
 	assert.deepEqual( out.applied, [ 'siteinfo:phone' ], 'only the defaulted Site Info row is written' );
 	assert.match( out.refused[ 'siteinfo:email' ], /not marked in review/ );
 	assert.match( out.refused[ 'siteinfo:vat' ], /not marked in review/ );
@@ -231,10 +232,10 @@ test( 'MUST FAIL: a default mark is not shown in the Mark cell, carries across a
 	assert.equal( re[ 'page:page:home' ].mark, null );
 	assert.ok( ! ( 'by' in re[ 'page:page:home' ] ) && true === re[ 'page:page:home' ].changed );
 	// An unapplied cell mark Bean typed before the re-export is carried onto an unmarked row as his own.
-	const withCell = cellMark( md, 'palette:social', 'one-off' );
+	const withCell = cellMark( md, 'siteinfo:email', 'drop' );
 	const kept = withUnappliedMarks( r.intake, withCell, { day: LATER } );
-	assert.deepEqual( kept.carried, [ 'palette:social' ] );
-	assert.ok( ! ( 'by' in byId( kept.intake.review )[ 'palette:social' ] ) );
+	assert.deepEqual( kept.carried, [ 'siteinfo:email' ] );
+	assert.ok( ! ( 'by' in byId( kept.intake.review )[ 'siteinfo:email' ] ) );
 	// A palette-only regeneration keeps a default as a default.
 	const into = intoIntake( { intake: r.intake, reviewMd: md, palette: fixture().palette, client: CLIENT, takenOn: r.intake.takenOn } );
 	assert.equal( byId( into.intake.review )[ 'palette:brand' ].by, 'go-through' );
@@ -288,7 +289,7 @@ test( 'MUST FAIL: --apply-review --go-through on a scratch copy marks every row,
 		assert.ok( ! fs.existsSync( at.goThroughOpen ) && ! fs.existsSync( at.confirmed ) );
 		const out = [];
 		assert.equal( applyIntakeReview( { repo, client: CLIENT, goThrough: true }, quiet( out ) ), 0, out.join( '\n' ) );
-		assert.match( out.join( '\n' ), /go-through: \d+ rows took their proposal as a default mark \(by: go-through; .*\); 5 rows had no proposal to take and are open \(.*\), listed in sites[\\/]fx-go[\\/]build[\\/]intake[\\/]go-through-open\.json/ );
+		assert.match( out.join( '\n' ), /go-through: \d+ rows took their proposal as a default mark \(by: go-through; .*\); 4 rows had no proposal to take and are open \(.*\), listed in sites[\\/]fx-go[\\/]build[\\/]intake[\\/]go-through-open\.json/ );
 		const saved = readJson( at.intake );
 		const entries = byId( saved.review );
 		assert.equal( saved.review.length, ALL.length );
@@ -296,7 +297,7 @@ test( 'MUST FAIL: --apply-review --go-through on a scratch copy marks every row,
 		assert.deepEqual( saved.review.filter( ( r ) => null === r.mark ).map( ( r ) => r.rowId ).sort(), [ ...OPEN_IDS ].sort() );
 		const open = readJson( at.goThroughOpen );
 		assert.equal( open.client, CLIENT );
-		assert.equal( open.count, 5 );
+		assert.equal( open.count, 4 );
 		assert.deepEqual( open.rows.map( ( r ) => r.rowId ).sort(), [ ...OPEN_IDS ].sort() );
 		open.rows.forEach( ( r ) => assert.deepEqual( Object.keys( r ).sort(), [ 'downstream', 'rowId', 'rowType', 'why' ] ) );
 		const md = fs.readFileSync( at.review, 'utf8' );
@@ -313,12 +314,12 @@ test( 'MUST FAIL: --apply-review --go-through on a scratch copy marks every row,
 		const again = [];
 		assert.equal( applyIntakeReview( { repo, client: CLIENT, goThrough: true }, { ...quiet( again ), today: LATER } ), 0, again.join( '\n' ) );
 		assert.deepEqual( readJson( at.intake ).review, saved.review, 'a second apply on an unchanged review changes nothing' );
-		fs.writeFileSync( at.review, cellMark( cellMark( md, 'palette:social', 'one-off' ), 'page:page:about', 'drop' ) );
+		fs.writeFileSync( at.review, cellMark( cellMark( md, 'siteinfo:email', 'drop' ), 'page:page:about', 'drop' ) );
 		assert.equal( applyIntakeReview( { repo, client: CLIENT, goThrough: true }, { ...quiet(), today: LATER } ), 0 );
 		const third = byId( readJson( at.intake ).review );
-		assert.deepEqual( [ third[ 'palette:social' ].mark, third[ 'page:page:about' ].mark ], [ 'one-off', 'drop' ] );
-		assert.ok( ! ( 'by' in third[ 'palette:social' ] ) && ! ( 'by' in third[ 'page:page:about' ] ) );
-		assert.equal( readJson( at.goThroughOpen ).count, 4, 'a row Bean marked leaves the open list' );
+		assert.deepEqual( [ third[ 'siteinfo:email' ].mark, third[ 'page:page:about' ].mark ], [ 'drop', 'drop' ] );
+		assert.ok( ! ( 'by' in third[ 'siteinfo:email' ] ) && ! ( 'by' in third[ 'page:page:about' ] ) );
+		assert.equal( readJson( at.goThroughOpen ).count, 3, 'a row Bean marked leaves the open list' );
 		assert.equal( fs.readFileSync( at.review, 'utf8' ).split( '\n' )[ 2 ], defaultsLine( readJson( at.intake ).review.filter( ( r ) => 'go-through' === r.by ).length ) );
 		assert.equal( readJson( at.pageMap ).length, 1, 'Bean\'s drop is honoured on the confirmed page map' );
 	} finally {
@@ -348,4 +349,57 @@ test( 'MUST FAIL: --go-through parses with --apply-review (and --section) only',
 	assert.equal( parseArgs( [ '--apply-review', CLIENT ] ).goThrough, false );
 	assert.match( parseArgs( [ CLIENT, '--go-through' ] ).error, /--go-through goes with --apply-review only/ );
 	assert.match( parseArgs( [ '--render', CLIENT, '--go-through' ] ).error, /--go-through goes with --apply-review only/ );
+} );
+
+test( 'MUST FAIL: a default saved by an earlier apply stays the row\'s mark on a later apply, with or without the flag, while its hash holds', () => {
+	const first = go( fixture(), renderReview( fixture() ) );
+	const blank = renderReview( { ...first.intake, review: [] } );
+	const plain = applyReview( first.intake, blank, { today: LATER } );
+	assert.deepEqual( plain.missing.map( ( m ) => m.rowId ).sort(), [ ...OPEN_IDS ].sort(), 'only the rows with no proposal still need a mark; every default stays' );
+	const kept = byId( plain.intake.review );
+	for ( const id of first.taken ) {
+		assert.deepEqual( [ kept[ id ].mark, kept[ id ].by, kept[ id ].markedOn ], [ byId( first.intake.review )[ id ].mark, 'go-through', TODAY ], `${ id } keeps its mark, its by and its first date` );
+	}
+	assert.deepEqual( [ ...plain.taken ].sort(), [ ...first.taken ].sort() );
+	// With the flag the same rows hold, and Bean's cell mark or a ticked Accept all still wins over the saved default.
+	const flagged = go( first.intake, cellMark( blank, 'page:page:about', 'drop' ), { today: LATER } );
+	assert.deepEqual( [ byId( flagged.intake.review )[ 'page:page:about' ].mark, 'by' in byId( flagged.intake.review )[ 'page:page:about' ] ], [ 'drop', false ] );
+	const ticked = applyReview( first.intake, tick( blank, [ 'page-map' ] ), { today: LATER } );
+	assert.equal( byId( ticked.intake.review )[ 'page:page:home' ].mark, 'accept' );
+	assert.ok( ! ( 'by' in byId( ticked.intake.review )[ 'page:page:home' ] ), 'a ticked Accept all is Bean\'s mark, not a default' );
+	// A row whose hash changed comes back unmarked, flag or not.
+	const edited = fixture();
+	edited.pageMap[ 0 ] = { ...edited.pageMap[ 0 ], title: 'Welcome' };
+	const moved = applyReview( { ...edited, review: first.intake.review }, renderReview( edited ), { today: LATER } );
+	assert.ok( moved.missing.some( ( m ) => 'page:page:home' === m.rowId ), 'a changed row needs a mark again' );
+	assert.equal( byId( moved.intake.review )[ 'page:page:home' ].mark, null );
+	// Bean's own earlier mark in intake.json (blank cell) counts only under the flag, as before.
+	const bean = { ...first.intake, review: first.intake.review.map( ( e ) => ( 'page:page:about' === e.rowId ? { rowId: e.rowId, rowType: e.rowType, contentHash: e.contentHash, mark: 'drop', markedOn: TODAY, carriedFrom: null } : e ) ) };
+	assert.ok( applyReview( bean, blank, { today: LATER } ).missing.some( ( m ) => 'page:page:about' === m.rowId ), 'without the flag a blank cell is still unmarked for Bean\'s own mark' );
+	assert.equal( byId( go( bean, blank, { today: LATER } ).intake.review )[ 'page:page:about' ].mark, 'drop' );
+} );
+
+test( 'MUST FAIL: a plain --apply-review after a go-through apply succeeds once Bean marks the open rows, and changes no default', () => {
+	const { repo, at } = scratch();
+	try {
+		assert.equal( applyIntakeReview( { repo, client: CLIENT, goThrough: true }, quiet() ), 0 );
+		const saved = readJson( at.intake ).review;
+		const lines = [];
+		assert.equal( applyIntakeReview( { repo, client: CLIENT }, { ...quiet( lines ), today: LATER } ), 1, 'the open rows still need Bean' );
+		assert.ok( lines.join( '\n' ).includes( 'siteinfo:email' ) && ! lines.join( '\n' ).includes( 'page:page:home' ), lines.join( '\n' ) );
+		let md = fs.readFileSync( at.review, 'utf8' );
+		const marks = { 'siteinfo:email': 'drop', 'siteinfo:vat': 'drop', 'missing:Quiz:1': 'difference', 'skeleton:header:unresolved': 'remove' };
+		for ( const id of OPEN_IDS ) {
+			md = cellMark( md, id, marks[ id ] );
+		}
+		fs.writeFileSync( at.review, md );
+		assert.equal( applyIntakeReview( { repo, client: CLIENT }, { ...quiet(), today: LATER } ), 0 );
+		const after = byId( readJson( at.intake ).review );
+		for ( const e of saved.filter( ( x ) => 'go-through' === x.by ) ) {
+			assert.deepEqual( after[ e.rowId ], e, `${ e.rowId } is unchanged` );
+		}
+		assert.deepEqual( OPEN_IDS.map( ( id ) => after[ id ].mark ), OPEN_IDS.map( ( id ) => marks[ id ] ) );
+	} finally {
+		fs.rmSync( repo, { recursive: true, force: true } );
+	}
 } );

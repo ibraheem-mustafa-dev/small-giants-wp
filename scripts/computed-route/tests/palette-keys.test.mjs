@@ -11,7 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { readTokens } from '../lib/tokens.mjs';
 import { proposePalette, loadPaletteSlugs } from '../lib/intake-palette.mjs';
-import { REPO, keyFile, derive } from '../tools/palette-keys.mjs';
+import { REPO, keyFile, derive, defaultedTokens } from '../tools/palette-keys.mjs';
 
 // Each answer key and its source (tools/palette-keys.mjs).
 const KEYS = { 'indus-foods': 'from-marks', 'eye-care-ward-end': 'ruled', 'mamas-munches-redesign': 'ruled' };
@@ -50,6 +50,13 @@ export function compareClient( client ) {
 export const REVIEW = {
 	'indus-foods': {},
 	'eye-care-ward-end': {
+		// The four below moved when palette.json was re-read on 2026-11-19: the record the key was last matched against (taken
+		// 2026-10-24, 400 usage rows, the home page only) came before the state-page route fix (5385190bd), which lets intake
+		// visit Eye Care's other ten pages (1,235 rows). Same proposer, same tokens: the 10-24 record still gives the key's
+		// slugs and the 11-19 record gives these. The key is Bean's ruling and is never derived; Bean rules each.
+		'accent-light': { key: '#F0EBE3', proposal: '#E6E1DA', class: 'reading-moved', check: 'the hairline #E6E1DA paints 613 grounds and lines across the 11 pages (the key gives accent-light to --acc-soft, 2 uses): Bean rules which is the accent\'s light ground' },
+		'accent-text': { key: '#6F6152', proposal: '#FFFFFF', class: 'reading-moved', check: 'the proposal rests on one character of text on an accent ground (a thin reading): Bean rules between the white and --acc-ink; a rule that needs more than one character is the proposer fix to consider' },
+		'section-text': { key: '#141414', proposal: '#8B8478', class: 'reading-moved', check: '55 characters of #8B8478 text sit on the section ground, and the dark ink paints buttons and icons there (no text characters): Bean rules whether the section text is the caption grey or the ink' },
 		section: { key: '#FFFFFF', proposal: '#F3F0EB', class: 'ruled-override', check: 'Bean\'s ruling (2026-10-24): section is the band colour, and Eye Care keeps its white card ground as a recorded override mark (--white and --surface-card role:surface-alt,section); the proposer reads the band rule, the mark carries the override' },
 	},
 	'mamas-munches-redesign': {},
@@ -131,4 +138,17 @@ test( 'MUST FAIL: Eye Care\'s --wa and every --wa-* token, and Indus\'s --whatsa
 test( 'negative control: a token no brand names keeps the slug a rendered fact gives it', () => {
 	const { p } = compareClient( 'eye-care-ward-end' );
 	assert.ok( p.rows.find( ( r ) => '--acc' === r.token ).roles.includes( 'accent' ) );
+} );
+
+// Spec 48 FR-48-17, tools/palette-keys.mjs: a palette row whose Mark cell is blank (a `--apply-review --go-through` default)
+// reads the mark intake.json saved for it, so a derived key never refuses a record whose rows went through by default; the
+// key lists those tokens as `defaulted`.
+test( 'MUST FAIL: Indus\'s key derives although go-through defaults have blank Mark cells, and lists exactly those tokens as defaulted', () => {
+	const key = JSON.parse( fs.readFileSync( keyFile( 'indus-foods' ), 'utf8' ) );
+	const defaulted = defaultedTokens( 'indus-foods' );
+	assert.ok( defaulted.length > 0, 'the record holds go-through palette defaults' );
+	assert.deepEqual( key.defaulted, defaulted );
+	defaulted.forEach( ( t ) => assert.ok( t in derive( 'indus-foods', 'from-marks' ), `${ t } is in the derived key` ) );
+	// A token Bean marked in the Mark cell is not a default, whatever intake.json also holds.
+	assert.ok( ! defaulted.includes( '--brand-blue' ) );
 } );
