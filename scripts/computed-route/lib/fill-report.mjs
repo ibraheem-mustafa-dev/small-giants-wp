@@ -99,14 +99,17 @@ export function fillReport( r ) {
 	const heldBy = heldCounts( held );
 	const settled = r.settled || [];
 	const settledBy = settledCounts( settled );
+	// The blocks the run resolved without default paint (fill.mjs --allow-missing-paint, lib/paint-gate.mjs::assertPaints).
+	const missingPaint = r.missingPaint || [];
 	const json = {
-		client: r.client, surface: r.surface, draft: r.draft, nodes: r.nodes, targets: r.targets,
+		client: r.client, surface: r.surface, draft: r.draft, nodes: r.nodes, targets: r.targets, missingPaint,
 		counts: { writes: live, superseded: replaced.size, customCssGaps: gaps.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, alreadyHeld: { total: held.length, ...heldBy }, patchKeys: ( r.snapshotPatch?.entries || [] ).length, unread: ( r.unread || [] ).length, settled: { total: settled.length, ...settledBy }, confirm: ( r.confirm || [] ).length },
 		writes, customCssGaps: gaps, unmapped: unmappedList( r.unmapped ), alreadyHeld: held.map( ( h ) => ( { property: h.property, value: h.value, node: h.node, block: h.block, slot: h.slot ?? '', state: h.state ?? null, reason: h.heldReason, detail: h.heldDetail } ) ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, snapshotPatch: r.snapshotPatch || { file: null, entries: [] }, unread: r.unread || [], settled, confirm: r.confirm || [],
 	};
 	const L = [
 		`# Fill: ${ r.surface }`, '',
 		`Client ${ r.client }. Draft: ${ r.draft }. ${ r.nodes } nodes, ${ r.targets } measured elements (draftRef and draftSlots). Fill writes rest-state styles, spacing, presence, words, links and motion (each node's sgsMotion: entrances and hover moves) in one root-down pass; hover, focus and active colour states are Solve's.`, '',
+		...( missingPaint.length ? [ '## Resolved without default paint', '', `These blocks have no default paint on this site and were named in --allow-missing-paint, so their settings were resolved without it: ${ missingPaint.join( ', ' ) }.`, '' ] : [] ),
 		'| What | Count |', '|---|---|',
 		`| Settings written | ${ live } (and ${ replaced.size } a later write on the same setting replaced, marked \`supersededBy\`) |`,
 		`| Custom-CSS rules with a gaps row (the native control each could become) | ${ gaps.length } |`,

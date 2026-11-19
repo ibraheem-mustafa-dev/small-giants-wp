@@ -355,7 +355,7 @@ function factsFor( { db, client, repo, facts } ) {
 // name, route, opened?, inventory, rows, counts, problems, gap? }], gaps, runs: [{ file, hash, surfaces, requests,
 // unlisted, blocked, proxyAttempts, ms }] }. A surface whose inventory or proposal throws, or that no opener renders,
 // keeps its entry with `gap` and adds a gap row naming what was tried.
-export async function proposeSkeletons( { folder, harPath, surfaces, client, db = null, facts = null, entry = null, routing = null, site = null, shotsDir = null, widths = INVENTORY_WIDTHS, repo = REPO, harness = {}, log = () => {}, census = null, openStates = true, inventoriesDir = null, propose = proposeSkeleton, pageMap = null } ) {
+export async function proposeSkeletons( { folder, harPath, surfaces, client, db = null, facts = null, entry = null, routing = null, site = null, shotsDir = null, widths = INVENTORY_WIDTHS, repo = REPO, harness = {}, log = () => {}, census = null, openStates = true, inventoriesDir = null, propose = proposeSkeleton, pageMap = null, allowMissingPaint = [] } ) {
 	if ( [ ...widths ].sort().join() !== [ ...INVENTORY_WIDTHS ].sort().join() ) {
 		throw new Error( `the skeleton inventory reads at ${ INVENTORY_WIDTHS.join( ', ' ) } (Spec 48 §3.4), not ${ widths.join( ', ' ) }` );
 	}
@@ -459,7 +459,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 							throw new Error( f.error );
 						}
 						const r = propose( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, formLinks: formLinks(), refs, draftLinks: draftLinks(), db: theDb } );
-						assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton ${ s.slug }` } );
+						assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton ${ s.slug }`, allow: allowMissingPaint, log } );
 						// A width another state opened (the same state at its other breakpoint) is named in `statesAt`.
 						const other = open ? Object.entries( open.ways ).filter( ( [ , x ] ) => x !== open.opener ).map( ( [ w, x ] ) => [ w, x.state ] ) : [];
 						const opened = open && { ...open.opener, at: open.at, readAt: open.readAt, ...( other.length ? { statesAt: Object.fromEntries( other ) } : {} ), tried: open.tried };

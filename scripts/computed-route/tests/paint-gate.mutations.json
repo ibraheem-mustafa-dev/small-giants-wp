@@ -1,17 +1,17 @@
 [
-	{ "file": "fill.mjs", "find": "assertPaints( { blocks: treeBlocks( skeleton ), calFor, site: entry.site, client: o.client, what: `fill ${ o.surface }` } );", "replace": "", "why": "the code before the gate: Fill runs on with no default paint" },
+	{ "file": "fill.mjs", "find": "const missingPaint = assertPaints( { blocks: treeBlocks( skeleton ), calFor, site: entry.site, client: o.client, what: `fill ${ o.surface }`, allow: o.allowMissingPaint || [], log: o.log || console.log } );", "replace": "const missingPaint = [];", "why": "the code before the gate: Fill runs on with no default paint" },
 	{ "file": "fill.mjs", "find": "assertPaints( { blocks: treeBlocks( skeleton ), calFor,", "replace": "assertPaints( { blocks: [], calFor,", "why": "Fill checks no block of its skeleton" },
 	{ "file": "lib/paint-gate.mjs", "find": "filter( ( b ) => calFor( b )?.paintMissing )", "replace": "filter( () => false )", "why": "no block is ever a gap" },
 	{ "file": "lib/paint-gate.mjs", "find": "filter( ( b ) => calFor( b )?.paintMissing )", "replace": "filter( ( b ) => ! calFor( b )?.elements )", "why": "a block with no slot map counts as a gap" },
-	{ "file": "lib/paint-gate.mjs", "find": "if ( gaps.length ) {", "replace": "if ( false ) {", "why": "gaps are found and never stop the run" },
+	{ "file": "lib/paint-gate.mjs", "find": "if ( stop.length ) {", "replace": "if ( false ) {", "why": "gaps are found and never stop the run" },
 	{ "file": "lib/paint-gate.mjs", "find": "if ( ! site ) {", "replace": "if ( site ) {", "why": "the gate checks only runs with no site" },
 	{ "file": "lib/paint-gate.mjs", "find": "if ( ! site ) {", "replace": "if ( false ) {", "why": "a run with no site is stopped for every calibrated block" },
 	{ "file": "lib/paint-gate.mjs", "find": "walk( Array.isArray( tree ) ? tree : [], ( n ) => n?.name && out.add( n.name ) );", "replace": "( Array.isArray( tree ) ? tree : [] ).forEach( ( n ) => n?.name && out.add( n.name ) );", "why": "only the top level of a tree is checked" },
 	{ "file": "lib/paint-gate.mjs", "find": "--blocks ${ gaps.join( ',' ) }", "replace": "--blocks", "why": "the command names no block" },
-	{ "file": "skeleton.mjs", "find": "assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton propose ${ surface }`, cache } );", "replace": "", "why": "skeleton propose writes a skeleton with a paint gap" },
-	{ "file": "lib/skeleton-rerun.mjs", "find": "assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton ${ s.slug }`, cache } );", "replace": "", "why": "the skeleton re-run proposes over a paint gap" },
+	{ "file": "skeleton.mjs", "find": "assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton propose ${ surface }`, cache, allow: allowMissingPaint } );", "replace": "", "why": "skeleton propose writes a skeleton with a paint gap" },
+	{ "file": "lib/skeleton-rerun.mjs", "find": "assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton ${ s.slug }`, cache, allow: allowMissingPaint } );", "replace": "", "why": "the skeleton re-run proposes over a paint gap" },
 	{ "file": "lib/skeleton-context.mjs", "find": "calFor: calibrationsAt( site, dir ), site, client, what", "replace": "calFor: calibrationsAt( site ), site, client, what", "why": "the skeleton gate reads the route's own cache, not the one it was given" },
-	{ "file": "lib/intake-skeletons.mjs", "find": "assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton ${ s.slug }` } );", "replace": "", "why": "an intake surface with a paint gap is proposed" },
-	{ "file": "solve.mjs", "find": "assertPaints( { blocks: treeBlocks( tree ), calFor, site: s.site, client, what: `solve ${ surface }` } );", "replace": "", "why": "Solve runs on with no default paint" },
-	{ "file": "apply.mjs", "find": "assertPaints( { blocks: surfaces.flatMap( ( s ) => Object.values( blocks[ s.postId ]?.blocks ?? {} ).map( ( b ) => b?.block ) ).filter( Boolean ), calFor, site, client, what: `apply ${ client }` } );", "replace": "", "why": "the applier runs on with no default paint" }
+	{ "file": "lib/intake-skeletons.mjs", "find": "assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton ${ s.slug }`, allow: allowMissingPaint, log } );", "replace": "", "why": "an intake surface with a paint gap is proposed" },
+	{ "file": "solve.mjs", "find": "assertPaints( { blocks: treeBlocks( tree ), calFor, site: s.site, client, what: `solve ${ surface }`, allow: allowMissingPaintArg( argv ) } );", "replace": "", "why": "Solve runs on with no default paint" },
+	{ "file": "apply.mjs", "find": "assertPaints( { blocks: surfaces.flatMap( ( s ) => Object.values( blocks[ s.postId ]?.blocks ?? {} ).map( ( b ) => b?.block ) ).filter( Boolean ), calFor, site, client, what: `apply ${ client }`, allow: allowMissingPaintArg( process.argv ) } );", "replace": "", "why": "the applier runs on with no default paint" }
 ]

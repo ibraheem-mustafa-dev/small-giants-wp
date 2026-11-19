@@ -21,6 +21,7 @@ import { carryIds, lostIds } from './intake-pagemap-regen.mjs';
 import { mergeBlocked } from './intake-run-collapse.mjs';
 import { reviewDecisions, recordReviewDecisions, decisionsFile, dbKnownBlock } from './intake-run-finalise.mjs';
 import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
+import { parseAllowMissingPaint } from './paint-gate.mjs';
 import { openDb } from './db.mjs';
 import { sourcesOf } from './freshness.mjs';
 import { writeCatalogue } from './intake-catalogue-run.mjs';
@@ -31,7 +32,7 @@ export const INTAKE_SCHEMA = path.join( HERE, '..', 'data', 'intake.schema.json'
 const WORKER = path.join( HERE, 'intake-run-worker.mjs' );
 const WIDTHS = [ 375, 768, 1440 ];
 export const USAGE = [
-	'usage: node scripts/computed-route/intake.mjs <client> [--record] [--widths 375,768,1440] [--surfaces a,b] [--repo <path>]',
+	'usage: node scripts/computed-route/intake.mjs <client> [--record] [--widths 375,768,1440] [--surfaces a,b] [--allow-missing-paint sgs/a,sgs/b] [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --apply-review <client> [--section <row type>[,<row type>...]] [--go-through] [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --finalise <client> | --apply-picks <client> | --render <client> | --rerun-skeletons <client> | --facts <client> | --page-map <client> | --catalogue <client> [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --palette-only <client> [--record] [--into-intake] [--repo <path>]',
@@ -42,7 +43,7 @@ const MODES = { '--apply-review': 'apply', '--finalise': 'finalise', '--apply-pi
 // argv (after the script) to { mode: 'run'|'apply'|'finalise'|'apply-picks'|'render'|'rerun-skeletons'|'facts'|'page-map'|'palette-only', client, record, widths, surfaces,
 // repo } or { error }.
 export function parseArgs( argv ) {
-	const o = { mode: 'run', client: null, record: false, intoIntake: false, sections: null, goThrough: false, widths: WIDTHS, surfaces: null, repo: REPO };
+	const o = { mode: 'run', client: null, record: false, intoIntake: false, sections: null, goThrough: false, widths: WIDTHS, surfaces: null, repo: REPO, allowMissingPaint: [] };
 	for ( let i = 0; i < argv.length; i++ ) {
 		const a = argv[ i ];
 		const value = () => ( i + 1 < argv.length && ! argv[ i + 1 ].startsWith( '--' ) ? argv[ ++i ] : null );
@@ -76,6 +77,12 @@ export function parseArgs( argv ) {
 				return { error: '--surfaces needs a comma list of surface slugs or surfaces.json ids' };
 			}
 			o.surfaces = v.split( ',' ).map( ( s ) => s.trim() ).filter( Boolean );
+		} else if ( '--allow-missing-paint' === a ) {
+			try {
+				o.allowMissingPaint = parseAllowMissingPaint( value() ?? '' );
+			} catch ( e ) {
+				return { error: e.message };
+			}
 		} else if ( '--repo' === a ) {
 			const v = value();
 			if ( ! v ) {
@@ -228,7 +235,7 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	// marquee is recognised by its recorded loop): the rows `--rerun-skeletons` gives, so both paths agree.
 	const fw = openDb();
 	try {
-		record = refreshIntakeSkeletons( { intake: record, client: o.client, db: fw, repo: o.repo } ).intake;
+		record = refreshIntakeSkeletons( { intake: record, client: o.client, db: fw, repo: o.repo, allowMissingPaint: o.allowMissingPaint } ).intake;
 	} catch ( e ) {
 		const error = `the motion-aware skeleton pass failed (${ e.message.split( '\n' )[ 0 ] }); the run's own skeleton rows are kept, so motion-dependent rules (a marquee) did not apply`;
 		say( error );

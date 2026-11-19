@@ -33,6 +33,7 @@ import { loopingKeys } from './lib/skeleton-rerun.mjs';
 import { isServedInventory, servedDecisions, servedMotion } from './lib/key-space.mjs';
 import { reviewHtml } from './lib/skeleton-review.mjs';
 import { calKeysFor, calTagsFor, calSettingsFor, statesOfRecord, thresholdsOf, assertSkeletonPaints } from './lib/skeleton-context.mjs';
+import { allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
 import { carriedIds } from './lib/skeleton-carried.mjs';
 import { formLinksFor } from './lib/skeleton-form-link.mjs';
@@ -122,8 +123,9 @@ export function reviewSurface( { client, surface, repo = REPO } ) {
 // Runs propose from the files on disk and writes <surface>.skeleton.json and <surface>.proposal.json. Returns the result.
 // A served inventory (`Root/…` keys) is proposed with the decisions and motion keys written in intake's space rewritten
 // to its root (lib/key-space.mjs). `cache`: the calibration cache folder (the route's own by default). A skeleton that uses a block
-// with no default paint on the surface's site is not written (lib/skeleton-context.mjs::assertSkeletonPaints).
-export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb(), propose = proposeSkeleton, cache = undefined } ) {
+// with no default paint on the surface's site is not written (lib/skeleton-context.mjs::assertSkeletonPaints), unless
+// `allowMissingPaint` (--allow-missing-paint) names the block.
+export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb(), propose = proposeSkeleton, cache = undefined, allowMissingPaint = [] } ) {
 	const p = skeletonPaths( { client, surface, repo } );
 	const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );
 	const { ctx, saved, served, clientDecisions } = surfaceDecisions( { client, surface, repo, inventory, file: p.decisions } );
@@ -139,7 +141,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const commerce = commerceOf( readSurface( repo, client, surface ), readJson( path.join( repo, 'sites', client, 'build', 'page-map.json' ), [] ), loadCatalogue( repo, client ) );
 	const site = readSurface( repo, client, surface ).site;
 	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, built: ctx.built, carried: carriedIds( { repo, client, site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( site, cache ), calTags: calTagsFor( site, cache ), calSettings: calSettingsFor( site, cache ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
-	assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton propose ${ surface }`, cache } );
+	assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton propose ${ surface }`, cache, allow: allowMissingPaint } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	return { ...r, paths: p, facts, inventory, clientDecisions };
@@ -176,7 +178,7 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 		json( p.inventory, inv );
 		log( `inventory ${ surface }: ${ inv.elements.length } elements, ${ Object.keys( inv.elements.reduce( ( a, e ) => Object.assign( a, e.screenshots ), {} ) ).length ? 'screenshots in' : 'no screenshots in' } ${ p.shots }, ${ inv.checks.duplicateKeys } duplicate keys` );
 	} else if ( 'propose' === cmd ) {
-		const r = proposeSurface( { client, surface, repo, siteName: flag( '--site-name' ) } );
+		const r = proposeSurface( { client, surface, repo, siteName: flag( '--site-name' ), allowMissingPaint: allowMissingPaintArg( argv ) } );
 		const c = r.proposal.counts;
 		log( `propose ${ surface }: ${ c.skeletonNodes } skeleton nodes (${ c.expandedNodes } with Fill's generated icons), ${ c.low } low confidence, ${ c.removed } removed or absorbed, ${ c.unresolved } unresolved, ${ r.problems.length } problems` );
 		r.problems.forEach( ( x ) => log( ` - ${ x }` ) );

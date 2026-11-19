@@ -28,8 +28,9 @@ export const calTagsFor = ( site, dir = CACHE ) => ( slug ) => Object.fromEntrie
 export const calSettingsFor = ( site, dir = CACHE ) => ( slug ) => calibrationsAt( site, dir )( slug )?.settings || {};
 
 // A proposed skeleton is written only when every block it uses has `site`'s default paint, since calKeysFor reads none
-// for a block without it (lib/paint-gate.mjs::assertPaints). No site: nothing to check.
-export const assertSkeletonPaints = ( { skeleton, site, client, what, cache: dir = CACHE } ) => assertPaints( { blocks: treeBlocks( skeleton ), calFor: calibrationsAt( site, dir ), site, client, what } );
+// for a block without it (lib/paint-gate.mjs::assertPaints); a block named in `allow` (--allow-missing-paint) goes on
+// without it and is printed. No site: nothing to check. Returns the named blocks the skeleton used without paint.
+export const assertSkeletonPaints = ( { skeleton, site, client, what, cache: dir = CACHE, allow = [], log = console.log } ) => assertPaints( { blocks: treeBlocks( skeleton ), calFor: calibrationsAt( site, dir ), site, client, what, allow, log } );
 
 const readJson = ( file, fallback ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : fallback );
 

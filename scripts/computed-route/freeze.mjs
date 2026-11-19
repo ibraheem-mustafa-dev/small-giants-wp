@@ -15,9 +15,10 @@ import fs from 'fs';
 import path from 'path';
 import { spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
+import { allowMissingPaintArg } from './lib/paint-gate.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
-const USAGE = 'usage: node scripts/computed-route/freeze.mjs snapshot <client> [--no-built] | diff <client> <freeze dir> [--no-built] | diff-all <freeze stamp>\n';
+const USAGE = 'usage: node scripts/computed-route/freeze.mjs snapshot <client> [--no-built] [--allow-missing-paint sgs/a,sgs/b] | diff <client> <freeze dir> [--no-built] [--allow-missing-paint sgs/a,sgs/b] | diff-all <freeze stamp>\n';
 const CLIENT = /^[a-z0-9-]+$/;
 
 // The outcome of a row: its block, or its action (with the element it was absorbed into).
@@ -75,7 +76,7 @@ const commitOf = ( repo ) => {
 };
 
 // The default proposer: the client's surfaces proposed offline from its saved intake and inventories.
-async function proposeClient( client, useBuilt, repo = REPO ) {
+async function proposeClient( client, useBuilt, repo = REPO, allowMissingPaint = [] ) {
 	const { rerunSkeletons, loopingKeys } = await import( './lib/skeleton-rerun.mjs' );
 	const { openDb } = await import( './lib/db.mjs' );
 	const file = path.join( repo, 'sites', client, 'build', 'intake', 'intake.json' );
@@ -85,7 +86,7 @@ async function proposeClient( client, useBuilt, repo = REPO ) {
 	const intake = JSON.parse( fs.readFileSync( file, 'utf8' ) );
 	const db = openDb();
 	try {
-		return proposalsOf( rerunSkeletons( { client, db, repo, skeletons: intake.skeletons, motion: loopingKeys( intake.inventory?.animations ), useBuilt } ).surfaces );
+		return proposalsOf( rerunSkeletons( { client, db, repo, skeletons: intake.skeletons, motion: loopingKeys( intake.inventory?.animations ), useBuilt, allowMissingPaint } ).surfaces );
 	} finally {
 		db.close();
 	}
@@ -106,7 +107,7 @@ async function diffOne( client, dir, flags, o ) {
 		o.err( `the freeze was taken ${ frozen.header.noBuilt ? 'with' : 'without' } --no-built; diff proposes as the freeze did\n` );
 		return 2;
 	}
-	const after = await o.propose( client, ! frozen.header.noBuilt, o.repo );
+	const after = await o.propose( client, ! frozen.header.noBuilt, o.repo, o.allowMissingPaint ?? [] );
 	const d = diffProposals( frozen.surfaces, after );
 	report( client, d, frozen.header.counts.rows ).forEach( ( l ) => o.out( `${ l }\n` ) );
 	return d.changed.length + d.added.length + d.removed.length ? 1 : 0;
@@ -115,7 +116,19 @@ async function diffOne( client, dir, flags, o ) {
 // argv: the arguments after the script. o: { repo, propose, now, out, err } (all defaulted). Returns the exit code.
 export async function main( argv, o = {} ) {
 	const opts = { repo: REPO, propose: proposeClient, now: () => new Date(), out: ( s ) => process.stdout.write( s ), err: ( s ) => process.stderr.write( s ), ...o };
-	const [ cmd, ...rest ] = argv;
+	const [ cmd, ...given ] = argv;
+	// --allow-missing-paint <blocks> (lib/paint-gate.mjs) goes to the proposer; every other flag is checked below.
+	let allowMissingPaint;
+	try {
+		allowMissingPaint = allowMissingPaintArg( given );
+	} catch ( e ) {
+		opts.err( `${ e.message }
+${ USAGE }` );
+		return 2;
+	}
+	opts.allowMissingPaint = allowMissingPaint;
+	const at = given.indexOf( '--allow-missing-paint' );
+	const rest = -1 === at ? given : given.filter( ( _, i ) => i !== at && i !== at + 1 );
 	const flags = rest.filter( ( x ) => x.startsWith( '--' ) );
 	const args = rest.filter( ( x ) => ! x.startsWith( '--' ) );
 	if ( flags.some( ( f ) => '--no-built' !== f ) ) {
@@ -125,7 +138,7 @@ export async function main( argv, o = {} ) {
 	try {
 		if ( 'snapshot' === cmd && 1 === args.length && CLIENT.test( args[ 0 ] ) ) {
 			const noBuilt = flags.includes( '--no-built' );
-			const surfaces = await opts.propose( args[ 0 ], ! noBuilt, opts.repo );
+			const surfaces = await opts.propose( args[ 0 ], ! noBuilt, opts.repo, opts.allowMissingPaint );
 			const now = opts.now();
 			const header = { client: args[ 0 ], commit: commitOf( opts.repo ), date: now.toISOString(), noBuilt, counts: { surfaces: Object.keys( surfaces ).length, rows: countRows( surfaces ) } };
 			const dir = path.join( opts.repo, 'sites', args[ 0 ], 'build', 'qa', 'freeze', `${ stampOf( now ) }${ noBuilt ? '-no-built' : '' }` );

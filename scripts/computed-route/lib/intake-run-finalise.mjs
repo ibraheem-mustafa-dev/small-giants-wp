@@ -285,7 +285,7 @@ export function runRerunSkeletons( at, o, { log, recordProblems } ) {
 	const db = openDb();
 	let res;
 	try {
-		res = refreshIntakeSkeletons( { intake, client: o.client, db, repo: o.repo } );
+		res = refreshIntakeSkeletons( { intake, client: o.client, db, repo: o.repo, allowMissingPaint: o.allowMissingPaint || [] } );
 	} catch ( e ) {
 		say( `the skeletons could not be proposed again: ${ e.message }` );
 		return 1;

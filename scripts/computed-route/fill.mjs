@@ -58,7 +58,7 @@ import { walkerConfigs, WALK_WIDTHS } from './lib/fill-config.mjs';
 import { walkerStates, walkRefusalRows } from './lib/walker-states.mjs';
 import { fillReport, unmappedList, readFailureRows, passSettled } from './lib/fill-report.mjs';
 import { calibrationFor } from './solve.mjs';
-import { assertPaints, treeBlocks } from './lib/paint-gate.mjs';
+import { assertPaints, treeBlocks, allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { motionSettled, motionRejudged, transitionListOutcomes } from './lib/fill-motion-settle.mjs';
 import { stateMap } from './lib/state-map.mjs';
 import { readMediaMap } from './lib/fill-media.mjs';
@@ -112,7 +112,7 @@ export function animationInventory( buildDir, draftIndex, log ) {
 export const draftIndexOf = ( o, entry ) => o.draftIndex || ( o.draftUrl ? entry?.draftIndex : null ) || null;
 
 // Runs Fill and writes its outputs. o: { client, surface, skeleton (a file), draftUrl | draftDir (+ draftIndex), liveUrl,
-// out, open, cache, sweep (default true), headless (default true), external, mirror ({ url: local file } answered
+// out, open, cache, allowMissingPaint ([block] that may go without default paint, lib/paint-gate.mjs), sweep (default true), headless (default true), external, mirror ({ url: local file } answered
 // from disk), repo, log }. Returns the report object.
 export async function fillSurface( o ) {
 	const repo = o.repo || REPO;
@@ -146,7 +146,8 @@ export async function fillSurface( o ) {
 	const skeleton = expandSiteInfoRows( authored );
 	// Every block of the skeleton has this site's default paint, or the run stops here, before any output (lib/paint-gate.mjs).
 	const calFor = calibrationLoader( entry.site, o.cache );
-	assertPaints( { blocks: treeBlocks( skeleton ), calFor, site: entry.site, client: o.client, what: `fill ${ o.surface }` } );
+	// A block named in o.allowMissingPaint (--allow-missing-paint) goes on without it, printed here and listed in the report.
+	const missingPaint = assertPaints( { blocks: treeBlocks( skeleton ), calFor, site: entry.site, client: o.client, what: `fill ${ o.surface }`, allow: o.allowMissingPaint || [], log: o.log || console.log } );
 	const outDir = path.resolve( o.out || path.join( buildDir, 'qa', 'fill', o.surface, stamp() ) );
 	fs.mkdirSync( outDir, { recursive: true } );
 	const tree = cleanTree( skeleton );
@@ -354,7 +355,7 @@ export async function fillSurface( o ) {
 		result.notes.push( ...[ ...new Set( result.confirm.filter( ( r ) => r.safeArea ).map( ( r ) => `${ r.node } ${ r.block } ${ r.property }: ${ r.safeArea.note }` ) ) ] );
 		result.confirm.push( ...imageRecords( { images: result.images } ) );
 		const steps = sweepSteps( reads.sweep, ( id ) => ( { node: refOf( flat[ Number( id.split( ':' )[ 0 ] ) ] ), slot: id.slice( id.indexOf( ':' ) + 1 ) } ) );
-		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, snapshotPatch: { file: patchFile, entries: states.patchEntries }, sweepSkipped: false === o.sweep } );
+		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, snapshotPatch: { file: patchFile, entries: states.patchEntries }, sweepSkipped: false === o.sweep, missingPaint } );
 		const divergences = fs.existsSync( ledgerFile ) ? path.relative( outDir, ledgerFile ).split( path.sep ).join( '/' ) : null;
 		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, inventory, draftUrl: readUrl, liveUrl: o.liveUrl, open: o.open || null, opener: walkOpener, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening', walk } );
 		const put = ( name, text ) => fs.writeFileSync( path.join( outDir, name ), text );
@@ -403,7 +404,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		} else {
 			const r = await fillSurface( {
 				client: flag( '--client' ), surface: flag( '--surface' ), skeleton: flag( '--skeleton' ), draftUrl: flag( '--draft-url' ), draftDir: flag( '--draft-dir' ), draftIndex: flag( '--draft-index' ),
-				liveUrl: flag( '--live-url' ), out: flag( '--out' ), open: flag( '--open' ), cache: flag( '--cache' ), sweep: ! argv.includes( '--no-sweep' ), headless: ! argv.includes( '--headed' ), external: argv.includes( '--allow-external' ), mirror: parseMirrors( argv ),
+				liveUrl: flag( '--live-url' ), out: flag( '--out' ), open: flag( '--open' ), cache: flag( '--cache' ), sweep: ! argv.includes( '--no-sweep' ), headless: ! argv.includes( '--headed' ), external: argv.includes( '--allow-external' ), mirror: parseMirrors( argv ), allowMissingPaint: allowMissingPaintArg( argv ),
 				log: ( m ) => console.log( m ),
 			} );
 			console.log( `fill ${ r.surface }: ${ r.counts.writes } settings written, ${ r.counts.unmapped } UNMAPPED, ${ r.counts.handover } handover, ${ r.counts.fluid } fluid, ${ r.counts.breakpointSteps } breakpoint steps. Report: ${ path.join( r.outDir, 'fill-report.md' ) }` );

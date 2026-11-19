@@ -13,7 +13,7 @@ import { spawn, spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { openDb, statesVocabulary } from './lib/db.mjs';
 import { loadCalibration } from './lib/cache.mjs';
-import { assertPaints, treeBlocks } from './lib/paint-gate.mjs';
+import { assertPaints, treeBlocks, allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { resolve, resolveViaAncestor } from './lib/resolve.mjs';
 import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, assertQuiet } from './lib/tree.mjs';
@@ -503,9 +503,10 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	}
 	const calFor = calibrationForSite( s.site );
 	const tree = readTree( treeFile );
-	// Every block of the tree has this site's default paint, or the run stops here, before any output (lib/paint-gate.mjs).
+	// Every block of the tree has this site's default paint, or is named in --allow-missing-paint (printed), or the run stops
+	// here, before any output (lib/paint-gate.mjs).
 	try {
-		assertPaints( { blocks: treeBlocks( tree ), calFor, site: s.site, client, what: `solve ${ surface }` } );
+		assertPaints( { blocks: treeBlocks( tree ), calFor, site: s.site, client, what: `solve ${ surface }`, allow: allowMissingPaintArg( argv ) } );
 	} catch ( e ) {
 		console.error( e.message );
 		process.exit( 2 );

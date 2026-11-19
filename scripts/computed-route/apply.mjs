@@ -45,7 +45,7 @@ import { positionTargets } from './lib/apply-position.mjs';
 import { attrsFor } from './lib/db.mjs';
 import { partHome } from './lib/fill-part-pairing.mjs';
 import { loadCalibration } from './lib/cache.mjs';
-import { assertPaints } from './lib/paint-gate.mjs';
+import { assertPaints, allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { openDb } from './lib/db.mjs';
 import { draftLinksFor } from './lib/draft-link.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
@@ -312,7 +312,7 @@ export function applySite( { surfaces, named = null, targets, repo, write = fals
 async function main() {
 	const client = process.argv[ 2 ];
 	if ( ! client || client.startsWith( '--' ) ) {
-		console.error( 'usage: node scripts/computed-route/apply.mjs <client> [--surfaces a,b] [--families x,y] [--widths 1440,768,375] [--draft <origin>] [--site <local mirror or scratch copy>] [--jobs 4] [--fresh] [--write]' );
+		console.error( 'usage: node scripts/computed-route/apply.mjs <client> [--surfaces a,b] [--families x,y] [--widths 1440,768,375] [--draft <origin>] [--site <local mirror or scratch copy>] [--jobs 4] [--fresh] [--allow-missing-paint sgs/a,sgs/b] [--write]' );
 		process.exit( 2 );
 	}
 	const write = has( '--write' );
@@ -360,9 +360,9 @@ async function main() {
 	const shelled = surfaces.filter( ( s ) => 'home' === s.shell );
 	const blocks = readBlocks( site, [ ...surfaces.map( ( s ) => s.postId ), ...( shelled.length ? [ 'template:home' ] : [] ) ], tmp );
 	shelled.forEach( ( s ) => ( s.postId = blocks.templates?.home || s.postId ) );
-	// Every block saved on the surfaces this run works on has this site's default paint, or the run stops here, before any
-	// read or write (lib/paint-gate.mjs).
-	assertPaints( { blocks: surfaces.flatMap( ( s ) => Object.values( blocks[ s.postId ]?.blocks ?? {} ).map( ( b ) => b?.block ) ).filter( Boolean ), calFor, site, client, what: `apply ${ client }` } );
+	// Every block saved on the surfaces this run works on has this site's default paint, or is named in --allow-missing-paint
+	// (printed), or the run stops here, before any read or write (lib/paint-gate.mjs).
+	assertPaints( { blocks: surfaces.flatMap( ( s ) => Object.values( blocks[ s.postId ]?.blocks ?? {} ).map( ( b ) => b?.block ) ).filter( Boolean ), calFor, site, client, what: `apply ${ client }`, allow: allowMissingPaintArg( process.argv ) } );
 	const clientData = { ...loadClientData( REPO, client ), draftSource: loadDraftSource( REPO, client ) };
 	const skeleton = loadSkeleton( REPO, client );
 	const tools = motionTools( db, rawSnapshot );

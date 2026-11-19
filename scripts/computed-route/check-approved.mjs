@@ -1,5 +1,5 @@
 // The skeleton standing rules measured against the client's approved review outcomes (Spec 48 FR-48-6):
-//   node scripts/computed-route/check-approved.mjs <client> [--no-built]
+//   node scripts/computed-route/check-approved.mjs <client> [--no-built] [--allow-missing-paint sgs/a,sgs/b]
 // Proposes every surface again offline (lib/skeleton-rerun.mjs, from the inventories the last intake saved, with the
 // motion inventory's loop records and no finaliser picks) and compares each row Bean approved in
 // sites/<client>/build/intake/approved-decisions.json (category3, every batch) with what the rules propose: the block,
@@ -16,6 +16,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { rerunSkeletons, loopingKeys } from './lib/skeleton-rerun.mjs';
+import { allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { openDb } from './lib/db.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
 import { checkApproval, aliasAbsorbed } from './lib/approved-check.mjs';
@@ -69,7 +70,7 @@ function main() {
 	assertCurrent( intake, path.join( REPO, 'sites', client, 'handoff' ), { label: `sites/${ client }/build/intake/intake.json` } );
 	const approved = JSON.parse( fs.readFileSync( path.join( dir, 'approved-decisions.json' ), 'utf8' ) );
 	const db = openDb();
-	const run = rerunSkeletons( { client, db, repo: REPO, skeletons: intake.skeletons, motion: loopingKeys( intake.inventory?.animations ), useBuilt: ! flags.includes( '--no-built' ) } );
+	const run = rerunSkeletons( { client, db, repo: REPO, skeletons: intake.skeletons, motion: loopingKeys( intake.inventory?.animations ), useBuilt: ! flags.includes( '--no-built' ), allowMissingPaint: allowMissingPaintArg( flags ) } );
 	db.close();
 
 	const rows = {};

@@ -45,6 +45,7 @@ import { readInventory } from './lib/skeleton-inventory.mjs';
 import { handoffRecords } from './lib/skeleton-reveal.mjs';
 import { permalinkOf } from './lib/fill-route.mjs';
 import { skeletonPaths, inventoryStrips, proposeSurface } from './skeleton.mjs';
+import { allowMissingPaintArg, allowMissingPaintArgs } from './lib/paint-gate.mjs';
 import { routeHash, withRoute } from './lib/fill-open.mjs';
 import { isStatePage, stateRouteHash } from './lib/state-route.mjs';
 import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
@@ -281,7 +282,7 @@ export async function main( argv ) {
 	const flag = ( n, d = null ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : d );
 	const site = flag( '--site' );
 	if ( ! client || ! site ) {
-		throw new Error( 'usage: site-run.mjs <client> --site <target> [--only a,b] [--stages inventory,propose,fill,build,apply,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content] [--no-copies] [--strict]' );
+		throw new Error( 'usage: site-run.mjs <client> --site <target> [--only a,b] [--stages inventory,propose,fill,build,apply,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content] [--no-copies] [--strict] [--allow-missing-paint sgs/a,sgs/b]' );
 	}
 	const stages = ( flag( '--stages' ) || ALL_STAGES.join( ',' ) ).split( ',' );
 	const only = flag( '--only' ) ? flag( '--only' ).split( ',' ) : null;
@@ -295,6 +296,9 @@ export async function main( argv ) {
 	const intake = readJson( path.join( build, 'intake', 'intake.json' ) );
 	const withCopies = ! argv.includes( '--no-copies' );
 	const strict = argv.includes( '--strict' );
+	// --allow-missing-paint <blocks> (lib/paint-gate.mjs): passed to propose, fill and apply, each of which prints the blocks it used without default paint.
+	const allowMissingPaint = allowMissingPaintArg( argv );
+	allowMissingPaint.length && console.log( `site-run: --allow-missing-paint ${ allowMissingPaint.join( ',' ) }: a stage whose tree uses one of these without default paint prints it in its log, and Fill's report lists it` );
 	const keys = runKeys( surfaces, only, { copies: withCopies } );
 	// A run that would carry on with worse proposals for want of a gitignored intake file stops here, before any stage.
 	const missingInputs = intakeInputsMissing( { client, build, stages, surfaces, keys, intake, withContent } );
@@ -406,7 +410,7 @@ export async function main( argv ) {
 			return;
 		}
 		if ( ! await step( 'propose', async () => {
-			const r = proposeSurface( { client, surface: key } );
+			const r = proposeSurface( { client, surface: key, allowMissingPaint } );
 			return proposeDetail( r, { strict } );
 		} ) ) {
 			return;
@@ -415,7 +419,7 @@ export async function main( argv ) {
 		let walkUrl = draftUrl;
 		if ( ! await step( 'fill', async () => {
 			const tail = await exec( 'fill', 'node', [ 'scripts/computed-route/fill.mjs', '--client', client, '--surface', key,
-				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, '--allow-external', '--out', path.relative( REPO, out ) ] );
+				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, '--allow-external', '--out', path.relative( REPO, out ), ...allowMissingPaintArgs( allowMissingPaint ) ] );
 			// A state that never rendered is an opener failure, not a Fill that happened to run.
 			const opened = path.join( out, 'opener.json' );
 			const o = fs.existsSync( opened ) ? readJson( opened ) : null;
@@ -516,7 +520,7 @@ export async function main( argv ) {
 		}
 		return step( 'apply', () => exclusive( async () => {
 			const origin = new URL( ( await serverFor( entry ) ).url ).origin;
-			const said = await exec( 'apply', 'node', [ 'scripts/computed-route/apply.mjs', client, '--surfaces', key, '--draft', origin, '--site', site, '--write' ] );
+			const said = await exec( 'apply', 'node', [ 'scripts/computed-route/apply.mjs', client, '--surfaces', key, '--draft', origin, '--site', site, '--write', ...allowMissingPaintArgs( allowMissingPaint ) ] );
 			return applyDetail( path.join( dir, `${ key }.apply.log` ), said );
 		} ) );
 	}
