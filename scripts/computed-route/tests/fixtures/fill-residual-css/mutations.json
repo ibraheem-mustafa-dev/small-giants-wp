@@ -1,0 +1,16 @@
+[
+	{"file":"lib/fill-residual-css.mjs","find":"( 'property' === h.via || 'reaches' === h.via ) && ! toggle( h.attr )","replace":"false","why":"a property a setting paints on the part would be written as Custom CSS"},
+	{"file":"lib/fill-residual-css.mjs","find":"&& ! toggle( h.attr ) );","replace":");","why":"a visibility toggle would count as the home of a shown display"},
+	{"file":"lib/fill-residual-css.mjs","find":"values.every( ( [ w, v ] ) => zeroShadow( v ) && unpainted( w ) )","replace":"false","why":"a zero shadow would reach the writer"},
+	{"file":"lib/fill-residual-css.mjs","find":"if ( 'slug' === s?.form ) {","replace":"if ( false ) {","why":"a palette colour would be written as a literal"},
+	{"file":"lib/fill-residual-css.mjs","find":"if ( ! holdsAttr( db, rec.name, 'sgsCustomCss' ) ) {","replace":"if ( false ) {","why":"a block with no Custom CSS setting would be written to"},
+	{"file":"lib/fill-residual-css.mjs","find":"a[ 0 ] > b[ 0 ] || ( a[ 0 ] === b[ 0 ] && a[ 1 ] > b[ 1 ] ) ? [ r, twin ] : [ twin, r ]","replace":"[ twin, r ]","why":"the outer wrapper would take the property the inner element paints"},
+	{"file":"lib/fill-residual-css.mjs","find":"if ( 'display' === prop ) {","replace":"if ( false ) {","why":"a display would be written over the block's own layout"},
+	{"file":"lib/fill-residual-css.mjs","find":"if ( PLACED_BY_POSITION.test( prop ) && unplaced.has( where ) ) {","replace":"if ( false ) {","why":"offsets of a refused out-of-flow element would be written"},
+	{"file":"lib/fill-residual-css.mjs","find":"if ( LAYOUT.test( prop ) && widths.length < WIDTHS.length ) {","replace":"if ( false ) {","why":"one width's layout would be held at every width"},
+	{"file":"lib/fill-residual-css.mjs","find":"if ( differs.length ) {","replace":"if ( false ) {","why":"a container property would act on a different layout"},
+	{"file":"lib/fill-residual-css.mjs","find":"if ( out.bytes + bytes > cap ) {","replace":"if ( false ) {","why":"the page cap would not hold"},
+	{"file":"lib/fill-residual-css.mjs","find":"const spans = widthSpans( { widths, values, series } );","replace":"const spans = { ranges: [ { range: [ 0, Infinity ], value: values[ widths.at( -1 ) ] } ], snaps: [] };","why":"a per-width value would be written as the widest one at every width"},
+	{"file":"lib/fill-residual-css.mjs","find":"JSON.stringify( [ g.block, g.part, property, g.state ?? null ] )","replace":"JSON.stringify( [ g.block, g.part, g.range, property, g.state ?? null ] )","why":"a gap row would repeat per width range"},
+	{"file":"lib/fill-residual-css.mjs","find":"\tif ( same ) {","replace":"\tif ( false ) {","why":"a setting painting the same box on another part would be written over"}
+]
