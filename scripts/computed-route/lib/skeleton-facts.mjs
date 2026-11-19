@@ -144,6 +144,11 @@ export function decisionsProblems( facts ) {
 		! values?.includes( x.value ) && problems.push( `rules.listArrangement.blocks[${ i }] must name a setting ${ x.block } has and one of its values (${ x.setting } ${ x.value })` );
 		x.equalShare && ( ! facts.attr( x.block, x.equalShare.setting ) || 'boolean' !== typeof x.equalShare.value ) && problems.push( `rules.listArrangement.blocks[${ i }].equalShare must name an on or off setting ${ x.block } has (${ x.equalShare.setting })` );
 	} );
+	// A dissolved link's slot names a block, a setting of it and the calibrated slot path the link is read at.
+	( r.homeLink?.linkSlots || [] ).forEach( ( x, i ) => {
+		known( x.block, `rules.homeLink.linkSlots[${ i }]` );
+		( ! facts.attr( x.block, x.setting ) || ! /^\.\S/.test( x.slot || '' ) ) && problems.push( `rules.homeLink.linkSlots[${ i }] must name a setting ${ x.block } has and a slot path of its element` );
+	} );
 	// An item-field slot names a block with the item key it reads and css_elements the block's settings sit on.
 	( r.itemFieldSlots?.blocks || [] ).forEach( ( x, i ) => {
 		known( x.block, `rules.itemFieldSlots.blocks[${ i }]` );

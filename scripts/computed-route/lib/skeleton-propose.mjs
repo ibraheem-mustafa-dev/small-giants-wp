@@ -14,6 +14,7 @@ import { listArrangement } from './skeleton-arrangement.mjs';
 import { makeClassifier, overrideFor, W } from './skeleton-classify.mjs';
 import { collapsePoint, childSlots, unitSlots, slideSlots } from './skeleton-child-slots.mjs';
 import { itemFieldSlots } from './skeleton-item-field-slots.mjs';
+import { wrapperLinkSlot } from './skeleton-wrapper-link-slot.mjs';
 import { mediaSelfSlot, partSlots, placePart, codeItemSlots, drawnSvgParts, itemSlots, chipSlots } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
@@ -172,10 +173,13 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			return null;
 		}
 		if ( 'unwrap' === r.action ) {
-			record( e, r );
+			const row = record( e, r );
 			hostSlot( e, r );
 			bandWrapper( e );
-			return buildChildren( e, parentBlock );
+			const built = buildChildren( e, parentBlock );
+			const link = wrapperLinkSlot( { rule: R[ r.rule ], e, built, calSettings, finder } );
+			link.notes.length && row && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...link.notes ] );
+			return built;
 		}
 		if ( 'absorbed' === r.action ) {
 			record( e, r );
