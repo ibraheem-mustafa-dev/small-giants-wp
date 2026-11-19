@@ -21,6 +21,9 @@ import { specHit } from './skeleton-facts.mjs';
 import { brandOwnsAddress } from './brand-registry.mjs';
 import { toggleGroups, summaryOf as summaryLine, stageNoteOf, canvasOf } from './skeleton-choice-flow-canvas.mjs';
 import { flowPieces } from './skeleton-choice-flow-refs.mjs';
+import { mountBinding } from './mount-handler.mjs';
+import { draftLogicOf } from './skeleton-narrowing.mjs';
+import { logicReadings } from './skeleton-widgets.mjs';
 
 const HEADING = /^h[1-6]$/;
 const FIELD_TAGS = new Set( [ 'input', 'select', 'textarea', 'sc-raw-select' ] );
@@ -46,12 +49,12 @@ function recordTree( els, rootKey ) {
 
 // o: { view (lib/skeleton-record.mjs::recordView), rootKey (the flow root's record key), R (rules.choiceFlow), formControl
 // (rules.formControl), brands (lib/brand-registry.mjs), surfaceKind, parts (the surface's surfaces.json parts, from
-// surfaceContext) }. Returns { attributes (the root's settings), steps [{ key, label, question?, fields [{ block, label, key }],
+// surfaceContext), folder (the handoff folder, for the logic of a mounted component) }. Returns { attributes (the root's settings), steps [{ key, label, question?, fields [{ block, label, key }],
 // result?, parts? (the record keys of the question's own pieces: heading, intro, description, badge, toggle), wrapper? (the
 // record key of the step's own element: a panel's), resultAt? (the record key a result part's result is drawn from) }], covered (record key -> what draws it), copies
 // [{ words, reason }], pieces (lib/skeleton-choice-flow-refs.mjs::flowPieces: the record keys of the flow's own pieces),
 // handovers, notes }.
-export function choiceFlowModel( { view, rootKey, R, formControl = null, brands = [], surfaceKind = null, parts = [] } ) {
+export function choiceFlowModel( { view, rootKey, R, formControl = null, brands = [], surfaceKind = null, parts = [], folder = null } ) {
 	const els = view.elements || {};
 	const out = { attributes: {}, steps: [], covered: new Map(), copies: [], handovers: [], notes: [] };
 	if ( ! rootKey || ! els[ rootKey ] ) {
@@ -63,7 +66,15 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 	const real = ( k ) => ! /^sc-/.test( rec( k ).realTag );
 	const literal = ( k ) => ( ( w ) => ( w && ! BOUND.test( w ) ? w : '' ) )( squash( rec( k ).words ) );
 	const words = ( k ) => [ k, ...t.desc( k ) ].map( literal ).filter( Boolean ).join( ' ' );
-	const handler = ( k ) => rec( k ).events?.find( ( ev ) => /^onclick$/i.test( ev.name ) )?.expr ?? /^\{\{\s*([^}\s]+)\s*\}\}$/.exec( rec( k ).attrs?.onClick ?? '' )?.[ 1 ] ?? '';
+	// A mount of a component whose control's click handler is a prop the mount passes (lib/mount-handler.mjs): the mount's
+	// binding, so a mounted button is a control with the handler it would have if drawn where it stands.
+	const mounted = ( k ) => {
+		const name = 'dc-import' === rec( k ).realTag ? rec( k ).attrs?.name : null;
+		const d = name && folder ? draftLogicOf( { folder, record: { sources: view.sources }, component: name } ) : null;
+		const own = d ? logicReadings( d ) : null;
+		return own ? Object.values( els ).map( ( x ) => x.template ).filter( ( t ) => t.component === name ).map( ( control ) => mountBinding( { control, mount: rec( k ), own } ) ).find( Boolean ) ?? '' : '';
+	};
+	const handler = ( k ) => rec( k ).events?.find( ( ev ) => /^onclick$/i.test( ev.name ) )?.expr ?? /^\{\{\s*([^}\s]+)\s*\}\}$/.exec( rec( k ).attrs?.onClick ?? '' )?.[ 1 ] ?? mounted( k );
 	const control = ( k ) => [ 'button', 'a' ].includes( rec( k ).realTag ) || !! handler( k );
 	const values = ( k, hole ) => {
 		const a = els[ k ].logic?.holes?.[ hole.id ] || {};
@@ -79,7 +90,7 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 	// The option loops: the button its handler binds to the item, and the item count the list recorded.
 	const loops = all.filter( ( k ) => 'sc-for' === rec( k ).realTag && rec( k ).attrs?.as ).map( ( k ) => {
 		const as = rec( k ).attrs.as;
-		const button = t.desc( k ).find( ( d ) => 'button' === rec( d ).realTag && handler( d ).startsWith( `${ as }.` ) );
+		const button = t.desc( k ).find( ( d ) => [ 'button', 'dc-import' ].includes( rec( d ).realTag ) && handler( d ).startsWith( `${ as }.` ) );
 		const list = rec( k ).holes.find( ( h ) => 'attr:list' === h.where );
 		const counted = list ? ( els[ k ].logic?.holes?.[ list.id ]?.[ 1440 ]?.v?.[ 0 ]?.n ?? null ) : null;
 		return button ? { k, as, button, count: counted ?? Math.max( 0, ...textHoles( t.desc( k ) ).map( ( x ) => x.vals?.n ?? 0 ) ) } : null;

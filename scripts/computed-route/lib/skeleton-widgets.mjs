@@ -22,6 +22,7 @@ import { isThisMember, isFn, subtree, resolveName, classMethod, keyName } from '
 import { propRefs, elementsOf, oneString } from './intake-ast-eval.mjs';
 import { rootData, holeField } from './fill-list-items.mjs';
 import { matchFields, keyRoles } from './fill-list-content.mjs';
+import { mountBinding } from './mount-handler.mjs';
 
 const MAX_DEPTH = 4;
 const SCROLL_CALLS = new Set( [ 'scrollTo', 'scrollBy', 'scrollIntoView' ] );
@@ -209,7 +210,30 @@ export function widgetModel( { m, view, facts, R, surface = {}, declared = () =>
 	const clickOf = ( e ) => ( tplOf( e )?.events || [] ).find( ( ev ) => /^onClick$/i.test( ev.name ) )?.expr ?? null;
 	const isControl = ( e ) => !! clickOf( e );
 	const loopOf = ( e ) => tplOf( e )?.membership?.scFor?.at( -1 ) ?? null;
-	const handlerOf = ( L, c ) => L.fnOf( L.valueOf( tplOf( c ), clickOf( c ) ) );
+	// The mount host a control sits in (the element the runtime stamps for a dc-import), or null.
+	const mountOf = ( e ) => {
+		for ( let x = m.byKey[ e.parentKey ]; x; x = m.byKey[ x.parentKey ] ) {
+			if ( 'dc-import' === x.srcTag ) {
+				return x;
+			}
+		}
+		return null;
+	};
+	// A control's click handler in the logic `L` of the unit holding it. A control inside a mounted component whose handler
+	// is a prop the mount passes (lib/mount-handler.mjs) is read through the mount's binding in L, as a control drawn where
+	// it stands is.
+	const handlerOf = ( L, c ) => {
+		const t = tplOf( c );
+		const host = mountOf( c );
+		const mount = host ? tplOf( host ) : null;
+		if ( t && mount && mount.component !== t.component ) {
+			const binding = mountBinding( { control: t, mount, own: logic( t.component ) } );
+			if ( binding ) {
+				return L.fnOf( L.valueOf( mount, binding ) );
+			}
+		}
+		return L.fnOf( L.valueOf( t, clickOf( c ) ) );
+	};
 	// Runs of sibling elements that are copies of one loop template (two or more).
 	const loopRuns = ( p ) => {
 		const by = new Map();

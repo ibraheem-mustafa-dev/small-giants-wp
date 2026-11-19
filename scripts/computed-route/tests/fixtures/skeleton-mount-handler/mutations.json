@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/skeleton-widgets.mjs",
+		"find": "if ( t && mount && mount.component !== t.component ) {",
+		"replace": "if ( false ) {",
+		"why": "a mounted control's handler is read in the parent as written (onPress), so it is never found"
+	},
+	{
+		"file": "lib/mount-handler.mjs",
+		"find": "return 'var' === r?.kind && isThisMember( r.init, 'props' );",
+		"replace": "return false;",
+		"why": "a name declared as this.props is not read as the props"
+	},
+	{
+		"file": "lib/mount-handler.mjs",
+		"find": "find( ( [ a ] ) => a === prop || a.toLowerCase() === prop.toLowerCase() )",
+		"replace": "find( ( [ a ] ) => 'label' === a )",
+		"why": "the wrong mount attribute is taken"
+	},
+	{
+		"file": "lib/skeleton-choice-flow.mjs",
+		"find": "?.[ 1 ] ?? mounted( k );",
+		"replace": "?.[ 1 ] ?? '';",
+		"why": "a mount gives the flow no handler"
+	},
+	{
+		"file": "lib/skeleton-choice-flow.mjs",
+		"find": "[ 'button', 'dc-import' ].includes( rec( d ).realTag )",
+		"replace": "[ 'button' ].includes( rec( d ).realTag )",
+		"why": "a mounted option is no option"
+	}
+]

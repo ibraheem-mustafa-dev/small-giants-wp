@@ -717,7 +717,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const rail = region?.key ? filterRail( { m, region, filters: surface.commerce.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
 	const role = surface.role ?? null;
-	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: view.entry( m.root )?.template.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [] } ) : null;
+	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: view.entry( m.root )?.template.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [], folder: handoffOf( facts ) } ) : null;
 	// The surface's accordions, sliders and tabs, recognised by what the draft's code does (lib/skeleton-widgets.mjs), read
 	// once on first use.
 	let widgetsRead = null;
