@@ -81,7 +81,7 @@ Signed off by Bean (2026-11-12). eye-care-test (`https://darkcyan-grouse-898606.
 
 **State:** no page waits on one stylesheet request per block type any more. Shared stylesheets print as order-preserving runs, inside the page (`inline`, the framework default) or as one cached file per run (`bundle`), set per site on SGS → CSS Output (`sgs_css_shared_delivery`); page-specific CSS prints inside the page; every font preset carries its size-matched fallback. Live on sandybrown, mamas-test, indus-test and eye-care-test (`45aef2042`); the code-review fixes are on `main` and not yet deployed. Saved modes: `bundle` on mamas-test (Bean's ruling after measuring both on the live shop: Home 95, Shop 82 against `inline`'s 90 and 86), `inline` everywhere else. Canary: Home 92 to 98, Shop 90 to 95.
 
-**Resume from:** `plans/2026-11-19-css-delivery.md` "Open": `bundle` hardening first (Mama's runs it), then Shop image loading, footer JavaScript, and Stage C (shrinking per-instance CSS) as its own plan.
+**Resume from:** `plans/2026-11-19-css-delivery.md` "Open" (Shop image loading, footer JavaScript, page cache; Mama's moves to `inline`, so `bundle` hardening is parked), then Stage C, shrinking per-instance CSS at source: `plans/2026-11-19-stage-c-per-instance-css.md`.
 
 ## Parked
 
