@@ -99,21 +99,23 @@ export function surfaceRoots( { folder, census, records = null } ) {
 			gaps.push( gap( 'surface-root', `${ r.dc }:${ missing[ 0 ] }`, `${ where } names template id(s) ${ missing.join( ', ' ) }, which the census does not hold` ) );
 			continue;
 		}
-		if ( ! SURFACE_KINDS.includes( r.kind ) ) {
+		// A result record that is a page of its own (its own page_key, no parent: the order confirmation) is read like a page.
+		const kind = 'result' === r.kind && null != r.page_key && null == r.parent ? 'page' : r.kind;
+		if ( ! SURFACE_KINDS.includes( kind ) ) {
 			parts.push( { id: r.id, name: r.name, kind: r.kind, parent: r.parent ?? null, why: `a ${ r.kind } is a state or part of ${ r.parent ? `surface ${ r.parent }` : 'the page it shows on' }, read with it` } );
 			continue;
 		}
 		// A menu record holding several tab panels is one surface per panel, each opened by its own tab's state.
 		const panels = tabPanels( r );
 		for ( const panel of panels.length ? panels : [ null ] ) {
-			const base = 'page' === r.kind ? `page-${ slug( '/' === r.route ? 'home' : r.route ) }` : slug( panel ? `${ r.name } ${ panel.name }` : r.name );
+			const base = 'page' === kind ? `page-${ slug( '/' === r.route ? 'home' : r.route ) }` : slug( panel ? `${ r.name } ${ panel.name }` : r.name );
 			let s = base;
 			for ( let i = 2; slugs.has( s ); i++ ) {
 				s = `${ s.replace( /-\d+$/, '' ) }-${ i }`;
 			}
 			slugs.add( s );
 			const rootTpl = tpls.at( -1 );
-			surfaces.push( { id: r.id, name: panel ? `${ r.name }: ${ panel.name }` : r.name, kind: r.kind, component: r.dc, rootTpl, tpls, route: r.route ?? null, slug: s, rootTag: elements.get( `${ r.dc }:${ rootTpl }` ).detail.tag, selector: `[${ ROOT_MARK }="${ s }"]`, states: panel ? [ panel ] : r.states || [], openedBy: r.opened_by ?? null, ...( panel ? { panel: panel.name } : {} ) } );
+			surfaces.push( { id: r.id, name: panel ? `${ r.name }: ${ panel.name }` : r.name, kind, component: r.dc, rootTpl, tpls, route: r.route ?? null, slug: s, rootTag: elements.get( `${ r.dc }:${ rootTpl }` ).detail.tag, selector: `[${ ROOT_MARK }="${ s }"]`, states: panel ? [ panel ] : r.states || [], openedBy: r.opened_by ?? null, ...( panel ? { panel: panel.name } : {} ) } );
 		}
 	}
 	// A census CPT element (by tag) in a component that no record of a claiming kind names.
