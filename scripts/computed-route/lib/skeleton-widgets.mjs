@@ -255,6 +255,10 @@ export function widgetModel( { m, view, facts, R, surface = {}, declared = () =>
 			const writes = L.writesOf( handlerOf( L, control ) );
 			const keys = new Set( writes.map( ( w ) => w.key ) );
 			const ut = tplOf( u );
+			// A static unit with no record entry has no template to find its panels in.
+			if ( ! ut ) {
+				return null;
+			}
 			const reading = ( t ) => ( t.membership?.scIf || [] ).filter( ( c ) => t.parent === c.key ).flatMap( ( c ) => [ ...L.readsOf( L.valueOf( t, bound( c.value ) ) ) ] ).filter( ( k ) => keys.has( k ) );
 			// The panel templates: inside the unit's template and outside the control's, directly under a condition that reads
 			// a key the control writes.

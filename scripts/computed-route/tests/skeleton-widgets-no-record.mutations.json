@@ -1,0 +1,8 @@
+[
+	{
+		"file": "lib/skeleton-widgets.mjs",
+		"find": "\t\t\tif ( ! ut ) {\n\t\t\t\treturn null;\n\t\t\t}\n",
+		"replace": "",
+		"why": "a static unit with no record entry stops the proposal"
+	}
+]
