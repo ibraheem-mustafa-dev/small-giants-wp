@@ -87,9 +87,9 @@ Read-only discovery of orphaned colour-token slugs: a colour attribute whose sto
 
 Backfills `_sgs_top_tone` (`dark` or `light`) on image attachments: the mean luminance of the top 20% of each image, measured on a small downscaled copy by `plugins/sgs-blocks/includes/media-top-tone.php` (new uploads get the same measure from its `wp_generate_attachment_metadata` filter). `sgs_surface_tone()` reads it so a photo section tells a see-through header and the shadow logic whether it reads light or dark. Without `--force`, attachments that already carry the meta are skipped. An unreadable file or a server with no image library counts as failed. It changes the tone class, and so the shadows, of existing photo sections, so run it on a client site only when asked.
 
-### `wp sgs media modernise [--batch=<n>] [--after=<id>] [--dry-run]`
+### `wp sgs media modernise [--batch=<n>] [--after=<id>] [--repair] [--dry-run]`
 
-Regenerates the resized copies of existing JPEG and PNG attachments as AVIF (quality 60) or WebP (quality 82), through `plugins/sgs-blocks/includes/media/class-sgs-media-formats.php` (Spec 49 FR-49-42). Old resized files stay on disk (the `--skip-delete` behaviour of `wp media regenerate`), so saved URLs that name one still resolve. It runs on one thread (`MAGICK_THREAD_LIMIT=1`), `--batch` attachments at a time (default 10), in ID order; the closing line prints the `--after=<id>` to resume from. Attachments whose resized copies are already AVIF or WebP are skipped. `--dry-run` lists what it would regenerate and writes nothing. It refuses to run when `sgs_media_modern_formats` is switched off or the server writes neither AVIF nor WebP. The attachment's main file, the `-scaled` copy and `original_image` are never touched: only resized sub-sizes convert. Run it over SSH, a batch at a time, on a client site only when asked.
+Regenerates the resized copies of existing JPEG and PNG attachments as AVIF (quality 60) or WebP (quality 82), through `plugins/sgs-blocks/includes/media/class-sgs-media-formats.php` (Spec 49 FR-49-42). Old resized files stay on disk (the `--skip-delete` behaviour of `wp media regenerate`), so saved URLs that name one still resolve. It runs on one thread (`MAGICK_THREAD_LIMIT=1`), `--batch` attachments at a time (default 10), in ID order; the closing line prints the `--after=<id>` to resume from. Attachments whose resized copies are already AVIF or WebP are skipped. `--dry-run` lists what it would regenerate and writes nothing. `--repair` selects only attachments with a 0-byte or missing resized copy, or a registered size absent from their metadata (a failed AVIF save on a busy host), deletes the 0-byte files and regenerates just those sizes (`Sgs_Media_Modernise::repair`); with `--dry-run` it lists each attachment with its empty files and size names. It refuses to run when `sgs_media_modern_formats` is switched off or the server writes neither AVIF nor WebP. The attachment's main file, the `-scaled` copy and `original_image` are never touched: only resized sub-sizes convert. Run it over SSH, a batch at a time, on a client site only when asked.
 
 ### `wp sgs addon-prices seed <file.json>`
 
@@ -139,7 +139,7 @@ wp sgs migrations run [--target=<slug>] --user=1
 # Diagnostics and data
 wp sgs audit-colour-tokens [--post_type=<types>]
 wp sgs media measure-tone [--force]
-wp sgs media modernise [--batch=<n>] [--after=<id>] [--dry-run]
+wp sgs media modernise [--batch=<n>] [--after=<id>] [--repair] [--dry-run]
 wp sgs addon-prices seed <file.json>
 wp sgs google-fonts sync
 wp sgs google-fonts status

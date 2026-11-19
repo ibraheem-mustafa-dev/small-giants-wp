@@ -142,12 +142,18 @@ final class Sgs_Media_Cli_Commands {
 	 * default: 0
 	 * ---
 	 *
+	 * [--repair]
+	 * : Select only attachments with a 0-byte or missing resized copy, or a registered size absent from their metadata, and
+	 * regenerate just those sizes (0-byte files are deleted first).
+	 *
 	 * [--dry-run]
 	 * : List the attachments that would be regenerated without writing anything.
 	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp sgs media modernise --dry-run
+	 *     wp sgs media modernise --repair --dry-run
+	 *     wp sgs media modernise --repair --batch=20
 	 *     wp sgs media modernise --batch=20 --after=1234
 	 *
 	 * @param string[] $args       Positional arguments (unused).
@@ -161,25 +167,31 @@ final class Sgs_Media_Cli_Commands {
 		$batch   = max( 1, (int) ( $assoc_args['batch'] ?? 10 ) );
 		$after   = max( 0, (int) ( $assoc_args['after'] ?? 0 ) );
 		$dry_run = ! empty( $assoc_args['dry-run'] );
+		$repair  = ! empty( $assoc_args['repair'] );
 
 		if ( ! \Sgs_Media_Formats::enabled() || '' === \Sgs_Media_Formats::target_mime() ) {
 			\WP_CLI::error( 'Modern formats are switched off, or this server cannot write AVIF or WebP.' );
 		}
 		\Sgs_Media_Modernise::single_thread();
 
-		$ids = \Sgs_Media_Modernise::pending_ids( $after, $batch );
+		$ids = $repair ? \Sgs_Media_Modernise::repair_ids( $after, $batch ) : \Sgs_Media_Modernise::pending_ids( $after, $batch );
 		if ( empty( $ids ) ) {
-			\WP_CLI::success( 'Nothing left to modernise after attachment ' . $after . '.' );
+			\WP_CLI::success( 'Nothing left to ' . ( $repair ? 'repair' : 'modernise' ) . ' after attachment ' . $after . '.' );
 			return;
 		}
 		$done   = 0;
 		$failed = 0;
 		foreach ( $ids as $id ) {
 			if ( $dry_run ) {
-				\WP_CLI::log( sprintf( 'Would regenerate attachment %d (%s)', $id, \get_attached_file( $id ) ) );
+				$note = '';
+				if ( $repair ) {
+					$problem = \Sgs_Media_Modernise::repair_problems( $id );
+					$note    = sprintf( ': %d empty files, sizes %s', count( $problem['empty'] ), implode( ',', $problem['missing'] ) );
+				}
+				\WP_CLI::log( sprintf( 'Would regenerate attachment %d (%s)%s', $id, \get_attached_file( $id ), $note ) );
 				continue;
 			}
-			$result = \Sgs_Media_Modernise::regenerate( $id );
+			$result = $repair ? \Sgs_Media_Modernise::repair( $id ) : \Sgs_Media_Modernise::regenerate( $id );
 			if ( \is_wp_error( $result ) ) {
 				++$failed;
 				\WP_CLI::warning( sprintf( 'Attachment %d: %s', $id, $result->get_error_message() ) );

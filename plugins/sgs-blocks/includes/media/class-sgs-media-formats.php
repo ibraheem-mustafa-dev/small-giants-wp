@@ -9,6 +9,9 @@
  * its source is replaced by a copy in the source format: a JPEG source is compared with the original file's bytes; a PNG
  * source is compared with the same size encoded as PNG (growth is common for flat graphics).
  *
+ * A copy whose save fails (an encoder error, or a file of 0 bytes) is saved again as WebP, then in the source format, by the editor
+ * subclasses in `class-sgs-media-editors.php` (`Sgs_Media_Save_Fallback::_save`); `editors()` swaps them in.
+ *
  * Filters: `sgs_media_modern_formats` (bool, default true; false switches the feature off), `sgs_media_avif_quality`
  * (default 60), `sgs_media_webp_quality` (default 82).
  *
@@ -49,6 +52,7 @@ final class Sgs_Media_Formats {
 		add_filter( 'image_editor_output_format', array( self::class, 'output_format' ), 10, 3 );
 		add_filter( 'wp_editor_set_quality', array( self::class, 'quality' ), 10, 2 );
 		add_filter( 'wp_generate_attachment_metadata', array( self::class, 'discard_oversized' ), 20, 2 );
+		add_filter( 'wp_image_editors', array( self::class, 'editors' ), 99 );
 	}
 
 	/**
@@ -71,6 +75,70 @@ final class Sgs_Media_Formats {
 			}
 		}
 		return '';
+	}
+
+	/**
+	 * `wp_image_editors`: use the editor subclasses that fall back when a resized copy fails to save.
+	 *
+	 * @param mixed $editors Editor class names, in order of preference.
+	 * @return mixed
+	 */
+	public static function editors( $editors ) {
+		if ( ! is_array( $editors ) || ! self::enabled() ) {
+			return $editors;
+		}
+		require_once __DIR__ . '/class-sgs-media-editors.php';
+		$swap = array(
+			'WP_Image_Editor_Imagick' => 'Sgs_Media_Imagick_Editor',
+			'WP_Image_Editor_GD'      => 'Sgs_Media_Gd_Editor',
+		);
+		foreach ( $editors as $i => $class ) {
+			if ( isset( $swap[ $class ] ) && class_exists( $swap[ $class ], false ) ) {
+				$editors[ $i ] = $swap[ $class ];
+			}
+		}
+		return $editors;
+	}
+
+	/**
+	 * Switch the format mapping off or on (the fallback's retry in the source format must not convert again).
+	 *
+	 * @param bool $on True to bypass the mapping.
+	 */
+	public static function bypass( bool $on ): void {
+		self::$bypass = $on;
+	}
+
+	/**
+	 * Whether an editor save left no usable copy: an error, no path, or an empty or missing file.
+	 *
+	 * @param mixed $saved The editor's `_save()` result.
+	 */
+	public static function save_failed( $saved ): bool {
+		if ( is_wp_error( $saved ) || ! is_array( $saved ) || empty( $saved['path'] ) ) {
+			return true;
+		}
+		clearstatcache( true, (string) $saved['path'] );
+		return (int) wp_filesize( (string) $saved['path'] ) <= 0;
+	}
+
+	/**
+	 * Delete the file a failed save left behind when it is empty (the error's data or the result's path names it).
+	 *
+	 * @param mixed $saved The editor's `_save()` result.
+	 */
+	public static function remove_empty( $saved ): void {
+		$path = '';
+		if ( is_wp_error( $saved ) ) {
+			$data = $saved->get_error_data();
+			$path = is_string( $data ) ? $data : '';
+		} elseif ( is_array( $saved ) && ! empty( $saved['path'] ) ) {
+			$path = (string) $saved['path'];
+		}
+		clearstatcache( true, $path );
+		if ( '' !== $path && file_exists( $path ) && 0 === (int) filesize( $path ) ) {
+			wp_delete_file( $path );
+		}
 	}
 
 	/**
