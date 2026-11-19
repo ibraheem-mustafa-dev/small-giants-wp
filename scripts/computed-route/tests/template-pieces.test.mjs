@@ -129,3 +129,24 @@ test( 'MUST FAIL: a kind with no builder is a problem, never a silent skip; rule
 	assert.deepEqual( asked, [] );
 	assert.deepEqual( cart.problems, [] );
 } );
+
+test( 'MUST FAIL: a piece named by its binding counts the blocks bound to that source and key, at any depth', () => {
+	const bound = ( key, kids = [] ) => ( { name: 'sgs/text', attributes: { metadata: { bindings: { text: { source: 'sgs/order', args: { key } } } } }, innerBlocks: kids } );
+	const data = { templates: { 'order-confirmation': { pieces: [ { id: 'order-number', binds: { source: 'sgs/order', key: 'number' }, required: true, once: false, kind: 'rule' } ] } } };
+	assert.deepEqual( pieceMapProblems( data ), [] );
+	assert.deepEqual( checkPieces( { key: 'order-confirmation', tree: [ node( 'sgs/container', [ node( 'sgs/container', [ bound( 'number' ) ] ) ] ) ], data } ), [] );
+	// Another key, another source or no binding is not the piece.
+	assert.match( checkPieces( { key: 'order-confirmation', tree: [ bound( 'total' ) ], data } )[ 0 ], /"order-number" is missing: no block bound to sgs\/order number in the tree/ );
+	const other = bound( 'number' );
+	other.attributes.metadata.bindings.text.source = 'sgs/product';
+	assert.equal( checkPieces( { key: 'order-confirmation', tree: [ other ], data } ).length, 1 );
+	// With a block named too, both must hold.
+	const both = { templates: { x: { pieces: [ { id: 'n', block: 'sgs/heading', binds: { source: 'sgs/order', key: 'number' }, required: true, kind: 'rule' } ] } } };
+	assert.match( checkPieces( { key: 'x', tree: [ bound( 'number' ) ], data: both } )[ 0 ], /no sgs\/heading bound to sgs\/order number/ );
+	// A binding with no source or key is refused; a piece with neither a block nor a binding is too.
+	const bad = { templates: { x: { pieces: [ { id: 'a', binds: { source: 'sgs/order' }, required: true, kind: 'rule' }, { id: 'b', required: true, kind: 'rule' } ] } } };
+	assert.deepEqual( pieceMapProblems( bad ), [ 'templates.x piece "a": binds needs a source (a block binding source name) and a key', 'templates.x piece "b": block "" is not a block name' ] );
+	// The committed map's order confirmation names the bound number and the order items.
+	const committed = piecesFor( 'order-confirmation', loadPieces() );
+	assert.deepEqual( committed.map( ( p ) => [ p.id, p.block ?? null, p.binds?.key ?? null, p.required ] ), [ [ 'order-number', null, 'number', true ], [ 'order-items', 'sgs/order-items', null, false ] ] );
+} );
