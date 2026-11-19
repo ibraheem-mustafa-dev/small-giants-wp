@@ -43,9 +43,51 @@ export function holdsOtherRoot( s, strips, srcDoc ) {
 // is or holds one at any depth holds another surface's root): the root's siblings are then read too, as `beside`, and the
 // elements of those in the chain of strips next to the root are inventoried under `strip` roots (rules.headerSlots decides
 // which are rows: lib/skeleton-header-slots.mjs::besideStrips). Returns { records, beside } or { error }.
-function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, allTextCap ] ) {
+// The items a strip's code builds inside element `e` when no stamped element sits in it (run in the page): the first level
+// below it, through single-child wrappers, holding two or more elements; each item's own words (its direct text) and its one
+// inline SVG with the paint the draft's CSS gives each drawing element written onto it (a colour equal to the SVG's own as
+// currentColor). A run read twice in a row (a marquee's loop) is read once. Null unless two or more items have words.
+export function codeItemsOf( e ) {
+	if ( e.querySelector( '[data-dc-tpl]' ) ) {
+		return null;
+	}
+	const ws = ( s ) => ( s || '' ).replace( /\s+/g, ' ' ).trim();
+	let lvl = e;
+	while ( 1 === lvl.children.length ) {
+		lvl = lvl.children[ 0 ];
+	}
+	const plain = { 'stroke-linecap': 'butt', 'stroke-linejoin': 'miter' };
+	const svgOf = ( k ) => {
+		const svgs = k.querySelectorAll( 'svg' );
+		if ( 1 !== svgs.length ) {
+			return null;
+		}
+		const copy = svgs[ 0 ].cloneNode( true );
+		const own = getComputedStyle( svgs[ 0 ] ).color;
+		const copies = copy.querySelectorAll( '*' );
+		[ ...svgs[ 0 ].querySelectorAll( '*' ) ].forEach( ( o, j ) => {
+			if ( /^(?:path|circle|ellipse|rect|line|polyline|polygon)$/.test( o.localName ) ) {
+				const cs = getComputedStyle( o );
+				for ( const p of [ 'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin' ] ) {
+					const v = cs.getPropertyValue( p ).trim();
+					v && v !== plain[ p ] && copies[ j ].setAttribute( p, v === own ? 'currentColor' : v );
+				}
+			}
+		} );
+		return new XMLSerializer().serializeToString( copy );
+	};
+	const items = [ ...lvl.children ].map( ( k ) => ( { text: ws( [ ...k.childNodes ].filter( ( c ) => 3 === c.nodeType ).map( ( c ) => c.nodeValue ).join( ' ' ) ), svg: svgOf( k ) } ) ).filter( ( x ) => x.text );
+	const half = items.length / 2;
+	const twice = items.length > 2 && 0 === items.length % 2 && items.slice( 0, half ).every( ( x, j ) => x.text === items[ half + j ].text );
+	const once = twice ? items.slice( 0, half ) : items;
+	return once.length >= 2 ? once : null;
+}
+
+function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, allTextCap, itemsSrc ] ) {
 	// eslint-disable-next-line no-new-func
 	const keyOf = new Function( `return (${ keySrc });` )();
+	// eslint-disable-next-line no-new-func
+	const codeItems = itemsSrc ? new Function( `return (${ itemsSrc });` )() : () => null;
 	const lineOf = new Function( `return (${ lineSrc });` )();
 	const root = document.querySelector( rootSelector );
 	if ( ! root ) {
@@ -161,11 +203,12 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, 
 		if ( tname !== window.__dcRootName() ) {
 			membership.unshift( { kind: 'inside-import', template: tname } );
 		}
+		const items = codeItems( e );
 		const r = e.getBoundingClientRect();
 		const box = e.getClientRects().length ? { x: +( r.left + scrollX ).toFixed( 1 ), y: +( r.top + scrollY ).toFixed( 1 ), w: +r.width.toFixed( 1 ), h: +r.height.toFixed( 1 ) } : null;
 		out.push( {
 			i: out.length, key: keyOf( e ), parentKey: p && ! stripRoots.has( e ) ? keyOf( p ) : null, ...( stripRoots.has( e ) ? { strip: stripRoots.get( e ) } : {} ), depth, tag: e.tagName.toLowerCase(), template: tname, tpl: Number( n ), attrs, words: ws( own ), allText: ws( e.textContent ).slice( 0, allTextCap ),
-			srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
+			...( items ? { codeItems: items } : {} ), srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
 		} );
 	} );
 	scrollTo( scrollWas[ 0 ], scrollWas[ 1 ] );
@@ -305,7 +348,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 		await page.setViewportSize( { width: w, height } );
 		await settleAt( page, w );
 		await page.evaluate( () => document.querySelectorAll( '[data-inv-i]' ).forEach( ( e ) => e.removeAttribute( 'data-inv-i' ) ) );
-		const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP ];
+		const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString() ];
 		const res = await page.evaluate( collect, args );
 		if ( res.error ) {
 			throw new Error( `${ res.error } at ${ w }px` );
@@ -342,7 +385,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			await page.goto( url, { waitUntil: 'networkidle', timeout: 90000 } );
 			await applyStateRoute( page );
 			await settle( page, root );
-			const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP ];
+			const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString() ];
 			const res = await page.evaluate( collect, args );
 			if ( res.error ) {
 				throw new Error( `${ res.error } at ${ w }px` );

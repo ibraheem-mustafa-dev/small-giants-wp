@@ -147,6 +147,14 @@ function clean( el, allowed, refused, top = true ) {
 	return { ...el, attrs, children: el.children.map( ( c ) => clean( c, allowed, refused, false ) ).filter( Boolean ) };
 }
 
+// Draft SVG markup as the icon's sanitiser keeps it (well-formed, its tags and attributes allowed, class, style and a root
+// width and height dropped), or null when nothing drawable is left.
+export function keptSvg( markup, allowed = allowedSvg() ) {
+	const tree = parseTree( String( markup ?? '' ) );
+	const kept = tree ? clean( tree, allowed, new Set() ) : null;
+	return kept && shapesOf( kept ).length ? render( kept ) : null;
+}
+
 // The drawing elements of a tree in document order.
 const shapesOf = ( el ) => [ ...( SHAPES.includes( el.name ) ? [ el ] : [] ), ...el.children.flatMap( shapesOf ) ];
 

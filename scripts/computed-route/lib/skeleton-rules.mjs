@@ -22,6 +22,7 @@ import { blockPartSurfaces } from './skeleton-surface-role.mjs';
 import { handlerOpens, opensOn } from './skeleton-handler-opens.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
 import { widgetModel } from './skeleton-widgets.mjs';
+import { keptSvg } from './fill-icon.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -819,7 +820,17 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const rec = view.entry( e );
 			const built = rec && ! kidsB.length && ! view.childrenOf( e ).length && rec.template.holes.some( ( h ) => 'text' === h.where );
 			// The motion keys name the template element (`<dc file>/<tpl>`), whatever import chain the page stamps it under.
-			return R.marqueeCodeItems && built && ( loops( e ) || motion.has( templateKey( { dc: e.template, tpl: e.tpl } ) ) ) ? v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: R.marqueeCodeItems.handover } } ) : null;
+			if ( ! R.marqueeCodeItems || ! built || ! ( loops( e ) || motion.has( templateKey( { dc: e.template, tpl: e.tpl } ) ) ) ) {
+				return null;
+			}
+			// The items the inventory read from the rendered strip (lib/skeleton-inventory.mjs, `codeItems`) are the block's items,
+			// each its words and its icon as the icon writer keeps it; with none read, the items are handed over.
+			const I = R.marqueeCodeItems.items;
+			const items = I && ( e.codeItems || [] ).length >= 2 ? e.codeItems.map( ( x ) => {
+				const svg = x.svg ? keptSvg( x.svg ) : null;
+				return { [ I.text ]: x.text, ...( svg ? { [ I.svg ]: svg } : {} ) };
+			} ) : null;
+			return items ? v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: { [ I.setting ]: items, ...Object.fromEntries( ( I.clear || [] ).map( ( a ) => [ a, '' ] ) ) }, absorb: true } ) : v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: R.marqueeCodeItems.handover } } );
 		},
 		( { e, kidsB } ) => {
 			if ( ! loops( e ) || ! kidsB.length ) {

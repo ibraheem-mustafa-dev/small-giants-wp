@@ -9,7 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
-import { loadFacts } from '../lib/skeleton-facts.mjs';
+import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { recordView, gridTracks, fractionalTrack, fixedTrack } from '../lib/skeleton-record.mjs';
 import { loopingKeys } from '../lib/skeleton-rerun.mjs';
@@ -40,7 +40,7 @@ function build( root ) {
 		const attrs = { ...( node.o.attrs || {} ), ...( node.o.style ? { style: node.o.style } : {} ) };
 		const words = node.o.words || '';
 		const el = { key, parentKey, depth, tag: node.tag, template: 'Root', tpl: id, attrs, words, allText: words, membership: [], srcTag: node.tag, srcOwnText: words, snippet: `<${ node.tag } data-dc-tpl="${ id }">${ words }</${ node.tag }>`,
-			box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: 0, y: id * 30, w: 100, h: 20 } ] ) ), visible: { 375: true, 768: true, 1440: true }, display: /display:\s*(flex|grid)/.exec( node.o.style || '' )?.[ 1 ] || 'block', flexDirection: 'row', screenshots: {} };
+			box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: 0, y: id * 30, w: 100, h: 20 } ] ) ), visible: { 375: true, 768: true, 1440: true }, display: /display:\s*(flex|grid)/.exec( node.o.style || '' )?.[ 1 ] || 'block', flexDirection: 'row', screenshots: {} , ...( node.o.codeItems ? { codeItems: node.o.codeItems } : {} ) };
 		elements.push( el );
 		const parentTk = parentKey ? parentKey.replace( /#0$/, '' ) : null;
 		const loopKey = node.o.loop ? `Root/f${ id }` : null;
@@ -329,4 +329,33 @@ test( 'a grid panel child\'s track counts each rendered child, so a loop\'s copi
 	const r = proposeSkeleton( { inventory: b.inventory, facts: facts(), surface: 'fixture', surfaceKind: 'menu', surfaceName: 'Panel', motion: new Set(), db, factRecord: record( b.recs, header ), openers: OPEN } );
 	assert.equal( rows( r ).filter( ( x ) => 1 === x.depth ).length, 3, 'two loop copies and the aside' );
 	assert.equal( rows( r ).find( ( x ) => 'Root/3#0' === x.key ).rule, 'megaAside' );
+} );
+
+test( 'MUST FAIL: a code-built marquee whose rendered items the inventory read gets them as the block items (words and kept icon), the title cleared and no handover', () => {
+	const STAR = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" style="fill:none"><path d="M20 6 9 17l-5-5" stroke="currentColor" fill="none" onclick="x()"></path></svg>';
+	const strip = ( codeItems ) => N( 'section', {}, [ N( 'div', { style: 'overflow-x:hidden', hole: 'trustBar', words: 'Baked fresh Handmade', codeItems } ) ] );
+	const motion = new Set( [ 'Root/2' ] );
+	const r = run( strip( [ { text: 'Baked fresh', svg: STAR }, { text: 'Handmade', svg: null } ] ), { motion } );
+	const row = rows( r )[ 1 ];
+	assert.equal( row.rule, 'marqueeCodeItems' );
+	const node = JSON.parse( JSON.stringify( r.skeleton ) )[ 0 ].innerBlocks[ 0 ];
+	assert.equal( node.name, 'sgs/trust-bar' );
+	assert.equal( node.attributes.title, '' );
+	assert.deepEqual( node.attributes.items.map( ( i ) => i.label ), [ 'Baked fresh', 'Handmade' ] );
+	assert.match( node.attributes.items[ 0 ].iconSvg, /^<svg[^>]*viewBox="0 0 24 24"[^>]*><path / );
+	assert.doesNotMatch( node.attributes.items[ 0 ].iconSvg, /style=|onclick|width=/, 'the icon writer keeps no style, handler or root width' );
+	assert.equal( node.attributes.items[ 1 ].iconSvg, undefined );
+	assert.ok( ! JSON.stringify( row ).includes( 'add each item to the trust bar' ), 'no handover when the items were read' );
+} );
+
+test( 'a code-built marquee with fewer than two items read keeps the handover, and the items rule never writes without its decisions entry', () => {
+	const strip = ( codeItems ) => N( 'section', {}, [ N( 'div', { style: 'overflow-x:hidden', hole: 'trustBar', words: 'One', codeItems } ) ] );
+	const motion = new Set( [ 'Root/2' ] );
+	const one = run( strip( [ { text: 'One', svg: null } ] ), { motion } );
+	assert.ok( JSON.stringify( rows( one )[ 1 ] ).includes( 'add each item to the trust bar' ) );
+	const off = run( strip( [ { text: 'A', svg: null }, { text: 'B', svg: null } ] ), { motion, facts: facts( 'marqueeCodeItems.items' ) } );
+	assert.equal( JSON.parse( JSON.stringify( off.skeleton ) )[ 0 ].innerBlocks[ 0 ].attributes.items, undefined );
+	const f = facts();
+	f.decisions.rules.marqueeCodeItems.items = { ...f.decisions.rules.marqueeCodeItems.items, setting: 'noSuchItems' };
+	assert.ok( decisionsProblems( f ).some( ( p ) => /rules\.marqueeCodeItems\.items must name/.test( p ) ) );
 } );

@@ -123,6 +123,10 @@ export function decisionsProblems( facts ) {
 	if ( r.footerSlots && ( ! r.footerSlots.slotAttribute || ! facts.attr( r.footerSlots.rowBlock, r.footerSlots.slotAttribute ) || ! Array.isArray( r.footerSlots.slots ) || 3 !== r.footerSlots.slots.length ) ) {
 		problems.push( `rules.footerSlots must name three slots and a slot attribute that ${ r.footerSlots.rowBlock } has` );
 	}
+	const ci = r.marqueeCodeItems?.items;
+	if ( ci && ( ! facts.attr( r.marqueeCodeItems.block, ci.setting ) || [ ...( ci.clear || [] ) ].some( ( a ) => ! facts.attr( r.marqueeCodeItems.block, a ) ) ) ) {
+		problems.push( `rules.marqueeCodeItems.items must name an items setting and cleared settings ${ r.marqueeCodeItems.block } has` );
+	}
 	Object.keys( r.footerSlots?.stackedRow || {} ).filter( ( a ) => ! facts.attr( r.footerSlots.rowBlock, a ) || facts.attr( r.footerSlots.rowBlock, a ).css_property ).forEach( ( a ) => problems.push( `rules.footerSlots.stackedRow.${ a } must name a structural setting ${ r.footerSlots.rowBlock } has (no CSS property: a skeleton carries no style value)` ) );
 	// A commerce region's block: a core block only as a listed exception, WooCommerce's own block (outside the framework
 	// database), or a known SGS block; its money pattern compiles.
