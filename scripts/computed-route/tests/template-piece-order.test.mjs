@@ -367,7 +367,7 @@ test( 'MUST FAIL: a value whose expression holds regular-expression characters i
 } );
 
 test( 'MUST FAIL: the plugin facts are read from the plugin, and the order facts file is refused where the plugin or database disagree', () => {
-	assert.deepEqual( bindingSourceOf( "register_block_bindings_source(\n'sgs/order', array() );\nconst KEYS = array( 'number', 'total' );" ), { source: 'sgs/order', keys: [ 'number', 'total' ] } );
+	assert.deepEqual( bindingSourceOf( "register_block_bindings_source(\n'sgs/order', array() );\nconst KEYS = array( 'number', 'total' );" ), { source: 'sgs/order', keys: [ 'number', 'total' ], factPrefix: null, factFilter: null } );
 	assert.deepEqual( supportedAttributesOf( "private const SUPPORTED_ATTRIBUTES = array(\n\t\t'sgs/text' => array( 'text' ),\n\t\t'sgs/button' => array( 'url', 'label' ),\n\t);" ), { 'sgs/text': [ 'text' ], 'sgs/button': [ 'url', 'label' ] } );
 	const real = pluginFacts();
 	assert.equal( real.source, 'sgs/order' );
@@ -407,15 +407,20 @@ test( "Mama's confirmation: one sgs/order-items, the number, gift name, gift not
 	const s = JSON.stringify( got.tree );
 	assert.equal( ( s.match( /"name":"sgs\/order-items"/g ) || [] ).length, 1 );
 	const binds = got.placed.filter( ( p ) => p.key ).map( ( p ) => `${ p.block } ${ p.attribute } ${ p.key } ${ p.format ?? '' }`.trim() );
-	assert.deepEqual( binds, [ 'sgs/text text number Order %s. We’ve emailed your receipt, and you’ll get a tracking link as soon as it’s posted.', 'sgs/text text gift_to Dear %s,', 'sgs/text text gift_message', 'sgs/button url view_url' ] );
-	assert.deepEqual( got.placed.filter( ( p ) => p.rule ).map( ( p ) => `${ p.at } ${ p.rule }` ), [ 'Confirmation/42 order-has-gift', 'Confirmation/49 order-no-gift', 'Confirmation/55 order-owner', 'Confirmation/61 order-guest', 'Confirmation/14 order-viewable', 'Confirmation/29 order-viewable' ] );
+	assert.deepEqual( binds, [ 'sgs/text text number Order %s. We’ve emailed your receipt, and you’ll get a tracking link as soon as it’s posted.', 'sgs/text text gift_to Dear %s,', 'sgs/text text gift_message', 'sgs/button url view_url', 'sgs/text text fact:bake_arrive Baking on {fact:bake_date} · with you from %s', 'sgs/text text fact:bake_date Zainab bakes it fresh on %s' ] );
+	assert.deepEqual( got.placed.filter( ( p ) => p.rule ).map( ( p ) => `${ p.at } ${ p.rule }` ), [ 'Confirmation/42 order-has-gift', 'Confirmation/49 order-no-gift', 'Confirmation/55 order-owner', 'Confirmation/61 order-guest', 'Confirmation/14 order-viewable', 'Confirmation/18 order-viewable', 'Confirmation/27 order-viewable', 'Confirmation/29 order-viewable' ] );
 	// The "What’s coming" card (the title and the order lines) is the one container ruled for the lines: it is no empty box under a wrong key.
 	assert.equal( find( got.tree, 'Root/29#0' ).attributes.sgsConditionLoggedIn, 'order-viewable' );
 	assert.equal( find( got.tree, 'Root/28#0' ).attributes.sgsConditionLoggedIn, undefined );
 	assert.deepEqual( got.placed.find( ( p ) => 'sgs/order-items' === p.block ).attributes, { showThumbnail: true, showMeta: true, showSubtotal: false, showDelivery: false, showDiscount: false, showGiftCard: false, showTotal: true, totalLabel: 'Paid' } );
 	assert.deepEqual( checkPieces( { key: 'order-confirmation', tree: got.tree, data: loadPieces() } ), [] );
-	// What no key holds is named, never bound: the bake and arrival dates, the step that reads the bake date, the eyebrow chosen by createAccount.
-	assert.deepEqual( got.problems.map( ( p ) => /\{\{ ([\w.]+) \}\}/.exec( p )?.[ 1 ] ), [ 'arrive', 'bakeDate', 's.d', 'acctEyebrow' ] );
+	// What no key holds: the bake and arrival dates (one block, one binding) and the step that reads the bake date (the second step
+	// only) are facts the site supplies, each listed for the owner. The eyebrow chosen by createAccount is no fact: it picks one of
+	// two fixed phrases by whether the order made an account, which no Show-to rule of the order says, so it stays a problem row.
+	assert.deepEqual( got.problems.map( ( p ) => /\{\{ ([\w.]+) \}\}/.exec( p )?.[ 1 ] ), [ 'acctEyebrow' ] );
+	assert.deepEqual( got.notes.filter( ( n ) => /site-supplied fact/.test( n ) ).map( ( n ) => /site-supplied fact (\S+): \{\{ ([\w.]+) \}\}/.exec( n ).slice( 1 ).join( ' ' ) ), [ 'fact:bake_arrive arrive', 'fact:bake_date bakeDate', 'fact:bake_date s.d' ] );
+	assert.equal( find( got.tree, 'Root/27#1' ).attributes.metadata.bindings.text.args.key, 'fact:bake_date' );
+	assert.deepEqual( [ 'Root/27#0', 'Root/27#2', 'Root/27#3' ].map( ( t ) => find( got.tree, t ).attributes.metadata ), [ undefined, undefined, undefined ] );
 	// The draft's other blocks are kept: only the line row's nodes and the total row's went, for one block.
 	const refs = ( t ) => JSON.stringify( t ).match( /"tpl":"[^"]+"/g ).map( ( x ) => x.slice( 7, -1 ) );
 	assert.deepEqual( refs( tree ).filter( ( x ) => ! refs( got.tree ).includes( x ) ), [ 'Root/32#0', 'Root/34#0', 'Root/35#0', 'Root/36#0', 'Root/37#0', 'Root/38#0', 'Root/39#0', 'Root/40#0' ] );
@@ -430,4 +435,188 @@ test( "Eye Care's confirmation: the reference is fixed words, so the number is a
 	assert.match( got.problems[ 0 ], /the draft writes the order reference "EC-10482" as fixed words in <h1> Eye Care Birmingham\/845/ );
 	assert.match( got.problems.at( -1 ), /the working piece "order-number" is missing: no block bound to sgs\/order number/ );
 	assert.deepEqual( got.tree, tree );
+} );
+
+// Site-supplied facts (FR-48-96): an order value no key of the sgs/order source holds, which the logic reads from the order,
+// is bound to `fact:<name>` for the site to supply; any other value stays a problem row. A planted draft: a bake line holding
+// two such values, a step line that joins one to fixed words, an order number (a key), words chosen by an order field, and a
+// currency amount from a constant.
+const FACT_TEMPLATE = `<main>
+<section><p>Baking on <b>{{ bakeDate }}</b> · with you from {{ arrive }}</p><p>Order {{ no }}</p></section>
+<div><sc-for list="{{ steps }}" as="s"><div><b>{{ s.t }}</b><span>{{ s.d }}</span></div></sc-for></div>
+<div><sc-for list="{{ items }}" as="it"><div><span>{{ it.qty }} × {{ it.name }}</span><b>{{ it.total }}</b></div></sc-for></div>
+<p>{{ eyebrow }}</p><p>Free over {{ threshold }}</p>
+</main>`;
+const FACT_LOGIC = `class Component extends DCLogic {
+  renderVals() {
+    const cfg = { free: 40 };
+    const money = n => '£' + n.toFixed(2);
+    const o = (M && M.order()) || { no: 'AB-1001', items: [ { name: 'Box', qty: 2, price: 5 } ], bake: { date: 'Mon 23 Nov', arrive: 'Wed 25 Nov' } };
+    const bake = o.bake || { date: 'Monday', arrive: 'Wednesday' };
+    return {
+      no: o.no, bakeDate: bake.date, arrive: bake.arrive,
+      steps: [ { t: 'Placed', d: 'Just now' }, { t: 'Baking', d: 'Baked on ' + bake.date }, { t: 'Posted', d: 'By courier' } ],
+      items: (o.items || []).map(it => ({ ...it, total: money(it.price * it.qty) })),
+      eyebrow: o.fresh ? 'Fresh today' : 'Baked soon', threshold: money(cfg.free)
+    };
+  }
+}`;
+const FACT_SAMPLES = { no: [ 'AB-1001' ], bakeDate: [ 'Mon 23 Nov' ], arrive: [ 'Wed 25 Nov' ], 's.d': [ 'Just now', 'Baked on Mon 23 Nov', 'By courier' ], 's.t': [ 'Placed', 'Baking', 'Posted' ], 'it.qty': [ 2 ], 'it.total': [ '£10.00' ], threshold: [ '£40.00' ] };
+const FACT_PLUGIN = { ...PLUGIN, factPrefix: 'fact:', factFilter: 'sgs_order_fact' };
+const nodesIn = ( tree ) => tree.flatMap( ( n ) => [ n, ...nodesIn( n.innerBlocks || [] ) ] );
+
+// The skeleton of the planted page: the bake line one block holding both values, the steps loop one container per step
+// (`Root/<n>#<step>`), the order number, the eyebrow and the threshold line.
+function factTree( record, steps = 3 ) {
+	const k = ( tag, words ) => keyOf( record, tag, words );
+	const num = ( key ) => key.split( '/' )[ 1 ];
+	const node = ( name, key, attributes = {}, innerBlocks = [], i = 0 ) => ( { name, attributes, draftRef: { tpl: `Root/${ num( key ) }#${ i }` }, innerBlocks } );
+	const loop = Object.keys( record.elements ).find( ( x ) => 'sc-for' === record.elements[ x ].template.tag );
+	const step = Object.keys( record.elements ).find( ( x ) => record.elements[ x ].template.parent === loop );
+	const [ title, line ] = Object.keys( record.elements ).filter( ( x ) => record.elements[ x ].template.parent === step );
+	const words = [ [ 'Placed', 'Just now' ], [ 'Baking', 'Baked on Mon 23 Nov' ], [ 'Posted', 'By courier' ] ];
+	const eyebrow = Object.keys( record.elements ).find( ( x ) => record.elements[ x ].template.holes.some( ( h ) => 'eyebrow' === h.expr ) );
+	return [ node( 'sgs/container', k( 'main' ), { tagName: 'main' }, [
+		node( 'sgs/container', k( 'section' ), {}, [ node( 'sgs/text', k( 'p', 'Baking on' ), { text: 'Baking on Mon 23 Nov · with you from Wed 25 Nov' } ), node( 'sgs/text', k( 'p', 'Order' ), { text: 'Order <strong>AB-1001</strong>' } ) ] ),
+		node( 'sgs/container', record.elements[ loop ].template.parent, {}, words.slice( 0, steps ).map( ( w, i ) => node( 'sgs/container', step, {}, [ node( 'sgs/text', title, { text: w[ 0 ] }, [], i ), node( 'sgs/text', line, { text: w[ 1 ] }, [], i ) ], i ) ) ),
+		node( 'sgs/text', eyebrow, { text: 'Baked soon' } ),
+		node( 'sgs/text', k( 'p', 'Free over' ), { text: 'Free over £40.00' } ),
+	] ) ];
+}
+const factCtx = ( planted, plugin = FACT_PLUGIN ) => ( { key: 'order-confirmation', factRecord: planted.record, rootComponent: 'Page', draft: planted.draft, db: fakeDb(), plugin, orderFacts: FACTS } );
+const bindingsOf = ( tree ) => nodesIn( tree ).filter( ( n ) => n.attributes?.metadata?.bindings ).map( ( n ) => [ n.draftRef.tpl, ...Object.values( n.attributes.metadata.bindings ).map( ( b ) => `${ b.args.key }|${ b.args.format ?? '' }` ) ] );
+const holesBy = ( r ) => Object.fromEntries( r.holes.map( ( h ) => [ `${ h.expr }${ undefined === h.instance ? '' : `@${ h.instance }` }`, h ] ) );
+
+test( 'MUST FAIL: the reader names a value no key holds as a site-supplied fact, one per step that reads the order, and nothing else', () => {
+	const planted = plant( FACT_TEMPLATE, FACT_LOGIC, FACT_SAMPLES );
+	const { draft, record } = planted;
+	const read = ( plugin ) => readOrder( { record, tops: [ keyOf( record, 'main' ) ], draft, facts: FACTS, plugin } );
+	const got = read( FACT_PLUGIN );
+	const h = holesBy( got );
+	assert.equal( h.bakeDate.key, 'fact:bake_date' );
+	assert.equal( h.arrive.key, 'fact:bake_arrive' );
+	assert.equal( h.bakeDate.fact, true );
+	// The step line is read per step: only the step whose own value reads the order is a hole, with the words the logic joins to it.
+	assert.deepEqual( Object.keys( h ).filter( ( k ) => k.startsWith( 's.d' ) ), [ 's.d@1' ] );
+	assert.equal( h[ 's.d@1' ].key, 'fact:bake_date' );
+	assert.equal( h[ 's.d@1' ].logicFormat, 'Baked on %s' );
+	assert.equal( h[ 's.d@1' ].problem, undefined );
+	// Negative controls: a built-in key is still its key, words chosen by an order field stay a problem, a constant is no hole.
+	assert.equal( h.no.key, 'number' );
+	assert.equal( h.no.fact, undefined );
+	assert.match( h.eyebrow.problem, /chooses fixed words by the order's fresh/ );
+	assert.equal( h.threshold, undefined );
+	assert.deepEqual( got.holes.filter( ( x ) => x.problem ).map( ( x ) => x.expr ), [ 'eyebrow' ] );
+	// A plugin that holds no fact form leaves every one of them a problem row, as before.
+	const none = holesBy( read( PLUGIN ) );
+	assert.match( none.bakeDate.problem, /reads the order's bake\.date, which no key of the order binding holds/ );
+	assert.match( none.arrive.problem, /bake\.arrive/ );
+	assert.match( none[ 's.d@1' ].problem, /reads the order's bake\.date, which no key of the order binding holds/ );
+	assert.equal( none.no.key, 'number' );
+	// A list the logic builds with map() has no step to point at: it stays the loop's problem row, with a plugin that holds facts too.
+	const mapped = plant( FACT_TEMPLATE, FACT_LOGIC.replace( /steps: \[[^\n]*\],/, "steps: [ 1, 2 ].map( i => ( { t: 'Step', d: 'Baked on ' + bake.date } ) )," ), FACT_SAMPLES );
+	const m = holesBy( readOrder( { record: mapped.record, tops: [ keyOf( mapped.record, 'main' ) ], draft: mapped.draft, facts: FACTS, plugin: FACT_PLUGIN } ) );
+	assert.match( m[ 's.d' ].problem, /sits in the loop/ );
+	// Steps that cannot be told apart stay the loop's problem row: a field below the step's own, and a list with a spread in it.
+	const nested = plant( FACT_TEMPLATE.replace( '{{ s.d }}', '{{ s.m.d }}' ), FACT_LOGIC.replace( "{ t: 'Baking', d: 'Baked on ' + bake.date }", "{ t: 'Baking', m: { d: 'Baked on ' + bake.date } }" ), FACT_SAMPLES );
+	assert.match( holesBy( readOrder( { record: nested.record, tops: [ keyOf( nested.record, 'main' ) ], draft: nested.draft, facts: FACTS, plugin: FACT_PLUGIN } ) )[ 's.m.d' ].problem, /sits in the loop/ );
+	const spread = plant( FACT_TEMPLATE, FACT_LOGIC.replace( "steps: [ { t: 'Placed', d: 'Just now' },", "steps: [ ...cfg.more, { t: 'Placed', d: 'Just now' }," ), FACT_SAMPLES );
+	assert.match( holesBy( readOrder( { record: spread.record, tops: [ keyOf( spread.record, 'main' ) ], draft: spread.draft, facts: FACTS, plugin: FACT_PLUGIN } ) )[ 's.d' ].problem, /sits in the loop/ );
+	// Words joined to a fact that a format cannot hold (a literal percent sign, two order values) are a problem row, not a fact
+	// that drops them; a plugin with a fact prefix but no filter to name binds none.
+	const pct = plant( FACT_TEMPLATE, FACT_LOGIC.replace( "'Baked on ' + bake.date", "'100% baked on ' + bake.date" ), FACT_SAMPLES );
+	const p = holesBy( readOrder( { record: pct.record, tops: [ keyOf( pct.record, 'main' ) ], draft: pct.draft, facts: FACTS, plugin: FACT_PLUGIN } ) );
+	assert.match( p[ 's.d@1' ].problem, /joins other words to the order's bake\.date in a way no binding format holds/ );
+	assert.equal( p.bakeDate.key, 'fact:bake_date' );
+	assert.match( holesBy( read( { ...PLUGIN, factPrefix: 'fact:' } ) ).bakeDate.problem, /no key of the order binding holds/ );
+	// A field that fits several keys stays a problem row (a fact is only for a value no key holds).
+	const several = plant( FACT_TEMPLATE.replace( '<p>{{ eyebrow }}</p>', '<p>{{ contact }}</p>' ), FACT_LOGIC.replace( 'eyebrow:', 'contact: o.phoneDate, eyebrow:' ), FACT_SAMPLES );
+	const s = holesBy( readOrder( { record: several.record, tops: [ keyOf( several.record, 'main' ) ], draft: several.draft, facts: FACTS, plugin: FACT_PLUGIN } ) );
+	assert.match( s.contact.problem, /fits several keys \(date, phone\)|fits several keys \(phone, date\)/ );
+	// A value that is an address is never a fact: only the words of an element are.
+	const link = plant( FACT_TEMPLATE.replace( '<p>{{ eyebrow }}</p>', '<a href="{{ bakeHref }}">x</a>' ), FACT_LOGIC.replace( 'eyebrow:', "bakeHref: bake.date, eyebrow:" ), FACT_SAMPLES );
+	const l = holesBy( readOrder( { record: link.record, tops: [ keyOf( link.record, 'main' ) ], draft: link.draft, facts: FACTS, plugin: FACT_PLUGIN } ) );
+	assert.match( l.bakeHref.problem, /no link key of the order binding holds/ );
+} );
+
+test( 'MUST FAIL: place binds a fact, puts the words around it in the format, and lists what the site must supply', () => {
+	const planted = plant( FACT_TEMPLATE, FACT_LOGIC, FACT_SAMPLES );
+	const { record } = planted;
+	const got = place( { ...factCtx( planted ), tree: factTree( record ) }, { id: 'order-number', find: 'order-values' } );
+	// The bake line is one block: its own fact is the key, the other fact is a {fact:name} token in the words around it, so the
+	// whole line (and every word of it) is one binding and nothing of the draft's sample date shows when no fact is supplied.
+	const bound = bindingsOf( got.tree );
+	assert.deepEqual( bound.map( ( b ) => b.slice( 1 ).join() ), [ 'fact:bake_arrive|Baking on {fact:bake_date} · with you from %s', 'number|Order %s', 'fact:bake_date|Baked on %s' ] );
+	// The step line is bound on the second step only; the other two keep their words.
+	assert.deepEqual( bound.filter( ( b ) => b[ 1 ].startsWith( 'fact:bake_date' ) ).map( ( b ) => b[ 0 ].split( '#' )[ 1 ] ), [ '1' ] );
+	const steps = nodesIn( got.tree ).filter( ( n ) => /Just now|By courier/.test( n.attributes?.text || '' ) );
+	assert.equal( steps.length, 2 );
+	assert.ok( steps.every( ( n ) => ! n.attributes.metadata ) );
+	// Every bound block outside an order branch shows only while the visitor may view the order.
+	assert.deepEqual( nodesIn( got.tree ).filter( ( n ) => n.attributes?.metadata?.bindings ).map( ( n ) => n.attributes.sgsConditionLoggedIn ), [ 'order-viewable', 'order-viewable', 'order-viewable' ] );
+	// The run report names each fact the owner must supply, once, with the filter to answer through.
+	const said = got.notes.join( '\n' );
+	assert.equal( ( said.match( /site-supplied fact/g ) || [] ).length, 3 );
+	assert.match( said, /site-supplied fact fact:bake_date: \{\{ s\.d \}\} in Page\/\d+ reads the order's bake\.date/ );
+	assert.match( said, /site-supplied fact fact:bake_date: \{\{ bakeDate \}\} in Page\/\d+ reads the order's bake\.date.*sgs_order_fact/ );
+	assert.match( said, /site-supplied fact fact:bake_arrive: \{\{ arrive \}\} in Page\/\d+ reads the order's bake\.arrive/ );
+	// The words chosen by an order field are still a problem row, and nothing else is.
+	assert.deepEqual( got.problems.map( ( p ) => /\{\{ ([\w.]+) \}\}/.exec( p )?.[ 1 ] ), [ 'eyebrow' ] );
+	// Negative control: with a plugin that holds no fact form nothing is bound for them, no note is made, and each is a problem row.
+	const off = place( { ...factCtx( planted, PLUGIN ), tree: factTree( record ) }, { id: 'order-number', find: 'order-values' } );
+	assert.deepEqual( bindingsOf( off.tree ).map( ( b ) => b.slice( 1 ).join() ), [ 'number|Order %s' ] );
+	assert.ok( ! /site-supplied fact/.test( off.notes.join( '\n' ) ) );
+	assert.deepEqual( off.problems.map( ( p ) => /\{\{ ([\w.]+) \}\}/.exec( p )?.[ 1 ] ), [ 'arrive', 'bakeDate', 's.d', 'eyebrow' ] );
+	// The tree the piece is given is not changed.
+	const input = factTree( record );
+	const snapshot = structuredClone( input );
+	place( { ...factCtx( planted ), tree: input }, { id: 'order-number', find: 'order-values' } );
+	assert.deepEqual( input, snapshot );
+} );
+
+test( 'MUST FAIL: a fact whose step is missing from the skeleton is a problem row, and a key beside a fact takes it as a token', () => {
+	const planted = plant( FACT_TEMPLATE, FACT_LOGIC, FACT_SAMPLES );
+	const { record } = planted;
+	// Only the first step was built: the step that reads the bake date is not in the skeleton.
+	const short = place( { ...factCtx( planted ), tree: factTree( record, 1 ) }, { id: 'order-number', find: 'order-values' } );
+	assert.match( short.problems.join( '\n' ), /the value \{\{ s\.d \}\} \(Page\/\d+, fact:bake_date\) is not in the skeleton/ );
+	assert.deepEqual( bindingsOf( short.tree ).map( ( b ) => b.slice( 1 ).join() ), [ 'fact:bake_arrive|Baking on {fact:bake_date} · with you from %s', 'number|Order %s' ] );
+	// A built-in key beside a fact in one block: the key is the binding and the fact a token.
+	const both = plant( FACT_TEMPLATE.replace( '<p>Order {{ no }}</p>', '<p>Order {{ no }} baked {{ bakeDate }}</p>' ), FACT_LOGIC, FACT_SAMPLES );
+	const mixed = place( { ...factCtx( both ), tree: factTree( both.record ) }, { id: 'order-number', find: 'order-values' } );
+	assert.ok( bindingsOf( mixed.tree ).some( ( b ) => 'number|Order %s baked {fact:bake_date}' === b.slice( 1 ).join() ), JSON.stringify( bindingsOf( mixed.tree ) ) );
+	assert.ok( ! mixed.problems.some( ( p ) => /holds another value/.test( p ) ) );
+	// Whichever the fact stands before: the key is still the binding, and the fact's own turn never reports it.
+	const before = plant( FACT_TEMPLATE.replace( '<p>Order {{ no }}</p>', '<p>Baked {{ bakeDate }} · Order {{ no }}</p>' ), FACT_LOGIC, FACT_SAMPLES );
+	const early = place( { ...factCtx( before ), tree: factTree( before.record ) }, { id: 'order-number', find: 'order-values' } );
+	assert.ok( bindingsOf( early.tree ).some( ( b ) => 'number|Baked {fact:bake_date} · Order %s' === b.slice( 1 ).join() ), JSON.stringify( bindingsOf( early.tree ) ) );
+	assert.deepEqual( early.problems.map( ( p ) => /\{\{ ([\w.]+) \}\}/.exec( p )?.[ 1 ] ), [ 'eyebrow' ] );
+	// A fact fills the token of its own value only: a third value in the words that is no fact is not filled by another fact.
+	const three = plant( FACT_TEMPLATE.replace( '<p>Order {{ no }}</p>', '<p>Order {{ bakeDate }} and {{ arrive }} and {{ eyebrow }}</p>' ).replace( '<p>{{ eyebrow }}</p>', '' ), FACT_LOGIC, FACT_SAMPLES );
+	const unfilled = place( { ...factCtx( three ), tree: factTree( three.record ) }, { id: 'order-number', find: 'order-values' } );
+	assert.ok( ! bindingsOf( unfilled.tree ).some( ( b ) => /\|Order /.test( b.slice( 1 ).join() ) ), JSON.stringify( bindingsOf( unfilled.tree ) ) );
+	assert.ok( unfilled.problems.some( ( p ) => /holds another value beside/.test( p ) ) );
+	// Negative control: a second value that is no fact is still refused, with or without the fact form.
+	const other = plant( FACT_TEMPLATE.replace( '<p>Order {{ no }}</p>', '<p>Order {{ no }} baked {{ eyebrow }}</p>' ), FACT_LOGIC, FACT_SAMPLES );
+	const refused = place( { ...factCtx( other ), tree: factTree( other.record ) }, { id: 'order-number', find: 'order-values' } );
+	assert.ok( ! bindingsOf( refused.tree ).some( ( b ) => /^number\|/.test( b.slice( 1 ).join() ) ) );
+} );
+
+test( 'MUST FAIL: the words of a draft element keep the space before a middle dot', () => {
+	const { draft, record } = plant( FACT_TEMPLATE, FACT_LOGIC, FACT_SAMPLES );
+	assert.equal( sourceText( draft, record.elements[ keyOf( record, 'p', 'Baking on' ) ] ), 'Baking on {{ bakeDate }} · with you from {{ arrive }}' );
+	// Negative control: a full stop after an inline tag still closes up to the word before it.
+	const tight = plant( FACT_TEMPLATE.replace( '<p>Order {{ no }}</p>', '<p>Order <b>{{ no }}</b>.</p>' ), FACT_LOGIC, FACT_SAMPLES );
+	assert.equal( sourceText( tight.draft, tight.record.elements[ keyOf( tight.record, 'p', 'Order' ) ] ), 'Order {{ no }}.' );
+} );
+
+test( 'MUST FAIL: the plugin facts name the fact form the plugin holds, and none when the plugin holds none', () => {
+	assert.deepEqual( bindingSourceOf( "register_block_bindings_source(\n'sgs/order', array() );\nconst KEYS = array( 'number' );\nconst FACT_PREFIX = 'fact:';\nconst FACT_FILTER = 'sgs_order_fact';" ), { source: 'sgs/order', keys: [ 'number' ], factPrefix: 'fact:', factFilter: 'sgs_order_fact' } );
+	const old = bindingSourceOf( "register_block_bindings_source(\n'sgs/order', array() );\nconst KEYS = array( 'number' );" );
+	assert.equal( old.factPrefix, null );
+	assert.equal( old.factFilter, null );
+	const real = pluginFacts();
+	assert.equal( real.factPrefix, 'fact:' );
+	assert.equal( real.factFilter, 'sgs_order_fact' );
+	assert.ok( ! real.keys.some( ( k ) => k.startsWith( real.factPrefix ) ), 'a fact is no built-in key' );
 } );

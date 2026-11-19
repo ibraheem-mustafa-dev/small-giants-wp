@@ -118,8 +118,9 @@ test( 'MUST FAIL: Mama\'s order confirmation through the pass: one sgs/order-ite
 	assert.equal( number.length, 1 );
 	assert.deepEqual( checkPieces( { key: 'order-confirmation', tree: got.tree, data: loadPieces() } ), [] );
 	assert.deepEqual( placedLint( tree, got.tree, openDb() ), [] );
-	// What no order key holds is a problem row, never a binding (as the order builder's own test proves).
-	assert.deepEqual( got.problems.map( ( p ) => /\{\{ ([\w.]+) \}\}/.exec( p )?.[ 1 ] ), [ 'arrive', 'bakeDate', 's.d', 'acctEyebrow' ] );
+	// What no order key holds is a site-supplied fact, bound and noted, when it reads the order; the eyebrow that picks fixed words by the order stays a problem row (as the order builder's own test proves).
+	assert.deepEqual( got.problems.map( ( p ) => /\{\{ ([\w.]+) \}\}/.exec( p )?.[ 1 ] ), [ 'acctEyebrow' ] );
+	assert.equal( got.notes.filter( ( n ) => /site-supplied fact/.test( n ) ).length, 3 );
 } );
 
 test( 'MUST FAIL: the fact record is read only for a template with a piece whose builder reads it, and the draft file names the root component', () => {
