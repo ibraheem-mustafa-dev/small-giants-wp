@@ -17,8 +17,18 @@
 // is recorded as the site build records its own copies; a page whose template has a shell builds only what sits below it.
 // A built header, footer or drawer (a page-map layout row) becomes its area's active layout, whatever the pointer named
 // before (lib/site-run-layout.mjs, FR-48-55); a run whose `--only` leaves it out changes no pointer.
-//   node scripts/computed-route/site-run.mjs <client> --site <target> [--only a,b] [--skip-stages inventory,walk]
+//   node scripts/computed-route/site-run.mjs <client> --site <target> [--only a,b]
 //        [--stages inventory,propose,fill,build,apply,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]
+//        [--no-copies] [--strict]
+// --site is the only site the run reads or writes (prepareSite): every surfaces.json entry moves onto it, its address is the live
+// address (--live-base overrides it), and a protected site, a site with other post ids than the surfaces' and a scratch copy
+// (`local-mediatest*`) in a main checkout are refused before any stage. The run stops before any stage, naming the file and how to
+// get it, when sites/<client>/build/intake/facts.json (the propose and fill stages read it) or intake/inventories/ (the inventory
+// stage, for a state-driven or form surface) is missing: both are gitignored, so a fresh worktree has neither.
+// A stage that did not run (left out of --stages, a WooCommerce page's own, a template copy's apply, a surface skipped) is recorded
+// { ok: true, skipped: <reason> } and printed `skip`. The process exits 1 when any stage failed; --strict also exits 1 when any
+// stage did not run, and lists them. --no-copies adds no template copy to an --only run: a page under a shell builds from the shell
+// already recorded, and fails with a message when none is.
 // The apply stage (apply.mjs for that surface with --write, run one at a time like a build: it writes the site's database and the
 // shared verify.json) sets the existing block settings the Fill and build cannot see, from the draft's runtime, on a local
 // mirror (a page or post surface only: a template copy and a Hostinger target are skipped with a note). Its failure stops the
@@ -142,10 +152,11 @@ export const needsTestOrder = ( surfaces, keys ) => keys.some( ( k ) => 'order-c
 export const orderAddress = ( reply ) => ( reply?.url ? ( ( u ) => `${ u.pathname }${ u.search }` )( new URL( reply.url ) ) : null );
 
 // The surfaces a run covers: the named ones, plus each template copy a named page's content sits in (its shell decides what
-// the page's post holds) and, with the page copy, the copies built from its shell.
-export function runKeys( surfaces, only ) {
+// the page's post holds) and, with the page copy, the copies built from its shell. `copies: false` (--no-copies) adds none: a
+// page then builds from the shell already recorded.
+export function runKeys( surfaces, only, { copies = true } = {} ) {
 	const keys = Object.keys( surfaces ).filter( ( k ) => ! only || only.includes( k ) );
-	if ( ! only ) {
+	if ( ! only || ! copies ) {
 		return keys;
 	}
 	const add = ( k ) => k && Object.hasOwn( surfaces, k ) && ! keys.includes( k ) && keys.push( k );
@@ -184,6 +195,57 @@ export function copyTrees( { surfaces, keys, filled, buildDir } ) {
 	return out;
 }
 
+// One stage's record in status.json: { ok, seconds, detail? }; a stage that did not run is { ok: true, skipped: <reason>, seconds: 0 }
+// (it did not fail, and it did not run).
+export function stageRecord( { ok, ms = 0, detail = null, skipped = null } ) {
+	return skipped
+		? { ok: true, skipped, seconds: 0, ...( detail ? { detail } : {} ) }
+		: { ok, seconds: Math.round( ms / 1000 ), ...( detail ? { detail } : {} ) };
+}
+
+// The printed line of a stage: `ok`, `FAIL` or `skip`, the surface, the stage, its seconds and its detail or skip reason.
+export function stageLine( key, stage, record ) {
+	const label = record.skipped ? 'skip' : record.ok ? 'ok  ' : 'FAIL';
+	const why = record.skipped ?? record.detail;
+	return `${ label } ${ key } ${ stage } ${ record.seconds }s${ why ? ` - ${ why }` : '' }`;
+}
+
+// The stages of a status object that failed or did not run, as "<surface> <stage>: <why>" lines: { failed, skipped }.
+export function stageProblems( status ) {
+	const out = { failed: [], skipped: [] };
+	for ( const [ key, stages ] of Object.entries( status ) ) {
+		for ( const [ stage, r ] of Object.entries( stages ) ) {
+			r.skipped && out.skipped.push( `${ key } ${ stage }: ${ r.skipped }` );
+			! r.ok && out.failed.push( `${ key } ${ stage }: ${ r.detail ?? 'failed' }` );
+		}
+	}
+	return out;
+}
+
+// The process exit code of a finished run: 1 when any stage failed, and with --strict (`strict`) when any stage did not run.
+export function runExit( status, { strict = false } = {} ) {
+	const { failed, skipped } = stageProblems( status );
+	return failed.length || ( strict && skipped.length ) ? 1 : 0;
+}
+
+// What the run reads that a fresh worktree lacks (sites/<client>/build/intake/facts.json and inventories/ are gitignored): the
+// propose and fill stages read facts.json, and the inventory stage reads inventories/ for a state-driven or form surface. One
+// message per missing path, naming it and how to get it; a surface that reads no draft (a copy, a content-only post without
+// --with-content, a surface with no draft) needs neither. `exists` is for tests.
+export function intakeInputsMissing( { client, build, stages, surfaces, keys, intake, withContent = false, exists = fs.existsSync } ) {
+	const reads = keys.filter( ( k ) => ! [ 'pages', 'page' ].includes( surfaces[ k ].copy?.from ) && ! surfaces[ k ].noDraft && ! ( isContentOnlySurface( surfaces[ k ] ) && ! withContent ) );
+	const out = [];
+	const at = ( ...p ) => path.join( build, 'intake', ...p );
+	if ( reads.length && [ 'propose', 'fill' ].some( ( s ) => stages.includes( s ) ) && ! exists( at( 'facts.json' ) ) ) {
+		out.push( `sites/${ client }/build/intake/facts.json is missing, and the ${ [ 'propose', 'fill' ].filter( ( s ) => stages.includes( s ) ).join( ' and ' ) } stage reads it (it is gitignored, so a fresh worktree has none): copy it from the checkout that holds it (cp <that checkout>/sites/${ client }/build/intake/facts.json sites/${ client }/build/intake/) or write it with node scripts/computed-route/intake.mjs --facts ${ client }` );
+	}
+	const fromSaved = reads.filter( ( k ) => ( ( skel ) => skel?.root?.viaState || 'form' === skel?.kind )( intake?.skeletons?.[ surfaces[ k ].intakeSurface ] ) );
+	if ( fromSaved.length && stages.includes( 'inventory' ) && ! exists( at( 'inventories' ) ) ) {
+		out.push( `sites/${ client }/build/intake/inventories/ is missing, and the inventory stage reads it for ${ fromSaved.slice( 0, 3 ).join( ', ' ) }${ fromSaved.length > 3 ? ` and ${ fromSaved.length - 3 } more` : '' } (it is gitignored, so a fresh worktree has none): copy it from the checkout that holds it (cp -r <that checkout>/sites/${ client }/build/intake/inventories sites/${ client }/build/intake/) or write it with node scripts/computed-route/intake.mjs ${ client }` );
+	}
+	return out;
+}
+
 // What a run on `site` reads and writes, before any stage: the named site is the only one. It must be a target and not protected,
 // a scratch copy runs only from a worktree, and every surface entry moves onto the site (a site with other post ids throws).
 // Returns { surfaces, base, target }: the retargeted manifest, the live address of every page read or built (the site's own,
@@ -204,7 +266,7 @@ export async function main( argv ) {
 	const flag = ( n, d = null ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : d );
 	const site = flag( '--site' );
 	if ( ! client || ! site ) {
-		throw new Error( 'usage: site-run.mjs <client> --site <target> [--only a,b] [--stages inventory,propose,fill,build,apply,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]' );
+		throw new Error( 'usage: site-run.mjs <client> --site <target> [--only a,b] [--stages inventory,propose,fill,build,apply,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content] [--no-copies] [--strict]' );
 	}
 	const stages = ( flag( '--stages' ) || ALL_STAGES.join( ',' ) ).split( ',' );
 	const only = flag( '--only' ) ? flag( '--only' ).split( ',' ) : null;
@@ -216,15 +278,24 @@ export async function main( argv ) {
 	const { surfaces, base, target } = prepareSite( { site, surfaces: readJson( path.join( build, 'surfaces.json' ) ), targets: readTargets(), repo: REPO, liveOverride } );
 	const rows = readJson( path.join( build, 'page-map.json' ) );
 	const intake = readJson( path.join( build, 'intake', 'intake.json' ) );
-	const keys = runKeys( surfaces, only );
+	const withCopies = ! argv.includes( '--no-copies' );
+	const strict = argv.includes( '--strict' );
+	const keys = runKeys( surfaces, only, { copies: withCopies } );
+	// A run that would carry on with worse proposals for want of a gitignored intake file stops here, before any stage.
+	const missingInputs = intakeInputsMissing( { client, build, stages, surfaces, keys, intake, withContent } );
+	if ( missingInputs.length ) {
+		throw new Error( missingInputs.join( '\n' ) );
+	}
 	const dir = path.join( build, 'qa', 'site-run', stamp() );
 	fs.mkdirSync( dir, { recursive: true } );
 	const status = {};
 	const save = () => fs.writeFileSync( path.join( dir, 'status.json' ), `${ JSON.stringify( status, null, 2 ) }\n` );
-	const note = ( key, stage, ok, ms, detail ) => {
-		( status[ key ] ||= {} )[ stage ] = { ok, seconds: Math.round( ms / 1000 ), ...( detail ? { detail } : {} ) };
+	// `skipped`: why the stage did not run (it is recorded ok, with the reason, and printed `skip`).
+	const note = ( key, stage, ok, ms, detail, skipped = null ) => {
+		const record = stageRecord( { ok, ms, detail, skipped } );
+		( status[ key ] ||= {} )[ stage ] = record;
 		save();
-		console.log( `${ ok ? 'ok  ' : 'FAIL' } ${ key } ${ stage } ${ Math.round( ms / 1000 ) }s${ detail ? ` - ${ detail }` : '' }` );
+		console.log( stageLine( key, stage, record ) );
 	};
 	// One draft server per draft file, serving that file as its index (a page-file draft has one file per page; a hash or
 	// state-page draft names one entry file for every surface).
@@ -240,12 +311,13 @@ export async function main( argv ) {
 	// skipped and its walk then stops (a failed stage stops the surface).
 	const stepper = ( key, wooPage ) => async ( stage, fn ) => {
 		if ( ! stages.includes( stage ) ) {
+			note( key, stage, true, 0, null, 'not in --stages' );
 			return true;
 		}
 		// Fill writes block settings and the walker pairs the draft with the blocks Fill wrote: WooCommerce renders these
 		// pages itself, so neither applies to the page's content; its layout is its template copy's surface.
 		if ( wooPage && [ 'fill', 'build', 'apply', 'walk' ].includes( stage ) ) {
-			note( key, stage, true, 0, `skipped: WooCommerce's own ${ wooPage } page keeps WooCommerce's content (its layout is the template-<slug> surface)` );
+			note( key, stage, true, 0, null, `WooCommerce's own ${ wooPage } page keeps WooCommerce's content (its layout is the template-<slug> surface)` );
 			return 'walk' !== stage;
 		}
 		const t = Date.now();
@@ -277,7 +349,7 @@ export async function main( argv ) {
 		const kind = skel?.kind;
 		const { row, hash, skip } = surfaceReach( { key, entry, skel, rows, withContent, routing: intake.routing ?? null } );
 		if ( skip ) {
-			note( key, 'skipped', true, 0, skip );
+			note( key, 'run', true, 0, null, skip );
 			return null;
 		}
 		const draftUrl = `${ ( await serverFor( entry ) ).url }${ hash }`;
@@ -373,7 +445,11 @@ export async function main( argv ) {
 		} else if ( ! ctx.filled ) {
 			tree = path.relative( REPO, path.join( ctx.out, 'filled.tree.json' ) );
 		} else if ( entry.shell ) {
-			const chain = copies[ entry.shell ]?.shell?.chain ?? readShell( build, entry.shell )?.chain ?? [];
+			const recorded = copies[ entry.shell ]?.shell?.chain ?? readShell( build, entry.shell )?.chain;
+			if ( ! recorded && ! withCopies ) {
+				return note( key, 'build', false, 0, `--no-copies: no ${ entry.shell } shell is recorded for this page to build under (sites/${ client }/build/trees/template): run the template-${ entry.shell } surface with it, or drop --no-copies` );
+			}
+			const chain = recorded ?? [];
 			try {
 				const file = path.join( ctx.out, 'content.tree.json' );
 				fs.writeFileSync( file, `${ JSON.stringify( contentUnder( ctx.filled, chain ), null, 2 ) }\n` );
@@ -402,7 +478,7 @@ export async function main( argv ) {
 			return;
 		}
 		if ( [ 'pages', 'page' ].includes( entry.copy?.from ) || ( slug && entry.copy && null === ctx.address ) ) {
-			return note( key, 'walk', true, 0, 'pages' === entry.copy?.from ? `skipped: walked with its pages (${ entry.copy.surfaces.join( ', ' ) })` : 'page' === entry.copy?.from ? 'skipped: no draft surface plays it' : `skipped: the ${ slug } template shows only at a WooCommerce endpoint` );
+			return note( key, 'walk', true, 0, null, 'pages' === entry.copy?.from ? `walked with its pages (${ entry.copy.surfaces.join( ', ' ) })` : 'page' === entry.copy?.from ? 'no draft surface plays it' : `the ${ slug } template shows only at a WooCommerce endpoint` );
 		}
 		const parity = path.join( build, 'qa', 'parity' );
 		await step( 'walk', () => exec( 'walk', 'node', [ 'scripts/parity/draft-live-walk.mjs', path.join( parity, path.basename( entry.walkerFull ) ),
@@ -419,10 +495,11 @@ export async function main( argv ) {
 	// target is not a mirror, so each is skipped with a note. Returns false when the stage failed.
 	async function applyStage( { ctx, entry, key, slug, step, exec } ) {
 		if ( ! stages.includes( 'apply' ) ) {
+			note( key, 'apply', true, 0, null, 'not in --stages' );
 			return true;
 		}
 		if ( slug || ! entry.target?.postId || ! /^local-/.test( site ) ) {
-			note( key, 'apply', true, 0, slug ? 'skipped: a template copy has no post of its own' : ! entry.target?.postId ? 'skipped: no post behind this surface' : `skipped: ${ site } is not a local mirror` );
+			note( key, 'apply', true, 0, null, slug ? 'a template copy has no post of its own' : ! entry.target?.postId ? 'no post behind this surface' : `${ site } is not a local mirror` );
 			return true;
 		}
 		return step( 'apply', () => exclusive( async () => {
@@ -497,11 +574,18 @@ export async function main( argv ) {
 		note( 'run', 'framework-backlog', 0 === fb.code, 0, fb.tail );
 	}
 	const failed = Object.entries( status ).filter( ( [ , s ] ) => Object.values( s ).some( ( x ) => ! x.ok ) );
-	console.log( `site run ${ client }: ${ keys.length } surfaces, ${ failed.length } with a failed stage. ${ path.join( dir, 'status.json' ) }` );
+	const problems = stageProblems( status );
+	console.log( `site run ${ client }: ${ keys.length } surfaces, ${ failed.length } with a failed stage, ${ problems.skipped.length } stages not run. ${ path.join( dir, 'status.json' ) }` );
+	// --strict: a stage that did not run counts as a failure of the run, and the run lists each one.
+	strict && problems.skipped.forEach( ( l ) => console.log( `strict: not run: ${ l }` ) );
+	problems.failed.forEach( ( l ) => console.log( `failed: ${ l }` ) );
+	return runExit( status, { strict } );
 }
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
-	main( process.argv.slice( 2 ) ).catch( ( e ) => {
+	main( process.argv.slice( 2 ) ).then( ( code ) => {
+		process.exitCode = code;
+	}, ( e ) => {
 		console.error( e.message );
 		process.exit( 1 );
 	} );
