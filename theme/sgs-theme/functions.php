@@ -444,7 +444,11 @@ function enqueue_styles(): void {
 			get_theme_file_uri( 'assets/js/dark-mode.js' ),
 			array(),
 			asset_version( 'assets/js/dark-mode.js', $theme_version ),
-			true // Load in footer — inline head script handles flash prevention.
+			// Deferred in the footer: the inline head script handles flash prevention, and init() runs once parsing ends.
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
 		);
 
 		// Per-slug preset -> dark custom-property mapping (D.4): every palette slug this
@@ -474,7 +478,11 @@ function enqueue_styles(): void {
 		get_theme_file_uri( 'assets/js/nav-accessibility.js' ),
 		array(),
 		asset_version( 'assets/js/nav-accessibility.js', $theme_version ),
-		true // Load in footer — runs after DOM is available.
+		// Deferred in the footer: runs after parsing, so the DOM is available and the parser never waits for it.
+		array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		)
 	);
 
 	/*
@@ -535,14 +543,21 @@ function enqueue_styles(): void {
 			get_theme_file_uri( 'assets/js/sgs-shop-filters-accordion.js' ),
 			array(),
 			asset_version( 'assets/js/sgs-shop-filters-accordion.js', $theme_version ),
-			true
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
 		);
 		wp_enqueue_script(
 			'sgs-shop-filters',
 			get_theme_file_uri( 'assets/js/sgs-shop-filters.js' ),
 			array( 'sgs-shop-filters-accordion' ),
 			asset_version( 'assets/js/sgs-shop-filters.js', $theme_version ),
-			true // Load in footer — no DOM dependency at parse time.
+			// Deferred in the footer: the whole shop-filter chain (accordion, extras, groups, chosen) defers together, in order.
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
 		);
 	}
 }

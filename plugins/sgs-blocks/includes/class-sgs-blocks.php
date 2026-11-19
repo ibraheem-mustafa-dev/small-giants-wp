@@ -580,7 +580,10 @@ final class SGS_Blocks {
 				SGS_BLOCKS_URL . 'assets/js/touch-input.js',
 				[],
 				SGS_BLOCKS_VERSION,
-				true
+				[
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				]
 			);
 		}
 
@@ -593,7 +596,10 @@ final class SGS_Blocks {
 				SGS_BLOCKS_URL . 'assets/js/js-flag.js',
 				[],
 				SGS_BLOCKS_VERSION,
-				true
+				[
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				]
 			);
 		}
 	}

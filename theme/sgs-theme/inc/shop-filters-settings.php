@@ -250,7 +250,10 @@ function localise_shop_filter_settings(): void {
 		get_theme_file_uri( 'assets/js/sgs-shop-filters-extras.js' ),
 		array( 'sgs-shop-filters' ),
 		asset_version( 'assets/js/sgs-shop-filters-extras.js', wp_get_theme()->get( 'Version' ) ),
-		true
+		array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		)
 	);
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\localise_shop_filter_settings', 20 );

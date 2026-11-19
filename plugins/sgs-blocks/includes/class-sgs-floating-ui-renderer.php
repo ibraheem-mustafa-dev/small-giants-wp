@@ -58,7 +58,10 @@ final class Sgs_Floating_UI_Renderer {
 			\plugins_url( 'assets/floating-ui/floating-ui.js', \dirname( __DIR__ ) . '/sgs-blocks.php' ),
 			array(),
 			SGS_BLOCKS_VERSION,
-			true
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
 		);
 
 		// -- Resolve colours and options -------------------------------------
