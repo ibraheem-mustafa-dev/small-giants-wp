@@ -30,7 +30,7 @@ if ( '' === $sgs_stagec_token || ! preg_match( '/^[a-z0-9-]{1,64}$/', $sgs_stage
 $GLOBALS['sgs_stagec'] = array(
 	'token'   => $sgs_stagec_token,
 	'records' => array(),
-	'current' => null,
+	'stack'   => array(),
 	'stages'  => array(),
 );
 
@@ -104,8 +104,9 @@ function sgs_stagec_wire(): void {
 add_action( 'wp', 'sgs_stagec_wire', PHP_INT_MAX );
 
 /**
- * Open a record for the block whose filters are about to run. A block's `render_block` filters run back to back
- * after its whole subtree has rendered, so one open record at a time is enough.
+ * Open a record for the block whose filters are about to run. A block's `render_block` filters run back to back after
+ * its whole subtree has rendered; a filter that itself renders blocks (a pattern, a synced block) opens and closes
+ * inner records meanwhile, so the records form a stack and the outer one resumes when the inner one closes.
  *
  * @param string $content Block HTML.
  * @param array  $block   Parsed block.
@@ -114,7 +115,7 @@ add_action( 'wp', 'sgs_stagec_wire', PHP_INT_MAX );
 function sgs_stagec_start( $content, $block ) {
 	$content = (string) $content;
 	$styles  = sgs_stagec_styles( $content );
-	$GLOBALS['sgs_stagec']['current'] = array(
+	$GLOBALS['sgs_stagec']['stack'][] = array(
 		'block'  => (string) ( $block['blockName'] ?? '' ),
 		'chunks' => array(),
 		'seen'   => array(),
@@ -133,10 +134,11 @@ function sgs_stagec_start( $content, $block ) {
  * @return void
  */
 function sgs_stagec_add( string $css, string $stage ): void {
-	$cur = &$GLOBALS['sgs_stagec']['current'];
-	if ( null === $cur || '' === $css ) {
+	$top = count( $GLOBALS['sgs_stagec']['stack'] ) - 1;
+	if ( $top < 0 || '' === $css ) {
 		return;
 	}
+	$cur = &$GLOBALS['sgs_stagec']['stack'][ $top ];
 	$key = md5( $css );
 	$n   = ( $cur['seen'][ $key ] ?? 0 );
 	$cur['seen'][ $key ] = $n + 1;
@@ -156,17 +158,19 @@ function sgs_stagec_add( string $css, string $stage ): void {
  * @return string Unchanged HTML.
  */
 function sgs_stagec_snapshot( string $content, int $priority ): string {
-	$cur = $GLOBALS['sgs_stagec']['current'];
-	if ( null === $cur ) {
+	$stack = $GLOBALS['sgs_stagec']['stack'];
+	if ( empty( $stack ) ) {
 		return $content;
 	}
+	$cur   = end( $stack );
 	$count = array();
 	foreach ( sgs_stagec_styles( $content ) as $css ) {
 		$key           = md5( $css );
 		$count[ $key ] = ( $count[ $key ] ?? 0 ) + 1;
 		if ( $count[ $key ] > ( $cur['seen'][ $key ] ?? 0 ) ) {
 			sgs_stagec_add( $css, 'p' . $priority );
-			$cur = $GLOBALS['sgs_stagec']['current'];
+			$stack = $GLOBALS['sgs_stagec']['stack'];
+			$cur   = end( $stack );
 		}
 	}
 	return $content;
@@ -181,7 +185,7 @@ function sgs_stagec_snapshot( string $content, int $priority ): string {
  */
 function sgs_stagec_finish( $content, $block ) {
 	$content = sgs_stagec_snapshot( (string) $content, 98 );
-	$cur     = $GLOBALS['sgs_stagec']['current'];
+	$cur     = array_pop( $GLOBALS['sgs_stagec']['stack'] );
 	if ( null !== $cur && ! empty( $cur['chunks'] ) ) {
 		$GLOBALS['sgs_stagec']['records'][] = array(
 			'block'  => $cur['block'],
@@ -194,7 +198,6 @@ function sgs_stagec_finish( $content, $block ) {
 			),
 		);
 	}
-	$GLOBALS['sgs_stagec']['current'] = null;
 	return $content;
 }
 

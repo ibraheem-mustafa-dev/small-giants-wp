@@ -14,7 +14,7 @@ names the code that writes that CSS and how much of it repeats.
   --fix                           the worklist: emitters ranked by bytes across every page, with a sample rule for each
   --check                         exit 1 when a page's collected CSS has more bytes, rules or :has() rules than the
                                   baseline recorded in its client's sites/<client>/stage-c.json (a :has() selector makes the browser search the subtree of every
-                                  element it could match: Mama's product page 4.9 s of style work with them, 1.5 s
+                                  element it could match: one client's product page 4.9 s of style work with them, 1.5 s
                                   without, 2026-11-19)
                                   --record writes the current survey as each client's baseline
   --compare <before> <after>      two snapshot folders (written by --survey --snapshot <dir>): for each page, the value
@@ -24,10 +24,11 @@ names the code that writes that CSS and how much of it repeats.
   --self-test                     plants a repeated body and an override pair and asserts both are caught; with
                                   --unplant the plants are removed and the self-test must fail (proves it can fail)
 
-The cascade comparison is a model, not a browser: it reads class, tag and id selectors joined by descendant or child
-combinators, with pseudo-classes and pseudo-elements kept as part of the state; it evaluates width, hover, pointer and
-reduced-motion media queries; a rule it cannot read (attribute selectors, :is/:where/:not/:has, sibling combinators,
-@container) is counted as `unread` and left out on both sides. The render check (scripts/render-check/) is the browser
+The cascade comparison is a model, not a browser: it reads class, tag, id, `:root` and attribute selectors (presence
+and exact value) joined by descendant or child combinators, with pseudo-classes and pseudo-elements kept as part of the
+state; it evaluates width, hover, pointer and reduced-motion media queries; a rule it cannot read (:is/:where/:not/:has,
+other attribute operators, sibling combinators, @container) is counted as `unread` and left out on both sides, so a
+change to such a rule needs the browser proof. The render check (scripts/render-check/) is the browser
 proof; this is the fast one.
 """
 from __future__ import annotations
@@ -42,6 +43,7 @@ import sys
 import time
 import urllib.request
 from collections import Counter, defaultdict
+from functools import lru_cache
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -202,7 +204,8 @@ def fetch(url: str, timeout: int = 120) -> str:
 
 def render_page(label: str, mirror_name: str, path: str) -> tuple[dict, str]:
     m = mirror(mirror_name)
-    token = f"{label}-{int(time.time() * 1000)}"
+    # The probe accepts only [a-z0-9-]{1,64}: fold the label to that alphabet and keep it short.
+    token = f"{re.sub(r'[^a-z0-9-]+', '-', label.lower()).strip('-')[:40]}-{int(time.time() * 1000)}"
     sep = "&" if "?" in path else "?"
     html = fetch(f"{m['url']}{path}{sep}sgs_stagec_survey={token}")
     out = Path(m["docroot"]) / "wp-content" / "uploads" / "sgs-stagec" / f"{token}.json"
@@ -377,7 +380,8 @@ class Doc(HTMLParser):
         counts = self.child_count[-1]
         counts[tag] += 1
         path = (self.els[parent]["path"] if parent >= 0 else "") + f"/{tag}[{counts[tag]}]"
-        el = {"tag": tag, "id": a.get("id") or "", "classes": set((a.get("class") or "").split()), "parent": parent, "path": path}
+        el = {"tag": tag, "id": a.get("id") or "", "classes": set((a.get("class") or "").split()), "parent": parent, "path": path,
+              "attrs": {k.lower(): (v if v is not None else "") for k, v in attrs}}
         self.els.append(el)
         if tag not in self.VOID:
             self.stack.append(len(self.els) - 1)
@@ -403,13 +407,16 @@ class Doc(HTMLParser):
             self.styles[-1] += data
 
 
-COMPOUND = re.compile(r"^(?P<tag>[a-zA-Z][\w-]*|\*)?(?P<rest>(?:[.#][\w-]+|::?[a-zA-Z-]+(?:\([^()]*\))?)*)$")
-UNREAD_PSEUDO = re.compile(r":(is|where|not|has|nth-|first-|last-|only-|empty|root|lang|dir)\b")
+COMPOUND = re.compile(r"^(?P<tag>[a-zA-Z][\w-]*|\*)?(?P<rest>(?:[.#][\w-]+|\[[^\]]*\]|::?[a-zA-Z-]+(?:\([^()]*\))?)*)$")
+UNREAD_PSEUDO = re.compile(r":(is|where|not|has|nth-|first-|last-|only-|empty|lang|dir)\b")
+ATTR = re.compile(r"""\[\s*([\w-]+)\s*(?:(=)\s*("[^"]*"|'[^']*'|[^\]\s]+))?\s*\]""")
 
 
 def parse_selector(sel: str):
     """[(compound, combinator_to_left)], state key, specificity; or None when the model cannot read it."""
-    if re.search(r"[\[+~]", sel) or UNREAD_PSEUDO.search(sel):
+    if re.search(r"[+~]", sel) or UNREAD_PSEUDO.search(sel):
+        return None
+    if re.search(r"\[[^\]]*\s[^\]]*\]", sel):  # an attribute value with a space would split the compound
         return None
     tokens = re.split(r"\s*(>)\s*|\s+", sel.strip())
     parts, comb = [], " "
@@ -425,22 +432,37 @@ def parse_selector(sel: str):
         rest = m.group("rest") or ""
         classes = set(re.findall(r"\.([\w-]+)", rest))
         ids = set(re.findall(r"#([\w-]+)", rest))
+        raw_attrs = re.findall(r"\[[^\]]*\]", rest)
+        attrs = []
+        for ra in raw_attrs:
+            am = ATTR.fullmatch(ra)
+            if not am:
+                return None  # ^= $= *= ~= |= and case flags: not modelled
+            attrs.append((am.group(1).lower(), am.group(3).strip("\"'") if am.group(2) else None))
+        rest = re.sub(r"\[[^\]]*\]", "", rest)
         pseudo = re.findall(r"::?[a-zA-Z-]+(?:\([^()]*\))?", rest)
+        root = ":root" in pseudo
+        pseudo = [x for x in pseudo if x != ":root"]
         tag = m.group("tag") if m.group("tag") and m.group("tag") != "*" else ""
-        parts.append({"tag": tag.lower(), "classes": classes, "ids": ids, "pseudo": pseudo, "comb": comb})
+        parts.append({"tag": "html" if root else tag.lower(), "classes": classes, "ids": ids, "attrs": attrs,
+                      "pseudo": pseudo, "root": root, "comb": comb})
         comb = " "
     if not parts:
         return None
     a = sum(len(p["ids"]) for p in parts)
-    b = sum(len(p["classes"]) + sum(1 for x in p["pseudo"] if not x.startswith("::")) for p in parts)
-    c = sum((1 if p["tag"] else 0) + sum(1 for x in p["pseudo"] if x.startswith("::")) for p in parts)
+    b = sum(len(p["classes"]) + len(p["attrs"]) + p["root"] + sum(1 for x in p["pseudo"] if not x.startswith("::")) for p in parts)
+    c = sum((1 if p["tag"] and not p["root"] else 0) + sum(1 for x in p["pseudo"] if x.startswith("::")) for p in parts)
     state = "|".join(f"{i}{''.join(sorted(p['pseudo']))}" for i, p in enumerate(parts) if p["pseudo"])
     # pseudo-classes on an ancestor change whether the rule applies (state); pseudo-elements make a different box
     return parts, state, (a, b, c)
 
 
 def compound_matches(el: dict, p: dict) -> bool:
-    return (not p["tag"] or el["tag"] == p["tag"]) and p["classes"] <= el["classes"] and (not p["ids"] or el["id"] in p["ids"])
+    if p["root"] and el["parent"] != -1:
+        return False
+    if not ((not p["tag"] or el["tag"] == p["tag"]) and p["classes"] <= el["classes"] and (not p["ids"] or el["id"] in p["ids"])):
+        return False
+    return all(name in el["attrs"] and (val is None or el["attrs"][name] == val) for name, val in p["attrs"])
 
 
 def selector_matches(els: list[dict], idx: int, parts: list[dict]) -> bool:
@@ -463,8 +485,11 @@ def selector_matches(els: list[dict], idx: int, parts: list[dict]) -> bool:
     return walk(idx, len(parts) - 2)
 
 
-def media_applies(ctx: tuple, profile: dict) -> bool | None:
-    """True/False for each at-rule context at this profile; None when it cannot be evaluated."""
+@lru_cache(maxsize=None)
+def media_applies(ctx: tuple, pname: str) -> bool | None:
+    """True/False for each at-rule context at this profile; None when it cannot be evaluated. Cached: the answer
+    depends only on the context and the profile, and the cascade asks it once per candidate rule per element."""
+    profile = PROFILES[pname]
     for head in ctx:
         if head.startswith("@supports") or head.startswith("@layer"):
             continue
@@ -553,7 +578,7 @@ def cascade(html: str) -> tuple[dict, dict]:
             if el["id"]:
                 cands.extend(index.get("#" + el["id"], []))
             for parts, state, spec, order, ctx, decls in cands:
-                ap = media_applies(ctx, prof)
+                ap = media_applies(ctx, pname)
                 if ap is None:
                     stats["unread-media"] += 1
                     continue
@@ -625,12 +650,19 @@ def self_test(unplant: bool) -> int:
         fails.append("an added <script> (never drawn) reported as a difference")
 
     # 3. model sanity: media at three widths, child combinator, unread selectors left out on both sides
-    h = "<style>.a>.b{margin:0}@media (min-width:768px){.a .b{margin:4px}}[data-x] .b{margin:9px}</style><div class='a'><p class='b'></p></div>"
+    h = ("<style>.a>.b{margin:0}@media (min-width:768px){.a .b{margin:4px}}.a + .b{margin:9px}"
+         ".b[data-on]{color:red}:root .b{padding:1px}.b[data-on=\"no\"]{border:0}</style>"
+         "<div class='a'><p class='b' data-on='yes'></p></div>")
+    r2, _ = cascade("<html><body>" + h + "</body></html>")
     r, st = cascade(h)
     if r["375"].get(("/div[1]/p[1]", "", "margin")) != "0" or r["1440"].get(("/div[1]/p[1]", "", "margin")) != "4px":
         fails.append(f"media/combinator model wrong: {r['375']} / {r['1440']}")
     if st.get("unread") != 1:
-        fails.append(f"attribute selector should be counted unread once: {st}")
+        fails.append(f"sibling selector should be counted unread once: {st}")
+    if r2["375"].get(("/html[1]/body[1]/div[1]/p[1]", "", "color")) != "red" or r2["375"].get(("/html[1]/body[1]/div[1]/p[1]", "", "padding")) != "1px":
+        fails.append(f"attribute presence or :root not read: {r['375']}")
+    if ("/html[1]/body[1]/div[1]/p[1]", "", "border") in r2["375"]:
+        fails.append("attribute value mismatch matched")
 
     for f in fails:
         print("FAIL", f)
