@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 1
-spec_version: 1.7.0
+spec_version: 1.8.0
 project: small-giants-wp
 title: SGS Theme
 status: shipped

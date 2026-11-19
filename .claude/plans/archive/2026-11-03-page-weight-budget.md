@@ -106,7 +106,7 @@ Recorded so a later session can pick one up with its numbers; none is scheduled.
 2. **The header's remaining JS on every page.** Interactivity runtime 15.7 KB, nav bar menu 6.9, nav drawer 6.9 (4.5 of it the store copy until the Stage B merge), smooth scroll 6.1, header behaviours 4.3, nav store 4.7. A 50 KB JS page is not reachable while all of these load at start.
 3. **WooCommerce's own `woocommerce.css` + layout on shop and product pages (about 19 KB).** Not removable as is: on the canary's product pages, screenshots change with them disabled (the classic gallery and parts of the add-to-cart form use them). Needs per-surface proof.
 4. **`media-element.css` on every page: Spec 49** replaces it with `media-base.css` (now minified at deploy: 14.3 -> 1.8 KB in the meantime).
-5. **Render-blocking stylesheet count (23 to 41 files a page).** Collecting the small per-block stylesheets into fewer files, or inlining the critical part, is the next mobile LCP lever after Spec 49's image sizes.
+5. **Render-blocking stylesheet count (23 to 41 files a page).** Done 2026-11-19 by `.claude/plans/2026-11-19-css-delivery.md` (Spec 32 FR-32-32): shared stylesheets print as order-preserving runs inside the page, so no own-origin stylesheet blocks the first paint.
 6. **The eye-care-test product page loads 370 KB of own-origin JS after a scroll**, most of it the Stripe gateway's scripts and React; worth a look with the payment plugin's lazy-load settings.
 
 ## Gate
