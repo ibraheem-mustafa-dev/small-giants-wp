@@ -13,6 +13,7 @@ import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { recordView, gridTracks, fractionalTrack, fixedTrack } from '../lib/skeleton-record.mjs';
 import { loopingKeys } from '../lib/skeleton-rerun.mjs';
+import { blockPadding } from '../lib/skeleton-rules.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../../..' );
@@ -188,6 +189,26 @@ test( 'alignWrapper.siblingGap: a wrapper declaring a margin against its previou
 	// the first child with a margin still goes: no sibling precedes it
 	const first = N( 'section', {}, [ N( 'div', { style: 'display:flex' }, [ N( 'div', { style: 'margin-top:18px' }, [ N( 'p', { words: 'A' } ), N( 'p', { words: 'B' } ) ] ) ] ) ] );
 	assert.equal( wrapper( run( first ) ).action, 'unwrap' );
+} );
+
+test( 'alignWrapper.blockPadding: a wrapper padding above or below its content stays; side padding alone still goes; MUST FAIL without the entry', () => {
+	const tree = ( pad ) => N( 'section', {}, [ N( 'div', { style: 'display:flex;flex-direction:column' }, [ N( 'p', { words: 'Before' } ), N( 'section', { style: `padding:${ pad }` }, [ N( 'p', { words: 'A' } ), N( 'p', { words: 'B' } ) ] ) ] ) ] );
+	const wrapper = ( r ) => rows( r ).find( ( x ) => 'section' === x.tag && x.depth === 2 );
+	assert.equal( wrapper( run( tree( '72px 40px 104px' ) ) ).action, null, 'the section keeps its top and bottom padding' );
+	assert.equal( wrapper( run( tree( '0 0 64px' ) ) ).action, null, 'bottom padding alone is space too' );
+	assert.equal( wrapper( run( tree( '72px 40px 104px' ), { facts: facts( 'alignWrapper.blockPadding' ) } ) ).action, 'unwrap' );
+	// Negative controls: side padding only, or none, still goes.
+	assert.equal( wrapper( run( tree( '0 40px' ) ) ).action, 'unwrap' );
+	assert.equal( wrapper( run( tree( '0px 40px 0px' ) ) ).action, 'unwrap' );
+} );
+
+test( 'blockPadding reads the shorthand, the block shorthand and the longhands', () => {
+	assert.equal( blockPadding( { padding: '72px 40px 104px' } ), 104 );
+	assert.equal( blockPadding( { padding: '12px' } ), 12 );
+	assert.equal( blockPadding( { padding: '0 40px' } ), 0 );
+	assert.equal( blockPadding( { 'padding-block': '8px 0' } ), 8 );
+	assert.equal( blockPadding( { 'padding-bottom': '30px' } ), 30 );
+	assert.equal( blockPadding( { padding: '{{ L.pad }}' } ), 0, 'a binding is no plain length' );
 } );
 
 test( 'record reads: aria-expanded, aria-pressed, required and the real tag come from the fact record, the render confirms', () => {

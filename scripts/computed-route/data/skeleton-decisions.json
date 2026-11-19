@@ -480,6 +480,11 @@
 				"scope": "a wrapper that follows a sibling in its parent and declares a margin: the margin is the gap between the two blocks, not spacing inside the wrapper",
 				"clients": [ "indus-foods", "mamas-munches-redesign" ],
 				"reason": "unwrapping a wrapper that declares a margin against its previous sibling would lose the gap between the two blocks, so the wrapper stays (Bean approved the mega aside's text column as sgs/container, 2026-10-21)"
+			},
+			"blockPadding": {
+				"id": "alignWrapper.blockPadding",
+				"scope": "a wrapper that declares padding above or below its content (a page section's padding around its centred column)",
+				"reason": "no block around or inside the wrapper holds the space its top and bottom padding make, so unwrapping it would lose that space; the wrapper stays and carries its own padding, as spacing is carried where the draft declares it (Bean, 2026-10-28, Spec 48 FR-48-101); side padding and alignment still go with the wrapper (Bean, 2026-10-13)"
 			}
 		},
 		"cardAction": {

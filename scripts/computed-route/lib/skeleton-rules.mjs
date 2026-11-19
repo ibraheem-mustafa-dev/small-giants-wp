@@ -55,6 +55,14 @@ const em = ( v ) => {
 	}
 	return 'em' === n[ 2 ] ? Number( n[ 1 ] ) : Number( n[ 1 ] ) / 16;
 };
+// The largest padding a declared style puts above or below the content, in px (a shorthand of one to four values, the
+// block shorthand or the top and bottom longhands; a value that is not a plain length counts as 0).
+export function blockPadding( st ) {
+	const sides = String( st.padding ?? '' ).trim().split( /\s+/ ).filter( Boolean );
+	const block = String( st[ 'padding-block' ] ?? '' ).trim().split( /\s+/ ).filter( Boolean );
+	const vals = [ sides[ 0 ], sides[ 2 ] ?? sides[ 0 ], block[ 0 ], block[ 1 ] ?? block[ 0 ], st[ 'padding-top' ], st[ 'padding-bottom' ] ];
+	return Math.max( 0, ...vals.map( ( x ) => ( '0' === String( x ?? '' ).trim() ? 0 : px( x ) ?? 0 ) ) );
+}
 const DECORATION_TAGS = new Set( [ 'img', 'iframe', 'video', 'input', 'textarea', 'select', 'hr' ] );
 
 // A small marker that holds nothing, in the flow of the text beside it: a dot (both sides at most D.maxDotPx) or a short
@@ -834,7 +842,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			// A margin on a wrapper that follows a sibling is the gap between the two blocks, not spacing inside the wrapper:
 			// unwrapping it would lose that gap, so the wrapper stays.
 			const apart = !! R.alignWrapper?.siblingGap && props.some( ( p ) => p.startsWith( 'margin' ) ) && m.blockKids( m.byKey[ e.parentKey ] || { key: null } ).indexOf( e ) > 0;
-			return parentBlock && ! m.words( e ) && kidsB.length && props.length && props.every( ( p ) => only.has( p ) ) && ! apart ? v( 'alignWrapper', { action: 'unwrap' } ) : null;
+			// Padding above or below its content is space no block around or inside it holds: unwrapping it would lose that
+			// space, so the wrapper stays and carries its own padding. Side padding and alignment still go.
+			const holdsSpace = !! R.alignWrapper?.blockPadding && blockPadding( st ) > 0;
+			return parentBlock && ! m.words( e ) && kidsB.length && props.length && props.every( ( p ) => only.has( p ) ) && ! apart && ! holdsSpace ? v( 'alignWrapper', { action: 'unwrap' } ) : null;
 		},
 		// Inside a hero: its image is the hero's own media slot; its layout wrappers go (the hero lays out its content).
 		( { e, kidsB } ) => {
