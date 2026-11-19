@@ -3,7 +3,8 @@
 
 // In-page. Collects every job's pair snapshot with the walker's collectPair, plus what Fill adds: the exact border box,
 // whether it takes part in flow, the element's own words and link, and (a block holding other blocks) its own text
-// styles. jobs: [{ id, finder, mark (a number: stamp the element so slot finders scope to it), own }].
+// styles. jobs: [{ id, finder, mark (a number: stamp the element so slot finders scope to it), own, stampOnly (stamp the
+// element as the job's node's own and read nothing: lib/region-stand-in.mjs) }].
 export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoProps, scopeAttr ] ) {
 	// eslint-disable-next-line no-new-func
 	const collect = new Function( `return (${ collectSrc });` )();
@@ -29,7 +30,7 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 	for ( const j of jobs ) {
 		resolve( j.finder )?.setAttribute( 'data-fill-owner', String( j.owner ) );
 	}
-	for ( const j of jobs ) {
+	for ( const j of jobs.filter( ( x ) => ! x.stampOnly ) ) {
 		const el = resolve( j.finder );
 		if ( el && null !== j.mark ) {
 			el.setAttribute( scopeAttr, String( j.mark ) );

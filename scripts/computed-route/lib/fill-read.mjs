@@ -16,6 +16,7 @@ import { readStates } from './fill-state-read.mjs';
 import { readLogicStates } from './fill-logic-state.mjs';
 import { readCurrentItems } from './fill-current-item.mjs';
 import { collectMany } from './fill-read-collect.mjs';
+import { standInJobs } from './region-stand-in.mjs';
 import { openState } from './fill-open.mjs';
 import { fireScrollReveals } from './scroll-reveals.mjs';
 import { showBranches } from './fill-data-branches.mjs';
@@ -197,6 +198,8 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 	const { chromium, devices } = await loadChromium();
 	const origin = new URL( url ).origin;
 	const jobs = jobsFor( nodes );
+	// The read also stamps each stand-in block's element as its own (lib/region-stand-in.mjs), reading nothing there.
+	const stamped = [ ...jobs, ...standInJobs( nodes ) ];
 	const browser = await chromium.launch( { headless, args: [ '--hide-scrollbars' ] } );
 	const result = { origin, widths: {}, declared: {}, declaredWritten: {}, sweep: {}, states: {}, failures: [], ...( opener ? { opener: { widths: {} } } : {} ) };
 	const aborted = new Set();
@@ -219,7 +222,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 					continue;
 				}
 			}
-			result.widths[ width ] = await page.evaluate( collectMany, [ jobs, COLLECT, RESOLVE, PAINT_SRC, full ? PROPS : LENGTH_PROPS, full ? PSEUDO_PROPS : null, SCOPE_ATTR ] );
+			result.widths[ width ] = await page.evaluate( collectMany, [ stamped, COLLECT, RESOLVE, PAINT_SRC, full ? PROPS : LENGTH_PROPS, full ? PSEUDO_PROPS : null, SCOPE_ATTR ] );
 			// A width that resolves none is legitimate when the surface is hidden there by design; it is a failure when the route
 			// aborted a request (the draft's runtime never loaded), or when every width resolves none.
 			if ( jobs.length && jobs.every( ( j ) => result.widths[ width ][ j.id ]?.missing ) ) {
@@ -317,7 +320,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 			for ( const width of SWEEP_WIDTHS ) {
 				await page.setViewportSize( { width, height: 900 } );
 				await page.waitForTimeout( 80 );
-				const snaps = await page.evaluate( collectMany, [ jobs, COLLECT, RESOLVE, PAINT_SRC, PROPS, null, SCOPE_ATTR ] );
+				const snaps = await page.evaluate( collectMany, [ stamped, COLLECT, RESOLVE, PAINT_SRC, PROPS, null, SCOPE_ATTR ] );
 				for ( const [ id, s ] of Object.entries( snaps ) ) {
 					const series = ( result.sweep[ id ] ??= {} );
 					( series[ PRESENT ] ??= [] ).push( { width, value: s.missing ? 'absent' : 'present' } );
