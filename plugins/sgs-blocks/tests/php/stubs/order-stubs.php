@@ -58,6 +58,15 @@ if ( ! class_exists( 'WC_Order', false ) ) {
 		public function get_formatted_line_subtotal( $item ) { return $item->d['price'] ?? ''; }
 		public function get_order_item_totals() { return $this->d['totals'] ?? array(); }
 		public function get_fees() { return array_map( fn( $i ) => new WC_Order_Item( $i ), $this->d['fees'] ?? array() ); }
+		public function get_address( $type = 'billing' ) { return $this->d[ $type ] ?? array(); }
+		public function has_shipping_address() { return ! empty( $this->d['shipping']['address_1'] ?? '' ); }
+		public function has_billing_address() { return ! empty( $this->d['billing']['address_1'] ?? '' ); }
+		public function needs_shipping_address() { return $this->d['needs_shipping'] ?? true; }
+		public function get_formatted_shipping_full_name() { return trim( ( $this->d['shipping']['first_name'] ?? '' ) . ' ' . ( $this->d['shipping']['last_name'] ?? '' ) ); }
+		public function get_formatted_billing_full_name() { return trim( ( $this->d['billing']['first_name'] ?? '' ) . ' ' . ( $this->d['billing']['last_name'] ?? '' ) ); }
+		public function get_billing_phone() { return $this->d['billing']['phone'] ?? ''; }
+		public function get_shipping_phone() { return $this->d['shipping']['phone'] ?? ''; }
+		public function get_payment_method_title() { return $this->d['payment'] ?? ''; }
 	}
 }
 
@@ -89,7 +98,22 @@ function wc_get_order( $id ) { return $GLOBALS['sgs_t']['orders'][ $id ] ?? fals
 function wc_format_datetime( $dt, $format = '' ) { return $dt ? gmdate( '' !== $format ? $format : 'j F Y', $dt->getTimestamp() ) : ''; }
 function wc_price( $amount, $args = array() ) { return '<span class="amount">&pound;' . number_format( (float) $amount, 2 ) . '</span>'; }
 function wc_get_product( $id ) { return false; }
-function WC() { return new class { public $session = null; }; }
+// WooCommerce's address formatter, reduced to its contract: the name line (blank when both names are), then each filled part, joined by the separator.
+function WC() {
+	return new class {
+		public $session = null;
+		public $countries;
+		public function __construct() {
+			$this->countries = new class {
+				public function get_formatted_address( $a = array(), $sep = '<br/>' ) {
+					$name  = trim( ( $a['first_name'] ?? '' ) . ' ' . ( $a['last_name'] ?? '' ) );
+					$parts = array( $name, $a['company'] ?? '', $a['address_1'] ?? '', $a['address_2'] ?? '', $a['city'] ?? '', $a['state'] ?? '', $a['postcode'] ?? '' );
+					return implode( $sep, array_values( array_filter( array_map( 'trim', $parts ), 'strlen' ) ) );
+				}
+			};
+		}
+	};
+}
 
 // A scenario handed to a child process (the render harness) as JSON in the environment: orders, query, key, user.
 $sgs_t_scenario = getenv( 'SGS_T_SCENARIO' );

@@ -33,6 +33,27 @@ const FIELDS = {
 		sample: __( 'Happy birthday!', 'sgs-blocks' ),
 	},
 	item_count: { label: __( 'Number of items', 'sgs-blocks' ), sample: '3' },
+	shipping_name: {
+		label: __( 'Delivery: who it goes to', 'sgs-blocks' ),
+		sample: __( 'Aisha Khan', 'sgs-blocks' ),
+	},
+	shipping_address: {
+		label: __( 'Delivery address (one line)', 'sgs-blocks' ),
+		sample: __( '12 High Street, Birmingham, B8 1AA', 'sgs-blocks' ),
+	},
+	billing_name: {
+		label: __( 'Billing: who paid', 'sgs-blocks' ),
+		sample: __( 'Aisha Khan', 'sgs-blocks' ),
+	},
+	billing_address: {
+		label: __( 'Billing address (one line)', 'sgs-blocks' ),
+		sample: __( '12 High Street, Birmingham, B8 1AA', 'sgs-blocks' ),
+	},
+	phone: { label: __( 'Phone number', 'sgs-blocks' ), sample: '07700 900123' },
+	payment_method: {
+		label: __( 'Payment method', 'sgs-blocks' ),
+		sample: __( 'Card', 'sgs-blocks' ),
+	},
 };
 
 registerBlockBindingsSource( {

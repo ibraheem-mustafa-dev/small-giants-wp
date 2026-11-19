@@ -32,6 +32,9 @@ $base = array(
 	'created'    => time() - 60,
 	'count'      => 3,
 	'meta'       => array( '_sgs_gift' => 'yes', '_sgs_gift_to' => 'Aisha <b>&</b>', '_sgs_gift_message' => 'Happy birthday' ),
+	'shipping'   => array( 'first_name' => 'Aisha', 'last_name' => 'Khan', 'company' => '', 'address_1' => '12 High Street', 'address_2' => 'Flat <b>2</b>', 'city' => 'Birmingham', 'postcode' => 'B8 1AA' ),
+	'billing'    => array( 'first_name' => 'Sara', 'last_name' => 'Khan', 'address_1' => '4 Mill Lane', 'city' => 'Leeds', 'postcode' => 'LS1 2AB', 'phone' => '07700 900123' ),
+	'payment'    => 'Card <i>ending 4242</i>',
 );
 sgs_t_order( $base );
 sgs_t_order( array( 'id' => 727, 'key' => 'wc_order_def', 'user' => 7, 'created' => time() - 5000, 'email' => 'owner@example.com' ) );
@@ -50,13 +53,34 @@ ok( '' === $get( 'view_url' ), 'view_url is empty for a guest order' );
 ok( '726' === $get( 'number' ), 'number still works' );
 ok( 'Thank you shopper@example.com' === $get( 'email', array( 'format' => 'Thank you %s' ) ), 'the format arg wraps any key' );
 
+ok( '12 High Street, Flat 2, Birmingham, B8 1AA' === $get( 'shipping_address' ), 'shipping_address is the address on one line, without the name and as plain text' );
+ok( 'Aisha Khan' === $get( 'shipping_name' ), 'shipping_name is who the order goes to' );
+ok( '4 Mill Lane, Leeds, LS1 2AB' === $get( 'billing_address' ), 'billing_address is the billing address on one line' );
+ok( 'Sara Khan' === $get( 'billing_name' ), 'billing_name is who paid' );
+ok( '07700 900123' === $get( 'phone' ), 'phone is the billing phone' );
+ok( 'Card ending 4242' === $get( 'payment_method' ), 'payment_method is the payment method title as plain text' );
+ok( 'Delivering to Aisha Khan' === $get( 'shipping_name', array( 'format' => 'Delivering to %s' ) ), 'the format arg wraps an address key' );
+
+sgs_t_order( array( 'needs_shipping' => false ) + $base );
+ok( '' === $get( 'shipping_address' ) && '' === $get( 'shipping_name' ), 'an order that needs no delivery has no shipping address or name' );
+ok( '4 Mill Lane, Leeds, LS1 2AB' === $get( 'billing_address' ), 'and still has its billing address' );
+$no_lines                      = $base;
+$no_lines['shipping']          = array( 'first_name' => 'Aisha', 'last_name' => 'Khan', 'phone' => '0121 496 0000' );
+$no_lines['billing']           = array( 'first_name' => 'Sara', 'phone' => '' );
+sgs_t_order( $no_lines );
+ok( '' === $get( 'shipping_address' ) && '' === $get( 'shipping_name' ), 'a name with no address line is no shipping address' );
+ok( '' === $get( 'billing_address' ) && '' === $get( 'billing_name' ), 'an order with no billing address line has no billing address or name' );
+ok( '0121 496 0000' === $get( 'phone' ), 'phone falls back to the shipping phone' );
+
 sgs_t_order( array( 'id' => 726, 'key' => 'wc_order_abc', 'email' => '', 'meta' => array(), 'created' => time() - 60 ) );
 ok( '' === $get( 'email' ) && '' === $get( 'gift_to' ) && '' === $get( 'gift_message' ) && '' === $get( 'delivery_method' ), 'absent values resolve to an empty string' );
+ok( '' === $get( 'shipping_address' ) && '' === $get( 'billing_address' ) && '' === $get( 'phone' ) && '' === $get( 'payment_method' ), 'absent address facts resolve to an empty string' );
 ok( '' === $get( 'email', array( 'format' => 'Sent to %s' ) ), 'an absent value drops its format text too' );
 sgs_t_order( $base );
 
 $_GET['key'] = 'wrong';
 ok( null === $get( 'email' ) && null === $get( 'total' ), 'a wrong order key resolves to null for every key' );
+ok( null === $get( 'shipping_address' ) && null === $get( 'billing_address' ) && null === $get( 'shipping_name' ) && null === $get( 'billing_name' ) && null === $get( 'phone' ) && null === $get( 'payment_method' ), 'a wrong order key shows no address fact' );
 $_GET['key'] = 'wc_order_def';
 $GLOBALS['sgs_t']['query'] = array( 'order-received' => '727' );
 $GLOBALS['sgs_t']['user']  = 9;
