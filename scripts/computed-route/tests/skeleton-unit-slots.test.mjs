@@ -90,8 +90,38 @@ test( 'a part whose setting the calibration measured on no such child, or a miss
 	const s = unitSlots( { cfg, units: [ a.u, b.u ], open: [ 0 ], m, finder, settings: { ...settings, contentPadding: { slot: `${ TWO } > .content`, slots: [ `${ TWO } > .content` ] } } } );
 	assert.equal( undefined, s.slots[ `${ ONE } > .content` ] );
 	assert.match( s.notes.join( ' ' ), /measured contentPadding on no current child/ );
-	assert.deepEqual( unitSlots( { cfg: null, units: [ a.u ], m, finder } ), { slots: {}, notes: [] } );
+	assert.deepEqual( unitSlots( { cfg: null, units: [ a.u ], m, finder } ), { slots: {}, states: {}, notes: [] } );
 	const bare = unitSlots( { cfg, units: [ a.u, b.u ], open: [ 0 ], m, finder, settings: {} } );
 	assert.deepEqual( bare.slots, {} );
 	assert.match( bare.notes.join( ' ' ), /no slot for headerFontWeight/ );
+} );
+
+// The closed unit's title and category texts (lib/skeleton-widgets.mjs::wordParts puts them on the unit): the accordion's
+// item heading and category line settings are calibrated on the fixture's heading and category line.
+const HEADING = ( c ) => `${ c } > .header > .heading > .title`;
+const LINE = ( c ) => `${ c } > .header > .heading > .eyebrow`;
+const wordSettings = { ...settings, itemTitleFontFamily: { slot: HEADING( ONE ), slots: [ HEADING( ONE ), HEADING( TWO ) ] }, categoryEyebrowColour: { slot: LINE( ONE ), slots: [ LINE( ONE ), LINE( TWO ) ] } };
+const wordCfg = { ...cfg, parts: [ ...cfg.parts, { part: 'title', child: 'resting', setting: 'itemTitleFontFamily' }, { part: 'category', child: 'resting', setting: 'categoryEyebrowColour' } ] };
+
+test( 'MUST FAIL WITHOUT THE TITLE AND CATEGORY PARTS: the closed unit\'s title and category texts sit at the resting child\'s heading and category line paths', () => {
+	const units = [ a.u, { ...b.u, title: el( 'title1' ), category: el( 'category1' ) } ];
+	const r = unitSlots( { cfg: wordCfg, units, open: [ 0 ], m, finder, settings: wordSettings } );
+	assert.deepEqual( r.slots[ HEADING( TWO ) ], { tpl: 'title1' } );
+	assert.deepEqual( r.slots[ LINE( TWO ) ], { tpl: 'category1' } );
+	assert.equal( undefined, r.slots[ LINE( ONE ) ], 'the parts are the closed unit\'s, never the open one\'s' );
+} );
+
+test( 'negative control: a control that shows no category has no category part, and the slot is said, never another text', () => {
+	const units = [ a.u, { ...b.u, title: el( 'title1' ), category: null } ];
+	const r = unitSlots( { cfg: wordCfg, units, open: [ 0 ], m, finder, settings: wordSettings } );
+	assert.equal( undefined, r.slots[ LINE( TWO ) ] );
+	assert.deepEqual( r.slots[ HEADING( TWO ) ], { tpl: 'title1' } );
+	assert.match( r.notes.join( ' ' ), /closed unit holds no category element/ );
+} );
+
+test( 'MUST FAIL WITHOUT THE CURRENT STATE: each current path carries the state the fixture\'s current child renders at rest, and no resting path does', () => {
+	const r = unitSlots( { cfg: { ...cfg, currentState: 'open' }, units: [ a.u, b.u ], open: [ 0 ], m, finder, settings } );
+	assert.deepEqual( r.states, { [ ONE ]: 'open', [ `${ ONE } > .content` ]: 'open' } );
+	// negative control: a config naming no state marks no path.
+	assert.deepEqual( run().states, {} );
 } );

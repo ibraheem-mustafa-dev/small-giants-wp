@@ -248,14 +248,17 @@
       "allowMultiple": false,
       "defaultOpen": 0,
       "openIcon": "plus",
-      "closeIcon": "x"
+      "closeIcon": "x",
+      "categoryEyebrowAlways": true
     },
     "inner": [
       {
         "name": "sgs/accordion-item",
         "attributes": {
           "title": "Open question",
-          "isOpen": true
+          "isOpen": true,
+          "category": "Open topic",
+          "showCategoryEyebrow": true
         },
         "innerBlocks": [
           {
@@ -269,7 +272,9 @@
       {
         "name": "sgs/accordion-item",
         "attributes": {
-          "title": "Closed question"
+          "title": "Closed question",
+          "category": "Closed topic",
+          "showCategoryEyebrow": true
         },
         "innerBlocks": [
           {

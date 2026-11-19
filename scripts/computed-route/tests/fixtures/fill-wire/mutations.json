@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/fill-resolve-element.mjs",
-		"find": "agreedDeclared( st, target, prop, draft, fontPx ), contextAt } );",
-		"replace": "agreedDeclared( st, target, prop, draft, fontPx ) } );",
+		"find": "agreedDeclared( st, target, prop, draft, fontPx ), contextAt };",
+		"replace": "agreedDeclared( st, target, prop, draft, fontPx ) };",
 		"why": "fillElement passes no context to resolveProperty"
 	},
 	{

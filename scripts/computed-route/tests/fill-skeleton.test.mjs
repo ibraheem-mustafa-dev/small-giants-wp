@@ -53,6 +53,20 @@ test( 'skeletonNodes numbers nodes depth-first as addRefs does, with parent, chi
 	assert.equal( nodes[ 0 ].targets[ 0 ].finder, 'main' );
 } );
 
+test( 'MUST FAIL WITHOUT THE SLOT STATE: a draftSlotStates entry is its target\'s state, every other target\'s state is null, and cleanTree strips it', () => {
+	const t = tree();
+	t[ 0 ].innerBlocks[ 0 ].draftSlotStates = { '.sgs-heading__link': 'open' };
+	const nodes = skeletonNodes( t );
+	assert.deepEqual( nodes[ 1 ].targets.map( ( x ) => [ x.slot, x.state ?? null ] ), [ [ '', null ], [ '.sgs-heading__link', 'open' ] ] );
+	assert.equal( skeletonNodes( tree() )[ 1 ].targets[ 1 ].state, null, 'negative control: no entry, no state' );
+	assert.ok( ! JSON.stringify( cleanTree( t ) ).includes( 'draftSlotStates' ) );
+	assert.deepEqual( skeletonProblems( t ), [] );
+	t[ 0 ].innerBlocks[ 0 ].draftSlotStates = { '.nowhere': 'open', '.sgs-heading__link': '' };
+	const p = skeletonProblems( t ).join( '\n' );
+	assert.match( p, /draftSlotStates "\.nowhere" must name a draftSlots path and a state word/ );
+	assert.match( p, /draftSlotStates "\.sgs-heading__link" must name a draftSlots path and a state word/ );
+} );
+
 test( 'skeletonProblems: a slot with no draftRef, an empty slot key, a pseudo slot, a bad owner and a bad finder are all named', () => {
 	const t = tree();
 	assert.deepEqual( skeletonProblems( t ), [] );

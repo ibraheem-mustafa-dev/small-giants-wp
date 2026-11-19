@@ -100,7 +100,8 @@ export function decisionsProblems( facts ) {
 		}
 		Object.entries( settings || {} ).forEach( ( [ k, attr ] ) => ! facts.attr( onChild.includes( k ) ? child[ 0 ] : block, attr ) && problems.push( `${ where }.settings.${ k } names ${ attr }, which ${ onChild.includes( k ) ? child[ 0 ] : block } does not have` ) );
 	};
-	widget( 'rules.accordion', r.accordion?.block, r.accordion?.settings, [ 'itemOpen', 'title', 'category' ] );
+	widget( 'rules.accordion', r.accordion?.block, r.accordion?.settings, [ 'itemOpen', 'title', 'category', 'categoryShown' ] );
+	widget( 'rules.accordion.toggle', r.accordion?.toggle && r.accordion.block, r.accordion?.toggle?.settings );
 	// The accordion's unit slots name settings of the accordion itself, each part one lib/skeleton-child-slots.mjs::unitSlots reads.
 	const cs = r.accordion?.childSlots;
 	cs && [ [ 'resting', cs.resting ], [ 'current', cs.current ], ...( cs.parts || [] ).map( ( p, i ) => [ `parts[${ i }]`, p.setting ] ) ]

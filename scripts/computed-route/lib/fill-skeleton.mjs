@@ -109,7 +109,9 @@ export function scopeFinder( f, scope ) {
 
 // Every node of a skeleton, depth-first (the index addRefs gives each ref), with its parent, its children's indices and
 // its measuring targets: the draftRef (slot '') then each draftSlots entry. A target is { id, index, slot, finder,
-// scoped }. A node with no draftRef has no targets: Fill reads nothing for it, and its children inherit past it.
+// scoped, state }: `state` is the slot's `draftSlotStates` entry (a state the block's fixture renders at that path at rest,
+// lib/skeleton-child-slots.mjs::unitSlots), else null. A node with no draftRef has no targets: Fill reads nothing for it,
+// and its children inherit past it.
 export function skeletonNodes( tree ) {
 	const nodes = [];
 	const go = ( list, parent ) => list.forEach( ( node ) => {
@@ -122,7 +124,7 @@ export function skeletonNodes( tree ) {
 		if ( undefined !== node.draftRef ) {
 			rec.targets.push( { id: `${ index }:`, index, slot: '', finder: node.draftRef, scoped: false } );
 			for ( const [ slot, finder ] of Object.entries( node.draftSlots || {} ) ) {
-				rec.targets.push( { id: `${ index }:${ slot }`, index, slot, finder, scoped: true } );
+				rec.targets.push( { id: `${ index }:${ slot }`, index, slot, finder, scoped: true, state: node.draftSlotStates?.[ slot ] ?? null } );
 			}
 		}
 		go( node.innerBlocks || [], index );
@@ -200,6 +202,11 @@ export function skeletonProblems( tree ) {
 				problems.push( `${ label } slot "${ slot }": ${ finderProblem( finder ) }` );
 			}
 		}
+		for ( const [ slot, state ] of Object.entries( node.draftSlotStates || {} ) ) {
+			if ( ! node.draftSlots?.[ slot ] || ! isStr( state ) ) {
+				problems.push( `${ label } draftSlotStates "${ slot }" must name a draftSlots path and a state word` );
+			}
+		}
 		if ( undefined !== node.draftFingerprint && ! ( node.draftFingerprint && 'object' === typeof node.draftFingerprint && isStr( node.draftFingerprint.tag ) ) ) {
 			problems.push( `${ label } draftFingerprint must be { tag, cls, styleHash }` );
 		}
@@ -210,7 +217,7 @@ export function skeletonProblems( tree ) {
 
 // `draftFingerprint` ({ tag, cls, styleHash }) is the skeleton writer's record of the draft element a tpl finder names;
 // Fill moves it into the surface's origin map (originMap) and strips it with the other draft keys.
-const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftFingerprint', 'handover', ...ROW_KEYS ];
+const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftFingerprint', 'handover', ...ROW_KEYS ];
 
 // The origin map of a skeleton: for every node whose draftRef is a tpl finder, { [cr-ref]: { tpl, fingerprint, slots } }
 // (slots: the slot path to the tpl key of each tpl slot finder). `refs[i]` is the cr-ref of node i (tree.mjs::refOf).

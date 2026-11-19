@@ -31,7 +31,7 @@ const unit = ( o = {} ) => N( 'div', { loop: { list: 'faqs', as: 'f', copies: o.
 	N( 'button', { click: 'f.toggle' }, [
 		N( 'span', { style: 'font-size:12px', words: ( c ) => [ 'Ordering', 'Allergens', 'Gifts' ][ c ], text: 'f.cat' } ),
 		N( 'span', { style: 'font-size:19px', words: ( c ) => [ 'When will it arrive?', 'What is in them?', 'Can I send one?' ][ c ], text: 'f.q' } ),
-		N( 'span', { attrs: { 'aria-hidden': 'true' }, words: '+' } ),
+		o.ring ?? N( 'span', { attrs: { 'aria-hidden': 'true' }, words: '+' } ),
 	] ),
 	o.panel ?? N( 'p', { ifOn: '{{ f.open }}', shownIn: o.shownIn ?? [ 0 ], words: ( c ) => [ 'In three days.', 'Oats and milk.', 'Yes, with a note.' ][ c ], text: 'f.a' } ),
 ] );
@@ -44,7 +44,8 @@ test( 'accordion: a run of units, each a control whose handler writes the key it
 	assert.equal( host.attributes.defaultOpen, 0, 'the item shown open at rest is open by default' );
 	assert.equal( host.attributes.allowMultiple, undefined, 'an index key opens one at a time' );
 	assert.deepEqual( [ 0, 1, 2 ].map( ( c ) => row( r, `Root/3#${ c }` ).block ), [ 'sgs/accordion-item', 'sgs/accordion-item', 'sgs/accordion-item' ] );
-	assert.deepEqual( row( r, 'Root/3#1' ).attributes, { title: 'What is in them?', category: 'Allergens' }, 'the largest text is the title, the other the category' );
+	assert.deepEqual( row( r, 'Root/3#1' ).attributes, { title: 'What is in them?', category: 'Allergens', showCategoryEyebrow: true }, 'the largest text is the title, the other the category, shown over the title' );
+	assert.equal( host.attributes.categoryEyebrowAlways, true, 'MUST FAIL: the accordion prints its items\' category lines with no filter' );
 	assert.ok( [ 0, 1, 2 ].every( ( c ) => 'absorbed' === row( r, `Root/4#${ c }` ).action && `Root/3#${ c }` === row( r, `Root/4#${ c }` ).into ), 'each control (and its glyph) is absorbed into its item' );
 	const acc = find( r.skeleton, ( x ) => 'sgs/accordion' === x.name )[ 0 ];
 	assert.deepEqual( acc.innerBlocks.map( ( x ) => x.innerBlocks.map( ( k ) => k.attributes.text ) ), [ [ 'In three days.' ], [ 'Oats and milk.' ], [ 'Yes, with a note.' ] ], 'MUST FAIL: every item holds its panel content, the closed ones read from the loop data' );
@@ -64,13 +65,44 @@ test( 'accordion: the host reads a closed unit\'s row and header and the open un
 		headerPadding: { slot: `${ ONE } > .h`, slots: [ `${ ONE } > .h`, `${ TWO } > .h` ] },
 		iconCircleBorderWidth: { slot: `${ ONE } > .h > .i`, slots: [ `${ ONE } > .h > .i`, `${ TWO } > .h > .i` ] },
 		contentPadding: { slot: `${ ONE } > .a`, slots: [ `${ ONE } > .a`, `${ TWO } > .a` ] },
+		itemTitleFontFamily: { slot: `${ ONE } > .h > .t`, slots: [ `${ ONE } > .h > .t`, `${ TWO } > .h > .t` ] },
+		categoryEyebrowColour: { slot: `${ ONE } > .h > .e`, slots: [ `${ ONE } > .h > .e`, `${ TWO } > .h > .e` ] },
 	};
 	const r = run( faqPage(), FAQ_LOGIC(), { calSettings: ( slug ) => ( 'sgs/accordion' === slug ? cal : {} ) } );
 	const acc = find( r.skeleton, ( x ) => 'sgs/accordion' === x.name )[ 0 ];
-	assert.deepEqual( acc.draftSlots, { [ TWO ]: { tpl: 'Root/3#1' }, [ `${ TWO } > .h` ]: { tpl: 'Root/4#1' }, [ ONE ]: { tpl: 'Root/3#0' }, [ `${ ONE } > .a` ]: { tpl: 'Root/8#0' } } );
+	assert.deepEqual( acc.draftSlots, { [ TWO ]: { tpl: 'Root/3#1' }, [ `${ TWO } > .h` ]: { tpl: 'Root/4#1' }, [ `${ TWO } > .h > .t` ]: { tpl: 'Root/6#1' }, [ `${ TWO } > .h > .e` ]: { tpl: 'Root/5#1' }, [ ONE ]: { tpl: 'Root/3#0' }, [ `${ ONE } > .a` ]: { tpl: 'Root/8#0' } }, 'MUST FAIL: the closed unit\'s question and category texts are its title and category parts' );
+	assert.deepEqual( acc.draftSlotStates, { [ ONE ]: 'open', [ `${ ONE } > .a` ]: 'open' }, 'MUST FAIL: the open unit\'s paths are read in the open state (childSlots.currentState)' );
 	assert.match( row( r, 'Root/2#0' ).slotNotes.join( ' ' ), /closed unit holds no icon element/, 'the fixture\'s glyph is not square, so no ring slot, and it is said' );
 	const bare = run( faqPage(), FAQ_LOGIC() );
 	assert.equal( undefined, find( bare.skeleton, ( x ) => 'sgs/accordion' === x.name )[ 0 ].draftSlots, 'negative: with no calibration there is no slot' );
+} );
+
+// The toggle glyph: a typed glyph in a square ring, turned by a declared rotate in the open copy (the draft's FAQ: a plus in
+// a ring that turns 45 degrees into a cross when open).
+const ring = ( o = {} ) => N( 'span', { attrs: { 'aria-hidden': 'true' }, box: [ 36, 36 ], words: o.words ?? '+', style: o.style ?? ( ( c ) => `width:36px;height:36px;transform:rotate(${ 0 === c ? 45 : 0 }deg)` ) } );
+const hostOf = ( o ) => row( run( faqPage( { ring: ring( o ) } ), FAQ_LOGIC() ), 'Root/2#0' );
+
+test( 'accordion: the closed unit\'s ring glyph is the open icon, and the open unit\'s further turn is the icon\'s turn (rules.accordion.toggle); MUST FAIL without the toggle read', () => {
+	const host = hostOf();
+	assert.equal( host.attributes.openIcon, 'plus', 'MUST FAIL: the typed plus is the Lucide plus' );
+	assert.equal( host.attributes.iconRotation, 45, 'MUST FAIL: the open ring turns 45 degrees further' );
+	assert.equal( host.attributes.closeIcon, undefined, 'a turning icon prints only the open icon' );
+} );
+
+test( 'accordion: a different glyph in the open ring is the close icon; the same glyph unturned stays the same icon', () => {
+	const swap = hostOf( { words: ( c ) => ( 0 === c ? '−' : '+' ), style: 'width:36px;height:36px' } );
+	assert.deepEqual( [ swap.attributes.openIcon, swap.attributes.closeIcon, swap.attributes.iconRotation ], [ 'plus', 'minus', undefined ] );
+	const still = hostOf( { style: 'width:36px;height:36px' } );
+	assert.deepEqual( [ still.attributes.openIcon, still.attributes.closeIcon, still.attributes.iconRotation ], [ 'plus', 'plus', undefined ] );
+} );
+
+test( 'NEGATIVE accordion toggle: a glyph the list names no icon for, and a control with no square ring, write no icon and say so', () => {
+	const odd = hostOf( { words: '?' } );
+	assert.equal( odd.attributes.openIcon, undefined );
+	assert.match( odd.reason, /draws "\?", which rules\.accordion\.toggle\.glyphs names no icon for/ );
+	const plain = row( run( faqPage(), FAQ_LOGIC() ), 'Root/2#0' );
+	assert.equal( plain.attributes.openIcon, undefined, 'the 100x20 glyph span is no ring' );
+	assert.match( plain.reason, /no closed unit draws an icon ring/ );
 } );
 
 test( 'accordion: a panel whose condition also reads a key the control never writes is still read by the key the control toggles', () => {

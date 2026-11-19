@@ -759,7 +759,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		if ( 'accordion' === hit.rule ) {
 			// The units travel with the verdict: the accordion keeps its rows' parts' look as its own settings, read from them
 			// (lib/skeleton-child-slots.mjs::unitSlots, rules.accordion.childSlots).
-			return v( 'accordion', { block: R.accordion.block, attributes: accordionSettings( md ), reason: why, units: { units: md.units, open: md.open } } );
+			return v( 'accordion', { block: R.accordion.block, attributes: accordionSettings( md ), reason: [ why, ...widgets().toggleIcon( md ).notes ].join( '; ' ), units: { units: md.units, open: md.open } } );
 		}
 		const words = widgets().itemWords( md.units[ hit.index ] );
 		const closed = md.units[ hit.index ].rendered.length ? { inner: [], handover: [] } : widgets().closedPanel( md, hit.index, m.tplFinder );
@@ -767,10 +767,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const handover = [ ...words.handover, ...closed.handover ];
 		return v( 'accordion', { block: md.item, attributes: { ...words.attributes, ...open }, reason: why, ...( closed.inner.length ? { closedInner: closed.inner } : {} ), ...( handover.length ? { handover: handover[ 0 ], handovers: handover } : {} ) } );
 	};
-	// An accordion's own settings: several open at once for a keyed map of open items, and the one item open at rest.
+	// An accordion's own settings: several open at once for a keyed map of open items, the one item open at rest, the items'
+	// category lines printed with no filter when a unit's control shows a category, and the toggle icon its units draw.
 	const accordionSettings = ( md ) => {
 		const S = R.accordion.settings || {};
-		return { ...( md.multiple && S.several ? { [ S.several ]: true } : {} ), ...( ! md.multiple && 1 === md.open.length && S.openAtRest ? { [ S.openAtRest ]: md.open[ 0 ] } : {} ) };
+		const lines = S.categoryShown && S.categoryAlways && md.units.some( ( u ) => S.category in widgets().itemWords( u ).attributes );
+		return { ...( md.multiple && S.several ? { [ S.several ]: true } : {} ), ...( ! md.multiple && 1 === md.open.length && S.openAtRest ? { [ S.openAtRest ]: md.open[ 0 ] } : {} ), ...( lines ? { [ S.categoryAlways ]: true } : {} ), ...widgets().toggleIcon( md ).attributes };
 	};
 	const STRUCTURES = [
 		// A choice flow's root is sgs/choice-flow, whatever its surfaces.json kind (a modal, a form): the flow draws its frame, and

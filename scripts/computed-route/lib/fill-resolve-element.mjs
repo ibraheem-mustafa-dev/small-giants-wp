@@ -18,6 +18,10 @@ import { fillLayerBox } from './fill-layer-box.mjs';
 import { tokenWrites } from './fill-token-ref.mjs';
 import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, ledgerView, gapTarget, draftOf } from './fill-resolve-state.mjs';
 
+// The resolver gaps of a state read (fillElement, target.state) that hand the read to the resting settings: no setting of
+// the state paints the property there, or none was calibrated in the state.
+const STATE_FALLBACK = [ 'no-setting', 'uncalibrated' ];
+
 // Writes one resolver result into the node, recording each change. Returns the number of settings changed. `slot` is the
 // element the setting sits on; `res.readSlot`, when it differs, the element the value was read on (a property read on the
 // root carried to a setting on an inner element), kept on the row as `readSlot` so the read stays answered. A row's
@@ -253,7 +257,12 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		}
 		const fluid = fluidSamples( st, target, layer, prop );
 		const alternates = layer ? [] : alternateSlots( cal, prop, draft, rec.targets.map( ( t ) => t.slot ), target.slot );
-		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...alternates.filter( ( s ) => s !== slot ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ), contextAt } );
+		const input = { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...alternates.filter( ( s ) => s !== slot ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ), contextAt };
+		// A path the block's fixture renders in a state at rest (target.state: the open unit's, lib/skeleton-child-slots.mjs::
+		// unitSlots) is resolved in that state first, so a setting of the state painting there takes the read (an accordion's
+		// open shadow); where no setting of the state paints the property there, the resting settings do (its open fill).
+		const inState = target.state && ! layer ? resolveProperty( { ...input, state: target.state } ) : null;
+		const res = inState && ! ( 'gap' === inState.status && STATE_FALLBACK.includes( inState.gap ) ) ? inState : resolveProperty( input );
 		const eq = 'gap' === res.status && 'no-setting' === res.gap && ! layer ? fillEquivalent( st, rec, target, prop, draft, { baselineFn, apply } ) : null;
 		notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
 		if ( 'equal' === res.status || 'equal' === eq?.status ) {

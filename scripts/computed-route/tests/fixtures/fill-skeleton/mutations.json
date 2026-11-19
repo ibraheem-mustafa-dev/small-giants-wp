@@ -1,0 +1,5 @@
+[
+ {"file": "lib/fill-skeleton.mjs", "find": "if ( ! node.draftSlots?.[ slot ] || ! isStr( state ) ) {", "replace": "if ( false ) {", "why": "a slot state for no slot, or an empty state, is accepted"},
+ {"file": "lib/fill-skeleton.mjs", "find": "'draftRef', 'draftSlots', 'draftSlotStates', 'draftFingerprint'", "replace": "'draftRef', 'draftSlots', 'draftFingerprint'", "why": "the slot states are left in the tree written to the site"},
+ {"file": "lib/fill-skeleton.mjs", "find": "state: node.draftSlotStates?.[ slot ] ?? null } );", "replace": "state: null } );", "why": "the node's slot states never reach the targets"}
+]
