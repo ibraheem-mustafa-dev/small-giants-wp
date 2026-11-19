@@ -1,0 +1,561 @@
+{
+ "surfaces": {
+  "S-06": {
+   "id": "S-06",
+   "kind": "footer",
+   "dc": "Shop",
+   "roots": [
+    "Shop/6"
+   ],
+   "states": []
+  },
+  "S-10": {
+   "id": "S-10",
+   "kind": "page",
+   "dc": "Shop",
+   "roots": [
+    "Shop/1"
+   ],
+   "states": []
+  },
+  "S-25": {
+   "id": "S-25",
+   "kind": "modal",
+   "dc": "Shop",
+   "roots": [
+    "Shop/10"
+   ],
+   "states": [
+    {
+     "name": "open",
+     "state_keys": {
+      "modal": "size"
+     },
+     "sc_if_tpl_ids": [
+      "9"
+     ]
+    }
+   ]
+  },
+  "S-27": {
+   "id": "S-27",
+   "kind": "modal",
+   "dc": "Shop",
+   "roots": [
+    "Shop/18"
+   ],
+   "states": [
+    {
+     "name": "open",
+     "state_keys": {
+      "lens": "{open:true}"
+     },
+     "sc_if_tpl_ids": [
+      "17"
+     ]
+    }
+   ]
+  }
+ },
+ "elements": {
+  "Shop/1": {
+   "template": {
+    "key": "Shop/1",
+    "component": "Shop",
+    "n": "1",
+    "tag": "main",
+    "attrs": {},
+    "words": "",
+    "parentChain": [],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  },
+  "Shop/2": {
+   "template": {
+    "key": "Shop/2",
+    "component": "Shop",
+    "n": "2",
+    "tag": "div",
+    "attrs": {},
+    "words": "",
+    "parentChain": [
+     "Shop/1"
+    ],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  },
+  "Shop/3": {
+   "template": {
+    "key": "Shop/3",
+    "component": "Shop",
+    "n": "3",
+    "tag": "h1",
+    "attrs": {},
+    "words": "Round frame",
+    "parentChain": [
+     "Shop/2",
+     "Shop/1"
+    ],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  },
+  "Shop/4": {
+   "template": {
+    "key": "Shop/4",
+    "component": "Shop",
+    "n": "4",
+    "tag": "button",
+    "attrs": {
+     "onClick": "{{ openSize }}"
+    },
+    "words": "Which size am I?",
+    "parentChain": [
+     "Shop/2",
+     "Shop/1"
+    ],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  },
+  "Shop/5": {
+   "template": {
+    "key": "Shop/5",
+    "component": "Shop",
+    "n": "5",
+    "tag": "button",
+    "attrs": {
+     "onClick": "{{ openLens }}"
+    },
+    "words": "Add my prescription",
+    "parentChain": [
+     "Shop/2",
+     "Shop/1"
+    ],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  },
+  "Shop/6": {
+   "template": {
+    "key": "Shop/6",
+    "component": "Shop",
+    "n": "6",
+    "tag": "footer",
+    "attrs": {},
+    "words": "",
+    "parentChain": [],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  },
+  "Shop/7": {
+   "template": {
+    "key": "Shop/7",
+    "component": "Shop",
+    "n": "7",
+    "tag": "a",
+    "attrs": {
+     "href": "#",
+     "onClick": "{{ openSize }}"
+    },
+    "words": "Size guide",
+    "parentChain": [
+     "Shop/6"
+    ],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  },
+  "Shop/8": {
+   "template": {
+    "key": "Shop/8",
+    "component": "Shop",
+    "n": "8",
+    "tag": "a",
+    "attrs": {
+     "href": "#",
+     "onClick": "{{ toHelp }}"
+    },
+    "words": "Help",
+    "parentChain": [
+     "Shop/6"
+    ],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  },
+  "Shop/9": {
+   "template": {
+    "key": "Shop/9",
+    "component": "Shop",
+    "n": "9",
+    "tag": "sc-if",
+    "attrs": {
+     "value": "{{ sizeOpen }}"
+    },
+    "words": "",
+    "parentChain": [],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  },
+  "Shop/10": {
+   "template": {
+    "key": "Shop/10",
+    "component": "Shop",
+    "n": "10",
+    "tag": "div",
+    "attrs": {
+     "class": "size"
+    },
+    "words": "",
+    "parentChain": [
+     "Shop/9"
+    ],
+    "style": {
+     "static": [
+      [
+       "position",
+       "fixed"
+      ],
+      [
+       "top",
+       "0px"
+      ],
+      [
+       "right",
+       "0px"
+      ],
+      [
+       "bottom",
+       "0px"
+      ],
+      [
+       "left",
+       "0px"
+      ]
+     ],
+     "holes": []
+    }
+   }
+  },
+  "Shop/11": {
+   "template": {
+    "key": "Shop/11",
+    "component": "Shop",
+    "n": "11",
+    "tag": "div",
+    "attrs": {
+     "onClick": "{{ closeSize }}"
+    },
+    "words": "",
+    "parentChain": [
+     "Shop/10",
+     "Shop/9"
+    ],
+    "style": {
+     "static": [
+      [
+       "position",
+       "absolute"
+      ],
+      [
+       "top",
+       "0px"
+      ],
+      [
+       "right",
+       "0px"
+      ],
+      [
+       "bottom",
+       "0px"
+      ],
+      [
+       "left",
+       "0px"
+      ],
+      [
+       "background-color",
+       "rgba(20, 20, 20, 0.5)"
+      ]
+     ],
+     "holes": []
+    }
+   }
+  },
+  "Shop/12": {
+   "template": {
+    "key": "Shop/12",
+    "component": "Shop",
+    "n": "12",
+    "tag": "div",
+    "attrs": {
+     "role": "dialog",
+     "aria-label": "Size guide"
+    },
+    "words": "",
+    "parentChain": [
+     "Shop/10",
+     "Shop/9"
+    ],
+    "style": {
+     "static": [
+      [
+       "background-color",
+       "rgb(250, 248, 245)"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(230, 225, 218)"
+      ],
+      [
+       "border-top-width",
+       "1px"
+      ]
+     ],
+     "holes": []
+    }
+   }
+  },
+  "Shop/13": {
+   "template": {
+    "key": "Shop/13",
+    "component": "Shop",
+    "n": "13",
+    "tag": "div",
+    "attrs": {},
+    "words": "",
+    "parentChain": [
+     "Shop/12",
+     "Shop/10",
+     "Shop/9"
+    ],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  },
+  "Shop/14": {
+   "template": {
+    "key": "Shop/14",
+    "component": "Shop",
+    "n": "14",
+    "tag": "span",
+    "attrs": {},
+    "words": "Which size am I?",
+    "parentChain": [
+     "Shop/13",
+     "Shop/12",
+     "Shop/10",
+     "Shop/9"
+    ],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  },
+  "Shop/15": {
+   "template": {
+    "key": "Shop/15",
+    "component": "Shop",
+    "n": "15",
+    "tag": "button",
+    "attrs": {
+     "onClick": "{{ closeSize }}",
+     "aria-label": "Close"
+    },
+    "words": "×",
+    "parentChain": [
+     "Shop/13",
+     "Shop/12",
+     "Shop/10",
+     "Shop/9"
+    ],
+    "style": {
+     "static": [
+      [
+       "color",
+       "rgb(20, 20, 20)"
+      ],
+      [
+       "background-color",
+       "transparent"
+      ]
+     ],
+     "holes": []
+    }
+   }
+  },
+  "Shop/16": {
+   "template": {
+    "key": "Shop/16",
+    "component": "Shop",
+    "n": "16",
+    "tag": "p",
+    "attrs": {},
+    "words": "Sizes",
+    "parentChain": [
+     "Shop/12",
+     "Shop/10",
+     "Shop/9"
+    ],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  },
+  "Shop/17": {
+   "template": {
+    "key": "Shop/17",
+    "component": "Shop",
+    "n": "17",
+    "tag": "sc-if",
+    "attrs": {
+     "value": "{{ lensOpen }}"
+    },
+    "words": "",
+    "parentChain": [],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  },
+  "Shop/18": {
+   "template": {
+    "key": "Shop/18",
+    "component": "Shop",
+    "n": "18",
+    "tag": "div",
+    "attrs": {
+     "class": "lens"
+    },
+    "words": "",
+    "parentChain": [
+     "Shop/17"
+    ],
+    "style": {
+     "static": [
+      [
+       "position",
+       "fixed"
+      ],
+      [
+       "top",
+       "0px"
+      ],
+      [
+       "right",
+       "0px"
+      ],
+      [
+       "bottom",
+       "0px"
+      ],
+      [
+       "left",
+       "0px"
+      ],
+      [
+       "background-color",
+       "rgb(250, 248, 245)"
+      ]
+     ],
+     "holes": []
+    }
+   }
+  },
+  "Shop/19": {
+   "template": {
+    "key": "Shop/19",
+    "component": "Shop",
+    "n": "19",
+    "tag": "div",
+    "attrs": {},
+    "words": "",
+    "parentChain": [
+     "Shop/18",
+     "Shop/17"
+    ],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  },
+  "Shop/20": {
+   "template": {
+    "key": "Shop/20",
+    "component": "Shop",
+    "n": "20",
+    "tag": "button",
+    "attrs": {
+     "onClick": "{{ closeLens }}"
+    },
+    "words": "Close",
+    "parentChain": [
+     "Shop/19",
+     "Shop/18",
+     "Shop/17"
+    ],
+    "style": {
+     "static": [
+      [
+       "color",
+       "rgb(20, 20, 20)"
+      ]
+     ],
+     "holes": []
+    }
+   }
+  },
+  "Shop/21": {
+   "template": {
+    "key": "Shop/21",
+    "component": "Shop",
+    "n": "21",
+    "tag": "p",
+    "attrs": {},
+    "words": "Pick a lens",
+    "parentChain": [
+     "Shop/19",
+     "Shop/18",
+     "Shop/17"
+    ],
+    "style": {
+     "static": [],
+     "holes": []
+    }
+   }
+  }
+ }
+}

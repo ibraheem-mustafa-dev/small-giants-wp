@@ -1,0 +1,29 @@
+<!doctype html>
+<html><head><meta charset="utf-8"></head><body>
+<x-dc>
+<main><div><h1>Round frame</h1><button onClick="{{ openSize }}">Which size am I?</button><button onClick="{{ openLens }}">Add my prescription</button></div></main>
+<footer><a href="#" onClick="{{ openSize }}">Size guide</a><a href="#" onClick="{{ toHelp }}">Help</a></footer>
+<sc-if value="{{ sizeOpen }}"><div class="size">
+  <div onClick="{{ closeSize }}"></div>
+  <div role="dialog" aria-label="Size guide"><div><span>Which size am I?</span><button onClick="{{ closeSize }}" aria-label="Close">×</button></div><p>Sizes</p></div>
+</div></sc-if>
+<sc-if value="{{ lensOpen }}"><div class="lens">
+  <div><button onClick="{{ closeLens }}">Close</button><p>Pick a lens</p></div>
+</div></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { modal: null, page: 'product', lens: { open: false } };
+  renderVals() {
+    const S = this.state;
+    const setL = patch => this.setState(s => ({ lens: Object.assign({}, s.lens, patch) }));
+    return {
+      sizeOpen: S.modal === 'size', lensOpen: S.lens.open,
+      openSize: () => this.setState({ modal: 'size' }), closeSize: () => this.setState({ modal: null }),
+      openLens: () => setL({ open: true }), closeLens: () => setL({ open: false }),
+      toHelp: () => this.setState({ page: 'help' }),
+    };
+  }
+}
+</script>
+</body></html>

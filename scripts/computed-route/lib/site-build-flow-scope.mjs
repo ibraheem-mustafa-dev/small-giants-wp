@@ -1,7 +1,7 @@
 // Which products a choice flow's product link reaches (Spec 48 FR-48-95, Spec 43 FR-43-25). lib/site-build-flow-links.mjs
 // plans a `_sgs_choice_flow` link for each published product a product row covers; this narrows that plan:
 // - a product row links its flow only when the draft's buy box itself opens it: the row's `opens` entry for that flow carries
-//   `buyBox` (lib/intake-pagemap-openers.mjs). A flow drawn inline on a page (Mama's Build your Zookie) or opened only from
+//   `buyBox` (lib/intake-pagemap-openers.mjs). A flow drawn inline on a page (a home page's build-your-box section) or opened only from
 //   elsewhere links no product;
 // - a product is linked only when it is a purchasable product of the types data/surface-openers.json `flowLinks.productTypes`
 //   names (never a gift card or any other product type), holds at least one variation attribute (never an option-less
