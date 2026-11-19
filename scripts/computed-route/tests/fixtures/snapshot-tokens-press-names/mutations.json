@@ -1,0 +1,5 @@
+[
+	{"file": "lib/snapshot-tokens.mjs", "find": "|| NOT_A_PRESET.includes( variant ) ) {", "replace": "|| [ 'link', 'custom', 'gold-large' ].includes( variant ) ) {", "why": "a name beyond the starters refused again"},
+	{"file": "lib/snapshot-tokens.mjs", "find": "const NOT_A_PRESET = [ 'link', 'custom' ];", "replace": "const NOT_A_PRESET = [ 'link' ];", "why": "custom would be written as if it were a preset"},
+	{"file": "lib/snapshot-tokens.mjs", "find": "'string' !== typeof variant || ! variant.trim() || ", "replace": "", "why": "a missing variant would be written to buttonPresets.undefined"}
+]

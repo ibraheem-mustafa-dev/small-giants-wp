@@ -15,8 +15,9 @@ const LENGTH = /^-?(?:\d*\.)?\d+(?:px|rem|em)$/;
 const LENGTH_ANY = /-?(?:\d*\.)?\d+(?:px|rem|em)?(?![\w.])/g;
 const COLOUR_FN = /(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\([^)]*\)/i;
 const NOT_A_VALUE = /var\(|currentcolor|inherit|initial|unset|revert/i;
-// The variants whose own press tokens a button reads, plus the site-wide default (helpers-button-press.php).
-const PRESS_VARIANTS = [ 'default', 'primary', 'secondary', 'outline' ];
+// The styles that are not presets: `link` never presses and `custom` wears no preset (helpers-button-press.php reads the
+// site-wide default for it). Every other name is a preset the press reads, whatever the snapshot calls it.
+const NOT_A_PRESET = [ 'link', 'custom' ];
 const PRESS_COLOUR_PROPS = [ 'background-color', 'color', 'border-color', 'border-top-color' ];
 
 const toHex = ( n ) => Math.round( Math.min( 255, Math.max( 0, Number( n ) ) ) ).toString( 16 ).padStart( 2, '0' );
@@ -139,14 +140,14 @@ export function focusTokens( look ) {
 // ({ transform, 'box-shadow', and any colour }). `variant` is a buttonPresets slug (primary, secondary, outline or
 // default). tokens holds only what includes/helpers-button-press.php paints: active-transform (a transform other than
 // none) and active-shadow (a box-shadow, "none" included). A pressed colour has no token and is a named gap, as is a
-// link-style button (it never presses) and a variant the press does not read.
+// link-style button (it never presses) and a style that is not a preset.
 export function pressTokens( look, variant ) {
 	const d = look?.declared ?? look ?? {};
 	if ( 'link' === variant ) {
 		return { variant, tokens: {}, gaps: [ 'link: the link style never presses' ] };
 	}
-	if ( ! PRESS_VARIANTS.includes( variant ) ) {
-		return { variant, tokens: {}, gaps: [ `variant:${ variant }: not a preset slug the press reads (${ PRESS_VARIANTS.join( ', ' ) })` ] };
+	if ( 'string' !== typeof variant || ! variant.trim() || NOT_A_PRESET.includes( variant ) ) {
+		return { variant, tokens: {}, gaps: [ `variant:${ variant }: not a preset name the press reads (a preset is any key of buttonPresets; link and custom are not)` ] };
 	}
 	const tokens = {};
 	const gaps = [];

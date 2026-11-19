@@ -83,7 +83,7 @@ test( 'MUST FAIL: no transform, an identity matrix and an unset shadow write not
 	assert.deepEqual( pressTokens( { 'box-shadow': 'none' }, 'secondary' ).tokens, { 'active-shadow': 'none' } );
 } );
 
-test( 'MUST FAIL: a pressed colour has no token and is a named gap; the link style and an unknown variant write nothing', () => {
+test( 'MUST FAIL: a pressed colour has no token and is a named gap; the link style and a style that is not a preset write nothing', () => {
 	const colours = pressTokens( { 'background-color': 'rgb(0, 0, 0)', color: '#fff', transform: 'scale(0.9)' }, 'primary' );
 	assert.deepEqual( Object.keys( colours.tokens ), [ 'active-transform' ] );
 	assert.equal( colours.gaps.length, 2 );
@@ -91,7 +91,7 @@ test( 'MUST FAIL: a pressed colour has no token and is a named gap; the link sty
 	const link = pressTokens( { transform: 'scale(0.9)' }, 'link' );
 	assert.deepEqual( [ link.tokens, link.gaps.length ], [ {}, 1 ] );
 	assert.match( link.gaps[ 0 ], /never presses/, 'the link style is named, not reported as an unknown variant' );
-	const odd = pressTokens( { transform: 'scale(0.9)' }, 'ghost' );
+	const odd = pressTokens( { transform: 'scale(0.9)' }, 'custom' );
 	assert.deepEqual( [ odd.tokens, odd.gaps.length ], [ {}, 1 ] );
 } );
 
