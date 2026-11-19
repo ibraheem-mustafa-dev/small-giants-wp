@@ -50,13 +50,10 @@ export function runOf( index, located ) {
 	return run;
 }
 
-export function place( ctx, piece ) {
-	const { key, tree } = ctx;
-	const refuse = ( why ) => ( { problems: [ `${ key }: piece "${ piece.id }" (${ piece.block }) is not placed: ${ why }` ] } );
-	if ( countBlocks( tree, piece.block ) ) {
-		return { notes: [ `${ key }: piece "${ piece.id }": the tree already holds ${ piece.block }` ] };
-	}
-	const kind = piece.find?.surface;
+// The buy box's run in the inventory (see the header): { surface, index, run, notes, inRun } or { why }. `kind` is the
+// record surface, `block` the block whose settings the run's parts are homed on.
+export function locateRun( ctx, kind, block ) {
+	const refuse = ( why ) => ( { why } );
 	const surface = recordSurface( ctx.shopParts, kind );
 	if ( ! surface ) {
 		return refuse( `the shop parts record (build/shop-parts.json) has no ${ kind } surface; run shop-parts.mjs <client> --write` );
@@ -68,16 +65,16 @@ export function place( ctx, piece ) {
 		return refuse( 'the surface has no inventory to find the buy box in' );
 	}
 	const index = inventoryIndex( ctx.inventory );
-	const own = surface.parts.filter( ( p ) => 'setting' === p.home?.type && p.home.block === piece.block );
+	const own = surface.parts.filter( ( p ) => 'setting' === p.home?.type && p.home.block === block );
 	const { keys, disagree } = locateParts( index, surface, own );
 	if ( disagree.length ) {
 		return refuse( `the shop parts record and the surface inventory disagree on ${ disagree.join( ', ' ) }: the elements those locators land on do not show the record's sample, so the two were read from different versions of the draft (rerun shop-parts.mjs <client> --write and the surface's inventory from the same draft)` );
 	}
 	const all = keys.flatMap( ( k ) => k.keys );
 	const located = all.filter( ( k ) => ! index.chain( k ).some( ( a ) => FIXED( index.byKey.get( a ) ) ) );
-	const notes = all.length > located.length ? [ `${ key }: ${ all.length - located.length } located element(s) sit in a fixed bar (${ all.filter( ( k ) => ! located.includes( k ) ).join( ', ' ) }): the bar is the buy box's sticky bar setting, not its place` ] : [];
+	const notes = all.length > located.length ? [ `${ ctx.key }: ${ all.length - located.length } located element(s) sit in a fixed bar (${ all.filter( ( k ) => ! located.includes( k ) ).join( ', ' ) }): the bar is the buy box's sticky bar setting, not its place` ] : [];
 	if ( ! located.length ) {
-		return refuse( `no part of the record homed on ${ piece.block } is located on an element this inventory shows` );
+		return refuse( `no part of the record homed on ${ block } is located on an element this inventory shows` );
 	}
 	const run = runOf( index, located );
 	if ( ! run ) {
@@ -89,6 +86,20 @@ export function place( ctx, piece ) {
 	if ( h1.length || homedElsewhere.length ) {
 		return refuse( `the elements holding its controls (${ run.join( ', ' ) }) also hold ${ [ ...h1.map( ( k ) => `the page's h1 ${ k }` ), ...homedElsewhere.map( ( id ) => `part ${ id }, homed outside the buy box` ) ].join( ' and ' ) }, so two regions would become one` );
 	}
+	return { surface, index, run, notes, inRun };
+}
+
+export function place( ctx, piece ) {
+	const { key, tree } = ctx;
+	const refuse = ( why ) => ( { problems: [ `${ key }: piece "${ piece.id }" (${ piece.block }) is not placed: ${ why }` ] } );
+	if ( countBlocks( tree, piece.block ) ) {
+		return { notes: [ `${ key }: piece "${ piece.id }": the tree already holds ${ piece.block }` ] };
+	}
+	const found = locateRun( ctx, piece.find?.surface, piece.block );
+	if ( found.why ) {
+		return refuse( found.why );
+	}
+	const { surface, index, run, notes, inRun } = found;
 	const nodes = nodesWithin( tree, index, run );
 	if ( ! nodes.length ) {
 		return refuse( `no skeleton node is built from its elements (${ run.join( ', ' ) })` );

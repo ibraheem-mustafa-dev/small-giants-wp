@@ -27,11 +27,12 @@ import * as buybox from './template-piece-buybox.mjs';
 import * as productField from './template-piece-product-field.mjs';
 import * as shopSort from './template-piece-shop-sort.mjs';
 import * as order from './template-piece-order.mjs';
+import * as gift from './template-piece-gift.mjs';
 import { lintSkeleton } from '../lint.mjs';
 import { openDb } from './db.mjs';
 
 // The builders the pass runs, by piece kind.
-export const BUILDERS = { buybox, 'product-field': productField, 'shop-sort': shopSort, order };
+export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order };
 // The kinds whose builder reads the client's fact record (lib/template-piece-order.mjs::place reads ctx.factRecord).
 export const FACT_KINDS = [ 'order' ];
 

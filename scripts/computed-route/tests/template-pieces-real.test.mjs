@@ -42,11 +42,15 @@ test( 'MUST FAIL: Mama\'s product skeleton gets one buy box, a bound title and d
 	assert.equal( treeNodes( got.tree ).filter( ( r ) => /^Add to basket ·/.test( r.node.attributes?.label || '' ) ).length, 0 );
 	const title = treeNodes( got.tree ).find( ( r ) => 'Root/27#0' === refKey( r.node ) ).node;
 	assert.deepEqual( title.attributes.metadata.bindings.content, { source: 'sgs-product/field', args: { key: 'title' } } );
-	assert.deepEqual( got.placed.map( ( p ) => p.id ), [ 'buy-box', 'title', 'description', 'gallery' ] );
+	assert.deepEqual( got.placed.map( ( p ) => p.id ), [ 'buy-box', 'gift', 'title', 'description', 'gallery' ] );
+	// The gift choice stands directly after the buy box, with the draft's words.
+	const list = treeNodes( got.tree ).find( ( r ) => ( r.node.innerBlocks || [] ).some( ( c ) => 'sgs/buybox' === c.name ) ).node.innerBlocks;
+	const at = list.findIndex( ( c ) => 'sgs/buybox' === c.name );
+	assert.deepEqual( list[ at + 1 ], { name: 'sgs/gift-order', attributes: { basketLabel: 'Send it as a gift', basketHelp: 'Add a note. We’ll leave the prices off.', messagePlaceholder: 'Congratulations, mama!', messageLimit: 200 }, innerBlocks: [], draftRef: { tpl: 'Root/93#0' } } );
 	// Every node outside the buy box and the gallery is kept, in order.
 	const removed = new Set( got.placed.flatMap( ( p ) => String( p.at.split( 'in place of' )[ 1 ] ?? '' ).match( /Root\/\d+#\d+/g ) || [] ) );
 	const gone = refs( before ).filter( ( k ) => ! refs( got.tree ).includes( k ) );
-	assert.deepEqual( refs( before ).filter( ( k ) => ! gone.includes( k ) ), refs( got.tree ) );
+	assert.deepEqual( refs( before ).filter( ( k ) => ! gone.includes( k ) ), refs( got.tree ).filter( ( k ) => refs( before ).includes( k ) ) );
 	const index = inventoryIndex( input.inventory );
 	assert.ok( gone.every( ( k ) => [ ...removed ].some( ( r ) => index.within( k, r ) ) ), gone.join( ', ' ) );
 	assert.ok( refs( got.tree ).includes( 'Root/109#0' ) && refs( got.tree ).includes( 'Root/128#0' ) );

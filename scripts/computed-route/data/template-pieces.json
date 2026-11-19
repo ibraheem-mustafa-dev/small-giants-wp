@@ -22,6 +22,7 @@
 		"single-product": {
 			"pieces": [
 				{ "id": "buy-box", "block": "sgs/buybox", "required": true, "kind": "buybox", "find": { "surface": "buybox" } },
+				{ "id": "gift", "block": "sgs/gift-order", "required": false, "kind": "gift", "find": { "surface": "buybox", "after": "sgs/buybox", "settings": { "label": "basketLabel", "help": "basketHelp", "placeholder": "messagePlaceholder", "limit": "messageLimit" } } },
 				{ "id": "title", "block": "sgs/heading", "binds": { "source": "sgs-product/field", "key": "title" }, "required": true, "kind": "product-field", "find": { "surface": "buybox", "contains": "wp:post-title" } },
 				{ "id": "price", "binds": { "source": "sgs-product/field", "key": "price" }, "required": false, "kind": "product-field", "find": { "field": "price" } },
 				{ "id": "description", "binds": { "source": "sgs-product/field", "key": "short_description" }, "required": false, "kind": "product-field", "find": { "field": "description" } },
