@@ -23,6 +23,7 @@ import { unreadProps } from './lib/calibrate-props.mjs';
 import { localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { runStage0, installedPlaywright } from './lib/stage0.mjs';
 import { refsFor, checkRefsExist, wpEvalRunner } from './lib/calibration-refs.mjs';
+import { readTargets } from './lib/site-targets.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -73,7 +74,7 @@ async function run( argv ) {
 		console.error( USAGE );
 		return 2;
 	}
-	const targets = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) );
+	const targets = readTargets();
 	if ( ! targets[ o.site ] ) {
 		console.error( `${ o.site } is not in calibration-targets.json (${ Object.keys( targets ).join( ', ' ) })` );
 		return 2;

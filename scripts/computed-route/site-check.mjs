@@ -30,6 +30,7 @@ import { wpCommand } from './lib/calibration-refs.mjs';
 import { formSlug } from './lib/form-submit-run.mjs';
 import { loadChromium } from './lib/fill-read.mjs';
 import { browserPidOf, closeBrowser } from './lib/browser-close.mjs';
+import { readTargets } from './lib/site-targets.mjs';
 import { FLOWS, MIN_GAP_MS } from '../parity/flows/run-all.mjs';
 import { execute, writeFlowResult } from '../parity/flows/lib/flow.mjs';
 
@@ -78,7 +79,7 @@ async function main() {
 		return 2;
 	}
 	const roots = candidateRoots( args.repo );
-	const targets = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) );
+	const targets = readTargets();
 	const target = targetOf( args.site, targets, roots );
 	if ( ! target ) {
 		console.error( `${ args.site } is neither a calibration-targets.json key nor a .claude/secrets/${ args.site }.env\n${ USAGE }` );

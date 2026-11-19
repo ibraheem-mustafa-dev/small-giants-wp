@@ -35,6 +35,7 @@ import { hopCanvasSettable } from './lib/cite-emission.mjs';
 import { solveLoopBody } from './lib/solve-loop-body.mjs';
 import { solveLoop } from './lib/solve-loop.mjs';
 import { journalFile, readJournal, resumeFrom, writeJournal } from './lib/solve-journal.mjs';
+import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath, surfaceOnSite, targetOf } from './lib/site-targets.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -140,12 +141,11 @@ export function siteOverride( s, site, targets, readUrl ) {
 	if ( ! site ) {
 		return { surface: s, sshArgs: undefined, liveOrigin: null };
 	}
-	const t = targets[ site ];
-	if ( ! t ) {
-		throw new Error( `--site ${ site } is not in calibration-targets.json` );
-	}
+	// lib/site-targets.mjs::surfaceOnSite: the site must be a target that shares the surface's post ids.
+	const surface = surfaceOnSite( s, site, targets );
+	const t = targetOf( site, targets );
 	return {
-		surface: { ...s, envFile: t.envFile, envKey: t.envKey, site },
+		surface,
 		sshArgs: t.pluginDir ? null : undefined,
 		liveOrigin: String( readUrl( t.envFile, t.envKey ) || '' ).replace( /\/+$/, '' ) || null,
 	};
@@ -153,7 +153,7 @@ export function siteOverride( s, site, targets, readUrl ) {
 
 // WP_URL_<key> from a secrets env file, or null.
 export function envUrl( file, key ) {
-	const f = path.join( REPO, file );
+	const f = secretsPath( file, REPO );
 	const line = fs.existsSync( f ) ? fs.readFileSync( f, 'utf8' ).split( /\r?\n/ ).find( ( l ) => l.startsWith( `WP_URL_${ key }=` ) ) : null;
 	return line ? line.slice( line.indexOf( '=' ) + 1 ).trim().replace( /^["']|["']$/g, '' ) : null;
 }
@@ -462,10 +462,19 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const maxRounds = Number( flag( '--rounds' ) || 3 );
 	const buildDir = path.join( REPO, 'sites', client, 'build' );
 	const surfaces = JSON.parse( fs.readFileSync( path.join( buildDir, 'surfaces.json' ), 'utf8' ) );
-	const site = siteOverride( surfaces[ surface ], surfaces[ surface ] ? flag( '--site' ) : null, JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) ), envUrl );
+	const targets = readTargets();
+	const site = siteOverride( surfaces[ surface ], surfaces[ surface ] ? flag( '--site' ) : null, targets, envUrl );
 	const s = site.surface;
 	if ( ! s ) {
 		console.error( `no surface "${ surface }" in surfaces.json` );
+		process.exit( 2 );
+	}
+	// Solve builds into the site the surface now names: a protected one is refused, and a scratch copy runs only from a worktree.
+	try {
+		assertUnprotected( s.site, targets );
+		assertScratchRunPlace( s.site, REPO );
+	} catch ( e ) {
+		console.error( e.message );
 		process.exit( 2 );
 	}
 	// Every surface names which walker states hold which setting state; without it every row would read as rest.
@@ -488,8 +497,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	}
 	const outDir = path.resolve( flag( '--out' ) || path.join( buildDir, 'qa', 'solve', surface, new Date().toISOString().replace( /[:.]/g, '-' ).slice( 0, 19 ) ) );
 	fs.mkdirSync( outDir, { recursive: true } );
-	const calibrationTargets = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) );
-	assertWritable( s.target, { calibrationTargets, surfaces } );
+	assertWritable( s.target, { calibrationTargets: targets, surfaces } );
 	const refs = detectReferences();
 	// The default paint is read from the site this surface is built on (--site, else the surface's own `site`).
 	if ( ! s.site ) {

@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { wpCommand } from './lib/calibration-refs.mjs';
+import { assertUnprotected, readTargets } from './lib/site-targets.mjs';
 import { readPhp, writePhp, syncTargets, planSync, writtenMismatches } from './lib/content-sync.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -24,10 +25,19 @@ if ( ! client || ! from || ! to ) {
 	console.error( 'usage: node scripts/computed-route/content-sync.mjs <client> --from <mirror> --to <site> [--only a,b] [--apply]' );
 	process.exit( 2 );
 }
-const targets = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) );
+const targets = readTargets();
 if ( targets[ from ]?.mirrorOf !== to ) {
 	console.error( `${ from } is not a mirror of ${ to } in calibration-targets.json (mirrorOf: ${ targets[ from ]?.mirrorOf ?? 'none' })` );
 	process.exit( 2 );
+}
+// A dry run only reads the site; --apply writes it, so a protected site is refused before anything is read.
+if ( argv.includes( '--apply' ) ) {
+	try {
+		assertUnprotected( to, targets );
+	} catch ( e ) {
+		console.error( e.message );
+		process.exit( 2 );
+	}
 }
 const surfaces = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', client, 'build', 'surfaces.json' ), 'utf8' ) );
 const want = syncTargets( surfaces, flag( '--only' )?.split( ',' ) ?? null );

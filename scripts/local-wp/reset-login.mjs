@@ -2,7 +2,8 @@
 // Sets a local mirror's WordPress login to the password its secrets file holds, after refresh-from-remote.sh has copied the
 // test site's users over it:
 //   node scripts/local-wp/reset-login.mjs <mirror, e.g. local-eye-care>
-// The mirror's secrets file and key come from scripts/computed-route/calibration-targets.json. The password is read the way
+// The mirror's secrets file and key come from scripts/computed-route/calibration-targets.json (or a scratch copy's entry in
+// calibration-targets.local.json). The password is read the way
 // every route script reads it (scripts/computed-route/lib/wp-run-session.mjs::readEnv: trimmed, one pair of surrounding
 // quotes removed), handed to WordPress on stdin and set with wp_set_password (no slashing), so it is never printed and a
 // quoted value reaches WordPress exactly as the scripts send it. Exit 0 set and checked, 1 failure, 2 usage.
@@ -11,11 +12,12 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { readEnv } from '../computed-route/lib/wp-run-session.mjs';
+import { readTargets } from '../computed-route/lib/site-targets.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '..', '..' );
 const mirror = process.argv[ 2 ];
-const targets = JSON.parse( fs.readFileSync( path.join( REPO, 'scripts', 'computed-route', 'calibration-targets.json' ), 'utf8' ) );
+const targets = readTargets( { repo: REPO } );
 const target = targets[ mirror ];
 if ( ! mirror || ! target?.pluginDir?.startsWith( '//wsl.localhost/' ) ) {
 	console.error( 'Usage: node scripts/local-wp/reset-login.mjs <mirror>; the name must be a local mirror in calibration-targets.json' );

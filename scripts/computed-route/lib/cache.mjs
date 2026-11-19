@@ -11,16 +11,15 @@
 // list is stale on every site, so a property calibration newly reads is measured everywhere.
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { READ_KEY } from './calibrate-props.mjs';
+import { readTargets } from './site-targets.mjs';
 
-const TARGETS_FILE = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'calibration-targets.json' );
 let mirrors = null;
 
 // The site whose paint folder `site` uses: the test site a mirror copies (`mirrorOf`), else the site itself.
 export function paintSite( site ) {
 	if ( ! mirrors ) {
-		const targets = fs.existsSync( TARGETS_FILE ) ? JSON.parse( fs.readFileSync( TARGETS_FILE, 'utf8' ) ) : {};
+		const targets = readTargets();
 		mirrors = Object.fromEntries( Object.entries( targets ).filter( ( [ , v ] ) => v.mirrorOf ).map( ( [ k, v ] ) => [ k, v.mirrorOf ] ) );
 	}
 	return mirrors[ site ] || site;
