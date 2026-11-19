@@ -23,6 +23,7 @@ import { normaliseHref } from './fill-presence.mjs';
 import { templateKeyOf, parseTemplateKey } from './fact-key.mjs';
 import { loadDraft } from './intake-ast.mjs';
 import { listItems } from './fill-list-items.mjs';
+import { DECISIONS_FILE } from './skeleton-facts.mjs';
 
 // The clone-coverage IDs this module writes (lib/clone-coverage.mjs::declaredWrites holds each entry's write to it).
 export const COVERAGE_WRITES = [
@@ -280,10 +281,19 @@ export function logicReader( folder ) {
 	};
 }
 
+// The standing rule for a slider's visible-slides setting (data/skeleton-decisions.json `rules.slider`): { blocks: [ block ],
+// attr, value } or null. A list the draft draws as a current-item display shows one item at a time, so the slider block that
+// holds it shows one slide, where its default shows several side by side.
+export function currentItemRule( decisions = JSON.parse( fs.readFileSync( DECISIONS_FILE, 'utf8' ) ).rules?.slider ) {
+	const attr = decisions?.settings?.visible;
+	const value = decisions?.currentItem?.visible;
+	return attr && undefined !== value ? { blocks: ( decisions.blocks || [] ).map( ( b ) => b.block ), attr, value } : null;
+}
+
 // Fill's list pass over every node with a draft element. inventory: the surface's skeleton inventory (null when absent);
 // idxFor( component ): logicReader's reader; picturesOf( targetId ): the pictures the draft read found in a target's element. Writes into the tree and returns { writes, children: [{ index, nodes }],
 // unmapped, handover, notes }; the caller places `children` (applyChildren) once nothing else walks the tree.
-export function listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor = () => null, db, schemaOf, media = {}, pages = null, rootComponent = null, picturesOf = () => null } ) {
+export function listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor = () => null, db, schemaOf, media = {}, pages = null, rootComponent = null, picturesOf = () => null, oneAtATime = currentItemRule() } ) {
 	const out = { writes: [], children: [], unmapped: [], handover: [], notes: [] };
 	for ( const rec of nodes ) {
 		const root = rec.targets.find( ( t ) => '' === t.slot && t.finder?.tpl );
@@ -317,6 +327,12 @@ export function listContentWrites( { nodes, flat, refOf, facts, inventory, idxFo
 			const kid = node.innerBlocks[ w.position ];
 			const { before, after } = setAttr( kid, { attr: w.attr, value: w.value, merge: 'replace' } );
 			out.writes.push( { node: refOf( kid ) ?? ref, index: rec.index, block: kid.name, slot: '', prop: '(content)', attr: w.attr, before, after, widths: [], how: 'content' } );
+		}
+		// A current-item display shows one item at a time: the slider block holding it shows one slide.
+		if ( list.current && oneAtATime?.blocks.includes( rec.name ) && ( d.children || d.writes.length ) && undefined === node.attributes?.[ oneAtATime.attr ] && Object.hasOwn( schemaOf( rec.name ) || {}, oneAtATime.attr ) ) {
+			const { before, after } = setAttr( node, { attr: oneAtATime.attr, value: oneAtATime.value, merge: 'replace' } );
+			out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: '', prop: '(one item shown at a time)', attr: oneAtATime.attr, before, after, widths: [], how: 'content' } );
+			out.notes.push( `${ ref } ${ rec.name }: the draft shows one item at a time, so ${ oneAtATime.attr } is ${ oneAtATime.value }` );
 		}
 		if ( d.children ) {
 			out.children.push( { index: rec.index, nodes: d.children } );

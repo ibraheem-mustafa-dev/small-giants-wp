@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "if ( list.current && oneAtATime?.blocks.includes( rec.name ) &&",
+		"replace": "if ( oneAtATime?.blocks.includes( rec.name ) &&",
+		"why": "a loop of copies is treated as a current-item display"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "if ( list.current && oneAtATime?.blocks.includes( rec.name ) &&",
+		"replace": "if ( list.current &&",
+		"why": "a block the rule does not name is given the setting"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "undefined === node.attributes?.[ oneAtATime.attr ] && Object.hasOwn(",
+		"replace": "Object.hasOwn(",
+		"why": "a setting the node already holds is overwritten"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "&& Object.hasOwn( schemaOf( rec.name ) || {}, oneAtATime.attr ) ) {",
+		"replace": "&& true ) {",
+		"why": "a setting the block does not declare is written"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "reason: null, current: true };",
+		"replace": "reason: null };",
+		"why": "the current-item list is not marked"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "const attr = decisions?.settings?.visible;",
+		"replace": "const attr = undefined;",
+		"why": "the rule's setting is not read from the decisions"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "value: oneAtATime.value, merge: 'replace' } );",
+		"replace": "value: 3, merge: 'replace' } );",
+		"why": "the written count is not the decision's"
+	}
+]

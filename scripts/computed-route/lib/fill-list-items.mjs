@@ -10,7 +10,8 @@
 //     each field read as one static string.
 // A field is named by its path after the loop variable (`ms.year` gives `year`); a field held by an <img> or an image
 // placeholder (`id`, `src` or `data-src`) is an image field. A hole in an element's style, an event, a placeholder text or
-// a list binding is no field. Returns { items: [{ field: value }], fields: [{ name, image }], source, reason }.
+// a list binding is no field. Returns { items: [{ field: value }], fields: [{ name, image }], source, reason, current }, `current` true
+// for a current-item display (the draft shows one item at a time).
 import { templateKeyOf } from './fact-key.mjs';
 import { classMethod, isFn } from './intake-ast.mjs';
 import { ref, resolveRefs, propRefs, returnsOf, oneString } from './intake-ast-eval.mjs';
@@ -159,7 +160,7 @@ export function currentItems( { facts, rootKey, rootComponent = null, idx } ) {
 		return refs.map( ( r ) => oneString( idx, r.node, r.env ) ).find( ( v ) => null !== v ) ?? null;
 	};
 	const items = list.els.map( ( el ) => Object.fromEntries( list.fields.map( ( f ) => [ f.name, value( el, f.name ) ] ) ) );
-	return { items, fields: list.fields, source: `current item ${ list.head } of a ${ items.length }-item list in the draft's logic`, reason: null };
+	return { items, fields: list.fields, source: `current item ${ list.head } of a ${ items.length }-item list in the draft's logic`, reason: null, current: true };
 }
 
 // The list one element draws: its loop when the rendered inventory shows one, else its current-item display. idx: the

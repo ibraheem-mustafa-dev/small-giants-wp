@@ -806,7 +806,8 @@
 			"blocks": [ { "block": "sgs/testimonial-slider", "roles": [ "quote", "author" ] } ],
 			"otherCapabilities": [ "carousel", "slider" ],
 			"classTrack": "a track the controls find by its class with a document query (document.querySelector('.rev-rail').scrollBy) is the slider track as a ref-bound one is",
-			"settings": { "arrows": "showArrows", "dots": "showDots", "autoplay": "autoplay", "speed": "autoplaySpeed" },
+			"settings": { "arrows": "showArrows", "dots": "showDots", "autoplay": "autoplay", "speed": "autoplaySpeed", "visible": "slidesVisible" },
+			"currentItem": { "visible": 1, "reason": "a draft that shows one item at a time, picked by an index its controls and timer move (a current-item display, lib/fill-list-items.mjs::currentItems), is a slider showing one slide; Fill writes the slider's visible-slides setting (settings.visible) as 1, where the block's default shows several side by side" },
 			"taughtBy": {
 				"client": "mamas-munches-redesign",
 				"key": "Home/222 (the review track) with Home/220, Home/221 and Home/235",
