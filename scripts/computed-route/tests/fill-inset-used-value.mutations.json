@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "const INSETS = new Set( [ 'top', 'right', 'bottom', 'left' ] );",
+		"replace": "const INSETS = new Set( [] );",
+		"why": "no inset is read as auto"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "const OUT_OF_FLOW_POSITION = /^(absolute|fixed)$/;",
+		"replace": "const OUT_OF_FLOW_POSITION = /^(absolute|fixed|static|relative)$/;",
+		"why": "an in-flow element's inset is read as auto too"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "const OUT_OF_FLOW_POSITION = /^(absolute|fixed)$/;",
+		"replace": "const OUT_OF_FLOW_POSITION = /^absolute$/;",
+		"why": "a fixed element's inset keeps its static-position pixels"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "! ctx.own?.includes( prop ) && undefined !== v ) {",
+		"replace": "undefined !== v ) {",
+		"why": "an inset the block's stylesheet sets is read as auto as well"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "OUT_OF_FLOW_POSITION.test( String( ctx?.position ?? '' ) ) && ! ctx.own",
+		"replace": "OUT_OF_FLOW_POSITION.test( String( ctx?.position ?? 'absolute' ) ) && ! ctx?.own",
+		"why": "a paint with no recorded context is read as absolute"
+	}
+]

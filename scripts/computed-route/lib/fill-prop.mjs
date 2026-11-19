@@ -249,12 +249,19 @@ export function calibratedContext( cal, slot, width ) {
 	return { parentDisplay: paint._parentDisplay, ...( paint._position ? { position: paint._position } : {} ), ...( paint.direction ? { direction: paint.direction } : {} ), ...( own.length ? { own } : {} ) };
 }
 
+const INSETS = new Set( [ 'top', 'right', 'bottom', 'left' ] );
+const OUT_OF_FLOW_POSITION = /^(absolute|fixed)$/;
+
 // A baseline value in the context it was read in, as the value an unstyled element holds: where it is what the
 // property's initial value computes to there and not that value itself (a `min-height` of 0px read off a flex or grid
 // item, the computed form of `auto` there), it is the initial value, which the comparison then canons in the draft's
-// context. A value the block's stylesheet sets (the context's `own` names the property: a declared `min-height: 0`
+// context (an inset of an absolute or fixed element it does not set is the used value of `auto`, so it reads as `auto`). A value the block's stylesheet sets (the context's `own` names the property: a declared `min-height: 0`
 // reads 0px off a flex item too) is that value, as is any other value or a baseline with no context of its own.
 export function inOwnContext( prop, v, ctx ) {
+	// An inset of an out-of-flow element the block's stylesheet does not set is the used value of `auto`: its static position.
+	if ( INSETS.has( prop ) && OUT_OF_FLOW_POSITION.test( String( ctx?.position ?? '' ) ) && ! ctx.own?.includes( prop ) && undefined !== v ) {
+		return 'auto';
+	}
 	const initial = ctx && undefined !== v && ! ctx.own?.includes( prop ) ? initialOf( prop ) : null;
 	if ( ! initial || String( v ).trim() === initial ) {
 		return v;
