@@ -126,6 +126,11 @@ defined( 'ABSPATH' ) || exit;
 	$card_grid_card_motion    = \SGS\Blocks\Motion\Sgs_Motion_Delegate::child_motion( 'sgs/card-grid', $attributes, $card_grid_template_attrs['sgsMotion'] ?? null );
 	$card_grid_card_own       = null === $card_grid_card_motion ? array() : array( 'sgsMotion' => $card_grid_card_motion );
 	ob_start();
+	// The cards are one loop for image loading (Spec 49 §7.7): the first few load eagerly, the rest lazily. Each card
+	// names its product, because the global post is the page.
+	if ( class_exists( 'SGS_Media_Priority' ) ) {
+		SGS_Media_Priority::begin_loop();
+	}
 
 	if ( $is_cpt_collection ) {
 		/*
@@ -146,6 +151,9 @@ defined( 'ABSPATH' ) || exit;
 				? 'wc-product'
 				: 'sgs-cpt';
 
+			if ( class_exists( 'SGS_Media_Priority' ) ) {
+				SGS_Media_Priority::loop_item( $collection_post_id );
+			}
 			$card_attrs = \SGS\Blocks\Card_Grid_Template::card_attrs(
 				$card_grid_template_attrs,
 				array(
@@ -164,6 +172,9 @@ defined( 'ABSPATH' ) || exit;
 		endforeach;
 	} else {
 		foreach ( $product_ids as $wc_product_id ) :
+			if ( class_exists( 'SGS_Media_Priority' ) ) {
+				SGS_Media_Priority::loop_item( absint( $wc_product_id ) );
+			}
 			$card_attrs = \SGS\Blocks\Card_Grid_Template::card_attrs(
 				$card_grid_template_attrs,
 				array(
@@ -179,6 +190,10 @@ defined( 'ABSPATH' ) || exit;
 				)
 			);
 		endforeach;
+	}
+
+	if ( class_exists( 'SGS_Media_Priority' ) ) {
+		SGS_Media_Priority::end_loop();
 	}
 
 	// The cards share one motion scope (the template's motion), so the editor preview prints its style tag once.

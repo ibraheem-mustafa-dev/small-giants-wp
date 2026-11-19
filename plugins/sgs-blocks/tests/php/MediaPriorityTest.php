@@ -1,7 +1,8 @@
 <?php
 /**
  * Tests: `SGS_Media_Priority::resolve` (Spec 49 section 7.7), the loading rules, the cap, the single high claim,
- * the 50,000 px floor, REST, unarmed, and the per-device slot counting as one image.
+ * the 50,000 px floor, REST, unarmed, the per-device slot counting as one image, and the loop rule (only the first
+ * `wp_omit_loading_attr_threshold` items of a post or product loop are eager).
  *
  * Run with:
  *   vendor/bin/phpunit --filter MediaPriorityTest
@@ -34,7 +35,13 @@ final class MediaPriorityTest extends TestCase {
 		require_once dirname( __DIR__, 2 ) . '/includes/motion/class-sgs-motion-fold.php';
 		require_once dirname( __DIR__, 2 ) . '/includes/motion/class-sgs-fold-scan.php';
 		require_once dirname( __DIR__, 2 ) . '/includes/media/class-sgs-media-priority.php';
+		if ( ! function_exists( 'get_the_ID' ) ) {
+			function get_the_ID() {
+				return $GLOBALS['sgs_test_post_id'] ?? false;
+			}
+		}
 		$GLOBALS['sgs_test_filters'] = array();
+		$GLOBALS['sgs_test_post_id'] = false;
 		SGS_Media_Priority::reset();
 	}
 
@@ -155,5 +162,149 @@ final class MediaPriorityTest extends TestCase {
 		$this->assertSame( 'high', $slot['fetchpriority'] );
 		$this->assertSame( 'eager', $next['loading'], 'the two-device slot used one place of the cap' );
 		$this->assertSame( 'lazy', $last['loading'] );
+	}
+
+	/**
+	 * Resolve one slot for the post the loop is on.
+	 *
+	 * @param int                 $post_id The loop item's post ID.
+	 * @param array<string,mixed> $context Extra slot context.
+	 * @return array<string,mixed>
+	 */
+	private static function item( int $post_id, array $context = array() ): array {
+		$GLOBALS['sgs_test_post_id'] = $post_id;
+		return SGS_Media_Priority::resolve( $context + self::BIG, self::page() );
+	}
+
+	public function test_a_loop_loads_its_first_three_items_eagerly_and_the_rest_lazily(): void {
+		SGS_Media_Priority::begin_loop();
+		$loading = array();
+		$high    = array();
+		foreach ( array( 11, 12, 13, 14, 15, 16 ) as $id ) {
+			$r         = self::item( $id );
+			$loading[] = $r['loading'];
+			$high[]    = $r['fetchpriority'];
+		}
+		SGS_Media_Priority::end_loop();
+		$this->assertSame( array( 'eager', 'eager', 'eager', 'lazy', 'lazy', 'lazy' ), $loading );
+		$this->assertSame( array( 'high', 'auto', 'auto', 'auto', 'auto', 'auto' ), $high, 'the first item leads, the rest do not' );
+	}
+
+	public function test_a_second_slot_of_the_same_item_counts_as_the_same_item(): void {
+		SGS_Media_Priority::begin_loop();
+		foreach ( array( 11, 12 ) as $id ) {
+			self::item( $id );
+		}
+		$third_photo = self::item( 13 );
+		$third_logo  = self::item( 13, array( 'role' => 'logo' ) );
+		$fourth      = self::item( 14 );
+		SGS_Media_Priority::end_loop();
+		$this->assertSame( 'eager', $third_photo['loading'] );
+		$this->assertSame( 'eager', $third_logo['loading'], 'a second slot of the third item is still the third item' );
+		$this->assertSame( 'lazy', $fourth['loading'] );
+	}
+
+	public function test_a_second_loop_restarts_its_count_but_not_the_page_wide_lead(): void {
+		SGS_Media_Priority::begin_loop();
+		foreach ( array( 11, 12, 13, 14 ) as $id ) {
+			self::item( $id );
+		}
+		SGS_Media_Priority::end_loop();
+		SGS_Media_Priority::begin_loop();
+		$second = array();
+		foreach ( array( 21, 22, 23, 24 ) as $id ) {
+			$second[] = self::item( $id );
+		}
+		SGS_Media_Priority::end_loop();
+		$this->assertSame( array( 'eager', 'eager', 'eager', 'lazy' ), array_column( $second, 'loading' ) );
+		$this->assertSame( array( 'auto', 'auto', 'auto', 'auto' ), array_column( $second, 'fetchpriority' ), 'the lead was taken by the first loop' );
+	}
+
+	public function test_the_page_wide_cap_still_applies_across_loops(): void {
+		$GLOBALS['sgs_test_filters']['sgs_eager_image_limit'] = static fn( $v ) => 4;
+		$loading = array();
+		foreach ( array( array( 11, 12, 13 ), array( 21, 22, 23 ) ) as $loop ) {
+			SGS_Media_Priority::begin_loop();
+			foreach ( $loop as $id ) {
+				$loading[] = self::item( $id )['loading'];
+			}
+			SGS_Media_Priority::end_loop();
+		}
+		$this->assertSame( array( 'eager', 'eager', 'eager', 'eager', 'lazy', 'lazy' ), $loading );
+	}
+
+	public function test_the_loop_threshold_follows_the_core_filter(): void {
+		$GLOBALS['sgs_test_filters']['wp_omit_loading_attr_threshold'] = static fn( $v ) => 1;
+		SGS_Media_Priority::begin_loop();
+		$loading = array( self::item( 11 )['loading'], self::item( 12 )['loading'] );
+		SGS_Media_Priority::end_loop();
+		$this->assertSame( array( 'eager', 'lazy' ), $loading );
+	}
+
+	public function test_load_first_overrides_the_loop_threshold(): void {
+		SGS_Media_Priority::begin_loop();
+		foreach ( array( 11, 12, 13, 14, 15 ) as $id ) {
+			self::item( $id );
+		}
+		$sixth_first = self::item( 16, array( 'load' => 'first' ) );
+		$seventh     = self::item( 17, array( 'load' => 'later' ) );
+		SGS_Media_Priority::end_loop();
+		$this->assertSame( 'eager', $sixth_first['loading'] );
+		$this->assertSame( 'lazy', $seventh['loading'] );
+	}
+
+	public function test_the_fold_rule_still_applies_to_the_first_three_items(): void {
+		SGS_Media_Priority::begin_loop();
+		$GLOBALS['sgs_test_post_id'] = 11;
+		$below                       = SGS_Media_Priority::resolve( self::BIG, self::page( false ) );
+		SGS_Media_Priority::end_loop();
+		$this->assertSame( 'lazy', $below['loading'], 'item 1 below the fold is lazy' );
+	}
+
+	public function test_a_slot_outside_any_loop_is_unchanged(): void {
+		$loading = array();
+		for ( $i = 0; $i < 6; $i++ ) {
+			$GLOBALS['sgs_test_post_id'] = 100 + $i;
+			$loading[]                   = SGS_Media_Priority::resolve( self::BIG, self::page() )['loading'];
+		}
+		$this->assertSame( array( 'eager', 'eager', 'eager', 'eager', 'eager', 'eager' ), $loading );
+		SGS_Media_Priority::begin_loop();
+		SGS_Media_Priority::end_loop();
+		$GLOBALS['sgs_test_post_id'] = 200;
+		$this->assertSame( 'eager', SGS_Media_Priority::resolve( self::BIG, self::page() )['loading'], 'a closed loop leaves no rule behind' );
+	}
+
+	public function test_a_block_names_its_items_when_the_global_post_is_the_page(): void {
+		$GLOBALS['sgs_test_post_id'] = 5;
+		SGS_Media_Priority::begin_loop();
+		$loading = array();
+		foreach ( array( 31, 32, 33, 34 ) as $product ) {
+			SGS_Media_Priority::loop_item( $product );
+			$loading[] = SGS_Media_Priority::resolve( self::BIG, self::page() )['loading'];
+		}
+		SGS_Media_Priority::end_loop();
+		$this->assertSame( array( 'eager', 'eager', 'eager', 'lazy' ), $loading );
+	}
+
+	public function test_an_item_with_no_id_is_not_counted(): void {
+		SGS_Media_Priority::begin_loop();
+		$loading = array();
+		for ( $i = 0; $i < 5; $i++ ) {
+			$GLOBALS['sgs_test_post_id'] = false;
+			$loading[]                   = SGS_Media_Priority::resolve( self::BIG, self::page() )['loading'];
+		}
+		SGS_Media_Priority::end_loop();
+		$this->assertSame( array( 'eager', 'eager', 'eager', 'eager', 'eager' ), $loading );
+	}
+
+	public function test_a_hidden_slot_does_not_spend_an_item(): void {
+		SGS_Media_Priority::begin_loop();
+		self::item( 11, array( 'hidden' => true ) );
+		$loading = array();
+		foreach ( array( 12, 13, 14 ) as $id ) {
+			$loading[] = self::item( $id )['loading'];
+		}
+		SGS_Media_Priority::end_loop();
+		$this->assertSame( array( 'eager', 'eager', 'eager' ), $loading );
 	}
 }

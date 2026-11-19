@@ -105,6 +105,10 @@ $sgs_pg_loop_style = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::post_grid( $uid,
 echo (string) $sgs_pg_loop_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from integers and a sanitised class by Sgs_Motion_Loop_Delays.
 if ( $query->have_posts() ) {
 	$card_index = 0;
+	// The cards are one loop for image loading (Spec 49 §7.7): the first few load eagerly, the rest lazily.
+	if ( class_exists( 'SGS_Media_Priority' ) ) {
+		SGS_Media_Priority::begin_loop();
+	}
 	while ( $query->have_posts() ) {
 		$query->the_post();
 		$card_html                  = \SGS\Blocks\Post_Grid_REST::render_card( get_the_ID(), $card_params );
@@ -113,6 +117,9 @@ if ( $query->have_posts() ) {
 		}
 		echo $card_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — render_card() escapes all output internally.
 		++$card_index;
+	}
+	if ( class_exists( 'SGS_Media_Priority' ) ) {
+		SGS_Media_Priority::end_loop();
 	}
 	wp_reset_postdata();
 } else {
