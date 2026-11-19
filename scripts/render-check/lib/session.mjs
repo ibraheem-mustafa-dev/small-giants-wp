@@ -56,7 +56,11 @@ export async function makeViewer( browser, { origin, auth, basket, user, pwd, pr
 			await signIn( page, origin, user, pwd );
 			const cookies = await ctx.cookies();
 			if ( ! cookies.some( ( c ) => c.name.startsWith( 'wordpress_logged_in' ) ) ) {
-				return { state: null, error: 'sign-in failed: no wordpress_logged_in cookie after signing in as ' + user };
+				// A refusal shows the sign-in page's error; no cookie and no error means the site never answered in time.
+				const refused = await page.locator( SIGN_IN_ERROR ).count().catch( () => 0 );
+				return { state: null, error: refused
+					? 'sign-in failed: the sign-in page refused ' + user
+					: 'sign-in failed: no wordpress_logged_in cookie and no sign-in error after signing in as ' + user };
 			}
 		}
 		if ( basket ) {

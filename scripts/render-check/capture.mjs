@@ -38,9 +38,9 @@ function requestKey( req, norm ) {
 
 const browser = await chromium.launch( { args: [ '--hide-scrollbars' ] } );
 
-// Viewers per side, made on first use. A viewer whose making threw (a sign-in click that timed out on a busy machine) is
-// made once more before every state that uses it is reported unreached; a sign-in that completes but leaves no cookie
-// is a real failure and is not retried.
+// Viewers per side, made on first use. A viewer whose making threw (a sign-in click that timed out on a busy machine), or
+// whose sign-in left neither a cookie nor the sign-in page's error after 60 s, is made once more before every state that
+// uses it is reported unreached. A sign-in the page refused is a real failure and is not retried.
 const viewers = {};
 function viewer( side, st ) {
 	const auth = st.auth || 'guest';
@@ -50,7 +50,7 @@ function viewer( side, st ) {
 	}
 	if ( ! viewers[ id ] ) {
 		const make = () => makeViewer( browser, { origin: cfg.sides[ side ].origin, auth, basket: !! st.basket, user: cfg.customer.user, pwd: cfg.customer.pwd, product: cfg.product } );
-		viewers[ id ] = make().then( ( v ) => ( v.error && v.error.includes( ' threw: ' ) ? make() : v ) );
+		viewers[ id ] = make().then( ( v ) => ( v.error && ( v.error.includes( ' threw: ' ) || v.error.includes( 'no sign-in error' ) ) ? make() : v ) );
 	}
 	return viewers[ id ];
 }
