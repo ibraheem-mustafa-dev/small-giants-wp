@@ -44,6 +44,37 @@ export function findGapsFiles( sitesDir ) {
 		.filter( ( f ) => fs.existsSync( f.file ) ).sort( ( a, b ) => byText( a.client, b.client ) );
 }
 
+// The residual Custom CSS gap rows of every client's latest Fill run per surface (Spec 48 FR-48-109: each distinct block,
+// part and property a run wrote as Custom CSS, `residualCss.gaps` in fill-report.json, lib/fill-residual-css.mjs): [ { client,
+// file, rows } ] sorted by client, one source per client. A report that cannot be read is skipped and named in `skipped`.
+export function findResidualGapRows( sitesDir, skipped = [] ) {
+	if ( ! fs.existsSync( sitesDir ) ) {
+		throw new Error( `the sites folder ${ sitesDir } does not exist` );
+	}
+	const out = [];
+	for ( const d of fs.readdirSync( sitesDir, { withFileTypes: true } ).filter( ( x ) => x.isDirectory() ).sort( ( a, b ) => byText( a.name, b.name ) ) ) {
+		const fill = path.join( sitesDir, d.name, 'build', 'qa', 'fill' );
+		if ( ! fs.existsSync( fill ) ) {
+			continue;
+		}
+		const rows = [];
+		for ( const surface of fs.readdirSync( fill, { withFileTypes: true } ).filter( ( x ) => x.isDirectory() ) ) {
+			const runs = fs.readdirSync( path.join( fill, surface.name ), { withFileTypes: true } ).filter( ( x ) => x.isDirectory() && fs.existsSync( path.join( fill, surface.name, x.name, 'fill-report.json' ) ) ).map( ( x ) => x.name ).sort( byText );
+			if ( ! runs.length ) {
+				continue;
+			}
+			const file = path.join( fill, surface.name, runs.at( -1 ), 'fill-report.json' );
+			try {
+				rows.push( ...( JSON.parse( fs.readFileSync( file, 'utf8' ) ).residualCss?.gaps || [] ) );
+			} catch ( e ) {
+				skipped.push( `${ file }: ${ String( e.message || e ).slice( 0, 120 ) }` );
+			}
+		}
+		rows.length && out.push( { client: d.name, file: fill, rows } );
+	}
+	return out;
+}
+
 // The backlog file; an empty backlog when there is none yet, a throw when it is not one.
 export function readBacklog( file ) {
 	if ( ! fs.existsSync( file ) ) {
@@ -104,7 +135,7 @@ const entryOf = ( client, r, prior, mergedOn ) => ( {
 export function mergeBacklog( { backlog, sources, mergedOn } ) {
 	const rows = new Map( structuredClone( backlog.rows ).map( ( r ) => [ r.key, r ] ) );
 	const stats = {
-		clients: sources.map( ( s ) => s.client ).sort( byText ), rowsRead: 0, merged: 0, newRows: 0, updatedRows: 0, crossClientRows: 0, refusedNonF: 0, refusedMalformed: 0,
+		clients: [ ...new Set( sources.map( ( s ) => s.client ) ) ].sort( byText ), rowsRead: 0, merged: 0, newRows: 0, updatedRows: 0, crossClientRows: 0, refusedNonF: 0, refusedMalformed: 0,
 		refusedUnkeyed: 0, refused: [], keptClosed: 0, closedSeenAgain: [], unpublishedEntries: 0,
 	};
 	const touched = new Set();

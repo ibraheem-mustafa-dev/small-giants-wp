@@ -1,0 +1,5 @@
+[
+	{"file":"lib/framework-backlog.mjs","find":"path.join( fill, surface.name, runs.at( -1 ), 'fill-report.json' )","replace":"path.join( fill, surface.name, runs[ 0 ], 'fill-report.json' )","why":"an older run's gap rows would be read"},
+	{"file":"lib/framework-backlog.mjs","find":"rows.length && out.push( { client: d.name, file: fill, rows } );","replace":"out.push( { client: d.name, file: fill, rows } );","why":"a client with no residual rows would be an empty source"},
+	{"file":"lib/framework-backlog.mjs","find":"...( JSON.parse( fs.readFileSync( file, 'utf8' ) ).residualCss?.gaps || [] )","replace":"...[]","why":"no residual gap row would reach the backlog"}
+]
