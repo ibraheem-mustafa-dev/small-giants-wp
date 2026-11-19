@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/fill-resolve-state.mjs", "find": "return s && ! s.missing ? { ...( s.layoutRect || s.rect ), inFlow: s.inFlow } : standIn( c, w );", "replace": "return s && ! s.missing ? { ...( s.layoutRect || s.rect ), inFlow: s.inFlow } : null;", "why": "a wrapper holding a placed block would be dropped, so the gap would be measured across it" },
+	{ "file": "lib/fill-resolve-state.mjs", "find": "if ( ! boxes.length ) {\n\t\t\treturn null;\n\t\t}", "replace": "if ( ! boxes.length ) {\n\t\t\treturn { x: 0, y: 0, w: 1, h: 1, inFlow: true };\n\t\t}", "why": "a child with nothing drawn would stand as a box and change the gaps" },
+	{ "file": "lib/fill-resolve-state.mjs", "find": "const x = Math.min( ...boxes.map( ( b ) => b.x ) );", "replace": "const x = Math.max( ...boxes.map( ( b ) => b.x ) );", "why": "the stand-in box would not start where its drawn content starts" }
+]

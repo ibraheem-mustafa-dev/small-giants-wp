@@ -123,6 +123,10 @@ export function decisionsProblems( facts ) {
 	if ( r.footerSlots && ( ! r.footerSlots.slotAttribute || ! facts.attr( r.footerSlots.rowBlock, r.footerSlots.slotAttribute ) || ! Array.isArray( r.footerSlots.slots ) || 3 !== r.footerSlots.slots.length ) ) {
 		problems.push( `rules.footerSlots must name three slots and a slot attribute that ${ r.footerSlots.rowBlock } has` );
 	}
+	const hc = r.headerSlots?.columnsSetting;
+	if ( hc && ( ! facts.attr( r.headerSlots.rowBlock, hc ) || facts.attr( r.headerSlots.rowBlock, hc ).css_property ) ) {
+		problems.push( `rules.headerSlots.columnsSetting must name a structural setting ${ r.headerSlots.rowBlock } has` );
+	}
 	const ci = r.marqueeCodeItems?.items;
 	if ( ci && ( ! facts.attr( r.marqueeCodeItems.block, ci.setting ) || [ ...( ci.clear || [] ) ].some( ( a ) => ! facts.attr( r.marqueeCodeItems.block, a ) ) ) ) {
 		problems.push( `rules.marqueeCodeItems.items must name an items setting and cleared settings ${ r.marqueeCodeItems.block } has` );

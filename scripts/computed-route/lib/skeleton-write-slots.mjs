@@ -5,8 +5,8 @@
 // setting its rule names.
 // The factory takes the writer's shared context (`ctx`) after the row book and the content settings are in `ctx.w`.
 import { specHit } from './skeleton-facts.mjs';
-import { besideStrips, insideStrips, slotPlan } from './skeleton-header-slots.mjs';
-import { buildFooterRows as footerRowsOf } from './skeleton-footer-slots.mjs';
+import { besideStrips, insideStrips, mergeWidthAlternatives, slotPlan } from './skeleton-header-slots.mjs';
+import { buildFooterRows as footerRowsOf, sideBySide } from './skeleton-footer-slots.mjs';
 
 export function makeSlotRows( ctx ) {
 	const { m, facts, cls, R, view, inventory, calSettings, finder, base, hosts, slotProblems, w } = ctx;
@@ -63,11 +63,45 @@ export function makeSlotRows( ctx ) {
 		const bottom = plan.bottom && buildSlotRow( plan.bottom, 'bottom' );
 		const rowsIn = nodes.filter( ( n ) => n.name === H.rowBlock );
 		// A main bar that is itself a row block is the middle row and keeps its attributes and draft element; any node beside
-		// it goes inside it. Otherwise the middle row is a new keyless row: a row block cannot nest, so those inside it give
-		// their children to it and their own attributes have no row to live on.
-		const middle = 1 === rowsIn.length ? rowsIn[ 0 ] : { name: H.rowBlock, attributes: {}, innerBlocks: [] };
-		middle.innerBlocks = nodes.flatMap( ( n ) => ( n.name === H.rowBlock ? n.innerBlocks : [ n ] ) );
+		// it goes inside it. A main bar drawn as width alternatives (every node a row block, each shown at other widths) is
+		// the widest alternative's row, holding every alternative's children in an order each alternative's own holds
+		// (lib/skeleton-header-slots.mjs::mergeWidthAlternatives). Otherwise the middle row is a new keyless row: a row block
+		// cannot nest, so those inside it give their children to it and their own attributes have no row to live on.
+		const elOf = ( n ) => m.byKey[ n.draftRef?.tpl ] ?? null;
+		const within = ( d, el ) => {
+			for ( let p = d; p; p = m.byKey[ p.parentKey ] ) {
+				if ( p === el ) {
+					return true;
+				}
+			}
+			return false;
+		};
+		const own = ( n ) => [ elOf( n ), ...( n.innerBlocks || [] ).flatMap( own ) ].filter( Boolean );
+		// A node holding an absorbed part (the burger) also stands for the block the part belongs to, which the part placement
+		// moves into it afterwards (lib/skeleton-part-slots.mjs::placePart); that block takes no place of its own.
+		const hosted = ( n ) => ( ctx.partPending || [] ).filter( ( p ) => own( n ).some( ( d ) => within( p.e, d ) ) ).map( ( p ) => m.byKey[ p.into ] ).filter( Boolean );
+		const drawn = ( n ) => [ ...own( n ), ...hosted( n ) ];
+		const pool = rowsIn.flatMap( ( r ) => r.innerBlocks );
+		const moves = ( n ) => pool.some( ( o ) => o !== n && hosted( o ).includes( elOf( n ) ) );
+		const alt = rowsIn.length === nodes.length ? mergeWidthAlternatives( rowsIn, { elOf, kidsOf: m.blockKids, shownAt: m.shownAt, moves, holds: ( n, el ) => drawn( n ).some( ( d ) => within( d, el ) ) } ) : null;
+		const middle = alt ? alt.row : 1 === rowsIn.length ? rowsIn[ 0 ] : { name: H.rowBlock, attributes: {}, innerBlocks: [] };
+		middle.innerBlocks = alt ? alt.innerBlocks : nodes.flatMap( ( n ) => ( n.name === H.rowBlock ? n.innerBlocks : [ n ] ) );
 		middle.attributes[ H.slotAttribute ] = 'middle';
+		// A grid row merged from width alternatives lays out, at each bar's widths, that bar's children: its column count per
+		// device is the count of the bar shown there whose block children all sit side by side (structural, rules.headerSlots.columnsSetting).
+		if ( alt && H.columnsSetting && 'grid' === middle.attributes.layout ) {
+			const tierOf = { 375: 'mobile', 768: 'tablet', 1440: 'desktop' };
+			const cols = {};
+			for ( const row of [ alt.row, ...alt.others ] ) {
+				const el = elOf( row );
+				const kids = el ? m.blockKids( el ) : [];
+				if ( kids.length >= 2 && sideBySide( kids ).length === kids.length ) {
+					m.shownAt( el ).forEach( ( w ) => ( cols[ tierOf[ w ] ] = kids.length ) );
+				}
+			}
+			Object.keys( cols ).length && ( middle.attributes[ H.columnsSetting ] = cols );
+		}
+		alt?.others.forEach( ( o ) => ( middle.handover ||= [] ).push( { owner: 'behaviour', kind: 'behaviour', detail: `${ o.draftRef?.tpl }: the main bar's alternative shown at ${ m.shownAt( elOf( o ) ).join( ' and ' ) }px gives its children to the middle row; its own layout settings have no row to live on (the row reads ${ middle.draftRef?.tpl })` } ) );
 		return [ top || emptyRow( 'top' ), middle, bottom || emptyRow( 'bottom' ) ];
 	}
 

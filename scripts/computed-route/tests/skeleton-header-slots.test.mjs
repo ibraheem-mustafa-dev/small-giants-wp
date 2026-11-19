@@ -13,7 +13,7 @@ import { skeletonProblems, skeletonNodes, originMap, cleanTree } from '../lib/fi
 import { addRefs, refOf } from '../lib/tree.mjs';
 import { lintSkeleton } from '../lint.mjs';
 import { aliasAbsorbed, checkApproval } from '../lib/approved-check.mjs';
-import { besideStrips, insideStrips } from '../lib/skeleton-header-slots.mjs';
+import { besideStrips, insideStrips, mergeWidthAlternatives } from '../lib/skeleton-header-slots.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -275,4 +275,110 @@ test( 'MUST FAIL: the middle row keeps the main bar\'s attributes and draft elem
 	assert.equal( rows( r )[ 1 ].draftRef.tpl, 'Root/2#0', 'the bar\'s draft element stays on the middle row' );
 	assert.ok( flat( rows( r )[ 1 ].innerBlocks ).some( ( n ) => 'Root/6#0' === n.draftRef?.tpl ), 'the sibling is inside the middle row' );
 	assert.equal( rows( r )[ 1 ].attributes.rowSlot, 'middle' );
+} );
+
+// The main bar as two width alternatives: a compact bar (M, shown at 375 and 768: burger, logo, icons) and a desktop bar (D,
+// shown at 1440: logo, nav, icons). The menu block draws both the burger and the desktop nav and was placed at the burger.
+const altBars = () => {
+	const E = ( key, shown, kids = [] ) => ( { key, shown, kids } );
+	const els = { b: E( 'b', [ 375, 768 ] ), lm: E( 'lm', [ 375, 768 ] ), im: E( 'im', [ 375, 768 ] ), ld: E( 'ld', [ 1440 ] ), nav: E( 'nav', [ 1440 ] ), id: E( 'id', [ 1440 ] ) };
+	els.M = E( 'M', [ 375, 768 ], [ els.b, els.lm, els.im ] );
+	els.D = E( 'D', [ 1440 ], [ els.ld, els.nav, els.id ] );
+	const N = ( name, draws, innerBlocks = [] ) => ( { name, draws, attributes: {}, innerBlocks } );
+	const menu = N( 'menu', [ els.b, els.nav ] );
+	const nodes = { menu, logoM: N( 'logoM', [ els.lm ] ), iconsM: N( 'iconsM', [ els.im ] ), logoD: N( 'logoD', [ els.ld ] ), iconsD: N( 'iconsD', [ els.id ] ) };
+	const M = { ...N( 'row', [ els.M ], [ menu, nodes.logoM, nodes.iconsM ] ), draftRef: { tpl: 'M' } };
+	const D = { ...N( 'row', [ els.D ], [ nodes.logoD, nodes.iconsD ] ), draftRef: { tpl: 'D' } };
+	const opts = { elOf: ( n ) => n.draws[ 0 ], kidsOf: ( e ) => e.kids, shownAt: ( e ) => e.shown, holds: ( n, e ) => n.draws.includes( e ) };
+	return { els, nodes, M, D, opts };
+};
+
+test( 'MUST FAIL: a main bar drawn as width alternatives is the widest alternative\'s row, its children ordered so each alternative\'s own order holds at its widths', () => {
+	const { nodes, M, D, opts } = altBars();
+	const r = mergeWidthAlternatives( [ M, D ], opts );
+	assert.equal( r.row, D, 'the desktop bar\'s row keeps its settings and draft element' );
+	assert.deepEqual( r.innerBlocks.map( ( n ) => n.name ), [ 'logoD', 'menu', 'iconsD', 'logoM', 'iconsM' ] );
+	assert.deepEqual( r.others, [ M ] );
+	const at = ( shown ) => r.innerBlocks.filter( ( n ) => n.draws.some( ( e ) => e.shown.includes( shown ) ) ).map( ( n ) => n.name );
+	assert.deepEqual( at( 1440 ), [ 'logoD', 'menu', 'iconsD' ], 'desktop: logo, nav, icons as the desktop bar draws them' );
+	assert.deepEqual( at( 375 ), [ 'menu', 'logoM', 'iconsM' ], 'mobile: burger, logo, icons as the compact bar draws them' );
+	assert.equal( mergeWidthAlternatives( [ D, M ], opts ).row, D, 'document order does not choose the row' );
+	assert.ok( nodes.menu );
+	// The shared child first in the desktop order and second in the compact one: the compact logo goes before it.
+	const flip = altBars();
+	flip.els.D.kids = [ flip.els.nav, flip.els.ld, flip.els.id ];
+	flip.els.M.kids = [ flip.els.lm, flip.els.b, flip.els.im ];
+	flip.M.innerBlocks = [ flip.nodes.logoM, flip.nodes.menu, flip.nodes.iconsM ];
+	const f2 = mergeWidthAlternatives( [ flip.M, flip.D ], flip.opts );
+	const at2 = ( shown ) => f2.innerBlocks.filter( ( n ) => n.draws.some( ( e ) => e.shown.includes( shown ) ) ).map( ( n ) => n.name );
+	assert.deepEqual( [ at2( 1440 ), at2( 375 ) ], [ [ 'menu', 'logoD', 'iconsD' ], [ 'logoM', 'menu', 'iconsM' ] ] );
+} );
+
+test( 'MUST FAIL: a block a later step moves into another pooled node (the menu placed at the burger wrapper) takes no place of its own; the wrapper stands where both bars put the menu', () => {
+	const { els, nodes, M, D, opts } = altBars();
+	// Before the part placement: the menu still sits in the desktop row, and the compact bar's burger wrapper holds only the burger.
+	const wrap = { name: 'wrap', draws: [ els.b, els.nav ], attributes: {}, innerBlocks: [] };
+	M.innerBlocks = [ wrap, nodes.logoM, nodes.iconsM ];
+	D.innerBlocks = [ nodes.logoD, nodes.menu, nodes.iconsD ];
+	nodes.menu.draws = [ els.nav ];
+	// The desktop bar first in the pool, so the menu node itself is found for the nav unless it is skipped as moved.
+	const r = mergeWidthAlternatives( [ D, M ], { ...opts, moves: ( n ) => n === nodes.menu } );
+	assert.deepEqual( r.innerBlocks.map( ( n ) => n.name ), [ 'logoD', 'wrap', 'iconsD', 'logoM', 'iconsM', 'menu' ], 'the wrapper is the place of the menu in both orders; the menu goes last until it is moved in' );
+} );
+
+test( 'two bars that are not width alternatives (one drawn at every width, or both at one width) are not merged', () => {
+	const { els, M, D, opts } = altBars();
+	els.M.shown = [ 375, 768, 1440 ];
+	assert.equal( mergeWidthAlternatives( [ M, D ], opts ), null, 'a bar drawn at every width' );
+	els.M.shown = [ 768, 1440 ];
+	assert.equal( mergeWidthAlternatives( [ M, D ], opts ), null, 'two bars drawn at 1440' );
+	els.M.shown = [];
+	assert.equal( mergeWidthAlternatives( [ M, D ], opts ), null, 'a bar drawn at no width' );
+	els.M.shown = [ 375, 768 ];
+	assert.equal( mergeWidthAlternatives( [ D ], opts ), null, 'one row is not a merge' );
+} );
+
+test( 'MUST FAIL: a header whose main bar is two width alternatives proposes the desktop bar as the middle row, with a handover entry for the compact bar and a tree the skeleton checks accept', () => {
+	const only = ( e, widths ) => {
+		e.visible = { 375: widths.includes( 375 ), 768: widths.includes( 768 ), 1440: widths.includes( 1440 ) };
+		e.box = Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, widths.includes( w ) ? { x: 0, y: 100, w: 100, h: 20 } : { x: 0, y: 0, w: 0, h: 0 } ] ) );
+		return e;
+	};
+	const [ root, bar, nav, a, b ] = header();
+	[ bar, nav, a, b ].forEach( ( e ) => only( e, [ 1440 ] ) );
+	const compact = [ el( 'Root/6#0', 'Root/1#0', 'div', '', { depth: 1, display: 'flex' } ), el( 'Root/7#0', 'Root/6#0', 'nav', '', { depth: 2 } ), el( 'Root/8#0', 'Root/7#0', 'a', 'Menu', { depth: 3, attrs: { href: '/m' } } ), el( 'Root/9#0', 'Root/7#0', 'a', 'Shop', { depth: 3, attrs: { href: '/s' } } ) ].map( ( e ) => only( e, [ 375, 768 ] ) );
+	const r = run( inv( [ root, bar, nav, a, b, ...compact ] ) );
+	const mid = rows( r )[ 1 ];
+	assert.equal( mid.draftRef?.tpl, 'Root/2#0', 'the desktop bar\'s row is the middle row' );
+	assert.ok( ( mid.handover || [] ).some( ( h ) => 'behaviour' === h.kind && /Root\/6#0: the main bar's alternative shown at 375 and 768px/.test( h.detail ) ), JSON.stringify( mid.handover ) );
+	assert.deepEqual( [ mid.innerBlocks.length, mid.innerBlocks[ 0 ].draftRef?.tpl ], [ 2, 'Root/3#0' ], 'each bar\'s content, the desktop bar\'s first' );
+	assert.deepEqual( skeletonProblems( r.skeleton ), [], 'the merged middle row passes the skeleton checks' );
+	assert.deepEqual( lintSkeleton( r.skeleton, db ), [] );
+} );
+
+test( 'MUST FAIL: a grid row merged from width alternatives takes each bar\'s column count at its widths; a flex row takes none', () => {
+	const only = ( e, widths, x = 0, w = 100 ) => {
+		e.visible = { 375: widths.includes( 375 ), 768: widths.includes( 768 ), 1440: widths.includes( 1440 ) };
+		e.box = Object.fromEntries( [ 375, 768, 1440 ].map( ( v ) => [ v, widths.includes( v ) ? { x, y: 100, w, h: 20 } : { x: 0, y: 0, w: 0, h: 0 } ] ) );
+		return e;
+	};
+	const D = [ 1440 ];
+	const C = [ 375, 768 ];
+	const root = el( 'Root/1#0', null, 'header', '', { depth: 0, box: boxes( 90, 60 ) } );
+	const desk = [ only( el( 'Root/2#0', 'Root/1#0', 'div', '', { depth: 1, display: 'grid' } ), D, 0, 1000 ), only( el( 'Root/20#0', 'Root/2#0', 'a', 'Acme', { depth: 2, attrs: { href: '/' } } ), D, 0, 150 ), only( el( 'Root/3#0', 'Root/2#0', 'nav', '', { depth: 2 } ), D, 200, 600 ), only( el( 'Root/4#0', 'Root/3#0', 'a', 'Shop', { depth: 3, attrs: { href: '/shop' } } ), D, 200, 60 ), only( el( 'Root/5#0', 'Root/3#0', 'a', 'Help', { depth: 3, attrs: { href: '/help' } } ), D, 300, 60 ) ];
+	const comp = [ only( el( 'Root/6#0', 'Root/1#0', 'div', '', { depth: 1, display: 'grid' } ), C, 0, 375 ), only( el( 'Root/7#0', 'Root/6#0', 'nav', '', { depth: 2 } ), C, 0, 100 ), only( el( 'Root/8#0', 'Root/7#0', 'a', 'Menu', { depth: 3, attrs: { href: '/m' } } ), C, 0, 100 ), only( el( 'Root/9#0', 'Root/6#0', 'a', 'Acme', { depth: 2, attrs: { href: '/' } } ), C, 120, 100 ), only( el( 'Root/10#0', 'Root/6#0', 'span', 'Open', { depth: 2 } ), C, 260, 100 ) ];
+	const r = run( inv( [ root, ...desk, ...comp ] ) );
+	const mid = rows( r )[ 1 ];
+	assert.equal( mid.draftRef?.tpl, 'Root/2#0' );
+	assert.equal( mid.attributes.layout, 'grid' );
+	assert.deepEqual( mid.attributes.columns, { desktop: 2, tablet: 3, mobile: 3 } );
+	assert.deepEqual( lintSkeleton( r.skeleton, db ), [] );
+	const stacked = comp.map( ( e ) => ( e.parentKey === 'Root/6#0' ? { ...e, box: Object.fromEntries( Object.entries( e.box ).map( ( [ w, b ] ) => [ w, b.w ? { ...b, x: 0, y: 100 + 30 * comp.indexOf( e ) } : b ] ) ) } : e ) );
+	assert.deepEqual( rows( run( inv( [ root, ...desk, ...stacked ] ) ) )[ 1 ].attributes.columns, { desktop: 2 }, 'a bar whose children stack gives no count' );
+	const flex = run( inv( [ root, ...desk.map( ( e, i ) => ( 0 === i ? { ...e, display: 'flex' } : e ) ), ...comp ] ) );
+	assert.equal( rows( flex )[ 1 ].attributes.columns, undefined, 'a flex row has no column count to set' );
+	const f = facts();
+	f.decisions = structuredClone( f.decisions );
+	f.decisions.rules.headerSlots.columnsSetting = 'gap';
+	assert.ok( decisionsProblems( f ).some( ( p ) => /headerSlots\.columnsSetting must name a structural setting/.test( p ) ) );
 } );

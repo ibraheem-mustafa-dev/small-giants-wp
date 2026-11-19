@@ -220,6 +220,8 @@
 		},
 		"headerSlots": {
 			"id": "headerSlots",
+			"columnsSetting": "columns",
+			"columnsReason": "a main bar merged from width alternatives keeps the widest bar's grid; at each other bar's widths the row lays out that bar's children, so the row's column count per device is the count of the bar shown there when its children sit side by side (the row block's default drops to one column on mobile)",
 			"block": "sgs/site-header",
 			"rowBlock": "sgs/site-header-row",
 			"slotAttribute": "rowSlot",

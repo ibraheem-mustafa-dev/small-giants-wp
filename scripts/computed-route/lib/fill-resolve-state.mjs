@@ -218,10 +218,24 @@ export function planSpacing( st, rec ) {
 	const measured = kids.filter( ( c ) => st.nodes[ c ].targets.length );
 	const unmeasured = kids.length - measured.length;
 	const holder = gapTarget( st, rec );
+	// A child whose own draft element is not drawn at a width but which holds blocks drawn there (a block the skeleton placed
+	// into a wrapper from another branch of the draft: the menu at the compact bar's burger) stands at that width as the box
+	// around its drawn descendants; a child with nothing drawn stays out, as one the width gate hides.
+	const below = ( c ) => ( st.nodes[ c ]?.children || [] ).flatMap( ( k ) => [ k, ...below( k ) ] );
+	const drawnBox = ( s ) => ( s && ! s.missing && ( s.layoutRect || s.rect ) && false !== s.inFlow ? s.layoutRect || s.rect : null );
+	const standIn = ( c, w ) => {
+		const boxes = below( c ).map( ( d ) => drawnBox( st.reads.widths[ w ]?.[ `${ d }:` ] ) ).filter( ( b ) => b && ( b.w > 0 || b.h > 0 ) );
+		if ( ! boxes.length ) {
+			return null;
+		}
+		const x = Math.min( ...boxes.map( ( b ) => b.x ) );
+		const y = Math.min( ...boxes.map( ( b ) => b.y ) );
+		return { x, y, w: Math.max( ...boxes.map( ( b ) => b.x + b.w ) ) - x, h: Math.max( ...boxes.map( ( b ) => b.y + b.h ) ) - y, inFlow: true };
+	};
 	for ( const w of READ_WIDTHS ) {
 		const rects = measured.map( ( c ) => {
 			const s = st.reads.widths[ w ]?.[ `${ c }:` ];
-			return s && ! s.missing ? { ...( s.layoutRect || s.rect ), inFlow: s.inFlow } : null;
+			return s && ! s.missing ? { ...( s.layoutRect || s.rect ), inFlow: s.inFlow } : standIn( c, w );
 		} );
 		const ownership = spacingOwnership( rects, { unmeasured, declared: ( holder && st.reads.declared?.[ w ]?.[ holder.id ] ) || null } );
 		if ( 'unknown' === ownership.owner || ownership.decisions.length ) {
