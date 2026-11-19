@@ -1,0 +1,152 @@
+[
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "export const isTimeout = ( detail ) => TIMEOUT.test( String( detail ?? '' ) );",
+		"replace": "export const isTimeout = ( detail ) => false;",
+		"why": "a timed-out build is never retried"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "const TIMEOUT = /time[ -]?out|timed out|ETIMEDOUT/i;",
+		"replace": "const TIMEOUT = /./;",
+		"why": "every failure is taken for a timeout"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\tif ( ! waiting ) {\n\t\treturn { ok: true, detail: 'no row awaits a pick' };\n\t}",
+		"replace": "\tif ( ! waiting || true ) {\n\t\treturn { ok: true, detail: 'no row awaits a pick' };\n\t}",
+		"why": "a row awaiting an agent pick passes"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\tif ( allowUnpicked ) {",
+		"replace": "\tif ( true ) {",
+		"why": "an unpicked row passes without the allowance"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\tconst rows = intake?.skeletons?.[ intakeSurface ]?.rows ?? [];\n\tconst waiting = rows.filter( needsFinaliser ).length;",
+		"replace": "\tconst rows = intake?.skeletons?.[ intakeSurface ]?.rows ?? [];\n\tconst waiting = rows.filter( ( r ) => r.low ).length;",
+		"why": "a row the agent already picked still waits"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "...( strict ? [ '--strict' ] : [] )",
+		"replace": "",
+		"why": "the pass test is not strict"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "'--jobs', String( jobs ),",
+		"replace": "'--jobs', '3',",
+		"why": "the jobs flag is ignored"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "...allowMissingPaintArgs( allowMissingPaint ) ];\n}",
+		"replace": "];\n}",
+		"why": "the paint allowance is not passed on"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "export const timedOutBuilds = ( status ) => Object.entries( status ?? {} ).filter( ( [ , s ] ) => s.build && ! s.build.ok && isTimeout( s.build.detail ) )",
+		"replace": "export const timedOutBuilds = ( status ) => Object.entries( status ?? {} ).filter( ( [ , s ] ) => s.build && ! s.build.ok )",
+		"why": "a build that failed for another reason is retried"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\t\t\tif ( ! record.skipped || ! out[ key ]?.[ stage ] ) {",
+		"replace": "\t\t\tif ( true ) {",
+		"why": "a stage the retry left out replaces the first run's record"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\t\t\tif ( ! record.skipped || ! out[ key ]?.[ stage ] ) {\n\t\t\t\t( out[ key ] ||= {} )[ stage ] = record;",
+		"replace": "\t\t\tif ( ! out[ key ]?.[ stage ] ) {\n\t\t\t\t( out[ key ] ||= {} )[ stage ] = record;",
+		"why": "the retry's records do not replace the failed ones"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\tconst out = JSON.parse( JSON.stringify( first ?? {} ) );",
+		"replace": "\tconst out = first ?? {};",
+		"why": "the first status is changed in place"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\t\t! status?.[ key ] && missing.push( `${ key }: no stage ran` );",
+		"replace": "",
+		"why": "a surface with no record passes"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\treturn { ok: ! failed.length && ! skipped.length && ! missing.length, lines, failed, skipped, missing };",
+		"replace": "\treturn { ok: ! failed.length && ! missing.length, lines, failed, skipped, missing };",
+		"why": "a stage that did not run passes"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\treturn { ok: ! failed.length && ! skipped.length && ! missing.length, lines, failed, skipped, missing };",
+		"replace": "\treturn { ok: ! skipped.length && ! missing.length, lines, failed, skipped, missing };",
+		"why": "a failed stage passes"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\t\t\tr && lines.push( `${ stageLine( key, stage, r ) }${ r.ok || ! runDir ? '' : ` (log ${ runDir }/${ key }.${ stage }.log)` }` );",
+		"replace": "\t\t\tr && lines.push( stageLine( key, stage, r ) );",
+		"why": "a failed stage names no log"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\tif ( picks.some( ( p ) => ! p.ok ) ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a surface awaiting a pick still runs"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\tconst late = retry ? timedOutBuilds( status ) : [];",
+		"replace": "\tconst late = timedOutBuilds( status );",
+		"why": "--no-retry still retries"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\t\tif ( again.status ) {\n\t\t\tstatus = mergeRetry( status, again.status );",
+		"replace": "\t\tif ( again.status ) {\n\t\t\tstatus = again.status;",
+		"why": "the retry's records are not merged with the first run's"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\tif ( unknown.length ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a surface the manifest lacks goes to site-run"
+	},
+	{
+		"file": "lib/clone-surface.mjs",
+		"find": "\tif ( ! first.status ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a run with no status is read as clean"
+	},
+	{
+		"file": "lib/site-run-launch.mjs",
+		"find": "\tconst fresh = stamps( root ).filter( ( d ) => ! before.has( d ) ).sort();",
+		"replace": "\tconst fresh = stamps( root ).sort();",
+		"why": "an older run's status is read"
+	},
+	{
+		"file": "lib/site-run-launch.mjs",
+		"find": "\tconst runDir = fresh.length ? path.join( root, fresh.at( -1 ) ) : null;",
+		"replace": "\tconst runDir = fresh.length ? path.join( root, fresh[ 0 ] ) : null;",
+		"why": "the oldest new run is read, not the newest"
+	},
+	{
+		"file": "clone-surface.mjs",
+		"find": "\t\tassertUnprotected( site, targets );",
+		"replace": "",
+		"why": "a protected site is not refused"
+	},
+	{
+		"file": "clone-surface.mjs",
+		"find": "\t\treturn verdict.ok ? 0 : 1;",
+		"replace": "\t\treturn 0;",
+		"why": "an unclean pass exits 0"
+	}
+]
