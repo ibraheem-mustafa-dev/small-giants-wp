@@ -108,6 +108,9 @@ export function decisionsProblems( facts ) {
 		.filter( ( [ , attr ] ) => ! facts.attr( r.accordion.block, attr ) ).forEach( ( [ k, attr ] ) => problems.push( `rules.accordion.childSlots.${ k } names ${ attr }, which ${ r.accordion.block } does not have` ) );
 	( cs?.parts || [] ).filter( ( p ) => ! UNIT_PARTS.includes( p.part ) || ! [ 'resting', 'current' ].includes( p.child ) )
 		.forEach( ( p ) => problems.push( `rules.accordion.childSlots part ${ JSON.stringify( p ) } must name a part of ${ UNIT_PARTS.join( ', ' ) } and a child of resting or current` ) );
+	// The option picker's own settings: the legend switch and the chip part its look is read at.
+	r.optionSet?.hideLabel && ! facts.attr( r.optionSet.block, r.optionSet.hideLabel.setting ) && problems.push( `rules.optionSet.hideLabel names ${ r.optionSet.hideLabel.setting }, which ${ r.optionSet.block } does not have` );
+	r.optionSet?.chipSlots && ! r.optionSet.chipSlots.part && problems.push( 'rules.optionSet.chipSlots must name the chip part' );
 	( r.slider?.blocks || [] ).forEach( ( b, i ) => widget( `rules.slider.blocks[${ i }]`, b.block, r.slider.settings ) );
 	widget( 'rules.tabs', r.tabs?.block, r.tabs?.settings, [ 'label' ] );
 	// A block-owned part's trigger names settings its owning block has (the control that opens the part writes them).

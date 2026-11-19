@@ -179,6 +179,38 @@ export function itemSlots( { finder, settings = [], calibrated = {}, what = 'the
 	return out;
 }
 
+// The draftSlots that read a block's option chips (rules.optionSet.chipSlots): each calibrated setting the framework DB places
+// on the chip `part` (css_element) is read at the draft's chip at the option position its calibrated slot names, one finder per
+// slot (`:nth-of-type(k)` is the k-th chip; the first is the one the block selects at rest, which the draft's default
+// choice is too). A setting whose slot names no position, a pseudo-element or a chip the draft lacks is said, not read.
+// chips: the draft's chip elements in order. Returns { slots: { <path>: finder }, notes }.
+export function chipSlots( { db, block, part, chips = [], finder, calibrated = {} } ) {
+	const out = { slots: {}, notes: [] };
+	if ( ! db || ! part || ! chips.length ) {
+		return out;
+	}
+	const said = new Set();
+	const say = ( text ) => said.has( text ) || ( said.add( text ), out.notes.push( text ) );
+	for ( const r of attrsFor( db, block ).filter( ( x ) => x.css_element === part && ! x.css_state ) ) {
+		const slot = calibrated[ r.attr_name ]?.slot;
+		if ( 'string' !== typeof slot || '' === slot ) {
+			continue;
+		}
+		const at = /:nth-of-type\((\d+)\)/.exec( slot );
+		if ( slot.includes( '::' ) ) {
+			continue;
+		}
+		if ( ! at ) {
+			say( `${ r.attr_name }: its calibrated slot names no chip position, so it is read at no chip` );
+		} else if ( ! chips[ Number( at[ 1 ] ) - 1 ] ) {
+			say( `${ r.attr_name }: its calibrated slot is chip ${ at[ 1 ] } and the draft has ${ chips.length }, so it is read at no chip` );
+		} else {
+			out.slots[ slot ] ||= finder( chips[ Number( at[ 1 ] ) - 1 ] );
+		}
+	}
+	return out;
+}
+
 // The inline SVG parts of a draft element that are a block's glyph slot: its child <svg> elements the block reads as a
 // part and the draft draws at some read width (a phone bar's icon is drawn only below the desktop width; an SVG drawn at
 // no width paints nothing to read). kids: the element's inventory children; isPart( kid ).

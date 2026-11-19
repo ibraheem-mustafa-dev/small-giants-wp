@@ -857,7 +857,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return v( 'optionSetForm', { block: R.optionSetForm.block, attributes: fieldContent( e, R.optionSetForm.block ), absorb: true } );
 			}
 			const filter = R.optionSetFilter && narrowsList( chips[ 0 ] );
-			return v( filter ? 'optionSetFilter' : 'optionSet', { block: R.optionSet.block, attributes: {}, absorb: true, ...( filter ? { handover: { owner: 'behaviour', kind: 'behaviour', detail: R.optionSetFilter.handover } } : {} ) } );
+			return v( filter ? 'optionSetFilter' : 'optionSet', { block: R.optionSet.block, attributes: R.optionSet.hideLabel ? { [ R.optionSet.hideLabel.setting ]: false } : {}, chips: chips.map( ( k ) => k.key ), absorb: true, ...( filter ? { handover: { owner: 'behaviour', kind: 'behaviour', detail: R.optionSetFilter.handover } } : {} ) } );
 		},
 		// A strip whose own animation loops a translate for ever is a marquee: logos make a brand strip, labels a scrolling
 		// trust bar; the repeated items are its items.

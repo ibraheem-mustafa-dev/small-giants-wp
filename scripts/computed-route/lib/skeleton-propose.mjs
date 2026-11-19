@@ -13,7 +13,7 @@ import { inventoryModel } from './skeleton-model.mjs';
 import { listArrangement } from './skeleton-arrangement.mjs';
 import { makeClassifier, overrideFor, W } from './skeleton-classify.mjs';
 import { collapsePoint, childSlots, unitSlots } from './skeleton-child-slots.mjs';
-import { mediaSelfSlot, partSlots, placePart, codeItemSlots, drawnSvgParts, itemSlots } from './skeleton-part-slots.mjs';
+import { mediaSelfSlot, partSlots, placePart, codeItemSlots, drawnSvgParts, itemSlots, chipSlots } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
 import { scIfFields } from './form-scif-fields.mjs';
@@ -260,6 +260,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const us = unitCfg ? unitSlots( { cfg: unitCfg, units: r.units.units, open: r.units.open, m, finder, settings: calSettings( block ) } ) : null;
 		us && Object.assign( slots, us.slots );
 		us?.notes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...us.notes ] );
+		// An option picker's chips (rules.optionSet.chipSlots): the pill settings are read at the draft's chips.
+		const chipRead = r.chips && R.optionSet?.chipSlots && db ? chipSlots( { db, block, part: R.optionSet.chipSlots.part, chips: r.chips.map( ( k ) => m.byKey[ k ] ).filter( Boolean ), finder, calibrated: calSettings( block ) } ) : null;
+		chipRead && Object.assign( slots, chipRead.slots );
+		chipRead?.notes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...chipRead.notes ] );
 		// Items the draft's code builds (no stamped element): the first item's element, at its child-index path from the
 		// draft element, is where the items' look is read (lib/skeleton-part-slots.mjs::codeItemSlots).
 		// A block whose items are the draft element's repeated children reads the item look at its first item

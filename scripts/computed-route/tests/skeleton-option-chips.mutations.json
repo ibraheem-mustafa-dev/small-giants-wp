@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "attributes: R.optionSet.hideLabel ? { [ R.optionSet.hideLabel.setting ]: false } : {}, chips:",
+		"replace": "attributes: {}, chips:",
+		"why": "the picker keeps its default legend"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "const chipRead = r.chips && R.optionSet?.chipSlots && db ?",
+		"replace": "const chipRead = false ?",
+		"why": "the picker's chips are never read"
+	},
+	{
+		"file": "lib/skeleton-classify.mjs",
+		"find": "...( r.chips ? { chips: r.chips } : {} ),",
+		"replace": "",
+		"why": "the chips never reach the proposal row"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "out.slots[ slot ] ||= finder( chips[ Number( at[ 1 ] ) - 1 ] );",
+		"replace": "out.slots[ slot ] ||= finder( chips[ 0 ] );",
+		"why": "every pill setting is read at the first chip, the selected one"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "\t\tif ( slot.includes( '::' ) ) {\n\t\t\tcontinue;\n\t\t}\n",
+		"replace": "",
+		"why": "a pseudo-element slot is read as a chip"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "else if ( ! chips[ Number( at[ 1 ] ) - 1 ] ) {",
+		"replace": "else if ( false ) {",
+		"why": "a chip position the draft lacks is read at nothing, unsaid"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": "r.optionSet?.hideLabel && ! facts.attr( r.optionSet.block, r.optionSet.hideLabel.setting ) &&",
+		"replace": "false &&",
+		"why": "a legend setting the block lacks is not reported"
+	}
+]

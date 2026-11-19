@@ -689,7 +689,9 @@
 			"taughtBy": { "client": "mamas-munches-redesign", "key": "Home/85 and Home/87", "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe" },
 			"scope": "an element whose block children are all buttons carrying an aria-pressed or aria-checked state (read from the fact record, the render confirms), as a loop (an sc-for) or a run of two or more, and that is neither inside a form element nor narrows a list; a lone button, a run without a pressed or checked state and a disclosure button (aria-expanded) are not an option set",
 			"clients": [ "indus-foods", "mamas-munches-redesign" ],
-			"reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it"
+			"reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
+			"hideLabel": { "setting": "showLabel", "reason": "the legend the picker prints above its options is its own, never a chip's: a draft's group holds only its chips, so the stray default legend is switched off and any heading the draft has above the group is built as its own block" },
+			"chipSlots": { "part": "pill", "reason": "the chips' look (colours, border, radius, shadow, padding, type, in the resting and the selected state) is the block's pill settings, calibrated on its options: each setting is read at the draft's chip at the option position its calibrated slot names (the first chip is the one selected at rest)" }
 		},
 		"optionSetForm": {
 			"id": "optionSetForm",
