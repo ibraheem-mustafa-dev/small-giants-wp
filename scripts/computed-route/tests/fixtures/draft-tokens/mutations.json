@@ -49,14 +49,14 @@
 	},
 	{
 		"file": "../parity/lib/devtools.mjs",
-		"find": "x.s.cssProperties.filter( ( p ) => p.name === name && '' === String( p.value ).trim() ).forEach( ( p ) => ( p.value = value ) );",
-		"replace": "void name;",
+		"find": "forEach( ( p ) => Object.assign( p, { value }, x.single ? { asWritten: x.written } : {} ) );",
+		"replace": "forEach( ( p ) => void p );",
 		"why": "a token shorthand's longhands stay empty"
 	},
 	{
 		"file": "../parity/lib/devtools.mjs",
-		"find": "\t\t\tp.value = resolvedOrRaw( p.value, lookup );",
-		"replace": "\t\t\tvoid lookup;",
+		"find": "Object.assign( p, { asWritten: p.value, value: resolvedOrRaw( p.value, lookup ) } );",
+		"replace": "Object.assign( p, { asWritten: p.value } );",
 		"why": "a token longhand stays as written"
 	},
 	{
@@ -64,5 +64,17 @@
 		"find": "const matched = tokens ? await withTokens( cdp, ids[ 0 ], raw ) : raw;",
 		"replace": "const matched = await withTokens( cdp, ids[ 0 ], raw );",
 		"why": "a built-page read resolves tokens too"
+	},
+	{
+		"file": "../parity/lib/devtools.mjs",
+		"find": "hasVar( as ) && ( written[ p ] = as );",
+		"replace": "void as;",
+		"why": "the writer gets no declaration as written"
+	},
+	{
+		"file": "../parity/lib/devtools.mjs",
+		"find": "x.single ? { asWritten: x.written } : {}",
+		"replace": "{}",
+		"why": "a longhand of a one-token shorthand loses its token"
 	}
 ]

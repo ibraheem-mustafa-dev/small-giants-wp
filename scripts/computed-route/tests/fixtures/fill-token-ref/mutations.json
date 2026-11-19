@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-token-ref.mjs",
+		"find": "st.reads.declaredWritten?.[ w ]?.[ target.id ]?.[ prop ] ?? st.reads.declared?.[ w ]?.[ target.id ]?.[ prop ]",
+		"replace": "st.reads.declared?.[ w ]?.[ target.id ]?.[ prop ]",
+		"why": "the trace reads the resolved value, so a token is never seen"
+	},
+	{
+		"file": "lib/fill-token-ref.mjs",
+		"find": "out.widths[ w ] = f.ref( slug );",
+		"replace": "void slug;",
+		"why": "a traced token writes no reference"
+	},
+	{
+		"file": "lib/fill-token-ref.mjs",
+		"find": "if ( raw?.settings?.custom?.defaultTokens?.includes?.( token ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a default token is written as a reference"
+	}
+]

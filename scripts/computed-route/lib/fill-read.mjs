@@ -170,6 +170,8 @@ async function openPage( browser, devices, { url, open, opener = null, width, or
 //   declared[w][targetId] every longhand the draft's matched rules declare (FR-48-8), at READ_WIDTHS; the ones the snapshot
 //                         holds no value for (lib/fill-declared.mjs::unreadDeclared) are read rendered into
 //                         widths[w][targetId].styles too.
+//   declaredWritten[w][targetId] { prop: the declaration as written } for each declared value written with a draft token
+//                         (`var(--ink)`), which declared[w] holds as the token's value (parity/lib/devtools.mjs::withTokens).
 //   sweep[targetId][prop] [{ width, value }] every 16px from 320 to 1920 (lengths and keywords as read).
 //   states[w]             each target's state looks at READ_WIDTHS (lib/fill-state-read.mjs::readStates), when `states`
 //                         (the state vocabulary, lib/db.mjs::statesVocabulary) is given; with `logicRows` (the state map's
@@ -188,7 +190,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 	const origin = new URL( url ).origin;
 	const jobs = jobsFor( nodes );
 	const browser = await chromium.launch( { headless, args: [ '--hide-scrollbars' ] } );
-	const result = { origin, widths: {}, declared: {}, sweep: {}, states: {}, failures: [], ...( opener ? { opener: { widths: {} } } : {} ) };
+	const result = { origin, widths: {}, declared: {}, declaredWritten: {}, sweep: {}, states: {}, failures: [], ...( opener ? { opener: { widths: {} } } : {} ) };
 	const aborted = new Set();
 	const emptyWidths = [];
 	const flexItems = {};
@@ -223,12 +225,14 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 				flexItems[ width ] = await page.evaluate( flexItemsInPage, [ jobs, RESOLVE ] );
 				const cdp = await openDevtools( page );
 				result.declared[ width ] = {};
+				result.declaredWritten[ width ] = {};
 				const found = jobs.filter( ( x ) => ! result.widths[ width ][ x.id ]?.missing );
 				for ( const j of found ) {
 					// A read that throws, or finds no element where the computed read found one, is a recorded outcome (`failures`,
 					// lib/fill-report.mjs::readFailureRows), never only a log line.
 					let reason = null;
-					const own = await declaredValues( cdp, j.finder, RESOLVE, null, { tokens: true } ).catch( ( e ) => {
+					const written = {};
+					const own = await declaredValues( cdp, j.finder, RESOLVE, null, { tokens: true, written } ).catch( ( e ) => {
 						reason = e.message;
 						return null;
 					} );
@@ -238,6 +242,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 						result.failures.push( { id: j.id, owner: j.owner, width, read: 'declared', reason } );
 					}
 					result.declared[ width ][ j.id ] = own;
+					Object.keys( written ).length && ( result.declaredWritten[ width ][ j.id ] = written );
 				}
 				// A wrapper that only holds an svg or img the draft sizes takes that size as its declared size.
 				for ( const j of found ) {

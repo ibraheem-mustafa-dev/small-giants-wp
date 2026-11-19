@@ -237,15 +237,27 @@ export function declaredNames( matched ) {
 // null reads every property an author declaration names (declaredNames). keepDocument: read without renumbering the
 // document's nodes (inside forcedPseudo's read, whose forced nodes must stay addressable).
 // tokens: read a declaration written with the page's tokens (`color: var(--ink)`, `border: var(--line)`) as its value
-// (withTokens); a draft read passes it, a read of a built page keeps the declarations as written.
-export async function declaredValues( cdp, finder, resolveSrc, props = DECLARED_PROPS, { keepDocument = false, tokens = false } = {} ) {
+// (withTokens); a draft read passes it, a read of a built page keeps the declarations as written. written: an object that
+// receives, for each prop read as a token's value, the declaration as the author wrote it (`var(--ink)`), for the token
+// reference writer (computed-route/lib/fill-token-ref.mjs).
+export async function declaredValues( cdp, finder, resolveSrc, props = DECLARED_PROPS, { keepDocument = false, tokens = false, written = null } = {} ) {
 	const ids = await nodeChain( cdp, finder, resolveSrc, false, keepDocument );
 	if ( ! ids ) {
 		return null;
 	}
 	const raw = await cdp.send( 'CSS.getMatchedStylesForNode', { nodeId: ids[ 0 ] } );
 	const matched = tokens ? await withTokens( cdp, ids[ 0 ], raw ) : raw;
-	return Object.fromEntries( ( props ?? declaredNames( matched ) ).map( ( p ) => [ p, cascadeWinner( matched, p ) ] ).filter( ( [ , v ] ) => null !== v ) );
+	const out = Object.fromEntries( ( props ?? declaredNames( matched ) ).map( ( p ) => [ p, cascadeWinner( matched, p ) ] ).filter( ( [ , v ] ) => null !== v ) );
+	if ( written && matched !== raw ) {
+		// The same cascade over the declarations as written (a longhand of a shorthand written as one token takes that token).
+		const asWritten = structuredClone( matched );
+		[ asWritten.attributesStyle, ...( asWritten.matchedCSSRules || [] ).map( ( r ) => r.rule?.style ), asWritten.inlineStyle ].filter( Boolean ).forEach( ( s ) => ( s.cssProperties || [] ).forEach( ( p ) => ( p.value = p.asWritten ?? p.value ) ) );
+		for ( const p of Object.keys( out ) ) {
+			const as = cascadeWinner( asWritten, p );
+			hasVar( as ) && ( written[ p ] = as );
+		}
+	}
+	return out;
 }
 
 // In-page: each [ shorthand, value ] expanded to its longhands by the browser's own parser: [ { longhand: value } ].
@@ -276,18 +288,18 @@ export async function withTokens( cdp, nodeId, matched ) {
 	for ( const s of styles( copy ) ) {
 		for ( const e of ( s.shorthandEntries || [] ).filter( ( x ) => hasVar( x.value ) ) ) {
 			const value = resolveVars( e.value, lookup );
-			null !== value && shorthands.push( { s, name: e.name, value } );
+			null !== value && shorthands.push( { s, name: e.name, value, written: e.value, single: /^var\([^()]*(\([^()]*\)[^()]*)*\)$/i.test( String( e.value ).trim() ) } );
 		}
 	}
 	const expanded = shorthands.length ? ( await cdp.send( 'Runtime.evaluate', { expression: `(${ expandShorthands.toString() })(${ JSON.stringify( shorthands.map( ( x ) => [ x.name, x.value ] ) ) })`, returnByValue: true } ) ).result?.value || [] : [];
 	shorthands.forEach( ( x, i ) => {
 		for ( const [ name, value ] of Object.entries( expanded[ i ] || {} ) ) {
-			x.s.cssProperties.filter( ( p ) => p.name === name && '' === String( p.value ).trim() ).forEach( ( p ) => ( p.value = value ) );
+			x.s.cssProperties.filter( ( p ) => p.name === name && '' === String( p.value ).trim() ).forEach( ( p ) => Object.assign( p, { value }, x.single ? { asWritten: x.written } : {} ) );
 		}
 	} );
 	for ( const s of styles( copy ) ) {
 		for ( const p of ( s.cssProperties || [] ).filter( ( q ) => hasVar( q.value ) ) ) {
-			p.value = resolvedOrRaw( p.value, lookup );
+			Object.assign( p, { asWritten: p.value, value: resolvedOrRaw( p.value, lookup ) } );
 		}
 	}
 	return copy;

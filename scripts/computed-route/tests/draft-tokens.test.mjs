@@ -84,11 +84,11 @@ before( async () => {
 } );
 after( () => browser?.close() );
 const RESOLVE = resolveFinder.toString();
-const read = async ( html, tokens ) => {
+const read = async ( html, tokens, written = null ) => {
 	const page = await browser.newPage();
 	await page.setContent( html );
 	const cdp = await openDevtools( page );
-	const out = await declaredValues( cdp, '#x', RESOLVE, null, { tokens } );
+	const out = await declaredValues( cdp, '#x', RESOLVE, null, { tokens, written } );
 	await page.close();
 	return out;
 };
@@ -109,4 +109,10 @@ test( 'negative control: a read without tokens (a built page) and a draft with l
 	assert.equal( raw.color, 'var(--nope, red)' );
 	const html = '<div id="x" style="border:2px solid #3A2A22;padding:6px 14px">x</div>';
 	assert.deepEqual( await read( html, true ), await read( html, false ) );
+} );
+
+test( 'MUST FAIL: a draft read hands the token reference writer each declaration as written', async () => {
+	const written = {};
+	await read( `${ TOKENS }<div id="x" style="border-radius:var(--r);padding:6px">x</div>`, true, written );
+	assert.deepEqual( written, { 'border-top-left-radius': 'var(--r)', 'border-top-right-radius': 'var(--r)', 'border-bottom-right-radius': 'var(--r)', 'border-bottom-left-radius': 'var(--r)', 'border-radius': 'var(--r)' } );
 } );

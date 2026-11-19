@@ -15,6 +15,7 @@ import { compareDR } from './fill-confirm.mjs';
 import { elementContext } from './fill-held.mjs';
 import { samePaint } from './css-equivalence/tolerance.mjs';
 import { fillLayerBox } from './fill-layer-box.mjs';
+import { tokenWrites } from './fill-token-ref.mjs';
 import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, ledgerView, gapTarget, draftOf } from './fill-resolve-state.mjs';
 
 // Writes one resolver result into the node, recording each change. Returns the number of settings changed. `slot` is the
@@ -295,7 +296,8 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 				if ( GAP_PROPS.includes( prop ) ) {
 					gapProp[ prop ] = { attrs, draft };
 				}
-				res.writes = res.writes.filter( ( w ) => ownerKeeps( st, rec, ref, target, prop, w, res.slot ) );
+				// A draft value written with a token the site's snapshot carries is written as that token's reference (Spec 32 FR-32-29).
+				res.writes = tokenWrites( st, target, prop, draft, res.writes, fontPx ).filter( ( w ) => ownerKeeps( st, rec, ref, target, prop, w, res.slot ) );
 				apply( st, rec, ref, target, prop, { ...res, readSlot: slot, answers: answeredWidths( prop, draft, res ) }, res.slot );
 				res.writes.forEach( ( w ) => recordOwner( st, rec, target, prop, w.attr, target.slot === res.slot ) );
 			}

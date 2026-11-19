@@ -220,6 +220,8 @@ export async function fillSurface( o ) {
 			// FR-48-39: the uploaded images of the surface's site (a null map when media-upload has not run).
 			media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site },
 			snapshot, rawSnapshot, facts, rootComponent: intakeParts.rootComponent,
+			// The draft's token files, for the token references (lib/fill-token-ref.mjs).
+			draftFolder: path.join( repo, 'sites', o.client, 'handoff' ),
 			fixtures: JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) ),
 			ledger: loadLedger( ledgerFile ),
 			ledgerStates: Object.entries( entry.states || {} ).filter( ( [ , v ] ) => null === v ).map( ( [ k ] ) => k ),
