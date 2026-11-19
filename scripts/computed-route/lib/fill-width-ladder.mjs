@@ -7,7 +7,8 @@
 //      `space-around` / `space-evenly` with one child centre it). When one value does at every width what the draft does,
 //      it is written through the generic resolver, which formats it and checks it against the setting.
 //   2. A tier-shaped sibling: another setting of the block for the same property that paints the same element and holds a
-//      value per device (a tier object, or Tablet / Mobile siblings): the value of each device, written where it changes.
+//      value per device (a tier object, or Tablet / Mobile siblings): the value of each device, written where it changes; a box
+//      setting (padding, margin) takes it through the resolver as one side of each device's box, never as a bare value.
 //   3. The block's own breakpoint setting: a block that draws its own narrow alternative under a width (the navigation's
 //      collapse point) takes the wide value; the narrow one is that alternative.
 //   4. A scoped `sgsCustomCss` @media rule on the instance (lib/fill-width-gate.mjs::scopedCssPuts), one rule per width
@@ -248,10 +249,19 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 				carried = values[ w ];
 			}
 		}
+		// A box setting (padding, margin: one object of sides per device) is written through the resolver, which puts the
+		// side's value into each device's box; a bare value per device would replace the box, so it is never written here.
+		if ( r.box_family ) {
+			const draft = Object.fromEntries( widths.filter( ( w ) => undefined !== tiers[ TIER_OF[ w ] ] ).map( ( w ) => [ w, values[ w ] ] ) );
+			const res = ask( draft );
+			if ( 'written' === res.status ) {
+				return took( res, 'width-ladder', `${ r.attr_name } holds a box per device, so the draft's ${ widths.map( ( w ) => `${ values[ w ] } at ${ w }` ).join( ', ' ) } is written into each device's box` );
+			}
+		}
 		const writes = 'flat_sibling' === r.tier_shape
 			? Object.entries( tiers ).map( ( [ t, value ] ) => ( { attr: siblings( db, rec.name, r.attr_name ).find( ( s ) => s.css_tier === t )?.attr_name, value, merge: 'replace' } ) )
 			: [ { attr: r.attr_name, value: tiers, merge: 'deep' } ];
-		if ( writes.every( ( w ) => w.attr ) ) {
+		if ( ! r.box_family && writes.every( ( w ) => w.attr ) ) {
 			return took( { writes, included: Object.fromEntries( widths.map( ( w ) => [ w, true ] ) ) }, 'width-ladder', `${ r.attr_name } holds a value per device, so the draft's ${ widths.map( ( w ) => `${ values[ w ] } at ${ w }` ).join( ', ' ) } is written there` );
 		}
 	}

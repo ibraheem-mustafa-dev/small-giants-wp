@@ -100,5 +100,8 @@
   "find": "...( state ? { state } : {} ), attr: x.attr",
   "replace": "attr: x.attr",
   "why": "a state width-gate write is counted at rest (council C6)"
- }
+ },
+ {"file":"lib/fill-width-ladder.mjs","find":"\t\tif ( r.box_family ) {\n\t\t\tconst draft","replace":"\t\tif ( false ) {\n\t\t\tconst draft","why":"a box setting no longer goes through the resolver: its sides are lost"},
+ {"file":"lib/fill-width-ladder.mjs","find":"if ( ! r.box_family && writes.every( ( w ) => w.attr ) ) {","replace":"if ( writes.every( ( w ) => w.attr ) ) {","why":"a refused box write falls back to a bare value per device"},
+ {"file":"lib/fill-width-ladder.mjs","find":"widths.filter( ( w ) => undefined !== tiers[ TIER_OF[ w ] ] ).map( ( w ) => [ w, values[ w ] ] )","replace":"widths.slice( -1 ).map( ( w ) => [ w, values[ w ] ] )","why":"only the desktop value reaches the box"}
 ]

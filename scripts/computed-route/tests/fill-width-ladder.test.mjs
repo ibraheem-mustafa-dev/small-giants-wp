@@ -10,7 +10,7 @@ import { openDb } from '../lib/db.mjs';
 import { fixtureDb } from './fixtures/framework-db.mjs';
 
 const dbFile = fixtureDb( {
-	blocks: [ { slug: 'sgs/box', title: 'Box', category: 'sgs', type: 'dynamic' }, { slug: 'sgs/bar', title: 'Bar', category: 'sgs', type: 'dynamic' }, { slug: 'sgs/nav', title: 'Nav', category: 'sgs', type: 'dynamic' } ],
+	blocks: [ { slug: 'sgs/box', title: 'Box', category: 'sgs', type: 'dynamic' }, { slug: 'sgs/bar', title: 'Bar', category: 'sgs', type: 'dynamic' }, { slug: 'sgs/nav', title: 'Nav', category: 'sgs', type: 'dynamic' }, { slug: 'sgs/panel', title: 'Panel', category: 'sgs', type: 'dynamic' } ],
 	block_attributes: [
 		{ block_slug: 'sgs/box', attr_name: 'justifyContent', attr_type: 'string', css_property: 'justify-content', css_element: 'wrapper', role: 'layout' },
 		{ block_slug: 'sgs/box', attr_name: 'colour', attr_type: 'string', css_property: 'color', css_element: 'wrapper', role: 'colour' },
@@ -19,6 +19,8 @@ const dbFile = fixtureDb( {
 		{ block_slug: 'sgs/bar', attr_name: 'barSizing', attr_type: 'object', css_property: null, tier_shape: 'tier_object', is_responsive: 1, role: 'layout' },
 		{ block_slug: 'sgs/nav', attr_name: 'collapsePoint', attr_type: 'number', css_property: null, role: 'layout' },
 		{ block_slug: 'sgs/nav', attr_name: 'navJustify', attr_type: 'string', css_property: 'justify-content', css_element: 'wrapper', role: 'layout' },
+		// A box setting: one object of sides per device (as sgs/container's padding).
+		{ block_slug: 'sgs/panel', attr_name: 'panelPadding', attr_type: 'object', css_property: 'padding', css_element: 'wrapper', tier_shape: 'tier_object', box_family: 'padding', is_responsive: 1, role: 'spacing' },
 	],
 } );
 const db = openDb( dbFile );
@@ -242,4 +244,34 @@ test( 'MUST FAIL: a state row\'s width-gate writes carry its state, so the censu
 	const of = ( p ) => r.writes.filter( ( x ) => p === x.covers );
 	assert.ok( of( 'color' ).length && of( 'color' ).every( ( x ) => 'hover' === x.state ), 'the hover row\'s writes are hover writes' );
 	assert.ok( of( 'gap' ).length && of( 'gap' ).every( ( x ) => ! ( 'state' in x ) ), 'negative control: a rest row\'s writes carry no state' );
+} );
+
+// A resolver standing in for lib/resolve.mjs on a box setting: the side's value goes into each device's box, or it refuses.
+const boxResolver = ( refuse = false ) => ( { prop, draft } ) => {
+	if ( refuse ) {
+		return { status: 'gap', gap: 'shape', detail: 'refused' };
+	}
+	const side = prop.replace( /^padding-/, '' );
+	const tiers = Object.fromEntries( Object.entries( draft ).map( ( [ w, v ] ) => [ { 375: 'mobile', 768: 'tablet', 1440: 'desktop' }[ w ], { [ side ]: v } ] ) );
+	return { status: 'written', writes: [ { attr: 'panelPadding', value: tiers, merge: 'deep' } ], included: draft };
+};
+const padRow = ( property, value ) => rowOf( { block: 'sgs/panel', property, value, code: ONE_VALUE_EVERY_WIDTH, reason: 'shape: x' } );
+
+test( 'MUST FAIL: a box setting (padding) that varies by width is written side by side into each device box, never as a bare value per device', () => {
+	const w = world( { block: 'sgs/panel' } );
+	const cal = { settings: { panelPadding: { slot: '' } } };
+	const r = run( w, [ padRow( 'padding-top', '{"375":"22px","768":"32px","1440":"40px"}' ), padRow( 'padding-left', '{"375":"18px","768":"32px","1440":"40px"}' ) ], { calFor: () => cal, resolver: boxResolver() } );
+	assert.deepEqual( r.unmapped, [] );
+	assert.deepEqual( attrs( w ).panelPadding, { desktop: { top: '40px', left: '40px' }, tablet: { top: '32px', left: '32px' }, mobile: { top: '22px', left: '18px' } }, 'each side keeps its own value; a later side never replaces an earlier one' );
+} );
+
+test( 'MUST FAIL: a box write the resolver refuses is never written as a bare value per device (it falls to the later rungs)', () => {
+	const w = world( { block: 'sgs/panel' } );
+	const cal = { settings: { panelPadding: { slot: '' } } };
+	run( w, [ padRow( 'padding-top', '{"375":"22px","768":"32px","1440":"40px"}' ) ], { calFor: () => cal, resolver: boxResolver( true ) } );
+	assert.equal( attrs( w ).panelPadding, undefined );
+	// Negative control: a tier-shaped setting that is not a box still takes its value per device directly (rung 2).
+	const v = world( { block: 'sgs/bar' } );
+	run( v, [ rowOf( { block: 'sgs/bar', property: 'justify-content', value: '{"375":"center","768":"flex-start","1440":"flex-start"}', code: ONE_VALUE_EVERY_WIDTH, reason: 'shape: x' } ) ], { calFor: () => ( { settings: { barJustify: { slot: '' } } } ), resolver: boxResolver( true ) } );
+	assert.deepEqual( attrs( v ).barJustify, { desktop: 'flex-start', mobile: 'center' } );
 } );
