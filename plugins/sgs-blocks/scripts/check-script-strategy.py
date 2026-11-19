@@ -14,8 +14,11 @@ A call is
   EXCEPTION   listed in EXCEPTIONS below with its reason
   BLOCKING    anything else: a front-end or unresolved call without a strategy (fails --check)
 
-The hook of a call is read from the nearest `function <name>(` above it and an `add_action( '<hook>', … '<name>' )`
-(any callable spelling that ends in the name) in the same file. A call whose hook cannot be read counts as front end.
+The hook of a call is read from the innermost function body around it: for a named function, an
+`add_action( '<hook>', … '<name>' )` in the same file (any callable spelling that ends in the name); for a closure, the
+hook it is passed to directly. A call at file level, or one whose hook cannot be read, counts as front end. Comments
+are read through the shared PHP tokeniser (scripts/lib/identity_scan.py::php_tokens), so a `//` or `#` inside a string
+is not taken for a comment.
 
 MODES
   --survey [--json]  every call with its verdict
@@ -34,6 +37,9 @@ import re
 import sys
 import tempfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from identity_scan import php_tokens  # noqa: E402  (the shared string-aware PHP tokeniser)
 
 sys.stdout.reconfigure(encoding="utf-8")
 ROOT = Path(__file__).resolve().parents[3]
@@ -84,10 +90,45 @@ def php_files() -> list[Path]:
 
 
 def strip_comments(src: str) -> str:
-    """Blank out comments, keeping offsets and line numbers."""
-    def blank(m: re.Match) -> str:
-        return re.sub(r"[^\n]", " ", m.group(0))
-    return re.sub(r"/\*.*?\*/|//[^\n]*|#(?!\[)[^\n]*", blank, src, flags=re.S)
+    """The file with its comments and `<?php` tags blanked and its strings kept, offsets and line numbers unchanged.
+
+    Reads the file through the shared PHP tokeniser (scripts/lib/identity_scan.py::php_tokens), so a `//` or `#` inside a
+    string (a URL, a colour) is never taken for a comment."""
+    out = [c if c == "\n" else " " for c in src]
+    for tok in php_tokens(src):
+        if tok.kind == "code":
+            end = tok.pos + len(tok.text)
+        elif tok.pos < len(src) and src[tok.pos] in "'\"":
+            quote, end = src[tok.pos], tok.pos + 1
+            while end < len(src) and src[end] != quote:
+                end += 2 if src[end] == "\\" else 1
+            end += 1
+        else:
+            continue  # raw HTML outside <?php ?> or a heredoc body: never a call
+        out[tok.pos:end] = src[tok.pos:end]
+    return "".join(out)
+
+
+def enclosing_function(code: str, pos: int) -> tuple[str | None, int | None]:
+    """The innermost function body around `pos`: (its name, or None for a closure; the offset of its `function` keyword).
+    (None, None) when the call sits at file level."""
+    best: tuple[str | None, int | None] = (None, None)
+    for f in re.finditer(r"\bfunction\s*&?\s*(\w+)?\s*\(", code[:pos]):
+        brace = code.find("{", f.end())
+        if brace < 0 or brace > pos:
+            continue
+        depth, k = 0, brace
+        while k < pos:
+            if code[k] == "{":
+                depth += 1
+            elif code[k] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            k += 1
+        if depth > 0:  # pos is inside this body; a later match inside it is nested deeper
+            best = (f.group(1), f.start())
+    return best
 
 
 def split_args(src: str, start: int) -> tuple[list[str], int]:
@@ -163,10 +204,15 @@ def classify(path: Path, src: str) -> list[dict]:
         elif len(args) >= 5 and has_strategy(args[4], code[: m.start()]):
             row["verdict"] = "PASS"
         else:
-            fn = None
-            for f in re.finditer(r"\bfunction\s+&?\s*(\w+)\s*\(", code[: m.start()]):
-                fn = f.group(1)
-            hooks = hooks_for(code, fn) if fn else set()
+            fn, at = enclosing_function(code, m.start())
+            if fn:
+                hooks = hooks_for(code, fn)
+            elif at is not None:
+                # A closure: the hook it is passed to directly, `add_action( '<hook>', function () { … } )`.
+                lead = re.search(r"add_action\s*\(\s*['\"]([\w./-]+)['\"]\s*,\s*(?:static\s+)?$", code[:at])
+                hooks = {lead.group(1)} if lead else set()
+            else:
+                hooks = set()
             row["function"] = fn
             row["hooks"] = sorted(hooks)
             if hooks and hooks <= ADMIN_HOOKS:
@@ -199,6 +245,10 @@ def self_test() -> int:
         "no-file": ("<?php\nfunction sgs_y() { wp_register_script( 'sgs-y', false, array(), null, false ); }\nadd_action( 'wp_enqueue_scripts', 'sgs_y' );\n", "NO-FILE"),
         "unresolved": ("<?php\nfunction sgs_z() { wp_enqueue_script( 'sgs-z', 'z.js' ); }\n", "BLOCKING"),
         "commented": ("<?php\n// wp_enqueue_script( 'sgs-c', 'c.js', array(), '1', true );\n", None),
+        "url-source": ("<?php\nfunction sgs_u() { wp_enqueue_script( 'sgs-u', 'https://maps.example.com/api.js#x', array(), '1', true ); }\nadd_action( 'wp_enqueue_scripts', 'sgs_u' );\n", "BLOCKING"),
+        "closure-front-end": ("<?php\nfunction sgs_boot() { add_action( 'wp_enqueue_scripts', function () { wp_enqueue_script( 'sgs-q', 'q.js', array(), '1', true ); } ); }\nadd_action( 'admin_init', 'sgs_boot' );\n", "BLOCKING"),
+        "closure-admin": ("<?php\nadd_action( 'admin_enqueue_scripts', static function () { wp_enqueue_script( 'sgs-r', 'r.js', array(), '1', true ); } );\n", "ADMIN"),
+        "file-level-after-function": ("<?php\nfunction sgs_a() {}\nadd_action( 'admin_init', 'sgs_a' );\nwp_enqueue_script( 'sgs-t', 't.js', array(), '1', true );\n", "BLOCKING"),
     }
     fails = []
     with tempfile.TemporaryDirectory() as tmp:
@@ -222,7 +272,7 @@ def self_test() -> int:
             fails.append(f"stale exception: {key} matches no call")
     for f in fails:
         print("FAIL", f)
-    print("self-test:", "FAIL" if fails else "PASS (9 cases)")
+    print("self-test:", "FAIL" if fails else "PASS (13 cases)")
     return 1 if fails else 0
 
 
