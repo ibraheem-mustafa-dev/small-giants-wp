@@ -11,6 +11,6 @@
 	{ "file": "lib/fill-width-ladder.mjs", "find": "( ! sizeOf( row.property ?? '' ) && (", "replace": "( ! false && (", "why": "a size keyword would be read by the ladder as well as the size pass" },
 	{ "file": "lib/fill-width-ladder.mjs", "find": "const slot = layoutHome( { db, block: rec.name, cal, prop, state, slot: row.slot ?? '' } );", "replace": "const slot = row.slot ?? '';", "why": "a layout keyword would be written at the root, not the content band" },
 	{ "file": "lib/fill-dimensions.mjs", "find": "'' !== slot && ! noSizeAll() ? innerToRoot( { rec, target, axis: size.axis, reads, cal, widths } ) : null;", "replace": "null;", "why": "a size declared on the root's content box would never go to the root" },
-	{ "file": "lib/fill-dimensions.mjs", "find": "( perWidth[ w ] + ( home?.extra[ w ] ?? 0 ) )", "replace": "perWidth[ w ]", "why": "the root's own border would not be added to the written minimum" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "( perWidth[ w ] + ( here ? 0 : home?.extra[ w ] ?? 0 ) )", "replace": "perWidth[ w ]", "why": "the root's own border would not be added to the written minimum" },
 	{ "file": "lib/fill-dimensions.mjs", "find": "slot: home ? '' : slot, prop: p", "replace": "slot, prop: p", "why": "the root size would be asked at the inner element" }
 ]
