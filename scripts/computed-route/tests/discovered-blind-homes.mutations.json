@@ -1,0 +1,6 @@
+[
+	{"file": "lib/css-equivalence/effect.mjs", "find": " && ! valueBlind( props[ n ] ) &&", "replace": " &&", "why": "a value-blind discovered property is named as a home of the draft's property"},
+	{"file": "lib/css-equivalence/effect.mjs", "find": "'tier_object' === d.tier || valueBlind( d ) ||", "replace": "'tier_object' === d.tier ||", "why": "a value-blind discovered property is an equivalence-layer write or tie"},
+	{"file": "lib/resolve.mjs", "find": "\t\tif ( valueBlind( d ) ) {\n\t\t\tcontinue;\n\t\t}\n", "replace": "", "why": "the resolver answers a blind side effect with an ambiguous gap, which the residual writer classes as a setting's to hold"},
+	{"file": "lib/css-equivalence/effect.mjs", "find": "const BLIND_VALUES = 3;", "replace": "const BLIND_VALUES = 99;", "why": "nothing is ever value-blind"}
+]

@@ -17,6 +17,18 @@ export const WIDTHS = [ 375, 768, 1440 ];
 const loosen = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' );
 const pathKey = ( anyIndex ) => ( p ) => ( anyIndex ? loosen( p ) : String( p ?? '' ) );
 
+// A discovered property that every recorded value of the setting paints alike (a block's inner wrapper reading min-width 0px
+// under flex, stack and grid alike) is a side effect of the setting being on, not something a value chooses: a draft that
+// shows it says nothing about which value to write, and writing one anyway lets the sibling tie-break pick it (a split hero
+// given `layout: stack`, whose column rule beat its two-column grid). Such a row is left to the other settings and the
+// residual Custom CSS writer. Three recorded values is the whole of a layout setting (flex, stack, grid); two identical
+// ones (display under flex and stack, with grid recorded apart) still decide.
+const BLIND_VALUES = 3;
+export function valueBlind( d ) {
+	const records = Object.values( d?.values || {} );
+	return records.length >= BLIND_VALUES && records.every( ( r ) => JSON.stringify( r ) === JSON.stringify( records[ 0 ] ) );
+}
+
 // Every name the paint of `prop` can be recorded under: itself, its standard and physical names, its shorthands (nearest
 // first) and its longhands.
 export function spellingsOf( prop ) {
@@ -81,7 +93,7 @@ export function measuredHomes( calibration, { slot, prop, state = null, anyIndex
 		}
 	}
 	for ( const [ attr, props ] of Object.entries( calibration?.discovered || {} ) ) {
-		const name = names.find( ( n ) => props[ n ] && ( props[ n ].slots || [] ).map( key ).includes( key( slot ) ) && ( props[ n ].state ?? null ) === ( state || null ) );
+		const name = names.find( ( n ) => props[ n ] && ! valueBlind( props[ n ] ) && ( props[ n ].slots || [] ).map( key ).includes( key( slot ) ) && ( props[ n ].state ?? null ) === ( state || null ) );
 		name && out.push( { attr, via: 'discovered', name } );
 	}
 	const rank = { property: 0, discovered: 1, reaches: 2, effect: 3 };
@@ -103,7 +115,7 @@ export function discoveredWrite( calibration, { slot, prop, perWidth, state = nu
 	for ( const [ attr, props ] of Object.entries( calibration?.discovered || {} ) ) {
 		for ( const name of names ) {
 			const d = props[ name ];
-			if ( ! d || 'tier_object' === d.tier || ! ( d.slots || [] ).map( key ).includes( key( slot ) ) || ( d.state ?? null ) !== ( state || null ) ) {
+			if ( ! d || 'tier_object' === d.tier || valueBlind( d ) || ! ( d.slots || [] ).map( key ).includes( key( slot ) ) || ( d.state ?? null ) !== ( state || null ) ) {
 				continue;
 			}
 			for ( const [ value, values ] of Object.entries( d.values || {} ) ) {

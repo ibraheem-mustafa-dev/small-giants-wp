@@ -13,6 +13,8 @@ import { applyClamp } from './fill-values.mjs';
 import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy, canonicalName } from './css-families.mjs';
 import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword, isSizeProperty } from './resolve-declared.mjs';
 import { consult } from './css-equivalence/index.mjs';
+import { valueBlind } from './css-equivalence/effect.mjs';
+export { valueBlind };
 import { sameAlignment } from './css-equivalence/keywords.mjs';
 
 export const COVERAGE_WRITES = [
@@ -315,18 +317,6 @@ export function defaultPaint( calibration, slot, prop, same = ( a, b ) => a === 
 		}
 	}
 	return out;
-}
-
-// A discovered property that every recorded value of the setting paints alike (a block's inner wrapper reading min-width 0px
-// under flex, stack and grid alike) is a side effect of the setting being on, not something a value chooses: a draft that
-// shows it says nothing about which value to write, and writing one anyway lets the sibling tie-break pick it (a split hero
-// given `layout: stack`, whose column rule beat its two-column grid). Such a row is left to the other settings and the
-// residual Custom CSS writer. Three recorded values is the whole of a layout setting (flex, stack, grid); two identical
-// ones (display under flex and stack, with grid recorded apart) still decide.
-const BLIND_VALUES = 3;
-export function valueBlind( d ) {
-	const records = Object.values( d?.values || {} );
-	return records.length >= BLIND_VALUES && records.every( ( r ) => JSON.stringify( r ) === JSON.stringify( records[ 0 ] ) );
 }
 
 // A setting with no css_property that calibration showed paints `prop` on `slot` (calibration.discovered): the enum
