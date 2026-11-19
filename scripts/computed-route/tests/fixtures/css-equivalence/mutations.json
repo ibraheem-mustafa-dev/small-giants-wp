@@ -61,8 +61,8 @@
 	},
 	{
 		"file": "lib/css-equivalence/effect.mjs",
-		"find": "\t\t\tif ( ! d || 'tier_object' === d.tier || ! ( d.slots || [] ).map( key ).includes( key( slot ) ) || ( d.state ?? null ) !== ( state || null ) ) {",
-		"replace": "\t\t\tif ( ! d || 'tier_object' === d.tier || ( d.state ?? null ) !== ( state || null ) ) {",
+		"find": "\t\t\tif ( ! d || 'tier_object' === d.tier || valueBlind( d ) || ! ( d.slots || [] ).map( key ).includes( key( slot ) ) || ( d.state ?? null ) !== ( state || null ) ) {",
+		"replace": "\t\t\tif ( ! d || 'tier_object' === d.tier || valueBlind( d ) || ( d.state ?? null ) !== ( state || null ) ) {",
 		"why": "a value measured on another part is written on this one"
 	},
 	{
