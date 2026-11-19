@@ -234,21 +234,25 @@ export function maskHiddenVariants( reads, nodes, facts, rootComponent = null ) 
 // widths and not at others with no sc-if to say so (a list whose length the code computes from the width: a top bar's claims,
 // four on a wide screen, two on a tablet, eight in a phone's loop). Null when the node has no root target read, is drawn at every
 // width read, is drawn at none, or sits on a surface read through a state opener (a state's surface renders only at some widths
-// by design, and every node of it would read as gated). reads: lib/fill-read.mjs::readDraft's result.
+// by design, and every node of it would read as gated). Only evidence counts: a node with a failed draft read
+// (reads.failures, lib/fill-report.mjs::readFailureRows) is never gated, and a width at which the read found no element at all
+// (the draft did not render there) is no width the node was read at. reads: lib/fill-read.mjs::readDraft's result.
 export function shownByRead( node, reads ) {
-	if ( ! reads?.widths || reads.opener ) {
+	if ( ! reads?.widths || reads.opener || ( reads.failures || [] ).some( ( f ) => f.owner === node.index ) ) {
 		return null;
 	}
 	const roots = ( node.targets || [] ).filter( ( t ) => '' === ( t.slot ?? '' ) );
 	if ( ! roots.length ) {
 		return null;
 	}
-	const drawn = [ 375, 768, 1440 ].filter( ( w ) => reads.widths[ w ] && roots.some( ( t ) => reads.widths[ w ][ t.id ] && ! reads.widths[ w ][ t.id ].missing ) );
-	const read = [ 375, 768, 1440 ].filter( ( w ) => reads.widths[ w ] );
+	const read = [ 375, 768, 1440 ].filter( ( w ) => Object.values( reads.widths[ w ] || {} ).some( ( s ) => s && ! s.missing ) );
+	const drawn = read.filter( ( w ) => roots.some( ( t ) => reads.widths[ w ][ t.id ] && ! reads.widths[ w ][ t.id ].missing ) );
 	if ( ! drawn.length || drawn.length === read.length ) {
 		return null;
 	}
-	return { shown: tierRanges( drawn ), via: [ `the draft draws its element at ${ drawn.join( ' and ' ) }px of ${ read.join( ', ' ) }px` ] };
+	// Only a width the read found the element missing at hides it: a width with no usable read counts as shown.
+	const missing = read.filter( ( w ) => ! drawn.includes( w ) );
+	return { shown: tierRanges( [ 375, 768, 1440 ].filter( ( w ) => ! missing.includes( w ) ) ), via: [ `the draft draws its element at ${ drawn.join( ' and ' ) }px and not at ${ missing.join( ' and ' ) }px` ] };
 }
 
 // The union of two lists of ranges.

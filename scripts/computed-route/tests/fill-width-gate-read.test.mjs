@@ -46,6 +46,24 @@ test( 'a child under an element the read already gates is not gated again (the p
 	assert.deepEqual( r.flat[ 2 ].attributes, {} );
 } );
 
+test( 'MUST FAIL: an element whose draft read failed is never gated, whatever its other reads say', () => {
+	// Node 1 is read at 375 and 768 and missing at 1440; a failed read of it (a declared read that threw at 768) is no evidence.
+	const failures = [ { id: '1:', owner: 1, width: 768, read: 'declared', reason: 'the devtools read found no element where the computed read found one' } ];
+	const r = run( { reads: readsOf( { failures } ) } );
+	assert.deepEqual( r.flat[ 1 ].attributes, {}, 'the node with a failed read is left alone' );
+	assert.deepEqual( r.flat[ 2 ].attributes, { sgsHideOnTablet: true, sgsHideOnDesktop: true }, 'a node with no failed read is still gated' );
+} );
+
+test( 'MUST FAIL: a width at which the read found no element at all is not a width the nodes were read at', () => {
+	// At 768 the draft rendered nothing (every target missing): that is a failed or empty read, not 768px drawing nothing.
+	const reads = readsOf();
+	reads.widths[ 768 ] = Object.fromEntries( DRAWN.map( ( d, i ) => [ `${ i }:`, gone ] ) );
+	const r = run( { reads } );
+	// Node 1 was drawn at 375 only of the two usable widths (375, 1440)? No: drawn at 375, missing at 1440, so it is gated on desktop alone.
+	assert.deepEqual( r.flat[ 1 ].attributes, { sgsHideOnDesktop: true } );
+	assert.deepEqual( r.flat[ 2 ].attributes, { sgsHideOnDesktop: true } );
+} );
+
 test( 'Fill hands the page read to the width gate', () => {
 	const src = fs.readFileSync( new URL( '../fill.mjs', import.meta.url ), 'utf8' );
 	assert.match( src, /widthGateWrites\( \{ nodes, flat, refOf, facts, db, scope: o\.surface, reads, / );

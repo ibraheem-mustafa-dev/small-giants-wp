@@ -7,8 +7,8 @@
 	},
 	{
 		"file": "lib/fill-width-gate.mjs",
-		"find": "if ( ! reads?.widths || reads.opener ) {",
-		"replace": "if ( ! reads?.widths ) {",
+		"find": "if ( ! reads?.widths || reads.opener || ( reads.failures",
+		"replace": "if ( ! reads?.widths || ( reads.failures",
 		"why": "a state-opened surface's nodes are gated by the widths its state renders at"
 	},
 	{
@@ -28,5 +28,17 @@
 		"find": "scope: o.surface, reads, entries:",
 		"replace": "scope: o.surface, entries:",
 		"why": "Fill never hands its read to the width gate"
+	},
+	{
+		"file": "lib/fill-width-gate.mjs",
+		"find": " || ( reads.failures || [] ).some( ( f ) => f.owner === node.index ) ) {",
+		"replace": " ) {",
+		"why": "a node whose draft read failed is gated on its other reads"
+	},
+	{
+		"file": "lib/fill-width-gate.mjs",
+		"find": ".filter( ( w ) => Object.values( reads.widths[ w ] || {} ).some( ( s ) => s && ! s.missing ) );",
+		"replace": ".filter( ( w ) => reads.widths[ w ] );",
+		"why": "a width the draft rendered nothing at counts as a width every node was missing at"
 	}
 ]
