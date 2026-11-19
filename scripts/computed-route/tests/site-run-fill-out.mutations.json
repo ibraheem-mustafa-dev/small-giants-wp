@@ -1,0 +1,26 @@
+[
+	{
+		"file": "site-run.mjs",
+		"find": "\treturn done.length ? path.join( fillRoot, done.at( -1 ) ) : null;",
+		"replace": "\treturn path.join( fillRoot, fresh );",
+		"why": "a build-only run reads a new empty folder (the 2026-11-19 fault)"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "\treturn done.length ? path.join( fillRoot, done.at( -1 ) ) : null;",
+		"replace": "\treturn done.length ? path.join( fillRoot, done[ 0 ] ) : null;",
+		"why": "the oldest Fill is read instead of the newest"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "&& exists( path.join( fillRoot, d, 'filled.tree.json' ) ) ).sort();",
+		"replace": ").sort();",
+		"why": "a folder whose Fill wrote no tree is read"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "fills: stages.includes( 'fill' ), fresh: stamp() } )",
+		"replace": "fills: true, fresh: stamp() } )",
+		"why": "the run never reads an earlier Fill"
+	}
+]
