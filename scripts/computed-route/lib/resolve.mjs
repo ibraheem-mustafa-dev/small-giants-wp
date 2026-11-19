@@ -487,13 +487,18 @@ export function drawnStyle( short, parts, widths = {} ) {
 	return 1 === drawn.length ? drawn[ 0 ] : null;
 }
 
+// A radius setting the media atoms generate (block.json `_generated: "media-atoms"`) holds corners per device: the atom's emitter
+// (includes/media/atoms/shape.php::sgs_media_atom_shape_emit) prints a corner only for a key of the device's value, so a plain
+// length per device prints no rule. Its block.json entry has no default to say so.
+export const MEDIA_ATOM_RADIUS = ( def ) => 'media-atoms' === def?._generated;
+
 function radiusWrite( attr, tiers, def ) {
 	const perTier = Object.fromEntries( Object.entries( tiers ).map( ( [ t, raw ] ) => [ t, radiusCorners( raw ) ] ) );
 	const bad = Object.entries( perTier ).find( ( [ , c ] ) => ! c );
 	if ( bad ) {
 		return { gap: 'shape', detail: `${ attr } cannot hold the radius ${ tiers[ bad[ 0 ] ] }` };
 	}
-	if ( def?.default && 'object' === typeof def.default && 'desktop' in def.default ) {
+	if ( ( def?.default && 'object' === typeof def.default && 'desktop' in def.default ) || MEDIA_ATOM_RADIUS( def ) ) {
 		return { writes: [ { attr, value: perTier, merge: 'deep' } ] };
 	}
 	const vals = [ ...new Set( Object.values( perTier ).map( ( c ) => JSON.stringify( c ) ) ) ];
@@ -678,7 +683,7 @@ export function resolve( input, ctx ) {
 		return folded;
 	}
 	tiers = folded.tiers;
-	if ( 'border-radius' === short && ( row.box_family || 'box_only' === row.tier_shape ) ) {
+	if ( 'border-radius' === short && ( row.box_family || 'box_only' === row.tier_shape || MEDIA_ATOM_RADIUS( schema[ attr ] ) ) ) {
 		return done( radiusWrite( attr, tiers, schema[ attr ] ) );
 	}
 	const isBox = !! row.box_family || 'box_only' === row.tier_shape;

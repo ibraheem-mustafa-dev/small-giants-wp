@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/resolve.mjs",
+		"find": "export const MEDIA_ATOM_RADIUS = ( def ) => 'media-atoms' === def?._generated;",
+		"replace": "export const MEDIA_ATOM_RADIUS = ( def ) => false;",
+		"why": "no radius is taken as a media-atom radius"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "export const MEDIA_ATOM_RADIUS = ( def ) => 'media-atoms' === def?._generated;",
+		"replace": "export const MEDIA_ATOM_RADIUS = ( def ) => true;",
+		"why": "every radius is taken as a media-atom radius, the burger's included"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "|| 'box_only' === row.tier_shape || MEDIA_ATOM_RADIUS( schema[ attr ] ) ) ) {",
+		"replace": "|| 'box_only' === row.tier_shape ) ) {",
+		"why": "the media-atom radius is not routed to the corner writer"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "'desktop' in def.default ) || MEDIA_ATOM_RADIUS( def ) ) {",
+		"replace": "'desktop' in def.default ) ) {",
+		"why": "the corner writer holds the media-atom radius flat instead of per device"
+	}
+]
