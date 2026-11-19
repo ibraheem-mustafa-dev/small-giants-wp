@@ -133,3 +133,16 @@ The walk now reaches every template surface: the checkout ends "every stage ran 
 | Account, signed in | Address cards' fill, border, corners and padding; the current tab is a dark pill at 375 | The menu shows WooCommerce's eight items as rows (the draft has four pill tabs with counts); order cards have no border or corners; order number and links underlined; no "Hello, <name>" header; the order page shows only its heading and status | Route: part-look (menu items and order card border have no setting; the order page's mode switches have no rule yet) |
 | Product | No underline anywhere (the general session's fix); the gift tick placed after the buy box; the add button yellow with the price; the ingredients card styled | The two columns are lost: gallery and buy box sit in one narrow column; no pink step card, no flavours, no subscribe or one-off choice; the value ladder table shows; the logo did not paint in the 1440 picture although the page holds it (not diagnosed) | Route: buy box layout and parts (part-look product round); flavours open |
 | Shop | The product cards: border, corners, three per row, yellow full-width buttons, picture on top | The pink band is broken worse at 1440 (title thrown right, band about 600px tall); card buttons say "View product" (the draft says three things); no badges; filter chips small | Route: `sgs/hero` Fill (the general session); product card words (one value per block) |
+
+## Order confirmation states (2026-11-19, 21:20)
+
+On `local-mediatest-trlab`, with two lab orders made by `E:\sgs-tmp\template-rework\lab\confirm-orders.php` (gift order 6058 owned by `rc-customer`, gift to "Amira" with a message; guest order 6059) and read by `E:\sgs-tmp\template-rework\lab\confirm-states.mjs` (pictures and `states.json` in `E:\sgs-tmp\template-rework\lab\shots\states\`, 375 and 1440).
+
+| State | Expected (checklist) | Seen |
+|---|---|---|
+| Gift order, signed-in owner | "Dear Amira," and the message, no Taster Trio upsell, "View order" | All as expected; the order number and the Zookies line show |
+| Guest order | "Create an account", no "View order", the upsell (no gift) | All as expected |
+| Wrong key, visitor | Order paragraph hidden, `sgs/order-items` prints nothing, no sample words | All hidden; no draft sample words (MM-1042, the draft's gift name) anywhere |
+| Wrong key, the order's owner signed in | As the visitor | The order lines are hidden, but the "Follow this order in your account · View order" card shows, and the "What's coming" card stays as an empty box |
+
+Two faults, both this stream's (`lib/template-piece-order.mjs`): the card that wraps `sgs/order-items` takes no Show-to rule, so with nothing to print it is an empty box (it should take the `viewable` rule, `order-viewable`, like a bound block outside every branch); and the account branch's rule `order-owner` does not also require the order to be viewable, so the owner sees the view-order card under a wrong key (no leak: the link opens the owner's own order, but the page is inconsistent). The static bake and arrival dates show in every state (Bean's open choice on order facts with no live source).
