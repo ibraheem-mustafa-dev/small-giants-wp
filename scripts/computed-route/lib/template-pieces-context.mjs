@@ -12,7 +12,11 @@
 //     lib/manifest-build.mjs::pageKeyOf, null when the entry names no draft file) and the handoff folder. A builder that
 //     reads the framework database opens its own (`db` is left to the builder's default);
 //   - `commerce`: the surface's commerce role (lib/skeleton-commerce-region.mjs::commerceOf over sites/<client>/build/page-map.json),
-//     null for a surface that is no WooCommerce page.
+//     null for a surface that is no WooCommerce page;
+//   - `draftLinks` and `pageRowId`: the client's draft link resolver (lib/draft-link.mjs::draftLinksFor), read only when the
+//     template has a piece of a kind in LINK_KINDS, else null, and the page-map row the surface's post is (its `target.postId`).
+// A surface whose entry names no template the map holds pieces for takes the pieces of its commerce page role (`pages.<role>`
+// of the map: the account page, an ordinary page holding WooCommerce's account piece).
 // The pass's placed rows, problems and notes are saved in the surface's proposal (`proposal.templatePieces`, written by
 // skeleton.mjs::proposeSurface); its problems join the proposal's, which fail the propose stage under --strict
 // (site-run.mjs::proposeDetail).
@@ -32,15 +36,19 @@ import * as order from './template-piece-order.mjs';
 import * as gift from './template-piece-gift.mjs';
 import * as wooLayout from './template-piece-woo-layout.mjs';
 import * as frame from './template-piece-frame.mjs';
+import * as account from './template-piece-account.mjs';
+import { draftLinksFor } from './draft-link.mjs';
 import { commerceOf } from './skeleton-commerce-region.mjs';
 import { lintSkeleton } from '../lint.mjs';
 import { openDb } from './db.mjs';
 
 // The builders the pass runs, by piece kind.
-export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame };
+export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account };
 // The kinds whose builder reads the client's fact record (lib/template-piece-order.mjs::place, lib/template-piece-woo-layout.mjs::place
 // and lib/template-piece-frame.mjs::place read ctx.factRecord).
 export const FACT_KINDS = [ 'order', 'woo-layout', 'frame' ];
+// The kinds whose builder resolves draft links to site addresses (lib/template-piece-account.mjs::place reads ctx.draftLinks).
+export const LINK_KINDS = [ 'account' ];
 
 // The fields of the draft's product records, by role: { name, price, description, image } (each a list of field names,
 // over every record list the catalogue reader finds: lib/catalogue-records.mjs::recordLists, ::imageFields,
@@ -85,6 +93,8 @@ export function pieceContext( { repo, client, entry, inventory, pieces = [], fac
 		rootComponent: draftFile ? pageKeyOf( draftFile ) : null,
 		handoffDir: folder,
 		commerce: commerceOf( entry, readRows( path.join( buildDir, 'page-map.json' ) ) ),
+		draftLinks: pieces.some( ( p ) => LINK_KINDS.includes( p.kind ) ) ? draftLinksFor( { repo, client } ) : null,
+		pageRowId: entry?.target?.postId ?? null,
 	};
 }
 
@@ -110,16 +120,20 @@ export function placedLint( before, after, db ) {
 }
 
 // The pass over one proposed skeleton: { tree, placed, problems, notes, template }, the tree unchanged (and every list
-// empty) when the surface builds no template the map names a builder's piece for. A template whose pieces are all a
+// empty) when the surface builds no template the map names a builder's piece for, and is no commerce page whose role the
+// map names one for. A template whose pieces are all a
 // rule's or the theme's is not checked here: a theme piece arrives only when the template copy is made
 // (lib/template-copies.mjs::themeContent), so a skeleton never holds it. Whatever a builder placed that the skeleton
 // lint refuses is a problem (placedLint), so Fill never meets it; `db` is the framework database (opened when not given).
 export function piecesPass( { repo, client, entry, tree, inventory, data = loadPieces(), builders = BUILDERS, facts = null, db = null } ) {
 	const template = entry?.target?.template || null;
-	if ( ! template || ! piecesFor( template, data ).some( ( p ) => ! CHECKED_ONLY.includes( p.kind ) ) ) {
+	const built = ( k ) => !! k && piecesFor( k, data ).some( ( p ) => ! CHECKED_ONLY.includes( p.kind ) );
+	const role = built( template ) || ! entry?.target ? null : commerceOf( entry, readRows( path.join( repo, 'sites', client, 'build', 'page-map.json' ) ) )?.role;
+	const key = built( template ) ? template : role && data?.pages?.[ role ] && built( role ) ? role : null;
+	if ( ! key ) {
 		return { tree, placed: [], problems: [], notes: [], template };
 	}
-	const got = placePieces( { key: template, tree, data, ctx: pieceContext( { repo, client, entry, inventory, pieces: piecesFor( template, data ), facts } ), builders } );
-	const lint = placedLint( tree, got.tree, db || openDb() ).map( ( m ) => `${ template }: a placed piece breaks the skeleton lint: ${ m }` );
+	const got = placePieces( { key, tree, data, ctx: pieceContext( { repo, client, entry, inventory, pieces: piecesFor( key, data ), facts } ), builders } );
+	const lint = placedLint( tree, got.tree, db || openDb() ).map( ( m ) => `${ key }: a placed piece breaks the skeleton lint: ${ m }` );
 	return { ...got, problems: [ ...got.problems, ...lint ], template };
 }
