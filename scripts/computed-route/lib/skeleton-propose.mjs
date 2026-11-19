@@ -146,9 +146,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const w = {};
 	const ctx = {
 		m, facts, cls, R, view, overrides, base, finder, rootOf, inventory, carried, surfaceKind, calSettings, db, rows, rowOf, w, siteLink,
-		widthAlternatives: [], variantsOf: new Map(), railIds: null, carryProblems: [], slotProblems: [], nodeOfKey: {}, partPending: [], hosts: [], stripRoots: [],
+		widthAlternatives: [], variantsOf: new Map(), railIds: null, carryProblems: [], slotProblems: [], wordProblems: [], nodeOfKey: {}, partPending: [], hosts: [], stripRoots: [],
 	};
-	const { widthAlternatives, carryProblems, slotProblems, nodeOfKey, partPending, hosts } = ctx;
+	const { widthAlternatives, carryProblems, slotProblems, wordProblems, nodeOfKey, partPending, hosts } = ctx;
 	Object.assign( w, makeRecorder( ctx ) );
 	Object.assign( w, makeUnits( ctx ) );
 	Object.assign( w, makeContent( ctx ) );
@@ -332,6 +332,20 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			text && ( node.innerBlocks = [ base( e, W.block, { [ text ]: m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : m.words( e ) } ) ] );
 			text && ( row.rowNote = [ row.rowNote, `the words are its body: one ${ W.block } inside it` ].filter( Boolean ).join( '; ' ) );
 		}
+		// A plain wrapper (a wrapper-shell block) has no setting for words, so an element's own words beside its block children, or
+		// alone, would print nowhere. They become one text child (rules.wrappedWords' block) with no draft element of its own (the
+		// wrapper reads the element's look), set before the first child when the draft's source opens with the words and after the
+		// last child otherwise. Where no text block can hold them, the proposal names the element in its problems.
+		if ( facts.wrapperShells.includes( block ) && m.words( e ) ) {
+			const text = R.wrappedWords?.block ? skeletonSettings( facts, R.wrappedWords.block ).text : null;
+			if ( text ) {
+				const child = { name: R.wrappedWords.block, attributes: { [ text ]: m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : m.words( e ) }, innerBlocks: [] };
+				/^<[^>]*>\s*[^<\s]/.test( e.snippet || '' ) ? node.innerBlocks.unshift( child ) : node.innerBlocks.push( child );
+				row.rowNote = [ row.rowNote, `its own words are one ${ R.wrappedWords.block } inside it` ].filter( Boolean ).join( '; ' );
+			} else {
+				wordProblems.push( `${ e.key }: ${ block } carries the words "${ m.words( e ) }" of its own and the skeleton has no text block to hold them: they would print nowhere` );
+			}
+		}
 		hosts.pop();
 		// An accordion item the draft shows closed at rest holds the panel content read from the draft's data (rule accordion).
 		r.closedInner && ! node.innerBlocks.length && ( node.innerBlocks = r.closedInner );
@@ -447,7 +461,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		top !== m.root && ( x.strip = top.key );
 	} );
 	built && R.clientBuiltSurface && rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface', builtPost: built, low: false }, 'unresolved' === x.action ? { action: null } : {} ) );
-	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...( widgets?.problems ?? [] ), ...( db ? lintSkeleton( skeleton, db ) : [] ) ];
+	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...wordProblems, ...( widgets?.problems ?? [] ), ...( db ? lintSkeleton( skeleton, db ) : [] ) ];
 	const proposal = {
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], stripRoots: ctx.stripRoots, recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
 		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),

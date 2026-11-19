@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "if ( facts.wrapperShells.includes( block ) && m.words( e ) ) {",
+		"replace": "if ( facts.wrapperShells.includes( block ) ) {",
+		"why": "a wordless wrapper gets an empty text child"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "if ( facts.wrapperShells.includes( block ) && m.words( e ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a wrapper's own words are dropped as before"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "? node.innerBlocks.unshift( child ) : node.innerBlocks.push( child );",
+		"replace": "? node.innerBlocks.push( child ) : node.innerBlocks.unshift( child );",
+		"why": "the words keep the wrong place in the element"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "const text = R.wrappedWords?.block ? skeletonSettings( facts, R.wrappedWords.block ).text : null;",
+		"replace": "const text = null;",
+		"why": "the words are never kept, and the problem is raised even with the text block"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "wordProblems.push(",
+		"replace": "[].push(",
+		"why": "the words are dropped and the proposal says nothing"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "...slotProblems, ...wordProblems,",
+		"replace": "...slotProblems,",
+		"why": "the problem is recorded and never reported"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "`its own words are one ${ R.wrappedWords.block } inside it` ].filter",
+		"replace": "`` ].filter",
+		"why": "the row says nothing of the words it kept"
+	}
+]
