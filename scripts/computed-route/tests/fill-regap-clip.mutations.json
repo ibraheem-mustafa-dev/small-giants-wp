@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-regap.mjs",
+		"find": "siblings: clipOf( ctx, target ), fluid: null",
+		"replace": "siblings: {}, fluid: null",
+		"why": "the re-asked resolver is blind to the draft's background-clip again"
+	},
+	{
+		"file": "lib/fill-regap.mjs",
+		"find": "ctx.reads.widths?.[ w ]?.[ target.id ]?.styles?.[ 'background-clip' ] ] ).filter( ( [ , v ] ) => v ) );",
+		"replace": "ctx.reads.widths?.[ w ]?.[ target.id ]?.styles?.[ 'background-origin' ] ] ).filter( ( [ , v ] ) => v ) );",
+		"why": "the wrong property is handed over as the clip"
+	},
+	{
+		"file": "lib/fill-regap.mjs",
+		"find": "return Object.keys( clip ).length ? { 'background-clip': clip } : {};",
+		"replace": "return { 'background-clip': { 1440: 'border-box' } };",
+		"why": "every element is told it clips to its box, an unread clip included"
+	}
+]
