@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13372,
+    "row_count": 13377,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -2382,6 +2382,11 @@
     "sgs/buybox::margin": "layout",
     "sgs/buybox::meterFlexWrap": "layout",
     "sgs/buybox::navFlexWrap": "layout",
+    "sgs/buybox::noteField": "boolean-visibility",
+    "sgs/buybox::noteHint": null,
+    "sgs/buybox::noteLabel": null,
+    "sgs/buybox::noteMaxLength": null,
+    "sgs/buybox::noteRequired": "behaviour",
     "sgs/buybox::notifyEnabled": "boolean-visibility",
     "sgs/buybox::notifyHeadingFontFamily": "typography",
     "sgs/buybox::notifyHeadingFontSize": "typography",
