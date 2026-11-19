@@ -64,6 +64,7 @@ import { stateMap } from './lib/state-map.mjs';
 import { readMediaMap } from './lib/fill-media.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
 import { rootDraftOf } from './lib/key-space.mjs';
+import { resolveDraftLink, draftLinksFor } from './lib/draft-link.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -213,6 +214,8 @@ export async function fillSurface( o ) {
 			tree, nodes, reads, db, calFor, origin: reads.origin,
 			// FR-48-30: the confirmed page map (a draft's #/route link is written as that page's permalink); null before intake.
 			pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null,
+			// A link to another page of the draft (`Contact.dc.html`) resolved to its site address through the page map, as the skeleton resolves one (lib/draft-link.mjs).
+			draftLink: ( href ) => resolveDraftLink( href, draftLinksFor( { repo, client: o.client } ) ),
 			// FR-48-39: the uploaded images of the surface's site (a null map when media-upload has not run).
 			media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site },
 			snapshot, rawSnapshot, facts, rootComponent: intakeParts.rootComponent,

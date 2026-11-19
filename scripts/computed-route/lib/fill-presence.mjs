@@ -185,13 +185,24 @@ const siteInfoKey = ( attributes, attr ) => {
 // The draft's links into the link settings calibration's `link` ties to each element. slots: { path: href | null }.
 // A setting bound to Site Info still receives the draft address (it is the fallback shown when Site Info is blank) and
 // also yields a `handover` row { attr, slot, siteInfoKey, address } so the clone reports the address for Site Info.
-export function linkDecisions( { calibration, attributes = {}, slots = {}, origin = '', pages = null } ) {
+// draftLink( href ): the draft-page resolver (lib/draft-link.mjs::resolveDraftLink over the page map), which gives a link to
+// another page of the draft (`Contact.dc.html`, or a route name) its site address; a page the map does not hold writes nothing.
+export function linkDecisions( { calibration, attributes = {}, slots = {}, origin = '', pages = null, draftLink = null } ) {
 	const out = { ...empty(), handover: [] };
 	const link = calibration?.link;
 	if ( ! link ) {
 		return out;
 	}
-	const draft = Object.entries( slots ).map( ( [ p, h ] ) => [ p, normaliseHref( h, origin, pages ) ] ).filter( ( [ , h ] ) => null !== h );
+	const draftPage = ( href ) => {
+		const h = String( href ?? '' ).trim();
+		if ( ! draftLink || ! h ) {
+			return null;
+		}
+		const r = draftLink( h );
+		return [ 'address', 'site' ].includes( r?.kind ) ? r.value : null;
+	};
+	const site = ( h ) => normaliseHref( h, origin, pages ) ?? draftPage( h );
+	const draft = Object.entries( slots ).map( ( [ p, h ] ) => [ p, site( h ) ] ).filter( ( [ , h ] ) => null !== h );
 	const claimed = new Set();
 	// A block with one link element (one distinct path) takes the address the draft's root element carries when no slot
 	// names that element: the draft's own anchor IS the element the node copies, while the block nests its anchor.

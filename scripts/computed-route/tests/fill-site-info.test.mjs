@@ -78,3 +78,22 @@ test( 'NEGATIVE: an exact slot for the link wins over the root slot, and a block
 	assert.equal( r.writes.length, 0 );
 	assert.equal( r.unmapped.length, 1 );
 } );
+
+// A link to another page of the draft (`Contact.dc.html`) is a site address once the draft-page resolver gives it one
+// (lib/draft-link.mjs::resolveDraftLink over the page map, passed as `draftLink`): a bound icon whose Site Info value is
+// empty on the site then still renders, through that typed fallback (plugins/sgs-blocks/src/blocks/icon/render.php: a
+// bound icon with neither a Site Info value nor a typed link renders nothing).
+const draftLink = ( href ) => ( /^(Contact\.dc\.html|contact$)/.test( href ) ? { kind: 'address', value: '/contact/' } : /^Ghost\.dc\.html/.test( href ) ? { kind: 'unresolved', route: 'Ghost.dc.html' } : { kind: 'other', value: href } );
+
+test( 'MUST FAIL: a bound icon linking to another draft page keeps that page\'s site address as its fallback link', () => {
+	const r = linkDecisions( { calibration: CAL, attributes: bound( 'socials.whatsapp' ), slots: { '': 'Contact.dc.html' }, origin: 'http://x', draftLink } );
+	assert.deepEqual( r.writes, [ { attr: 'linkUrl', value: '/contact/', merge: 'replace' } ] );
+	assert.deepEqual( r.handover, [ { attr: 'linkUrl', slot: '', siteInfoKey: 'socials.whatsapp', address: '/contact/' } ] );
+} );
+
+test( 'a draft page the page map does not hold, a non-draft relative name, or no resolver writes nothing', () => {
+	assert.deepEqual( linkDecisions( { calibration: CAL, attributes: bound( 'socials.whatsapp' ), slots: { '': 'Ghost.dc.html' }, origin: 'http://x', draftLink } ).writes, [] );
+	assert.deepEqual( linkDecisions( { calibration: CAL, attributes: {}, slots: { '': 'notes.txt' }, origin: 'http://x', draftLink } ).writes, [], 'a relative name the page map does not hold' );
+	assert.deepEqual( linkDecisions( { calibration: CAL, attributes: {}, slots: { '': 'contact' }, origin: 'http://x', draftLink } ).writes.map( ( w ) => w.value ), [ '/contact/' ], 'a route name the page map holds' );
+	assert.deepEqual( linkDecisions( { calibration: CAL, attributes: bound( 'socials.whatsapp' ), slots: { '': 'Contact.dc.html' }, origin: 'http://x' } ).writes, [], 'no resolver: as before' );
+} );

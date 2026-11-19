@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/fill-presence.mjs", "find": "return [ 'address', 'site' ].includes( r?.kind ) ? r.value : null;", "replace": "return r?.kind ? h : null;", "why": "an unresolved draft page would be written as its draft file name" },
+	{ "file": "lib/fill-presence.mjs", "find": "if ( ! draftLink || ! h ) {", "replace": "if ( true ) {", "why": "no relative link would ever reach the draft-page resolver" },
+	{ "file": "lib/fill-presence.mjs", "find": "const site = ( h ) => normaliseHref( h, origin, pages ) ?? draftPage( h );", "replace": "const site = ( h ) => normaliseHref( h, origin, pages );", "why": "a link to another draft page would be dropped, so a bound icon with an empty Site Info value renders nothing" }
+]
