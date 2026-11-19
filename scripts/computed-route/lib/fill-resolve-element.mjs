@@ -7,7 +7,7 @@ import { usedValueTarget } from './solve-rows.mjs';
 import { PROPS, READ_WIDTHS, TIE_PROPS } from './fill-read.mjs';
 import { extraProps, usedValueDrafts, USED_VALUE } from './fill-declared.mjs';
 import { FLUID_WIDTHS } from './fill-values.mjs';
-import { INHERITED, resolveProperty, notPainted, gapPaintsNothing } from './fill-prop.mjs';
+import { INHERITED, resolveProperty, notPainted, gapPaintsNothing, flexOnlyPaintsNothing } from './fill-prop.mjs';
 import { unpairedPart } from './fill-part-pairing.mjs';
 import { gateFor, carriedFor } from './fill-fixture.mjs';
 import { fillEquivalent } from './fill-equivalents.mjs';
@@ -365,6 +365,9 @@ export function notPaintedWhy( prop, styles, snap = null, declared = null ) {
 	}
 	if ( /gap$/.test( prop ) ) {
 		return gapPaintsNothing( prop, styles, snap );
+	}
+	if ( /^flex-(direction|wrap)$/.test( prop ) ) {
+		return flexOnlyPaintsNothing( prop, snap );
 	}
 	if ( /^outline-/.test( prop ) ) {
 		return `${ prop } with outline-style ${ styles[ 'outline-style' ] ?? 'unread' } and outline-width ${ styles[ 'outline-width' ] ?? 'unread' }: no outline is drawn`;

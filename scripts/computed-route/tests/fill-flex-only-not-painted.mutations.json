@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "\tif ( FLEX_ONLY.includes( prop ) ) {\n\t\treturn null !== flexOnlyPaintsNothing( prop, snap );\n\t}\n",
+		"replace": "",
+		"why": "a block's initial flex-direction would be written as a hero setting again"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "const FLEX_ONLY = [ 'flex-direction', 'flex-wrap' ];",
+		"replace": "const FLEX_ONLY = [ 'flex-direction' ];",
+		"why": "flex-wrap would be written for a block"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "return undefined === laid || '' === laid || /(^|-)flex$/.test( laid ) ? null :",
+		"replace": "return undefined === laid || '' === laid ? null :",
+		"why": "a flex container's direction would be called not painted"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "return undefined === laid || '' === laid || /(^|-)flex$/.test( laid ) ? null :",
+		"replace": "return /(^|-)flex$/.test( laid ) ? null :",
+		"why": "an unread layout display would be judged"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "return flexOnlyPaintsNothing( prop, snap );",
+		"replace": "return `${ prop } with text-decoration-line none: no line is drawn`;",
+		"why": "the settled row would carry the text-decoration reason"
+	}
+]
