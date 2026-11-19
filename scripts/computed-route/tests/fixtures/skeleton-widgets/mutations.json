@@ -26,7 +26,7 @@
  {"file":"lib/skeleton-facts.mjs","find":"Object.entries( settings || {} ).forEach(","replace":"Object.entries( {} ).forEach(","why":"a widget setting the block lacks is accepted"},
  {"file":"lib/skeleton-rules.mjs","find":", units: { units: md.units, open: md.open } } );","replace":" } );","why":"the accordion verdict carries no units, so no part of a row is read"},
  {"file":"lib/skeleton-classify.mjs","find":", ...( r.units ? { units: r.units } : {} )","replace":"","why":"the classifier drops the units on the way to the proposal"},
- {"file":"lib/skeleton-propose.mjs","find":"slideBlock && ( node.innerBlocks = r.slides.map( ( s ) => base( s, slideBlock, {} ) ) );","replace":"","why":"the slider holds no child per slide, so no card look is read"},
+ {"file":"lib/skeleton-propose.mjs","find":"slideBlock && ( node.innerBlocks = r.slides.map( ( s ) => {","replace":"slideBlock && ( node.innerBlocks = [] ) && ( r.slides.map( ( s ) => {","why":"the slider holds no child per slide, so no card look is read"},
  {"file":"lib/skeleton-facts.mjs","find":".filter( ( [ , attr ] ) => ! facts.attr( r.accordion.block, attr ) )","replace":".filter( () => false )","why":"a childSlots setting the accordion lacks is accepted"},
  {"file":"lib/skeleton-widgets.mjs","find":"S.categoryShown && ( attributes[ S.categoryShown ] = true );","replace":"","why":"an item with a category never shows it over its title"},
  {"file":"lib/skeleton-rules.mjs","find":"...( lines ? { [ S.categoryAlways ]: true } : {} ), ","replace":"","why":"the accordion prints its items' category lines only with a filter"},
