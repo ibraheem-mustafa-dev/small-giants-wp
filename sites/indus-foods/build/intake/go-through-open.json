@@ -1,0 +1,32 @@
+{
+ "client": "indus-foods",
+ "writtenOn": "2026-11-19",
+ "note": "--apply-review --go-through marked every other row with its proposal (review entries with by: \"go-through\"); these rows had no proposal to take, so they carry no mark and the run did not stop for them. `downstream` is what the route does with each today. Mark a row in review.md and apply again to settle it.",
+ "count": 4,
+ "rows": [
+  {
+   "rowId": "palette:--social-linkedin",
+   "rowType": "palette-role",
+   "why": "the draft colour has no proposed palette role (a header, selection or social colour, a brand colour or a shade with no slug)",
+   "downstream": "confirmed_palette.py::effective_marks treats a row with no mark as accepted and ::_mark_slugs gives an accepted row with no role no slug, so the colour fills no palette slot and no custom colour: it stays a hex value wherever a block paints it (what the one-off mark gives)"
+  },
+  {
+   "rowId": "palette:--social-facebook",
+   "rowType": "palette-role",
+   "why": "the draft colour has no proposed palette role (a header, selection or social colour, a brand colour or a shade with no slug)",
+   "downstream": "confirmed_palette.py::effective_marks treats a row with no mark as accepted and ::_mark_slugs gives an accepted row with no role no slug, so the colour fills no palette slot and no custom colour: it stays a hex value wherever a block paints it (what the one-off mark gives)"
+  },
+  {
+   "rowId": "palette:--whatsapp-green",
+   "rowType": "palette-role",
+   "why": "the draft colour has no proposed palette role (a header, selection or social colour, a brand colour or a shade with no slug)",
+   "downstream": "confirmed_palette.py::effective_marks treats a row with no mark as accepted and ::_mark_slugs gives an accepted row with no role no slug, so the colour fills no palette slot and no custom colour: it stays a hex value wherever a block paints it (what the one-off mark gives)"
+  },
+  {
+   "rowId": "palette:--focus-color",
+   "rowType": "palette-role",
+   "why": "the draft colour has no proposed palette role (a header, selection or social colour, a brand colour or a shade with no slug)",
+   "downstream": "confirmed_palette.py::effective_marks treats a row with no mark as accepted and ::_mark_slugs gives an accepted row with no role no slug, so the colour fills no palette slot and no custom colour: it stays a hex value wherever a block paints it (what the one-off mark gives)"
+  }
+ ]
+}

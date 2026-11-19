@@ -1,5 +1,7 @@
 # Intake review: indus-foods
 
+Taken by default: 27 rows had no mark from Bean and took their proposal (intake.mjs --apply-review --go-through; the Mark cell of such a row stays blank, and a mark Bean writes there overrides the default); rows with no proposal to take are listed in go-through-open.json.
+
 Taken on 2026-11-19T06:19:28.565Z; manifest 1.0, files hash f2d909d8605ef2cb.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review indus-foods`.
