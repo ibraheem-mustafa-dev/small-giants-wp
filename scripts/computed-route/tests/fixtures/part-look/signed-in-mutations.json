@@ -1,0 +1,92 @@
+[
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "if ( undefined !== m.ariaCurrent && ( el.hasAttribute( 'aria-current' ) && 'false' !== el.getAttribute( 'aria-current' ) ) !== m.ariaCurrent ) {",
+		"replace": "if ( false ) {",
+		"why": "the menu's current item is not told from the others"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "if ( ! bg || 'transparent' === bg || /^rgba\\([^)]*,\\s*0\\)$/.test( bg ) ) {",
+		"replace": "if ( ! bg ) {",
+		"why": "an element with no fill of its own counts as a pill"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "return h > 0 && parseFloat( s.borderTopLeftRadius ) >= 0.4 * h;",
+		"replace": "return h > 0;",
+		"why": "a square-cornered fill counts as a pill"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"hasAmount\": false\n\t\t\t\t\t},\n\t\t\t\t\t\"pick\": \"first\"",
+		"replace": "\"control\": false\n\t\t\t\t\t},\n\t\t\t\t\t\"pick\": \"first\"",
+		"why": "address cards are read in a view that lists amounts (a plan card's frequency buttons)"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"div\",\n\t\t\t\t\t\t\t\"li\",\n\t\t\t\t\t\t\t\"article\",\n\t\t\t\t\t\t\t\"section\"\n\t\t\t\t\t\t],\n\t\t\t\t\t\t\"repeats\": true,\n\t\t\t\t\t\t\"hasAmount\": true,",
+		"replace": "\"div\",\n\t\t\t\t\t\t\t\"li\",\n\t\t\t\t\t\t\t\"article\",\n\t\t\t\t\t\t\t\"section\",\n\t\t\t\t\t\t\t\"tr\"\n\t\t\t\t\t\t],\n\t\t\t\t\t\t\"repeats\": true,\n\t\t\t\t\t\t\"hasAmount\": true,",
+		"why": "a table's rows are taken for order cards"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "return Object.entries( parts || {} ).filter( ( [ , loc ] ) => ( 'detail' === view ) === ( 'detail' === loc?.view ) ).map( ( [ name ] ) => name );",
+		"replace": "return Object.keys( parts || {} );",
+		"why": "every view reads every part, so the list's own elements answer for the order page's parts"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "if ( ! list?.length || ( filled[ part ] && filled[ part ] !== view ) ) {",
+		"replace": "if ( ! list?.length ) {",
+		"why": "a later view overwrites the view that located a part first"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "let form = forms.find( ( f ) => pw( f ).some( ( i ) => tokens( i ).includes( 'current-password' ) ) );",
+		"replace": "let form = forms[ 0 ];",
+		"why": "the first form (the register form) is signed in through"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "const plain = forms.filter( ( f ) => 1 === pw( f ).length && ! pw( f ).some( ( i ) => tokens( i ).includes( 'new-password' ) ) );",
+		"replace": "const plain = forms.filter( ( f ) => 1 === pw( f ).length );",
+		"why": "a register form alone is taken for a sign-in form"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "return all.filter( ( el ) => all.some( ( o ) => o !== el && o.parentElement?.parentElement === el.parentElement?.parentElement && signature( o ) === signature( el ) ) );",
+		"replace": "return all;",
+		"why": "the lone control beside the menu (signing out) is opened as a view"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "&& AMOUNT.test( el.textContent || '' ) &&",
+		"replace": "&&",
+		"why": "a card with no amount (an address) is opened as a listed item"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "const p = m.logout ? null : rel( m.href );",
+		"replace": "const p = rel( m.href );",
+		"why": "the live read follows the sign-out link"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "const named = block ? map?.blocks?.[ block ]?.[ part ] : null;",
+		"replace": "const named = null;",
+		"why": "the signed-in views' live selectors are not used"
+	},
+	{
+		"file": "data/part-look-modes.json",
+		"find": "\"setting\": \"ordersRowList\",\n\t\t\t\t\t\"value\": true,",
+		"replace": "\"setting\": \"ordersRowList\",\n\t\t\t\t\t\"value\": false,",
+		"why": "a draft that lists its orders as cards keeps the table"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": "if ( at < 1 || at === String( text ).length - 1 ) {",
+		"replace": "if ( at < 0 ) {",
+		"why": "a login with no password is accepted"
+	}
+]
