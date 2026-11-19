@@ -34,7 +34,7 @@ function readEnv( file ) {
 	return env;
 }
 
-test( 'wp-build-page.js never picks up an inserter default entrance', { skip: ! fs.existsSync( ENV_FILE ) && 'no sandybrown secrets', timeout: 300000 }, async () => {
+test( 'wp-build-page.js never picks up an inserter default entrance', { skip: ( process.env.SGS_NO_SITE && '0' !== process.env.SGS_NO_SITE && 'SGS_NO_SITE is set: this live test may not contact the canary' ) || ( ! fs.existsSync( ENV_FILE ) && 'no sandybrown secrets' ), timeout: 300000 }, async () => {
 	const env = readEnv( ENV_FILE );
 	const url = env.WP_URL_SANDYBROWN.replace( /\/$/, '' );
 	const auth = 'Basic ' + Buffer.from( `${ env.WP_USER_SANDYBROWN }:${ env.WP_APP_PWD_SANDYBROWN }` ).toString( 'base64' );

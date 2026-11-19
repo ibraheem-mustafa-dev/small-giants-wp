@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
+import { assertSiteContact } from './lib/site-contact.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
 const flag = ( name, fallback = null ) => {
@@ -40,7 +41,7 @@ export function optionsOf( bar ) {
 	return out;
 }
 
-const wp = ( site, args ) => spawnSync( 'wsl', [ '-d', 'Ubuntu', '-u', 'root', '--', 'bash', '-lc', `cd /var/www/${ site } && wp --allow-root ${ args }` ], { encoding: 'utf8' });
+const wp = ( site, args ) => assertSiteContact( { site } ) ?? spawnSync( 'wsl', [ '-d', 'Ubuntu', '-u', 'root', '--', 'bash', '-lc', `cd /var/www/${ site } && wp --allow-root ${ args }` ], { encoding: 'utf8' });
 
 // The draft's progress bar as the page computes it: { position, height, backgroundImage, backgroundColor }, or null. `browser` is an
 // open Playwright browser (the applier's own), else one is launched for the read.

@@ -89,7 +89,7 @@ async function run( argv ) {
 		compositionRows: () => db.prepare( 'SELECT block_slug FROM block_composition' ).all(),
 		fixtures: JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) ),
 		refs: refsFor( targets, o.site ),
-		refsExist: ( roles ) => checkRefsExist( refsFor( targets, o.site ), roles, wpEvalRunner( targets[ o.site ], o.site, REPO ) ),
+		refsExist: ( roles ) => checkRefsExist( refsFor( targets, o.site ), roles, wpEvalRunner( targets[ o.site ], o.site, REPO, { readOnly: true } ) ),
 		hashesOf: ( block ) => hashesFor( o.site, targets[ o.site ], block ),
 		extraPropsOf: ( block ) => unreadProps( attrsFor( db, block ) ),
 		runCalibrate: ( args ) => spawnSync( process.execPath, [ path.join( HERE, 'calibrate.mjs' ), ...args ], { stdio: 'inherit', cwd: REPO } ).status ?? 1,

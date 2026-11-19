@@ -57,6 +57,7 @@ const { execFileSync } = require( 'child_process' );
 
 const surfaceShape = require( './lib/surface-tree-shape' );
 const objectAttrCheck = require( './lib/object-attr-check' );
+const noSite = require( './lib/no-site' );
 const pluginRequire = createRequire( path.join( __dirname, '..', 'plugins', 'sgs-blocks', 'package.json' ) );
 const { chromium } = pluginRequire( 'playwright' );
 
@@ -347,6 +348,14 @@ async function main() {
 		JSON.parse( out ).forEach( ( k ) => { flatAttrs[ k ] = true; } );
 	} catch ( e ) {
 		console.error( `[warn] per-device shape check skipped (framework DB not readable: ${ String( e.message ).split( /\r?\n/ )[ 0 ] })` );
+	}
+
+	// The steps below reach the site (the shared browser, the login, the editor): the kill switch (lib/no-site.js) stops here, after the
+	// offline argument and tree checks above.
+	try {
+		noSite.assertMayContactSite();
+	} catch ( e ) {
+		fail( 1, e.message );
 	}
 
 	// Cloud sessions: the same opt-in proxy trust as scripts/parity/draft-live-walk.mjs

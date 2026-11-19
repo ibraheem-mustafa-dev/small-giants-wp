@@ -10,6 +10,7 @@
  * and the process exits 1.
  */
 import { readFileSync } from 'node:fs';
+import { assertSiteContact } from './lib/site-contact.mjs';
 import { spawnSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -58,6 +59,7 @@ const COUNT = '.sgs-shop-load-more__count';
 const ANNOUNCER = '.sgs-shop-load-more__announcer';
 
 function ssh( command ) {
+	assertSiteContact();
 	const r = spawnSync( 'ssh', [ 'hd', 'cd ' + target.path + ' && ' + command ], { encoding: 'utf8' } );
 	return { code: r.status, out: ( r.stdout || '' ).trim(), err: ( r.stderr || '' ).trim() };
 }

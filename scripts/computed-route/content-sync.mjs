@@ -41,7 +41,7 @@ if ( argv.includes( '--apply' ) ) {
 }
 const surfaces = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', client, 'build', 'surfaces.json' ), 'utf8' ) );
 const want = syncTargets( surfaces, flag( '--only' )?.split( ',' ) ?? null );
-const run = ( site, php ) => wpCommand( targets[ site ] || {}, site, REPO )( [ 'eval-file', '-' ], php );
+const run = ( site, php ) => wpCommand( targets[ site ] || {}, site, REPO, { readOnly: ! argv.includes( '--apply' ) } )( [ 'eval-file', '-' ], php );
 const read = ( site, withContent ) => JSON.parse( run( site, readPhp( { ...want, withContent } ) ) );
 
 try {

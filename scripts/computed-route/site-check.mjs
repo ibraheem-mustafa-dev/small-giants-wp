@@ -263,7 +263,7 @@ async function main() {
 		await guard( 'forms', async () => {
 			// The site's wp-cli (a WSL mirror's or over SSH, lib/calibration-refs.mjs::wpCommand), read-only: the stored
 			// submissions since the run began. Unreachable leaves the stored row unread, never failed.
-			const wp = wpCommand( target, args.site, args.repo );
+			const wp = wpCommand( target, args.site, args.repo, { readOnly: true } );
 			const sql = ( q ) => wp( [ 'db', 'query', q, '--skip-column-names' ] ).trim();
 			let prefix = null;
 			let since = null;

@@ -17,6 +17,7 @@ import { loadSurfaces } from './lib/apply-targets.mjs';
 import { refreshPairs } from './lib/refresh-pairs.mjs';
 import { readLiveBoxes } from './lib/live-boxes.mjs';
 import { loadChromium } from './lib/fill-read.mjs';
+import { assertSiteContact } from './lib/site-contact.mjs';
 import { pairId, withRevealed } from './lib/reveal-merge.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
@@ -40,6 +41,7 @@ if ( ! /^local-/.test( surface.site ) ) {
 let file = flag( '--blocks' );
 if ( ! file ) {
 	file = path.join( os.tmpdir(), `refresh-pairs-${ process.pid }.json` );
+	assertSiteContact( { site: surface.site, readOnly: true } );
 	const r = spawnSync( process.platform === 'win32' ? 'python' : 'python3', [ path.join( REPO, 'scripts/local-wp/read-block-attrs.py' ), '--site', surface.site, '--out', file, String( surface.postId ) ], { encoding: 'utf8' } );
 	if ( 0 !== r.status ) {
 		throw new Error( `could not read the blocks of ${ surface.site }: ${ r.stderr }` );

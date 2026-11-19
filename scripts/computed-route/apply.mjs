@@ -17,6 +17,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
+import { assertSiteContact } from './lib/site-contact.mjs';
 import { FAMILIES, familyProps } from './lib/apply-families.mjs';
 import { ledgerIndex, ledgerMatch, surfaceNames } from './lib/apply-ledger.mjs';
 import { gateRows } from './lib/apply-gate.mjs';
@@ -87,6 +88,7 @@ export function renderStamp( { repo, rawSnapshot } ) {
 const opKey = ( op ) => `${ op.ref }|${ op.family }|${ op.prop }|${ crypto.createHash( 'sha1' ).update( JSON.stringify( op.writes ) ).digest( 'hex' ).slice( 0, 12 ) }`;
 
 function readBlocks( site, posts, tmp ) {
+	assertSiteContact( { site, readOnly: true } );
 	const out = path.join( tmp, `blocks-${ process.pid }-${ Date.now() }.json` );
 	const r = spawnSync( PY, [ path.join( REPO, 'scripts/local-wp/read-block-attrs.py' ), '--site', site, '--out', out, ...posts.map( String ) ], { encoding: 'utf8' } );
 	if ( 0 !== r.status ) {
@@ -96,6 +98,7 @@ function readBlocks( site, posts, tmp ) {
 }
 
 function patch( site, postId, ops, tmp, dry ) {
+	assertSiteContact( { site, readOnly: dry } );
 	const file = path.join( tmp, `patch-${ postId }-${ Date.now() }.json` );
 	fs.writeFileSync( file, JSON.stringify( ops ) );
 	const r = spawnSync( PY, [ path.join( REPO, 'scripts/local-wp/patch-block-attrs.py' ), '--site', site, '--post', String( postId ), '--patch', file, ...( dry ? [ '--dry-run' ] : [] ) ], { encoding: 'utf8' } );

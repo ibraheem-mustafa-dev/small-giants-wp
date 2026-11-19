@@ -6,6 +6,7 @@
 import fs from 'fs';
 import path from 'path';
 import { execFileSync } from 'child_process';
+import { assertSiteContact } from './site-contact.mjs';
 import { BUNDLE_TEXT, EDITOR_ONLY, SSH, TEXT_FILE, lfText, md5, normaliseBundle, remotePlugin } from './deploy-hash.mjs';
 
 // Whether a build file counts: bundled module ids vary with the build folder, so view scripts and asset files are compared
@@ -35,6 +36,7 @@ export function localFiles( dir ) {
 // The same map for the test site's build/blocks folder, read with one ssh `find ... md5sum` (bundled files are compared by
 // their name only: their ids differ by build folder and fetching each would cost an ssh call per block).
 export function remoteFiles( site, run = ( cmd, args ) => execFileSync( cmd, args, { encoding: 'utf8', timeout: 120000, maxBuffer: 64 * 1024 * 1024 } ) ) {
+	assertSiteContact( { readOnly: true } );
 	const dir = `${ remotePlugin( site ) }/build/blocks`;
 	const text = run( 'ssh', [ ...SSH, `cd ${ dir } && find . -type f -exec md5sum {} +` ] );
 	return parseListing( text );

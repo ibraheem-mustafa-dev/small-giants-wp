@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { execFileSync } from 'child_process';
 import { SSH, hostedRoot } from './deploy-hash.mjs';
+import { assertSiteContact } from './site-contact.mjs';
 
 export { hostedRoot };
 
@@ -189,14 +190,17 @@ export function refGate( blocks, fixtures, refs, exists, site ) {
 // default, which fails as ENOBUFS.
 const WP_OUTPUT_MAX = 256 * 1024 * 1024;
 
-export function wpCommand( target, site, repo ) {
+// Each call first passes lib/site-contact.mjs::assertSiteContact: refused under SGS_NO_SITE, and refused on a `protected` target
+// unless the caller passes { readOnly: true } (a command that only reads). `exec` replaces execFileSync (tests).
+export function wpCommand( target, site, repo, { readOnly = false, exec = execFileSync } = {} ) {
 	const wsl = String( target.pluginDir || '' ).match( /^\/\/wsl\.localhost\/([^/]+)(\/.+)\/wp-content\/plugins\/sgs-blocks\/?$/ );
+	const guard = () => assertSiteContact( { site, target, readOnly } );
 	if ( wsl ) {
-		return ( args, input ) => execFileSync( 'wsl', [ '-d', wsl[ 1 ], '-u', 'root', '--', 'wp', `--path=${ wsl[ 2 ] }`, '--allow-root', ...args, '--user=Claude' ], { encoding: 'utf8', timeout: 120000, input, maxBuffer: WP_OUTPUT_MAX } );
+		return ( args, input ) => guard() ?? exec( 'wsl', [ '-d', wsl[ 1 ], '-u', 'root', '--', 'wp', `--path=${ wsl[ 2 ] }`, '--allow-root', ...args, '--user=Claude' ], { encoding: 'utf8', timeout: 120000, input, maxBuffer: WP_OUTPUT_MAX } );
 	}
 	const root = hostedRoot( site, repo );
 	const quote = ( a ) => `'${ String( a ).replace( /'/g, `'\\''` ) }'`;
-	return ( args, input ) => execFileSync( 'ssh', [ ...SSH, `cd ${ quote( root ) } && wp ${ args.map( quote ).join( ' ' ) } --user=Claude` ], { encoding: 'utf8', timeout: 120000, input, maxBuffer: WP_OUTPUT_MAX } );
+	return ( args, input ) => guard() ?? exec( 'ssh', [ ...SSH, `cd ${ quote( root ) } && wp ${ args.map( quote ).join( ' ' ) } --user=Claude` ], { encoding: 'utf8', timeout: 120000, input, maxBuffer: WP_OUTPUT_MAX } );
 }
 
 // The file `wp eval-file -` reads for a PHP body: one opening tag, whether or not the body carries its own (the PHP
@@ -204,7 +208,7 @@ export function wpCommand( target, site, repo ) {
 export const evalScript = ( php ) => `<?php\n${ String( php ).replace( /^\s*<\?php\b/, '' ) }\n`;
 
 // runPhp for checkRefsExist: the PHP goes in on stdin to `wp eval-file -`, so no shell quoting touches it.
-export const wpEvalRunner = ( target, site, repo ) => {
-	const wp = wpCommand( target, site, repo );
+export const wpEvalRunner = ( target, site, repo, options = {} ) => {
+	const wp = wpCommand( target, site, repo, options );
 	return ( php ) => wp( [ 'eval-file', '-' ], evalScript( php ) );
 };

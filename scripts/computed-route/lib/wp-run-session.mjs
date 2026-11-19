@@ -12,6 +12,7 @@ import path from 'path';
 import { spawn } from 'child_process';
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
+import { assertSiteContact } from './site-contact.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '..', '..', '..' );
@@ -33,6 +34,7 @@ export function readEnv( file, key, repo = process.env.SGS_SECRETS_ROOT || REPO 
 // The shared browser for `site`, logged in with `env`: { context, page, close }. Scrollbars are hidden as the walker hides
 // them, or a headed window lays the page out about 15px narrower than its viewport.
 export async function openRunSession( site, env, timeout = 120000 ) {
+	assertSiteContact( { site } );
 	const require = createRequire( import.meta.url );
 	const wpSession = require( '../../lib/wp-session.js' );
 	const closeOnExit = require( '../../lib/close-browser-on-exit.js' );
@@ -63,6 +65,7 @@ const freePort = () => new Promise( ( resolve, reject ) => {
 // with it, so a child's login waits until it times out. Here Chrome runs on its own with a debugging port; the run logs in
 // over CDP, disconnects, and exports SGS_CDP_URL for the children; close() ends the process.
 export async function openDetachedSession( site, env, timeout = 120000 ) {
+	assertSiteContact( { site } );
 	const require = createRequire( import.meta.url );
 	const wpSession = require( '../../lib/wp-session.js' );
 	const closeOnExit = require( '../../lib/close-browser-on-exit.js' );
