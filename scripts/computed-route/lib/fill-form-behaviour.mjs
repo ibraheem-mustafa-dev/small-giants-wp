@@ -24,6 +24,10 @@ const GLYPH_ONLY = /^[^\p{L}\p{N}]*$/u;
 // handoff folder (the folder lib/fill-list-content.mjs::logicReader is given).
 export const formDraftFolder = ( { draftDir = null, repo, entryDraftDir = null, client } ) => draftDir || path.join( repo, entryDraftDir || path.join( 'sites', client, 'handoff' ) );
 
+// Plain words as HTML text: the message is rich text, so the draft's own "<", ">" and "&" are escaped and only the line
+// breaks between lines are markup.
+const htmlText = ( s ) => String( s ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' );
+
 // A literal as fnWrites writes it (`true`, `"size"`).
 const lit = ( v ) => ( 'string' === typeof v ? JSON.stringify( v ) : String( v ) );
 
@@ -75,7 +79,7 @@ export function successMessageOf( { factRecord, record, folder } ) {
 			lines.push( words );
 		}
 	}
-	return lines.length ? { message: lines.join( '<br>' ), lines, notes, state: `${ sent.s.id } ${ sent.st.name }` } : { message: null, lines, notes: [ ...notes, `the sent state ${ sent.s.id } "${ sent.st.name }" shows no words` ] };
+	return lines.length ? { message: lines.map( htmlText ).join( '<br>' ), lines, notes, state: `${ sent.s.id } ${ sent.st.name }` } : { message: null, lines, notes: [ ...notes, `the sent state ${ sent.s.id } "${ sent.st.name }" shows no words` ] };
 }
 
 // The success message write for a skeleton's form node: { writes: [{ attr, value, merge }], unmapped: [], notes }. node: the

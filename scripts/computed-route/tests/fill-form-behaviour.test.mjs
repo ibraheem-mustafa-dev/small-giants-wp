@@ -61,6 +61,19 @@ test( 'MUST FAIL: the form takes the words its draft shows once sent as its succ
 	assert.equal( successMessageOf( { factRecord: word, record: word.surfaces[ 'S-34' ], folder: dir } ).message, SENT );
 } );
 
+test( 'MUST FAIL: the draft\'s plain words are written as HTML, so a "<", ">" or "&" in them shows as typed and only the line breaks are markup', () => {
+	// The fact record's words are the text the page showed (decoded), and the message is rich text the editor sanitises.
+	const facts = read( 'mamas', 'facts.json' );
+	facts.elements[ 'Contact/71' ].template.words = 'We <3 you & yours';
+	facts.elements[ 'Contact/72' ].template.words = 'Fish &amp; chips, <b>not</b> "bold" > 3';
+	const r = successMessageOf( { factRecord: facts, record: facts.surfaces[ 'S-34' ], folder: path.join( FIX, 'mamas' ) } );
+	assert.equal( r.message, 'We &lt;3 you &amp; yours<br>Fish &amp;amp; chips, &lt;b&gt;not&lt;/b&gt; "bold" &gt; 3' );
+	// The lines stay the draft's own words.
+	assert.deepEqual( r.lines, [ 'We <3 you & yours', 'Fish &amp; chips, <b>not</b> "bold" > 3' ] );
+	// Negative control: words with none of the three characters are written as they are.
+	assert.equal( successMessageOf( { factRecord: read( 'mamas', 'facts.json' ), record: read( 'mamas', 'facts.json' ).surfaces[ 'S-34' ], folder: path.join( FIX, 'mamas' ) } ).message, SENT );
+} );
+
 test( 'negative control: a form with no folder, no submit handler, or a handler that shows no state writes no message', () => {
 	const facts = read( 'mamas', 'facts.json' );
 	const db = openDb();
