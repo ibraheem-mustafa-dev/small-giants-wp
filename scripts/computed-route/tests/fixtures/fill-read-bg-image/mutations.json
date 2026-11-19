@@ -1,0 +1,38 @@
+[
+ {
+  "file": "lib/fill-read-collect.mjs",
+  "find": "const light = painted ? [ { ...read( el ), tag: 'img', src: painted, alt: '' } ] : nodes.map( read );",
+  "replace": "const light = nodes.map( read );",
+  "why": "a background picture is no media: the card's photo stays blank"
+ },
+ {
+  "file": "lib/fill-read-collect.mjs",
+  "find": "const painted = ! nodes.length && ! el.children.length && '' === ( el.textContent || '' ).trim() && shown( el ) ? bgUrl : null;",
+  "replace": "const painted = ! nodes.length && '' === ( el.textContent || '' ).trim() && shown( el ) ? bgUrl : null;",
+  "why": "an element holding a child element is read as a picture"
+ },
+ {
+  "file": "lib/fill-read-collect.mjs",
+  "find": "const painted = ! nodes.length && ! el.children.length && '' === ( el.textContent || '' ).trim() && shown( el ) ? bgUrl : null;",
+  "replace": "const painted = ! nodes.length && ! el.children.length && shown( el ) ? bgUrl : null;",
+  "why": "an element holding words is read as a picture"
+ },
+ {
+  "file": "lib/fill-read-collect.mjs",
+  "find": "const painted = ! nodes.length && ! el.children.length && '' === ( el.textContent || '' ).trim() && shown( el ) ? bgUrl : null;",
+  "replace": "const painted = ! el.children.length && '' === ( el.textContent || '' ).trim() && shown( el ) ? bgUrl : null;",
+  "why": "a background wins over a held image"
+ },
+ {
+  "file": "lib/fill-read-collect.mjs",
+  "find": "const bgUrl = /^url\\(\\s*([\"']?)([^\"')]+)\\1\\s*\\)$/.exec( getComputedStyle( el ).backgroundImage || '' )?.[ 2 ] || null;",
+  "replace": "const bgUrl = /url\\(\\s*([\"']?)([^\"')]+)\\1\\s*\\)/.exec( getComputedStyle( el ).backgroundImage || '' )?.[ 2 ] || null;",
+  "why": "two background layers read as one picture"
+ },
+ {
+  "file": "lib/fill-read-collect.mjs",
+  "find": "tag: 'img', src: painted, alt: '' }",
+  "replace": "tag: 'img', src: painted, alt: null }",
+  "why": "the background picture is not decorative"
+ }
+]

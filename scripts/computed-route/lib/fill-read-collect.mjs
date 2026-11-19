@@ -154,7 +154,13 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 					},
 				};
 			};
-			const light = nodes.map( read );
+			// A wordless element with no child element that paints one picture as its own background
+			// (`<div style="background-image:url(card.jpg)">`, a card's photo drawn with CSS) shows that picture: it is the
+			// element's own image, with an empty alt (a background has no accessible name). A gradient, two layers, or an
+			// element holding words or elements is no picture of its own.
+			const bgUrl = /^url\(\s*(["']?)([^"')]+)\1\s*\)$/.exec( getComputedStyle( el ).backgroundImage || '' )?.[ 2 ] || null;
+			const painted = ! nodes.length && ! el.children.length && '' === ( el.textContent || '' ).trim() && shown( el ) ? bgUrl : null;
+			const light = painted ? [ { ...read( el ), tag: 'img', src: painted, alt: '' } ] : nodes.map( read );
 			// A custom element draws its picture in its open shadow root: those images, one per address, when no light-DOM media shows.
 			const seen = new Set();
 			const shadow = light.length ? [] : drawn.filter( ( i ) => shown( i ) && ! seen.has( imgSrc( i ) ) && seen.add( imgSrc( i ) ) ).map( read );
