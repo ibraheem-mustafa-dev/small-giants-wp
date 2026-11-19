@@ -14,6 +14,7 @@
  *   6. Otherwise lazy.
  * The lead is the first eager image that is not a `logo`, `layer` or `brand-strip` and has at least
  * `wp_min_priority_img_pixels` (50,000) square pixels. One lead per page, taken through a per-request claim.
+ * The lead is also preloaded from the head (`lead-image-preload.php::sgs_lead_image_preload`).
  * A slot with different images per device is one image: the caller resolves it once.
  *
  * A loop is a frame opened by `begin_loop()` and closed by `end_loop()`: `Sgs_Motion_Loop_Delays` opens one when each

@@ -43,6 +43,8 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/media/lead-image-preload.php';
+
 /**
  * Per-request buffer of consolidated scoped CSS, keyed by a content hash so
  * identical block instances (deterministic md5-of-attributes uids) collapse to
@@ -210,10 +212,24 @@ function sgs_css_start_buffer(): void {
  * automatic: changed CSS → new hash → new filename → the freshly-rendered HTML
  * links it; the epoch bump + LiteSpeed purge refresh any cached HTML.
  *
+ * The same pass first adds the head preload of the page's lead image
+ * (`media/lead-image-preload.php::sgs_lead_image_preload`), whether or not any
+ * CSS was collected.
+ *
  * @param string $html Full buffered page HTML.
  * @return string
  */
 function sgs_css_inject( string $html ): string {
+	return sgs_css_place( sgs_lead_image_preload( $html ) );
+}
+
+/**
+ * Place the consolidated CSS into the `<head>` (see sgs_css_inject()).
+ *
+ * @param string $html Full buffered page HTML.
+ * @return string
+ */
+function sgs_css_place( string $html ): string {
 	if ( empty( $GLOBALS['sgs_collected_css'] ) ) {
 		return $html;
 	}
