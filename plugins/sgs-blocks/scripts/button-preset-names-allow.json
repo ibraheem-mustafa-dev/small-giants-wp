@@ -1,0 +1,145 @@
+{
+  "_comment": "Instances of the three starter button preset names that scripts/check-button-preset-names.py allows, each with a status and reason. A fixed place is removed from this list (the check fails on a stale entry).",
+  "allowed": [
+    {
+      "file": "plugins/sgs-blocks/includes/helpers-button-preset-names.php",
+      "kind": "list",
+      "key": "",
+      "status": "defined-here",
+      "reason": "the one list of the starter names in PHP (SGS_BUTTON_STARTER_PRESETS)"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/button/preset-names.js",
+      "kind": "list",
+      "key": "",
+      "status": "defined-here",
+      "reason": "the one list of the starter names in the editor JavaScript (STARTER_PRESETS)"
+    },
+    {
+      "file": "plugins/sgs-blocks/scripts/theme-extractor/presets.py",
+      "kind": "list",
+      "key": "",
+      "status": "defined-here",
+      "reason": "FRAMEWORK_SLOTS is the one list of the starter names in the extractor; _VARIANT_SLOT maps a classic draft's class words to them and _add_classless_presets slots classless buttons into them"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/button/style.css",
+      "kind": "css",
+      "key": ".sgs-button--",
+      "status": "framework-default",
+      "reason": "the starter presets' own rules; a name beyond them is printed from the snapshot by sgs_button_named_preset_css"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/button/style.css",
+      "kind": "css",
+      "key": "--button-presets--",
+      "status": "framework-default",
+      "reason": "the starter presets' fallbacks; a name beyond them reads the same tokens through sgs_button_named_preset_css"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+      "kind": "css",
+      "key": ".buybox__add-to-cart--",
+      "status": "framework-default",
+      "reason": "the starter add-to-cart rules; a name beyond them is printed by sgs_buybox_named_preset_css"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+      "kind": "css",
+      "key": "--button-presets--",
+      "status": "framework-default",
+      "reason": "the starter add-to-cart rules read the starters' tokens"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+      "kind": "css",
+      "key": ".sgs-button--",
+      "status": "framework-default",
+      "reason": "comments and overrides naming the starter classes; every name shares .sgs-button, and sgs_button_named_preset_css prints the rest"
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/helpers-button-preset.php",
+      "kind": "list",
+      "key": "",
+      "status": "framework-default",
+      "reason": "the WooCommerce helper's two always-on names; any other name resolves through sgs_button_preset_resolve on a site that opted in"
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/product-card-builtin-render.php",
+      "kind": "list",
+      "key": "",
+      "status": "framework-default",
+      "reason": "the primary and secondary fallbacks when a stored style names no preset"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/product-card/edit.js",
+      "kind": "list",
+      "key": "",
+      "status": "framework-default",
+      "reason": "the primary and secondary fallbacks when a stored style names no preset"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/multi-button/edit.js",
+      "kind": "list",
+      "key": "",
+      "status": "framework-default",
+      "reason": "the starter buttons a new group is seeded with"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+      "kind": "list",
+      "key": "",
+      "status": "deferred",
+      "reason": "the hero's starter buttons and its own CTA style list (accent, primary, outline); a hero CTA wearing a snapshot name is not built (.claude/plans/2026-11-19-general-cloning-work.md Task 5 follow-up)"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/pricing-table/edit.js",
+      "kind": "list",
+      "key": "",
+      "status": "deferred",
+      "reason": "the pricing table's CTA style list (its own accent style too); not built (.claude/plans/2026-11-19-general-cloning-work.md Task 5 follow-up)"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
+      "kind": "css",
+      "key": ".sgs-pricing-table__cta--",
+      "status": "deferred",
+      "reason": "the pricing table's own CTA rules; not built (.claude/plans/2026-11-19-general-cloning-work.md Task 5 follow-up)"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/modal/style.css",
+      "kind": "css",
+      "key": ".sgs-modal__trigger--",
+      "status": "deferred",
+      "reason": "the modal trigger's own style rules (triggerStyle also holds text-link and none); not built (.claude/plans/2026-11-19-general-cloning-work.md Task 5 follow-up)"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/account/ExtraPanels.js",
+      "kind": "list",
+      "key": "",
+      "status": "deferred",
+      "reason": "the account block's sign-in and register preset choice (block.json enum primary, secondary); sgs_button_preset_css already takes any name, the setting does not (.claude/plans/2026-11-19-general-cloning-work.md Task 5 follow-up)"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+      "kind": "css",
+      "key": "--button-presets--",
+      "status": "deferred",
+      "reason": "the account tabs read the primary and secondary look; not built (.claude/plans/2026-11-19-general-cloning-work.md Task 5 follow-up)"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+      "kind": "css",
+      "key": "--button-presets--",
+      "status": "deferred",
+      "reason": "the flow's Continue and Back buttons read primary and secondary; not built (.claude/plans/2026-11-19-general-cloning-work.md Task 5 follow-up)"
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/woocommerce.css",
+      "kind": "css",
+      "key": "--button-presets--",
+      "status": "patch",
+      "reason": "WooCommerce's buttons belong to the shop session; the change is E:\\sgs-tmp\\general-cloning\buttons\\woocommerce-buttons.patch"
+    }
+  ]
+}

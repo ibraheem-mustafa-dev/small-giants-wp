@@ -2348,5 +2348,23 @@
     "added_commit": null,
     "budget_ms": 15000,
     "order": 270
+  },
+  {
+    "id": "check-button-preset-names",
+    "cmd": "python scripts/check-button-preset-names.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 200,
+    "order": 271
+  },
+  {
+    "id": "check-button-preset-names-selftest",
+    "cmd": "python scripts/check-button-preset-names.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 100,
+    "order": 272
   }
 ]
