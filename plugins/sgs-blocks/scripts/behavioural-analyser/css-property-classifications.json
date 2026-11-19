@@ -42591,6 +42591,15 @@
       }
     },
     {
+      "slug": "sgs/hero",
+      "attr": "splitWidth",
+      "fields": {
+        "css_property": "width",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
       "slug": "sgs/icon",
       "attr": "borderColour",
       "fields": {
