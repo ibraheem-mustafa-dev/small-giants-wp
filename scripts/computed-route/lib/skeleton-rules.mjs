@@ -536,7 +536,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( ! control || ! ( specHit( R.backToTop, `${ text } ${ e.attrs?.[ 'aria-label' ] || '' }` ) || specHit( R.backToTop?.handlers, handlerOf( e ) ) ) ) {
 				return null;
 			}
-			return kidsB.length ? v( 'backToTop', { block: R.backToTop?.wholeBlock, attributes: { sgsBlockLinkSource: 'top' } } ) : v( 'backToTop', { block: R.backToTop?.lone, attributes: { linkSource: 'top', label: text } } );
+			// Words of the control's own beside a glyph (`<button>Back to top <span>↑</span></button>`) are a button's label: a
+			// container keeps only its child blocks, so those words would be lost; the button's glyph part takes the glyph.
+			const own = m.words( e );
+			return kidsB.length && ! own ? v( 'backToTop', { block: R.backToTop?.wholeBlock, attributes: { sgsBlockLinkSource: 'top' } } ) : v( 'backToTop', { block: R.backToTop?.lone, attributes: { linkSource: 'top', label: own || text } } );
 		},
 		( { e } ) => ( 'iframe' === e.tag && specHit( R.mapEmbed, srcOf( e ) ) ? v( 'mapEmbed', { block: R.mapEmbed?.block, attributes: { displayType: 'map' }, absorb: true, handover: { owner: 'site-info', kind: 'presence', detail: R.mapEmbed.handover } } ) : null ),
 		// A live open or closed line; a second line beside the first is part of the same display.

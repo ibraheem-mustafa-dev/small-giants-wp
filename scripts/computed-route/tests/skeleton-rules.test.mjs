@@ -144,6 +144,13 @@ test( 'backToTop: a back-to-top control holding a label and a glyph is a contain
 	assert.notEqual( byTag( run( tree, { facts: facts( 'backToTop' ) } ), 'button' ).rule, 'backToTop' );
 } );
 
+test( 'MUST FAIL: a back-to-top control whose words are its own beside a glyph is a button labelled with them, the glyph absorbed', () => {
+	const tree = section( [ E( 'button', { words: 'Back to top', attrs: { 'aria-label': 'Back to top' }, snippet: '<button sc-camel-on-click="{{ toTop }}">' }, [ E( 'span', {}, [ svg() ] ) ] ) ] );
+	const r = byTag( run( tree ), 'button' );
+	assert.deepEqual( [ r.block, r.rule, r.attributes.linkSource, r.attributes.label ], [ 'sgs/button', 'backToTop', 'top', 'Back to top' ] );
+	assert.equal( byTag( run( tree ), 'span' ).action, 'absorbed' );
+} );
+
 test( 'mapEmbed: an embedded Google map is business-info\'s map display; MUST FAIL without the rule', () => {
 	const tree = section( [ E( 'iframe', { snippet: '<iframe title="Map" src="https://maps.google.com/maps?q=B11&amp;output=embed" data-dc-tpl="2"></iframe>' } ) ] );
 	const r = byTag( run( tree ), 'iframe' );
