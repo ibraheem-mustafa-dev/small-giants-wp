@@ -3,7 +3,7 @@
 // Run: node scripts/computed-route/tools/run-tests.mjs tests/part-look-finder.test.mjs
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import test from 'node:test';
+import test, { after, before } from 'node:test';
 import { findPartsInPage, READ_PROPS } from '../lib/fill-part-look.mjs';
 import { loadChromium } from '../lib/fill-read.mjs';
 
@@ -36,17 +36,22 @@ const PAGE = `<!doctype html><body style="margin:0;font:16px sans-serif">
 <div style="position:fixed;right:0;top:0;width:300px;height:300px"><div><span>Basket</span><span>£15.00</span></div><a href="Checkout.html">Go</a></div>
 </body>`;
 
-async function locate( html, group = 'wc', pages = PAGES ) {
+// One browser and one page for the whole file: a launch or a new context per test is what makes the suite slow on a loaded machine.
+let browser;
+let page;
+before( async () => {
 	const { chromium } = await loadChromium();
-	const browser = await chromium.launch( { headless: true } );
-	try {
-		const page = await ( await browser.newContext( { viewport: { width: 1200, height: 800 } } ) ).newPage();
-		await page.setContent( html );
-		const g = LOCATORS.groups[ group ];
-		return await page.evaluate( findPartsInPage, { spec: { anchors: g.anchors, parts: g.parts }, names: Object.keys( g.parts ), props: READ_PROPS, pages } );
-	} finally {
-		await browser.close();
-	}
+	browser = await chromium.launch( { headless: true } );
+	page = await ( await browser.newContext( { viewport: { width: 1200, height: 800 } } ) ).newPage();
+} );
+after( async () => {
+	await browser?.close();
+} );
+
+async function locate( html, group = 'wc', pages = PAGES ) {
+	await page.setContent( html );
+	const g = LOCATORS.groups[ group ];
+	return page.evaluate( findPartsInPage, { spec: { anchors: g.anchors, parts: g.parts }, names: Object.keys( g.parts ), props: READ_PROPS, pages } );
 }
 
 const tags = ( list = [] ) => list.map( ( i ) => i.tag );
