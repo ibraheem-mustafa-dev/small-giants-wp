@@ -16,6 +16,7 @@ import { elementContext } from './fill-held.mjs';
 import { samePaint } from './css-equivalence/tolerance.mjs';
 import { fillLayerBox } from './fill-layer-box.mjs';
 import { tokenWrites } from './fill-token-ref.mjs';
+import { normalKeywords } from './fill-normal-keywords.mjs';
 import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, ledgerView, gapTarget, draftOf } from './fill-resolve-state.mjs';
 
 // Whether a resolver result writes only settings calibration measured painting `slot` itself (not ones that only reach it).
@@ -256,6 +257,11 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 				notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
 				continue;
 			}
+		}
+		// A `normal` letter-spacing or line-height is written as the value it renders (lib/fill-normal-keywords.mjs).
+		if ( ! layer ) {
+			const base = baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] );
+			draft = normalKeywords( prop, draft, { snaps, base: ( w ) => base( slot, w ) } ).draft;
 		}
 		const fluid = fluidSamples( st, target, layer, prop );
 		const alternates = layer ? [] : alternateSlots( cal, prop, draft, rec.targets.map( ( t ) => t.slot ), target.slot );

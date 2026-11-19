@@ -43,6 +43,21 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		snap.rect = { x: Math.round( r.x * 1000 ) / 1000, y: Math.round( ( r.y + window.scrollY ) * 1000 ) / 1000, w: Math.round( r.width * 1000 ) / 1000, h: Math.round( r.height * 1000 ) / 1000 };
 		snap.position = getComputedStyle( el ).position;
 		snap.inFlow = ! [ 'absolute', 'fixed' ].includes( snap.position );
+		// Where line-height computes to normal, the px height of one line box of the element's font at normal (the value
+		// lib/fill-normal-keywords.mjs writes in place of a keyword the setting cannot hold).
+		const lineCs = getComputedStyle( el );
+		if ( 'normal' === lineCs.lineHeight ) {
+			const probe = document.createElement( 'div' );
+			probe.style.cssText = 'position:absolute;visibility:hidden;left:-99999px;top:0;margin:0;padding:0;border:0;white-space:nowrap;line-height:normal';
+			for ( const p of [ 'font-family', 'font-size', 'font-weight', 'font-style', 'font-stretch', 'font-variant', 'font-feature-settings', 'font-variation-settings', 'font-optical-sizing' ] ) {
+				probe.style.setProperty( p, lineCs.getPropertyValue( p ) );
+			}
+			probe.textContent = 'Hg';
+			document.body.appendChild( probe );
+			const lh = probe.getBoundingClientRect().height;
+			probe.remove();
+			lh > 0 && ( snap.normalLineHeight = Math.round( lh * 1000 ) / 1000 );
+		}
 		snap.words = ( el.textContent || '' ).replace( /\s+/g, ' ' ).trim();
 		const anchors = el.matches( 'a[href]' ) ? [ el ] : [ ...el.querySelectorAll( 'a[href]' ) ];
 		const sole = 1 === anchors.length && ( el === anchors[ 0 ] || anchors[ 0 ].textContent.replace( /\s+/g, ' ' ).trim() === snap.words );

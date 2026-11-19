@@ -1,0 +1,9 @@
+[
+	{"file":"lib/fill-normal-keywords.mjs","find":"const px = 'letter-spacing' === prop ? 0 : Number( snaps[ w ]?.normalLineHeight );","replace":"const px = Number( snaps[ w ]?.normalLineHeight );","why":"letter-spacing normal would stay a keyword the setting cannot hold"},
+	{"file":"lib/fill-normal-keywords.mjs","find":"|| 'normal' === String( base( Number( w ) ) ?? '' ).trim()","replace":"","why":"a block already painting normal would be written a length"},
+	{"file":"lib/fill-normal-keywords.mjs","find":"if ( ! Number.isFinite( px ) || ( 'line-height' === prop && px <= 0 ) ) {","replace":"if ( false ) {","why":"an unmeasured line would be written as NaNpx"},
+	{"file":"lib/resolve.mjs","find":"fam.members.forEach( ( m ) => ( parts[ m ] = styles[ 0 ] ) );","replace":"void styles;","why":"a lone painted side would stay a shape gap"},
+	{"file":"lib/resolve.mjs","find":"if ( painted.length && 1 === styles.length && '' !== styles[ 0 ]","replace":"if ( painted.length && '' !== styles[ 0 ]","why":"two painted sides of different styles would fold to one"},
+	{"file":"lib/css-equivalence/keywords.mjs","find":"const edges = { ltr: { start: 'left', end: 'right' }, rtl: { start: 'right', end: 'left' } }[ dir ];","replace":"const edges = { start: 'left', end: 'right' };","why":"start would be left whatever the direction"},
+	{"file":"lib/css-equivalence/keywords.mjs","find":"return edges?.[ v ] ?? v;","replace":"return v;","why":"text-align start would match no enum value"}
+]
