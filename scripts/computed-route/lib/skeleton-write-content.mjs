@@ -7,6 +7,9 @@ import { blockMediaSlots } from './media/slots.mjs';
 import { itemSource } from './media/write.mjs';
 import { LOGO_HANDOVER } from './skeleton-write-units.mjs';
 import { elementHandler, handlerOf, linkWrite } from './draft-link.mjs';
+import fs from 'fs';
+import path from 'path';
+import { decodeEntities, loadDraft } from './intake-ast.mjs';
 
 // The words a draft's copyright line prints before its © mark (sgs/business-info prints `{copyrightPrefix} © {year} {line}`):
 // "Copyright © 2026 Acme" gives "Copyright", "© 2026 Acme" gives "" (the block then omits the word). A line with no mark
@@ -77,11 +80,172 @@ export function makeContent( ctx ) {
 		return opts.includes( want ) ? { layout: want } : {};
 	};
 
+	// The rich text of a heading whose children are all inline (lib/skeleton-classify.mjs, structural.inlineHeading), read in
+	// document order from the heading's own source in the draft file (the fact record's template number is its start tag's
+	// place among the template's tags, lib/intake-ast.mjs::loadDraft; the inventory's snippet is cut short): its words; an
+	// <img> as the Inline photo format with the media-map attachment of the file it draws (lib/skeleton-carried.mjs, as a
+	// logo's Source is carried); a word whose only children are bare positioned layers as the Highlight format; a bare layer
+	// holding no words is the format's own drawing and goes. Each child element in the source is the inventory's child in
+	// the same place. A photo the build cannot carry is a handover row and leaves the words. When the source cannot be read
+	// in order (no record entry, a binding or loop in it, a child that does not line up) the words are the element's rendered
+	// words in order and every photo is a handover row. Returns { html, handover }.
+	const VOID = new Set( [ 'img', 'br', 'wbr', 'hr', 'input', 'source' ] );
+	const TAG = /<\/?([a-zA-Z][\w-]*)\b[^>]*>/g;
+	const esc = ( x ) => String( x ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' ).replace( /"/g, '&quot;' );
+	// Words as a text setting holds them elsewhere in the skeleton: only the angle brackets escaped.
+	const escText = ( x ) => String( x ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' );
+	const drafts = new Map();
+	// An element's outer source in its draft file, or null.
+	const sourceOf = ( e ) => {
+		const t = view?.entry( e )?.template;
+		const folder = facts.repo && facts.client ? path.join( facts.repo, 'sites', facts.client, 'handoff' ) : null;
+		const file = t && folder ? `${ t.component }.dc.html` : null;
+		if ( ! file || ! fs.existsSync( path.join( folder, file ) ) ) {
+			return null;
+		}
+		drafts.has( file ) || drafts.set( file, loadDraft( folder, file ) );
+		const d = drafts.get( file );
+		const start = d.tags?.[ Number( t.n ) ];
+		if ( ! start || start.name.toLowerCase() !== String( t.tag || t.realTag ).toLowerCase() ) {
+			return null;
+		}
+		const re = new RegExp( TAG.source, 'g' );
+		re.lastIndex = start.index;
+		let depth = 0;
+		for ( let hit = re.exec( d.text ); hit; hit = re.exec( d.text ) ) {
+			const name = hit[ 1 ].toLowerCase();
+			if ( hit[ 0 ].startsWith( '</' ) ) {
+				depth--;
+			} else if ( ! VOID.has( name ) && ! hit[ 0 ].endsWith( '/>' ) ) {
+				depth++;
+			}
+			if ( depth <= 0 ) {
+				return d.text.slice( start.index, re.lastIndex );
+			}
+		}
+		return null;
+	};
+	// The parts directly inside an element's outer source: [{ text } | { tag, html }].
+	const topLevel = ( outer ) => {
+		const inner = String( outer || '' ).replace( /^<[^>]*>/, '' ).replace( /<\/[a-z0-9-]+>\s*$/i, '' );
+		const out = [];
+		const re = new RegExp( TAG.source, 'g' );
+		let depth = 0;
+		let last = 0;
+		let from = 0;
+		for ( let hit = re.exec( inner ); hit; hit = re.exec( inner ) ) {
+			0 === depth && hit.index > last && out.push( { text: inner.slice( last, hit.index ) } );
+			const name = hit[ 1 ].toLowerCase();
+			if ( hit[ 0 ].startsWith( '</' ) ) {
+				depth--;
+				0 === depth && out.push( { tag: out.pop().tag, html: inner.slice( from, re.lastIndex ) } );
+			} else if ( VOID.has( name ) || hit[ 0 ].endsWith( '/>' ) ) {
+				0 === depth && out.push( { tag: name, html: hit[ 0 ] } );
+			} else {
+				if ( 0 === depth ) {
+					from = hit.index;
+					out.push( { tag: name } );
+				}
+				depth++;
+			}
+			last = re.lastIndex;
+		}
+		last < inner.length && out.push( { text: inner.slice( last ) } );
+		return out;
+	};
+	const wordless = ( k ) => ! String( k.allText ?? m.words( k ) ).trim() && 'img' !== k.tag && ! m.kids( k ).some( ( x ) => 'img' === x.tag || ! wordless( x ) );
+	const positioned = ( k ) => /(?:^|;)\s*position\s*:\s*(?:absolute|fixed)/i.test( k.attrs?.style || '' );
+	// A worded child set apart from the words beside it (its own margin or padding, or a flex or grid parent's gap): a space
+	// keeps the two apart in the rich text, where its box is gone.
+	const apart = ( k, parent ) => /(?:^|;)\s*(?:margin|padding)[\w-]*\s*:\s*(?!0(?:px)?\s*(?:;|$))/i.test( k.attrs?.style || '' ) || /(?:^|;)\s*display\s*:\s*(?:inline-)?(?:flex|grid)/i.test( parent.attrs?.style || '' );
+	const join = ( a, b ) => ( a && b && ! /\s$/.test( a ) && ! /^\s/.test( b ) ? `${ a } ${ b }` : a + b );
+	function inlineContent( e ) {
+		const IH = facts.decisions.structural?.inlineHeading || {};
+		const handover = [];
+		const words = String( e.allText ?? m.words( e ) ).replace( /\s+/g, ' ' ).trim();
+		const filled = [];
+		const photoOf = ( img ) => {
+			const hit = carried?.logo( img, view ) ?? null;
+			if ( hit?.id && hit.url ) {
+				return `<img class="${ esc( IH.photoClass ) } wp-image-${ hit.id }" src="${ esc( hit.url ) }" alt="${ esc( img.attrs?.alt || '' ) }"/>`;
+			}
+			handover.push( { owner: 'content-page', kind: 'presence', detail: `the inline photo ${ img.attrs?.srcBasename || img.attrs?.src || '' } in the heading "${ words }": ${ hit?.reason || 'no media map is read for this run' }; insert it with the Inline photo format` } );
+			return '';
+		};
+		const render = ( x, outer ) => {
+			const parts = topLevel( outer );
+			const kids = m.kids( x );
+			if ( parts.filter( ( q ) => q.tag ).length !== kids.length ) {
+				return null;
+			}
+			let out = '';
+			let at = 0;
+			let gap = false;
+			// Text the draft's code fills (`{{ s.h }}`) is the element's rendered words when it is the element's only text.
+			const texts = parts.filter( ( q ) => undefined !== q.text && q.text.trim() );
+			for ( const part of parts ) {
+				if ( undefined !== part.text ) {
+					let text = decodeEntities( part.text );
+					if ( /\{\{|\}\}/.test( part.text ) ) {
+						if ( 1 !== texts.length ) {
+							return null;
+						}
+						text = ( /^\s/.test( part.text ) ? ' ' : '' ) + m.words( x ) + ( /\s$/.test( part.text ) ? ' ' : '' );
+						filled.push( part.text.replace( /\s+/g, ' ' ).trim() );
+					}
+					out = gap ? join( out, escText( text ) ) : out + escText( text );
+					gap = false;
+					continue;
+				}
+				const kid = kids[ at++ ];
+				if ( kid.tag !== part.tag ) {
+					return null;
+				}
+				if ( 'br' === kid.tag ) {
+					out += '<br>';
+				} else if ( 'img' === kid.tag ) {
+					out += photoOf( kid );
+				} else if ( ! wordless( kid ) ) {
+					const inner = render( kid, part.html );
+					if ( null === inner ) {
+						return null;
+					}
+					const marked = IH.highlightClass && m.words( kid ) && m.kids( kid ).length && m.kids( kid ).every( ( k ) => wordless( k ) && positioned( k ) );
+					const piece = marked ? `<span class="${ esc( IH.highlightClass ) }">${ inner }</span>` : inner;
+					out = apart( kid, x ) ? join( out, piece ) : out + piece;
+					gap = apart( kid, x );
+				}
+			}
+			return out;
+		};
+		const outer = sourceOf( e );
+		const html = outer ? render( e, outer ) : null;
+		const plain = ( h ) => decodeEntities( String( h ).replace( /<br>/g, ' ' ).replace( /<[^>]+>/g, '' ) ).replace( /\s+/g, ' ' ).trim();
+		if ( null !== html && plain( html ).replace( /\s/g, '' ) === words.replace( /\s/g, '' ) ) {
+			filled.length && handover.unshift( { owner: 'content-page', kind: 'text', detail: `the heading "${ words }" holds words the draft's code fills (${ filled.join( ', ' ) }): its rendered words are written` } );
+			return { html: html.replace( /\s+/g, ' ' ).trim(), handover };
+		}
+		const imgs = [];
+		const walk = ( x ) => m.kids( x ).forEach( ( k ) => ( 'img' === k.tag ? imgs.push( k ) : walk( k ) ) );
+		walk( e );
+		// The words the draft's code fills: the fact record's text holes of the heading and everything in it.
+		const holes = ( x ) => [ ...( view?.entry( x )?.template.holes || [] ).filter( ( h ) => 'text' === h.where ).map( ( h ) => `{{ ${ h.expr } }}` ), ...m.kids( x ).flatMap( holes ) ];
+		const bound = [ ...new Set( holes( e ) ) ];
+		const said = bound.length ? [ { owner: 'content-page', kind: 'text', detail: `the heading "${ words }" holds words the draft's code fills (${ bound.join( ', ' ) }): its rendered words are written` } ] : [];
+		return { html: escText( words ), handover: [ ...said, ...imgs.map( ( img ) => ( { owner: 'content-page', kind: 'presence', detail: `the inline photo ${ img.attrs?.srcBasename || img.attrs?.src || '' } in the heading "${ words }": its place among the words is not readable from the draft's source; insert it with the Inline photo format` } ) ) ] };
+	}
+
 	// The content settings of one element's block. Returns { a (attributes), handover }.
 	function contentAttrs( block, e, top ) {
 		const a = {};
 		const handover = [];
 		const t = m.words( e );
+		if ( top.inline && m.kids( e ).length ) {
+			const { text: textAttr } = skeletonSettings( facts, block );
+			const r = inlineContent( e );
+			textAttr && ( a[ textAttr ] = r.html );
+			return { a: { ...a, ...( top.attributes || {} ) }, handover: r.handover };
+		}
 		if ( facts.wrapperShells.includes( block ) ) {
 			a.tagName = ( enumOf( block, 'tagName' ) || [] ).includes( e.tag ) ? e.tag : 'div';
 			return { a: { ...a, ...layoutOf( block, e ) }, handover };
