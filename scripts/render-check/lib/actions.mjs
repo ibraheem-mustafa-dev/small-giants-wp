@@ -4,6 +4,8 @@
 //   { "click": "<selector>", "ifPresent": true }  click the first visible match; with ifPresent, no visible match
 //                                    means the page has no such part at this width (absent), not a failure
 //   { "waitFor": "<selector>" }      wait until a match is visible
+//   { "waitGone": "<selector>" }     wait until no match is visible (a basket drawer's loading row, so a side whose
+//                                    basket request is slower is not captured mid-load)
 //   { "scroll": <px> | "middle" | "end" }
 //   { "wait": <ms> }
 // Returns { fails, absent }: absent names the part a step needed and the page does not show at this width; the states
@@ -58,6 +60,9 @@ export async function runActions( page, actions ) {
 			}
 			if ( a.waitFor ) {
 				await page.waitForSelector( a.waitFor, { state: 'visible', timeout: 10000 } );
+			}
+			if ( a.waitGone ) {
+				await page.waitForSelector( a.waitGone, { state: 'hidden', timeout: 10000 } );
 			}
 			if ( a.scroll !== undefined ) {
 				await page.evaluate( ( y ) => {

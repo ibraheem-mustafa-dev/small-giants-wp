@@ -184,7 +184,7 @@ if ( ! empty( $rc_seed['woocommerce'] ) ) {
 		array(
 			'name'    => 'basket-drawer-empty',
 			'path'    => '/',
-			'actions' => array( array( 'open' => 'dialog.sgs-cart__panel' ) ),
+			'actions' => array( array( 'open' => 'dialog.sgs-cart__panel' ), array( 'waitGone' => '.sgs-cart__panel-loading' ) ),
 			'assert'  => array( 'dialog.sgs-cart__panel[open]' ),
 		)
 	);
@@ -193,7 +193,7 @@ if ( ! empty( $rc_seed['woocommerce'] ) ) {
 			'name'       => 'basket-drawer-filled',
 			'path'       => '/',
 			'basket'     => true,
-			'actions'    => array( array( 'open' => 'dialog.sgs-cart__panel' ) ),
+			'actions'    => array( array( 'open' => 'dialog.sgs-cart__panel' ), array( 'waitGone' => '.sgs-cart__panel-loading' ) ),
 			'assert'     => array( 'dialog.sgs-cart__panel[open]' ),
 			'assertText' => array( $rc_product['name'] ),
 		)
