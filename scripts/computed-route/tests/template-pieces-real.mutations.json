@@ -1,5 +1,6 @@
 [
-	{"file": "lib/template-pieces-context.mjs", "find": "\tif ( ! template || ! piecesFor( template, data ).length ) {", "replace": "\tif ( true ) {", "why": "the pass never runs"},
+	{"file": "lib/template-pieces-context.mjs", "find": "\tif ( ! template || ! piecesFor( template, data ).some( ( p ) => ! CHECKED_ONLY.includes( p.kind ) ) ) {", "replace": "\tif ( true ) {", "why": "the pass never runs"},
+	{"file": "lib/template-pieces-context.mjs", "find": "\tif ( ! template || ! piecesFor( template, data ).some( ( p ) => ! CHECKED_ONLY.includes( p.kind ) ) ) {", "replace": "\tif ( ! template || ! piecesFor( template, data ).length ) {", "why": "a theme piece the skeleton never holds is a problem at propose"},
 	{"file": "lib/template-pieces-context.mjs", "find": "export const BUILDERS = { buybox, 'product-field': productField, 'shop-sort': shopSort };", "replace": "export const BUILDERS = { buybox, 'product-field': productField };", "why": "the shop's builder is not handed to the pass"},
 	{"file": "lib/template-pieces-context.mjs", "find": "\t\tadd( 'description', descriptionField( ctx, l.records, [ ...taken, img.image, img.gallery ].filter( Boolean ) ) );", "replace": "", "why": "the description field is not read"},
 	{"file": "lib/template-pieces-context.mjs", "find": "\t\tadd( 'image', img.gallery );", "replace": "", "why": "the gallery field is not read"},

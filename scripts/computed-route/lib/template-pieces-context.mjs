@@ -6,11 +6,11 @@
 //   - `shopParts`: sites/<client>/build/shop-parts.json (lib/fill-shop-parts.mjs::loadShopParts), null when absent;
 //   - `draftFile` and `draftSource`: the surface's draft file (surfaces.json `draftIndex`) and its text, for the logic;
 //   - `productFields`: the fields of the draft's product records the catalogue reader finds (productFieldsOf).
-// A surface whose entry builds no template, or a template the map names no piece for, is returned unchanged.
+// A surface whose entry builds no template, or a template the map names no builder's piece for, is returned unchanged.
 import fs from 'node:fs';
 import path from 'node:path';
 import { loadShopParts } from './fill-shop-parts.mjs';
-import { loadPieces, piecesFor, placePieces } from './template-pieces.mjs';
+import { CHECKED_ONLY, loadPieces, piecesFor, placePieces } from './template-pieces.mjs';
 import { catalogueSources } from './catalogue-source.mjs';
 import { descriptionField, imageFields, recordLists } from './catalogue-records.mjs';
 import * as buybox from './template-piece-buybox.mjs';
@@ -62,10 +62,12 @@ export function pieceContext( { repo, client, entry, inventory } ) {
 }
 
 // The pass over one proposed skeleton: { tree, placed, problems, notes, template }, the tree unchanged (and every list
-// empty) when the surface builds no template the map names a piece for.
+// empty) when the surface builds no template the map names a builder's piece for. A template whose pieces are all a
+// rule's or the theme's is not checked here: a theme piece arrives only when the template copy is made
+// (lib/template-copies.mjs::themeContent), so a skeleton never holds it.
 export function piecesPass( { repo, client, entry, tree, inventory, data = loadPieces(), builders = BUILDERS } ) {
 	const template = entry?.target?.template || null;
-	if ( ! template || ! piecesFor( template, data ).length ) {
+	if ( ! template || ! piecesFor( template, data ).some( ( p ) => ! CHECKED_ONLY.includes( p.kind ) ) ) {
 		return { tree, placed: [], problems: [], notes: [], template };
 	}
 	return { ...placePieces( { key: template, tree, data, ctx: pieceContext( { repo, client, entry, inventory } ), builders } ), template };
