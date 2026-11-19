@@ -1,0 +1,1705 @@
+{
+ "_about": "Eye Care's order-confirmation (done) elements of sites/eye-care-ward-end/build/intake/facts.json (template and logic only, the main at tpl 843 and below), taken 2026-11-19 for tests/template-piece-order.test.mjs",
+ "elements": {
+  "Eye Care Birmingham/843": {
+   "template": {
+    "key": "Eye Care Birmingham/843",
+    "component": "Eye Care Birmingham",
+    "n": "843",
+    "tag": "main",
+    "realTag": "main",
+    "attrs": {
+     "class": "sgs-page-order-confirmed",
+     "data-screen-label": "Order confirmed"
+    },
+    "style": {
+     "static": [
+      [
+       "max-width",
+       "720px"
+      ],
+      [
+       "margin-top",
+       "0px"
+      ],
+      [
+       "margin-right",
+       "auto"
+      ],
+      [
+       "margin-bottom",
+       "0px"
+      ],
+      [
+       "margin-left",
+       "auto"
+      ],
+      [
+       "text-align",
+       "center"
+      ]
+     ],
+     "holes": [
+      "style:padding#0"
+     ]
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "style:padding#0",
+      "where": "style:padding",
+      "expr": "pagePad",
+      "path": "pagePad",
+      "whole": true
+     }
+    ],
+    "parent": "Eye Care Birmingham/842",
+    "realParent": "Eye Care Birmingham/6",
+    "parentChain": [
+     "Eye Care Birmingham/842",
+     "Eye Care Birmingham/6",
+     "Eye Care Birmingham/5"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Eye Care Birmingham/842",
+       "value": "{{ isDone }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {
+     "data-screen-label": "Order confirmed"
+    },
+    "events": [],
+    "words": "",
+    "srcLine": 1638
+   },
+   "logic": {
+    "holes": {
+     "style:padding#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "28px 20px 60px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "48px 52px 90px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "48px 52px 90px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Eye Care Birmingham/844": {
+   "template": {
+    "key": "Eye Care Birmingham/844",
+    "component": "Eye Care Birmingham",
+    "n": "844",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "width",
+       "64px"
+      ],
+      [
+       "height",
+       "64px"
+      ],
+      [
+       "border-top-left-radius",
+       "50%"
+      ],
+      [
+       "border-top-right-radius",
+       "50%"
+      ],
+      [
+       "border-bottom-right-radius",
+       "50%"
+      ],
+      [
+       "border-bottom-left-radius",
+       "50%"
+      ],
+      [
+       "background",
+       "var(--acc,#9C8B78)",
+       "unexpanded"
+      ],
+      [
+       "color",
+       "rgb(255, 255, 255)"
+      ],
+      [
+       "display",
+       "inline-flex"
+      ],
+      [
+       "align-items",
+       "center"
+      ],
+      [
+       "justify-content",
+       "center"
+      ],
+      [
+       "font-size",
+       "26px"
+      ],
+      [
+       "animation-duration",
+       "0.6s"
+      ],
+      [
+       "animation-timing-function",
+       "ease"
+      ],
+      [
+       "animation-delay",
+       "0s"
+      ],
+      [
+       "animation-iteration-count",
+       "1"
+      ],
+      [
+       "animation-direction",
+       "normal"
+      ],
+      [
+       "animation-fill-mode",
+       "both"
+      ],
+      [
+       "animation-play-state",
+       "running"
+      ],
+      [
+       "animation-name",
+       "pop"
+      ],
+      [
+       "animation-timeline",
+       "auto"
+      ],
+      [
+       "animation-range-start",
+       "normal"
+      ],
+      [
+       "animation-range-end",
+       "normal"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Eye Care Birmingham/843",
+    "realParent": "Eye Care Birmingham/843",
+    "parentChain": [
+     "Eye Care Birmingham/843",
+     "Eye Care Birmingham/842",
+     "Eye Care Birmingham/6",
+     "Eye Care Birmingham/5"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Eye Care Birmingham/842",
+       "value": "{{ isDone }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "✓",
+    "srcLine": 1639
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Eye Care Birmingham/845": {
+   "template": {
+    "key": "Eye Care Birmingham/845",
+    "component": "Eye Care Birmingham",
+    "n": "845",
+    "tag": "h1",
+    "realTag": "h1",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "margin-top",
+       "24px"
+      ],
+      [
+       "margin-right",
+       "0px"
+      ],
+      [
+       "margin-bottom",
+       "12px"
+      ],
+      [
+       "margin-left",
+       "0px"
+      ],
+      [
+       "font-family",
+       "\"Playfair Display\", serif"
+      ],
+      [
+       "font-weight",
+       "500"
+      ],
+      [
+       "line-height",
+       "1.05"
+      ],
+      [
+       "animation-duration",
+       "0.6s"
+      ],
+      [
+       "animation-timing-function",
+       "ease"
+      ],
+      [
+       "animation-delay",
+       "0s"
+      ],
+      [
+       "animation-iteration-count",
+       "1"
+      ],
+      [
+       "animation-direction",
+       "normal"
+      ],
+      [
+       "animation-fill-mode",
+       "both"
+      ],
+      [
+       "animation-play-state",
+       "running"
+      ],
+      [
+       "animation-name",
+       "rise"
+      ],
+      [
+       "animation-timeline",
+       "auto"
+      ],
+      [
+       "animation-range-start",
+       "normal"
+      ],
+      [
+       "animation-range-end",
+       "normal"
+      ]
+     ],
+     "holes": [
+      "style:font-size#0"
+     ]
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "style:font-size#0",
+      "where": "style:font-size",
+      "expr": "h1",
+      "path": "h1",
+      "whole": true
+     }
+    ],
+    "parent": "Eye Care Birmingham/843",
+    "realParent": "Eye Care Birmingham/843",
+    "parentChain": [
+     "Eye Care Birmingham/843",
+     "Eye Care Birmingham/842",
+     "Eye Care Birmingham/6",
+     "Eye Care Birmingham/5"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Eye Care Birmingham/842",
+       "value": "{{ isDone }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Thank you — order EC-10482.",
+    "srcLine": 1640
+   },
+   "logic": {
+    "holes": {
+     "style:font-size#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "34px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "48px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "48px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Eye Care Birmingham/846": {
+   "template": {
+    "key": "Eye Care Birmingham/846",
+    "component": "Eye Care Birmingham",
+    "n": "846",
+    "tag": "p",
+    "realTag": "p",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "margin-top",
+       "0px"
+      ],
+      [
+       "margin-right",
+       "0px"
+      ],
+      [
+       "margin-bottom",
+       "28px"
+      ],
+      [
+       "margin-left",
+       "0px"
+      ],
+      [
+       "color",
+       "rgb(94, 88, 79)"
+      ],
+      [
+       "font-size",
+       "16.5px"
+      ],
+      [
+       "text-wrap-mode",
+       "initial"
+      ],
+      [
+       "text-wrap-style",
+       "pretty"
+      ],
+      [
+       "animation-duration",
+       "0.7s"
+      ],
+      [
+       "animation-timing-function",
+       "ease"
+      ],
+      [
+       "animation-delay",
+       "0s"
+      ],
+      [
+       "animation-iteration-count",
+       "1"
+      ],
+      [
+       "animation-direction",
+       "normal"
+      ],
+      [
+       "animation-fill-mode",
+       "both"
+      ],
+      [
+       "animation-play-state",
+       "running"
+      ],
+      [
+       "animation-name",
+       "rise"
+      ],
+      [
+       "animation-timeline",
+       "auto"
+      ],
+      [
+       "animation-range-start",
+       "normal"
+      ],
+      [
+       "animation-range-end",
+       "normal"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "doneNote",
+      "path": "doneNote",
+      "whole": false
+     }
+    ],
+    "parent": "Eye Care Birmingham/843",
+    "realParent": "Eye Care Birmingham/843",
+    "parentChain": [
+     "Eye Care Birmingham/843",
+     "Eye Care Birmingham/842",
+     "Eye Care Birmingham/6",
+     "Eye Care Birmingham/5"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Eye Care Birmingham/842",
+       "value": "{{ isDone }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "{{ doneNote }}",
+    "srcLine": 1641
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Confirmation is on its way by email and WhatsApp. Frames post within one working day; prescription lenses take 7 to 10."
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Confirmation is on its way by email and WhatsApp. Frames post within one working day; prescription lenses take 7 to 10."
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Confirmation is on its way by email and WhatsApp. Frames post within one working day; prescription lenses take 7 to 10."
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Eye Care Birmingham/847": {
+   "template": {
+    "key": "Eye Care Birmingham/847",
+    "component": "Eye Care Birmingham",
+    "n": "847",
+    "tag": "sc-if",
+    "realTag": "sc-if",
+    "attrs": {
+     "value": "{{ doneHasAccount }}",
+     "hint-placeholder-val": "{{ false }}"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "attr:value#0",
+      "where": "attr:value",
+      "expr": "doneHasAccount",
+      "path": "doneHasAccount",
+      "whole": true
+     },
+     {
+      "id": "attr:hint-placeholder-val#1",
+      "where": "attr:hint-placeholder-val",
+      "expr": "false",
+      "path": "false",
+      "whole": true
+     }
+    ],
+    "parent": "Eye Care Birmingham/843",
+    "realParent": "Eye Care Birmingham/843",
+    "parentChain": [
+     "Eye Care Birmingham/843",
+     "Eye Care Birmingham/842",
+     "Eye Care Birmingham/6",
+     "Eye Care Birmingham/5"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Eye Care Birmingham/842",
+       "value": "{{ isDone }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {
+     "value": "{{ doneHasAccount }}"
+    },
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 1642
+   },
+   "logic": {
+    "holes": {
+     "attr:value#0": {
+      "375": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     },
+     "attr:hint-placeholder-val#1": {
+      "375": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    },
+    "width": null
+   }
+  },
+  "Eye Care Birmingham/848": {
+   "template": {
+    "key": "Eye Care Birmingham/848",
+    "component": "Eye Care Birmingham",
+    "n": "848",
+    "tag": "p",
+    "realTag": "p",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "margin-top",
+       "-12px"
+      ],
+      [
+       "margin-right",
+       "0px"
+      ],
+      [
+       "margin-bottom",
+       "28px"
+      ],
+      [
+       "margin-left",
+       "0px"
+      ],
+      [
+       "color",
+       "rgb(94, 88, 79)"
+      ],
+      [
+       "font-size",
+       "15px"
+      ],
+      [
+       "text-wrap-mode",
+       "initial"
+      ],
+      [
+       "text-wrap-style",
+       "pretty"
+      ],
+      [
+       "animation-duration",
+       "0.75s"
+      ],
+      [
+       "animation-timing-function",
+       "ease"
+      ],
+      [
+       "animation-delay",
+       "0s"
+      ],
+      [
+       "animation-iteration-count",
+       "1"
+      ],
+      [
+       "animation-direction",
+       "normal"
+      ],
+      [
+       "animation-fill-mode",
+       "both"
+      ],
+      [
+       "animation-play-state",
+       "running"
+      ],
+      [
+       "animation-name",
+       "rise"
+      ],
+      [
+       "animation-timeline",
+       "auto"
+      ],
+      [
+       "animation-range-start",
+       "normal"
+      ],
+      [
+       "animation-range-end",
+       "normal"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "doneAccountNote",
+      "path": "doneAccountNote",
+      "whole": false
+     }
+    ],
+    "parent": "Eye Care Birmingham/847",
+    "realParent": "Eye Care Birmingham/843",
+    "parentChain": [
+     "Eye Care Birmingham/847",
+     "Eye Care Birmingham/843",
+     "Eye Care Birmingham/842",
+     "Eye Care Birmingham/6",
+     "Eye Care Birmingham/5"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Eye Care Birmingham/847",
+       "value": "{{ doneHasAccount }}"
+      },
+      {
+       "key": "Eye Care Birmingham/842",
+       "value": "{{ isDone }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "{{ doneAccountNote }}",
+    "srcLine": 1643
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "It is saved in My account, where you can follow its progress."
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "It is saved in My account, where you can follow its progress."
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "It is saved in My account, where you can follow its progress."
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Eye Care Birmingham/849": {
+   "template": {
+    "key": "Eye Care Birmingham/849",
+    "component": "Eye Care Birmingham",
+    "n": "849",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "row-gap",
+       "10px"
+      ],
+      [
+       "column-gap",
+       "10px"
+      ],
+      [
+       "justify-content",
+       "center"
+      ],
+      [
+       "flex-wrap",
+       "wrap"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Eye Care Birmingham/843",
+    "realParent": "Eye Care Birmingham/843",
+    "parentChain": [
+     "Eye Care Birmingham/843",
+     "Eye Care Birmingham/842",
+     "Eye Care Birmingham/6",
+     "Eye Care Birmingham/5"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Eye Care Birmingham/842",
+       "value": "{{ isDone }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 1645
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Eye Care Birmingham/850": {
+   "template": {
+    "key": "Eye Care Birmingham/850",
+    "component": "Eye Care Birmingham",
+    "n": "850",
+    "tag": "button",
+    "realTag": "button",
+    "attrs": {
+     "onClick": "{{ goSun }}"
+    },
+    "style": {
+     "static": [
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(20, 20, 20)"
+      ],
+      [
+       "color",
+       "rgb(250, 248, 245)"
+      ],
+      [
+       "border-top-width",
+       "0px"
+      ],
+      [
+       "border-right-width",
+       "0px"
+      ],
+      [
+       "border-bottom-width",
+       "0px"
+      ],
+      [
+       "border-left-width",
+       "0px"
+      ],
+      [
+       "border-top-style",
+       "initial"
+      ],
+      [
+       "border-right-style",
+       "initial"
+      ],
+      [
+       "border-bottom-style",
+       "initial"
+      ],
+      [
+       "border-left-style",
+       "initial"
+      ],
+      [
+       "border-top-color",
+       "initial"
+      ],
+      [
+       "border-right-color",
+       "initial"
+      ],
+      [
+       "border-bottom-color",
+       "initial"
+      ],
+      [
+       "border-left-color",
+       "initial"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "padding-top",
+       "0px"
+      ],
+      [
+       "padding-right",
+       "26px"
+      ],
+      [
+       "padding-bottom",
+       "0px"
+      ],
+      [
+       "padding-left",
+       "26px"
+      ],
+      [
+       "min-height",
+       "50px"
+      ],
+      [
+       "font-size",
+       "13px"
+      ],
+      [
+       "letter-spacing",
+       "0.1em"
+      ],
+      [
+       "text-transform",
+       "uppercase"
+      ],
+      [
+       "animation-duration",
+       "0.8s"
+      ],
+      [
+       "animation-timing-function",
+       "ease"
+      ],
+      [
+       "animation-delay",
+       "0s"
+      ],
+      [
+       "animation-iteration-count",
+       "1"
+      ],
+      [
+       "animation-direction",
+       "normal"
+      ],
+      [
+       "animation-fill-mode",
+       "both"
+      ],
+      [
+       "animation-play-state",
+       "running"
+      ],
+      [
+       "animation-name",
+       "rise"
+      ],
+      [
+       "animation-timeline",
+       "auto"
+      ],
+      [
+       "animation-range-start",
+       "normal"
+      ],
+      [
+       "animation-range-end",
+       "normal"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "attr:onClick#0",
+      "where": "attr:onClick",
+      "expr": "goSun",
+      "path": "goSun",
+      "whole": true
+     }
+    ],
+    "parent": "Eye Care Birmingham/849",
+    "realParent": "Eye Care Birmingham/849",
+    "parentChain": [
+     "Eye Care Birmingham/849",
+     "Eye Care Birmingham/843",
+     "Eye Care Birmingham/842",
+     "Eye Care Birmingham/6",
+     "Eye Care Birmingham/5"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Eye Care Birmingham/842",
+       "value": "{{ isDone }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [
+     {
+      "name": "onClick",
+      "expr": "goSun"
+     }
+    ],
+    "words": "Back to the shop",
+    "srcLine": 1646
+   },
+   "logic": {
+    "holes": {
+     "attr:onClick#0": {
+      "375": {
+       "v": [
+        {
+         "t": "function"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "function"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "function"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Eye Care Birmingham/851": {
+   "template": {
+    "key": "Eye Care Birmingham/851",
+    "component": "Eye Care Birmingham",
+    "n": "851",
+    "tag": "sc-if",
+    "realTag": "sc-if",
+    "attrs": {
+     "value": "{{ doneHasAccount }}",
+     "hint-placeholder-val": "{{ false }}"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "attr:value#0",
+      "where": "attr:value",
+      "expr": "doneHasAccount",
+      "path": "doneHasAccount",
+      "whole": true
+     },
+     {
+      "id": "attr:hint-placeholder-val#1",
+      "where": "attr:hint-placeholder-val",
+      "expr": "false",
+      "path": "false",
+      "whole": true
+     }
+    ],
+    "parent": "Eye Care Birmingham/849",
+    "realParent": "Eye Care Birmingham/849",
+    "parentChain": [
+     "Eye Care Birmingham/849",
+     "Eye Care Birmingham/843",
+     "Eye Care Birmingham/842",
+     "Eye Care Birmingham/6",
+     "Eye Care Birmingham/5"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Eye Care Birmingham/842",
+       "value": "{{ isDone }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {
+     "value": "{{ doneHasAccount }}"
+    },
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 1647
+   },
+   "logic": {
+    "holes": {
+     "attr:value#0": {
+      "375": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     },
+     "attr:hint-placeholder-val#1": {
+      "375": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    },
+    "width": null
+   }
+  },
+  "Eye Care Birmingham/852": {
+   "template": {
+    "key": "Eye Care Birmingham/852",
+    "component": "Eye Care Birmingham",
+    "n": "852",
+    "tag": "button",
+    "realTag": "button",
+    "attrs": {
+     "onClick": "{{ goOrders }}"
+    },
+    "style": {
+     "static": [
+      [
+       "background-image",
+       "none"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "initial"
+      ],
+      [
+       "color",
+       "rgb(20, 20, 20)"
+      ],
+      [
+       "border-top-width",
+       "1px"
+      ],
+      [
+       "border-right-width",
+       "1px"
+      ],
+      [
+       "border-bottom-width",
+       "1px"
+      ],
+      [
+       "border-left-width",
+       "1px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(20, 20, 20)"
+      ],
+      [
+       "border-right-color",
+       "rgb(20, 20, 20)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(20, 20, 20)"
+      ],
+      [
+       "border-left-color",
+       "rgb(20, 20, 20)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "padding-top",
+       "0px"
+      ],
+      [
+       "padding-right",
+       "26px"
+      ],
+      [
+       "padding-bottom",
+       "0px"
+      ],
+      [
+       "padding-left",
+       "26px"
+      ],
+      [
+       "min-height",
+       "50px"
+      ],
+      [
+       "font-size",
+       "13px"
+      ],
+      [
+       "letter-spacing",
+       "0.1em"
+      ],
+      [
+       "text-transform",
+       "uppercase"
+      ],
+      [
+       "animation-duration",
+       "0.8s"
+      ],
+      [
+       "animation-timing-function",
+       "ease"
+      ],
+      [
+       "animation-delay",
+       "0s"
+      ],
+      [
+       "animation-iteration-count",
+       "1"
+      ],
+      [
+       "animation-direction",
+       "normal"
+      ],
+      [
+       "animation-fill-mode",
+       "both"
+      ],
+      [
+       "animation-play-state",
+       "running"
+      ],
+      [
+       "animation-name",
+       "rise"
+      ],
+      [
+       "animation-timeline",
+       "auto"
+      ],
+      [
+       "animation-range-start",
+       "normal"
+      ],
+      [
+       "animation-range-end",
+       "normal"
+      ],
+      [
+       "transition-behavior",
+       "normal, normal"
+      ],
+      [
+       "transition-duration",
+       "0.25s, 0.25s"
+      ],
+      [
+       "transition-timing-function",
+       "ease, ease"
+      ],
+      [
+       "transition-delay",
+       "0s, 0s"
+      ],
+      [
+       "transition-property",
+       "background, color"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {
+     "hover": {
+      "static": [
+       [
+        "background-image",
+        "initial"
+       ],
+       [
+        "background-position-x",
+        "initial"
+       ],
+       [
+        "background-position-y",
+        "initial"
+       ],
+       [
+        "background-size",
+        "initial"
+       ],
+       [
+        "background-repeat",
+        "initial"
+       ],
+       [
+        "background-attachment",
+        "initial"
+       ],
+       [
+        "background-origin",
+        "initial"
+       ],
+       [
+        "background-clip",
+        "initial"
+       ],
+       [
+        "background-color",
+        "rgb(20, 20, 20)"
+       ],
+       [
+        "color",
+        "rgb(250, 248, 245)"
+       ]
+      ],
+      "holes": []
+     }
+    },
+    "holes": [
+     {
+      "id": "attr:onClick#0",
+      "where": "attr:onClick",
+      "expr": "goOrders",
+      "path": "goOrders",
+      "whole": true
+     }
+    ],
+    "parent": "Eye Care Birmingham/851",
+    "realParent": "Eye Care Birmingham/849",
+    "parentChain": [
+     "Eye Care Birmingham/851",
+     "Eye Care Birmingham/849",
+     "Eye Care Birmingham/843",
+     "Eye Care Birmingham/842",
+     "Eye Care Birmingham/6",
+     "Eye Care Birmingham/5"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Eye Care Birmingham/851",
+       "value": "{{ doneHasAccount }}"
+      },
+      {
+       "key": "Eye Care Birmingham/842",
+       "value": "{{ isDone }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [
+     {
+      "name": "onClick",
+      "expr": "goOrders"
+     }
+    ],
+    "words": "View my orders",
+    "srcLine": 1648
+   },
+   "logic": {
+    "holes": {
+     "attr:onClick#0": {
+      "375": {
+       "v": [
+        {
+         "t": "function"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "function"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "function"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  }
+ }
+}
