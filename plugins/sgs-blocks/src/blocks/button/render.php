@@ -41,6 +41,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-add-to-basket.php
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-site-info-label.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-icon-circle.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-focus.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-preset-names.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-press.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-icon-gap-hover.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-link-underline.php';
@@ -56,6 +57,11 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-inner-kses.php';
 // data attribute for support/debugging (e.g. "which buttons are still on
 // their original preset vs hand-tweaked").
 $inherit_style = isset( $attributes['inheritStyle'] ) ? sanitize_text_field( $attributes['inheritStyle'] ) : 'primary';
+// The style is `link`, `custom` or a preset name (helpers-button-preset-names.php: the starters, and the snapshot's own
+// names on a site that opted in); any other value falls back to the default, primary.
+if ( ! in_array( $inherit_style, array( 'link', 'custom' ), true ) ) {
+	$inherit_style = '' !== sgs_button_preset_resolve( $inherit_style ) ? sgs_button_preset_resolve( $inherit_style ) : 'primary';
+}
 $label         = isset( $attributes['label'] ) ? $attributes['label'] : 'Click Here';
 
 // LINK contract (Spec 35 §2 / D609 row-opens-popover shape) — internal-link
@@ -436,7 +442,7 @@ if ( $has_border_width ) {
 // A preset class supplies border-style:solid, so a preset button only needs a
 // non-solid override; a preset-less (custom) button has no style of its own, so
 // its width paints with the resolved style ('' = solid, helpers-border-style.php).
-$border_style_is_preset = in_array( $inherit_style, array( 'primary', 'secondary', 'outline' ), true );
+$border_style_is_preset = ! in_array( $inherit_style, array( 'link', 'custom' ), true );
 $border_style_has_width = $has_border_width_any || $border_style_is_preset;
 $border_style_resolved  = sgs_border_style_keyword( $border_style );
 if ( ( $has_border_width_any && ! $border_style_is_preset ) || ( $border_style_has_width && 'solid' !== $border_style_resolved ) ) {
@@ -739,7 +745,7 @@ if ( $has_width_tier || in_array( $width_type, array( 'custom', 'full', 'fit' ),
 // value emits NO modifier — the neutral base `.sgs-button` + any per-instance
 // override vars govern (so a naked cloned link is NOT forced to a primary look).
 $btn_classes = array( 'sgs-button' );
-if ( in_array( $inherit_style, array( 'primary', 'secondary', 'outline', 'link' ), true ) ) {
+if ( 'custom' !== $inherit_style ) {
 	$btn_classes[] = 'sgs-button--' . $inherit_style;
 }
 // builtInHoverLift off: the style's own hover movement is dropped (style.css, .sgs-button--hover-still).
@@ -918,8 +924,7 @@ $btn_style_str = $inline_styles ? implode( ';', $inline_styles ) . ';' : '';
 $btn_class_str = implode( ' ', $btn_classes );
 
 // Whitelist to prevent arbitrary attribute-value injection.
-$allowed_presets    = array( 'primary', 'secondary', 'outline', 'link' );
-$safe_inherit_style = in_array( $inherit_style, $allowed_presets, true ) ? $inherit_style : 'primary';
+$safe_inherit_style = 'custom' === $inherit_style ? 'primary' : $inherit_style;
 
 // The <a>/<button> IS the block root (no intermediate wrapper div — D288): the
 // button's own identity class + inline styles merge into the block-wrapper attrs

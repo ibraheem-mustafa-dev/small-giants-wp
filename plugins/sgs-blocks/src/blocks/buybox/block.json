@@ -2147,13 +2147,7 @@
 		"addToCartStyle": {
 			"type": "string",
 			"default": "",
-			"enum": [
-				"",
-				"primary",
-				"secondary",
-				"outline"
-			],
-			"description": "Add-to-cart button style preset (matches the SGS button presets). Empty = today's accent-colour look."
+			"description": "Add-to-cart button style preset (matches the SGS button presets: primary, secondary, outline, and the snapshot's own names on a site that sets namedButtonPresets). Empty = today's accent-colour look."
 		},
 		"addToCartShowPrice": {
 			"type": "boolean",

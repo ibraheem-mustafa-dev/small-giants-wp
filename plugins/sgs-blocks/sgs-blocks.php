@@ -342,6 +342,9 @@ require_once SGS_BLOCKS_PATH . 'includes/custom-css.php';
 // re-show the Appearance > Customize link for a block theme (wp-admin/menu.php:246).
 require_once SGS_BLOCKS_PATH . 'includes/class-button-presets-customiser.php';
 
+// Button preset names (the starters, and a site's own when it opts in) and the CSS a name needs.
+require_once SGS_BLOCKS_PATH . 'includes/helpers-button-preset-names.php';
+
 // Button preset hover transform split into lift, scale and rotate (a button's own Motion hover replaces only the matching part).
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-button-hover-parts.php';
 \SGS\Blocks\Sgs_Button_Hover_Parts::register();

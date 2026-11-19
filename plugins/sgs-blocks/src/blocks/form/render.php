@@ -37,6 +37,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-form-submit-motion.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-preset.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-form-own-submit.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
@@ -307,6 +308,17 @@ if ( '' !== $sgs_form_preset_text ) {
 if ( '' !== $sgs_form_preset_bg ) {
 	$sgs_form_supports_classes[] = 'has-background';
 	$sgs_form_supports_classes[] = 'has-' . $sgs_form_preset_bg . '-background-color';
+}
+
+// A button preset name beyond the starters (resolved only on a site that opted in to named presets, helpers-button-preset-names.php) paints
+// the submit button's whole preset: resting look, hover colours, lift, timing and shadow. It prints before the button's own
+// colour, border and size rules below, which share its selector and so still win.
+$sgs_form_submit_preset = in_array( $submit_style, SGS_BUTTON_STARTER_PRESETS, true ) ? '' : sgs_button_preset_resolve( (string) $submit_style );
+if ( '' !== $sgs_form_submit_preset ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_supports_css .= sgs_button_preset_css( '.' . $sgs_form_uid . ' .sgs-form__button--submit', $sgs_form_submit_preset );
 }
 
 // Submit button colour — moved from inline style="" (contract §A) into a

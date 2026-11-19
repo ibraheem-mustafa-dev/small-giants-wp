@@ -1,0 +1,140 @@
+[
+ {
+  "file": "includes/helpers-button-preset-names.php",
+  "find": "return true === sgs_global_custom_setting( 'namedButtonPresets' );",
+  "replace": "return true;",
+  "why": "the switch is always on: an unopted site would accept the names"
+ },
+ {
+  "file": "includes/helpers-button-preset-names.php",
+  "find": "return true === sgs_global_custom_setting( 'namedButtonPresets' );",
+  "replace": "return false;",
+  "why": "the switch is always off: no site can opt in"
+ },
+ {
+  "file": "includes/helpers-button-preset-names.php",
+  "find": "'' !== $slug && ! in_array( $slug, SGS_BUTTON_RESERVED_STYLES, true ) && is_array( $roles )",
+  "replace": "'' !== $slug && is_array( $roles )",
+  "why": "link, custom and default would be preset names"
+ },
+ {
+  "file": "includes/helpers-button-preset-names.php",
+  "find": "'' !== $slug && in_array( $slug, sgs_button_preset_names(), true ) ? $slug : ''",
+  "replace": "'' !== $slug ? $slug : ''",
+  "why": "any string would resolve to a name"
+ },
+ {
+  "file": "includes/helpers-button-preset-names.php",
+  "find": "\t\t\tif ( ! in_array( $slug, SGS_BUTTON_STARTER_PRESETS, true ) ) {\n\t\t\t\t$css .= '.sgs-button.sgs-button--'",
+  "replace": "\t\t\tif ( false ) {\n\t\t\t\t$css .= '.sgs-button.sgs-button--'",
+  "why": "a name beyond the starters gets no rule"
+ },
+ {
+  "file": "includes/helpers-button-preset-names.php",
+  "find": "if ( sgs_button_preset_has_role( $slug, 'shadow' ) ) {",
+  "replace": "if ( false ) {",
+  "why": "the resting shadow is not printed"
+ },
+ {
+  "file": "includes/helpers-button-preset-names.php",
+  "find": "if ( sgs_button_preset_has_role( $slug, 'hover-shadow' ) ) {",
+  "replace": "if ( false ) {",
+  "why": "the hover shadow is not printed"
+ },
+ {
+  "file": "includes/helpers-button-preset-names.php",
+  "find": "$fallback = sgs_button_preset_has_role( $slug, 'shadow' ) ? 'var(' . $v . 'shadow)' : 'none';",
+  "replace": "$fallback = 'none';",
+  "why": "the hover shadow does not fall back to the resting one"
+ },
+ {
+  "file": "includes/helpers-button-preset-names.php",
+  "find": "\t\t\tif ( in_array( $slug, SGS_BUTTON_STARTER_PRESETS, true ) ) {\n\t\t\t\tcontinue;\n\t\t\t}",
+  "replace": "",
+  "why": "the buy box prints rules for the starters too"
+ },
+ {
+  "file": "includes/helpers-button-preset-names.php",
+  "find": "if ( array() === $extra ) {",
+  "replace": "if ( false ) {",
+  "why": "the editor is told even when there is nothing to tell"
+ },
+ {
+  "file": "includes/helpers-button-preset-names.php",
+  "find": "return trim( $slug, '-' );",
+  "replace": "return $slug;",
+  "why": "a spaced key keeps its stray hyphens"
+ },
+ {
+  "file": "includes/helpers-button-press.php",
+  "find": "in_array( $variant, sgs_button_preset_names(), true ) ? array( $variant, 'default' )",
+  "replace": "in_array( $variant, SGS_BUTTON_STARTER_PRESETS, true ) ? array( $variant, 'default' )",
+  "why": "press keeps its own list of names"
+ },
+ {
+  "file": "includes/helpers-button-press.php",
+  "find": "foreach ( sgs_button_preset_names() as $variant ) {",
+  "replace": "foreach ( SGS_BUTTON_STARTER_PRESETS as $variant ) {",
+  "why": "the by-class press rules skip a name"
+ },
+ {
+  "file": "includes/helpers-button-focus.php",
+  "find": "if ( in_array( $preset, sgs_button_preset_names(), true ) ) {",
+  "replace": "if ( in_array( $preset, SGS_BUTTON_STARTER_PRESETS, true ) ) {",
+  "why": "focus keeps its own list of bordered names"
+ },
+ {
+  "file": "includes/helpers-button-preset.php",
+  "find": "$named = sgs_button_presets_open() ? sgs_button_preset_resolve( $preset ) : '';",
+  "replace": "$named = '';",
+  "why": "the WooCommerce helper refuses every name"
+ },
+ {
+  "file": "includes/helpers-button-preset.php",
+  "find": "if ( '' !== $named && 'outline' !== $named ) {",
+  "replace": "if ( '' !== $named ) {",
+  "why": "the WooCommerce helper starts printing outline (a site that opted in with only the starters would change)"
+ },
+ {
+  "file": "src/blocks/button/render.php",
+  "find": "$inherit_style = '' !== sgs_button_preset_resolve( $inherit_style ) ? sgs_button_preset_resolve( $inherit_style ) : 'primary';",
+  "replace": "$inherit_style = $inherit_style;",
+  "why": "a value no preset names is rendered as written"
+ },
+ {
+  "file": "src/blocks/button/render.php",
+  "find": "if ( 'custom' !== $inherit_style ) {\n\t$btn_classes[]",
+  "replace": "if ( in_array( $inherit_style, array( 'primary', 'secondary', 'outline', 'link' ), true ) ) {\n\t$btn_classes[]",
+  "why": "the button keeps its own list of names"
+ },
+ {
+  "file": "src/blocks/buybox/extras.php",
+  "find": "return sgs_button_preset_resolve( $style );",
+  "replace": "return in_array( $style, array( 'primary', 'secondary', 'outline' ), true ) ? $style : '';",
+  "why": "the buy box keeps its own list of names"
+ },
+ {
+  "file": "includes/product-card-builtin-render.php",
+  "find": "$sgs_pcard_cta_style = sgs_button_preset_resolve( sanitize_key( (string) ( $attributes['ctaStyle'] ?? 'primary' ) ) );",
+  "replace": "$sgs_pcard_cta_style = in_array( sanitize_key( (string) ( $attributes['ctaStyle'] ?? 'primary' ) ), array( 'primary', 'secondary', 'outline' ), true ) ? sanitize_key( (string) ( $attributes['ctaStyle'] ?? 'primary' ) ) : '';",
+  "why": "the product card's first CTA keeps its own list"
+ },
+ {
+  "file": "includes/product-card-builtin-render.php",
+  "find": "$sgs_pcard_cta2style = sgs_button_preset_resolve( sanitize_key( (string) ( $attributes['cta2Style'] ?? 'secondary' ) ) );",
+  "replace": "$sgs_pcard_cta2style = in_array( sanitize_key( (string) ( $attributes['cta2Style'] ?? 'secondary' ) ), array( 'primary', 'secondary', 'outline' ), true ) ? sanitize_key( (string) ( $attributes['cta2Style'] ?? 'secondary' ) ) : '';",
+  "why": "the product card's second CTA keeps its own list"
+ },
+ {
+  "file": "src/blocks/form/render.php",
+  "find": "$sgs_form_submit_preset = in_array( $submit_style, SGS_BUTTON_STARTER_PRESETS, true ) ? '' : sgs_button_preset_resolve( (string) $submit_style );",
+  "replace": "$sgs_form_submit_preset = '';",
+  "why": "the form submit never reads a preset name"
+ },
+ {
+  "file": "src/blocks/form/render.php",
+  "find": "$sgs_form_submit_preset = in_array( $submit_style, SGS_BUTTON_STARTER_PRESETS, true ) ? '' : sgs_button_preset_resolve( (string) $submit_style );",
+  "replace": "$sgs_form_submit_preset = sgs_button_preset_resolve( (string) $submit_style );",
+  "why": "the form's own primary look is replaced by the preset's"
+ }
+]

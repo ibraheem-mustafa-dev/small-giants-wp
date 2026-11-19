@@ -1870,8 +1870,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					if ( '' !== $sgs_cta2_text ) :
 						$sgs_cta2_url_raw = isset( $attributes['cta2Url'] ) ? (string) $attributes['cta2Url'] : '';
 						$sgs_cta2_href    = '' !== $sgs_cta2_url_raw ? esc_url( $sgs_cta2_url_raw ) : $product_permalink;
-						$sgs_cta2_style   = sanitize_key( (string) ( $attributes['cta2Style'] ?? 'secondary' ) );
-						if ( ! in_array( $sgs_cta2_style, array( 'primary', 'secondary', 'outline' ), true ) ) {
+						$sgs_cta2_style   = sgs_button_preset_resolve( sanitize_key( (string) ( $attributes['cta2Style'] ?? 'secondary' ) ) );
+						if ( '' === $sgs_cta2_style ) {
 							$sgs_cta2_style = 'secondary';
 						}
 						?>
@@ -2236,8 +2236,8 @@ echo sgs_product_card_wishlist_markup( $attributes );
 		if ( '' !== $sgs_nv_cta2_text ) :
 			$sgs_nv_cta2_url_raw = isset( $attributes['cta2Url'] ) ? (string) $attributes['cta2Url'] : '';
 			$sgs_nv_cta2_href    = '' !== $sgs_nv_cta2_url_raw ? esc_url( $sgs_nv_cta2_url_raw ) : $product_permalink;
-			$sgs_nv_cta2_style   = sanitize_key( (string) ( $attributes['cta2Style'] ?? 'secondary' ) );
-			if ( ! in_array( $sgs_nv_cta2_style, array( 'primary', 'secondary', 'outline' ), true ) ) {
+			$sgs_nv_cta2_style   = sgs_button_preset_resolve( sanitize_key( (string) ( $attributes['cta2Style'] ?? 'secondary' ) ) );
+			if ( '' === $sgs_nv_cta2_style ) {
 				$sgs_nv_cta2_style = 'secondary';
 			}
 			?>

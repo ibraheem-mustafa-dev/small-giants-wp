@@ -30,6 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-preset-names.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-tier-queries.php';
 
@@ -250,8 +251,9 @@ if ( ! function_exists( 'sgs_buybox_axis_has_swatch' ) ) {
 if ( ! function_exists( 'sgs_buybox_add_to_cart_class' ) ) {
 	/**
 	 * Allowlist an addToCartStyle value into its BEM modifier class, or '' for
-	 * today's look. Mirrors sgs/button's primary/secondary/outline preset
-	 * names — style.css's `.buybox__add-to-cart--{style}` rules read the SAME
+	 * today's look. Mirrors sgs/button's preset names (the starters, and the
+	 * snapshot's own on a site that opted in, sgs_button_preset_names()) —
+	 * style.css's `.buybox__add-to-cart--{style}` rules read the SAME
 	 * `--wp--custom--button-presets--{style}--*` design tokens sgs/button's own
 	 * `.sgs-button--{style}` rules do (style.css docblock), so the two stay
 	 * visually matched without this block depending on sgs/button's stylesheet
@@ -259,11 +261,10 @@ if ( ! function_exists( 'sgs_buybox_add_to_cart_class' ) ) {
 	 * self-contained).
 	 *
 	 * @param string $style Raw addToCartStyle attribute value.
-	 * @return string '' or 'primary'|'secondary'|'outline'.
+	 * @return string '' or a preset slug.
 	 */
 	function sgs_buybox_add_to_cart_class( string $style ): string {
-		$allowed = array( 'primary', 'secondary', 'outline' );
-		return in_array( $style, $allowed, true ) ? $style : '';
+		return sgs_button_preset_resolve( $style );
 	}
 }
 

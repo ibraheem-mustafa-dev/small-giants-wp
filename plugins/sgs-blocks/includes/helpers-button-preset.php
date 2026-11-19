@@ -12,18 +12,28 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-button-preset-names.php';
+
 if ( ! function_exists( 'sgs_button_preset_css' ) ) {
 	/**
 	 * The CSS for one preset on one selector.
 	 *
 	 * @param string $selector  Fully scoped selector (a comma list is allowed).
-	 * @param string $preset    'primary' or 'secondary'; anything else prints nothing.
+	 * @param string $preset    'primary' or 'secondary'; on a site that opted in to named presets (`sgs_button_presets_open`), any name its snapshot carries too; anything else prints nothing.
 	 * @param bool   $resting   True to print the resting look too; false when the theme already paints it.
 	 * @param bool   $colours   True to print the hover colours too; false for the lift and timing alone.
 	 * @return string CSS text; '' for an unknown preset.
 	 */
 	function sgs_button_preset_css( string $selector, string $preset, bool $resting = true, bool $colours = true ): string {
-		if ( '' === $selector || ! in_array( $preset, array( 'primary', 'secondary' ), true ) ) {
+		// `outline` is a starter this helper never printed, so it still prints nothing: a site that opts in with only the
+		// starters renders exactly as before.
+		$named = sgs_button_presets_open() ? sgs_button_preset_resolve( $preset ) : '';
+		if ( '' !== $named && 'outline' !== $named ) {
+			$preset = $named;
+		} elseif ( ! in_array( $preset, array( 'primary', 'secondary' ), true ) ) {
+			return '';
+		}
+		if ( '' === $selector ) {
 			return '';
 		}
 		$v     = '--wp--custom--button-presets--' . $preset . '--';
@@ -39,13 +49,17 @@ if ( ! function_exists( 'sgs_button_preset_css' ) ) {
 			$css .= $selector . '{background:var(' . $v . 'background);color:var(' . $v . 'text);border-style:solid;'
 				. 'border-width:var(' . $v . 'border-width,1px);border-color:var(' . $v . 'border,transparent);'
 				. 'border-radius:var(' . $v . 'border-radius,0);font-weight:var(' . $v . 'font-weight,inherit);'
-				. 'text-transform:var(' . $v . 'text-transform,none);letter-spacing:var(' . $v . 'letter-spacing,normal);}';
+				. 'text-transform:var(' . $v . 'text-transform,none);letter-spacing:var(' . $v . 'letter-spacing,normal);'
+				// sgs-shadow-fallback: printed only where the opted-in snapshot sets the token, so no fallback shadow exists.
+				. ( sgs_button_preset_has_role( $preset, 'shadow' ) ? 'box-shadow:var(' . $v . 'shadow);' : '' ) . '}';
 		}
 		$css .= $selector . '{transition:' . implode( ',', $trans ) . ';}';
 		$hover_colours = $colours
 			? 'background:var(' . $v . 'hover-background,var(' . $v . 'background));'
 				. 'color:var(' . $v . 'hover-text,var(' . $v . 'text));'
 				. 'border-color:var(' . $v . 'hover-border,var(' . $v . 'border,transparent));'
+				// sgs-shadow-fallback: printed only where the opted-in snapshot sets the token, so no fallback shadow exists.
+				. ( sgs_button_preset_has_role( $preset, 'hover-shadow' ) ? 'box-shadow:var(' . $v . 'hover-shadow);' : '' )
 			: '';
 		if ( '' !== $hover_colours ) {
 			$css .= $hover . '{' . $hover_colours . '}';

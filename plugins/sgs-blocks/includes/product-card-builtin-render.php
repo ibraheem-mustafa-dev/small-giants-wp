@@ -31,6 +31,7 @@ defined( 'ABSPATH' ) || exit;
 // The colour-swatch row this file renders lives in its own file (both this
 // file and the block's render.php are over the PHP file-length limit).
 require_once __DIR__ . '/product-card-swatches.php';
+require_once __DIR__ . '/helpers-button-preset-names.php';
 
 if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 
@@ -103,13 +104,12 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 			: 'h3';
 
 		// CTA style classes — allowlisted; esc_attr applied at output.
-		$sgs_allowed_styles  = array( 'primary', 'secondary', 'outline' );
-		$sgs_pcard_cta_style = sanitize_key( (string) ( $attributes['ctaStyle'] ?? 'primary' ) );
-		if ( ! in_array( $sgs_pcard_cta_style, $sgs_allowed_styles, true ) ) {
+		$sgs_pcard_cta_style = sgs_button_preset_resolve( sanitize_key( (string) ( $attributes['ctaStyle'] ?? 'primary' ) ) );
+		if ( '' === $sgs_pcard_cta_style ) {
 			$sgs_pcard_cta_style = 'primary';
 		}
-		$sgs_pcard_cta2style = sanitize_key( (string) ( $attributes['cta2Style'] ?? 'secondary' ) );
-		if ( ! in_array( $sgs_pcard_cta2style, $sgs_allowed_styles, true ) ) {
+		$sgs_pcard_cta2style = sgs_button_preset_resolve( sanitize_key( (string) ( $attributes['cta2Style'] ?? 'secondary' ) ) );
+		if ( '' === $sgs_pcard_cta2style ) {
 			$sgs_pcard_cta2style = 'secondary';
 		}
 

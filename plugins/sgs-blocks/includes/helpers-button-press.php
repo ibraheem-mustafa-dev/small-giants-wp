@@ -24,9 +24,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-global-settings.php';
 require_once __DIR__ . '/helpers-shadow-hover.php';
-
-/** The variants whose own press tokens a button reads (style.css `.sgs-button--{variant}`). */
-const SGS_BUTTON_PRESS_VARIANTS = array( 'primary', 'secondary', 'outline' );
+require_once __DIR__ . '/helpers-button-preset-names.php';
 
 if ( ! function_exists( 'sgs_button_press_token' ) ) {
 	/**
@@ -39,13 +37,16 @@ if ( ! function_exists( 'sgs_button_press_token' ) ) {
 	function sgs_button_press_token( string $variant, string $role ): string {
 		static $presets = null;
 		if ( null === $presets ) {
-			$presets = function_exists( 'sgs_global_custom_setting' ) ? sgs_global_custom_setting( 'buttonPresets' ) : array();
-			$presets = is_array( $presets ) ? $presets : array();
+			$raw     = function_exists( 'sgs_global_custom_setting' ) ? sgs_global_custom_setting( 'buttonPresets' ) : array();
+			$presets = array();
+			foreach ( is_array( $raw ) ? $raw : array() as $key => $roles ) {
+				$presets[ sgs_button_preset_slug( (string) $key ) ] = $roles;
+			}
 		}
 		if ( 'link' === $variant ) {
 			return '';
 		}
-		$candidates = in_array( $variant, SGS_BUTTON_PRESS_VARIANTS, true ) ? array( $variant, 'default' ) : array( 'default' );
+		$candidates = in_array( $variant, sgs_button_preset_names(), true ) ? array( $variant, 'default' ) : array( 'default' );
 		foreach ( $candidates as $slug ) {
 			$value = $presets[ $slug ][ $role ] ?? null;
 			if ( is_string( $value ) && '' !== trim( $value ) ) {
@@ -126,7 +127,7 @@ if ( ! function_exists( 'sgs_button_press_rules_by_variant' ) ) {
 	function sgs_button_press_rules_by_variant( string $scope ): string {
 		$scope = sanitize_html_class( $scope );
 		$css   = '';
-		foreach ( SGS_BUTTON_PRESS_VARIANTS as $variant ) {
+		foreach ( sgs_button_preset_names() as $variant ) {
 			$css .= sgs_button_press_rule_for( ".{$scope}.{$scope} .sgs-button--{$variant}", $variant, '', true );
 		}
 		return $css;

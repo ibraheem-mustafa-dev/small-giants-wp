@@ -21,6 +21,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-button-preset-names.php';
 require_once __DIR__ . '/motion/class-sgs-motion-field-types.php';
 require_once __DIR__ . '/motion/class-sgs-motion-layers.php';
 require_once __DIR__ . '/motion/class-sgs-motion-targets.php';
@@ -30,8 +31,6 @@ const SGS_BUTTON_FOCUS_CLASSES = array(
 	'signature' => 'sgs-focus--signature',
 );
 
-/** The presets whose stylesheet rule gives the button a border (style.css `.sgs-button--<preset>`). */
-const SGS_BUTTON_FOCUS_BORDERED_PRESETS = array( 'primary', 'secondary', 'outline' );
 
 if ( ! function_exists( 'sgs_button_focus_style' ) ) {
 	/**
@@ -144,7 +143,8 @@ if ( ! function_exists( 'sgs_button_focus_host_border' ) ) {
 			}
 			return 1 === count( $distinct ) ? $distinct[0] : 'max(' . implode( ',', $sides ) . ')';
 		}
-		if ( in_array( $preset, SGS_BUTTON_FOCUS_BORDERED_PRESETS, true ) ) {
+		// Every preset's stylesheet rule gives the button a border (style.css `.sgs-button--<preset>`, `sgs_button_named_preset_css`).
+		if ( in_array( $preset, sgs_button_preset_names(), true ) ) {
 			return "var(--wp--custom--button-presets--{$preset}--border-width,2px)";
 		}
 		return '';

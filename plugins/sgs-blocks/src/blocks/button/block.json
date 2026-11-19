@@ -255,13 +255,7 @@
 		"inheritStyle": {
 			"type": "string",
 			"default": "primary",
-			"enum": [
-				"primary",
-				"secondary",
-				"outline",
-				"link",
-				"custom"
-			]
+			"description": "The button's style: a preset name (primary, secondary and outline always; any other name in the site's snapshot settings.custom.buttonPresets when the site sets namedButtonPresets), 'link' (plain text link) or 'custom' (no preset). Any other value falls back to primary."
 		},
 		"widthType": {
 			"type": "object",
