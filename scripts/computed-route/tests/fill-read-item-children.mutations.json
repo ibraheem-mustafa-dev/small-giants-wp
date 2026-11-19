@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "own: n.children.length > 0 || !! n.itemChildren,",
+		"replace": "own: n.children.length > 0,",
+		"why": "the read ignores the mark"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "'children' === listTarget( db, rec.name, schemaOf )?.kind )",
+		"replace": "!! listTarget( db, rec.name, schemaOf ) )",
+		"why": "a block holding its items in an attribute is marked"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "if ( ! rec.children.length && rec.targets.length &&",
+		"replace": "if ( rec.targets.length &&",
+		"why": "a node that already has child nodes is marked"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "if ( ! rec.children.length && rec.targets.length &&",
+		"replace": "if ( ! rec.children.length &&",
+		"why": "a node with no draft element is marked"
+	},
+	{
+		"file": "fill.mjs",
+		"find": "const nodes = markItemChildren( { nodes: skeletonNodes( skeleton ), db, schemaOf: blockSchema } );",
+		"replace": "const nodes = skeletonNodes( skeleton );",
+		"why": "Fill never marks the nodes"
+	}
+]

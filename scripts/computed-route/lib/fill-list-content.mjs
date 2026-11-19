@@ -290,6 +290,19 @@ export function currentItemRule( decisions = JSON.parse( fs.readFileSync( DECISI
 	return attr && undefined !== value ? { blocks: ( decisions.blocks || [] ).map( ( b ) => b.block ), attr, value } : null;
 }
 
+// Marks each skeleton node whose block draws its items as child blocks (`itemChildren`) while the skeleton holds none of them
+// yet (a slider: Fill places one child block per item once the read is done). Its draft element's text styles are its own, read
+// with the element's computed style (lib/fill-read.mjs::jobsFor), as for a node with children: the first text beneath it belongs
+// to an item (a quote mark, the quote's words), never to the block's root. nodes: lib/fill-skeleton.mjs::skeletonNodes.
+export function markItemChildren( { nodes, db, schemaOf } ) {
+	for ( const rec of nodes ) {
+		if ( ! rec.children.length && rec.targets.length && 'children' === listTarget( db, rec.name, schemaOf )?.kind ) {
+			rec.itemChildren = true;
+		}
+	}
+	return nodes;
+}
+
 // Fill's list pass over every node with a draft element. inventory: the surface's skeleton inventory (null when absent);
 // idxFor( component ): logicReader's reader; picturesOf( targetId ): the pictures the draft read found in a target's element. Writes into the tree and returns { writes, children: [{ index, nodes }],
 // unmapped, handover, notes }; the caller places `children` (applyChildren) once nothing else walks the tree.

@@ -51,7 +51,7 @@ import { draftDefectsFile, writeDraftDefects } from './lib/draft-defects-file.mj
 import { presetWrites, dropPresetMotion } from './lib/fill-preset.mjs';
 import { formWrites, formSources } from './lib/fill-form.mjs';
 import { formDraftFolder } from './lib/fill-form-behaviour.mjs';
-import { listContentWrites, logicReader, applyChildren } from './lib/fill-list-content.mjs';
+import { listContentWrites, logicReader, applyChildren, markItemChildren } from './lib/fill-list-content.mjs';
 import { loadShopParts, shopPartWrites } from './lib/fill-shop-parts.mjs';
 import { shopPartTargets } from './lib/fill-shop-targets.mjs';
 import { blockSchema } from './lib/resolve.mjs';
@@ -158,7 +158,7 @@ export async function fillSurface( o ) {
 	fs.mkdirSync( outDir, { recursive: true } );
 	const tree = cleanTree( skeleton );
 	addRefs( tree, o.surface );
-	const nodes = skeletonNodes( skeleton );
+	const nodes = markItemChildren( { nodes: skeletonNodes( skeleton ), db, schemaOf: blockSchema } );
 	const flat = [];
 	walk( tree, ( n, i ) => {
 		flat[ i ] = n;

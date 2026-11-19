@@ -90,8 +90,9 @@ export function jobsFor( nodes ) {
 		owner: n.index,
 		root: '' === ( t.slot ?? '' ),
 		// A node with child nodes reads its own text styles at every target, its root and its slots alike (a row's content
-		// band): a text descendant there is another node's element, never this one's look.
-		own: n.children.length > 0,
+		// band): a text descendant there is another node's element, never this one's look. A block that draws its items as child
+		// blocks (`itemChildren`, lib/fill-list-content.mjs::markItemChildren) has them once Fill places the items.
+		own: n.children.length > 0 || !! n.itemChildren,
 	} ) ) );
 }
 
