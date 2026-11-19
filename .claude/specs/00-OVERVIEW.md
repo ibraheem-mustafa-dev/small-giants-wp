@@ -98,7 +98,7 @@ No "it works on desktop but breaks on mobile" — mobile is the starting point.
 - **< 100KB CSS** total page load (vs ~300KB+ with Astra + Spectra)
 - **< 50KB JS** for non-interactive pages (vs ~200KB+ with Spectra)
 - **Core Web Vitals green** on every page (LCP < 2.5s, CLS < 0.1, INP < 200ms)
-- **No render-blocking resources** — critical CSS inlined, everything else deferred
+- **No page waits on a stylesheet request per block type**: page-specific CSS is inline, shared stylesheets print as order-preserving runs, inline or one cached file per run, and nothing is deferred (Spec 32 FR-32-32)
 
 ---
 
