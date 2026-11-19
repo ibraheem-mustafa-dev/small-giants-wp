@@ -11,7 +11,7 @@ import { fixtureDb } from './fixtures/framework-db.mjs';
 
 const ext = ( block ) => [ 'sgsCustomCss', 'sgsCustomCssId', 'sgsCustomCssNote' ].map( ( a ) => ( { block_slug: block, attr_name: a, attr_type: 'string', source: 'sgs-ext' } ) );
 const db = openDb( fixtureDb( {
-	blocks: [ { slug: 'sgs/field', title: 'Field', category: 'sgs', type: 'dynamic' }, { slug: 'core/group', title: 'Group', category: 'design', type: 'static', source: 'core' } ],
+	blocks: [ { slug: 'sgs/field', title: 'Field', category: 'sgs', type: 'dynamic' }, { slug: 'sgs/card', title: 'Card', category: 'sgs', type: 'dynamic' }, { slug: 'core/group', title: 'Group', category: 'design', type: 'static', source: 'core' } ],
 	block_attributes: [
 		...ext( 'sgs/field' ),
 		{ block_slug: 'sgs/field', attr_name: 'fieldColour', attr_type: 'string', css_property: 'color', role: 'colour' },
@@ -19,6 +19,12 @@ const db = openDb( fixtureDb( {
 		{ block_slug: 'sgs/field', attr_name: 'fieldGap', attr_type: 'string', css_property: 'gap', role: 'layout' },
 		{ block_slug: 'sgs/field', attr_name: 'sgsHideOnMobile', attr_type: 'boolean', css_property: 'display', role: 'layout', source: 'sgs-ext' },
 		{ block_slug: 'core/group', attr_name: 'tagName', attr_type: 'string', role: 'layout', source: 'core' },
+		...ext( 'sgs/card' ),
+	],
+	motion_targets: [ { block_slug: 'sgs/card', target: 'root', css_element: 'root', kind: 'root' } ],
+	motion_fields: [
+		{ def_name: 'HoverStateValues', field: 'restOrigin', panel: 'hover', layer: 'hover.state', field_path: 'elements.<target>.hover.state.values.restOrigin', field_type: 'choice', css_property: 'transform-origin', state: 'rest', per_device: 1 },
+		{ def_name: 'HoverStateValues', field: 'restRotate', panel: 'hover', layer: 'hover.state', field_path: 'elements.<target>.hover.state.values.restRotate', field_type: 'angle', css_property: '--sgs-rot-rest', state: 'rest', per_device: 1 },
 	],
 } ) );
 
@@ -35,7 +41,7 @@ const cal = {
 	},
 	elements: paint,
 };
-const calFor = ( b ) => ( 'sgs/field' === b ? cal : null );
+const calFor = ( b ) => ( [ 'sgs/field', 'sgs/card' ].includes( b ) ? cal : null );
 const snapshot = { palette: [ { slug: 'ink', colour: { r: 58, g: 42, b: 34, a: 1 } } ], spacing: [ { slug: '50', px: 20 } ], fontSizes: [], fontFamilies: [ { slug: 'display', family: 'young serif' } ] };
 
 // One node of `block` with a root and an input part, both read on draft elements; `same` reads one element for both.
@@ -195,6 +201,20 @@ test( 'MUST FAIL WITHOUT THE LEAK RULE: an inherited property is refused where a
 	const same = make( 'normal' );
 	run( same, [ row( { property: 'line-height', value: 'normal', slot: '' } ) ] );
 	assert.equal( css( same ), '& { line-height: normal; }' );
+} );
+
+test( 'MUST FAIL WITHOUT THE MOTION AND EFFECT RULES: a resting transform or origin on a block with motion targets is a pose the motion layer holds; an alignment equal in effect to the paint needs nothing', () => {
+	const card = ( o ) => ( { ...row( o ), block: 'sgs/card', slot: '' } );
+	assert.match( classifyRow( card( { property: 'transform', value: 'matrix(0.999, -0.035, 0.035, 0.999, 0, 0)' } ), { calFor, db } ).cause, /^motion-rest/ );
+	assert.match( classifyRow( card( { property: 'transform-origin', value: '0px 15px' } ), { calFor, db } ).cause, /^motion-rest/ );
+	assert.equal( classifyRow( card( { property: 'transform', value: 'none', state: 'hover' } ), { calFor, db } ).cls === 'route' && /motion-rest/.test( classifyRow( card( { property: 'transform', value: 'none', state: 'hover' } ), { calFor, db } ).cause ), false, 'a hover look is not the resting pose' );
+	assert.equal( classifyRow( row( { property: 'transform', value: 'matrix(0.999, -0.035, 0.035, 0.999, 0, 0)', slot: '' } ), { calFor, db } ).cls, 'residual', 'no motion targets: residual' );
+	paint[ '.f__input' ][ 1440 ][ 'justify-content' ] = 'flex-start';
+	paint[ '.f__input' ][ 768 ][ 'justify-content' ] = 'flex-start';
+	paint[ '.f__input' ][ 375 ][ 'justify-content' ] = 'flex-start';
+	assert.match( classifyRow( row( { property: 'justify-content', value: 'normal' } ), { calFor, db } ).cause, /equal in effect/ );
+	assert.equal( classifyRow( row( { property: 'justify-content', value: 'center' } ), { calFor, db } ).cls, 'residual' );
+	[ 375, 768, 1440 ].forEach( ( x ) => delete paint[ '.f__input' ][ x ][ 'justify-content' ] );
 } );
 
 test( 'MUST FAIL WITHOUT THE CAP: past the page cap a rule is refused and listed, and the bytes are counted', () => {

@@ -30,7 +30,7 @@ import { sameCanonical } from './css-equivalence/values.mjs';
 import { candidates } from './db.mjs';
 import { calSameBox } from './fill-same-box.mjs';
 import { WIDTHS, rowTarget, rowValues, perNode, regroup, answer } from './fill-regap.mjs';
-import { widthSpans, STATE_PSEUDO, safeCss } from './fill-width-ladder.mjs';
+import { widthSpans, STATE_PSEUDO, safeCss, effectOf } from './fill-width-ladder.mjs';
 import { mediaRule, scopedCssPuts, snapEntry } from './fill-width-gate.mjs';
 import { setAttr } from './tree.mjs';
 import { snapColour, snapFontFamily, snapLength, toPx } from './normalise.mjs';
@@ -43,6 +43,22 @@ const MOTION = /^(transition|animation)(-|$)/;
 // Properties that size or place the element in its parent's layout: written only where the draft states them at every
 // read width, so a rule never holds one width's layout at another.
 const LAYOUT = /^(display|position|top|right|bottom|left|inset(-.+)?|float|clear|(min-|max-)?(width|height)|(min-|max-)?(inline|block)-size|flex(-.+)?|grid(-.+)?|order|justify-.+|align-.+|place-.+|gap|row-gap|column-gap|margin(-.+)?|aspect-ratio)$/;
+const MOTION_REST = /^(transform|transform-origin|rotate)$/;
+const ALIGN = /^(justify-content|align-items|align-content|justify-items|align-self|justify-self)$/;
+// The properties the motion layer holds at rest: its `rest` fields' CSS properties, and `transform` (with `rotate`) where
+// a rest field is a rotation custom property the transform reads (`--sgs-rot-rest`). Read once per database.
+const rests = new WeakMap();
+export function restPose( db ) {
+	if ( ! db ) {
+		return new Set();
+	}
+	if ( ! rests.has( db ) ) {
+		const has = db.prepare( "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'motion_fields'" ).get();
+		const props = has ? db.prepare( "SELECT DISTINCT css_property FROM motion_fields WHERE state = 'rest' AND css_property IS NOT NULL" ).all().map( ( r ) => r.css_property ) : [];
+		rests.set( db, new Set( [ ...props.filter( ( x ) => ! x.startsWith( '--' ) ), ...( props.some( ( x ) => /^--sgs-r(ot|x|y)-rest$/.test( x ) ) ? [ 'transform', 'rotate' ] : [] ) ] ) );
+	}
+	return rests.get( db );
+}
 // Properties that lay out the element's children.
 const CONTAINER = /^(justify-content|justify-items|align-items|align-content|place-(content|items)|gap|row-gap|column-gap|flex-direction|flex-wrap|flex-flow|grid-template(-.+)?|grid-auto(-.+)?)$/;
 // Out-of-flow positions, and the properties that only place an element that is positioned.
@@ -114,6 +130,21 @@ export function classifyRow( row, { calFor, db } ) {
 	} );
 	if ( same ) {
 		return { cls: 'route', cause: `pairing: ${ same.attr_name } paints ${ canon } on a part that is the same box as this one` };
+	}
+	// The block's motion layer holds a resting pose (motion_fields rows of state `rest`: a resting origin, and resting rotations
+	// as custom properties the transform reads): a resting transform or origin on a block with motion targets is the motion
+	// pass's to write, never Custom CSS, which would fight the pose someone later sets in the motion panel.
+	if ( ! state && MOTION_REST.test( canon ) && restPose( db ).has( canon ) && db.prepare( 'SELECT 1 FROM motion_targets WHERE block_slug = ?' ).get( row.block ) ) {
+		return { cls: 'route', cause: `motion-rest: the block's motion layer holds a resting ${ canon } (motion_fields, state rest)` };
+	}
+	// A value that does at every width what the block's part already paints (the width ladder's effect rule: `normal`
+	// justify-content in a flex container is its start) needs nothing.
+	if ( ALIGN.test( canon ) && values.length && values.every( ( [ w, v ] ) => {
+		const ctx = { display: String( paintAt( cal, slot, 'display', Number( w ) )?.value ?? '' ) };
+		const painted = paintAt( cal, slot, canon, Number( w ) )?.value;
+		return undefined !== painted && effectOf( canon, v, ctx ) === effectOf( canon, painted, ctx );
+	} ) ) {
+		return { cls: 'unneeded', cause: `equal in effect to the ${ canon } the block's part already paints` };
 	}
 	const unpainted = ( w ) => [ undefined, 'none' ].includes( paintAt( cal, slot, canon, Number( w ) )?.value );
 	if ( 'box-shadow' === canon && values.length && values.every( ( [ w, v ] ) => zeroShadow( v ) && unpainted( w ) ) ) {
