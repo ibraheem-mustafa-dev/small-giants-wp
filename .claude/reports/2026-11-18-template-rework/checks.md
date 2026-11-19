@@ -1,6 +1,6 @@
 # Tick box look and shop-filter checkbox list: before and after on Indus and Eye Care (2026-11-18)
 
-Measured on scratch copies of `local-indus` and `local-eye-care` (dropped afterwards), old build against new. Old is the build both mirrors hold, whose theme and plugin PHP are byte-identical to `419b4cb6a` (what `indus-test` and `eye-care-test` run). New is `main` at `b14b92d67` with the gated build of `ac99e4529`. The tick box commit is `be2ebc588`. Scripts, per-element JSON and crop pairs: `E:\sgs-tmp\template-rework\checks\` (`capture.mjs`, `compare.py`, `check2.mjs`, `indus-compare.md`, `eye-compare.md`, `eye-compare2.md`, `evidence\`). The main session looked at the two pairs marked "seen".
+Measured on scratch copies of `local-indus` and `local-eye-care` (dropped afterwards), old build against new. Old is the build both mirrors hold, whose theme and plugin PHP are byte-identical to `419b4cb6a` (what `indus-test` and `eye-care-test` run). New is `main` at `b14b92d67` with the gated build of `ac99e4529`. The tick box commit is `be2ebc588`. The committed, reusable successor of these scripts is `scripts/render-check/` (use it for any new before-and-after run). Scripts, per-element JSON and crop pairs of this measurement: `E:\sgs-tmp\template-rework\checks\` (`capture.mjs`, `compare.py`, `check2.mjs`, `indus-compare.md`, `eye-compare.md`, `eye-compare2.md`, `evidence\`). The main session looked at the two pairs marked "seen".
 
 ## Limits
 

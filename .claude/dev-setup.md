@@ -245,6 +245,8 @@ python plugins/sgs-blocks/scripts/migrate-media-system/cli.py check --mirror med
 python plugins/sgs-blocks/scripts/migrate-media-system/cli.py restore --mirror mediatest-<name> --backup <file>
 ```
 
+To prove a build or step changes nothing a site renders, run `python scripts/render-check/render-check.py --from <mirror> --before <checkout> --after <checkout>` (`scripts/render-check/README.md`): it makes and drops its own scratch copies.
+
 ---
 
 ## Deployment process

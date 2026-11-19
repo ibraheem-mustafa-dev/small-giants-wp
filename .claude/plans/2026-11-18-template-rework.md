@@ -26,7 +26,7 @@ Finishing Mama's Munches took two rounds of hand-tuning on its shop surfaces (ba
 - A draft's own tokens and animation records are carried open-ended, under its own names, and set on the blocks they apply to.
 - No Components page, no block map, no section-level block choice in the handoff. A block list in design words, yes.
 - A clone goes through by default: Bean reads no long review table. The agent compares the built clone with the draft, proposes fixes, and names the areas where Bean's own eye would be easier or more accurate. Bean looks at one page per layout type.
-- No plugin or theme change that alters what a page renders reaches `main` until the before-and-after check of Task 1 exists, because every Mama's fix deploys `main` whole and Mama's is becoming the live shop. `main` does not deploy to `indus-test` or `eye-care-test` before Task 2.
+- No plugin or theme change that alters what a page renders reaches `main` without a passing run of the before-and-after check of Task 1 (`scripts/render-check/`, built 2026-11-19), because every Mama's fix deploys `main` whole and Mama's is the live shop. `main` does not deploy to `indus-test` or `eye-care-test` before Task 2.
 - The second new site's own details (its bookings and event data) are parked until the general cloning work is settled; do not raise them.
 
 ## Out of scope
