@@ -8,6 +8,10 @@
 //     (`metadata.bindings.<attribute>` to the `sgs/order` source with the key, and the words around the value as `format`);
 //     each branch that tests the order takes its Show-to rule on the blocks it holds; a bound block outside every order
 //     branch takes the `viewable` rule, so the draft's sample order never shows to a visitor who may not view the order.
+//     A value no key holds that reads the order is bound to `fact:<name>` for the site to supply (the plugin's
+//     `sgs_order_fact` filter) and noted as a "site-supplied fact"; the words around it, the draft's and the ones its logic
+//     joins to it, are the binding's `format`, and a second fact in the same words is a `{fact:<name>}` token in it, so the
+//     whole line is one binding that renders nothing until every fact is supplied (an sgs/text with no words renders nothing).
 // What cannot be done right is a problem row naming the draft element (a value no key fits, a block with no attribute a
 // binding can write, a branch the skeleton does not hold); what is lost on the way is a note (inline formatting a bound
 // plain value cannot keep). The tree comes in as a copy (lib/template-pieces.mjs::placePieces) and its nodes name
@@ -41,7 +45,7 @@ function readsFor( ctx ) {
 	const plugin = ctx.plugin || pluginFacts();
 	const db = ctx.db || openDb();
 	const draft = ctx.draft || draftOf( ctx.handoffDir, ctx.rootComponent );
-	const order = readOrder( { record: ctx.factRecord, tops: topKeys( ctx.tree, ctx.rootComponent ), draft, facts } );
+	const order = readOrder( { record: ctx.factRecord, tops: topKeys( ctx.tree, ctx.rootComponent ), draft, facts, plugin } );
 	return { facts, plugin, db, draft, order, factProblems: orderFactsProblems( { facts, plugin, db } ) };
 }
 
@@ -208,8 +212,14 @@ function placeValues( ctx, piece, r ) {
 	// Bindings, on the block holding each classified value.
 	const ancestorsOf = ( k ) => [ k, ...( record[ k ]?.template?.parentChain || [] ) ];
 	const boundNodes = [];
-	for ( const h of order.holes ) {
-		if ( h.absorbed ) {
+	// A value no key holds is a fact the site supplies; one block binds one key, so a block with several of them takes the first
+	// as its key and the others as `{fact:<name>}` tokens in its words. Built-in keys go first, so a key is never the token.
+	const taken = new Set();
+	const sameStep = ( a, b ) => a.instance === b.instance;
+	// What the owner must supply for a fact: shown in the run report beside the other notes.
+	const factNote = ( x, holder ) => `site-supplied fact ${ x.key }: {{ ${ x.expr } }} in ${ holder } reads the order's ${ x.paths.map( ( p ) => p.join( '.' ) ).join( ', ' ) }, which no key of ${ plugin.source } holds, so the site supplies it through the ${ plugin.factFilter } filter (name ${ x.key.slice( plugin.factPrefix.length ) }); the value is empty, and the block shows nothing, until it does`;
+	for ( const h of [ ...order.holes ].sort( ( a, b ) => Number( !! a.fact ) - Number( !! b.fact ) ) ) {
+		if ( h.absorbed || taken.has( h ) ) {
 			continue;
 		}
 		if ( h.problem ) {
@@ -225,7 +235,14 @@ function placeValues( ctx, piece, r ) {
 			continue;
 		}
 		const role = 'attr:href' === h.where ? 'link-href' : 'text-content';
-		for ( const { node: held } of byKey.get( holder ) ) {
+		// A value of one step of a loop binds on that step's block only (the skeleton keeps each step as `<key>#<step>`).
+		const stepOf = ( n ) => Number( /#(\d+)$/.exec( n.draftRef?.tpl || '' )?.[ 1 ] );
+		const targets = byKey.get( holder ).filter( ( w ) => undefined === h.instance || stepOf( w.node ) === h.instance );
+		if ( ! targets.length ) {
+			problems.push( `the value {{ ${ h.expr } }} (${ h.el }, ${ h.key }) is not in the skeleton: it is the step ${ h.instance } of its loop, and the proposal holds no such step` );
+			continue;
+		}
+		for ( const { node: held } of targets ) {
 			// A link drawn as a card whose block takes no bound address is followed by the one block inside it that does (the
 			// card's action button): that block carries the link.
 			const inner = 'link-href' === role && ! boundAttr( db, plugin.supported, held.name, role ) ? walk( held.innerBlocks ).filter( ( w ) => boundAttr( db, plugin.supported, w.node.name, role ) ) : [];
@@ -238,6 +255,7 @@ function placeValues( ctx, piece, r ) {
 			node !== held && notes.push( `the link to the order (${ holder }, {{ ${ h.expr } }}) is a ${ held.name } with no address a binding can write; its address is bound on the ${ node.name } inside it (${ keyOf( node ) }), so only that block links to the order` );
 			const existing = node.attributes?.metadata?.bindings?.[ attr ];
 			let format = null;
+			const others = [];
 			if ( 'text-content' === role ) {
 				const text = sourceText( draft, record[ holder ] );
 				const hole = new RegExp( `\\{\\{\\s*${ h.expr.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ) }\\s*\\}\\}` );
@@ -245,7 +263,17 @@ function placeValues( ctx, piece, r ) {
 					problems.push( `the words around {{ ${ h.expr } }} in ${ holder } cannot be read from the draft source, so the order's ${ h.key } is not bound` );
 					continue;
 				}
-				const sentence = text.replace( hole, '%s' );
+				// The words the logic joins to a fact (`'Baked on ' + bake.date`) are the value's own words, and a fact has no other
+				// place to keep them.
+				let sentence = text.replace( hole, () => ( h.fact && h.logicFormat ? h.logicFormat : '%s' ) );
+				// Another site-supplied fact in the same words is a token of the format, naming the fact the plugin reads there.
+				for ( const m of [ ...sentence.matchAll( /\{\{\s*([^}]+?)\s*\}\}/g ) ] ) {
+					const o = order.holes.find( ( x ) => x !== h && x.fact && ! x.problem && ! taken.has( x ) && x.expr === m[ 1 ] && sameStep( x, h ) && ancestorsOf( x.el ).includes( holder ) );
+					if ( o ) {
+						sentence = sentence.replace( m[ 0 ], () => `{${ o.key }}` );
+						others.push( o );
+					}
+				}
 				if ( /\{\{/.test( sentence ) ) {
 					problems.push( `${ holder } holds another value beside {{ ${ h.expr } }} ("${ text }"): one binding shows one order fact, so the order's ${ h.key } is not bound there` );
 					continue;
@@ -259,6 +287,8 @@ function placeValues( ctx, piece, r ) {
 			node.attributes = { ...( node.attributes || {} ), metadata: { ...( node.attributes?.metadata || {} ), bindings: { ...( node.attributes?.metadata?.bindings || {} ), [ attr ]: { source: plugin.source, args: { key: h.key, ...( format ? { format } : {} ) } } } } };
 			placed.push( { id: piece.id, block: node.name, at: holder, attribute: attr, key: h.key, ...( format ? { format } : {} ) } );
 			boundNodes.push( { node, holder } );
+			others.forEach( ( o ) => taken.add( o ) );
+			[ h, ...others ].filter( ( x ) => x.fact ).forEach( ( x ) => notes.push( factNote( x, holder ) ) );
 			if ( holder !== h.el ) {
 				const tags = ancestorsOf( h.el ).slice( 0, ancestorsOf( h.el ).indexOf( holder ) ).map( ( k ) => `<${ record[ k ]?.template?.tag }>` );
 				notes.push( `the order's ${ h.key } in ${ holder } sat inside ${ tags.join( ' inside ' ) } (${ h.el }); a bound value is plain text, so that formatting is lost` );

@@ -8,8 +8,10 @@
 //   - the rows that follow the loop in its own container and show an order amount are its totals rows;
 //   - each order value outside the lines is classified to a key of the `sgs/order` binding source by structure first (a
 //     currency amount, the order's reference, a link carrying that reference, a field under a part of the order a branch
-//     tests) and by data/order-facts.json's words only between keys the structure leaves open; a value no key fits is a
-//     problem row naming it;
+//     tests) and by data/order-facts.json's words only between keys the structure leaves open; a value of an element's words
+//     that reads the order and no key holds is a site-supplied fact (`fact:<name>`, the name its field path's words joined with
+//     `_`) when the plugin holds that form, and any other value no key fits is a problem row naming it; a value in a loop that
+//     is not the order lines is read per step when the logic writes the loop's list as an array of object literals;
 //   - each branch (`sc-if`) whose test reads the order takes the Show-to rule of the part it tests (a gift, an account),
 //     shown or hidden by the test's polarity; a branch that only hides a value its own content shows is a guard and needs
 //     no rule.
@@ -187,7 +189,7 @@ export function sourceText( draft, el ) {
 		}
 		if ( depth <= 0 ) {
 			const html = draft.text.slice( start.index, re.lastIndex );
-			return decodeEntities( html.replace( /<[^>]*>/g, ' ' ) ).replace( /\s+/g, ' ' ).replace( /\s+([.,;:!?·])/g, '$1' ).trim();
+			return decodeEntities( html.replace( /<[^>]*>/g, ' ' ) ).replace( /\s+/g, ' ' ).replace( /\s+([.,;:!?])/g, '$1' ).trim();
 		}
 	}
 	return null;
@@ -204,13 +206,60 @@ export function surfaceElements( record, tops ) {
 	return Object.entries( record?.elements || {} ).filter( ( [ k, e ] ) => set.has( k ) || ( e.template?.parentChain || [] ).some( ( p ) => set.has( p ) ) ).sort( ( a, b ) => order( a[ 0 ] ) - order( b[ 0 ] ) ).map( ( [ key, e ] ) => ( { key, ...e } ) );
 }
 
+// The name of a site-supplied fact for the order field at `path`: its segments' words (camelCase split), lower case, joined
+// with `_` (`bake.date` and `bakeDate` are `bake_date`); null when a segment is no plain name (a computed index).
+export function factNameOf( path ) {
+	if ( ! path.length || ! path.every( ( s ) => /^[A-Za-z_$][\w$]*$/.test( s ) ) ) {
+		return null;
+	}
+	const name = path.flatMap( wordsOf ).join( '_' ).replace( /[^a-z0-9_]/g, '' );
+	return name && name.length <= 64 ? name : null;
+}
+
+// The parts of a joined value (`'a ' + x`, a template literal): [ { text } | { node } ], a part that is no literal being the
+// node of the value itself; a variable holding a join is followed.
+function joinParts( L, n, depth = 0 ) {
+	if ( ! n || depth > DEPTH ) {
+		return [ { node: n } ];
+	}
+	if ( 'StringLiteral' === n.type ) {
+		return [ { text: String( n.value ) } ];
+	}
+	if ( 'BinaryExpression' === n.type && '+' === n.operator ) {
+		return [ ...joinParts( L, n.left, depth + 1 ), ...joinParts( L, n.right, depth + 1 ) ];
+	}
+	if ( 'TemplateLiteral' === n.type ) {
+		return n.quasis.flatMap( ( q, i ) => [ { text: q.value.cooked ?? '' }, ...( n.expressions[ i ] ? joinParts( L, n.expressions[ i ], depth + 1 ) : [] ) ] );
+	}
+	if ( 'Identifier' === n.type ) {
+		const r = resolveName( L, n );
+		const parts = 'var' === r?.kind && r.init && ! r.key ? joinParts( L, r.init, depth + 1 ) : null;
+		return parts && parts.length > 1 ? parts : [ { node: n } ];
+	}
+	return [ { node: n } ];
+}
+
+// The words a logic value joins around the one value it shows, as a format (`'Baked on ' + bake.date` is `Baked on %s`); null
+// when the value is not a join of fixed words with exactly one other part.
+export function joinFormat( L, node ) {
+	const parts = joinParts( L, node );
+	const values = parts.filter( ( p ) => p.node );
+	const words = parts.filter( ( p ) => undefined !== p.text );
+	if ( 1 !== values.length || ! words.some( ( p ) => p.text.trim() ) || words.some( ( p ) => p.text.includes( '%' ) ) ) {
+		return null;
+	}
+	return parts.map( ( p ) => ( p.node ? '%s' : p.text ) ).join( '' );
+}
+
 // The words that pick a key, a group or a row out of the order facts: the path's own words.
 const wordHit = ( segment, words ) => wordsOf( segment ).some( ( w ) => words.includes( w ) ) || words.includes( String( segment ).toLowerCase() );
 
 // The order as the draft shows it: { lines, rows, holes, branches, problems, notes } (see the header). `record` is the fact
 // record, `tops` the template keys of the surface's top elements, `draft` the draft file loaded by lib/intake-ast.mjs::
-// loadDraft (its logic in `draft.idx`), `facts` data/order-facts.json.
-export function readOrder( { record, tops, draft, facts } ) {
+// loadDraft (its logic in `draft.idx`), `facts` data/order-facts.json, `plugin` the plugin facts (lib/template-piece-order-plugin.mjs::
+// pluginFacts): when it holds the form of a site-supplied fact (`factPrefix`, `factFilter`), a value of an element's words that
+// reads the order and fits no key becomes a fact (`key` `<prefix><name>`, `fact` true) instead of a problem row.
+export function readOrder( { record, tops, draft, facts, plugin = null } ) {
 	const L = draft?.idx || null;
 	const els = surfaceElements( record, tops );
 	const byKey = new Map( els.map( ( e ) => [ e.key, e ] ) );
@@ -267,7 +316,23 @@ export function readOrder( { record, tops, draft, facts } ) {
 	const D = out.order?.decl ?? null;
 	const ofOrder = ( list ) => list.filter( ( o ) => D && o.decl === D && ! ( out.order.listPath.length && ( samePath( o.path, out.order.listPath ) || under( o.path, out.order.listPath ) ) ) );
 
-	// Every hole outside the order lines that reads the order, with what its value is.
+	// The value node of each step of a loop whose list the logic writes as an array of object literals (the same steps the
+	// skeleton holds as `<key>#<step>`): [ node | null ] per step, or null when the loop's list is built another way or the
+	// hole is not one field of the step.
+	const stepValues = ( e, h ) => {
+		const loops = loopsOf( e );
+		const [ first, ...more ] = String( h.expr ).split( '.' );
+		if ( 1 !== loops.length || first !== loops[ 0 ].as || 1 !== more.length ) {
+			return null;
+		}
+		const lists = topValues( L, exprOf( loops[ 0 ].list ) );
+		const steps = 1 === lists.length && 'ArrayExpression' === lists[ 0 ].type ? lists[ 0 ].elements : null;
+		return steps?.length && steps.every( ( s ) => 'ObjectExpression' === s?.type ) ? steps.map( ( s ) => s.properties.find( ( p ) => 'ObjectProperty' === p.type && keyName( p ) === more[ 0 ] )?.value ?? null ) : null;
+	};
+	const distinctPaths = ( spine ) => [ ...new Map( spine.map( ( o ) => [ pathText( o.path ), o.path ] ) ).values() ];
+
+	// Every hole outside the order lines that reads the order, with what its value is. A hole in a loop that is not the order
+	// lines is one hole per step whose own value reads the order (`instance` the step's place) when the steps can be told apart.
 	const lineItems = new Set( out.lines?.items || [] );
 	for ( const e of els ) {
 		for ( const h of e.template?.holes || [] ) {
@@ -279,12 +344,28 @@ export function readOrder( { record, tops, draft, facts } ) {
 			if ( ! reads.length ) {
 				continue;
 			}
+			const base = { el: e.key, id: h.id, expr: h.expr, where: where.split( '#' )[ 0 ], loops: loopsOf( e ).map( ( l ) => l.key ) };
+			const steps = stepValues( e, h );
+			if ( steps ) {
+				const firstSamples = Object.values( e.logic?.holes?.[ h.id ] || {} )[ 0 ]?.v || [];
+				steps.forEach( ( node, instance ) => {
+					const stepReads = node ? ofOrder( readsOf( L, node ) ) : [];
+					if ( ! stepReads.length ) {
+						return;
+					}
+					const spine = ofOrder( originsOf( L, node ) );
+					out.holes.push( {
+						...base, instance, paths: distinctPaths( spine ), reads: [ ...new Set( stepReads.map( ( o ) => pathText( o.path ) ) ) ], money: spine.some( ( o ) => o.money ) || isMoney( L, node ),
+						joined: spine.some( ( o ) => o.joined ), sample: 'string' === firstSamples[ instance ]?.t ? firstSamples[ instance ].v || null : null, logicFormat: joinFormat( L, node ),
+					} );
+				} );
+				continue;
+			}
 			const spine = ofOrder( originsFor( e, h ) );
-			const paths = [ ...new Map( spine.map( ( o ) => [ pathText( o.path ), o.path ] ) ).values() ];
+			const nodes = valuesFor( e, h ).map( ( x ) => x.node );
 			out.holes.push( {
-				el: e.key, id: h.id, expr: h.expr, where: where.split( '#' )[ 0 ], loops: loopsOf( e ).map( ( l ) => l.key ),
-				paths, reads: [ ...new Set( reads.map( ( o ) => pathText( o.path ) ) ) ], money: spine.some( ( o ) => o.money ) || moneyHole( e, h ),
-				joined: spine.some( ( o ) => o.joined ), sample: samples( e, h.id ).find( ( x ) => 'string' === x.t && x.v )?.v ?? null,
+				...base, paths: distinctPaths( spine ), reads: [ ...new Set( reads.map( ( o ) => pathText( o.path ) ) ) ], money: spine.some( ( o ) => o.money ) || moneyHole( e, h ),
+				joined: spine.some( ( o ) => o.joined ), sample: samples( e, h.id ).find( ( x ) => 'string' === x.t && x.v )?.v ?? null, logicFormat: 1 === nodes.length ? joinFormat( L, nodes[ 0 ] ) : null,
 			} );
 		}
 	}
@@ -325,7 +406,7 @@ export function readOrder( { record, tops, draft, facts } ) {
 			h.absorbed = h.row;
 			continue;
 		}
-		if ( h.loops.length ) {
+		if ( h.loops.length && undefined === h.instance ) {
 			h.problem = `the value {{ ${ h.expr } }} (${ h.el }) sits in the loop ${ h.loops.at( -1 ) }, which is not the order lines, and reads the order's ${ h.reads.join( ', ' ) }: no binding reaches a loop item`;
 			continue;
 		}
@@ -358,8 +439,15 @@ export function readOrder( { record, tops, draft, facts } ) {
 		const money = Object.entries( facts.keys || {} ).filter( ( [ , k ] ) => k.money ).map( ( [ name ] ) => name );
 		// A currency amount with no words of its own still takes the one money key there is.
 		const keys = fits.length ? fits : h.money && 1 === money.length && ! groups.length ? money : [];
+		// A value no key holds, in an element's words, is a fact the site supplies when the plugin holds that form.
+		const fact = ! keys.length && plugin?.factPrefix && plugin?.factFilter && 'text' === h.where ? factNameOf( p ) : null;
 		if ( 1 === keys.length ) {
 			h.key = keys[ 0 ];
+		} else if ( fact && h.joined && ! h.logicFormat ) {
+			h.problem = `the value {{ ${ h.expr } }} (${ h.el }) joins other words to the order's ${ pathText( p ) } in a way no binding format holds (one fixed text and one order fact), so it is not bound`;
+		} else if ( fact ) {
+			h.key = `${ plugin.factPrefix }${ fact }`;
+			h.fact = true;
 		} else {
 			h.problem = `the value {{ ${ h.expr } }} (${ h.el }) reads the order's ${ pathText( p ) }, which ${ keys.length ? `fits several keys (${ keys.join( ', ' ) })` : `no ${ link ? 'link ' : '' }key of the order binding holds` }`;
 		}

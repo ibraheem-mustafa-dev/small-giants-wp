@@ -18,12 +18,16 @@ export const FACTS_FILE = path.resolve( HERE, '..', 'data', 'order-facts.json' )
 
 const quoted = ( text ) => [ ...String( text ).matchAll( /'([^']*)'/g ) ].map( ( m ) => m[ 1 ] );
 
-// { source, keys } of the order binding source in its PHP file's text: the source name `register_block_bindings_source`
-// registers and the strings of `const KEYS = array( … )`.
+// { source, keys, factPrefix, factFilter } of the order binding source in its PHP file's text: the source name
+// `register_block_bindings_source` registers, the strings of `const KEYS = array( … )`, and the form a site-supplied fact's key
+// takes (`const FACT_PREFIX`, `fact:`) with the filter the site answers through (`const FACT_FILTER`); each of those two is null
+// when the plugin holds none, and the route then binds no fact.
 export function bindingSourceOf( php ) {
 	const source = /register_block_bindings_source\(\s*'([^']+)'/.exec( php )?.[ 1 ] ?? null;
 	const keys = quoted( /const\s+KEYS\s*=\s*array\(([^)]*)\)/.exec( php )?.[ 1 ] ?? '' );
-	return { source, keys };
+	const factPrefix = /const\s+FACT_PREFIX\s*=\s*'([^']+)'/.exec( php )?.[ 1 ] ?? null;
+	const factFilter = /const\s+FACT_FILTER\s*=\s*'([^']+)'/.exec( php )?.[ 1 ] ?? null;
+	return { source, keys, factPrefix, factFilter };
 }
 
 // { <block>: [ attribute ] } of the bindings support file's SUPPORTED_ATTRIBUTES array.
