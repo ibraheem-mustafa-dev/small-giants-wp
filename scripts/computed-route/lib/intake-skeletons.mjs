@@ -38,6 +38,7 @@ import { sourcesOf } from './freshness.mjs';
 import { fingerprintsOf } from './identity.mjs';
 import { carriedIds } from './skeleton-carried.mjs';
 import { siteOf, calKeysFor, assertSkeletonPaints } from './skeleton-context.mjs';
+import { recordForIntakeRun } from './skeleton-record.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const SURFACE_KINDS = [ 'header', 'footer', 'drawer', 'menu', 'form', 'modal', 'global', 'page' ];
@@ -354,7 +355,9 @@ function factsFor( { db, client, repo, facts } ) {
 // confirmed page-map.json exists) }. Returns { skeletons: [{ surface, id, kind,
 // name, route, opened?, inventory, rows, counts, problems, gap? }], gaps, runs: [{ file, hash, surfaces, requests,
 // unlisted, blocked, proxyAttempts, ms }] }. A surface whose inventory or proposal throws, or that no opener renders,
-// keeps its entry with `gap` and adds a gap row naming what was tried.
+// keeps its entry with `gap` and adds a gap row naming what was tried. The proposals read the client's saved fact record
+// through lib/skeleton-record.mjs::recordForIntakeRun: a stale or invalid one is the record the intake run is replacing, so
+// they are made without it and `log` says so.
 export async function proposeSkeletons( { folder, harPath, surfaces, client, db = null, facts = null, entry = null, routing = null, site = null, shotsDir = null, widths = INVENTORY_WIDTHS, repo = REPO, harness = {}, log = () => {}, census = null, openStates = true, inventoriesDir = null, propose = proposeSkeleton, pageMap = null, allowMissingPaint = [] } ) {
 	if ( [ ...widths ].sort().join() !== [ ...INVENTORY_WIDTHS ].sort().join() ) {
 		throw new Error( `the skeleton inventory reads at ${ INVENTORY_WIDTHS.join( ', ' ) } (Spec 48 §3.4), not ${ widths.join( ', ' ) }` );
@@ -371,6 +374,10 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 	const ownDb = ! db && ! facts;
 	const theDb = db || ( facts ? null : openDb() );
 	const f = factsFor( { db: theDb, client, repo, facts } );
+	// The fact record this stage proposes from, read once: none when the saved one is the record this run replaces (stale or
+	// invalid). Any other failure to read it throws inside each surface's proposal, so each surface keeps its gap row.
+	let runRecord;
+	const factRecord = () => ( undefined === runRecord ? ( runRecord = recordForIntakeRun( f.facts, { log } ) ) : runRecord );
 	const calKeys = calKeysFor( site );
 	const sources = inventoriesDir ? sourcesOf( folder ) : null;
 	// The state keys each component writes from the viewport width: a state bounding one opens only at the widths inside it.
@@ -458,7 +465,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						if ( f.error ) {
 							throw new Error( f.error );
 						}
-						const r = propose( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, formLinks: formLinks(), refs, draftLinks: draftLinks(), db: theDb } );
+						const r = propose( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, formLinks: formLinks(), refs, draftLinks: draftLinks(), db: theDb, factRecord: factRecord() } );
 						assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton ${ s.slug }`, allow: allowMissingPaint, log } );
 						// A width another state opened (the same state at its other breakpoint) is named in `statesAt`.
 						const other = open ? Object.entries( open.ways ).filter( ( [ , x ] ) => x !== open.opener ).map( ( [ w, x ] ) => [ w, x.state ] ) : [];

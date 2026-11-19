@@ -6,7 +6,8 @@
 // reads the record. An element with no record entry (one a custom element draws, or an inventory taken from another
 // draft) is read from its rendered attributes, as before.
 import fs from 'fs';
-import { loadFacts as loadFactRecord, factsFile, warnMissingFacts } from './fact-record.mjs';
+import { loadFacts as loadFactRecord, factsFile, warnMissingFacts, InvalidRecordError } from './fact-record.mjs';
+import { StaleRecordError } from './freshness.mjs';
 import { translateElement } from './key-space.mjs';
 import { templateKey } from './fact-key.mjs';
 import { readJson } from './handoff.mjs';
@@ -32,6 +33,23 @@ export function recordFor( facts ) {
 		loaded.set( id, loadFactRecord( facts.client, { repo: facts.repo } ) );
 	}
 	return loaded.get( id );
+}
+
+// The fact record an intake run's own skeleton stage proposes from (lib/intake-skeletons.mjs::proposeSkeletons). That run
+// writes facts.json after the stage (the facts stage reads the inventories it saves), so a record the export has outgrown,
+// one an older schema wrote or one that does not parse is the record the run is replacing, not a failure: the stage
+// proposes without it, as on a client's first run, `log` says why, and the rows are proposed again from the new record
+// once it is written (lib/skeleton-rerun.mjs::refreshIntakeSkeletons). Any other failure throws. `load` is recordFor.
+export function recordForIntakeRun( facts, { log = () => {}, load = recordFor } = {} ) {
+	try {
+		return load( facts );
+	} catch ( e ) {
+		if ( ! ( e instanceof StaleRecordError || e instanceof InvalidRecordError ) ) {
+			throw e;
+		}
+		log( `${ e.message.replace( /; run intake again$/, '' ) }: this run writes the record anew, so the skeleton rows are proposed without it here and proposed again from the new record after the facts stage` );
+		return null;
+	}
 }
 
 // The `opened_by` words of the client's handoff `surfaces.json` records, by surface id (the fact record keeps no opener).

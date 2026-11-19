@@ -15,6 +15,10 @@ import { recordExport } from '../lib/intake-record.mjs';
 import { staticCensus } from '../lib/intake-census.mjs';
 import { HARNESS_DEFAULTS } from '../lib/intake-harness.mjs';
 import { surfaceRoots, proposeSkeletons, unresolvedRows } from '../lib/intake-skeletons.mjs';
+import { loadFacts } from '../lib/skeleton-facts.mjs';
+import { openDb } from '../lib/db.mjs';
+import { factsFile, factsProblems, FACTS_SCHEMA_VERSION } from '../lib/fact-record.mjs';
+import { sourcesOf } from '../lib/freshness.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const FIXTURE = path.join( HERE, 'fixtures', 'intake-skeletons' );
@@ -104,6 +108,33 @@ test( 'MUST FAIL: a proposal that throws is a gap row for that surface, which ke
 	const r = await proposeSkeletons( { folder: FIXTURE, harPath, surfaces: header, client: CLIENT, facts } );
 	assert.deepEqual( r.skeletons.map( ( s ) => [ s.surface, s.gap ] ), [ [ 'site-header', 'facts unavailable' ] ] );
 	assert.deepEqual( r.gaps, [ { construct: 'skeleton', draftId: 'Home:1', error: 'site-header: facts unavailable' } ] );
+} );
+
+test( 'MUST FAIL (rerun after a draft change): a saved fact record the export has outgrown does not fail the stage that runs before the record is rewritten', async () => {
+	// The client's repository: its handoff as it is now, and a fact record written before the draft's last edit.
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-intake-skeletons-stale-' ) );
+	const db = openDb();
+	try {
+		const handoff = path.join( repo, 'sites', CLIENT, 'handoff' );
+		fs.cpSync( FIXTURE, handoff, { recursive: true } );
+		const record = {
+			schema: FACTS_SCHEMA_VERSION, client: CLIENT, widths: [ 375, 768, 1440 ], sources: sourcesOf( handoff, { commit: null } ), elements: {}, surfaces: {}, pages: [], animations: { records: 0, unjoined: [] }, assets: { files: 0, unused: [], missing: [], logicRefs: [] }, gaps: [],
+			counts: { elements: 0, holes: 0, perWidth: {}, widthConditions: 0, elementsInSurfaces: 0, instances: 0, gaps: 0, effects: { records: 0, joined: 0, unjoined: 0, elements: 0 }, assets: { files: 0, elements: 0, unused: 0, missing: 0 } },
+		};
+		assert.deepEqual( factsProblems( record ), [] );
+		fs.mkdirSync( path.dirname( factsFile( repo, CLIENT ) ), { recursive: true } );
+		fs.writeFileSync( factsFile( repo, CLIENT ), JSON.stringify( record ) );
+		fs.appendFileSync( path.join( handoff, INDEX ), '\n<!-- edited after the record was written -->\n' );
+		const lines = [];
+		const r = await proposeSkeletons( { folder: FIXTURE, harPath, surfaces: roots.surfaces, client: CLIENT, repo, db, facts: { ...loadFacts( { db, client: CLIENT } ), repo }, log: ( l ) => lines.push( l ) } );
+		assert.deepEqual( r.gaps, [], 'no surface fails on the record the run is about to replace' );
+		const shape = ( run ) => run.skeletons.map( ( s ) => [ s.surface, s.gap, s.rows.map( ( x ) => [ x.key, x.action, x.candidates[ 0 ]?.block ] ) ] );
+		assert.deepEqual( shape( r ), shape( real ), 'every surface is read and its rows are those of a client with no record yet' );
+		assert.equal( lines.filter( ( l ) => /facts\.json is stale/.test( l ) && /Home\.dc\.html changed/.test( l ) ).length, 1, 'said once for the run, naming the changed file' );
+	} finally {
+		db.close();
+		fs.rmSync( repo, { recursive: true, force: true } );
+	}
 } );
 
 test( 'an sc-for root resolves to the element holding its copies; a root id the page does not hold is a gap row', async () => {

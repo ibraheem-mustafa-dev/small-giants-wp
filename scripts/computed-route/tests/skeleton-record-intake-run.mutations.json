@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/skeleton-record.mjs",
+		"find": "if ( ! ( e instanceof StaleRecordError || e instanceof InvalidRecordError ) ) {",
+		"replace": "if ( ! ( e instanceof InvalidRecordError ) ) {",
+		"why": "a stale record fails the run that is about to replace it"
+	},
+	{
+		"file": "lib/skeleton-record.mjs",
+		"find": "if ( ! ( e instanceof StaleRecordError || e instanceof InvalidRecordError ) ) {",
+		"replace": "if ( ! ( e instanceof StaleRecordError ) ) {",
+		"why": "a record an older schema wrote fails the run that is about to replace it"
+	},
+	{
+		"file": "lib/skeleton-record.mjs",
+		"find": "if ( ! ( e instanceof StaleRecordError || e instanceof InvalidRecordError ) ) {",
+		"replace": "if ( false ) {",
+		"why": "any failure to read the record is swallowed"
+	},
+	{
+		"file": "lib/skeleton-record.mjs",
+		"find": "log( `${ e.message.replace( /; run intake again$/, '' ) }: this run writes",
+		"replace": "void ( `${ e.message.replace( /; run intake again$/, '' ) }: this run writes",
+		"why": "the stage proposes without the record and says nothing"
+	},
+	{
+		"file": "lib/fact-record.mjs",
+		"find": "throw new InvalidRecordError( `${ path.relative( repo, file ) } does not parse",
+		"replace": "throw new Error( `${ path.relative( repo, file ) } does not parse",
+		"why": "a record that does not parse is not known as invalid"
+	},
+	{
+		"file": "lib/fact-record.mjs",
+		"find": "throw new InvalidRecordError( `${ path.relative( repo, file ) } does not validate",
+		"replace": "throw new Error( `${ path.relative( repo, file ) } does not validate",
+		"why": "a record that does not validate is not known as invalid"
+	}
+]

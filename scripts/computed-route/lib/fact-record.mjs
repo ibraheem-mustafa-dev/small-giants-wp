@@ -180,17 +180,30 @@ export function writeFacts( file, record ) {
 	return record.counts;
 }
 
-// A client's fact record, refused when it is missing, invalid or stale (a StaleRecordError names each changed input). The
-// one way a stage reads the draft's template, logic and surface facts.
+// A saved fact record that does not parse or does not validate (one an older schema wrote).
+export class InvalidRecordError extends Error {
+	constructor( message ) {
+		super( message );
+		this.name = 'InvalidRecordError';
+	}
+}
+
+// A client's fact record, refused when it is missing, invalid (an InvalidRecordError) or stale (a StaleRecordError names
+// each changed input). The one way a stage reads the draft's template, logic and surface facts.
 export function loadFacts( client, { repo = REPO, folder = path.join( repo, 'sites', client, 'handoff' ), warn, current = null } = {} ) {
 	const file = factsFile( repo, client );
 	if ( ! fs.existsSync( file ) ) {
 		throw new Error( `${ path.relative( repo, file ) } is missing: run intake for ${ client } first` );
 	}
-	const record = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+	let record;
+	try {
+		record = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+	} catch ( e ) {
+		throw new InvalidRecordError( `${ path.relative( repo, file ) } does not parse (${ e.message }); run intake again` );
+	}
 	const problems = factsProblems( record );
 	if ( problems.length ) {
-		throw new Error( `${ path.relative( repo, file ) } does not validate: ${ problems.join( '; ' ) }; run intake again` );
+		throw new InvalidRecordError( `${ path.relative( repo, file ) } does not validate: ${ problems.join( '; ' ) }; run intake again` );
 	}
 	assertCurrent( record, folder, { label: 'facts.json', current, ...( warn ? { warn } : {} ) } );
 	return record;

@@ -1,0 +1,14 @@
+[
+	{
+		"file": "lib/intake-skeletons.mjs",
+		"find": "draftLinks: draftLinks(), db: theDb, factRecord: factRecord() } );",
+		"replace": "draftLinks: draftLinks(), db: theDb } );",
+		"why": "each proposal loads the saved record itself, so a stale one fails every surface of the run that replaces it"
+	},
+	{
+		"file": "lib/intake-skeletons.mjs",
+		"find": "( runRecord = recordForIntakeRun( f.facts, { log } ) )",
+		"replace": "( runRecord = recordForIntakeRun( f.facts ) )",
+		"why": "the stage proposes without the record and the run's log does not say so"
+	}
+]
