@@ -920,9 +920,15 @@
 						"tag": [
 							"button"
 						],
-						"has": {
-							"text": "count"
-						}
+						"hasAll": [
+							{
+								"text": "count"
+							},
+							{
+								"ownText": true,
+								"text": "words"
+							}
+						]
 					},
 					"pick": "first"
 				},
@@ -936,6 +942,23 @@
 						}
 					},
 					"smallest": true
+				},
+				"iconTrigger": {
+					"from": "page",
+					"match": {
+						"scope": "chrome",
+						"tag": [
+							"button"
+						],
+						"has": {
+							"text": "count"
+						},
+						"lacks": {
+							"ownText": true,
+							"text": "words"
+						}
+					},
+					"pick": "first"
 				}
 			},
 			"parts": {
@@ -1197,20 +1220,25 @@
 					"sameAs": "trigger"
 				},
 				"badge": {
-					"from": "trigger",
-					"match": {
-						"text": "count"
-					},
-					"pick": "first"
+					"any": [
+						{
+							"from": "trigger",
+							"match": {
+								"text": "count"
+							},
+							"pick": "first"
+						},
+						{
+							"from": "iconTrigger",
+							"match": {
+								"text": "count"
+							},
+							"pick": "first"
+						}
+					]
 				},
 				"icon": {
-					"from": "trigger",
-					"match": {
-						"tag": [
-							"svg"
-						]
-					},
-					"pick": "first"
+					"sameAs": "iconTrigger"
 				}
 			}
 		}

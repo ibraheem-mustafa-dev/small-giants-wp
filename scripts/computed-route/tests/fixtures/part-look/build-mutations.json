@@ -1,0 +1,134 @@
+[
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "return c && c.a > 0 ? toHex( c ) : null;",
+		"replace": "return c ? toHex( c ) : null;",
+		"why": "a transparent background is written"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "'' === v || INITIAL[ property ] === v ||",
+		"replace": "'' === v ||",
+		"why": "a text-transform of none is written"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( undefined !== t && null !== t && ! same( t, d ) ) {",
+		"replace": "if ( undefined !== t && null !== t ) {",
+		"why": "a tablet value equal to the desktop one is written"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( undefined !== m && null !== m && ! same( m, eff ) ) {",
+		"replace": "if ( undefined !== m && null !== m ) {",
+		"why": "a mobile value equal to the tablet one is written"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "widthVaries = undefined !== tiers.tablet || undefined !== tiers.mobile;",
+		"replace": "widthVaries = false;",
+		"why": "widths that differ for a one-value setting go unreported"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( values.every( ( v ) => samePrimitive( v, first ) ) ) {",
+		"replace": "if ( true ) {",
+		"why": "differing instances are not told apart, the first one is written"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "'line-height' === row.css_property ? '' : 'px'",
+		"replace": "'px'",
+		"why": "a line height gets a px unit"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( ! stated ) {",
+		"replace": "if ( false ) {",
+		"why": "an undeclared size is written"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( ! /^-?[\\d.]+px$/.test( stated ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a size declared in vw is written as its computed pixels"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "const look = rows.filter( ( r ) => r.css_element && r.css_property && ! r.css_state );",
+		"replace": "const look = rows.filter( ( r ) => r.css_element && r.css_property );",
+		"why": "a hover setting is written from the resting read"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( ! loc || ( onlyBlocks && ! onlyBlocks.includes( block ) ) ) {",
+		"replace": "if ( ! loc ) {",
+		"why": "a part restricted to another block is located on this one"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "return same( own, wide ) ? { skip: 'no draft difference' } : { tiers: { only: own } };",
+		"replace": "return { tiers: { only: own } };",
+		"why": "a tablet setting is written when the tablet draft equals the desktop one"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "return Object.keys( narrow ).length ? { tiers: narrow } :",
+		"replace": "return false ? { tiers: narrow } :",
+		"why": "a part shown only on narrow devices is skipped"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "return colourAttr ? { value: text, extra: { [ colourAttr ]: slug( value.colour, colourAttr ) } } :",
+		"replace": "return false ? { value: text, extra: { [ colourAttr ]: slug( value.colour, colourAttr ) } } :",
+		"why": "a shadow's colour setting is not written"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "return all.every( ( v ) => Math.abs( v - all[ 0 ] ) <= 0.5 ) ?",
+		"replace": "return true ?",
+		"why": "uneven corners are written as one radius"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "const fault = faultOf( row.attr_name );",
+		"replace": "const fault = null;",
+		"why": "a known fault is not flagged"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( ( COVERS[ property ] || [ property ] ).some( ( p ) => held.has( p ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a look a setting holds is also reported as no setting"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "out.push( { block, part, selector, property, draft:",
+		"replace": "out.push( { block, part, property, draft:",
+		"why": "the look table's selector is left out of a noSetting row"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "return Math.abs( ca.a - cb.a ) < 0.02 && deltaE( ca, cb ) <= 2;",
+		"replace": "return Math.abs( ca.a - cb.a ) < 0.02;",
+		"why": "any two opaque colours are the same look"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "return hit ? hit.value : c;",
+		"replace": "return c;",
+		"why": "a colour is written as a literal, never as its palette slug"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "return { value: preset || String( value ).split( ',' )[ 0 ]",
+		"replace": "return { value: String( value ).split( ',' )[ 0 ]",
+		"why": "a font family is never written as its preset"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( ! WIDTHS.some( ( w ) => ( instances[ w ] || [] ).length ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a located part with no draft element is not reported as unpaired"
+	}
+]

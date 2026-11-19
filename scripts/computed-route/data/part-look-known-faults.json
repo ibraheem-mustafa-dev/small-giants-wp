@@ -1,0 +1,14 @@
+{
+	"_comment": "Settings known to exist and not paint (or paint wrongly), named by block. A value the route writes or compares that lands on one is marked 'written, known not to paint' in the part-look report, so a pass is not read as 'the page looks right'. Source: .claude/reports/2026-11-18-template-rework/class-a-results.md, 'Settings that exist but do not work, or lose', and template-rework plan Task 3. The settings of a look-table row that has no selector for a block are added at run time from selectors.json (lib/fill-part-look.mjs::tableAttrs), not listed here.",
+	"blocks": {
+		"woocommerce/cart": {
+			"sgsFieldPadding": "loses to WooCommerce's active-field padding rule on the Cart (class-a-results.md fault 1)",
+			"sgsSummaryWrapsButton": "leaves a second card inside the summary card (class-a-results.md fault 3)",
+			"sgsSummaryTitleTextMargin": "moves the phone Order summary step title as well as the heading (class-a-results.md fault 7)"
+		},
+		"woocommerce/checkout": {
+			"sgsSummaryWrapsButton": "leaves a second card inside the summary card (class-a-results.md fault 3)",
+			"sgsSummaryTitleTextMargin": "moves the phone Order summary step title as well as the heading (class-a-results.md fault 7)"
+		}
+	}
+}
