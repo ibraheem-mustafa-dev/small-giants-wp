@@ -17,8 +17,14 @@
  *   - the tint sits on the scrim's `::before` with its own opacity, the blur on
  *     the scrim itself, so a strong blur is never faded by a light tint and a
  *     gradient takes the same strength control as a flat colour;
- *   - the scrim's own opacity is only the open/close fade, driven by CSS
- *     `:root:has(<open selector>)`, so no block needs JavaScript to show it;
+ *   - the scrim's own opacity is only the open/close fade: the scrim carries its
+ *     owner's open selector (`data-sgs-scrim-open`) and the shared
+ *     `assets/js/scrim-state.js` sets `data-sgs-scrim-on` while it matches, so
+ *     no block wires its own scrim. Every owner opens through script (a
+ *     `<dialog>` `showModal()`, or a disclosure's `aria-expanded`). A CSS
+ *     `:root:has(<open selector>)` did the same with no script but made the
+ *     browser re-check the whole document on every style pass (Mama's product
+ *     page: about 3.5 s of style work on a slowed phone, 2026-11-19);
  *   - the HTML is printed at `wp_footer` as a direct child of `<body>`, so no
  *     transformed or filtered ancestor (a blurred header, an animated
  *     container) can capture its `position:fixed`.
@@ -184,7 +190,8 @@ if ( ! function_exists( 'sgs_scrim_render' ) ) {
 				)
 			);
 		}
-		$css .= ':root:has(' . $open . ') ' . $sel . '{opacity:1;pointer-events:auto;transition-duration:' . $enter_ms . 'ms}';
+		// Open state: assets/js/scrim-state.js sets data-sgs-scrim-on while `$open` matches (see sgs_scrim_print_footer).
+		$css .= $sel . '[data-sgs-scrim-on]{opacity:1;pointer-events:auto;transition-duration:' . $enter_ms . 'ms}';
 		$css .= '@media (prefers-reduced-motion:reduce){' . $sel . '{transition-duration:.01ms}}';
 		$css .= '@media (forced-colors:active){' . $sel . '{display:none}}';
 
@@ -197,7 +204,7 @@ if ( ! function_exists( 'sgs_scrim_render' ) ) {
 		}
 		sgs_scrim_queue(
 			$uid,
-			sprintf( '<div class="sgs-scrim %s" aria-hidden="true"%s></div>', esc_attr( $uid . '-scrim' ), $data )
+			sprintf( '<div class="sgs-scrim %s" aria-hidden="true" data-sgs-scrim-open="%s"%s></div>', esc_attr( $uid . '-scrim' ), esc_attr( $open ), $data )
 		);
 
 		return $css;
@@ -224,11 +231,28 @@ if ( ! function_exists( 'sgs_scrim_queue' ) ) {
 
 if ( ! function_exists( 'sgs_scrim_print_footer' ) ) {
 	/**
-	 * Print every queued scrim as a direct child of `<body>`.
+	 * Print every queued scrim as a direct child of `<body>`, and the script that shows each one while its owner is open
+	 * (enqueued here, at `wp_footer` priority 5, so it prints with the footer scripts and only on a page with a scrim).
 	 */
 	function sgs_scrim_print_footer() {
+		$queue = sgs_scrim_queue();
+		if ( empty( $queue ) ) {
+			return;
+		}
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each entry built from esc_attr() values in sgs_scrim_render().
-		echo implode( '', sgs_scrim_queue() );
+		echo implode( '', $queue );
+		if ( defined( 'SGS_BLOCKS_URL' ) && defined( 'SGS_BLOCKS_PATH' ) && file_exists( SGS_BLOCKS_PATH . 'assets/js/scrim-state.js' ) ) {
+			wp_enqueue_script(
+				'sgs-scrim-state',
+				SGS_BLOCKS_URL . 'assets/js/scrim-state.js',
+				array(),
+				(string) filemtime( SGS_BLOCKS_PATH . 'assets/js/scrim-state.js' ),
+				array(
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				)
+			);
+		}
 	}
 	if ( function_exists( 'add_action' ) ) {
 		add_action( 'wp_footer', 'sgs_scrim_print_footer', 5 );

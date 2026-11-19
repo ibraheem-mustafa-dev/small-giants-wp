@@ -54,10 +54,11 @@
  *   • Scrim:   the shared viewport scrim (Wave 3C U-2, family M-14) — a
  *              `.{uid}-scrim` div printed at `wp_footer` by
  *              includes/helpers-scrim.php::sgs_scrim_render(), carrying
- *              data-sgs-nav-scrim="{drawerRef}". Its visibility is driven by
- *              CSS `:root:has(.{uid}[open])`, not by a class this store
- *              toggles, so ONE mechanism covers modal and non-modal alike.
- *              This store only wires its click-to-close.
+ *              data-sgs-nav-scrim="{drawerRef}". Its visibility follows
+ *              the drawer's `[open]` through the shared
+ *              assets/js/scrim-state.js (it sets `data-sgs-scrim-on`), not a
+ *              class this store toggles, so ONE mechanism covers modal and
+ *              non-modal alike. This store only wires its click-to-close.
  *
  * Example burger markup a consumer emits:
  *   <div data-wp-context='{"isOpen":false,"drawerRef":"sgs-nav-drawer-1"}'>
@@ -547,8 +548,8 @@ function resolveDrawer( ctx ) {
 
 /**
  * Resolve the shared viewport scrim for a drawer id (modal and non-modal
- * alike — its visibility is CSS-driven, not toggled here; see the module
- * docblock's Scrim bullet).
+ * alike — its visibility follows the drawer's `[open]` through
+ * assets/js/scrim-state.js, not toggled here; see the module docblock's Scrim bullet).
  *
  * @param {string} drawerRef The drawer id.
  * @return {HTMLElement|null} The scrim element, or null.
