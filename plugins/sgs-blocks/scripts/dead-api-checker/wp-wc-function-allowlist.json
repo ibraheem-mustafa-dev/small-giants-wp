@@ -11,6 +11,7 @@
     "_n_noop",
     "_nx",
     "_wp_relative_upload_path",
+    "_wp_to_kebab_case",
     "_x",
     "absint",
     "add_action",
