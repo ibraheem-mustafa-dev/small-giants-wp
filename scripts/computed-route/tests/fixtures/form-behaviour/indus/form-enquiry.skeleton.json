@@ -1,0 +1,623 @@
+[
+	{
+		"name": "sgs/form",
+		"attributes": {},
+		"draftRef": {
+			"tpl": "Root>EnquiryForm@468#0/6#0"
+		},
+		"draftFingerprint": {
+			"tag": "form",
+			"cls": "",
+			"styleHash": "1505",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 13
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "flex"
+				},
+				"draftRef": {
+					"tpl": "Root>EnquiryForm@468#0/7#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "bcc9f754",
+					"parentTags": [
+						"form"
+					],
+					"textHash": "1505",
+					"line": 14
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "01"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/8#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "1c10abc2",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "596804",
+							"line": 15
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "What can we help with?"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/9#0"
+						},
+						"draftFingerprint": {
+							"tag": "h3",
+							"cls": "",
+							"styleHash": "7bfb8038",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "c70c31dd",
+							"line": 16
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Choose all that apply"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/10#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "d2c9c594",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "d5c85a24",
+							"line": 17
+						},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/form-field-tiles",
+				"attributes": {},
+				"draftRef": {
+					"tpl": "Root>EnquiryForm@468#0/11#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "9fd13249",
+					"parentTags": [
+						"form"
+					],
+					"textHash": "1505",
+					"line": 19
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "flex"
+				},
+				"draftRef": {
+					"tpl": "Root>EnquiryForm@468#0/20#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "3a781edb",
+					"parentTags": [
+						"form"
+					],
+					"textHash": "1505",
+					"line": 30
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "02"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/21#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "1c10abc2",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "596807",
+							"line": 31
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Your details"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/22#0"
+						},
+						"draftFingerprint": {
+							"tag": "h3",
+							"cls": "",
+							"styleHash": "7bfb8038",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "ad24f3f6",
+							"line": 32
+						},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "grid"
+				},
+				"draftRef": {
+					"tpl": "Root>EnquiryForm@468#0/23#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "bde73e2",
+					"parentTags": [
+						"form"
+					],
+					"textHash": "1505",
+					"line": 34
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/25#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "aa146b11",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 36
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/form-field-text",
+								"attributes": {
+									"label": "Your name"
+								},
+								"draftRef": {
+									"tpl": "Root>EnquiryForm@468#0/26#0"
+								},
+								"draftFingerprint": {
+									"tag": "input",
+									"cls": "scp1m",
+									"styleHash": "e8b5130c",
+									"parentTags": [
+										"form",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 37
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-form-field__input": {
+										"tpl": "Root>EnquiryForm@468#0/26#0"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/25#1"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "aa146b11",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 36
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/form-field-text",
+								"attributes": {
+									"label": "Business name (optional)"
+								},
+								"draftRef": {
+									"tpl": "Root>EnquiryForm@468#0/26#1"
+								},
+								"draftFingerprint": {
+									"tag": "input",
+									"cls": "scp1m",
+									"styleHash": "e8b5130c",
+									"parentTags": [
+										"form",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 37
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-form-field__input": {
+										"tpl": "Root>EnquiryForm@468#0/26#1"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/25#2"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "aa146b11",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 36
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/form-field-email",
+								"attributes": {
+									"label": "Email"
+								},
+								"draftRef": {
+									"tpl": "Root>EnquiryForm@468#0/26#2"
+								},
+								"draftFingerprint": {
+									"tag": "input",
+									"cls": "scp1m",
+									"styleHash": "e8b5130c",
+									"parentTags": [
+										"form",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 37
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-form-field__input": {
+										"tpl": "Root>EnquiryForm@468#0/26#2"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/25#3"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "aa146b11",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 36
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/form-field-phone",
+								"attributes": {
+									"label": "Phone (optional)"
+								},
+								"draftRef": {
+									"tpl": "Root>EnquiryForm@468#0/26#3"
+								},
+								"draftFingerprint": {
+									"tag": "input",
+									"cls": "scp1m",
+									"styleHash": "e8b5130c",
+									"parentTags": [
+										"form",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 37
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-form-field__input": {
+										"tpl": "Root>EnquiryForm@468#0/26#3"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/30#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "720862a9",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 42
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/form-field-textarea",
+								"attributes": {
+									"label": "How can we help?"
+								},
+								"draftRef": {
+									"tpl": "Root>EnquiryForm@468#0/31#0"
+								},
+								"draftFingerprint": {
+									"tag": "textarea",
+									"cls": "scp1m",
+									"styleHash": "f0be88d4",
+									"parentTags": [
+										"form",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 43
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-form-field__input": {
+										"tpl": "Root>EnquiryForm@468#0/31#0"
+									}
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "flex"
+				},
+				"draftRef": {
+					"tpl": "Root>EnquiryForm@468#0/36#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "cc712e33",
+					"parentTags": [
+						"form"
+					],
+					"textHash": "1505",
+					"line": 50
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Reply by"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/37#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "83026f48",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "1c2c80c",
+							"line": 51
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Email"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/39#0"
+						},
+						"draftFingerprint": {
+							"tag": "button",
+							"cls": "",
+							"styleHash": "505c8139",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "bfda129",
+							"line": 53
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Phone"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/39#1"
+						},
+						"draftFingerprint": {
+							"tag": "button",
+							"cls": "",
+							"styleHash": "24dca300",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "de11eb9",
+							"line": 53
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "WhatsApp"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/39#2"
+						},
+						"draftFingerprint": {
+							"tag": "button",
+							"cls": "",
+							"styleHash": "24dca300",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "71fcb1bd",
+							"line": 53
+						},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "flex"
+				},
+				"draftRef": {
+					"tpl": "Root>EnquiryForm@468#0/40#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "975570a3",
+					"parentTags": [
+						"form"
+					],
+					"textHash": "1505",
+					"line": 57
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "We reply within one working day. Your details are only used to answer your enquiry."
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/41#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "1770ff34",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "4824cc34",
+							"line": 58
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Send message"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/42#0"
+						},
+						"draftFingerprint": {
+							"tag": "button",
+							"cls": "scp1n",
+							"styleHash": "54f5fbd8",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "5b4a5872",
+							"line": 59
+						},
+						"innerBlocks": []
+					}
+				]
+			}
+		]
+	}
+]
