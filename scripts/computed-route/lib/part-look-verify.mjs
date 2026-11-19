@@ -14,12 +14,16 @@ import { sameSetting } from './part-look-compare.mjs';
 
 // A part's live selector. WooCommerce blocks: the look table's selector for the part's row (the part named for the row's id, or the
 // row `map.parts` names for a part older than the table). The block's own parts: `supports.sgs.elements[part].selector`, else the
-// block's BEM class for an element of that name. Returns { selectors: { part: selector }, none: { part: reason } }.
-export function liveSelectorsFor( { parts, blockKey, table, map, elements, short } ) {
+// block's BEM class for an element of that name. A part `map.blocks[block]` names takes that selector first (a part whose block.json
+// element has no selector, or one the block prints only in another mode). Returns { selectors: { part: selector }, none: { part: reason } }.
+export function liveSelectorsFor( { parts, blockKey, table, map, elements, short, block = null } ) {
 	const selectors = {};
 	const none = {};
 	for ( const part of parts ) {
-		if ( blockKey ) {
+		const named = block ? map?.blocks?.[ block ]?.[ part ] : null;
+		if ( named ) {
+			selectors[ part ] = named;
+		} else if ( blockKey ) {
 			const rowId = map?.parts?.[ part ] || part.replace( /-/g, '_' );
 			const sel = table.rows?.[ rowId ]?.[ blockKey ];
 			if ( ! table.rows?.[ rowId ] ) {

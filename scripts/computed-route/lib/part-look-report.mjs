@@ -71,7 +71,9 @@ export function reportMarkdown( { client, site, compare, generated, surfaces, to
 			lines.push( `Settings the block holds: ${ st.total }, of which ${ st.withPart } name a part and ${ st.withoutPart } name none (content and mode switches, labels and the like cannot be placed on a part). ${ st.withoutPartButProperty.length } of those carry a CSS property and no part, so a look they hold cannot be placed: ${ st.withoutPartButProperty.join( ', ' ) || 'none' }.`, '' );
 		}
 		if ( s.shots ) {
-			lines.push( `Pictures at 1440: ${ Object.entries( s.shots ).map( ( [ k, f ] ) => `${ k } \`${ f.split( /[\\/]/ ).pop() }\`` ).join( ', ' ) }.`, '' );
+			// A signed-in surface has a picture per view ({ path: file }), another surface one picture per stage.
+			const names = ( f ) => ( 'string' === typeof f ? [ f ] : Object.values( f || {} ) ).map( ( x ) => `\`${ x.split( /[\\/]/ ).pop() }\`` ).join( ', ' );
+			lines.push( `Pictures at 1440: ${ Object.entries( s.shots ).map( ( [ k, f ] ) => `${ k } ${ names( f ) }` ).join( '; ' ) }.`, '' );
 		}
 		if ( b.gaps?.length ) {
 			lines.push( '### Gaps (what the block cannot express, with the draft evidence)', '', table( [ 'Setting', 'What', 'Draft evidence' ], b.gaps.map( ( g ) => [ g.setting, g.what, g.evidence ?? '' ] ) ), '' );
