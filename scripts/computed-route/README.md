@@ -2141,6 +2141,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `REPO`, `MASTER_SCHEMAS`, `KNOWN_RUNTIMES`: the repository root, `.claude/claude-design-handoff/handoff-schema/` and `data/known-runtimes.json`.
 - `manifestSchemaVersion(schemas?)` → the `schema_version` const `manifest.schema.json` demands (throws when it names none); the gate chain's G0 expects it.
 - `REQUIRED_FILES`: FR-48A-2's list (a root `.dc.html` is checked separately). `MAX_BYTES`: 20 MB (FR-48A-10).
+- `isTokenFile(path)` → whether a folder-relative path is a stylesheet directly inside `tokens/`: a draft carries as many token files as its design has (FR-48A-3).
 - `sha256(buf)` → hex digest. `readJson(file)` → `{ data }` or `{ error }`. `readKnown(file?)` → `{ runtimes }` (empty when the file is missing).
 - `walkFolder(root)` → `{ files, problems }`: every file relative with `/`, sorted; a symlink is a problem and is not followed.
 - `resolveRef(value, fromDraft?)` → a folder-relative path (query and fragment removed, URL-decoded, leading `./` removed), or null for a templated value, an absolute URL, a bare fragment or a path leaving the folder.

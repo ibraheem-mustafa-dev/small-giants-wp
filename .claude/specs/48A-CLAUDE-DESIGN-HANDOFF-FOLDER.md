@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 48A
-spec_version: "1.3"
+spec_version: "1.4"
 title: The Claude Design handoff folder
 project: small-giants-wp
 status: active
-last_verified: 2026-11-18
+last_verified: 2026-11-19
 authors: Bean + Claude
 parent_spec: Spec 48 (`.claude/specs/48-CLONING-SYSTEM.md`, the cloning system)
 ---
@@ -36,11 +36,11 @@ Edited in the folder: Mama's Contact page's "quick answers" became an FAQ accord
 Status: checked by `scripts/computed-route/handoff-check.mjs`.
 
 ### FR-48A-3 -- Allowed files and reachability
-Besides the required files, a folder may hold only: files under `assets/`, and project scripts (`.js`) a reachable draft loads. Every other file fails the check and is named, with the instruction to remove it (e.g. a planning document saved as a draft, an earlier page version, skill folders, notes, a trace harness).
+Besides the required files, a folder may hold only: files under `assets/`, further token stylesheets directly inside `tokens/` (`tokens/motion.css`: a draft carries as many token files as its design has, FR-48A-17), and project scripts (`.js`) a reachable draft loads. Every other file fails the check and is named, with the instruction to remove it (e.g. a planning document saved as a draft, an earlier page version, skill folders, notes, a trace harness).
 - Entry drafts are the paths listed in `MANIFEST.json` `entry_drafts`.
 - A draft is reachable when it is an entry draft, or a reachable draft names it through `<dc-import name="X">` (resolved to `X.dc.html`, exact and case-sensitive, spaces allowed) or links to it through an `href` or `src` value ending in `.dc.html` (query string and fragment removed, URL-decoded, a leading `./` removed). Plain links count, so one file per page (Mama's Munches) passes.
 - A project script is reachable when a reachable draft loads it through `<script src>` or `x-import from=`, resolved the same way.
-- Every `.dc.html` in the folder must be reachable; an unreachable one fails the check. Links are read from attribute values only, so a page reached only through a path built in script fails loudly and is listed in `entry_drafts`. Status: checked by `handoff-check.mjs`.
+- Every `.dc.html` in the folder must be reachable; an unreachable one fails the check. Links are read from attribute values only, so a page reached only through a path built in script fails loudly and is listed in `entry_drafts`. Status: checked by `handoff-check.mjs` (`lib/handoff.mjs::isTokenFile` for the token stylesheets; `tests/handoff-check.test.mjs`, `tests/handoff-token-files.mutations.json` 4 of 4 killed).
 
 ### FR-48A-4 -- The manifest
 Claude Design writes `MANIFEST.json` last, valid against `handoff-schema/manifest.schema.json`: `schema_version`, `generated` (date), `project`, `entry_drafts`, `runtime_sha256` (of `support.js`) and `files`, one `{ path, bytes, sha256 }` per file in the folder except `MANIFEST.json` itself. Paths are relative to the folder root, POSIX separators, NFC, case-sensitive, with no `./`, `..`, leading slash or backslash; directories are not listed. The check passes only when the listed paths equal the files on disk in both directions, every size and hash matches, and `runtime_sha256` matches `support.js`. A design change after export means pasting the handoff prompt again and downloading the whole folder; files are never moved in or out by hand.
@@ -85,13 +85,15 @@ A client whose site is already built from an earlier draft (Eye Care) is not put
 Status: specified; the Eye Care mirror (the draft edited to match the live eye-care-test) is still open. Edited 2026-10-28 (`f75c042ae`, `53a5672d6`): in `sites/eye-care-ward-end/handoff/Eye Care Birmingham.dc.html` the header, footer and drawer show the logo images eye-care-test uses (the `assets/ec-logo.png` mark and the new `assets/eye-care-wordmark.png` wordmark) in place of typed text; `animations.json`, `surfaces.json` and `MANIFEST.json` were regenerated and `handoff-check` passes. Bean uploads the edited draft and the new asset file into the Claude Design project.
 
 ### FR-48A-12 -- The producer's instructions
-`.claude/claude-design-handoff/` holds the one pasted prompt (`PROMPT.txt`), the project `CLAUDE.md` (standing facts, runtime traps, the folder map) and `handoff-schema/`. They are the only copies that get edited, and a change to this spec updates them in the same commit. The folder map in `CLAUDE.md` lists exactly the files FR-48A-2 and FR-48A-3 allow.
+`.claude/claude-design-handoff/` holds the one pasted prompt (`PROMPT.txt`), the project `CLAUDE.md` (standing facts, runtime traps, the design rules, the folder map), `WHAT-WE-BUILD.md` and `handoff-schema/`. They are the only copies that get edited, and a change to this spec updates them in the same commit. The folder map in `CLAUDE.md` lists exactly the files FR-48A-2 and FR-48A-3 allow. Bean uploads `CLAUDE.md`, `WHAT-WE-BUILD.md` and `handoff-schema/` to each Claude Design project and pastes `PROMPT.txt` at handoff.
 
-Status: done 2026-10-11.
+`WHAT-WE-BUILD.md` is the list of what the framework already has, in design words (Bean, 2026-11-18: no Components page, no block map and no section-level block choice; a list of what we have, yes). Claude Design styles anything on it freely and asks before drawing something that works differently from everything on it. It names no block and no setting (FR-48A-8), and it is never part of a handoff folder. It is generated: `python plugins/sgs-blocks/scripts/generate-handoff-block-list.py` joins the framework database (which blocks are built, which options each has) with the wording file `plugins/sgs-blocks/scripts/data/handoff-block-list.words.json` (how a designer would name each thing and option), and refuses to write when a built block has no entry, an entry names a block, option or value the database lacks, an option value has no wording, or a block or setting name leaks into the text; `--check` exits 1 when the file is out of date.
+
+Status: done 2026-10-11; `WHAT-WE-BUILD.md` and its generator added 2026-11-19 (59 entries covering every built block). Not wired: `--check` as a gate after a reseed.
 
 ### FR-48A-13 -- Structured reach, typed keys, one threshold form, stable part ids
 All of these are optional, so an earlier export still validates. The handoff never names an SGS block: block choice is made at cloning.
-- `data-part="<id>"` on a meaningful element is a stable name for what the element is in the design (`hero-cta`, `filter-rail`). It is identity only and is kept unchanged between exports.
+- `data-part="<id>"` on a meaningful element is a stable name for what the element is in the design (`hero-cta`, `filter-rail`). It is identity only and is kept unchanged between exports. The producer's `CLAUDE.md` asks for it on every section, drawer, menu, form and call to action (2026-11-19); an export without it still validates.
 - A `surfaces.json` state may carry `how_to_reach_structured` beside the `how_to_reach` prose: `{ setState: { ... }, storeCalls: [ { path, args } ], event: { type, target } }` (`.claude/claude-design-handoff/handoff-schema/surfaces.schema.json::$defs.state`). `target` is a `data-part` id or a `data-dc-tpl` index.
 - A state may carry `state_key_sources`, mapping each `state_keys` key to `state`, `derived` or `instance`.
 - A state that depends on a width carries `breakpoint`: `{ basis: "state.w", op, value }`.
@@ -102,6 +104,7 @@ Status: schema, method, prompt and `CLAUDE.md` updated 2026-10-29. The route rea
 ### FR-48A-14 -- What the clone reads from text and widgets
 - Inline formatting inside a text element is kept: bold (`strong`, `b`), italic (`em`, `i`), strikethrough (`s`, `del`), links (`a`) and line breaks (`br`) land in the matching block setting as rich text. Write them as ordinary phrasing content inside the element; do not flatten them to plain text or split a sentence across elements to fake them.
 - Lists, tabs, accordions and breadcrumbs are read by their meaning (ARIA roles, states and behaviour such as `role="tablist"`, `aria-expanded`, `<nav aria-label>` with an ordered list), not by tag names or class names. Give each widget its correct ARIA role and state attributes; a class called `tabs` on a plain `div` is not a tab set.
+- These rules stand in the producer's `CLAUDE.md` as design rules, so they apply while a draft is designed and not only at handoff (2026-11-19: no export so far carries `aria-controls` or `aria-modal`). The widget rows there: an accordion header is a `button` with `aria-expanded` and `aria-controls`; a slider is a container with `aria-roledescription="carousel"`, slides with `aria-roledescription="slide"`, `button` arrows and dots with `aria-current`; a drawer, modal or covering panel is `role="dialog"` with `aria-modal`, opened by a button with `aria-expanded` and `aria-controls`; a drop-down menu's trigger is a `button` with `aria-expanded`; chips are buttons with `aria-pressed`. The route recognises a widget by what its code does and reads these as the cross-check (Spec 48 FR-48-6).
 - Per-pattern block tags in a draft (`data-sgs-block`) are not used. The draft's natural names (`data-part` ids, class names, headings) serve as guidance only; tags may come later (Bean, 2026-10-30).
 
 ### FR-48A-15 -- Focus tokens
@@ -114,6 +117,20 @@ Status: schema, method, prompt and `CLAUDE.md` updated 2026-10-29. The route rea
 - The producer's `CLAUDE.md` lists the pages and states to design: for every site the page-not-found page, search results with and without results, each form's sent and error states and the open menu drawer; for a blog the post list and one post; for a shop the listing (with filters, and empty), a product (with options, sold out), the basket page and drawer (filled, empty), the checkout (guest, signed in, a field error), the order confirmation, sign in, create account, lost password, each account view and one notice of each kind. It also lists what a WooCommerce shop does and does not do, so a draft promises nothing the shop cannot deliver (Mama's Munches' draft showed an address book, tracking links and a bake date, and had no page-not-found, search or account sub-view designs; each cost a ruling or a hand-built page, `.claude/reports/2026-11-18-template-rework/inventory.md`).
 - At handoff the prompt compares the drafts with that list and reports each missing page or state, and each feature a shop does not do, as an unresolved item; it draws nothing new.
 - Status: `CLAUDE.md` and `PROMPT.txt` updated 2026-11-18 (version 1.3). Not built: `handoff-check.mjs` warning on a missing surface (the three existing exports predate this and would only warn; it belongs to the general cloning work, which owns `handoff-check.mjs`), and the route composing a surface the draft lacks from the site's own designed parts (`.claude/plans/2026-11-18-template-rework.md`, Task 7).
+
+### FR-48A-17 -- Tokens used by name; buttons and fields built once, with presets
+Bean's rulings of 2026-11-18 and 2026-11-19, written into the producer's `CLAUDE.md`.
+- **Tokens.** `tokens/` holds every value the design reuses, under the project's own names and as many as the design has (colours, type, spacing, radii, borders, shadows, easings, durations and any other family); `colors.css`, `typography.css` and `spacing.css` always exist and further files are allowed (FR-48A-3). Every draft loads the token files in its `<helmet>` and uses a token by name (`var(--ink)`) in inline styles, `style-*` rules and the values its logic picks per width, so each use can be traced to its token. A value used once or twice stays a literal; a value used three times or more is a token.
+- **Buttons and form fields.** The buttons and form fields a design repeats are each one component file (`Button.dc.html`), mounted through `<dc-import>`, whose presets are named versions in `data-props` (an enum prop `version`, and `size` where the design has sizes). A button mounted with a preset is cloned as that preset. A button meant to look different is drawn where it stands with its own styles and is cloned with its own styles (Bean, 2026-11-19: "you just apply the preset if it's named the preset or you just don't and the cloning pipeline sets the styles the normal way"). The rule guards only against a preset re-drawn by hand with slightly different numbers (Eye Care's black button comes in 8 sizes; Mama's primary yellow in about 12).
+- **No new producer file.** The families are read from the mounts (`scripts/computed-route/lib/intake-props.mjs::declaredProps` reads each component's enum options and each mount's values, Spec 48 FR-48-29) and the tokens from the token files, so intake derives both and Claude Design writes no component inventory.
+- Proved in the runtime (2026-11-19, build `8fe7df74`): a draft that links `tokens/colors.css` in `<helmet>` computes `var(--token)` in an inline style and in a `style-hover` rule; one `Button.dc.html` with `version` and `size` enums renders a link when given `href` and a button with children when given a handler, and each mount carries its prop values in the annotated template. A mount's wrapper is a block-level element, so a button sits in a flex or grid parent, never inside a line of text.
+
+Status: instructions written 2026-11-19 (version 1.4). No export made under them exists yet: the first is the trial (Mama's Munches, re-exported). Not built: the route reading a mount's preset as the button's variant, the extractor reading presets from the component's versions (Spec 48 §11, FR-32-7), and the route tracing a token by name again (the token-reference reader, in git history since the 2026-11-02 route rewind, `2e3986425`; not in the running route).
+
+### FR-48A-18 -- Tidying a draft during a handoff
+One rule replaces the earlier conflict between "never change a draft" (`CLAUDE.md`, `METHOD.md` §10) and "fix any draft that breaks these" (`PROMPT.txt`). While preparing a handoff Claude Design uses its own judgement to make the drafts follow the design rules (a raw value that is plainly a token, a hand-drawn button that is plainly a preset, a fake list, a missing role, state or `data-part`), says what it changed in its final reply, and asks only where a change would alter the design Bean approved or it cannot tell which of two things was meant (Bean, 2026-11-19: the rule trusts the model's judgement and lists no cases). Bugs and missing pages or states are still listed as unresolved (FR-48A-16). Its final reply also names any hand-drawn button or field that looks the same as a preset and that it left alone.
+
+Status: `CLAUDE.md`, `PROMPT.txt` and `METHOD.md` §10 updated 2026-11-19.
 
 ## 3. Readers
 

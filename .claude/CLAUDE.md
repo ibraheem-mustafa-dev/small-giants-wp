@@ -13,7 +13,7 @@ One home per job:
 | How the deploy works: its files, stage order, speed mechanisms (gate tiers, cache, motion QA tiers, timings) and how to add to each | `deploy-architecture.md` |
 | The `wp sgs` command reference | `wp-sgs-cli.md` |
 | Generated catalogues (every gate/script, every helper/component) | `catalogues/` |
-| The prompt pasted into Claude Design to export a draft, and the `CLAUDE.md` and `handoff-schema/` uploaded with it | `claude-design-handoff/` (Bean keeps a desktop copy) |
+| The prompt pasted into Claude Design to export a draft, and the `CLAUDE.md`, `WHAT-WE-BUILD.md` (the list of what we have, in design words; generated) and `handoff-schema/` uploaded with it | `claude-design-handoff/` (Bean keeps a desktop copy) |
 | Why something was decided | the doc it changed, and the commit message |
 | History | git |
 

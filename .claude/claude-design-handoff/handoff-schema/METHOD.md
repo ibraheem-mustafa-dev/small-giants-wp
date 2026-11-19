@@ -19,7 +19,8 @@ The runtime trace is optional. It only confirms what the source already says.
 
 ## 1. Find the inputs
 
-- **Drafts:** every `.dc.html` the handoff ships, plus every `dc-import name="X"` → `X.dc.html` they mount, recursively.
+- **Drafts:** every `.dc.html` the handoff ships, plus every `dc-import name="X"` → `X.dc.html` they mount, recursively. A button or field component (`Button.dc.html`, `Field.dc.html`) is a draft like any other: its `style-*` rules, transitions and handlers are recorded once, against the component's own file, however many times it is mounted.
+- **Token files:** every `tokens/*.css` a draft loads through a `<link>` in its `<helmet>`. A declaration's value may be a token reference (`var(--ink)`); in a record's values write the value the token resolves to, exactly as the token file declares it, so a record stays valid on its own.
 - **External scripts:** every `<script src>` in each `<helmet>` and every `x-import from=`. Read those that manipulate the DOM. `indus-logo.js` animates; `image-slot.js` only renders.
 - **Assets the code inlines:** SVGs fetched and injected. Their element ids are animation targets.
 
@@ -117,6 +118,8 @@ For every `.animate(` site, `transition`, pseudo rule, keyframe, media rule and 
 - Line numbers are file lines, not lines within the logic script.
 - `React.createElement` output in `renderVals()` (icons) has no `data-dc-tpl`. It is content, not effects, unless something animates it.
 - Rendered text holes are wrapped in `<span class="sc-interp">`. Never match records to measured text.
+- A mounted component renders inside a block-level wrapper `div` (`.sc-host`), and only position, size, `z-index` and `transform` from the mount's `style` reach it. An element inside a component has the component's own `data-dc-tpl` numbering, shared by every mount.
+- A hole whose value is `undefined` renders nothing and logs a warning (`{{ label }} never resolved`); it is not an effect.
 
 ## 7. Surfaces
 
@@ -153,6 +156,6 @@ It cannot produce real `:hover`/`:focus` or emulate `prefers-reduced-motion`, an
 
 ## 10. What not to do
 
-- Don't change the draft while inventorying. Report bugs (unguarded motion, dead paths, effects that look unintended) in `unresolved` and ask before fixing.
+- Tidy a draft as `CLAUDE.md` says ("Changing a draft during a handoff"): by your own judgement where the change follows the design rules, said in the final reply, and as a question where it would alter the design or you cannot tell what was meant. Make those changes before inventorying, never during it. Report bugs (unguarded motion, dead paths, effects that look unintended) in `unresolved` and ask before fixing.
 - After any fix, regenerate both files and MANIFEST.json.
 - Don't rely on screenshots or measured layout for anything the code states.

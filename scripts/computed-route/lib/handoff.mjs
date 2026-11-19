@@ -40,6 +40,8 @@ export const MAX_BYTES = 20 * 1024 * 1024;
 export const sha256 = ( buf ) => crypto.createHash( 'sha256' ).update( buf ).digest( 'hex' );
 
 const isDraft = ( p ) => p.endsWith( '.dc.html' );
+// A token file: a stylesheet directly inside tokens/. A draft carries as many as its design has (FR-48A-3).
+export const isTokenFile = ( p ) => /^tokens\/[^/]+\.css$/.test( p );
 
 // Every file under `root`, relative with forward slashes, sorted; a symlink anywhere is a problem and is not followed.
 export function walkFolder( root ) {
@@ -296,7 +298,7 @@ export function checkHandoff( root, { known = readKnown(), schemas = MASTER_SCHE
 		errors.push( 'FR-48A-3 MANIFEST.json: draft and script reachability is not checked without a valid entry_drafts list' );
 	}
 	for ( const f of files ) {
-		if ( required.has( f ) || f.startsWith( 'assets/' ) ) {
+		if ( required.has( f ) || f.startsWith( 'assets/' ) || isTokenFile( f ) ) {
 			continue;
 		}
 		if ( isDraft( f ) ) {
@@ -306,7 +308,7 @@ export function checkHandoff( root, { known = readKnown(), schemas = MASTER_SCHE
 		} else if ( f.endsWith( '.js' ) && ! f.includes( '/' ) && ! reach ) {
 			continue;
 		} else if ( ! ( f.endsWith( '.js' ) && reach && reach.scripts.has( f ) ) ) {
-			errors.push( `FR-48A-3 ${ f }: not an allowed handoff file (required file, assets/, or a script a reachable draft loads); remove it` );
+			errors.push( `FR-48A-3 ${ f }: not an allowed handoff file (required file, a tokens/*.css file, assets/, or a script a reachable draft loads); remove it` );
 		}
 	}
 

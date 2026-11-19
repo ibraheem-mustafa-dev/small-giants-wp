@@ -103,6 +103,20 @@ test( 'MUST FAIL FR-48A-3: an unknown extra file and a script no draft loads are
 	assert.ok( ! r.errors.some( ( e ) => / store\.js:/.test( e ) ), 'a script a reachable draft loads is allowed' );
 } );
 
+test( 'MUST FAIL FR-48A-3: a draft may carry more token files than the three required ones', () => {
+	const root = folder( { extra: { 'tokens/motion.css': ':root{--ease:ease}', 'tokens/components.css': ':root{--btn-h:52px}' } } );
+	const r = check( root );
+	assert.deepEqual( r.errors, [] );
+} );
+
+test( 'FR-48A-3: only a stylesheet directly inside tokens/ is a token file (negative controls)', () => {
+	const root = folder( { extra: { 'tokens/notes.md': 'notes', 'tokens/old/colors.css': ':root{--x:1}', 'styles.css': ':root{--y:2}' } } );
+	const r = check( root );
+	failsWith( r, /^FR-48A-3 tokens\/notes\.md: .*remove it/ );
+	failsWith( r, /^FR-48A-3 tokens\/old\/colors\.css: .*remove it/ );
+	failsWith( r, /^FR-48A-3 styles\.css: .*remove it/ );
+} );
+
 test( 'MUST FAIL FR-48A-3: a draft no entry draft reaches is named', () => {
 	const root = folder( { drafts: { 'Home.dc.html': page( '<p>home</p>' ), 'Home v1.dc.html': page( '<p>old</p>' ) } } );
 	failsWith( check( root ), /^FR-48A-3 Home v1\.dc\.html: draft is not reachable/ );

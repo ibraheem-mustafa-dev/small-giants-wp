@@ -1,0 +1,6 @@
+[
+	{ "file": "lib/handoff.mjs", "find": "|| isTokenFile( f ) ) {", "replace": ") {", "why": "an extra token file is refused again" },
+	{ "file": "lib/handoff.mjs", "find": "/^tokens\\/[^/]+\\.css$/.test( p )", "replace": "/^tokens\\/.+\\.css$/.test( p )", "why": "a stylesheet in a folder under tokens/ passes as a token file" },
+	{ "file": "lib/handoff.mjs", "find": "/^tokens\\/[^/]+\\.css$/.test( p )", "replace": "/^tokens\\/[^/]+$/.test( p )", "why": "any file inside tokens/ passes as a token file" },
+	{ "file": "lib/handoff.mjs", "find": "/^tokens\\/[^/]+\\.css$/.test( p )", "replace": "/[^/]+\\.css$/.test( p )", "why": "a stylesheet anywhere in the folder passes as a token file" }
+]

@@ -1,0 +1,348 @@
+{
+  "intro": [
+    "This is what the site platform already has, in design words. Everything here can be styled freely: colour, type, spacing, shape, shadow and motion are yours, and so is the layout around and inside each thing. The list is about what a thing is and how it works, not how it looks.",
+    "Before drawing a section, widget or control that works differently from everything here, say it would have to be built and ask first.",
+    "Any text can carry bold, italic, strikethrough, links and line breaks, a highlighter stripe behind words, and a small photo inside a line. Any box can have a hover lift, an entrance as it scrolls into view, and a looping or scroll-linked effect."
+  ],
+  "groups": [
+    "Sections and layout",
+    "Text, pictures and small parts",
+    "Things that open, switch or move",
+    "Cards, lists and collections",
+    "Reviews, trust and contact",
+    "Forms",
+    "Header, footer and navigation",
+    "Shop"
+  ],
+  "entries": [
+    { "group": "Sections and layout", "name": "Section or box", "blocks": ["sgs/container"],
+      "is": "A band or box that holds anything, laid out as a stack, a row or a grid, at full width or at a set content width, with a colour, gradient, photo, video or drawn background.",
+      "can": [
+        { "of": "sgs/container.scrollArrows", "say": "become a row that scrolls sideways, with arrows, dots and drag" },
+        { "of": "sgs/container.hoverAsCard", "say": "lift as one card on hover" }
+      ] },
+    { "group": "Sections and layout", "name": "Hero", "blocks": ["sgs/hero"],
+      "is": "The opening section of a page: a headline, a supporting line and calls to action, over or beside a picture, video or drawn graphic.",
+      "versions": [
+        { "of": "sgs/hero.variant", "label": "Layout", "say": { "standard": "words over a full background", "split": "words beside the picture" } },
+        { "of": "sgs/hero.alignment", "label": "Words", "say": { "left": "at the start", "center": "centred" } }
+      ] },
+    { "group": "Sections and layout", "name": "Floating decoration", "blocks": ["sgs/decorative-image"],
+      "is": "A picture, a word, a label or a badge floated over its section at a set position, size and angle.",
+      "can": [
+        { "of": "sgs/decorative-image.flipX", "say": "be mirrored" },
+        { "of": "sgs/decorative-image.fadeOnScroll", "say": "fade as the page scrolls" }
+      ] },
+    { "group": "Sections and layout", "name": "Divider", "blocks": ["sgs/separator"],
+      "is": "A horizontal line between parts, in any thickness, width, colour or gradient.",
+      "versions": [
+        { "of": "sgs/separator.contentMode", "label": "Middle", "say": { "none": "a plain line", "icon": "an icon in the middle", "text": "a word in the middle" } }
+      ] },
+    { "group": "Sections and layout", "name": "Playful section", "blocks": ["sgs/physics-canvas"],
+      "is": "A section whose decorative items can be picked up and thrown about." },
+
+    { "group": "Text, pictures and small parts", "name": "Heading", "blocks": ["sgs/heading"],
+      "is": "A heading at any of six levels, or a sub-heading line.",
+      "versions": [
+        { "of": "sgs/heading.headingRole", "label": "Kind", "say": { "heading": "heading", "subheading": "sub-heading" } }
+      ] },
+    { "group": "Text, pictures and small parts", "name": "Text", "blocks": ["sgs/text", "sgs/collapsible-text"],
+      "is": "A paragraph of body text.",
+      "can": [
+        { "of": "sgs/text.dropCap", "say": "open with a large first letter" },
+        { "of": "sgs/collapsible-text.collapsible", "say": "fold behind a Read more and Read less control" }
+      ] },
+    { "group": "Text, pictures and small parts", "name": "Label, eyebrow or badge", "blocks": ["sgs/label"],
+      "is": "A short kicker above a heading, a pill, a tag or a badge.",
+      "versions": [
+        { "of": "sgs/label.markerShape", "label": "Marker beside the words", "say": { "dot": "a dot", "line": "a short line", "icon": "an icon" } },
+        { "of": "sgs/label.endShapeLeft", "label": "Shaped ends", "say": { "arrow": "arrow", "triangle": "triangle", "slant": "slant", "curve": "curve", "wave-smooth": "wave", "zigzag": "zigzag" } }
+      ] },
+    { "group": "Text, pictures and small parts", "name": "Quote", "blocks": ["sgs/quote"],
+      "is": "A pulled quote of one or more paragraphs.",
+      "can": [ { "of": "sgs/quote.attributionEnabled", "say": "name who said it" } ] },
+    { "group": "Text, pictures and small parts", "name": "Picture, video or drawn graphic", "blocks": ["sgs/media"],
+      "is": "One photo, video, embedded player or drawn graphic, with a different file for phone, tablet and desktop where the design needs one. It can be cropped to a shape, framed, captioned and linked." },
+    { "group": "Text, pictures and small parts", "name": "Gallery", "blocks": ["sgs/gallery"],
+      "is": "Several pictures as a grid, a staggered wall or a carousel.",
+      "can": [
+        { "of": "sgs/gallery.enableLightbox", "say": "open a picture large over the page" },
+        { "of": "sgs/gallery.showCaptions", "say": "show captions" },
+        { "of": "sgs/gallery.carouselAutoplay", "say": "play by itself, with arrows, dots and a pause control" }
+      ] },
+    { "group": "Text, pictures and small parts", "name": "Before and after", "blocks": ["sgs/before-after"],
+      "is": "Two pictures or videos compared by dragging a divider across them.",
+      "versions": [
+        { "of": "sgs/before-after.orientation", "label": "Divider moves", "say": { "horizontal": "side to side", "vertical": "up and down" } }
+      ],
+      "can": [ { "of": "sgs/before-after.showLabels", "say": "label each side" } ] },
+    { "group": "Text, pictures and small parts", "name": "Icon", "blocks": ["sgs/icon"],
+      "is": "An icon, an emoji or a drawn mark, bare or inside a shaped background, with an optional label.",
+      "versions": [
+        { "of": "sgs/icon.shape", "label": "Background shape", "say": { "square": "square", "circle": "circle", "pill": "pill", "hexagon": "hexagon", "diamond": "diamond", "octagon": "octagon", "star": "star", "blob": "blob" } },
+        { "of": "sgs/icon.labelPosition", "label": "Label", "say": { "end": "after", "start": "before", "below": "below", "above": "above" } }
+      ] },
+    { "group": "Text, pictures and small parts", "name": "Button and button row", "blocks": ["sgs/button", "sgs/multi-button"],
+      "is": "A button or link in the versions your Button component declares, alone or in a row that stacks or wraps on small screens.",
+      "versions": [
+        { "of": "sgs/button.iconPosition", "label": "Icon", "say": { "before": "before the words", "after": "after the words", "only": "alone, with no words showing" } }
+      ] },
+    { "group": "Text, pictures and small parts", "name": "Animated number", "blocks": ["sgs/counter"],
+      "is": "A number that counts up when it comes into view, with a prefix, a suffix and a label." },
+    { "group": "Text, pictures and small parts", "name": "Countdown", "blocks": ["sgs/countdown-timer"],
+      "is": "A countdown to a date, or one that starts fresh for each visitor.",
+      "versions": [
+        { "of": "sgs/countdown-timer.digitStyle", "label": "Digits", "say": { "simple": "plain", "flip": "flipping cards" } }
+      ] },
+    { "group": "Text, pictures and small parts", "name": "Audio player", "blocks": ["sgs/audio"],
+      "is": "A sound player.",
+      "versions": [
+        { "of": "sgs/audio.playerStyle", "label": "Look", "say": { "minimal": "a quiet pill", "waveform": "a waveform", "spectrum": "live spectrum bars", "radial": "a radial ring", "oscilloscope": "an oscilloscope line", "gradient-pulse": "a pulsing gradient", "hidden": "no visible player", "toggle": "a sound on and off button" } }
+      ] },
+    { "group": "Text, pictures and small parts", "name": "Measured drawing", "blocks": ["sgs/measured-diagram", "sgs/diagram-dimension"],
+      "is": "A drawing with labelled measurement lines over it.",
+      "versions": [
+        { "of": "sgs/measured-diagram.labelMode", "label": "Labels", "say": { "onDrawing": "written on the drawing", "numbered": "numbered, with a key beside it" } }
+      ] },
+    { "group": "Text, pictures and small parts", "name": "Scroll-played picture sequence", "blocks": ["sgs/image-sequence"],
+      "is": "A run of frames that plays forwards and backwards as the page scrolls, like a product turning." },
+    { "group": "Text, pictures and small parts", "name": "Contents list", "blocks": ["sgs/table-of-contents"],
+      "is": "A list of the page's headings that jumps to each and marks where the reader is.",
+      "versions": [
+        { "of": "sgs/table-of-contents.listStyle", "label": "List", "say": { "numbered": "numbered", "bulleted": "bulleted", "plain": "plain" } }
+      ] },
+    { "group": "Text, pictures and small parts", "name": "Live clock, dark mode switch, language and country links", "blocks": ["sgs/local-time", "sgs/theme-toggle", "sgs/language-switch", "sgs/store-selector"],
+      "is": "Small working parts: a clock for one time zone, a light and dark switch, a list of language links, and a country or store chooser." },
+
+    { "group": "Things that open, switch or move", "name": "Accordion", "blocks": ["sgs/accordion", "sgs/accordion-item"],
+      "is": "Rows that open to show an answer: FAQs, product details, policies. Each answer can hold anything.",
+      "versions": [
+        { "of": "sgs/accordion.accordionStyle", "label": "Look", "say": { "bordered": "boxed rows", "flush": "rows divided by lines", "card": "separate cards" } },
+        { "of": "sgs/accordion.iconPosition", "label": "Open and close icon", "say": { "right": "at the end", "left": "at the start" } }
+      ],
+      "can": [
+        { "of": "sgs/accordion.allowMultiple", "say": "keep several rows open, or one at a time" },
+        { "of": "sgs/accordion.filterSearch", "say": "be narrowed by a search box" },
+        { "of": "sgs/accordion.filterChips", "say": "be narrowed by topic chips" },
+        { "of": "sgs/accordion-item.showCategoryEyebrow", "say": "show a topic above each question" }
+      ] },
+    { "group": "Things that open, switch or move", "name": "Tabs", "blocks": ["sgs/tabs", "sgs/tab"],
+      "is": "A row or column of tabs, one panel showing at a time. Each panel can hold anything.",
+      "versions": [
+        { "of": "sgs/tabs.orientation", "label": "Tabs run", "say": { "horizontal": "across the top", "vertical": "down the side" } },
+        { "of": "sgs/tabs.tabStyle", "label": "Look", "say": { "underline": "underlined", "boxed": "boxed", "pills": "pills" } },
+        { "of": "sgs/tabs.mobileLayout", "label": "On a phone", "say": { "stack": "tabs stack", "row": "tabs stay in a row that scrolls" } }
+      ] },
+    { "group": "Things that open, switch or move", "name": "Review or quote slider", "blocks": ["sgs/testimonial-slider", "sgs/testimonial"],
+      "is": "Customer reviews or quotes as a slider, or a single one standing alone. Each holds the quote, a name, a role and organisation, a rating, a photo, a logo and a work picture, each optional.",
+      "versions": [
+        { "of": "sgs/testimonial.variant", "label": "Card", "say": { "classic-card": "a classic card", "pull-quote-editorial": "a large editorial quote", "rating-led": "led by the rating", "review-card": "a review card", "avatar-spotlight": "led by the person's photo", "corporate-logo": "led by the organisation's logo", "case-study-media": "with a case-study picture", "minimal-quote": "the quote alone" } },
+        { "of": "sgs/testimonial-slider.changeTransition", "label": "Change", "say": { "slide": "slides across", "fade-up": "fades up" } },
+        { "of": "sgs/testimonial.ratingType", "label": "Rating", "say": { "stars": "stars", "scale": "a score out of a number" } }
+      ],
+      "can": [
+        { "of": "sgs/testimonial-slider.autoplay", "say": "play by itself, with a pause control" },
+        { "of": "sgs/testimonial-slider.showArrows", "say": "show arrows" },
+        { "of": "sgs/testimonial-slider.showDots", "say": "show dots" }
+      ] },
+    { "group": "Things that open, switch or move", "name": "Timeline", "blocks": ["sgs/timeline"],
+      "is": "Dated or numbered moments along a line.",
+      "versions": [
+        { "of": "sgs/timeline.contentLayout", "label": "Entries sit", "say": { "alternating": "on alternate sides", "same-side": "all on one side", "single-column": "in one column" } },
+        { "of": "sgs/timeline.scrollEffect", "label": "As the page scrolls", "say": { "basic": "entries appear", "scrub": "the line fills with the scroll", "pinned-journey": "the section holds still while the entries pass", "pinned-horizontal": "the section holds still and travels sideways" } },
+        { "of": "sgs/timeline.mobileLayout", "label": "On a phone", "say": { "stacked": "stacked", "carousel": "a swipeable row" } }
+      ] },
+    { "group": "Things that open, switch or move", "name": "Numbered steps", "blocks": ["sgs/process-steps"],
+      "is": "The steps of a process in a row, each with a number, a title and a line of text.",
+      "versions": [
+        { "of": "sgs/process-steps.connectorStyle", "label": "Joined by", "say": { "line": "a line", "arrow": "arrows", "dots": "dots" } },
+        { "of": "sgs/process-steps.numberStyle", "label": "Number", "say": { "circle": "in a circle", "square": "in a square", "none": "not shown" } }
+      ] },
+    { "group": "Things that open, switch or move", "name": "Pop-up", "blocks": ["sgs/modal"],
+      "is": "A panel that opens over the page from a button or link and holds anything. It closes with its close control, the Escape key or a click outside.",
+      "versions": [
+        { "of": "sgs/modal.maxWidth", "label": "Width", "say": { "small": "small", "medium": "medium", "large": "large", "full": "full width" } },
+        { "of": "sgs/modal.size", "label": "Size", "say": { "default": "a box", "fullscreen": "the whole screen" } }
+      ] },
+    { "group": "Things that open, switch or move", "name": "Notice or announcement strip", "blocks": ["sgs/notice-banner", "sgs/notice-message"],
+      "is": "A message in the page, a bar across it, or an announcement strip above the header.",
+      "versions": [
+        { "of": "sgs/notice-banner.displayMode", "label": "Place", "say": { "inline": "in the page", "bar": "a bar across the page", "announcement": "the strip above the header" } },
+        { "of": "sgs/notice-banner.variant", "label": "Tone", "say": { "info": "information", "success": "success", "warning": "warning", "error": "error", "accent": "brand accent" } },
+        { "of": "sgs/notice-banner.messageMode", "label": "Messages", "say": { "static": "one message", "rotate": "several, shown in turn", "random": "several, one picked at random" } }
+      ],
+      "can": [ { "of": "sgs/notice-banner.dismissible", "say": "be closed by the visitor" } ] },
+    { "group": "Things that open, switch or move", "name": "Choice chips", "blocks": ["sgs/option-picker"],
+      "is": "A set of pills or tiles where the visitor picks one: a pack size, a flavour, a colour, a plan.",
+      "versions": [
+        { "of": "sgs/option-picker.pillStyle", "label": "Look", "say": { "outlined": "outlined", "filled": "filled", "ghost": "bare until chosen", "tile": "tiles" } },
+        { "of": "sgs/option-picker.pillSize", "label": "Size", "say": { "small": "small", "medium": "medium", "large": "large" } }
+      ] },
+    { "group": "Things that open, switch or move", "name": "Step-by-step chooser", "blocks": ["sgs/choice-flow", "sgs/choice-flow-question", "sgs/choice-flow-result"],
+      "is": "A run of questions where each answer can lead to a different next question, ending in a recommendation, an add to basket or an email. It can show a running price and summary.",
+      "versions": [
+        { "of": "sgs/choice-flow.flowLayout", "label": "Layout", "say": { "compact": "every question visible in the page", "showcase": "one question at a time, large" } },
+        { "of": "sgs/choice-flow.progressStyle", "label": "Progress", "say": { "bar": "a bar", "circles": "circles", "badge": "a step count" } },
+        { "of": "sgs/choice-flow-result.action", "label": "Ends with", "say": { "recommend": "a recommendation", "add-to-bag": "add to basket", "email": "an email" } }
+      ] },
+    { "group": "Things that open, switch or move", "name": "Live message preview", "blocks": ["sgs/message-preview", "sgs/message-preview-line"],
+      "is": "Text boxes whose typing appears live elsewhere on the page, such as a gift note on a card." },
+
+    { "group": "Cards, lists and collections", "name": "Card grid", "blocks": ["sgs/card-grid"],
+      "is": "A grid of cards, each with a picture, a title, text and a link.",
+      "versions": [
+        { "of": "sgs/card-grid.variant", "label": "Card", "say": { "card": "words below the picture", "overlay": "words laid over the picture" } },
+        { "of": "sgs/card-grid.source", "label": "Filled from", "say": { "manual": "cards written by hand", "query": "the latest posts or pages", "wc-product": "shop products", "cpt-collection": "a collection of the site's own items" } },
+        { "of": "sgs/card-grid.pagination", "label": "More", "say": { "none": "no more", "standard": "numbered pages", "load-more": "a Load more button", "infinite": "loads as the page scrolls" } }
+      ] },
+    { "group": "Cards, lists and collections", "name": "Feature cards", "blocks": ["sgs/feature-grid", "sgs/info-box"],
+      "is": "Benefit or feature cards, each with an icon or picture, a title, a sub-title, text and a button, in any order.",
+      "versions": [
+        { "of": "sgs/info-box.iconPosition", "label": "Icon or picture", "say": { "top": "above the words", "left": "at the start", "right": "at the end" } },
+        { "of": "sgs/feature-grid.layoutMode", "label": "Grid", "say": { "auto-flex": "cards wrap to fit the width", "fixed-columns": "a set number of columns" } }
+      ] },
+    { "group": "Cards, lists and collections", "name": "List", "blocks": ["sgs/icon-list"],
+      "is": "A list of lines or links, with an optional heading.",
+      "versions": [
+        { "of": "sgs/icon-list.markerType", "label": "Marker", "say": { "icon": "an icon per line", "emoji": "an emoji per line", "bullet": "bullets", "numbered": "numbers", "none": "none" } }
+      ],
+      "cannot": "Letters or Roman numerals, a list that starts from a chosen number or counts down, and items laid out across columns row by row." },
+    { "group": "Cards, lists and collections", "name": "Blog and article grid", "blocks": ["sgs/post-grid"],
+      "is": "Posts as a grid, a list, a staggered wall or a carousel, each with a picture, title, extract, date, author and category, each optional.",
+      "versions": [
+        { "of": "sgs/post-grid.cardStyle", "label": "Card", "say": { "card": "a card", "flat": "flat", "overlay": "words over the picture", "minimal": "words only" } },
+        { "of": "sgs/post-grid.pagination", "label": "More", "say": { "none": "no more", "standard": "numbered pages", "load-more": "a Load more button", "infinite": "loads as the page scrolls" } }
+      ],
+      "can": [ { "of": "sgs/post-grid.showFilters", "say": "be filtered by category or tag" } ] },
+    { "group": "Cards, lists and collections", "name": "Pricing table", "blocks": ["sgs/pricing-table"],
+      "is": "Plans side by side, each with a price, a feature list, a button and an optional badge.",
+      "versions": [
+        { "of": "sgs/pricing-table.billingToggle", "label": "Billing switch", "say": { "none": "none", "monthly-yearly": "monthly and yearly", "monthly-only": "monthly only", "yearly-only": "yearly only" } }
+      ] },
+    { "group": "Cards, lists and collections", "name": "Team member", "blocks": ["sgs/team-member"],
+      "is": "A person's card: photo, name, role, a short biography and social links.",
+      "versions": [
+        { "of": "sgs/team-member.displayMode", "label": "Size", "say": { "full": "full", "compact": "compact" } }
+      ] },
+
+    { "group": "Reviews, trust and contact", "name": "Trust strip", "blocks": ["sgs/trust-bar"],
+      "is": "A full-width strip of short trust points, such as accreditations and delivery promises. It can sit still or scroll as a ticker.",
+      "versions": [
+        { "of": "sgs/trust-bar.badgeStyle", "label": "Each point", "say": { "icon-circle": "an icon in a circle", "icon-bare": "a bare icon", "text-only": "words only", "image-badge": "a picture badge" } },
+        { "of": "sgs/trust-bar.badgeSize", "label": "Size", "say": { "small": "small", "medium": "medium", "large": "large" } }
+      ] },
+    { "group": "Reviews, trust and contact", "name": "Logo strip", "blocks": ["sgs/brand-strip"],
+      "is": "A row of brand or partner logos, still or scrolling for ever, with faded edges.",
+      "versions": [
+        { "of": "sgs/brand-strip.logoLayout", "label": "Logos", "say": { "tiles": "in tiles", "row": "in a plain row" } },
+        { "of": "sgs/brand-strip.brandDisplay", "label": "Shows", "say": { "logos": "logos", "text": "names", "logo-else-text": "a logo, or the name where there is none" } }
+      ] },
+    { "group": "Reviews, trust and contact", "name": "Google and Trustpilot reviews", "blocks": ["sgs/google-reviews", "sgs/google-rating-badge", "sgs/trustpilot-reviews"],
+      "is": "Reviews pulled from Google or Trustpilot, and a compact Google rating badge. These keep the platform's own look, so draw them only where the design means to show that platform; reviews in the client's own style are the review slider.",
+      "versions": [
+        { "of": "sgs/google-reviews.variant", "label": "Google layout", "say": { "grid": "grid", "slider": "slider", "list": "list", "wall": "wall" } },
+        { "of": "sgs/trustpilot-reviews.variant", "label": "Trustpilot layout", "say": { "carousel": "carousel", "grid": "grid", "list": "list", "mini": "a small summary", "mini-carousel": "a small carousel" } },
+        { "of": "sgs/google-rating-badge.badgeStyle", "label": "Badge", "say": { "pill": "pill", "card": "card", "stacked": "stacked" } }
+      ] },
+    { "group": "Reviews, trust and contact", "name": "Star rating", "blocks": ["sgs/star-rating"],
+      "is": "Stars, with half stars.",
+      "versions": [
+        { "of": "sgs/star-rating.displayMode", "label": "Shows", "say": { "stars-only": "stars", "stars-with-value": "stars and the score", "stars-with-value-and-count": "stars, the score and the number of reviews" } }
+      ] },
+    { "group": "Reviews, trust and contact", "name": "Business details", "blocks": ["sgs/business-info"],
+      "is": "The business's phone, email, address, opening hours, an open-now line and a map, kept in one place and shown wherever they are drawn.",
+      "versions": [
+        { "of": "sgs/business-info.hoursLayout", "label": "Hours", "say": { "rows": "a row per day", "condensed": "days with the same hours grouped" } },
+        { "of": "sgs/business-info.mapFilterPreset", "label": "Map tint", "say": { "none": "none", "greyscale": "grey", "muted": "muted", "sepia": "sepia", "high-contrast": "high contrast", "dark": "dark" } }
+      ] },
+    { "group": "Reviews, trust and contact", "name": "Social and contact icons", "blocks": ["sgs/social-icons"],
+      "is": "A row of icons linking to the business's phone, email, address and social profiles.",
+      "versions": [
+        { "of": "sgs/social-icons.colourMode", "label": "Colour", "say": { "inherit": "the surrounding text colour", "theme": "the site's colours", "brand": "each network's own colour as the background", "brand-glyph": "each network's own colour on the icon" } }
+      ] },
+    { "group": "Reviews, trust and contact", "name": "WhatsApp button", "blocks": ["sgs/whatsapp-cta"],
+      "is": "A way to start a WhatsApp chat.",
+      "versions": [
+        { "of": "sgs/whatsapp-cta.variant", "label": "Form", "say": { "inline": "a button in the page", "floating": "a button floating in a corner", "banner": "a banner", "card": "a card" } }
+      ] },
+
+    { "group": "Forms", "name": "Form", "blocks": ["sgs/form", "sgs/form-step", "sgs/form-review", "sgs/form-field-text", "sgs/form-field-email", "sgs/form-field-phone", "sgs/form-field-number", "sgs/form-field-date", "sgs/form-field-textarea", "sgs/form-field-select", "sgs/form-field-radio", "sgs/form-field-checkbox", "sgs/form-field-consent", "sgs/form-field-tiles", "sgs/form-field-file", "sgs/form-field-address", "sgs/form-field-hidden"],
+      "is": "A form in one page or several steps, with a sent message, error messages and emails to the owner and the sender. Fields: short text, email, phone, number, date, long text with a character count, dropdown, a pick-one group, a tick-box group, a consent tick, picture tiles, file upload and address.",
+      "versions": [
+        { "of": "sgs/form-field-text.width", "label": "Field width", "say": { "full": "full", "half": "half", "third": "a third", "auto": "as wide as its content" } },
+        { "of": "sgs/form-field-text.floatingLabelPosition", "label": "Label", "say": { "above": "above the box", "inside": "inside the box, moving up when typed in" } },
+        { "of": "sgs/form-field-checkbox.optionPresentation", "label": "Tick-box options", "say": { "plain": "plain", "card": "cards" } },
+        { "of": "sgs/form-field-tiles.selectedStyle", "label": "A chosen tile shows", "say": { "checkmark": "a tick", "border": "a border", "background": "a fill" } },
+        { "of": "sgs/form-field-file.zoneStyle", "label": "Upload area", "say": { "dashed": "a dashed drop area", "panel": "a panel", "native": "the browser's own button" } },
+        { "of": "sgs/form.stepLayout", "label": "Step markers", "say": { "stacked": "stacked", "inline": "in a line" } }
+      ],
+      "can": [
+        { "of": "sgs/form.stepCounter", "say": "show a step count" },
+        { "of": "sgs/form.savedProgress", "say": "keep a half-filled form for the visitor's return" },
+        { "of": "sgs/form-review.showEditLinks", "say": "end with a review of the answers, each with an Edit link" }
+      ] },
+
+    { "group": "Header, footer and navigation", "name": "Header", "blocks": ["sgs/site-header", "sgs/site-header-row"],
+      "is": "The site header in up to three rows: a strip above, the main bar, and a strip below. It can stick, shrink as the page scrolls, blur what passes behind it and sit transparent over the first section." },
+    { "group": "Header, footer and navigation", "name": "Navigation bar and mega menus", "blocks": ["sgs/nav-bar-menu", "sgs/mega-panel", "sgs/mega-group", "sgs/mega-aside"],
+      "is": "A row of links that becomes a burger below a chosen width. An item can open a simple drop-down or a wide panel of link columns, cards or brands with a featured side panel.",
+      "versions": [
+        { "of": "sgs/nav-bar-menu.submenuOpenOn", "label": "Sub-menus open on", "say": { "hover": "hover", "click": "click" } },
+        { "of": "sgs/mega-panel.style", "label": "Panel", "say": { "columns": "columns of links", "cards": "cards", "minimal": "minimal" } },
+        { "of": "sgs/mega-aside.asideFormat", "label": "Side panel", "say": { "feature": "a feature", "preview": "a preview", "cta": "a call to action" } }
+      ] },
+    { "group": "Header, footer and navigation", "name": "Menu drawer", "blocks": ["sgs/nav-drawer", "sgs/nav-drawer-menu"],
+      "is": "The panel the burger opens, holding the menu and anything else: a logo, a search, contact icons, a rating, buttons.",
+      "versions": [
+        { "of": "sgs/nav-drawer.anchor", "label": "Opens", "say": { "full-screen": "over the whole screen", "header": "below the header", "side-start": "from the start side", "side-end": "from the end side", "container": "inside its section", "trigger": "from the burger itself", "centred": "as a centred box", "header-box": "as a box under the header" } },
+        { "of": "sgs/nav-drawer.submenuModel", "label": "Sub-menus", "say": { "accordion": "open in place", "drill-down": "slide to a new level" } }
+      ] },
+    { "group": "Header, footer and navigation", "name": "Footer", "blocks": ["sgs/site-footer", "sgs/site-footer-row"],
+      "is": "The site footer in up to three rows: a strip above, a grid of up to six columns, and a bottom bar." },
+    { "group": "Header, footer and navigation", "name": "Logo", "blocks": ["sgs/responsive-logo"],
+      "is": "The logo, with a different file for desktop, tablet and phone where the design needs one, and an optional drawn-on animation." },
+    { "group": "Header, footer and navigation", "name": "Breadcrumbs", "blocks": ["sgs/breadcrumbs"],
+      "is": "The trail of pages above the current one, made from the site's own structure." },
+    { "group": "Header, footer and navigation", "name": "Search", "blocks": ["sgs/product-search"],
+      "is": "A search box that suggests products as the visitor types.",
+      "versions": [
+        { "of": "sgs/product-search.displayMode", "label": "Form", "say": { "inline-bar": "a bar in the page or header", "icon-expand": "an icon that opens into a box", "full-screen-overlay": "an icon that opens a full-screen search", "command-palette": "a quick-find box opened from the keyboard" } }
+      ] },
+
+    { "group": "Shop", "name": "Product card", "blocks": ["sgs/product-card"],
+      "is": "A product in a grid or carousel: photo, name, price, rating, badges, option pills and one or two buttons.",
+      "versions": [
+        { "of": "sgs/product-card.ctaBehaviour", "label": "Main button", "say": { "learn-more": "goes to the product", "add-to-basket": "adds to the basket", "buy-now": "goes straight to checkout" } }
+      ] },
+    { "group": "Shop", "name": "Buy box", "blocks": ["sgs/buybox"],
+      "is": "The buying area of a product page: gallery, name, price, option choices, quantity and add to basket.",
+      "versions": [
+        { "of": "sgs/buybox.pickerStyle", "label": "Option choices", "say": { "outlined": "outlined pills", "filled": "filled pills", "ghost": "bare until chosen", "tile": "tiles" } }
+      ],
+      "can": [
+        { "of": "sgs/buybox.stickyEnabled", "say": "keep an add-to-basket bar in view as the page scrolls" },
+        { "of": "sgs/buybox.showStockStatus", "say": "show stock" },
+        { "of": "sgs/buybox.notifyEnabled", "say": "offer a tell-me-when-it-is-back form on a sold-out product" }
+      ] },
+    { "group": "Shop", "name": "Basket", "blocks": ["sgs/cart", "sgs/free-delivery-bar", "sgs/gift-order", "sgs/commerce-note", "sgs/pay-later-message"],
+      "is": "The header's basket control with its live count, opening a small panel or a drawer of the basket's lines. With it: a free-delivery progress bar, a gift switch with a recipient and note, a line of small print with a link, and a pay-later message.",
+      "versions": [
+        { "of": "sgs/cart.displayMode", "label": "Opens", "say": { "link": "the basket page", "flyout": "a small panel under the control", "drawer": "a drawer" } },
+        { "of": "sgs/cart.triggerStyle", "label": "Control", "say": { "icon": "an icon", "pill": "a pill with words" } },
+        { "of": "sgs/cart.itemQtyStyle", "label": "Quantity", "say": { "input": "a number box", "stepper": "a minus and plus stepper" } }
+      ] },
+    { "group": "Shop", "name": "Account", "blocks": ["sgs/account", "sgs/order-items"],
+      "is": "Sign in, create account and lost password, then the account: a dashboard, orders, one order with its items, addresses, account details and saved items.",
+      "versions": [
+        { "of": "sgs/account.authLayout", "label": "Sign in and create account", "say": { "side-by-side": "side by side", "stacked": "stacked", "tabs": "as two tabs" } },
+        { "of": "sgs/account.navLayout", "label": "Account menu", "say": { "sidebar": "a side menu", "tabs": "tabs" } }
+      ] },
+    { "group": "Shop", "name": "Saved items", "blocks": ["sgs/wishlist-link", "sgs/wishlist-panel"],
+      "is": "A heart control with a live count, and the list of saved products with move to basket, tell me when it is back, and remove." },
+    { "group": "Shop", "name": "Product questions", "blocks": ["sgs/product-faq", "sgs/product-faq-item"],
+      "is": "Questions and answers for a product page, as rows that open." },
+    { "group": "Shop", "name": "Filter search", "blocks": ["sgs/filter-search"],
+      "is": "A type-to-find box that narrows a long list of filter choices, such as brands." }
+  ],
+  "not_listed": {}
+}
