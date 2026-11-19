@@ -1,0 +1,27 @@
+{
+	"_comment": "For a Cart or Checkout part whose settings are older than the look table, the look-table row (selectors.json rows) whose selector finds that part on the live page. A part whose name is a row's id with hyphens for underscores needs no entry. The verify pass (lib/part-look-verify.mjs) reads the live page through these selectors; a part with neither a row nor an entry is not verified and says so.",
+	"parts": {
+		"line-item": "item",
+		"line-item-image": "item_image_img",
+		"line-item-name": "item_name",
+		"line-item-price": "item_price",
+		"line-item-stepper": "item_stepper",
+		"line-item-variant": "item_variant",
+		"line-item-remove": "item_remove",
+		"line-item-brand": "item_brand",
+		"line-item-description": "item_description",
+		"line-item-text": "item_text",
+		"line-item-unit-price": "item_unit_price",
+		"line-item-header": "item_header",
+		"line-item-cell": "item_cell",
+		"primary-button": "button_primary",
+		"sidebar": "sidebar_wide",
+		"total-row": "total_divider",
+		"summary-row": "summary_row_divider",
+		"delivery-card-title": "delivery_title",
+		"delivery-card-description": "delivery_description",
+		"express-divider": "express_rule",
+		"express-divider-line": "express_rule_line",
+		"field-text-input": "field_input"
+	}
+}
