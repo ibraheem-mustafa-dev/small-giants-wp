@@ -301,7 +301,8 @@
 					"motionSelector": ".sgs-hero__media .sgs-media-el",
 					"prefix": "",
 					"attrMap": {
-						"css:height": "splitHeight",
+						"css:width": "splitWidth",
+							"css:height": "splitHeight",
 						"css:max-width": "splitMaxWidth",
 						"css:max-height": "splitMaxHeight",
 						"css:border-width": "splitBorderWidth",

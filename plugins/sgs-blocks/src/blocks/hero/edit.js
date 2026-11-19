@@ -1257,11 +1257,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									onChange={ ( obj ) => setAttributes( { splitContentOrder: obj } ) }
 								>
 									{ ( { ownValue, setOwnValue, tier } ) => {
-										const orderOptionsMap = {
-											desktop: DESKTOP_ORDER_OPTIONS,
-											tablet: TABLET_ORDER_OPTIONS,
-											mobile: MOBILE_ORDER_OPTIONS,
-										};
 										const orderLabelMap = {
 											desktop: __( 'Desktop order', 'sgs-blocks' ),
 											tablet: __( 'Tablet order', 'sgs-blocks' ),
@@ -1274,13 +1269,15 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 										};
 										// Mobile has no blank/inherit option (MOBILE_ORDER_OPTIONS
 										// mirrors render.php's own 'media-first' fallback default);
-										// desktop/tablet keep the blank = inherit convention.
-										const value = 'mobile' === tier ? ( ownValue || 'media-first' ) : ( ownValue || '' );
+										// desktop/tablet keep the blank = inherit convention. The value
+										// and option lists are written inline so the framework database's
+										// source reader (scripts/dbschema/block-source-choices.js) reads
+										// this setting's values: '', 'media-first' and 'content-first'.
 										return (
 											<SelectControl
 												label={ orderLabelMap[ tier ] }
-												value={ value }
-												options={ orderOptionsMap[ tier ] }
+												value={ 'mobile' === tier ? ( ownValue || 'media-first' ) : ( ownValue || '' ) }
+												options={ ( 'mobile' === tier && MOBILE_ORDER_OPTIONS ) || ( 'tablet' === tier && TABLET_ORDER_OPTIONS ) || DESKTOP_ORDER_OPTIONS }
 												help={ orderHelpMap[ tier ] }
 												onChange={ ( val ) => setOwnValue( val ) }
 												__nextHasNoMarginBottom
