@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { buildTree, planInstances, preconditionsFor } from '../lib/calibrate.mjs';
+import { matchesPaintState } from '../lib/paint-state.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../../..' );
@@ -172,6 +173,33 @@ test( 'a fixture precondition puts the gating attribute on the setting\'s instan
 	// Another setting is untouched, and an instance already holding the value gets nothing extra.
 	assert.deepEqual( preconditionsFor( { attr_name: 'otherSetting', css_property: 'height' }, schema, {}, ctx ), {} );
 	assert.deepEqual( preconditionsFor( { attr_name: 'gatedSetting', css_property: 'width' }, schema, { gate: 'on' }, ctx ), {} );
+} );
+
+test( 'MUST FAIL (site-header-row gridTemplateColumns, gridAutoRows, justifyItems untestable): each is calibrated on a row whose layout is grid', () => {
+	// The header row's column template paints only on a grid row; the fixture's row is a flex row, so calibration marked the three
+	// grid settings dead and Fill could never write a phone header's columns (2026-11-19).
+	const pre = FX[ 'sgs/site-header-row' ].preconditions;
+	for ( const setting of [ 'gridTemplateColumns', 'gridAutoRows', 'justifyItems' ] ) {
+		assert.deepEqual( pre?.[ setting ], { layout: 'grid' }, `${ setting } needs a grid row` );
+	}
+	assert.equal( FX[ 'sgs/site-header-row' ].attributes.layout, undefined, 'negative control: the default instance stays a flex row, so every other setting is measured as before' );
+	const schema = { gridTemplateColumns: { type: 'object' }, layout: { type: 'string', default: 'flex' } };
+	const ctx = { settingPreconditions: pre };
+	assert.deepEqual( preconditionsFor( { attr_name: 'gridTemplateColumns', css_property: 'grid-template-columns' }, schema, {}, ctx ), { layout: 'grid' } );
+	assert.deepEqual( preconditionsFor( { attr_name: 'gap', css_property: 'gap' }, schema, {}, ctx ), {} );
+} );
+
+test( 'MUST FAIL (basket label upper case): the cart is calibrated in its pill trigger style as a paint state, so its own text-transform is the baseline', () => {
+	// The default instance draws the icon-only trigger; the pill trigger (a stylesheet rule on `.sgs-cart__trigger--pill`) sets its
+	// own upper-case label, which no default paint recorded, so a draft pill label in normal case was judged equal and the clone
+	// printed BASKET (2026-11-19).
+	const states = FX[ 'sgs/cart' ].paintStates;
+	assert.equal( states.length, 1 );
+	assert.deepEqual( states[ 0 ].when, { equals: { triggerStyle: 'pill' } } );
+	assert.equal( states[ 0 ].attributes.triggerStyle, 'pill', 'the state is measured on a pill trigger' );
+	assert.equal( matchesPaintState( states[ 0 ].when, { attributes: { triggerStyle: 'pill' } } ), true );
+	assert.equal( matchesPaintState( states[ 0 ].when, { attributes: { triggerStyle: 'icon' } } ), false, 'negative control: an icon trigger keeps the default paint' );
+	assert.equal( matchesPaintState( states[ 0 ].when, { attributes: {} } ), false );
 } );
 
 test( 'the icon list calibrates its link settings on linked items (render.php prints .sgs-icon-list__item-link only for an item with a url)', () => {

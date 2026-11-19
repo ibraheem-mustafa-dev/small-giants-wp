@@ -248,9 +248,14 @@ export async function openToggle( page ) {
 	await toggle.evaluate( ( el ) => el.click() );
 }
 
-// The reader's arguments: an inherited property's own paint is read on the default instances only, so a marked
+// The instances whose inherited properties' own paint is read: the default instances and the paint-state instances (a way the
+// block renders whose resting paint differs from the default's, such as a cart's pill trigger that sets its own upper case).
+// A marked instance carries none.
+export const ownAtOf = ( instances ) => instances.flatMap( ( inst, n ) => ( inst.isDefault || inst.paintState ? [ n ] : [] ) );
+
+// The reader's arguments: an inherited property's own paint is read on the default instances and the paint-state ones, so a marked
 // instance's read carries no `_own:` key for the slot finder to take as a change.
-const args = ( instances, only, extraProps = [] ) => [ instances.length, CAL_PREFIX, [ ...READ_PROPS, ...extraProps ], elementPath.toString(), [ ...CAL_PSEUDO_PROPS, ...extraProps ], TEXT_PSEUDO_PROPS, only, OWN_INHERITED, instances.flatMap( ( inst, n ) => ( inst.isDefault ? [ n ] : [] ) ) ];
+const args = ( instances, only, extraProps = [] ) => [ instances.length, CAL_PREFIX, [ ...READ_PROPS, ...extraProps ], elementPath.toString(), [ ...CAL_PSEUDO_PROPS, ...extraProps ], TEXT_PSEUDO_PROPS, only, OWN_INHERITED, ownAtOf( instances ) ];
 
 // One state instance under its trigger: hover or keyboard focus on the styled element (its panel opened first when
 // it is hidden), the state's ancestor class added, or (open) the instance's own disclosure opened (lib/calibrate-open.mjs). A 'probe' state is entered by the first state-vocabulary

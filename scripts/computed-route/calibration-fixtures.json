@@ -609,6 +609,20 @@
         "displayMode": "link"
       }
     ],
+    "paintStates": [
+      {
+        "name": "pill",
+        "when": {
+          "equals": {
+            "triggerStyle": "pill"
+          }
+        },
+        "attributes": {
+          "triggerStyle": "pill",
+          "pillCountStyle": "bubble"
+        }
+      }
+    ],
     "basket": {
       "id": "{{product}}",
       "variation": {
@@ -2508,6 +2522,11 @@
   "sgs/site-header-row": {
     "attributes": {
       "rowSlot": "middle"
+    },
+    "preconditions": {
+      "gridTemplateColumns": { "layout": "grid" },
+      "gridAutoRows": { "layout": "grid" },
+      "justifyItems": { "layout": "grid" }
     },
     "parents": [
       {

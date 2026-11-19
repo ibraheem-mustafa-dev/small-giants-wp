@@ -1,0 +1,32 @@
+[
+	{
+		"file": "calibration-fixtures.json",
+		"find": "      \"gridTemplateColumns\": { \"layout\": \"grid\" },\n",
+		"replace": "",
+		"why": "the column template is calibrated on a flex row again"
+	},
+	{
+		"file": "calibration-fixtures.json",
+		"find": "      \"gridAutoRows\": { \"layout\": \"grid\" },\n",
+		"replace": "",
+		"why": "the grid row height is calibrated on a flex row again"
+	},
+	{
+		"file": "calibration-fixtures.json",
+		"find": "      \"justifyItems\": { \"layout\": \"grid\" }\n",
+		"replace": "      \"justifyItems\": { \"layout\": \"flex\" }\n",
+		"why": "the item alignment is calibrated on a flex row again"
+	},
+	{
+		"file": "calibration-fixtures.json",
+		"find": "          \"equals\": {\n            \"triggerStyle\": \"pill\"\n          }",
+		"replace": "          \"equals\": {\n            \"triggerStyle\": \"icon\"\n          }",
+		"why": "the cart's pill paint state matches an icon trigger"
+	},
+	{
+		"file": "calibration-fixtures.json",
+		"find": "        \"attributes\": {\n          \"triggerStyle\": \"pill\",\n          \"pillCountStyle\": \"bubble\"\n        }\n      }\n    ],",
+		"replace": "        \"attributes\": {\n          \"triggerStyle\": \"icon\",\n          \"pillCountStyle\": \"bubble\"\n        }\n      }\n    ],",
+		"why": "the cart's pill state is measured on an icon trigger"
+	}
+]

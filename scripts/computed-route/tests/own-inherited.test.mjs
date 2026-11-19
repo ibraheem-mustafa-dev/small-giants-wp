@@ -9,7 +9,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'crypto';
-import { readInstancesInPage } from '../lib/calibrate-read.mjs';
+import { readInstancesInPage, ownAtOf } from '../lib/calibrate-read.mjs';
 import { READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, INHERITED, OWN_INHERITED, READ_KEY } from '../lib/calibrate-props.mjs';
 import { slotFor } from '../lib/calibrate.mjs';
 import { baselineFn, ownPaint, partOwnPaint } from '../lib/fill-resolve-state.mjs';
@@ -166,4 +166,12 @@ test( 'MUST FAIL: the nearest part that paints the property wins over an outer o
 	const cal = { elements: { '': { 1440: {} }, '.a': { 1440: { '_own:color': 'rgb(1, 1, 1)', _fs: '16px' } }, '.a > .b': { 1440: { '_own:color': 'rgb(2, 2, 2)', _fs: '16px' } }, '.a > .b > .c': { 1440: {} } } };
 	assert.equal( partOwnPaint( cal, '.a > .b > .c', 1440, 'color' ), 'rgb(2, 2, 2)' );
 	assert.equal( partOwnPaint( cal, '.a > .c', 1440, 'color' ), 'rgb(1, 1, 1)' );
+} );
+
+// A paint state (a way the block renders whose resting paint differs from the default's) is read for its own inherited paint
+// too: the cart's pill trigger sets its own upper case, which the icon-only default instance never shows, so a draft's "Basket" in
+// normal case was judged equal to the inherited value and the clone printed BASKET (2026-11-19).
+test( 'MUST FAIL: the own paint of inherited properties is read on default and paint-state instances only', () => {
+	assert.deepEqual( ownAtOf( [ { isDefault: true }, { key: 'marked' }, { paintState: { name: 'pill' } }, { key: 'other' } ] ), [ 0, 2 ] );
+	assert.deepEqual( ownAtOf( [ { key: 'marked' } ] ), [], 'negative control: a marked instance carries no own paint' );
 } );

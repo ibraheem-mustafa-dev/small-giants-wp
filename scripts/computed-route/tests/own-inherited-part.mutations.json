@@ -16,5 +16,17 @@
 		"find": "for ( let i = steps.length - 1; i >= 1; i-- ) {",
 		"replace": "for ( let i = 1; i >= 1 && i < steps.length; i++ ) {",
 		"why": "only the outermost part is consulted, not the nearest"
+	},
+	{
+		"file": "lib/calibrate-read.mjs",
+		"find": "( inst.isDefault || inst.paintState ? [ n ] : [] )",
+		"replace": "( inst.isDefault ? [ n ] : [] )",
+		"why": "a paint state is read without its own inherited paint"
+	},
+	{
+		"file": "lib/calibrate-read.mjs",
+		"find": "( inst.isDefault || inst.paintState ? [ n ] : [] )",
+		"replace": "( true ? [ n ] : [] )",
+		"why": "a marked instance carries its own paint too"
 	}
 ]
