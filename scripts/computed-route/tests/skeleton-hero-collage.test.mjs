@@ -92,12 +92,26 @@ test( 'MUST FAIL: the pictures and captions inside the layers are blocks of thei
 	assert.ok( all( [ nodeOf( r, 7 ) ] ).includes( nodeOf( r, 8 ) ), 'the picture sits inside its layer' );
 } );
 
+// The heading's inline photo (a chip of a picture set among the words) is part of the heading, never the hero's media.
+const INLINE = [ 15, 4, 'img', '', 'height:1em', { w: 60, h: 50 } ];
+
+test( 'MUST FAIL: a picture set inline in the hero heading does not make a collage hero split', () => {
+	const r = run( hero( STAGE, [ ...PILE, INLINE ] ) );
+	assert.notEqual( heroOf( r ).attributes.variant, 'split', JSON.stringify( heroOf( r ).attributes ) );
+	assert.equal( heroOf( r ).draftSlots?.[ MEDIA ], undefined );
+} );
+
 // Negative controls: what is not a collage keeps its old verdicts.
 test( 'a hero with one picture beside its content stays a split hero', () => {
 	const r = run( hero( STAGE, [ [ 7, 6, 'img', '', 'width:100%', { w: 520, h: 560 } ] ] ) );
 	assert.equal( heroOf( r ).attributes.variant, 'split' );
 	assert.equal( rowOf( r, 7 ).action, 'absorbed' );
 	assert.equal( rowOf( r, 6 ).rule, 'heroInner' );
+} );
+
+test( 'an inline heading picture beside a real column picture leaves the split hero split', () => {
+	const r = run( hero( STAGE, [ [ 7, 6, 'img', '', 'width:100%', { w: 520, h: 560 } ], INLINE ] ) );
+	assert.equal( heroOf( r ).attributes.variant, 'split' );
 } );
 
 test( 'one picture frame with a floating badge on it stays a split hero', () => {

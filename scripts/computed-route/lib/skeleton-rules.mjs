@@ -960,9 +960,18 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			// A picture laid behind the content (lib/skeleton-hero-background.mjs) is the hero's background: only a picture beside
 			// the content makes it the split hero.
 			const backdrop = desc( e ).filter( isMedia ).filter( ( p ) => behindContent( { hero: e, picture: p, m, desc } ) );
-			// A picture inside a collage layer is that layer's own, never the hero's split media.
+			// A picture inside a collage layer is that layer's own, and a picture set inline in a heading is part of its words (the
+			// heading draws it): neither is the hero's split media.
 			const collage = collageOf( e );
-			const pictures = desc( e ).filter( isMedia ).filter( ( p ) => ! backdrop.includes( p ) && ! collage.layerOf.has( p.key ) );
+			const inHeading = ( p ) => {
+				for ( let up = m.byKey[ p.parentKey ]; up && up !== e; up = m.byKey[ up.parentKey ] ) {
+					if ( HEADING.test( up.tag ) ) {
+						return true;
+					}
+				}
+				return false;
+			};
+			const pictures = desc( e ).filter( isMedia ).filter( ( p ) => ! backdrop.includes( p ) && ! collage.layerOf.has( p.key ) && ! inHeading( p ) );
 			const media = pictures.length > 0;
 			// A split hero's order per device is the draft's (lib/skeleton-hero-order.mjs): its picture against every worded
 			// element outside a picture, at each device's width.

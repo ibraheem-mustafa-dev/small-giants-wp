@@ -37,8 +37,8 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": " && ! collage.layerOf.has( p.key ) );",
-		"replace": " );",
+		"find": " && ! collage.layerOf.has( p.key ) && ! inHeading( p ) );",
+		"replace": " && ! inHeading( p ) );",
 		"why": "a picture in a layer would still be the hero's split media"
 	},
 	{
@@ -58,5 +58,11 @@
 		"find": "minPictureLayers: R.heroCollage.minPictureLayers",
 		"replace": "minPictureLayers: 1",
 		"why": "the decisions' picture count would not be read"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": " && ! collage.layerOf.has( p.key ) && ! inHeading( p ) );",
+		"replace": " && ! collage.layerOf.has( p.key ) );",
+		"why": "a photo set inline in the heading would be the hero's split media"
 	}
 ]
