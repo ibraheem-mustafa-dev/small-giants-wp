@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { decodeEntities, loadDraft } from './intake-ast.mjs';
 import { declared } from './skeleton-rules.mjs';
+import { ALL_TEXT_CAP } from './skeleton-model.mjs';
 
 // The words a draft's copyright line prints before its © mark (sgs/business-info prints `{copyrightPrefix} © {year} {line}`):
 // "Copyright © 2026 Acme" gives "Copyright", "© 2026 Acme" gives "" (the block then omits the word). A line with no mark
@@ -81,7 +82,8 @@ export function makeContent( ctx ) {
 		return opts.includes( want ) ? { layout: want } : {};
 	};
 
-	// The rich text of a heading whose children are all inline (lib/skeleton-classify.mjs, structural.inlineHeading), read in
+	// The rich text of a heading whose children are all inline, or of an element whose own words sit beside inline children
+	// (lib/skeleton-classify.mjs, structural.inlineHeading and structural.inlineText), read in
 	// document order from the heading's own source in the draft file (the fact record's template number is its start tag's
 	// place among the template's tags, lib/intake-ast.mjs::loadDraft; the inventory's snippet is cut short): its words; an
 	// <img> as the Inline photo format with the media-map attachment of the file it draws (lib/skeleton-carried.mjs, as a
@@ -168,6 +170,19 @@ export function makeContent( ctx ) {
 	// other than the heading's, such as an eyebrow inside the heading. Each is a handover row naming what it loses (the heading
 	// keeps its words; the piece is split off or restyled by hand). An inherited value is the heading's.
 	const ownValue = ( v ) => null != v && ! /^(?:inherit|unset|currentcolor)$/i.test( v );
+	// What the handover rows call the element: a heading, or the text an element of words is (structural.inlineText).
+	const noun = ( e ) => ( /^h[1-6]$/.test( e.tag ) ? 'heading' : 'text' );
+	// The rich-text format a phrasing child keeps (the body formats every SGS text and heading offers: bold, italic,
+	// strikethrough, link); any other phrasing child is its words alone.
+	const FORMAT = { b: 'strong', strong: 'strong', i: 'em', em: 'em', s: 's', del: 's' };
+	const insideControl = ( k ) => {
+		for ( let p = m.byKey[ k.parentKey ]; p; p = m.byKey[ p.parentKey ] ) {
+			if ( 'a' === p.tag || 'button' === p.tag ) {
+				return true;
+			}
+		}
+		return false;
+	};
 	const pieceRows = ( e, IH, words ) => {
 		const out = [];
 		const visit = ( x ) => m.kids( x ).forEach( ( k ) => {
@@ -175,7 +190,7 @@ export function makeContent( ctx ) {
 			const own = ( IH.ownTypeProps || [] ).filter( ( p ) => ownValue( declared( k )[ p ] ) && declared( k )[ p ] !== declared( e )[ p ] ).map( ( p ) => `${ p } ${ declared( k )[ p ] }` );
 			const lost = [ ...( ( IH.boxDisplays || [] ).includes( k.display ) ? [ `its own ${ k.display } line` ] : [] ), ...own ];
 			if ( text && lost.length ) {
-				out.push( { owner: 'content-page', kind: 'text', detail: `the heading "${ words }" holds "${ text }" as a piece of its own (${ lost.join( ', ' ) }), which the heading's rich text cannot carry: split it into its own block or restyle it` } );
+				out.push( { owner: 'content-page', kind: 'text', detail: `the ${ noun( e ) } "${ words }" holds "${ text }" as a piece of its own (${ lost.join( ', ' ) }), which the ${ noun( e ) }'s rich text cannot carry: split it into its own block or restyle it` } );
 				return;
 			}
 			visit( k );
@@ -193,7 +208,7 @@ export function makeContent( ctx ) {
 			if ( hit?.id && hit.url ) {
 				return `<img class="${ esc( IH.photoClass ) } wp-image-${ hit.id }" src="${ esc( hit.url ) }" alt="${ esc( img.attrs?.alt || '' ) }"/>`;
 			}
-			handover.push( { owner: 'content-page', kind: 'presence', detail: `the inline photo ${ img.attrs?.srcBasename || img.attrs?.src || '' } in the heading "${ words }": ${ hit?.reason || 'no media map is read for this run' }; insert it with the Inline photo format` } );
+			handover.push( { owner: 'content-page', kind: 'presence', detail: `the inline photo ${ img.attrs?.srcBasename || img.attrs?.src || '' } in the ${ noun( e ) } "${ words }": ${ hit?.reason || 'no media map is read for this run' }; insert it with the Inline photo format` } );
 			return '';
 		};
 		const render = ( x, outer ) => {
@@ -235,18 +250,36 @@ export function makeContent( ctx ) {
 						return null;
 					}
 					const marked = IH.highlightClass && m.words( kid ) && m.kids( kid ).length && m.kids( kid ).every( ( k ) => wordless( k ) && positioned( k ) );
-					const piece = marked ? `<span class="${ esc( IH.highlightClass ) }">${ inner }</span>` : inner;
+					const piece = format( kid, marked ? `<span class="${ esc( IH.highlightClass ) }">${ inner }</span>` : inner );
 					out = apart( kid, x ) ? join( out, piece ) : out + piece;
 					gap = apart( kid, x );
 				}
 			}
 			return out;
 		};
+		// A bold, italic or struck child keeps its format; a link child its site address (lib/draft-link.mjs), unless it sits
+		// inside a link or button already (a link in a link is invalid) or its address does not resolve (a handover row).
+		function format( kid, inner ) {
+			if ( FORMAT[ kid.tag ] ) {
+				return `<${ FORMAT[ kid.tag ] }>${ inner }</${ FORMAT[ kid.tag ] }>`;
+			}
+			const href = 'a' === kid.tag ? kid.attrs?.href : null;
+			if ( ! href || ! siteLink || insideControl( kid ) ) {
+				return inner;
+			}
+			const r = siteLink( href, kid );
+			const out = 'none' === r.kind ? { value: null, handover: { owner: 'behaviour', kind: 'link', detail: `the link "${ m.words( kid ) }" in the ${ noun( e ) } "${ words }": draft link "${ href }" has no destination in the draft; its words are kept without a link` } } : linkWrite( r, href );
+			out.handover && handover.push( out.handover );
+			return null === out.value ? inner : `<a href="${ esc( out.value ) }">${ inner }</a>`;
+		}
 		const outer = sourceOf( e );
 		const html = outer ? render( e, outer ) : null;
 		const plain = ( h ) => decodeEntities( String( h ).replace( /<br>/g, ' ' ).replace( /<[^>]+>/g, '' ) ).replace( /\s+/g, ' ' ).trim();
-		if ( null !== html && plain( html ).replace( /\s/g, '' ) === words.replace( /\s/g, '' ) ) {
-			filled.length && handover.unshift( { owner: 'content-page', kind: 'text', detail: `the heading "${ words }" holds words the draft's code fills (${ filled.join( ', ' ) }): its rendered words are written` } );
+		// The rendered text is kept to ALL_TEXT_CAP characters: a longer element's source matches it as far as it goes.
+		const bare = ( x ) => x.replace( /\s/g, '' );
+		const capped = words.length >= ALL_TEXT_CAP;
+		if ( null !== html && ( capped ? bare( plain( html ) ).startsWith( bare( words ) ) : bare( plain( html ) ) === bare( words ) ) ) {
+			filled.length && handover.unshift( { owner: 'content-page', kind: 'text', detail: `the ${ noun( e ) } "${ words }" holds words the draft's code fills (${ filled.join( ', ' ) }): its rendered words are written` } );
 			return { html: html.replace( /\s+/g, ' ' ).trim(), handover: [ ...pieceRows( e, IH, plain( html ) ), ...handover ] };
 		}
 		const imgs = [];
@@ -255,8 +288,9 @@ export function makeContent( ctx ) {
 		// The words the draft's code fills: the fact record's text holes of the heading and everything in it.
 		const holes = ( x ) => [ ...( view?.entry( x )?.template.holes || [] ).filter( ( h ) => 'text' === h.where ).map( ( h ) => `{{ ${ h.expr } }}` ), ...m.kids( x ).flatMap( holes ) ];
 		const bound = [ ...new Set( holes( e ) ) ];
-		const said = bound.length ? [ { owner: 'content-page', kind: 'text', detail: `the heading "${ words }" holds words the draft's code fills (${ bound.join( ', ' ) }): its rendered words are written` } ] : [];
-		return { html: escText( words ), handover: [ ...pieceRows( e, IH, words ), ...said, ...imgs.map( ( img ) => ( { owner: 'content-page', kind: 'presence', detail: `the inline photo ${ img.attrs?.srcBasename || img.attrs?.src || '' } in the heading "${ words }": its place among the words is not readable from the draft's source; insert it with the Inline photo format` } ) ) ] };
+		const said = bound.length ? [ { owner: 'content-page', kind: 'text', detail: `the ${ noun( e ) } "${ words }" holds words the draft's code fills (${ bound.join( ', ' ) }): its rendered words are written` } ] : [];
+		const cut = capped ? [ { owner: 'content-page', kind: 'text', detail: `the ${ noun( e ) } "${ words }" is longer than the ${ ALL_TEXT_CAP } characters of rendered text the inventory keeps and its source cannot be read in order: type the rest of its words` } ] : [];
+		return { html: escText( words ), handover: [ ...cut, ...pieceRows( e, IH, words ), ...said, ...imgs.map( ( img ) => ( { owner: 'content-page', kind: 'presence', detail: `the inline photo ${ img.attrs?.srcBasename || img.attrs?.src || '' } in the ${ noun( e ) } "${ words }": its place among the words is not readable from the draft's source; insert it with the Inline photo format` } ) ) ] };
 	}
 
 	// The content settings of one element's block. Returns { a (attributes), handover }.

@@ -65,5 +65,5 @@ test( 'MUST FAIL: the rich text keeps a space where a child that renders as its 
 
 test( 'negative control: an inline child with no whitespace after it joins its words, as the draft renders them', () => {
 	const word = N( 'section', {}, [ N( 'div', {}, [ N( 'h2', { words: 'Unable', parts: [ 'Un', 0, 'able' ] }, [ N( 'em', { words: 'believ' } ) ] ) ] ) ] );
-	assert.equal( richText( word ), 'Unbelievable' );
+	assert.equal( richText( word ), 'Un<em>believ</em>able', 'joined with no space, the italic kept as the body format' );
 } );

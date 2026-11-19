@@ -1,0 +1,80 @@
+[
+ {
+  "file": "lib/skeleton-classify.mjs",
+  "find": "if ( IH && IT && textBlock && bk.length && words && ( ! tagOwn || tagOwn === textBlock ) && inlineOnly( e, IH ) ) {",
+  "replace": "if ( false ) {",
+  "why": "own words beside inline children are a wrapper again and are lost"
+ },
+ {
+  "file": "lib/skeleton-classify.mjs",
+  "find": "if ( IH && IT && textBlock && bk.length && words && ( ! tagOwn || tagOwn === textBlock ) && inlineOnly( e, IH ) ) {",
+  "replace": "if ( IH && IT && textBlock && bk.length && ( ! tagOwn || tagOwn === textBlock ) && inlineOnly( e, IH ) ) {",
+  "why": "a wrapper with no words of its own is claimed (over-broad)"
+ },
+ {
+  "file": "lib/skeleton-classify.mjs",
+  "find": "if ( IH && IT && textBlock && bk.length && words && ( ! tagOwn || tagOwn === textBlock ) && inlineOnly( e, IH ) ) {",
+  "replace": "if ( IH && IT && textBlock && bk.length && words && inlineOnly( e, IH ) ) {",
+  "why": "a tag with its own block (a quote, a link, a button) is claimed"
+ },
+ {
+  "file": "lib/skeleton-classify.mjs",
+  "find": "if ( IH && IT && textBlock && bk.length && words && ( ! tagOwn || tagOwn === textBlock ) && inlineOnly( e, IH ) ) {",
+  "replace": "if ( IH && IT && textBlock && bk.length && words && ( ! tagOwn || tagOwn === textBlock ) ) {",
+  "why": "an element holding a block child is claimed"
+ },
+ {
+  "file": "lib/skeleton-write-content.mjs",
+  "find": "const FORMAT = { b: 'strong', strong: 'strong', i: 'em', em: 'em', s: 's', del: 's' };",
+  "replace": "const FORMAT = {};",
+  "why": "bold and italic children lose their format"
+ },
+ {
+  "file": "lib/skeleton-write-content.mjs",
+  "find": "\t\t\t\t\tconst piece = format( kid, marked ?",
+  "replace": "\t\t\t\t\tconst piece = ( ( k, x ) => x )( kid, marked ?",
+  "why": "no child keeps a format"
+ },
+ {
+  "file": "lib/skeleton-write-content.mjs",
+  "find": "\t\t\t\tout += '<br>';",
+  "replace": "\t\t\t\tout += '';",
+  "why": "the line break between the price and the note is dropped"
+ },
+ {
+  "file": "lib/skeleton-write-content.mjs",
+  "find": "\tconst noun = ( e ) => ( /^h[1-6]$/.test( e.tag ) ? 'heading' : 'text' );",
+  "replace": "\tconst noun = () => 'heading';",
+  "why": "a text's handover rows call it a heading"
+ },
+ {
+  "file": "lib/skeleton-write-content.mjs",
+  "find": "\t\t\tout.handover && handover.push( out.handover );\n\t\t\treturn null === out.value ? inner",
+  "replace": "\t\t\treturn null === out.value ? inner",
+  "why": "an unresolved link inside a sentence is dropped silently"
+ },
+ {
+  "file": "lib/skeleton-write-content.mjs",
+  "find": "if ( null !== html && ( capped ? bare( plain( html ) ).startsWith( bare( words ) ) : bare( plain( html ) ) === bare( words ) ) ) {",
+  "replace": "if ( null !== html && bare( plain( html ) ) === bare( words ) ) {",
+  "why": "a text longer than the inventory's rendered text is cut at its limit"
+ },
+ {
+  "file": "lib/skeleton-write-content.mjs",
+  "find": "if ( null !== html && ( capped ? bare( plain( html ) ).startsWith( bare( words ) ) : bare( plain( html ) ) === bare( words ) ) ) {",
+  "replace": "if ( null !== html && bare( plain( html ) ).startsWith( bare( words ) ) ) {",
+  "why": "a short text's source that says more than the page shows is written"
+ },
+ {
+  "file": "lib/skeleton-write-content.mjs",
+  "find": "const cut = capped ? [",
+  "replace": "const cut = false ? [",
+  "why": "a cut text is written silently"
+ },
+ {
+  "file": "lib/skeleton-model.mjs",
+  "find": "export const ALL_TEXT_CAP = 120;",
+  "replace": "export const ALL_TEXT_CAP = 1000;",
+  "why": "the writer's limit disagrees with the inventory's"
+ }
+]

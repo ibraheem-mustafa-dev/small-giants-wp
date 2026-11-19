@@ -43,7 +43,8 @@ test( 'MUST FAIL: the flow\'s rows: covered pieces name what draws them, a contr
 	assert.equal( row( 'Root/1#0' ).block, 'sgs/choice-flow' );
 	assert.equal( row( 'Root/1#0' ).rule, 'choiceFlow' );
 	assert.notEqual( row( 'Root/47#0' ).rule, 'choiceFlow', 'the stray line is built by the ordinary rules beside the flow' );
-	assert.equal( skeleton.at( -1 ).name, 'sgs/container', 'the stray line and its span sit after the flow' );
+	assert.equal( skeleton.at( -1 ).name, 'sgs/text', 'the stray line and its span sit after the flow, one text holding both (structural.inlineText)' );
+	assert.match( skeleton.at( -1 ).attributes.text, /^A stray line/, 'the own words of the line are kept (the rendered text of the fixture is the own words of the line alone)' );
 	assert.equal( row( 'Root/20#1' ).action, 'absorbed' );
 	assert.match( row( 'Root/20#1' ).reason, /question 1 "Pick a size"/ );
 	assert.match( row( 'Root/8#0' ).reason, /summary/ );

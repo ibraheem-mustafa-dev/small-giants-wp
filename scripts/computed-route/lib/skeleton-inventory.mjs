@@ -10,6 +10,7 @@ import { loadChromium } from './fill-read.mjs';
 import { applyStateRoute } from './state-route.mjs';
 import { discoverReveals, readReveals } from './skeleton-reveal.mjs';
 import { recId } from './reveal-merge.mjs';
+import { ALL_TEXT_CAP } from './skeleton-model.mjs';
 
 export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
 // The attributes kept per element: what a block needs to know (link, name, label, image source) and the style attribute
@@ -42,7 +43,7 @@ export function holdsOtherRoot( s, strips, srcDoc ) {
 // is or holds one at any depth holds another surface's root): the root's siblings are then read too, as `beside`, and the
 // elements of those in the chain of strips next to the root are inventoried under `strip` roots (rules.headerSlots decides
 // which are rows: lib/skeleton-header-slots.mjs::besideStrips). Returns { records, beside } or { error }.
-function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc ] ) {
+function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, allTextCap ] ) {
 	// eslint-disable-next-line no-new-func
 	const keyOf = new Function( `return (${ keySrc });` )();
 	const lineOf = new Function( `return (${ lineSrc });` )();
@@ -163,7 +164,7 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc ]
 		const r = e.getBoundingClientRect();
 		const box = e.getClientRects().length ? { x: +( r.left + scrollX ).toFixed( 1 ), y: +( r.top + scrollY ).toFixed( 1 ), w: +r.width.toFixed( 1 ), h: +r.height.toFixed( 1 ) } : null;
 		out.push( {
-			i: out.length, key: keyOf( e ), parentKey: p && ! stripRoots.has( e ) ? keyOf( p ) : null, ...( stripRoots.has( e ) ? { strip: stripRoots.get( e ) } : {} ), depth, tag: e.tagName.toLowerCase(), template: tname, tpl: Number( n ), attrs, words: ws( own ), allText: ws( e.textContent ).slice( 0, 120 ),
+			i: out.length, key: keyOf( e ), parentKey: p && ! stripRoots.has( e ) ? keyOf( p ) : null, ...( stripRoots.has( e ) ? { strip: stripRoots.get( e ) } : {} ), depth, tag: e.tagName.toLowerCase(), template: tname, tpl: Number( n ), attrs, words: ws( own ), allText: ws( e.textContent ).slice( 0, allTextCap ),
 			srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
 		} );
 	} );
@@ -304,7 +305,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 		await page.setViewportSize( { width: w, height } );
 		await settleAt( page, w );
 		await page.evaluate( () => document.querySelectorAll( '[data-inv-i]' ).forEach( ( e ) => e.removeAttribute( 'data-inv-i' ) ) );
-		const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString() ];
+		const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP ];
 		const res = await page.evaluate( collect, args );
 		if ( res.error ) {
 			throw new Error( `${ res.error } at ${ w }px` );
@@ -341,7 +342,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			await page.goto( url, { waitUntil: 'networkidle', timeout: 90000 } );
 			await applyStateRoute( page );
 			await settle( page, root );
-			const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString() ];
+			const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP ];
 			const res = await page.evaluate( collect, args );
 			if ( res.error ) {
 				throw new Error( `${ res.error } at ${ w }px` );

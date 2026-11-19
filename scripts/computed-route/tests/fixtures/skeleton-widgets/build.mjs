@@ -56,8 +56,9 @@ export function build( root ) {
 	const tplHtml = ( node ) => {
 		const attrs = Object.entries( node.o.attrs || {} ).map( ( [ k, v ] ) => ` ${ k }="${ v }"` ).join( '' ) + ( style( node ) ? ` style="${ style( node ) }"` : '' );
 		const words = node.o.text ? `{{ ${ node.o.text } }}` : node.o.words || '';
-		if ( 'img' === node.tag ) {
-			return `<img${ attrs }>`;
+		// A void element (an image, a line break) has no end tag, as in a draft file.
+		if ( [ 'img', 'br', 'wbr', 'hr', 'input' ].includes( node.tag ) ) {
+			return `<${ node.tag }${ attrs }>`;
 		}
 		const inner = node.o.parts ? node.o.parts.map( ( q ) => ( 'number' === typeof q ? tplHtml( node.kids[ q ] ) : q ) ).join( '' ) : `${ node.kids.map( tplHtml ).join( '' ) }${ words }`;
 		return `<${ node.tag }${ attrs }>${ inner }</${ node.tag }>`;

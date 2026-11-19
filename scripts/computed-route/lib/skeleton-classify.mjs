@@ -211,6 +211,18 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 			'leaf' === composition[ own ]?.composition_role && add( C, own, 'db', W.composition, `block_composition: ${ own } is a leaf: the inline children are its own rich text` );
 			return { ...finish( C ), stale };
 		}
+		// Words of an element's own that sit beside inline phrasing children (`<p><b>Vegan base:</b> no eggs…</p>`,
+		// `<b>£3.95<br><span>Free over £35</span></b>`) are one text block holding them all as rich text in document order
+		// (decisions structural.inlineText): as a wrapper it builds only its children and its own words are lost. Only an element
+		// that is words (no tag-map block, or the paragraph's: a link or button is the button block's, a quote the quote's), and
+		// never one whose children carry all the words (a wrapper of phrasing children with no words of its own stays a wrapper).
+		const IT = decisions.structural?.inlineText;
+		const tagOwn = tagMap[ e.tag ]?.core_block_slug;
+		if ( IH && IT && textBlock && bk.length && words && ( ! tagOwn || tagOwn === textBlock ) && inlineOnly( e, IH ) ) {
+			add( C, textBlock, 'db', W.tag, `html_tag_to_core_block: p -> ${ textBlock }: the element's own words and its inline children are one text`, { inline: true } );
+			add( C, textBlock, 'structure', W.structure, `own words beside inline phrasing content (${ [ ...new Set( descOf( e ).map( ( k ) => k.tag ) ) ].join( ', ' ) }): ${ IT.reason }` );
+			return { ...finish( C ), stale };
+		}
 		if ( bk.length ) {
 			const childTops = bk.map( ( k ) => classify( k, null ).candidates[ 0 ]?.block );
 			const same = bk.length > 1 && childTops.every( ( b ) => b && b === childTops[ 0 ] ) ? childTops[ 0 ] : null;

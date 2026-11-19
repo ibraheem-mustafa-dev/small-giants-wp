@@ -5,6 +5,9 @@ import { parseTplKey } from './fill-skeleton.mjs';
 import { fingerprintOf } from './identity.mjs';
 
 const ws = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim();
+// The most characters of an element's rendered text (`allText`) the inventory keeps (lib/skeleton-inventory.mjs::collect): a
+// reader comparing words with it compares only that many.
+export const ALL_TEXT_CAP = 120;
 
 export function inventoryModel( inventory ) {
 	const els = inventory.elements;
