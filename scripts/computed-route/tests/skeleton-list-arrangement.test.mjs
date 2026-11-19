@@ -11,7 +11,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { decisionsProblems } from '../lib/skeleton-facts.mjs';
 import { inventoryModel } from '../lib/skeleton-model.mjs';
-import { inOneRow, listArrangement } from '../lib/skeleton-arrangement.mjs';
+import { inOneRow, equalWidths, listArrangement } from '../lib/skeleton-arrangement.mjs';
 import { facts, N, run, row, find, REPO } from './fixtures/skeleton-widgets/build.mjs';
 
 const RULE = JSON.parse( fs.readFileSync( path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'skeleton-decisions.json' ), 'utf8' ) ).rules.listArrangement;
@@ -20,7 +20,7 @@ const el = ( b ) => ( { b } );
 const boxOf = ( e ) => e.b;
 
 test( 'the rule names a setting the timeline has and one of its values', () => {
-	assert.deepEqual( RULE.blocks, [ { block: 'sgs/timeline', setting: 'orientation', value: 'horizontal' } ] );
+	assert.deepEqual( RULE.blocks, [ { block: 'sgs/timeline', setting: 'orientation', value: 'horizontal', equalShare: { setting: 'cardsShareRow', value: true } } ] );
 	assert.deepEqual( decisionsProblems( facts( REPO ) ).filter( ( p ) => /listArrangement/.test( p ) ), [] );
 } );
 
@@ -33,6 +33,17 @@ test( 'MUST FAIL: a rule naming a value the setting does not have, or a setting 
 	assert.equal( bad( [ { block: 'sgs/timeline', setting: 'orientation', value: 'sideways' } ] ).length, 1 );
 	assert.equal( bad( [ { block: 'sgs/timeline', setting: 'noSuchSetting', value: 'horizontal' } ] ).length, 1 );
 	assert.equal( bad( [ { block: 'sgs/timeline', setting: 'orientation', value: 'horizontal' } ] ).length, 0 );
+	assert.equal( bad( [ { block: 'sgs/timeline', setting: 'orientation', value: 'horizontal', equalShare: { setting: 'cardsShareRow', value: true } } ] ).length, 0 );
+	assert.equal( bad( [ { block: 'sgs/timeline', setting: 'orientation', value: 'horizontal', equalShare: { setting: 'noSuchSetting', value: true } } ] ).length, 1 );
+	assert.equal( bad( [ { block: 'sgs/timeline', setting: 'orientation', value: 'horizontal', equalShare: { setting: 'orientation', value: 'horizontal' } } ] ).length, 1, 'the equal-share setting is an on or off setting' );
+} );
+
+test( 'MUST FAIL: units one width within a pixel are equal columns; units sized by their words, a lone unit and an unboxed unit are not', () => {
+	assert.equal( equalWidths( [ el( box( 0, 0, 157.719 ) ), el( box( 178, 0, 157.719 ) ), el( box( 356, 0, 157.734 ) ) ], boxOf ), true );
+	assert.equal( equalWidths( [ el( box( 0, 0, 150 ) ), el( box( 160, 0, 190 ) ) ], boxOf ), false, 'unequal widths' );
+	assert.equal( equalWidths( [ el( box( 0, 0, 150 ) ), el( box( 160, 0, 152 ) ) ], boxOf ), false, 'two pixels apart is a different width' );
+	assert.equal( equalWidths( [ el( box( 0, 0 ) ) ], boxOf ), false, 'one unit shares nothing' );
+	assert.equal( equalWidths( [ el( box( 0, 0 ) ), {} ], boxOf ), false, 'a unit with no box' );
 } );
 
 test( 'MUST FAIL: units that sit side by side in one row are in one row; stacked, wrapped, single and unboxed units are not', () => {
@@ -50,7 +61,9 @@ test( 'MUST FAIL: the real Indus homepage rows: the four milestones under Root/2
 	const m = inventoryModel( inv );
 	const items = m.blockKids( m.byKey[ 'Root/258#0' ] );
 	assert.equal( items.length, 4 );
-	assert.deepEqual( listArrangement( { rule: RULE, block: 'sgs/timeline', items, box: m.box } ), { orientation: 'horizontal' } );
+	assert.deepEqual( listArrangement( { rule: RULE, block: 'sgs/timeline', items, box: m.box } ), { orientation: 'horizontal', cardsShareRow: true } );
+	const uneven = items.map( ( e, i ) => ( { ...e, box: { 1440: box( i * 200, 0, 100 + 40 * i ) } } ) );
+	assert.deepEqual( listArrangement( { rule: RULE, block: 'sgs/timeline', items: uneven, box: m.box } ), { orientation: 'horizontal' }, 'a row of unequal widths is horizontal but does not share the row' );
 	assert.deepEqual( listArrangement( { rule: RULE, block: 'sgs/process-steps', items, box: m.box } ), {}, 'a block the rule does not list is left alone' );
 	assert.deepEqual( listArrangement( { rule: null, block: 'sgs/timeline', items, box: m.box } ), {}, 'no rule, no write' );
 	const stacked = m.blockKids( m.byKey[ 'Root/258#0' ] ).map( ( e, i ) => ( { ...e, box: { 1440: box( 0, i * 200 ) } } ) );
@@ -68,8 +81,10 @@ test( 'MUST FAIL: the proposal writes horizontal on a client-decided timeline wh
 	const side = run( page( true ), LOGIC, { clientDecisions: decided() } );
 	assert.equal( row( side, 'Root/2#0' ).block, 'sgs/timeline' );
 	assert.equal( find( side.skeleton, ( x ) => 'sgs/timeline' === x.name )[ 0 ].attributes.orientation, 'horizontal' );
+	assert.equal( find( side.skeleton, ( x ) => 'sgs/timeline' === x.name )[ 0 ].attributes.cardsShareRow, true, 'four equal columns share the row' );
 	const stack = run( page( false ), LOGIC, { clientDecisions: decided() } );
 	assert.equal( find( stack.skeleton, ( x ) => 'sgs/timeline' === x.name )[ 0 ].attributes.orientation, undefined );
+	assert.equal( find( stack.skeleton, ( x ) => 'sgs/timeline' === x.name )[ 0 ].attributes.cardsShareRow, undefined );
 	const own = run( page( true ), LOGIC, { clientDecisions: decided( { orientation: 'vertical' } ) } );
 	assert.equal( find( own.skeleton, ( x ) => 'sgs/timeline' === x.name )[ 0 ].attributes.orientation, 'vertical' );
 	const off = run( page( true ), LOGIC, { clientDecisions: decided(), off: [ 'listArrangement' ] } );

@@ -464,9 +464,16 @@
 			"reason": "an element's own words in a block that holds its body as inner blocks (it wraps a container, as sgs/quote) are one body child of this block, read at the same draft element; the block's first text setting names another part (the quote's attribution) and its empty body prints the editor placeholder"
 		},
 		"listArrangement": {
-			"blocks": [ { "block": "sgs/timeline", "setting": "orientation", "value": "horizontal" } ],
-			"scope": "a listed block that draws its items from the draft's repeated units (the draft element's block children) whose units sit in one row at the widest width they render at (each starts at or beyond the previous one's right edge, and each overlaps the first unit's height; lib/skeleton-arrangement.mjs::inOneRow). The block's own setting takes the listed value; a decision's own value for the setting wins, and units stacked or wrapped onto a second row keep the block's default.",
+			"blocks": [ { "block": "sgs/timeline", "setting": "orientation", "value": "horizontal", "equalShare": { "setting": "cardsShareRow", "value": true } } ],
+			"scope": "a listed block that draws its items from the draft's repeated units (the draft element's block children) whose units sit in one row at the widest width they render at (each starts at or beyond the previous one's right edge, and each overlaps the first unit's height; lib/skeleton-arrangement.mjs::inOneRow). The block's own setting takes the listed value; a decision's own value for the setting wins, and units stacked or wrapped onto a second row keep the block's default. A row of equal columns (each unit's width within a pixel of the first's) also takes the entry's `equalShare` setting",
 			"reason": "a timeline whose entries the draft sets side by side in one row is the timeline's horizontal orientation, where the block's default draws them down the page (four year entries along a line, each with a title and a line of words beneath)"
+		},
+		"itemFieldSlots": {
+			"blocks": [
+				{ "block": "sgs/timeline", "parts": [ { "key": "date", "elements": [ "date", "dateRing" ] } ] }
+			],
+			"scope": "a listed block that draws its entries from a loop of the draft: the draft element of the loop's first copy that prints the entry's field (the field the list pass puts into the part's item key, a draft `year` into the timeline's `date`) is where the settings of the part's css_elements are read, at the slot calibration measured them at (lib/skeleton-item-field-slots.mjs). An element printing two fields, or no calibrated slot for the part's settings, gives no slot and a note on the row",
+			"reason": "a timeline's year ring is the element that prints the entry's date: its size, border, fill, radius, shadow and padding are the block's year-ring settings, and its type the date settings, read at the draft's own ring and not at the timeline's root, where they paint nothing"
 		},
 		"marquee": {
 			"logoBlock": "sgs/brand-strip",

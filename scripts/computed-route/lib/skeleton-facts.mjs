@@ -142,6 +142,15 @@ export function decisionsProblems( facts ) {
 		known( x.block, `rules.listArrangement.blocks[${ i }]` );
 		const values = facts.enumOf?.( x.block, x.setting ) ?? null;
 		! values?.includes( x.value ) && problems.push( `rules.listArrangement.blocks[${ i }] must name a setting ${ x.block } has and one of its values (${ x.setting } ${ x.value })` );
+		x.equalShare && ( ! facts.attr( x.block, x.equalShare.setting ) || 'boolean' !== typeof x.equalShare.value ) && problems.push( `rules.listArrangement.blocks[${ i }].equalShare must name an on or off setting ${ x.block } has (${ x.equalShare.setting })` );
+	} );
+	// An item-field slot names a block with the item key it reads and css_elements the block's settings sit on.
+	( r.itemFieldSlots?.blocks || [] ).forEach( ( x, i ) => {
+		known( x.block, `rules.itemFieldSlots.blocks[${ i }]` );
+		( x.parts || [] ).forEach( ( p ) => {
+			const missing = ( p.elements || [] ).filter( ( c ) => ! facts.q( 'SELECT 1 AS x FROM block_attributes WHERE block_slug = ? AND css_element = ? LIMIT 1', x.block, c ).length );
+			( ! p.key || ! ( p.elements || [] ).length || missing.length ) && problems.push( `rules.itemFieldSlots.blocks[${ i }] part ${ p.key } must name an item key and css_elements ${ x.block } has` );
+		} );
 	} );
 	const ti = r.marquee?.textItems;
 	if ( ti && [ ti.items?.setting, ...Object.keys( ti.attributes || {} ) ].some( ( a ) => ! a || ! facts.attr( r.marquee.logoBlock, a ) ) ) {

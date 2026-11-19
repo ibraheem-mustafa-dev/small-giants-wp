@@ -13,6 +13,7 @@ import { inventoryModel } from './skeleton-model.mjs';
 import { listArrangement } from './skeleton-arrangement.mjs';
 import { makeClassifier, overrideFor, W } from './skeleton-classify.mjs';
 import { collapsePoint, childSlots, unitSlots, slideSlots } from './skeleton-child-slots.mjs';
+import { itemFieldSlots } from './skeleton-item-field-slots.mjs';
 import { mediaSelfSlot, partSlots, placePart, codeItemSlots, drawnSvgParts, itemSlots, chipSlots } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
@@ -271,6 +272,11 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// (`rules.<rule>.itemSlots`, lib/skeleton-part-slots.mjs::itemSlots).
 		const codeSlots = r.codeItem ? codeItemSlots( { at: r.codeItem, settings: R[ r.rule ]?.items?.slots, calibrated: calSettings( block ) } ) : r.firstItem && m.byKey[ r.firstItem ] && R[ r.rule ]?.itemSlots ? itemSlots( { finder: finder( m.byKey[ r.firstItem ] ), settings: R[ r.rule ].itemSlots, calibrated: calSettings( block ) } ) : null;
 		codeSlots && Object.assign( slots, codeSlots.slots );
+		// A block that styles one part of each entry (a timeline's year ring) reads that part at the draft element printing the
+		// entry's field in the loop's first copy (`rules.itemFieldSlots`, lib/skeleton-item-field-slots.mjs).
+		const fieldRead = itemFieldSlots( { rule: R.itemFieldSlots, db, block, rootKey: e.key, inventory, factRecord, rootComponent, calibrated: calSettings( block ), finder, byKey: m.byKey } );
+		Object.assign( slots, fieldRead.slots );
+		fieldRead.notes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...fieldRead.notes ] );
 		// A rule whose block is the draft control itself and draws that control as one of its own parts (`rules.<rule>.selfPart`:
 		// the cart a header's basket button is, whose trigger the button is) reads the control at that part's slot.
 		const self = R[ r.rule ]?.selfPart && db && ! r.action ? partSlots( { db, block, cal: { settings: calSettings( block ) }, part: R[ r.rule ].selfPart, opener: e, m, finder } ) : null;

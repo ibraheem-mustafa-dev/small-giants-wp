@@ -67,9 +67,10 @@ export function readOnce( items ) {
 	return items.length >= 4 && items.every( held ) && items.slice( 0, half ).every( ( it, i ) => JSON.stringify( it ) === JSON.stringify( items[ half + i ] ) ) ? items.slice( 0, half ) : items;
 }
 
-// The loop items the rendered inventory shows inside `rootKey`: the outermost loop inside the element whose copies print
-// fields of its own variable. null when the element holds no such loop.
-export function loopItems( { inventory, facts, rootKey, rootComponent = null } ) {
+// The outermost loop inside the element `rootKey` whose copies print fields of its own variable, with its copies (a copy is a
+// loop member whose parent is outside the loop) and the inventory elements within one copy: { loop, copies, within( copy ), byKey,
+// facts: ( element ) => the template's field holes of that variable }, or null when the element holds no such loop.
+function loopOf( { inventory, facts, rootKey, rootComponent = null } ) {
 	const { root, els, byKey } = subtreeOf( inventory, rootKey );
 	if ( ! root ) {
 		return null;
@@ -93,22 +94,52 @@ export function loopItems( { inventory, facts, rootKey, rootComponent = null } )
 		return null;
 	}
 	const inLoop = ( e ) => !! e && loopsOf( e ).some( ( m ) => String( m.tpl ) === loop.tpl );
-	// A copy is a loop member whose parent is outside the loop; its fields are read from the copy and its descendants.
 	const copies = els.filter( ( e ) => inLoop( e ) && ! inLoop( byKey.get( e.parentKey ) ) );
+	const within = ( copy ) => els.filter( ( e ) => {
+		for ( let x = e; x; x = byKey.get( x.parentKey ) ) {
+			if ( x === copy ) {
+				return true;
+			}
+		}
+		return false;
+	} );
+	const holes = ( e ) => {
+		const t = factOf( facts, e.key, rootComponent );
+		return ( t?.holes || [] ).map( ( h ) => holeField( h, t.realTag || t.tag, ! String( e.words ?? '' ).trim() ) ).filter( ( f ) => f && f.head === loop.as );
+	};
+	return { loop, copies, within, holes };
+}
+
+// The draft element of the loop's first copy that prints each item field by itself: { [field]: inventory element }, a field
+// printed by one element only (an element printing two fields shows them run together, so neither is its own element). Empty
+// when the element holds no loop. A block's draftSlots at an item part (a timeline's year ring) are read from these elements.
+export function loopFieldElements( o ) {
+	const l = loopOf( o );
+	const first = l?.copies[ 0 ];
+	if ( ! first ) {
+		return {};
+	}
+	const out = {};
+	for ( const e of l.within( first ) ) {
+		const own = l.holes( e ).filter( ( f ) => f.text && ! f.image );
+		own.length === 1 && ( out[ own[ 0 ].name ] = e );
+	}
+	return out;
+}
+
+// The loop items the rendered inventory shows inside `rootKey`: the outermost loop inside the element whose copies print
+// fields of its own variable. null when the element holds no such loop.
+export function loopItems( o ) {
+	const l = loopOf( o );
+	if ( ! l ) {
+		return null;
+	}
+	const { loop, copies, within } = l;
 	const fields = new Map();
 	const items = copies.map( ( copy ) => {
 		const item = {};
-		const within = els.filter( ( e ) => {
-			for ( let x = e; x; x = byKey.get( x.parentKey ) ) {
-				if ( x === copy ) {
-					return true;
-				}
-			}
-			return false;
-		} );
-		for ( const e of within ) {
-			const t = factOf( facts, e.key, rootComponent );
-			const own = ( t?.holes || [] ).map( ( h ) => holeField( h, t.realTag || t.tag, ! String( e.words ?? '' ).trim() ) ).filter( ( f ) => f && f.head === loop.as );
+		for ( const e of within( copy ) ) {
+			const own = l.holes( e );
 			const texts = own.filter( ( f ) => f.text );
 			for ( const f of own ) {
 				fields.set( f.name, { name: f.name, image: f.image } );
