@@ -4,7 +4,7 @@
 	{ "file": "lib/skeleton-rules.mjs", "find": "...( Array.isArray( read[ 0 ].at ) ? { codeItem: read[ 0 ].at } : {} ), ...glyph } );", "replace": "...glyph } );", "why": "the first item's element would never be read for the items' look" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "const glyph = I.marksNote && 1 === marks.length && '' !== marks[ 0 ] ?", "replace": "const glyph = I.marksNote && marks.length ?", "why": "differing glyphs or none would be named as one separator" },
 	{ "file": "lib/skeleton-classify.mjs", "find": "...( r.codeItem ? { codeItem: r.codeItem } : {} ), ", "replace": "", "why": "the item path would not reach the proposer" },
-	{ "file": "lib/skeleton-classify.mjs", "find": "...( r.glyphNote ? { glyphNote: r.glyphNote } : {} ) };", "replace": " };", "why": "the separator note would not reach the row" },
+	{ "file": "lib/skeleton-classify.mjs", "find": "...( r.glyphNote ? { glyphNote: r.glyphNote } : {} ),", "replace": "", "why": "the separator note would not reach the row" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "codeSlots && Object.assign( slots, codeSlots.slots );", "replace": "", "why": "the code-built item's slots would not be given" },
 	{ "file": "lib/skeleton-part-slots.mjs", "find": "'string' === typeof slot && '' !== slot && ! slot.includes( '::' ) ?", "replace": "'string' === typeof slot && '' !== slot ?", "why": "a pseudo-element slot would be given a finder, which skeletonProblems refuses" },
 	{ "file": "lib/skeleton-part-slots.mjs", "find": "reduce( ( x, i ) => ( x ? x.children[ i ] : null ), root ) || null", "replace": "reduce( ( x, i ) => x.children[ i ], root )", "why": "a draft with fewer elements than the path would throw instead of reading nothing" },
