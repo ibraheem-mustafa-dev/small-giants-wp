@@ -17,8 +17,12 @@ const hash = ( v ) => createHash( 'md5' ).update( 'string' === typeof v ? v : JS
 // The setting an instance measures, or null for a default, baseline or paint state.
 export const settingOf = ( inst ) => inst.content?.attr ?? inst.discover?.attr ?? inst.row?.attr_name ?? null;
 
-// The hash of a block's fixture: a changed fixture moves every element path.
-export const fixtureKeyOf = ( fixture ) => hash( fixture || {} ).slice( 0, 12 );
+// The hash of a block's fixture: a changed fixture moves every element path. `carries` is read by Fill alone (which
+// preconditions it writes beside a setting, lib/fill-fixture.mjs::carriedFor), so it never moves the key.
+export const fixtureKeyOf = ( fixture ) => {
+	const { carries, ...measured } = fixture || {};
+	return hash( measured ).slice( 0, 12 );
+};
 
 // The block's own PHP as { word: [ lines ] }, so a setting's lines are found by its name. sources: an array of file texts.
 export function codeIndex( sources ) {

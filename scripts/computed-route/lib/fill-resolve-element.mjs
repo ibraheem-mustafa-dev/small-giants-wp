@@ -9,7 +9,7 @@ import { extraProps, usedValueDrafts, USED_VALUE } from './fill-declared.mjs';
 import { FLUID_WIDTHS } from './fill-values.mjs';
 import { INHERITED, resolveProperty, notPainted, gapPaintsNothing } from './fill-prop.mjs';
 import { unpairedPart } from './fill-part-pairing.mjs';
-import { gateFor } from './fill-fixture.mjs';
+import { gateFor, carriedFor } from './fill-fixture.mjs';
 import { fillEquivalent } from './fill-equivalents.mjs';
 import { compareDR } from './fill-confirm.mjs';
 import { elementContext } from './fill-held.mjs';
@@ -49,6 +49,12 @@ export function apply( st, rec, ref, target, prop, res, slot ) {
 			const g = setAttr( node, { attr: gate, value: true } );
 			changed++;
 			st.out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop: '(switch)', attr: gate, before: g.before, after: g.after, widths: [], how: 'fixture-switch' } );
+		}
+		// The companion values the fixture lists for this setting (widthType custom for customWidth).
+		for ( const [ name, value ] of Object.entries( carriedFor( st, rec.name, w.attr, node.attributes ) || {} ) ) {
+			const c = setAttr( node, { attr: name, value } );
+			changed++;
+			st.out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop: '(switch)', attr: name, before: c.before, after: c.after, widths: [], how: 'fixture-carry' } );
 		}
 	}
 	return changed;

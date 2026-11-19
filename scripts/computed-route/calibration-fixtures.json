@@ -377,6 +377,7 @@
         "widthType": { "desktop": "custom", "tablet": "custom", "mobile": "custom" }
       }
     },
+    "carries": [ "customWidth" ],
     "variants": [
       {},
       {

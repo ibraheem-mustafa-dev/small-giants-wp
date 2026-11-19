@@ -133,3 +133,17 @@ export function gateFor( st, block, cal, schema, attr, attributes = {} ) {
 	const [ t ] = Object.keys( gatingToggle( attr, schema || {}, attributes ) );
 	return t && undefined === attributes[ t ] ? t : null;
 }
+
+// The companion settings a written setting needs to paint at all, or null: the fixture's `carries` list names the settings
+// whose per-setting `preconditions` are switches Fill writes beside them (sgs/button's customWidth paints only under
+// widthType custom, a value that paints nothing of its own). A precondition not listed there is calibration scaffolding
+// (a hover background needs a resting one) and is never written. A companion the node already holds is left as it is.
+// Returns { attr: value } or null.
+export function carriedFor( st, block, attr, attributes = {} ) {
+	const fixture = st.fixtures?.[ block ];
+	if ( ! ( fixture?.carries || [] ).includes( attr ) ) {
+		return null;
+	}
+	const out = Object.fromEntries( Object.entries( fixture.preconditions?.[ attr ] || {} ).filter( ( [ name ] ) => undefined === attributes[ name ] ) );
+	return Object.keys( out ).length ? out : null;
+}
