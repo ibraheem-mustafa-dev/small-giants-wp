@@ -1,9 +1,9 @@
 [
 	{
 		"file": "lib/resolve.mjs",
-		"find": "if ( PAINT_ROW.test( prop ) && LAYOUT_EFFECTS.some( ( l ) => props[ l ]?.values?.[ value ] ) ) {",
+		"find": "if ( ! LAYOUT_ROW.test( prop ) && LAYOUT_EFFECTS.some( ( l ) => props[ l ]?.values?.[ value ] ) ) {",
 		"replace": "if ( false ) {",
-		"why": "a paint row is answered by a value that also switches a layout mode on"
+		"why": "a paint or size row is answered by a value that also switches a layout mode on"
 	},
 	{
 		"file": "lib/resolve.mjs",
@@ -13,8 +13,14 @@
 	},
 	{
 		"file": "lib/resolve.mjs",
-		"find": "if ( PAINT_ROW.test( prop ) && LAYOUT_EFFECTS",
-		"replace": "if ( ! PAINT_ROW.test( prop ) && LAYOUT_EFFECTS",
+		"find": "if ( ! LAYOUT_ROW.test( prop ) && LAYOUT_EFFECTS",
+		"replace": "if ( LAYOUT_ROW.test( prop ) && LAYOUT_EFFECTS",
 		"why": "a layout row is refused its own layout value"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "const LAYOUT_ROW = /^(?:display|",
+		"replace": "const LAYOUT_ROW = /^(?:min-height|display|",
+		"why": "a size row is treated as a layout row"
 	}
 ]

@@ -14,6 +14,7 @@ const cal = {
 	elements: { [ PILL ]: every( { 'border-top-color': 'rgba(0, 0, 0, 0)', display: 'flex' } ), '.o': every( { display: 'flex' } ) },
 	discovered: { pillStyle: {
 		'border-top-color': { slots: [ PILL ], values: { tile: every( 'rgb(58, 42, 34)' ), filled: every( 'rgb(1, 2, 3)' ) } },
+		'min-height': { slots: [ PILL ], values: { tile: every( '44px' ) } },
 		display: { slots: [ '.o' ], values: { tile: every( 'grid' ) } },
 	} },
 };
@@ -21,6 +22,10 @@ const row = ( prop, value ) => resolveDiscovered( { slot: PILL, prop, perWidth: 
 
 test( 'MUST FAIL: a border colour row is not answered by the value that also turns the options into a grid', () => {
 	assert.equal( row( 'border-top-color', 'rgb(58, 42, 34)' ), null, 'tile changes the layout, so it never answers a border colour' );
+} );
+
+test( 'MUST FAIL: nor is a size row such as the pill minimum height', () => {
+	assert.equal( row( 'min-height', '44px' ), null );
 } );
 
 test( 'negative controls: a value with no layout effect still answers a paint row, and a layout row is still answered by the layout value', () => {

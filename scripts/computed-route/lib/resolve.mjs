@@ -319,9 +319,9 @@ export function defaultPaint( calibration, slot, prop, same = ( a, b ) => a === 
 	return out;
 }
 
-// The paint properties a discovered setting's value may answer only when it changes no layout (resolveDiscovered), and the layout
-// properties that mark a value as a layout mode.
-const PAINT_ROW = /^(?:color|background-color|background-image|box-shadow|text-shadow|outline-color|text-decoration-color|-webkit-text-stroke-color|border-(?:top|right|bottom|left)-(?:color|style|width))$/;
+// A discovered setting's value that records a layout effect (LAYOUT_EFFECTS) is a layout mode: it answers a layout row (LAYOUT_ROW)
+// and no other (resolveDiscovered).
+const LAYOUT_ROW = /^(?:display|flex(?:-[a-z]+)?|grid(?:-[a-z]+)*|gap|row-gap|column-gap|justify-[a-z]+|align-[a-z]+|place-[a-z]+|order|position|float)$/;
 const LAYOUT_EFFECTS = [ 'display', 'flex-direction', 'grid-template-columns', 'grid-template-rows' ];
 
 // A setting with no css_property that calibration showed paints `prop` on `slot` (calibration.discovered): the enum
@@ -374,9 +374,9 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 			if ( owned && attr in owned && String( owned[ attr ] ) !== value ) {
 				continue;
 			}
-			// A colour, ground, border or shadow row is never answered by a value that also switches a layout mode on (an option
-			// picker's `tile` style draws a cocoa border and also turns its options into a one-column grid).
-			if ( PAINT_ROW.test( prop ) && LAYOUT_EFFECTS.some( ( l ) => props[ l ]?.values?.[ value ] ) ) {
+			// A colour, ground, border, shadow or size row is never answered by a value that also switches a layout mode on (an option
+			// picker's `tile` style draws a cocoa border and a 44px minimum height and also turns its options into a one-column grid).
+			if ( ! LAYOUT_ROW.test( prop ) && LAYOUT_EFFECTS.some( ( l ) => props[ l ]?.values?.[ value ] ) ) {
 				continue;
 			}
 			if ( rowWidths.some( ( w ) => undefined !== values[ w ] ) && fits( values, perWidth, baseOf( prop ) ) ) {
