@@ -97,7 +97,8 @@ export function matchRecord( row, records ) {
 	if ( ! kind ) {
 		return { reason: `no record kind for post type ${ row.postType }` };
 	}
-	let mine = records.filter( ( r ) => r.kind === kind );
+	// A template row (the order confirmation) is played by its route's page or by a result record that is a page of its own.
+	let mine = records.filter( ( r ) => r.kind === kind || ( 'template' === row.postType && 'result' === r.kind ) );
 	if ( 'page' === kind ) {
 		mine = mine.filter( ( r ) => null != row.route && r.page_key === pageKeyOf( row.route ) );
 	} else if ( 'form' === kind ) {
@@ -372,7 +373,9 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 			// A kept intakeSurface naming a skeleton intake no longer holds (a record now read as one skeleton per tab panel)
 			// gives way to the generated link.
 			const stale = intakeSurface && Object.hasOwn( have, 'intakeSurface' ) && ! Object.hasOwn( intake.skeletons, have.intakeSurface );
-			entries[ key ] = { ...entry, ...have, ...( noDraft ? { noDraft } : {} ), ...( stale ? { intakeSurface } : {} ) };
+			// A template copy's source is generated truth, as it is for a copy that reads no draft: a copy once made from the page
+			// shell is Filled at its row once the row matches a record.
+			entries[ key ] = { ...entry, ...have, ...( isTemplate ? { copy: row.templateOf.copy } : {} ), ...( noDraft ? { noDraft } : {} ), ...( stale ? { intakeSurface } : {} ) };
 			noDraft || delete entries[ key ].noDraft;
 			// An existing entry's walker fields do not survive for a page the run never walks: a re-apply drops them.
 			walked || ( delete entries[ key ].walker, delete entries[ key ].walkerFull );

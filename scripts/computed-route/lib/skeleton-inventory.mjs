@@ -9,6 +9,7 @@ import { tplLineOf } from './identity.mjs';
 import { loadChromium } from './fill-read.mjs';
 import { applyStateRoute } from './state-route.mjs';
 import { discoverReveals, readReveals } from './skeleton-reveal.mjs';
+import { addDataBranches } from './skeleton-data-branches.mjs';
 import { recId } from './reveal-merge.mjs';
 import { ALL_TEXT_CAP } from './skeleton-model.mjs';
 
@@ -340,7 +341,7 @@ async function addReveals( { page, res, args, reveal, w, log } ) {
 
 // The read on a page the caller prepared (readInventory with `page`): per width, resize, `settle( page, width )`, clear
 // the previous read's data-inv-i marks, read; screenshots only with `shotsDir`; overlays hidden for crops are restored.
-async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, strips, reveal } ) {
+async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, strips, reveal, branches } ) {
 	if ( 'function' !== typeof settleAt ) {
 		throw new Error( 'readInventory with a page needs settle( page, width ): the caller drives settling' );
 	}
@@ -362,6 +363,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 		log( `inventory ${ w }px: ${ res.records.length } elements` );
 		await shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );
 		await addReveals( { page, res, args, reveal, w, log } );
+		await addDataBranches( { page, res, collect, args, branches, w, log } );
 	}
 	return summarise( { runs, shots, skipped, url: url ?? page.url(), root } );
 }
@@ -372,10 +374,12 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 // opened and settled, such as intake's sandboxed harness page), nothing is launched or navigated: readOnPage resizes it
 // to each width and the caller's `settle( page, width )` settles it; `shotsDir` may be null (no screenshots) and `url`
 // only labels the result (default: the page's url). `reveal` ({ records }, or null for none) adds the elements the root
-// shows only in a state a click reaches (lib/skeleton-reveal.mjs): each carries `reveal: { component, keys }`.
-export async function readInventory( { url, root, shotsDir, log = () => {}, page = null, settle: settleAt = null, strips = null, reveal = null } ) {
+// shows only in a state a click reaches (lib/skeleton-reveal.mjs): each carries `reveal: { component, keys }`. `branches`
+// ({ list, hosts }, lib/skeleton-data-branches.mjs::inventoryBranches) adds, in document order, the elements a branch shows
+// only for some data: each carries `branch: { component, keys }`.
+export async function readInventory( { url, root, shotsDir, log = () => {}, page = null, settle: settleAt = null, strips = null, reveal = null, branches = null } ) {
 	if ( page ) {
-		return readOnPage( { page, url, root, shotsDir, log, settle: settleAt, strips, reveal } );
+		return readOnPage( { page, url, root, shotsDir, log, settle: settleAt, strips, reveal, branches } );
 	}
 	const { chromium } = await loadChromium();
 	const browser = await chromium.launch( { headless: true } );
@@ -399,6 +403,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			log( `inventory ${ w }px: ${ res.records.length } elements` );
 			await shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );
 			await addReveals( { page, res, args, reveal, w, log } );
+			await addDataBranches( { page, res, collect, args, branches, w, log } );
 			await ctx.close();
 		}
 	} finally {

@@ -1,0 +1,8 @@
+[
+	{"file": "lib/intake-skeletons.mjs", "find": "const kind = 'result' === r.kind && null != r.page_key && null == r.parent ? 'page' : r.kind;", "replace": "const kind = r.kind;", "why": "the order confirmation's result record is only a part, so intake reads no surface for it"},
+	{"file": "lib/intake-skeletons.mjs", "find": "const kind = 'result' === r.kind && null != r.page_key && null == r.parent ? 'page' : r.kind;", "replace": "const kind = 'result' === r.kind && null != r.page_key ? 'page' : r.kind;", "why": "a result inside another surface is read as a page"},
+	{"file": "lib/manifest-build.mjs", "find": "r.kind === kind || ( 'template' === row.postType && 'result' === r.kind )", "replace": "r.kind === kind", "why": "the template row matches no result record, so its copy is the page shell"},
+	{"file": "lib/manifest-build.mjs", "find": "r.kind === kind || ( 'template' === row.postType && 'result' === r.kind )", "replace": "r.kind === kind || 'result' === r.kind", "why": "a page row takes a result record"},
+	{"file": "lib/template-copies.mjs", "find": "export const WHOLE_TREE = [ 'archive-product', 'single-product', 'cart', 'checkout', 'order-confirmation' ];", "replace": "export const WHOLE_TREE = [ 'archive-product', 'single-product', 'cart', 'checkout' ];", "why": "the copy is the shell around the theme's content, so the order's pieces are lost"},
+	{"file": "lib/manifest-build.mjs", "find": "...( isTemplate ? { copy: row.templateOf.copy } : {} ), ", "replace": "", "why": "an entry once made from the page shell keeps that copy after its row matches a record"}
+]

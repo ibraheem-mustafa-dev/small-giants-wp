@@ -10,7 +10,8 @@
 // checkout and the account page) are SGS pages with WooCommerce's piece in them (Bean, 2026-10-26): their copy is the
 // whole Filled tree inside the frame, in which the skeleton placed WooCommerce's piece at the draft's commerce region
 // (lib/skeleton-commerce-region.mjs: the product collection, or `core/post-content` printing the page's own Cart, Checkout
-// or account block).
+// or account block). The order confirmation's copy is its whole Filled tree too, with the order's pieces placed after
+// propose (lib/template-pieces-context.mjs::piecesPass: sgs/order-items and blocks bound to the order).
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -25,8 +26,8 @@ const MAIN = { name: 'sgs/container', attributes: { tagName: 'main', anchor: 'ma
 
 // Templates whose inner block is the page's own content.
 export const PAGE_CONTENT = [ 'front-page', 'page' ];
-// Templates built from their surface's whole Filled tree: WooCommerce's pages.
-export const WHOLE_TREE = [ 'archive-product', 'single-product', 'cart', 'checkout' ];
+// Templates built from their surface's whole Filled tree: WooCommerce's pages and the order confirmation.
+export const WHOLE_TREE = [ 'archive-product', 'single-product', 'cart', 'checkout', 'order-confirmation' ];
 // Templates the draft has no surface for: built from the site's own `page` copy with the theme template's own content.
 export const DERIVED = [ '404', 'search', 'archive', 'product-search-results', 'taxonomy-product_attribute' ];
 // The templates WordPress reaches by its template hierarchy (a page's slug reaches `page-<slug>`), never set as a page's

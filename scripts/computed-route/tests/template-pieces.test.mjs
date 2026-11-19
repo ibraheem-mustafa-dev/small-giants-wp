@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { PIECES_FILE, checkPieces, countBlocks, countPiece, loadPieces, pieceMapProblems, piecesFor, placePieces } from '../lib/template-pieces.mjs';
+import { PIECES_FILE, checkPieces, countBlocks, countPiece, loadPieces, pieceMapProblems, piecesFor, placePieces, readsDataBranches } from '../lib/template-pieces.mjs';
 
 const node = ( name, innerBlocks = [] ) => ( { name, attributes: {}, innerBlocks } );
 const DATA = {
@@ -163,4 +163,14 @@ test( 'the committed map names the product page\'s buy box and bound title and t
 	for ( const kind of [ 'buybox', 'product-field', 'shop-sort', 'order' ] ) {
 		assert.ok( fs.existsSync( path.join( path.dirname( PIECES_FILE ), '..', 'lib', `template-piece-${ kind }.mjs` ) ), kind );
 	}
+} );
+
+test( 'MUST FAIL: a template opts in to the data branch reader with dataBranches true, and anything but true or false is refused', () => {
+	const data = { templates: { 'order-confirmation': { dataBranches: true, pieces: [] }, cart: { pieces: [] }, bad: { dataBranches: 'yes', pieces: [] } } };
+	assert.deepEqual( pieceMapProblems( data ), [ 'templates.bad: dataBranches must be true or false' ] );
+	assert.equal( readsDataBranches( 'order-confirmation', data ), true );
+	assert.equal( readsDataBranches( 'cart', data ), false );
+	assert.equal( readsDataBranches( 'bad', data ), false );
+	assert.equal( readsDataBranches( 'order-confirmation', loadPieces() ), true );
+	assert.equal( readsDataBranches( 'checkout', loadPieces() ), false );
 } );

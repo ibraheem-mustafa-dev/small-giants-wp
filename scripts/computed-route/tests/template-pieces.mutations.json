@@ -21,5 +21,7 @@
 	{"file":"lib/template-pieces.mjs","find":"if ( p?.binds && ( ! BLOCK.test( String( p.binds.source || '' ) ) || ! p.binds.key || 'string' !== typeof p.binds.key ) ) {","replace":"if ( false ) {","why":"a binding with no source or key is accepted"},
 	{"file":"lib/template-pieces.mjs","find":"if ( ( p?.block || ! p?.binds ) && ! BLOCK.test( String( p?.block || '' ) ) ) {","replace":"if ( ! BLOCK.test( String( p?.block || '' ) ) ) {","why":"a piece named by its binding alone is refused"},
 	{"file":"lib/template-pieces.mjs","find":"if ( ( p?.block || ! p?.binds ) && ! BLOCK.test( String( p?.block || '' ) ) ) {","replace":"if ( p?.block && ! BLOCK.test( String( p?.block || '' ) ) ) {","why":"a piece with neither a block nor a binding is accepted"},
-	{"file":"lib/template-pieces.mjs","find":"\t\tconst builder = builders[ piece.kind ];","replace":"\t\tconst builder = Object.values( builders )[ 0 ];","why":"every piece goes to the first builder handed in, whatever its kind"}
+	{"file":"lib/template-pieces.mjs","find":"\t\tconst builder = builders[ piece.kind ];","replace":"\t\tconst builder = Object.values( builders )[ 0 ];","why":"every piece goes to the first builder handed in, whatever its kind"},
+	{"file": "lib/template-pieces.mjs", "find": "if ( undefined !== entry?.dataBranches && 'boolean' !== typeof entry.dataBranches ) {", "replace": "if ( false ) {", "why": "a dataBranches that is not true or false is accepted"},
+	{"file": "lib/template-pieces.mjs", "find": "export const readsDataBranches = ( key, data ) => true === data?.templates?.[ key ]?.dataBranches;", "replace": "export const readsDataBranches = ( key, data ) => !! data?.templates?.[ key ]?.dataBranches;", "why": "any truthy value opts a template in"}
 ]
