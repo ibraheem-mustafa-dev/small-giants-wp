@@ -6,7 +6,7 @@
  * @package SGS\Blocks
  */
 
-import { colourVar, sgsBorderPreview, resolveShadowPreviewComposed, tierValueOf } from '../../utils';
+import { colourVar, sgsBorderPreview, resolveShadowPreviewComposed, tierBoxLonghands, tierValueOf } from '../../utils';
 
 const RATIO_RE = /^\s*(\d+(?:\.\d+)?)\s*(?:\/\s*(\d+(?:\.\d+)?)\s*)?$/;
 
@@ -100,7 +100,47 @@ export function timelineCardPreviewStyle( attributes, tier ) {
  */
 export function timelineStripPreviewStyle( attributes, tier ) {
 	const gap = lengthOf( tierValueOf( attributes.cardGap, tier ) );
-	return gap ? { columnGap: gap } : {};
+	const style = gap ? { columnGap: gap } : {};
+	if ( attributes.cardsShareRow && 'pinned-horizontal' !== attributes.scrollEffect ) {
+		// The equal-column row (style.scss `.sgs-timeline--cards-share`); the editor's list is the block root.
+		Object.assign( style, { display: 'grid', gridAutoFlow: 'column', gridAutoColumns: 'minmax(0, 1fr)' } );
+	}
+	return style;
+}
+
+/**
+ * The inline style of an entry's date for the year ring: the ring's box (background, border, radius, shadow, padding),
+ * as date-ring.php prints it.
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {string} tier       Previewed device tier.
+ * @return {Object} React style fragment.
+ */
+export function timelineDateRingPreviewStyle( attributes, tier ) {
+	if ( 'horizontal' !== attributes.orientation ) {
+		return {};
+	}
+	const style = sgsBorderPreview(
+		{
+			widthValues: attributes.dateRingBorderWidth,
+			styleValue: attributes.dateRingBorderStyle,
+			colourValue: attributes.dateRingBorderColour,
+			colourGradientValue: attributes.dateRingBorderColourGradient,
+			radiusValues: attributes.dateRingBorderRadius,
+		},
+		tier
+	);
+	if ( attributes.dateRingBackgroundColour ) {
+		style.backgroundColor = colourVar( attributes.dateRingBackgroundColour );
+	}
+	if ( attributes.dateRingBackgroundColourGradient ) {
+		style.backgroundImage = attributes.dateRingBackgroundColourGradient;
+	}
+	const boxShadow = resolveShadowPreviewComposed( attributes.dateRingShadow, colourVar( attributes.dateRingShadowColour ) );
+	if ( boxShadow ) {
+		style.boxShadow = boxShadow;
+	}
+	return { ...style, ...tierBoxLonghands( attributes.dateRingPadding, tier, 'padding' ) };
 }
 
 /**

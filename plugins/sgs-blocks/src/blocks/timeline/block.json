@@ -64,7 +64,8 @@
 				"padding": [
 					"padding",
 					"contentPadding",
-					"cardPadding"
+					"cardPadding",
+					"dateRingPadding"
 				],
 				"margin": [
 					"margin",
@@ -75,11 +76,13 @@
 				"borderRadius": [
 					"borderRadius",
 					"cardBorderRadius",
+					"dateRingBorderRadius",
 					"entryRadius"
 				],
 				"borderWidth": [
 					"borderWidth",
-					"cardBorderWidth"
+					"cardBorderWidth",
+					"dateRingBorderWidth"
 				]
 			},
 			"elements": {
@@ -362,6 +365,32 @@
 					"_note": "The card box of each entry in a horizontal timeline (background, padding, border, radius, shadow), printed on the entry element only when orientation is horizontal. With contentLayout 'same-side' the entry also becomes a two-column card (text on one side, media on the other, contentSide choosing the text side) from 768px up.",
 					"absentIn": [ "vertical" ],
 					"absentWhy": "The card box prints only for the horizontal orientation."
+				},
+				"dateRing": {
+					"selector": ".sgs-timeline__date",
+					"motion": false,
+					"label": "Year ring (horizontal)",
+					"order": 1,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "dateRing",
+					"attrMap": {
+						"css:background-color": "dateRingBackgroundColour",
+						"css:background-image": "dateRingBackgroundColourGradient",
+						"css:padding": "dateRingPadding",
+						"css:border-radius": "dateRingBorderRadius",
+						"css:border-width": "dateRingBorderWidth",
+						"css:border-color": "dateRingBorderColour",
+						"css:border-color-gradient": "dateRingBorderColourGradient",
+						"css:border-style": "dateRingBorderStyle",
+						"css:box-shadow": "dateRingShadow",
+						"css:width": "dateRingSize"
+					},
+					"_note": "A box drawn around each entry's date in a horizontal timeline (background, padding, border, radius, shadow). A size turns it into a square or round marker that sits on the connecting line and replaces the dot, from 768px up.",
+					"absentIn": [ "vertical" ],
+					"absentWhy": "The year ring prints only for the horizontal orientation."
 				},
 				"image": {
 					"selector": ".sgs-timeline__media-slot",
@@ -1473,6 +1502,62 @@
 		"cardShadowColour": {
 			"type": "string",
 			"default": ""
+		},
+		"dateRingBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Horizontal timeline: background colour of the box around each entry's date (the year ring). Empty draws none."
+		},
+		"dateRingBackgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"dateRingPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: padding inside the year ring, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). Empty keeps none."
+		},
+		"dateRingBorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: corner radius of the year ring, per device. 50% draws a circle on a square ring."
+		},
+		"dateRingBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: border width of the year ring (per-side box, or a tier object of boxes)."
+		},
+		"dateRingBorderStyle": {
+			"type": "string",
+			"default": "solid",
+			"enum": ["none", "solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset"]
+		},
+		"dateRingBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"dateRingBorderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"dateRingShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Horizontal timeline: box-shadow shape of the year ring (the shared ShadowControl value)."
+		},
+		"dateRingShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"dateRingSize": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline, 768px and up: the width and height of the year ring as CSS lengths per device ({desktop,tablet,mobile} tier object, for example 56px). A size makes the ring a square marker centred on the connecting line, hides the dot and keeps the date text centred inside it. Empty leaves the date where it was and sized by its text."
+		},
+		"cardsShareRow": {
+			"type": "boolean",
+			"default": false,
+			"description": "Horizontal timeline, 768px and up: the entries share the row in equal columns instead of each taking the card width, so any number of entries fits without scrolling sideways. Off keeps the card width. Ignored while the scroll effect is pinned-horizontal."
 		},
 		"cardColumnGap": {
 			"type": "object",

@@ -865,6 +865,46 @@
 	--sgs-text-me: auto;
 }
 
+// Equal columns (`cardsShareRow`, 768px up): the entries share the row in columns of one width instead of each taking the
+// card width, so four entries fill a row that three card widths would overflow. The card strip keeps its own padding and
+// gap settings; `cardMaxWidth` still caps a card. The pinned horizontal scroll effect never gets this class.
+@media (min-width: 768px) {
+	.sgs-timeline--horizontal.sgs-timeline--cards-share .sgs-timeline__list {
+		display: grid;
+		grid-auto-flow: column;
+		grid-auto-columns: minmax(0, 1fr);
+	}
+
+	.sgs-timeline--horizontal.sgs-timeline--cards-share .sgs-timeline__entry {
+		min-width: 0;
+	}
+}
+
+// Year ring marker (`dateRingSize`, 768px up): the date is a box of one size with its text centred, sitting on the
+// connecting line, and the dot is not drawn. The line runs through the ring's centre: the root's top padding plus half
+// the ring. The ring's own border, background, radius, shadow and padding print on the date at every width.
+@media (min-width: 768px) {
+	.sgs-timeline--horizontal.sgs-timeline--date-ring:not(.sgs-timeline--content-same-side) {
+		--sgs-timeline-h-line-top: calc(var(--wp--preset--spacing--30, 1.5rem) + var(--sgs-date-ring-size, 3rem) / 2);
+
+		.sgs-timeline__date {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex: 0 0 auto;
+			box-sizing: border-box;
+			width: var(--sgs-date-ring-size, 3rem);
+			height: var(--sgs-date-ring-size, 3rem);
+			position: relative;
+			z-index: 1;
+		}
+
+		.sgs-timeline__node {
+			display: none;
+		}
+	}
+}
+
 // =============================================================================
 // Shared element styles
 // =============================================================================

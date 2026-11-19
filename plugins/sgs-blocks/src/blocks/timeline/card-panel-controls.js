@@ -70,7 +70,7 @@ export function cardColourRows( attributes, setAttributes ) {
  * @param {Function} props.onChange      Receives the next tier object.
  * @return {JSX.Element} The control.
  */
-function TierBox( { label, value, onChange } ) {
+export function TierBox( { label, value, onChange } ) {
 	return (
 		<ResponsiveOverride value={ value } onChange={ onChange }>
 			{ ( { ownValue, setOwnValue } ) => (

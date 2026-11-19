@@ -278,7 +278,15 @@ $margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs
 // the ToC, so the `id` attribute stays free for the anchor).
 // ---------------------------------------------------------------------------
 
-$uid             = 'sgs-tl-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+// The equal-columns and year ring settings stay out of the scope hash while unset (empty, false, or the default solid
+// style), so a timeline that sets none keeps the class suffix it had before they existed.
+$hash_attrs = $attributes;
+foreach ( array_keys( $hash_attrs ) as $hash_key ) {
+	if ( ( 'cardsShareRow' === $hash_key || 0 === strpos( (string) $hash_key, 'dateRing' ) ) && ( empty( $hash_attrs[ $hash_key ] ) || 'solid' === $hash_attrs[ $hash_key ] ) ) {
+		unset( $hash_attrs[ $hash_key ] );
+	}
+}
+$uid             = 'sgs-tl-' . substr( md5( wp_json_encode( $hash_attrs ) ), 0, 8 );
 $root_sel        = '.' . $uid . '.sgs-timeline';
 $title_sel       = $root_sel . ' .sgs-timeline__title';
 $description_sel = $root_sel . ' .sgs-timeline__description';
@@ -881,6 +889,7 @@ foreach ( $entries as $sgs_tl_index => $sgs_tl_entry ) {
 }
 
 require __DIR__ . '/card-device.php';
+require __DIR__ . '/date-ring.php';
 require __DIR__ . '/horizontal-panel.php';
 $wrapper_args = array_merge( $wrapper_args, $hp_wrapper_args );
 

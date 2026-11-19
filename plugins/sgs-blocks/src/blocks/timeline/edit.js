@@ -46,10 +46,11 @@ import {
 	gapVar,
 } from '../../utils';
 import { connectorLineCss, connectorLineStyleOf } from '../../utils/connector-line';
-import { timelineCardPreviewStyle, timelineMediaPreviewStyle, timelineMediaWidth, timelineStripPreviewStyle } from './card-preview';
+import { timelineCardPreviewStyle, timelineDateRingPreviewStyle, timelineMediaPreviewStyle, timelineMediaWidth, timelineStripPreviewStyle } from './card-preview';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 import HorizontalPanelControls, { CardWidthControl, pinnedColourRows } from './horizontal-panel-controls';
 import { cardColourRows, EntryCardControls, EntryDateTypography, EntryDescriptionTypography } from './card-panel-controls';
+import DateRingControls, { dateRingColourRows } from './date-ring-controls';
 
 // Per-device spacing boxes of the entry parts: [ attribute, label ].
 const ENTRY_PART_BOXES = [
@@ -514,6 +515,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		'sgs-timeline--media-under',
 		rowStripes ? 'sgs-timeline--row-stripes' : '',
 		'carousel' === mobileLayout ? 'sgs-timeline--mobile-carousel' : '',
+		'horizontal' === orientation && attributes.cardsShareRow && 'pinned-horizontal' !== scrollEffect
+			? 'sgs-timeline--cards-share'
+			: '',
+		'horizontal' === orientation && Object.keys( attributes.dateRingSize || {} ).length
+			? 'sgs-timeline--date-ring'
+			: '',
 		orientation === 'vertical' &&
 		contentLayout === 'single-column' &&
 		datePosition === 'own-column'
@@ -683,6 +690,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			'--sgs-timeline-milestone-min-height':
 				milestoneMinHeight || undefined,
 			'--sgs-timeline-entry-gap': gapVar( entryGap ),
+			'--sgs-date-ring-size': 'horizontal' === orientation ? timelineMediaWidth( attributes.dateRingSize, previewTier ) || undefined : undefined,
 			...buildRootPreviewStyle( attributes, previewTier ),
 		},
 	} );
@@ -1172,6 +1180,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					},
 					...pinnedColourRows( attributes, setAttributes ),
 					...cardColourRows( attributes, setAttributes ),
+					...dateRingColourRows( attributes, setAttributes ),
 				] }
 			/>
 			<InspectorControls group="styles">
@@ -1331,6 +1340,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<CardWidthControl
 							attributes={ attributes }
 							setAttributes={ setAttributes }
+						/>
+					) }
+					{ 'horizontal' === orientation && (
+						<ToggleControl
+							label={ __( 'Entries share the row equally', 'sgs-blocks' ) }
+							checked={ !! attributes.cardsShareRow }
+							onChange={ ( val ) => setAttributes( { cardsShareRow: val } ) }
+							help={ __(
+								'768px and up: every entry takes an equal column of the row, so any number of entries fits without scrolling sideways. Off keeps the card width above. Not used while the scroll effect is pinned horizontal.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
 						/>
 					) }
 				</PanelBody>
@@ -1552,6 +1573,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<EntryDescriptionTypography attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
 				<EntryCardControls attributes={ attributes } setAttributes={ setAttributes } />
+				<DateRingControls attributes={ attributes } setAttributes={ setAttributes } />
 				<PanelBody
 					title={ __( 'Padding, margin & border', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -1738,6 +1760,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							style={ {
 								...datePreviewStyle,
 								...dateColourStyle,
+								...timelineDateRingPreviewStyle( attributes, previewTier ),
 								...tierBoxLonghands( attributes.dateMargin, previewTier, 'margin' ),
 								...( [ 'none', 'uppercase', 'lowercase', 'capitalize' ].includes( attributes.dateTextTransform )
 									? { textTransform: attributes.dateTextTransform }
