@@ -194,6 +194,37 @@ test( 'MUST FAIL: one read per branch, each with its branch forced and put back 
 	delete globalThis.document;
 } );
 
+test( 'MUST FAIL: a read or settle that throws still puts the forced renderVals back; a read that succeeds is unchanged', async () => {
+	const logic = runtime();
+	const page = { evaluate: async ( fn, arg ) => fn( arg ) };
+	const branches = [ { component: 'Page', el: 'Page/5', test: 'hasNote', keys: { hasNote: true } }, { component: 'Page', el: 'Page/7', test: 'hasAcct', keys: { hasAcct: true } } ];
+	const ok = async () => [ rec( 'Root/1#0', null ) ];
+	// The read throws while the branch is forced: the error reaches the caller and the page is as it was.
+	let seenForced = false;
+	await assert.rejects( readDataBranches( { page, branches, base: [], hosts: () => [ 'Root' ], settle: async () => {}, read: async () => {
+		seenForced = true === logic.renderVals().hasNote;
+		throw new Error( 'no root' );
+	} } ), /no root/ );
+	assert.equal( seenForced, true );
+	assert.deepEqual( logic.renderVals(), { hasNote: false } );
+	assert.equal( forceRenderVals( { hosts: [ 'Root' ], patch: null } ), 0, 'nothing was left to put back' );
+	// The settle throws on the forced page: the same.
+	await assert.rejects( readDataBranches( { page, branches, base: [], hosts: () => [ 'Root' ], read: ok, settle: async () => {
+		throw new Error( 'closed' );
+	} } ), /closed/ );
+	assert.deepEqual( logic.renderVals(), { hasNote: false } );
+	// Negative control: a read that succeeds forces, reads and restores each branch as before.
+	const seen = [];
+	const out = await readDataBranches( { page, branches, base: [], settle: async () => {}, hosts: ( c ) => [ c, 'Root' ], read: async () => {
+		seen.push( logic.renderVals() );
+		return ok();
+	} } );
+	assert.deepEqual( seen, [ { hasNote: true }, { hasNote: false, hasAcct: true } ] );
+	assert.equal( out.length, 1 );
+	assert.deepEqual( logic.renderVals(), { hasNote: false } );
+	delete globalThis.document;
+} );
+
 test( 'MUST FAIL: only a page surface with an intake skeleton and a draft file forces anything', () => {
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'data-branches-repo-' ) );
 	const build = path.join( repo, 'sites', 'c', 'build' );

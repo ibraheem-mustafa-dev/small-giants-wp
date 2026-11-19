@@ -239,9 +239,13 @@ export async function readDataBranches( { page, branches, read, base, settle = (
 			log( `data branch ${ b.el } ({{ ${ b.test } }}): ${ b.component } is not mounted` );
 			continue;
 		}
-		await settle();
-		reads.push( { branch: { component: b.component, hosts: names, keys: b.keys }, records: await read() } );
-		await page.evaluate( forceRenderVals, { hosts: names, patch: null } );
+		try {
+			await settle();
+			reads.push( { branch: { component: b.component, hosts: names, keys: b.keys }, records: await read() } );
+		} finally {
+			// A read or settle that throws still puts the page's renderVals back, so the caller's page is never left forced.
+			await page.evaluate( forceRenderVals, { hosts: names, patch: null } );
+		}
 		await settle();
 	}
 	return mergeDataReads( base, reads );
