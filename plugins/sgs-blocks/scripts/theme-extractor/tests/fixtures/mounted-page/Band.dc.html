@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<section style="background:#3366aa;padding:60px 40px;min-height:240px">
+<h2 style="margin:0 0 24px;color:#ffffff;font-size:40px;font-weight:800">{{ title }}</h2>
+<p style="color:#ffffff;font-size:18px;max-width:480px">A band drawn by a mounted component, as a header or footer is.</p>
+<a href="#start" style="display:inline-flex;padding:14px 28px;border-radius:999px;background:#ffcc00;color:#222222;font-weight:700;text-decoration:none">Start your order</a>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+// A coloured band with a heading and a call to action.
+class Component extends DCLogic {
+  renderVals() { return { title: this.props.title || null }; }
+}
+</script>
+</body>
+</html>

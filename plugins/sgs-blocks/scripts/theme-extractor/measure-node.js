@@ -1,12 +1,11 @@
 /**
- * measure-node.js: the Node-side helpers of measure.js (argument parsing, the URL convention, the hover
- * read). Nothing here runs in the browser except HOVER_READ_SRC, which is serialised into the page and
- * therefore must not close over anything.
+ * measure-node.js: the Node-side helpers of measure.js (argument parsing, serving the draft, the hover and
+ * state reads, the component probe). The *_SRC functions run in the browser: they are serialised into the
+ * page and therefore must not close over anything.
  */
 'use strict';
 
 const path = require('path');
-const { pathToFileURL } = require('url');
 
 // DATA: class tokens a draft's RUNTIME stamps on elements, never authored by the designer. The Claude
 // Design runtime (the draft's support.js) gives every element that carries an inline style a scoped
@@ -14,9 +13,6 @@ const { pathToFileURL } = require('url');
 // variant names, so they must not make a button look class-bearing. Passed into the page as a source
 // string because CAPTURE_SRC is serialised into the browser context and cannot close over Node scope.
 const GENERATED_CLASS_RE = /^(scp[0-9a-z]+|sc-host)$/;
-
-// Same convention as parity/computed-parity.js: http(s) passes through, a local path → file:// URL.
-const toURL = (s) => (!s ? s : (/^https?:\/\//i.test(s) ? s : pathToFileURL(path.resolve(s)).href));
 
 function parseArgs(argv) {
   const out = { draft: null, out: null, components: null };
@@ -82,9 +78,10 @@ async function openStateSession(page) {
   return cdp;
 }
 
-// A folder served on 127.0.0.1 at an ephemeral port, plus pages held in memory (`virtual`: path -> html). The draft
-// runtime fetches every mounted component (`<dc-import>`) with fetch(), which a file:// page cannot do, so a
-// component is only drawn when its folder is served over HTTP.
+// A folder served on 127.0.0.1 at an ephemeral port, plus pages held in memory (`virtual`: path -> html, read on
+// each request, so a page can be added after the server starts). Every local draft is measured through this server
+// (`openDraft`): the draft runtime fetches each mounted component (`<dc-import>`: a header, footer, button or field)
+// with fetch(), which a page opened from disk (file://) cannot do, so from disk a component is never drawn.
 const CONTENT_TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
   '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json',
   '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp',
@@ -155,10 +152,21 @@ const PROBE_READ_SRC = function (i, props) {
     textLen: (el.textContent || el.value || '').trim().length };
 };
 
-// Each probe's resting, hover and pressed looks, read from the draft's own component (see componentHarness).
-async function measureComponents(browser, folder, probes, restProps) {
+// The address to open for `--draft`: an http(s) address as given, a local file through a server on its folder.
+// Returns { url, served }: served is null for an address, else serveFolder's { url, close } plus its `virtual` map.
+async function openDraft(draft) {
+  if (/^https?:\/\//i.test(draft)) return { url: draft, served: null };
+  const file = path.resolve(draft);
+  const virtual = {};
+  const served = Object.assign(await serveFolder(path.dirname(file), virtual), { virtual });
+  return { url: served.url + encodeURIComponent(path.basename(file)), served };
+}
+
+// Each probe's resting, hover and pressed looks, read from the draft's own component (see componentHarness), on a
+// page added to the draft's own server (`openDraft`).
+async function measureComponents(browser, served, probes, restProps) {
   const harnessPath = '/__sgs-component-probe.dc.html';
-  const served = await serveFolder(folder, { [harnessPath]: componentHarness(probes) });
+  served.virtual[harnessPath] = componentHarness(probes);
   const context = await browser.newContext({ deviceScaleFactor: 1 });
   try {
     const page = await context.newPage();
@@ -181,7 +189,6 @@ async function measureComponents(browser, folder, probes, restProps) {
     return out;
   } finally {
     await context.close();
-    await served.close();
   }
 }
 
@@ -220,5 +227,5 @@ async function readHover(page, btn) {
   return hover;
 }
 
-module.exports = { GENERATED_CLASS_RE, toURL, parseArgs, readHover, readStates, openStateSession, measureComponents,
-  componentHarness };
+module.exports = { GENERATED_CLASS_RE, openDraft, parseArgs, readHover, readStates, openStateSession,
+  measureComponents, componentHarness };

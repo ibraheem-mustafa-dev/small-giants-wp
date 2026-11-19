@@ -20,8 +20,7 @@
 
 const { chromium } = require('playwright');
 const fs = require('fs');
-const path = require('path');
-const { GENERATED_CLASS_RE, toURL, parseArgs, readHover, readStates, openStateSession,
+const { GENERATED_CLASS_RE, openDraft, parseArgs, readHover, readStates, openStateSession,
   measureComponents } = require('./measure-node');
 
 // The resting properties a button reading records: CAPTURE_SRC's BOX list (passed into the page, which cannot share
@@ -85,11 +84,28 @@ const CAPTURE_SRC = function (generatedClassSrc, boxProps) {
     return !landmark.closest('main, article, section');
   };
   const rect = (el) => { const r = el.getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height) }; };
+  // A closed overlay: a fixed-position panel moved wholly outside the window (an off-canvas menu or basket drawer, a
+  // modal slid away). The visitor never sees it until it opens, so nothing inside it stands for the page's look.
+  // Drafts that mount their header as a component draw such drawers (the page is served, so mounts render).
+  const overlayClosed = new Map();
+  const inClosedOverlay = (el) => {
+    for (let n = el; n && n.nodeType === 1; n = n.parentElement) {
+      if (overlayClosed.has(n)) { if (overlayClosed.get(n)) return true; continue; }
+      let closed = false;
+      if (getComputedStyle(n).position === 'fixed') {
+        const r = n.getBoundingClientRect();
+        closed = r.right <= 0 || r.left >= innerWidth || r.bottom <= 0 || r.top >= innerHeight;
+      }
+      overlayClosed.set(n, closed);
+      if (closed) return true;
+    }
+    return false;
+  };
   const visible = (el) => {
     const cs = getComputedStyle(el);
     if (cs.display === 'none' || cs.visibility === 'hidden' || parseFloat(cs.opacity) === 0) return false;
     const r = el.getBoundingClientRect();
-    return r.width > 0 && r.height > 0;
+    return r.width > 0 && r.height > 0 && !inClosedOverlay(el);
   };
 
   const root = { fontSize: getComputedStyle(document.documentElement).fontSize };
@@ -226,10 +242,15 @@ const CAPTURE_SRC = function (generatedClassSrc, boxProps) {
     // An element with no class of its own keys on its painted-style signature even under a classed
     // section: a section class (`sgs-hero`) names the section, not the variant, so two differently
     // painted buttons in one hero stay two signatures.
+    // A button in the site's header, footer or nav is keyed apart too: the signature's first instance decides its
+    // `inChrome`, and a mounted header comes first in the page, so a header button sharing a call to action's paint
+    // would otherwise carry the whole signature out as chrome.
     const stateControl = holdsState(el);
+    const chrome = inChrome(el);
     const key = (ownless
       ? 'sig:' + SIG.map((k) => getComputedStyle(el)[k]).join('|')
-      : own.slice().sort().join(' ') + '||' + anc.slice().sort().join(' ')) + (stateControl ? '|state' : '');
+      : own.slice().sort().join(' ') + '||' + anc.slice().sort().join(' ')) + (stateControl ? '|state' : '')
+      + (chrome ? '|chrome' : '');
     keyOf.set(el, key);
     const pad = padOf(getComputedStyle(el));
     const authoredPad = pad !== browserPadding(el) ? pad : null;
@@ -242,7 +263,7 @@ const CAPTURE_SRC = function (generatedClassSrc, boxProps) {
     // ambiguous across instances and silently resolved to the wrong node).
     el.setAttribute('data-sgs-btn-idx', String(btnIdx));
     byKey[key] = { classKey: key, classes: own, ancestorClasses: anc, idx: btnIdx,
-      path: nodePath(el), rest: pick(el, BOX), count: 1, stateControl, external: leavesSite(el), inChrome: inChrome(el),
+      path: nodePath(el), rest: pick(el, BOX), count: 1, stateControl, external: leavesSite(el), inChrome: chrome,
       paddings: authoredPad ? { [authoredPad]: 1 } : {}, companions: {},
       textLen: (el.textContent || el.value || '').trim().length, w: rect(el).w, h: rect(el).h };
     buttons.push(byKey[key]);
@@ -322,7 +343,8 @@ async function main() {
     process.stderr.write('Usage: node measure.js --draft <url|path> [--out <file>]\n');
     process.exit(2);
   }
-  const url = toURL(args.draft);
+  // A local draft is served over HTTP from its own folder, so the components it mounts are drawn (openDraft).
+  const { url, served } = await openDraft(args.draft);
   const browser = await chromium.launch();
   try {
     const page = await (await browser.newContext({ deviceScaleFactor: 1 })).newPage();
@@ -362,12 +384,11 @@ async function main() {
     }
 
     // A draft's button component (`--components`, listed by the Python layer from the export's own files): each
-    // named version is mounted on a page of its own, served over HTTP so the runtime can fetch it, and read whole.
-    if (args.components) {
+    // named version is mounted on a page of its own, added to the draft's own server, and read whole.
+    if (args.components && served) {
       const probes = JSON.parse(args.components);
-      const folder = path.dirname(path.resolve(args.draft));
       try {
-        facts.componentButtons = await measureComponents(browser, folder, probes, BUTTON_REST_PROPS);
+        facts.componentButtons = await measureComponents(browser, served, probes, BUTTON_REST_PROPS);
       } catch (e) {
         facts.componentButtons = probes.map((p) => Object.assign({}, p.meta || {}, { component: p.component,
           attrs: p.attrs, painted: false, error: String(e && e.message || e).slice(0, 200) }));
@@ -388,6 +409,7 @@ async function main() {
     process.stdout.write(json + '\n');
   } finally {
     await browser.close();
+    if (served) await served.close();
   }
 }
 
