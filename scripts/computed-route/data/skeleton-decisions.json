@@ -5,6 +5,12 @@
 			"block": "sgs/heading",
 			"reason": "the first text child of a wrapper whose other children are a run of links is the column heading"
 		},
+		"inlineHeading": {
+			"phrasingTags": [ "a", "abbr", "b", "bdi", "bdo", "br", "cite", "code", "data", "del", "dfn", "em", "i", "img", "ins", "kbd", "mark", "q", "s", "samp", "small", "span", "strong", "sub", "sup", "time", "u", "var", "wbr" ],
+			"photoClass": "sgs-inline-photo",
+			"highlightClass": "sgs-highlight",
+			"reason": "a heading holding only inline content (words, an inline photo, a decorated word) stays the heading block at its level with its words in order; an inline image is the Inline photo format (Spec 02 FR-2-5, `<img class=\"sgs-inline-photo wp-image-N\">`, resolved through the media map), a word underlined by a bare positioned layer the Highlight format (Spec 02 FR-2-4); the photo frame's border, radius and tilt are the snapshot's settings.custom.inlinePhoto tokens (2026-11-18 clone audit G-2)"
+		},
 		"linkList": {
 			"minLinks": 2,
 			"arrangement": "stacked",

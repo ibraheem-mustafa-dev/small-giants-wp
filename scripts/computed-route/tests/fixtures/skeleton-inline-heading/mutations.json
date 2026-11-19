@@ -1,0 +1,7 @@
+[
+ {"file": "lib/skeleton-classify.mjs", "find": "const inlineOnly = ( e, IH ) => descOf( e ).every( ( k ) => ( IH.phrasingTags || [] ).includes( k.tag ) );", "replace": "const inlineOnly = () => true;", "why": "a heading holding a block element is inline"},
+ {"file": "lib/skeleton-write-content.mjs", "find": "return `<img class=\"${ esc( IH.photoClass ) } wp-image-${ hit.id }\" src=\"${ esc( hit.url ) }\" alt=\"${ esc( img.attrs?.alt || '' ) }\"/>`;", "replace": "return '';", "why": "a carried photo is dropped"},
+ {"file": "lib/skeleton-write-content.mjs", "find": "const marked = IH.highlightClass && m.words( kid ) && m.kids( kid ).length && m.kids( kid ).every( ( k ) => wordless( k ) && positioned( k ) );", "replace": "const marked = false;", "why": "the decorated word loses its highlight"},
+ {"file": "lib/skeleton-write-content.mjs", "find": "\t\t\thandover.push( { owner: 'content-page', kind: 'presence', detail: `the inline photo ${ img.attrs?.srcBasename || img.attrs?.src || '' } in the heading \"${ words }\": ${ hit?.reason || 'no media map is read for this run' }; insert it with the Inline photo format` } );\n", "replace": "", "why": "an uncarried photo is dropped silently"},
+ {"file": "lib/skeleton-write-content.mjs", "find": "filled.length && handover.unshift(", "replace": "false && handover.unshift(", "why": "code-filled words are written with no handover"}
+]

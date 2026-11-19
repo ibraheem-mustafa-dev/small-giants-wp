@@ -126,6 +126,11 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		return { ...finish( C ), ...base, absorb: !! r.absorb };
 	};
 
+	// Every element under an element, parts included (a br, an svg's own elements).
+	const descOf = ( e ) => m.kids( e ).flatMap( ( k ) => [ k, ...descOf( k ) ] );
+	// Whether every element under a heading is inline phrasing content (decisions structural.inlineHeading.phrasingTags).
+	const inlineOnly = ( e, IH ) => descOf( e ).every( ( k ) => ( IH.phrasingTags || [] ).includes( k.tag ) );
+
 	// The candidates for one element. ctx: { parentBlock, typedBrand (the element is part of a typed brand name) }.
 	function classify( e, parentBlock = null, ctx = {} ) {
 		const C = {};
@@ -193,6 +198,17 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 				add( C, b, 'pattern', W.pattern, `typed brand name: the words equal the site name "${ facts.siteName }"` );
 			} );
 			textBlock && add( C, textBlock, 'db', W.tag * 0.5, `html_tag_to_core_block: p -> ${ textBlock }, halved: the words are a brand name` );
+			return { ...finish( C ), stale };
+		}
+		// A heading whose children are all inline phrasing content (words, an inline photo, an emphasis, a decorated word) stays
+		// the heading block at its level: its words in order and its inline photo are its own rich text
+		// (lib/skeleton-write-content.mjs::inlineContent), never a wrapper holding loose pieces (Spec 48 FR-48-97).
+		const IH = decisions.structural?.inlineHeading;
+		if ( IH && bk.length && /^h[1-6]$/.test( e.tag ) && tagMap[ e.tag ] && inlineOnly( e, IH ) ) {
+			const own = tagMap[ e.tag ].core_block_slug;
+			add( C, own, 'db', W.tag, `html_tag_to_core_block: ${ e.tag } -> ${ own } ("${ tagMap[ e.tag ].note }")`, { inline: true } );
+			add( C, own, 'structure', W.structure, `every descendant is inline phrasing content (${ [ ...new Set( descOf( e ).map( ( k ) => k.tag ) ) ].join( ', ' ) }): ${ IH.reason }` );
+			'leaf' === composition[ own ]?.composition_role && add( C, own, 'db', W.composition, `block_composition: ${ own } is a leaf: the inline children are its own rich text` );
 			return { ...finish( C ), stale };
 		}
 		if ( bk.length ) {
