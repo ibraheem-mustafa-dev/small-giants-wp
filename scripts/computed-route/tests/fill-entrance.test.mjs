@@ -282,3 +282,26 @@ test( 'MUST FAIL: a state the opener reports as not open samples nothing, and it
 		await served.close();
 	}
 } );
+
+const BUILT_HTML = `<!doctype html><html><head><meta charset="utf-8"><style>
+body { margin: 0; } .mq { display: inline-flex; width: 3000px; animation: mq 32s linear infinite; } @keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.spin { width: 20px; height: 20px; animation: mq 4s linear infinite; }
+</style></head><body><div class="strip" data-dc-tpl="18" style="overflow:hidden"><div class="mq"><span>One</span><span>Two</span></div></div>
+<div class="host" data-dc-tpl="5"><div class="spin" data-dc-tpl="6"></div></div><div class="loose"><div class="mq"></div></div></body></html>`;
+
+test( 'MUST FAIL in a real browser: a stamped element owns the endless animations of the elements the code builds inside it, each with the moving element’s own box; never a stamped child’s, nor any for an unstamped element', async () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'fill-entrance-built-' ) );
+	fs.writeFileSync( path.join( dir, 'index.html' ), BUILT_HTML );
+	const served = await serveDraft( dir );
+	try {
+		const jobs = [ { id: 'strip', finder: '.strip' }, { id: 'host', finder: '.host' }, { id: 'loose', finder: '.loose' } ];
+		const { loops } = await sampleMotion( { url: served.url, jobs, windowMs: 600, sweep: null } );
+		const strip = loops.strip[ 1440 ];
+		assert.equal( strip.loops.length, 1, 'the code-built track’s loop is the strip’s' );
+		assert.deepEqual( [ strip.loops[ 0 ].name, strip.loops[ 0 ].box.width ], [ 'mq', 3000 ] );
+		assert.deepEqual( loops.host?.[ 1440 ]?.loops || [], [], 'a stamped child’s loop is its own target’s, not its parent’s' );
+		assert.deepEqual( loops.loose?.[ 1440 ]?.loops || [], [], 'an unstamped element owns no descendant’s loop' );
+	} finally {
+		await served.close();
+	}
+} );

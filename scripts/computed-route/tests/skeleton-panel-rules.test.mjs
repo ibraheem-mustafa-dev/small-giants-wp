@@ -64,7 +64,7 @@ function entry( key, realTag, attrs, st, holes, parent, realParent, loopKey = nu
 const record = ( recs, surfaces = {} ) => ( { schema: '1', client: 'fixture-client', elements: recs, surfaces: Object.fromEntries( Object.entries( surfaces ).map( ( [ id, s ] ) => [ id, { id, kind: s.kind, name: s.name, dc: 'Root', parent: s.parent || null, roots: s.roots || [], parts: [], states: [] } ] ) ) } );
 const run = ( root, o = {} ) => {
 	const b = build( root );
-	return proposeSkeleton( { inventory: b.inventory, facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', motion: o.motion || new Set(), db, factRecord: 'record' in o ? o.record : record( b.recs, o.surfaces ), openers: o.openers || {} } );
+	return proposeSkeleton( { inventory: b.inventory, facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', motion: o.motion || new Set(), db, factRecord: 'record' in o ? o.record : record( b.recs, o.surfaces ), openers: o.openers || {}, ...( o.calSettings ? { calSettings: o.calSettings } : {} ) } );
 };
 const rows = ( r ) => r.proposal.rows;
 const byWords = ( r, w ) => rows( r ).find( ( x ) => x.words === w );
@@ -358,4 +358,83 @@ test( 'a code-built marquee with fewer than two items read keeps the handover, a
 	const f = facts();
 	f.decisions.rules.marqueeCodeItems.items = { ...f.decisions.rules.marqueeCodeItems.items, setting: 'noSuchItems' };
 	assert.ok( decisionsProblems( f ).some( ( p ) => /rules\.marqueeCodeItems\.items must name/.test( p ) ) );
+} );
+
+test( 'MUST FAIL: a code-built marquee reads its items’ look at the first item’s element (the item and label slots), takes the word-only style when no item has an icon, and names a separator glyph no setting holds', () => {
+	const strip = ( codeItems ) => N( 'section', {}, [ N( 'div', { style: 'overflow-x:hidden', hole: 'trustBar', words: 'Baked fresh Handmade', codeItems } ) ] );
+	const motion = new Set( [ 'Root/2' ] );
+	const CAL = { itemGap: { slot: '.sgs-trust-bar__badge:nth-of-type(1)' }, labelFontSize: { slot: '.sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label' } };
+	const items = [ { text: 'Baked fresh', svg: null, marks: '✦', at: [ 0, 0 ] }, { text: 'Handmade', svg: null, marks: '✦', at: [ 0, 1 ] } ];
+	const r = run( strip( items ), { motion, calSettings: () => CAL } );
+	const node = JSON.parse( JSON.stringify( r.skeleton ) )[ 0 ].innerBlocks[ 0 ];
+	assert.equal( node.attributes.badgeStyle, 'text-only', 'no item draws an icon' );
+	assert.deepEqual( Object.keys( node.draftSlots || {} ).sort(), Object.values( CAL ).map( ( c ) => c.slot ).sort() );
+	const f = node.draftSlots[ CAL.itemGap.slot ];
+	assert.match( f.js, /\[ 0, 0 \]/, 'the finder walks the first item’s child-index path' );
+	// eslint-disable-next-line no-new-func
+	const walk = new Function( `return (${ f.js })` )();
+	const leaf = { children: [] };
+	assert.equal( walk( { children: [ { children: [ leaf ] } ] } ), leaf );
+	assert.equal( walk( { children: [] } ), null );
+	assert.ok( rows( r )[ 1 ].slotNotes.some( ( n ) => /no separator setting.*"✦"/.test( n ) ) );
+	const bad = facts();
+	bad.decisions.rules.marqueeCodeItems.items = { ...bad.decisions.rules.marqueeCodeItems.items, slots: [ 'noSuchLook' ] };
+	assert.ok( decisionsProblems( bad ).some( ( p ) => /rules\.marqueeCodeItems\.items must name/.test( p ) ), 'a look setting the block lacks is a decisions problem' );
+} );
+
+test( 'NEGATIVE: items that draw an icon keep the block’s icon style, differing glyphs or none give no separator note, and an item path that is no index list gives no slots', () => {
+	const STAR = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg>';
+	const strip = ( codeItems ) => N( 'section', {}, [ N( 'div', { style: 'overflow-x:hidden', hole: 'trustBar', words: 'A B', codeItems } ) ] );
+	const motion = new Set( [ 'Root/2' ] );
+	const CAL = { itemGap: { slot: '.sgs-trust-bar__badge:nth-of-type(1)' }, labelFontSize: { slot: '::before' } };
+	const icons = run( strip( [ { text: 'A', svg: STAR, marks: '', at: [ 0 ] }, { text: 'B', svg: null, marks: '', at: [ 1 ] } ] ), { motion, calSettings: () => CAL } );
+	const node = JSON.parse( JSON.stringify( icons.skeleton ) )[ 0 ].innerBlocks[ 0 ];
+	assert.equal( node.attributes.badgeStyle, undefined, 'an item with an icon keeps the icon style' );
+	assert.deepEqual( Object.keys( node.draftSlots ), [ '.sgs-trust-bar__badge:nth-of-type(1)' ], 'a pseudo-element slot is never given' );
+	assert.ok( ! ( rows( icons )[ 1 ].slotNotes || [] ).some( ( n ) => /separator/.test( n ) ), 'no glyph, no separator note' );
+	const mixed = run( strip( [ { text: 'A', svg: null, marks: '✦', at: [ 0 ] }, { text: 'B', svg: null, marks: '•', at: [ 1 ] } ] ), { motion, calSettings: () => CAL } );
+	assert.ok( ! ( rows( mixed )[ 1 ].slotNotes || [] ).some( ( n ) => /separator/.test( n ) ), 'two different glyphs are no one separator' );
+	const noPath = run( strip( [ { text: 'A', svg: null }, { text: 'B', svg: null } ] ), { motion, calSettings: () => CAL } );
+	assert.equal( JSON.parse( JSON.stringify( noPath.skeleton ) )[ 0 ].innerBlocks[ 0 ].draftSlots, undefined );
+} );
+
+
+test( 'MUST FAIL: a drawer\'s <nav> whose only children are a loop of links is the drawer menu block (the navigation rule), not unwrapped as a bare list wrapper; a bare div and a page\'s nav still are', () => {
+	const links = () => [ N( 'a', { loop: true, words: 'Shop all', attrs: { href: '/shop/' } } ), N( 'a', { loop: true, words: 'Gifts', attrs: { href: '/gifts/' } } ) ];
+	const drawer = { 'S-1': { kind: 'drawer', name: 'Menu' } };
+	const navRow = ( r ) => rows( r ).find( ( x ) => 'nav' === x.tag || 'div' === x.tag && 1 === x.depth );
+	const inDrawer = run( N( 'aside', {}, [ N( 'nav', { attrs: { 'aria-label': 'Menu links' } }, links() ) ] ), { kind: 'drawer', name: 'Menu', surfaces: drawer } );
+	const nav = rows( inDrawer ).find( ( x ) => 'nav' === x.tag );
+	assert.deepEqual( [ nav.block, nav.rule ], [ 'sgs/nav-drawer-menu', 'navigation' ], JSON.stringify( rows( inDrawer ).map( ( x ) => [ x.tag, x.block, x.action, x.rule ] ) ) );
+	const div = navRow( run( N( 'aside', {}, [ N( 'div', {}, links() ) ] ), { kind: 'drawer', name: 'Menu', surfaces: drawer } ) );
+	assert.deepEqual( [ div.action, div.rule ], [ 'unwrap', 'listWrapper' ], 'negative control: a bare div holding the list is still unwrapped' );
+	const page = rows( run( N( 'section', {}, [ N( 'nav', {}, links() ) ] ) ) ).find( ( x ) => 'nav' === x.tag );
+	assert.deepEqual( [ page.action, page.rule ], [ 'unwrap', 'listWrapper' ], 'negative control: no navigation block on a page, so its nav is still unwrapped' );
+} );
+
+test( 'MUST FAIL: a grid of image links (logoGrid) reads its tiles\' look at the first link: the tile settings\' calibrated element is that link; a decisions entry naming a setting the block lacks is a problem', () => {
+	const tile = ( src ) => N( 'a', { loop: true, attrs: { href: 'https://example.com/' } }, [ N( 'img', { attrs: { src, alt: '' } } ) ] );
+	const grid = N( 'section', {}, [ N( 'div', { style: 'display:grid' }, [ tile( 'a.jpg' ), tile( 'b.jpg' ), tile( 'c.jpg' ) ] ) ] );
+	const CAL = { tileBorderRadius: { slot: '.sgs-gallery__grid > .sgs-gallery__item:nth-of-type(1)' } };
+	const r = run( grid, { calSettings: () => CAL } );
+	const row = rows( r ).find( ( x ) => 'logoGrid' === x.rule );
+	assert.ok( row, JSON.stringify( rows( r ).map( ( x ) => [ x.tag, x.block, x.rule ] ) ) );
+	const find = ( list ) => list.flatMap( ( n ) => ( 'sgs/gallery' === n.name ? [ n ] : find( n.innerBlocks || [] ) ) );
+	const node = find( JSON.parse( JSON.stringify( r.skeleton ) ) )[ 0 ];
+	assert.deepEqual( node.draftSlots, { [ CAL.tileBorderRadius.slot ]: { tpl: 'Root/3#0' } }, 'the first link is the first tile' );
+	assert.equal( find( JSON.parse( JSON.stringify( run( grid, { calSettings: () => ( {} ) } ).skeleton ) ) )[ 0 ].draftSlots, undefined, 'negative control: no calibrated tile element, no slot' );
+	const bad = facts();
+	bad.decisions.rules.logoGrid = { ...bad.decisions.rules.logoGrid, itemSlots: [ 'noSuchTile' ] };
+	assert.ok( decisionsProblems( bad ).some( ( p ) => /rules\.logoGrid\.itemSlots names noSuchTile/.test( p ) ) );
+} );
+
+test( 'MUST FAIL: a list block made from a run of links reads its link part (the underline) at its first link, the node\'s own draft element; with no calibrated link part it gets no slot', () => {
+	const LINK = '.sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link';
+	const col = N( 'section', {}, [ N( 'nav', { attrs: { 'aria-label': 'Shop' } }, [ N( 'div', { words: 'shop' } ), N( 'a', { words: 'All Zookies', attrs: { href: '/shop/' } } ), N( 'a', { words: 'Gifts', attrs: { href: '/gifts/' } } ), N( 'a', { words: 'Taster Trio', attrs: { href: '/trio/' } } ) ] ) ] );
+	const find = ( list ) => list.flatMap( ( n ) => ( 'sgs/icon-list' === n.name ? [ n ] : find( n.innerBlocks || [] ) ) );
+	const listOf = ( cal ) => find( JSON.parse( JSON.stringify( run( col, { calSettings: ( b ) => ( 'sgs/icon-list' === b ? cal : {} ) } ).skeleton ) ) )[ 0 ];
+	const list = listOf( { linkUnderline: { slot: LINK } } );
+	assert.ok( list, 'the links are one list block' );
+	assert.deepEqual( list.draftSlots, { [ LINK ]: list.draftRef }, 'the link part is the first link, the node\'s draft element' );
+	assert.equal( listOf( {} ).draftSlots, undefined, 'negative control: no calibrated link part, no slot' );
 } );

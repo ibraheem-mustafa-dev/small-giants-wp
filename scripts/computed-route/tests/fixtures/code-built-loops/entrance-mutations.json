@@ -1,0 +1,6 @@
+[
+	{ "file": "lib/fill-entrance.mjs", "find": "if ( own.length || ! el.hasAttribute?.( 'data-dc-tpl' ) ) {\n\t\t\t\t\treturn own;\n\t\t\t\t}", "replace": "return own;", "why": "a loop the code builds inside its strip would be read nowhere" },
+	{ "file": "lib/fill-entrance.mjs", "find": "if ( own.length || ! el.hasAttribute?.( 'data-dc-tpl' ) ) {", "replace": "if ( own.length ) {", "why": "an unstamped element would own its descendants' loops" },
+	{ "file": "lib/fill-entrance.mjs", "find": "filter( ( x ) => ! x.hasAttribute( 'data-dc-tpl' ) && x.parentElement.closest( '[data-dc-tpl]' ) === el )", "replace": "filter( ( x ) => true )", "why": "a stamped child's loop would be read on its parent too" },
+	{ "file": "lib/fill-entrance.mjs", "find": "( { ...l, box: { width: x.offsetWidth, height: x.offsetHeight } } )", "replace": "l", "why": "the moving element's box would be lost" }
+]

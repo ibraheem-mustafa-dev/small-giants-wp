@@ -47,14 +47,18 @@ export function holdsOtherRoot( s, strips, srcDoc ) {
 // below it, through single-child wrappers, holding two or more elements; each item's own words (its direct text) and its one
 // inline SVG with the paint the draft's CSS gives each drawing element written onto it (a colour equal to the SVG's own as
 // currentColor). A run read twice in a row (a marquee's loop) is read once. Null unless two or more items have words.
+// Each item also carries `at`, its element's child-index path from `e` (Fill reads the first item's look there), and
+// `marks`, the words of its child elements that are not an SVG (a separator glyph drawn beside the words), or '' for none.
 export function codeItemsOf( e ) {
 	if ( e.querySelector( '[data-dc-tpl]' ) ) {
 		return null;
 	}
 	const ws = ( s ) => ( s || '' ).replace( /\s+/g, ' ' ).trim();
 	let lvl = e;
+	const path = [];
 	while ( 1 === lvl.children.length ) {
 		lvl = lvl.children[ 0 ];
+		path.push( 0 );
 	}
 	const plain = { 'stroke-linecap': 'butt', 'stroke-linejoin': 'miter' };
 	const svgOf = ( k ) => {
@@ -76,7 +80,8 @@ export function codeItemsOf( e ) {
 		} );
 		return new XMLSerializer().serializeToString( copy );
 	};
-	const items = [ ...lvl.children ].map( ( k ) => ( { text: ws( [ ...k.childNodes ].filter( ( c ) => 3 === c.nodeType ).map( ( c ) => c.nodeValue ).join( ' ' ) ), svg: svgOf( k ) } ) ).filter( ( x ) => x.text );
+	const marksOf = ( k ) => ws( [ ...k.children ].filter( ( c ) => 'svg' !== c.localName && ! c.querySelector( 'svg' ) ).map( ( c ) => c.textContent ).join( ' ' ) );
+	const items = [ ...lvl.children ].map( ( k, i ) => ( { text: ws( [ ...k.childNodes ].filter( ( c ) => 3 === c.nodeType ).map( ( c ) => c.nodeValue ).join( ' ' ) ), svg: svgOf( k ), marks: marksOf( k ), at: [ ...path, i ] } ) ).filter( ( x ) => x.text );
 	const half = items.length / 2;
 	const twice = items.length > 2 && 0 === items.length % 2 && items.slice( 0, half ).every( ( x, j ) => x.text === items[ half + j ].text );
 	const once = twice ? items.slice( 0, half ) : items;

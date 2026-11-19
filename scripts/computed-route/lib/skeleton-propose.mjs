@@ -12,7 +12,7 @@ import { lintSkeleton } from '../lint.mjs';
 import { inventoryModel } from './skeleton-model.mjs';
 import { makeClassifier, overrideFor, W } from './skeleton-classify.mjs';
 import { collapsePoint, childSlots, unitSlots } from './skeleton-child-slots.mjs';
-import { mediaSelfSlot, partSlots, placePart } from './skeleton-part-slots.mjs';
+import { mediaSelfSlot, partSlots, placePart, codeItemSlots, drawnSvgParts, itemSlots } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
 import { formHostNodes } from './skeleton-form-host.mjs';
@@ -153,13 +153,14 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	Object.assign( w, { buildNode, buildChildren } );
 
 	function buildNode( e, parentBlock ) {
-		// A bare wrapper whose children are exactly one list: the list block is that wrapper (unless the client decided it).
-		const units = m.words( e ) || 'client decision' === overrides( e, '' )?.source ? [] : unitsOf( e );
+		// A bare wrapper whose children are exactly one list: the list block is that wrapper (unless the client decided it, or
+		// a rule makes the wrapper one block that takes its children in, such as a drawer's navigation).
+		const r = cls.classify( e, parentBlock );
+		const units = m.words( e ) || 'client decision' === overrides( e, '' )?.source || ( r.rule && r.absorb ) ? [] : unitsOf( e );
 		if ( R.listWrapper && 1 === units.length && 'list' === units[ 0 ].type && units[ 0 ].els.length === m.blockKids( e ).length ) {
 			record( e, { action: 'unwrap', rule: 'listWrapper', source: 'rule listWrapper', reason: R.listWrapper.reason, confidence: 1, candidates: [] } );
 			return [ buildList( units[ 0 ].els ) ];
 		}
-		const r = cls.classify( e, parentBlock );
 		if ( 'remove' === r.action ) {
 			record( e, r );
 			removeSubtree( e, `inside a removed element (${ e.key })` );
@@ -236,7 +237,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const clashSaid = clash.map( ( k ) => `the client decision sets ${ k } ${ shown( top.attributes[ k ] ) }, which is not applied; the build carries ${ shown( carry[ k ] ) } (${ said[ k ] })` );
 		const row = record( e, r, { attributes: a, ...( Object.keys( carry ).length ? { carried: said } : {} ), ...( missing.length ? { carriedMissing: missing } : {} ), ...( clash.length ? { stale: [ r.stale, ...clashSaid ].filter( Boolean ).join( '; ' ) } : {} ) } );
 		const slots = {};
-		m.kids( e ).filter( ( k ) => m.isPart( k ) && 'svg' === k.tag && k.visible[ 1440 ] ).forEach( ( k ) => {
+		drawnSvgParts( m.kids( e ), ( k ) => m.isPart( k ) ).forEach( ( k ) => {
 			const key = calKeys( block ).filter( ( c ) => new RegExp( `(^|> )svg$` ).test( c ) ).sort( ( x, y ) => x.length - y.length )[ 0 ];
 			key && ( slots[ key ] = finder( k ) );
 		} );
@@ -253,6 +254,18 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const us = unitCfg ? unitSlots( { cfg: unitCfg, units: r.units.units, open: r.units.open, m, finder, settings: calSettings( block ) } ) : null;
 		us && Object.assign( slots, us.slots );
 		us?.notes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...us.notes ] );
+		// Items the draft's code builds (no stamped element): the first item's element, at its child-index path from the
+		// draft element, is where the items' look is read (lib/skeleton-part-slots.mjs::codeItemSlots).
+		// A block whose items are the draft element's repeated children reads the item look at its first item
+		// (`rules.<rule>.itemSlots`, lib/skeleton-part-slots.mjs::itemSlots).
+		const codeSlots = r.codeItem ? codeItemSlots( { at: r.codeItem, settings: R[ r.rule ]?.items?.slots, calibrated: calSettings( block ) } ) : r.firstItem && m.byKey[ r.firstItem ] && R[ r.rule ]?.itemSlots ? itemSlots( { finder: finder( m.byKey[ r.firstItem ] ), settings: R[ r.rule ].itemSlots, calibrated: calSettings( block ) } ) : null;
+		codeSlots && Object.assign( slots, codeSlots.slots );
+		// A rule whose block is the draft control itself and draws that control as one of its own parts (`rules.<rule>.selfPart`:
+		// the cart a header's basket button is, whose trigger the button is) reads the control at that part's slot.
+		const self = R[ r.rule ]?.selfPart && db && ! r.action ? partSlots( { db, block, cal: { settings: calSettings( block ) }, part: R[ r.rule ].selfPart, opener: e, m, finder } ) : null;
+		self && Object.assign( slots, self.slots );
+		const codeNotes = [ ...( codeSlots?.notes || [] ), ...( self?.notes || [] ), ...( r.glyphNote ? [ r.glyphNote ] : [] ) ];
+		codeNotes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...codeNotes ] );
 		if ( Object.keys( slots ).length ) {
 			node.draftSlots = slots;
 			row.slots = slots;

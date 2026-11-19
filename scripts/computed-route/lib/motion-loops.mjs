@@ -114,7 +114,8 @@ export function resolvedLoop( record, measured ) {
 			delay: 'number' === typeof record.delay_ms ? record.delay_ms : m?.delay ?? 0,
 			direction: record.direction || m?.direction || 'normal',
 			easing: record.easing ?? m?.easing ?? ( 'css-animation' === record.mechanism ? 'ease' : 'linear' ),
-			box: measured?.box || null,
+			// A loop measured on an element the code builds inside the target carries that element's box (lib/fill-entrance.mjs).
+			box: m?.box || measured?.box || null,
 				...( random ? { sampled: true } : {} ),
 			other: [ ...new Set( other ) ],
 			unsupported: [ ...new Set( unsupported ) ],

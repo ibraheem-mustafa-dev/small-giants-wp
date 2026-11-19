@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/skeleton-inventory.mjs", "find": "\t\tpath.push( 0 );\n", "replace": "", "why": "an item's path would skip the one-child track" },
+	{ "file": "lib/skeleton-inventory.mjs", "find": "marks: marksOf( k ), at: [ ...path, i ] }", "replace": "marks: marksOf( k ), at: [ i ] }", "why": "an item's path would start at the strip's own children" },
+	{ "file": "lib/skeleton-inventory.mjs", "find": "filter( ( c ) => 'svg' !== c.localName && ! c.querySelector( 'svg' ) )", "replace": "filter( ( c ) => true )", "why": "an icon circle would be read as a separator glyph" }
+]

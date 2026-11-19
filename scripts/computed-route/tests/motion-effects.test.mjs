@@ -277,3 +277,12 @@ test( 'MUST FAIL: a loop the draft starts as its element scrolls into view is wr
 	assert.equal( inView.effects[ 0 ].trigger, 'visible' );
 	assert.equal( elementEffects( [ float() ], { mdb, loops: null } ).effects[ 0 ].trigger, 'load', 'control: a mount loop runs at load' );
 } );
+
+test( 'MUST FAIL: a loop measured on an element the code builds inside the target travels a share of that element’s own box, not the target’s', () => {
+	const css = rec( 'K', { mechanism: 'css-animation', trigger: { type: 'state' }, easing: 'linear', direction: 'normal', duration_ms: 32000, element: { dc: 'Site', template_tpl_id: null, nearest_tpl_id: '18' }, properties: [ { property: 'animation-name', from: null, to: 'mq' }, { property: 'transform', from: 'translateX(0px)', to: 'translateX(-50%)' } ] } );
+	const loop = { css: true, name: 'mq', duration: 32000, delay: 0, direction: 'normal', easing: 'linear', playbackRate: 1, frames: [ { offset: 0, transform: 'translateX(0px)' }, { offset: 1, transform: 'translateX(-50%)' } ] };
+	const strip = ( own ) => ( { loops: [ own ? { ...loop, box: own } : loop ], box: { width: 1440, height: 60 }, marquee: null, smil: [] } );
+	assert.deepEqual( loopEffect( css, { 1440: strip( { width: 6400, height: 40 } ) }, { mdb } ).values, { speed: 100, direction: 'left' }, 'half of the 6400px track over 32s' );
+	assert.deepEqual( loopEffect( css, { 1440: strip( null ) }, { mdb } ).values, { speed: 22.5, direction: 'left' }, 'control: a loop with no box of its own is measured against the target' );
+	assert.deepEqual( runtimeLoopsFor( [ css ], strip( { width: 6400, height: 40 } ) ), [ css ], 'the unplaced record matches the loop the strip owns' );
+} );

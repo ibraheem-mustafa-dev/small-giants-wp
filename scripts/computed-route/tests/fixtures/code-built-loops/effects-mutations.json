@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/motion-loops.mjs", "find": "box: m?.box || measured?.box || null,", "replace": "box: measured?.box || null,", "why": "a code-built track's travel would be measured against its strip" },
+	{ "file": "lib/motion-loops.mjs", "find": "box: m?.box || measured?.box || null,", "replace": "box: m?.box || null,", "why": "a loop with no box of its own would lose the target's box" }
+]

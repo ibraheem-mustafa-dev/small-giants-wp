@@ -154,3 +154,32 @@ export function mediaSelfSlot( { tag, tags = {} } ) {
 	const inner = Object.entries( tags ).filter( ( [ k, v ] ) => '' !== k && ! k.includes( '::' ) && v === t );
 	return 1 === inner.length ? inner[ 0 ][ 0 ] : null;
 }
+
+// The draftSlots for items the draft's code builds (no stamped element, lib/skeleton-inventory.mjs::codeItemsOf): each
+// setting named in `settings` is read at the first item's element, so its calibrated slot gets a finder that walks the
+// item's child-index path `at` down from the node's draft element. at: [ child index, ... ]; settings: [ setting name ];
+// calibrated: the block's calibration settings ({ <setting>: { slot } }). Returns { slots: { <path>: finder }, notes }.
+export function codeItemSlots( { at, settings = [], calibrated = {} } ) {
+	const out = { slots: {}, notes: [] };
+	if ( ! Array.isArray( at ) || ! at.length || ! at.every( ( i ) => Number.isInteger( i ) && i >= 0 ) ) {
+		return out;
+	}
+	const finder = { js: `( root ) => [ ${ at.join( ', ' ) } ].reduce( ( x, i ) => ( x ? x.children[ i ] : null ), root ) || null` };
+	return itemSlots( { finder, settings, calibrated, what: 'the code-built items’ look' } );
+}
+
+// The draftSlots that read a block's item look at one draft element: each setting in `settings` gives its calibrated
+// element slot (never the root, never a pseudo-element) the `finder`. Returns { slots: { <path>: finder }, notes }.
+export function itemSlots( { finder, settings = [], calibrated = {}, what = 'the items’ look' } ) {
+	const out = { slots: {}, notes: [] };
+	for ( const s of settings || [] ) {
+		const slot = calibrated[ s ]?.slot;
+		'string' === typeof slot && '' !== slot && ! slot.includes( '::' ) ? ( out.slots[ slot ] = finder ) : out.notes.push( `the calibration has no element slot for ${ s }, so ${ what } is not read for it` );
+	}
+	return out;
+}
+
+// The inline SVG parts of a draft element that are a block's glyph slot: its child <svg> elements the block reads as a
+// part and the draft draws at some read width (a phone bar's icon is drawn only below the desktop width; an SVG drawn at
+// no width paints nothing to read). kids: the element's inventory children; isPart( kid ).
+export const drawnSvgParts = ( kids, isPart ) => kids.filter( ( k ) => isPart( k ) && 'svg' === k.tag && Object.values( k.visible || {} ).some( Boolean ) );

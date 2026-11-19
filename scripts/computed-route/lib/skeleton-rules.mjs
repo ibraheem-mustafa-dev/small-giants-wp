@@ -829,13 +829,23 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return null;
 			}
 			// The items the inventory read from the rendered strip (lib/skeleton-inventory.mjs, `codeItems`) are the block's items,
-			// each its words and its icon as the icon writer keeps it; with none read, the items are handed over.
+			// each its words and its icon as the icon writer keeps it; with none read, the items are handed over. Items with no
+			// icon take the block's word-only style (`items.plain`), and the first item's element is where Fill reads the
+			// items' look (`codeItem`, its child-index path from the strip: lib/skeleton-propose.mjs gives it the draftSlots of
+			// `items.slots`). A glyph drawn beside every item's words (a separator) has no setting: the row names it (`glyphNote`).
 			const I = R.marqueeCodeItems.items;
-			const items = I && ( e.codeItems || [] ).length >= 2 ? e.codeItems.map( ( x ) => {
+			const read = I && ( e.codeItems || [] ).length >= 2 ? e.codeItems : null;
+			const items = read ? read.map( ( x ) => {
 				const svg = x.svg ? keptSvg( x.svg ) : null;
 				return { [ I.text ]: x.text, ...( svg ? { [ I.svg ]: svg } : {} ) };
 			} ) : null;
-			return items ? v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: { [ I.setting ]: items, ...Object.fromEntries( ( I.clear || [] ).map( ( a ) => [ a, '' ] ) ) }, absorb: true } ) : v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: R.marqueeCodeItems.handover } } );
+			if ( ! items ) {
+				return v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: R.marqueeCodeItems.handover } } );
+			}
+			const plain = I.plain && read.every( ( x ) => ! x.svg ) ? { [ I.plain.setting ]: I.plain.value } : {};
+			const marks = [ ...new Set( read.map( ( x ) => x.marks || '' ) ) ];
+			const glyph = I.marksNote && 1 === marks.length && '' !== marks[ 0 ] ? { glyphNote: `${ I.marksNote }: the draft draws "${ marks[ 0 ] }" beside every item's words` } : {};
+			return v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: { [ I.setting ]: items, ...Object.fromEntries( ( I.clear || [] ).map( ( a ) => [ a, '' ] ) ), ...plain }, absorb: true, ...( Array.isArray( read[ 0 ].at ) ? { codeItem: read[ 0 ].at } : {} ), ...glyph } );
 		},
 		( { e, kidsB } ) => {
 			if ( ! loops( e ) || ! kidsB.length ) {

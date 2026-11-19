@@ -98,11 +98,21 @@ function startProbe( [ jobs, resolveSrc, windowMs, sweep ] ) {
 			// The element's endless animations as the draft's code made them (timing and keyframes, read from the
 			// Animation objects), its box, a <marquee>'s attributes and the SVG animation elements inside it.
 			const KF = [ 'transform', 'translate', 'scale', 'rotate', 'opacity', 'filter', 'boxShadow' ];
-			const loopsOf = ( el ) => ( el.getAnimations ? el.getAnimations() : [] ).filter( ( a ) => Infinity === a.effect?.getComputedTiming?.().iterations ).map( ( a ) => {
+			const endless = ( el ) => ( el.getAnimations ? el.getAnimations() : [] ).filter( ( a ) => Infinity === a.effect?.getComputedTiming?.().iterations ).map( ( a ) => {
 				const t = a.effect.getTiming();
 				const frames = a.effect.getKeyframes().map( ( k ) => Object.fromEntries( [ [ 'offset', k.computedOffset ], ...KF.filter( ( p ) => undefined !== k[ p ] ).map( ( p ) => [ p, String( k[ p ] ) ] ) ] ) );
 				return { css: 'string' === typeof a.animationName, name: a.animationName ?? null, duration: 'number' === typeof t.duration ? t.duration : null, delay: t.delay || 0, direction: t.direction, easing: t.easing, playbackRate: a.playbackRate, frames };
 			} );
+			// A stamped element with no endless animation of its own also owns those of the elements the draft's code builds
+			// inside it (no stamped element between them: no other target can name them), each with the moving element's own
+			// box, which a percentage travel is measured against (a marquee track the code builds inside its strip).
+			const loopsOf = ( el ) => {
+				const own = endless( el );
+				if ( own.length || ! el.hasAttribute?.( 'data-dc-tpl' ) ) {
+					return own;
+				}
+				return [ ...el.querySelectorAll( '*' ) ].filter( ( x ) => ! x.hasAttribute( 'data-dc-tpl' ) && x.parentElement.closest( '[data-dc-tpl]' ) === el ).flatMap( ( x ) => endless( x ).map( ( l ) => ( { ...l, box: { width: x.offsetWidth, height: x.offsetHeight } } ) ) );
+			};
 			const ATTRS = [ 'attributeName', 'type', 'values', 'from', 'to', 'by', 'dur', 'repeatCount', 'keyTimes', 'calcMode', 'begin', 'end', 'fill' ];
 			const mediaOf = ( el ) => ( {
 				box: { width: el.offsetWidth, height: el.offsetHeight, surface: 'IMG' === el.tagName || 'none' !== getComputedStyle( el ).backgroundImage },

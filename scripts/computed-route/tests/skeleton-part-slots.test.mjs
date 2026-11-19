@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
-import { mediaSelfSlot } from '../lib/skeleton-part-slots.mjs';
+import { mediaSelfSlot, drawnSvgParts, codeItemSlots } from '../lib/skeleton-part-slots.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -103,4 +103,21 @@ test( 'the media pairing does not fire for a block whose root is the image, one 
 	assert.equal( mediaSelfSlot( { tag: 'div', tags: LOGO_TAGS } ), null );
 	assert.equal( mediaSelfSlot( { tag: 'svg', tags: { '': 'div', '.x > svg': 'svg' } } ), null, 'an inline svg is a part, paired by its own rule' );
 	assert.equal( mediaSelfSlot( { tag: 'img', tags: { '': 'div', '.x::before': 'img' } } ), null, 'a pseudo-element is never the media' );
+} );
+
+test( 'MUST FAIL: an inline SVG part drawn only at a narrower width (a phone bar\'s icon) is still a glyph slot; one drawn at no width, a non-part and a non-SVG are not', () => {
+	const kid = ( tag, visible, part = true ) => ( { tag, visible, part } );
+	const phone = kid( 'svg', { 375: true, 768: true, 1440: false } );
+	const desk = kid( 'svg', { 375: false, 768: false, 1440: true } );
+	const never = kid( 'svg', { 375: false, 768: false, 1440: false } );
+	const notPart = kid( 'svg', { 375: true, 768: true, 1440: true }, false );
+	const span = kid( 'span', { 375: true, 768: true, 1440: true } );
+	assert.deepEqual( drawnSvgParts( [ phone, desk, never, notPart, span ], ( k ) => k.part ), [ phone, desk ] );
+} );
+
+test( 'codeItemSlots: each named setting\'s calibrated element is read at the first code-built item; a pseudo slot or an unknown setting is a note', () => {
+	const r = codeItemSlots( { at: [ 0, 2 ], settings: [ 'itemGap', 'glow', 'missing' ], calibrated: { itemGap: { slot: '.a > .b' }, glow: { slot: '.a::before' } } } );
+	assert.deepEqual( Object.keys( r.slots ), [ '.a > .b' ] );
+	assert.equal( r.notes.length, 2 );
+	assert.deepEqual( codeItemSlots( { at: [ -1 ], settings: [ 'itemGap' ], calibrated: { itemGap: { slot: '.a' } } } ).slots, {}, 'a path that is no index list gives no slot' );
 } );

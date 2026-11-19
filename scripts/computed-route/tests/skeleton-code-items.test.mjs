@@ -8,7 +8,7 @@ import { codeItemsOf } from '../lib/skeleton-inventory.mjs';
 
 const WORDS = [ 'boost your milk', 'baked when you order', 'handmade in Birmingham' ];
 const glyphRun = ( n ) => WORDS.slice( 0, n ).map( ( w ) => `<span style="display:inline-flex;gap:28px">${ w }<span style="color:#E86A75">✦</span></span>` ).join( '' );
-const ICON = '<svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:#3A2A22;stroke-width:1.9;stroke-linecap:round"><path d="M20 6 9 17l-5-5"></path></svg>';
+const ICON = '<svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:#3A2A22;stroke-width:1.9;stroke-linecap:round"><title>Tick</title><path d="M20 6 9 17l-5-5"></path></svg>';
 const iconRow = WORDS.map( ( w ) => `<span style="display:inline-flex;gap:12px;color:#3A2A22"><span style="width:40px;height:40px;border-radius:999px">${ ICON }</span>${ w }</span>` ).join( '' );
 const PAGE = `<body>
 <div id="marquee"><div data-marquee style="display:inline-flex">${ glyphRun( 3 ) }${ glyphRun( 3 ) }</div></div>
@@ -51,4 +51,11 @@ test( 'no items for an element holding a stamped element, one with a single item
 	assert.equal( r.one, null, 'one item is no list' );
 	assert.deepEqual( r.odd.map( ( x ) => x.text ), WORDS, 'three items, not halved' );
 	assert.deepEqual( r.even.map( ( x ) => x.text ), [ ...WORDS, 'one-handed snacking' ], 'four different items are not a doubled run' );
+} );
+
+test( 'MUST FAIL: each code item carries its child-index path and the words of its glyph children', async () => {
+	const r = await read( [ 'marquee', 'row' ] );
+	assert.deepEqual( r.marquee.map( ( x ) => x.at ), [ [ 0, 0 ], [ 0, 1 ], [ 0, 2 ] ], 'through the one-child track, then the item' );
+	assert.ok( r.marquee.every( ( x ) => '✦' === x.marks ) );
+	assert.ok( r.row.every( ( x ) => '' === x.marks ), 'an icon circle is no glyph mark' );
 } );

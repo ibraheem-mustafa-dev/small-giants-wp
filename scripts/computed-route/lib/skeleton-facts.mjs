@@ -127,8 +127,10 @@ export function decisionsProblems( facts ) {
 	if ( hc && ( ! facts.attr( r.headerSlots.rowBlock, hc ) || facts.attr( r.headerSlots.rowBlock, hc ).css_property ) ) {
 		problems.push( `rules.headerSlots.columnsSetting must name a structural setting ${ r.headerSlots.rowBlock } has` );
 	}
+	// A rule's item look settings (`itemSlots`) are settings of its own block.
+	Object.entries( r ).filter( ( [ , x ] ) => Array.isArray( x?.itemSlots ) ).forEach( ( [ id, x ] ) => x.itemSlots.filter( ( a ) => ! facts.attr( x.block, a ) ).forEach( ( a ) => problems.push( `rules.${ id }.itemSlots names ${ a }, which ${ x.block } does not have` ) ) );
 	const ci = r.marqueeCodeItems?.items;
-	if ( ci && ( ! facts.attr( r.marqueeCodeItems.block, ci.setting ) || [ ...( ci.clear || [] ) ].some( ( a ) => ! facts.attr( r.marqueeCodeItems.block, a ) ) ) ) {
+	if ( ci && ( ! facts.attr( r.marqueeCodeItems.block, ci.setting ) || [ ...( ci.clear || [] ), ...( ci.slots || [] ), ...( ci.plain ? [ ci.plain.setting ] : [] ) ].some( ( a ) => ! facts.attr( r.marqueeCodeItems.block, a ) ) ) ) {
 		problems.push( `rules.marqueeCodeItems.items must name an items setting and cleared settings ${ r.marqueeCodeItems.block } has` );
 	}
 	Object.keys( r.footerSlots?.stackedRow || {} ).filter( ( a ) => ! facts.attr( r.footerSlots.rowBlock, a ) || facts.attr( r.footerSlots.rowBlock, a ).css_property ).forEach( ( a ) => problems.push( `rules.footerSlots.stackedRow.${ a } must name a structural setting ${ r.footerSlots.rowBlock } has (no CSS property: a skeleton carries no style value)` ) );
