@@ -2339,5 +2339,14 @@
     "added_commit": null,
     "budget_ms": 500,
     "order": 269
+  },
+  {
+    "id": "test-scrim-state",
+    "cmd": "node scripts/tests/test-scrim-state.mjs --all",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 15000,
+    "order": 270
   }
 ]
