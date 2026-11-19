@@ -10,6 +10,6 @@
  {"file":"lib/form-scif-fields.mjs","find":"\t\tlist.splice( before < 0 ? list.length : before, 0, ...made.map( ( x ) => x.node ) );","replace":"\t\tlist.push( ...made.map( ( x ) => x.node ) );","why":"built fields land after the submit button"},
  {"file":"lib/form-scif-fields.mjs","find":"\t\t\t[ 'inputmode', 'placeholder' ].forEach(","replace":"\t\t\t[].forEach(","why":"a built field loses its input mode"},
  {"file":"lib/form-scif-fields.mjs","find":"const put = ( n, attr, value ) => has( n.name, attr ) && ( n.attributes ??= {} ) && ( n.attributes[ attr ] = value );","replace":"const put = ( n, attr, value ) => ( n.attributes ??= {} ) && ( n.attributes[ attr ] = value );","why":"a setting the block lacks is written"},
- {"file":"lib/form-scif-fields.mjs","find":"\treturn m ? `${ 'Root' === m[ 1 ] ? rootComponent : m[ 1 ] }/${ m[ 2 ] }` : null;","replace":"\treturn m ? `${ rootComponent }/${ m[ 2 ] }` : null;","why":"an imported component's element is keyed under the root component"},
+ {"file":"lib/form-scif-fields.mjs","find":"\treturn m ? templateKey( { dc: 'Root' === m[ 1 ] ? rootComponent : m[ 1 ], tpl: m[ 2 ] } ) : null;","replace":"\treturn m ? templateKey( { dc: rootComponent, tpl: m[ 2 ] } ) : null;","why":"an imported component's element is keyed under the root component"},
  {"file":"lib/form-scif-fields.mjs","find":"\tif ( ! rec?.dc || ! folder || ! fs.existsSync( path.join( folder, `${ rec.dc }.dc.html` ) ) ) {","replace":"\tif ( ! rec?.dc || ! folder ) {","why":"a client whose form component has no draft file stops the proposer"}
 ]

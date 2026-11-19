@@ -17,6 +17,7 @@ import path from 'path';
 import { loadDraft, propName, keyName, subtree, isFn } from './intake-ast.mjs';
 import { isDescription } from './state-openers.mjs';
 import { schemaFieldNode } from './skeleton-form-step-parts.mjs';
+import { templateKey } from './fact-key.mjs';
 
 const IDENT = /^[A-Za-z_$][\w$]*$/;
 const FIELD = /^sgs\/form-field-/;
@@ -25,7 +26,7 @@ const FIELD = /^sgs\/form-field-/;
 // component standing for `Root`; null for a node with no reference.
 export function templateKeyOf( node, rootComponent ) {
 	const m = /(?:^|>)([^>@/]+)(?:@[^/]*)?\/(\d+)#\d+$/.exec( String( node?.draftRef?.tpl || '' ) );
-	return m ? `${ 'Root' === m[ 1 ] ? rootComponent : m[ 1 ] }/${ m[ 2 ] }` : null;
+	return m ? templateKey( { dc: 'Root' === m[ 1 ] ? rootComponent : m[ 1 ], tpl: m[ 2 ] } ) : null;
 }
 
 // The label a draft list pairs with a value (`[ 'bulk', 'Baby shower or event' ]`), or null.
@@ -72,7 +73,7 @@ export function scIfConditions( { factRecord, surfaceId, idx } ) {
 			continue;
 		}
 		for ( const id of st.sc_if_tpl_ids || [] ) {
-			const scIf = `${ rec.dc }/${ id }`;
+			const scIf = templateKey( { dc: rec.dc, tpl: id } );
 			if ( 'sc-if' === els[ scIf ]?.template?.tag && inForm( scIf ) ) {
 				out.push( { scIf, field, raw, value: pairedLabel( idx, raw ) ?? String( raw ) } );
 			}

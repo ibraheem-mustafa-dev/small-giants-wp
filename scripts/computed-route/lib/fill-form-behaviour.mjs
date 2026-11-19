@@ -16,6 +16,7 @@ import { loadDraft, readBinding, propName } from './intake-ast.mjs';
 import { fnsNamed } from './intake-census-map.mjs';
 import { fnWrites } from './intake-pagemap-flow-openers.mjs';
 import { templateKeyOf } from './form-scif-fields.mjs';
+import { templateKey } from './fact-key.mjs';
 
 const GLYPH_ONLY = /^[^\p{L}\p{N}]*$/u;
 
@@ -60,7 +61,7 @@ export function successMessageOf( { factRecord, record, folder } ) {
 	}
 	const lines = [];
 	for ( const id of sent.st.sc_if_tpl_ids ) {
-		const shown = under( `${ record.dc }/${ id }` ).sort( ( a, b ) => Number( a.n ) - Number( b.n ) );
+		const shown = under( templateKey( { dc: record.dc, tpl: id } ) ).sort( ( a, b ) => Number( a.n ) - Number( b.n ) );
 		const controls = shown.filter( ( t ) => [ 'button', 'a' ].includes( t.tag ) ).map( ( t ) => t.key );
 		for ( const t of shown ) {
 			const words = String( t.words || '' ).trim();
