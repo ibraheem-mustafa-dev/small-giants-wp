@@ -45,6 +45,7 @@ defined( 'ABSPATH' ) || exit;
 // calls. Without this, a layout/section composite fatals on the gap/shape code path.
 require_once __DIR__ . '/render-helpers.php';
 require_once __DIR__ . '/container-scroll-row-css.php';
+require_once __DIR__ . '/helpers-container-fit.php';
 require_once __DIR__ . '/shape-dividers.php';
 require_once __DIR__ . '/helpers-grid-item.php';
 require_once __DIR__ . '/helpers-surface-ground.php';
@@ -1882,6 +1883,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Responsive CSS + uid — section + layout kinds with responsive attrs.
 			// ----------------------------------------------------------------
 			$responsive_css    = '';
+			$shared_fit_rule   = '';
 			$has_responsive_bg = ( ! empty( $bg_image_tablet['url'] ) || ! empty( $bg_image_mobile['url'] ) ); // D6: universal.
 			// A per-tier COLUMN COUNT (columnsTablet/columnsMobile) also needs the
 			// responsive block to run — that is where the count is emitted as a scoped
@@ -2292,7 +2294,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// `auto`: a child's own min-width/min-height (a nested container's
 				// minHeight, sgs/button's 48px floor) always wins. At (0,2,0) it
 				// zeroed every authored min-height on a grid/flex child.
-				$responsive_css .= ':where(' . $grid_sel . '>*){min-width:0;min-height:0}';
+				// The same reset for every instance: a marker class on the root and one shared rule (helpers-container-fit.php).
+				$classes[]       = sgs_container_fit_class( $grid_on_inner );
+				$shared_fit_rule = sgs_container_fit_rule();
 			}
 
 			// order — the container's position among its parent's grid/flex items, a
@@ -3256,13 +3260,17 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			$style_tag = '';
+			if ( '' !== $shared_fit_rule && $uid ) {
+				// A tag of its own, so every instance prints the same text and the collector keeps one copy.
+				$style_tag = '<style>' . wp_strip_all_tags( $shared_fit_rule ) . '</style>';
+			}
 			if ( $responsive_css && $uid ) {
 				// NOT esc_html() — the band selector uses the child combinator '>'
 				// which esc_html() turns into '&gt;', breaking every band rule.
 				// Every value component is pre-sanitised ($sgs_css_length /
 				// sgs_colour_value / sgs_sanitize_grid_template / esc_url);
 				// wp_strip_all_tags() guards against '</style>' injection.
-				$style_tag = sprintf( '<style id="%s">%s</style>', esc_attr( $uid ), wp_strip_all_tags( $responsive_css ) );
+				$style_tag .= sprintf( '<style id="%s">%s</style>', esc_attr( $uid ), wp_strip_all_tags( $responsive_css ) );
 			}
 
 			// ----------------------------------------------------------------

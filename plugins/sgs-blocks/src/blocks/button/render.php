@@ -43,6 +43,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-icon-circle.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-focus.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-preset-names.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-press.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-shared-rules.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-icon-gap-hover.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-link-underline.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-inner-kses.php';
@@ -532,11 +533,9 @@ if ( $icon_col_hov ) {
 }
 
 // Pressed look (helpers-button-press.php): the style's `active-transform` / `active-shadow` preset tokens, printed
-// only when a preset sets them, after the hover rules and out-ranking them.
-$press_rule = sgs_button_press_rule( $uid, $inherit_style );
-if ( '' !== $press_rule ) {
-	$scoped_css_parts[] = $press_rule;
-}
+// only when a preset sets them, out-ranking the hover rules. It names nothing about this button, so it is a shared rule
+// read through a marker class (helpers-button-shared-rules.php), not a rule under this button's uid.
+$press_shared = sgs_button_press_shared( $inherit_style );
 
 // Typography — base + tablet + mobile on the SAME selector (Pattern A),
 // via the shared sgs_typography_css_rule() helper (D971/D972 full-replacement
@@ -1049,6 +1048,19 @@ if ( '' !== $text_gradient_value || '' !== $text_gradient_hover_value ) {
 	}
 }
 
+// A button with any per-instance rule holds still under reduced motion, and wears its pressed look's marker: both are
+// shared rules (helpers-button-shared-rules.php), the same text in every button's `<style>`, kept once by the collector.
+$sgs_btn_shared_css   = array();
+$sgs_btn_shared_class = '';
+if ( $scoped_css_parts || '' !== $press_shared['css'] ) {
+	$sgs_btn_shared_class = sgs_button_still_class();
+	$sgs_btn_shared_css[] = sgs_button_still_rule();
+	if ( '' !== $press_shared['css'] ) {
+		$sgs_btn_shared_class .= ' ' . $press_shared['class'];
+		array_unshift( $sgs_btn_shared_css, $press_shared['css'] );
+	}
+}
+
 $wrapper_attr = get_block_wrapper_attributes(
 	array_merge(
 		array(
@@ -1056,7 +1068,7 @@ $wrapper_attr = get_block_wrapper_attributes(
 			// D303: $uid is ALSO a class so the class-scoped per-instance rules
 			// (`.{$uid}.sgs-button` = 0,2,0, never `#uid`) match this element and can be
 			// overridden by the appended sgsCustomCss residual by source order.
-			'class'       => trim( $merged_class . ' ' . $uid ),
+			'class'       => trim( $merged_class . ' ' . $uid . ' ' . $sgs_btn_shared_class ),
 			'data-preset' => $safe_inherit_style,
 		),
 		// U-12 §F: 'top' adds data-sgs-link-source="top" here so view.js can
@@ -1074,14 +1086,16 @@ $wrapper_attr = get_block_wrapper_attributes(
 $allowed_css_tags = array(
 	'style' => array(),
 );
+foreach ( $sgs_btn_shared_css as $sgs_btn_shared_rule ) {
+	echo '<style>' . wp_strip_all_tags( $sgs_btn_shared_rule ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS built from sanitised tokens; wp_strip_all_tags guards </style>
+}
 if ( $scoped_css_parts ) {
 	// Class-level compound selector (`.{$uid}.sgs-button`), matching the seven other
 	// scoped rules in this file. The uid and the class sit on the SAME element, so an
 	// ID selector (`#{$uid} .sgs-button`) would be a descendant combinator and match
 	// zero elements. Class level is also required by Spec 32 §6.1(b)/D303, so the
 	// client's sgsCustomCss residual can win.
-	$raw_css = implode( '', $scoped_css_parts )
-		. "@media(prefers-reduced-motion:reduce){.{$uid}.sgs-button{transition:none !important;transform:none !important;translate:none !important;}}";
+	$raw_css = implode( '', $scoped_css_parts );
 	// wp_strip_all_tags (not esc_html) matches the proven SGS_Container_Wrapper
 	// pattern: it blocks a </style> breakout while leaving CSS combinators like
 	// `>` intact (esc_html would turn `>` into &gt; and break any descendant rule).
