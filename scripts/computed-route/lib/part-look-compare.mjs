@@ -53,6 +53,10 @@ function shadowOf( text, colourAttr, site ) {
 }
 
 const REASON = {
+	drawn: 'the draft draws this part, so it is not hidden',
+	notDrawn: 'the draft does not draw this part, so the switch stays off',
+	neighboursNotFound: 'the neighbours of the part were not found in the draft, so nothing is hidden',
+	switchDirection: 'no data says which value of this switch hides the part',
 	undeclared: 'the draft states no such size (the layout decides it)',
 	noLocator: 'no locator for the part',
 	unpaired: 'the part has a locator and the draft has no element for it',

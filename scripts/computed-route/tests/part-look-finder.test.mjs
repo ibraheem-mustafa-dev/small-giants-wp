@@ -144,3 +144,53 @@ test( 'a page element never counts the totals and checkout link of a fixed panel
 test( 'a part restricted to one block (the checkbox parts) carries that restriction in the data', () => {
 	assert.deepEqual( LOCATORS.groups.wc.parts[ 'checkbox-input' ].blocks, [ 'woocommerce/checkout' ] );
 } );
+
+// ---- parts the draft may not draw (Task 4 follow-up) ----------------------------------------------------------------------
+
+const LINES = ( extra = '' ) => `${ LINE( 'Item A', 'Large', '£10.00' ) }${ extra }${ LINE( 'Item B', 'Small', '£5.00' ) }`;
+const wrapLines = ( before, lines = LINES() ) => `<!doctype html><body style="margin:0"><main style="width:700px"><div>${ before }${ lines }</div></main></body>`;
+
+test( 'a row of column labels above the lines is the table header; a progress banner above them is not', async () => {
+	const labels = await locate( wrapLines( '<div style="display:flex"><span>Product</span><span>Total</span></div>' ) );
+	assert.equal( labels[ 'line-item-header' ].length, 1 );
+	const banner = await locate( wrapLines( '<div><div><span>Add more for free delivery</span></div><div style="height:8px"><div style="height:8px;width:30%"></div></div></div>' ) );
+	assert.deepEqual( banner[ 'line-item-header' ], [] );
+	const none = await locate( wrapLines( '' ) );
+	assert.deepEqual( none[ 'line-item-header' ], [] );
+} );
+
+test( 'the unit price is a second amount in a line beside the line total', async () => {
+	const withUnit = wrapLines( '', LINE( 'Item A', 'Large', '£10.00' ).replace( '<span>£10.00</span>', '<span>£10.00</span><span>£5.00 each</span>' ).replace( '£5.00 each', '£5.00' ) + LINE( 'Item B', 'Small', '£5.00' ) );
+	const r = await locate( withUnit );
+	assert.equal( r[ 'line-item-unit-price' ].length, 1 );
+	assert.deepEqual( ( await locate( wrapLines( '' ) ) )[ 'line-item-unit-price' ], [] );
+} );
+
+test( 'a rule between lines is found (a line with a top border, an hr) and a boxed card is not a rule', async () => {
+	const ruled = await locate( wrapLines( '', LINES().replace( /<div class="l">/g, '<div class="l"><div style="border-top:1px solid #000;height:1px"></div>' ) ) );
+	assert.equal( ruled[ 'line-item-cell' ].length, 2 );
+	const hr = await locate( wrapLines( '', LINES( '<hr style="width:600px">' ) ) );
+	assert.ok( hr[ 'line-item-cell' ].some( ( i ) => 'hr' === i.tag ) );
+	const boxed = await locate( wrapLines( '', LINES().replace( /<div class="l">/g, '<div class="l" style="border:2px solid #000">' ) ) );
+	assert.deepEqual( boxed[ 'line-item-cell' ], [] );
+} );
+
+test( 'the wallet buttons are repeated word buttons outside a step, and the rule after them has an empty strip each side', async () => {
+	const html = '<!doctype html><body style="margin:0"><main><form style="width:600px"><div><div><button type="button">Apple Pay</button><button type="button">Google Pay</button></div><div>or pay by card<span style="display:block;height:2px"></span><span style="display:block;height:2px"></span></div></div><fieldset><legend>Details</legend><button type="button">One</button><button type="button">Two</button></fieldset></form></main></body>';
+	const r = await locate( html );
+	assert.equal( r[ 'express-buttons' ].length, 1 );
+	assert.equal( r[ 'express-buttons' ][ 0 ].text, 'Apple PayGoogle Pay' );
+	assert.equal( r[ 'express-rule' ].length, 1 );
+	assert.equal( r[ 'express-divider-line' ].length, 2 );
+	const none = await locate( html.replace( /<div><div><button[^]*?<\/div><div>or pay[^]*?<\/div><\/div>/, '' ) );
+	assert.deepEqual( none[ 'express-buttons' ], [] );
+} );
+
+test( 'terms follow the place order button and carry a link; the disclosure button of a coupon panel is a control with aria-expanded', async () => {
+	const html = '<!doctype html><body><main><form><button type="submit">Pay</button><div>By ordering you agree to <a href="t.html">terms</a>.</div></form><aside><div><span>Subtotal</span><b>£5.00</b></div><div><span>Total</span><b>£5.00</b></div>' + LINES() + '<button aria-expanded="false">Add a coupon</button></aside></main></body>';
+	const r = await locate( html );
+	assert.equal( r.terms.length, 1 );
+	assert.equal( r[ 'coupon-label' ].length, 1 );
+	const without = await locate( html.replace( ' aria-expanded="false"', '' ) );
+	assert.deepEqual( without[ 'coupon-label' ], [] );
+} );

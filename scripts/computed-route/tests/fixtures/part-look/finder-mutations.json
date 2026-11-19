@@ -70,5 +70,23 @@
 		"find": "return r.width > 0 && r.height > 0 && 'none' !== styleOf( el ).display;",
 		"replace": "return true;",
 		"why": "an element the draft does not show is located"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "if ( m.allChildren && ! [ ...el.children ].every( ( k ) => test( k, m.allChildren ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a progress banner above the lines is read as the table header"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "&& ! ( drawn( el, 'Top' ) && drawn( el, 'Right' ) && drawn( el, 'Bottom' ) && drawn( el, 'Left' ) );",
+		"replace": ";",
+		"why": "a boxed card is read as a rule between lines"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "el.hasAttribute( 'aria-expanded' ) !== m.ariaExpanded",
+		"replace": "false",
+		"why": "any button is a disclosure button"
 	}
 ]

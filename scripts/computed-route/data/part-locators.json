@@ -218,6 +218,60 @@
 						]
 					},
 					"smallest": true
+				},
+				"headerRow": {
+					"from": "page",
+					"match": {
+						"precedesAnchor": "lines",
+						"minChildren": 2,
+						"allChildren": {
+							"text": "words"
+						},
+						"control": false,
+						"notInAnchor": "lines"
+					},
+					"smallest": true
+				},
+				"linesParent": {
+					"from": "page",
+					"match": {
+						"parentOfAnchor": "lines"
+					},
+					"smallest": true
+				},
+				"express": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"repeats": true,
+						"text": "words",
+						"notInside": {
+							"tag": [
+								"fieldset"
+							]
+						}
+					}
+				},
+				"expressGroup": {
+					"from": "page",
+					"match": {
+						"parentOfAnchor": "express"
+					},
+					"smallest": true
+				},
+				"expressRule": {
+					"from": "page",
+					"match": {
+						"followsAnchor": "expressGroup",
+						"ownText": true,
+						"text": "words",
+						"minChildren": 2,
+						"allChildren": {
+							"text": "none"
+						}
+					}
 				}
 			},
 			"parts": {
@@ -700,6 +754,258 @@
 				},
 				"item-remove": {
 					"sameAs": "line-item-remove"
+				},
+				"line-item-header": {
+					"sameAs": "headerRow",
+					"neighbours": [
+						"line-item"
+					]
+				},
+				"line-item-unit-price": {
+					"from": "lines",
+					"match": {
+						"ownText": true,
+						"text": "currency"
+					},
+					"perRoot": true,
+					"pick": {
+						"index": 1
+					},
+					"neighbours": [
+						"line-item",
+						"line-item-price"
+					]
+				},
+				"line-item-cell": {
+					"any": [
+						{
+							"from": "lines",
+							"match": {
+								"rule": true
+							}
+						},
+						{
+							"from": "linesParent",
+							"match": {
+								"rule": true
+							}
+						}
+					],
+					"neighbours": [
+						"line-item"
+					]
+				},
+				"sidebar": {
+					"sameAs": "summary"
+				},
+				"summary-sidebar": {
+					"from": "page",
+					"match": {
+						"holdsAnchor": "checkoutLink",
+						"hasAll": [
+							{
+								"childText": [
+									"words",
+									"currency"
+								]
+							}
+						]
+					},
+					"smallest": true,
+					"neighbours": [
+						"summary",
+						"primary-button"
+					]
+				},
+				"coupon-label": {
+					"from": "summary",
+					"match": {
+						"control": true,
+						"ariaExpanded": true
+					}
+				},
+				"address-wrapper": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"input"
+						],
+						"autocomplete": [
+							"address-line1"
+						]
+					},
+					"rel": "wrapper"
+				},
+				"checkout-root": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"form"
+						],
+						"has": {
+							"tag": [
+								"fieldset"
+							]
+						}
+					},
+					"pick": "first"
+				},
+				"order-notes": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"textarea"
+						]
+					},
+					"rel": "wrapper"
+				},
+				"terms": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"div",
+							"p"
+						],
+						"ownText": true,
+						"text": "words",
+						"has": {
+							"tag": [
+								"a"
+							]
+						},
+						"followsAnchor": "placeOrder"
+					}
+				},
+				"summary-edit": {
+					"from": "summary",
+					"match": {
+						"control": true,
+						"tag": [
+							"a"
+						],
+						"linksTo": "cart"
+					}
+				},
+				"summary-item-name": {
+					"sameAs": "line-item-name",
+					"blocks": [
+						"woocommerce/checkout"
+					]
+				},
+				"summary-item-metadata": {
+					"sameAs": "line-item-variant",
+					"blocks": [
+						"woocommerce/checkout"
+					]
+				},
+				"summary-title-text-deep": {
+					"sameAs": "summary-heading"
+				},
+				"totals-wrapper": {
+					"from": "summary",
+					"match": {
+						"childText": [
+							"words",
+							"currency"
+						],
+						"tag": [
+							"div",
+							"li",
+							"tr",
+							"dl"
+						]
+					},
+					"pick": "allButLast"
+				},
+				"summary-row": {
+					"sameAs": "totals-wrapper"
+				},
+				"place-order-label": {
+					"from": "placeOrder",
+					"self": true,
+					"match": {
+						"ownText": true,
+						"text": "words"
+					}
+				},
+				"place-order-text": {
+					"sameAs": "place-order-label"
+				},
+				"option-chosen": {
+					"from": "radioCards",
+					"self": true,
+					"match": {
+						"ariaOn": true
+					}
+				},
+				"radio-labels": {
+					"sameAs": "delivery-card-title"
+				},
+				"radio-descriptions": {
+					"sameAs": "delivery-card-description"
+				},
+				"express-buttons": {
+					"sameAs": "expressGroup"
+				},
+				"express-rule": {
+					"sameAs": "expressRule"
+				},
+				"express-divider": {
+					"sameAs": "expressRule"
+				},
+				"express-divider-line": {
+					"from": "expressRule",
+					"match": {
+						"text": "none",
+						"maxChildren": 0
+					}
+				},
+				"step-spaced": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"fieldset"
+						],
+						"has": {
+							"tag": [
+								"legend"
+							]
+						},
+						"lacksAnchor": "radioCards"
+					}
+				},
+				"line-item-description": {
+					"from": "lines",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false
+					},
+					"perRoot": true,
+					"pick": {
+						"index": 0
+					},
+					"rel": {
+						"ancestor": {
+							"hasMany": {
+								"match": {
+									"ownText": true,
+									"text": "words",
+									"control": false
+								},
+								"atLeast": 2
+							}
+						}
+					}
+				},
+				"item-description": {
+					"sameAs": "line-item-description"
+				},
+				"line-item-text": {
+					"sameAs": "line-item-description"
+				},
+				"item-text": {
+					"sameAs": "line-item-description"
 				}
 			}
 		},

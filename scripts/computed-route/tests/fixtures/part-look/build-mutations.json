@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/fill-part-look.mjs",
-		"find": "return c && c.a > 0 ? toHex( c ) : null;",
-		"replace": "return c ? toHex( c ) : null;",
+		"find": "return c && c.a > 0 ? toHex( c ) : ( keep && c ? 'transparent' : null );",
+		"replace": "return c ? toHex( c ) : ( keep && c ? 'transparent' : null );",
 		"why": "a transparent background is written"
 	},
 	{
@@ -91,8 +91,8 @@
 	},
 	{
 		"file": "lib/fill-part-look.mjs",
-		"find": "const fault = faultOf( row.attr_name );",
-		"replace": "const fault = null;",
+		"find": "const fault = faultOf( row.attr_name );\n\t\t\tconst pairedColour",
+		"replace": "const fault = null;\n\t\t\tconst pairedColour",
 		"why": "a known fault is not flagged"
 	},
 	{
@@ -127,8 +127,8 @@
 	},
 	{
 		"file": "lib/fill-part-look.mjs",
-		"find": "if ( ! WIDTHS.some( ( w ) => ( instances[ w ] || [] ).length ) ) {",
-		"replace": "if ( false ) {",
+		"find": "if ( ! found() ) {\n\t\t\tif ( partLook.length ) {",
+		"replace": "if ( false ) {\n\t\t\tif ( partLook.length ) {",
 		"why": "a located part with no draft element is not reported as unpaired"
 	}
 ]
