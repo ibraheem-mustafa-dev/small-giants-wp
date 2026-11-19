@@ -465,12 +465,14 @@
 		},
 		"listArrangement": {
 			"blocks": [ { "block": "sgs/timeline", "setting": "orientation", "value": "horizontal" } ],
-			"scope": "a listed block that draws its items from the draft's repeated units (the draft element's block children) whose units sit in one row at the widest width they render at (each starts at or beyond the previous one's right edge, and each overlaps the first unit's height; lib/skeleton-arrangement.mjs::inOneRow). The block's own setting takes the listed value; a decision's own value for the setting wins, and units stacked or wrapped onto a second row keep the block's default",
+			"scope": "a listed block that draws its items from the draft's repeated units (the draft element's block children) whose units sit in one row at the widest width they render at (each starts at or beyond the previous one's right edge, and each overlaps the first unit's height; lib/skeleton-arrangement.mjs::inOneRow). The block's own setting takes the listed value; a decision's own value for the setting wins, and units stacked or wrapped onto a second row keep the block's default.",
 			"reason": "a timeline whose entries the draft sets side by side in one row is the timeline's horizontal orientation, where the block's default draws them down the page (four year entries along a line, each with a title and a line of words beneath)"
 		},
 		"marquee": {
 			"logoBlock": "sgs/brand-strip",
 			"itemBlock": "sgs/trust-bar",
+			"itemSlots": [ "tileBackgroundColour", "tileRadius", "tileShadow", "tilePadding", "tileBorderWidth", "tileBorderColour" ],
+			"itemSlotsReason": "the name tiles' look (fill, radius, shadow, padding, border) is the block's tile settings, calibrated on its first text tile: the draft's first labelled tile is read there",
 			"textItems": {
 				"attributes": { "brandDisplay": "text", "logoLayout": "row" },
 				"items": { "setting": "logos", "text": "name" },
@@ -479,6 +481,7 @@
 			},
 			"labelledLogos": {
 			"attributes": { "brandDisplay": "logo-else-text" },
+			"tile": { "setting": "brandTextTile", "reason": "a labelled tile the draft paints itself (an inline background, border or box shadow) is a name tile: the strip draws each name as a tile (brandTextTile), and the first tile's look is read at the block's tile settings (itemSlots) where the block's default shows the names bare" },
 			"reason": "a looping strip of logo tiles that each name themselves (an aria-label) shows each name where its picture is not set yet and the picture once it is, so a strip of empty picture placeholders presents its brands by name and never as an empty band; Fill writes each tile's label as the item's name (lib/fill-list-items.mjs::holeField)"
 		},
 		"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7"

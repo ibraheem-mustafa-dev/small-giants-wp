@@ -1,7 +1,7 @@
 [
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "attributes: labelled ? { ...L.attributes } : {}, absorb: true",
+		"find": "attributes: labelled ? { ...L.attributes, ...( painted ? { [ T2.setting ]: true } : {} ) } : {}, absorb: true",
 		"replace": "attributes: {}, absorb: true",
 		"why": "the strip is never given the display"
 	},

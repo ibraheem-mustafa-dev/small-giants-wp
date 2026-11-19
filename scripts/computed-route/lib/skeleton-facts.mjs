@@ -132,7 +132,7 @@ export function decisionsProblems( facts ) {
 		problems.push( `rules.headerSlots.columnsSetting must name a structural setting ${ r.headerSlots.rowBlock } has` );
 	}
 	// A rule's item look settings (`itemSlots`) are settings of its own block.
-	Object.entries( r ).filter( ( [ , x ] ) => Array.isArray( x?.itemSlots ) ).forEach( ( [ id, x ] ) => x.itemSlots.filter( ( a ) => ! facts.attr( x.block, a ) ).forEach( ( a ) => problems.push( `rules.${ id }.itemSlots names ${ a }, which ${ x.block } does not have` ) ) );
+	Object.entries( r ).filter( ( [ , x ] ) => Array.isArray( x?.itemSlots ) ).forEach( ( [ id, x ] ) => x.itemSlots.filter( ( a ) => ! facts.attr( x.block ?? x.logoBlock, a ) ).forEach( ( a ) => problems.push( `rules.${ id }.itemSlots names ${ a }, which ${ x.block ?? x.logoBlock } does not have` ) ) );
 	const ci = r.marqueeCodeItems?.items;
 	if ( ci && ( ! facts.attr( r.marqueeCodeItems.block, ci.setting ) || [ ...( ci.clear || [] ), ...( ci.slots || [] ), ...( ci.plain ? [ ci.plain.setting ] : [] ) ].some( ( a ) => ! facts.attr( r.marqueeCodeItems.block, a ) ) ) ) {
 		problems.push( `rules.marqueeCodeItems.items must name an items setting and cleared settings ${ r.marqueeCodeItems.block } has` );
@@ -150,6 +150,9 @@ export function decisionsProblems( facts ) {
 	// The labelled-logo display names settings of the logo block, each at a value the setting has.
 	Object.entries( r.marquee?.labelledLogos?.attributes || {} ).filter( ( [ a, val ] ) => ! facts.enumOf?.( r.marquee.logoBlock, a )?.includes( val ) )
 		.forEach( ( [ a, val ] ) => problems.push( `rules.marquee.labelledLogos.attributes ${ a } ${ val } must be a setting of ${ r.marquee.logoBlock } and one of its values` ) );
+	// The name tile's setting is a setting of the logo block (the tile look read at the first tile is checked with every `itemSlots`).
+	const tileSetting = r.marquee?.labelledLogos?.tile?.setting;
+	tileSetting && ! facts.attr( r.marquee.logoBlock, tileSetting ) && problems.push( `rules.marquee.labelledLogos.tile.setting ${ tileSetting } must be a setting of ${ r.marquee.logoBlock }` );
 	Object.keys( r.footerSlots?.stackedRow || {} ).filter( ( a ) => ! facts.attr( r.footerSlots.rowBlock, a ) || facts.attr( r.footerSlots.rowBlock, a ).css_property ).forEach( ( a ) => problems.push( `rules.footerSlots.stackedRow.${ a } must name a structural setting ${ r.footerSlots.rowBlock } has (no CSS property: a skeleton carries no style value)` ) );
 	// A commerce region's block: a core block only as a listed exception, WooCommerce's own block (outside the framework
 	// database), or a known SGS block; its money pattern compiles.
