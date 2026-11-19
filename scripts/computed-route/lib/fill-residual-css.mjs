@@ -265,6 +265,17 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 			const state = row.state ?? null;
 			const pseudo = state ? STATE_PSEUDO[ state ] : '';
 			const where = `${ target.slot }|${ state ?? '' }`;
+			// A setting of the block for the property that this instance already holds with a value doing what the draft's
+			// does (Fill wrote it, on whichever part calibration placed it) holds the row; a rule would repeat or fight it.
+			const heldBy = ALIGN.test( prop ) ? candidates( db, rec.name, prop, state ).find( ( c ) => {
+				const v = node.attributes?.[ c.attr_name ];
+				const ctx = { display: String( reads.widths?.[ 1440 ]?.[ target.id ]?.layoutDisplay || reads.widths?.[ 1440 ]?.[ target.id ]?.styles?.display || '' ) };
+				return 'string' === typeof v && '' !== v && Object.values( statedValues( row ) ).every( ( x ) => effectOf( prop, x, ctx ) === effectOf( prop, v, ctx ) );
+			} ) : null;
+			if ( heldBy ) {
+				refuse( r, `${ heldBy.attr_name } already holds ${ node.attributes[ heldBy.attr_name ] } on this instance, which does what the draft's ${ row.value } does` );
+				continue;
+			}
 			if ( 'display' === prop ) {
 				refuse( r, 'display: the block\'s own markup decides how its element is laid out; a different display would fight it' );
 				continue;

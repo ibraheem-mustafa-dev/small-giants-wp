@@ -19,5 +19,6 @@
 	{"file":"lib/fill-residual-css.mjs","find":"if ( leaks.length ) {","replace":"if ( false ) {","why":"an inherited value would pass into the blocks inside that render another"},
 	{"file":"lib/fill-residual-css.mjs","find":"MOTION_REST.test( canon ) && restPose( db ).has( canon )","replace":"false","why":"a resting pose the motion layer holds would be written as Custom CSS"},
 	{"file":"lib/fill-residual-css.mjs","find":"return undefined !== painted && effectOf( canon, v, ctx ) === effectOf( canon, painted, ctx );","replace":"return false;","why":"an alignment equal in effect to the paint would be written"},
-	{"file":"lib/fill-residual-css.mjs","find":"db.prepare( 'SELECT 1 FROM motion_targets WHERE block_slug = ?' ).get( row.block )","replace":"true","why":"a block with no motion targets would leave its resting transform unwritten"}
+	{"file":"lib/fill-residual-css.mjs","find":"db.prepare( 'SELECT 1 FROM motion_targets WHERE block_slug = ?' ).get( row.block )","replace":"true","why":"a block with no motion targets would leave its resting transform unwritten"},
+	{"file":"lib/fill-residual-css.mjs","find":"if ( heldBy ) {","replace":"if ( false ) {","why":"an alignment a written setting already holds would be repeated as Custom CSS"}
 ]

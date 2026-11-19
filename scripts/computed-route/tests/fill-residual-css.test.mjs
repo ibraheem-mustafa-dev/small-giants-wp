@@ -16,6 +16,7 @@ const db = openDb( fixtureDb( {
 		...ext( 'sgs/field' ),
 		{ block_slug: 'sgs/field', attr_name: 'fieldColour', attr_type: 'string', css_property: 'color', role: 'colour' },
 		{ block_slug: 'sgs/field', attr_name: 'boxPadLeft', attr_type: 'string', css_property: 'padding-left', role: 'spacing' },
+		{ block_slug: 'sgs/field', attr_name: 'boxJustify', attr_type: 'string', css_property: 'justify-content', role: 'layout' },
 		{ block_slug: 'sgs/field', attr_name: 'fieldGap', attr_type: 'string', css_property: 'gap', role: 'layout' },
 		{ block_slug: 'sgs/field', attr_name: 'sgsHideOnMobile', attr_type: 'boolean', css_property: 'display', role: 'layout', source: 'sgs-ext' },
 		{ block_slug: 'core/group', attr_name: 'tagName', attr_type: 'string', role: 'layout', source: 'core' },
@@ -215,6 +216,21 @@ test( 'MUST FAIL WITHOUT THE MOTION AND EFFECT RULES: a resting transform or ori
 	assert.match( classifyRow( row( { property: 'justify-content', value: 'normal' } ), { calFor, db } ).cause, /equal in effect/ );
 	assert.equal( classifyRow( row( { property: 'justify-content', value: 'center' } ), { calFor, db } ).cls, 'residual' );
 	[ 375, 768, 1440 ].forEach( ( x ) => delete paint[ '.f__input' ][ x ][ 'justify-content' ] );
+} );
+
+test( 'MUST FAIL WITHOUT THE WRITTEN-SETTING RULE: an alignment a setting this instance holds already does is refused, not written', () => {
+	// The part paints centre by default, so the draft's normal (its start) is a real difference the written setting holds.
+	W.forEach( ( x ) => ( paint[ '.f__input' ][ x ][ 'justify-content' ] = 'center' ) );
+	const w = world();
+	w.flat[ 0 ].attributes.boxJustify = 'flex-start';
+	const r = run( w, [ row( { property: 'justify-content', value: 'normal' } ) ] );
+	assert.equal( css( w ), undefined );
+	assert.match( r.refused[ 0 ].reason, /boxJustify already holds flex-start/ );
+	const other = world();
+	other.flat[ 0 ].attributes.boxJustify = 'center';
+	run( other, [ row( { property: 'justify-content', value: 'normal' } ) ] );
+	assert.equal( css( other ), '& .f__input { justify-content: normal; }', 'a held value doing something else does not hold the row' );
+	W.forEach( ( x ) => delete paint[ '.f__input' ][ x ][ 'justify-content' ] );
 } );
 
 test( 'MUST FAIL WITHOUT THE CAP: past the page cap a rule is refused and listed, and the bytes are counted', () => {
