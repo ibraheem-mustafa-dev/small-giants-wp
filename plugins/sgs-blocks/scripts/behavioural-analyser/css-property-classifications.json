@@ -2842,7 +2842,8 @@
       "slug": "sgs/account",
       "attr": "registerButtonPreset",
       "fields": {
-        "css_property": "border-color,border-radius,border-width,color,font-weight,letter-spacing,rotate,scale,text-transform,transform"
+        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -14080,6 +14081,14 @@
       "fields": {
         "css_property": "padding",
         "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitStyle",
+      "fields": {
+        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
+        "css_layer": "OUTER"
       }
     },
     {
