@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/resolve.mjs",
+		"find": "if ( 'background-image' === short && ! state ) {",
+		"replace": "if ( false ) {",
+		"why": "the text-clip rule never runs"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "if ( behind.dropped.length && ! behind.rows.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a text gradient left alone is written anyway"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "tied = behind.rows;",
+		"replace": "tied = tied;",
+		"why": "the dropped text gradient stays in a tie"
+	},
+	{
+		"file": "lib/resolve-side-effects.mjs",
+		"find": "if ( ! clips.length || clips.includes( 'text' ) ) {",
+		"replace": "if ( ! clips.length ) {",
+		"why": "a draft that clips to the text loses the text gradient"
+	},
+	{
+		"file": "lib/resolve-side-effects.mjs",
+		"find": "if ( ! clips.length || clips.includes( 'text' ) ) {",
+		"replace": "if ( clips.includes( 'text' ) ) {",
+		"why": "an unread clip drops the text gradient"
+	},
+	{
+		"file": "lib/resolve-side-effects.mjs",
+		"find": "'background-clip' === e.slice( e.lastIndexOf( '|' ) + 1 ) && same(",
+		"replace": "same(",
+		"why": "every effect on the element counts as a clip"
+	},
+	{
+		"file": "lib/resolve-side-effects.mjs",
+		"find": "e.includes( '|' ) && 'background-clip' === e.slice( e.lastIndexOf( '|' ) + 1 ) && same( e.slice( 0, e.lastIndexOf( '|' ) ), slot ) );\n\treturn { rows:",
+		"replace": "e.includes( '|' ) && 'background-clip' === e.slice( e.lastIndexOf( '|' ) + 1 ) );\n\treturn { rows:",
+		"why": "an effect on another element counts"
+	}
+]

@@ -4,7 +4,7 @@
 // calibration decides which candidate paints that slot (R-47-6); values snap to the site's tokens (R-47-7).
 import { mayAnswer } from './discovered-layout.mjs';
 import { nearestHome } from './resolve-nearest.mjs';
-import { sideEffectFree } from './resolve-side-effects.mjs';
+import { sideEffectFree, backgroundBehindBox } from './resolve-side-effects.mjs';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -602,6 +602,14 @@ export function resolve( input, ctx ) {
 	if ( ! tied.length ) {
 		const named = 'display' === prop ? `no layout setting holds display:${ [ ...new Set( Object.values( perWidth ) ) ].join( ', ' ) } on ${ block } "${ slot }"` : `no ${ prop } setting on ${ block } paints "${ slot }"`;
 		return resolveDiscovered( { ...input, state }, ctx.calibration ) || noSetting( { ...input, state }, ctx, `${ named } (candidates: ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) })` );
+	}
+	// A text gradient cannot give a background the draft paints behind its box (lib/resolve-side-effects.mjs::backgroundBehindBox).
+	if ( 'background-image' === short && ! state ) {
+		const behind = backgroundBehindBox( tied, { effectsOf: ( r ) => ctx.calibration.settings?.[ r.attr_name ]?.effects, slot, same: ( p, s ) => loose( p ) === s, siblings: input.siblings || {} } );
+		if ( behind.dropped.length && ! behind.rows.length ) {
+			return resolveDiscovered( { ...input, state }, ctx.calibration ) || noSetting( { ...input, state }, ctx, `no background-image setting on ${ block } paints "${ slot }" behind the box (${ behind.dropped.map( ( r ) => r.attr_name ).join( ', ' ) } clip the background to the text, and the draft's background-clip is ${ [ ...new Set( Object.values( input.siblings[ 'background-clip' ] ) ) ].join( ', ' ) })` );
+		}
+		tied = behind.rows;
 	}
 	const split = ( rows ) => {
 		const f = rows.filter( ( r ) => 'flat_sibling' === r.tier_shape );

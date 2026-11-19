@@ -24,3 +24,19 @@ export function sideEffectFree( rows, { effectsOf, slot, same, siblings = {}, pa
 	const free = rows.filter( ( r ) => ! ownEffects( r ).some( atDefault ) );
 	return free.length ? free : rows;
 }
+
+// The tied rows that can paint a background the draft draws behind its box. A setting that clips the background to the text (a
+// text gradient: calibration lists the read element's `background-clip` among its effects) paints the gradient into the letters
+// and clears the text colour, so it cannot give a gradient the draft paints behind the box and clips to the box. The draft's own
+// background-clip decides: `text` (at any width) keeps every row; a clip the draft states as anything else drops the rows that
+// clip to text; an unread clip keeps every row. A gradient sized and placed as an underline is such a background. Returns
+// { rows, dropped }: `rows` are the rows that remain (empty when every row clips to text), `dropped` the rows removed.
+// rows: the tied rows (attr_name); effectsOf, slot, same, siblings: as sideEffectFree.
+export function backgroundBehindBox( rows, { effectsOf, slot, same, siblings = {} } ) {
+	const clips = Object.values( siblings[ 'background-clip' ] || {} ).map( ( v ) => String( v ).trim() ).filter( Boolean );
+	if ( ! clips.length || clips.includes( 'text' ) ) {
+		return { rows, dropped: [] };
+	}
+	const toText = ( r ) => ( effectsOf( r ) || [] ).map( String ).some( ( e ) => e.includes( '|' ) && 'background-clip' === e.slice( e.lastIndexOf( '|' ) + 1 ) && same( e.slice( 0, e.lastIndexOf( '|' ) ), slot ) );
+	return { rows: rows.filter( ( r ) => ! toText( r ) ), dropped: rows.filter( toText ) };
+}
