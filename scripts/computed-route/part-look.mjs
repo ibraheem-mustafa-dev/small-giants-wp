@@ -22,15 +22,16 @@ import { fileURLToPath } from 'node:url';
 import { openDb } from './lib/db.mjs';
 import { buildLook, tableSelector } from './lib/fill-part-look.mjs';
 import { compareSettings, faultsOf } from './lib/part-look-compare.mjs';
-import { REPO, assertMayWrite, blockRows, customCssOf, patchBlock, readParts, readSavedBlock } from './lib/part-look-run.mjs';
+import { REPO, assertMayWrite, blockRows, customCssOf, patchBlock, readParts, readSavedBlock, templateIdOf } from './lib/part-look-run.mjs';
 import { reportMarkdown, totalsOf } from './lib/part-look-report.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
-import { blockElementsOf, liveSelectorsFor, readLiveSurface, seedOf, verifySurface } from './lib/part-look-verify.mjs';
+import { blockElementsOf, liveSelectorsFor, readLiveSurface, seedOf, shootLiveSurface, verifySurface } from './lib/part-look-verify.mjs';
 import { READ_PROPS } from './lib/fill-part-look.mjs';
+import { evaluateModes } from './lib/part-look-modes.mjs';
 import { readTargets, siteUrl, targetOf } from './lib/site-targets.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
-const SURFACES = [ 'cart', 'checkout', 'my-account', 'header' ];
+const SURFACES = [ 'cart', 'checkout', 'my-account', 'header', 'product', 'shop' ];
 const readJson = ( file ) => JSON.parse( fs.readFileSync( file, 'utf8' ) );
 const SELECTOR_TABLE = path.join( REPO, 'plugins', 'sgs-blocks', 'includes', 'woocommerce', 'commerce-look', 'selectors.json' );
 
@@ -44,7 +45,7 @@ export function pagesOf( { rows, surfaces } ) {
 	return Object.fromEntries( Object.entries( { cart: route( 'cart' ), checkout: route( 'checkout' ), account, signin } ).filter( ( [ , v ] ) => v ) );
 }
 
-export async function runPartLook( { client, surfaces: wanted = SURFACES, site = null, compare = false, write = false, verify = false, seed = null, only = null, dryRun = false, out = null, headed = false, log = ( m ) => console.log( m ) } ) {
+export async function runPartLook( { client, surfaces: wanted = SURFACES, site = null, compare = false, write = false, verify = false, seed = null, shots = true, only = null, dryRun = false, out = null, headed = false, log = ( m ) => console.log( m ) } ) {
 	if ( ( compare || write || verify ) && ! site ) {
 		throw new Error( `${ verify ? '--verify' : ( write ? '--write' : '--compare' ) } needs --site <scratch copy>` );
 	}
@@ -57,6 +58,8 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	const listed = readJson( path.join( HERE, 'data', 'part-look-known-faults.json' ) );
 	const switches = readJson( path.join( HERE, 'data', 'part-look-switches.json' ) );
 	const liveMap = readJson( path.join( HERE, 'data', 'part-live-selectors.json' ) );
+	const modesData = readJson( path.join( HERE, 'data', 'part-look-modes.json' ) );
+	const shopRecord = fs.existsSync( path.join( buildDir, 'shop-parts.json' ) ) ? readJson( path.join( buildDir, 'shop-parts.json' ) ) : null;
 	const table = readJson( SELECTOR_TABLE );
 	// A role names a file only where the draft has one (a draft whose pages are its logic's own state has none).
 	const draftDirOf = ( entry ) => path.resolve( REPO, entry.draftDir );
@@ -84,8 +87,15 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		}
 		const cfg = config.surfaces?.[ surface ] || {};
 		const group = locators.groups[ loc.group ];
-		const spec = { anchors: group.anchors, parts: group.parts };
 		const mainFile = cfg.file || pages[ loc.pageRole ] || entry.draftIndex;
+		// The client's shop parts record locates each shop part by template key ("Product/108"): a locator may name a part id.
+		const shopParts = {};
+		for ( const sp of shopRecord?.surfaces || [] ) {
+			for ( const part of sp.parts || [] ) {
+				shopParts[ part.id ] = ( part.locators || [] ).map( ( k ) => ( { dc: k.slice( 0, k.lastIndexOf( '/' ) ), tpl: k.slice( k.lastIndexOf( '/' ) + 1 ) } ) );
+			}
+		}
+		const spec = { anchors: group.anchors, parts: group.parts, shopParts, rootName: String( mainFile ).replace( /\.dc\.html$/, '' ) };
 		const also = ( loc.alsoRead || [] ).map( ( role ) => pages[ role ] ).filter( Boolean );
 		const { rows: blockRowsOf, names } = blockRows( loc.block, db );
 		const blockKey = [ 'woocommerce/cart', 'woocommerce/checkout' ].includes( loc.block ) ? loc.block.split( '/' )[ 1 ] : null;
@@ -96,13 +106,24 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		const build = buildLook( {
 			block: loc.block, rows: blockRowsOf, names, locators: spec, reads, snapshot,
 			selectorOf: ( part ) => ( blockKey ? tableSelector( table, part, blockKey ) : null ),
-			faultOf: faultsOf( { block: loc.block, blockKey, table, listed } ), tableParts, switches,
+			faultOf: faultsOf( { block: loc.block, blockKey, table, listed } ), tableParts, switches, policy: loc.instances || null,
 		} );
+		// Content and mode settings (what a card draws, what its button says): rules over the located parts.
+		const modes = evaluateModes( { block: loc.block, rules: modesData.blocks?.[ loc.block ]?.rules, rows: blockRowsOf, reads } );
+		build.writes.push( ...modes.writes );
+		build.gaps.push( ...modes.gaps );
+		Object.entries( modes.settings ).forEach( ( [ attr, st ] ) => ( build.settings[ attr ] ??= { status: st.code === 'written' ? 'written' : 'not-written', code: st.code, part: null } ) );
+		build.counts.modes = modes.writes.length;
+		const withPart = blockRowsOf.filter( ( r ) => r.css_element );
+		const settingsStats = {
+			total: blockRowsOf.length, withPart: withPart.length, withoutPart: blockRowsOf.length - withPart.length,
+			withoutPartButProperty: blockRowsOf.filter( ( r ) => ! r.css_element && r.css_property ).map( ( r ) => r.attr_name ),
+		};
 		const lookRows = blockRowsOf.filter( ( r ) => r.css_element && r.css_property && ! r.css_state );
 		const partNames = [ ...new Set( lookRows.map( ( r ) => r.css_element ) ) ];
 		const located = ( part ) => Object.values( reads[ part ] || {} ).some( ( l ) => l.length );
 		const result = {
-			surface, block: loc.block, postId: entry.target?.postId ?? null, draftFile: noDraft ? `none (${ noDraft })` : mainFile, alsoRead: also, pages,
+			surface, block: loc.block, settingsStats, template: loc.template ?? null, postId: loc.template && site ? templateIdOf( site, loc.template ) : ( entry.target?.postId ?? null ), draftFile: noDraft ? `none (${ noDraft })` : mainFile, alsoRead: also, pages,
 			rowsPaired: { tableRows: { present: tableParts.length, paired: tableParts.filter( located ).length }, parts: { withSettings: partNames.length, paired: partNames.filter( located ).length } },
 			build, located: Object.fromEntries( Object.entries( reads ).map( ( [ part, byWidth ] ) => [ part, Object.fromEntries( Object.entries( byWidth ).map( ( [ w, l ] ) => [ w, l.map( ( i ) => ( { text: i.text, tag: i.tag, box: i.box } ) ) ] ) ) ] ) ),
 		};
@@ -116,6 +137,22 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 				result.compare = compareSettings( { writes: build.writes, settings: build.settings, saved: saved.attrs, lookAttrs: lookRows.map( ( r ) => r.attr_name ), site: snapshot } );
 			}
 		}
+		const base0 = verify || shots ? ( site ? siteUrl( targetOf( site, readTargets() ), REPO ) : null ) : null;
+		const pagePathOf = () => {
+			if ( loc.basket === false && 'product' === loc.pageRole ) {
+				return seed ? seedOf( fs.readFileSync( seed, 'utf8' ) ).path : '/shop/';
+			}
+			const row = rows.find( ( r ) => r.template === loc.template );
+			// A shop archive is read at its own address: its page id redirects to a product on a WooCommerce site.
+			if ( row?.slug && 'shop' === row.postType ) {
+				return `/${ row.slug }/`;
+			}
+			return row?.id ? `/?page_id=${ row.id }` : ( 'header' === surface ? `/?page_id=${ manifest.cart?.target?.postId }` : `/?page_id=${ result.postId }` );
+		};
+		if ( verify && shots && base0 ) {
+			result.shots = { before: path.join( outDir, `${ surface }-before-1440.png` ) };
+			await shootLiveSurface( { base: base0, pagePath: pagePathOf(), product: false === loc.basket || ! seed ? null : seedOf( fs.readFileSync( seed, 'utf8' ) ), file: result.shots.before } );
+		}
 		if ( write ) {
 			const set = Object.fromEntries( build.writes.filter( ( w ) => ! only || only.includes( w.attr ) || only.includes( w.companionOf ) ).map( ( w ) => [ w.attr, w.value ] ) );
 			result.written = { site, count: Object.keys( set ).length, output: Object.keys( set ).length ? patchBlock( { site, postId: result.postId, block: loc.block, set, file: path.join( outDir, `patch-${ surface }.json` ), dryRun } ) : 'nothing to write on this surface' };
@@ -124,17 +161,20 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 			const short = loc.block.split( '/' )[ 1 ];
 			const live = liveSelectorsFor( { parts: partNames, blockKey, table, map: liveMap, elements: blockKey ? null : blockElementsOf( REPO, short ), short } );
 			const base = siteUrl( targetOf( site, readTargets() ), REPO );
-			const pageId = 'header' === surface ? manifest.cart?.target?.postId : result.postId;
-			const product = seed ? seedOf( fs.readFileSync( seed, 'utf8' ) ) : null;
+			const product = seed && false !== loc.basket ? seedOf( fs.readFileSync( seed, 'utf8' ) ) : null;
 			let n = 0;
 			result.verify = await verifySurface( {
-				buildInputs: { block: loc.block, rows: blockRowsOf, names, locators: spec, reads, snapshot, selectorOf: ( part ) => ( blockKey ? tableSelector( table, part, blockKey ) : null ), faultOf: faultsOf( { block: loc.block, blockKey, table, listed } ), tableParts, switches },
+				buildInputs: { block: loc.block, rows: blockRowsOf, names, locators: spec, reads, snapshot, selectorOf: ( part ) => ( blockKey ? tableSelector( table, part, blockKey ) : null ), faultOf: faultsOf( { block: loc.block, blockKey, table, listed } ), tableParts, switches, policy: loc.instances || null },
 				built: build,
-				readLive: () => readLiveSurface( { base, pagePath: `/?page_id=${ pageId }`, selectors: live.selectors, props: READ_PROPS, product, openDrawer: 'header' === surface, headed } ),
+				readLive: () => readLiveSurface( { base, pagePath: pagePathOf(), selectors: live.selectors, props: READ_PROPS, product, openDrawer: 'header' === surface, headed } ),
 				patch: async ( { set, unset } ) => patchBlock( { site, postId: result.postId, block: loc.block, set, unset, file: path.join( outDir, `patch-verify-${ surface }-${ ++n }.json` ) } ),
 				readSaved: async () => readSavedBlock( { site, postId: result.postId, block: loc.block } ).attrs,
 				selectorsNone: live.none, selectors: live.selectors, log,
 			} );
+			if ( shots ) {
+				result.shots = { ...( result.shots || {} ), after: path.join( outDir, `${ surface }-after-1440.png` ) };
+				await shootLiveSurface( { base, pagePath: pagePathOf(), product, file: result.shots.after } );
+			}
 		}
 		results[ surface ] = result;
 	}
@@ -157,7 +197,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		if ( surface && ! SURFACES.includes( surface ) ) {
 			throw new Error( `--surface must be one of ${ SURFACES.join( ', ' ) }` );
 		}
-		const r = await runPartLook( { client, surfaces: surface ? [ surface ] : SURFACES, site: flag( '--site' ), compare: argv.includes( '--compare' ), write: argv.includes( '--write' ), verify: argv.includes( '--verify' ), seed: flag( '--seed' ), only: flag( '--only' ) ? flag( '--only' ).split( ',' ) : null, dryRun: argv.includes( '--dry-run' ), out: flag( '--out' ), headed: argv.includes( '--headed' ) } );
+		const r = await runPartLook( { client, surfaces: surface ? [ surface ] : SURFACES, site: flag( '--site' ), compare: argv.includes( '--compare' ), write: argv.includes( '--write' ), verify: argv.includes( '--verify' ), shots: ! argv.includes( '--no-shots' ), seed: flag( '--seed' ), only: flag( '--only' ) ? flag( '--only' ).split( ',' ) : null, dryRun: argv.includes( '--dry-run' ), out: flag( '--out' ), headed: argv.includes( '--headed' ) } );
 		for ( const [ block, t ] of Object.entries( r.totals ) ) {
 			console.log( `${ block }: ${ t.written } values to write (${ t.knownFaultWrites } known not to paint), table rows paired ${ t.tableRowsPaired}/${ t.tableRowsPresent }, parts paired ${ t.partsPaired }/${ t.partsWithSettings }, ${ t.unpaired } unpaired, ${ t.noLocator } no locator, ${ t.noSetting } no setting${ t.compare ? `; compare: equal ${ t.compare.equal }, differs ${ t.compare.differs }, hand-set only ${ t.compare.handSetOnly }, route only ${ t.compare.routeOnly }` : '' }` );
 		}

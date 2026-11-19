@@ -49,8 +49,8 @@
 	},
 	{
 		"file": "lib/part-look-verify.mjs",
-		"find": "selectors[ part ] = elements[ part ].selector || `.sgs-${ short }__${ part }`;",
-		"replace": "selectors[ part ] = elements[ part ].selector;",
-		"why": "an element with no selector of its own has none"
+		"find": "( [ 'wrapper', 'box' ].includes( part ) ? `.sgs-${ short }` : `.sgs-${ short }__${ part }` );",
+		"replace": "`.sgs-${ short }__${ part }`;",
+		"why": "a block's wrapper is looked for as an element named wrapper"
 	}
 ]

@@ -66,6 +66,19 @@ export function reportMarkdown( { client, site, compare, generated, surfaces, to
 				lines.push( '**Route only**', '', table( [ 'Setting', 'Part', 'Route' ], c.routeOnly.map( ( r ) => [ `${ r.attr }${ r.knownFault ? ' (known not to paint)' : '' }`, r.part, json( r.route ) ] ) ), '' );
 			}
 		}
+		if ( s.settingsStats ) {
+			const st = s.settingsStats;
+			lines.push( `Settings the block holds: ${ st.total }, of which ${ st.withPart } name a part and ${ st.withoutPart } name none (content and mode switches, labels and the like cannot be placed on a part). ${ st.withoutPartButProperty.length } of those carry a CSS property and no part, so a look they hold cannot be placed: ${ st.withoutPartButProperty.join( ', ' ) || 'none' }.`, '' );
+		}
+		if ( s.shots ) {
+			lines.push( `Pictures at 1440: ${ Object.entries( s.shots ).map( ( [ k, f ] ) => `${ k } \`${ f.split( /[\\/]/ ).pop() }\`` ).join( ', ' ) }.`, '' );
+		}
+		if ( b.gaps?.length ) {
+			lines.push( '### Gaps (what the block cannot express, with the draft evidence)', '', table( [ 'Setting', 'What', 'Draft evidence' ], b.gaps.map( ( g ) => [ g.setting, g.what, g.evidence ?? '' ] ) ), '' );
+		}
+		if ( b.minority?.length ) {
+			lines.push( '### Instances that differ from the value written (the surface writes the value most instances hold)', '', table( [ 'Setting', 'Part', 'Instance', 'Width', 'Its value' ], b.minority.flatMap( ( m ) => m.minority.map( ( x ) => [ m.attr, m.part, x.instance, x.width, json( x.value ) ] ) ) ), '' );
+		}
 		lines.push( '### Values to write', '', b.writes.length ? table( [ 'Setting', 'Part', 'Property', 'Value', 'Draft value per width', 'Flags' ], b.writes.map( ( w ) => [ w.attr, w.part, w.property, json( w.value ), draftText( w.draft ), [ w.knownFault ? 'written, known not to paint' : '', w.widthVaries ? 'widths differ, one value held' : '', w.defaultNotRead ? 'default not read' : '' ].filter( Boolean ).join( ', ' ) ] ) ) : 'None.', '' );
 		lines.push( '### Unpaired (a locator, no draft element)', '', b.unpaired.length ? b.unpaired.map( ( u ) => `- ${ u.part } (${ u.settings } settings${ u.tableRow ? ', look-table row' : '' })` ).join( '\n' ) : 'None.', '' );
 		lines.push( '### No locator', '', b.noLocator.length ? b.noLocator.map( ( u ) => `- ${ u.part } (${ u.settings } settings${ u.tableRow ? ', look-table row' : '' })` ).join( '\n' ) : 'None.', '' );

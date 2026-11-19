@@ -1,0 +1,92 @@
+{
+	"_comment": "The content and mode settings that choose what a part shows (lib/part-look-modes.mjs), as rules over the parts a block's locators find in the draft. The framework database gives these settings no CSS property or part, so the look pairing cannot place them; each names the setting it writes and the draft evidence that decides it (a part the draft draws or does not draw, the part's own words, a computed value). A rule whose setting the database does not hold for the block is a gap row; a setting that is not listed here is never written by the route.",
+	"blocks": {
+		"sgs/product-card": {
+			"rules": [
+				{
+					"setting": "showPickers",
+					"value": false,
+					"whenAbsent": "cardPicker",
+					"neighbours": [
+						"wrapper"
+					]
+				},
+				{
+					"setting": "showLadder",
+					"value": false,
+					"whenAbsent": "valueLadder",
+					"neighbours": [
+						"wrapper"
+					]
+				},
+				{
+					"setting": "showCta",
+					"value": true,
+					"whenFound": "cta"
+				},
+				{
+					"setting": "showDescription",
+					"value": true,
+					"whenFound": "desc"
+				},
+				{
+					"setting": "showDescription",
+					"value": false,
+					"whenAbsent": "desc",
+					"neighbours": [
+						"wrapper"
+					]
+				},
+				{
+					"setting": "showShadow",
+					"from": {
+						"look": {
+							"part": "wrapper",
+							"property": "box-shadow"
+						}
+					},
+					"neighbours": [
+						"wrapper"
+					]
+				},
+				{
+					"setting": "ctaText",
+					"from": {
+						"text": "cta",
+						"label": true
+					},
+					"whenFound": "cta"
+				},
+				{
+					"setting": "ctaBehaviour",
+					"gap": "the block holds one button action for every card; the draft's button action is in its click handler, which the part-look reader does not read, and its words differ by product",
+					"evidencePart": "cta"
+				},
+				{
+					"setting": "ctaStyle",
+					"gap": "the block holds one primary-button style (primary, secondary or outline) for every card; the draft styles its button per product",
+					"evidencePart": "cta"
+				}
+			]
+		},
+		"sgs/buybox": {
+			"rules": [
+				{
+					"setting": "addToCartLabel",
+					"from": {
+						"text": "add-to-cart",
+						"label": true
+					},
+					"whenFound": "add-to-cart"
+				},
+				{
+					"setting": "addToCartShowPrice",
+					"from": {
+						"hasAmount": "add-to-cart"
+					},
+					"whenFound": "add-to-cart"
+				}
+			]
+		}
+	}
+}

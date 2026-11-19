@@ -73,8 +73,8 @@ test( 'a part is found on the live page through its look-table row, the row the 
 	assert.equal( r.selectors[ 'line-item-name' ], TABLE.rows.item_name.cart );
 	assert.match( r.none.step, /no cart selector/ );
 	assert.match( r.none.nothing, /no row/ );
-	const own = liveSelectorsFor( { parts: [ 'panel-heading', 'scrim', 'missing' ], blockKey: null, table: TABLE, map: LIVE_MAP, elements: { scrim: {}, 'panel-heading': { selector: '.x' } }, short: 'cart' } );
-	assert.deepEqual( own.selectors, { 'panel-heading': '.x', scrim: '.sgs-cart__scrim' } );
+	const own = liveSelectorsFor( { parts: [ 'panel-heading', 'scrim', 'wrapper', 'missing' ], blockKey: null, table: TABLE, map: LIVE_MAP, elements: { scrim: {}, wrapper: {}, 'panel-heading': { selector: '.x' } }, short: 'cart' } );
+	assert.deepEqual( own.selectors, { 'panel-heading': '.x', scrim: '.sgs-cart__scrim', wrapper: '.sgs-cart' } );
 	assert.match( own.none.missing, /no element/ );
 } );
 

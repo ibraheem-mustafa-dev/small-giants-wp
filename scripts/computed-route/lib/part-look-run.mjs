@@ -152,3 +152,17 @@ export function patchBlock( { site, postId, block, set = {}, unset = [], file, d
 	}
 	return ( r.stdout || '' ).trim();
 }
+
+// The id of a site's saved block template (wp_template) of a slug: the post the route's own copy of the template lives in.
+export function templateIdOf( site, slug ) {
+	if ( ! WSL_SITE.test( site ) || ! /^[a-z0-9-]+$/.test( slug ) ) {
+		throw new Error( `a template is read from a local mirror or scratch copy (local-<name>) by its slug, not ${ site } ${ slug }` );
+	}
+	assertSiteContact( { site, readOnly: true } );
+	const r = wsl( `cd /var/www/${ site } && wp --allow-root post list --post_type=wp_template --post_status=any --name=${ slug } --field=ID` );
+	const id = Number( String( r.stdout || '' ).trim().split( /\s+/ ).pop() );
+	if ( ! id ) {
+		throw new Error( `${ site } holds no saved template ${ slug }: the route has not built it there` );
+	}
+	return id;
+}

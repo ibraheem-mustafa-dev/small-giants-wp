@@ -9,7 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { loadChromium } from './fill-read.mjs';
-import { COVERS, LOOKS, WIDTHS, buildLook, primitive, samePrimitive } from './fill-part-look.mjs';
+import { COVERS, LOOKS, WIDTHS, buildLook, primitive, readPart, samePrimitive } from './fill-part-look.mjs';
 import { sameSetting } from './part-look-compare.mjs';
 
 // A part's live selector. WooCommerce blocks: the look table's selector for the part's row (the part named for the row's id, or the
@@ -32,7 +32,7 @@ export function liveSelectorsFor( { parts, blockKey, table, map, elements, short
 				selectors[ part ] = sel;
 			}
 		} else if ( elements?.[ part ] ) {
-			selectors[ part ] = elements[ part ].selector || `.sgs-${ short }__${ part }`;
+			selectors[ part ] = elements[ part ].selector || ( [ 'wrapper', 'box' ].includes( part ) ? `.sgs-${ short }` : `.sgs-${ short }__${ part }` );
 		} else {
 			none[ part ] = 'the block\'s block.json names no element of this part';
 		}
@@ -48,7 +48,7 @@ export function blockElementsOf( repo, short ) {
 
 // The properties of a live read a draft value is compared with, per part and width. `draftReads`/`liveReads`: { part: { width: [ {key, text, styles} ] } }.
 // Returns { differs: [ { part, property, draft: { width }, live: { width } } ], matched: Set of 'part|property', compared: Set }.
-export function compareParts( { draftReads, liveReads, properties = LOOKS.map( ( [ p ] ) => p ) } ) {
+export function compareParts( { draftReads, liveReads, properties = LOOKS.map( ( [ p ] ) => p ), policy = null } ) {
 	const out = { differs: [], matched: new Set(), compared: new Set() };
 	for ( const part of Object.keys( liveReads ) ) {
 		if ( ! draftReads[ part ] ) {
@@ -60,9 +60,10 @@ export function compareParts( { draftReads, liveReads, properties = LOOKS.map( (
 			let differs = false;
 			let compared = false;
 			for ( const w of WIDTHS ) {
-				const d = ( draftReads[ part ][ w ] || [] ).map( ( i ) => primitive( property, i.styles, { css_property: property }, true ) );
+				const dv = readPart( property, { [ w ]: draftReads[ part ][ w ] || [] }, { css_property: property }, true, policy ).perWidth[ w ];
+				const d = undefined === dv ? [] : [ dv ];
 				const l = ( liveReads[ part ][ w ] || [] ).map( ( i ) => primitive( property, i.styles, { css_property: property }, true ) );
-				if ( ! d.length || ! l.length || d.some( ( v ) => undefined === v ) || l.some( ( v ) => undefined === v ) || ! d.every( ( v ) => samePrimitive( v, d[ 0 ] ) ) ) {
+				if ( ! d.length || ! l.length || l.some( ( v ) => undefined === v ) ) {
 					continue;
 				}
 				compared = true;
@@ -97,7 +98,7 @@ export function rowsHolding( rows, part, property ) {
 export async function verifySurface( { buildInputs, built, readLive, patch, readSaved, selectorsNone = {}, selectors = {}, log = () => {} } ) {
 	const { rows } = buildInputs;
 	const first = await readLive();
-	const cmp0 = compareParts( { draftReads: buildInputs.reads, liveReads: first.reads } );
+	const cmp0 = compareParts( { draftReads: buildInputs.reads, liveReads: first.reads, policy: buildInputs.policy } );
 	// Switches: a part the draft does not draw must not show on the page.
 	const showing = ( w ) => ( 'display' === w.property ? ( first.shown[ w.part ] || 0 ) > 0 : ( first.reads[ w.part ]?.[ 1440 ] || [] ).some( ( i ) => parseFloat( i.styles[ w.property ] ) > 0 ) );
 	const stillShown = built.writes.filter( ( w ) => w.visibility && showing( w ) ).map( ( w ) => ( { part: w.part, property: w.property, draft: { 1440: 'not drawn' }, live: { 1440: 'display' === w.property ? `${ first.shown[ w.part ] } element(s) shown` : 'drawn' }, why: `the switch ${ w.attr } is written and the part still shows` } ) );
@@ -130,7 +131,7 @@ export async function verifySurface( { buildInputs, built, readLive, patch, read
 		log( `verify: writing ${ Object.keys( set ).length } settings the live page showed a difference for` );
 		await patch( { set, unset: [] } );
 		const second = await readLive();
-		cmp1 = compareParts( { draftReads: buildInputs.reads, liveReads: second.reads } );
+		cmp1 = compareParts( { draftReads: buildInputs.reads, liveReads: second.reads, policy: buildInputs.policy } );
 		const stillDiffers = new Set( cmp1.differs.map( ( d ) => `${ d.part }|${ d.property }` ) );
 		const revertSet = {};
 		const revertUnset = [];
@@ -292,4 +293,34 @@ export async function readLiveSurface( { base, pagePath, selectors, props, produ
 		await browser.close();
 	}
 	return { reads, shown };
+}
+
+// A full-page picture of the live page at 1440, as a visitor (with the seed's product in the basket when `product` is given).
+export async function shootLiveSurface( { base, pagePath, product = null, file } ) {
+	const { chromium } = await loadChromium();
+	const browser = await chromium.launch( { headless: true, args: [ '--hide-scrollbars' ] } );
+	try {
+		const ctx = await browser.newContext( { viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' } );
+		const page = await ctx.newPage();
+		await page.goto( `${ base }/`, { waitUntil: 'load', timeout: 60000 } );
+		if ( product ) {
+			await page.evaluate( async ( { where, fields } ) => {
+				await fetch( where, { method: 'POST', credentials: 'same-origin', body: new URLSearchParams( fields ) } );
+			}, { where: product.path, fields: product.addFields } );
+		}
+		await page.goto( `${ base }${ pagePath }`, { waitUntil: 'load', timeout: 60000 } );
+		await page.waitForLoadState( 'networkidle', { timeout: 30000 } ).catch( () => {} );
+		await page.evaluate( async () => {
+			for ( let y = 0; y < document.documentElement.scrollHeight; y += 600 ) {
+				window.scrollTo( 0, y );
+				await new Promise( ( r ) => setTimeout( r, 100 ) );
+			}
+			window.scrollTo( 0, 0 );
+		} ).catch( () => {} );
+		await page.waitForTimeout( 1200 );
+		await page.screenshot( { path: file, fullPage: true } );
+	} finally {
+		await browser.close();
+	}
+	return file;
 }

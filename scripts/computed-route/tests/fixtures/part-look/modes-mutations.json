@@ -1,0 +1,62 @@
+[
+	{
+		"file": "lib/part-look-modes.mjs",
+		"find": "if ( rule.whenAbsent && has( reads, rule.whenAbsent ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a card that draws option buttons has its pickers turned off"
+	},
+	{
+		"file": "lib/part-look-modes.mjs",
+		"find": "if ( neighbours.some( ( n ) => ! has( reads, n ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "an absence is read where the card itself was not found"
+	},
+	{
+		"file": "lib/part-look-modes.mjs",
+		"find": "if ( 1 !== texts.length ) {",
+		"replace": "if ( false ) {",
+		"why": "cards whose buttons say different things get the first card's words"
+	},
+	{
+		"file": "lib/part-look-modes.mjs",
+		"find": "if ( ! known.has( rule.setting ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a setting the framework database does not hold is written"
+	},
+	{
+		"file": "lib/part-look-modes.mjs",
+		"find": "value = vals.every( ( v ) => null !== v );",
+		"replace": "value = true;",
+		"why": "the shadow switch is on whatever the draft shows"
+	},
+	{
+		"file": "lib/part-look-modes.mjs",
+		"find": ".replace( AMOUNT, '' )",
+		"replace": "",
+		"why": "the button's label keeps its amount"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( 'majority' === policy && groups[ 0 ].at.length > groups[ 1 ].at.length && undefined !== groups[ 0 ].value ) {",
+		"replace": "if ( 'majority' === policy ) {",
+		"why": "a tie between card looks is settled by the first card"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( 'majority' === policy && groups[ 0 ].at.length",
+		"replace": "if ( groups[ 0 ].at.length",
+		"why": "differing instances take the majority without the surface asking for it"
+	},
+	{
+		"file": "lib/part-look-run.mjs",
+		"find": "! /^[a-z0-9-]+$/.test( slug )",
+		"replace": "false",
+		"why": "a template slug is not checked"
+	},
+	{
+		"file": "lib/part-look-run.mjs",
+		"find": "if ( ! WSL_SITE.test( site ) || ",
+		"replace": "if ( false || ",
+		"why": "a template is read from any site name"
+	}
+]
