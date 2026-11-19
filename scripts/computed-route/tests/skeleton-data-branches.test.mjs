@@ -196,7 +196,7 @@ test( 'MUST FAIL: only a page surface with an intake skeleton and a draft file f
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'data-branches-repo-' ) );
 	const build = path.join( repo, 'sites', 'c', 'build' );
 	fs.mkdirSync( path.join( build, 'intake' ), { recursive: true } );
-	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { d: { intakeSurface: 'drawer', draftIndex: 'Page.dc.html' }, x: { draftIndex: 'Page.dc.html' } } ) );
+	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { d: { intakeSurface: 'drawer', draftIndex: 'Page.dc.html', target: { template: 'order-confirmation' } }, x: { draftIndex: 'Page.dc.html' } } ) );
 	fs.writeFileSync( path.join( build, 'intake', 'intake.json' ), JSON.stringify( { skeletons: { drawer: { kind: 'drawer', root: { tpl: '3' } } } } ) );
 	// A drawer forces nothing and reads no fact record (the site holds none).
 	assert.deepEqual( inventoryBranches( { repo, client: 'c', surface: 'd' } ).list, [] );
@@ -236,4 +236,38 @@ test( 'MUST FAIL: the inventory step reads the branches with the reader\'s own c
 	await assert.rejects( addDataBranches( { page, res, collect: () => ( { error: 'no root' } ), args: [], branches, w: 768, settle: async () => {} } ), /no root in a data branch at 768px/ );
 	forceRenderVals( { hosts: [ 'Root' ], patch: null } );
 	delete globalThis.document;
+} );
+
+test( "MUST FAIL: only a template that opts in reads data branches: Mama's product, basket, checkout and account force nothing, the confirmation its two", () => {
+	// Mama's committed manifest and intake skeletons, with the confirmation's entry as the manifest and intake wiring make it.
+	const build = path.join( REPO, 'sites', 'mamas-munches-redesign', 'build' );
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'data-branches-gate-' ) );
+	const mine = path.join( repo, 'sites', 'mamas-munches-redesign', 'build' );
+	fs.mkdirSync( path.join( mine, 'intake' ), { recursive: true } );
+	const surfaces = JSON.parse( fs.readFileSync( path.join( build, 'surfaces.json' ), 'utf8' ) );
+	surfaces[ 'template-order-confirmation' ] = { ...surfaces[ 'template-order-confirmation' ], intakeSurface: 'page-confirmation-dc-html', draftDir: 'sites/mamas-munches-redesign/handoff', draftIndex: 'Confirmation.dc.html' };
+	const intake = JSON.parse( fs.readFileSync( path.join( build, 'intake', 'intake.json' ), 'utf8' ) );
+	intake.skeletons[ 'page-confirmation-dc-html' ] = { id: 'S-32', kind: 'page', root: { tpl: '6', tag: 'main' } };
+	fs.writeFileSync( path.join( mine, 'surfaces.json' ), JSON.stringify( surfaces ) );
+	fs.writeFileSync( path.join( mine, 'intake', 'intake.json' ), JSON.stringify( { skeletons: intake.skeletons } ) );
+	const facts = JSON.parse( fs.readFileSync( path.join( FIX, 'mamas-confirmation-facts.json' ), 'utf8' ) );
+	const asked = [];
+	// The branches as the fact record and the draft give them; every component a surface would read is recorded.
+	const branchesOf = ( { component, rootTpl } ) => {
+		asked.push( component );
+		const draft = loadDraft( path.join( REPO, 'sites', 'mamas-munches-redesign', 'handoff' ), `${ component }.dc.html` );
+		return dataBranches( { record: facts, draft, component, within: `${ component }/${ rootTpl }` } );
+	};
+	for ( const surface of [ 'product', 'cart', 'template-cart', 'checkout', 'template-checkout', 'my-account', 'shop', 'home' ] ) {
+		assert.deepEqual( inventoryBranches( { repo, client: 'mamas-munches-redesign', surface, branchesOf } ).list, [], `${ surface } forces nothing` );
+	}
+	assert.deepEqual( asked, [] );
+	const got = inventoryBranches( { repo, client: 'mamas-munches-redesign', surface: 'template-order-confirmation', branchesOf } );
+	assert.deepEqual( got.list.map( ( b ) => [ b.el, b.test ] ), [ [ 'Confirmation/41', 'hasNote' ], [ 'Confirmation/54', 'hasAcct' ] ] );
+	assert.deepEqual( got.hosts( 'Confirmation' ), [ 'Confirmation', 'Root' ] );
+	// The opt-in is the pieces map's: without it the confirmation forces nothing too.
+	const data = JSON.parse( fs.readFileSync( path.join( REPO, 'scripts', 'computed-route', 'data', 'template-pieces.json' ), 'utf8' ) );
+	assert.equal( data.templates[ 'order-confirmation' ].dataBranches, true );
+	delete data.templates[ 'order-confirmation' ].dataBranches;
+	assert.deepEqual( inventoryBranches( { repo, client: 'mamas-munches-redesign', surface: 'template-order-confirmation', data, branchesOf } ).list, [] );
 } );

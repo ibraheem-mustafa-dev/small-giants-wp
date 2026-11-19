@@ -13,6 +13,11 @@
 // A piece names its block, a binding (`binds: { source, key }`: a block whose `metadata.bindings` binds an attribute to
 // that source and key, since a bound text has no block name of its own), or both; a node is the piece when it matches
 // every one it names.
+//
+// A template may opt in to the data branch reader (`dataBranches: true`, lib/skeleton-data-branches.mjs::inventoryBranches):
+// its surface's inventory also reads the branches the draft shows only for some data. Only a template whose working pieces
+// need those branches in the skeleton opts in (the order confirmation's gift note and signed-in link); a state a working
+// block draws itself (a signed-in account, an empty basket, a product type) is never read in.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -31,6 +36,9 @@ export function pieceMapProblems( data ) {
 	for ( const group of [ 'templates', 'pages' ] ) {
 		for ( const [ key, entry ] of Object.entries( data?.[ group ] || {} ) ) {
 			const seen = new Set();
+			if ( undefined !== entry?.dataBranches && 'boolean' !== typeof entry.dataBranches ) {
+				out.push( `${ group }.${ key }: dataBranches must be true or false` );
+			}
 			if ( ! Array.isArray( entry?.pieces ) ) {
 				out.push( `${ group }.${ key }: no pieces list` );
 				continue;
@@ -68,6 +76,9 @@ export function loadPieces( file = PIECES_FILE ) {
 	}
 	return data;
 }
+
+// Whether a template's surface reads its data branches (see the header).
+export const readsDataBranches = ( key, data ) => true === data?.templates?.[ key ]?.dataBranches;
 
 // The pieces of one template slug, or of one commerce page role when no template has that name.
 export const piecesFor = ( key, data ) => data?.templates?.[ key ]?.pieces || data?.pages?.[ key ]?.pieces || [];

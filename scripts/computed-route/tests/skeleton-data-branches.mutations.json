@@ -20,7 +20,8 @@
 	{"file": "lib/skeleton-data-branches.mjs", "find": "return x.tpl < y.tpl || ( x.tpl === y.tpl && x.copy < y.copy );", "replace": "return x.tpl < y.tpl;", "why": "a later copy of the same element is not ordered"},
 	{"file": "lib/skeleton-data-branches.mjs", "find": "if ( ! x || ! y || x.chain.join( '>' ) !== y.chain.join( '>' ) ) {", "replace": "if ( ! x || ! y ) {", "why": "another host's element is compared by its own numbering"},
 	{"file": "lib/skeleton-data-branches.mjs", "find": "while ( at < out.length && inside.has( out[ at ].parentKey ) ) {", "replace": "while ( false ) {", "why": "a new last child goes before its parent's earlier children's descendants"},
-	{"file": "lib/skeleton-data-branches.mjs", "find": "if ( ! skel || ! component || 'page' !== skel.kind ) {", "replace": "if ( ! skel || ! component ) {", "why": "a drawer's data branches are forced"},
+	{"file": "lib/skeleton-data-branches.mjs", "find": "if ( ! skel || ! component || 'page' !== skel.kind || ", "replace": "if ( ! skel || ! component || ", "why": "a drawer's data branches are forced"},
 	{"file": "lib/skeleton-data-branches.mjs", "find": "\tif ( ! branches?.list?.length ) {\n\t\treturn;\n\t}\n", "replace": "", "why": "a surface with no data branch is read again"},
-	{"file": "lib/skeleton-data-branches.mjs", "find": "\t\tif ( r.error ) {\n\t\t\tthrow new Error( `${ r.error } in a data branch at ${ w }px` );\n\t\t}\n", "replace": "", "why": "a failed collect in a forced read passes silently"}
+	{"file": "lib/skeleton-data-branches.mjs", "find": "\t\tif ( r.error ) {\n\t\t\tthrow new Error( `${ r.error } in a data branch at ${ w }px` );\n\t\t}\n", "replace": "", "why": "a failed collect in a forced read passes silently"},
+	{"file": "lib/skeleton-data-branches.mjs", "find": " || ! readsDataBranches( entry?.target?.template, data ) ) {", "replace": " ) {", "why": "every page surface reads its data branches, the account's signed-in view and the empty basket included"}
 ]

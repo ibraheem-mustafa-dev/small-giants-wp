@@ -4,10 +4,12 @@
 // some data, such as an order confirmation's gift note or its signed-in link: no click and no state key reaches it, so its
 // elements never reach the skeleton. This finds those branches and reads the page again with each one shown.
 //
-// Which branches, on a page surface (inventoryBranches; a header, drawer, form or modal forces none): every `sc-if` of the
-// surface's component inside the surface's root whose test is a renderVals key (or its negation) that is falsy at every width
-// at rest (the fact record's sample of the test), that is not a key of the class state, and whose value in renderVals reads no
-// state, no props and no method of the component (its AST, lib/intake-ast.mjs). A test shown at rest, a width condition, a
+// Which surfaces: only a page surface whose template opts in through the pieces map (data/template-pieces.json
+// `dataBranches: true`, inventoryBranches), because a state a working block draws itself (a signed-in account, an empty
+// basket, a product type) read into the skeleton would build the static imitation the working block replaces. Which
+// branches: every `sc-if` of the surface's component inside the surface's root whose test is a renderVals key (or its
+// negation) that is falsy at every width at rest (the fact record's sample of the test) and whose value in renderVals reads
+// no state, no props and no method of the component (its AST, lib/intake-ast.mjs). A test shown at rest, a width condition, a
 // state value and a loop item's field are left as they are (the reveal and width reads cover them); a test of one field of a
 // data value (`gift.on`) is not forced and is a note. Sibling branches that are each other's opposite need no pairing: the one
 // hidden at rest is read, the one shown at rest is in the opening read.
@@ -32,6 +34,7 @@ import { stateKeysOf } from './read-logic-conditions.mjs';
 import { parseInstanceKey, templateKey } from './fact-key.mjs';
 import { loadFacts } from './fact-record.mjs';
 import { SERVED_ROOT } from './key-space.mjs';
+import { loadPieces, readsDataBranches } from './template-pieces.mjs';
 import { settleAnimations } from '../../parity/lib/devtools.mjs';
 
 const DEPTH = 8;
@@ -243,18 +246,20 @@ export async function readDataBranches( { page, branches, read, base, settle = (
 	return mergeDataReads( base, reads );
 }
 
-// What the inventory reader forces for one manifest surface: { list (dataBranches), hosts, notes }. The surface's component is
-// its draft file (surfaces.json `draftIndex`), served as the runtime's root host; its root is the intake skeleton's root
-// element (intake.json `skeletons[intakeSurface].root.tpl`). A surface with no intake skeleton or no draft file forces nothing.
-export function inventoryBranches( { repo, client, surface } ) {
+// What the inventory reader forces for one manifest surface: { list (dataBranches), hosts, notes }. Only a page surface whose
+// template (surfaces.json `target.template`) opts in through the pieces map (`data`, data/template-pieces.json) forces
+// anything. The surface's component is its draft file (surfaces.json `draftIndex`), served as the runtime's root host; its
+// root is the intake skeleton's root element (intake.json `skeletons[intakeSurface].root.tpl`). A surface with no intake
+// skeleton or no draft file forces nothing. `branchesOf` finds the branches (surfaceDataBranches; tests plant one).
+export function inventoryBranches( { repo, client, surface, data = loadPieces(), branchesOf = surfaceDataBranches } ) {
 	const read = ( file ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : null );
 	const entry = read( path.join( repo, 'sites', client, 'build', 'surfaces.json' ) )?.[ surface ];
 	const skel = entry?.intakeSurface ? read( path.join( repo, 'sites', client, 'build', 'intake', 'intake.json' ) )?.skeletons?.[ entry.intakeSurface ] : null;
 	const component = entry?.draftIndex ? path.basename( entry.draftIndex ).replace( /\.dc\.html$/i, '' ) : null;
-	if ( ! skel || ! component || 'page' !== skel.kind ) {
+	if ( ! skel || ! component || 'page' !== skel.kind || ! readsDataBranches( entry?.target?.template, data ) ) {
 		return { list: [], hosts: ( c ) => [ c ], notes: skel && component ? [] : [ `${ surface }: no intake skeleton or draft file, so no data branch is forced` ] };
 	}
-	const { branches, notes } = surfaceDataBranches( { repo, client, component, rootTpl: skel.root?.tpl ?? null } );
+	const { branches, notes } = branchesOf( { repo, client, component, rootTpl: skel.root?.tpl ?? null } );
 	return { list: branches, hosts: ( c ) => ( c === component ? [ c, SERVED_ROOT ] : [ c ] ), notes };
 }
 
