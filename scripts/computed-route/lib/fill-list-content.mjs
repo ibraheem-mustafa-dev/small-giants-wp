@@ -87,8 +87,12 @@ const one = ( t ) => [].concat( t ?? [] )[ 0 ] ?? null;
 
 // Where a block keeps its list: { kind: 'attr', attr, keys } or { kind: 'children', child, keys }, keys [{ key, type, html }];
 // null when it keeps none. schemaOf( block ): the block.json attributes.
+// A content array the DB also lists a CSS property for (process steps' `steps`, read as `left,right` because the steps place
+// the connector) is still the list when its block.json items name text-content fields: the items are words, not a style.
 export function listTarget( db, block, schemaOf ) {
-	const arrays = db.prepare( "SELECT attr_name FROM block_attributes WHERE block_slug = ? AND attr_type = 'array' AND role = 'content' AND ( css_property IS NULL OR css_property = '' ) ORDER BY attr_name" ).all( block );
+	const itemText = ( attr ) => Object.values( ( schemaOf( block ) || {} )[ attr ]?.items?.properties || {} ).some( ( p ) => 'text-content' === p?.role );
+	const arrays = db.prepare( "SELECT attr_name, css_property FROM block_attributes WHERE block_slug = ? AND attr_type = 'array' AND role = 'content' ORDER BY attr_name" ).all( block )
+		.filter( ( r ) => ! r.css_property || itemText( r.attr_name ) );
 	if ( 1 === arrays.length ) {
 		const attr = arrays[ 0 ].attr_name;
 		const def = ( schemaOf( block ) || {} )[ attr ] || {};

@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "\t\t.filter( ( r ) => ! r.css_property || itemText( r.attr_name ) );",
+		"replace": "\t\t.filter( ( r ) => ! r.css_property );",
+		"why": "a text-item array the DB styles is not taken as the list"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "\t\t.filter( ( r ) => ! r.css_property || itemText( r.attr_name ) );",
+		"replace": "\t\t.filter( () => true );",
+		"why": "a styled array of non-text items is taken as the list"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": ".some( ( p ) => 'text-content' === p?.role );",
+		"replace": ".some( () => true );",
+		"why": "any item field counts as text"
+	}
+]

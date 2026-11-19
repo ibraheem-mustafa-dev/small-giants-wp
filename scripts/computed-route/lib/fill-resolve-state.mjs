@@ -53,7 +53,9 @@ export function alternateSlots( cal, prop, draft = {}, apart = null, own = '' ) 
 		if ( Object.values( draft ).some( ( v ) => 'none' === String( v ).trim() ) ) {
 			return [];
 		}
-		return Object.values( cal?.discovered || {} ).flatMap( ( d ) => d.display?.slots || [] );
+		// One copy of a repeated item (a step, a card: its last step is `:nth-of-type(n)`) lays out its own content, not the
+		// block's children: the root's grid is never an item's display (Indus's three-column steps read as the vertical list layout).
+		return Object.values( cal?.discovered || {} ).flatMap( ( d ) => d.display?.slots || [] ).filter( ( slot ) => ! /:nth-of-type\(\d+\)$/.test( String( slot ) ) );
 	}
 	const carried = CARRIED.includes( prop );
 	if ( ! carried && ! ( apart && ( BOX_PAINT.test( prop ) || BOX_SIZE.test( prop ) ) ) ) {

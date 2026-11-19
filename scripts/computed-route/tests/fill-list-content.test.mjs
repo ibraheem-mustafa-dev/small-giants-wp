@@ -18,6 +18,8 @@ import { blockMediaSlots } from '../lib/media/slots.mjs';
 
 const C = 'Demo';
 const SCHEMAS = {
+	'sgs/process': { steps: { type: 'array', items: { type: 'object', properties: { number: { type: 'string', role: 'text-content' }, title: { type: 'string', role: 'text-content' } } } } },
+	'sgs/offsets': { offsets: { type: 'array', items: { type: 'object', properties: { left: { type: 'string' }, right: { type: 'string' } } } } },
 	'sgs/milestones': { entries: { type: 'array', default: [ { date: '2020-01-01', title: 'First', description: '<p>Text.</p>', image: 0 } ] } },
 	'sgs/steps': { steps: { type: 'array', default: [ { number: '1', title: 'First Step' } ], items: { type: 'object', properties: { icon: { type: 'string' }, number: { type: 'string' }, title: { type: 'string' }, description: { type: 'string' } } } } },
 	'sgs/logos': { logos: { type: 'array', default: [] , items: { type: 'object', properties: { media: { type: 'object' }, linkUrl: { type: 'string' } } } } },
@@ -35,6 +37,7 @@ function makeDb() {
 		( 'sgs/milestones', 'entries', 'array', 'content', NULL, NULL ), ( 'sgs/milestones', 'titleColour', 'string', 'color', 'color', NULL ),
 		( 'sgs/steps', 'steps', 'array', 'content', NULL, NULL ),
 		( 'sgs/logos', 'logos', 'array', 'content', NULL, NULL ),
+		( 'sgs/process', 'steps', 'array', 'content', 'left,right', NULL ), ( 'sgs/offsets', 'offsets', 'array', 'content', 'left,right', NULL ),
 		( 'sgs/quote', 'quote', 'string', 'text-content', NULL, NULL ), ( 'sgs/quote', 'reviewerName', 'string', 'content', NULL, NULL ),
 		( 'sgs/quote', 'orgName', 'string', 'text-content', NULL, NULL ), ( 'sgs/quote', 'avatarMedia', 'object', 'image-object', NULL, NULL ),
 		( 'sgs/quote', 'quoteColour', 'string', 'color', 'color', NULL ),
@@ -268,6 +271,10 @@ test( 'list targets come from the DB: one content array, else one child block', 
 	assert.equal( listTarget( db, 'sgs/milestones', schemaOf ).keys.find( ( k ) => 'description' === k.key ).html, true );
 	assert.deepEqual( listTarget( db, 'sgs/quotes', schemaOf ).keys.map( ( k ) => k.key ), [ 'quote', 'reviewerName', 'orgName', 'avatarMedia' ] );
 	assert.equal( listTarget( db, 'sgs/row', schemaOf ), null );
+	// MUST FAIL: a content array the DB gives a CSS property is still the list when its items are text (process steps' `steps`).
+	assert.equal( listTarget( db, 'sgs/process', schemaOf )?.attr, 'steps' );
+	// Negative control: an array with a CSS property whose items name no text is a style, not a list.
+	assert.equal( listTarget( db, 'sgs/offsets', schemaOf ), null );
 	assert.equal( listDecisions( { block: 'sgs/quotes', target: listTarget( db, 'sgs/quotes', schemaOf ), node: { innerBlocks: [] }, list: { items: [ { text: 'x' } ], fields: [ { name: 'text', image: false } ], source: 's' } } ).children[ 0 ].attributes.quote, 'x' );
 } );
 
