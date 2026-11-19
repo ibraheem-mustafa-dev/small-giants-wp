@@ -145,7 +145,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// innermost last) and `w`, which holds the writer's functions once each module has made them.
 	const w = {};
 	const ctx = {
-		m, facts, cls, R, view, overrides, base, finder, rootOf, inventory, carried, surfaceKind, calSettings, rows, rowOf, w, siteLink,
+		m, facts, cls, R, view, overrides, base, finder, rootOf, inventory, carried, surfaceKind, calSettings, db, rows, rowOf, w, siteLink,
 		widthAlternatives: [], variantsOf: new Map(), railIds: null, carryProblems: [], slotProblems: [], nodeOfKey: {}, partPending: [], hosts: [], stripRoots: [],
 	};
 	const { widthAlternatives, carryProblems, slotProblems, nodeOfKey, partPending, hosts } = ctx;
@@ -153,7 +153,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	Object.assign( w, makeUnits( ctx ) );
 	Object.assign( w, makeContent( ctx ) );
 	Object.assign( w, makeSlotRows( ctx ) );
-	const { record, removeSubtree, absorbSubtree, absorbWidthKids, takeVariants, unitsOf, buildBrand, buildIcons, buildList, contentAttrs, carriedAttrs, wrappedBody, buildHeaderRows, buildFooterRows, hostSlot } = w;
+	const { record, removeSubtree, absorbSubtree, absorbWidthKids, takeVariants, unitsOf, buildBrand, buildIcons, buildList, contentAttrs, carriedAttrs, wrappedBody, buildHeaderRows, buildFooterRows, hostSlot, bandWrapper } = w;
 	Object.assign( w, { buildNode, buildChildren } );
 
 	function buildNode( e, parentBlock ) {
@@ -173,6 +173,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		if ( 'unwrap' === r.action ) {
 			record( e, r );
 			hostSlot( e, r );
+			bandWrapper( e );
 			return buildChildren( e, parentBlock );
 		}
 		if ( 'absorbed' === r.action ) {
@@ -321,7 +322,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			} );
 			return node;
 		}
-		hosts.push( { block, node, row } );
+		hosts.push( { block, node, row, e } );
 		node.innerBlocks = e !== m.root ? buildChildren( e, block ) : R.headerSlots && block === R.headerSlots.block ? buildHeaderRows( e, block ) : R.footerSlots && block === R.footerSlots.block ? buildFooterRows( e, block ) : buildChildren( e, block );
 		// The element's own words in a block that holds its body as inner blocks (rules.wrappedWords): one body child holding them,
 		// read at the same draft element (a review's text inside sgs/quote, which would otherwise print its placeholder body).

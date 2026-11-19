@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "\t\t\tbandWrapper( e );\n",
+		"replace": "",
+		"why": "an unwrapped wrapper is never recorded as band evidence"
+	},
+	{
+		"file": "lib/skeleton-write-slots.mjs",
+		"find": "e.parentKey !== host.e.key ||",
+		"replace": "",
+		"why": "a deeper unwrapped element is recorded too"
+	},
+	{
+		"file": "lib/skeleton-write-slots.mjs",
+		"find": " || ! bandSetting( ctx.db, host.block, { settings: calSettings( host.block ) } ) ) {",
+		"replace": " ) {",
+		"why": "a block with no calibrated band records wrappers too"
+	},
+	{
+		"file": "lib/fill-skeleton.mjs",
+		"find": "( Array.isArray( node.draftBandWrappers ) ? node.draftBandWrappers : [] ).forEach(",
+		"replace": "( node.draftBandWrappers || [] ).forEach(",
+		"why": "a malformed wrapper list crashes the targets"
+	},
+	{
+		"file": "lib/fill-skeleton.mjs",
+		"find": "'draftSlotStates', 'draftBandWrappers',",
+		"replace": "'draftSlotStates',",
+		"why": "the wrapper list leaks into the block tree"
+	},
+	{
+		"file": "lib/fill-band.mjs",
+		"find": "\t\tif ( k.dissolved ) {\n\t\t\treturn false;\n\t\t}\n",
+		"replace": "",
+		"why": "a dissolved wrapper that declares a max-width counts as sized by itself"
+	},
+	{
+		"file": "lib/fill-band.mjs",
+		"find": "const wrappers = wrapperTargets.map(",
+		"replace": "const wrappers = [].map(",
+		"why": "Fill never reads the wrappers"
+	}
+]

@@ -5,6 +5,7 @@
 // setting its rule names.
 // The factory takes the writer's shared context (`ctx`) after the row book and the content settings are in `ctx.w`.
 import { specHit } from './skeleton-facts.mjs';
+import { bandSetting } from './fill-band.mjs';
 import { besideStrips, insideStrips, mergeWidthAlternatives, slotPlan } from './skeleton-header-slots.mjs';
 import { buildFooterRows as footerRowsOf, sideBySide } from './skeleton-footer-slots.mjs';
 
@@ -132,5 +133,15 @@ export function makeSlotRows( ctx ) {
 		host.node.draftSlots = { ...host.node.draftSlots, [ slot ]: finder( e ) };
 		host.row.slots = { ...host.row.slots, [ slot ]: finder( e ) };
 	}
-	return { buildHeaderRows, buildFooterRows, hostSlot };
+	// An element a rule unwraps that is a direct child of the block's own draft element and holds the block's children: the
+	// block does not draw it, so Fill reads it as evidence of the content band's width (draftBandWrappers,
+	// lib/fill-band.mjs) for a block that has a calibrated band.
+	function bandWrapper( e ) {
+		const host = hosts.at( -1 );
+		if ( ! host?.e || e.parentKey !== host.e.key || ! host.node.draftRef || ! bandSetting( ctx.db, host.block, { settings: calSettings( host.block ) } ) ) {
+			return;
+		}
+		host.node.draftBandWrappers = [ ...( host.node.draftBandWrappers || [] ), finder( e ) ];
+	}
+	return { buildHeaderRows, buildFooterRows, hostSlot, bandWrapper };
 }

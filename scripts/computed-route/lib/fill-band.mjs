@@ -24,6 +24,7 @@
 // `wide` the theme wide size, any other value a CSS length.
 import { resolve, blockSchema, LOOSE } from './resolve.mjs';
 import { setAttr } from './tree.mjs';
+import { BAND_WRAPPER_SLOT } from './fill-skeleton.mjs';
 
 const TOL = 1;
 const TIERS = [ [ 'desktop', [ 1440 ] ], [ 'tablet', [ 768 ] ], [ 'mobile', [ 375 ] ] ];
@@ -107,7 +108,11 @@ export function bandNeed( own, kids, declaredOf = () => ( {} ) ) {
 	if ( /grid/.test( display ) ) {
 		return { min: box, why: 'a grid' };
 	}
+	// A dissolved wrapper (the block does not draw it) is sized by nothing the block carries: its cap is the band's to hold.
 	const sizedBySelf = ( k ) => {
+		if ( k.dissolved ) {
+			return false;
+		}
 		const d = declaredOf( k ) || {};
 		const cap = px( k.styles?.[ 'max-width' ] );
 		return ! BLOCK_LEVEL.test( k.styles?.display ?? 'block' ) || ( null !== cap && k.rect.w >= cap - TOL ) || [ 'width', 'max-width' ].some( ( p ) => undefined !== d[ p ] && ! NO_SIZE.has( String( d[ p ] ).trim() ) );
@@ -180,13 +185,17 @@ export function fillBand( st, rec, ref, cal ) {
 		return null;
 	}
 	const kidTargets = rec.children.map( ( i ) => st.nodes[ i ]?.targets.find( ( t ) => '' === t.slot ) ).filter( Boolean );
+	// The wrappers the block dissolved are the root's real children: their boxes carry the cap, and the children they hold lie
+	// inside those boxes, so they add nothing to the extent (a column centred by its wrapper shrinks each child to its own text).
+	const wrapperTargets = rec.targets.filter( ( t ) => t.slot.startsWith( BAND_WRAPPER_SLOT ) );
 	const needs = {};
 	for ( const w of Object.keys( st.reads.widths || {} ).map( Number ) ) {
 		if ( ! TIERS.some( ( [ , ws ] ) => ws.includes( w ) ) ) {
 			continue;
 		}
 		const read = ( t ) => st.reads.widths[ w ]?.[ t.id ];
-		needs[ w ] = bandNeed( read( root ), kidTargets.map( read ).map( ( k, i ) => k && { ...k, id: kidTargets[ i ].id } ), ( k ) => st.reads.declared?.[ w ]?.[ k.id ] );
+		const wrappers = wrapperTargets.map( ( t ) => ( { ...read( t ), id: t.id, dissolved: true } ) ).filter( ( k ) => k.rect );
+		needs[ w ] = bandNeed( read( root ), [ ...wrappers, ...kidTargets.map( read ).map( ( k, i ) => k && { ...k, id: kidTargets[ i ].id } ) ], ( k ) => st.reads.declared?.[ w ]?.[ k.id ] );
 	}
 	if ( ! Object.values( needs ).some( Boolean ) ) {
 		return null;

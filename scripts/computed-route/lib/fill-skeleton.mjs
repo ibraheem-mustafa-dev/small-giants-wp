@@ -25,6 +25,10 @@ export const hasRow = ( node ) => 'sgs/social-icons' === node.name && ROW_KEYS.s
 // the glyph against the row's shape and glyph elements (lib/fill-row-lift.mjs).
 export const ROW_GLYPH_SLOT = '.sgs-icon__shape > .sgs-icon__svg';
 
+// The slot-name prefix of a node's dissolved wrappers (`draftBandWrappers`): the draft elements between the node's own element
+// and its children that the block does not draw, whose width the content band carries. No setting is calibrated at such a slot.
+export const BAND_WRAPPER_SLOT = '>band-wrapper:';
+
 // The attribute Fill puts on a node's draft element while its slots resolve (scopeSelector names it).
 export const SCOPE_ATTR = 'data-fill-scope';
 export const scopeSelector = ( index ) => `[${ SCOPE_ATTR }="${ index }"]`;
@@ -126,6 +130,9 @@ export function skeletonNodes( tree ) {
 			for ( const [ slot, finder ] of Object.entries( node.draftSlots || {} ) ) {
 				rec.targets.push( { id: `${ index }:${ slot }`, index, slot, finder, scoped: true, state: node.draftSlotStates?.[ slot ] ?? null } );
 			}
+			// The wrappers the block dissolved (`draftBandWrappers`): read only as evidence of the content band's width
+			// (lib/fill-band.mjs), at a slot name no setting is calibrated at.
+			( Array.isArray( node.draftBandWrappers ) ? node.draftBandWrappers : [] ).forEach( ( finder, i ) => rec.targets.push( { id: `${ index }:${ BAND_WRAPPER_SLOT }${ i }`, index, slot: `${ BAND_WRAPPER_SLOT }${ i }`, finder, scoped: true, state: null } ) );
 		}
 		go( node.innerBlocks || [], index );
 	} );
@@ -202,6 +209,9 @@ export function skeletonProblems( tree ) {
 				problems.push( `${ label } slot "${ slot }": ${ finderProblem( finder ) }` );
 			}
 		}
+		if ( undefined !== node.draftBandWrappers && ( ! Array.isArray( node.draftBandWrappers ) || undefined === node.draftRef || node.draftBandWrappers.some( ( f ) => finderProblem( f ) ) ) ) {
+			problems.push( `${ label } draftBandWrappers must be a list of finders on a node with a draftRef` );
+		}
 		for ( const [ slot, state ] of Object.entries( node.draftSlotStates || {} ) ) {
 			if ( ! node.draftSlots?.[ slot ] || ! isStr( state ) ) {
 				problems.push( `${ label } draftSlotStates "${ slot }" must name a draftSlots path and a state word` );
@@ -217,7 +227,7 @@ export function skeletonProblems( tree ) {
 
 // `draftFingerprint` ({ tag, cls, styleHash }) is the skeleton writer's record of the draft element a tpl finder names;
 // Fill moves it into the surface's origin map (originMap) and strips it with the other draft keys.
-const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftFingerprint', 'handover', ...ROW_KEYS ];
+const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftFingerprint', 'handover', ...ROW_KEYS ];
 
 // The origin map of a skeleton: for every node whose draftRef is a tpl finder, { [cr-ref]: { tpl, fingerprint, slots } }
 // (slots: the slot path to the tpl key of each tpl slot finder). `refs[i]` is the cr-ref of node i (tree.mjs::refOf).
