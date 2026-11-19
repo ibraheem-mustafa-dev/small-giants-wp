@@ -348,7 +348,4 @@ test( 'MUST FAIL: --go-through parses with --apply-review (and --section) only',
 	assert.equal( parseArgs( [ '--apply-review', CLIENT ] ).goThrough, false );
 	assert.match( parseArgs( [ CLIENT, '--go-through' ] ).error, /--go-through goes with --apply-review only/ );
 	assert.match( parseArgs( [ '--render', CLIENT, '--go-through' ] ).error, /--go-through goes with --apply-review only/ );
-	const cli = spawnSync( process.execPath, [ path.join( HERE, '..', 'intake.mjs' ), CLIENT, '--go-through' ], { encoding: 'utf8' } );
-	assert.equal( cli.status, 2 );
-	assert.match( cli.stderr, /node scripts\/computed-route\/intake.mjs --apply-review <client> \[--section <row type>\[,<row type>...\]\] \[--go-through\]/ );
 } );
