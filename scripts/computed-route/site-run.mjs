@@ -56,6 +56,7 @@ import { isContentOnlySurface, isUnwalkedWooPage, wooContentRole } from './lib/s
 import { walkChecked } from './lib/site-check-openers.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
 import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
+import { draftProductSlugs, liveFactsPhp, readLiveFacts, templateAddresses, livePrimeFor } from './lib/template-live-address.mjs';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
 import { TOP_N, writeRanking } from './lib/site-run-rank.mjs';
@@ -120,6 +121,10 @@ const exclusive = ( task ) => {
 // answers a headless browser with a 403 bot challenge, so a walk of one with `--live-base` and SGS_LIVE_ORIGIN needs it).
 const headlessFlag = ( env = process.env ) => ( env.SGS_HEADED && '0' !== env.SGS_HEADED ? [] : [ '--headless' ] );
 
+// The row kinds a surface keyed by slug or route can name: a page, the WooCommerce shop page (`shop`) and the single-product
+// template (`product`, every product uses it).
+const PAGE_LIKE = [ 'page', 'shop', 'product' ];
+
 // Where one surface is read: the draft route it opens at, the page-map row whose permalink is its live address, and why it is
 // skipped (a content-only post surface runs only with `--with-content`). The route is the entry's `draftRoute` (a form's
 // page, a post's route), else its page row's route, else its intake record's route. A post surface (`contentOnly`) and the
@@ -132,7 +137,7 @@ export function surfaceReach( { key, entry, skel, rows, withContent = false, rou
 	const postSlug = entry.fromPost ?? ( entry.contentOnly ? key : null );
 	// A template copy Filled on its own is read at the row playing it (`copy.row`, a row key).
 	const byRow = 'fill' === entry.copy?.from ? rows.find( ( r ) => rowKey( r ) === entry.copy.row ) : null;
-	const own = byRow ?? ( postSlug ? rows.find( ( r ) => 'post' === r.postType && r.slug === postSlug ) : rows.find( ( r ) => 'page' === r.postType && ( r.slug === key || r.route === key ) ) );
+	const own = byRow ?? ( postSlug ? rows.find( ( r ) => 'post' === r.postType && r.slug === postSlug ) : rows.find( ( r ) => PAGE_LIKE.includes( r.postType ) && ( r.slug === key || r.route === key ) ) );
 	const named = entry.draftRoute && ! postSlug ? rows.find( ( r ) => 'page' === r.postType && r.route === routeName( entry.draftRoute ) ) : null;
 	const row = own ?? named ?? null;
 	// A surface the manifest marks `noDraft` (one of WooCommerce's own pages the draft has no page for) has nothing to read.
@@ -145,8 +150,12 @@ export function surfaceReach( { key, entry, skel, rows, withContent = false, rou
 
 // The live address of a row: a page or post's permalink; a `template` row's template where WordPress shows it (the search
 // results for any query, the not-found page for an address nothing holds, the order confirmation at the run's test order,
-// `shown`: template slug -> address), or null when the run has none.
+// `shown`: template slug -> address), or null when the run has none. A shop or product row shows its template at the address the
+// live site answered (lib/template-live-address.mjs::templateAddresses): the shop page, a product the draft names.
 export function liveAddress( row, rows, shown = {} ) {
+	if ( [ 'shop', 'product' ].includes( row?.postType ) ) {
+		return shown[ row.template ] ?? null;
+	}
 	if ( 'template' !== row?.postType ) {
 		return row ? permalinkOf( row, rows ) : '/';
 	}
@@ -401,6 +410,8 @@ export async function main( argv ) {
 		const wooPage = isUnwalkedWooPage( entry.target, row ) ? wooContentRole( row ) : null;
 		const address = liveAddress( row, rows, shown );
 		const liveUrl = `${ base }${ address ?? '/' }`;
+		// A checkout walk starts with a product in the basket: WooCommerce sends an empty basket's checkout to the basket.
+		const livePrime = livePrimeFor( entry.target?.template ?? row?.template, liveFacts );
 		const step = stepper( key, wooPage );
 		const exec = execFor( key );
 		if ( ! entry.intakeSurface || ! skel ) {
@@ -444,7 +455,7 @@ export async function main( argv ) {
 		let walkUrl = draftUrl;
 		if ( ! await step( 'fill', async () => {
 			const tail = await exec( 'fill', 'node', [ 'scripts/computed-route/fill.mjs', '--client', client, '--surface', key,
-				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, '--site', site, '--allow-external', '--out', path.relative( REPO, out ), ...allowMissingPaintArgs( allowMissingPaint ) ] );
+				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, ...( livePrime ? [ '--live-prime', JSON.stringify( livePrime ) ] : [] ), '--site', site, '--allow-external', '--out', path.relative( REPO, out ), ...allowMissingPaintArgs( allowMissingPaint ) ] );
 			// A state that never rendered is an opener failure, not a Fill that happened to run.
 			const opened = path.join( out, 'opener.json' );
 			const o = fs.existsSync( opened ) ? readJson( opened ) : null;
@@ -583,6 +594,19 @@ export async function main( argv ) {
 	};
 	// The order confirmation is read at a real order: one test order (pending, so no email) for the run, deleted at its end.
 	const shown = {};
+	// The shop templates' live addresses and the checkout walk's basket product, asked of the live site once (read-only).
+	let liveFacts = null;
+	if ( keys.some( ( k ) => [ 'single-product', 'archive-product', 'checkout' ].includes( surfaces[ k ]?.target?.template ) ) ) {
+		try {
+			liveFacts = readLiveFacts( runPhp( liveFactsPhp( { productSlugs: draftProductSlugs( keys.map( ( k ) => intake.skeletons?.[ surfaces[ k ].intakeSurface ]?.route ) ) } ) ) );
+		} catch ( e ) {
+			// No answer: the shop templates have no address (their walk is skipped with its note) and the checkout walks unprimed.
+			liveFacts = readLiveFacts( '' );
+			console.log( `live shop: the query failed (${ String( e.message || e ).slice( 0, 200 ) })` );
+		}
+		Object.assign( shown, templateAddresses( liveFacts ) );
+		console.log( `live shop: shop ${ liveFacts.shop ?? 'none' }, product ${ liveFacts.product ?? 'none' }, basket product ${ liveFacts.basket?.fields?.[ 'add-to-cart' ] ?? 'none' }` );
+	}
 	// Every template copy's tree, made between the passes (finish builds from it).
 	let copies = {};
 	if ( needsTestOrder( surfaces, keys ) ) {

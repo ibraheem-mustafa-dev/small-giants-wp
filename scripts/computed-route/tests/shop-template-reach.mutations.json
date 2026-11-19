@@ -1,0 +1,7 @@
+[
+	{ "file": "site-run.mjs", "find": "const PAGE_LIKE = [ 'page', 'shop', 'product' ];", "replace": "const PAGE_LIKE = [ 'page' ];", "why": "the shop and product rows are no longer found for their surfaces" },
+	{ "file": "site-run.mjs", "find": "\tif ( [ 'shop', 'product' ].includes( row?.postType ) ) {\n\t\treturn shown[ row.template ] ?? null;\n\t}\n", "replace": "", "why": "a shop or product row is walked at its row permalink instead of where the site shows its template" },
+	{ "file": "site-run.mjs", "find": "return shown[ row.template ] ?? null;", "replace": "return shown[ row.template ] ?? '/';", "why": "a shop or product row with no answer is walked at the home page" },
+	{ "file": "lib/fill-config.mjs", "find": "${ prime?.length ? `, prime: ${ JSON.stringify( prime ) }` : '' }", "replace": "", "why": "the walker config loses the checkout's live prime" },
+	{ "file": "lib/fill-config.mjs", "find": "${ prime?.length ? `, prime: ${ JSON.stringify( prime ) }` : '' }", "replace": "${ `, prime: ${ JSON.stringify( prime ) }` }", "why": "a config with no prime writes one" }
+]

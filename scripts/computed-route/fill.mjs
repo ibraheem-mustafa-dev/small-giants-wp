@@ -116,7 +116,8 @@ export function animationInventory( buildDir, draftIndex, log ) {
 // file) the surface's own `draftIndex` in surfaces.json, else null (the inventory's first draft).
 export const draftIndexOf = ( o, entry ) => o.draftIndex || ( o.draftUrl ? entry?.draftIndex : null ) || null;
 
-// Runs Fill and writes its outputs. o: { client, surface, skeleton (a file), draftUrl | draftDir (+ draftIndex), liveUrl,
+// Runs Fill and writes its outputs. o: { client, surface, skeleton (a file), draftUrl | draftDir (+ draftIndex), liveUrl, livePrime (the
+// walker's live.prime entries, lib/template-live-address.mjs::livePrimeFor),
 // out, open, cache, allowMissingPaint ([block] that may go without default paint, lib/paint-gate.mjs), sweep (default true), headless (default true), external, mirror ({ url: local file } answered
 // from disk), repo, log }. Returns the report object.
 export async function fillSurface( o ) {
@@ -379,7 +380,7 @@ export async function fillSurface( o ) {
 		const steps = sweepSteps( reads.sweep, ( id ) => ( { node: refOf( flat[ Number( id.split( ':' )[ 0 ] ) ] ), slot: id.slice( id.indexOf( ':' ) + 1 ) } ) );
 		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, snapshotPatch: { file: patchFile, entries: states.patchEntries }, sweepSkipped: false === o.sweep, missingPaint } );
 		const divergences = fs.existsSync( ledgerFile ) ? path.relative( outDir, ledgerFile ).split( path.sep ).join( '/' ) : null;
-		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, inventory, draftUrl: readUrl, liveUrl: o.liveUrl, open: o.open || null, opener: walkOpener, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening', walk } );
+		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, inventory, draftUrl: readUrl, liveUrl: o.liveUrl, open: o.open || null, opener: walkOpener, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening', walk, prime: o.livePrime || null } );
 		const put = ( name, text ) => fs.writeFileSync( path.join( outDir, name ), text );
 		writeOrigin();
 		// A list host's new children join the tree last: every pass above reads the tree by its skeleton's node indices.
@@ -426,7 +427,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		} else {
 			const r = await fillSurface( {
 				client: flag( '--client' ), surface: flag( '--surface' ), skeleton: flag( '--skeleton' ), draftUrl: flag( '--draft-url' ), draftDir: flag( '--draft-dir' ), draftIndex: flag( '--draft-index' ),
-				liveUrl: flag( '--live-url' ), site: flag( '--site' ), out: flag( '--out' ), open: flag( '--open' ), cache: flag( '--cache' ), sweep: ! argv.includes( '--no-sweep' ), headless: ! argv.includes( '--headed' ), external: argv.includes( '--allow-external' ), mirror: parseMirrors( argv ), allowMissingPaint: allowMissingPaintArg( argv ),
+				liveUrl: flag( '--live-url' ), livePrime: flag( '--live-prime' ) ? JSON.parse( flag( '--live-prime' ) ) : null, site: flag( '--site' ), out: flag( '--out' ), open: flag( '--open' ), cache: flag( '--cache' ), sweep: ! argv.includes( '--no-sweep' ), headless: ! argv.includes( '--headed' ), external: argv.includes( '--allow-external' ), mirror: parseMirrors( argv ), allowMissingPaint: allowMissingPaintArg( argv ),
 				log: ( m ) => console.log( m ),
 			} );
 			console.log( `fill ${ r.surface }: ${ r.counts.writes } settings written, ${ r.counts.unmapped } UNMAPPED, ${ r.counts.handover } handover, ${ r.counts.fluid } fluid, ${ r.counts.breakpointSteps } breakpoint steps. Report: ${ path.join( r.outDir, 'fill-report.md' ) }` );
