@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/resolve.mjs",
+		"find": "tied = holding.length ? holding : tied;",
+		"replace": "tied = tied;",
+		"why": "a tied setting whose list cannot hold the draft's value still competes"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "\ttiers = listed.tiers;\n",
+		"replace": "\ttiers = tiers;\n",
+		"why": "the computed keyword is written as it stands though the list does not hold it"
+	},
+	{
+		"file": "lib/resolve-enum.mjs",
+		"find": "&& same( enumReads[ v ][ prop ][ width ], raw ) );",
+		"replace": "&& true );",
+		"why": "any value that recorded a paint answers any keyword"
+	},
+	{
+		"file": "lib/resolve-enum.mjs",
+		"find": "list.includes( String( raw ) ) || undefined !== valueFor( reads, prop, Number( w ), raw )",
+		"replace": "true",
+		"why": "every setting holds every value"
+	},
+	{
+		"file": "lib/resolve-enum.mjs",
+		"find": "if ( ! list.length || ! reads ) {\n\t\treturn true;",
+		"replace": "if ( ! list.length ) {\n\t\treturn true;",
+		"why": "a setting with no readings is judged by a missing record and crashes"
+	},
+	{
+		"file": "lib/resolve-enum.mjs",
+		"find": "\tif ( undefined === v ) {\n\t\t\treturn { error:",
+		"replace": "\tif ( undefined === v ) {\n\t\t\tout[ t ] = raw;\n\t\t\tcontinue;\n\t\t\treturn { error:",
+		"why": "a keyword no value paints is written as it stands"
+	}
+]

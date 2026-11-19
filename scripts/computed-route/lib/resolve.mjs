@@ -15,6 +15,7 @@ import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, r
 import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword, sizeShape, isSizeProperty } from './resolve-declared.mjs';
 import { consult } from './css-equivalence/index.mjs';
 import { valueBlind } from './css-equivalence/effect.mjs';
+import { holdsValue, mapTiers } from './resolve-enum.mjs';
 export { valueBlind };
 import { sameAlignment } from './css-equivalence/keywords.mjs';
 
@@ -628,6 +629,11 @@ export function resolve( input, ctx ) {
 		const f = rows.filter( ( r ) => 'flat_sibling' === r.tier_shape );
 		return { flat: f, others: ownElementSetting( ctx.db, block, rows.filter( ( r ) => 'flat_sibling' !== r.tier_shape ) ), bases: new Set( f.map( ( r ) => r.attr_name.replace( /(Tablet|Mobile)$/, '' ) ) ) };
 	};
+	// A tied setting whose value list cannot hold the draft's value is no candidate while another can (lib/resolve-enum.mjs).
+	if ( tied.length > 1 ) {
+		const holding = tied.filter( ( r ) => holdsValue( r, blockSchema( block )?.[ r.attr_name ], ctx.calibration.settings?.[ r.attr_name ], prop, perWidth ) );
+		tied = holding.length ? holding : tied;
+	}
 	let { flat, others, bases } = split( tied );
 	// A tie the other rules leave goes, as the last resort, to the settings whose other paint on the element the draft does
 	// not contradict (lib/resolve-side-effects.mjs).
@@ -691,6 +697,12 @@ export function resolve( input, ctx ) {
 		return folded;
 	}
 	tiers = folded.tiers;
+	// A computed keyword the setting's value list does not hold is written as the value that paints it (lib/resolve-enum.mjs).
+	const listed = mapTiers( row, schema[ attr ], ctx.calibration.settings?.[ row.attr_name ], prop, tiers );
+	if ( listed.error ) {
+		return { gap: 'shape', detail: listed.error };
+	}
+	tiers = listed.tiers;
 	if ( 'border-radius' === short && ( row.box_family || 'box_only' === row.tier_shape || MEDIA_ATOM_RADIUS( schema[ attr ] ) ) ) {
 		return done( radiusWrite( attr, tiers, schema[ attr ] ) );
 	}
