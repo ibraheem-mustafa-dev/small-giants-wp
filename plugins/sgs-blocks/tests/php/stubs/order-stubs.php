@@ -79,7 +79,8 @@ function sgs_t_order( array $d ): WC_Order { $o = new WC_Order( $d ); $GLOBALS['
 
 function add_filter( $t, $cb, $p = 10, $a = 1 ) {}
 function add_action( $t, $cb, $p = 10, $a = 1 ) {}
-function apply_filters( $t, $v ) { return $v; }
+// add_filter() stays a no-op; a test lists the callbacks it wants an apply_filters() hook to run in $GLOBALS['sgs_t']['filters'][ <hook> ].
+function apply_filters( $t, $v, ...$args ) { foreach ( $GLOBALS['sgs_t']['filters'][ $t ] ?? array() as $cb ) { $v = $cb( $v, ...$args ); } return $v; }
 function is_admin() { return false; }
 function is_user_logged_in() { return $GLOBALS['sgs_t']['user'] > 0; }
 function get_current_user_id() { return $GLOBALS['sgs_t']['user']; }

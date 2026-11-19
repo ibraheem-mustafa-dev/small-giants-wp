@@ -13,6 +13,20 @@
  * and `payment_method` (the payment method's title). An address is one line in the format of its country, its parts
  * joined by a comma, without the name. A fact the order does not have is ''.
  *
+ * Site-supplied facts: a fact about the order that WooCommerce holds no field for (a bake date, an arrival date) is bound
+ * with the key `fact:<name>` (the name a lower-case key: letters, digits, `_` and `-`), e.g.
+ * `{ "source": "sgs/order", "args": { "key": "fact:bake_date" } }`. The site answers through the `sgs_order_fact` filter:
+ *
+ *     add_filter( 'sgs_order_fact', function ( $value, $name, $order ) {
+ *         return 'bake_date' === $name ? my_bake_date_for( $order ) : $value;
+ *     }, 10, 3 );
+ *
+ * `$value` is '' (nothing supplied), `$name` the fact's name and `$order` the viewable `WC_Order`. The answer is plain text
+ * (sanitised like every other key); a site that supplies nothing leaves the fact '' and the bound block renders nothing. The
+ * filter is called only for an order the visitor may view. A `format` may place further facts beside the value: each
+ * `{fact:<name>}` in it is replaced by that fact, and the whole sentence is '' when any of them is empty, so a line
+ * built from several facts shows nothing until every one is supplied.
+ *
  * The order is read the way WooCommerce's own order-confirmation blocks read it
  * (AbstractOrderConfirmationBlock::get_view_order_permissions): the order id from
  * the `order-received` query var, the `key` query argument checked with
@@ -36,6 +50,12 @@ final class Order_Binding {
 
 	/** Keys the source resolves. */
 	const KEYS = array( 'number', 'email', 'delivery_method', 'total', 'date', 'view_url', 'gift_to', 'gift_message', 'item_count', 'shipping_name', 'shipping_address', 'billing_name', 'billing_address', 'phone', 'payment_method' );
+
+	/** The prefix of a key that names a site-supplied fact (`fact:<name>`). */
+	const FACT_PREFIX = 'fact:';
+
+	/** The filter a site answers a site-supplied fact through: ( '', name, WC_Order ) returns the fact's text. */
+	const FACT_FILTER = 'sgs_order_fact';
 
 	/**
 	 * Wire hooks.
@@ -69,21 +89,24 @@ final class Order_Binding {
 	 * The bound value, or null when the visitor may not see this order (the block then keeps its saved text).
 	 *
 	 * An optional `format` arg places the value inside a sentence: its first `%s` becomes the value, e.g.
-	 * `{"key":"number","format":"Thank you, order %s."}`. A format without `%s` is ignored.
+	 * `{"key":"number","format":"Thank you, order %s."}`. A format without `%s` is ignored. Each `{fact:<name>}` in the
+	 * format is replaced by that site-supplied fact; when any is empty the whole value is ''.
 	 *
 	 * @param mixed $source_args Binding args (`key`, optional `format`).
 	 * @return string|null
 	 */
 	public static function get_value( $source_args ): ?string {
-		$key = \is_array( $source_args ) && isset( $source_args['key'] ) ? \sanitize_key( (string) $source_args['key'] ) : '';
-		if ( ! \in_array( $key, self::KEYS, true ) ) {
+		$raw  = \is_array( $source_args ) && isset( $source_args['key'] ) && \is_string( $source_args['key'] ) ? $source_args['key'] : '';
+		$fact = self::fact_name( $raw );
+		$key  = null === $fact ? \sanitize_key( $raw ) : '';
+		if ( null === $fact && ! \in_array( $key, self::KEYS, true ) ) {
 			return null;
 		}
 		$order = self::viewable_order();
 		if ( null === $order ) {
 			return null;
 		}
-		$value  = self::value_for( $key, $order );
+		$value = null === $fact ? self::value_for( $key, $order ) : self::fact_value( $fact, $order );
 		if ( '' === $value ) {
 			return '';
 		}
@@ -92,7 +115,58 @@ final class Order_Binding {
 		if ( false === $at ) {
 			return $value;
 		}
-		return \substr( $format, 0, $at ) . $value . \substr( $format, $at + 2 );
+		// The facts named in the format are read from the format's own words, before the value goes in, so text inside a value is never expanded.
+		$before = self::with_facts( \substr( $format, 0, $at ), $order );
+		$after  = self::with_facts( \substr( $format, $at + 2 ), $order );
+		return null === $before || null === $after ? '' : $before . $value . $after;
+	}
+
+	/**
+	 * The fact name in a `fact:<name>` key (sanitised as a key), or null when the key does not name a fact.
+	 *
+	 * @param string $raw The binding's key as authored.
+	 * @return string|null
+	 */
+	private static function fact_name( string $raw ): ?string {
+		if ( 0 !== \strpos( $raw, self::FACT_PREFIX ) ) {
+			return null;
+		}
+		$name = \sanitize_key( \substr( $raw, \strlen( self::FACT_PREFIX ) ) );
+		return '' === $name ? null : $name;
+	}
+
+	/**
+	 * One site-supplied fact's plain-text value for an order ('' when no filter supplies it). Output is escaped by core when printed.
+	 *
+	 * @param string    $name  The fact's name.
+	 * @param \WC_Order $order The viewable order.
+	 * @return string
+	 */
+	private static function fact_value( string $name, \WC_Order $order ): string {
+		// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingSinceComment, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- the hook is self::FACT_FILTER, `sgs_order_fact`.
+		$answer = \apply_filters( self::FACT_FILTER, '', $name, $order );
+		return \is_scalar( $answer ) ? \sanitize_text_field( (string) $answer ) : '';
+	}
+
+	/**
+	 * Part of a format with each `{fact:<name>}` replaced by that fact; null when one of them is empty.
+	 *
+	 * @param string    $part  Part of a format.
+	 * @param \WC_Order $order The viewable order.
+	 * @return string|null
+	 */
+	private static function with_facts( string $part, \WC_Order $order ): ?string {
+		$missing = false;
+		$out     = (string) \preg_replace_callback(
+			'/\{fact:([a-z0-9_-]+)\}/',
+			static function ( array $m ) use ( $order, &$missing ): string {
+				$value   = self::fact_value( $m[1], $order );
+				$missing = $missing || '' === $value;
+				return $value;
+			},
+			$part
+		);
+		return $missing ? null : $out;
 	}
 
 	/**
