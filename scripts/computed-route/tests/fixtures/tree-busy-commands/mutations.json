@@ -22,5 +22,29 @@
   "find": "const name = String( script.exec( l )?.[ 1 ] || '' ).split( /[\\\\/]/ ).pop().toLowerCase();",
   "replace": "const name = String( script.exec( l )?.[ 1 ] || '' ).toLowerCase();",
   "why": "the script's folder is read as its name"
+ },
+ {
+  "file": "lib/tree.mjs",
+  "find": "if ( 'build-deploy.py' === name && /\\s--gate-only(?=\\s|$)/.test( l ) && ! /\\s--editor-check(?=[\\s=]|$)/.test( l ) ) {",
+  "replace": "if ( false ) {",
+  "why": "a gate-only run holds every calibration on the machine"
+ },
+ {
+  "file": "lib/tree.mjs",
+  "find": "if ( 'build-deploy.py' === name && /\\s--gate-only(?=\\s|$)/.test( l ) && ! /\\s--editor-check(?=[\\s=]|$)/.test( l ) ) {",
+  "replace": "if ( 'build-deploy.py' === name && /\\s--gate-only(?=\\s|$)/.test( l ) ) {",
+  "why": "a gate-only run that overwrites a mirror for the editor check is ignored"
+ },
+ {
+  "file": "lib/tree.mjs",
+  "find": "if ( 'build-deploy.py' === name && /\\s--gate-only(?=\\s|$)/.test( l ) && ! /\\s--editor-check(?=[\\s=]|$)/.test( l ) ) {",
+  "replace": "if ( /\\s--gate-only(?=\\s|$)/.test( l ) && ! /\\s--editor-check(?=[\\s=]|$)/.test( l ) ) {",
+  "why": "the flag exempts a reseed script too"
+ },
+ {
+  "file": "lib/tree.mjs",
+  "find": "if ( 'build-deploy.py' === name && /\\s--gate-only(?=\\s|$)/.test( l ) && ! /\\s--editor-check(?=[\\s=]|$)/.test( l ) ) {",
+  "replace": "if ( 'build-deploy.py' === name && /--gate-only/.test( l ) && ! /\\s--editor-check(?=[\\s=]|$)/.test( l ) ) {",
+  "why": "the words inside another argument's value count as the flag"
  }
 ]

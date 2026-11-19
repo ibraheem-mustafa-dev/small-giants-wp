@@ -19,6 +19,18 @@ test( 'MUST FAIL: a script argument naming a seed step is no reseed; the deploy 
 	assert.ok( ! busy.some( ( l ) => /render-check/.test( l ) ) );
 } );
 
+test( 'MUST FAIL (gate-only): a deploy run that only builds and gates holds nothing; one that also syncs a mirror, and a real deploy, do', () => {
+	const gate = String.raw`C:\Python313\python.exe C:\repo\plugins\sgs-blocks\scripts\build-deploy.py --gate-only`;
+	const gateWithTarget = String.raw`python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --gate-only --blocks-only`;
+	const withEditor = String.raw`python plugins/sgs-blocks/scripts/build-deploy.py --gate-only --editor-check local-indus`;
+	const deploy = String.raw`python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown`;
+	const named = String.raw`python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --note=--gate-only-later`;
+	assert.deepEqual( busyCommands( [ gate, gateWithTarget ].join( '\n' ) ), [], 'MUST FAIL: a gate-only run is not a deploy' );
+	assert.deepEqual( busyCommands( [ gate, withEditor, deploy, named ].join( '\n' ) ), [ withEditor, deploy, named ] );
+	// The flag exempts only the deploy script: a reseed carrying the same word is still a reseed.
+	assert.equal( busyCommands( String.raw`python C:\x\sgs-update-v2.py --gate-only` ).length, 1 );
+} );
+
 test( 'negative control: other Python scripts and empty input are quiet', () => {
 	assert.deepEqual( busyCommands( String.raw`python C:\repo\scripts\check-md-wrap.py --check` + '\npython -m http.server' ), [] );
 	assert.deepEqual( busyCommands( '' ), [] );

@@ -148,11 +148,16 @@ export function assertWritable( target, manifests ) {
 
 // The command lines among `lines` that run a deploy or a framework reseed: a Python process whose script (the first
 // argument after the interpreter) is build-deploy.py, sgs-update*.py or a seed-/seed_ script. A word in another script's
-// arguments (render-check.py's `--seed-step`) is no reseed.
+// arguments (render-check.py's `--seed-step`) is no reseed. A `build-deploy.py --gate-only` run is not a deploy: it builds
+// and gates in its own worktree and stops, uploading nothing and contacting no target, so it holds nothing here unless it
+// also carries `--editor-check`, which overwrites a local mirror's plugin and theme.
 export function busyCommands( lines ) {
 	const script = /^"?[^"\s]*python[^"\s]*"?\s+"?([^"\s]+)/i;
 	return String( lines || '' ).split( /\r?\n/ ).map( ( l ) => l.trim() ).filter( ( l ) => {
 		const name = String( script.exec( l )?.[ 1 ] || '' ).split( /[\\/]/ ).pop().toLowerCase();
+		if ( 'build-deploy.py' === name && /\s--gate-only(?=\s|$)/.test( l ) && ! /\s--editor-check(?=[\s=]|$)/.test( l ) ) {
+			return false;
+		}
 		return /^(?:build-deploy\.py|sgs-update[\w-]*\.py|seed[-_][\w-]*\.py)$/.test( name );
 	} );
 }
