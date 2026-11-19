@@ -105,6 +105,7 @@ export function scIfFields( tree, { factRecord, surfaceId, folder, rules = {}, h
 	} );
 	walk( tree, null );
 	const put = ( n, attr, value ) => has( n.name, attr ) && ( n.attributes ??= {} ) && ( n.attributes[ attr ] = value );
+	const builtNodes = new Map();
 	const wait = ( n, c ) => [ [ 'conditionalField', c.field ], [ 'conditionalOperator', 'equals' ], [ 'conditionalValue', c.value ] ].forEach( ( [ a, v ] ) => put( n, a, v ) );
 	for ( const c of conditions ) {
 		// The field the condition watches: a field node whose draft subtree holds a control whose click handler writes the key.
@@ -126,10 +127,13 @@ export function scIfFields( tree, { factRecord, surfaceId, folder, rules = {}, h
 			wait( x.n, c );
 			out.conditioned.push( x.key );
 		} );
-		// Controls under the sc-if with no node are built from their template.
+		// Controls under the sc-if with no node are built from their template. A control under nested sc-ifs was built for the
+		// first condition that reaches it and waits on the later one instead, as a rendered field under both does (`wait` above).
 		const have = new Set( nodes.map( ( x ) => x.key ).filter( Boolean ) );
-		const controls = Object.values( els ).map( ( e ) => e.template ).filter( ( t ) => t && ( rules.formControl?.tags || [] ).includes( t.tag ) && ( t.parentChain || [] ).includes( c.scIf ) && ! have.has( t.key ) )
+		const unbuilt = Object.values( els ).map( ( e ) => e.template ).filter( ( t ) => t && ( rules.formControl?.tags || [] ).includes( t.tag ) && ( t.parentChain || [] ).includes( c.scIf ) && ! have.has( t.key ) )
 			.sort( ( a, b ) => Number( a.n ) - Number( b.n ) );
+		const controls = unbuilt.filter( ( t ) => ! builtNodes.has( t.key ) );
+		unbuilt.filter( ( t ) => builtNodes.has( t.key ) ).forEach( ( t ) => wait( builtNodes.get( t.key ), c ) );
 		if ( ! controls.length ) {
 			out.notes.push( `the fields under ${ c.scIf } show only while ${ c.field } is "${ c.value }": ${ under.length } waits on it` );
 			continue;
@@ -147,6 +151,7 @@ export function scIfFields( tree, { factRecord, surfaceId, folder, rules = {}, h
 			[ 'inputmode', 'placeholder' ].forEach( ( a ) => t.attrs?.[ a ] && ! /\{\{/.test( t.attrs[ a ] ) && put( built.node, a, t.attrs[ a ] ) );
 			wait( built.node, c );
 			made.push( { node: built.node, n: Number( t.n ) } );
+			builtNodes.set( t.key, built.node );
 			out.built.push( t.key );
 		}
 		const list = host ? ( host.n.innerBlocks ??= [] ) : tree;

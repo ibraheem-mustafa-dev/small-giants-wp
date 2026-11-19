@@ -11,5 +11,8 @@
  {"file":"lib/form-scif-fields.mjs","find":"\t\t\t[ 'inputmode', 'placeholder' ].forEach(","replace":"\t\t\t[].forEach(","why":"a built field loses its input mode"},
  {"file":"lib/form-scif-fields.mjs","find":"const put = ( n, attr, value ) => has( n.name, attr ) && ( n.attributes ??= {} ) && ( n.attributes[ attr ] = value );","replace":"const put = ( n, attr, value ) => ( n.attributes ??= {} ) && ( n.attributes[ attr ] = value );","why":"a setting the block lacks is written"},
  {"file":"lib/form-scif-fields.mjs","find":"\treturn m ? templateKey( { dc: 'Root' === m[ 1 ] ? rootComponent : m[ 1 ], tpl: m[ 2 ] } ) : null;","replace":"\treturn m ? templateKey( { dc: rootComponent, tpl: m[ 2 ] } ) : null;","why":"an imported component's element is keyed under the root component"},
- {"file":"lib/form-scif-fields.mjs","find":"\tif ( ! rec?.dc || ! folder || ! fs.existsSync( path.join( folder, `${ rec.dc }.dc.html` ) ) ) {","replace":"\tif ( ! rec?.dc || ! folder ) {","why":"a client whose form component has no draft file stops the proposer"}
+ {"file":"lib/form-scif-fields.mjs","find":"\tif ( ! rec?.dc || ! folder || ! fs.existsSync( path.join( folder, `${ rec.dc }.dc.html` ) ) ) {","replace":"\tif ( ! rec?.dc || ! folder ) {","why":"a client whose form component has no draft file stops the proposer"},
+ {"file":"lib/form-scif-fields.mjs","find":"const controls = unbuilt.filter( ( t ) => ! builtNodes.has( t.key ) );","replace":"const controls = unbuilt;","why":"a control under nested sc-ifs is built once for each"},
+ {"file":"lib/form-scif-fields.mjs","find":"unbuilt.filter( ( t ) => builtNodes.has( t.key ) ).forEach( ( t ) => wait( builtNodes.get( t.key ), c ) );","replace":"","why":"a control built for an outer condition keeps waiting on it, not the later one"},
+ {"file":"lib/form-scif-fields.mjs","find":"\t\t\tbuiltNodes.set( t.key, built.node );\n","replace":"","why":"a built control is forgotten, so the next condition builds it again"}
 ]

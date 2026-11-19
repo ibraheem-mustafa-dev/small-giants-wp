@@ -53,6 +53,26 @@ test( 'MUST FAIL: the order-number field waits on My order, and the cookie-count
 	assert.equal( r.notes.length, 2 );
 } );
 
+test( 'MUST FAIL: a control under two nested sc-ifs is built once, waiting on the later condition as a rendered field does', () => {
+	// The event topic shows the outer sc-if (Contact/59) and a gift topic the inner one (Contact/60, the div holding both controls).
+	const nested = facts();
+	nested.elements[ 'Contact/60' ].template.tag = 'sc-if';
+	nested.surfaces[ 'S-34' ].states.push( { name: 'topic: gift', state_keys: { topic: 'gift' }, sc_if_tpl_ids: [ '60' ], animation_ids: [] } );
+	const t = tree();
+	const r = scIfFields( t, { factRecord: nested, surfaceId: 'S-34', folder: FIX, rules: RULES, has } );
+	assert.deepEqual( fields( t ).map( ( f ) => f[ 0 ] ), [ 'What’s it about?', 'Your name', 'Email', 'Order number (if you have it)', 'How many cookies, roughly?', 'Date needed', 'Message' ] );
+	assert.deepEqual( r.built, [ 'Contact/62', 'Contact/64' ] );
+	assert.deepEqual( fields( t ).filter( ( f ) => /cookies|Date/.test( f[ 0 ] ) ).map( ( f ) => [ f[ 1 ], f[ 2 ] ] ), [ [ 'topic', 'A gift' ], [ 'topic', 'A gift' ] ], 'the later condition is the one the field waits on' );
+	// Negative control: with one sc-if per condition (no nesting) the same controls are built once each, as before.
+	const flat = tree();
+	assert.deepEqual( scIfFields( flat, { factRecord: facts(), surfaceId: 'S-34', folder: FIX, rules: RULES, has } ).built, [ 'Contact/62', 'Contact/64' ] );
+	assert.deepEqual( fields( flat ), fields( ( () => {
+		const again = tree();
+		scIfFields( again, { factRecord: facts(), surfaceId: 'S-34', folder: FIX, rules: RULES, has } );
+		return again;
+	} )() ) );
+} );
+
 test( 'MUST FAIL: the conditions come from the record states that show one sc-if for one value', () => {
 	const idx = loadDraft( FIX, 'Contact.dc.html' ).idx;
 	assert.deepEqual( scIfConditions( { factRecord: facts(), surfaceId: 'S-34', idx } ), [
