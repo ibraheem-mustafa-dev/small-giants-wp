@@ -1,0 +1,5 @@
+[
+	{"file": "lib/skeleton-record.mjs", "find": "const BOX_SIDES = 2;", "replace": "const BOX_SIDES = 1;", "why": "a one-sided hairline divider counts as a painted box again, so the links become buttons"},
+	{"file": "lib/skeleton-record.mjs", "find": "const BOX_SIDES = 2;", "replace": "const BOX_SIDES = 5;", "why": "a border on every side no longer counts as a painted box"},
+	{"file": "lib/skeleton-record.mjs", "find": ".length >= BOX_SIDES;", "replace": ".length >= 0;", "why": "every link counts as a painted box"}
+]
